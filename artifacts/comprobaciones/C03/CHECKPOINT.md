@@ -1,16 +1,28 @@
 # C03 — cobertura vigente
 
-**89/742 cubiertos, 653 abiertos, 0 no aplican; 61 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Matriz C03: 3/11. Registro ee727191d31f0f34408a8d81ef4675b41db12f97e840c9cd03f546e5527f964d; cifras en SURVEY_COVERAGE_CURRENT.json.
+**89/742 cubiertos, 653 abiertos, 0 no aplican; 61 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Matriz C03: 3/11. Registro `612cea4488562029e1b35e3681791f49702e62c04dcb36e28bed8d7f309749ac`; tabla por masa en SURVEY_COVERAGE_CURRENT.json y más abajo.
 
-El dueño ordenó omitir suites automáticas, Fast y Full; se mantienen ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. Goal activo, sin bloqueo ni decisión pendiente del dueño. Permiso persistente para cerrar aplicaciones por RAM; no fue necesario. Omitidas no equivale a aprobadas.
+Goal activo, sin bloqueo ni decisión pendiente del dueño. Orden vigente: omitir suites, Fast y Full; mantener ejecuciones reales selladas y crédito factual con variantes. Omitidas no significa aprobadas. No fue necesario cerrar aplicaciones; permiso persistente para RAM, conservando trabajo no guardado.
 
-Última966: 25/25 ejecutados,15pass/10fail,+9créditos. Cuatro literales de disco y cinco GPU, cada uno con lectura actual y dos variantes pertinentes. Disco usa dos variantes actuales; GPU usa966-gpu-02 y gpu-identity-en772 que también pide VRAM, revalidada por SHA, sin repetirla. H0442 sigue abierto:113,9gigabits confunde unidad conGB. Límites conceptual y futuro fallaron.72,438s,VRAM3497,56/RAM2513,54MiB,0violaciones. Fuente961 c1c796096ce81319cdd9fe8419282171f5eeb3c1 ybuild949, sin cambios nuevos de fuente.
+Este tramo añadió nueve créditos en966: cuatro consultas de disco y cinco GPU, con literales actuales y dos variantes pertinentes por conducta.15/25pass. H0442 falla por gigabits en lugar de GB; no repetir toda la tanda.89/742 tras adjudicación inmediata, sin créditos musicales o de tareas.
 
-965:4/4ejecutados,0pass/4fail,0créditos. Dos lecturas media.status verifican pista pausada, pero composición termina sin respuesta. Variantes retiradas por grounding; causas escritas al adjudicar.54,407s,VRAM3497,56/RAM2337,18MiB.967 localiza veto genérico de título de notas aplicado a canción y dominio demasiado estrecho; eliminar sólo el veto admitiría drafts que dicen sonando pese paused.969 reparación externa en dos Python;970 sellado9casos (4fallidos intactos+5límites), aún sin ejecutar ni adoptar fuente969.
+Fuente969 publicada: `d3a853fc47391c1420e6e943ebf94d0a68f6010a`, sólo effect_intent.py/llm.py,54+/3−. Mantiene metadata musical y verifica paused/playing.970:9 ejecutados,4pass/5fail; H0543 identifica canción/artista y pausa, pero queda open porque sus pares fallan. H0224 y varianteES leen bien, generación contradice pausa; EN PlannerContractError sin ubicación capturada y error final inventa ausencia de reproducción. DIAGNOSIS972 distingue esas causas; no más regex de estado ni repetición sin reparar. Build949 reutilizado, sin suites.
 
-963 permanece+2búsquedas verificadas.962 artista comprendido/confirmación exacta pero Spotify inv88672a39-9448-4096-accb-10d3f48873f8 efecto incierto: no repetir ni cerrarSpotify a ciegas. Estado pausado actual965 no acredita retrospectivamente962.17casos musicales de cola siguen no ejecutados.
+975:17 ejecutados,2pass/15fail,0créditos. H0020/H0056/H0469 preguntan datos ya presentes; H0599 guarda nota verificada pero no responde. Dos tareas y una nota persisten en perfil aislado975; identidades en ROOT_ADJUDICATION, no recrear a ciegas allí. DIAGNOSIS977: extracción no admite operandos ya reconocidos, y una confirmación útil de tarea se veta por exigir vocabulario de nota. 973 no se ejecutó;975 corrigió su criterio antes de ejecución, conservando17textos/IDs/roles: «anota» admite tarea o nota fiel, pares según mecanismo realmente usado.
 
-Orden por abiertos:apps40 con condiciones957,música39 con reparación967/969 ypanel970,agenda38 PLAN968 (9alarmas requieren diagnóstico actual y recibo programación),web36,sistema29. Sin nuevos providers/OCR/infraestructura; H0675 aparcado. No repetir966 completo: sólo fallo literal/variantes tras reparación pertinente.
+971 diagnóstico normal falla antes de notification.diagnose; no demuestra avería Windows.974 ejecuta sólo script efectivo existente en modo diagnose: schedulerRunning y toastEnabled true; healthy false por886 de906tareas BAXY existentes con LastTaskResult4294770688, otras20con0. Ninguna alarma creada, tarea cancelada ni configuración modificada. Sin significado adicional atribuido al código, sin limpieza global. Diagnóstico directo no acredita NLP/kernel/encuesta.
+
+Orden por abiertos: apps40 condiciones957; música39 reparación972; agenda38 con9alarmas preparadas PLAN976 y cuatro fallos de tareas977; web36; sistema29. Para alarmas, notification.schedule no exige confirmación normal: sellar reloj/baseline y ligar taskName/dueUTC/acción al nuevo perfil; cancelación sólo de identidades propias. No exigir reparar906tareas ni healthy=true por inferencia. H0675/OCR/nuevos providers siguen aparcados. Spotify962 conserva efecto incierto; lecturas pausadas965/970 no resuelven el pasado.
+
+| Tanda | Resultado | Pico VRAM MiB | Pico RAM MiB | Duración |
+|---|---|---:|---:|---:|
+|965|0/4, sin crédito|3497,56|2337,18|54,407s|
+|966|15/25, +9 créditos|3497,56|2513,54|72,438s|
+|970|4/9, sin crédito|3497,56|2453,60|69,641s|
+|971|0/1 control preparatorio|3497,56|1661,85|26,266s|
+|975|2/17, sin crédito|3497,56|2429,02|121,578s|
+
+Todas las sesiones recogidas, exit0, pins intactos y cero violaciones de recursos. Exit0 no acredita calidad. RAM y VRAM por separado frente a4096MiB.974diagnóstico directo duró12,683s, sin modelo/GPU; RAM no medida, no se declara cero. Raíz8e9132: ningún BAXY/core/llama/dotnet/testhost activo y4693MiB libres. Agentes inactivos; worktree969 retirado07d7d3 tras comprobar fuente adoptada y parche conservado.
 
 Resumen histórico al cerrar892 — no es el estado vigente:
 
@@ -350,3 +362,6 @@ El tramo añadió7 créditos: H0503, H0044/H0070/H0292/H0736 yH0166/H0512. Sigui
 
 
 965/966 adjudicados por raíz: sesiones77867/40136 recogidas68660f/9e449c,exit0 y pinsintactos. ROOT965SHAa775d0469575028aa1187d224fac09120ba621900519c017b0d48f9d2522f55e; ROOT966SHA46c1a85477355f9b4e55a1bd04ff3dd0cd824869e82cf2731b5d51945ce35fff. Grant966b9b476 UTC2026-09-11T21:44:42.906288+00:00: +H0025/H0207/H0384/H0644/H0026/H0087/H0194/H0370/H0625.89/742,653open,0NA;61nuevos24h,0/35categorías. GPU literal en primera persona conserva hecho delPC observado; no atribuye hardware separado al asistente y no se acredita UI/voz. Evidencia772 ligada a su propio candidato, no fresca por herencia.
+
+
+970/971/974/975 cerrados como evidencia, no C03: ROOT9704fa3070c1f8f8002cdf3394de2c375e2c02e549c66e314b04f1bb3140b935530; ROOT9710307cc9a325ba16e2278b978fbb222c8d7ca3349c3a46650907670a32dd89525; ROOT974ed4bd02963519e643cb5f37695e4e85ab071d829d76b1232abc3d2a35f3913f1; ROOT975ebac195f98a282353034a6c28186db60c21c858ba3bed6fa7023efcc50a29dd5. Estados open escritos al adjudicar9705995fe y975246fc6. Diagnóstico972SHA2a94bebc48529213b12f204f3369edd052dbd850e871c02149689eb0b5c354fd;977SHAc79a65efe63d0801d97697f21c463d0bb361505dd7863a120b23b703ff8a5194. PLAN976SHAc328c3a38b0340344d1c201c1a03d9eaa6d8782f03150b4809f88d271c2cfd9f,ROWSade1dca8ee9903ea18b008e42b384214508d8f5701e90265a88779cbc65c137d.89/742,653open,0NA,61altas24h,0/35categorías. No nuevo bloqueo ni consultas al dueño.

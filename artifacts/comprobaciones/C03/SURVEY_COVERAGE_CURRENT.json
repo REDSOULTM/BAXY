@@ -1,5 +1,5 @@
 {
-  "utc": "2026-09-11T21:47:16.625605+00:00",
+  "utc": "2026-09-11T22:09:17.632306+00:00",
   "covered": 89,
   "open": 653,
   "not_applicable": 0,
@@ -354,7 +354,7 @@
       "not_applicable": 0
     }
   ],
-  "requirements_sha256": "ee727191d31f0f34408a8d81ef4675b41db12f97e840c9cd03f546e5527f964d",
+  "requirements_sha256": "612cea4488562029e1b35e3681791f49702e62c04dcb36e28bed8d7f309749ac",
   "classification_source": "SURVEY_TAXONOMY846.json",
   "latest_adjudications": [
     "APP_OPEN847/ROOT_ADJUDICATION.json",
@@ -375,17 +375,20 @@
     "MUSIC_TAIL962/ROOT_ADJUDICATION.json",
     "WEB_TAIL963/ROOT_ADJUDICATION.json",
     "MUSIC_STATUS965/ROOT_ADJUDICATION.json",
-    "SYSTEM_READ966/ROOT_ADJUDICATION.json"
+    "SYSTEM_READ966/ROOT_ADJUDICATION.json",
+    "MEDIA_STATUS970/ROOT_ADJUDICATION.json",
+    "NOTIFICATION_READY971/ROOT_ADJUDICATION.json",
+    "TASK_CREATE975/ROOT_ADJUDICATION.json"
   ],
-  "equal_maximum_open_next_selection": "Apps40 conditions957; music39 pending967 repair/970 sealed read-only retry, then agenda38 PLAN968 readiness and9 alarms, web36 existing failures, system29 after9grants966. No rerun entire panels or uncertain Spotify effect.",
+  "equal_maximum_open_next_selection": "Apps40 conditions957; music39 diagnosed972 pending targeted repair; agenda38 has9alarms with existing provider readiness974/PLAN976, tasks4failures diagnosed977; web36 then system29. Next panel must credit literals or directly prepare them. No global cleanup of906existing scheduled tasks.",
   "latest_product_run": {
-    "batch": 966,
-    "executed": 25,
-    "passed": 15,
-    "failed": 10,
+    "batch": 975,
+    "executed": 17,
+    "passed": 2,
+    "failed": 15,
     "not_executed": 0,
-    "coverage_added": 9,
+    "coverage_added": 0,
     "exit_code": 0
   },
-  "registry_sha256": "ee727191d31f0f34408a8d81ef4675b41db12f97e840c9cd03f546e5527f964d"
+  "registry_sha256": "612cea4488562029e1b35e3681791f49702e62c04dcb36e28bed8d7f309749ac"
 }

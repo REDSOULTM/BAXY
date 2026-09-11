@@ -1,0 +1,19 @@
+{
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "candidate_manifest_sha256": "1dd9cca324af855d1f9305bdd1269bc0bf72f5e062c398334de6f7045ad33690",
+  "execution_authorized": true,
+  "utc": "2026-09-11T21:55:08.093299+00:00",
+  "exit_code": 0,
+  "stopped": false,
+  "pins_unchanged": true,
+  "terminal_records": 1,
+  "session_controls_observed": 1,
+  "turn_admissions_observed": 1,
+  "app_cleanup_by_runner": false,
+  "audio_restoration_by_runner": false,
+  "quality_adjudicated": false,
+  "success_count": null,
+  "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-notification-ready971-profile\\journal\\missions.jsonl",
+  "target_apps_closed_by_guard": false
+}

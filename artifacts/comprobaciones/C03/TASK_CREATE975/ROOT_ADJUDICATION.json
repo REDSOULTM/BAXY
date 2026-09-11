@@ -1,0 +1,479 @@
+{
+  "schema": "c03-task975-root-adjudication-v1",
+  "adjudicator": "root",
+  "adjudicated_at_utc": "2026-09-11T22:04:53.091714+00:00",
+  "source_commit": "d3a853fc47391c1420e6e943ebf94d0a68f6010a",
+  "seal_sha256": "5c53c86fc4042c7d963d19fd8391933dad40bd3eb17380078160bcf6f83ca5a1",
+  "runner_sha256": "087f57403dae3994e1790b6dce8958495519da2ee4e4027c43a0ed691efcd5b0",
+  "manifest_sha256": "ae4ad1fdbd980378ff2b26677a027f14272b435e4c5bb24638240912c0be0dfd",
+  "preparation_sha256": "1865e52414d086dfa303cb51afaca4ade8b302e77a428f54ffcf9b1f443f0d84",
+  "session_id": 85904,
+  "collection": "3a3279",
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "executed": 17,
+  "passed": 2,
+  "failed": 15,
+  "not_executed": 0,
+  "coverage_added": 0,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "resources": {
+    "utc": "2026-09-11T22:02:34.656440+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2429.0234375,
+    "seconds": 121.57800000000861,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0020",
+      "literal": "creá una tarea: terminar el informe",
+      "criterion": "Persist the explicitly requested task with task.create and verify current product identity/postread. Preserve complete action, names, quantities and supplied details; optional due must not become an invented deadline, reminder or calendar event. Final response must truthfully identify the persisted task and state. Do not perform the action described. Ask only for genuinely missing content; due omission alone is not missing required task content. Credit requires pertinent task-persistence variants, not note-only outcomes.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Asks for task title although literal already supplies terminar el informe. No task created; unnecessary clarification, remains open.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿cuál es el título de la tarea?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null
+    },
+    {
+      "index": 1,
+      "case_id": "H0056",
+      "literal": "anota llamar al dentista",
+      "criterion": "Persist the complete requested action faithfully as a task OR a note, since this request does not mandate a storage type. Verify product receipt/current identity/postread and complete content, including names and details. Final response must honestly identify the actual persisted type and state. Do not invent an alarm, deadline or calendar event, and do not perform the action described. Credit requires pertinent variants of the mechanism actually used; task variants do not automatically generalize a note outcome. If pertinent note pairs are missing, no credit.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Asks for note title/content although llamar al dentista is supplied. No task or note created; unnecessary clarification, remains open.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Qué contenido y título quieres para la nota?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null
+    },
+    {
+      "index": 2,
+      "case_id": "H0469",
+      "literal": "anotá llamar al dentista",
+      "criterion": "Persist the complete requested action faithfully as a task OR a note, since this request does not mandate a storage type. Verify product receipt/current identity/postread and complete content, including names and details. Final response must honestly identify the actual persisted type and state. Do not invent an alarm, deadline or calendar event, and do not perform the action described. Credit requires pertinent variants of the mechanism actually used; task variants do not automatically generalize a note outcome. If pertinent note pairs are missing, no credit.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Asks for note title/content although llamar al dentista is supplied. No task or note created; unnecessary clarification, remains open.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Qué contenido y título quieres para la nota?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null
+    },
+    {
+      "index": 3,
+      "case_id": "H0599",
+      "literal": "anotá que tengo que llamar al dentista",
+      "criterion": "Persist the complete requested action faithfully as a task OR a note, since this request does not mandate a storage type. Verify product receipt/current identity/postread and complete content, including names and details. Final response must honestly identify the actual persisted type and state. Do not invent an alarm, deadline or calendar event, and do not perform the action described. Credit requires pertinent variants of the mechanism actually used; task variants do not automatically generalize a note outcome. If pertinent note pairs are missing, no credit.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Verified note.create persisted title llamar al dentista/content tengo que llamar al dentista; final composition failed. Persistence alone is not a useful faithful product response, remains open. Preserve note identity before any continuation.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 4,
+        "timestampUtc": "2026-09-11T22:00:53.1947117+00:00",
+        "phase": "completed",
+        "requestId": "959f850c-2153-4a7f-b610-df6ddb7161e1",
+        "missionId": "783e26eb-47cf-4b38-a89f-2d24f139256a",
+        "invocationId": "7773d754-3ee0-4f81-b1ad-b856b6fdd7ed",
+        "operation": "note.create",
+        "requestFingerprint": "817b694c27ecc90f549a107cee53f82db7c735415eb700045969c72d84c9f4a4",
+        "response": {
+          "type": "operation.response",
+          "requestId": "959f850c-2153-4a7f-b610-df6ddb7161e1",
+          "missionId": "783e26eb-47cf-4b38-a89f-2d24f139256a",
+          "invocationId": "7773d754-3ee0-4f81-b1ad-b856b6fdd7ed",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"note.create\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"title\":\"llamar al dentista\",\"content\":\"tengo que llamar al dentista\",\"createdAtUtc\":\"2026-09-11T22:00:53.1807911+00:00\",\"updatedAtUtc\":\"2026-09-11T22:00:53.1807911+00:00\",\"revision\":1,\"isTrashed\":false}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "noteId": "a567f9c9-a516-4144-8716-1c3c2b1118f6",
+            "title": "llamar al dentista",
+            "content": "tengo que llamar al dentista",
+            "createdAtUtc": "2026-09-11T22:00:53.1807911+00:00",
+            "updatedAtUtc": "2026-09-11T22:00:53.1807911+00:00",
+            "trashedAtUtc": null,
+            "revision": 1,
+            "isTrashed": false
+          },
+          "errorCode": null
+        }
+      }
+    },
+    {
+      "index": 4,
+      "case_id": "task-create973-dev-01",
+      "literal": "Agregá a mis pendientes comprar tres sobres acolchados.",
+      "criterion": "Persist the explicitly requested task with task.create and verify current product identity/postread. Preserve complete action, names, quantities and supplied details; optional due must not become an invented deadline, reminder or calendar event. Final response must truthfully identify the persisted task and state. Do not perform the action described. Ask only for genuinely missing content; due omission alone is not missing required task content. Credit requires pertinent task-persistence variants, not note-only outcomes.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Verified task.create preserved comprar tres sobres acolchados, but response composition failed. No variant credit.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 6,
+        "timestampUtc": "2026-09-11T22:01:03.6676117+00:00",
+        "phase": "completed",
+        "requestId": "e2cab2be-37de-43c8-8143-585bcbd42303",
+        "missionId": "70a5c959-7582-4aa5-abfb-5f42ebd00176",
+        "invocationId": "0e0c5b6e-688f-4a33-b696-fccd09ba0c99",
+        "operation": "task.create",
+        "requestFingerprint": "e96f07ee30b539a74e092a30e33500c8ae2598929fed5459f7563812dd1bac1c",
+        "response": {
+          "type": "operation.response",
+          "requestId": "e2cab2be-37de-43c8-8143-585bcbd42303",
+          "missionId": "70a5c959-7582-4aa5-abfb-5f42ebd00176",
+          "invocationId": "0e0c5b6e-688f-4a33-b696-fccd09ba0c99",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"task.create\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"taskId\":\"edcf69de-5558-49e8-9997-d341d025f8b2\",\"title\":\"comprar tres sobres acolchados\",\"details\":\"comprar tres sobres acolchados\",\"completed\":false,\"deleted\":false,\"createdAtUtc\":\"2026-09-11T22:01:03.6448979+00:00\",\"updatedAtUtc\":\"2026-09-11T22:01:03.6448979+00:00\",\"version\":1}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "taskId": "edcf69de-5558-49e8-9997-d341d025f8b2",
+            "title": "comprar tres sobres acolchados",
+            "details": "comprar tres sobres acolchados",
+            "dueUtc": null,
+            "completed": false,
+            "completedAtUtc": null,
+            "deleted": false,
+            "createdAtUtc": "2026-09-11T22:01:03.6448979+00:00",
+            "updatedAtUtc": "2026-09-11T22:01:03.6448979+00:00",
+            "version": 1
+          },
+          "errorCode": null
+        }
+      }
+    },
+    {
+      "index": 5,
+      "case_id": "task-create973-dev-02",
+      "literal": "Necesito dejar anotado que tengo que devolver el libro a Lucía.",
+      "criterion": "Persist the complete requested action faithfully as a task OR a note, since this request does not mandate a storage type. Verify product receipt/current identity/postread and complete content, including names and details. Final response must honestly identify the actual persisted type and state. Do not invent an alarm, deadline or calendar event, and do not perform the action described. Credit requires pertinent variants of the mechanism actually used; task variants do not automatically generalize a note outcome. If pertinent note pairs are missing, no credit.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Asks for note title/content already supplied by devolver el libro a Lucía; no write.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Qué contenido y título quieres que tenga la nota?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null
+    },
+    {
+      "index": 6,
+      "case_id": "task-create973-dev-03",
+      "literal": "Preparar las diapositivas: guardalo como una tarea.",
+      "criterion": "Persist the explicitly requested task with task.create and verify current product identity/postread. Preserve complete action, names, quantities and supplied details; optional due must not become an invented deadline, reminder or calendar event. Final response must truthfully identify the persisted task and state. Do not perform the action described. Ask only for genuinely missing content; due omission alone is not missing required task content. Credit requires pertinent task-persistence variants, not note-only outcomes.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Unnecessarily asks whether to create the local task already explicitly requested; no write.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Quieres que cree una tarea local para guardarlo?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null
+    },
+    {
+      "index": 7,
+      "case_id": "task-create973-dev-04",
+      "literal": "Creá una tarea titulada revisar presupuesto, con el detalle comparar las dos cotizaciones.",
+      "criterion": "Persist the explicitly requested task with task.create and verify current product identity/postread. Preserve complete action, names, quantities and supplied details; optional due must not become an invented deadline, reminder or calendar event. Final response must truthfully identify the persisted task and state. Do not perform the action described. Ask only for genuinely missing content; due omission alone is not missing required task content. Credit requires pertinent task-persistence variants, not note-only outcomes.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Verified task creation collapses requested title and detail into one title with empty details; final composition also fails. Preserve created task identity; no success credit.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 8,
+        "timestampUtc": "2026-09-11T22:01:27.4499008+00:00",
+        "phase": "completed",
+        "requestId": "b5b2c5e4-7465-4cca-a266-c1e8c655bffe",
+        "missionId": "42e355cd-65e1-45b5-b0c7-ea2849c37bf0",
+        "invocationId": "ac4cbbc5-ff72-41bf-91f9-91a692b280b3",
+        "operation": "task.create",
+        "requestFingerprint": "0d9c26d1dd3ab70543cfe1525c8ae5b5fd59275cecd3ccee3ba0422f55d3ab14",
+        "response": {
+          "type": "operation.response",
+          "requestId": "b5b2c5e4-7465-4cca-a266-c1e8c655bffe",
+          "missionId": "42e355cd-65e1-45b5-b0c7-ea2849c37bf0",
+          "invocationId": "ac4cbbc5-ff72-41bf-91f9-91a692b280b3",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"task.create\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"taskId\":\"58a497b2-1c98-4315-8c3e-d59ddb582a99\",\"title\":\"revisar presupuesto, con el detalle comparar las dos cotizaciones\",\"details\":\"\",\"completed\":false,\"deleted\":false,\"createdAtUtc\":\"2026-09-11T22:01:27.4387274+00:00\",\"updatedAtUtc\":\"2026-09-11T22:01:27.4387274+00:00\",\"version\":1}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "taskId": "58a497b2-1c98-4315-8c3e-d59ddb582a99",
+            "title": "revisar presupuesto, con el detalle comparar las dos cotizaciones",
+            "details": "",
+            "dueUtc": null,
+            "completed": false,
+            "completedAtUtc": null,
+            "deleted": false,
+            "createdAtUtc": "2026-09-11T22:01:27.4387274+00:00",
+            "updatedAtUtc": "2026-09-11T22:01:27.4387274+00:00",
+            "version": 1
+          },
+          "errorCode": null
+        }
+      }
+    },
+    {
+      "index": 8,
+      "case_id": "task-create973-dev-05",
+      "literal": "Add replacing the hallway light bulb to my to-do list.",
+      "criterion": "Persist the explicitly requested task with task.create and verify current product identity/postread. Preserve complete action, names, quantities and supplied details; optional due must not become an invented deadline, reminder or calendar event. Final response must truthfully identify the persisted task and state. Do not perform the action described. Ask only for genuinely missing content; due omission alone is not missing required task content. Credit requires pertinent task-persistence variants, not note-only outcomes.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Requests title,due date,task ID,details and expected version for a new task with supplied content and no deadline requirement. No create; exposes unnecessary internal fields.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "What is the title, due date, task ID, details, and expected version for replacing the hallway light bulb?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null
+    },
+    {
+      "index": 9,
+      "case_id": "task-create973-dev-06",
+      "literal": "Keep a task for me to call Dr. Patel about the appointment.",
+      "criterion": "Persist the explicitly requested task with task.create and verify current product identity/postread. Preserve complete action, names, quantities and supplied details; optional due must not become an invented deadline, reminder or calendar event. Final response must truthfully identify the persisted task and state. Do not perform the action described. Ask only for genuinely missing content; due omission alone is not missing required task content. Credit requires pertinent task-persistence variants, not note-only outcomes.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Asks for exact appointment title instead of storing supplied call task and named person; no write.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "What is the exact title of the appointment to keep with Dr. Patel?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null
+    },
+    {
+      "index": 10,
+      "case_id": "task-create973-dev-07",
+      "literal": "Renew the library card — put that on my task list.",
+      "criterion": "Persist the explicitly requested task with task.create and verify current product identity/postread. Preserve complete action, names, quantities and supplied details; optional due must not become an invented deadline, reminder or calendar event. Final response must truthfully identify the persisted task and state. Do not perform the action described. Ask only for genuinely missing content; due omission alone is not missing required task content. Credit requires pertinent task-persistence variants, not note-only outcomes.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Only task.list executed; the requested renewing-library-card task was not created. Final future promise does not fulfill storage request.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "I'll add renewing the library card to my task list.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 10,
+        "timestampUtc": "2026-09-11T22:01:53.4557655+00:00",
+        "phase": "completed",
+        "requestId": "0bd09d57-2844-4742-849f-60d19e0853ad",
+        "missionId": "0a3fe157-6b17-4d95-a7f4-cfddade05c4f",
+        "invocationId": "beae1504-73e0-4165-828d-f8feea9638a7",
+        "operation": "task.list",
+        "requestFingerprint": "2bb69b6fafe518d27444b0dd87f35fb61099e6cd0781ec812f02d6738e044ec0",
+        "response": {
+          "type": "operation.response",
+          "requestId": "0bd09d57-2844-4742-849f-60d19e0853ad",
+          "missionId": "0a3fe157-6b17-4d95-a7f4-cfddade05c4f",
+          "invocationId": "beae1504-73e0-4165-828d-f8feea9638a7",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"task.list\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"tasks\":[{\"taskId\":\"58a497b2-1c98-4315-8c3e-d59ddb582a99\",\"title\":\"revisar presupuesto, con el detalle comparar las dos cotizaciones\",\"completed\":false,\"deleted\":false,\"updatedAtUtc\":\"2026-09-11T22:01:27.4387274+00:00\",\"version\":1},{\"taskId\":\"edcf69de-5558-49e8-9997-d341d025f8b2\",\"title\":\"comprar tres sobres acolchados\",\"completed\":false,\"deleted\":false,\"updatedAtUtc\":\"2026-09-11T22:01:03.6448979+00:00\",\"version\":1}],\"count\":2,\"mode\":\"tasks\",\"limit\":20}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "tasks": [
+              {
+                "taskId": "58a497b2-1c98-4315-8c3e-d59ddb582a99",
+                "title": "revisar presupuesto, con el detalle comparar las dos cotizaciones",
+                "dueUtc": null,
+                "completed": false,
+                "deleted": false,
+                "updatedAtUtc": "2026-09-11T22:01:27.4387274+00:00",
+                "version": 1
+              },
+              {
+                "taskId": "edcf69de-5558-49e8-9997-d341d025f8b2",
+                "title": "comprar tres sobres acolchados",
+                "dueUtc": null,
+                "completed": false,
+                "deleted": false,
+                "updatedAtUtc": "2026-09-11T22:01:03.6448979+00:00",
+                "version": 1
+              }
+            ],
+            "count": 2,
+            "mode": "tasks",
+            "limit": 20
+          },
+          "errorCode": null
+        }
+      }
+    },
+    {
+      "index": 11,
+      "case_id": "task-create973-dev-08",
+      "literal": "Create a task named organize receipts and include a note to separate travel expenses.",
+      "criterion": "Persist the explicitly requested task with task.create and verify current product identity/postread. Preserve complete action, names, quantities and supplied details; optional due must not become an invented deadline, reminder or calendar event. Final response must truthfully identify the persisted task and state. Do not perform the action described. Ask only for genuinely missing content; due omission alone is not missing required task content. Credit requires pertinent task-persistence variants, not note-only outcomes.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Composition failure and no current write; requested task not fulfilled.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null
+    },
+    {
+      "index": 12,
+      "case_id": "task-create973-boundary-prohibition",
+      "literal": "No guardes ninguna tarea sobre llamar al dentista.",
+      "criterion": "Respetar prohibición, no tarea/nota/recordatorio ni persistencia indirecta.",
+      "verdict": "pass",
+      "coverage_added": false,
+      "reason": "Acknowledges prohibition; no task,note,reminder or other invocation for this turn.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Claro, no guardaré ninguna tarea para llamar al dentista.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null
+    },
+    {
+      "index": 13,
+      "case_id": "task-create973-boundary-quotation",
+      "literal": "Explain what \"add buying envelopes to my to-do list\" asks someone to do.",
+      "criterion": "Explicar instrucción citada sin ejecutarla ni guardar tarea.",
+      "verdict": "pass",
+      "coverage_added": false,
+      "reason": "Correctly explains quoted instruction without writing a task or executing quote.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "It asks someone to add a task related to purchasing envelopes to their to-do list.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null
+    },
+    {
+      "index": 14,
+      "case_id": "task-create973-boundary-missing",
+      "literal": "Creá una tarea, pero todavía no te dije de qué.",
+      "criterion": "Pedir contenido realmente faltante; no inventar título ni crear tarea vacía.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Gives out-of-scope refusal instead of asking for genuinely missing task content.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No puedo hacer eso porque está fuera de mi ámbito de acción.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null
+    },
+    {
+      "index": 15,
+      "case_id": "task-create973-boundary-future",
+      "literal": "Si mañana te confirmo que hace falta, anotá revisar el contrato; todavía no lo guardes.",
+      "criterion": "Preservar condición futura y prohibición actual; no guardar ni crear aviso implícito.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "No write but composition failure leaves future condition/prohibition unanswered.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null
+    },
+    {
+      "index": 16,
+      "case_id": "task-create973-boundary-narrative",
+      "literal": "Yesterday I wrote down calling the dentist; I am only describing what I did.",
+      "criterion": "Tratar relato pasado, no nueva tarea ni afirmar existencia actual sin observación.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Final SIEMPRE is unrelated to English past narrative; no useful response, no write.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "SIEMPRE",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null
+    }
+  ],
+  "registry_before_sha256": "30866df9757105a325b28dff846dbebf011af19915e141ae283e6b178732b359",
+  "scope": "973 never executed; root corrected over-specific operation rubric before any execution by sealing975, all texts/IDs/origins preserved. All four literals remain open. Two tasks and one note are verified persisted in isolated975profile and preserved; no blind write replay in that profile, no full975 rerun. UI/voice not accredited."
+}

@@ -1,0 +1,51 @@
+{
+  "schema": "c03-notification971-root-adjudication-v1",
+  "adjudicated_at_utc": "2026-09-11T21:59:07.669099+00:00",
+  "source_commit": "d3a853fc47391c1420e6e943ebf94d0a68f6010a",
+  "adjudicator": "root",
+  "session_id": 81231,
+  "collection": "2990bf",
+  "seal_sha256": "8110afac2925b413b09a4c39d2e1e4f16d4b514d63584bef97dfa2beddeea589",
+  "runner_sha256": "e6cd2c618adcfb9777318c514e5ab3efc08085d84bb3d31e53ae01c1c8ccc7b9",
+  "manifest_sha256": "1dd9cca324af855d1f9305bdd1269bc0bf72f5e062c398334de6f7045ad33690",
+  "preparation_sha256": "e4e979b99c2dc480f358aa1b529fe23c2af926cb6f863f2a27656ed7cb14fcdd",
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "executed": 1,
+  "passed": 0,
+  "failed": 1,
+  "coverage_added": 0,
+  "tests_run": false,
+  "case": {
+    "index": 0,
+    "case_id": "notification-ready971-readiness",
+    "control_observed": {
+      "response": {
+        "type": "admission",
+        "command": "session.new",
+        "status": 200,
+        "body": "{\"ok\":true,\"id\":\"cb165251b5b8\"}"
+      },
+      "ok": true
+    },
+    "terminal_observed": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "No se pudieron revisar si el programador y las notificaciones de Windows están listos para las alarmas de BAXY porque falló la interpretación de la solicitud.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "verdict": null
+  },
+  "reason": "Normal readiness request failed interpretation before any notification.diagnose call. Final acknowledges this limitation; it proves neither scheduler failure nor readiness. Audit raw plan has notification.diagnose plus system.status, then ConversationReplyContractError unsupported_forbidden twice; exact first internal rejection not exposed. No alarm, task cancellation or configuration change occurred.",
+  "resources": {
+    "utc": "2026-09-11T21:55:08.092289+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1661.8515625,
+    "seconds": 26.26600000000326,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "c03-provider974-preparation-v1",
+  "adjudicated_at_utc": "2026-09-11T21:59:07.669099+00:00",
+  "source_commit": "d3a853fc47391c1420e6e943ebf94d0a68f6010a",
+  "scope": "Direct execution of the existing effective provider diagnose script after971normal-turn failure. Read-only environment preparation for9alarm literals; not a kernel invocation, product-NLP acceptance, automated suite or survey credit.",
+  "session_id": 6977,
+  "collection": "0a66b2",
+  "prereg_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-notification-provider974-private\\PREREG.json",
+  "prereg_sha256": "8f1e67447bf1dc5d941b2f8c50592bd969d764b9d56de2ab325a8973626f1a51",
+  "script_path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\WindowsScheduledNotification.ps1",
+  "script_sha256": "d51eb9ee09f3813117e91f2328908337f61b8173f05c142a2674250595360bc5",
+  "arguments": [
+    "-Mode",
+    "diagnose",
+    "-Kind",
+    "alarm",
+    "-AlarmRoot",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-notification-ready971-profile\\scheduled-notifications"
+  ],
+  "receipt": {
+    "utc": "2026-09-11T21:57:04.3247191Z",
+    "prereg_sha256": "8f1e67447bf1dc5d941b2f8c50592bd969d764b9d56de2ab325a8973626f1a51",
+    "exit_code": 0,
+    "stdout_sha256": "9e95dda5a292cea72ab26b38ec8e6fe4324cf42a74290bed44ca10d560a9377c",
+    "seconds": 12.6832256,
+    "script_unchanged": true,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "observation": {
+    "schedulerRunning": true,
+    "toastEnabled": true,
+    "healthy": false,
+    "taskCount": 906,
+    "firedReceiptCount": 0,
+    "issueCount": 886,
+    "authority": "windows_task_scheduler_notification_diagnostics_postread"
+  },
+  "task_result_counts": {
+    "4294770688": 886,
+    "0": 20
+  },
+  "coverage_added": 0,
+  "tests_run": false,
+  "alarms_created": 0,
+  "tasks_cancelled": 0,
+  "settings_changed": false,
+  "resource_measurement": "No model/GPU launched. No RAM peak sampler for this direct provider command; do not report zero usage.",
+  "interpretation": "Scheduler running and toast enabled are observed. healthy=false comes from886existing BAXY tasks with lastTaskResult4294770688;20report0. No meaning for that numeric result is inferred. Existing tasks were not removed. Zero fired receipts is scoped to isolated971profile, not global firing history. This does not prove a new alarm would fail or would ring.",
+  "resumption": "Keep971interpretation failure separate. Before alarm panel, preserve exact new task identity, computed dueUtc and postread; judge scheduling separately from actual firing. Do not clean existing906tasks or infer current readiness from NLP failure."
+}
