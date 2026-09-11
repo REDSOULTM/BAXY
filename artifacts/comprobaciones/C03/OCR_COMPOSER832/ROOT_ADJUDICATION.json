@@ -1,0 +1,167 @@
+{
+  "utc": "2026-09-11T09:19:34.867531+00:00",
+  "root_adjudicated": true,
+  "collection": {
+    "session_id": 80419,
+    "chunk": "f7243c",
+    "exit_code": 0
+  },
+  "pass": 6,
+  "fail": 2,
+  "cases": [
+    {
+      "case_id": "OCR832-D01",
+      "user_message": "En esta tabla, ¿qué aplicación tiene el valor más alto en Memoria y cuánto indica?",
+      "answer": "La aplicación con el mayor uso de memoria es Orilla, con 980,2 MB.",
+      "pass": true,
+      "root_reason": "Identifica Orilla y980,2MB. El pedido fija el alcance de esta tabla; la respuesta no añade una afirmación global.",
+      "seconds": 1.0310000000026776,
+      "trace": {
+        "physical_requests": 1,
+        "http_status": 200,
+        "layout_and_identity_unchanged_to_wire": true,
+        "server_draft_equals_published_answer": true,
+        "finish_reason": "stop",
+        "vetoes": 0,
+        "first_observed_error_stage": null
+      }
+    },
+    {
+      "case_id": "OCR832-D02",
+      "user_message": "¿Cuál de las tres filas muestra menos memoria y qué valor tiene?",
+      "answer": "La tercera fila muestra menos memoria y tiene el valor de 105,0 MB.",
+      "pass": true,
+      "root_reason": "La tercera fila identifica inequívocamente Río en la imagen y devuelve105,0MB. No se exige repetir el nombre si la referencia de fila responde al pedido.",
+      "seconds": 0.875,
+      "trace": {
+        "physical_requests": 1,
+        "http_status": 200,
+        "layout_and_identity_unchanged_to_wire": true,
+        "server_draft_equals_published_answer": true,
+        "finish_reason": "stop",
+        "vetoes": 0,
+        "first_observed_error_stage": null
+      }
+    },
+    {
+      "case_id": "OCR832-D03",
+      "user_message": "¿Esta observación demuestra cuál es la aplicación que más memoria usa en todo mi PC?",
+      "answer": "No, esta observación no demuestra cuál es la aplicación que más memoria usa en todo el PC. Solo muestra el consumo de memoria de tres aplicaciones: Cosmos (420,5 MB), Orilla (980,2 MB) y Río (105,0 MB). Orilla usa más memoria que las otras, pero no se puede afirmar que sea la que más consume en todo el sistema, ya que no se incluyen otros procesos o aplicaciones.",
+      "pass": true,
+      "root_reason": "Niega máximo global y limita evidencia a tres aplicaciones; cifras y máximo local correctos. No exige inventario completo.",
+      "seconds": 2.061999999998079,
+      "trace": {
+        "physical_requests": 1,
+        "http_status": 200,
+        "layout_and_identity_unchanged_to_wire": true,
+        "server_draft_equals_published_answer": true,
+        "finish_reason": "stop",
+        "vetoes": 0,
+        "first_observed_error_stage": null
+      }
+    },
+    {
+      "case_id": "OCR832-D04",
+      "user_message": "Junto a Orilla aparece un número entre paréntesis: ¿cuál es y permite saber los PID de sus integrantes?",
+      "answer": "El número entre paréntesis que aparece junto a \"Orilla\" es 7. Este número indica que el proceso Orilla tiene un PID de 7.",
+      "pass": false,
+      "root_reason": "Inventa que7 es un PID. La imagen sólo muestra Orilla(7) sin columna PID ni miembros identificados.",
+      "seconds": 1.0940000000009604,
+      "trace": {
+        "physical_requests": 1,
+        "http_status": 200,
+        "layout_and_identity_unchanged_to_wire": true,
+        "server_draft_equals_published_answer": true,
+        "finish_reason": "stop",
+        "vetoes": 0,
+        "first_observed_error_stage": "native generation under BAXY composer framing; framing causality not yet isolated"
+      }
+    },
+    {
+      "case_id": "OCR832-D05",
+      "user_message": "List the three applications from highest to lowest in the Memoria column, including each displayed value.",
+      "answer": "1. Orilla - 980.2 MB  \n2. Cosmos - 420.5 MB  \n3. Río - 105.0 MB",
+      "pass": true,
+      "root_reason": "Orden descendente Orilla980,2/Cosmos420,5/Río105,0MB correcto, en inglés.",
+      "seconds": 1.125,
+      "trace": {
+        "physical_requests": 1,
+        "http_status": 200,
+        "layout_and_identity_unchanged_to_wire": true,
+        "server_draft_equals_published_answer": true,
+        "finish_reason": "stop",
+        "vetoes": 0,
+        "first_observed_error_stage": null
+      }
+    },
+    {
+      "case_id": "OCR832-D06",
+      "user_message": "Read the Memoria column from top to bottom as displayed, pairing each value with its application name. Keep the displayed row order.",
+      "answer": "Cosmos: 420.5 MB  \nOrilla: 980.2 MB  \nRío: 105.0 MB",
+      "pass": true,
+      "root_reason": "Orden visual Cosmos420,5/Orilla980,2/Río105,0MB y asociaciones correctas.",
+      "seconds": 1.0629999999982829,
+      "trace": {
+        "physical_requests": 1,
+        "http_status": 200,
+        "layout_and_identity_unchanged_to_wire": true,
+        "server_draft_equals_published_answer": true,
+        "finish_reason": "stop",
+        "vetoes": 0,
+        "first_observed_error_stage": null
+      }
+    },
+    {
+      "case_id": "OCR832-D07",
+      "user_message": "Are any of the three applications tied in the displayed memory values? Show the values you used.",
+      "answer": "Yes, Cosmos and Orilla are tied in the displayed memory values. The values used are: Cosmos — 420.5 MB, Orilla — 980.2 MB, Río — 105.0 MB.",
+      "pass": false,
+      "root_reason": "Afirma empate Cosmos-Orilla aunque sus propios valores420,5 y980,2MB son distintos.",
+      "seconds": 1.3280000000013388,
+      "trace": {
+        "physical_requests": 1,
+        "http_status": 200,
+        "layout_and_identity_unchanged_to_wire": true,
+        "server_draft_equals_published_answer": true,
+        "finish_reason": "stop",
+        "vetoes": 0,
+        "first_observed_error_stage": "native generation under BAXY composer framing; framing causality not yet isolated"
+      }
+    },
+    {
+      "case_id": "OCR832-D08",
+      "user_message": "Compare Cosmos y Río por memoria y dime en español si también puedes comparar su CPU con esta tabla.",
+      "answer": "Cosmos tiene 420,5 MB de memoria, Río tiene 105,0 MB, por lo que Cosmos consume más memoria que Río. Orilla tiene 980,2 MB, lo que indica que usa más memoria que ambos. No tengo información sobre la CPU para compararla con una tabla.",
+      "pass": true,
+      "root_reason": "Compara Cosmos420,5>Río105,0MB en español y reconoce ausencia de CPU. La mención adicional de Orilla es correcta y no sustituye la comparación pedida.",
+      "seconds": 1.625,
+      "trace": {
+        "physical_requests": 1,
+        "http_status": 200,
+        "layout_and_identity_unchanged_to_wire": true,
+        "server_draft_equals_published_answer": true,
+        "finish_reason": "stop",
+        "vetoes": 0,
+        "first_observed_error_stage": null
+      }
+    }
+  ],
+  "resources": {
+    "seconds": 32.25,
+    "gpu_peak_mib": 3495.55859375,
+    "ram_peak_mib": 755.19921875,
+    "violations": []
+  },
+  "coverage_added": 0,
+  "survey_counts": {
+    "covered": 36,
+    "open": 706,
+    "not_applicable": 0
+  },
+  "limits": [
+    "One synthetic image, development composition only.",
+    "No product selection, active-window geometry, H0675, acceptance, desktop UI, voice or cross-image generalization credit.",
+    "Wrong claims already present in server draft, no postprocessor corruption. Native framing control needed before attributing cause to BAXY prompt."
+  ],
+  "next": "Same8 native framing control836; DPI835 isolated repair then native capture verification and real observation834."
+}

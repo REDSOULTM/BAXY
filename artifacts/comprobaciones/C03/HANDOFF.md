@@ -2,6 +2,10 @@
 
 Goal completo EN_CURSO: encuesta 36 cubiertos / 706 abiertos / 0 NA sobre742; matriz3/11; procesos82449/50, cinco familias49/49 adoptadas; H0675 «qué app usa más memoria» abierto. Ninguna pregunta pendiente. BAXY cerrado para uso manual; diagnósticos ocultos autorizados.
 
+## Último resultado vigente
+
+OCR832 YA terminó: sesión80419 recogida0 f7243c; raíz6/8, inventaPID7 y empatefalso. REPORT/ROOT_ADJUDICATION/TRACE_CHECK completos; layout/hash llegan intactos8/8 y borrador del modelo igual publicación.32,25s,VRAM3495,56MiB/RAM755,20MiB,0guardas. NO repetir832. Sigue control de framing836 con mismos8; agenteocr832 prepara externo. DPI835 agente ya autorizado a dueñas tras GPU; no integración durante siguienteGPU. Estado previo siguiente se conserva como antecedente.
+
 ## Estado y siguiente acción
 
 HEAD/origin5ab3c01a publicó candidato829 como WIP validado, sin adoptar por límite de captura. Main5f572ee1 intacto. Publicar reparación exclusiva de driver832 y ejecutar sus ocho casos con Full d7858325857a250d1a5aeafaebe327cd6aa8aad3b4d26fa1ff5f9997f832c9ed y46pins1e552541c0a18d816026c9139e82263f173ff29184f91d4a84aabce6cfb205ac. No cambios de fuente ni Full durante GPU. Raíz adjudica todos los textos y primeras pérdidas en transporte. Fixture sintético: cero crédito H0675/encuesta/UI/voz/aceptación.

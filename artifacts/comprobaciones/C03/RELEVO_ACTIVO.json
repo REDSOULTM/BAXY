@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "829 Full green, published validated WIP5ab3c01a, not adopted.832 initial preflight failed before outputs/model; verified own venv parent exclusion repaired, independent runner still detected. DPI835 metadata probe confirmed physical/virtualized mismatch, context restored. Survey36/706/0; processes49/50; H0675 and all C03 active.",
-  "continuation": "Publish runner-only repair then execute OCR832 with unchanged Full/source/panel/profile. Root judges8 answers. Integrate DPI835 only after GPU and owners; native capture proof before adoption.",
+  "checkpoint": "OCR832 collected0 f7243c,6/8 root-valid. D04 inventedPID7; D07 false tie. Geometry/hash intact to wire8/8; native drafts equal published,0veto/retry/cut. VRAM3495,56MiB/RAM755,20MiB/32,25s. Native framing836 preparation; DPI835 isolated repair. Survey36/706/0,H0675open,C03active.",
+  "continuation": "Review and run native framing control836 with same8 sealedcases, no product source changes during GPU. Review DPI835 repair afterowners, integrate and verify physical capture before adoption/real834.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,7 +34,7 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "f70ea94c7ef04a2b623cf3be5c1bfd2218d59385",
-  "workStatus": "ocr832_launcher_repaired_dpi835_confirmed",
+  "workStatus": "ocr832_adjudicated6of8_dpi835_repair",
   "goalStatusNote": "All C03 remains active;36covered/706open and49/50 process panel; generic screen prerequisites not H0675 completion.",
   "previousGoalTurnClassification": "progress",
   "publishedEvidenceCommit": "c5d0f476facd538b1226c5d3c4c0ced22a1ee7ec",
@@ -956,5 +956,16 @@
     "owners_reference_skip": 1,
     "receipt": "PROCESS_NARRATOR823/ROOT_VALIDATION.json"
   },
-  "publishedCandidateCommit": "5ab3c01a3c842213bf83f0ba530580c4f121ea60"
+  "publishedCandidateCommit": "5ab3c01a3c842213bf83f0ba530580c4f121ea60",
+  "publishedRunnerCommit": "ef88d4c9b891889e127e25c95a1df1086ff50775",
+  "latestOcrRun": {
+    "name": "OCR832",
+    "sessionId": 80419,
+    "collectionChunk": "f7243c",
+    "exitCode": 0,
+    "pass": 6,
+    "fail": 2,
+    "sourceAdopted": false,
+    "coverageAdded": 0
+  }
 }

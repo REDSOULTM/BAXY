@@ -1,0 +1,23 @@
+{
+  "utc": "2026-09-11T09:16:47.743942+00:00",
+  "cases_completed": 8,
+  "cases_registered": 8,
+  "fatal_recorded": false,
+  "violations": [],
+  "seconds": 32.25,
+  "gpu_peak_mib": 3495.55859375,
+  "gpu_telemetry_available": true,
+  "ram_peak_mib": 755.19921875,
+  "seals_unchanged": true,
+  "error_cases": 0,
+  "quality_adjudicated": false,
+  "coverage_added": 0,
+  "private_receipts": {
+    "compose-audit.jsonl": "35bba2bc8aa2ddb4f4d4d5f0b4cb8d445b7d3b21d4fc1ce46f06b1aa4d510547",
+    "inputs.jsonl": "bee6c3e4a8e5d12cae98a546ecc513e443e08d18eb80231f1ac9a1efae8d595c",
+    "physical-http.jsonl": "6d2823bc16a8ce5d1afdf4bdc34b49f732a541be2a07b41e72a4291d4f4d28ac",
+    "posts.jsonl": "f6dcb53f4f553d886d4d93254172c0fcacdca8b474502f2c5f40403914c63cc6",
+    "replies.jsonl": "de151a0dffc476222609c733af090edbc976b05f8e780214e4f08c8e008c8c7f",
+    "slots.jsonl": "88afe5376bd1b1469f83714434b44a2975ee260d6469a4065c0e675efd9ed278"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "utc": "2026-09-11T09:19:34.867531+00:00",
+  "all8_layout_identity_to_wire": true,
+  "all8_http_payload_equals_merged": true,
+  "all8_native_response_equals_returned_published": true,
+  "physical_posts": 8,
+  "first_drafts_published": 8,
+  "retries": 0,
+  "vetoes": 0,
+  "finish_length": 0,
+  "private_receipt_hashes_verified": {
+    "compose-audit.jsonl": "35bba2bc8aa2ddb4f4d4d5f0b4cb8d445b7d3b21d4fc1ce46f06b1aa4d510547",
+    "inputs.jsonl": "bee6c3e4a8e5d12cae98a546ecc513e443e08d18eb80231f1ac9a1efae8d595c",
+    "physical-http.jsonl": "6d2823bc16a8ce5d1afdf4bdc34b49f732a541be2a07b41e72a4291d4f4d28ac",
+    "posts.jsonl": "f6dcb53f4f553d886d4d93254172c0fcacdca8b474502f2c5f40403914c63cc6",
+    "replies.jsonl": "de151a0dffc476222609c733af090edbc976b05f8e780214e4f08c8e008c8c7f",
+    "slots.jsonl": "88afe5376bd1b1469f83714434b44a2975ee260d6469a4065c0e675efd9ed278"
+  }
+}
