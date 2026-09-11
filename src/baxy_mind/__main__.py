@@ -4541,22 +4541,20 @@ def _explicit_arguments_from_evidence(
             content = clause_literal(matches[0].group("content"))
             if title and content:
                 return {"title": title, "content": content}
-        evidence = re.sub(
-            r"^(\s*)anotá\b",
-            r"\1anota",
-            evidence,
-            count=1,
-            flags=re.IGNORECASE,
-        )
+        note_request = effect_intent._strip_request_envelope(evidence)
+        desired = effect_intent._explicit_desire_request(note_request)
+        if desired is not None:
+            note_request = desired.group("body")
         shorthand = re.match(
             r"^[¿?¡!\s]*(?:"
-            r"(?:anota|anotar|anotame|note down|write down)\s+"
-            r"(?:que|that|:)"
+            r"(?:anot[aá]|anotar|anotame|note down|write down|"
+            r"deja(?:r)?\s+anotad[oa])\s+"
+            r"(?:(?:que|that)\b|:|(?=[^\W\d_]+(?:ar|er|ir)\b))"
             r"|(?:crea|crear|create|make|haz|hacer)\s+"
             r"(?:(?:una?|a)\s+)?(?:nota|note)\s+"
             r"(?:que\s+diga|that\s+says?|saying|:)"
             r")\s*(?P<content>.+?)[\s.!?]*$",
-            evidence,
+            note_request,
             re.IGNORECASE,
         )
         if shorthand is not None:
@@ -4599,8 +4597,8 @@ def _explicit_arguments_from_evidence(
 
     if operation == "task.create":
         task_pattern = (
-            r"\b(?:tarea|task)\s+"
-            r"(?:llamad[oa]|titulad[oa]|named|called)\s+"
+            r"\b(?:tarea|task)(?:\s*:\s*|"
+            r"\s+(?:llamad[oa]|titulad[oa]|named|called)\s+)"
             r"(?P<title>.+?)"
             r"(?:\s+(?:y|and)\s+(?:una?|an?)\s*)?[.!?]*$"
         )

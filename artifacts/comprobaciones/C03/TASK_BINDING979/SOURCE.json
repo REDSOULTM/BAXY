@@ -1,0 +1,17 @@
+{
+  "schema": "c03-task-binding979-source-v1",
+  "utc": "2026-09-11T22:26:33.1804534Z",
+  "base": "2ad4e464852fec16e6c117a2c2127e974f725ebc",
+  "patch": "C:/Users/usuario/AppData/Local/BAXY/C03-task-binding979-proposal/repair.patch",
+  "patch_sha256": "0f3a34c4443edab5b725ed6fede98cd5a77268ebac01f24f3b84c6b5188e73ff",
+  "diagnosis977_sha256": "c79a65efe63d0801d97697f21c463d0bb361505dd7863a120b23b703ff8a5194",
+  "root_review": "Typed note/task creation retains exact title but no longer requires an unrelated noun; generator distinguishes persistence from performing the described activity. Existing extractors support colon title, anota plus infinitive, and positive dejar anotado wrapper.",
+  "source_sha256": {
+    "src/baxy_mind/__main__.py": "5bcad8decc873aff9e77846bc59d03152937fcc55ca9edc83eff9117a7f01d9a",
+    "src/baxy_mind/llm.py": "771a6df965df9b715fe7968b297fdbf783491f4699f6b6f08c5703163fcb0d43"
+  },
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "product_validation": "pending TASK_REPAIR980; source adoption does not prove case coverage",
+  "coverage_added": 0
+}
