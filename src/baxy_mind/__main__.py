@@ -4924,6 +4924,8 @@ def _ground_explicit_arguments(
         "app.installed",
         "app.open",
         "audio.mute",
+        "audio.volume",
+        "audio.volume.adjust",
         "browser.navigate",
         "browser.navigate.named",
         "calendar.event.list",
@@ -4943,6 +4945,9 @@ def _ground_explicit_arguments(
         # sole provider value. System scopes are enum identities selected by
         # the existing domain parser, not words the user must spell literally.
         # Process ranks use that same closed metric/cardinal parser.
+        # Audio's closed quantity parser grounds word-valued levels and
+        # relative directions before canonicalizing them to catalog values.
+        # Rechecking those values as generic literals would lose that evidence.
         # Every path still crosses the exact catalog JSON
         # Schema here.
         return explicit if validate_json_schema_instance(explicit, schema) else None

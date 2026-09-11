@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-11T13:33:03.587352+00:00",
+  "pid": 36728,
+  "wrapper_pid": 31956,
+  "command": [
+    "C:/Users/usuario/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/powershell/pwsh.EXE",
+    "-NoProfile",
+    "-File",
+    "scripts/test_source_quality.ps1",
+    "-QualityPython",
+    "C:/Users/usuario/AppData/Local/BAXYQuality/source-quality-v1/Scripts/python.exe"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-11T13:36:51.811552+00:00",
+  "root_reviewed": true,
+  "panel_seal_sha256": "4c98c77741825f7db612112bd316b927f26aef71f43e76ece9796f1844c7ac52",
+  "cases": 47,
+  "historical_literals": 30,
+  "variants": 12,
+  "boundaries": 5,
+  "source_objects_unchanged": true,
+  "verified_against_current_registry_sha256": "7ad672ca8e643468e33d4dc42f1249febf155e218c5c80b0c523a3bbb66c84af",
+  "old_seal_registry_snapshot": "4901a08fe29b420c183b0ec318f2c3bec4b6722841e022fe9c53f6b47c736312",
+  "note": "Since panel preparation, only individual open reasons/timestamps changed; literal and marks preserved. No reclassification or credit. Root exact47object/text review7027b3.",
+  "source_pins_sha256": "82653e62a0b2a4eaa6e5e5d174da93c0c3790af8ba59e6e413c795834a1dc7c9"
+}

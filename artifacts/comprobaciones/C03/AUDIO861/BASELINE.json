@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-11T13:35:34.506393+00:00",
+  "verified": true,
+  "endpointIdHash": "88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922",
+  "state": {
+    "volumePercent": 31,
+    "muted": false
+  },
+  "private_report": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio861-baseline-private\\REPORT.json",
+  "private_report_sha256": "00e13e48eabca6eeb2ab224bbc25ae85712dc71d7286278044f671db15c12ccc",
+  "core_exited": true,
+  "credit": 0
+}

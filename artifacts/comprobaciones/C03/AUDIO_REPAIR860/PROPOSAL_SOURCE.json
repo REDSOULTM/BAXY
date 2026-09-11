@@ -1,0 +1,10 @@
+{
+  "report": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio-grounding860-proposal\\REPORT.md",
+  "report_sha256": "29d127985675d7b00e69ed1eef94bbfcc02f01ab5794cb2037989e6bc11fcca8",
+  "patch_sha256": "20fdc15343afb7b4ef256d2782fb26e74c32f7a218f48b0abb3e47b0784207e2",
+  "root_integrated": true,
+  "root_review_chunk": "4df62a",
+  "integration_chunk": "4f9d89",
+  "validation_collection": "7bd839",
+  "validator_sha256": "adba8f849abbfb11e5637639885f281f5117b9034a1256ba6b4384c038b748fe"
+}

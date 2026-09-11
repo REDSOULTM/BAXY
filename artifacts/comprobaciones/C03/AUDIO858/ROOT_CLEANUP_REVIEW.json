@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-11T13:23:18.2949961Z",
+  "reviewer": "root",
+  "scriptSha256": "a7a00011e65583a1d608ff18c1c34543ece09ecede07688044a1f900125b445a",
+  "restoreInputSha256": "15ad8e53a651dd4a74aaba0a67871747cec95eefba839dd088a8677af8065aa6",
+  "expectedFinal": {
+    "muted": true,
+    "volumePercent": 100
+  },
+  "baseline": {
+    "muted": false,
+    "volumePercent": 31
+  },
+  "maximumCoreCalls": 4,
+  "retry": false,
+  "newCredit": 0,
+  "reviewEvidence": "Root read full restore.py; final audio858 journal completed audio.mute verified true at sequence52, endpoint88f8..., final100/true. Fresh state and endpoint guard before effects; preserve journal snapshot; only existing Core audio catalog; root-specific child closed."
+}

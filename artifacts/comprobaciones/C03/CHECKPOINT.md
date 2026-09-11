@@ -1,3 +1,67 @@
+# Audio860 validado; preparado para producto861 — 2026-09-11T13:36:51.811552+00:00
+
+**45/742 cubiertos,697 abiertos,0no aplican;0/35categorías. Últimas24h:17altas confirmadas+2actualizaciones covered de primera fecha indistinguible;huboFull843.** Audio48>apps47>web46; tabla íntegra vigente en el siguiente apartado.
+
+860 integrado:dos operaciones reutilizan la normalización explícita existente,con schema intacto.3583pass/0fail/0skip74,57s;Fast0/Release23,19s;64pins82653e62...intactos;sesión28431 recogida7bd839. Worktree retirado con snapshotdba3e7. Commit/push propios antes de prepare861. Panel861sellado30+12+5,47casos94wire;literal/objetos revisados contra registro actual7ad672ca... El baseline fresco leído antes de ejecución es31%/sin silencio,mismoendpoint;Core cerrado. Servidores de build cerrados. [Validación](AUDIO_REPAIR860/VALIDATION_EXIT.json).
+
+863 prepara en worktree propio los dos fallos de narración de858 (mandato tras efecto y dirección contraria); no fuente canónica ni suites duranteGPU. Runner861 se completa con pins reales860 y requiere revisión raíz antes de prepare/run. H0675/OCR/providers nuevos aparcados. Sin crédito por tests ni repetición del panel858 entero.
+
+---
+
+# Audio858 adjudicado; reparación pública860 en curso — 2026-09-11T13:29:59.063527+00:00
+
+**45/742 cubiertos, 697 abiertos, 0 no aplican; categorías cerradas 0/35. Últimas24h:17 altas confirmadas y2 actualizaciones covered cuya primera fecha no se distingue. Hubo Full843.**
+
+Audio858 terminó52/52 con exit0 y pins intactos;31 respuestas válidas y21 fallidas.35 literales:26 válidos/9 fallidos;12 variantes:1 válida/11 fallidas;5 límites:4 válidos/1 fallido. Cero altas: no hay dos variantes pertinentes válidas para los ajustes o el silencio. Los35 estados abiertos se escribieron al adjudicar con causa individual. Registro SHA7ad672ca8e643468e33d4dc42f1249febf155e218c5c80b0c523a3bbb66c84af. [Adjudicación](AUDIO858/ROOT_ADJUDICATION.json).
+
+857 está publicado en a46cc65318f29839ef8f5de83f698ca551b68a9a, con3545 dueñas aprobadas,0 fallos,0 omisiones y Fast0. El producto conserva ahora la operación en T3/T5/T7, pero después la frontera pública de argumentos rechaza el valor extraído. Las pruebas857 sólo ejercitaban el extractor;860 añade pruebas del dispatcher real y repara esa frontera existente. Cambio de estrategia tras dos tandas sin variantes absolutas válidas: no ampliar el extractor ni repetir el panel entero. Desbloqueo potencial:21 literales absolutos, sujeto a medición; no infraestructura nueva. [Diagnóstico](AUDIO859_DIAGNOSIS/SOURCE.json).
+
+Audio48 abiertos continúa delante de apps47 y web46.861 está sellado con30 literales de ajustes (21 absolutos+9 relativos),12 variantes y5 límites;SHA4c98c77741825f7db612112bd316b927f26aef71f43e76ece9796f1844c7ac52. Espera fuente860 validada y pins reales.854 permanece preparado para cuando le corresponda por masa. Se conservan3 negativos y18 sin marca. H0675,OCR y nuevos providers aparcados.
+
+Recursos858:VRAM3499,56MiB;RAM del árbol2413,79MiB;153,531s, sin violaciones. Raíz restauró100%/silenciado a31%/sin silencio con cuatro llamadas Core, estado fresco coincidente y recibos verificados; diario del panel preservado antes. Sin créditos de limpieza. Sesión34634 recogida638337;cleanup exit0 recogido feee6b. [Restauración](AUDIO858/CLEANUP.json).
+
+Full843 sigue siendo baseline histórico, no Full del Python nuevo. C03 EN_CURSO, matriz3/11 cumplida. Máximo dos subagentes, raíz único escritor canónico/GPU/adjudicador. Main y cambios del dueño intactos.
+
+| Categoría | Total | Cubiertos | Abiertos | No aplican |
+|---|---:|---:|---:|---:|
+| Audio y volumen | 51 | 3 | 48 | 0 |
+| Abrir aplicaciones | 54 | 7 | 47 | 0 |
+| Navegación y búsqueda web | 46 | 0 | 46 | 0 |
+| Música | 39 | 0 | 39 | 0 |
+| Estado de hardware y sistema | 40 | 2 | 38 | 0 |
+| Alarmas, recordatorios, tareas y agenda | 38 | 0 | 38 | 0 |
+| Conocimiento, razonamiento y creatividad verbal | 37 | 3 | 34 | 0 |
+| Entrada incompleta, ruido y control de diálogo | 34 | 0 | 34 | 0 |
+| Archivos y carpetas | 32 | 0 | 32 | 0 |
+| Mensajería | 31 | 0 | 31 | 0 |
+| Instalar y desinstalar software | 31 | 0 | 31 | 0 |
+| Vídeo y series | 26 | 0 | 26 | 0 |
+| Conversación social y ayuda general | 31 | 9 | 22 | 0 |
+| Interacción dentro de aplicaciones | 22 | 0 | 22 | 0 |
+| Hora y fecha | 23 | 3 | 20 | 0 |
+| Red y Bluetooth | 21 | 1 | 20 | 0 |
+| Cerrar aplicaciones y ventanas | 20 | 0 | 20 | 0 |
+| Pantalla, captura e interpretación visual | 19 | 0 | 19 | 0 |
+| Brillo y pantalla | 17 | 0 | 17 | 0 |
+| Información web actual | 17 | 0 | 17 | 0 |
+| Estado de ventanas y aplicaciones | 14 | 1 | 13 | 0 |
+| Organizar ventanas y pestañas | 13 | 0 | 13 | 0 |
+| Identidad y capacidades del asistente | 19 | 7 | 12 | 0 |
+| Notas | 12 | 0 | 12 | 0 |
+| Memoria personal | 10 | 0 | 10 | 0 |
+| Correo | 6 | 0 | 6 | 0 |
+| Bibliotecas y fichas de juegos | 6 | 0 | 6 | 0 |
+| Contactos | 5 | 0 | 5 | 0 |
+| Desarrollo y ejecución de comandos | 5 | 0 | 5 | 0 |
+| Restricciones negativas de apertura | 4 | 1 | 3 | 0 |
+| Portapapeles | 3 | 0 | 3 | 0 |
+| Energía del sistema | 3 | 0 | 3 | 0 |
+| Crear documentos y editar imágenes | 2 | 0 | 2 | 0 |
+| Leer y resumir páginas web | 2 | 0 | 2 | 0 |
+| Procesos | 9 | 8 | 1 | 0 |
+
+---
+
 # Audio857 validado; listo para producto858 — 2026-09-11T13:11:40.628227+00:00
 
 **45/742 cubiertos,697abiertos,0NA;0/35categorías;últimas24h17altasconfirmadas+2actualizacionescovered de primera fecha indistinguible. HuboFull843.** Audio48open,apps47,web46. Dueñas raíz3545pass/0fail/0skip75,63s;Fast0/Release22,71s,pins63intactos3c0d1ae4...,sesión35989recogida823c22. Worktree857fotografiado yretirado; fuenteaúnpendiente de producto.858sellado35+12+5/104wirea8831683...;runnerf23fb3f2...revisado332a97. Baseline físico fresco31%/sin silencio, endpoint88f8b460...,Corecerrado. Publicar/prepare/runactual, adjudicarcoveredinmediato; restauraraudioalbaseline despuésconreciboactual. NoFull/source duranteGPU. H0675/OCR/newprovidersaparcados.

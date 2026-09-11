@@ -1,0 +1,15 @@
+{
+  "utc": "2026-09-11T13:16:50.505472+00:00",
+  "exit_code": 0,
+  "stopped": false,
+  "pins_unchanged": true,
+  "terminal_records": 52,
+  "session_controls_observed": 52,
+  "turn_admissions_observed": 52,
+  "app_cleanup_by_runner": false,
+  "audio_restoration_by_runner": false,
+  "quality_adjudicated": false,
+  "success_count": null,
+  "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio858-profile\\journal\\missions.jsonl",
+  "target_apps_closed_by_guard": false
+}

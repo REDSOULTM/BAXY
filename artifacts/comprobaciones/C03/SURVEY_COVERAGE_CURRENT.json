@@ -1,5 +1,5 @@
 {
-  "utc": "2026-09-11T12:56:23.767681+00:00",
+  "utc": "2026-09-11T13:27:42.273809+00:00",
   "covered": 45,
   "open": 697,
   "not_applicable": 0,
@@ -315,7 +315,7 @@
       "not_applicable": 0
     }
   ],
-  "requirements_sha256": "4901a08fe29b420c183b0ec318f2c3bec4b6722841e022fe9c53f6b47c736312",
+  "requirements_sha256": "7ad672ca8e643468e33d4dc42f1249febf155e218c5c80b0c523a3bbb66c84af",
   "classification_source": "SURVEY_TAXONOMY846.json",
   "latest_adjudications": [
     "APP_OPEN847/ROOT_ADJUDICATION.json",

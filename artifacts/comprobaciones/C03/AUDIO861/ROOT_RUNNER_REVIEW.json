@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-11T13:37:43.3226448Z",
+  "root_reviewed": true,
+  "runner_sha256": "40f919396d75d0b083ef6b20055c4b61570bd6b7422373e9564f0071a80af5a2",
+  "plan_sha256": "22df37f8117e12ce8c5813b57902f34985564483c5806f6042b40bf20b10b968",
+  "diff_review_chunk": "63cd12",
+  "source_pins_sha256": "82653e62a0b2a4eaa6e5e5d174da93c0c3790af8ba59e6e413c795834a1dc7c9",
+  "guards_unchanged": true,
+  "cases": 47,
+  "wire_lines": 94,
+  "actual_head_required_as_argument": true,
+  "prepare_review_required_before_run": true
+}

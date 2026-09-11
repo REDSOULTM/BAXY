@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-11T13:27:42.273809+00:00",
+  "before": {
+    "covered": 45,
+    "open": 697,
+    "not_applicable": 0
+  },
+  "after": {
+    "covered": 45,
+    "open": 697,
+    "not_applicable": 0
+  },
+  "new_covered_ids": [],
+  "open_adjudications_written": 35,
+  "requirements_sha256": "7ad672ca8e643468e33d4dc42f1249febf155e218c5c80b0c523a3bbb66c84af",
+  "requirements_before_sha256": "4901a08fe29b420c183b0ec318f2c3bec4b6722841e022fe9c53f6b47c736312",
+  "credit_written_at_adjudication": true
+}
