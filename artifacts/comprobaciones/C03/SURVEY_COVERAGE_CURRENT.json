@@ -1,5 +1,5 @@
 {
-  "utc": "2026-09-11T17:04:49.2596039Z",
+  "utc": "2026-09-11T17:23:35.7945393Z",
   "covered": 66,
   "open": 676,
   "not_applicable": 0,
@@ -336,7 +336,7 @@
       "not_applicable": 0
     }
   ],
-  "requirements_sha256": "45c523628df911994fbe8be17e367c429ce1f544ddb2341db8965ab57e3d7c4e",
+  "requirements_sha256": "1b6b8520e73501d87784500d5a05dd845b1ce1a89fc3bd68126a974e3b1639a0",
   "classification_source": "SURVEY_TAXONOMY846.json",
   "latest_adjudications": [
     "APP_OPEN847/ROOT_ADJUDICATION.json",
@@ -344,7 +344,8 @@
     "APP_OPEN853/ROOT_PARTIAL_CREDIT.json",
     "APP_OPEN853/ROOT_ADJUDICATION.json",
     "APP_OPEN853_TAIL/ROOT_ADJUDICATION.json",
-    "WEB_SEARCH895/ROOT_ADJUDICATION.json"
+    "WEB_SEARCH895/ROOT_ADJUDICATION.json",
+    "WEB_SEARCH900/ROOT_ADJUDICATION.json"
   ],
   "equal_maximum_open_next_selection": "Web and apps both46open; next sealed web864 selected. No category with more open requirements is bypassed."
 }

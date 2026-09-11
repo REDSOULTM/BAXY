@@ -1,0 +1,120 @@
+{
+  "utc": "2026-09-11T17:19:54.5195251Z",
+  "root_adjudicated": true,
+  "candidate_commit": "2a69be0d3e0c5b0264a4ada01b33225d6e94400b",
+  "tests_run": false,
+  "counts": {
+    "failed": 8,
+    "total": 11,
+    "coverage_added": 0,
+    "historical_literals_passed": 1,
+    "passed": 3
+  },
+  "private_review_sha256": "609d0f994a5ca086d93507cb8e0df306065d4cfe4943c76f890eafc8a2686c1d",
+  "journal_sha256": "6fe3f7c9299c6b8352017287860e6738f33f839e529083cadc1354e4784f05a8",
+  "panel_seal_sha256": "c58b93b14f2b55911c7bf012384c2ffd86ada0570aad67894c9a5e9896e53dcd",
+  "registry_before_sha256": "45c523628df911994fbe8be17e367c429ce1f544ddb2341db8965ab57e3d7c4e",
+  "registry_after_sha256": "1b6b8520e73501d87784500d5a05dd845b1ce1a89fc3bd68126a974e3b1639a0",
+  "cases": [
+    {
+      "case_id": "web-search895-variant-direct-es",
+      "group": "generic_search",
+      "verdict": "fail",
+      "reason": "Proveedor rechaza resultados irrelevantes; respuesta honesta pero búsqueda no resuelta.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "81d86ade-140a-4f7a-bff4-5762db056477"
+      ]
+    },
+    {
+      "case_id": "web-search895-variant-direct-en",
+      "group": "generic_search",
+      "verdict": "fail",
+      "reason": "Proveedor rechaza resultados irrelevantes y composición termina sin respuesta.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "10096751-a326-4ba7-b5d2-42b1e74637db"
+      ]
+    },
+    {
+      "case_id": "web-search895-variant-courtesy-en",
+      "group": "generic_search",
+      "verdict": "fail",
+      "reason": "Ya no admite resultados de películas para novelas; falla búsqueda y composición sin respuesta.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "9826f7f2-6c45-4e5d-a072-a18eaffdc670"
+      ]
+    },
+    {
+      "case_id": "H0708",
+      "group": "generic_search",
+      "verdict": "fail",
+      "reason": "Búsqueda del clima llega a Core pero resultados rechazados como irrelevantes; no hay resultados útiles ni crédito. Causa de argumento/ámbito aún en diagnóstico.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "b584eeca-4b6b-4d80-88ca-c78ecf6b9f2f"
+      ]
+    },
+    {
+      "case_id": "H0098",
+      "group": "generic_search",
+      "verdict": "fail",
+      "reason": "Ya no presenta recetas generales como recetas de pizza; termina honestamente sin resultados relevantes y sigue open.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "24c5653a-0060-4e29-bb1d-56b75bdbb285"
+      ]
+    },
+    {
+      "case_id": "H0380",
+      "group": "generic_search",
+      "verdict": "pass",
+      "reason": "Búsqueda Transformers verificada con resultados relevantes y respuesta fiel; literal válido actual, sigue open porque ninguna de las tres variantes de búsqueda pasó.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "4c5b87fe-63c0-46df-b077-02678b6754bf"
+      ]
+    },
+    {
+      "case_id": "web-search899-boundary-complete-query",
+      "group": "complete_query_boundary",
+      "verdict": "fail",
+      "reason": "No repite la consulta completa suministrada; pide una consulta que ya consta y falla utilidad.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-search899-boundary-negation",
+      "group": "negation_boundary",
+      "verdict": "pass",
+      "reason": "Respeta la prohibición y la reconoce fielmente sin operaciones.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-search899-boundary-quotation",
+      "group": "quotation_boundary",
+      "verdict": "fail",
+      "reason": "No ejecuta la cita, pero dice sin sujeto implícito a la vez que asume you; explicación contradictoria de la estructura solicitada.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-search899-boundary-local",
+      "group": "local_scope_boundary",
+      "verdict": "pass",
+      "reason": "Da orientación general útil para localizar un archivo sin inspeccionar datos ni consultar Internet.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-search899-boundary-conditional",
+      "group": "conditional_boundary",
+      "verdict": "fail",
+      "reason": "Declara fuera de capacidad una búsqueda condicionada todavía no autorizada; no respeta su alcance como condición pendiente de ciudad.",
+      "survey_credit": false,
+      "invocation_ids": []
+    }
+  ]
+}
