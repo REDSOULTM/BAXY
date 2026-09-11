@@ -1,0 +1,104 @@
+{
+  "id": "OCR836-native-framing-control",
+  "status": "prepared_not_executed",
+  "driver_sha256": "b29bc8d66803f4daaa02790e921ec798fe1f5965f2d6ee9c27623c904e3cca96",
+  "source_driver832_sha256": "7c44441d25f1105aec06e61043faa1b445017a33395bb2b3fecea812ec2c4626",
+  "wire832_sha256": "6d2823bc16a8ce5d1afdf4bdc34b49f732a541be2a07b41e72a4291d4f4d28ac",
+  "prereg832_sha256": "8031be57c7c7c031c102fd4fec8cd1fa7e1798736e2e38ae3814344f4f320bdf",
+  "full_sha256": "d7858325857a250d1a5aeafaebe327cd6aa8aad3b4d26fa1ff5f9997f832c9ed",
+  "pins_sha256": "1e552541c0a18d816026c9139e82263f173ff29184f91d4a84aabce6cfb205ac",
+  "original_pins_sha256": "f4f206175dbde85b2f335654fe11508d33979ef28705a6deacd4472b2f02f25e",
+  "native_payload_sha256": {
+    "OCR832-D01": "a838d0727aa31853371b13fed095906425597151ae7993be1c874ab1b8b91915",
+    "OCR832-D02": "271896ed85026cfe51b6689d8ae90ac87fd0bbde9c20805bd8870fe3044c20bf",
+    "OCR832-D03": "3ee7c9b08ec9becf8b2a33f6527c5c1805ffe3c118d5fb298830a19f0cb8968e",
+    "OCR832-D04": "d8ef8903185f4b30a9e4438285bfab95911858bb26d9aba32dcfde9b981a39a2",
+    "OCR832-D05": "1630045fcd2cc504686234cfee843fa4ab4e0329ddb2fac92e261697586f32da",
+    "OCR832-D06": "8a67ecedb2bf2851e2631db8afbe0959ef2125b4e7b15c78febc28405707a95e",
+    "OCR832-D07": "8f9f8969e90e9bec1c9f5dc49a8289375b06e65c86399222b3cc71ffd8e03cd8",
+    "OCR832-D08": "9c011461b8d3405754aa7326790bec0d432547eadb5a0a2031548530dc2cbf48"
+  },
+  "removals": {
+    "OCR832-D01": {
+      "system_removed": true,
+      "suffix_removed": "\nIdioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.",
+      "literal_and_situation_substring_unchanged": true,
+      "generation_parameters_unchanged": true
+    },
+    "OCR832-D02": {
+      "system_removed": true,
+      "suffix_removed": "\nIdioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.",
+      "literal_and_situation_substring_unchanged": true,
+      "generation_parameters_unchanged": true
+    },
+    "OCR832-D03": {
+      "system_removed": true,
+      "suffix_removed": "\nIdioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.",
+      "literal_and_situation_substring_unchanged": true,
+      "generation_parameters_unchanged": true
+    },
+    "OCR832-D04": {
+      "system_removed": true,
+      "suffix_removed": "\nIdioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.",
+      "literal_and_situation_substring_unchanged": true,
+      "generation_parameters_unchanged": true
+    },
+    "OCR832-D05": {
+      "system_removed": true,
+      "suffix_removed": "\nMandatory language: English. Outside literal contract items, do not introduce Spanish words such as «Listo» or «encontré».\nEnglish only.",
+      "literal_and_situation_substring_unchanged": true,
+      "generation_parameters_unchanged": true
+    },
+    "OCR832-D06": {
+      "system_removed": true,
+      "suffix_removed": "\nMandatory language: English. Outside literal contract items, do not introduce Spanish words such as «Listo» or «encontré».\nEnglish only.",
+      "literal_and_situation_substring_unchanged": true,
+      "generation_parameters_unchanged": true
+    },
+    "OCR832-D07": {
+      "system_removed": true,
+      "suffix_removed": "\nMandatory language: English. Outside literal contract items, do not introduce Spanish words such as «Listo» or «encontré».\nEnglish only.",
+      "literal_and_situation_substring_unchanged": true,
+      "generation_parameters_unchanged": true
+    },
+    "OCR832-D08": {
+      "system_removed": true,
+      "suffix_removed": "\nIdioma obligatorio: español. Fuera de los literales del contrato, no introduzcas palabras inglesas.",
+      "literal_and_situation_substring_unchanged": true,
+      "generation_parameters_unchanged": true
+    }
+  },
+  "hash_serialization": "UTF-8 json.dumps(payload, ensure_ascii=False, sort_keys=True), no trailing newline",
+  "method": "One direct LlmRuntime._post via inherited Client per case, bypass compose and prose vetos. Single user message: exact832 user literal and exact832 situation JSON substring. All generation parameters preserved. Physical HTTP retries unchanged; no content retry or tuning. Exact response dict and content retained.",
+  "budget_inherited832": {
+    "request_seconds": 4,
+    "warmup_seconds": 90,
+    "wall_seconds": 600,
+    "initial_free_ram_mib": 2700,
+    "minimum_free_ram_mib": 768,
+    "gpu_stop_mib": 3800
+  },
+  "inheritance": {
+    "DECISION_MODELO792.md_lines_3_9": "Qwen selection closed. Prior737 found BAXY prompt could harm K2 answers. This is832 framing control, not model choice or capability ranking.",
+    "REGISTRO_DE_MANTENIBILIDAD": "Scoped query gave no specific832 framing rejection.",
+    "scope": "Root selected this bounded control under the owner goal methodology of native isolation; no prior model/profile sweep reopened."
+  },
+  "guardrails": "Same46 paths/final pins, Full receipt/log, fixture/image, plan/cases, model/backend/manifest, own-launcher guard and wire-capture code preserved from executed832. Seals before/after and between cases.",
+  "wire_capture_identical832": true,
+  "private_output": "C:/Users/usuario/AppData/Local/BAXY/C03-ocr-native836-private",
+  "public_output": "artifacts/comprobaciones/C03/OCR_NATIVE836; metadata/receipts only",
+  "adjudicator": "root reads all8 exact responses; no programmatic adjudication",
+  "excluded_credit": [
+    "production change",
+    "model/profile change",
+    "survey",
+    "H0675",
+    "acceptance",
+    "UI",
+    "voice",
+    "between-image generalization",
+    "C03 completion"
+  ],
+  "validation": "Preparation only plus ast.parse pass. Initial preparation assert caught English suffix with Mandatory language and English only; exact full suffix inherited and sealed before finalizing. No driver import/execution, inference, tests, build or Full.",
+  "invocation": "Registered runtime Python, this driver, --expected-plan-sha256=<exact PLAN.json bytes SHA256>. Full/pin defaults locked to832 constants; overrides must equal them."
+}
