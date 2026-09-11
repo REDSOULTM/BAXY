@@ -10422,6 +10422,7 @@ class LlmRuntime:
                 return "Describe el estado observado; nunca copies el pedido."
             return ""
 
+        observed_playback = _merged_observed(situation).get("playbackStatus")
         retry_hint = {
             "missing_confirmation_choice": (
                 "Pregunta con todas estas opciones literales: "
@@ -10496,12 +10497,22 @@ class LlmRuntime:
                 )
             ),
             "reversed_result": (
-                "Name the app. Say you will not open it."
-                if _looks_like_negative_constraint(user_text)
+                f"The session is {observed_playback}. Correct the contrary playback "
+                "claim: paused or stopped means the loaded track is not playing. "
+                "Preserve the supplied title and artist in a natural reply, without "
+                "implying PC-wide silence."
+                if situation.get("operation") == "media.status"
+                and situation.get("verified") is True
+                and situation.get("succeeded") is True
+                and observed_playback in {"playing", "paused", "stopped"}
                 else (
-                    "Do not invert."
-                    if _looks_like_refuse_question(user_text)
-                    else "State only what seen shows."
+                    "Name the app. Say you will not open it."
+                    if _looks_like_negative_constraint(user_text)
+                    else (
+                        "Do not invert."
+                        if _looks_like_refuse_question(user_text)
+                        else "State only what seen shows."
+                    )
                 )
             ),
             "acting_asserted": _PROGRESS_MESSAGE_INSTRUCTION,

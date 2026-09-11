@@ -275,6 +275,15 @@ def _audit_turn_attempt_failure(
     """Record a stable failure class without exposing exception text."""
 
     failure_reason = str(getattr(error, "audit_reason", ""))[:64]
+    if not failure_reason:
+        traceback = error.__traceback__
+        while traceback is not None:
+            frame = traceback.tb_frame
+            code = frame.f_code
+            module = str(frame.f_globals.get("__name__") or "")
+            if module.startswith("baxy_mind.") or code.co_filename == __file__:
+                failure_reason = f"{code.co_name[:48]}:{traceback.tb_lineno}"[:64]
+            traceback = traceback.tb_next
     record = {
         "schema": "baxy.mind-turn-audit.v1",
         "request_id": message.get("id"),
@@ -318,14 +327,16 @@ def _stable_turn_failure_stage(error: BaseException) -> str:
     declared_stage = str(getattr(error, "audit_stage", ""))
     if declared_stage in set(_TURN_FAILURE_STAGE_BY_FRAME.values()):
         return declared_stage
-    frames: list[tuple[str, str]] = []
+    frames: list[tuple[bool, str]] = []
     traceback = error.__traceback__
     while traceback is not None:
         module = str(traceback.tb_frame.f_globals.get("__name__") or "")
-        frames.append((module, traceback.tb_frame.f_code.co_name))
+        code = traceback.tb_frame.f_code
+        owned = module.startswith("baxy_mind.") or code.co_filename == __file__
+        frames.append((owned, code.co_name))
         traceback = traceback.tb_next
-    for module, function in reversed(frames):
-        if module.startswith("baxy_mind.") and (
+    for owned, function in reversed(frames):
+        if owned and (
             stage := _TURN_FAILURE_STAGE_BY_FRAME.get(function)
         ):
             return stage
