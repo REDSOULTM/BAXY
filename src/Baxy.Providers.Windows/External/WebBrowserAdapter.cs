@@ -469,11 +469,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         }
 
         var observed = new HashSet<string>(resultTokens, StringComparer.Ordinal);
-        int matches = queryTokens.Count(observed.Contains);
-        int requiredMatches = queryTokens.Length == 1
-            ? 1
-            : checked((queryTokens.Length + 1) / 2);
-        return matches >= requiredMatches;
+        return queryTokens.All(observed.Contains);
     }
 
     private static string SafeUnescapedPath(Uri uri)

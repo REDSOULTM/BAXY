@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-11T17:10:47.6142342Z",
+  "base_commit": "13608a2b4dba476c211beff82cdb4dd3ecb6a226",
+  "tests_run": false,
+  "owner_policy": "omit suites/Fast/Full, build product if needed for sealed survey execution",
+  "functional_validation": "pending_panel899",
+  "coverage_added": 0,
+  "source_path": "src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs",
+  "source_sha256": "448887961f8af18ce0ce7689336ab1088552d69eeaca98fe6524bb80eb942822",
+  "diagnosis": "C:/Users/usuario/AppData/Local/BAXY/C03-web-search898-diagnosis/REPORT.md",
+  "diagnosis_sha256": "c0abb44f33d876d6e4e87c75b0d8f6682d1ba428e39aae733b54015524eb3197",
+  "review": "Root e6f64d/2ca8ce; exact code loses secondary query terms as acceptance conditions. Replace five count/half-threshold lines with existing query token All membership, before result limit. No new call/provider/scorer or target-specific vocabulary.",
+  "limits": "Lexical all-term coverage is stricter and can reject synonyms or inflections; does not prove semantics or useful retrieval. No credit promised. Follow-up panel preserves failed queries, plus new H0708.",
+  "build": "main.compile_if_needed(force=False) completed; build/publish exit0, build-server shutdown exit0; session28145 collected44f6cb. Published Core copied to effective App location by inherited startup operation before sealing.",
+  "prior_turn_classification": "progress: published894,executed/adjudicated895,wroteopen causes",
+  "build_receipt_sha256": "4eb5c08382f32d0d3d2edbc13aeda19bff1ee935584fe75fb5ad4d7658cdcba7"
+}
