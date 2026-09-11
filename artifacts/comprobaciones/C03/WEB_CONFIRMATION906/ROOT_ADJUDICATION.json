@@ -1,0 +1,144 @@
+{
+  "utc": "2026-09-11T17:49:42.6089975Z",
+  "root_adjudicated": true,
+  "candidate_commit": "1c7973ed25d2bcde732762f4e0fbd96031c9f5fd",
+  "source_commit": "c99a60f58281e74fe22792740b54ca9506e792e4",
+  "tests_run": false,
+  "counts": {
+    "not_executed": 13,
+    "confirmation_admissions": 0,
+    "failed": 1,
+    "passed": 0,
+    "reportable_terminals": 2,
+    "coverage_added": 0,
+    "real_admissions": 1,
+    "sealed": 14,
+    "executed": 1
+  },
+  "panel_seal_sha256": "d4ec688293e559ac55d8b2045f1848705c3a07d4f19167acc234a616edde2981",
+  "candidate_manifest_sha256": "ef4f02cda4561975f93d5b1e6957014b417613d84c301dc4cfa2614fac2a2824",
+  "preparation_sha256": "03293f3fed6755eb3762d91dfb271ccab1cb8bcf8d890b70baae38c6d8b9d6e4",
+  "registry_before_sha256": "96d6ca83640517f8f972b4749bb2398d3588bc648e4a2b3dcd98d2fe4eb53626",
+  "registry_after_sha256": "96d6ca83640517f8f972b4749bb2398d3588bc648e4a2b3dcd98d2fe4eb53626",
+  "journal_sha256": "2c306648c94d2e5df2a726fbe8c10b76247f06bb55c7894d9aab0d9c6b99b079",
+  "capture_sha256": "9e2449e3911db1007d9568b2c90f91d15c8b2e3478dc9a45533eb5baa05fb8ef",
+  "turn_audit_sha256": "a8352bfe8258edf90c87ff5937577f63b66b39a4e851c861af5de4511b7c95e7",
+  "cases": [
+    {
+      "case_id": "web-confirmation905-url-es",
+      "group": "exact_url_navigation",
+      "verdict": "fail",
+      "reason": "La petición de navegar produjo una negativa de capacidad; ninguna browser.navigate se propuso ni ejecutó. La guarda rechazó la confirmación porque no existía el pendiente exacto. Fallo del producto, sin crédito.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-confirmation905-url-en",
+      "group": "exact_url_navigation",
+      "verdict": "not_executed",
+      "reason": "Host exit3 detuvo el lote antes del siguiente comando; no se adjudica calidad ni se cuenta como fallo.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-confirmation905-google-es",
+      "group": "engine_search",
+      "verdict": "not_executed",
+      "reason": "Host exit3 detuvo el lote antes del siguiente comando; no se adjudica calidad ni se cuenta como fallo.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-confirmation905-google-en",
+      "group": "engine_search",
+      "verdict": "not_executed",
+      "reason": "Host exit3 detuvo el lote antes del siguiente comando; no se adjudica calidad ni se cuenta como fallo.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0267",
+      "group": "exact_url_navigation",
+      "verdict": "not_executed",
+      "reason": "Host exit3 detuvo el lote antes del siguiente comando; no se adjudica calidad ni se cuenta como fallo.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0389",
+      "group": "exact_url_navigation",
+      "verdict": "not_executed",
+      "reason": "Host exit3 detuvo el lote antes del siguiente comando; no se adjudica calidad ni se cuenta como fallo.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0397",
+      "group": "engine_search",
+      "verdict": "not_executed",
+      "reason": "Host exit3 detuvo el lote antes del siguiente comando; no se adjudica calidad ni se cuenta como fallo.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0490",
+      "group": "engine_search",
+      "verdict": "not_executed",
+      "reason": "Host exit3 detuvo el lote antes del siguiente comando; no se adjudica calidad ni se cuenta como fallo.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0622",
+      "group": "engine_search",
+      "verdict": "not_executed",
+      "reason": "Host exit3 detuvo el lote antes del siguiente comando; no se adjudica calidad ni se cuenta como fallo.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-confirmation905-boundary-negation",
+      "group": "negation",
+      "verdict": "not_executed",
+      "reason": "Host exit3 detuvo el lote antes del siguiente comando; no se adjudica calidad ni se cuenta como fallo.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-confirmation905-boundary-quotation",
+      "group": "quotation",
+      "verdict": "not_executed",
+      "reason": "Host exit3 detuvo el lote antes del siguiente comando; no se adjudica calidad ni se cuenta como fallo.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-confirmation905-boundary-missingtarget",
+      "group": "missingtarget",
+      "verdict": "not_executed",
+      "reason": "Host exit3 detuvo el lote antes del siguiente comando; no se adjudica calidad ni se cuenta como fallo.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-confirmation905-boundary-local",
+      "group": "local",
+      "verdict": "not_executed",
+      "reason": "Host exit3 detuvo el lote antes del siguiente comando; no se adjudica calidad ni se cuenta como fallo.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "web-confirmation905-boundary-condition",
+      "group": "condition",
+      "verdict": "not_executed",
+      "reason": "Host exit3 detuvo el lote antes del siguiente comando; no se adjudica calidad ni se cuenta como fallo.",
+      "survey_credit": false,
+      "invocation_ids": []
+    }
+  ],
+  "first_loss": "request8 lexical retrieval excludes browser.navigate; raw model knowledge/zero-effect; final presentation unsupported. Further cause diagnosis908 pending.",
+  "guard_evidence": "Synthetic409 after request; zero confirmation submission, no browser effect; Hostexit3 and intact pins prove thirteen commands unexecuted.",
+  "no_replay": "Do not rerun failed first variant without justified repair; continuation may use thirteen untouched remaining cases.",
+  "private_review_sha256": "4946b7269b8a74a8969f838f45ac84185bb82b7bd1fb69f8ef7642aad36e340f"
+}
