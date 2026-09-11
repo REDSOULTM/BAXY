@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-11T04:08:41.567762+00:00",
+  "candidate": 806,
+  "adopted": false,
+  "base_commit": "7ecd2274102df409a141b0f20f5b0a2e1218308c",
+  "changed_files": [
+    "src/baxy_mind/measurement_prose_projection.py",
+    "tests/test_c03_process_inventory.py",
+    "tests/test_c03_process_projection_scope.py",
+    "tests/test_c03_process_scope_prompt.py"
+  ],
+  "difference": "Six lines in existing measurement projection describe the accessible observation boundary instead of copying its internal enum. Canonical observations, counts, rows, units, order, prompt, sampler, model, budgets and checker remain unchanged.",
+  "cause": "805 memory_rank-08 repeats accessible_processes in all six attempts, gets internal_code vetoes and no response despite factual first draft. 805 root verdict37/50 preserved.",
+  "owners": "Root: six complete suites, 198 passed / 0 skipped in2.72s; tool exec35c6d3 exit0.",
+  "baseline_full": "PROCESS_DEADLINE804/FULL_RETRY1/FULL_EXIT.json covers previous Python802+C#804 only.806 is Python-only; new owner+Fast and product807 required. Final Full remains required.",
+  "rows_proposal": "Isolated, not integrated or measured in806.",
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  }
+}

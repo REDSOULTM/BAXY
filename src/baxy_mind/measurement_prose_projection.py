@@ -79,6 +79,12 @@ def project_system_measurements(seen: dict[str, Any]) -> dict[str, Any]:
 def project_process_measurements(seen: dict[str, Any], user_text: str) -> dict[str, Any]:
     """Separate observed count, returned instances and the requested resource."""
     result = dict(seen)
+    if seen.get("observationScope") == "accessible_processes":
+        # Describe the provider's boundary without exposing its enum to narration.
+        result["observationScope"] = (
+            "processes accessible during this observation; "
+            "completeness for the whole PC is not established"
+        )
     request = fold(user_text)
     count_request = re.search(
         r"\b(?:cuantos|cuenta|cantidad|numero|how many|count)\b", request,

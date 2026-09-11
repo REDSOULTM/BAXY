@@ -71,7 +71,10 @@ def test_verified_process_scope_reaches_first_prompt_and_existing_retry(question
     prompt_facts = client.requests[0]["messages"][-1]["content"]
     facts = json.loads(prompt_facts.split("situation: ", 1)[1].split("\n", 1)[0])
     seen = facts["seen"]
-    assert seen["observationScope"] == "accessible_processes"
+    assert seen["observationScope"] == (
+        "processes accessible during this observation; "
+        "completeness for the whole PC is not established"
+    )
     assert seen["observedProcessCount"] == 207
     assert seen["returnedProcessCount"] == 2
     assert [row["processId"] for row in seen["processes"]] == [731, 927]
@@ -88,7 +91,10 @@ def test_count_only_prompt_keeps_the_observed_count_and_scope_without_rows():
     facts = json.loads(prompt_facts.split("situation: ", 1)[1].split("\n", 1)[0])
     assert facts["seen"] == {
         "observedProcessCount": 207,
-        "observationScope": "accessible_processes",
+        "observationScope": (
+            "processes accessible during this observation; "
+            "completeness for the whole PC is not established"
+        ),
     }
 
 

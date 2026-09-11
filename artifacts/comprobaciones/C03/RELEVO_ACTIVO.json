@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "805 completo y adjudicado por raíz:37/50 válidos,13fallidos,265,078s sin infracciones;28pins y sellos intactos. Frente801:6ganancias/4pérdidas; frente803:12ganancias/3pérdidas. Listas mediana5,119s frente30,817s; VRAM3497,56MiB/RAMresidente2392,75MiB. Full804 repetición1 verde:Python12714pass/3skips/466subtests;.NET4642pass/1omisión agregada y16optativas impresas. Fuente800/802/804 no adoptada. Próximo: dos propuestas aisladas806 (proyección del alcance y fidelidad de filas), integración/medición una diferencia por vez. Encuesta28/714/0; matriz3/11; C03 EN_CURSO.",
-  "continuation": "Review isolated scope806 and rows806 proposals, one source difference per confirmation. Owners/Fast then candidate preservation commit/push, original50 panel807. Root adjudicates all finals. Complete C03, app75 prepared but not run.",
+  "checkpoint": "806 integrado sólo como candidato:6líneas de proyección de alcance,198dueñas pass/0skip,Fast0/Release22,36s/0advertencias/errores,29pins intactos.807 preparado mismos50; filas/PIDs/orden sigue propuesta aislada.805 conserva37/50 y4pérdidas frente801; fuente sinadoptar, sincrédito. Full804verde anterior; Full final pendiente. Encuesta28/714/0; matriz3/11;C03EN_CURSO.",
+  "continuation": "Commit/push validated scope806 candidate preservation, launch scratchpad/c03-process-batch807.py immediately. Root live adjudication original50; do not integrate rows prompt until807 complete. No new model campaign, no Full alongside GPU.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,10 +34,10 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "d1a040d62fd57ef1db583121eda2c67c1efde632",
-  "workStatus": "process805_complete_repairs806_preparing",
+  "workStatus": "scope806_validated_process807_ready",
   "goalStatusNote": "Activo; Full804 verde, producto805 completo37/50; sin decisión pendiente del dueño.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "a1633b09",
+  "publishedEvidenceCommit": "7ecd2274102df409a141b0f20f5b0a2e1218308c",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -854,7 +854,16 @@
     "active_agent_limit": 2,
     "scope_worktree": "C:/Users/usuario/AppData/Local/BAXY/worktrees/c03-process-scope806",
     "rows_worktree": "C:/Users/usuario/AppData/Local/BAXY/worktrees/c03-process-rows806",
-    "status": "isolated proposals; no canonical integration",
+    "status": "scope806 integrated+owners198+Fast0; scope worktree removed; rows proposal isolated, not integrated",
     "iteration_limit_each": 2
+  },
+  "latestCandidateValidation": {
+    "candidate": 806,
+    "owners_passed": 198,
+    "owners_skipped": 0,
+    "fast_exit": 0,
+    "release_seconds": 22.36,
+    "source_pins": 29,
+    "adopted": false
   }
 }

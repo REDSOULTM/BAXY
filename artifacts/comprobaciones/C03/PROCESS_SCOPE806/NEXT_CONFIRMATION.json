@@ -1,0 +1,13 @@
+{
+  "batch": 807,
+  "candidate": 806,
+  "adopted": false,
+  "original_panel": "PROCESS_CATEGORY795_PLAN.json; same original50, no changes",
+  "runner": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\scratchpad\\c03-process-batch807.py",
+  "runner_sha256": "0acd1973374ecc99209174c952f9d077de0de3e515f65e554c95604acdd54ae4",
+  "reviewer": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\scratchpad\\c03-review-process807.py",
+  "reviewer_sha256": "afac9efe9776b7eeac6365eed1018ddfe5ba0016f7a43fc1aca31faf78b37530",
+  "root_review": "Diff vs805 retains panel/input/model/runtime/sampler/guards; Full804 baseline bound to804pins, own Fast806 bound to806pins; root added explicit Fast source_pins_unchanged/hash guards. AST pass.",
+  "required": "198owner passes/0skip; Fast0/Release22.36s/0warnings/errors;29pins unchanged; original50; no Full or concurrent inference; 4000MiB free before launch.",
+  "source_difference": "Only six-line observationScope meaning projection; rows prompt proposal excluded."
+}

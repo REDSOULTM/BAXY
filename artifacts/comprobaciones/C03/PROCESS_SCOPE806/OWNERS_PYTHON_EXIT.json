@@ -1,0 +1,8 @@
+{
+  "exit_code": 0,
+  "passed": 198,
+  "skipped": 0,
+  "seconds": 2.72,
+  "command": "C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe -X utf8 -m pytest tests/test_c03_process_projection_scope.py tests/test_c03_process_inventory.py tests/test_c03_process_scope_prompt.py tests/test_system_measurement_prose_projection.py tests/test_c03_observed_process_vocabulary.py tests/test_c03_process_output_budget.py -q",
+  "evidence": "Root tool command chunk35c6d3; complete stdout summary198 passed in2.72s."
+}

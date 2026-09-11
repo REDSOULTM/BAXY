@@ -113,7 +113,13 @@ def test_count_composition_keeps_observation_scope_without_competing_row_count(t
     source = situation()
     original = copy.deepcopy(source)
     seen = _compose_situation_payload(source, "es", text)["seen"]
-    assert seen == {"observedProcessCount": 207, "observationScope": "accessible_processes"}
+    assert seen == {
+        "observedProcessCount": 207,
+        "observationScope": (
+            "processes accessible during this observation; "
+            "completeness for the whole PC is not established"
+        ),
+    }
     assert source == original
 
 
