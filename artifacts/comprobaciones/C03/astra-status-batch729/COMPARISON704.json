@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-10T08:35:43.314779+00:00",
+  "baseline": 704,
+  "candidate": 729,
+  "same73_ids": true,
+  "baseline_counts": {
+    "failed": 23,
+    "correct_observed_run": 50
+  },
+  "current_counts": {
+    "correct": 49,
+    "failed": 24
+  },
+  "gains": [],
+  "losses": [
+    "H0655"
+  ],
+  "unchanged": 72,
+  "baseline_verdicts_sha256": "0f88fc1038a1afa901c26f820d5142ce2095c941a5abb135036035cbdca515f9",
+  "current_result_sha256": "e2914295fc74042a404f71068ed4a6aef0829dcc021b4877f003845c3d417c8d",
+  "attribution": "Observed single-pair difference only. H0655 previously distinguished total/free/used/installed;729 labels total usable only as available. No change of criterion or causal attribution to source705/712."
+}

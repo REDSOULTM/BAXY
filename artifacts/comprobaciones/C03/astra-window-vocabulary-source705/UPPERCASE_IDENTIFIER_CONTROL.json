@@ -1,0 +1,18 @@
+{
+  "control": "Existing case-sensitive dotted-code check also accepts Atlas.route with masking entirely disabled; current corrected mask preserves that compound. This is not evidence of a705 regression.",
+  "lexical_text": "The window \"\ufffc\" is active. Atlas.route.",
+  "rows": [
+    {
+      "observed_name_mask_enabled": false,
+      "draft": "The window \"Atlas\" is active. Atlas.route.",
+      "output": "The window \"Atlas\" is active. Atlas.route.",
+      "calls": 1
+    },
+    {
+      "observed_name_mask_enabled": true,
+      "draft": "The window \"Atlas\" is active. Atlas.route.",
+      "output": "The window \"Atlas\" is active. Atlas.route.",
+      "calls": 1
+    }
+  ]
+}

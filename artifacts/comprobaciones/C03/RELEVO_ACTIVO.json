@@ -1,11 +1,11 @@
 {
-  "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
-  "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
+  "threadId": "01a08e1a-db7f-77a2-bcf2-3bc95483a9e6",
+  "sourceThreadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-11T00:57:10.065545+00:00",
+  "confirmedAtUtc": "2026-09-11T01:36:29.259Z",
   "branch": "Goal-c03",
-  "checkpoint": "796+798 adoptados con Full798 exit0 y confirmacion799:19/50 validos,50 finales/0 vetos;31 abiertos en panel. SoloLF en un test normalizado, AST equivalente y1961 dueñas pass/0skip. Publicacion explicita en Goal-c03; main intacto. Siguiente alcance800/confirmacion801; Qwen elegido. Encuesta28/714/0.",
-  "continuation": "Publish796+798 after test-only LF owning validation; preserve original pins/Full798 evidence. Integrate reviewed scope800, run owners/Fast and same50confirmation801. No model campaign.",
+  "checkpoint": "801 completo0 y recogido47840:35/50 validos,15 sin credito;conteos12/12,5cortes finish_reason=length.800 aun sin adoptar por regresiones de corte.25pins intactos, pico3497,56MiBVRAM/2429,93MiBRSS, compromiso privado6528,39MiB. No procesos801 activos. Siguiente presupuesto802/confirmacion803, reutilizar dense allowance; no comparacion de modelos.798 publicado d1a040d6. Encuesta28/714/0.",
+  "continuation": "Reuse existing dense output allowance for process rows in802, validate owners/Fast then same50confirmation803. Preserve80025pins and801 root verdicts. No model campaign. Pending app75 runner proposal803 needs renumbering after process category.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -33,11 +33,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "65761a14dff7ee12092321878c154edccfc7268d",
-  "workStatus": "source798_adopted_commit_pending",
+  "publishedSourceCommit": "d1a040d62fd57ef1db583121eda2c67c1efde632",
+  "workStatus": "process801_adjudicated_scope800_unadopted",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "65761a14dff7ee12092321878c154edccfc7268d",
+  "publishedEvidenceCommit": "d1a040d62fd57ef1db583121eda2c67c1efde632",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,10 +48,10 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Full798 green collected;799 all50 root-adjudicated with19passes and0prose vetoes.",
+  "previousGoalTurnClassificationReason": "Source796+798 published after green full and root799 adjudication; scope800 integrated with owning regression green; next full50confirmation prepared.",
   "activeValidation": null,
-  "objectiveFile": "C:\\Users\\usuario\\.codex\\attachments\\9fef4dbc-0c33-4d2f-ab08-5839846b2ed3\\goal-objective.md",
-  "objectiveSha256": "e8c8bb362392f93e44f56e51de0808b761f2bbf8fe5b1446de669cf07690368c",
+  "objectiveFile": "C:/Users/usuario/.codex/attachments/a913971f-39ae-4c98-a51f-484a1c008d8f/goal-objective.md",
+  "objectiveSha256": "dad0371375d4286fb4c8d3ea301d2e891790336d42dd0a7e8478cd38db4f8420",
   "ownerMethodology": "Model-specific native template and documented presets first, same complete cases for every arm; add BAXY one layer at a time and attribute first lost behavior. API use alone does not imply native isolation. Optimize whole categories without quality loss.",
   "lastValidation": {
     "utc": "2026-09-11T00:43:25.469574+00:00",
@@ -119,16 +119,15 @@
   "activeReadOnlyAgent": null,
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
-    "name": "process799",
-    "sessionId": 71175,
-    "launcher": 17468,
+    "name": "process801",
+    "sessionId": 47840,
     "registeredCases": 50,
     "state": "complete",
     "adjudication": "root_complete",
-    "sourcePins": 24,
+    "sourcePins": 25,
     "exit_code": 0,
-    "passed": 19,
-    "failed_or_not_credited": 31
+    "passed": 35,
+    "failed_or_not_credited": 15
   },
   "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
   "ownerPriority": "Owner ordered model selection after792 and immediate progress on C03 blockers; no further model campaign.",
@@ -871,5 +870,11 @@
     "path": "tests/test_effect_intent.py",
     "crlf_line_endings": 25,
     "note": "Normalize for Git only after all current validation/inference ends; preserve previous bytes, prove AST unchanged, run owner suite and record exact validation scope. Do not edit sealed24 sources while Full/799 runs."
+  },
+  "relayStartup": {
+    "sourceThreadStatus": "idle; last turn interrupted",
+    "orphanProcesses": [],
+    "head": "d1a040d62fd57ef1db583121eda2c67c1efde632",
+    "inheritedWipPreservation": "chore(c03): preserve WIP at relay; preservation only, no source800/802 adoption"
   }
 }

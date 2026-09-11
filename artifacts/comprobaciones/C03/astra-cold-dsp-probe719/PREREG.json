@@ -1,0 +1,29 @@
+{
+  "utc": "2026-09-10T07:25:47.866538+00:00",
+  "source_hashes": {
+    "tests/test_sidecar_lifecycle.py": "4ac312b869624d261e047521bc918d9ff025194d8c9186dd9b5fae5a8959656d",
+    "src/baxy_mind/__main__.py": "447d51d4f57c0d95a71faaa87e789a3c961803bc6d55db79241c2b98a8dc2070",
+    "src/baxy_mind/voice_aec.py": "9663a4882f17c0bce6973da7bd0a4c9ea2defbaba845c04d5c842bb8aced371a"
+  },
+  "cases": [
+    [
+      "test_dispatch_crash_exits_while_redirected_stdin_remains_open",
+      3.0,
+      1
+    ],
+    [
+      "test_cold_voice_dsp_responds_while_redirected_stdin_remains_open",
+      10.0,
+      0
+    ]
+  ],
+  "profiles": [
+    "original",
+    "deferred_warmup_only"
+  ],
+  "difference": "Replace prepare_resampler only in the private child process, no source edits",
+  "cold_assertion": "Deferred DSP profile requires scipy.signal absent before its first native import",
+  "post_deadline_observer": "py-spy on actual interpreter, then creation-time-checked disposal",
+  "adoption": false,
+  "coverage_added": 0
+}

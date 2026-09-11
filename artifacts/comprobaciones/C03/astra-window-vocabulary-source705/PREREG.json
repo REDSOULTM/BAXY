@@ -1,0 +1,47 @@
+{
+  "utc": "2026-09-10T03:59:57.519250+00:00",
+  "adopted": false,
+  "parent_commit": "83fef92c956a2c6de06a4d19a1b19519aceb4557",
+  "sources": {
+    "src/Baxy.App/ObservedResponseLiterals.cs": "c9945feb36ed3939b1016cafa5eb8e54d5f44403d86ce7ccc591796c8368f292",
+    "src/Baxy.App/UserMessagePolicy.cs": "d71ebd057a68dbe7c968a5f9b90d3f19b5e98d79900fc6e9f9980aebe12e3721",
+    "src/baxy_mind/observed_response_literals.py": "3ebc4ca8dbd1b5779d82bfa7e79633a7ba7bff0f952c76e58280d6d20106546b",
+    "src/baxy_mind/llm.py": "83f2fb68cc768fbd62ac1292babe8e32ca73211e5aa9fa1d459688d519c1f472",
+    "tests/Baxy.Integration.Tests/ObservedWindowVocabularyTests.cs": "41da4ed55f839f03943ebb92fac07a0a205dddf771ada444d7ee063d293e49e4",
+    "tests/test_c03_observed_window_vocabulary.py": "f1c472729448022ffdcd7da50c8354fdd96f89b0e78e8a88e256e917c392546c",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "10968539a9e34a28496a0bb95b12cf24cd26826573bb93b5673986f998203a5c",
+    "experiments/stt_quality/evaluate_reserved_stt.py": "407f9815a65ae3d368fe0ccfc85279eba1b6834b37aa29e9b0918628b0db8fc4",
+    "tests/test_price_v8_veto_damage_by_cause.py": "771b550388d31594ac9cf2001a6a935cdf946e5dc28d72af4d47fdfaf6496cbe"
+  },
+  "python_tree_sha256": "cc0217666f1971fc478a722ba9f5b7b2ab1b35eb26e9d3e3d1f2fb5a3736f434",
+  "python_files": 407,
+  "design": "Treat complete names from verified, succeeded window operation observations as opaque only during vocabulary/code-shape checks. Mission steps retain their own envelopes. Do not derive exemptions from requested targets, root title/reason, merged data or dialogue. Original prose remains unchanged for factual checks, recovery and publication. The public length cap applies before masking. No model, prompt, sampler, retry-count, risk or catalog changes.",
+  "inheritance": [
+    "OperationVisibleFacts.FromOutcome verified/succeeded envelope and sanitized observed payload",
+    "window_prose_facts quoted/subject identity opacity",
+    "existing user-identifier vocabulary exceptions in C# and Python",
+    "source703 and fully reviewed product704 remain baseline",
+    "product694 H0104 first draft correct but rejected forbidden_term; source705 does not repair the separate postposed ventanal grammar"
+  ],
+  "baseline": {
+    "python_passed": 6,
+    "python_failed": 43,
+    "dotnet_passed": 11,
+    "dotnet_failed": 7,
+    "fixture_correction": "Initial Python run49fail: six negative fixtures expected ValueError, while the existing composer returns empty after three rejected drafts. Only that fixture expectation was corrected before the authoritative baseline43fail/6pass; source was unchanged. Original logs retained."
+  },
+  "initial_focal": {
+    "python_passed": 373,
+    "dotnet_passed": 113,
+    "skipped": 0,
+    "limit": "Before adding unquoted names, complete-token boundaries, unrelated self-description and public-length controls."
+  },
+  "validation_next": "Expanded owners, then Full because adoption touches C# and Python together. Replay actual historical draft privately and run a complete product panel only after code validation. Tests replaying drafts are technical veto controls, not fresh user acceptance or evidence of model generation.",
+  "survey_counts": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "goal_complete": false,
+  "new_coverage": 0
+}

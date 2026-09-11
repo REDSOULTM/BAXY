@@ -1,0 +1,9 @@
+{
+  "utc": "2026-09-10T07:50:22.700783+00:00",
+  "test_sha256": "952ab1bc8ecbcffbb7c6314161d0fae54690b067f139ed117bcd8a33dd10d9f8",
+  "max_attempts": 5,
+  "stop_at_first_failure": true,
+  "difference": "Popen subclass captures stack only after TimeoutExpired; original test and10/3 deadlines",
+  "coverage_added": 0,
+  "adopted": false
+}

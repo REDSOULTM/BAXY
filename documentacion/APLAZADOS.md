@@ -181,3 +181,5 @@ goal.
 - 2026-09-04, revisión autorizada de sprints: quedan sustituidas las reglas de 350K+150K, cierre en una sesión y aceptación fresca por cambio de GGUF; véase `documentacion/sprints/REVISION_SPRINTS_2026-09-04.md`. Hardware/instalación/firma diferidos conservan compromiso y tienen owner en fase 12; no son capacidad certificada por 11.16.
 
 - C03, 2026-09-08: el objetivo actualizado (artifacts/comprobaciones/C03/astra-baseline-full526/GOAL_OBJECTIVE.md) sustituye las antiguas restricciones no-commit/no-Full, cuota trilingüe y voz humana física dentro de C03; las anteriores se conservan sólo como evidencia.
+
+- C03, 2026-09-09: si se promueve el backend experimental K2 Horizon, ampliar la validación del manifiesto existente al paquete EXE/DLL completo. El ejecutable del fork es un lanzador pequeño; su hash aislado no identifica las DLL de implementación. El experimento ya fija el paquete en `artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/BACKEND_BUILD_NFC.json`; no se añade una validación productiva alternativa mientras no se justifique promoverlo.

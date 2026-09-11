@@ -1,15 +1,13 @@
-**Estado vigente:** 796+798 adoptados con Full798 exit0 y confirmacion799:19/50 validos,50 finales/0 vetos;31 abiertos en panel. SoloLF en un test normalizado, AST equivalente y1961 dueñas pass/0skip. Publicacion explicita en Goal-c03; main intacto. Siguiente alcance800/confirmacion801; Qwen elegido. Encuesta28/714/0.
+**Estado vigente:** 801 completo0 y recogido47840:35/50 validos,15 sin credito;conteos12/12,5cortes finish_reason=length.800 aun sin adoptar por regresiones de corte.25pins intactos, pico3497,56MiBVRAM/2429,93MiBRSS, compromiso privado6528,39MiB. No procesos801 activos. Siguiente presupuesto802/confirmacion803, reutilizar dense allowance; no comparacion de modelos.798 publicado d1a040d6. Encuesta28/714/0.
 
-# Handoff C03 — confirmacion799 completada
+# Handoff C03 — alcance800 y confirmacion801
 
-799 terminado y adjudicado por raiz:19/50 validos,31 sin credito,50 respuestas publicadas/50 lecturas/0 vetos. Full798 exit0 recogido. No procesos activos;796+798 pendientes de publicacion tras normalizar solo LF de un test y ejecutar su suite duena. Encuesta28 cubiertos/714 abiertos/0NA. Siguiente integrar alcance800 y confirmar mismos50 en801; Qwen elegido, comparaciones cerradas.
+Fuente796+798 publicada d1a040d6 y remoto verificado; main5f572ee1 intacto.800 sellado25pins:3258pass/1skipSTT/121subtests21,82s, Fast en curso63063. Confirmacion801 preparada, mismos50 casos/modelo. Worktree de propuesta retirado tras preservar snapshot. Sin credito nuevo:28/714/0.
 
-Full798:12684 Python pass,3 skips ambientales,466 subtests;4625 .NET pass,1 omision agregada y16 lineas opt-in impresas. Sesiones24887 y71175 recogidas con exit0; no volver a sondear.
+799 completo y adjudicado:19/50 válidos,31sin crédito,50finales/0vetos. CPU6/11. Fuentes796+798 adoptadas, Full7980 (12684Pythonpass/3skips/466subtests;4625.NETpass/1skip agregado,16opt-ins impresos). Publicación restauróLF de un test (1961pass/0skip) y dos recibosJSON; R278 inicial1fallo/2pass, luego testfallido1pass21,57s. No borrar rojos.
 
-799:12 validos anteriores conservados,7 ganancias,1 perdida numerica H0169. Seis casosCPU pasan; cuatro pierdenPID y uno plural se reduce a maximo. Picos3497,56MiB VRAM,2404,62MiB RSS (muestreador),6565,39MiB compromiso privado; sin credito UI/voz. PROCESS_BATCH799/{ADJUDICATION.json,REPORT.md}; literales privados C03-process-batch799-private/RESPUESTAS.md.
+Activo: validación800 sesión63063; seguir con runner scratchpad/c03-process-batch801.py sólo si VALIDATION_EXIT.json0. Pines PROCESS_SCOPE800/SOURCE_PINS.json; Fast no Full para este cambio sóloPython. No editar fuente durante801. Revisar con c03-review-process801.py --partial --count0 y c03-view-process-review.py <privado live-review.json> --start0 --count25, usando espacios entre argumentos.
 
-Publicacion: SOURCE_PINS_FINAL.json preserva24bytes probados por Full y799; SOURCE_PINS_PUBLISH.json cambia solo finalesLF en tests/test_effect_intent.py, AST identica. Fuente runtime identica. Falta suite duena LF y commit/push explicitos. Main5f572ee1 intacto; HEAD65761a14.
+Siguiente: adjudicación completa raíz, adoptar si la evidencia lo respalda; si persisten bloqueantes reparar por categorías, no otra comparación de modelos. Propuesta75apps C03-app-runner803-proposal/runner.py privada, necesita selloAPPLICATION_OPEN802 antes de ejecutarse. Panel NEXT_APPLICATION_CATEGORY.json; preflight sólo lectura, sin éxito asumido. Ningún agente activo.
 
-800: parche privado C03-process-scope799-proposal/repair.patch solo llm.py + test, explicado y revisado, aun sin integrar; worktree C03-process-scope799-worktree. Agente prepara runner801 privado. Otro prepara bookkeeping799 privado. Proxima categoria75apps sellada, preflight privado C03-app-open-preflight799-proposal.
-
-Objetivo vigente PROCESS_VOCABULARY798/GOAL_OBJECTIVE.md. Cierre global pendiente742generalizados/100aceptacion/8rutas/UI-voz-recuperacion-recursos/matriz-continuidadC04-C09/Fullfinal. Mantener activo; ningun bloqueo por decision del dueno.
+Qwen3-4B-Instruct2507Q4_K_M elegido. Objetivo vigente PROCESS_VOCABULARY798/GOAL_OBJECTIVE.md. C03 sigueEN_CURSO:742generalizados,100aceptación,8rutas,UI/voz/recuperación/recursos/matriz/continuidadC04-C09/Fullfinal pendientes.

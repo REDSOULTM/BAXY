@@ -1,0 +1,7 @@
+{
+  "utc": "2026-09-10T05:32:17.564588+00:00",
+  "exit_code": 1,
+  "fixture_restored": true,
+  "temporary_helper_removed": true,
+  "test_binary_contains_diagnostics_until_next_build": true
+}

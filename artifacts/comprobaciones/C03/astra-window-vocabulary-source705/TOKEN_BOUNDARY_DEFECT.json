@@ -1,0 +1,33 @@
+{
+  "utc": "2026-09-10T04:24:32.057638+00:00",
+  "rows": [
+    {
+      "name": "Atlas",
+      "extra": " Atlas.route.",
+      "candidate": "The window \"Atlas\" is active. Atlas.route.",
+      "lexical_copy": "The window \"￼\" is active. ￼.route.",
+      "published": "The window \"Atlas\" is active. Atlas.route.",
+      "correct": false
+    },
+    {
+      "name": "Router notes",
+      "extra": " Router notes-extra.",
+      "candidate": "The window \"Router notes\" is active. Router notes-extra.",
+      "lexical_copy": "The window \"￼\" is active. ￼-extra.",
+      "published": "The window \"Router notes\" is active. Router notes-extra.",
+      "correct": false
+    },
+    {
+      "name": "Core",
+      "extra": " Core.schema.",
+      "candidate": "The window \"Core\" is active. Core.schema.",
+      "lexical_copy": "The window \"￼\" is active. ￼.schema.",
+      "published": "The window \"Core\" is active. Core.schema.",
+      "correct": false
+    }
+  ],
+  "cause": "Word-only boundaries allow a known name to mask a prefix of a longer dotted/hyphenated identifier. This broadens lexical acceptance and must be corrected before adoption.",
+  "scope": "Technical fixture; no native inference. Confirmed in Python; matching C# pattern needs owner control.",
+  "current_full": "16657 still active against CANDIDATE3; leave source frozen until it terminates.",
+  "next": "Extend complete-identifier boundaries in both helper owners; add positive sentence punctuation and negative compound identifiers. Re-run owners then Full with new final candidate."
+}

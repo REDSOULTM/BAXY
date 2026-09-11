@@ -1,0 +1,32 @@
+$ErrorActionPreference='Stop'
+$utf8=[System.Text.UTF8Encoding]::new($false)
+[Console]::OutputEncoding=$utf8; $OutputEncoding=$utf8
+$shell=$null; $folder=$null
+try {
+    $shell=New-Object -ComObject Shell.Application
+    $folder=$shell.NameSpace('shell:AppsFolder')
+    if ($null -eq $folder) { throw 'The application namespace is unavailable.' }
+    $apps=@(foreach ($item in $folder.Items()) {
+        [pscustomobject]@{ Name=$item.Name; AppID=$item.Path; ShellItem=$item }
+    })
+    $duplicateIds=@{}
+    $apps | Group-Object Name | Where-Object Count -GT 1 | ForEach-Object {
+        $_.Group | ForEach-Object { $duplicateIds[$_.AppID]=$true }
+    }
+    $targets=@{}
+    try {
+        foreach ($app in $apps) {
+            if ($duplicateIds.ContainsKey($app.AppID)) {
+                $targets[$app.AppID]=$app.ShellItem.ExtendedProperty('System.Link.TargetParsingPath')
+            }
+        }
+    } catch {
+        $targets=@{}
+    }
+    @($apps | ForEach-Object {
+        [pscustomobject]@{ Name=$_.Name; AppID=$_.AppID; TargetPath=$targets[$_.AppID] }
+    }) | ConvertTo-Json -Compress
+} finally {
+    if ($null -ne $folder) { [void][Runtime.InteropServices.Marshal]::ReleaseComObject($folder) }
+    if ($null -ne $shell) { [void][Runtime.InteropServices.Marshal]::ReleaseComObject($shell) }
+}

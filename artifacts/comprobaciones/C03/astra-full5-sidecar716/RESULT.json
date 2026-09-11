@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-10T07:08:52.647790+00:00",
+  "pid": 28340,
+  "deadline_passed": false,
+  "return_code": 1,
+  "late_code_before_disposal": null,
+  "killed_owned_child": true,
+  "elapsed_including_post_deadline_diagnostic": 5.828000000001339,
+  "stack_exit_code": 1,
+  "hello_seen": false,
+  "forced_dispatch_crash_seen": false,
+  "buffered_busy_seen": false,
+  "private_evidence": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-full5-sidecar716-private",
+  "source_test_unchanged": "4ac312b869624d261e047521bc918d9ff025194d8c9186dd9b5fae5a8959656d",
+  "coverage_added": 0,
+  "goal_complete": false
+}

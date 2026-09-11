@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-10T08:40:30.016310+00:00",
+  "status": "candidate_before_implementation",
+  "baseline": "source705+712, diagnostic729; not adopted",
+  "next": "Bounded global inventory through existing window.resolve; exact global selector before .exe normalization; existing process/title semantics; fresh pages, no persistent snapshot; complete vs observed subset; identity verified before result.",
+  "unchanged": "No model/backend/sampler/sourcePython edits in first C# ownership stage. No test deadline relaxation.",
+  "validation": "Provider selector/page/identity/cancellation/failure tests; kernel schema and Core serialization; read-only native window enumeration after owner tests. Full before source adoption.",
+  "adopted": false,
+  "coverage_added": 0,
+  "before_sources": {
+    "src/Baxy.Providers.Windows/Windows/WindowControlContracts.cs": "4c6380372f565a39c9e14a2d74d3450ef3d46e9a253a5354c41e3473dfb0dc99",
+    "src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs": "93eab6c7278cdb90ff14b5f8e62050e42177a5f83f508e948fba2a989fb75040",
+    "src/Baxy.Core/Operations/WindowControlHandlers.cs": "9ebeab789bfa601f040a92e7126e9fa6d5458f0caacc81c20ebc75457e6ccc9c",
+    "src/Baxy.Kernel/Operations/ProductCatalog.cs": "f2e3164d018dc94699b66476bbac60ca580563fd4e25ef47b1ab848f26570a03",
+    "tests/Baxy.Providers.Windows.Tests/WindowsWindowControlProviderTests.cs": "6b984255a4b2598cb9f053d249858d66b689f0194eb706cc129a406ba1236d62",
+    "tests/Baxy.Integration.Tests/MvpLocalTransientHandlerMatrixTests.cs": "161db42b081fd19fb6d1649dcba48e87c23078452233ee85bb565175bf9a7934"
+  }
+}

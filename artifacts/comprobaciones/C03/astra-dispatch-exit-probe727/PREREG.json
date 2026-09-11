@@ -1,0 +1,10 @@
+{
+  "utc": "2026-09-10T08:00:27.054004+00:00",
+  "prototype_sha256": "952ab1bc8ecbcffbb7c6314161d0fae54690b067f139ed117bcd8a33dd10d9f8",
+  "acceptance_tests_unchanged": true,
+  "max_attempts": 5,
+  "stop_at_first_failure": true,
+  "difference": "Retired724 phase probe only. Retain native child handle before trigger; timestamp write and kernel exit separately. Original acceptance files stay restored.",
+  "coverage_added": 0,
+  "adopted": false
+}

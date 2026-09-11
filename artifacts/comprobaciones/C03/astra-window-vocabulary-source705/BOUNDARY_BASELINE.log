@@ -1,0 +1,130 @@
+...........................................................FFFFF........ [ 97%]
+..                                                                       [100%]
+================================== FAILURES ===================================
+____ test_observed_name_cannot_hide_a_longer_identifier[Atlas-Atlas.route] ____
+
+name = 'Atlas', compound = 'Atlas.route'
+
+    @pytest.mark.parametrize("name,compound", [
+        ("Atlas", "Atlas.route"),
+        ("Core", "Core.schema"),
+        ("Core", "internal.Core"),
+        ("Router notes", "Router notes-extra"),
+        ("Router notes", "extra-Router notes"),
+        ("Core", "Core_schema"),
+        ("Core", "internal_Core"),
+    ])
+    def test_observed_name_cannot_hide_a_longer_identifier(name, compound):
+        good = f'The window "{name}" is active.'
+        client = Recorder([f"{good} {compound}.", good])
+>       assert client.compose_user_message("Which window is active?", "status", facts(name)) == good
+E       assert 'The window "... Atlas.route.' == 'The window "...s" is active.'
+E         
+E         - The window "Atlas" is active.
+E         + The window "Atlas" is active. Atlas.route.
+E         ?                              +++++++++++++
+
+tests\test_c03_observed_window_vocabulary.py:121: AssertionError
+____ test_observed_name_cannot_hide_a_longer_identifier[Core-Core.schema] _____
+
+name = 'Core', compound = 'Core.schema'
+
+    @pytest.mark.parametrize("name,compound", [
+        ("Atlas", "Atlas.route"),
+        ("Core", "Core.schema"),
+        ("Core", "internal.Core"),
+        ("Router notes", "Router notes-extra"),
+        ("Router notes", "extra-Router notes"),
+        ("Core", "Core_schema"),
+        ("Core", "internal_Core"),
+    ])
+    def test_observed_name_cannot_hide_a_longer_identifier(name, compound):
+        good = f'The window "{name}" is active.'
+        client = Recorder([f"{good} {compound}.", good])
+>       assert client.compose_user_message("Which window is active?", "status", facts(name)) == good
+E       assert 'The window "... Core.schema.' == 'The window "Core" is active.'
+E         
+E         - The window "Core" is active.
+E         + The window "Core" is active. Core.schema.
+E         ?                             +++++++++++++
+
+tests\test_c03_observed_window_vocabulary.py:121: AssertionError
+___ test_observed_name_cannot_hide_a_longer_identifier[Core-internal.Core] ____
+
+name = 'Core', compound = 'internal.Core'
+
+    @pytest.mark.parametrize("name,compound", [
+        ("Atlas", "Atlas.route"),
+        ("Core", "Core.schema"),
+        ("Core", "internal.Core"),
+        ("Router notes", "Router notes-extra"),
+        ("Router notes", "extra-Router notes"),
+        ("Core", "Core_schema"),
+        ("Core", "internal_Core"),
+    ])
+    def test_observed_name_cannot_hide_a_longer_identifier(name, compound):
+        good = f'The window "{name}" is active.'
+        client = Recorder([f"{good} {compound}.", good])
+>       assert client.compose_user_message("Which window is active?", "status", facts(name)) == good
+E       assert 'The window "...nternal.Core.' == 'The window "Core" is active.'
+E         
+E         - The window "Core" is active.
+E         + The window "Core" is active. internal.Core.
+E         ?                             +++++++++++++++
+
+tests\test_c03_observed_window_vocabulary.py:121: AssertionError
+_ test_observed_name_cannot_hide_a_longer_identifier[Router notes-Router notes-extra] _
+
+name = 'Router notes', compound = 'Router notes-extra'
+
+    @pytest.mark.parametrize("name,compound", [
+        ("Atlas", "Atlas.route"),
+        ("Core", "Core.schema"),
+        ("Core", "internal.Core"),
+        ("Router notes", "Router notes-extra"),
+        ("Router notes", "extra-Router notes"),
+        ("Core", "Core_schema"),
+        ("Core", "internal_Core"),
+    ])
+    def test_observed_name_cannot_hide_a_longer_identifier(name, compound):
+        good = f'The window "{name}" is active.'
+        client = Recorder([f"{good} {compound}.", good])
+>       assert client.compose_user_message("Which window is active?", "status", facts(name)) == good
+E       assert 'The window "... notes-extra.' == 'The window "...s" is active.'
+E         
+E         - The window "Router notes" is active.
+E         + The window "Router notes" is active. Router notes-extra.
+E         ?                                     ++++++++++++++++++++
+
+tests\test_c03_observed_window_vocabulary.py:121: AssertionError
+_ test_observed_name_cannot_hide_a_longer_identifier[Router notes-extra-Router notes] _
+
+name = 'Router notes', compound = 'extra-Router notes'
+
+    @pytest.mark.parametrize("name,compound", [
+        ("Atlas", "Atlas.route"),
+        ("Core", "Core.schema"),
+        ("Core", "internal.Core"),
+        ("Router notes", "Router notes-extra"),
+        ("Router notes", "extra-Router notes"),
+        ("Core", "Core_schema"),
+        ("Core", "internal_Core"),
+    ])
+    def test_observed_name_cannot_hide_a_longer_identifier(name, compound):
+        good = f'The window "{name}" is active.'
+        client = Recorder([f"{good} {compound}.", good])
+>       assert client.compose_user_message("Which window is active?", "status", facts(name)) == good
+E       assert 'The window "...Router notes.' == 'The window "...s" is active.'
+E         
+E         - The window "Router notes" is active.
+E         + The window "Router notes" is active. extra-Router notes.
+E         ?                                     ++++++++++++++++++++
+
+tests\test_c03_observed_window_vocabulary.py:121: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_observed_window_vocabulary.py::test_observed_name_cannot_hide_a_longer_identifier[Atlas-Atlas.route]
+FAILED tests/test_c03_observed_window_vocabulary.py::test_observed_name_cannot_hide_a_longer_identifier[Core-Core.schema]
+FAILED tests/test_c03_observed_window_vocabulary.py::test_observed_name_cannot_hide_a_longer_identifier[Core-internal.Core]
+FAILED tests/test_c03_observed_window_vocabulary.py::test_observed_name_cannot_hide_a_longer_identifier[Router notes-Router notes-extra]
+FAILED tests/test_c03_observed_window_vocabulary.py::test_observed_name_cannot_hide_a_longer_identifier[Router notes-extra-Router notes]
+5 failed, 69 passed in 1.91s

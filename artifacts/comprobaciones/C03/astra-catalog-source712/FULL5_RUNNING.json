@@ -1,0 +1,13 @@
+{
+  "observed_at_utc": "2026-09-10T06:00:34+00:00",
+  "session_id": 65777,
+  "status": "running",
+  "command": "scripts/test_source_quality.ps1 -Mode Full",
+  "candidate": "CANDIDATE.json",
+  "log": "%TEMP%/c03-catalog712-full5.log",
+  "exit_record": "%TEMP%/c03-catalog712-full5-exit.json",
+  "prerequisite_guard": "scratchpad/c03-guard-full712.py",
+  "temporary_source_removed_before_start": true,
+  "adopted": false,
+  "coverage_added": 0
+}

@@ -1,0 +1,271 @@
+{
+  "method": "Read-only semantic exploration of all515 open needs_context_or_model rows from workboard692, filtered before partitioning. Two reviewers used private literals and owner expectations. Aggregate planning only: no per-case adjudication, no demonstrated shared cause, no provider calls, no coverage changes. Group definitions differ across partitions and must not be added as if they were one taxonomy.",
+  "workboard": "artifacts/comprobaciones/C03/COVERAGE_WORKBOARD692.json",
+  "private_registry": "%LOCALAPPDATA%/BAXY/C03-survey-requirements336-private/requirements.jsonl",
+  "expected_registry_sha256": "237c14900a9e36e2e5f6071f132ad916a234ecb39a77e0dd497ef2565eceb2b7",
+  "partition_filter": {
+    "coverage": "open",
+    "planning_group": "needs_context_or_model"
+  },
+  "partitions": [
+    {
+      "slice_start": 0,
+      "slice_stop": 260,
+      "count": 260,
+      "expectation_counts": {
+        "positive": 247,
+        "unmarked_limit": 10,
+        "negative_limit": 3
+      },
+      "groups": [
+        {
+          "name": "windows_apps_local_ui",
+          "count": 49,
+          "examples": [
+            "H0023",
+            "H0103",
+            "H0209",
+            "H0238",
+            "H0268"
+          ]
+        },
+        {
+          "name": "device_status_controls",
+          "count": 45,
+          "examples": [
+            "H0027",
+            "H0067",
+            "H0146",
+            "H0221",
+            "H0359"
+          ]
+        },
+        {
+          "name": "communication_personal_organization",
+          "count": 38,
+          "examples": [
+            "H0014",
+            "H0024",
+            "H0119",
+            "H0198",
+            "H0363"
+          ]
+        },
+        {
+          "name": "files_desktop_development",
+          "count": 28,
+          "examples": [
+            "H0001",
+            "H0047",
+            "H0077",
+            "H0201",
+            "H0334"
+          ]
+        },
+        {
+          "name": "media_streaming",
+          "count": 27,
+          "examples": [
+            "H0009",
+            "H0010",
+            "H0163",
+            "H0235",
+            "H0351"
+          ]
+        },
+        {
+          "name": "browser_web_search",
+          "count": 21,
+          "examples": [
+            "H0029",
+            "H0033",
+            "H0082",
+            "H0292",
+            "H0326"
+          ]
+        },
+        {
+          "name": "knowledge_conversation_identity_memory_calculation",
+          "count": 34,
+          "examples": [
+            "H0012",
+            "H0135",
+            "H0159",
+            "H0239",
+            "H0367"
+          ]
+        },
+        {
+          "name": "insufficient_reference_fragment_noise",
+          "count": 18,
+          "examples": [
+            "H0006",
+            "H0097",
+            "H0205",
+            "H0287",
+            "H0336"
+          ]
+        }
+      ]
+    },
+    {
+      "slice_start": 260,
+      "slice_stop": 515,
+      "count": 255,
+      "expectation_counts": {
+        "positive": 249,
+        "unmarked_limit": 6,
+        "negative_limit": 0
+      },
+      "groups": [
+        {
+          "name": "conversation_knowledge_fragment_noise",
+          "count": 79,
+          "examples": [
+            "H0388",
+            "H0415",
+            "H0424",
+            "H0438",
+            "H0474"
+          ]
+        },
+        {
+          "name": "games_streaming_catalog_install_navigation",
+          "count": 30,
+          "examples": [
+            "H0387",
+            "H0390",
+            "H0396",
+            "H0434",
+            "H0482"
+          ]
+        },
+        {
+          "name": "device_controls_connectivity",
+          "count": 29,
+          "examples": [
+            "H0430",
+            "H0445",
+            "H0464",
+            "H0488",
+            "H0494"
+          ]
+        },
+        {
+          "name": "current_state_screen_references",
+          "count": 24,
+          "examples": [
+            "H0392",
+            "H0400",
+            "H0419",
+            "H0458",
+            "H0527"
+          ]
+        },
+        {
+          "name": "app_window_input",
+          "count": 23,
+          "examples": [
+            "H0386",
+            "H0398",
+            "H0403",
+            "H0457",
+            "H0472"
+          ]
+        },
+        {
+          "name": "files_notes_memory_local_data",
+          "count": 18,
+          "examples": [
+            "H0426",
+            "H0453",
+            "H0485",
+            "H0532",
+            "H0547"
+          ]
+        },
+        {
+          "name": "communication_contacts_messages",
+          "count": 17,
+          "examples": [
+            "H0395",
+            "H0408",
+            "H0425",
+            "H0440",
+            "H0489"
+          ]
+        },
+        {
+          "name": "web_browser_search",
+          "count": 15,
+          "examples": [
+            "H0389",
+            "H0397",
+            "H0443",
+            "H0480",
+            "H0490"
+          ]
+        },
+        {
+          "name": "time_date_timers_agenda",
+          "count": 10,
+          "examples": [
+            "H0385",
+            "H0399",
+            "H0450",
+            "H0473",
+            "H0576"
+          ]
+        },
+        {
+          "name": "compound_conditional",
+          "count": 10,
+          "examples": [
+            "H0421",
+            "H0432",
+            "H0456",
+            "H0542",
+            "H0559"
+          ]
+        }
+      ]
+    }
+  ],
+  "review_corrections": [
+    "The second review initially sliced all742 before filtering and reported345 overlapping rows. That result is invalidated; only the corrected255 filtered rows are recorded here.",
+    "Nonhuman authorship does not remove a positive owner expectation from development: the owner authorized historical material. Human provenance remains a separate reserve criterion.",
+    "Risk and confirmation follow the exact operation and product identity; no universal confirmation rule is inferred for communication or session actions."
+  ],
+  "next_action": "Complete Full5 and product706 first. Use measured current-state/status and global-window inventory defects as concrete shared causes; these semantic groups only help select further full-family panels. Recover original context before judging references or compound requests.",
+  "coverage_added": 0,
+  "goal_complete": false,
+  "scope_validation": {
+    "utc": "2026-09-10T06:35:18.912719+00:00",
+    "workboard_sha256": "cf7b423a4c64fb8af37e724619dde8e58d5d8480525fb9a910fc4695db55bfb2",
+    "partitions": [
+      {
+        "count": 260,
+        "first": "H0001",
+        "last": "H0382",
+        "ordered_ids_sha256": "33cc4482e3909292e1f718c54b8f16063f5f456fa298317ca2bd3dd113e169d2",
+        "expectations": {
+          "positive": 247,
+          "negative_limit": 3,
+          "unmarked_limit": 10
+        }
+      },
+      {
+        "count": 255,
+        "first": "H0385",
+        "last": "H0742",
+        "ordered_ids_sha256": "d88e5763c4f6b9b0ae7d23be0a8e2a222ef177ed29694a5b00904b6e3562fd2f",
+        "expectations": {
+          "positive": 249,
+          "unmarked_limit": 6
+        }
+      }
+    ],
+    "scope_disjoint_and_complete": true,
+    "note": "Scope, representative membership and expectation counts verified mechanically; semantic group counts remain reviewer planning judgments, not behavior verification."
+  }
+}

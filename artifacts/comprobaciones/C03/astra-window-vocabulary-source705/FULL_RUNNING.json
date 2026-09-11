@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-10T04:06:48.081065+00:00",
+  "sessionId": 61066,
+  "candidate_sha256": "4f1f17457e518bc03f9a39b612784203b8080c982f9a8225a32841b88fdb959a",
+  "python_owners_passed": 691,
+  "dotnet_owners_passed": 167,
+  "skipped": 0,
+  "adopted": false,
+  "log": "TEMP/c03-window-vocabulary705-full.log",
+  "exit": "TEMP/c03-window-vocabulary705-full-exit.json"
+}

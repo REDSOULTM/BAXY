@@ -1,0 +1,71 @@
+  Determinando los proyectos que se van a restaurar...
+  Todos los proyectos están actualizados para la restauración.
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+NUnit Adapter 4.5.0.0: Test execution started
+Running selected tests in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+   NUnit3TestExecutor discovered 1 of 1 NUnit test cases using Current Discovery mode, Non-Explicit run
+Startup713 trial 1/50
+Startup713 trial 2/50
+Startup713 trial 3/50
+Startup713 trial 4/50
+Startup713 trial 5/50
+Startup713 trial 6/50
+Startup713 trial 7/50
+Startup713 trial 8/50
+Startup713 trial 9/50
+Startup713 trial 10/50
+Startup713 trial 11/50
+Startup713 trial 12/50
+Startup713 trial 13/50
+Startup713 trial 14/50
+Startup713 trial 15/50
+Startup713 trial 16/50
+Startup713 trial 17/50
+Startup713 trial 18/50
+Startup713 trial 19/50
+Startup713 trial 20/50
+Startup713 trial 21/50
+Startup713 trial 22/50
+Startup713 trial 23/50
+Startup713 trial 24/50
+Startup713 trial 25/50
+Startup713 trial 26/50
+Startup713 trial 27/50
+Startup713 trial 28/50
+Startup713 trial 29/50
+Startup713 trial 30/50
+Startup713 trial 31/50
+Startup713 trial 32/50
+Startup713 trial 33/50
+Startup713 trial 34/50
+Startup713 trial 35/50
+Startup713 trial 36/50
+Startup713 trial 37/50
+Startup713 trial 38/50
+Startup713 trial 39/50
+Startup713 trial 40/50
+Startup713 trial 41/50
+Startup713 trial 42/50
+Startup713 trial 43/50
+Startup713 trial 44/50
+Startup713 trial 45/50
+Startup713 trial 46/50
+Startup713 trial 47/50
+Startup713 trial 48/50
+Startup713 trial 49/50
+Startup713 trial 50/50
+NUnit Adapter 4.5.0.0: Test execution complete
+  Correctas FiftyColdStartsUsingTheActualContractFixture [8 m 52 s]
+
+La serie de pruebas se ejecutó correctamente.
+Pruebas totales: 1
+     Correcto: 1
+ Tiempo total: 8,9657 Minutos

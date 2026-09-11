@@ -1,0 +1,23 @@
+{
+  "utc": "2026-09-10T04:04:05.957956+00:00",
+  "source_reviews": {
+    "694": "582f4063fe35c860f40b972c0bffecc45c43e7beaae3fcfce8c27f3133b3f160",
+    "704": "a56674df695ca98e3c62981d3aca1efb134d7d58fc5d8b2d722bad255736d2b8"
+  },
+  "private_replay_sha256": "3de6afb191febbeb90be87406f59ac4cbce1feb53818c380e75592d3b57af1e1",
+  "counts": {
+    "694": {
+      "draft_occurrences": 18,
+      "accepted_identical": 12,
+      "unique_drafts": 2
+    },
+    "704": {
+      "draft_occurrences": 18,
+      "accepted_identical": 0,
+      "unique_drafts": 1
+    }
+  },
+  "method": "Preserved native drafts, current composer in a deterministic Recorder. Each rejected draft is repeated up to the existing three attempts to reveal validation outcome; these are not new model calls, new user tests, or a reconstruction of every original HTTP parameter. Source situation/request and full C# forbidden-term list retained. No public prose altered.",
+  "new_coverage": 0,
+  "goal_complete": false
+}

@@ -1,0 +1,130 @@
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Runtime.ExceptionServices;
+using System.Text.Json;
+using Baxy.App;
+using NUnit.Framework;
+
+namespace Baxy.Integration.Tests;
+
+[TestFixture]
+[NonParallelizable]
+public sealed class TemporaryStartupProbe709
+{
+    [Test]
+    public async Task FiftyColdStartsUsingTheActualContractFixture()
+    {
+        MethodInfo method = typeof(MindShellEndToEndTests).GetMethod(
+            "WithContractMindAsync", BindingFlags.Static | BindingFlags.NonPublic)!;
+        Func<MainWindowViewModel, string, string, Task> body = (_, _, _) => Task.CompletedTask;
+        for (int index = 0; index < 50; index++)
+        {
+            TestContext.Progress.WriteLine($"Startup709 trial {index + 1}/50");
+            await (Task)method.Invoke(null, new object[] { body })!;
+        }
+    }
+
+    internal static IDisposable Observe(MainWindowViewModel viewModel) => new Observation(viewModel);
+
+    private sealed class Observation : IDisposable
+    {
+        private readonly MainWindowViewModel _viewModel;
+        private readonly Stopwatch _elapsed = Stopwatch.StartNew();
+        private readonly string _directory;
+        private readonly List<string> _exceptions = new();
+        private int _captured;
+
+        internal Observation(MainWindowViewModel viewModel)
+        {
+            _viewModel = viewModel;
+            _directory = Path.Combine(
+                Environment.GetEnvironmentVariable("C03_STARTUP_PROBE_DIRECTORY")!,
+                $"startup-{DateTime.UtcNow:yyyyMMddTHHmmssfffffff}");
+            Directory.CreateDirectory(_directory);
+            AppDomain.CurrentDomain.FirstChanceException += Capture;
+        }
+
+        private void Capture(object? sender, FirstChanceExceptionEventArgs args)
+        {
+            if (args.Exception is not TimeoutException
+                || args.Exception.Message != "El core no emitió el saludo local a tiempo."
+                || Interlocked.Exchange(ref _captured, 1) != 0)
+            {
+                return;
+            }
+
+            // Runs after the unchanged deadline expired, before the App disposes its Core.
+            try
+            {
+                File.WriteAllText(Path.Combine(_directory, "exception.txt"), args.Exception.ToString());
+                object client = typeof(MainWindowViewModel).GetField(
+                    "_coreClient", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(_viewModel)!;
+                var core = (Process)client.GetType().GetField(
+                    "_process", BindingFlags.Instance | BindingFlags.NonPublic)!.GetValue(client)!;
+                File.WriteAllText(Path.Combine(_directory, "timeout.json"), JsonSerializer.Serialize(new
+                {
+                    secondsBeforeDiagnostic = _elapsed.Elapsed.TotalSeconds,
+                    corePid = core.Id,
+                    coreStartUtc = core.StartTime.ToUniversalTime(),
+                    coreHasExited = core.HasExited,
+                }));
+                if (core.HasExited)
+                {
+                    return;
+                }
+
+                var start = new ProcessStartInfo
+                {
+                    FileName = Environment.GetEnvironmentVariable("C03_STARTUP_STACK_TOOL")!,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                };
+                start.ArgumentList.Add("report");
+                start.ArgumentList.Add("--process-id");
+                start.ArgumentList.Add(core.Id.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                using Process report = Process.Start(start)!;
+                Task<string> output = report.StandardOutput.ReadToEndAsync();
+                Task<string> error = report.StandardError.ReadToEndAsync();
+                bool finished = report.WaitForExit(15_000);
+                if (!finished)
+                {
+                    report.Kill(entireProcessTree: true);
+                    report.WaitForExit(5_000);
+                }
+
+                bool drained = Task.WaitAll(new Task[] { output, error }, 5_000);
+                File.WriteAllText(Path.Combine(_directory, "stack-result.json"), JsonSerializer.Serialize(new
+                {
+                    finished,
+                    drained,
+                    exitCode = report.HasExited ? report.ExitCode : (int?)null,
+                }));
+                if (drained)
+                {
+                    File.WriteAllText(Path.Combine(_directory, "managed-stack.txt"), output.Result);
+                    File.WriteAllText(Path.Combine(_directory, "stack-stderr.txt"), error.Result);
+                }
+            }
+            catch (Exception error)
+            {
+                _exceptions.Add(error.ToString());
+            }
+        }
+
+        public void Dispose()
+        {
+            AppDomain.CurrentDomain.FirstChanceException -= Capture;
+            File.WriteAllText(Path.Combine(_directory, "result.json"), JsonSerializer.Serialize(new
+            {
+                seconds = _elapsed.Elapsed.TotalSeconds,
+                _viewModel.IsReady,
+                _viewModel.HasStartupError,
+                captured = _captured != 0,
+                diagnosticErrors = _exceptions,
+            }));
+        }
+    }
+}

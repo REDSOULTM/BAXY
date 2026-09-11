@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "real_destination_exists_and_writable": true,
+  "original_calls": 4,
+  "same_arguments_return_objects_and_exceptions": true,
+  "synthetic_records_separate_from_product": true
+}

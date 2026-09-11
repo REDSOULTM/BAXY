@@ -1,0 +1,85 @@
+{
+  "utc": "2026-09-10T05:36:01.091324+00:00",
+  "exit_code": 1,
+  "dotnet_diagnostic_tests": {
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0
+  },
+  "startup_attempts": [
+    {
+      "seconds": 8.9330608,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0531069759004",
+      "result_sha256": "0935a89d7686809017210aa274e8b265533043b4620dbda6fc946b8f8c512e3d"
+    },
+    {
+      "seconds": 9.3742323,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0531188541236",
+      "result_sha256": "7da53a8c754baa9262e3316ad0000a12e450b2c7ccfb26ec67bffb661665e7e2"
+    },
+    {
+      "seconds": 9.3777636,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0531293574608",
+      "result_sha256": "7d4c42236b72e17f67e44e807e3e9e82a62a53e40e02793f22130df5dbffa9a0"
+    },
+    {
+      "seconds": 9.4006086,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0531415927583",
+      "result_sha256": "8e180d8637e618b8cbe30e6c8fb24f7ce42604feca5ee5e201f882112d754604"
+    },
+    {
+      "seconds": 8.1707588,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0531530746100",
+      "result_sha256": "f61afcea78855f34827e5320d1e28261150b036a0b9dc552fe1ed063acd42055"
+    },
+    {
+      "seconds": 12.5378966,
+      "IsReady": false,
+      "HasStartupError": true,
+      "captured": true,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0532038418236",
+      "result_sha256": "63d18895b6b1f385a0f29f896b4b9fc90d57b8e8fcbfd86250773c69abf44fee",
+      "timeout": {
+        "secondsBeforeDiagnostic": 10.0587568,
+        "corePid": 8604,
+        "coreStartUtc": "2026-09-10T05:32:03.8677231Z",
+        "coreHasExited": false
+      },
+      "stack-result": {
+        "finished": true,
+        "drained": true,
+        "exitCode": 0
+      }
+    }
+  ],
+  "ready": 5,
+  "failed_startups": 1,
+  "fixture_restored": true,
+  "candidate4_sources_unchanged": true,
+  "temporary_helper_removed": true,
+  "cause": "Core handshake TimeoutException reproduced. Core PowerShell inventory child still present at9.753s and absent at10.305s after Core process creation; timeout captured about10.03s after creation. Stack later shows Core reading stdin. Timing overlaps the deadline but the late stack does not uniquely locate the exact await at timeout. Isolate catalog phases before repair.",
+  "limits": "Process sampling intended every250ms had about550ms cadence near failure. Observer may add load. Diagnostic stack collection happens only after timeout. Five successful startups are not five separate passed NUnit tests or new acceptance coverage.",
+  "coverage_added": 0,
+  "goal_complete": false
+}

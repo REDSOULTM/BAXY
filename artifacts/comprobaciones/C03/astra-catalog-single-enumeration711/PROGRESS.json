@@ -1,0 +1,64 @@
+{
+  "runs": [
+    {
+      "index": 0,
+      "kind": "original",
+      "exit_code": 0,
+      "seconds": 6.7189999999973224,
+      "entries": 322,
+      "normalized_entries_sha256": "c1d1464d34645c427de023611f2d4b6bb93aecd95cea679669daaac866e45b34",
+      "stdout_sha256": "e5332f126f9693477c10dfa888e45d7e8985f7bc0712186e33c0f2f786c8eed5",
+      "available_ram_mib": 4133.015625
+    },
+    {
+      "index": 1,
+      "kind": "candidate",
+      "exit_code": 0,
+      "seconds": 6.905999999995402,
+      "entries": 322,
+      "normalized_entries_sha256": "c1d1464d34645c427de023611f2d4b6bb93aecd95cea679669daaac866e45b34",
+      "stdout_sha256": "f68e663ed304c8428c2bf95a677d9ece300b9f61b144eb2751dc6788de1fc9ce",
+      "available_ram_mib": 4149.6171875
+    },
+    {
+      "index": 2,
+      "kind": "candidate",
+      "exit_code": 0,
+      "seconds": 3.438000000001921,
+      "entries": 322,
+      "normalized_entries_sha256": "c1d1464d34645c427de023611f2d4b6bb93aecd95cea679669daaac866e45b34",
+      "stdout_sha256": "f68e663ed304c8428c2bf95a677d9ece300b9f61b144eb2751dc6788de1fc9ce",
+      "available_ram_mib": 4152.02734375
+    },
+    {
+      "index": 3,
+      "kind": "original",
+      "exit_code": 0,
+      "seconds": 7.984000000004016,
+      "entries": 322,
+      "normalized_entries_sha256": "c1d1464d34645c427de023611f2d4b6bb93aecd95cea679669daaac866e45b34",
+      "stdout_sha256": "e5332f126f9693477c10dfa888e45d7e8985f7bc0712186e33c0f2f786c8eed5",
+      "available_ram_mib": 4185.15234375
+    },
+    {
+      "index": 4,
+      "kind": "original",
+      "exit_code": 0,
+      "seconds": 5.484000000004016,
+      "entries": 322,
+      "normalized_entries_sha256": "c1d1464d34645c427de023611f2d4b6bb93aecd95cea679669daaac866e45b34",
+      "stdout_sha256": "e5332f126f9693477c10dfa888e45d7e8985f7bc0712186e33c0f2f786c8eed5",
+      "available_ram_mib": 4183.47265625
+    },
+    {
+      "index": 5,
+      "kind": "candidate",
+      "exit_code": 0,
+      "seconds": 3.889999999999418,
+      "entries": 322,
+      "normalized_entries_sha256": "c1d1464d34645c427de023611f2d4b6bb93aecd95cea679669daaac866e45b34",
+      "stdout_sha256": "f68e663ed304c8428c2bf95a677d9ece300b9f61b144eb2751dc6788de1fc9ce",
+      "available_ram_mib": 4051.484375
+    }
+  ]
+}

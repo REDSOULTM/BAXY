@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-10T08:06:46.687739+00:00",
+  "status": "diagnostic_before_adoption",
+  "candidate": "artifacts\\comprobaciones\\C03\\astra-catalog-source712\\CANDIDATE.json",
+  "candidate_sha256": "ce2d929ce161a1bfd9416f0b866a618b1b5bf652413bad0cb42862571e1e9cfe",
+  "full5_sha256": "7025499446a63d6c69694b4939a9c7eedb12ed69952abcb40690d426cf89b3fd",
+  "full_gate_passed": false,
+  "adopted": false,
+  "goal_complete": false,
+  "decision": "Move product diagnosis before the next Full to advance C03 without mistaking two infrastructure timeouts for model quality. Full remains mandatory before source adoption and final delivery.",
+  "differences_from_prepared706": "Only run tag and scheduling precondition; same73 panel, criteria, source712, model/backend/presets, resource limits and observer bytes",
+  "scope": "Read-only hidden product diagnosis; no UI/voice/survey completion credit"
+}

@@ -1,0 +1,28 @@
+......................................................F................. [ 10%]
+........................................................................ [ 20%]
+........................................................................ [ 31%]
+........................................................................ [ 41%]
+........................................................................ [ 52%]
+........................................................................ [ 62%]
+........................................................................ [ 73%]
+........................................................................ [ 83%]
+........................................................................ [ 93%]
+..........................................                               [100%]
+================================== FAILURES ===================================
+_ test_unquoted_identity_preserves_the_same_names_and_polarity[router_notes.txt - Editor] _
+tests\test_c03_observed_window_vocabulary.py:86: in test_unquoted_identity_preserves_the_same_names_and_polarity
+    assert client.compose_user_message("Which window is active?", "status", facts(name)) == good
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:10162: in compose_user_message
+    retry = post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9221: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+tests\test_c03_window_state_facts.py:105: in _post
+    return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                             ^^^^^^^^^^^^^^^^^^
+E   StopIteration
+=========================== short test summary info ===========================
+FAILED tests/test_c03_observed_window_vocabulary.py::test_unquoted_identity_preserves_the_same_names_and_polarity[router_notes.txt - Editor]
+1 failed, 689 passed in 8.08s

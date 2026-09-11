@@ -1,0 +1,5 @@
+{
+  "same_harness": true,
+  "script_sha256": "66ba972fca71234c9717fee00c267da3dcdc9957b234bea8519701008d72a5e2",
+  "changed": "Only run identifiers/private and public folders and candidate reference. Same fixture,10s timeout,50maximum,stopfirstfailure,process observation and post-timeout stack capture."
+}

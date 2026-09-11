@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-10T05:58:36.862606+00:00",
+  "hello_within10s": true,
+  "seconds": 6.7960000000020955,
+  "hello_type": "hello",
+  "pid_matches": true,
+  "application_catalog": {
+    "verified": true,
+    "complete": true,
+    "names_count": 293
+  },
+  "clean_exit_code": 0,
+  "private_hello_sha256": "a393ca6a54e6796245c701ef75bae8519113281a855313bd2795625534606b97",
+  "model_inference": false,
+  "coverage_added": 0,
+  "goal_complete": false
+}

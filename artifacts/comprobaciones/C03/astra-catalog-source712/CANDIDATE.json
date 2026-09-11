@@ -1,0 +1,29 @@
+{
+  "utc": "2026-09-10T05:42:29.969054+00:00",
+  "adopted": false,
+  "parent_commit": "83fef92c956a2c6de06a4d19a1b19519aceb4557",
+  "sources": {
+    "src/Baxy.App/ObservedResponseLiterals.cs": "5ffc046cd5d94ebdf4a2116580d53308946fe52bb0f10ad92150c1422eae9d7c",
+    "src/Baxy.App/UserMessagePolicy.cs": "d71ebd057a68dbe7c968a5f9b90d3f19b5e98d79900fc6e9f9980aebe12e3721",
+    "src/baxy_mind/observed_response_literals.py": "3325607e157bfa227881187227d8ccc0531458563d40a8e4728cbe59e0d4d586",
+    "src/baxy_mind/llm.py": "40e2770bff56e9d6d7e5156caa780ecb0ea192447faa950c6bba67fbe9faead7",
+    "tests/Baxy.Integration.Tests/ObservedWindowVocabularyTests.cs": "f4dbbb425714ffd9a1247861fe47662f14306cfb935e5d3483cbbc01220c180a",
+    "tests/test_c03_observed_window_vocabulary.py": "cb0ecc42b47c0dc2d7734913c6817160ffb4c035cd0270fc23f958a65bb7e930",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "a7757308b6e780e6d206c5d457f095a4a952546c10d0fd36912a90936a2e8e48",
+    "experiments/stt_quality/evaluate_reserved_stt.py": "18acd736235e35b25de04ba784e8b2b555d505259168dfa8e453f7e4f43b2957",
+    "tests/test_price_v8_veto_damage_by_cause.py": "7b44d1fe4979627c0e388fc515f5bef3a8e57583e3dc82d141457fd1e3bbba39",
+    "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs": "c25571fbca3a506e57576556e3a284d9b38db3902bb1ad3a9f58bfc83c261315"
+  },
+  "python_tree_sha256": "76d0b6aed0296ef168d4e8558db21f9e2ac8677e09a64f4b1e98506df2c37cd3",
+  "python_files": 407,
+  "inherits": "../astra-window-vocabulary-source705/CANDIDATE4.json",
+  "change": "Only catalog discovery script uses one existing Shell AppsFolder enumeration for names/IDs and duplicate metadata; diagnostic exception labels no longer name Get-StartApps. Preserves ambiguity checks, cache, cancellation, typed contracts and original Core10s deadline. No new product layer.",
+  "evidence": [
+    "../astra-fixture-startup-probe709/RESULT.json",
+    "../astra-catalog-phases710/RESULT.json",
+    "../astra-catalog-single-enumeration711/RESULT.json"
+  ],
+  "validation_next": "Provider owners, then same50-start diagnostic against the actual fixture with new outputs; remove temporary instrumentation; integrated Full and product73 regression before adoption of combined705+712.",
+  "coverage_added": 0,
+  "goal_complete": false
+}

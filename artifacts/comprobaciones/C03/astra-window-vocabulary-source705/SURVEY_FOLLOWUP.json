@@ -1,0 +1,84 @@
+{
+  "utc": "2026-09-10T04:18:35.072482+00:00",
+  "review_sha256": "a56674df695ca98e3c62981d3aca1efb134d7d58fc5d8b2d722bad255736d2b8",
+  "survey_requirements_in_panel": 50,
+  "literal_correct": 36,
+  "literal_failed": 14,
+  "groups_for_followup": {
+    "clock_time": {
+      "case_ids": [
+        "H0126",
+        "H0223",
+        "H0449",
+        "H0498",
+        "H0586",
+        "H0600",
+        "H0700",
+        "H0727"
+      ],
+      "variant_ids": [
+        "clock-time-mixed"
+      ]
+    },
+    "disk_free": {
+      "case_ids": [
+        "H0025",
+        "H0207",
+        "H0442",
+        "H0644"
+      ],
+      "variant_ids": [
+        "disk-free-en"
+      ]
+    },
+    "gpu_identity_only": {
+      "case_ids": [
+        "H0087",
+        "H0194",
+        "H0370",
+        "H0625"
+      ],
+      "variant_ids": []
+    },
+    "ram_total": {
+      "case_ids": [
+        "H0111",
+        "H0162",
+        "H0655"
+      ],
+      "variant_ids": [
+        "memory-total-en"
+      ]
+    },
+    "battery_level": {
+      "case_ids": [
+        "H0144",
+        "H0379",
+        "H0665"
+      ],
+      "variant_ids": [
+        "battery-level-es"
+      ]
+    },
+    "cpu_usage": {
+      "case_ids": [
+        "H0065",
+        "H0350"
+      ],
+      "variant_ids": [
+        "cpu-usage-en"
+      ]
+    }
+  },
+  "candidate_requirements": 24,
+  "coverage_granted": 0,
+  "limits": [
+    "Read-only agent mapping, pending primary semantic review; not a coverage decision.",
+    "Must establish changes of names, values, order, references and language for each behavior, without treating family membership as proof.",
+    "cpu-order-es fails: English/Spanish correct CPU variants do not establish order generalization.",
+    "No English-only clock-time variant in this panel; date is not time.",
+    "Wi-Fi is not Internet; GPU identity is not VRAM usage; installed/usable/free RAM differ.",
+    "H0655 wording was accepted contextually in694/704, not as a second free-RAM claim."
+  ],
+  "next_action": "Use this bounded list to construct the missing generalization evidence after current shared blockers; do not rerun the742 or increase registry counts automatically."
+}

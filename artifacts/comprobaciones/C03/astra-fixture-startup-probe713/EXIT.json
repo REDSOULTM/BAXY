@@ -1,0 +1,13 @@
+{
+  "exit_code": 1,
+  "test_exit_code": null,
+  "test_passed_from_log": true,
+  "test_summary": "NUnit: 1 passed, 0 failed, 0 skipped; 50 completed startups. Test process exit code was not saved before the cleanup exception.",
+  "failure": "OSError [Errno 22] Invalid argument in FIXTURE.write_bytes(original), after the test process completed. Original instrumented file remained intact by SHA256.",
+  "fixture_restored": true,
+  "temporary_helper_removed": true,
+  "cleanup_completed_afterward": true,
+  "cleanup_method": "apply_patch removed only the diagnostic using block and the temporary helper. Fixture SHA256 then exactly matched the original backup.",
+  "fixture_sha256": "628ab599ecae26227707d479220bbab41a06f17e9a3980c828c8dd6c45119ae3",
+  "test_binary_contains_diagnostics_until_next_build": true
+}

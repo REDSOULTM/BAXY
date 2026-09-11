@@ -1,0 +1,12 @@
+{
+  "utc": "2026-09-10T04:44:33.225179+00:00",
+  "prior_replay_sha256": "3de6afb191febbeb90be87406f59ac4cbce1feb53818c380e75592d3b57af1e1",
+  "private_replay4_sha256": "d76df4ec0c75cb98bd07177768320598d4b9ab5219665216dca20a14e1b2ed76",
+  "observed_name_helper_sha256": "3325607e157bfa227881187227d8ccc0531458563d40a8e4728cbe59e0d4d586",
+  "occurrences": 36,
+  "unique_drafts": 3,
+  "outputs_equal_to_prior_replay": true,
+  "accepted_identical": 12,
+  "new_model_inference": false,
+  "new_coverage": 0
+}

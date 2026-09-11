@@ -9374,6 +9374,30 @@ class LlmRuntime:
             )
             message_prompt += scope
             cpu_prompt += scope
+        if (
+            situation.get("operation") == "system.process.list"
+            and situation.get("kind") == "operation"
+            and situation.get("polarity") == "success"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and situation.get("cause") != "acting"
+            and _merged_observed(situation).get("observationScope") == "accessible_processes"
+        ):
+            scope = (
+                " For this process inventory, observationScope is the accessible observation"
+                " boundary, not every process on the system. observedProcessCount is the"
+                " count observed within that boundary; returnedProcessCount is only the"
+                " returned rows. For a requested list, disclose the observed count and"
+                " whether returned rows are a subset, naming every returned instance."
+                " Respect requested cardinality; a plural ranking with several observed"
+                " instances is not a single maximum. Distinguish same-name instances by"
+                " processId. A top-one result need not list every process and needs processId"
+                " only when its name is ambiguous. A count-only reply states the observed"
+                " count and scope without rows. A process working set is not an application"
+                " total."
+            )
+            message_prompt += scope
+            cpu_prompt += scope
         compose_sampling = _public_compose_sampling(gguf)
         adapter = getattr(self, "_cpu_prose_adapter", None)
         if adapter is not None and applies_to_cpu_prose(situation, _merged_observed(situation)):
@@ -9673,17 +9697,18 @@ class LlmRuntime:
             or sum(len(fact) for fact in required_facts) >= 512
         )
         inventory_seen = visible_situation.get("seen")
-        inventory_windows = (
-            inventory_seen.get("windows") if isinstance(inventory_seen, dict) else None
+        inventory_entries = (
+            inventory_seen.get("windows" if situation.get("operation") == "window.resolve" else "processes")
+            if isinstance(inventory_seen, dict) else None
         )
         dense_inventory = (
-            situation.get("operation") == "window.resolve"
+            situation.get("operation") in {"window.resolve", "system.process.list"}
             and situation.get("verified") is True
             and situation.get("succeeded") is True
-            and isinstance(inventory_windows, list)
+            and isinstance(inventory_entries, list)
             and (
-                len(inventory_windows) >= 8
-                or len(json.dumps(inventory_windows, ensure_ascii=False, separators=(",", ":"))) >= 512
+                len(inventory_entries) >= 8
+                or len(json.dumps(inventory_entries, ensure_ascii=False, separators=(",", ":"))) >= 512
             )
         )
         # Inventory facts travel in situation, outside requiredFacts. Reuse

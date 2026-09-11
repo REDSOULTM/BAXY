@@ -1,0 +1,39 @@
+{
+  "results": [
+    {
+      "profile": "original",
+      "case": "test_dispatch_crash_exits_while_redirected_stdin_remains_open",
+      "deadline_seconds": 3.0,
+      "elapsed_seconds": 3.0159999999959837,
+      "timed_out": true,
+      "code": 1,
+      "pass": false,
+      "hello_seen": false,
+      "stack_exit_code": 0
+    },
+    {
+      "profile": "original",
+      "case": "test_cold_voice_dsp_responds_while_redirected_stdin_remains_open",
+      "deadline_seconds": 10.0,
+      "elapsed_seconds": 6.093000000000757,
+      "timed_out": false,
+      "code": 0,
+      "pass": true,
+      "hello_seen": true,
+      "stack_exit_code": null
+    },
+    {
+      "profile": "deferred_warmup_only",
+      "case": "test_dispatch_crash_exits_while_redirected_stdin_remains_open",
+      "deadline_seconds": 3.0,
+      "elapsed_seconds": 3.0160000000032596,
+      "timed_out": true,
+      "code": 1,
+      "pass": false,
+      "hello_seen": true,
+      "stack_exit_code": 1
+    }
+  ],
+  "coverage_added": 0,
+  "goal_complete": false
+}

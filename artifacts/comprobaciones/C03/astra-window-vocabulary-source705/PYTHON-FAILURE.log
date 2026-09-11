@@ -1,0 +1,39 @@
+F
+================================== FAILURES ===================================
+_ test_exact_observed_name_reaches_publication_unchanged_in_one_call[Which window is active?-The window "{name}" is active.-Qwen] _
+
+name = 'Qwen', question = 'Which window is active?'
+template = 'The window "{name}" is active.'
+
+    @pytest.mark.parametrize("name", NAMES)
+    @pytest.mark.parametrize("question,template", ANSWERS)
+    def test_exact_observed_name_reaches_publication_unchanged_in_one_call(name, question, template):
+        answer = template.format(name=name)
+        client = Recorder([answer])
+>       assert client.compose_user_message(question, "status", facts(name)) == answer
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_window_vocabulary.py:28: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10157: in compose_user_message
+    retry = post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9219: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x00000294E00AF110>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na..."}], "count": 1}, "operation": "window.resolve"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+=========================== short test summary info ===========================
+FAILED tests/test_c03_observed_window_vocabulary.py::test_exact_observed_name_reaches_publication_unchanged_in_one_call[Which window is active?-The window "{name}" is active.-Qwen]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed in 1.60s

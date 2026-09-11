@@ -1,0 +1,41 @@
+{
+  "utc": "2026-09-10T07:02:22.123806+00:00",
+  "sessionId": 65777,
+  "status": "terminal_failed",
+  "exit_code": 1,
+  "candidate_sources_unchanged": true,
+  "candidate_sha256": "ce2d929ce161a1bfd9416f0b866a618b1b5bf652413bad0cb42862571e1e9cfe",
+  "dotnet": {
+    "passed": 4532,
+    "failed": 0,
+    "aggregate_skipped": 1,
+    "projects": {
+      "Contracts": 60,
+      "Integration": 3336,
+      "Kernel": 140,
+      "Providers": 519,
+      "Setup": 477
+    },
+    "note": "Explicit opt-in omissions also remain in log and are not counted as passes."
+  },
+  "python": {
+    "passed": 11135,
+    "failed": 2,
+    "skipped": 3,
+    "subtests_passed": 466,
+    "seconds": 1823.03,
+    "failures": [
+      "tests/test_product_packaging.py::ProductPackagingTests::test_detached_head_snapshot_is_exact_and_cleanup_removes_it",
+      "tests/test_sidecar_lifecycle.py::test_dispatch_crash_exits_while_redirected_stdin_remains_open"
+    ]
+  },
+  "diagnostic_observation": {
+    "tool": "py-spy0.4.2 installed only in TEMP/c03-pyspy712",
+    "command": "dump --pid14344, without locals",
+    "raw_stack": "TEMP/c03-catalog712-python-stack1.txt",
+    "observation": "One stack in test_source_quality_mode_is_canonicalized waiting for a PowerShell subprocess. That test is not in the final failure list; the observation does not explain the two failures."
+  },
+  "adopted": false,
+  "new_coverage": 0,
+  "goal_complete": false
+}

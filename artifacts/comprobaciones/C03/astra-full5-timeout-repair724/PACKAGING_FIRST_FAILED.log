@@ -1,0 +1,108 @@
+F                                                                        [100%]
+================================== FAILURES ===================================
+_ ProductPackagingTests.test_detached_head_snapshot_is_exact_and_cleanup_removes_it _
+
+self = <test_product_packaging.ProductPackagingTests testMethod=test_detached_head_snapshot_is_exact_and_cleanup_removes_it>
+
+        def test_detached_head_snapshot_is_exact_and_cleanup_removes_it(self) -> None:
+            # Snapshot semantics must not depend on how much historical evidence the
+            # BAXY repository has accumulated. Use an entire controlled Git HEAD and
+            # prove that neither dirty source files nor its index leak into the copy.
+            repository = self.sandbox / "source-repository"
+            repository.mkdir()
+    
+            def source_git(*arguments: str) -> str:
+                return subprocess.run(
+                    ["git", "-C", str(repository), *arguments],
+                    text=True,
+                    encoding="utf-8",
+                    errors="strict",
+                    capture_output=True,
+                    check=True,
+                    timeout=10,
+                ).stdout.strip()
+    
+            source_git("init", "--quiet")
+            expected_files = {
+                ".gitattributes": b"* text=auto eol=lf\n*.bin -text\n",
+                "message.txt": "contenido del commit\n".encode(),
+                "nested/archivo con espacios.txt": b"nested source\n",
+                "payload.bin": b"\x00\xff\r\n\x80",
+            }
+            for relative, content in expected_files.items():
+                destination = repository / relative
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                destination.write_bytes(content)
+            source_git("add", "--all")
+            source_git(
+                "-c", "user.name=BAXY fixture",
+                "-c", "user.email=fixture@example.invalid",
+                "-c", "commit.gpgsign=false",
+                "commit", "--quiet", "-m", "controlled source HEAD",
+            )
+            commit = source_git("rev-parse", "HEAD")
+            (repository / "message.txt").write_bytes(b"uncommitted working tree\n")
+            (repository / "payload.bin").write_bytes(b"staged replacement")
+            source_git("add", "payload.bin")
+            (repository / "untracked.txt").write_bytes(b"not part of HEAD")
+            status_before = source_git("status", "--porcelain=v1", "--untracked-files=all")
+            self.assertTrue(status_before)
+            snapshot = self.sandbox / "head-snapshot"
+            byte_checks = "\n".join(
+                f"    if ((Get-FileHash -LiteralPath (Join-Path $path '{relative}') -Algorithm SHA256).Hash -ine '{sha256_bytes(content)}') {{ throw 'snapshot bytes mismatch' }}"
+                for relative, content in expected_files.items()
+            )
+            command = f"""
+    $ErrorActionPreference = 'Stop'
+    . '{ROOT / 'scripts' / 'path_safety.ps1'}'
+    . '{ROOT / 'scripts' / 'product_build_common.ps1'}'
+    $created = $false
+    try {{
+        $path = New-BaxyHeadWorktreeSnapshot -RepositoryRoot '{repository}' -AllowedRoot '{BUILD_AREA}' -SnapshotRoot '{snapshot}' -Commit '{commit}'
+        $created = $true
+        $actual = ([string](& git -C $path rev-parse HEAD)).Trim()
+        if ($actual -cne '{commit}') {{ throw 'snapshot commit mismatch' }}
+        if (@(& git -C $path status --porcelain=v1 --untracked-files=all).Count -ne 0) {{ throw 'snapshot is dirty' }}
+        $files = @(Get-ChildItem -LiteralPath $path -Recurse -File -Force | Where-Object {{ $_.FullName -cne (Join-Path $path '.git') }})
+        if ($files.Count -ne {len(expected_files)}) {{ throw 'snapshot file inventory mismatch' }}
+    {byte_checks}
+    }} finally {{
+        if ($created -or (Test-Path -LiteralPath '{snapshot}')) {{
+            Remove-BaxyHeadWorktreeSnapshot -RepositoryRoot '{repository}' -AllowedRoot '{BUILD_AREA}' -SnapshotRoot '{snapshot}'
+        }}
+    }}
+    """
+            result = subprocess.run(
+                [
+                    "powershell.exe",
+                    "-NoLogo",
+                    "-NoProfile",
+                    "-NonInteractive",
+                    "-ExecutionPolicy",
+                    "Bypass",
+                    "-Command",
+                    command,
+                ],
+                cwd=self.sandbox,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                capture_output=True,
+                timeout=45,
+                check=False,
+            )
+>           self.assertEqual(result.returncode, 0, result.stderr)
+E           AssertionError: 1 != 0 : Preparing worktree (detached HEAD f0d560b)
+E           Get-FileHash : El término 'Get-FileHash' no se reconoce como nombre de un cmdlet, función, archivo de script o 
+E           programa ejecutable. Compruebe si escribió correctamente el nombre o, si incluyó una ruta de acceso, compruebe que 
+E           dicha ruta es correcta e inténtelo de nuevo.
+E           En línea: 14 Carácter: 10
+E           +     if ((Get-FileHash -LiteralPath (Join-Path $path '.gitattributes') ...
+E           +          ~~~~~~~~~~~~
+E               + CategoryInfo          : ObjectNotFound: (Get-FileHash:String) [], ParentContainsErrorRecordException
+E               + FullyQualifiedErrorId : CommandNotFoundException
+
+tests\test_product_packaging.py:355: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_product_packaging.py::ProductPackagingTests::test_detached_head_snapshot_is_exact_and_cleanup_removes_it
+1 failed in 41.70s

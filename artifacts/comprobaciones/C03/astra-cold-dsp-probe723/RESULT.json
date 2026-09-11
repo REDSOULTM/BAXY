@@ -1,0 +1,72 @@
+{
+  "results": [
+    {
+      "profile": "original",
+      "case": "test_dispatch_crash_exits_while_redirected_stdin_remains_open",
+      "deadline_seconds": 3.0,
+      "elapsed_seconds": 3.0,
+      "timed_out": true,
+      "code": 15,
+      "pass": false,
+      "hello_seen": false,
+      "stack_exit_code": 0
+    },
+    {
+      "profile": "original",
+      "case": "test_cold_voice_dsp_responds_while_redirected_stdin_remains_open",
+      "deadline_seconds": 10.0,
+      "elapsed_seconds": 4.014999999999418,
+      "timed_out": false,
+      "code": 0,
+      "pass": true,
+      "hello_seen": true,
+      "stack_exit_code": null
+    },
+    {
+      "profile": "openblas1",
+      "case": "test_dispatch_crash_exits_while_redirected_stdin_remains_open",
+      "deadline_seconds": 3.0,
+      "elapsed_seconds": 3.0,
+      "timed_out": true,
+      "code": 1,
+      "pass": false,
+      "hello_seen": true,
+      "stack_exit_code": 0
+    },
+    {
+      "profile": "openblas1",
+      "case": "test_cold_voice_dsp_responds_while_redirected_stdin_remains_open",
+      "deadline_seconds": 10.0,
+      "elapsed_seconds": 5.89100000000326,
+      "timed_out": false,
+      "code": 0,
+      "pass": true,
+      "hello_seen": true,
+      "stack_exit_code": null
+    },
+    {
+      "profile": "deferred_openblas1",
+      "case": "test_dispatch_crash_exits_while_redirected_stdin_remains_open",
+      "deadline_seconds": 3.0,
+      "elapsed_seconds": 3.0159999999959837,
+      "timed_out": true,
+      "code": 1,
+      "pass": false,
+      "hello_seen": true,
+      "stack_exit_code": 1
+    },
+    {
+      "profile": "deferred_openblas1",
+      "case": "test_cold_voice_dsp_responds_while_redirected_stdin_remains_open",
+      "deadline_seconds": 10.0,
+      "elapsed_seconds": 10.01600000000326,
+      "timed_out": true,
+      "code": 1,
+      "pass": false,
+      "hello_seen": true,
+      "stack_exit_code": 0
+    }
+  ],
+  "coverage_added": 0,
+  "goal_complete": false
+}

@@ -1,0 +1,29 @@
+{
+  "stage": "wait_returned",
+  "timeout": 3.0,
+  "observed_ticks": 134335008368864882,
+  "trigger_ticks": 134335008361805564,
+  "records": {
+    "launcher": {
+      "pid": 32336,
+      "creation_ticks": 134335008325607569,
+      "signaled": true,
+      "exit_code": 1,
+      "exit_ticks": 134335008368728910,
+      "exit_seconds_after_trigger": 0.6923346,
+      "cpu_seconds": 0.046875,
+      "priority_class": 32
+    },
+    "interpreter": {
+      "pid": 29208,
+      "creation_ticks": 134335008325764481,
+      "signaled": true,
+      "exit_code": 1,
+      "exit_ticks": 134335008368215738,
+      "exit_seconds_after_trigger": 0.6410174,
+      "cpu_seconds": 3.734375,
+      "priority_class": 32
+    }
+  },
+  "observation": "native kernel exit timestamps; retired diagnostic fixture, not acceptance"
+}

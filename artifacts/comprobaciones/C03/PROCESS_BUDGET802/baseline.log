@@ -1,0 +1,82 @@
+......FFFFFF.......                                                      [100%]
+================================== FAILURES ===================================
+_ test_process_instances_get_enough_bounded_output_without_changing_their_facts[8-512-Lista los procesos.] _
+
+text = 'Lista los procesos.', count = 8, expected = 512
+
+    @pytest.mark.parametrize("text", ["Lista los procesos.", "List the processes."])
+    @pytest.mark.parametrize("count,expected", [(0, 256), (1, 256), (3, 256), (8, 512), (10, 512), (50, 512)])
+    def test_process_instances_get_enough_bounded_output_without_changing_their_facts(text, count, expected):
+        request = first_request(observation(count), text)
+>       assert request["max_tokens"] == expected
+E       assert 256 == 512
+
+tests\test_c03_process_output_budget.py:53: AssertionError
+_ test_process_instances_get_enough_bounded_output_without_changing_their_facts[8-512-List the processes.] _
+
+text = 'List the processes.', count = 8, expected = 512
+
+    @pytest.mark.parametrize("text", ["Lista los procesos.", "List the processes."])
+    @pytest.mark.parametrize("count,expected", [(0, 256), (1, 256), (3, 256), (8, 512), (10, 512), (50, 512)])
+    def test_process_instances_get_enough_bounded_output_without_changing_their_facts(text, count, expected):
+        request = first_request(observation(count), text)
+>       assert request["max_tokens"] == expected
+E       assert 256 == 512
+
+tests\test_c03_process_output_budget.py:53: AssertionError
+_ test_process_instances_get_enough_bounded_output_without_changing_their_facts[10-512-Lista los procesos.] _
+
+text = 'Lista los procesos.', count = 10, expected = 512
+
+    @pytest.mark.parametrize("text", ["Lista los procesos.", "List the processes."])
+    @pytest.mark.parametrize("count,expected", [(0, 256), (1, 256), (3, 256), (8, 512), (10, 512), (50, 512)])
+    def test_process_instances_get_enough_bounded_output_without_changing_their_facts(text, count, expected):
+        request = first_request(observation(count), text)
+>       assert request["max_tokens"] == expected
+E       assert 256 == 512
+
+tests\test_c03_process_output_budget.py:53: AssertionError
+_ test_process_instances_get_enough_bounded_output_without_changing_their_facts[10-512-List the processes.] _
+
+text = 'List the processes.', count = 10, expected = 512
+
+    @pytest.mark.parametrize("text", ["Lista los procesos.", "List the processes."])
+    @pytest.mark.parametrize("count,expected", [(0, 256), (1, 256), (3, 256), (8, 512), (10, 512), (50, 512)])
+    def test_process_instances_get_enough_bounded_output_without_changing_their_facts(text, count, expected):
+        request = first_request(observation(count), text)
+>       assert request["max_tokens"] == expected
+E       assert 256 == 512
+
+tests\test_c03_process_output_budget.py:53: AssertionError
+_ test_process_instances_get_enough_bounded_output_without_changing_their_facts[50-512-Lista los procesos.] _
+
+text = 'Lista los procesos.', count = 50, expected = 512
+
+    @pytest.mark.parametrize("text", ["Lista los procesos.", "List the processes."])
+    @pytest.mark.parametrize("count,expected", [(0, 256), (1, 256), (3, 256), (8, 512), (10, 512), (50, 512)])
+    def test_process_instances_get_enough_bounded_output_without_changing_their_facts(text, count, expected):
+        request = first_request(observation(count), text)
+>       assert request["max_tokens"] == expected
+E       assert 256 == 512
+
+tests\test_c03_process_output_budget.py:53: AssertionError
+_ test_process_instances_get_enough_bounded_output_without_changing_their_facts[50-512-List the processes.] _
+
+text = 'List the processes.', count = 50, expected = 512
+
+    @pytest.mark.parametrize("text", ["Lista los procesos.", "List the processes."])
+    @pytest.mark.parametrize("count,expected", [(0, 256), (1, 256), (3, 256), (8, 512), (10, 512), (50, 512)])
+    def test_process_instances_get_enough_bounded_output_without_changing_their_facts(text, count, expected):
+        request = first_request(observation(count), text)
+>       assert request["max_tokens"] == expected
+E       assert 256 == 512
+
+tests\test_c03_process_output_budget.py:53: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_process_output_budget.py::test_process_instances_get_enough_bounded_output_without_changing_their_facts[8-512-Lista los procesos.]
+FAILED tests/test_c03_process_output_budget.py::test_process_instances_get_enough_bounded_output_without_changing_their_facts[8-512-List the processes.]
+FAILED tests/test_c03_process_output_budget.py::test_process_instances_get_enough_bounded_output_without_changing_their_facts[10-512-Lista los procesos.]
+FAILED tests/test_c03_process_output_budget.py::test_process_instances_get_enough_bounded_output_without_changing_their_facts[10-512-List the processes.]
+FAILED tests/test_c03_process_output_budget.py::test_process_instances_get_enough_bounded_output_without_changing_their_facts[50-512-Lista los procesos.]
+FAILED tests/test_c03_process_output_budget.py::test_process_instances_get_enough_bounded_output_without_changing_their_facts[50-512-List the processes.]
+6 failed, 13 passed in 0.54s

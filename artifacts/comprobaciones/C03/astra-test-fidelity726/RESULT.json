@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-10T07:57:56.877069+00:00",
+  "restored": [
+    {
+      "path": "tests/test_product_packaging.py",
+      "restored_sha256": "5ba170a05a877e31a9d023468856b3403fdda066ebd75b432a7cf7166730501f",
+      "rejected_sha256": "05f74ef75b05fb750f7b95159ba2f448d573bcbbd76b2289a6403550b95db85a",
+      "prototype": "REJECTED724_test_product_packaging.py"
+    },
+    {
+      "path": "tests/test_sidecar_lifecycle.py",
+      "restored_sha256": "4ac312b869624d261e047521bc918d9ff025194d8c9186dd9b5fae5a8959656d",
+      "rejected_sha256": "952ab1bc8ecbcffbb7c6314161d0fae54690b067f139ed117bcd8a33dd10d9f8",
+      "prototype": "REJECTED724_test_sidecar_lifecycle.py"
+    }
+  ],
+  "reason": "Goal requires full validation without narrowing or relaxing; controlled smaller repository and shifted3s origin cannot replace the original acceptance tests",
+  "status": "candidate724_withdrawn",
+  "candidate712_unchanged": true,
+  "new_coverage": 0,
+  "goal_complete": false
+}

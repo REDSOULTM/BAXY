@@ -1,0 +1,482 @@
+{
+  "utc": "2026-09-10T05:56:49.526942+00:00",
+  "wrapper_exit_code": 1,
+  "test_exit_code": null,
+  "dotnet_diagnostic_tests": {
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0
+  },
+  "startup_attempts": [
+    {
+      "seconds": 11.8552335,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0545310413078",
+      "result_sha256": "451c556e3ab01e46738fe06f503f6695b7cdbc0fbeaae67d5e14bdb62721f9bc"
+    },
+    {
+      "seconds": 6.3782521,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0545440511762",
+      "result_sha256": "423afa7fc3e9928f19e3e5ec3659b37f8a28c9f118ba579cdb0644a153fbba76"
+    },
+    {
+      "seconds": 7.3327319,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0545548948183",
+      "result_sha256": "5af9356c4925ae673fb53f573fa00048a58ea4190a8a273f34f87462b60750bd"
+    },
+    {
+      "seconds": 6.5315244,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0546061489197",
+      "result_sha256": "4d8b155d155a8cacd29dc972c3e7f4767f0319b84e68f54dc6376770fc29d9a1"
+    },
+    {
+      "seconds": 5.8496451,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0546177946155",
+      "result_sha256": "837f73ed91eee633e9a71d6d4fc0cf6662f8dca17f2a93b29934e8823293501e"
+    },
+    {
+      "seconds": 6.1812521,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0546268307017",
+      "result_sha256": "bcb2268a4d508c6c9f249754f4bbeb813bc026f8eb782c06ee7189b8121ed410"
+    },
+    {
+      "seconds": 6.5594154,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0546370093280",
+      "result_sha256": "0c1b7f47b8b601ce4f9b9b2d5dc84262ec5f5299b62d0935f88cf3ead50b5947"
+    },
+    {
+      "seconds": 8.6218603,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0546479408204",
+      "result_sha256": "9e7a57d586f4721f2daf15e57087fb20b8d12f54419b40c344aef430fd3e7425"
+    },
+    {
+      "seconds": 8.9139041,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0546577640219",
+      "result_sha256": "c3c05bcf83c6b3f7237e7bdea90ae430453aa7be0045b8b399e18ec0a04d28da"
+    },
+    {
+      "seconds": 10.2608014,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0547113416202",
+      "result_sha256": "f77d2fea70a0ed027cd475235555ecc5d3eb10c2dd10d69fb377559e203d2bcc"
+    },
+    {
+      "seconds": 6.0204916,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0547245296366",
+      "result_sha256": "6518525bf4036eb56982f11e1b8e516b851b368be275df123196fe8338f953fb"
+    },
+    {
+      "seconds": 6.808719,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0547321744310",
+      "result_sha256": "dc9036b9dba376ada79a1652eb3f2fbd3c806889248503b2a07a9d4c0d2a9e4c"
+    },
+    {
+      "seconds": 6.8306044,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0547410914059",
+      "result_sha256": "31199f86ae493b45a5647a4f4ecf9fdd136a83d6b16cefb7ea8b27d8a7ab572b"
+    },
+    {
+      "seconds": 6.3180049,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0547528997466",
+      "result_sha256": "0f7562075d143f7fd92e053437a191d64f0961181b6c1685c0da2a2a68eee139"
+    },
+    {
+      "seconds": 6.9623719,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0548014303694",
+      "result_sha256": "201605705d67a34970bbb2a1f6d7afb5634ebc098e62fc243753d9a39854c085"
+    },
+    {
+      "seconds": 8.2665076,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0548151200220",
+      "result_sha256": "48c2b325c0366c01839e1daf4441220864d1508497cd9eef6ec3e4af4ca70aa2"
+    },
+    {
+      "seconds": 6.7388962,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0548268937243",
+      "result_sha256": "c246c13eac45e29e594c1980a267c2fb1621ae9a798590a9e89e43bd6d54aee3"
+    },
+    {
+      "seconds": 6.1076721,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0548368385764",
+      "result_sha256": "c16ceab92c24bbd080a888de12d9e8dff8b383c321371de52810916cbc4e9c71"
+    },
+    {
+      "seconds": 6.8717105,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0548477748623",
+      "result_sha256": "89707f8812c17a6862240cf4260544e8f331c8b01f4278e8a82965219bf2d98d"
+    },
+    {
+      "seconds": 6.7536912,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0548565969980",
+      "result_sha256": "17e667e4d77f51fe357fde0ea3d4048c41a8db74a06e08ad1aec84d0583b42ce"
+    },
+    {
+      "seconds": 6.3903453,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0549059211219",
+      "result_sha256": "8d178a848d860cfc26d991a017b739c796e775b615fd3c2726f184d419c4bf64"
+    },
+    {
+      "seconds": 7.453625,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0549168865899",
+      "result_sha256": "7eaf1f0ca3b1fc2689f5c2bdae37b5656f4dad668f649344b48e3c0613f107e0"
+    },
+    {
+      "seconds": 7.7204532,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0549275869863",
+      "result_sha256": "bc6931a14d9a5aed02103721b20a5d77be74e17d06dee3d2427c47360e44934b"
+    },
+    {
+      "seconds": 6.4482561,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0549379881441",
+      "result_sha256": "f9cbdba41c8763cd99e0dac1a92ecd6c31c1c1f3c8901ef5d6e78ed1e0d81ba3"
+    },
+    {
+      "seconds": 6.4909158,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0549480230610",
+      "result_sha256": "e0964371177d1d43fad20afae3ebb82003c5100340ad632fd41ef6f79e099a0e"
+    },
+    {
+      "seconds": 8.5789384,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0549588937232",
+      "result_sha256": "3a2b2bc0761aa4b8c14976b91f7a72437791805b2837da9649f6ae9ea7a7eee4"
+    },
+    {
+      "seconds": 6.1764175,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0550118231027",
+      "result_sha256": "f8c467f3c903f079f4b960989da309898597362625655bd3c05e506eea4c6b64"
+    },
+    {
+      "seconds": 8.7862073,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0550200428351",
+      "result_sha256": "e4145304513788f9ce2688d4690f9a96af6a738749b252bed655dd5f9347ad7d"
+    },
+    {
+      "seconds": 6.5697222,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0550312479992",
+      "result_sha256": "4ddb4abd4a3788b5eb7cb918ea956c21680bb2d3a9a9cf47f629bcfb533d2508"
+    },
+    {
+      "seconds": 8.4293033,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0550406278492",
+      "result_sha256": "4d13d56436af8efccb29dc624bea6b53936f54b42e588c954eadd081a2bc2cd5"
+    },
+    {
+      "seconds": 8.0075217,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0550518542343",
+      "result_sha256": "7fdd1b37949e1f28b45d91b98f06ca054ef10d55eb0221eae11fa9ce03015bf2"
+    },
+    {
+      "seconds": 6.5709795,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0551024955444",
+      "result_sha256": "3d20394df208ed870a554d460e955a137ce466960fe54e17737dffc0887c035d"
+    },
+    {
+      "seconds": 6.5122997,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0551119328284",
+      "result_sha256": "6ffe0e0ee011facff3d289a072e10802cf62f924f67f9dd06c07bd783a6eddc7"
+    },
+    {
+      "seconds": 6.2615289,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0551241453974",
+      "result_sha256": "632b31326d180fc5be551a8022b815e30c05ee955ed6850fbb9f4c10c7e7179e"
+    },
+    {
+      "seconds": 6.931524,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0551331768996",
+      "result_sha256": "6f0630a47488a428a12832c6b65411378b3856f496d3c251ed37b56064213156"
+    },
+    {
+      "seconds": 5.9987556,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0551440011494",
+      "result_sha256": "8787e1202f0258d3263b4e237af925792e0aae81a40799042feabcae9cf0419b"
+    },
+    {
+      "seconds": 6.2218869,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0551544710793",
+      "result_sha256": "2c2fe55fe1e9871faba8102cbcd5dedb1b02db6353d256156db7e633751293fc"
+    },
+    {
+      "seconds": 7.7261686,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0552058267128",
+      "result_sha256": "2cd66b1817d6fb44900de0e4f1593cec0495a93f248ca1e1f9e4cacf69006330"
+    },
+    {
+      "seconds": 6.561591,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0552178114948",
+      "result_sha256": "338779e7689f5449d7a89f1c803dfcc06e3f4dbee515c30639580cbf59598536"
+    },
+    {
+      "seconds": 6.1617447,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0552283128001",
+      "result_sha256": "0cd2df63ebbf3f10b89c0c6db08b8c6c6183a816c6ad40942e6aee58c661bbb6"
+    },
+    {
+      "seconds": 8.7709437,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0552368159304",
+      "result_sha256": "018daa6e50935ca3098451af547af8229f0fa177ca57dcffc803bf24ac67b473"
+    },
+    {
+      "seconds": 6.5917695,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0552493254938",
+      "result_sha256": "3045b933f16189eb5c8939ae4569f63e4f9fc22b68ae722f64a684cc5641077b"
+    },
+    {
+      "seconds": 6.7189618,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0552585725039",
+      "result_sha256": "5325611ca2bdc9591572b09ef7f79abe92939051ff137f2ea2d57277ad288c03"
+    },
+    {
+      "seconds": 9.614543,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0553075423414",
+      "result_sha256": "19cdf7db29dabe5e97cc56ea40190c00fb52cc5adf20182e79ecffa23962e12f"
+    },
+    {
+      "seconds": 6.8171417,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0553225858990",
+      "result_sha256": "d4cb79ae42cb87daae7194ebdcf0a7022d00bee96bfffa3af4676b3135439683"
+    },
+    {
+      "seconds": 10.2416419,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0553327613053",
+      "result_sha256": "51bfbb0c8351a7866e72044759d7a6870d086b8206169eda221f88a462e83cef"
+    },
+    {
+      "seconds": 6.3185815,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0553444559114",
+      "result_sha256": "1d12d695cd2a9b182fee6300b5f605cf3369a4242fc7883f6112e37c3b5e941c"
+    },
+    {
+      "seconds": 6.2684278,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0553536284815",
+      "result_sha256": "34f9d35e26e75bd018a30262526530e711b5f54077ce2108fcbdf4e1ba2fe892"
+    },
+    {
+      "seconds": 8.463181,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0554042953218",
+      "result_sha256": "423fddec3c61bd6dac532ccd7079ff1accd597d21224dda328a1ffa5f5421b89"
+    },
+    {
+      "seconds": 8.4420972,
+      "IsReady": true,
+      "HasStartupError": false,
+      "captured": false,
+      "diagnosticErrors": [],
+      "id": "startup-20260910T0554148180669",
+      "result_sha256": "1a6effd6e92b59a5891b600739c81d31bbc416fef9d7d3a9da226b29c893264b"
+    }
+  ],
+  "ready": 50,
+  "failed_startups": 0,
+  "initialize_seconds": {
+    "minimum": 5.8496451,
+    "median": 6.7462937,
+    "maximum": 11.8552335
+  },
+  "candidate_sources_unchanged": true,
+  "fixture_restored": true,
+  "temporary_helper_removed": true,
+  "baseline709": {
+    "ready": 5,
+    "failed_startups": 1,
+    "stopped_on_first_failure": true
+  },
+  "scope": "Same real fixture and observation as709;50independent Core/data-root starts in one NUnit test, no model/user turn. Original10s deadline applies to Core handshake, not all InitializeAsync. No retries after failure. This run does not prove absence of rare failure or meet all C03 acceptance.",
+  "full_next": "Run integrated source-quality Full, which rebuilds the restored source and removes the diagnostic from test binaries. Do not run product706 on the previous Full4.",
+  "adopted": false,
+  "coverage_added": 0,
+  "goal_complete": false
+}

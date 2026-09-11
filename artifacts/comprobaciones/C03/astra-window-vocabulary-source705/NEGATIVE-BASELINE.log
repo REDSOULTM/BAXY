@@ -1,0 +1,33 @@
+F
+================================== FAILURES ===================================
+_ test_untrusted_or_different_name_does_not_exempt_a_forbidden_term[unverified] _
+
+change = 'unverified'
+
+    @pytest.mark.parametrize("change", ["unverified", "unsucceeded", "failure", "other_operation", "history", "different_name"])
+    def test_untrusted_or_different_name_does_not_exempt_a_forbidden_term(change):
+        value = facts("Router notes")
+        if change == "unverified":
+            value["situation"]["verified"] = False
+        elif change == "unsucceeded":
+            value["situation"]["succeeded"] = False
+        elif change == "failure":
+            value["situation"]["polarity"] = "failure"
+        elif change == "other_operation":
+            value["situation"]["operation"] = "system.status"
+        elif change == "history":
+            value["context"] = 'The window "Router notes" is active.'
+            value["situation"] = {"kind": "conversation", "polarity": "success"}
+        else:
+            value["situation"]["observed"]["windows"][0].update(title="Router plans", processName="Editor")
+        # Repeated failure is intentionally observable, rather than publishing a fallback.
+        client = Recorder(['The window "Router notes" is active.'] * 32)
+>       with pytest.raises(ValueError):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE ValueError
+
+tests\test_c03_observed_window_vocabulary.py:67: Failed
+=========================== short test summary info ===========================
+FAILED tests/test_c03_observed_window_vocabulary.py::test_untrusted_or_different_name_does_not_exempt_a_forbidden_term[unverified]
+!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 1 failures !!!!!!!!!!!!!!!!!!!!!!!!!!
+1 failed, 48 deselected in 0.52s

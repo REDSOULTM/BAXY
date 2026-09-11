@@ -1,0 +1,92 @@
+{
+  "utc": "2026-09-11T01:20:46.676967+00:00",
+  "candidate": 800,
+  "cases": 50,
+  "passed": 35,
+  "failed_or_not_credited": 15,
+  "baseline799_passed": 19,
+  "retained_previous_passes": 16,
+  "gained_cases": [
+    "H0133",
+    "H0470",
+    "H0678",
+    "process795-count-01",
+    "process795-count-02",
+    "process795-count-03",
+    "process795-count-05",
+    "process795-count-06",
+    "process795-count-09",
+    "process795-count-10",
+    "process795-cpu_rank-04",
+    "process795-cpu_rank-07",
+    "process795-cpu_rank-10",
+    "process795-list-02",
+    "process795-list-03",
+    "process795-list-07",
+    "process795-list-08",
+    "process795-memory_rank-03",
+    "process795-memory_rank-08"
+  ],
+  "lost_cases": [
+    "H0364",
+    "H0669",
+    "process795-unspecified_rank-01"
+  ],
+  "groups": {
+    "app_memory": {
+      "failed": 1
+    },
+    "count": {
+      "passed": 12
+    },
+    "cpu_rank": {
+      "failed": 3,
+      "passed": 8
+    },
+    "list": {
+      "passed": 5,
+      "failed": 6
+    },
+    "memory_rank": {
+      "failed": 2,
+      "passed": 9
+    },
+    "unspecified_rank": {
+      "failed": 3,
+      "passed": 1
+    }
+  },
+  "terminal_kinds": {
+    "published_final": 50
+  },
+  "core_reads": 50,
+  "length_cut_final_ordinals": [
+    3,
+    7,
+    10,
+    15,
+    32
+  ],
+  "rejected_attempt_occurrences": 2,
+  "resources": {
+    "utc": "2026-09-11T01:17:40.014739+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2429.9296875,
+    "seconds": 333.906,
+    "scope": "Owned conductor product process tree; no voice or visible desktop UI credit."
+  },
+  "guard_samples_rss_peak_mib": 2415.4296875,
+  "private_commit_peak_mib": 6528.39453125,
+  "minimum_free_ram_mib": 1860.203125,
+  "source_adopted": false,
+  "method": "Same frozen50 cases and criteria795; fresh process values change, so changes in ranks/numeric drafts are not all causally attributable to800. Five actual length-limited final drafts identified from audit. No UI/voice credit.",
+  "interpretation": "Keep conservative numeric rounding from797/799. A shown list must identify its bounded subset, even when it states the observed total. A single ranking maximum need not list all rows; distinct names need no unrequested extra PID.",
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "next": "Reuse existing dense-inventory output allowance for processes; preserve800 and its regressions, no further model comparison."
+}

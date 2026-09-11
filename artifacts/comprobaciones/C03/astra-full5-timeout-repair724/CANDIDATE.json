@@ -1,0 +1,25 @@
+{
+  "utc": "2026-09-10T07:44:21.027831+00:00",
+  "previous_candidate": "astra-catalog-source712/CANDIDATE.json",
+  "previous_candidate_sha256": "ce2d929ce161a1bfd9416f0b866a618b1b5bf652413bad0cb42862571e1e9cfe",
+  "sources": {
+    "src/Baxy.App/ObservedResponseLiterals.cs": "5ffc046cd5d94ebdf4a2116580d53308946fe52bb0f10ad92150c1422eae9d7c",
+    "src/Baxy.App/UserMessagePolicy.cs": "d71ebd057a68dbe7c968a5f9b90d3f19b5e98d79900fc6e9f9980aebe12e3721",
+    "src/baxy_mind/observed_response_literals.py": "3325607e157bfa227881187227d8ccc0531458563d40a8e4728cbe59e0d4d586",
+    "src/baxy_mind/llm.py": "40e2770bff56e9d6d7e5156caa780ecb0ea192447faa950c6bba67fbe9faead7",
+    "tests/Baxy.Integration.Tests/ObservedWindowVocabularyTests.cs": "f4dbbb425714ffd9a1247861fe47662f14306cfb935e5d3483cbbc01220c180a",
+    "tests/test_c03_observed_window_vocabulary.py": "cb0ecc42b47c0dc2d7734913c6817160ffb4c035cd0270fc23f958a65bb7e930",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "a7757308b6e780e6d206c5d457f095a4a952546c10d0fd36912a90936a2e8e48",
+    "experiments/stt_quality/evaluate_reserved_stt.py": "18acd736235e35b25de04ba784e8b2b555d505259168dfa8e453f7e4f43b2957",
+    "tests/test_price_v8_veto_damage_by_cause.py": "7b44d1fe4979627c0e388fc515f5bef3a8e57583e3dc82d141457fd1e3bbba39",
+    "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs": "c25571fbca3a506e57576556e3a284d9b38db3902bb1ad3a9f58bfc83c261315",
+    "tests/test_product_packaging.py": "05f74ef75b05fb750f7b95159ba2f448d573bcbbd76b2289a6403550b95db85a",
+    "tests/test_sidecar_lifecycle.py": "952ab1bc8ecbcffbb7c6314161d0fae54690b067f139ed117bcd8a33dd10d9f8"
+  },
+  "additional_changes": "Two test fixtures only; no further product, model, reader, DSP or Git configuration changes",
+  "packaging": "Entire HEAD of a controlled repository, byte/inventory/dirty-source/registration assertions; original PowerShell timeout45s",
+  "sidecar": "Hello readiness bounded10s, then explicit crash request and unchanged3s failure-exit deadline; second read must remain blocked",
+  "full_required": true,
+  "adopted": false,
+  "coverage_added": 0
+}

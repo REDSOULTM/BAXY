@@ -1,0 +1,38 @@
+...........................................................F............ [ 10%]
+........................................................................ [ 20%]
+........................................................................ [ 30%]
+........................................................................ [ 40%]
+........................................................................ [ 50%]
+........................................................................ [ 61%]
+........................................................................ [ 71%]
+........................................................................ [ 81%]
+........................................................................ [ 91%]
+..........................................................               [100%]
+================================== FAILURES ===================================
+____ test_observed_name_cannot_hide_a_longer_identifier[Atlas-Atlas.route] ____
+
+name = 'Atlas', compound = 'Atlas.route'
+
+    @pytest.mark.parametrize("name,compound", [
+        ("Atlas", "Atlas.route"),
+        ("Core", "Core.schema"),
+        ("Core", "internal.Core"),
+        ("Router notes", "Router notes-extra"),
+        ("Router notes", "extra-Router notes"),
+        ("Core", "Core_schema"),
+        ("Core", "internal_Core"),
+    ])
+    def test_observed_name_cannot_hide_a_longer_identifier(name, compound):
+        good = f'The window "{name}" is active.'
+        client = Recorder([f"{good} {compound}.", good])
+>       assert client.compose_user_message("Which window is active?", "status", facts(name)) == good
+E       assert 'The window "... Atlas.route.' == 'The window "...s" is active.'
+E         
+E         - The window "Atlas" is active.
+E         + The window "Atlas" is active. Atlas.route.
+E         ?                              +++++++++++++
+
+tests\test_c03_observed_window_vocabulary.py:121: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_observed_window_vocabulary.py::test_observed_name_cannot_hide_a_longer_identifier[Atlas-Atlas.route]
+1 failed, 705 passed in 10.90s

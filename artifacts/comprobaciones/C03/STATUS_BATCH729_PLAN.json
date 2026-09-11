@@ -1,0 +1,23 @@
+{
+  "utc": "2026-09-10T08:20:37.463522+00:00",
+  "parent_plan": "STATUS_BATCH689_PLAN.json",
+  "parent_plan_sha256": "de906be92c73afb24934e36c77b4a11f646a6931a131131b3db354abc5b24ffa",
+  "same73_inputs_and_order": true,
+  "panel_sha256": "5880182539982018f8472524a36ef0eb2fab80a67a4cf80bb3a5fe7cb568d669",
+  "requirements_sha256": "237c14900a9e36e2e5f6071f132ad916a234ecb39a77e0dd497ef2565eceb2b7",
+  "survey_counts_before": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "changes": "Unadopted candidate705+712: verified observed-name spans are opaque only to vocabulary/code/capitalization checks; original facts/prose unchanged. Catalog uses one Shell enumeration. Full5 remains red for two infrastructure timeouts. Same model, runtime, per-turn criteria and campaign resource ceilings. No conductor clearing of pending state; existing source703 owns confirmation continuity.",
+  "effect_scope": "Read-only status in hidden diagnostic product. No UI/voice credit, no user data sent externally.",
+  "criteria": "Original689 criteria unchanged. Verify requested fields against fresh typed observations, installed/usable distinction, units, unknown adapters and Wi-Fi identity gap. Count all failures; no automatic survey credit.",
+  "instrumentation": "Declared before first729 execution: transparent private _post and decide_turn boundary observers inherited from521. Identical arguments, one original call, identical returned object or exception; no server flags, payload/model/candidate/output changes. Diagnostic latency includes file logging. This adds observation to689 built-in audits without changing its73 inputs/order/criteria.",
+  "instrumentation_sha256": "ad01bca92b7895762c5421cfabbba9701af0bca6d4bacadb56bbcee7d2468c9a",
+  "acceptance_gate": {
+    "full_passed": false,
+    "adopted": false,
+    "sequence_record": "STATUS_BATCH729_SEQUENCE.json"
+  }
+}

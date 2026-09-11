@@ -1,0 +1,50 @@
+{
+  "results": [
+    {
+      "profile": "deferred_warmup_only",
+      "case": "test_dispatch_crash_exits_while_redirected_stdin_remains_open",
+      "deadline_seconds": 3.0,
+      "elapsed_seconds": 2.3280000000013388,
+      "timed_out": false,
+      "code": 1,
+      "pass": true,
+      "hello_seen": true,
+      "stack_exit_code": null
+    },
+    {
+      "profile": "deferred_warmup_only",
+      "case": "test_cold_voice_dsp_responds_while_redirected_stdin_remains_open",
+      "deadline_seconds": 10.0,
+      "elapsed_seconds": 10.01600000000326,
+      "timed_out": true,
+      "code": 1,
+      "pass": false,
+      "hello_seen": true,
+      "stack_exit_code": 0
+    },
+    {
+      "profile": "deferred_with_readfile",
+      "case": "test_dispatch_crash_exits_while_redirected_stdin_remains_open",
+      "deadline_seconds": 3.0,
+      "elapsed_seconds": 2.5780000000013388,
+      "timed_out": false,
+      "code": 1,
+      "pass": true,
+      "hello_seen": true,
+      "stack_exit_code": null
+    },
+    {
+      "profile": "deferred_with_readfile",
+      "case": "test_cold_voice_dsp_responds_while_redirected_stdin_remains_open",
+      "deadline_seconds": 10.0,
+      "elapsed_seconds": 10.01600000000326,
+      "timed_out": true,
+      "code": 1,
+      "pass": false,
+      "hello_seen": true,
+      "stack_exit_code": 0
+    }
+  ],
+  "coverage_added": 0,
+  "goal_complete": false
+}

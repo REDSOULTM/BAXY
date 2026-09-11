@@ -1,0 +1,70 @@
+{
+  "utc": "2026-09-10T04:08:25.943851+00:00",
+  "adopted": false,
+  "parent_commit": "83fef92c956a2c6de06a4d19a1b19519aceb4557",
+  "sources": {
+    "src/Baxy.App/ObservedResponseLiterals.cs": "c9945feb36ed3939b1016cafa5eb8e54d5f44403d86ce7ccc591796c8368f292",
+    "src/Baxy.App/UserMessagePolicy.cs": "d71ebd057a68dbe7c968a5f9b90d3f19b5e98d79900fc6e9f9980aebe12e3721",
+    "src/baxy_mind/observed_response_literals.py": "3ebc4ca8dbd1b5779d82bfa7e79633a7ba7bff0f952c76e58280d6d20106546b",
+    "src/baxy_mind/llm.py": "40e2770bff56e9d6d7e5156caa780ecb0ea192447faa950c6bba67fbe9faead7",
+    "tests/Baxy.Integration.Tests/ObservedWindowVocabularyTests.cs": "0b93b329f5cae437b6d38a4aa4e303303c1e1504f743bd6c66ecabc994a655b5",
+    "tests/test_c03_observed_window_vocabulary.py": "e87d6527b1b33635ba67b671c44a917c2e50f54c5d6adb6862661b71edc4fd7a",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "e9094990f52d7563ce3753cae6931403ec89efaf407de9e22be7ea30e6aa6921",
+    "experiments/stt_quality/evaluate_reserved_stt.py": "f003231a620efab4276800c30aee38e0a45bc28de7483f833000fa7dc046ef63",
+    "tests/test_price_v8_veto_damage_by_cause.py": "7b44d1fe4979627c0e388fc515f5bef3a8e57583e3dc82d141457fd1e3bbba39"
+  },
+  "python_tree_sha256": "f137c37bdfff68369b233748b5e2a963c999c0d4ee4f0eced4e20281c408368e",
+  "python_files": 407,
+  "design": "Treat complete names from verified, succeeded window operation observations as opaque only during vocabulary/code-shape checks. Mission steps retain their own envelopes. Do not derive exemptions from requested targets, root title/reason, merged data or dialogue. Original prose remains unchanged for factual checks, recovery and publication. The public length cap applies before masking. No model, prompt, sampler, retry-count, risk or catalog changes.",
+  "inheritance": [
+    "OperationVisibleFacts.FromOutcome verified/succeeded envelope and sanitized observed payload",
+    "window_prose_facts quoted/subject identity opacity",
+    "existing user-identifier vocabulary exceptions in C# and Python",
+    "source703 and fully reviewed product704 remain baseline",
+    "product694 H0104 first draft correct but rejected forbidden_term; source705 does not repair the separate postposed ventanal grammar"
+  ],
+  "baseline": {
+    "python_passed": 6,
+    "python_failed": 43,
+    "dotnet_passed": 11,
+    "dotnet_failed": 7,
+    "fixture_correction": "Initial Python run49fail: six negative fixtures expected ValueError, while the existing composer returns empty after three rejected drafts. Only that fixture expectation was corrected before the authoritative baseline43fail/6pass; source was unchanged. Original logs retained."
+  },
+  "initial_focal": {
+    "python_passed": 373,
+    "dotnet_passed": 113,
+    "skipped": 0,
+    "limit": "Before adding unquoted names, complete-token boundaries, unrelated self-description and public-length controls."
+  },
+  "validation_next": "Expanded owners, then Full because adoption touches C# and Python together. Replay actual historical draft privately and run a complete product panel only after code validation. Tests replaying drafts are technical veto controls, not fresh user acceptance or evidence of model generation.",
+  "survey_counts": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "goal_complete": false,
+  "new_coverage": 0,
+  "expanded_python_owners": {
+    "passed": 691,
+    "skipped": 0,
+    "seconds": 6.13,
+    "previous": {
+      "passed": 689,
+      "failed": 1,
+      "cause": "A verified lowercase filename was rejected as lowercase prose. The same lexical scratch copy now preserves that exact identity; lowercase surrounding prose still fails. Added a control, no test removed."
+    }
+  },
+  "full_status": "running_second_attempt",
+  "dotnet_owners": {
+    "passed": 167,
+    "skipped": 0,
+    "duration": "4m24s"
+  },
+  "full1": {
+    "exit_code": 1,
+    "cause": "five whitespace diagnostics in new test JSON initializer; no suites ran",
+    "product_sources_unchanged": true,
+    "test_tokens_unchanged": true
+  },
+  "full2_session": 16657
+}

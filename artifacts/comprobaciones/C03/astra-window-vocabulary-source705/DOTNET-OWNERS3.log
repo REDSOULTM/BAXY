@@ -1,0 +1,41 @@
+  Determinando los proyectos que se van a restaurar...
+  Todos los proyectos están actualizados para la restauración.
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Con error RequestedSaveOffersEnableAndResumesOnlyAfterExactConfirmation [10 s]
+  Mensaje de error:
+   System.InvalidOperationException : Sequence contains no elements
+  Seguimiento de la pila:
+     at System.Linq.ThrowHelper.ThrowNoElementsException()
+   at System.Linq.Enumerable.Single[TSource](IEnumerable`1 source)
+   at Baxy.Integration.Tests.MemoryAppFlowTests.RequestedSaveOffersEnableAndResumesOnlyAfterExactConfirmation() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 700
+   at Baxy.Integration.Tests.MemoryAppFlowTests.RequestedSaveOffersEnableAndResumesOnlyAfterExactConfirmation() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MemoryAppFlowTests.cs:line 731
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()
+   at NUnit.Framework.Internal.MessagePumpStrategy.NoMessagePumpStrategy.WaitForCompletion(AwaitAdapter awaiter)
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)
+   at NUnit.Framework.Internal.Execution.SimpleWorkItem.PerformWork()
+
+  Con error KnownNameCannotHideALongerIdentifier("Atlas","Atlas.route") [65 ms]
+  Mensaje de error:
+     Assert.That(UserMessagePolicy.ModelResponseRejectionReason(
+            $"The window \"{name}\" is active. {compound}.", draft, "Which window is active?"), Is.Not.Null)
+  Expected: not null
+  But was:  null
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.ObservedWindowVocabularyTests.KnownNameCannotHideALongerIdentifier(String name, String compound) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\ObservedWindowVocabularyTests.cs:line 130
+
+1)    at Baxy.Integration.Tests.ObservedWindowVocabularyTests.KnownNameCannotHideALongerIdentifier(String name, String compound) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\ObservedWindowVocabularyTests.cs:line 130
+
+
+
+Con error! - Con error:     2, Superado:   188, Omitido:     0, Total:   190, Duración: 7 m 16 s - Baxy.Integration.Tests.dll (net10.0)

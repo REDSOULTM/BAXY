@@ -1,0 +1,129 @@
+source_quality_toolchain: dotnet=10.0.100; python=3.12; ruff 0.15.22; eslint=v10.3.0; typescript=Version 6.0.3; runtime_locks=verified
+source_quality_stage_started: powershell-source
+source_quality_stage_passed: powershell-source
+source_quality_stage_started: python-ruff
+All checks passed!
+source_quality_stage_passed: python-ruff
+source_quality_stage_started: python-compileall
+source_quality_stage_passed: python-compileall
+source_quality_stage_started: field-ui-eslint
+source_quality_stage_passed: field-ui-eslint
+source_quality_stage_started: field-ui-tsc-app
+source_quality_stage_passed: field-ui-tsc-app
+source_quality_stage_started: field-ui-tsc-node
+source_quality_stage_passed: field-ui-tsc-node
+source_quality_stage_started: dotnet-format
+source_quality_stage_passed: dotnet-format
+source_quality_stage_started: dotnet-build-release
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Contracts.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Contracts.Tests\bin\Release\net10.0\Baxy.Contracts.Tests.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Kernel.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Kernel.Tests\bin\Release\net10.0\Baxy.Kernel.Tests.dll
+  Baxy.Setup -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Setup\bin\Release\net10.0-windows10.0.19041.0\win-x64\Baxy.Setup.dll
+  Baxy.Setup.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Setup.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Setup.Tests.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Providers.Windows.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Providers.Windows.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.Tests.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+
+Compilación correcta.
+    0 Advertencia(s)
+    0 Errores
+
+Tiempo transcurrido 00:00:28.04
+source_quality_stage_passed: dotnet-build-release
+source_quality_stage_started: dotnet-tests
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Contracts.Tests\bin\Release\net10.0\Baxy.Contracts.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+
+Correctas! - Con error:     0, Superado:    60, Omitido:     0, Total:    60, Duración: 300 ms - Baxy.Contracts.Tests.dll (net10.0)
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas CompareLegacyAndCurrentJsonHotPaths [1 ms]
+  Omitidas CompareLegacyAndCurrentCoreJsonlTransport [< 1 ms]
+  Con error LargeNotesListIsBoundedPaginatedAndLeavesProtocolResponsive [10 s]
+  Mensaje de error:
+   System.TimeoutException : The operation has timed out.
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.CoreNotesEndToEndTests.CoreSession.ReadRequiredLineAsync(Process process) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\CoreNotesEndToEndTests.cs:line 1135
+   at Baxy.Integration.Tests.CoreNotesEndToEndTests.CoreSession.StartAsync(String dataRoot) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\CoreNotesEndToEndTests.cs:line 1013
+   at Baxy.Integration.Tests.CoreNotesEndToEndTests.LargeNotesListIsBoundedPaginatedAndLeavesProtocolResponsive() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\CoreNotesEndToEndTests.cs:line 828
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()
+   at NUnit.Framework.Internal.MessagePumpStrategy.NoMessagePumpStrategy.WaitForCompletion(AwaitAdapter awaiter)
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.Commands.BeforeAndAfterTestCommand.<>c__DisplayClass1_0.<Execute>b__0()
+   at NUnit.Framework.Internal.Commands.DelegatingTestCommand.RunTestMethodInThreadAbortSafeZone(TestExecutionContext context, Action action)
+
+  Omitidas EveryExactRuntimeMessageIsAuditedByTheRealGuiInputPipeline [10 ms]
+  Omitidas SequentialVersusOverlappedRuntimeVerificationAndCoreHello [< 1 ms]
+  Con error CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead("Me llamo Lina.","¿Cómo me llamo?",True) [16 s]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(viewModel.IsReady, Is.True)
+  Expected: True
+  But was:  False
+
+  2)   Assert.That(viewModel.HasStartupError, Is.False)
+  Expected: False
+  But was:  True
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1072
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1077
+   at Baxy.Integration.Tests.MindShellEndToEndTests.CurrentNameConversationDoesNotBecomeAnUnrequestedPersistentRead(String declaration, String recall, Boolean usesConversation) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 132
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.ContextUtils.<>c__DisplayClass1_0`1.<DoIsolated>b__0(Object _)
+
+1)    at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass34_0.<WithContractMindAsync>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1074
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1072
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s)
+
+2)    at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass34_0.<WithContractMindAsync>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1075
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1072
+   at System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1.AsyncStateMachineBox`1.ExecutionContextCallback(Object s)
+
+
+  Omitidas OptInRealRuntimeTraversesShellMindAndCoreUsingReadOnlyOperations [< 1 ms]
+  Con error SimpleMindActionPreservesCoreConfirmationInsteadOfClaimingSuccess [13 s]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(viewModel.IsReady, Is.True)
+  Expected: True
+  But was:  False
+
+  2)   Assert.That(viewModel.HasStartupError, Is.False)
+  Expected: False
+  But was:  True
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1072
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1077
+   at Baxy.Integration.Tests.MindShellEndToEndTests.SimpleMindActionPreservesCoreConfirmationInsteadOfClaimingSuccess() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 696
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.ContextUtils.<>c__DisplayClass1_0`1.<DoIsolated>b__0(Object _)
+
+1)    at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass34_0.<WithContractMindAsync>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1074
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1072
+
+2)    at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass34_0.<WithContractMindAsync>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1075
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1072
+
+
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Steam","Steam") [< 1 ms]
+  Omitidas ModelAuthoredNotepadAliasOpensThroughRealPipeline [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Bloc de notas","Bloc de notas") [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Discord si está instalado","Discord") [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Steam pero no maximices ni lances juegos","Steam") [< 1 ms]

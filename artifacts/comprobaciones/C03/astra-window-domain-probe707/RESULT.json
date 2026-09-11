@@ -1,0 +1,442 @@
+{
+  "utc": "2026-09-10T04:54:44.781797+00:00",
+  "rows": [
+    {
+      "id": "P01",
+      "text": "Enumera las ventanas.",
+      "expected_domain": true,
+      "before": false,
+      "after": true
+    },
+    {
+      "id": "P02",
+      "text": "Muéstrame las ventanas.",
+      "expected_domain": true,
+      "before": false,
+      "after": true
+    },
+    {
+      "id": "P03",
+      "text": "Lista mis ventanas.",
+      "expected_domain": true,
+      "before": false,
+      "after": true
+    },
+    {
+      "id": "P04",
+      "text": "Dime cuántas ventanas hay abiertas.",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P05",
+      "text": "¿Cuáles son las ventanas abiertas?",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P06",
+      "text": "Las ventanas abiertas, muéstramelas.",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P07",
+      "text": "Quiero ver todas las ventanas del escritorio.",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P08",
+      "text": "Enséñame las ventanas que tengo abiertas.",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P09",
+      "text": "¿Qué ventanas están visibles ahora?",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P10",
+      "text": "Cuenta las ventanas de mi PC.",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P11",
+      "text": "Muestra las ventanas de Opera.",
+      "expected_domain": true,
+      "before": false,
+      "after": true
+    },
+    {
+      "id": "P12",
+      "text": "¿Hay varias ventanas del navegador?",
+      "expected_domain": true,
+      "before": false,
+      "after": true
+    },
+    {
+      "id": "P13",
+      "text": "Lista las ventanas y luego dime la hora.",
+      "expected_domain": true,
+      "before": false,
+      "after": true
+    },
+    {
+      "id": "P14",
+      "text": "¿Cuántas ventanas de la aplicación están abiertas?",
+      "expected_domain": true,
+      "before": true,
+      "after": true
+    },
+    {
+      "id": "P15",
+      "text": "Busca la ventana titulada \"Atlas 42\".",
+      "expected_domain": true,
+      "before": true,
+      "after": true
+    },
+    {
+      "id": "P16",
+      "text": "¿Qué ventana está activa?",
+      "expected_domain": true,
+      "before": true,
+      "after": true
+    },
+    {
+      "id": "P17",
+      "text": "Muéstrame la ventana actual.",
+      "expected_domain": true,
+      "before": true,
+      "after": true
+    },
+    {
+      "id": "P18",
+      "text": "Lista las ventanas minimizadas.",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P19",
+      "text": "Necesito los títulos de las ventanas abiertas.",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P20",
+      "text": "Dime qué ventanas tengo en este escritorio.",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P21",
+      "text": "List my windows.",
+      "expected_domain": true,
+      "before": false,
+      "after": true
+    },
+    {
+      "id": "P22",
+      "text": "Show all open windows.",
+      "expected_domain": true,
+      "before": false,
+      "after": true
+    },
+    {
+      "id": "P23",
+      "text": "Which windows are open?",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P24",
+      "text": "How many windows are visible right now?",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P25",
+      "text": "List the windows and then tell me the time.",
+      "expected_domain": true,
+      "before": false,
+      "after": true
+    },
+    {
+      "id": "P26",
+      "text": "Show the browser windows.",
+      "expected_domain": true,
+      "before": false,
+      "after": true
+    },
+    {
+      "id": "P27",
+      "text": "Find the window titled \"Cedar 73\".",
+      "expected_domain": true,
+      "before": true,
+      "after": true
+    },
+    {
+      "id": "P28",
+      "text": "Which window is active?",
+      "expected_domain": true,
+      "before": true,
+      "after": true
+    },
+    {
+      "id": "P29",
+      "text": "What are the titles of my open windows?",
+      "expected_domain": true,
+      "before": false,
+      "after": true
+    },
+    {
+      "id": "P30",
+      "text": "Show windows on this desktop.",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P31",
+      "text": "Baxy, lista mis windows.",
+      "expected_domain": true,
+      "before": false,
+      "after": true
+    },
+    {
+      "id": "P32",
+      "text": "Muéstrame las open windows.",
+      "expected_domain": true,
+      "before": false,
+      "after": true
+    },
+    {
+      "id": "P33",
+      "text": "Which ventanas tengo abiertas?",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P34",
+      "text": "Dime los titles de las ventanas abiertas.",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P35",
+      "text": "Las windows del navegador, list them.",
+      "expected_domain": true,
+      "before": false,
+      "after": true
+    },
+    {
+      "id": "P36",
+      "text": "Show las ventanas del escritorio.",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P37",
+      "text": "Cuenta mis ventanas, please.",
+      "expected_domain": true,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "P38",
+      "text": "List las ventanas y luego dime la hora.",
+      "expected_domain": true,
+      "before": false,
+      "after": true
+    },
+    {
+      "id": "P39",
+      "text": "Find la ventana titulada \"Maple 19\".",
+      "expected_domain": true,
+      "before": true,
+      "after": true
+    },
+    {
+      "id": "P40",
+      "text": "Qué window está active?",
+      "expected_domain": true,
+      "before": true,
+      "after": true
+    },
+    {
+      "id": "N01",
+      "text": "Explica cómo sellar las ventanas de la cocina.",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N02",
+      "text": "Quiero pintar las ventanas de mi casa.",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N03",
+      "text": "Enumera los tipos de ventanas de aluminio.",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N04",
+      "text": "¿Por qué las ventanas de doble vidrio aíslan mejor?",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N05",
+      "text": "Cuenta las ventanas dibujadas en este plano arquitectónico.",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N06",
+      "text": "¿Qué significa una ventana de oportunidad?",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N07",
+      "text": "Describe las ventanas de oportunidad para una empresa.",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N08",
+      "text": "Explícame Windows 11, el sistema operativo.",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N09",
+      "text": "¿Cómo está la red neuronal?",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N10",
+      "text": "Haz una captura del ladrón.",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N11",
+      "text": "How do I clean the windows in my kitchen?",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N12",
+      "text": "List the windows shown on this house floor plan.",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N13",
+      "text": "What is a window of opportunity?",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N14",
+      "text": "Explain the Windows operating system.",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N15",
+      "text": "Why does glass fog up on house windows?",
+      "expected_domain": false,
+      "before": false,
+      "after": true
+    },
+    {
+      "id": "N16",
+      "text": "Quiero clean las ventanas de mi cocina.",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N17",
+      "text": "Explain las ventanas de oportunidad en negocios.",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N18",
+      "text": "Lista los tipos de house windows para construir.",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N19",
+      "text": "Compare Windows 11 con Linux como sistemas operativos.",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    },
+    {
+      "id": "N20",
+      "text": "Show me window insulation techniques for my house.",
+      "expected_domain": false,
+      "before": false,
+      "after": false
+    }
+  ],
+  "counts": {
+    "cases": 60,
+    "positive": 40,
+    "negative": 20,
+    "baseline_correct": 28,
+    "candidate_correct": 42,
+    "gains": 15,
+    "losses": 1,
+    "remaining_false_vetoes": 17,
+    "remaining_false_domains": 1
+  },
+  "adopted": false,
+  "product_source_changed": false,
+  "model_inference": false,
+  "coverage_added": 0,
+  "decision": "Rejected as complete correction: a pure plural change leaves17valid reads withheld and creates a false local-window domain for house windows. Do not apply this in-memory candidate to product source.",
+  "next_experiment": "Before adding lexical variants, evaluate the existing stronger recovery chain (candidate-free effect shape, closed selector, full contract compatibility) on the complete60. The weaker identity verifier cannot authorize execution: historic negatives21/84 refused. Keep primary domain gate and read-only counterexample intact until new evidence."
+}

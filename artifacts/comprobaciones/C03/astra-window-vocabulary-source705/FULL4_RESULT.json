@@ -1,0 +1,28 @@
+{
+  "utc": "2026-09-10T05:21:34.442267+00:00",
+  "sessionId": 88138,
+  "status": "terminal_failed",
+  "exit_code": 1,
+  "candidate_sources_unchanged": true,
+  "dotnet": {
+    "passed": 4531,
+    "failed": 1,
+    "aggregate_skipped": 1,
+    "integration": {
+      "passed": 3335,
+      "failed": 1,
+      "aggregate_skipped": 1,
+      "duration": "23m26s"
+    },
+    "other_projects": {
+      "contracts": 60,
+      "kernel": 140,
+      "providers": 519,
+      "setup": 477
+    }
+  },
+  "python_full": "not run: gate stops after dotnet-tests failure",
+  "failure": "MindShellEndToEndTests.SlotOrUncertainReplyRetainsTheExactPendingConfirmation(\"la segunda\"): IsReady=false/HasStartupError=true after11s, before test body. Cause not yet captured.",
+  "adopted": false,
+  "new_coverage": 0
+}

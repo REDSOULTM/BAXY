@@ -1,0 +1,26 @@
+{
+  "utc": "2026-09-10T07:30:19.147531+00:00",
+  "deadline_passed": false,
+  "exit_code": 0,
+  "elapsed_seconds": 58.07800000000134,
+  "phases": [
+    "PHASE add.begin 0.1532385",
+    "PHASE add.end 39.0656593",
+    "PHASE chain.begin 39.0657887",
+    "PHASE chain.end 39.0796526",
+    "PHASE tree.begin 39.0797684",
+    "PHASE tree.end 39.6826771",
+    "PHASE rev.begin 39.682781",
+    "PHASE rev.end 40.7739533",
+    "PHASE status.begin 40.7758599",
+    "PHASE status.end 44.2743468",
+    "PHASE remove.begin 45.2880312",
+    "PHASE remove.end 51.0728695"
+  ],
+  "peak_rss_mib": 728.05078125,
+  "max_children": 7,
+  "snapshot_absent": true,
+  "sources_unchanged": true,
+  "coverage_added": 0,
+  "goal_complete": false
+}

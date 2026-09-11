@@ -1,0 +1,31 @@
+{
+  "results": [
+    {
+      "attempt": 1,
+      "pass": true,
+      "error": null,
+      "elapsed_including_post_deadline_observation": 5.764999999999418
+    },
+    {
+      "attempt": 2,
+      "pass": true,
+      "error": null,
+      "elapsed_including_post_deadline_observation": 4.9689999999973224
+    },
+    {
+      "attempt": 3,
+      "pass": true,
+      "error": null,
+      "elapsed_including_post_deadline_observation": 6.0310000000026776
+    },
+    {
+      "attempt": 4,
+      "pass": false,
+      "error": "Failed: sidecar did not exit after its dispatcher failed",
+      "elapsed_including_post_deadline_observation": 6.48399999999674
+    }
+  ],
+  "source_unchanged": true,
+  "coverage_added": 0,
+  "goal_complete": false
+}

@@ -1,0 +1,28 @@
+{
+  "profiles_in_order": [
+    [
+      "pair1-original",
+      null
+    ],
+    [
+      "pair1-workers2",
+      2
+    ],
+    [
+      "pair2-workers2",
+      2
+    ],
+    [
+      "pair2-original",
+      null
+    ]
+  ],
+  "same_commit_and_full_worktree": true,
+  "same_original_45_second_deadline": true,
+  "difference": "per-command checkout.workers=2 only; no global Git configuration",
+  "resource_observer": "same 0.2-second RSS observer in both profiles",
+  "source": "https://git-scm.com/docs/git-checkout#Documentation/git-checkout.txt-checkoutworkers",
+  "rationale": "Two installed drives are NVMe SSDs; official docs describe possible SSD gains, to be measured",
+  "source_adopted": false,
+  "coverage_added": 0
+}

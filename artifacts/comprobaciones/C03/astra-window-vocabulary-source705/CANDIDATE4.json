@@ -1,0 +1,86 @@
+{
+  "utc": "2026-09-10T04:46:55.316653+00:00",
+  "adopted": false,
+  "parent_commit": "83fef92c956a2c6de06a4d19a1b19519aceb4557",
+  "sources": {
+    "src/Baxy.App/ObservedResponseLiterals.cs": "5ffc046cd5d94ebdf4a2116580d53308946fe52bb0f10ad92150c1422eae9d7c",
+    "src/Baxy.App/UserMessagePolicy.cs": "d71ebd057a68dbe7c968a5f9b90d3f19b5e98d79900fc6e9f9980aebe12e3721",
+    "src/baxy_mind/observed_response_literals.py": "3325607e157bfa227881187227d8ccc0531458563d40a8e4728cbe59e0d4d586",
+    "src/baxy_mind/llm.py": "40e2770bff56e9d6d7e5156caa780ecb0ea192447faa950c6bba67fbe9faead7",
+    "tests/Baxy.Integration.Tests/ObservedWindowVocabularyTests.cs": "f4dbbb425714ffd9a1247861fe47662f14306cfb935e5d3483cbbc01220c180a",
+    "tests/test_c03_observed_window_vocabulary.py": "cb0ecc42b47c0dc2d7734913c6817160ffb4c035cd0270fc23f958a65bb7e930",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "a7757308b6e780e6d206c5d457f095a4a952546c10d0fd36912a90936a2e8e48",
+    "experiments/stt_quality/evaluate_reserved_stt.py": "18acd736235e35b25de04ba784e8b2b555d505259168dfa8e453f7e4f43b2957",
+    "tests/test_price_v8_veto_damage_by_cause.py": "7b44d1fe4979627c0e388fc515f5bef3a8e57583e3dc82d141457fd1e3bbba39"
+  },
+  "python_tree_sha256": "76d0b6aed0296ef168d4e8558db21f9e2ac8677e09a64f4b1e98506df2c37cd3",
+  "python_files": 407,
+  "design": "Treat complete names from verified, succeeded window operation observations as opaque only during vocabulary/code-shape checks. Mission steps retain their own envelopes. Do not derive exemptions from requested targets, root title/reason, merged data or dialogue. Original prose remains unchanged for factual checks, recovery and publication. The public length cap applies before masking. No model, prompt, sampler, retry-count, risk or catalog changes.",
+  "inheritance": [
+    "OperationVisibleFacts.FromOutcome verified/succeeded envelope and sanitized observed payload",
+    "window_prose_facts quoted/subject identity opacity",
+    "existing user-identifier vocabulary exceptions in C# and Python",
+    "source703 and fully reviewed product704 remain baseline",
+    "product694 H0104 first draft correct but rejected forbidden_term; source705 does not repair the separate postposed ventanal grammar"
+  ],
+  "baseline": {
+    "python_passed": 6,
+    "python_failed": 43,
+    "dotnet_passed": 11,
+    "dotnet_failed": 7,
+    "fixture_correction": "Initial Python run49fail: six negative fixtures expected ValueError, while the existing composer returns empty after three rejected drafts. Only that fixture expectation was corrected before the authoritative baseline43fail/6pass; source was unchanged. Original logs retained."
+  },
+  "initial_focal": {
+    "python_passed": 373,
+    "dotnet_passed": 113,
+    "skipped": 0,
+    "limit": "Before adding unquoted names, complete-token boundaries, unrelated self-description and public-length controls."
+  },
+  "validation_next": "Expanded owners, then Full because adoption touches C# and Python together. Replay actual historical draft privately and run a complete product panel only after code validation. Tests replaying drafts are technical veto controls, not fresh user acceptance or evidence of model generation.",
+  "survey_counts": {
+    "covered": 26,
+    "open": 716,
+    "not_applicable": 0
+  },
+  "goal_complete": false,
+  "new_coverage": 0,
+  "expanded_python_owners": {
+    "passed": 706,
+    "skipped": 0,
+    "seconds": 8.06
+  },
+  "full_status": "pending_fourth_attempt",
+  "dotnet_owners": {
+    "log": "DOTNET-OWNERS3.log",
+    "passed": 188,
+    "failed": 2,
+    "skipped": 0,
+    "failures": [
+      "Uppercase identifier fixture expected a broader policy than705 changes; corrected with explicit raw-span preservation plus lowercase-code check.",
+      "RequestedSaveOffersEnableAndResumesOnlyAfterExactConfirmation: no outbox entry; isolated reproduction retained in final log."
+    ],
+    "boundary_final_log": "DOTNET-BOUNDARY-FINAL.log",
+    "prior_full_startup_failures": "The three Full2 failures passed in this owner run; no cause is inferred from non-reproduction."
+  },
+  "full1": {
+    "exit_code": 1,
+    "cause": "five whitespace diagnostics in new test JSON initializer; no suites ran",
+    "product_sources_unchanged": true,
+    "test_tokens_unchanged": true
+  },
+  "full2_session": null,
+  "boundary_fix": "Whole-name matching preserves compound identifiers through dots/hyphens and permits sentence punctuation. Original prose and factual checks remain untouched.",
+  "boundary_baseline": {
+    "python_failed": 5,
+    "python_passed": 69,
+    "dotnet_failed": 4,
+    "dotnet_passed": 32
+  },
+  "fixture_control": "Atlas.route was also accepted with the mask entirely disabled by the pre-existing case-sensitive code policy. The fixture now proves uppercase compound preservation directly and tests the existing lowercase-code rejection separately; no product policy broadened.",
+  "full2": {
+    "exit_code": 1,
+    "intentionally_interrupted": true,
+    "completed_validation": false,
+    "reason": "Known candidate defect and three observed startup failures; receipts preserved."
+  }
+}

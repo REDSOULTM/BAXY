@@ -1,0 +1,37 @@
+{
+  "results": [
+    {
+      "attempt": 1,
+      "pass": true,
+      "error": null,
+      "elapsed_including_post_deadline_observation": 4.14100000000326
+    },
+    {
+      "attempt": 2,
+      "pass": true,
+      "error": null,
+      "elapsed_including_post_deadline_observation": 4.343000000000757
+    },
+    {
+      "attempt": 3,
+      "pass": true,
+      "error": null,
+      "elapsed_including_post_deadline_observation": 4.265999999995984
+    },
+    {
+      "attempt": 4,
+      "pass": true,
+      "error": null,
+      "elapsed_including_post_deadline_observation": 4.312000000005355
+    },
+    {
+      "attempt": 5,
+      "pass": true,
+      "error": null,
+      "elapsed_including_post_deadline_observation": 4.2039999999979045
+    }
+  ],
+  "source_unchanged": true,
+  "coverage_added": 0,
+  "goal_complete": false
+}

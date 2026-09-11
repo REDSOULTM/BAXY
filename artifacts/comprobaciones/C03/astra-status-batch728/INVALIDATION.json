@@ -1,0 +1,33 @@
+{
+  "utc": "2026-09-10T08:20:32.496063+00:00",
+  "status": "invalid_diagnostic_observer_failure",
+  "exit": {
+    "exitCode": 0,
+    "manifest_unchanged": true
+  },
+  "terminal_count": 73,
+  "terminal_kinds": {
+    "composition_failed": 72,
+    "filtered": 1
+  },
+  "audit_errors": {
+    "FileNotFoundError": 64
+  },
+  "cause": "Observer hook copied from706 retains private706 output path. That directory does not exist, so log append raises FileNotFoundError before calling the original LLM method.",
+  "source_model_attribution": false,
+  "quality_comparison_valid": false,
+  "adopted": false,
+  "coverage_added": 0,
+  "full_gate_passed": false,
+  "hook_sha256": "b3e13ecbb96d6e60950ae546202c7b46529bcc02aae61def3a606fe3bd9cf10b",
+  "missing_observer_directory": true,
+  "original_logs_preserved": true,
+  "resources": {
+    "violations": [],
+    "gpu_peak_mib": 3491.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2325.14453125,
+    "seconds": 618.547
+  },
+  "next": "Correct output destination only, preflight actual hook with stub calls and real destination write before repeating all73."
+}

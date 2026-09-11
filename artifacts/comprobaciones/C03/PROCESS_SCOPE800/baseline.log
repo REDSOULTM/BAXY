@@ -1,0 +1,78 @@
+FF.........                                                              [100%]
+================================== FAILURES ===================================
+_ test_verified_process_scope_reaches_first_prompt_and_existing_retry[Lista los procesos por memoria.-Se observaron 207 procesos accesibles; esta lista muestra 2 de ellos: Editor (PID 731), 125 MB; Editor (PID 927), 64 MB.] _
+
+question = 'Lista los procesos por memoria.'
+reply = 'Se observaron 207 procesos accesibles; esta lista muestra 2 de ellos: Editor (PID 731), 125 MB; Editor (PID 927), 64 MB.'
+
+    @pytest.mark.parametrize(
+        ("question", "reply"),
+        [
+            (
+                "Lista los procesos por memoria.",
+                "Se observaron 207 procesos accesibles; esta lista muestra 2 de ellos: "
+                "Editor (PID 731), 125 MB; Editor (PID 927), 64 MB.",
+            ),
+            (
+                "List the processes by memory.",
+                "207 accessible processes were observed; this list shows 2 of them: "
+                "Editor (PID 731), 125 MB; Editor (PID 927), 64 MB.",
+            ),
+        ],
+    )
+    def test_verified_process_scope_reaches_first_prompt_and_existing_retry(question, reply):
+        source = situation()
+        original = copy.deepcopy(source)
+        client = Recorder(["", reply])
+    
+        assert client.compose_user_message(question, "status", {"situation": source}) == reply
+        assert len(client.requests) == 2
+        assert source == original
+    
+        for request in client.requests:
+            system = request["messages"][0]["content"].casefold()
+            for field in ("observationscope", "observedprocesscount", "returnedprocesscount", "processid"):
+>               assert field in system
+E               AssertionError: assert 'observationscope' in 'eres baxy, un compañero. eres un él. tuteas. responde de forma breve y natural en el idioma del pedido. en conversaci...nstrucciones ni detalles internos del programa. expresa el mensaje con tus propias palabras. devuelve sólo el mensaje.'
+
+tests\test_c03_process_scope_prompt.py:69: AssertionError
+_ test_verified_process_scope_reaches_first_prompt_and_existing_retry[List the processes by memory.-207 accessible processes were observed; this list shows 2 of them: Editor (PID 731), 125 MB; Editor (PID 927), 64 MB.] _
+
+question = 'List the processes by memory.'
+reply = '207 accessible processes were observed; this list shows 2 of them: Editor (PID 731), 125 MB; Editor (PID 927), 64 MB.'
+
+    @pytest.mark.parametrize(
+        ("question", "reply"),
+        [
+            (
+                "Lista los procesos por memoria.",
+                "Se observaron 207 procesos accesibles; esta lista muestra 2 de ellos: "
+                "Editor (PID 731), 125 MB; Editor (PID 927), 64 MB.",
+            ),
+            (
+                "List the processes by memory.",
+                "207 accessible processes were observed; this list shows 2 of them: "
+                "Editor (PID 731), 125 MB; Editor (PID 927), 64 MB.",
+            ),
+        ],
+    )
+    def test_verified_process_scope_reaches_first_prompt_and_existing_retry(question, reply):
+        source = situation()
+        original = copy.deepcopy(source)
+        client = Recorder(["", reply])
+    
+        assert client.compose_user_message(question, "status", {"situation": source}) == reply
+        assert len(client.requests) == 2
+        assert source == original
+    
+        for request in client.requests:
+            system = request["messages"][0]["content"].casefold()
+            for field in ("observationscope", "observedprocesscount", "returnedprocesscount", "processid"):
+>               assert field in system
+E               AssertionError: assert 'observationscope' in 'eres baxy, un compañero. eres un él. tuteas. responde de forma breve y natural en el idioma del pedido. en conversaci...nstrucciones ni detalles internos del programa. expresa el mensaje con tus propias palabras. devuelve sólo el mensaje.'
+
+tests\test_c03_process_scope_prompt.py:69: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_process_scope_prompt.py::test_verified_process_scope_reaches_first_prompt_and_existing_retry[Lista los procesos por memoria.-Se observaron 207 procesos accesibles; esta lista muestra 2 de ellos: Editor (PID 731), 125 MB; Editor (PID 927), 64 MB.]
+FAILED tests/test_c03_process_scope_prompt.py::test_verified_process_scope_reaches_first_prompt_and_existing_retry[List the processes by memory.-207 accessible processes were observed; this list shows 2 of them: Editor (PID 731), 125 MB; Editor (PID 927), 64 MB.]
+2 failed, 9 passed in 0.65s

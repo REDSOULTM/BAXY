@@ -1,0 +1,26 @@
+{
+  "utc": "2026-09-10T05:44:29.281964+00:00",
+  "command": [
+    "dotnet",
+    "test",
+    "tests/Baxy.Integration.Tests",
+    "-c",
+    "Release",
+    "--nologo",
+    "-v:minimal",
+    "--filter",
+    "FullyQualifiedName~TemporaryStartupProbe713",
+    "--logger",
+    "console;verbosity=normal"
+  ],
+  "maximum_startups": 50,
+  "stop": "First real fixture failure; do not retry to obtain a pass.",
+  "method": "Actual WithContractMindAsync including parallel Mind discovery and its stdlib Python fixture. No turns or LLM. Subscribe around InitializeAsync to the exact Core handshake TimeoutException; capture owned Core stack before App disposal, only after the original 10-second deadline expired. Observe process descendants every 250 ms; private raw logs. This is diagnosis, not acceptance.",
+  "fixture_before_sha256": "628ab599ecae26227707d479220bbab41a06f17e9a3980c828c8dd6c45119ae3",
+  "candidate": "../astra-catalog-source712/CANDIDATE.json",
+  "stack_tool_sha256": "ba59674a202d19e753d39fde8cd8f200dcbaa0842a948a78c8ac91d90a2e146a",
+  "stack_tool_version": "10.0.731102",
+  "stack_docs": "https://learn.microsoft.com/en-us/dotnet/core/diagnostics/dotnet-stack",
+  "coverage_added": 0,
+  "goal_complete": false
+}

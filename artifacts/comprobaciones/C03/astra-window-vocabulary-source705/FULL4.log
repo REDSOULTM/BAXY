@@ -1,0 +1,108 @@
+source_quality_toolchain: dotnet=10.0.100; python=3.12; ruff 0.15.22; eslint=v10.3.0; typescript=Version 6.0.3; runtime_locks=verified
+source_quality_stage_started: powershell-source
+source_quality_stage_passed: powershell-source
+source_quality_stage_started: python-ruff
+All checks passed!
+source_quality_stage_passed: python-ruff
+source_quality_stage_started: python-compileall
+source_quality_stage_passed: python-compileall
+source_quality_stage_started: field-ui-eslint
+source_quality_stage_passed: field-ui-eslint
+source_quality_stage_started: field-ui-tsc-app
+source_quality_stage_passed: field-ui-tsc-app
+source_quality_stage_started: field-ui-tsc-node
+source_quality_stage_passed: field-ui-tsc-node
+source_quality_stage_started: dotnet-format
+source_quality_stage_passed: dotnet-format
+source_quality_stage_started: dotnet-build-release
+  Baxy.Setup -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Setup\bin\Release\net10.0-windows10.0.19041.0\win-x64\Baxy.Setup.dll
+  Baxy.Setup.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Setup.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Setup.Tests.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Contracts.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Contracts.Tests\bin\Release\net10.0\Baxy.Contracts.Tests.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Kernel.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Kernel.Tests\bin\Release\net10.0\Baxy.Kernel.Tests.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Providers.Windows.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Providers.Windows.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.Tests.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+
+Compilación correcta.
+    0 Advertencia(s)
+    0 Errores
+
+Tiempo transcurrido 00:01:03.98
+source_quality_stage_passed: dotnet-build-release
+source_quality_stage_started: dotnet-tests
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Contracts.Tests\bin\Release\net10.0\Baxy.Contracts.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+
+Correctas! - Con error:     0, Superado:    60, Omitido:     0, Total:    60, Duración: 479 ms - Baxy.Contracts.Tests.dll (net10.0)
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas CompareLegacyAndCurrentJsonHotPaths [1 ms]
+  Omitidas CompareLegacyAndCurrentCoreJsonlTransport [< 1 ms]
+  Omitidas EveryExactRuntimeMessageIsAuditedByTheRealGuiInputPipeline [45 ms]
+  Omitidas SequentialVersusOverlappedRuntimeVerificationAndCoreHello [< 1 ms]
+  Omitidas OptInRealRuntimeTraversesShellMindAndCoreUsingReadOnlyOperations [< 1 ms]
+  Con error SlotOrUncertainReplyRetainsTheExactPendingConfirmation("la segunda") [11 s]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(viewModel.IsReady, Is.True)
+  Expected: True
+  But was:  False
+
+  2)   Assert.That(viewModel.HasStartupError, Is.False)
+  Expected: False
+  But was:  True
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1072
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1077
+   at Baxy.Integration.Tests.MindShellEndToEndTests.SlotOrUncertainReplyRetainsTheExactPendingConfirmation(String fragment) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 766
+   at NUnit.Framework.Internal.TaskAwaitAdapter.GenericAdapter`1.BlockUntilCompleted()
+   at NUnit.Framework.Internal.AsyncToSyncAdapter.Await[TResult](Func`1 invoke)
+   at NUnit.Framework.Internal.Commands.TestMethodCommand.Execute(TestExecutionContext context)
+   at NUnit.Framework.Internal.ContextUtils.<>c__DisplayClass1_0`1.<DoIsolated>b__0(Object _)
+
+1)    at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass34_0.<WithContractMindAsync>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1074
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1072
+
+2)    at Baxy.Integration.Tests.MindShellEndToEndTests.<>c__DisplayClass34_0.<WithContractMindAsync>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1075
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.MindShellEndToEndTests.WithContractMindAsync(Func`4 body) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\MindShellEndToEndTests.cs:line 1072
+
+
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Steam","Steam") [< 1 ms]
+  Omitidas ModelAuthoredNotepadAliasOpensThroughRealPipeline [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Bloc de notas","Bloc de notas") [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Discord si está instalado","Discord") [< 1 ms]
+  Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds("abre Steam pero no maximices ni lances juegos","Steam") [< 1 ms]
+shell_visible_indication_ms p50=0.074 p95=0.997 max=0.997
+shell_published_text_ms_without_llm_composition p50=0.117 p95=1.741 max=1.741
+
+
+Con error! - Con error:     1, Superado:  3335, Omitido:     1, Total:  3337, Duración: 23 m 26 s - Baxy.Integration.Tests.dll (net10.0)
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Kernel.Tests\bin\Release\net10.0\Baxy.Kernel.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas CompareMemoryStreamAndArrayBufferWriterImplementations [< 1 ms]
+
+Correctas! - Con error:     0, Superado:   140, Omitido:     0, Total:   140, Duración: 3 s - Baxy.Kernel.Tests.dll (net10.0)
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Providers.Windows.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas NativeAotCoreAudioJsonlRoundTripReplaysWithoutAnotherEffectAndRestoresBaseline [2 ms]
+  Omitidas WifiStatusReadsActualWindowsStateTwice [< 1 ms]
+  Omitidas DxgiAndPdhProduceOneCoherentLocalSnapshot [< 1 ms]
+  Omitidas ActualIpListReturnsStableParseableAddressesWithoutInterfaceNames [< 1 ms]
+Observed CPU topology: physical=8; logical=16
+
+
+Correctas! - Con error:     0, Superado:   519, Omitido:     0, Total:   519, Duración: 1 m 19 s - Baxy.Providers.Windows.Tests.dll (net10.0)
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Setup.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Setup.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Omitidas InstallationMoveWorksWhileAnExecutableRunsFromTheRoot [< 1 ms]
+
+Correctas! - Con error:     0, Superado:   477, Omitido:     0, Total:   477, Duración: 2 m 8 s - Baxy.Setup.Tests.dll (net10.0)

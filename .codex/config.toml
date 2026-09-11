@@ -22,12 +22,8 @@
 # y `profile`/`profiles`: por eso los dos modos de trabajo (EFFICIENT y DEEP/1M)
 # se instalan como perfiles de usuario. Ver .codex/README.md.
 
-# El razonamiento es lo que se está comprando. El desperdicio que hay que quitar
-# es el contexto basura, no la inteligencia: los goals de este repositorio se
-# escribieron para `effort: high` y ése es el suelo, no el techo.
-# `xhigh` se sube a mano en la sesión concreta que lo merezca.
-# `ultra` NO: reparte el trabajo en subagentes automáticamente.
-model_reasoning_effort = "high"
+# El esfuerzo de razonamiento se elige en el selector de cada tarea.
+# No fijarlo aquí: debe permitir cambiar entre High, Ultra y los demás niveles.
 
 # Respuestas al usuario cortas; el pensamiento no se toca.
 model_verbosity = "low"

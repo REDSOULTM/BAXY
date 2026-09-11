@@ -1,0 +1,45 @@
+{
+  "utc": "2026-09-10T09:00:04.474774+00:00",
+  "status": "candidate_csharp_owners_passed",
+  "provider_first": "compile failed CS8604, no tests run; private normalizer now accepts nullable input and retains its validation",
+  "provider_final": {
+    "passed": 41,
+    "failed": 0,
+    "skipped": 0,
+    "duration_ms": 932,
+    "exit_code": 0
+  },
+  "scope": "Includes controlled native Windows global enumeration, title literal*, *.exe not global, page counts/offset/complete, identity/cancellation/absence/failure. Does not certify user prose.",
+  "python_unchanged_this_stage": true,
+  "full_gate_passed": false,
+  "adopted": false,
+  "coverage_added": 0,
+  "kernel": {
+    "passed": 37,
+    "failed": 0,
+    "skipped": 0,
+    "duration_ms": 174,
+    "exit_code": 0,
+    "session_id": 1999
+  },
+  "core": {
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "duration_ms": 285,
+    "exit_code": 0,
+    "session_id": 1999
+  },
+  "next": "Verify model integration compatibility in response to owner concern before further model batches; Python inventory integration remains pending.",
+  "source_sha256": {
+    "src/Baxy.Providers.Windows/Windows/WindowControlContracts.cs": "e5cbfd254108b80bc3fb18147fd132bc4db7c2cadd2016a6fe6559a705b3a827",
+    "src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs": "ba7456425f07d8fc9e39e84c275810510d8ee96e497fc2e28d3ee9162d71c95f",
+    "src/Baxy.Core/Operations/WindowControlHandlers.cs": "faae9e5f356284e4de92d5a0ff4579ab71653ac7785d23de0419bd9972b6d3c4",
+    "src/Baxy.Kernel/Operations/ProductCatalog.cs": "837ac551fac21f3da5b98cf9c2254008a342cf87d2a22422e1c1814c91f324cd",
+    "tests/Baxy.Providers.Windows.Tests/WindowInventoryProviderTests.cs": "5d1795af0fc6eece27ef5ac0841d0a135352341cad4467def1f824e39924ddae",
+    "tests/Baxy.Providers.Windows.Tests/WindowsWindowControlProviderTests.cs": "2da1415c1c5ac1aa6d501ab1d389dc3a17319599b980787de0bc8b1aaa5cbac5",
+    "tests/Baxy.Providers.Windows.Tests/WindowTitleResolutionTests.cs": "1fdbe34b49c78dd4efed166402dd82ce4f2de2ee2541c2ccb03da5458c9c0fc3",
+    "tests/Baxy.Integration.Tests/MvpLocalTransientHandlerMatrixTests.cs": "35a5b88241adfa6db85d17c43fe436e6935f9ac4013c817c1eaf625c0d055b4a",
+    "tests/Baxy.Kernel.Tests/ProductCatalogTests.cs": "0e773ffd758d89dd4d9ee463b6e8a3f72220e7c2f3c9d5e19d8dc372f53398e5"
+  }
+}

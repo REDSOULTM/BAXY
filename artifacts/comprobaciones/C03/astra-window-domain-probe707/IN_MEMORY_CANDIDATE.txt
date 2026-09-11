@@ -1,0 +1,37 @@
+def _window_domain(text: str) -> bool:
+    if not _has(text, r"\b(?:ventanas?|windows?)\b"):
+        return False
+    if has_named_window_target(text):
+        return True
+    if _has(
+        text,
+        (
+            r"\b(?:navegador|browser|aplicacion|application|programa|program|"
+            r"spotify|opera|chrome|edge|firefox|notepad|bloc de notas|"
+            r"calculadora|calculator)\b"
+        ),
+    ):
+        return True
+    if _has(
+        text,
+        (
+            r"\b(?:ventanas?|windows?)\s+(?:activa|active|actual|current)\b"
+            r"(?!\s+(?:de|del|of|para|for)\b)|"
+            r"\b(?:ventanas?|windows?)\s+(?:esta|is)\s+(?:activa|active)\b"
+            r"|\b(?:ventanas?|windows?)\s+(?:en\s+)?primer\s+plano\b"
+            r"|\bforeground\s+windows?\b"
+        ),
+    ):
+        return True
+    if _has(
+        text,
+        r"\b(?:esta|this)\s+(?:ventanas?|windows?)\b(?!\s+of\s+opportunity)",
+    ):
+        return True
+    return _has(
+        text,
+        (
+            r"\b(?:ventanas?|windows?)\b"
+            r"(?=\s*(?:[\s?!.]*$|,?\s+(?:y luego|y despues|and then|then)\b))"
+        ),
+    )

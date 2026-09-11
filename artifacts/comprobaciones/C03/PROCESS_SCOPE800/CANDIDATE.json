@@ -1,0 +1,26 @@
+{
+  "utc": "2026-09-11T01:09:32.064622+00:00",
+  "source": 800,
+  "base_commit": "d1a040d62fd57ef1db583121eda2c67c1efde632",
+  "adopted": false,
+  "hypothesis": "Process narrator omits scope and same-name identities although provider facts are complete. Explain existing typed fields only in completed verified process inventory, with requested list/cardinality. Existing retry retains instruction; no validator/model/backend/sampler changes.",
+  "private_snapshot": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-source800-private",
+  "runtime_changes": [
+    "src/baxy_mind/llm.py"
+  ],
+  "declarations_only": [
+    "experiments/stt_quality/evaluate_reserved_stt.py",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py",
+    "tests/test_price_v8_veto_damage_by_cause.py"
+  ],
+  "new_tests": 11,
+  "baseline": "2 failed,9 passed in0.65s",
+  "prior_evidence": [
+    "PROCESS_BATCH799/ADJUDICATION.json",
+    "PROCESS_BATCH797/REPORT.md",
+    "PROCESS_VOCABULARY798/REPLAY.json"
+  ],
+  "acceptance": "Same frozen50 panel795, preserve prior valid behavior and improve scope/identity against fresh payloads; root adjudication. No survey credit from owners.",
+  "root_review": "Added explicit list completeness and plural/requested cardinality to proposed instruction. Corrected agent runner Full798 receipt path before execution.",
+  "full_scope": "Full798 covers unchanged C# and previous Python source.800 is Python-only; owning suites and Fast now, Full at global final."
+}

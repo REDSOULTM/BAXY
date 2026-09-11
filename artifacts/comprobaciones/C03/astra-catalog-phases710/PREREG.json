@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-10T05:34:43.335108+00:00",
+  "source_sha256": "4dab2425ea8a05db54e1b392a7c7ccaf27f27e42a5ac31b9bf5b76fe2655a687",
+  "method": "Three alternating original/instrumented pairs of the existing PowerShell catalog script, copied exactly from source. Only stopwatch and stderr phase markers added. No providers, models, user turns, or source edits. Compare full JSON entries privately; publish timing, count and hashes only. The standalone observation cap40s is not a change to the Core handshake10s.",
+  "order": [
+    "original",
+    "timed",
+    "timed",
+    "original",
+    "original",
+    "timed"
+  ],
+  "coverage_added": 0,
+  "sources": [
+    "https://learn.microsoft.com/en-us/powershell/module/startlayout/get-startapps?view=windowsserver2025-ps"
+  ],
+  "source_note": "Official Get-StartApps documents name/AppID enumeration; local timing must identify the cause, documentation does not promise a startup SLA."
+}

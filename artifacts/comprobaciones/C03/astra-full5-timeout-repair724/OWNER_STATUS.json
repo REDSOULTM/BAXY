@@ -1,0 +1,37 @@
+{
+  "packaging_first_attempt": {
+    "session": 15067,
+    "exit_code": 1,
+    "passed": 0,
+    "failed": 1,
+    "seconds": 41.7,
+    "reason": "Get-FileHash unavailable; changed assertion to existing Get-BaxySha256"
+  },
+  "packaging_second_attempt": {
+    "session": 18099,
+    "exit_code": 0,
+    "passed": 1,
+    "failed": 0,
+    "seconds": 38.67
+  },
+  "sidecar_two_tests": {
+    "session": 15643,
+    "exit_code": 0,
+    "passed": 2,
+    "failed": 0,
+    "seconds": 10.34
+  },
+  "three_owner_suites": {
+    "session": 62763,
+    "status": "terminal_failed",
+    "exit_code": 1,
+    "passed": 66,
+    "failed": 1,
+    "skipped": 0,
+    "subtests_passed": 5,
+    "seconds": 322.55,
+    "failure": "test_dispatch_crash_exits_while_redirected_stdin_remains_open: post-trigger wait3s exceeded"
+  },
+  "adopted": false,
+  "coverage_added": 0
+}

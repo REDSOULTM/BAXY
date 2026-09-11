@@ -1,0 +1,33 @@
+{
+  "utc": "2026-09-10T07:12:31.447224+00:00",
+  "pid": 23188,
+  "deadline_passed": false,
+  "return_code": 1,
+  "late_code_before_disposal": null,
+  "killed_owned_child": true,
+  "elapsed_including_post_deadline_diagnostic": 3.2189999999973224,
+  "stack_exit_code": 0,
+  "observed_processes": [
+    {
+      "pid": 23188,
+      "parent": 33488,
+      "name": "python.exe",
+      "rss": 4415488,
+      "exe": "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe"
+    },
+    {
+      "pid": 14344,
+      "parent": 23188,
+      "name": "python.exe",
+      "rss": 70856704,
+      "exe": "C:\\Users\\usuario\\AppData\\Local\\Programs\\Python\\Python312\\python.exe"
+    }
+  ],
+  "hello_seen": false,
+  "forced_dispatch_crash_seen": false,
+  "buffered_busy_seen": false,
+  "private_evidence": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-full5-sidecar717-private",
+  "source_test_unchanged": "4ac312b869624d261e047521bc918d9ff025194d8c9186dd9b5fae5a8959656d",
+  "coverage_added": 0,
+  "goal_complete": false
+}

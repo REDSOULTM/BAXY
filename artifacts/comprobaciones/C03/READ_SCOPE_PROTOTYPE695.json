@@ -1,0 +1,79 @@
+{
+  "utc": "2026-09-09T19:59:31.879677+00:00",
+  "method": "Isolated in-memory module against all742 original literals and frozen73 batch. No model, provider or source edit. Changes are proposed operation lists, not correctness or coverage.",
+  "source_sha256": "e72c2509a90b3aaa150e6036b6c0567c621c8ae70289055e89de316778139778",
+  "survey_rows": 742,
+  "changed_survey_cases": [
+    {
+      "case_id": "H0126",
+      "before": [],
+      "after": [
+        "system.time"
+      ]
+    },
+    {
+      "case_id": "H0359",
+      "before": [],
+      "after": [
+        "system.status"
+      ]
+    },
+    {
+      "case_id": "H0450",
+      "before": [],
+      "after": [
+        "system.time"
+      ]
+    },
+    {
+      "case_id": "H0499",
+      "before": [],
+      "after": [
+        "system.time"
+      ]
+    },
+    {
+      "case_id": "H0532",
+      "before": [],
+      "after": [
+        "system.status"
+      ]
+    },
+    {
+      "case_id": "H0602",
+      "before": [],
+      "after": [
+        "system.time"
+      ]
+    }
+  ],
+  "batch_changed_cases": [
+    "disk-used-es",
+    "H0532",
+    "H0359",
+    "cpu-order-es",
+    "H0126",
+    "H0450",
+    "H0499",
+    "H0602",
+    "clock-date-en",
+    "audio-order-es"
+  ],
+  "negative_controls": 18,
+  "negative_control_changes": 0,
+  "adopted": false,
+  "coverage_added": 0,
+  "private_hashes": {
+    "RESULT.json": "27426a1112ecb8ed2208437765914e4180bed1946c91913df09c949532c54483",
+    "candidate.patch": "43b931991edfbef2232f50c463fa3b7fa7a9d4c0ad0c83f928156ee66003a2e9"
+  },
+  "limits": "Static operation proposal only, no inference or product. Remaining515 static-unresolved planning rows are not failures. Must test original pipeline and meaningful generalization before any adoption.",
+  "expanded_generalization": {
+    "cases": 50,
+    "positive_cases": 28,
+    "positive_failures": 2,
+    "new_false_reads": 3,
+    "private_sha256": "9765e011acbaf1a96c317da0193ac850428e0d1baa3d94e548ac72b02cbdfe87",
+    "findings": "What is time? incorrectly becomes clock read; a named foreign GPU and explicit drive D become local system.status. GPU memory topicalization and English volume reference still unresolved. Prototype is not fit for adoption; retain all outcomes. Clock definite-reference guard and topic ownership/drive scope need correction, not extra literal exemptions."
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "wrapper_exit_code": 1,
+  "passed": false,
+  "failure_stage": "diagnostic data-root setup, before catalog discovery",
+  "stderr": "BAXY core could not validate its private data directory.",
+  "hello_bytes": 0,
+  "harness_exception": "JSONDecodeError when parsing the empty first line after Core rejected the nested data root.",
+  "diagnosis": "The standalone harness used a nested private/data directory; the existing product fixtures use one direct child of LOCALAPPDATA/BAXY. Correct the harness path, preserve product private-storage validation.",
+  "product_source_changed": false,
+  "coverage_added": 0,
+  "goal_complete": false
+}

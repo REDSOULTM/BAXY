@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-10T07:21:26.061922+00:00",
+  "deadline_passed": false,
+  "exit_code": 1,
+  "elapsed_seconds": 2.764999999999418,
+  "phases": [],
+  "snapshot_absent": true,
+  "sources_unchanged": true,
+  "coverage_added": 0,
+  "goal_complete": false
+}

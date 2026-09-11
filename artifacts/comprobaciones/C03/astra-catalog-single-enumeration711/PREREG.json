@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-10T05:38:24.219029+00:00",
+  "source_sha256": "4dab2425ea8a05db54e1b392a7c7ccaf27f27e42a5ac31b9bf5b76fe2655a687",
+  "hypothesis": "Reuse the existing Shell AppsFolder mechanism once for Name/Path and duplicate-target metadata, avoiding the separate Get-StartApps enumeration. No product source changed. Reject if even one original identity/target is lost or altered, or extra entries appear. Exact parity is necessary, not sufficient for adoption.",
+  "order": [
+    "original",
+    "candidate",
+    "candidate",
+    "original",
+    "original",
+    "candidate"
+  ],
+  "stop": "Stop after the first pair with unequal entries, process error or timeout. Otherwise complete three alternating pairs. No retries to select a winner.",
+  "sources": [
+    "https://learn.microsoft.com/en-us/windows/win32/shell/shell-namespace",
+    "https://learn.microsoft.com/en-us/windows/win32/shell/folder-items"
+  ],
+  "heritage": "Current provider already enumerates AppsFolder for duplicate metadata. Prior catalog/journal overlap rejected in REGISTRO_DE_MANTENIBILIDAD.md:429-433; no parallelization or cache/fallback proposed.",
+  "model_inference": false,
+  "coverage_added": 0
+}

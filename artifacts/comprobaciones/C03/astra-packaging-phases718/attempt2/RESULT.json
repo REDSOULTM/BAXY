@@ -1,0 +1,24 @@
+{
+  "utc": "2026-09-10T07:23:16.249507+00:00",
+  "deadline_passed": false,
+  "exit_code": 0,
+  "elapsed_seconds": 53.28100000000268,
+  "phases": [
+    "PHASE add.begin 0.2138428",
+    "PHASE add.end 38.9900247",
+    "PHASE chain.begin 38.9902299",
+    "PHASE chain.end 39.0026804",
+    "PHASE tree.begin 39.0027805",
+    "PHASE tree.end 39.6081475",
+    "PHASE rev.begin 39.6082511",
+    "PHASE rev.end 41.4610254",
+    "PHASE status.begin 41.4642064",
+    "PHASE status.end 41.7460661",
+    "PHASE remove.begin 42.1850707",
+    "PHASE remove.end 49.0675678"
+  ],
+  "snapshot_absent": true,
+  "sources_unchanged": true,
+  "coverage_added": 0,
+  "goal_complete": false
+}

@@ -1,0 +1,10 @@
+{
+  "name": "Full705-fourth-attempt",
+  "sessionId": 88138,
+  "status": "running_exec_handle",
+  "candidate": "CANDIDATE4.json",
+  "candidate_sha256": "c80333f5944b660bc54908301b13904586dbaf7f99517194c8008e72bc805854",
+  "log": "TEMP/c03-window-vocabulary705-full4.log",
+  "exit": "TEMP/c03-window-vocabulary705-full4-exit.json",
+  "adopted": false
+}

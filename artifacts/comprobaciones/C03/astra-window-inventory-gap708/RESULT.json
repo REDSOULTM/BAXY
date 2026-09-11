@@ -1,0 +1,52 @@
+{
+  "utc": "2026-09-10T05:10:59.682368+00:00",
+  "diagnosis": "No typed operation currently enumerates all visible windows without a known process/title selector.",
+  "sources": {
+    "src/Baxy.Kernel/Operations/ProductCatalog.cs": "f2e3164d018dc94699b66476bbac60ca580563fd4e25ef47b1ab848f26570a03",
+    "src/Baxy.Core/Operations/WindowControlHandlers.cs": "9ebeab789bfa601f040a92e7126e9fa6d5458f0caacc81c20ebc75457e6ccc9c",
+    "src/Baxy.Providers.Windows/Windows/WindowControlContracts.cs": "4c6380372f565a39c9e14a2d74d3450ef3d46e9a253a5354c41e3473dfb0dc99",
+    "src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs": "93eab6c7278cdb90ff14b5f8e62050e42177a5f83f508e948fba2a989fb75040",
+    "tests/Baxy.Providers.Windows.Tests/WindowsWindowControlProviderTests.cs": "6b984255a4b2598cb9f053d249858d66b689f0194eb706cc129a406ba1236d62"
+  },
+  "evidence": [
+    {
+      "file": "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+      "lines": "1601-1612",
+      "fact": "window.resolve requires nonwhitespace process; limit1-50 only bounds matches. Description supports process name or title with byTitle."
+    },
+    {
+      "file": "src/Baxy.Core/Operations/WindowControlHandlers.cs",
+      "lines": "8-39",
+      "fact": "resolve unconditionally reads process. window.active only calls ResolveForegroundAsync."
+    },
+    {
+      "file": "src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs",
+      "lines": "71-123,462-477,616-650",
+      "fact": "Empty selector is invalid. Process matching is exact, title matching uses named application/title identity. No all/wildcard branch; enumeration stops at limit."
+    },
+    {
+      "file": "tests/Baxy.Providers.Windows.Tests/WindowsWindowControlProviderTests.cs",
+      "lines": "187-198",
+      "fact": "Empty selector is tested as invalid; not an implicit inventory request."
+    }
+  ],
+  "correction": "The initial H0023 window.resolve proposal belongs to the window domain, but is not directly executable for list-all under this contract. Earlier claims that a correct executable read was merely vetoed were too strong.",
+  "next": "Establish a real bounded window inventory contract/provider before measuring LLM recovery for list-all. Prefer reusing discovery responsibility where it preserves requested scope and truthful partial-result reporting; inspect heritage before choosing final design.",
+  "probe707_limit": "Expected_domain=True only means a desktop-window topic. It does not establish full operation compatibility, existing capability, correct arguments or product success. Pure plural patch remains unadopted.",
+  "product_source_changed": false,
+  "model_inference": false,
+  "coverage_added": 0,
+  "goal_complete": false,
+  "heritage": [
+    {
+      "file": "biblioteca/gemma4-agent/codigo-docs/prompts/tool_rules/window.md",
+      "lines": "1-9",
+      "finding": "Top-level OS window tool included list separately from browser tabs; no pagination/truncation contract given."
+    },
+    {
+      "file": "biblioteca/gemma4-agent/codigo-docs/prompts/tool_rules/desktop_layout.md",
+      "lines": "1-5",
+      "finding": "Global visible-window snapshots used EnumWindows with positions and process identity; no bounded inventory or pagination contract given."
+    }
+  ]
+}

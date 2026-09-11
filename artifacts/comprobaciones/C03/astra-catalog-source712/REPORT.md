@@ -1,0 +1,13 @@
+# Candidato712: retirar una consulta duplicada del arranque
+
+Se sustituyó la combinación Get-StartApps más enumeración Shell por una sola enumeración Shell que obtiene nombre, identidad y los mismos metadatos de duplicados. El parser, la resolución posterior de ambigüedades, la caché y la cancelación conservan su implementación. El Core sigue teniendo diez segundos para emitir su saludo. Se actualizaron únicamente los nombres de los diagnósticos que antes atribuían cualquier fallo al cmdlet retirado.
+
+La propuesta reutiliza el mecanismo ya presente en el provider. Microsoft también documenta la lectura de nombres y AppIDs mediante los campos Name/Path de AppsFolder en su [ejemplo para obtener AUMID](https://learn.microsoft.com/en-us/windows/configuration/store/find-aumid). El ensayo711 comprobó equivalencia completa de las 322 entradas de este PC en tres pares alternados; la mediana bajó de6,719 a3,890s, con dos mejoras y una pérdida. No se generaliza esa muestra a todo hardware.
+
+Validación dueña: `dotnet test tests/Baxy.Providers.Windows.Tests -c Release --nologo -v:minimal --filter FullyQualifiedName~WindowsInstalledApplicationOpenProviderTests` → **50 pass,0 fail,0 skips**,475ms de tests. Son controles de contrato/plataforma simulada, no una demostración de ausencia de timeouts físicos.
+
+El diagnóstico713 repitió el mismo fixture de709: los50arranques terminaron listos, sin timeout deCore; NUnit1pass/0fail/0skip. InitializeAsync completo tuvo mediana6,746s y máximo11,855s, reloj distinto del plazo10s del saludo. El wrapper terminóexit1 al restaurar el fixture por OSError22; se reparó conapply_patch yse verificóhashidéntico aloriginal. No se convierte eseexit1 en0. Se retiró elhelper antes deFull.
+
+El control715 recibióhello en6,796s,catálogo293nombres verified/complete=true,exit0.714 había fallado por un directorio de prueba anidado prohibido; se corrigió sóloelconductor. Full5 recompiló la fuente restaurada y terminó con exit1: .NET4532pass/0fail/1skip agregado; Python11135pass/2fail/3skip,466subtests,1823,03s. Los fallos son un timeout45s de snapshot/cleanup de empaquetado y otro3s del cierre del sidecar tras fallo de dispatcher. FULL5_RESULT.json y el log conservan el resultado; las omisiones no cuentan como pass.
+
+El candidato conjunto conserva las fuentes705 por sus hashes y añade sólo este provider. No se adopta ni publica como resuelto todavía. CANDIDATE.json fija las fuentes previas a las pruebas y sus diez hashes permanecen idénticos. Full4 y Full5 permanecen rojos; producto706 aún no se ha ejecutado. Se diagnostican las dos pruebas exactas sin aumentar límites ni reiniciar la campaña completa a ciegas. Encuesta26cubiertos/716abiertos/0noaplicables.

@@ -1,0 +1,12 @@
+{
+  "elapsed": 3.0,
+  "deadline": 3.0,
+  "timed_out": true,
+  "stack_exit_code": 0,
+  "owned_descendants": [
+    [
+      30652,
+      1789025796.2305176
+    ]
+  ]
+}

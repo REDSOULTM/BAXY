@@ -1,0 +1,66 @@
+{
+  "source_candidate": 800,
+  "source_adopted": false,
+  "new_coverage": 0,
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "cases": [
+    {
+      "case_id": "H0133",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Fresh facts, requested scope/cardinality and identities where relevant are preserved; stated values match observed quantities at displayed precision."
+    },
+    {
+      "case_id": "H0158",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "The observed total191 is supplied, but the returned list is not identified as a bounded subset."
+    },
+    {
+      "case_id": "H0169",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Final is cut mid-word; composer finish_reason=length."
+    },
+    {
+      "case_id": "H0364",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Repeated python and msedgewebview2 instances lack PIDs; numeric CPU values alone do not preserve identity."
+    },
+    {
+      "case_id": "H0470",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Fresh facts, requested scope/cardinality and identities where relevant are preserved; stated values match observed quantities at displayed precision."
+    },
+    {
+      "case_id": "H0650",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Two ChatGPT instances are listed without their PIDs; saying they have different IDs does not identify them."
+    },
+    {
+      "case_id": "H0669",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Final is cut mid-word; composer finish_reason=length. This case previously passed799."
+    },
+    {
+      "case_id": "H0675",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "A single python process working set is called application memory without application membership or aggregation."
+    },
+    {
+      "case_id": "H0678",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Fresh facts, requested scope/cardinality and identities where relevant are preserved; stated values match observed quantities at displayed precision."
+    }
+  ]
+}

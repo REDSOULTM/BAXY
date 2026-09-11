@@ -1,0 +1,10 @@
+{
+  "utc": "2026-09-10T05:58:29.396740+00:00",
+  "method": "One actual Core, fresh private data root, no requests/LLM. Require hello within10s after Process.Start, exact PID and application catalog verified,complete and nonempty. This detects a fast startup caused by fail-closed empty inventory; it does not claim every one of713 starts had an identical inventory.",
+  "core_files": {
+    "baxy-core.exe": "b3a9bae87fcabad694f9f6ad4103eab628d3a7acc8cc5b162c7a5a25cd90cf7f",
+    "baxy-core.dll": "4c39a5cee18d151f0bffa22704bc22b20989b59053e8f8fd365f3126f3d164fd",
+    "Baxy.Providers.Windows.dll": "a0133b3cbafd69d57c1f054432f4fe63f2473e5703abd169015152864312a92d"
+  },
+  "coverage_added": 0
+}
