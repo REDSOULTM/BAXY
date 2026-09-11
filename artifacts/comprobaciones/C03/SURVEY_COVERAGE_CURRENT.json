@@ -1,12 +1,12 @@
 {
-  "utc": "2026-09-11T13:47:23.707261+00:00",
-  "covered": 63,
-  "open": 679,
+  "utc": "2026-09-11T14:35:49.975650+00:00",
+  "covered": 64,
+  "open": 678,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 37,
+  "covered_updated_last_24h": 38,
   "updated_recent_ids": [
     "H0133",
     "H0158",
@@ -44,27 +44,28 @@
     "H0524",
     "H0538",
     "H0684",
-    "H0725"
+    "H0725",
+    "H0672"
   ],
-  "confirmed_new_grants_last_24h": 35,
+  "confirmed_new_grants_last_24h": 36,
   "first_grant_date_not_distinguished_for_recent_ids": [
     "H0180",
     "H0499"
   ],
   "categories": [
     {
-      "category": "apps_open",
-      "label": "Abrir aplicaciones",
-      "total": 54,
-      "covered": 7,
-      "open": 47,
-      "not_applicable": 0
-    },
-    {
       "category": "web_navigation_search",
       "label": "Navegación y búsqueda web",
       "total": 46,
       "covered": 0,
+      "open": 46,
+      "not_applicable": 0
+    },
+    {
+      "category": "apps_open",
+      "label": "Abrir aplicaciones",
+      "total": 54,
+      "covered": 8,
       "open": 46,
       "not_applicable": 0
     },
@@ -333,7 +334,7 @@
       "not_applicable": 0
     }
   ],
-  "requirements_sha256": "8e338064f6ed0a575f60c8a6c06a8c4768a1740bcfd4b572436c0cad4d2dcef3",
+  "requirements_sha256": "ddc2fa026e3f38e1b7c48303c05791aa7c5747d9bfd18a80cd59e3f561849842",
   "classification_source": "SURVEY_TAXONOMY846.json",
   "latest_adjudications": [
     "APP_OPEN847/ROOT_ADJUDICATION.json",
@@ -341,5 +342,6 @@
     "APP_OPEN853/ROOT_PARTIAL_CREDIT.json",
     "APP_OPEN853/ROOT_ADJUDICATION.json",
     "APP_OPEN853_TAIL/ROOT_ADJUDICATION.json"
-  ]
+  ],
+  "equal_maximum_open_next_selection": "Web and apps both46open; next sealed web864 selected. No category with more open requirements is bypassed."
 }

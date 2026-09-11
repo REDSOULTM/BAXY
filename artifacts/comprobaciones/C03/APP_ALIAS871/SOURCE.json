@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-11T14:39:34.909761+00:00",
+  "source_integrated": true,
+  "root_review_chunk": "665a26",
+  "source_path": "src\\baxy_mind\\effect_intent.py",
+  "source_sha256": "0204584361572737f1aadf6dda5f9526679691467d313fc1d71a1b57f009af0d",
+  "source_base_sha256": "29ad7f6b8b1f31e0354015c72415c74464a2938aa5fe73b988c5017802efb677",
+  "patch_sha256": "4f149c34de54bc3e1b2bc5eb34f687658526b0cfa986556f3b5bd449888fa1ef",
+  "private_proposal": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-app-alias871-proposal",
+  "change": "One existing Settings alias added; authenticated catalog and uniqueness guard preserved.",
+  "tests_run": false,
+  "tests_omitted_reason": "Latest explicit owner instruction: no hagas test, saca el goal lo mas rápido posible, sin perder calidad.",
+  "full_run": false,
+  "product_verified": false,
+  "coverage_added": 0
+}

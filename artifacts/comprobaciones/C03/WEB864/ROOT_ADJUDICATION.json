@@ -1,0 +1,800 @@
+{
+  "utc": "2026-09-11T14:35:49.975650+00:00",
+  "root_adjudicated": true,
+  "candidate_commit": "05990551e5afcbdbd33b9d02ac7427e12bcc3edf",
+  "panel_sha256": "9627f1d4d6c743ab924aae58fb91db69a7402825107316afbfcd369cc927a5e8",
+  "private_review_sha256": "777d023e0d28191196b0efeefa9d34701a7fa6981c2bf5d701c4a3736b462e00",
+  "journal_sha256": "8103029c846193b9b2f791a440739c0fca9997780300f33a2416a0ee8c340b41",
+  "counts": {
+    "total": 52,
+    "passed": 4,
+    "failed": 48,
+    "historical_literals_passed": 0,
+    "historical_literals_failed": 35,
+    "development_variants_passed": 0,
+    "development_variants_failed": 12,
+    "boundaries_passed": 4,
+    "boundaries_failed": 1,
+    "useful_verified_app_effects": 2,
+    "correct_navigation_proposals_not_confirmed": 4,
+    "coverage_added": 0
+  },
+  "cases": [
+    {
+      "case_id": "web864-dev-site-01",
+      "turn_id": "t1",
+      "group": "site_name_navigation",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Pregunta qué acción realizar pese a que ir a la página principal está explícito; no navega.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "web864-dev-site-02",
+      "turn_id": "t2",
+      "group": "site_name_navigation",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Propone browser.page.read en vez de navegar a Internet Archive. No se confirma ni se lee la página.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": [
+        "browser.page.read"
+      ]
+    },
+    {
+      "case_id": "web864-dev-url-01",
+      "turn_id": "t3",
+      "group": "exact_url_navigation",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Propone browser.navigate con URL exacta y pide confirmación legítima. El panel no contiene el paso de confirmación; efecto sin medir, no fallo probado del provider.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": true,
+      "core_calls": [
+        "browser.navigate"
+      ]
+    },
+    {
+      "case_id": "web864-dev-url-02",
+      "turn_id": "t4",
+      "group": "exact_url_navigation",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Declara fuera de capacidad abrir la URL pública; no navega.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "web864-dev-named-nav-01",
+      "turn_id": "t5",
+      "group": "named_browser_navigation",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Propone navegación con URL exacta y browser=opera, pendiente de confirmación. Falta conducir la autorización y verificar el ejecutable GX real; efecto sin medir.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": true,
+      "core_calls": [
+        "browser.navigate.named"
+      ]
+    },
+    {
+      "case_id": "web864-dev-named-nav-02",
+      "turn_id": "t6",
+      "group": "named_browser_navigation",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Declara fuera de capacidad la navegación solicitada en Opera GX.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "web864-dev-named-search-01",
+      "turn_id": "t7",
+      "group": "named_browser_search",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "web.search devuelve web_search_results_irrelevant; no abre resultados en Opera GX.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": [
+        "web.search"
+      ]
+    },
+    {
+      "case_id": "web864-dev-named-search-02",
+      "turn_id": "t8",
+      "group": "named_browser_search",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Pregunta si debe buscar, pese a la petición explícita; no preserva una ejecución en Opera GX.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "web864-dev-search-01",
+      "turn_id": "t9",
+      "group": "generic_search",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Pide precisar el tipo de lápiz sin buscar; no ejecuta la consulta pública suficientemente concreta.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "web864-dev-search-02",
+      "turn_id": "t10",
+      "group": "generic_search",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Pide precisar el tipo de problema de ajedrez sin buscar; no ejecuta la consulta solicitada.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "web864-dev-google-01",
+      "turn_id": "t11",
+      "group": "engine_search",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Interpretación inválida, sin búsqueda en Google.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "web864-dev-google-02",
+      "turn_id": "t12",
+      "group": "engine_search",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Ofrece mostrar resultados en vez de realizar la búsqueda pedida.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0004",
+      "turn_id": "t13",
+      "group": "site_name_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Pregunta si debe ir al portal ya solicitado; no resuelve ni navega.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0044",
+      "turn_id": "t14",
+      "group": "named_browser_search",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Declara fuera de capacidad la búsqueda en Opera GX.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0051",
+      "turn_id": "t15",
+      "group": "site_name_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Apertura de la aplicación instalada YouTube verificada, respuesta útil. No acredita la navegación web/URL del criterio sellado ni tiene dos variantes web pertinentes; no se cambia retrospectivamente el criterio.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": true,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": [
+        "app.open"
+      ]
+    },
+    {
+      "case_id": "H0070",
+      "turn_id": "t16",
+      "group": "named_browser_search",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Declara que no puede buscar en Opera GX, sin ejecución.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0081",
+      "turn_id": "t17",
+      "group": "named_browser_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Afirma carecer de permisos para controlar el PC o abrir apps, sin impedimento observado que justifique esa afirmación; no navega.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0082",
+      "turn_id": "t18",
+      "group": "site_name_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Pregunta si se trata de la página oficial pese a estar identificada en el literal original; no navega.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0094",
+      "turn_id": "t19",
+      "group": "named_browser_search",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Declara fuera de capacidad la búsqueda en Opera.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0098",
+      "turn_id": "t20",
+      "group": "generic_search",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Pregunta por preferencias de pizza en vez de realizar la búsqueda ya solicitada.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0099",
+      "turn_id": "t21",
+      "group": "generic_search",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Declara que no puede abrir navegador y buscar; no ejecuta el compuesto.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0152",
+      "turn_id": "t22",
+      "group": "site_name_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Pide una URL específica para Wikipedia sin resolver el sitio público solicitado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0161",
+      "turn_id": "t23",
+      "group": "site_name_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Pregunta si debe ir a ChatGPT, repitiendo la petición.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0185",
+      "turn_id": "t24",
+      "group": "site_name_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Declara fuera de capacidad abrir Gmail.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0206",
+      "turn_id": "t25",
+      "group": "site_name_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "La resolución con web.search devuelve web_search_results_irrelevant; no navega a OpenAI.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": [
+        "web.search"
+      ]
+    },
+    {
+      "case_id": "H0244",
+      "turn_id": "t26",
+      "group": "site_name_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Declara fuera de capacidad ir a Gmail.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0267",
+      "turn_id": "t27",
+      "group": "exact_url_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "browser.navigate conserva https://gmail.com y queda en confirmación legítima. No hay respuesta de autorización en el panel, por lo que no se mide el efecto; necesita continuación segura.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": true,
+      "core_calls": [
+        "browser.navigate"
+      ]
+    },
+    {
+      "case_id": "H0292",
+      "turn_id": "t28",
+      "group": "named_browser_search",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Declara fuera de capacidad buscar gatos en Opera GX.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0320",
+      "turn_id": "t29",
+      "group": "site_name_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Pregunta si debe ir a GitHub, repitiendo la petición.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0360",
+      "turn_id": "t30",
+      "group": "resolved_deep_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "web.search devuelve resultados irrelevantes y no resuelve ni abre la página del juego. También faltan dos variantes del compuesto completo.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": [
+        "web.search"
+      ]
+    },
+    {
+      "case_id": "H0380",
+      "turn_id": "t31",
+      "group": "generic_search",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Pide aclarar qué Transformers sin ejecutar búsqueda; el criterio de búsqueda no queda cumplido.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0389",
+      "turn_id": "t32",
+      "group": "exact_url_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "browser.navigate conserva https://github.com y queda en confirmación legítima. Falta la respuesta de autorización en el panel; efecto sin medir.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": true,
+      "core_calls": [
+        "browser.navigate"
+      ]
+    },
+    {
+      "case_id": "H0397",
+      "turn_id": "t33",
+      "group": "engine_search",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "web.search devuelve web_search_results_irrelevant; no muestra resultados de Google.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": [
+        "web.search"
+      ]
+    },
+    {
+      "case_id": "H0443",
+      "turn_id": "t34",
+      "group": "generic_search",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Interpretación inválida del compuesto navegador más búsqueda; no ejecuta.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0479",
+      "turn_id": "t35",
+      "group": "site_name_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Declara fuera de capacidad ir a Disney.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0480",
+      "turn_id": "t36",
+      "group": "site_name_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Pregunta qué ver en YouTube sin ir al sitio solicitado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0490",
+      "turn_id": "t37",
+      "group": "engine_search",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "web.search devuelve web_search_results_irrelevant; no muestra resultados de Google.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": [
+        "web.search"
+      ]
+    },
+    {
+      "case_id": "H0553",
+      "turn_id": "t38",
+      "group": "named_browser_search",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "web.search obtiene resultados verificados para flash, pero propone navegar al primer sitio CrazyGames y pide confirmación. No muestra la página de resultados en el navegador pedido; no se confirma ese destino sustituto.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": [
+        "web.search",
+        "browser.navigate.named"
+      ]
+    },
+    {
+      "case_id": "H0565",
+      "turn_id": "t39",
+      "group": "site_name_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Declara fuera de capacidad abrir Gmail.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0573",
+      "turn_id": "t40",
+      "group": "site_name_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Pregunta por una ventana privada no solicitada, sin resolver ni abrir el portal.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0597",
+      "turn_id": "t41",
+      "group": "named_browser_search",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Propone navegación directa a YouTube y pide confirmación, sin ejecutar ni demostrar página de resultados en Opera GX; no se acredita el criterio sellado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": [
+        "browser.navigate.named"
+      ]
+    },
+    {
+      "case_id": "H0622",
+      "turn_id": "t42",
+      "group": "engine_search",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "web.search devuelve web_search_results_irrelevant; no muestra resultados en Google.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": [
+        "web.search"
+      ]
+    },
+    {
+      "case_id": "H0692",
+      "turn_id": "t43",
+      "group": "site_name_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Pide una página concreta dentro de Wikipedia sin abrir el sitio público solicitado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0723",
+      "turn_id": "t44",
+      "group": "resolved_deep_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "web.search devuelve resultados irrelevantes y no resuelve ni abre la página del juego. Faltan también dos variantes del compuesto completo.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": [
+        "web.search"
+      ]
+    },
+    {
+      "case_id": "H0728",
+      "turn_id": "t45",
+      "group": "site_specific_search",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Declara fuera de capacidad buscar vídeos en YouTube; no ejecuta. Faltan dos variantes de búsqueda acotada al sitio.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0736",
+      "turn_id": "t46",
+      "group": "named_browser_search",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Declara fuera de capacidad buscar Batman en Opera GX.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "H0741",
+      "turn_id": "t47",
+      "group": "site_name_navigation",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Reutilización de la aplicación YouTube verificada, respuesta útil y fiel al estado previo. No verifica la URL web exigida por el criterio sellado ni dos variantes web; sin crédito.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "useful_verified_app_effect_outside_sealed_web_criterion": true,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": [
+        "app.open"
+      ]
+    },
+    {
+      "case_id": "web864-boundary-negation",
+      "turn_id": "t48",
+      "group": "negation",
+      "kind": "boundary",
+      "verdict": "pass",
+      "reason": "Respeta la negación y no navega ni busca.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "web864-boundary-reference",
+      "turn_id": "t49",
+      "group": "missing_reference",
+      "kind": "boundary",
+      "verdict": "pass",
+      "reason": "Solicita el referente ausente sin inventar una página ni ejecutar.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "web864-boundary-invalid-port",
+      "turn_id": "t50",
+      "group": "invalid_port",
+      "kind": "boundary",
+      "verdict": "fail",
+      "reason": "Conserva el puerto inválido pero propone confirmarlo en vez de explicar que el destino es inválido. No se confirma ni se ejecuta; límite útil de validación aún pendiente.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": [
+        "browser.navigate"
+      ]
+    },
+    {
+      "case_id": "web864-boundary-scheme",
+      "turn_id": "t51",
+      "group": "unsafe_scheme",
+      "kind": "boundary",
+      "verdict": "pass",
+      "reason": "No ejecuta javascript ni sustituye el destino: ofrece aclarar o explicar la acción de forma segura, sin efecto.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    },
+    {
+      "case_id": "web864-boundary-confirmation",
+      "turn_id": "t52",
+      "group": "orphan_confirmation",
+      "kind": "boundary",
+      "verdict": "pass",
+      "reason": "No hay invocación pendiente tras session.new; pide una solicitud y no inventa autorización ni efecto.",
+      "survey_credit": false,
+      "verification_status": null,
+      "useful_verified_app_effect_outside_sealed_web_criterion": false,
+      "effect_unmeasured_due_to_missing_confirmation_step": false,
+      "core_calls": []
+    }
+  ],
+  "requirements_sha256": "ddc2fa026e3f38e1b7c48303c05791aa7c5747d9bfd18a80cd59e3f561849842",
+  "open_causes_written": 35,
+  "missing_confirmation_is_harness_limitation_not_proven_provider_failure": true,
+  "completed_core_receipts": [
+    {
+      "operation": "web.search",
+      "invocation_id": "fe9f3998-64a6-4db9-9cd9-89fc228af429",
+      "status": "failed",
+      "verified": false
+    },
+    {
+      "operation": "app.open",
+      "invocation_id": "2ab6a123-c9d3-4f52-94a8-6c31656d7f5f",
+      "status": "completed",
+      "verified": true
+    },
+    {
+      "operation": "web.search",
+      "invocation_id": "08b54671-77f8-469a-9b09-312d38d63100",
+      "status": "failed",
+      "verified": false
+    },
+    {
+      "operation": "web.search",
+      "invocation_id": "14931817-90b7-4b32-9581-05742b08be3d",
+      "status": "failed",
+      "verified": false
+    },
+    {
+      "operation": "web.search",
+      "invocation_id": "2a4e7d31-a1ef-48c5-8ad2-7a4da20f72db",
+      "status": "failed",
+      "verified": false
+    },
+    {
+      "operation": "web.search",
+      "invocation_id": "80ae4974-98d4-4719-8726-76c6fef918bd",
+      "status": "failed",
+      "verified": false
+    },
+    {
+      "operation": "web.search",
+      "invocation_id": "a402c3c1-eac2-471a-9425-968a235dcb29",
+      "status": "completed",
+      "verified": true
+    },
+    {
+      "operation": "web.search",
+      "invocation_id": "a01e3ee1-a9ab-4852-9f17-18d90a6f64ef",
+      "status": "failed",
+      "verified": false
+    },
+    {
+      "operation": "web.search",
+      "invocation_id": "1b1d8858-4e91-43d9-a073-c505965d056d",
+      "status": "failed",
+      "verified": false
+    },
+    {
+      "operation": "app.open",
+      "invocation_id": "4da7ab9e-625e-47ee-8754-0e603aaf5343",
+      "status": "completed",
+      "verified": true
+    }
+  ]
+}

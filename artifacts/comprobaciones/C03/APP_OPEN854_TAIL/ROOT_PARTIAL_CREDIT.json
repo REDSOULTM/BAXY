@@ -1,0 +1,30 @@
+{
+  "utc": "2026-09-11T14:08:50.597415+00:00",
+  "root_adjudicated": true,
+  "candidate": "05990551e5afcbdbd33b9d02ac7427e12bcc3edf",
+  "new_covered_ids": [
+    "H0672"
+  ],
+  "invocation_id": "41fb98df-e0e0-41db-9df6-f3dd20b1f1d0",
+  "variant_ids": [
+    "app-open-next-notepad-07",
+    "app-open-next-paint-02"
+  ],
+  "variant_invocation_ids": [
+    [
+      "656b6901-db1a-4517-aae9-f6bf36170702"
+    ],
+    [
+      "53d0f747-1ac4-4ffe-bca4-742b0df3463e"
+    ]
+  ],
+  "app_id": "Spotify",
+  "receipt_verified": true,
+  "literal_useful_and_faithful": true,
+  "source_review_sha256": "3b20dced67691537b58ffd4fd5a04289a79e9a4b20a9d6765ecf904ac387040d",
+  "requirements_sha256": "e3f2fdb682e336ed0b67bd1ec8b74915b57a112c4254034fb6054268cfc52557",
+  "covered": 64,
+  "open": 678,
+  "not_applicable": 0,
+  "reason": "Root observed published acknowledgement, verified Spotify identity/window and prior-running state; pair changes app name, wording and language, same opened/reused behavior."
+}

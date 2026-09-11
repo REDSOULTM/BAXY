@@ -1,31 +1,15 @@
 # Estado para el dueño — 11 de septiembre
 
-La encuesta llegó a **63/742 cubiertos**. La última tanda acreditó18 solicitudes de volumen: los valores escritos con palabras ya llegan a la operación y las respuestas se contrastaron con los cambios reales. Tres variantes, incluida una inglesa, pasaron con 27%,11% ymitad de escala.
+La encuesta está en **64/742 cubiertos, 678 abiertos y 0 no aplican**. Se acreditaron 36 requisitos en las últimas 24 horas. Dos actualizaciones adicionales de casos cubiertos no permiten distinguir la fecha de su primera acreditación. Hay 0/35 categorías cerradas; la matriz C03 permanece en3/11.
 
-| Qué se midió | Resultado | Qué falta |
-|---|---|---|
-| Audio861, candidato actual | 47/47 ejecutados;27 válidos y 20 fallidos.18 créditos nuevos. | Tres respuestas de ajustes siguen fallando; nueve peticiones sin cantidad terminan en aclaración. |
-| Generalización del volumen absoluto | Tres variantes correctas, con cambios reales; antes fallaban las tres. | No equivale a cerrar todo audio: siguen abiertos30 requisitos de la categoría. |
-| Apps853 y continuación | Siete solicitudes acreditadas; dos paradas por RAM conservaron lo ya ejecutado. | Sigue la tanda grande de apps854, preparada con 30 literales,12 variantes y 5 límites. |
+Audio861 acreditó18 solicitudes de volumen. La continuación de apps acreditó Spotify; otras dos respuestas útiles quedaron abiertas porque todavía faltan variantes de su misma conducta. Las causas de los demás fallos ya constan por case_id.
 
-| Avance formal | Estado |
-|---|---|
-| Encuesta | 63/742 cubiertos;679 abiertos;0 no aplican. |
-| Últimas24 horas | 35 altas confirmadas;otras2 actualizaciones de casos cubiertos no permiten distinguir su primera fecha. |
-| Categorías | 0/35 cerradas. Apps47 abiertos;web46;audio30. |
-| Matriz C03 | 3/11 cumplidas,5 contradichas y 3 pendientes. |
+Web y apps empatan con46 abiertos. Web864 terminó sus52 casos sin crédito nuevo. Varias navegaciones quedaron sin el paso de confirmación y las búsquedas devolvieron fallos. Se prepara una corrección mínima del nombre de Configuración y una continuación para dos casos de apps que necesitan variantes. Nueve literales de Steam y juegos quedan aparcados hasta disponer de6000MiB de RAM libre, con los límites de ejecución originales. Esto responde a tres cortes por RAM; no se repiten las tandas completas.
 
-| Recursos, medidos por separado | VRAM pico | RAM residente pico |
-|---|---:|---:|
-| Audio861 | 3499,56 MiB | 2402,05 MiB |
-| Audio858 | 3499,56 MiB | 2413,79 MiB |
-| Apps853 | 3497,56 MiB | 2449,31 MiB |
-| Continuación853 | 3497,56 MiB | 1886,62 MiB |
+La continuación de apps terminó24/24 en88,25s sin exceder recursos:3497,56MiB de VRAM y2490,64MiB de RAM del árbol. Spotify reutilizó una ventana existente. Explorer produjo un efecto incierto: no se atribuye éxito ni se reintenta automáticamente. El audio continúa restaurado a31%, sin silencio.
 
-La última ejecución duró137,656 segundos y terminó sin cortes de recursos. La VRAM permaneció bajo 4 GB. La RAM del árbol puede incluir aplicaciones descendientes; no representa sólo el modelo. El volumen volvió a31%, sin silencio, verificado mediante tres llamadas separadas de la prueba.
+El candidato pasó3583 pruebas dueñas, cero fallos y cero omisiones, más estática y compilación Release. El Full843 histórico aprobó4754 pruebas.NET y12907 Python, con una omisión agregada.NET y tres Python, además de466 subpruebas aprobadas. No se cuentan las omisiones como aprobaciones ni se atribuye ese Full al Python posterior. Falta el Full final.
 
-El candidato pasó3583 pruebas, sin fallos ni omisiones, además de estática y compilación Release. El Full anterior tuvo4754 pruebas.NET y 12907 Python aprobadas, cero fallos;una omisión agregada.NET y tresPython, además de 466 subpruebas aprobadas. Esas omisiones no cuentan como aprobaciones y ese Full no se atribuye al Python nuevo. Falta el Full final.
+H0675, OCR y nuevos providers siguen aparcados. El Administrador de tareas se conserva como lo dejaste. C03 sigue en curso; main y tus cambios se conservan. La [tabla de categorías del checkpoint](CHECKPOINT.md) está ordenada por abiertos.
 
-Apps pasa primero por número de abiertos; web se prepara en paralelo. Los fallos de respuesta de audio tienen propuesta externa y no retrasan esa prioridad. H0675,OCR y nuevos providers siguen aparcados. El Administrador de tareas se conserva como lo dejaste.
-
-C03 sigue en curso, sin fecha de cierre fiable. El avance se cuenta por requisitos verificados; main y tus cambios se conservan. La tabla completa de categorías está en [el checkpoint](CHECKPOINT.md).
+Por tu nueva instrucción, no se lanzan suites de tests ni Full. La aclaración sobre paneles de producto está pendiente; el trabajo continúa con revisión y cambios mínimos. Ninguna prueba omitida se contará como aprobada.

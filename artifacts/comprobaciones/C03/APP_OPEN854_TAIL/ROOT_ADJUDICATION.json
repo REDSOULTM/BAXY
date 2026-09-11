@@ -1,0 +1,294 @@
+{
+  "utc": "2026-09-11T14:20:33.362487+00:00",
+  "root_adjudicated": true,
+  "candidate_commit": "05990551e5afcbdbd33b9d02ac7427e12bcc3edf",
+  "panel_sha256": "d892a5300010686295e44575f37387a0243f4a49f8a6bad694d1011c4f348ee1",
+  "private_review_sha256": "3b20dced67691537b58ffd4fd5a04289a79e9a4b20a9d6765ecf904ac387040d",
+  "journal_sha256": "5f239f21447af3c26516467e15bad4d4e77395da359315a999fa26af304ccddf",
+  "counts": {
+    "total": 24,
+    "passed": 6,
+    "failed": 18,
+    "historical_literals_passed": 3,
+    "historical_literals_failed": 16,
+    "boundaries_passed": 3,
+    "boundaries_failed": 2,
+    "coverage_added": 1,
+    "useful_literals_missing_generalization": 2
+  },
+  "cases": [
+    {
+      "case_id": "H0147",
+      "turn_id": "t1",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Pide archivo o carpeta pese a que el literal identifica File Explorer; no ejecuta la apertura solicitada.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0151",
+      "turn_id": "t2",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Apertura con efecto incierto y verification_failed; la respuesta final reconoce la falta de verificación. No es consumación acreditable ni autoriza reintento automático.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": [
+        "b125b87e-692a-4715-a73c-c3b93aa3d92c"
+      ]
+    },
+    {
+      "case_id": "H0166",
+      "turn_id": "t3",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Repetición del nombre Chrome termina fuera de capacidad, sin apertura ni aclaración útil del destino.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0227",
+      "turn_id": "t4",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Pregunta si debe abrir Steel, repitiendo una intención ya explícita sin resolver qué aplicación es.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0249",
+      "turn_id": "t5",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Interpretación inválida; no resuelve el nombre ni ofrece una aclaración útil.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0289",
+      "turn_id": "t6",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Pregunta si debe abrir Photoshop pese a la orden explícita; no verifica presencia ni ejecuta.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0353",
+      "turn_id": "t7",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "La búsqueda de Configuración recibe una respuesta útil respaldada por app.installed verificado. Permanece open: las variantes app.open no acreditan dos variantes de búsqueda de aplicación instalada.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": [
+        "8abaa13c-8e4c-43b3-83ff-80b3dbcd71de"
+      ]
+    },
+    {
+      "case_id": "H0386",
+      "turn_id": "t8",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Declara fuera de capacidad un destino abreviado sin aclararlo ni ejecutar.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0398",
+      "turn_id": "t9",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Declara que abrir Steel no es una tarea del PC; no resuelve el nombre ni ejecuta.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0406",
+      "turn_id": "t10",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Respuesta útil y fiel a la inexistencia explícitamente indicada por el usuario, sin efectos. Permanece open: faltan dos variantes pertinentes de aplicación declarada inexistente; un límite no se reetiqueta como variante.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0503",
+      "turn_id": "t11",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Pregunta si debe abrir zzqwx123 en vez de resolver su presencia o pedir una aclaración sobre el nombre.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0512",
+      "turn_id": "t12",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Repetición del nombre Chrome termina fuera de capacidad, sin apertura ni aclaración útil del destino.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0521",
+      "turn_id": "t13",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "La aclaración contrapone abrir a operar dentro de Team, aunque abrir ya está pedido; no aclara la identidad de la aplicación ambigua.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0522",
+      "turn_id": "t14",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Declara fuera de capacidad el nombre abreviado Ste sin aclarar el destino.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0558",
+      "turn_id": "t15",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Pregunta si debe abrir Photoshop pese a la orden explícita; no verifica presencia ni ejecuta.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0672",
+      "turn_id": "t16",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "pass",
+      "reason": "Apertura/reutilización de Spotify verificada con identidad, ventana y estado previo fieles; crédito escrito al observarlo con dos variantes válidas de854.",
+      "survey_credit": true,
+      "verification_status": "covered",
+      "invocation_ids": [
+        "41fb98df-e0e0-41db-9df6-f3dd20b1f1d0"
+      ]
+    },
+    {
+      "case_id": "H0688",
+      "turn_id": "t17",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "La petición de una terminal termina fuera de capacidad, sin resolver aplicación ni ejecutar.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0691",
+      "turn_id": "t18",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "La corrección explícita a Firefox termina fuera de capacidad sin apertura ni aclaración útil.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0706",
+      "turn_id": "t19",
+      "group": "owner_open",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Rechaza abrir Configuración de Windows sin ejecutar ni explicar un impedimento observado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-open-next-boundary-01",
+      "turn_id": "t20",
+      "group": "boundary",
+      "kind": "boundary",
+      "verdict": "pass",
+      "reason": "Respeta la negación y no abre aplicaciones.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-open-next-boundary-02",
+      "turn_id": "t21",
+      "group": "boundary",
+      "kind": "boundary",
+      "verdict": "pass",
+      "reason": "Explica el uso de la calculadora sin confundir la pregunta con una orden de apertura.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-open-next-boundary-03",
+      "turn_id": "t22",
+      "group": "boundary",
+      "kind": "boundary",
+      "verdict": "fail",
+      "reason": "Interpreta una narración sobre ayer como un intento fallido de apertura actual; respuesta infiel pese a no ejecutar.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-open-next-boundary-04",
+      "turn_id": "t23",
+      "group": "boundary",
+      "kind": "boundary",
+      "verdict": "pass",
+      "reason": "Respeta la negación en inglés sin efectos.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-open-next-boundary-06",
+      "turn_id": "t24",
+      "group": "boundary",
+      "kind": "boundary",
+      "verdict": "fail",
+      "reason": "No ejecuta el nombre inventado, pero afirma que no está en el sistema sin una observación de catálogo que respalde esa ausencia. La invención del nombre no es una consulta de instalación.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    }
+  ],
+  "credit_already_written": "ROOT_PARTIAL_CREDIT.json",
+  "requirements_sha256": "4e4104871c43400cc6c63773de7976c3c48856e1e18708b063c42570283129d4",
+  "open_causes_written": 18
+}

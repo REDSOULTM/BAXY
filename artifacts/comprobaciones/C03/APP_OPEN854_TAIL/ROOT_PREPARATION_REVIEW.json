@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-11T14:05:07.504619+00:00",
+  "root_reviewed": true,
+  "preparation_sha256": "aaff874a86942540ba6f82cca0098ef2d7ff0bf58c25d0ff9d0655a75c3b1012",
+  "head": "05990551e5afcbdbd33b9d02ac7427e12bcc3edf",
+  "pins_verified": 654,
+  "sources_verified": 584,
+  "binaries_verified": 18,
+  "build_exit": 0,
+  "shutdown_exit": 0,
+  "postbuild_free_ram_mib": 4467.62109375,
+  "gpu_not_started_at_review": true
+}

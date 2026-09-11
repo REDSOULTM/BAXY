@@ -1,0 +1,513 @@
+{
+  "utc": "2026-09-11T14:02:10.264149+00:00",
+  "root_adjudicated": true,
+  "candidate_commit": "05990551e5afcbdbd33b9d02ac7427e12bcc3edf",
+  "counts": {
+    "registered": 47,
+    "executed": 14,
+    "passed": 8,
+    "failed": 6,
+    "not_executed": 33,
+    "variants_passed": 8,
+    "variants_failed": 4,
+    "literals_passed": 0,
+    "literals_failed": 2,
+    "coverage_added": 0
+  },
+  "cases": [
+    {
+      "case_id": "app-open-next-notepad-03",
+      "turn_id": "t1",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Declara fuera de capacidad una apertura disponible; app.open faltaba en shortlist y raw clasificó conocimiento.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-open-next-notepad-05",
+      "turn_id": "t2",
+      "kind": "variant",
+      "verdict": "pass",
+      "reason": "Apertura/reutilización verificada del destino pedido y respuesta útil/fiel; variantes ES/EN/mix sin exigir frase exacta.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": [
+        "e705487e-22ff-4f0e-bff2-3191eeafc5bb"
+      ]
+    },
+    {
+      "case_id": "app-open-next-notepad-06",
+      "turn_id": "t3",
+      "kind": "variant",
+      "verdict": "pass",
+      "reason": "Apertura/reutilización verificada del destino pedido y respuesta útil/fiel; variantes ES/EN/mix sin exigir frase exacta.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": [
+        "81dbce05-d046-428a-9415-8802c1f5a0c5"
+      ]
+    },
+    {
+      "case_id": "app-open-next-notepad-07",
+      "turn_id": "t4",
+      "kind": "variant",
+      "verdict": "pass",
+      "reason": "Apertura/reutilización verificada del destino pedido y respuesta útil/fiel; variantes ES/EN/mix sin exigir frase exacta.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": [
+        "656b6901-db1a-4517-aae9-f6bf36170702"
+      ]
+    },
+    {
+      "case_id": "app-open-next-notepad-09",
+      "turn_id": "t5",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Raw app.open correcto se pierde en domain_grounding; agota aclaración y no ejecuta.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-open-next-notepad-12",
+      "turn_id": "t6",
+      "kind": "variant",
+      "verdict": "pass",
+      "reason": "Apertura/reutilización verificada del destino pedido y respuesta útil/fiel; variantes ES/EN/mix sin exigir frase exacta.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": [
+        "f8b045a4-eec0-458a-b704-56c7babae459"
+      ]
+    },
+    {
+      "case_id": "app-open-next-paint-01",
+      "turn_id": "t7",
+      "kind": "variant",
+      "verdict": "pass",
+      "reason": "Apertura/reutilización verificada del destino pedido y respuesta útil/fiel; variantes ES/EN/mix sin exigir frase exacta.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": [
+        "7e805356-4c00-4ae2-af96-cbe2df3f0eb7"
+      ]
+    },
+    {
+      "case_id": "app-open-next-paint-02",
+      "turn_id": "t8",
+      "kind": "variant",
+      "verdict": "pass",
+      "reason": "Apertura/reutilización verificada del destino pedido y respuesta útil/fiel; variantes ES/EN/mix sin exigir frase exacta.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": [
+        "53d0f747-1ac4-4ffe-bca4-742b0df3463e"
+      ]
+    },
+    {
+      "case_id": "app-open-next-paint-04",
+      "turn_id": "t9",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Raw window.active equivocado; app.open ausente; después se veta dominio y publica unsupported.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-open-next-paint-08",
+      "turn_id": "t10",
+      "kind": "variant",
+      "verdict": "pass",
+      "reason": "Apertura/reutilización verificada del destino pedido y respuesta útil/fiel; variantes ES/EN/mix sin exigir frase exacta.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": [
+        "c27770c2-56e1-4728-9bef-258d39ff9803"
+      ]
+    },
+    {
+      "case_id": "app-open-next-paint-10",
+      "turn_id": "t11",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Pregunta versión de Paint aunque la solicitud no exige escoger versión; no abre.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-open-next-paint-11",
+      "turn_id": "t12",
+      "kind": "variant",
+      "verdict": "pass",
+      "reason": "Apertura/reutilización verificada del destino pedido y respuesta útil/fiel; variantes ES/EN/mix sin exigir frase exacta.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": [
+        "00b6e161-127c-48ae-b78a-86d8e60e303b"
+      ]
+    },
+    {
+      "case_id": "H0055",
+      "turn_id": "t13",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Steam devuelve verification_failed,verifiedfalse,resultnull,effectMayHaveOccurredtrue; no hay apertura verificable que acreditar. Se conserva incertidumbre.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": [
+        "a889baf3-d80f-45bf-9faf-529c22ba0dc4"
+      ]
+    },
+    {
+      "case_id": "H0083",
+      "turn_id": "t14",
+      "kind": "historical_literal",
+      "verdict": "fail",
+      "reason": "Devuelve pregunta para que el usuario empiece Mortal Kombat; ninguna ejecución ni resultado útil de la petición.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0134",
+      "turn_id": "t15",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0136",
+      "turn_id": "t16",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0147",
+      "turn_id": "t17",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0151",
+      "turn_id": "t18",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0166",
+      "turn_id": "t19",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0227",
+      "turn_id": "t20",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0249",
+      "turn_id": "t21",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0289",
+      "turn_id": "t22",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0317",
+      "turn_id": "t23",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0353",
+      "turn_id": "t24",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0386",
+      "turn_id": "t25",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0391",
+      "turn_id": "t26",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0398",
+      "turn_id": "t27",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0406",
+      "turn_id": "t28",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0418",
+      "turn_id": "t29",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0487",
+      "turn_id": "t30",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0503",
+      "turn_id": "t31",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0512",
+      "turn_id": "t32",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0521",
+      "turn_id": "t33",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0522",
+      "turn_id": "t34",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0544",
+      "turn_id": "t35",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0558",
+      "turn_id": "t36",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0608",
+      "turn_id": "t37",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0653",
+      "turn_id": "t38",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0672",
+      "turn_id": "t39",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0688",
+      "turn_id": "t40",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0691",
+      "turn_id": "t41",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0706",
+      "turn_id": "t42",
+      "kind": "historical_literal",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": "open",
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-open-next-boundary-01",
+      "turn_id": "t43",
+      "kind": "boundary",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-open-next-boundary-02",
+      "turn_id": "t44",
+      "kind": "boundary",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-open-next-boundary-03",
+      "turn_id": "t45",
+      "kind": "boundary",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-open-next-boundary-04",
+      "turn_id": "t46",
+      "kind": "boundary",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-open-next-boundary-06",
+      "turn_id": "t47",
+      "kind": "boundary",
+      "verdict": "not_executed",
+      "reason": "Sin admisión ni terminal antes de la guardaRAM; no se asume resultado.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": []
+    }
+  ],
+  "journal_sha256": "7dfecb7150d5e94d014c302329c06c91efa5d9b1c978890c11533bb14a621082",
+  "private_review_sha256": "3e0a509b7ae29127d41dae92d93f81d1d3ddf09bec726fe9acad7de6a183e3ac",
+  "guard": "system_free_ram_bound",
+  "wrapper_exit_code": 1,
+  "guard_exit_code": 15,
+  "pins_unchanged": true
+}

@@ -3564,6 +3564,7 @@ def resolve_application_catalog_app_id(
     calculator_aliases = {"calc", "calculadora", "calculator"}
     settings_aliases = {
         "configuracion",
+        "configuracion de windows",
         "configuraciones de windows",
         "windows settings",
     }

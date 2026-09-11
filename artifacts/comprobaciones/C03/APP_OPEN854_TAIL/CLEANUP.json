@@ -1,0 +1,8 @@
+{
+  "utc": "2026-09-11T14:20:33.362487+00:00",
+  "app_close_actions": 0,
+  "retries": 0,
+  "reason": "Spotify reused a pre-existing verified window. Explorer returned an uncertain effect with no resulting HWND; no user window can be attributed for automatic closure. Diagnostic BAXY tree stopped normally by runner.",
+  "uncertain_invocation_id": "b125b87e-692a-4715-a73c-c3b93aa3d92c",
+  "journal_sha256": "5f239f21447af3c26516467e15bad4d4e77395da359315a999fa26af304ccddf"
+}

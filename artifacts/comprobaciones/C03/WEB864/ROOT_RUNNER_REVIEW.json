@@ -1,0 +1,24 @@
+{
+  "utc": "2026-09-11T14:22:52.804149+00:00",
+  "root_reviewed": true,
+  "runner_sha256": "88c102bfd525b450c51eec23c6592b3f1f14b5d254b5cfb04fbaab63d1aaf107",
+  "runner_diff_review_chunks": [
+    "6b8451",
+    "8cb9eb"
+  ],
+  "pin_review_chunk": "240913",
+  "data_review_chunk": "b2d336",
+  "seal_sha256": "e8ea0c012a2aeb64af2e61a02d6c006a393dc31d6a31a3aba087718aed3d0fb6",
+  "cases": 52,
+  "literals": 35,
+  "variants": 12,
+  "boundaries": 5,
+  "wire": 104,
+  "source_candidate": "0634a8d5474e099a9fabb990e205224a78638a62",
+  "candidate_pins": 64,
+  "guards_unchanged": true,
+  "parent_material_objects_preserved": 51,
+  "unexecuted_private_boundary_preserved": true,
+  "registry_allows_only_review_metadata_outside_selected": true,
+  "credit_not_granted": true
+}

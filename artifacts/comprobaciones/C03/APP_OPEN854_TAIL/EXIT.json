@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-11T14:06:41.453932+00:00",
+  "exit_code": 0,
+  "stopped": false,
+  "pins_unchanged": true,
+  "terminal_records": 24,
+  "session_controls_observed": 24,
+  "turn_admissions_observed": 24,
+  "app_cleanup_by_runner": false,
+  "quality_adjudicated": false,
+  "success_count": null,
+  "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-app-open854-tail-profile\\journal\\missions.jsonl",
+  "target_apps_closed_by_guard": false
+}

@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-11T14:02:10.264149+00:00",
+  "case_ids": [
+    "H0134",
+    "H0136",
+    "H0317",
+    "H0391",
+    "H0418",
+    "H0487",
+    "H0544",
+    "H0653",
+    "H0608"
+  ],
+  "verification_status": "open",
+  "all_not_executed_in854": true,
+  "not_applicable": false,
+  "reason": "Three comparable app runs853/853tail/854 reached RAM guard after Steam opening. Preserve guard and change continuation strategy instead of repeating Steam first.",
+  "resume": "After existing lighter categories have progressed, resume these exact nine original objects in a new sealed continuation when at least6000MiB RAM are free before launching BAXY, preserving4000MiB mandatorypreflight and768MiB runtime guard. First Steam attempt requires observed window/focus receipt; verification_failed/effectMayHaveOccurred forbids automatic retry. No new provider or relaxed threshold authorized by this deferral.",
+  "next_continuation": "Remaining19never-admitted literals+5original boundaries, parent order. Ambiguous names may still resolve a heavy target; no runtime whitelist or changed request."
+}

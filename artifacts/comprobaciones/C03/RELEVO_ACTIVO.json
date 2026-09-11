@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "63/742covered679open0NA;86147/47,18créditos. Apps47primero>web46;audio30. Audio restaurado31/unmuted.",
-  "continuation": "Publicar propios861;prepare apps854revision860 conHEADreal,revisarPREPARATION654pins584sources18bins antes run. Root adjudica créditos en vivo;web864enpreparación.863propuestaprivadadirección179pass0skip,nointegrarantesapps.",
+  "checkpoint": "64/742 cubiertos,678 abiertos,0NA;854TAIL24/24,6pass18fail,+1Spotify. Web46=apps46; web864 revision2 siguiente.",
+  "continuation": "No tests/Full per latest owner. One pending clarification whether product panels also excluded. Review/integrate minimal alias871 proposal without tests;869 sealed but do not run pending scope answer. Web864 fully adjudicated, causes stored, YouTube owned window closed normally and exact process exited. Publish root WIP explicitly.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -28,16 +28,16 @@
     "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
   },
   "surveyVerificationCounts": {
-    "open": 679,
-    "covered": 63,
+    "open": 678,
+    "covered": 64,
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "0634a8d5474e099a9fabb990e205224a78638a62",
-  "workStatus": "audio861_adjudicated_18_credits_apps854_next",
-  "goalStatusNote": "All C03active;63/742covered,679open,0NA;0/35categories,H0675parked.",
+  "workStatus": "implementation_no_tests_owner_instruction",
+  "goalStatusNote": "All C03 active;64/742 covered,678 open,0NA;0/35categories,H0675parked.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "0634a8d5474e099a9fabb990e205224a78638a62",
+  "publishedEvidenceCommit": "05990551e5afcbdbd33b9d02ac7427e12bcc3edf",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Audio858 completed with honest individual open causes; located public arguments boundary absent from857tests; bounded860repair and sealed861 prepared.",
+  "previousGoalTurnClassificationReason": "Apps854TAIL completed and H0672 credited immediately;18 individual open causes recorded. Next tied-largest web52case panel sealed.",
   "activeValidation": null,
   "objectiveFile": "C:\\Users\\usuario\\.codex\\attachments\\310753b7-9a38-4a57-951e-007fdcf7693a\\goal-objective.md",
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
@@ -86,16 +86,19 @@
   "activeReadOnlyAgent": null,
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
-    "name": "audio861",
-    "sessionId": 98811,
-    "state": "complete_root_adjudicated_and_restored",
-    "collectedExitCode": 0,
-    "collectionChunk": "75e595",
-    "sourceCandidate": "0634a8d5474e099a9fabb990e205224a78638a62",
-    "registeredCases": 47,
-    "executedCases": 47,
-    "newCredits": 18,
-    "adjudication": "AUDIO861/ROOT_ADJUDICATION.json"
+    "name": "web864",
+    "sessionId": 16260,
+    "state": "completed",
+    "sourceCandidate": "05990551e5afcbdbd33b9d02ac7427e12bcc3edf",
+    "registeredCases": 52,
+    "preparationSha256": "7d164f9a3c3098d8f77add626fc78581226d084b0fb24d28cb50f310be612e12",
+    "sealSha256": "e8ea0c012a2aeb64af2e61a02d6c006a393dc31d6a31a3aba087718aed3d0fb6",
+    "exitCode": 0,
+    "collectionChunk": "8f4b26",
+    "casesExecuted": 52,
+    "passed": 4,
+    "failed": 48,
+    "coverageAdded": 0
   },
   "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
   "ownerPriority": "Owner ordered model selection after792 and immediate progress on C03 blockers; no further model campaign.",
@@ -940,5 +943,11 @@
     "total": 52,
     "coverage_added": 2,
     "audio_restored": true
+  },
+  "ownerLatestInstruction": {
+    "utc": "2026-09-11T14:38:26.312269+00:00",
+    "text": "no hagas test, saca el goal lo mas rápido posible, sin perder calidad",
+    "suites_and_full": "do_not_run",
+    "product_panels_scope": "one clarification pending; no new runs meanwhile"
   }
 }

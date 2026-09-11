@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-11T14:35:49.975650+00:00",
+  "normal_window_close": true,
+  "forced_termination": false,
+  "pid": 19800,
+  "window_handle": 3412178,
+  "baseline_process_absent": true,
+  "identity_verified_before_close": true,
+  "exact_process_exited": true,
+  "close_request_sha256": "98326542f1fb85a5b6790f37263f08a83e08093a4b9b208db3a2a5308bcf4623",
+  "verification_sha256": "ec5aa4526bf852d57ed6b8092d67ebd693f890e43028534f089a48e21fe1d086",
+  "root_action_chunk": "205d6b",
+  "root_verification_chunk": "4aecc7",
+  "free_ram_mib": 4183.45703125,
+  "credits": 0
+}

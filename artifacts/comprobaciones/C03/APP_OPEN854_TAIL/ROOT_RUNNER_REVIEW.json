@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-11T14:04:20.7432369Z",
+  "root_reviewed": true,
+  "runner_sha256": "3e89c226fa68e5e178afd6d95579018ebeda8f8162eedf1e0972bf2e94d48487",
+  "seal_sha256": "0e495069f9c419fbcaaa35d30c759a4e212194e630b6106c2d07a2e831f864c6",
+  "diff_review_chunk": "e2107f",
+  "exact_parent_objects": true,
+  "never_admitted_literals": 19,
+  "boundaries": 5,
+  "deferred_unexecuted_literals": 9,
+  "repeated_variants": 0,
+  "source_pins": 64,
+  "guards_unchanged": true
+}

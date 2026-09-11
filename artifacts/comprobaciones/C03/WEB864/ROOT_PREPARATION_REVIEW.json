@@ -1,0 +1,12 @@
+{
+  "utc": "2026-09-11T14:23:22.556130+00:00",
+  "root_reviewed": true,
+  "preparation_sha256": "7d164f9a3c3098d8f77add626fc78581226d084b0fb24d28cb50f310be612e12",
+  "pins_checked": 665,
+  "sources_checked": 584,
+  "binaries_checked": 18,
+  "pins_unchanged": true,
+  "candidate": "05990551e5afcbdbd33b9d02ac7427e12bcc3edf",
+  "prepare_collection_chunk": "4a6ff9",
+  "postbuild_free_ram_mib": 4138.5625
+}
