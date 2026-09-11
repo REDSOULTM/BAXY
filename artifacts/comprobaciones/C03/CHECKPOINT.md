@@ -1,10 +1,10 @@
 # C03 — cobertura vigente
 
-**76/742 cubiertos, 666 abiertos, 0 no aplican; 48 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Matriz C03: 3/11. Registro SHA256: 2e0a83b9f1d866b6a01504f8435a858921175574f3d8671dec7096537690fe92. Cifras en SURVEY_COVERAGE_CURRENT.json.
+**78/742 cubiertos, 664 abiertos, 0 no aplican; 50 acreditaciones confirmadas en las últimas24h; 0/35 categorías cerradas.** Matriz C03: 3/11. Registro2efc6f2a4798f98b8693ac7bfa0269463a983be46e60d2130d11863c11259cb2; cifras en SURVEY_COVERAGE_CURRENT.json.
 
 El dueño reanudó el goal y aclaró el método: omitir suites automáticas, Fast y Full; mantener ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. El bloqueo anterior de alcance está resuelto. También autorizó cerrar aplicaciones para liberar RAM. No se cuentan pruebas omitidas como aprobadas.
 
-Fuente949 publicada54ad9ff787dc5f0f6955fb870c628e7ee5e79566. Última950:12casos8pass/4fail,+4créditos. Apps42 sigue primera;954/955 en preparación. Historia debajo.
+Fuente954 publicada18437a35b0e1210c16b619c73cbbd7b9ab2ff0bb. Última955:9casos5pass/4fail,+2créditos. Apps40 primera; PLAN956 prepara música39 sin autorizar ejecución. Historia debajo.
 
 Últimos tres tramos:
 
@@ -28,7 +28,7 @@ Cobertura vigente por categoría de la taxonomía846, ordenada por abiertos:
 
 | Categoría | Total | Cubiertos | Abiertos | No aplican |
 |---|---:|---:|---:|---:|
-| Abrir aplicaciones | 54 | 12 | 42 | 0 |
+| Abrir aplicaciones | 54 | 14 | 40 | 0 |
 | Música | 39 | 0 | 39 | 0 |
 | Navegación y búsqueda web | 46 | 8 | 38 | 0 |
 | Estado de hardware y sistema | 40 | 2 | 38 | 0 |
@@ -36,8 +36,8 @@ Cobertura vigente por categoría de la taxonomía846, ordenada por abiertos:
 | Conocimiento, razonamiento y creatividad verbal | 37 | 3 | 34 | 0 |
 | Entrada incompleta, ruido y control de diálogo | 34 | 0 | 34 | 0 |
 | Archivos y carpetas | 32 | 0 | 32 | 0 |
-| Mensajería | 31 | 0 | 31 | 0 |
 | Instalar y desinstalar software | 31 | 0 | 31 | 0 |
+| Mensajería | 31 | 0 | 31 | 0 |
 | Audio y volumen | 51 | 21 | 30 | 0 |
 | Vídeo y series | 26 | 0 | 26 | 0 |
 | Conversación social y ayuda general | 31 | 9 | 22 | 0 |
@@ -53,15 +53,15 @@ Cobertura vigente por categoría de la taxonomía846, ordenada por abiertos:
 | Identidad y capacidades del asistente | 19 | 7 | 12 | 0 |
 | Notas | 12 | 0 | 12 | 0 |
 | Memoria personal | 10 | 0 | 10 | 0 |
-| Correo | 6 | 0 | 6 | 0 |
 | Bibliotecas y fichas de juegos | 6 | 0 | 6 | 0 |
+| Correo | 6 | 0 | 6 | 0 |
 | Contactos | 5 | 0 | 5 | 0 |
 | Desarrollo y ejecución de comandos | 5 | 0 | 5 | 0 |
 | Restricciones negativas de apertura | 4 | 1 | 3 | 0 |
 | Portapapeles | 3 | 0 | 3 | 0 |
 | Energía del sistema | 3 | 0 | 3 | 0 |
-| Crear documentos y editar imágenes | 2 | 0 | 2 | 0 |
 | Leer y resumir páginas web | 2 | 0 | 2 | 0 |
+| Crear documentos y editar imágenes | 2 | 0 | 2 | 0 |
 | Procesos | 9 | 8 | 1 | 0 |
 
 [Historia preservada hasta Audio861](CHECKPOINT_HISTORICO_2026-09-11_HASTA_AUDIO861.md). Los tramos posteriores conservan recibos propios y versiones anteriores de este checkpoint en Git.
@@ -328,6 +328,16 @@ H0094 conserva open: Opera normal no fue encontrado por el provider (inv9f0483c4
 
 ROOT_ADJUDICATION950 SHA c07f0881ec1de4a6aa1f52d93c737236fe1dc26f9cb2e45ca7d9e5c9466776e6. Sesión44047 recogidaad21a4, exit0, 19 admisiones reales/7 confirmaciones/12 finales, pins íntegros.86,641s; VRAM3566,19MiB y RAM4013,52MiB; cero violaciones. Sin suites/Fast/Full, UI o voz. El fallo previo prepare0389ae fue sólo transporte antes de GPU: revisión1 corrigió cinco booleanos conservando panel y wire byteidénticos. No se repitió una ejecución de producto.
 
-Fuente949 publicada54ad9ff787dc5f0f6955fb870c628e7ee5e79566. Apps42 queda primera frente a web38. PLAN953 selecciona H0166/H0512 por repetición uniforme de Chrome, potencial2 sin nueva infraestructura.954 parche externo6f526cb40f1494560a91cf96452573540d3f1e6d21fe43a02f4ebf0eec39785b revisadoe50f0c y aplicadof2a37a; raíz añade comparación de identidad canónica con el mismo resolver para nombres como Bloc de notas/windows.notepad. Se exige una unidad repetida completa y tokens exactos de una única identidad del catálogo; nada de alias o similitud nuevos. Sólo effect_intent.py, sin build necesario.955 prepara dos literales íntegros, dos variantes y cinco límites. Falta sellar candidato y ejecutar; no atribuir créditos al código. No reabrir953/937–939 ni repetir854TAIL entero.
+Fuente954 publicada18437a35b0e1210c16b619c73cbbd7b9ab2ff0bb. Última955:9casos5pass/4fail,+2créditos. Apps40 primera; PLAN956 prepara música39 sin autorizar ejecución. Historia debajo.
 
 954 adoptado tras revisión raíz e50f0c/f2a37a: repetición íntegra de una identidad única, comparación canónica por resolver existente para Bloc de notas/windows.notepad. Sólo effect_intent.py; no build ni suites nuevos.955 revisado completo08f348: 9casos18wire, dos históricos íntegros incluidas diferencias de whitespace,2variantes y5límites. SEAL5e7d81063c22cd6ea71f579d3cabefb326e87ac587755f7d8e93ad9563dfd97f runner720f8e88288504ddd83fac3c25676f0b087203b62de721fed2bba6dd0013d048.76/742,666open,0NA;48altas24h,0/35categorías. Siguiente: manifest955, prepare/run.
+
+## 955 cerrado: dos aperturas acreditadas
+
+78/742 cubiertos, 664 abiertos y0 no aplican; 50 acreditaciones confirmadas en24h; 0/35 categorías cerradas, C03 3/11. H0166/H0512 se acreditaron20:38:40.1977221UTC al comprobar sus aperturas únicas de Google Chrome y los dos pares actuales Paint/Bloc de notas. Registro2efc6f2a4798f98b8693ac7bfa0269463a983be46e60d2130d11863c11259cb2. ROOT9553bd5ebc134bc6e0f7e4a78f01dd5893c2b7a8b2cd167c54331faf96044da4347.
+
+955 ejecutó9 casos:5válidos y4fallidos,+2. Literales Chrome invec022463-0907-427f-bc63-a2e643b2b51f y20a37d20-accd-48b5-a9a1-c28cb16a34e7, proceso21520/ventana331066; primer arranque y segundo ya corriendo, fielmente narrados. Paint inv36935034-f792-4630-8006-790a7bc5c954, proceso6052/ventana330918; Bloc de notas inv7177f5bf-aba0-4625-93f2-8ac70a0c7634, proceso34532/ventana5639004 ya abierto. Cada repetición hizo una sola apertura verificada. La variante «Open Bloc de notas…» mezcla naturalmente comando inglés con nombre español; no se presenta como prueba de preferencia de salida inglesa.
+
+Cita válida; negación, condición, nombres distintos y referencia ausente no causaron efectos, pero recibieron respuestas inadecuadas. Sesión44746 recogida7a8728exit0,9turnos/9controles,pins íntegros;52,343s,VRAM3497,56MiB/RAM2396,84MiB,cero violaciones. Sin suites/Fast/Full, UI o voz. Chrome yPaint nuevos no se cerraron; Notepad preexistente se conserva. Fuente954 publicada18437a35b0e1210c16b619c73cbbd7b9ab2ff0bb, sólo Python; build949 reutilizado sin cambios.
+
+El tramo añadió7 créditos: H0503, H0044/H0070/H0292/H0736 yH0166/H0512. Siguiente preparación956: música39, doce reproducciones sin plataforma impuesta, diez primeros literales para diagnóstico10+10 si el mecanismo no está probado. PLANd6115e4b0c83f7c377392072be324fc2f711b1ecde0378a166bea1b3cecb2bb6 leídoae3ba0. Antes de sellar, ligar ruta/provider efectivo de media.play.query y evidencia de reproducción/metadatos; catálogo no prueba soporte. No inventar servicio, completar argumentos desde runner ni construir infraestructura nueva. Apps40 sigue primera formalmente:953 deja pendientes bajo exclusiones de identidad/instalación/efectos inciertos; documentar elegibilidad antes de saltar a música. No repetir953/937–939 ni paneles enteros. Goal activo/progreso, ningún permiso pendiente.

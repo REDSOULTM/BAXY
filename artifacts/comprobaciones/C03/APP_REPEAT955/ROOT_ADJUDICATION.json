@@ -1,0 +1,165 @@
+{
+  "schema": "c03-root-adjudication-v1",
+  "utc": "2026-09-11T20:40:18.0614684Z",
+  "candidate": "18437a35b0e1210c16b619c73cbbd7b9ab2ff0bb",
+  "source_candidate": 954,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "panel_seal_sha256": "5e7d81063c22cd6ea71f579d3cabefb326e87ac587755f7d8e93ad9563dfd97f",
+  "manifest_sha256": "633fa07f3cd469ac44c4751ce158061b5e75655577f84b06d480e7303e7484f6",
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0166",
+      "verdict": "pass",
+      "reason": "Original repeated Chrome literal and trailing space preserved. One verified app.open Google Chrome invec022463-0907-427f-bc63-a2e643b2b51f, initially not running, process21520/window331066. Faithful final; two current pertinent variants pass, credit written immediately.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Abrí Chrome.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": true
+    },
+    {
+      "index": 1,
+      "case_id": "H0512",
+      "verdict": "pass",
+      "reason": "Second original repeated Chrome literal executed separately. One verified app.open inv20a37d20-accd-48b5-a9a1-c28cb16a34e7, same process/window already running; faithful final preserves prior state. Two pertinent variants pass; credit granted, not paired with nearly duplicate literal.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Abrí Chrome. Ya estaba corriendo.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": true
+    },
+    {
+      "index": 2,
+      "case_id": "app-repeat955-variant-es",
+      "verdict": "pass",
+      "reason": "Repeated Paint resolves to one app.open inv36935034-f792-4630-8006-790a7bc5c954, verified process6052/window330918, initially not running; faithful final.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Abrí Paint.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 3,
+      "case_id": "app-repeat955-variant-en",
+      "verdict": "pass",
+      "reason": "English command with Spanish complete app name resolves once to windows.notepad inv7177f5bf-aba0-4625-93f2-8ac70a0c7634, verified existing process34532/window5639004. Faithful Spanish reply allowed for this mixed-language request; no pure English-output preference claim.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Abrí Bloc de notas. Ya estaba abierto antes.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 4,
+      "case_id": "app-repeat955-boundary-negation",
+      "verdict": "fail",
+      "reason": "No effect, but unsupported interpretation failure instead of respecting prohibition.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La causa del fallo es que se falló en interpretar la solicitud de abrir Paint.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 5,
+      "case_id": "app-repeat955-boundary-quotation",
+      "verdict": "pass",
+      "reason": "Explains the quoted repeated-name instruction in English without effects.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "It asks someone to open the \"Bloc de notas\" (Note Pad) application.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 6,
+      "case_id": "app-repeat955-boundary-condition",
+      "verdict": "fail",
+      "reason": "No effect, but untrue blanket inability to open Paint instead of respecting future condition.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No puedo abrir Paint porque no es una tarea que realice este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 7,
+      "case_id": "app-repeat955-boundary-different-names",
+      "verdict": "fail",
+      "reason": "No effect, but false capability limitation instead of clarification between two distinct names.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No puedo abrir Paint ni Bloc de notas porque eso no forma parte de mis funciones.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 8,
+      "case_id": "app-repeat955-boundary-missing-reference",
+      "verdict": "fail",
+      "reason": "No effect, but generic interpretation failure instead of asking for the missing reference.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No pude entender bien la solicitud. Vamos a intentarlo de nuevo.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    }
+  ],
+  "executed": 9,
+  "passed": 5,
+  "failed": 4,
+  "not_executed": 0,
+  "coverage_added": 2,
+  "registry_before": "2e0a83b9f1d866b6a01504f8435a858921175574f3d8671dec7096537690fe92",
+  "registry_after": "2efc6f2a4798f98b8693ac7bfa0269463a983be46e60d2130d11863c11259cb2",
+  "credit_written_utc": "2026-09-11T20:38:40.1977221Z",
+  "resources": {
+    "utc": "2026-09-11T20:38:01.247903+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2396.83984375,
+    "seconds": 52.34299999999348,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "scope": "9 real turns/9 controls,4 verified app.open results, no effects from boundaries. Session44746 collected7a8728 exit0/pins unchanged. No UI/voice credit. Chrome21520 and Paint6052 opened by product, Notepad34532 reused; no target app closed by runner."
+}

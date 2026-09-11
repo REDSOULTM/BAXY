@@ -1,12 +1,12 @@
 {
-  "utc": "2026-09-11T20:32:08.2446244Z",
-  "covered": 76,
-  "open": 666,
+  "utc": "2026-09-11T20:40:18.1525700Z",
+  "covered": 78,
+  "open": 664,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 48,
+  "covered_updated_last_24h": 50,
   "updated_recent_ids": [
     "H0017",
     "H0035",
@@ -55,17 +55,19 @@
     "H0044",
     "H0070",
     "H0292",
-    "H0736"
+    "H0736",
+    "H0166",
+    "H0512"
   ],
-  "confirmed_new_grants_last_24h": 48,
+  "confirmed_new_grants_last_24h": 50,
   "first_grant_date_not_distinguished_for_recent_ids": [],
   "categories": [
     {
       "category": "apps_open",
       "label": "Abrir aplicaciones",
       "total": 54,
-      "covered": 12,
-      "open": 42,
+      "covered": 14,
+      "open": 40,
       "not_applicable": 0
     },
     {
@@ -125,16 +127,16 @@
       "not_applicable": 0
     },
     {
-      "category": "messaging",
-      "label": "Mensajería",
+      "category": "software_installation",
+      "label": "Instalar y desinstalar software",
       "total": 31,
       "covered": 0,
       "open": 31,
       "not_applicable": 0
     },
     {
-      "category": "software_installation",
-      "label": "Instalar y desinstalar software",
+      "category": "messaging",
+      "label": "Mensajería",
       "total": 31,
       "covered": 0,
       "open": 31,
@@ -261,16 +263,16 @@
       "not_applicable": 0
     },
     {
-      "category": "email",
-      "label": "Correo",
+      "category": "game_library_navigation",
+      "label": "Bibliotecas y fichas de juegos",
       "total": 6,
       "covered": 0,
       "open": 6,
       "not_applicable": 0
     },
     {
-      "category": "game_library_navigation",
-      "label": "Bibliotecas y fichas de juegos",
+      "category": "email",
+      "label": "Correo",
       "total": 6,
       "covered": 0,
       "open": 6,
@@ -317,16 +319,16 @@
       "not_applicable": 0
     },
     {
-      "category": "document_image_creation",
-      "label": "Crear documentos y editar imágenes",
+      "category": "web_read_summary",
+      "label": "Leer y resumir páginas web",
       "total": 2,
       "covered": 0,
       "open": 2,
       "not_applicable": 0
     },
     {
-      "category": "web_read_summary",
-      "label": "Leer y resumir páginas web",
+      "category": "document_image_creation",
+      "label": "Crear documentos y editar imágenes",
       "total": 2,
       "covered": 0,
       "open": 2,
@@ -368,5 +370,5 @@
     "not_executed": 0,
     "coverage_added": 1
   },
-  "registry_sha256": "2e0a83b9f1d866b6a01504f8435a858921175574f3d8671dec7096537690fe92"
+  "registry_sha256": "2efc6f2a4798f98b8693ac7bfa0269463a983be46e60d2130d11863c11259cb2"
 }
