@@ -1,0 +1,14 @@
+{
+  "schema": "c03-alarm-compose982-source-v1",
+  "utc": "2026-09-11T22:37:11.3017148Z",
+  "base": "84c4c3a6c19e61527b8a431329b5c9d1e76db66d",
+  "patch_sha256": "df46b1d558c535a1efff662f480a70c682d0cf73e6d8b21695f732011b362342",
+  "llm_sha256": "a4e5721f2a3b651ee201506eefb252d1a46e0e666e6dd82e77ffe52da3b600bf",
+  "diagnosis981_sha256": "0efc61eb0af63ca40c1406bb000ca1f9a8d0f67cd303a8d79810bd4ac16db233",
+  "root_review": "Scheduled due time requires verified successful notification.schedule and agreeing dueUtc/nextRunUtc. Existing clock/calendar helpers verify stated UTC time/date, distinct from current clock. Generated descriptive title is not mandatory note identity. Explicit title markers retain title. Note/task generation shortened after actual980 instruction leakage.",
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "build": "Python only; actual949 binaries reused",
+  "functional_status": "pending ALARM_REPAIR983; source adoption grants no coverage",
+  "coverage_added": 0
+}
