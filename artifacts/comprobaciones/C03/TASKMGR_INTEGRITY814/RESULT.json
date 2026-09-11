@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-11T05:23:55.211527+00:00",
+  "hypothesis_status": "rejected_on_this_machine",
+  "ordinary_launcher": true,
+  "target_elevated": true,
+  "detail": "CreatedPID8864 exited2147500036; childPID8204 integrity12288/elevatedtrue. RunAsInvoker did not retain ordinary integrity for TaskManager.",
+  "uia_structure": "Only window and title bar; no process groups, rows or cells.",
+  "window_id": 5704926,
+  "close_attempt": "One ordinary Alt+F4 through Computer Use; window and process still present on subsequent checks.",
+  "pending_user_action": "Owner asked once to close this newly created diagnostic window. Independent BAXY work continues.",
+  "no_product_credit": true,
+  "no_security_settings_changed": true
+}

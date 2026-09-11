@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-11T05:26:16.809783+00:00",
+  "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-narrator814",
+  "allowed_modified": [
+    "src/baxy_mind/llm.py",
+    "tests/test_c03_process_scope_prompt.py"
+  ],
+  "exact_candidate_and_snapshot_match": true,
+  "snapshot": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-narrator814-private\\source",
+  "removal": "Root verifies resolved Windows path then git worktree remove --force; only this task worktree."
+}

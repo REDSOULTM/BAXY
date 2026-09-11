@@ -9390,8 +9390,7 @@ class LlmRuntime:
                 " ranking, processes already contains the selected rows in the requested"
                 " order. Include every supplied row once, in that order, keeping its name,"
                 " processId and observed resource value and unit together, even for a single result. Do not"
-                " shorten or reorder the list. State how many rows you actually list and"
-                " how many processes were observed; disclose when the list is a subset."
+                " shorten or reorder the list. Disclose when the list is a subset."
                 " A count-only reply states the observed count and scope without rows."
                 " A process working set is not an application total."
             )

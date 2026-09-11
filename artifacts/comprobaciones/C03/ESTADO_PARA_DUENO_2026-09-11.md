@@ -1,56 +1,49 @@
 # Estado de C03 — 11 de septiembre de 2026
 
-**C03 sigue abierto.** La tanda 811 consiguió **40 respuestas válidas de 50**, frente a 37 en 809. Recuperó diez casos y perdió siete. El candidato 810 sigue sin adoptar por esas siete regresiones; la encuesta no obtiene cobertura nueva.
+**C03 sigue abierto.** La última tanda, 813, obtuvo **39 respuestas válidas de 50**, frente a 40 en 811: recuperó tres casos y perdió cuatro. La variante 812 no mejora el conjunto y no se adopta como solución. Las identidades de los procesos siguen conservándose en las filas mostradas.
 
-Se cambió la forma de entregar la identidad de cada proceso al narrador: ahora nombre e identificador van juntos. Las filas que aparecen en las respuestas conservan sus identificadores. Las listas pasan de 9/11 a 11/11 y memoria de 3/11 a 8/11. Sin embargo, algunas respuestas todavía confunden cuántos procesos se observaron con cuántos se incluyen en la respuesta.
+Se probó dar cada cantidad junto con su significado: procesos observados o filas seleccionadas. Eso recuperó algunos rankings, pero no eliminó las confusiones entre ambas cantidades. La siguiente prueba retira una obligación innecesaria: recitar ambas cantidades incluso cuando sólo se pide un ranking. Conserva los conteos solicitados, las filas y el alcance de la observación.
 
-| Qué se midió | Resultado de 811 |
-|---|---|
-| Listas | 11/11 válidas. |
-| Conteos | 12/12 válidas. |
-| Memoria | 8/11 válidas. |
-| CPU | 9/11 válidas. |
-| Recurso no especificado | 0/4 válidas. |
-| Memoria de aplicaciones | 0/1 válida. |
-| Total | 40/50 válidas; 10 fallidas. |
+| Conducta medida | Válidas 813 | Válidas 811 |
+|---|---:|---:|
+| Listas | 11/11 | 11/11 |
+| Conteos | 10/12 | 12/12 |
+| Memoria | 9/11 | 8/11 |
+| CPU | 9/11 | 9/11 |
+| Recurso no especificado | 0/4 | 0/4 |
+| Memoria de aplicaciones | 0/1 | 0/1 |
+| Total | 39/50 | 40/50 |
 
-| Tiempo y recursos | Resultado |
+| Qué falló en 813 | Casos |
 |---|---:|
-| Duración de las 50 consultas consecutivas | 253,406 segundos |
-| Espera mediana por respuesta | 4,512 segundos |
-| Percentil 95 de espera | 7,133 segundos |
-| Máximo de espera | 7,278 segundos |
-| Pico de VRAM | 3.499,55859375 MiB |
-| Pico de RAM residente | 2.455,98828125 MiB, inferior a 4.096 MiB |
+| Dice que muestra diez procesos, pero aparecen cuatro o cinco. | 6 |
+| Confunde una fila devuelta con la cantidad total observada. | 2 |
+| Publica el nombre de un campo interno. | 1 |
+| Agota los reintentos y no entrega respuesta. | 1 |
+| Atribuye la memoria de un proceso a toda una aplicación. | 1 |
 
-La espera mide eventos registrados de cada turno completado, no voz. La VRAM queda bajo el techo de 4.096 MiB; RAM y VRAM se miden por separado. Hubo telemetría de GPU y cero infracciones en el árbol de procesos medido. La ejecución terminó con código 0 y mantuvo intactos sus componentes. Aún no acredita interfaz visible, voz ni el ciclo completo de BAXY funcionando junto.
+La respuesta agotada fue rechazada por contener «current context», una expresión normal que una regla trata como código. Además, afirmaba haber comprobado fuera del alcance observado. Ambos defectos quedan separados; retirar ese veto no convierte la respuesta en verdadera.
 
-| Qué falló | Qué falta resolver |
-|---|---|
-| Tres respuestas confunden la cantidad observada con el recorte. | Mantener los 139 observados aunque se devuelvan uno, dos o tres. |
-| Seis respuestas dicen que muestran diez procesos pero enseñan uno o cuatro. | Hacer coincidir lo que se afirma con las filas que realmente aparecen. |
-| Una respuesta atribuye la memoria de un proceso a toda una aplicación. | Verificar qué procesos pertenecen a la aplicación y su consumo agregado. |
+| Tiempo y recursos 813 | Resultado |
+|---|---:|
+| Duración de 50 consultas consecutivas | 262,844 segundos |
+| Espera mediana hasta terminar el turno | 4,726 segundos |
+| Percentil 95 de espera | 7,016 segundos |
+| Máximo de espera | 9,587 segundos |
+| Pico de VRAM | 3.497,56 MiB |
+| Pico de RAM residente, por separado | 2.449,81 MiB |
 
-En un ranking de CPU sin cantidad solicitada, presentar menos filas puede ser válido si el recorte es explícito. H0364 mostró correctamente dos máximos de CPU de 145 procesos observados y declaró esos dos; no tenía una obligación de mostrar diez. El problema pendiente es afirmar cantidades que no coinciden con lo observado o mostrado.
+La VRAM queda bajo el techo de 4 GB y la guarda operativa de 3.800 MiB. La RAM se mide aparte. Hubo cero infracciones. La espera incluye 49 respuestas publicadas y un turno fallido; no mide voz. Esta ejecución no acredita interfaz visible ni el conjunto completo de BAXY funcionando con voz.
 
-| Validación disponible | Resultado y límite |
-|---|---|
-| Siete suites del candidato 810 | 247 aprobadas, cero omisiones, 3,04 segundos. |
-| Controles Fast 810 | Salida 0; compilación Release en 22,18 segundos, cero advertencias y errores; 30 archivos comprobados sin cambios. |
-| Full 804, base anterior | Python: 12.714 aprobadas, 3 omisiones y 466 subpruebas. .NET: 4.642 aprobadas y 1 omisión agregada. Las 16 omisiones optativas impresas se solapan y no se suman. |
-
-No hay Full 810 acreditada. Ninguna omisión cuenta como aprobada. Faltan la validación Full acumulada para adoptar y la Full final de cierre.
-
-El candidato siguiente, 812, ya pasó sus controles de integración: unir cada cantidad con el grupo de procesos al que corresponde en los datos que recibe el narrador. La raíz integró siete líneas en la proyección existente, sin cambiar instrucciones ni el verificador.306pruebas aprobadas, cero omisiones, en3,34segundos; Fast correcto con compilación22,94segundos y cero advertencias/errores. Falta medir sus respuestas en las mismas50consultas; no se adopta todavía.
+812 pasó 306 pruebas, cero omisiones, en 3,34 segundos; Fast correcto y compilación Release 22,94 segundos, sin advertencias ni errores. 814 pasó las mismas 306 pruebas en 3,62 segundos; Fast pasó: compilación Release en 25,34 segundos, sin advertencias ni errores. El Full 804 anterior dio 12.714 pruebas Python aprobadas, 3 omisiones y 466 subpruebas; .NET 4.642 aprobadas y 1 omisión agregada, con 16 optativas impresas que se solapan. Ninguna omisión cuenta como aprobada. Faltan Full acumulado de adopción y Full final.
 
 | Avance formal | Estado |
 |---|---|
 | Encuesta | 28/742 cubiertos; 714 abiertos; 0 no aplicables. |
 | Matriz C03 | 3/11 cumplidas; 5 contradichas; 3 pendientes. |
 | Categorías nuevas cerradas | 0; total completo no definido. |
-| Ocho rutas de respuesta | Pendientes. |
 | Apertura de aplicaciones | 75 casos preparados, sin ejecutar. |
 
-Estos recuentos no son un porcentaje de cierre de C03. Siguen pendientes las demás conductas, cien turnos de aceptación, errores y recuperación, interfaz real, voz y validación final. No hay plazo fiable de cierre.
+Estos recuentos no son un porcentaje de cierre. Faltan las conductas restantes, las ocho rutas, cien turnos de aceptación, recuperación, interfaz real, voz y validación final. No hay un plazo fiable de cierre.
 
-BAXY permanece cerrado para uso manual. Encuesta 742/revisión 1248 intacta; los cambios del dueño se conservan. Última publicación verificada: f4480bf2 en Goal-c03; main permanece en 5f572ee1.
+La prueba de permisos ordinarios del Administrador de tareas no funcionó: Windows creó de nuevo una instancia elevada y no expuso las filas. La vía queda descartada en esta máquina. Se pidió cerrar esa ventana; el trabajo independiente continúa. BAXY permanece cerrado para uso manual. Encuesta 742/revisión 1248 y cambios del dueño conservados. Última publicación verificada: 2bb04ef4 en Goal-c03; main 5f572ee1 intacto.

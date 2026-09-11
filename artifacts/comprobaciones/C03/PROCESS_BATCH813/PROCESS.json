@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-11T05:05:46.502478+00:00",
+  "launcher": 33772,
+  "runner": 30596,
+  "command": [
+    "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
+    "main.py",
+    "--conductor",
+    "--profile",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-profile813",
+    "--capture",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch813-private\\capture",
+    "--turns-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch813-private\\turns.jsonl",
+    "--timeout-ms",
+    "120000"
+  ]
+}

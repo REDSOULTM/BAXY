@@ -1,0 +1,13 @@
+{
+  "candidate": 814,
+  "product": 815,
+  "panel": "Same frozen50 cases795; unchanged SHA/criteria/observations rubric.",
+  "runner_sha256": "cfadfc0297dcda56a60bf25494877b4568f39d6078766f04a70aceec8e55457f",
+  "reviewer_sha256": "4358fe51dd5879f89a9601f75673147f9681734137c6e90150bfba5a4a28fafb",
+  "ready": true,
+  "owners": 306,
+  "skipped": 0,
+  "fast_exit": 0,
+  "published_before_launch": true,
+  "adopted": false
+}

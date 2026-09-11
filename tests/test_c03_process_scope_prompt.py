@@ -74,7 +74,6 @@ def test_verified_process_scope_reaches_first_prompt_and_existing_retry(
         assert "include every supplied row once, in that order" in system
         assert "keeping its name, processid and observed resource value and unit together" in system
         assert "even for a single result" in system
-        assert "state how many rows you actually list" in system
         assert "disclose when the list is a subset" in system
         assert "a process working set is not an application total" in system
 

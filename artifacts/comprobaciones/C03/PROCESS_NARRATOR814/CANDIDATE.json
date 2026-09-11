@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-11T05:22:39.822602+00:00",
+  "candidate": 814,
+  "adopted": false,
+  "base_commit": "2bb04ef4a3951f4862f2ba41697da0c6b28a1919",
+  "changed_files": [
+    "src/baxy_mind/llm.py",
+    "tests/test_c03_process_scope_prompt.py"
+  ],
+  "difference": "Remove only the obligation to recite both counts on every list/ranking reply. Count-only instruction, subset disclosure, selected rows and all projected facts remain unchanged. No new layer, verifier or output template.",
+  "root_review": "Exact two-file diff: one prompt clause removed and its obsolete string assertion removed. All count, scope, identity, row-order and first/retry behavior tests retained, including direct valid count replies in both languages. Data812 unchanged.",
+  "cause": "81339/50 vs81140: six false displayed cardinalities, two observed-versus-returned confusions, internal field leak, exhausted terminal and app aggregation failure. Obliging both counts in every reply remains a hypothesis; no improvement claimed before815.",
+  "owners": "Root eight complete suites306 passed/0skipped/3.62s; command chunke7207b exit0. Includes direct valid count replies and retry ES/EN, preserving the no-extra-call check.",
+  "baseline_full": "Full804/FULL_RETRY1 is previous baseline only, not Full814. Python-only814 owners+Fast precede815; cumulative adoption and final Full remain required.",
+  "unchanged": "Model, backend, sampler, budgets, factual checker, count representation812, identities810, canonical observations, frozen50 panel.",
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "utc": "2026-09-11T05:20:41.333284+00:00",
+  "launcher": {
+    "pid": 4196,
+    "elevated": false,
+    "integrity_rid": 8192
+  },
+  "created_pid": 8864,
+  "created_exit": 2147500036,
+  "targets": [
+    {
+      "pid": 8204,
+      "elevated": true,
+      "integrity_rid": 12288,
+      "create_time": 1789104036.52343,
+      "parent_pid": 8864
+    }
+  ],
+  "environment_scope": "Only new child; no global environment, registry, manifest or security setting changes.",
+  "client_integrity": "Computer Use helper not exposed by its API; unknown, not inferred.",
+  "ui_readability": "not_yet_observed",
+  "close": "not_yet_attempted"
+}

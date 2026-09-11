@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-11T05:17:50.505006+00:00",
+  "session": 85624,
+  "collected_exit_code": 0,
+  "runtime_absence_check": "Root Get-CimInstance after collection: no Baxy.exe, baxy-core.exe, llama-server.exe, Taskmgr.exe or testhost.exe.",
+  "adopted": false,
+  "adoption_reason": "39/50 vs81140;3gains4losses including count regression and exhausted terminal. Cannot close category or adopt as completed solution.",
+  "terminals": {
+    "published_final": 49,
+    "composition_failed": 1
+  },
+  "rubric_note": "CPU06 names two true maxima, explicitly calls them two, and reports ten supplied rows, a true payload fact. It does not claim ten displayed. No count requested; unchanged rubric from811H0364.",
+  "latency_label_correction": {
+    "before_sha256": "9c8182e30f3a021987cc8cf6d9a12946bd9f15c2de80000110c72e582da82710",
+    "before_fragment": "completed finals only.",
+    "after_fragment": "all 50 completed terminals, including one composition_failed in813.",
+    "reason": "Inherited metric label said finals only while times() includes all completed terminals. Only this813 label corrected before closure; all raw timings and judgments unchanged, earlier receipts untouched."
+  },
+  "diagnosis_pending": "count07 initial draft available and accepted by Python composer; downstream internal_code/recovery veto needs owner diagnosis. No claim of zero vetos.",
+  "scope": "All50 root judgments saved before assembler; no acceptance100, UI, voice or survey credit."
+}

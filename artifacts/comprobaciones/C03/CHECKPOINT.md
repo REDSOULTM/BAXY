@@ -1,3 +1,9 @@
+814 validado: eliminación de una obligación redundante en el párrafo de rankings, dos archivos +1/-3 líneas.306dueñas pass/0skip/3,62s;Fast0 recogido69115,Release25,34s,31pinsintactos.815 listo mismos50 tras publicación.81339/50 preservado;812sinadoptar. TaskManager814 se relanza elevado;UIA sinfilas,cierre manual solicitado una vez. Encuesta28/714/0;matriz3/11;C03EN_CURSO.
+
+813 completo: 39/50 válidos, 11 fallidos; tres ganancias/cuatro pérdidas frente a81140/50. Listas11/11,conteos10/12,memoria9/11,CPU9/11,indeterminado0/4,app0/1.49publicados y1composition_failed;262,844s,mediana terminal4,726s;VRAM3497,56MiB/RAMresidente2449,81MiB,sin infracciones.812 no mejora el conjunto ni se adopta. Diagnóstico814 de primer veto y vía TaskManager ordinaria pendientes. Encuesta28/714/0;matriz3/11;C03EN_CURSO.
+
+813 activo, sesión85624/launcher33772: mismos50, fuente812 cuentas ligadas a población. 306dueñas pass/0skip,Fast0/Release22,94s,31pins. Publicado2bb04ef4,originigual/mainintacto. Raíz adjudica contra observaciones nuevas; sin fuente/Full duranteGPU.81140/50 preservado,sin adopción. Encuesta28/714/0;matriz3/11;C03EN_CURSO.
+
 812 validado:306dueñas pass/0skip/3,34s;Fast0 recogido63356,Release22,94s,0advertencias/errores,31pinsintactos. Siete líneas ligan cuentas a población, sin prompt/checker.813 listo mismos50 tras publicación. 81140/50 preservado,10ganancias/7pérdidas;sin adopción. Encuesta28/714/0;matriz3/11;C03EN_CURSO.
 
 812 integrado: siete líneas de proyección ligan cuentas a población, sin prompt/checker. 306dueñas pass/0skip/3,34s;Fast activo63356/PID4048,31pins.813 preparado mismos50, worktree retirado tras snapshot exacto.81140/50 preservado,10ganancias/7pérdidas,sin adopción. Encuesta28/714/0;matriz3/11;C03EN_CURSO.

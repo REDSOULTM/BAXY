@@ -1,0 +1,66 @@
+{
+  "source_candidate": 812,
+  "source_adopted": false,
+  "new_coverage": 0,
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "cases": [
+    {
+      "case_id": "H0133",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Diez instancias/PIDs y magnitudes MB fieles en orden;139accesibles observados/10mostrados y subconjunto explícito."
+    },
+    {
+      "case_id": "H0158",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Diez instancias/PIDs y valores MB conservados;139accesibles observados/10mostrados como subconjunto, sin declarar totalidad del sistema."
+    },
+    {
+      "case_id": "H0169",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Muestra cuatro PIDs/valores de memoria correctos pero afirma que incluye diez filas en la lista; cardinalidad falsa."
+    },
+    {
+      "case_id": "H0364",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Cinco instanciasCPU y porcentajes actuales correctos, pero declara diez listadas mientras muestra cinco; diferencia del recorte explícito veraz en811."
+    },
+    {
+      "case_id": "H0470",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "139accesibles observables en esta revisión, sin garantía de completitud del sistema; conteo verdadero y limitado."
+    },
+    {
+      "case_id": "H0650",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Top5 solicitado con PIDs/MB y orden correctos;139observados accesibles/5listados como subconjunto, sin agregación."
+    },
+    {
+      "case_id": "H0669",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Declara memoria y conserva cuatro PIDs/valores, pero afirma diez listados cuando aparecen cuatro; cardinalidad falsa."
+    },
+    {
+      "case_id": "H0675",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Atribuye el working set de una instancia ChatGPT a la aplicación de mayor memoria sin membresía ni agregado observados."
+    },
+    {
+      "case_id": "H0678",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "139observados accesibles durante esta revisión, límite explícito y completitud del sistema no afirmada."
+    }
+  ]
+}
