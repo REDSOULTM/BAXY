@@ -4854,7 +4854,26 @@ def compose_visible_defect(
             return "extra_claim"
         if not clock and re.search(r"(?<!\d)\d{1,2}:\d{2}(?!\d)", stripped):
             return "extra_claim"
-        if "?" in stripped or "¿" in stripped:
+        question_text = stripped
+        if (
+            operation in {"browser.navigate", "browser.navigate.named"}
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+        ):
+            observed_urls = {
+                value for key in ("requestedUrl", "finalUrl")
+                if isinstance(value := observed_dict.get(key), str) and value
+            }
+            question_text = re.sub(
+                r"""(?<![\w:/])https?://[^\s<>"'“”‘’]+""",
+                lambda found: found[0].replace("?", "") if (
+                    found[0] in observed_urls
+                    or found[0].rstrip(".,;:!)]}»") in observed_urls
+                ) else found[0],
+                stripped,
+                flags=re.IGNORECASE,
+            )
+        if "?" in question_text or "¿" in question_text:
             return "extra_claim"
         closed_request = re.search(r"\bcierr|\bclose\b", (user_text or "").casefold())
         if closed_request and not (isinstance(app_name, str) and app_name.strip()):
