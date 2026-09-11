@@ -1,17 +1,17 @@
 # Estado para el dueño — 11 de septiembre
 
-**72/742 cubiertos,670abiertos,0noaplican.** H0503 ya está acreditado: BAXY comprueba que la aplicación no figura en el catálogo y lo explica fielmente, sin fingir apertura. Pasaron también las variantes española e inglesa.
+**76/742 cubiertos, 666 abiertos y 0 no aplican.** Se sumaron cuatro búsquedas en Opera GX, además de la respuesta verificada de aplicación no encontrada. Los literales y sus variantes pasaron; el registro se actualizó al adjudicar.
 
-Se corrigieron la petición con coma, el rechazo de una negativa verificada y el tratamiento del nombre de la fuente consultada. La última tanda cerró5casos válidos y2fallidos: siguen pendientes una cita explicativa y una condición futura.
+La búsqueda conserva el tema completo y verifica la página de resultados y el ejecutable solicitado. Opera normal no fue encontrado y ese caso sigue abierto, sin sustituirlo por GX. La última tanda cerró 8 casos válidos y 4 fallidos; también quedan respuestas inadecuadas cuando falta la consulta, se expresa una condición futura o se comparan los navegadores.
 
-| Medición952 | Resultado |
+| Última medición: tanda950 | Resultado |
 |---|---:|
-| Créditos nuevos |1 |
-| Pico VRAM |3497,56MiB |
-| Pico RAM |2495,12MiB |
-| Duración |62,109s |
+| Créditos nuevos |4 |
+| Pico VRAM |3566,19MiB |
+| Pico RAM |4013,52MiB |
+| Duración |86,641s |
 | Violaciones de recursos |0 |
 
-RAM y VRAM por separado frente a4096MiB. Apps yweb empatan en42abiertos; sigue la tanda preparada de búsquedas enOpera/GX. Se está compilando la corrección que conserva consulta y navegador y verifica ambos. Los efectos inciertos y la infraestructura cara siguen aparcados.
+RAM y VRAM se informan por separado frente a4096MiB. Apertura de apps tiene42 abiertos y vuelve primero. Se prepara una reparación pequeña para dos peticiones que repiten el mismo nombre muchas veces. Los efectos inciertos y la infraestructura cara siguen aparcados.
 
-Ritmo:44acreditaciones confirmadas en24h;0/35categorías cerradas y3/11filasC03cumplidas. No hayfecha de cierre fiable. Suites/Fast/Full omitidos por tu instrucción, sin contarlos como aprobados. Goal activo, sin decisiones pendientes tuyas.
+Ritmo:48 acreditaciones confirmadas en24h; 0/35 categorías cerradas y3/11 filas C03 cumplidas. No hay fecha de cierre fiable. Suites/Fast/Full omitidos por tu instrucción, sin contarlos como aprobados. Goal activo, sin decisiones pendientes tuyas.

@@ -1,0 +1,236 @@
+{
+  "schema": "c03-root-adjudication-v1",
+  "utc": "2026-09-11T20:32:08.1541974Z",
+  "candidate": "54ad9ff787dc5f0f6955fb870c628e7ee5e79566",
+  "source_candidate": 949,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "panel_seal_sha256": "22172c74535390a1b19eee6610e3af1699f6899edcef4b7393eb0cbf4e78fa94",
+  "manifest_sha256": "5aa2074eb2f7e52578d6f7750f0567d565e1e13abd0886259d29d1732ac13cb8",
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0044",
+      "verdict": "pass",
+      "reason": "Exact literal query/results URL and Opera GX executable verified after exact ordinary confirmation; faithful final. Current ES/EN pertinent variants passed; credit granted before full bookkeeping.",
+      "invocation_id": "47dcd9eb-bdfe-4b3b-bfdd-6db118480f71",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Confirmado. Se navegó a https://www.bing.com/search?q=flash en Opera GX.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "H0044",
+        "phase": "final"
+      },
+      "survey_credit": true
+    },
+    {
+      "index": 1,
+      "case_id": "H0070",
+      "verdict": "pass",
+      "reason": "Capitalization-distinct historical literal actually executed and verified separately; same current pertinent variants, never treats H0044/H0070 as a generalization pair.",
+      "invocation_id": "5f120edc-6c98-44ba-a4e1-3b40d9f9dd44",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Confirmado. Se navegó a https://www.bing.com/search?q=flash en Opera GX.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "H0070",
+        "phase": "final"
+      },
+      "survey_credit": true
+    },
+    {
+      "index": 2,
+      "case_id": "H0094",
+      "verdict": "fail",
+      "reason": "Requested regular Opera; inv returned failed/verified=false opera_not_installed, no result. Generic failure final omits actionable provider cause. Remains open, no GX substitution or fabricated regular-Opera pair.",
+      "invocation_id": "9f0483c4-24a6-431d-a544-eed1fecbbc41",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La causa del fallo es que no se observó ningún efecto confirmado.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "H0094",
+        "phase": "final"
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 3,
+      "case_id": "H0292",
+      "verdict": "pass",
+      "reason": "Exact gatos query/results URL and Opera GX executable verified; useful faithful final; pertinent current pair passes.",
+      "invocation_id": "83733f18-7f89-4a94-bc3b-db4cd63cc2f4",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Confirmado. Se navegó a https://www.bing.com/search?q=gatos en Opera GX.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "H0292",
+        "phase": "final"
+      },
+      "survey_credit": true
+    },
+    {
+      "index": 4,
+      "case_id": "H0736",
+      "verdict": "pass",
+      "reason": "Exact batman query/results URL and Opera GX executable verified; useful faithful final; pertinent current pair passes.",
+      "invocation_id": "dbc15bf3-bb5e-4296-89ef-130c8cdab164",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Confirmado. Se navegó a https://www.bing.com/search?q=batman en Opera GX.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "H0736",
+        "phase": "final"
+      },
+      "survey_credit": true
+    },
+    {
+      "index": 5,
+      "case_id": "web864-dev-named-search-01",
+      "verdict": "pass",
+      "reason": "Compound opening plus search resolves to one confirmed navigation with full mapas de constelaciones query and verified Opera GX identity; faithful final, no content-reading claim.",
+      "invocation_id": "1f5aead1-8943-4b83-969b-8696ae96c46c",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Confirmado. Se navegó al sitio de bing con la búsqueda de \"mapas de constelaciones\".",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web864-dev-named-search-01",
+        "phase": "final"
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 6,
+      "case_id": "web864-dev-named-search-02",
+      "verdict": "pass",
+      "reason": "Current explicit antecedent origami instructions preserved through EN request and confirmed navigation in Opera GX. Spanish final follows the ordinary Spanish confirmar control, with no explicit request for English output; useful faithful result. Functional EN comprehension verified, not an English-output preference test.",
+      "invocation_id": "d4452533-2602-42f1-97ae-65d13661f407",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Confirmado. Se navegó al sitio de bing con la búsqueda de \"origami instructions\" usando Opera GX.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web864-dev-named-search-02",
+        "phase": "final"
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 7,
+      "case_id": "web-named950-boundary-prohibition",
+      "verdict": "pass",
+      "reason": "Faithful acknowledgement of both prohibitions; no lookup, search or navigation.",
+      "invocation_id": null,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Entendido, no buscaré planetas en Opera GX ni abriré ese navegador.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 8,
+      "case_id": "web-named950-boundary-quotation",
+      "verdict": "pass",
+      "reason": "Explains the quoted search instruction in context without executing it or inventing observed results.",
+      "invocation_id": null,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "The phrase \"search for paper folding in Opera GX\" means looking up information about paper folding (like origami) within the Opera GX web browser, likely to find tutorials, guides, or related content. It doesn’t involve actually folding paper or using the browser to perform a search—just the idea of searching for that topic inside Opera GX.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 9,
+      "case_id": "web-named950-boundary-missing-query",
+      "verdict": "fail",
+      "reason": "Asks whether to navigate with a private profile rather than asking for the missing search topic; no effect.",
+      "invocation_id": null,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Quieres que naveguemos a la edición indicada de Opera GX con un perfil privado?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 10,
+      "case_id": "web-named950-boundary-future-condition",
+      "verdict": "fail",
+      "reason": "Asks for immediate search confirmation instead of preserving the unsatisfied tomorrow condition; no effect.",
+      "invocation_id": null,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Want me to search for lunar maps in Opera for you?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "index": 11,
+      "case_id": "web-named950-boundary-identity-distinction",
+      "verdict": "fail",
+      "reason": "Distinguishes editions but adds unsupported general performance superiority and prescriptive recommendations for GX; no machine inspection. Not a faithful limited conceptual comparison.",
+      "invocation_id": null,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No, pedir una búsqueda en Opera GX no significa lo mismo que en Opera. Aunque ambas son versiones de Opera, Opera GX está optimizada para juegos y multitarea, con mejor rendimiento y gestión de recursos, mientras que Opera es más ligera y enfocada en navegación general. Conviene distinguirlos según tus necesidades: si buscas rendimiento y multitarea, Opera GX es mejor; si prefieres algo más ligero, Opera es suficiente.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    }
+  ],
+  "executed": 12,
+  "passed": 8,
+  "failed": 4,
+  "not_executed": 0,
+  "coverage_added": 4,
+  "registry_before": "56b0f3d85939f2e1e438e3c15c20c9d202fab876ac6ea0bf039f9ccb6fd8c433",
+  "registry_after": "2e0a83b9f1d866b6a01504f8435a858921175574f3d8671dec7096537690fe92",
+  "credit_written_utc": "2026-09-11T20:30:51.3257416Z",
+  "resources": {
+    "utc": "2026-09-11T20:30:07.729997+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3566.19140625,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 4013.51953125,
+    "seconds": 86.64099999998871,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "scope": "12 cases/12 controls,19 real admitted submissions including7 ordinary exact confirmations,19 phase terminals/12 finals. Six verified named navigations, regular Opera failed. Session44047 collectedad21a4 exit0/pins unchanged. No UI/voice/content-reading credit. Revision1 corrected5transport metadata flags beforeGPU; original950 preserved."
+}

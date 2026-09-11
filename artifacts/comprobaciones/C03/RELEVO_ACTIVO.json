@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "72/742covered,670open,0NA;44grants24h,0/35categories,C03 3/11.9527executed5pass2fail,+H0503.",
-  "continuation": "Collect build949 session55757, sync effective/published Core, commit/push5sourcefiles; seal950 manifest584/18/5 andprepare/run.950rootreview57589c/00932f complete; seal9a3f68aa runner22f69bdb.952completeb21de8 ROOT63908a05,+H0503alreadyregistered; no fullreplay.953agentprepare934 plansnexteligibleapps bymass. No tests/Fast/Full.",
+  "checkpoint": "76/742 covered,666 open,0NA;48 grants24h,0/35categories,C03 3/11.95012executed8pass4fail,+4credits.",
+  "continuation": "950 complete session44047 collectedad21a4 exit0,pins intact,ROOTc07f0881;4credits already registered.954 effect_intent.py WIP integrated plus rootcanonicalidentitycomparison; prepare934955 seals2original854TAIL literals+2variants+5boundaries. Review955 thencommit/Python-onlymanifest584/18/5reuse949build andprepare/run. Apps42 first, web38. No tests/Full.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -29,12 +29,12 @@
   },
   "surveyVerificationCounts": {
     "not_applicable": 0,
-    "open": 670,
-    "covered": 72
+    "open": 666,
+    "covered": 76
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "91dc9d46c1a14ca4dcd5f28fdd5cdf2bdfbf799e",
-  "workStatus": "building949_before950",
+  "publishedSourceCommit": "54ad9ff787dc5f0f6955fb870c628e7ee5e79566",
+  "workStatus": "integrating954_preparing955",
   "goalStatusNote": "Owner approved the proposed methodology: omit automated suites, Fast and Full; retain sealed product executions and evidence-based survey credit. Previous scope blocker resolved.",
   "previousGoalTurnClassification": "progress",
   "publishedEvidenceCommit": "0a945cb407d3f3aaede2796c8924a6630bfd392b",

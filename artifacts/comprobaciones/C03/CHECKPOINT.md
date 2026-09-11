@@ -1,10 +1,10 @@
 # C03 — cobertura vigente
 
-**72/742 cubiertos,670abiertos,0noaplican;44acreditaciones confirmadas en las últimas24h;0/35categorías cerradas.** Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: 56b0f3d85939f2e1e438e3c15c20c9d202fab876ac6ea0bf039f9ccb6fd8c433. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
+**76/742 cubiertos, 666 abiertos, 0 no aplican; 48 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Matriz C03: 3/11. Registro SHA256: 2e0a83b9f1d866b6a01504f8435a858921175574f3d8671dec7096537690fe92. Cifras en SURVEY_COVERAGE_CURRENT.json.
 
 El dueño reanudó el goal y aclaró el método: omitir suites automáticas, Fast y Full; mantener ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. El bloqueo anterior de alcance está resuelto. También autorizó cerrar aplicaciones para liberar RAM. No se cuentan pruebas omitidas como aprobadas.
 
-Fuente publicada951:91dc9d46c1a14ca4dcd5f28fdd5cdf2bdfbf799e. Última ejecución952:7casos5pass/2fail,+H0503.949 fuenteweb integrada en build,950 panelrevisado siguiente. Historia debajo.
+Fuente949 publicada54ad9ff787dc5f0f6955fb870c628e7ee5e79566. Última950:12casos8pass/4fail,+4créditos. Apps42 sigue primera;954/955 en preparación. Historia debajo.
 
 Últimos tres tramos:
 
@@ -24,12 +24,13 @@ Siguiente categoría por masa: **web46 abiertos**, seguida de apps44. Agente893 
 
 No repetir: paneles completos854/TAIL,861,864,881,885,892; campañas de modelo/backend ya cerradas; Full843 histórico. Full/Fast/suites nuevos se omiten por orden posterior. H0675/OCR/nuevos providers y los9 Steam854 siguen aparcados con sus reanudaciones heredadas. No reintentar efectos inciertos H0183/Calculadora, H0151/Explorer ni Steam/Discord sin resolver su causa. Paint propio de885 se cerró normalmente y está fuera; Spotify preexistente se conservó. Audio861 ya restaurado31/sin silencio: no repetir su restauración. Los3 negativos y18 sin marca conservan sus marcas y límites.
 
-Tabla de la taxonomía846, ordenada por requisitos abiertos:
+Cobertura vigente por categoría de la taxonomía846, ordenada por abiertos:
+
 | Categoría | Total | Cubiertos | Abiertos | No aplican |
 |---|---:|---:|---:|---:|
-| Abrir aplicaciones | 54 | 11 | 43 | 0 |
-| Navegación y búsqueda web | 46 | 4 | 42 | 0 |
+| Abrir aplicaciones | 54 | 12 | 42 | 0 |
 | Música | 39 | 0 | 39 | 0 |
+| Navegación y búsqueda web | 46 | 8 | 38 | 0 |
 | Estado de hardware y sistema | 40 | 2 | 38 | 0 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 0 | 38 | 0 |
 | Conocimiento, razonamiento y creatividad verbal | 37 | 3 | 34 | 0 |
@@ -316,3 +317,17 @@ Empateapps42/web42: saleweb949/950ya preparado.949parche621ab1f0a8a3bd2a61a7754c
 950panel12casos/24wire,5literales+2variantesoriginalesfallidas+5límites; máximo19admisiones/7confirmaciones. Rootreview57589c/00932f completo: sólofasefinaladjudicable, exactconfirmation904 compara args reales, no losrellena. SEAL9a3f68aaeec249e32a3d9e747fb0fbb5ad7aa6a9718d98590014c851eeb19040 runner22f69bdb9901e2692dbf2e2196c59b46e250079ddc6eb057f0d96d3ee9283db9. H0094Opera sinparpertinente aún, no atribuirvariantesGX. Resolverrutasactuales tieneGX; noOpera enlasrutashabituales, no sustituirnavegador. Falta build/sync/commit/manifest950 yprepare/run.953prepara siguienteapps42 conmaterialelegible, sin repetirefectosinciertos. Goalactivo/progreso.
 
 949 adoptado tras revisión raíz e861de/f6ee79: build real exit0 y cierre de servidores exit0, sesión55757 recogida e16e89. Core efectivo sincronizado. Panel950 completo y6pins históricos verificados79ed9a. Sin suites ni Full, sin créditos anticipados. Siguiente inmediato: manifest950 y ejecución sellada.
+
+## 950 cerrado: cuatro búsquedas acreditadas; sigue apertura de aplicaciones
+
+Encuesta: 76/742 cubiertos, 666 abiertos, 0 no aplican. Últimas 24 h: 48 acreditaciones confirmadas. Categorías: 0/35; matriz C03: 3/11. Registro SHA256: 2e0a83b9f1d866b6a01504f8435a858921175574f3d8671dec7096537690fe92.
+
+950 ejecutó 12 casos: 8 válidos, 4 fallidos. Se acreditaron H0044, H0070, H0292 y H0736 a las20:30:51.3257416UTC, después de comprobar sus literales y los dos pares actuales. Seis navegaciones reales verificaron consulta completa, página de resultados y ruta observada del ejecutable Opera GX. Pares: compuesto ES inv1f5aead1-8943-4b83-969b-8696ae96c46c y antecedente EN invd4452533-2602-42f1-97ae-65d13661f407. La respuesta final EN fue española después del control ordinario «confirmar»; no había petición explícita de respuesta inglesa. Se acredita comprensión y ejecución, no preferencia de salida inglesa ni lectura del contenido web.
+
+H0094 conserva open: Opera normal no fue encontrado por el provider (inv9f0483c4-24a6-431d-a544-eed1fecbbc41, opera_not_installed). No se sustituyó por GX. El mensaje final omitió la causa útil. También fallaron límites de consulta ausente, condición futura y comparación con afirmaciones de rendimiento no sustentadas. Prohibición y explicación de cita válidas; sin efectos en los límites.
+
+ROOT_ADJUDICATION950 SHA c07f0881ec1de4a6aa1f52d93c737236fe1dc26f9cb2e45ca7d9e5c9466776e6. Sesión44047 recogidaad21a4, exit0, 19 admisiones reales/7 confirmaciones/12 finales, pins íntegros.86,641s; VRAM3566,19MiB y RAM4013,52MiB; cero violaciones. Sin suites/Fast/Full, UI o voz. El fallo previo prepare0389ae fue sólo transporte antes de GPU: revisión1 corrigió cinco booleanos conservando panel y wire byteidénticos. No se repitió una ejecución de producto.
+
+Fuente949 publicada54ad9ff787dc5f0f6955fb870c628e7ee5e79566. Apps42 queda primera frente a web38. PLAN953 selecciona H0166/H0512 por repetición uniforme de Chrome, potencial2 sin nueva infraestructura.954 parche externo6f526cb40f1494560a91cf96452573540d3f1e6d21fe43a02f4ebf0eec39785b revisadoe50f0c y aplicadof2a37a; raíz añade comparación de identidad canónica con el mismo resolver para nombres como Bloc de notas/windows.notepad. Se exige una unidad repetida completa y tokens exactos de una única identidad del catálogo; nada de alias o similitud nuevos. Sólo effect_intent.py, sin build necesario.955 prepara dos literales íntegros, dos variantes y cinco límites. Falta sellar candidato y ejecutar; no atribuir créditos al código. No reabrir953/937–939 ni repetir854TAIL entero.
+
+954 adoptado tras revisión raíz e50f0c/f2a37a: repetición íntegra de una identidad única, comparación canónica por resolver existente para Bloc de notas/windows.notepad. Sólo effect_intent.py; no build ni suites nuevos.955 revisado completo08f348: 9casos18wire, dos históricos íntegros incluidas diferencias de whitespace,2variantes y5límites. SEAL5e7d81063c22cd6ea71f579d3cabefb326e87ac587755f7d8e93ad9563dfd97f runner720f8e88288504ddd83fac3c25676f0b087203b62de721fed2bba6dd0013d048.76/742,666open,0NA;48altas24h,0/35categorías. Siguiente: manifest955, prepare/run.

@@ -1,12 +1,12 @@
 {
-  "utc": "2026-09-11T20:21:52.0592902Z",
-  "covered": 72,
-  "open": 670,
+  "utc": "2026-09-11T20:32:08.2446244Z",
+  "covered": 76,
+  "open": 666,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 44,
+  "covered_updated_last_24h": 48,
   "updated_recent_ids": [
     "H0017",
     "H0035",
@@ -51,9 +51,13 @@
     "H0267",
     "H0688",
     "H0397",
-    "H0503"
+    "H0503",
+    "H0044",
+    "H0070",
+    "H0292",
+    "H0736"
   ],
-  "confirmed_new_grants_last_24h": 44,
+  "confirmed_new_grants_last_24h": 48,
   "first_grant_date_not_distinguished_for_recent_ids": [],
   "categories": [
     {
@@ -65,19 +69,19 @@
       "not_applicable": 0
     },
     {
-      "category": "web_navigation_search",
-      "label": "Navegación y búsqueda web",
-      "total": 46,
-      "covered": 4,
-      "open": 42,
-      "not_applicable": 0
-    },
-    {
       "category": "music",
       "label": "Música",
       "total": 39,
       "covered": 0,
       "open": 39,
+      "not_applicable": 0
+    },
+    {
+      "category": "web_navigation_search",
+      "label": "Navegación y búsqueda web",
+      "total": 46,
+      "covered": 8,
+      "open": 38,
       "not_applicable": 0
     },
     {
@@ -121,16 +125,16 @@
       "not_applicable": 0
     },
     {
-      "category": "software_installation",
-      "label": "Instalar y desinstalar software",
+      "category": "messaging",
+      "label": "Mensajería",
       "total": 31,
       "covered": 0,
       "open": 31,
       "not_applicable": 0
     },
     {
-      "category": "messaging",
-      "label": "Mensajería",
+      "category": "software_installation",
+      "label": "Instalar y desinstalar software",
       "total": 31,
       "covered": 0,
       "open": 31,
@@ -257,16 +261,16 @@
       "not_applicable": 0
     },
     {
-      "category": "game_library_navigation",
-      "label": "Bibliotecas y fichas de juegos",
+      "category": "email",
+      "label": "Correo",
       "total": 6,
       "covered": 0,
       "open": 6,
       "not_applicable": 0
     },
     {
-      "category": "email",
-      "label": "Correo",
+      "category": "game_library_navigation",
+      "label": "Bibliotecas y fichas de juegos",
       "total": 6,
       "covered": 0,
       "open": 6,
@@ -313,16 +317,16 @@
       "not_applicable": 0
     },
     {
-      "category": "web_read_summary",
-      "label": "Leer y resumir páginas web",
+      "category": "document_image_creation",
+      "label": "Crear documentos y editar imágenes",
       "total": 2,
       "covered": 0,
       "open": 2,
       "not_applicable": 0
     },
     {
-      "category": "document_image_creation",
-      "label": "Crear documentos y editar imágenes",
+      "category": "web_read_summary",
+      "label": "Leer y resumir páginas web",
       "total": 2,
       "covered": 0,
       "open": 2,
@@ -364,5 +368,5 @@
     "not_executed": 0,
     "coverage_added": 1
   },
-  "registry_sha256": "56b0f3d85939f2e1e438e3c15c20c9d202fab876ac6ea0bf039f9ccb6fd8c433"
+  "registry_sha256": "2e0a83b9f1d866b6a01504f8435a858921175574f3d8671dec7096537690fe92"
 }

@@ -3504,7 +3504,7 @@ def _indexed_authenticated_application_target(
             if target_key in catalog.keys:
                 matches.append((request.start("target") + offset, target_key))
     if not matches:
-        return None
+        return None if installed_query else _repeated_application_target(text, catalog)
     return min(
         matches,
         key=lambda item: (-len(item[1]), item[1], item[0]),
@@ -3656,6 +3656,46 @@ def resolve_application_catalog_app_id(
             continue
         return ranked[0][1]
     return None
+
+
+def _repeated_application_target(
+    text: str,
+    catalog: ApplicationCatalogIndex,
+) -> tuple[int, str] | None:
+    """Resolve a uniform whole-target repetition through one catalog identity."""
+
+    folded = _strip_request_envelope(_fold(text))
+    if len(folded) > 16_384 or not _application_desire_is_positive(folded):
+        return None
+    request = _application_open_request(folded)
+    if (
+        request is None
+        or _is_negated_match(folded, request)
+        or len(_request_clauses(folded)) != 1
+    ):
+        return None
+    matches: set[tuple[int, str]] = set()
+    for target, offset in _application_target_forms(request.group("target")):
+        repeated = re.fullmatch(r"(?P<unit>.+?)(?:\s+(?P=unit))+", target)
+        if repeated is None:
+            continue
+        unit = repeated.group("unit")
+        tokens = set(unit.split())
+        identities = [
+            (name, key) for name, key in catalog.entries
+            if tokens and tokens <= set(key.split())
+        ]
+        if len(identities) != 1:
+            continue
+        name, key = identities[0]
+        # Exact complete tokens and unique membership constrain the existing
+        # resolver; no similarity winner, alias or first-token guess is added.
+        resolved = resolve_application_catalog_app_id(unit, catalog)
+        if resolved is not None and resolved == resolve_application_catalog_app_id(name, catalog):
+            matches.add((request.start("target") + offset, key))
+    if len({key for _, key in matches}) != 1:
+        return None
+    return min(matches)
 
 
 def resolve_application_window_status_name(
@@ -13155,6 +13195,11 @@ def resolve_explicit_effects(
         application_names,
     )
     authenticated_games = build_game_catalog_index(game_catalog)
+    if (
+        "app.open" in available
+        and _repeated_application_target(text, authenticated_applications) is not None
+    ):
+        return EffectIntent(("app.open",), (text,))
     if "browser.navigate.named" in available and _named_browser_search(text) is not None:
         return EffectIntent(("browser.navigate.named",), (text,))
     if (
