@@ -34,10 +34,10 @@
   },
   "schema": "c03-active-relay-current-v2",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-11T23:12:51.344653+00:00",
+  "confirmedAtUtc": "2026-09-11T23:27:13.078331+00:00",
   "branch": "Goal-c03",
   "checkpoint": "97/742covered,645open,0NA;69confirmed grants24h;0/35categories,C03 3/11. This turn+8credits983/986.",
-  "continuation": "Collect agents994/995, review and adopt source if justified, complete confirmation transport revision before993 execution.989 collected; do not restart.",
+  "continuation": "Commit reviewed994/996+App URL projection removal; build996 ready. Generate authorized993 manifest from actual build996, prepare and run revision3. No active product or agents.",
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "9bc1c38d712a676766fb1738638cc8f68532e06b",
   "surveyVerificationCounts": {
@@ -51,7 +51,7 @@
     "total": 35
   },
   "surveyCoverageLast24h": 69,
-  "workStatus": "989_adjudicated_991_deferred_994_repair_995_transport",
+  "workStatus": "994_996_compiled_adoption_pending_993_revision3_sealed",
   "goalStatusNote": "Owner waived automated suites/Fast/Full; scope blocker resolved. No new blocked condition.",
   "previousGoalTurnClassification": "progress",
   "previousGoalTurnClassificationReason": "Four sealed product batches, three source repairs adopted and published, eight literal credits adjudicated, real scheduled effects reconciled; next repair reviewed and panel sealed.",
@@ -72,8 +72,18 @@
     "coverageAdded": 0
   },
   "activeValidation": null,
-  "activeRepairAgent": "apps_intent852/994;prepare934/995",
-  "currentUnpublishedSource": null,
+  "activeRepairAgent": null,
+  "currentUnpublishedSource": {
+    "files": [
+      "src/baxy_mind/__main__.py",
+      "src/baxy_mind/effect_intent.py",
+      "src/Baxy.App/PlannerExecutionSupport.cs",
+      "src/Baxy.App/MainWindowViewModel.cs",
+      "src/Baxy.App/ProductConductor.cs",
+      "src/Baxy.App/ProductConductorHost.cs"
+    ],
+    "build_ready": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conductor-review996-private\\BUILD_READY.json"
+  },
   "preparedNextPanel": "WEB_NAMED993/PREPARATION.json",
   "lastValidation": {
     "status": "historical_only",

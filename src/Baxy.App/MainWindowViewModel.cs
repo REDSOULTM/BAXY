@@ -574,7 +574,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     internal bool HasPendingPlan => _mindPlans.HasPending;
 
-    internal PendingOperationConfirmation? CaptureConductorConfirmation()
+    internal PendingOperationConfirmation? CaptureConductorConfirmation(bool allowVerifiedWebSearchPrefix = false)
     {
         if (Environment.CurrentManagedThreadId != _uiThreadId
             || _isDisposed || !IsInputEnabled || _coreClient?.IsReady != true
@@ -583,9 +583,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             || _memoryTurns.HasConfirmation || _memoryTurns.HasPendingOperation
             || _pendingAudioOperation is not null || _pendingNoteInteraction.Current is not null
             || _mindPlans.Current is not { } execution
-            || execution.Steps.Count != 1 || execution.NextIndex != 0
-            || execution.ReplanCount != 0 || execution.Observations.Count != 0
-            || execution.CompletedMessages.Count != 0 || execution.PendingEffectMayHaveOccurred
+            || !ConductorConfirmationShape(execution, allowVerifiedWebSearchPrefix)
+            || execution.ReplanCount != 0 || execution.PendingEffectMayHaveOccurred
             || execution.Confirmation is not { ReconciliationRequired: false } confirmation
             || !ReferenceEquals(execution.PendingOperation, confirmation.Prepared)
             || _retryableOperations?.SnapshotPendingOperations() is not { Count: 1 } pending
@@ -596,6 +595,53 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
 
         return confirmation;
+    }
+
+    private static bool ConductorConfirmationShape(
+        PendingMindPlanExecution execution,
+        bool allowVerifiedWebSearchPrefix)
+    {
+        if (execution.Steps.Count == 1 && execution.NextIndex == 0
+            && execution.Observations.Count == 0 && execution.CompletedMessages.Count == 0)
+        {
+            return true;
+        }
+
+        // CompleteStep records completed, verified responses. Failed/uncertain
+        // steps retain a boundary or replan; Capture rejects replans separately.
+        return allowVerifiedWebSearchPrefix
+            && execution.Steps.Count == 2 && execution.NextIndex == 1
+            && execution.Steps[0].Operation == "web.search"
+            && execution.CurrentStep.Operation is "browser.navigate" or "browser.navigate.named"
+            && execution.PendingOperation?.OperationName == execution.CurrentStep.Operation
+            && execution.CompletedMessages.Count == 1
+            && execution.Observations.Count == 1
+            && execution.Observations[0] is JsonObject observation
+            && (string?)observation["stepId"] == execution.Steps[0].Id
+            && (string?)observation["operation"] == "web.search"
+            && (string?)observation["status"] == OperationStatuses.Completed
+            && (bool?)observation["verified"] == true
+            && observation["result"] is JsonObject;
+    }
+
+    internal JsonArray CaptureConductorWebSearchEvidence()
+    {
+        if (CaptureConductorConfirmation(allowVerifiedWebSearchPrefix: true) is null
+            || _mindPlans.Current is not { NextIndex: 1 } execution
+            || execution.Observations[0] is not JsonObject observation)
+        {
+            return [];
+        }
+
+        // Existing projection excludes messages, credentials and tokens.
+        return [new JsonObject
+        {
+            ["stepId"] = observation["stepId"]?.DeepClone(),
+            ["operation"] = observation["operation"]?.DeepClone(),
+            ["verified"] = observation["verified"]?.DeepClone(),
+            ["status"] = observation["status"]?.DeepClone(),
+            ["result"] = observation["result"]?.DeepClone(),
+        }];
     }
 
     internal async Task SubmitAsync(

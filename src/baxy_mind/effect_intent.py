@@ -1243,6 +1243,8 @@ def _curated_domain_is_grounded(
             return creation
         return reading and not creation
     if operation in {"browser.navigate", "browser.navigate.named"}:
+        if operation == "browser.navigate" and _symbolic_web_destination(text) is not None:
+            return True
         if operation == "browser.navigate.named" and _named_browser_search(text) is not None:
             return True
         return _has(
@@ -1258,7 +1260,8 @@ def _curated_domain_is_grounded(
         # or local operand. This gate only retains a proposal, never selects it.
         direct_public_search = _direct_public_search_query(text) is not None
         return (
-            _location_recommendation_request(folded)
+            _symbolic_web_destination(text) is not None
+            or _location_recommendation_request(folded)
             or _public_route_lookup_request(folded)
             or _public_calendar_fact_lookup_request(folded)
             or _public_live_lookup_request(folded)
@@ -6955,7 +6958,7 @@ _COVERAGE_ACTION_HEAD = (
     r"sacale|"
     r"restaura|escribe|escribi|type|selecciona|select|copia|copiame|copy|"
     r"edita|edit|convierte|convert|transforma|arrastra|drag|make|navega|navegar|"
-    r"navigate|ve|go|recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|"
+    r"navigate|ve|go|ir|anda|entra|entrar|recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|"
     r"play|pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
     r"consulta|consultar|comprueba|comprobar|checkea|averigua|averiguar|"
     r"find\s+out|inspect|inspecciona|give|prepara|prepare|resolve|"
@@ -11190,6 +11193,55 @@ def _location_recommendation_request(text: str) -> bool:
     )
 
 
+def _symbolic_web_destination(text: str) -> str | None:
+    """Preserve a public site operand without manufacturing its URL."""
+
+    request = _strip_request_envelope(text)
+    desired = _explicit_desire_request(request)
+    if desired is not None:
+        request = request[desired.start("body"):]
+    found = re.fullmatch(
+        r"[¿?¡!\s]*(?:(?:ve|and[aá]|entra|entr[aá]|entrar|ir|navega|navegar|"
+        r"llevame|llévame)\s+a(?:l)?\s+|(?:go|navigate)\s+to\s+|"
+        r"take\s+me\s+to\s+|(?:abre|abr[ií]|abrir|open)\s+"
+        r"(?=(?:(?:la|el|the|a)\s+)?(?:p[aá]gina|page|sitio|site|website|portal)\b))"
+        r"(?P<target>\S.+?)[\s.!?]*",
+        request, re.IGNORECASE,
+    )
+    if found is None:
+        return None
+    folded = _fold(text)
+    if (
+        explicit_non_action_frame(text)
+        or _is_meta_or_tool_denial(folded)
+        or _is_past_or_hypothetical_state(folded)
+        or _has_unsupported_deferred_effect(folded)
+        or _has_contradictory_correction(folded)
+        or len(_request_clauses(folded)) != 1
+        or _named_browser(folded) is not None
+        or _has(folded, r"https?://|\b(?:[a-z0-9-]+\.)+[a-z]{2,63}\b")
+        or _has(folded, r"\b(?:archivos?|files?|carpetas?|folders?|documentos?|"
+                r"documents?|descargas|downloads?|escritorio|desktop|notas?|notes?|"
+                r"tareas?|tasks?|recordatorios?|reminders?|ventanas?|windows?|"
+                r"aplicaciones?|applications?|apps?)\b")
+    ):
+        return None
+    target = re.sub(
+        r"^(?:(?:la|el|the|a)\s+)?(?:p[aá]gina|page|sitio|site|website)"
+        r"(?:\s+(?:oficial|official|principal|main|home))?\s+(?:(?:de|of)\s+)?",
+        "", found.group("target"), count=1, flags=re.IGNORECASE,
+    ).strip()
+    target = _bounded_application_literal(target)
+    if target is None or _has(
+        _fold(target),
+        r"^(?:(?:la|el|the|a|esta|esa|this|that)\s+)?"
+        r"(?:pagina|page|sitio|site|website|portal|alli|ahi|there|it)$",
+    ):
+        return None
+    # Reuse public-query privacy and single-clause guards on the literal operand.
+    return _direct_public_search_query("busca " + target)
+
+
 def _direct_public_search_query(text: str) -> str | None:
     """Read one authoritative public query, preserving its original spelling."""
 
@@ -13252,6 +13304,15 @@ def resolve_explicit_effects(
         application_names,
     )
     authenticated_games = build_game_catalog_index(game_catalog)
+    destination = _symbolic_web_destination(text)
+    if (
+        destination is not None
+        and {"web.search", "browser.navigate"} <= available
+        and _authenticated_application_request(folded, authenticated_applications) is None
+        and resolve_application_catalog_app_id(destination, authenticated_applications) is None
+    ):
+        # Resolve the destination through the existing verified search dependency.
+        return EffectIntent(("web.search", "browser.navigate"), (text, text))
     if (
         "app.open" in available
         and _repeated_application_target(text, authenticated_applications) is not None

@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-11T23:27:13.078331+00:00",
+  "parent_commit": "015b2bd05ace2ff1df2ffbd04ae3c03341359c13",
+  "patch": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web-routing994-proposal\\repair.patch",
+  "patch_sha256": "dbd56436d87d59310c6587531df75c04f3186749cb9f76ddffb88df906ac356c",
+  "source_pins": {
+    "src/baxy_mind/__main__.py": "6f58f7a1a2b11708c2c1986b2f7a225e245018c122ce9b5d5420cf96a3226884",
+    "src/baxy_mind/effect_intent.py": "04625ce51d9864f36eac8da5615ebde9917def98d3c50812e743f40f6843a570",
+    "src/Baxy.App/PlannerExecutionSupport.cs": "bb6059d9149a0ced9b425f2871e67d7ae4bfe30a8af76ebe6ad92a8a73ec4e9e"
+  },
+  "root_addition": "Removed browser.navigate/named URL projection from App, matching Python. A sole search URL proves existence, not relevance; existing model grounding now handles dependent URLs.",
+  "literal_scope": {
+    "panel_targets": 17,
+    "syntactic_targets": 12,
+    "previous_routing_losses": 9,
+    "previous_searches_reached": 3
+  },
+  "validation": "manual source/diff review and necessary .NET build only; product993 pending",
+  "tests_run": false,
+  "coverage_added": 0
+}

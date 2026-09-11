@@ -122,6 +122,7 @@ internal static class ProductConductorHost
                         conductor,
                         command,
                         parsed.Timeout,
+                        parsed.ProfileDirectory,
                         capture,
                         lifetime.Token).ConfigureAwait(true))
                 {
@@ -162,10 +163,17 @@ internal static class ProductConductorHost
         ProductConductor conductor,
         JsonObject command,
         TimeSpan timeout,
+        string profileDirectory,
         StreamWriter? capture,
         CancellationToken cancellationToken)
     {
         string cmd = ((string?)command["cmd"] ?? "turn").Trim().ToLowerInvariant();
+        if (cmd == "turn.confirm-reviewed")
+        {
+            return await ExecuteReviewedAsync(
+                conductor, command, timeout, profileDirectory, capture, cancellationToken)
+                .ConfigureAwait(true);
+        }
         if (cmd == "turn.confirm-if-matches")
         {
             string? caseId = command["caseId"] is JsonValue caseValue
@@ -278,6 +286,209 @@ internal static class ProductConductorHost
             .ConfigureAwait(true);
         await EmitTurnAsync(turn, capture, cancellationToken).ConfigureAwait(true);
         return true;
+    }
+
+    private static async Task<bool> ExecuteReviewedAsync(
+        ProductConductor conductor,
+        JsonObject command,
+        TimeSpan timeout,
+        string profileDirectory,
+        StreamWriter? capture,
+        CancellationToken cancellationToken)
+    {
+        string? caseId = ReviewString(command, "caseId");
+        string? text = ReviewString(command, "text");
+        string? directory = ReviewString(command, "reviewDirectory");
+        async Task<bool> RejectAsync(string diagnostic)
+        {
+            await EmitTurnAsync(conductor.RejectConfirmation(diagnostic),
+                capture, cancellationToken, caseId, "final").ConfigureAwait(true);
+            return false;
+        }
+
+        if (command.Count != 4 || string.IsNullOrWhiteSpace(caseId)
+            || string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(directory)
+            || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
+        {
+            return await RejectAsync("review_command_not_admitted").ConfigureAwait(true);
+        }
+
+        var elapsed = System.Diagnostics.Stopwatch.StartNew();
+        try
+        {
+            directory = ValidateReviewDirectory(directory, profileDirectory);
+            Directory.CreateDirectory(directory);
+            ValidateReviewDirectory(directory, profileDirectory);
+        }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException
+            or ArgumentException or NotSupportedException)
+        {
+            return await RejectAsync("review_directory_invalid").ConfigureAwait(true);
+        }
+
+        ProductTurnResult initial = await conductor.TurnAsync(text, timeout, cancellationToken)
+            .ConfigureAwait(true);
+        PendingOperationConfirmation? observed = conductor.ViewModel
+            .CaptureConductorConfirmation(allowVerifiedWebSearchPrefix: true);
+        if (observed is null && !initial.Posterior.HasPendingPlan)
+        {
+            // A genuine non-confirming result has one admission/final, not a
+            // fabricated extra rejection just because there is no challenge.
+            await EmitTurnAsync(initial, capture, cancellationToken, caseId, "final")
+                .ConfigureAwait(true);
+            return !initial.TimedOut && !initial.Posterior.HasPendingPlan && !initial.Posterior.IsBusy;
+        }
+
+        await EmitTurnAsync(initial, capture, cancellationToken, caseId, "request")
+            .ConfigureAwait(true);
+        if (observed is null || initial.TimedOut
+            || initial.Terminal != ProductTurnTerminal.PublishedFinal
+            || initial.Diagnostic is not null
+            || observed.Prepared.OperationName is not ("browser.navigate" or "browser.navigate.named"))
+        {
+            return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
+        }
+
+        // Prepared owns its arguments; this independent snapshot never exposes
+        // the confirmation token and is never regenerated from reviewer input.
+        PreparedOperation prepared = observed.Prepared;
+        JsonObject arguments = JsonNode.Parse(prepared.Arguments.GetRawText())!.AsObject();
+        string nonce = Guid.NewGuid().ToString("N");
+        string reviewPath = Path.Combine(directory, nonce);
+        string proposalPath = Path.Combine(reviewPath, "proposal.json");
+        string approvalPath = Path.Combine(reviewPath, "approval.json");
+        var proposal = new JsonObject
+        {
+            ["schema"] = "conductor-review-proposal-v1",
+            ["nonce"] = nonce,
+            ["caseId"] = caseId,
+            ["requestText"] = text,
+            ["operation"] = prepared.OperationName,
+            ["arguments"] = arguments.DeepClone(),
+            ["missionId"] = prepared.MissionId,
+            ["invocationId"] = prepared.InvocationId,
+            ["expiresAtUtc"] = observed.ExpiresAtUtc.ToString("O"),
+            ["webSearchObservations"] = conductor.ViewModel.CaptureConductorWebSearchEvidence(),
+        };
+        try
+        {
+            ValidateReviewDirectory(directory, profileDirectory);
+            if (Directory.Exists(reviewPath))
+            {
+                return await RejectAsync("review_directory_already_exists").ConfigureAwait(true);
+            }
+            Directory.CreateDirectory(reviewPath);
+            ValidateReviewDirectory(reviewPath, profileDirectory);
+            using (var stream = new FileStream(proposalPath, FileMode.CreateNew,
+                FileAccess.Write, FileShare.Read))
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(proposal.ToJsonString(JsonOptions));
+                await stream.WriteAsync(bytes, cancellationToken).ConfigureAwait(true);
+            }
+
+            await EmitAsync(new JsonObject
+            {
+                ["type"] = "review_required",
+                ["caseId"] = caseId,
+                ["nonce"] = nonce,
+                ["proposalPath"] = proposalPath,
+                ["approvalPath"] = approvalPath,
+                ["maximumConfirmations"] = 1,
+            }, capture, cancellationToken).ConfigureAwait(true);
+
+            while (elapsed.Elapsed < timeout && DateTimeOffset.UtcNow < observed.ExpiresAtUtc)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (!ReferenceEquals(observed, conductor.ViewModel
+                    .CaptureConductorConfirmation(allowVerifiedWebSearchPrefix: true)))
+                {
+                    return await RejectAsync("review_pending_changed").ConfigureAwait(true);
+                }
+                ValidateReviewDirectory(reviewPath, profileDirectory);
+                if (File.Exists(approvalPath))
+                {
+                    if ((File.GetAttributes(approvalPath) & FileAttributes.ReparsePoint) != 0)
+                    {
+                        return await RejectAsync("review_approval_invalid").ConfigureAwait(true);
+                    }
+                    using var stream = new FileStream(approvalPath, FileMode.Open,
+                        FileAccess.Read, FileShare.Read);
+                    if (stream.Length is <= 0 or > 65_536)
+                    {
+                        return await RejectAsync("review_approval_invalid").ConfigureAwait(true);
+                    }
+                    byte[] bytes = new byte[(int)stream.Length];
+                    await stream.ReadExactlyAsync(bytes, cancellationToken).ConfigureAwait(true);
+                    JsonObject? approval = JsonNode.Parse(bytes) as JsonObject;
+                    if (approval is null || approval.Count != 8
+                        || ReviewString(approval, "schema") != "conductor-review-approval-v1"
+                        || ReviewString(approval, "nonce") != nonce
+                        || ReviewString(approval, "caseId") != caseId
+                        || ReviewString(approval, "operation") != prepared.OperationName
+                        || ReviewString(approval, "missionId") != prepared.MissionId
+                        || ReviewString(approval, "invocationId") != prepared.InvocationId
+                        || !JsonNode.DeepEquals(approval["arguments"], arguments))
+                    {
+                        return await RejectAsync("review_approval_mismatch").ConfigureAwait(true);
+                    }
+                    if (ReviewString(approval, "decision") != "approve")
+                    {
+                        return await RejectAsync("review_not_approved").ConfigureAwait(true);
+                    }
+                    if (elapsed.Elapsed >= timeout
+                        || DateTimeOffset.UtcNow >= observed.ExpiresAtUtc)
+                    {
+                        break;
+                    }
+
+                    ProductTurnResult final = await conductor.ConfirmPendingAsync(
+                        initial, observed, prepared.OperationName, arguments,
+                        timeout - elapsed.Elapsed, cancellationToken,
+                        allowVerifiedWebSearchPrefix: true).ConfigureAwait(true);
+                    await EmitTurnAsync(final, capture, cancellationToken, caseId, "final")
+                        .ConfigureAwait(true);
+                    // One reviewed navigation only. Never auto-approve a suffix.
+                    return !final.TimedOut
+                        && final.Terminal == ProductTurnTerminal.PublishedFinal
+                        && !final.Posterior.HasPendingPlan && !final.Posterior.HasCompositionError;
+                }
+                await Task.Delay(TimeSpan.FromMilliseconds(200), cancellationToken)
+                    .ConfigureAwait(true);
+            }
+        }
+        catch (Exception error) when (error is IOException or UnauthorizedAccessException
+            or JsonException or ArgumentException or InvalidOperationException)
+        {
+            return await RejectAsync("review_io_or_data_invalid").ConfigureAwait(true);
+        }
+
+        return await RejectAsync("review_timed_out").ConfigureAwait(true);
+    }
+
+    private static string? ReviewString(JsonObject value, string key) =>
+        value[key] is JsonValue field && field.TryGetValue(out string? text) ? text : null;
+
+    private static string ValidateReviewDirectory(string directory, string profileDirectory)
+    {
+        string profile = Path.GetFullPath(profileDirectory);
+        string path = Path.GetFullPath(directory);
+        string localRoot = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BAXY");
+        if (!profile.StartsWith(localRoot + Path.DirectorySeparatorChar,
+                StringComparison.OrdinalIgnoreCase)
+            || !path.StartsWith(profile.TrimEnd(Path.DirectorySeparatorChar)
+                + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))
+        {
+            throw new IOException("Review directory must be inside the private profile.");
+        }
+        for (DirectoryInfo? current = new(path); current is not null; current = current.Parent)
+        {
+            if (current.Exists && (current.Attributes & FileAttributes.ReparsePoint) != 0)
+            {
+                throw new IOException("Review path cannot traverse a reparse point.");
+            }
+        }
+        return path;
     }
 
     private static async Task EmitTurnAsync(

@@ -731,8 +731,6 @@ _DETERMINISTIC_DEPENDENCY_FIELDS = {
     "window.restore": ("windowId",),
     "bluetooth.device.pair": ("deviceId",),
     "peripheral.scan": ("deviceId",),
-    "browser.navigate": ("url",),
-    "browser.navigate.named": ("url",),
     "filesystem.read.text": ("resourceId",),
     "game.install.commit": ("confirmationId",),
     "package.install.commit": ("confirmationId",),
@@ -3871,6 +3869,9 @@ def _explicit_browser_navigation_arguments(
 ) -> dict[str, object] | None:
     """Canonicalize literal destinations and searches under public policy."""
 
+    if effect_intent._symbolic_web_destination(evidence) is not None:
+        # Its identity must come from the verified search, never a site-name map.
+        return None
     named_search = effect_intent._named_browser_search(evidence)
     if named_search is not None:
         if operation != "browser.navigate.named":
@@ -4447,6 +4448,9 @@ def _explicit_arguments_from_evidence(
         return _explicit_media_control_arguments(evidence)
 
     if operation == "web.search":
+        destination = effect_intent._symbolic_web_destination(evidence)
+        if destination is not None:
+            return {"query": destination}
         query = ""
         search_evidence = re.split(
             r"\s+(?:(?:y\s+)?(?:despu\S+s|luego)|and\s+then|then|afterwards)"

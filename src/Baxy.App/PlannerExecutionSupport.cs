@@ -557,7 +557,6 @@ internal static class PlanObservationProjector
                 or "window.minimize" or "window.move" or "window.resize"
                 or "window.restore" => ["windowId"],
             "bluetooth.device.pair" or "peripheral.scan" => ["deviceId"],
-            "browser.navigate" or "browser.navigate.named" => ["url"],
             "filesystem.read.text" => ["resourceId"],
             "game.install.commit" or "package.install.commit" =>
                 ["confirmationId"],

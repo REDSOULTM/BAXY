@@ -1,13 +1,14 @@
 {
-  "utc": "2026-09-11T23:12:51.344653+00:00",
-  "proposal": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web-named993-proposal",
-  "seal_sha256": "e4c4c1b6df14a10a11f6862753fbc308ce67e1b6966927f5c46c73d5d70aa917",
+  "utc": "2026-09-11T23:27:13.078331+00:00",
+  "proposal": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web-named993-proposal\\revision3",
+  "seal_sha256": "4bd778be10408acf5070bd341552d8912af9fdc1f37e0866b67d0d0b9dbf2d17",
   "cases": 34,
   "literals": 17,
   "variants": 12,
   "boundaries": 5,
   "execution_authorized": false,
-  "source_repair": "994 pending",
-  "transport": "995 review pending; normal revision1 has no confirmation",
-  "youtube_prior_effects": "H0051/H0741 were verified app launch/reuse, not uncertain. WEB864/CLEANUP.json records exact normal close PID19800 handle3412178. Original URL criterion remains unchanged; do not force a web interpretation merely to satisfy it."
+  "source_repair": "994 and996 compiled; adoption commit pending",
+  "transport": "Reviewed exact proposal command996,29positive+5normal;34cases68wire,max63admissions/terminals;reviewDirectory under993profile. Revisions1/2unexecuted.",
+  "youtube_prior_effects": "H0051/H0741 were verified app launch/reuse, not uncertain. WEB864/CLEANUP.json records exact normal close PID19800 handle3412178. Original URL criterion remains unchanged; do not force a web interpretation merely to satisfy it.",
+  "runner_sha256": "90af8313137cc51f0a522771020b6ca85f7d41d3e2d88b43a4fc965b173edee7"
 }
