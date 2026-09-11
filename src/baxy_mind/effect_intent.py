@@ -10630,7 +10630,6 @@ def _review_application_and_window_effects(
         matches.append((authenticated_open[0], 0, "app.open"))
     elif (
         _head_is(head, _OPEN)
-        and _has(folded, r"\b(?:navegador|browser)\b")
         and not _has(folded, _KNOWN_APPLICATION)
         and not _has(
             folded,
@@ -10641,7 +10640,7 @@ def _review_application_and_window_effects(
             matches,
             folded,
             "app.open",
-            r"\b(?:navegador|browser)\b",
+            rf"\b{_OPEN}\s+(?:(?:el|un|the|a)\s+)?(?:navegador|browser)\b",
         )
     elif context_open_application:
         continued_application = _match(

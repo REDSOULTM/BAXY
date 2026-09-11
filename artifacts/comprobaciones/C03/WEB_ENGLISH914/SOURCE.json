@@ -1,0 +1,15 @@
+{
+  "utc": "2026-09-11T18:03:33.4007192Z",
+  "base": "5958af30cd74beb707f3e730c71528ccdbde1cad",
+  "source_sha256": "7f3b86c30bf527af5f46520d356a63fd81993fba6950a8a17792a0567c3524a9",
+  "patch_sha256": "59224d0b9bda271aeae8bfa33676c831e2eeb0feb4c8c41d50073175061cbd0f",
+  "root_reviews": [
+    "597721",
+    "0d9d4d",
+    "7fb2fa"
+  ],
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "scope": "Only generic browser app.open matcher: require direct verb-object relation, preserve negation and other guards. Existing branch1 insertion2 deletions. No global suppression of app.open for URL.",
+  "timing": "Adopted before912 starts, while GPU idle; prevents needless literal reruns after later candidate change. Pending real product English verification915. No current green claim."
+}
