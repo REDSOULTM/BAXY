@@ -1,0 +1,142 @@
+{
+  "utc": "2026-09-11T17:56:26.1373057Z",
+  "root_adjudicated": true,
+  "candidate_commit": "71e79fe3db2157302b481de7a8461eca33dd3f18",
+  "tests_run": false,
+  "counts": {
+    "executed": 2,
+    "reportable_terminals": 4,
+    "confirmation_admissions": 1,
+    "failed": 1,
+    "not_executed": 12,
+    "coverage_added": 0,
+    "sealed": 14,
+    "passed": 1,
+    "real_admissions": 3
+  },
+  "panel_seal_sha256": "3617e9a7ceddcbf8f0606fced8a24a5f1c07cc45781b3806540dcd6ffc39b48b",
+  "candidate_manifest_sha256": "cc3f34404100b26e79e3d338220a0259abe80bc5bf1473cd1d2a55dba546d19b",
+  "preparation_sha256": "a629f11ab384de3e3724d7b22eb56a3456dc234c1ca6099a2f34fd09e5a506a8",
+  "registry_before_sha256": "96d6ca83640517f8f972b4749bb2398d3588bc648e4a2b3dcd98d2fe4eb53626",
+  "registry_after_sha256": "96d6ca83640517f8f972b4749bb2398d3588bc648e4a2b3dcd98d2fe4eb53626",
+  "journal_sha256": "1e538a31d5eb675be1066430cfe8438971b233ae82ce732041bc8c9f6e83c5a3",
+  "capture_sha256": "b49459ab60875b3a31edc60186e56184fb9fec0a1aa8110138608a0ae2caf568",
+  "turn_audit_sha256": "42af654aafae8c3ffa8f497ce8347c47863fdbba9047223cdaf81fa1fbded675",
+  "cases": [
+    {
+      "case_id": "web-confirmation905-url-es",
+      "group": "exact_url_navigation",
+      "verdict": "pass",
+      "reason": "Navegación ordinaria confirmada contra pendiente exacto, Core completed/verified; requestedUrl y finalUrl https://www.rfc-editor.org/ con target CDP. Respuesta fiel, sin afirmaciones de lectura.",
+      "survey_credit": false,
+      "invocation_ids": "897b5f13-0044-4ae8-b22e-1a61b6cc0b28"
+    },
+    {
+      "case_id": "web-confirmation905-url-en",
+      "group": "exact_url_navigation",
+      "verdict": "fail",
+      "reason": "Solicitud de una URL genera dos operaciones browser.navigate y app.open; domain_grounding retira el plan y devuelve falsa limitación de capacidad. Ninguna operación ni confirmación del caso inglés.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-google-es",
+      "group": "engine_search",
+      "verdict": "not_executed",
+      "reason": "Hostexit3 detuvo antes del comando; no ejecutado, sin juicio de calidad.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-google-en",
+      "group": "engine_search",
+      "verdict": "not_executed",
+      "reason": "Hostexit3 detuvo antes del comando; no ejecutado, sin juicio de calidad.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "H0267",
+      "group": "exact_url_navigation",
+      "verdict": "not_executed",
+      "reason": "Hostexit3 detuvo antes del comando; no ejecutado, sin juicio de calidad.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "H0389",
+      "group": "exact_url_navigation",
+      "verdict": "not_executed",
+      "reason": "Hostexit3 detuvo antes del comando; no ejecutado, sin juicio de calidad.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "H0397",
+      "group": "engine_search",
+      "verdict": "not_executed",
+      "reason": "Hostexit3 detuvo antes del comando; no ejecutado, sin juicio de calidad.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "H0490",
+      "group": "engine_search",
+      "verdict": "not_executed",
+      "reason": "Hostexit3 detuvo antes del comando; no ejecutado, sin juicio de calidad.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "H0622",
+      "group": "engine_search",
+      "verdict": "not_executed",
+      "reason": "Hostexit3 detuvo antes del comando; no ejecutado, sin juicio de calidad.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-boundary-negation",
+      "group": "negation",
+      "verdict": "not_executed",
+      "reason": "Hostexit3 detuvo antes del comando; no ejecutado, sin juicio de calidad.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-boundary-quotation",
+      "group": "quotation",
+      "verdict": "not_executed",
+      "reason": "Hostexit3 detuvo antes del comando; no ejecutado, sin juicio de calidad.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-boundary-missingtarget",
+      "group": "missingtarget",
+      "verdict": "not_executed",
+      "reason": "Hostexit3 detuvo antes del comando; no ejecutado, sin juicio de calidad.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-boundary-local",
+      "group": "local",
+      "verdict": "not_executed",
+      "reason": "Hostexit3 detuvo antes del comando; no ejecutado, sin juicio de calidad.",
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "web-confirmation905-boundary-condition",
+      "group": "condition",
+      "verdict": "not_executed",
+      "reason": "Hostexit3 detuvo antes del comando; no ejecutado, sin juicio de calidad.",
+      "survey_credit": false,
+      "invocation_ids": null
+    }
+  ],
+  "source_outcome": "The observed llevame routing failure906 is repaired in909; exact same input now browser.navigate only and verified actual URL. English separate request18 has an additional app.open effect before domain_grounding. No historical literal executed yet.",
+  "no_replay": "Preserve passed ES as prior pertinent variant. Do not rerun EN without justified repair. Continue only twelve not-executed cases.",
+  "private_review_sha256": "4660a51a2ea8470abd0096615e0e1e02331e49bc1afd451f0d466078799f350c"
+}
