@@ -1886,6 +1886,10 @@ def _curated_domain_is_grounded(
                 r"\b(?:que|what)\b.{0,40}\b(?:reproduciendo|playing)\b|"
                 r"\bwhat(?:'s|\s+is)\s+playing\b",
             )
+            or (
+                _has(folded, r"\b(?:titulo|title|artista|artist|pista|track)\b")
+                and _has(folded, r"\b(?:sonando|reproduciendo|playing)\b")
+            )
         ) and not _has(
             folded,
             r"\b(?:netflix|youtube|spotify)\b|"

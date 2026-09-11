@@ -3664,6 +3664,14 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             "absence beyond that catalog, a launch attempt, or a completed opening."
         )
     if observed:
+        if situation.get("operation") == "media.status":
+            bits.append(
+                "Identify the observed title and artist when supplied, and state "
+                "playbackStatus. A loaded track is not evidence that it is playing: "
+                "paused or stopped means it is not playing. Do not repeat the "
+                "question's playing premise as a fact or claim PC-wide silence. "
+                "If no session or metadata was observed, report only that scope."
+            )
         if isinstance(observed.get("app"), str) and observed["app"].strip():
             bits.append(
                 "Name observed.app. State open, closed or playing from the facts."
@@ -4896,8 +4904,9 @@ def compose_visible_defect(
                 return "missing_state"
         title = observed_dict.get("title")
         if isinstance(title, str) and title.strip():
-            if title.casefold() not in folded or not re.search(
-                r"nota|note|t[íi]tulo|title", folded
+            if title.casefold() not in folded or (
+                operation != "media.status"
+                and not re.search(r"nota|note|t[íi]tulo|title", folded)
             ):
                 return "missing_name"
             if not (isinstance(app_name, str) and app_name.strip()) and re.search(
@@ -4910,6 +4919,40 @@ def compose_visible_defect(
                 re.IGNORECASE,
             ):
                 return "copied_instruction"
+        if operation == "media.status":
+            # Metadata names are literal facts, not assertions of playback.
+            playback_text = stripped
+            for field in ("title", "artist"):
+                name = observed_dict.get(field)
+                if isinstance(name, str) and name.strip():
+                    pattern = r"(?<!\w)" + re.escape(name.strip()) + r"(?!\w)"
+                    if not re.search(pattern, stripped, re.IGNORECASE):
+                        return "missing_name"
+                    playback_text = re.sub(pattern, "", playback_text, flags=re.IGNORECASE)
+            playback = observed_dict.get("playbackStatus")
+            if playback in {"playing", "paused", "stopped"}:
+                assertions = list(re.finditer(
+                    r"\b(?:(?P<negative>no|not|nothing|isn't|isn’t|aren't|aren’t)\s+)?"
+                    r"(?:(?:se|est[aá]|est[aá]n|is|are|sigue|still|currently|"
+                    r"hay|nada|ahora|actualmente)\s+)*"
+                    r"(?:(?P<playing>sonando|suena|reproduciendo|playing)|"
+                    r"(?P<paused>pausad[oa]s?|en\s+pausa|paused)|"
+                    r"(?P<stopped>detenid[oa]s?|parad[oa]s?|stopped))\b",
+                    playback_text,
+                    re.IGNORECASE,
+                ))
+                names_observed_state = False
+                for assertion in assertions:
+                    state = next(
+                        key for key in ("playing", "paused", "stopped")
+                        if assertion.group(key)
+                    )
+                    if (state == playback) == bool(assertion.group("negative")):
+                        return "reversed_result"
+                    if state == playback or (state == "playing" and assertion.group("negative")):
+                        names_observed_state = True
+                if not names_observed_state:
+                    return "missing_state"
         if "level" in observed_dict and not re.search(
             r"volumen|volume|\bnivel\b|\blevel\b", folded
         ):
@@ -10385,7 +10428,11 @@ class LlmRuntime:
                 if cause in {"out_of_catalog", "out-of-catalog"}
                 else "Name the failure cause in prose."
             ),
-            "missing_state": "abierto/open, no el imperativo.",
+            "missing_state": (
+                "State the observed playbackStatus; a loaded title does not imply playback."
+                if situation.get("operation") == "media.status"
+                else "abierto/open, no el imperativo."
+            ),
             "reversed_result": (
                 "Name the app. Say you will not open it."
                 if _looks_like_negative_constraint(user_text)
