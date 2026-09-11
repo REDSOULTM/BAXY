@@ -1,0 +1,102 @@
+{
+  "utc": "2026-09-11T16:37:44.8408987Z",
+  "root_adjudicated": true,
+  "candidate_commit": "d6cf9d2a52f4f1e49836365d6ced125e68f662fe",
+  "tests_run": false,
+  "private_review_sha256": "4944e71b304aa7e9a21e879ad9c7e49240ece8a5dd9475fba308519df4ab1f60",
+  "journal_sha256": "12dce794cd8188a9efee63ab9e3be8a2a1c8eab2c52a12d4dc0f4a7aea5557fb",
+  "panel_seal_sha256": "37644da1c7b9ebd5e5e3a8616e43d328a990af2cc59f6918994fbfb7d6981b6f",
+  "counts": {
+    "passed": 7,
+    "total": 9,
+    "historical_literals_passed": 2,
+    "failed": 2,
+    "coverage_added": 2
+  },
+  "registry_before_final_credit_sha256": "869b8e52d1e12eebad2669e57aec6f691681e7f8cc293a0dacf15f87aa29df35",
+  "registry_after_sha256": "124e5f482ff26dbbfb640a718869aa01afb5bde51b29ac6b9f4457bf95812c88",
+  "prior_variants": [
+    "app-lookup869-variant-presence-en",
+    "app-lookup869-variant-fiction-en"
+  ],
+  "prior_variants_candidate": "97b9d5f5931454f552a96c9c4cc3d95985a0d0ad",
+  "prior_pertinence": "Same declared behaviors, criteria and alternate targets/language; prior results retain source identity. Owner permits variants from prior category batches. Neither prior run is attributed to current source.",
+  "cases": [
+    {
+      "case_id": "app-lookup869-variant-presence-es",
+      "group": "installed_app_lookup",
+      "verdict": "pass",
+      "reason": "Consulta app.installed verificada para Paint y respuesta coincide con presencia observada.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "4ffef567-797c-4da2-aa91-092347dec6d7"
+      ]
+    },
+    {
+      "case_id": "app-lookup869-variant-fiction-es",
+      "group": "explicitly_fictional_application",
+      "verdict": "pass",
+      "reason": "Negativa breve contextual al intento de abrir un objeto declarado inexistente; sin reconfirmación, lanzamiento, sustitución ni escaneo inventado. El criterio no exige repetir la premisa con una frase exacta.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0353",
+      "group": "installed_app_lookup",
+      "verdict": "pass",
+      "reason": "Literal útil con Configuración instalada verificada; acreditado al adjudicar5f18ee con variante Paint actual y Notepad881 anterior pertinente.",
+      "survey_credit": true,
+      "invocation_ids": [
+        "9fae131b-79b4-486e-84e6-c04dd2ed82e3"
+      ]
+    },
+    {
+      "case_id": "H0406",
+      "group": "explicitly_fictional_application",
+      "verdict": "pass",
+      "reason": "Literal útil y fiel a inexistencia declarada; acreditado ahora con variantes ES actual y EN881 anterior pertinentes.",
+      "survey_credit": true,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-lookup890-boundary-conceptual",
+      "group": "conceptual_boundary",
+      "verdict": "pass",
+      "reason": "Explica la diferencia de los listados sin inventar observación local.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-lookup890-boundary-quotation",
+      "group": "quotation_boundary",
+      "verdict": "pass",
+      "reason": "Traduce la cita sin ejecutar la orden citada.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-lookup890-boundary-negation",
+      "group": "negation_boundary",
+      "verdict": "fail",
+      "reason": "No ejecuta, pero responde error de interpretación a una prohibición clara; falla utilidad.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-lookup890-boundary-premise_other_object",
+      "group": "premise_other_object_boundary",
+      "verdict": "pass",
+      "reason": "No traslada la premisa de la isla a la instalación de Paint; explicación fiel sin lectura inventada.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-lookup890-boundary-creation_comparison",
+      "group": "creation_comparison_boundary",
+      "verdict": "fail",
+      "reason": "Sin respuesta útil: composition_failed no_response; no operaciones, no crédito.",
+      "survey_credit": false,
+      "invocation_ids": []
+    }
+  ]
+}

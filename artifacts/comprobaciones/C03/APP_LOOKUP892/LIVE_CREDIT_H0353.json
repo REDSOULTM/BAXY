@@ -1,0 +1,24 @@
+{
+  "utc": "2026-09-11T16:35:58.9818740Z",
+  "root_adjudicated": true,
+  "case_id": "H0353",
+  "verification_status": "covered",
+  "candidate_commit": "d6cf9d2a52f4f1e49836365d6ced125e68f662fe",
+  "literal_invocation": "9fae131b-79b4-486e-84e6-c04dd2ed82e3",
+  "current_variant_invocation": "4ffef567-797c-4da2-aa91-092347dec6d7",
+  "prior_variant_invocation": "3c92c4f1-59ff-4b81-898f-4638213d0617",
+  "prior_variant_candidate": "97b9d5f5931454f552a96c9c4cc3d95985a0d0ad",
+  "prior_variant_pertinence": "Same sealed app.installed behavior: exact requested target, fresh verified catalog observation, faithful response, no opening. 888 expands ES presence grammar; existing EN read path/contract preserved. Prior evidence allowed by owner, not claimed as a current-candidate run.",
+  "tests_run": false,
+  "counts": {
+    "open": 677,
+    "not_applicable": 0,
+    "covered": 65
+  },
+  "registry_before_sha256": "84c452c4391988bc504a11fa9dd8af029554752433b2c44bda9f8a2eda3a166f",
+  "registry_after_sha256": "869b8e52d1e12eebad2669e57aec6f691681e7f8cc293a0dacf15f87aa29df35",
+  "observed_root_tools": [
+    "56e2d4",
+    "c1b46c"
+  ]
+}

@@ -1,27 +1,34 @@
-# C03 — cobertura vigente y siguiente tanda
+# C03 — cobertura vigente
 
-**64/742 cubiertos, 678 abiertos, 0 no aplican; 36 altas confirmadas en las últimas 24 h y 0/35 categorías cerradas.** Otras dos actualizaciones covered no permiten distinguir la fecha de primera acreditación. Hubo Full843 en esa ventana.
+**66/742 cubiertos, 676 abiertos, 0 no aplican; 38 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Hay dos actualizaciones adicionales de casos cubiertos cuya fecha de primera acreditación no se distingue. Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: 124e5f482ff26dbbfb640a718869aa01afb5bde51b29ac6b9f4457bf95812c88. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
 
-Apps854TAIL terminó24/24 con6 respuestas válidas y18 fallidas; H0672 recibió crédito al observarlo. Otros dos literales útiles siguen abiertos por falta de variantes pertinentes. Sus18 causas abiertas ya están escritas en el registro. [Adjudicación raíz](APP_OPEN854_TAIL/ROOT_ADJUDICATION.json). El padre854 quedó en14/47 por RAM; los33 no ejecutados se repartieron entre24 de la continuación y9 Steam/juego aparcados con reanudación exacta. No repetir las tandas completas.
+El dueño reanudó el goal y aclaró el método: omitir suites automáticas, Fast y Full; mantener ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. El bloqueo anterior de alcance está resuelto. También autorizó cerrar aplicaciones para liberar RAM. No se cuentan pruebas omitidas como aprobadas.
 
-Web864 terminó52/52, sin cortes:4 límites válidos y48 criterios sin cumplir, cero créditos. Las35 causas están escritas; cuatro propuestas de navegación correctas quedaron sin confirmar por falta de ese paso en el panel. No se atribuye este límite del harness al provider. Dos aperturas de YouTube fueron útiles como aplicación, sin demostrar el criterio web sellado. [Adjudicación](WEB864/ROOT_ADJUDICATION.json).
+Fuente vigente publicada: d6cf9d2a52f4f1e49836365d6ced125e68f662fe. 888 amplía la consulta local de apps reutilizando lector y selector; 889 conserva premisas explícitas sobre objetos ficticios en el verificador existente. Revisión manual y ejecución892 posterior, sin suites. No cambia modelo, runtime, catálogo ni provider.
 
-Web y apps empatan con46 abiertos.869 quedó sellado como continuación dirigida de dos carencias de variantes de apps:4 variantes nuevas, H0353/H0406 exactos y2 límites. No repite854 completa.868 es propuesta externa para confirmación segura, sin implementar: sólo dos literales se han demostrado bloqueados exclusivamente por ese paso.870 localizó resultados RSS ajenos a una consulta pública en su única reproducción; el filtro los rechazó correctamente.
+Últimos tres tramos:
 
-Instrucción nueva del dueño: «no hagas test, saca el goal lo mas rápido posible, sin perder calidad». No se lanzan suites ni Full. El dueño aclaró que se mantienen los paneles reales de producto para acreditar encuesta.871 incorporó el alias de Configuración.872 corrige la selección de Google y conserva la consulta;875 admite artículos indefinidos al resolver nombres de apps. Estas fuentes están publicadas hasta0731ea99.876 comparte la extracción de órdenes directas y desiderativas para que los artículos y aliases existentes lleguen al mismo resolver; conserva las exclusiones y retira la gramática reemplazada. Revisión manual, sin tests ni crédito por estos cambios. [Fuente876](APP_DESIRE876/SOURCE.json).
+- 881: 8/8 ejecutados, 6 válidos y 2 fallidos, sin crédito. Ambos literales fueron útiles pero faltaba una variante de cada conducta. Sus causas se escribieron al adjudicar. [Adjudicación](APP_LOOKUP881/ROOT_ADJUDICATION.json).
+- 885: el primer arranque falló antes de cargar comandos por un perfil anidado no admitido. Se corrigieron sólo rutas externas y se preservó todo. La continuación ejecutó 9/9: 1 válido y 8 fallidos, sin crédito. Paint y hora fueron verificados, pero la respuesta correcta fue rechazada después; Calculadora dejó efecto incierto en H0183. [Adjudicación](APP_UNEXECUTED885_RETRY1/ROOT_ADJUDICATION.json).
+- 892: 9/9 ejecutados, 7 válidos y 2 fallidos, **+2 créditos H0353/H0406**. Literales actuales y variantes pertinentes actuales/anteriores ligados explícitamente a sus candidatos. H0353 se escribió al adjudicar su literal; H0406 al resolver su par. Persisten dos límites fallidos: prohibición respondida como error y comparación conceptual sin respuesta. [Adjudicación](APP_LOOKUP892/ROOT_ADJUDICATION.json).
 
-Fuente860 publicada0634a8d5:3583 pruebas dueñas aprobadas,0 fallos,0 omisiones; Fast0. Full843 es histórico (4754.NET aprobadas/1 omisión agregada;12907Python aprobadas/3 omisiones/466subtests), Full final omitido por decisión posterior del dueño. C03 EN_CURSO, matriz3/11. H0675/OCR/nuevos providers aparcados. Los3 negativos y18 sin marca permanecen límites.
+| Tanda | Pico VRAM MiB | Pico RAM MiB | Tiempo | Guarda |
+|---|---:|---:|---:|---|
+| 881 | 3497,56 | 2429,65 | 41,875 s | Sin violaciones |
+| 885 continuación | 3497,56 | 2398,76 | 66,922 s | Sin violaciones |
+| 892 | 3497,56 | 2410,98 | 82,047 s | Sin violaciones |
 
-876 quedó publicado904b5a85.878 amplía el lector de prefacios para rectificación inicial separada y seguida de una cabeza de acción existente; conserva el cuerpo completo y sus vetos. Revisión manual, sin ejecución, H0691 continúa abierto.877 quedó sellado y revisado: H0165/H0183 exactos +4 variantes +3 límites,9casos/18mensajes; mecanismo existente, incertidumbre histórica de Calculadora conservada.879 documenta por qué el runner antiguo no puede atribuir sus pruebas860 al candidato actual;881 prepara una adaptación con manifiesto explícito de no-tests, aún sin ejecutar. [Fuente878](APP_CORRECTION878/SOURCE.json), [panel877](APP_UNEXECUTED877/SOURCE.json).
+VRAM y RAM se informan por separado; techo de referencia 4096 MiB, parada GPU a3800 MiB y RAM libre mínima768 MiB. Las tres sesiones están recogidas y cerradas; no quedan corridas que esperar.
 
-La tabla usa la taxonomía846 sobre742 case_id y el registro actual; ordenada por abiertos, con web elegida para el empate máximo. SHA del registro: ddc2fa026e3f38e1b7c48303c05791aa7c5747d9bfd18a80cd59e3f561849842.
+Siguiente categoría por masa: **web46 abiertos**, seguida de apps44. Agente893 prepara diagnóstico de dos búsquedas genéricas con mecanismo existente, H0098/H0380. 887 deja sólo un plan para tres Google: falta vincular la confirmación ordinaria con operación y argumentos exactos; no se construyó infraestructura ni se infló su alcance. 891 propone reparación C# del rechazo posterior de una respuesta correcta con hora y apertura; parche externo sin adoptar, sin build ni pruebas, para revisar cuando corresponda a la prioridad. 880 sigue sellado sin ejecutar.
 
-878 publicado48260462.883 sustituye la reconfirmación de apertura por una pregunta nativa sobre la identidad faltante, únicamente ante el mismo operando no resuelto de un app.open positivo y único; conserva el veto y cero efectos. Revisión manual, sin tests/producto,0créditos.882 distingue4 recorridos de presentación de otros7 fallos: no son11 causas iguales.884 quedó fuera del pipeline: aclarar identidad no demuestra apertura conforme al criterio854 original; todos sus archivos provisionales se preservan.869 sigue primero entre continuaciones dirigidas;881 ya tiene runner revisado con manifiesto obligatorio de no-tests, aún sin manifiesto real, prepare ni run.877/880 sellados sin ejecutar. Conteos de24h contrastados de nuevo74d9f7:38 actualizaciones recientes,36 altas confirmadas y2 primeras fechas indistinguibles;64/742 total intacto.
+No repetir: paneles completos854/TAIL,861,864,881,885,892; campañas de modelo/backend ya cerradas; Full843 histórico. Full/Fast/suites nuevos se omiten por orden posterior. H0675/OCR/nuevos providers y los9 Steam854 siguen aparcados con sus reanudaciones heredadas. No reintentar efectos inciertos H0183/Calculadora, H0151/Explorer ni Steam/Discord sin resolver su causa. Paint propio de885 se cerró normalmente y está fuera; Spotify preexistente se conservó. Audio861 ya restaurado31/sin silencio: no repetir su restauración. Los3 negativos y18 sin marca conservan sus marcas y límites.
 
+Tabla de la taxonomía846, ordenada por requisitos abiertos:
 | Categoría | Total | Cubiertos | Abiertos | No aplican |
 |---|---:|---:|---:|---:|
 | Navegación y búsqueda web | 46 | 0 | 46 | 0 |
-| Abrir aplicaciones | 54 | 8 | 46 | 0 |
+| Abrir aplicaciones | 54 | 10 | 44 | 0 |
 | Música | 39 | 0 | 39 | 0 |
 | Estado de hardware y sistema | 40 | 2 | 38 | 0 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 0 | 38 | 0 |
@@ -56,13 +63,4 @@ La tabla usa la taxonomía846 sobre742 case_id y el registro actual; ordenada po
 | Leer y resumir páginas web | 2 | 0 | 2 | 0 |
 | Procesos | 9 | 8 | 1 | 0 |
 
-[Checkpoint histórico preservado íntegro hasta Audio861](CHECKPOINT_HISTORICO_2026-09-11_HASTA_AUDIO861.md). Fuente exacta05990551, SHA256 afc270de71667d338af133c99aa719a8c75df12de5d2784768ffcbbfd2dc9e12.
-
-Reanudación autorizada: el dueño aceptó omitir suites automáticas, Fast y Full y mantener los paneles reales de encuesta. La duda de alcance queda resuelta. Próximo paso869/881 sobre candidato actual; se prepara885 para877 en paralelo. RAM libre observada2855MiB frente a4000MiB de arranque: se solicitó liberar aplicaciones, sin cerrar ninguna del dueño. Cobertura64/742,678abiertos,0NA;0/35categorías; último cómputo24h36altas confirmadas a15:42UTC. Ninguna suite omitida se declara aprobada.
-
-
-
-881: ocho casos ejecutados, seis respuestas válidas y dos variantes fallidas; los dos literales útiles siguen abiertos por falta de generalización. Cobertura64/742,678abiertos,0NA;0/35categorías;36altas confirmadas24h al último recuento. VRAM3497,56MiB y RAM2429,65MiB frente a4096MiB;41,875s. No suites/Fast/Full.885 no admitió casos por una ruta de perfil incorrecta del runner; se corrigió sólo esa ruta y su continuación está en marcha. Causas escritas por case_id; no se repite881 completa.
-
-
-885 continuación terminó9/9 en66,922s:1pass8fail,0créditos; VRAM3497,56MiB/RAM2398,76MiB, sin violaciones. H0165/H0183 causas escritas49dc01, registro84c452c4391988bc504a11fa9dd8af029554752433b2c44bda9f8a2eda3a166f. H0183 app.open3cb73ca5-77ab-4802-8f56-8fe73b526ba8 con efecto incierto: no reintentar. Paint de la variante fue abierto/verificado, pero composición falló; cierre normal autorizado solicitado por raíz aed8fa, PID33076/HWND4983644/creation2026-09-11T16:22:45.8377761Z. No repetir885entero.888+889 integrados con revisión manual, sin suites, para consulta de presencia y premisa explícita ficticia; panel890 dirigido en preparación.64/742,678abiertos,0NA;36altas confirmadas24h,0/35categorías;matriz3/11.887Google sóloPLAN: confirmación segura pendiente, alcance3, ninguna infraestructura nueva ni sello ejecutable.
+[Historia preservada hasta Audio861](CHECKPOINT_HISTORICO_2026-09-11_HASTA_AUDIO861.md). Los tramos posteriores conservan recibos propios y versiones anteriores de este checkpoint en Git.
