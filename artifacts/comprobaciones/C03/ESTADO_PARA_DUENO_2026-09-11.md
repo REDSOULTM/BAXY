@@ -19,3 +19,5 @@ La corrección de Configuración ocupa una línea. La revisión del código cons
 También se ajustó la lectura de nombres para peticiones como «una terminal», conservando la comprobación contra aplicaciones instaladas. Los cambios nuevos sólo tienen revisión de código: no se ejecutaron tests ni se sumó cobertura por ellos.
 
 Las órdenes directas y los pedidos «quiero que abras…» comparten ahora la extracción del nombre. Esto permite usar los artículos y alias que BAXY ya conoce sin duplicar esa gramática. La verificación en el producto sigue pendiente. Se prepara una continuación para dos literales de apps que aún no se habían ejecutado en los recibos consultados.
+
+También se ajustó «no, mejor abrí…» para conservar la nueva orden sin borrar las negaciones o correcciones que contenga. Los dos literales pendientes ya están sellados con cuatro variantes y tres límites. No se ejecutaron: la cobertura sigue en64/742. El próximo paso de acreditación depende de aclarar si tu indicación de no hacer tests permite las ejecuciones del producto; las suites y el Full siguen detenidos.

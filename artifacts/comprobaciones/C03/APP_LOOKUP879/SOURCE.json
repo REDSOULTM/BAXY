@@ -1,0 +1,10 @@
+{
+  "utc": "2026-09-11T15:26:20.6706840Z",
+  "private_report": "C:/Users/usuario/AppData/Local/BAXY/C03-app-lookup879-runner-proposal/REPORT.md",
+  "report_sha256": "67260ed7ae306e6c4af513bcf3662f67b7899df4ea27ff4f41dc7fb381fbc324",
+  "root_review_chunk": "e2fae7",
+  "runner_created": false,
+  "reason": "Old runner860 validation receipt cannot apply to changed source.881 adapts preflight, preparation and evidence coherently with explicit no-tests candidate manifest.",
+  "product_executed": false,
+  "coverage_added": 0
+}

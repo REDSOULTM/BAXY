@@ -4346,7 +4346,7 @@ def _strip_trailing_social_closure(text: str) -> str:
 
 
 def _strip_request_envelope(text: str) -> str:
-    """Remove a bounded stack of non-semantic request wrappers.
+    """Remove bounded request prefaces without changing their action bodies.
 
     The wrapper grammar is deliberately the same one used by every anchored
     request matcher.  Centralizing it here makes ``Hola, ...`` and
@@ -4358,13 +4358,15 @@ def _strip_request_envelope(text: str) -> str:
 
     current = _strip_trailing_social_closure(text).rstrip()
     for _ in range(6):
-        # Agreement is not an extra effect when a separate, explicit request
-        # follows it. Reuse the clause reader's action heads, including a
-        # negative command, rather than stripping agreement from statements
-        # such as "sí, sí, te oigo" or treating a conditional as a preface.
+        # Agreement or an initial rectification can precede an explicit request.
+        # Rectification requires a positive action head; agreement may also
+        # precede a negative command. Retain the entire body so its prohibitions,
+        # later corrections and narrative boundaries remain visible.
         found = _match(
             current,
-            r"^[¿?¡!\s]*(?:s[ií]|yes|ok(?:ay)?|perfecto|perfect)\s*[,;:.!]+\s*"
+            r"^[¿?¡!\s]*(?:(?:s[ií]|yes|ok(?:ay)?|perfecto|perfect)\s*[,;:.!]+\s*|"
+            r"no\s*[,;:]\s*(?:mejor|en realidad|actually|on second thought)"
+            rf"\s*[,;:]?\s+(?=(?:{_COVERAGE_ACTION_HEAD})\b))"
             r"(?P<body>.+)$",
         )
         if found is not None and not (

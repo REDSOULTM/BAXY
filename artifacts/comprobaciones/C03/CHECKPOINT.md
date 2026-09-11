@@ -12,6 +12,8 @@ Instrucción nueva del dueño: «no hagas test, saca el goal lo mas rápido posi
 
 Fuente860 publicada0634a8d5:3583 pruebas dueñas aprobadas,0 fallos,0 omisiones; Fast0. Full843 es histórico (4754.NET aprobadas/1 omisión agregada;12907Python aprobadas/3 omisiones/466subtests), Full final pendiente. C03 EN_CURSO, matriz3/11. H0675/OCR/nuevos providers aparcados. Los3 negativos y18 sin marca permanecen límites.
 
+876 quedó publicado904b5a85.878 amplía el lector de prefacios para rectificación inicial separada y seguida de una cabeza de acción existente; conserva el cuerpo completo y sus vetos. Revisión manual, sin ejecución, H0691 continúa abierto.877 quedó sellado y revisado: H0165/H0183 exactos +4 variantes +3 límites,9casos/18mensajes; mecanismo existente, incertidumbre histórica de Calculadora conservada.879 documenta por qué el runner antiguo no puede atribuir sus pruebas860 al candidato actual;881 prepara una adaptación con manifiesto explícito de no-tests, aún sin ejecutar. [Fuente878](APP_CORRECTION878/SOURCE.json), [panel877](APP_UNEXECUTED877/SOURCE.json).
+
 La tabla usa la taxonomía846 sobre742 case_id y el registro actual; ordenada por abiertos, con web elegida para el empate máximo. SHA del registro: ddc2fa026e3f38e1b7c48303c05791aa7c5747d9bfd18a80cd59e3f561849842.
 
 | Categoría | Total | Cubiertos | Abiertos | No aplican |
