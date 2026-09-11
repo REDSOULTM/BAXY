@@ -1,10 +1,10 @@
 # C03 — cobertura vigente
 
-**69/742 cubiertos, 673 abiertos, 0 no aplican; 41 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Hay dos actualizaciones adicionales de casos cubiertos cuya fecha de primera acreditación no se distingue. Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: 66a8879d4be17016a094758341a237b7fc487337f77ad46e8efd029db66b68b9. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
+**69/742 cubiertos, 673 abiertos, 0 no aplican; 41 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Hay dos actualizaciones adicionales de casos cubiertos cuya fecha de primera acreditación no se distingue. Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: 1ae78cd8f28c52d397672f9e0cabe90609da3cd23dbd74e16639a580bc39205c. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
 
 El dueño reanudó el goal y aclaró el método: omitir suites automáticas, Fast y Full; mantener ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. El bloqueo anterior de alcance está resuelto. También autorizó cerrar aplicaciones para liberar RAM. No se cuentan pruebas omitidas como aprobadas.
 
-Fuente vigente: 1045665366a14a0e051dbcf85ec296cb19d503ec (926), publicada. Última ejecución925:3válidas/3fallidas,0créditos; seis casos ejecutados, H0706 efecto incierto. Apps44 abiertos precede ahora web43. Los tramos siguientes conservan historia; novedades al final.
+Fuente vigente: 652a96a76815d3b50dd1e47bddfe8cd97c2e6c35 (929), publicada. Última ejecución930:4válidas/7fallidas,0créditos; once casos ejecutados, sin efectos de aplicaciones. Apps44 abiertos precede ahora web43. Los tramos siguientes conservan historia; novedades al final.
 
 Últimos tres tramos:
 
@@ -219,3 +219,11 @@ Turno anterior clasificado progress con estado8805e9ac y fuentes/evidencia922–
 929 hereda923 y modifica únicamente __main__.py (+67/-20): un campo privado opt-in conserva operaciones/evidencia exacta/origen/cardinalidad/resoluciones reales y catálogo efectivo en frontera domain_grounding. Mismo resolver, orden y cortocircuito; sin imports/helpers/providers ni nuevo archivo. Fallo de captura o exceso128KiB conserva audit anterior, sin cambiar decisión. Raíz revisó diff609925 y reporteab2c70; patch5ec5742ceae16e8741f20a15629872ac8aca7c10d0b8873b0e20a60ea478690c,fuente7cf1b7c08b39378e645ef5afa3f0a5037a51d9b6e38f7abd2fd7449e828d75e8. No pruebas/Fast/Full/build por dueño y cambioPython. Esto prepara diagnóstico, no corrige identidad ni acredita por sí mismo.
 
 930 contiene5literales H0691/H0227/H0289/H0503/H0558, varianteEN902 fallida intacta y5límites originales,11casos22wire. Selloa51ade091ae97f6b7d55e80b1c12d775a68ce8843fcc3ee34eb9f4f1208e790e,runner999c7cb931a9b05684742a56b676e35b190f23acbd777e8b4427f06fe632a440 revisados6c6ba5/ab2c70. Paneldirigido tras fallos, no repetición entera; pares apertura854 separados de corrección902. Sin mejora funcional asumida; literal necesita éxito útil/verificado y2variantes pertinentes. Perfil nuevo directoBAXY, mismos guardas584/18/5. Pendiente vincular HEADreal y ejecutar. H0706/Calculator/Explorer/Steam inciertos excluidos. Encuesta69/742,673open,0NA;41altas24h,0/35categorías.
+
+## Tramo930 — identidad capturada, primera pérdida localizada
+
+Manifiesto549fa1cc601ebc086550e0e5042e62c6b80bd64d8db6bcdd2f5fc36a53314915,584/18/5pins; preparaciónd85ef9faebe4ac3217e2409c109cc3be59da099ff11bb3ab6603c34b89f6208d d22b43;run31d2af,session6853 recogida9e51fd.11ejecutados4pass7fail,0noejecutados,0créditos.59,765s,VRAM3497,56MiB/RAM2449,46MiB,comparados por separado frente4096; pins intactos,sin violaciones. No app.open ni efectos solicitados en journal, sólomemory.status de inicio.
+
+Nuevo audit privado929 observado en tres requests:8Firefox evidencia explícita firefox unresolved;13Steel objetivo completo unresolved;35NotepadEN objetivo completo resolvedwindows.notepad pero stage domain_grounding retira después. Catálogo293 íntegro contiene Bloc de notas, no entradasFirefox/Steel/Photoshop/zzqwx123; no se extrapola ausencia física ni causa de los tres literales que fallaron antes del audit. Primeras respuestas piden permiso repetido/nombreexacto;Photoshoplimitaciones infundadas;zzqwx123cambiaactor;ENcomposition_failed. Cuatro límites pasan;condicional responde incapacidad infundada.
+
+Raíz adjudicó y escribió cinco causasopen df5313. Registro1ae78cd8f28c52d397672f9e0cabe90609da3cd23dbd74e16639a580bc39205c. ROOT_ADJUDICATION38c21f756371882528f9c8825ac1ecf9a9fe9227b8ed6241ae620e7b525e9452. Aclaración Steel no cumple apertura positiva, sin crédito automático. No nuevos efectos inciertos ni cierre deapps. Diagnóstico931 debe explicar veto posteriorNotepad antes de parchear; no agregaralias ya resuelto. Apps44/web43,69/742covered673open0NA,41altas24h,0/35categorías. Suites/Fast/Full omitidos por dueño. Reservas927/919 sin adoptar.

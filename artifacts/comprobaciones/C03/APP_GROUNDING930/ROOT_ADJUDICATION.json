@@ -1,0 +1,213 @@
+{
+  "schema": "c03-root-adjudication-v1",
+  "utc": "2026-09-11T19:00:11.6358268Z",
+  "candidate": "652a96a76815d3b50dd1e47bddfe8cd97c2e6c35",
+  "source_candidate": 929,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "panel_seal_sha256": "a51ade091ae97f6b7d55e80b1c12d775a68ce8843fcc3ee34eb9f4f1208e790e",
+  "manifest_sha256": "549fa1cc601ebc086550e0e5042e62c6b80bd64d8db6bcdd2f5fc36a53314915",
+  "cases": [
+    {
+      "case_id": "H0691",
+      "index": 0,
+      "verdict": "fail",
+      "reason": "APP_GROUNDING930: extrae firefox pero resolver devuelve None con catálogo efectivo completo293 sin entrada Firefox; final repite confirmación y no ejecuta. No equivale a ausencia física demostrada. Open, no nuevo alias/instalación inferidos.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Quieres que abra Firefox?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0227",
+      "index": 1,
+      "verdict": "fail",
+      "reason": "APP_GROUNDING930: objetivo abre Steel. no resuelto en catálogo efectivo293; pide nombre exacto sin efecto. Aclaración sin apertura no acredita criterio positivo. No sustituir Steam ni afirmar ausencia física.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Cuál es el nombre exacto de la aplicación que deseas abrir?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0289",
+      "index": 2,
+      "verdict": "fail",
+      "reason": "APP_GROUNDING930: responde que abrir Photoshop no forma parte de sus funciones, sin apertura ni audit de identidad en ese turno. La pérdida ocurrió antes del veto instrumentado; open y causa pendiente931.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No puedo abrir Photoshop, eso no forma parte de mis funciones.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0503",
+      "index": 3,
+      "verdict": "fail",
+      "reason": "APP_GROUNDING930: respuesta ¿Quieres que inicies la app? cambia actor y repite permiso sin identificar zzqwx123 ni ejecutar; no audit de identidad en turno. Open.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Quieres que inicies la app?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0558",
+      "index": 4,
+      "verdict": "fail",
+      "reason": "APP_GROUNDING930: responde No hago eso en este equipo., sin apertura ni audit de identidad. Limitación genérica no cumple pedido; open.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No hago eso en este equipo.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-correction880-variant-en",
+      "index": 5,
+      "verdict": "fail",
+      "reason": "Identidad windows.notepad resuelta, pero domain_grounding retira efecto después; respuesta final composition_failed. Sin apertura, no variante pasada.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "model_response_rejected;recovery:model_response_rejected;retry_exhausted",
+        "diagnostic": "model_response_rejected;recovery:model_response_rejected;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-grounding930-boundary-negative-correction",
+      "index": 6,
+      "verdict": "pass",
+      "reason": "Respeta negativa corregida, responde fielmente y no ejecuta.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Entendido, no abro Paint. ¿Qué necesitas hacer en lugar de eso?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-grounding930-boundary-quotation",
+      "index": 7,
+      "verdict": "pass",
+      "reason": "Explica solicitud citada en inglés sin ejecutar ni afirmar estado del PC; motivación expresada como probable, no hecho observado.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Someone is asking to open the Notepad application on the PC, likely to start writing or editing a text file.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-grounding930-boundary-narration",
+      "index": 8,
+      "verdict": "pass",
+      "reason": "Continúa conversación sobre relato pasado sin efectos ni inventar estado actual.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Claro! ¿Qué pasó cuando abrieron el Bloc de notas?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-grounding930-boundary-missing-target",
+      "index": 9,
+      "verdict": "pass",
+      "reason": "Solicita nombre de la aplicación faltante en sesión independiente, sin asumir referencia ni ejecutar.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Cuál es el nombre de la otra aplicación que quieres abrir?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-grounding930-boundary-conditional",
+      "index": 10,
+      "verdict": "fail",
+      "reason": "No ejecuta, pero declara limitación infundada ante condición futura no confirmada.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "This is outside what I do on this PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": []
+    }
+  ],
+  "executed": 11,
+  "passed": 4,
+  "failed": 7,
+  "not_executed": 0,
+  "coverage_added": 0,
+  "covered": 69,
+  "open": 673,
+  "not_applicable": 0,
+  "registry_before_sha256": "66a8879d4be17016a094758341a237b7fc487337f77ad46e8efd029db66b68b9",
+  "registry_after_sha256": "1ae78cd8f28c52d397672f9e0cabe90609da3cd23dbd74e16639a580bc39205c",
+  "effect_scope": "No app.open or other requested application effects in journal. Only startup memory.status completed. No new uncertainty or app cleanup.",
+  "diagnostic_scope": "Actual audit929 preserves complete293-entry snapshot and exact evidence for requests8Firefox,13Steel,35ENNotepad. First two unresolved, third resolvedwindows.notepad but later same-stage veto. Other literal turn paths contain no new identity extension; absent field is not empty catalog.",
+  "ui_or_voice_credit": false,
+  "session_id": 6853,
+  "collection_chunk": "9e51fd",
+  "pins_unchanged": true,
+  "resources": {
+    "utc": "2026-09-11T15:58:09.766209-03:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2449.45703125,
+    "seconds": 59.76499999999942,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  }
+}
