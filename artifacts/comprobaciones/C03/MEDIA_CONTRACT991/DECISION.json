@@ -1,0 +1,10 @@
+{
+  "utc": "2026-09-11T23:12:51.344653+00:00",
+  "decision": "defer_same_session_field_grammar_until_mass_web_repair",
+  "reason": "No safe minimal patch delivered; next repair targets17 named web literals. No further media repeat without a material correction.",
+  "resume": "Represent exclusively state and identity as fields of one current-session read in strict catalog request and clause normalization; replace duplicated directional predicate. Preserve unrelated second clauses, prohibited/future/quoted requests. Then rerun failed literals and pertinent variants, not all music.",
+  "diagnosis_sha256": "ab1c18b795cb2a4e573bd8a1284e029b9197128fbe98c2b81f64ed0d15d7e6b5",
+  "coverage_added": 0,
+  "source_edited": false,
+  "tests_run": false
+}

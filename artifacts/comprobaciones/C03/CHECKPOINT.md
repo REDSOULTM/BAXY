@@ -1,4 +1,18 @@
-# C03 — cobertura vigente tras986
+# C03 — cobertura vigente tras989
+
+**97/742 cubiertos, 645 abiertos, 0 no aplican; 69 altas confirmadas en 24h; 0/35 categorías cerradas.** C03: 3/11 cumplidos, 5 contradichos, 3 pendientes. Goal activo, sin decisión pendiente del dueño. Registro SHA `c1b2164bfcf83baea767614a826d7d9b7bec8d82c300dbdd2e50a5ea6e0fa46e`.
+
+989 ejecutó 11 casos: 5 útiles, 6 fallidos, **0 créditos**. Una lectura literal identifica fielmente la pista pausada; falta una segunda variante pertinente. La otra literal añade una afirmación de silencio sin alcance explícito. Se conservan como abiertos al adjudicar, sin elevar el contador. [Adjudicación989](MEDIA_STATUS989/ROOT_ADJUDICATION.json), colección87a79b. Fuente988 publicada `9bc1c38d712a676766fb1738638cc8f68532e06b`; hashes y build949 preservados, sin pruebas automatizadas por orden del dueño.
+
+La recuperación ya describe mejor la pista pausada. El diagnóstico añadido localiza ahora el rechazo de la pregunta inglesa en conservación de operaciones; propuesta991 pendiente. No se concluye que la reparación de toda la categoría exista. Preparación993 apunta a 17 literales web, 12 variantes y 5 límites tras una reparación transversal de resolución/navegación. Apps40 conserva condiciones957 y música39 conserva Spotify962 incierto: no repetir efectos sin reconciliarlos. H0675/OCR/nuevos providers siguen aparcados.
+
+| Tanda | Útiles / ejecutados | Nuevos créditos | Pico VRAM MiB | Pico RAM MiB | Segundos |
+|---|---:|---:|---:|---:|---:|
+| 989 | 5/11 | 0 | 3497.56 | 2371.46 | 86.672 |
+
+Salida0, pins intactos y cero violaciones; salida0 no demuestra utilidad. RAM y VRAM se midieron por separado frente al techo de4096MiB. No hubo que cerrar aplicaciones.69 acreditaciones en24h supera20, sin Full; no hay permiso pendiente. La tabla por categoría sigue vigente porque989 no añadió créditos.
+
+# Resumen del tramo986 — histórico
 
 **97/742 cubiertos,645 abiertos,0 no aplican;69 altas confirmadas en24h;0/35 categorías cerradas.** C03:3/11 cumplidos,5 contradichos,3 pendientes. Goal activo, sin decisión pendiente del dueño. RegistroSHA `40c530c681cb18b03cc46b7f1217757d46c80f8a2666fec59fae4cc611dd1108`.
 
