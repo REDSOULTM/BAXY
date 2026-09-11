@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-11T17:53:07.2708430Z",
+  "base_source": "c99a60f58281e74fe22792740b54ca9506e792e4",
+  "changed_file": "src/baxy_mind/effect_intent.py",
+  "source_sha256": "3c472d768dd3eee64112ba0697d6287fef72f8843524339ceb546a33404a6ff4",
+  "patch_sha256": "bc4899590046031f6f2094027eff12ae98d6fcc299c91150119861c2993b2279",
+  "diagnosis_report_sha256": "0ed025796d5c7d287b566d343b68417d4a5a1b7b9ac1086b23958134d59a5ea8",
+  "root_reviews": [
+    "de4d6b",
+    "7ea238",
+    "d1ce7f",
+    "afc197"
+  ],
+  "application": "1e2057",
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "change": "Existing navigation reader reuses one local verb expression adding llevame; keeps direct speech-act, deferred/meta and negation gates. No global _OPEN, retrieval, provider or response template changes.",
+  "scope": "One observed failed variant; two potential exact-URL literals need both variants and actual execution. Google three not attributed to this repair. Source behavior pending909.",
+  "panel909_seal_sha256": "3617e9a7ceddcbf8f0606fced8a24a5f1c07cc45781b3806540dcd6ffc39b48b"
+}

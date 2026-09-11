@@ -4,14 +4,14 @@ El dueño aclaró y reactivó el goal: **omitir suites automáticas, Fast y Full
 
 ## Estado autoritativo
 
-- Rama Goal-c03. Fuente publicada fb04a7014a368dc37afb05a904a671ba7e0e7499 (894). Los commits documentales posteriores no cambian esa fuente.
+- Rama Goal-c03. Fuente publicada c99a60f58281e74fe22792740b54ca9506e792e4 (904). Los commits documentales posteriores no cambian esa fuente.
 - **66/742 cubiertos,676 abiertos,0 no aplican;38 acreditaciones confirmadas24h y2 fechas iniciales indistinguibles;0/35 categorías;matriz C03 3/11.** Cómputo actualizado2026-09-11 alrededor16:40UTC. Ventana móvil: no repetir38 tras vencer esas fechas sin recalcular.
 - Registro: C:/Users/usuario/AppData/Local/BAXY/C03-survey-requirements336-private/requirements.jsonl SHA96d6ca83640517f8f972b4749bb2398d3588bc648e4a2b3dcd98d2fe4eb53626.
 - Fuente: effect_intent.py sha4625052505bd1d5963dbbec30d55184d21d451654bf81506ccf960d0a5fed10a;llm.py SHA487d79f477d41d40bf3d9bcc5652b4697a1df8c27af4a2502379e168c1554c6b;__main__.py SHA88276c0394352cb40dc529062b565ff4812d286a720dc9e23a9fdfad3160b1c3.
 - 888 reutiliza lector/selector de consulta de apps;889 añade4líneas al prompt existente de identidad para preservar ficción explícita del mismo objeto, sin inferir ausencia por nombre raro ni rechazar creación. Revisiónmanual y producto892; sin suites.
 - No hay corrida GPU viva. Sesiones85222/50599/29968/44837 recogidas y terminales. Agente apps_intent852 prepara diagnóstico896 de siguiente masa web; process_counts812 adapta runner895. 893/894 y panel895 terminados. ocr832_runner terminado histórico.
 
-## Siguiente acción por masa
+## Antecedentes por masa (la continuación vigente está al final)
 
 **Web46 abiertos precede apps44.** Diagnóstico externo893 de H0098/H0380: búsqueda genérica con mecanismo existente, sin navegación/infra nueva; recoger C:/Users/usuario/AppData/Local/BAXY/C03-web-search893-diagnosis/REPORT.md cuando lo entregue apps_intent852. Resolver primera pérdida observada y preparar panel dirigido; no repetir52casos864.
 
@@ -99,3 +99,11 @@ Fuente904 bajo HEAD1c7973ed25d2bcde732762f4e0fbd96031c9f5fd; panel d4ec688293e55
 1/14 ejecutado, 0 válidos, 1 fallido, 13 no ejecutados, 0 créditos. Primera variante «Llevame a https://www.rfc-editor.org/.» devolvió «No puedo llevarlo a esa página. Eso está fuera de mis funciones.». Retrieval lexical no incluyó browser.navigate; request8 terminó conversación sin operación. La guarda904 rechazó el pendiente ausente; no envió confirmar. Hostexit3, una admisión real, dos fases reportables; cola no ejecutada demostrada. 23,094s, VRAM3497,56MiB y RAM1598,58MiB, sin violaciones y pins intactos. No se ejecutaron literales: registro96d6ca83640517f8f972b4749bb2398d3588bc648e4a2b3dcd98d2fe4eb53626 intacto. Raíz adjudicó ROOT_ADJUDICATION.json.
 
 66/742 cubiertos,676 abiertos,0NA;38 altas confirmadas24h (dos fechas iniciales adicionales indistinguibles);0/35 categorías,matriz3/11. No suites/Fast/Full. No repetir la variante fallida sin reparación justificada; continuar sólo los13 no ejecutados.908 diagnostica primera pérdida;907 prepara siguientes aperturas. Goal activo, sin bloqueo ni permiso pendiente.
+
+## 910 — lector de navegación corregido; continuación909 sellada
+
+Revisión de908 (SHA0ed025796d5c7d287b566d343b68417d4a5a1b7b9ac1086b23958134d59a5ea8) y fuente afc197/d1ce7f: llevame ya era petición directa pero faltaba en los patrones locales de navegación. Una expresión local sustituye siete repeticiones y añade ese verbo; no cambia _OPEN global ni retrieval. Parchebc4899590046031f6f2094027eff12ae98d6fcc299c91150119861c2993b2279, fuente3c472d768dd3eee64112ba0697d6287fef72f8843524339ceb546a33404a6ff4, integrado1e2057. Sin suites; comportamiento pendiente del producto.
+
+909 conserva bytes de panel/wire906 y los14 objetos: sólo se reejecuta la variante fallida con reparación justificada; otros13 nunca se ejecutaron. Sello3617e9a7ceddcbf8f0606fced8a24a5f1c07cc45781b3806540dcd6ffc39b48b, runnerd2089a513c34c5352e770160cd2b0f9b53e2e0ab82a29ddd51d54d5bbbe4bcb8; revisióncd73e2: sólo10 líneas de identidad/rutas/schema, guardas intactas. Reutilizar build904 real de C# sin atribuir build nuevo ni pruebas verdes; sólo cambia Python. Raíz ligará584fuentes/18binarios/5runtime y ejecutará909.
+
+907 inventaría44apps abiertos:40positivos+4límites; cero literales positivos nuevos elegibles bajo exclusiones. Esto no cierra ni aparca la categoría: requiere reparar fallos observados antes de repetir los afectados. Los10 Calculadora requieren resolver verificación/efecto incierto primero; no pedir permiso nuevo para una reparación dentro del goal. 66/742 cubiertos,676abiertos,0NA;38altas confirmadas24h,0/35categorías,C03matriz3/11.

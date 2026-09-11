@@ -4,7 +4,7 @@
 
 El dueño reanudó el goal y aclaró el método: omitir suites automáticas, Fast y Full; mantener ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. El bloqueo anterior de alcance está resuelto. También autorizó cerrar aplicaciones para liberar RAM. No se cuentan pruebas omitidas como aprobadas.
 
-Fuente vigente publicada: d6cf9d2a52f4f1e49836365d6ced125e68f662fe. 888 amplía la consulta local de apps reutilizando lector y selector; 889 conserva premisas explícitas sobre objetos ficticios en el verificador existente. Revisión manual y ejecución892 posterior, sin suites. No cambia modelo, runtime, catálogo ni provider.
+Fuente vigente: c99a60f58281e74fe22792740b54ca9506e792e4 (904), publicada. Última ejecución906: una variante fallida, trece casos no ejecutados, cero confirmaciones y cero créditos. Reparación local910 y continuación909 en preparación. Los tramos siguientes son históricos y sus novedades más recientes están al final.
 
 Últimos tres tramos:
 
@@ -119,3 +119,11 @@ Fuente904 bajo HEAD1c7973ed25d2bcde732762f4e0fbd96031c9f5fd; panel d4ec688293e55
 1/14 ejecutado, 0 válidos, 1 fallido, 13 no ejecutados, 0 créditos. Primera variante «Llevame a https://www.rfc-editor.org/.» devolvió «No puedo llevarlo a esa página. Eso está fuera de mis funciones.». Retrieval lexical no incluyó browser.navigate; request8 terminó conversación sin operación. La guarda904 rechazó el pendiente ausente; no envió confirmar. Hostexit3, una admisión real, dos fases reportables; cola no ejecutada demostrada. 23,094s, VRAM3497,56MiB y RAM1598,58MiB, sin violaciones y pins intactos. No se ejecutaron literales: registro96d6ca83640517f8f972b4749bb2398d3588bc648e4a2b3dcd98d2fe4eb53626 intacto. Raíz adjudicó ROOT_ADJUDICATION.json.
 
 66/742 cubiertos,676 abiertos,0NA;38 altas confirmadas24h (dos fechas iniciales adicionales indistinguibles);0/35 categorías,matriz3/11. No suites/Fast/Full. No repetir la variante fallida sin reparación justificada; continuar sólo los13 no ejecutados.908 diagnostica primera pérdida;907 prepara siguientes aperturas. Goal activo, sin bloqueo ni permiso pendiente.
+
+## 910 — lector de navegación corregido; continuación909 sellada
+
+Revisión de908 (SHA0ed025796d5c7d287b566d343b68417d4a5a1b7b9ac1086b23958134d59a5ea8) y fuente afc197/d1ce7f: llevame ya era petición directa pero faltaba en los patrones locales de navegación. Una expresión local sustituye siete repeticiones y añade ese verbo; no cambia _OPEN global ni retrieval. Parchebc4899590046031f6f2094027eff12ae98d6fcc299c91150119861c2993b2279, fuente3c472d768dd3eee64112ba0697d6287fef72f8843524339ceb546a33404a6ff4, integrado1e2057. Sin suites; comportamiento pendiente del producto.
+
+909 conserva bytes de panel/wire906 y los14 objetos: sólo se reejecuta la variante fallida con reparación justificada; otros13 nunca se ejecutaron. Sello3617e9a7ceddcbf8f0606fced8a24a5f1c07cc45781b3806540dcd6ffc39b48b, runnerd2089a513c34c5352e770160cd2b0f9b53e2e0ab82a29ddd51d54d5bbbe4bcb8; revisióncd73e2: sólo10 líneas de identidad/rutas/schema, guardas intactas. Reutilizar build904 real de C# sin atribuir build nuevo ni pruebas verdes; sólo cambia Python. Raíz ligará584fuentes/18binarios/5runtime y ejecutará909.
+
+907 inventaría44apps abiertos:40positivos+4límites; cero literales positivos nuevos elegibles bajo exclusiones. Esto no cierra ni aparca la categoría: requiere reparar fallos observados antes de repetir los afectados. Los10 Calculadora requieren resolver verificación/efecto incierto primero; no pedir permiso nuevo para una reparación dentro del goal. 66/742 cubiertos,676abiertos,0NA;38altas confirmadas24h,0/35categorías,C03matriz3/11.

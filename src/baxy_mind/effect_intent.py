@@ -11188,12 +11188,13 @@ def _review_web_and_browser_effects(
         r"\b(?:archivo|file|carpeta|folder|escritorio|desktop|"
         r"documentos|documents|descargas|downloads)\b",
     )
+    navigation_verbs = rf"(?:{_OPEN}|navega|navegar|navigate|ve|go|llevame)"
     navigate = _head_is(
         head,
-        rf"(?:{_OPEN}|navega|navegar|navigate|ve|go)",
+        navigation_verbs,
     ) and _has(
         folded,
-        rf"\b(?:{_OPEN}|navega|navegar|navigate|ve|go)\b",
+        rf"\b{navigation_verbs}\b",
     )
     named_browser = _named_browser(folded) is not None or context_browser is not None
     if has_url and navigate:
@@ -11212,7 +11213,7 @@ def _review_web_and_browser_effects(
                 else "browser.navigate"
             ),
             (
-                rf"\b(?:{_OPEN}|navega|navegar|navigate|ve|go)\b"
+                rf"\b{navigation_verbs}\b"
                 r"(?:(?!https?://)[^,;\r\n]){0,160}https?://\S+"
             ),
         )
@@ -11221,7 +11222,7 @@ def _review_web_and_browser_effects(
             matches,
             folded,
             "browser.navigate.named" if named_browser else "browser.navigate",
-            rf"\b(?:{_OPEN}|navega|navegar|navigate|ve|go)\b",
+            rf"\b{navigation_verbs}\b",
         )
     elif (
         navigate
@@ -11235,13 +11236,13 @@ def _review_web_and_browser_effects(
             matches,
             folded,
             "web.search",
-            rf"\b(?:{_OPEN}|navega|navegar|navigate|ve|go)\b",
+            rf"\b{navigation_verbs}\b",
         )
         _append(
             matches,
             folded,
             "browser.navigate.named" if named_browser else "browser.navigate",
-            rf"\b(?:{_OPEN}|navega|navegar|navigate|ve|go)\b",
+            rf"\b{navigation_verbs}\b",
             priority=1,
         )
     elif (
@@ -11253,7 +11254,7 @@ def _review_web_and_browser_effects(
             matches,
             folded,
             "browser.navigate",
-            rf"\b(?:{_OPEN}|navega|navegar|navigate|ve|go)\b",
+            rf"\b{navigation_verbs}\b",
         )
     elif (
         _head_is(head, r"(?:llevame|take|ve|go|navega|navigate)")
