@@ -1,0 +1,8 @@
+{
+  "private_finding": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-app-membership819-proposal\\FINDING.md",
+  "sha256": "61064753a9680bce8657d330132bd4ff87a838b5e19a0ea45dcb19b169f656a5",
+  "code_commit": "6c4f0dec4fa0ec098eac03745c0d5a9ac7aff51d",
+  "root_decision": "Reject this identity-only mechanism as sufficient app membership; no product change or credit.",
+  "ordinary_execution_verified": false,
+  "new_owner_question": false
+}

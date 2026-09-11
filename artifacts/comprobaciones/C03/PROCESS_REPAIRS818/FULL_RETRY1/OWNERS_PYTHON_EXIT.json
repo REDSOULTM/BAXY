@@ -1,0 +1,8 @@
+{
+  "exit_code": 0,
+  "passed": 696,
+  "skipped": 0,
+  "seconds": 7.54,
+  "command": "C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe -X utf8 -m pytest -q tests/test_c03_process_scope_vocabulary.py tests/test_compose_contract.py tests/test_c03_request_preservation.py tests/test_c03_process_projection_scope.py tests/test_c03_process_inventory.py tests/test_c03_process_scope_prompt.py tests/test_c03_process_identity_projection.py tests/test_c03_process_output_budget.py tests/test_system_measurement_prose_projection.py tests/test_c03_observed_process_vocabulary.py tests/test_c03_process_count_projection.py",
+  "evidence": "Root command chunk ba1fa3, exit0:696 passed in7.54s."
+}

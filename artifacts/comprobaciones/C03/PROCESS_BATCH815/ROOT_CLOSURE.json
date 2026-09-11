@@ -1,0 +1,24 @@
+{
+  "utc": "2026-09-11T05:41:54.784219+00:00",
+  "session": 26072,
+  "collected_exit_code": 0,
+  "product_runtime_absent": true,
+  "runtime_absence_check": "No Baxy.exe, baxy-core.exe, llama-server.exe or testhost.exe after collection. Taskmgr8204 remains; owner close requested once.",
+  "terminals": {
+    "published_final": 48,
+    "composition_failed": 2
+  },
+  "adopted": false,
+  "adoption_reason": "39/50vs81339;10gains10losses. Eight list failures and omitted memory values remain. After two variants without net improvement, stop narration adjustments; repair deterministic false vetos and investigate measured five-row composition deadline.",
+  "rubric_notes": [
+    "List criterion explicitly requires observed count and subset/access limit; seven otherwise published inventories omit it, and the exhausted eighth also lacks it in first draft.",
+    "memory05 identifies two correct PIDs but omits working-set magnitudes required by sealed memory criterion.",
+    "CPU06 gives a correct current maximum with PID/percent; no quantity requested, no invented cardinality or new quota of displayed rows."
+  ],
+  "environment_confounds": "Taskmgr814 remained alive during815 and was absent813. Do not attribute all latency difference to prompt removal. Both are fresh observations; no quality regrading.",
+  "pending_diagnoses": {
+    "list06": "Existing _truncated_fact_word mistakes complete for clipped completeness from narrator-owned observationScope; exact static diagnosis outside.",
+    "memory03": "t31 six message.compose requests show5000ms outer budget and stop near4000ms each; no result draft in compose audit, one progress only. Need pure/source deadline owner diagnosis; raw-replies.jsonl was not created."
+  },
+  "scope": "All50 root judgments saved before assembler; no acceptance100/UI/voice/survey credit."
+}

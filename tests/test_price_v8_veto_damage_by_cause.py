@@ -99,12 +99,14 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # status instructions and explanation boundaries. V8 evidence/numbers stay sealed.
 # C03 590 pins the current CPU prose adapter integration and the published
 # CPU actor/quantity repairs; consumed V8 evidence and verdict remain unchanged.
+# C03 818 pins the process narration and metadata-vocabulary repairs. This is
+# current program identity only; V8 artifacts, arithmetic and verdict stay sealed.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
         "db333cd34b11d7e099d2b69501d0134e436460086c2f7b0d0c912393cf125a29"
     ),
     "src/baxy_mind/llm.py": (
-        "9769da156623c5e959a4b37afccb9e510f10f6b551acaeb3520c68d7df62b3d4"
+        "ffd1c8ca159069044ac5dbc449d00fcc833649c728f421604b7f1f0c3d27f0a8"
     ),
 }
 

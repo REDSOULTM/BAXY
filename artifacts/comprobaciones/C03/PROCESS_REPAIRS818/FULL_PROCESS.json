@@ -1,0 +1,15 @@
+{
+  "utc": "2026-09-11T05:54:39.556120+00:00",
+  "pid": 19472,
+  "command": [
+    "C:\\Users\\usuario\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.EXE",
+    "-NoProfile",
+    "-File",
+    "scripts/test_source_quality.ps1",
+    "-Mode",
+    "Full"
+  ],
+  "private_log": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-repairs818-private\\full.log",
+  "source_pins_sha256": "ba07567209ba1e71e77903a8b4a02500ce1e23dbb8d31a03ca1f4435b4677882",
+  "runner_sha256": "238e58b8889c115df7ecd5c9eaf7fa46419eb2871a0ee92207d197a8f1aebe8d"
+}

@@ -560,7 +560,10 @@ public sealed class PlannerAppBoundaryTests
     }
 
     [TestCase(0, false)]
-    [TestCase(7, false)]
+    [TestCase(1, false)]
+    [TestCase(2, true)]
+    [TestCase(5, true)]
+    [TestCase(7, true)]
     [TestCase(8, true)]
     [TestCase(50, true)]
     public void ProcessInventoryCompositionBudgetUsesReturnedRows(int count, bool dense)
@@ -569,6 +572,10 @@ public sealed class PlannerAppBoundaryTests
         foreach (int index in Enumerable.Range(0, count))
         {
             processes.Add(new JsonObject { ["processId"] = index + 1, ["name"] = "p" });
+        }
+        if (count < 8)
+        {
+            Assert.That(processes.ToJsonString().Length, Is.LessThan(512));
         }
         var situation = new JsonObject
         {
@@ -627,6 +634,8 @@ public sealed class PlannerAppBoundaryTests
         });
     }
 
+    [TestCase("false", "true", "{\"processes\":[1,2]}")]
+    [TestCase("true", "false", "{\"processes\":[1,2]}")]
     [TestCase("false", "true", "{\"processes\":[1,2,3,4,5,6,7,8]}")]
     [TestCase("true", "false", "{\"processes\":[1,2,3,4,5,6,7,8]}")]
     [TestCase("null", "true", "{\"processes\":[1,2,3,4,5,6,7,8]}")]

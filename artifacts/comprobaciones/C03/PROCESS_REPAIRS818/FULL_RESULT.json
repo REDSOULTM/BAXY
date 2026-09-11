@@ -1,0 +1,28 @@
+{
+  "utc": "2026-09-11T06:21:53.729679+00:00",
+  "exit_code": 1,
+  "source_pins_unchanged": true,
+  "dotnet": {
+    "passed": 4657,
+    "aggregate_skipped": 1,
+    "printed_opt_in_skips_nondisjoint": 16,
+    "failed": 0
+  },
+  "python": {
+    "passed": 12895,
+    "failed": 3,
+    "skipped": 3,
+    "subtests_passed": 466,
+    "seconds": 730.14
+  },
+  "failures": [
+    "tests/test_price_v8_veto_damage_by_cause.py::test_published_split_and_ceiling_are_the_numbers_r144_reported",
+    "tests/test_stt_quality_evaluators.py::test_stt_evaluator_freezes_final_contract_and_blind_engines",
+    "tests/test_stt_quality_evaluators.py::test_fresh_postweight_source_audit_is_preacquisition_and_text_blind"
+  ],
+  "cause": "Stale expected identities for current llm.py and current Python program tree in historical evidence tools. No artifacts, consumed populations or historical judgments are to be resealed.",
+  "raw_log": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-repairs818-private\\full.log",
+  "raw_log_sha256": "f57facbcb2d0787243aa7d664fe1614e6c4de183bd2ba36f3014c82893a61c43",
+  "adopted": false,
+  "retry": "Only after exact current fingerprints and full owner suites pass; original Full stays red."
+}

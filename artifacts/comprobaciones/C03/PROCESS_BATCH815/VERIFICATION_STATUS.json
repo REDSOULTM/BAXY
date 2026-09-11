@@ -1,0 +1,66 @@
+{
+  "source_candidate": 814,
+  "source_adopted": false,
+  "new_coverage": 0,
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "cases": [
+    {
+      "case_id": "H0133",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Diez instancias/PIDs y MB fieles; 144 accesibles observados, diez mostrados y lista parcial del sistema explícitos."
+    },
+    {
+      "case_id": "H0158",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Diez instancias/PIDs y MB fieles, pero sólo menciona límite accesible y omite los 144 observados y que diez son un recorte; no cumple la identificación del subconjunto y conteo observados exigidos al inventario."
+    },
+    {
+      "case_id": "H0169",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Cuatro máximos de memoria con PIDs y MB correctos; métrica y alcance accesible declarados, sin cantidad solicitada ni afirmar diez mostrados."
+    },
+    {
+      "case_id": "H0364",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Diez instancias CPU con PIDs, orden y porcentajes intervalares correctos; alcance accesible declarado, sin cardinalidad falsa."
+    },
+    {
+      "case_id": "H0470",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "146 procesos accesibles durante la observación; no afirma que sean todos los del sistema. Conteo y límite correctos."
+    },
+    {
+      "case_id": "H0650",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Top5 solicitado con identidades/PIDs, MB y orden correctos, limitado a procesos accesibles sin confundir memoria de aplicación."
+    },
+    {
+      "case_id": "H0669",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Cuatro máximos de memoria correctos con PIDs y MB, alcance observado/accesible y completitud no garantizada; ninguna cantidad solicitada ni cardinalidad falsa."
+    },
+    {
+      "case_id": "H0675",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Llama mayor aplicación al working set de una instancia python sin membresía ni agregado de aplicación observados."
+    },
+    {
+      "case_id": "H0678",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "146 procesos accesibles observados antes de seleccionar filas, número y alcance correctos sin afirmar completitud del sistema."
+    }
+  ]
+}

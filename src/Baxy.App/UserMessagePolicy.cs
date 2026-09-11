@@ -1515,7 +1515,6 @@ internal static class UserMessagePolicy
             || folded.Contains("no esta claro", StringComparison.Ordinal)
             || folded.Contains("clarificacion ambigua", StringComparison.Ordinal)
             || folded.Contains("clock field", StringComparison.Ordinal)
-            || folded.Contains("current context", StringComparison.Ordinal)
             || folded.Contains("mundo digital", StringComparison.Ordinal)
             || folded.Contains("compilar", StringComparison.Ordinal);
     }

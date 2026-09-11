@@ -1,0 +1,8 @@
+{
+  "exit_code": 0,
+  "passed": 289,
+  "skipped": 0,
+  "seconds_reported": 17,
+  "command": "C:/Users/usuario/.dotnet/dotnet.exe test tests/Baxy.Integration.Tests -c Release --nologo -v:minimal --filter FullyQualifiedName~C03NaturalContextPhraseTests|FullyQualifiedName~ObservedProcessVocabularyTests|FullyQualifiedName~PlannerAppBoundaryTests|FullyQualifiedName~C03FactPreservationTests|FullyQualifiedName~Goal06VisibleVoiceTests",
+  "evidence": "Root session87176, final chunk cda716, exit0:289 passed/0 skipped; integrated816+818."
+}

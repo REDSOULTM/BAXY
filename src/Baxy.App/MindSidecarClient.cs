@@ -226,7 +226,8 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 _ => null,
             };
             return collection is not null && observed[collection] is JsonArray rows
-                && (rows.Count >= DenseMessageFactCount
+                && ((collection == "processes" && rows.Count > 1)
+                    || rows.Count >= DenseMessageFactCount
                     || rows.ToJsonString().Length >= DenseMessageFactCharacters);
         }
         catch (JsonException)

@@ -1,0 +1,29 @@
+{
+  "utc": "2026-09-11T05:53:29.462919+00:00",
+  "candidate": 818,
+  "adopted": false,
+  "base_commit": "b997816d43a651bf8886b8db5b1748a9f9c709b9",
+  "changed_files": [
+    "src/Baxy.App/MindSidecarClient.cs",
+    "src/Baxy.App/UserMessagePolicy.cs",
+    "src/baxy_mind/llm.py",
+    "tests/Baxy.Integration.Tests/C03NaturalContextPhraseTests.cs",
+    "tests/Baxy.Integration.Tests/PlannerAppBoundaryTests.cs",
+    "tests/test_c03_process_scope_vocabulary.py"
+  ],
+  "components": {
+    "816": "Remove the single current context substring from the internal-code blacklist. Natural bounded counts pass; actual internal codes remain rejected.",
+    "817": "Exclude observationScope and unit narrator metadata from the existing literal-word truncation vocabulary. Observed names, titles and capabilities remain protected. No dictionary exceptions or new checker.",
+    "818": "Select the existing dense composition budget for verified successful process observations with more than one returned row. Existing numeric budgets, token limits and retry counts remain unchanged."
+  },
+  "root_review": "Three independently diagnosed boundaries integrated one at a time with owner tests. No prompt or fact projection change; inherited 814 is not declared a successful category solution.",
+  "baseline": "815:39/50, preserved; no panel regrading. Captured false-veto replay does not make its omitted observed population valid.",
+  "native_isolation_limit": "815 t31 shows six result-composition attempts using outer5s/inner4s without a result draft. It does not measure isolated native completion duration.",
+  "measurement_plan": "819 repeats the frozen50 after both gates. Overall recovery belongs to the combined repair; individual causal claims rely only on isolated owner reproductions.",
+  "unchanged": "Qwen model, backend, profile, sampler, prompts, projection812/810, canonical observations, panel795 and rubric; no new response layer.",
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  }
+}

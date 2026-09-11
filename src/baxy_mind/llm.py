@@ -3829,7 +3829,14 @@ def _truncated_fact_word(text: str, facts: dict) -> bool:
         if isinstance(value, str):
             return [value]
         if isinstance(value, dict):
-            return [text for child in value.values() for text in values_only(child)]
+            # Narrator metadata describes observations; it is not literal text
+            # whose wording must be preserved like names, titles or capabilities.
+            return [
+                text
+                for key, child in value.items()
+                if key not in {"observationScope", "unit"}
+                for text in values_only(child)
+            ]
         if isinstance(value, (list, tuple)):
             return [text for child in value for text in values_only(child)]
         return []

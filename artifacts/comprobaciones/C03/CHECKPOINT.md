@@ -1,3 +1,15 @@
+Full818 retry1 recogido0: .NET4657pass/1omisión agregada(16optativas impresas no disjuntas); Python12898pass/3skip/466subtests/620,88s;33pins intactos. PrimerFull rojo y3referenciasactuales reparadas preservados. Preparado819, mismos50; publicar propios y arrancar, sin adopción ni crédito.81539/50; encuesta28/714/0;matriz3/11;C03EN_CURSO.
+
+Full818 retry1 activo: sesión56418/PID31492 desde06:27:13UTC; Fastretry1verde,33pinsSHA952a061bf291456f415ec67a810f5b8fd5054602c01a761d76f7bb5576beaa45. Reparación820 sólo3referenciasdeidentidadactual; dueñas17pass/1skipambiental/1,93s. Runtime818 idéntico. PrimerFull rojo3fallosSHA preservado; noGPU.819preparado exige FULL_RETRY1 verde, no iniciado.81539/50; encuesta28/714/0; matriz3/11; C03EN_CURSO.
+
+Full818 recogido exit1: .NET4657pass/1omisión agregada (16optativas impresas no disjuntas); Python12895pass/3failed/3skip/466subtests/730,14s.33pins intactos. Los3fallos son referencias SHA actuales obsoletas: llm en pruebaV8 y árbolPython en2evaluadoresSTT. Sin reabrir campañas ni tocar sus recibos. Reparación820 sóloactualiza esas3referencias; luego dueñas yFullretry1 separados.819sinarrancar; encuesta28/714/0,matriz3/11,C03EN_CURSO.
+
+816–818 integrados: 289 dueñas C# pass/0skip/17s y 696 Python pass/0skip/7,54s. Tres causas aisladas: falso current context, metadatos complete/completeness y selección del plazo denso para más de una fila de procesos. Fast verde; Full acumulado activo en sesión31953/PID19472, 33pins, sin GPU ni cambios de fuente. 815 íntegro39/50; sin adopción, encuesta28/714/0, matriz3/11, C03 EN_CURSO.
+
+815 completo:39/50válidos,11fallidos;10ganancias/10pérdidas frente81339. Listas3/11,conteos12/12,memoria9/11,CPU11/11,indeterminado4/4,app0/1.48publicados/2agotados;414,11s;mediana5,262s;picoVRAM3497,56MiB/RAM2429,73MiB,sininfracciones.814sinadoptar. Detenerajustesprosa trasdosvariantes sinmejora; reparacionesléxicas816/817aisladas y plazo5filasendiagnóstico. Encuesta28/714/0;matriz3/11;C03EN_CURSO.
+
+815 activo, sesión26072/launcher22608/runner3440: mismos50, fuente814 simplifica una obligación de conteos en rankings.306dueñas pass/0skip/3,62s,Fast0/Release25,34s,31pins. Publicadob997816d,originigual/mainintacto.81339/50 íntegro,sinadopción;raízadjudica. No source/Full duranteGPU. Encuesta28/714/0;matriz3/11;C03EN_CURSO.
+
 814 validado: eliminación de una obligación redundante en el párrafo de rankings, dos archivos +1/-3 líneas.306dueñas pass/0skip/3,62s;Fast0 recogido69115,Release25,34s,31pinsintactos.815 listo mismos50 tras publicación.81339/50 preservado;812sinadoptar. TaskManager814 se relanza elevado;UIA sinfilas,cierre manual solicitado una vez. Encuesta28/714/0;matriz3/11;C03EN_CURSO.
 
 813 completo: 39/50 válidos, 11 fallidos; tres ganancias/cuatro pérdidas frente a81140/50. Listas11/11,conteos10/12,memoria9/11,CPU9/11,indeterminado0/4,app0/1.49publicados y1composition_failed;262,844s,mediana terminal4,726s;VRAM3497,56MiB/RAMresidente2449,81MiB,sin infracciones.812 no mejora el conjunto ni se adopta. Diagnóstico814 de primer veto y vía TaskManager ordinaria pendientes. Encuesta28/714/0;matriz3/11;C03EN_CURSO.

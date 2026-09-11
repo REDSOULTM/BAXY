@@ -1,0 +1,9 @@
+{
+  "exit_code": 0,
+  "passed": 17,
+  "skipped": 1,
+  "seconds": 1.93,
+  "command": "C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe -X utf8 -m pytest -q tests/test_price_v8_veto_damage_by_cause.py tests/test_stt_quality_evaluators.py",
+  "evidence": "Root command chunkdb16e9:17 passed,1 skipped in1.93s.",
+  "skip": "Environmental absence of blind-campaign inputs, test_stt_quality_evaluators.py:122. Not counted as passed; no data campaign reopened."
+}
