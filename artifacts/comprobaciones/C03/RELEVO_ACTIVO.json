@@ -5,7 +5,7 @@
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
   "checkpoint": "64/742 cubiertos,678 abiertos,0NA;854TAIL24/24,6pass18fail,+1Spotify. Web46=apps46; web864 revision2 siguiente.",
-  "continuation": "No tests/Full per latest owner. One pending clarification whether product panels also excluded. Review/integrate minimal alias871 proposal without tests;869 sealed but do not run pending scope answer. Web864 fully adjudicated, causes stored, YouTube owned window closed normally and exact process exited. Publish root WIP explicitly.",
+  "continuation": "872 revision3 and875 integrated by root; no tests/build/Full/product runs after owner instruction. Commit/push explicit source+evidence paths. Both871/872 worktrees removed after preserving patches. Product panel scope clarification remains pending;869 sealed/unexecuted. Do not use old860pins for new source. Other proposals863/868/873/874 external, unadopted; no provider/filter rewrite. Preserve64/742 honest count.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -33,11 +33,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "0634a8d5474e099a9fabb990e205224a78638a62",
-  "workStatus": "implementation_no_tests_owner_instruction",
+  "publishedSourceCommit": "92e7f668f294b4ee80d28d86a2fb381abb9a5ef1",
+  "workStatus": "google_and_app_grammar_integrated_no_tests",
   "goalStatusNote": "All C03 active;64/742 covered,678 open,0NA;0/35categories,H0675parked.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "05990551e5afcbdbd33b9d02ac7427e12bcc3edf",
+  "publishedEvidenceCommit": "92e7f668f294b4ee80d28d86a2fb381abb9a5ef1",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -949,5 +949,14 @@
     "text": "no hagas test, saca el goal lo mas rápido posible, sin perder calidad",
     "suites_and_full": "do_not_run",
     "product_panels_scope": "one clarification pending; no new runs meanwhile"
+  },
+  "currentUnpublishedSource": {
+    "effect_intent_sha256": "83895b3df64e33e4a3875ed5d6d4a9446fbd73e3a1ffc3c9a44ef8c1616e2f2b",
+    "main_sha256": "628d9ce0bedd4263014bbe7374c097bc5c733a340dffb444ba3871e2db0bb783",
+    "changes": [
+      "GOOGLE_ROUTING872",
+      "APP_ARTICLES875"
+    ],
+    "validation": "manual review only; tests explicitly prohibited by owner"
   }
 }

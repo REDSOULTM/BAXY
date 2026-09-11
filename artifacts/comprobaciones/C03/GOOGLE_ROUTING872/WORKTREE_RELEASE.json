@@ -1,0 +1,8 @@
+{
+  "target": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-google-routing872-worktree",
+  "removed": true,
+  "sourceEffectSha256": "9d29a6c0e37f0a77331a328a10980e71734d0e4d80ea7a7782cb113490e017ec",
+  "sourceMainSha256": "628d9ce0bedd4263014bbe7374c097bc5c733a340dffb444ba3871e2db0bb783",
+  "patchPreserved": "C:/Users/usuario/AppData/Local/BAXY/C03-google-routing872-proposal/revision3/repair.patch",
+  "laterRootChange": "APP_ARTICLES875/SOURCE.json"
+}

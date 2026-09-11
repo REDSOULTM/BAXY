@@ -25,7 +25,7 @@ from enum import Enum
 from functools import partial
 from pathlib import Path
 from typing import Any, Callable
-from urllib.parse import urlsplit
+from urllib.parse import urlencode, urlsplit
 
 # PyTorch otherwise sizes its CPU pools for the whole machine. On a 16 GiB
 # notebook that creates dozens of workers and can turn startup into minutes of
@@ -3813,7 +3813,18 @@ def _explicit_browser_navigation_arguments(
     operation: str,
     evidence: str,
 ) -> dict[str, object] | None:
-    """Canonicalize only a literal URL, bare host, or closed service name."""
+    """Canonicalize explicit destinations and a literal Google search query."""
+
+    google_query = effect_intent._explicit_google_search_query(evidence)
+    if google_query is not None:
+        # Named-browser clauses need their own authenticated browser evidence;
+        # abstain here rather than silently opening the generic CDP session.
+        if (
+            operation != "browser.navigate"
+            or effect_intent._named_browser(effect_intent._fold(evidence)) is not None
+        ):
+            return None
+        return {"url": "https://www.google.com/search?" + urlencode({"q": google_query})}
 
     full_urls = [
         match.group(0).rstrip(".,;:!?)]}»”’")
@@ -4940,7 +4951,8 @@ def _ground_explicit_arguments(
         # canonicalization. Requiring a canonical display name or opaque AppID
         # to also appear literally in user text would discard that authority.
         # Browser destinations cross an equally closed parser: only a literal
-        # URL, bare host, or the named YouTube service is canonical. The media
+        # URL, bare host, named service, or explicitly requested Google query
+        # encoded by that parser is canonical. The media
         # query parser preserves the literal query and supplies the catalog's
         # sole provider value. System scopes are enum identities selected by
         # the existing domain parser, not words the user must spell literally.

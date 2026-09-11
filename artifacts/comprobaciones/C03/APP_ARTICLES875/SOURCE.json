@@ -1,0 +1,19 @@
+{
+  "utc": "2026-09-11T15:00:28.245796+00:00",
+  "source_integrated": true,
+  "source_path": "src\\baxy_mind\\effect_intent.py",
+  "source_sha256": "83895b3df64e33e4a3875ed5d6d4a9446fbd73e3a1ffc3c9a44ef8c1616e2f2b",
+  "base_source_sha256": "9d29a6c0e37f0a77331a328a10980e71734d0e4d80ea7a7782cb113490e017ec",
+  "root_review_chunks": [
+    "7632e5",
+    "839411"
+  ],
+  "change": "Extend existing article wrapper by singular indefinite un/una/a/an. Original candidate retained, longest exact authenticated name still preferred, no arbitrary application ID.",
+  "relevant_open_literal": "H0688",
+  "causal_scope": "Static grammar mismatch repaired; real effective catalog and product execution not observed for this candidate. No claim that H0688 is covered.",
+  "tests_run": false,
+  "full_run": false,
+  "product_verified": false,
+  "coverage_added": 0,
+  "owner_instruction": "no hagas test, saca el goal lo mas rápido posible, sin perder calidad"
+}

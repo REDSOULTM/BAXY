@@ -3419,7 +3419,7 @@ def _application_target_forms(
     )
     wrapper = re.compile(
         (
-            r"^(?:(?:el|la|los|las|the)\s+)?"
+            r"^(?:(?:el|la|los|las|un|una|the|a|an)\s+)?"
             r"(?:(?:aplicacion|application|app|programa|program)\s+)?"
         ),
         re.IGNORECASE,
@@ -7634,7 +7634,10 @@ def _is_direct_request(text: str) -> bool:
     if topic is not None:
         text = topic.group("body")
     text = _negative_state_question_body(text) or text
-    if _direct_process_inventory_request(text):
+    if (
+        _direct_process_inventory_request(text)
+        or _explicit_google_search_query(text) is not None
+    ):
         return True
     request_head = (
         rf"(?:{_OPEN}|{_LIST}|{_READ}|{_CREATE}|{_SEARCH}|{_MUTE_VERB}|"
@@ -9695,7 +9698,12 @@ def _finalize_effect_matches(
             fragment,
             flags=re.IGNORECASE,
         ).strip(" ,;:-")
-        evidence.append(fragment[:240] or "efecto solicitado")
+        # Google query construction consumes this evidence as data. Retain the
+        # complete bounded clause so a plan cannot silently search a prefix.
+        evidence.append(
+            fragment if _explicit_google_search_query(fragment) is not None
+            else fragment[:240] or "efecto solicitado"
+        )
     return EffectIntent(operations, tuple(evidence))
 
 
@@ -10978,6 +10986,30 @@ def _location_recommendation_request(text: str) -> bool:
     )
 
 
+def _explicit_google_search_query(text: str) -> str | None:
+    """Read an explicit Google search without folding its literal query."""
+
+    prefix = rf"[¿?¡!\s]*{_REQUEST_PREFIX}"
+    search = rf"(?:search(?:\s+for)?|{_SEARCH}|buscá)\s+"
+    for body in (
+        search + r"(?P<query>.+?)\s+(?:en|on)\s+google[.!?]*",
+        search + r"(?:en|on)\s+google\s+(?P<query>.+)",
+        rf"(?:en|on)\s+google\s*,\s*{_REQUEST_PREFIX}"
+        + search + r"(?P<query>.+)",
+    ):
+        match = re.fullmatch(prefix + body, text.strip(), re.IGNORECASE)
+        if match is None:
+            continue
+        query = match.group("query").strip()
+        if (
+            query
+            and len(query.encode("utf-8")) <= 512
+            and not any(ord(character) < 32 for character in query)
+        ):
+            return query
+    return None
+
+
 def _review_web_and_browser_effects(
     matches: list[tuple[int, int, str]],
     folded: str,
@@ -10987,6 +11019,23 @@ def _review_web_and_browser_effects(
     web_search_requested: bool,
 ) -> None:
     """Append explicit web-search, navigation, page, and tab effects."""
+
+    if _explicit_google_search_query(folded) is not None:
+        browser = _named_browser(folded) or context_browser
+        if browser is None or browser == "opera":
+            if _append(
+                matches,
+                folded,
+                "browser.navigate.named" if browser else "browser.navigate",
+                rf"\b{_SEARCH}\b",
+            ):
+                # Check negation at the real verb before retaining the Google
+                # heading as part of the same evidence clause.
+                _, priority, operation = matches[-1]
+                matches[-1] = (0, priority, operation)
+        # A named browser has no generic substitute. Do not fall through to
+        # Bing RSS when the public navigation contract cannot represent it.
+        return
 
     explicit_public_lookup = (
         _head_is(head, _SEARCH)
@@ -11713,6 +11762,17 @@ def _request_clauses(text: str) -> tuple[str, ...]:
     parts = []
     start = 0
     for boundary in separator.finditer(boundary_text):
+        if (
+            _explicit_google_search_query(text[start:]) is not None
+            and re.fullmatch(
+                rf"[¿?¡!\s]*{_REQUEST_PREFIX}(?:en|on)\s+google",
+                boundary_text[start:boundary.start()].strip(),
+                re.IGNORECASE,
+            )
+        ):
+            # The Google topic belongs to its following imperative. Later
+            # action separators still delimit independent effects normally.
+            continue
         topic = _machine_status_topic(boundary_text[start:])
         if topic is not None and (
             boundary.start() <= start + topic.start("separator") < boundary.end()
