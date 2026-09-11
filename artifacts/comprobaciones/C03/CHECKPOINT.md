@@ -64,3 +64,6 @@ Tabla de la taxonomía846, ordenada por requisitos abiertos:
 | Procesos | 9 | 8 | 1 | 0 |
 
 [Historia preservada hasta Audio861](CHECKPOINT_HISTORICO_2026-09-11_HASTA_AUDIO861.md). Los tramos posteriores conservan recibos propios y versiones anteriores de este checkpoint en Git.
+
+
+893 terminado y leído37d8c6: raw web.search correcto en H0098/H0380 se retira por domain_grounding; exige una mención pública adicional aunque la orden ya es una búsqueda directa. Son lecturas existentes, sin confirmación de navegador. InformeSHA898422b45b39c1ecf9389c344dd27bb5570d271d0e098d1d3ea38c832d181746. Agente apps_intent852 prepara894 fuera de canónico, en worktree codex/c03-web-search894, sólo effect_intent.py y __main__.py si imprescindible. No pruebas/build/GPU/HTTP; raíz revisaráparche y sellarácontinuación de2literales convariantes, sin repetir864. Fuente canónica todavía d6cf9d2a.66/742,676open,0NA;38altas24h,0/35categorías.

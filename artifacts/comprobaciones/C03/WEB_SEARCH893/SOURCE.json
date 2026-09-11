@@ -1,0 +1,15 @@
+{
+  "utc": "2026-09-11T16:45:04.2755897Z",
+  "report_path": "C:/Users/usuario/AppData/Local/BAXY/C03-web-search893-diagnosis/REPORT.md",
+  "report_sha256": "898422b45b39c1ecf9389c344dd27bb5570d271d0e098d1d3ea38c832d181746",
+  "root_review": "37d8c6",
+  "case_ids": [
+    "H0098",
+    "H0380"
+  ],
+  "first_observed_loss": "Both raw web.search decisions preserved through information_question then withdrawn at domain_grounding; later generic clarification asks preferences/meaning.",
+  "existing_mechanism": "ReadOnly web.search; no navigation confirmation or new provider needed.",
+  "next": "Agent apps_intent852 proposes894 in isolated worktree codex/c03-web-search894, effect_intent.py and __main__.py only. No tests/build/product/GPU/HTTP; root reviews and adopts before sealed directed execution.",
+  "coverage_added": 0,
+  "tests_run": false
+}

@@ -5,7 +5,7 @@
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
   "checkpoint": "66/742 covered,676open,0NA;38confirmednew24h+2unknownfirstdates;0/35categories;C03matrix3/11.8927pass2fail,+H0353/H0406,session44837terminalfb6a2b.",
-  "continuation": "Web46 now precedes apps44. Agent893 diagnoses existing generic search H0098/H0380 externally. 891 C# proposal external/notadopted. Source888/889 publishedd6cf9d2a. 892 session44837terminalexit0,9/9,7pass2fail,+2credits; sourcepinsunchanged. No pending GPU/process run. Owner approved omit suites/Fast/Full, retain sealed product runs and close applications for RAM. Old scope blocker resolved.",
+  "continuation": "893 diagnosis complete/rootreview37d8c6: correct web.search lost at lexical domain grounding in H0098/H0380. Agent apps_intent852 now prepares894 repair in isolated worktree, effect_intent.py/__main__.py only, no tests/build/GPU/HTTP. Collect proposal then rootreview/adopt/seal directed panel. Source d6cf9d2a;66/742 covered,676open; no live product run.891externalnotadopted, web46 highest mass.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
