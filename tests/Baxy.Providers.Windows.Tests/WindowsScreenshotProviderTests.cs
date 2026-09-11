@@ -128,6 +128,153 @@ public sealed class WindowsScreenshotProviderTests
         Assert.That(Directory.GetFiles(temporary.Path), Is.Empty);
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void CaptureUsesPhysicalDesktopCoordinatesAndRestoresOriginalDpiContext(bool activeWindow)
+    {
+        var dpi = new FakeThreadDpiContext();
+        var physicalDesktop = new CaptureBounds(0, 0, 2800, 1840);
+        var virtualizedDesktop = new CaptureBounds(0, 0, 1244, 818);
+        var window = new CaptureBounds(136, 124, 2564, 1320);
+        int observations = 0;
+        CaptureBounds ReadDesktop() => dpi.Current == (nint)(-4) ? physicalDesktop : virtualizedDesktop;
+        var platform = new GdiScreenshotPlatform(() =>
+        {
+            Assert.That(dpi.Current, Is.EqualTo((nint)(-4)));
+            observations++;
+            return Snapshot() with { WindowBounds = window, DesktopBounds = ReadDesktop() };
+        }, bounds =>
+        {
+            Assert.That(dpi.Current, Is.EqualTo((nint)(-4)), "Pixel acquisition must share the physical bounds context.");
+            Assert.That(bounds, Is.EqualTo(activeWindow ? window : physicalDesktop));
+            return new ScreenshotFrame(bounds.Width, bounds.Height, []);
+        }, new FixedTimeProvider(), dpi.Set, ReadDesktop);
+
+        ScreenshotFrame frame = activeWindow ? platform.CaptureActiveWindow() : platform.CaptureVirtualScreen();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That((frame.Width, frame.Height), Is.EqualTo(activeWindow ? (2564, 1320) : (2800, 1840)));
+            Assert.That(observations, Is.EqualTo(activeWindow ? 2 : 0));
+            Assert.That(dpi.Current, Is.EqualTo(FakeThreadDpiContext.Original));
+            Assert.That(dpi.Requests, Is.EqualTo(new nint[] { -4, FakeThreadDpiContext.Original }));
+            if (activeWindow)
+            {
+                Assert.That(frame.ActiveWindow!.CaptureBounds, Is.EqualTo(window));
+                Assert.That(frame.ActiveWindow.IsClipped, Is.False);
+            }
+            else
+            {
+                Assert.That(frame.ActiveWindow, Is.Null);
+            }
+        });
+    }
+
+    [TestCase(true, "before")]
+    [TestCase(true, "pixels")]
+    [TestCase(true, "after")]
+    [TestCase(false, "bounds")]
+    [TestCase(false, "pixels")]
+    public void CaptureFailureRestoresThreadDpiContext(bool activeWindow, string failureStage)
+    {
+        var dpi = new FakeThreadDpiContext();
+        int observations = 0;
+        var platform = new GdiScreenshotPlatform(() =>
+        {
+            Assert.That(dpi.Current, Is.EqualTo((nint)(-4)));
+            observations++;
+            if (failureStage == (observations == 1 ? "before" : "after"))
+                throw new IOException("Observation unavailable.");
+            return Snapshot();
+        }, bounds =>
+        {
+            Assert.That(dpi.Current, Is.EqualTo((nint)(-4)));
+            if (failureStage == "pixels") throw new IOException("Pixel copy failed.");
+            return new ScreenshotFrame(bounds.Width, bounds.Height, []);
+        }, new FixedTimeProvider(), dpi.Set, () =>
+        {
+            Assert.That(dpi.Current, Is.EqualTo((nint)(-4)));
+            if (failureStage == "bounds") throw new IOException("Desktop bounds unavailable.");
+            return Snapshot().DesktopBounds;
+        });
+
+        Assert.Throws<IOException>(() =>
+        {
+            if (activeWindow) _ = platform.CaptureActiveWindow();
+            else _ = platform.CaptureVirtualScreen();
+        });
+        Assert.That(dpi.Current, Is.EqualTo(FakeThreadDpiContext.Original));
+        Assert.That(dpi.Requests, Is.EqualTo(new nint[] { -4, FakeThreadDpiContext.Original }));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void UnavailableDpiContextDoesNotReadBoundsOrPixels(bool activeWindow)
+    {
+        var dpi = new FakeThreadDpiContext { RejectEnter = true };
+        int nativeReads = 0;
+        var platform = new GdiScreenshotPlatform(() =>
+        {
+            nativeReads++;
+            return Snapshot();
+        }, bounds =>
+        {
+            nativeReads++;
+            return new ScreenshotFrame(bounds.Width, bounds.Height, []);
+        }, new FixedTimeProvider(), dpi.Set, () =>
+        {
+            nativeReads++;
+            return Snapshot().DesktopBounds;
+        });
+
+        Assert.Throws<IOException>(() =>
+        {
+            if (activeWindow) _ = platform.CaptureActiveWindow();
+            else _ = platform.CaptureVirtualScreen();
+        });
+        Assert.That(nativeReads, Is.Zero);
+        Assert.That(dpi.Current, Is.EqualTo(FakeThreadDpiContext.Original));
+        Assert.That(dpi.Requests, Is.EqualTo(new nint[] { -4 }));
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void FailedDpiRestorationDoesNotPersistASuccessfulCapture(bool activeWindow)
+    {
+        using TemporaryDirectory temporary = new();
+        var dpi = new FakeThreadDpiContext { RejectRestore = true };
+        var platform = new GdiScreenshotPlatform(Snapshot,
+            bounds => new ScreenshotFrame(bounds.Width, bounds.Height, new byte[bounds.Width * bounds.Height * 4]),
+            new FixedTimeProvider(), dpi.Set, () => Snapshot().DesktopBounds);
+        var provider = new WindowsScreenshotProvider(temporary.Path, platform, new FixedTimeProvider());
+
+        Assert.ThrowsAsync<IOException>(async () =>
+        {
+            if (activeWindow) _ = await provider.CaptureActiveWindowAsync(CancellationToken.None);
+            else _ = await provider.CaptureAsync(CancellationToken.None);
+        });
+        Assert.That(dpi.Requests, Is.EqualTo(new nint[] { -4, FakeThreadDpiContext.Original }));
+        Assert.That(Directory.GetFiles(temporary.Path), Is.Empty);
+    }
+
+    private sealed class FakeThreadDpiContext
+    {
+        internal static readonly nint Original = 12345;
+        public nint Current { get; private set; } = Original;
+        public List<nint> Requests { get; } = [];
+        public bool RejectEnter { get; init; }
+        public bool RejectRestore { get; init; }
+
+        public nint Set(nint context)
+        {
+            Requests.Add(context);
+            if ((context == (nint)(-4) && RejectEnter) || (context == Original && RejectRestore)) return 0;
+            nint previous = Current;
+            Current = context;
+            return previous;
+        }
+    }
+
     private static ActiveWindowSnapshot Snapshot() => new(
         123, 456, DateTimeOffset.UnixEpoch.AddTicks(123),
         new CaptureBounds(0, 0, 2, 2), new CaptureBounds(0, 0, 2, 2));

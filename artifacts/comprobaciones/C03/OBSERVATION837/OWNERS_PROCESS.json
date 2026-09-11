@@ -1,0 +1,19 @@
+{
+  "utc": "2026-09-11T09:30:45.567437+00:00",
+  "pid": 17108,
+  "wrapper_pid": 2716,
+  "command": [
+    "C:/Users/usuario/.dotnet/dotnet.exe",
+    "test",
+    "tests/Baxy.Providers.Windows.Tests/Baxy.Providers.Windows.Tests.csproj",
+    "-c",
+    "Release",
+    "--nologo",
+    "-v:quiet",
+    "--filter",
+    "FullyQualifiedName~WindowsScreenshotProviderTests|FullyQualifiedName~CaptureOcrLayoutTests",
+    "-p:UseSharedCompilation=false",
+    "-nodeReuse:false"
+  ],
+  "source_pins_sha256": "b0ea5aeae1792f1d0ef8fea8a66c071f30c1ec41e3f004e90df859ddb78aaaf5"
+}

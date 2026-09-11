@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-11T09:33:19.037047+00:00",
+  "pid": 32672,
+  "wrapper_pid": 4964,
+  "command": [
+    "C:/Users/usuario/.dotnet/dotnet.exe",
+    "run",
+    "--project",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-capture837-native-probe\\Probe.csproj",
+    "-c",
+    "Release",
+    "--verbosity",
+    "quiet",
+    "-p:UseSharedCompilation=false",
+    "-p:BuildInParallel=false"
+  ],
+  "source_pins_sha256": "b0ea5aeae1792f1d0ef8fea8a66c071f30c1ec41e3f004e90df859ddb78aaaf5"
+}

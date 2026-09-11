@@ -93,6 +93,8 @@ internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
 {
     private readonly Func<ActiveWindowSnapshot> _observeActiveWindow;
     private readonly Func<CaptureBounds, ScreenshotFrame> _captureRegion;
+    private readonly Func<CaptureBounds> _readDesktopBounds;
+    private readonly Func<nint, nint> _setThreadDpiContext;
     private readonly TimeProvider _time;
 
     public GdiScreenshotPlatform()
@@ -104,21 +106,43 @@ internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
     internal GdiScreenshotPlatform(
         Func<ActiveWindowSnapshot> observeActiveWindow,
         Func<CaptureBounds, ScreenshotFrame> captureRegion,
-        TimeProvider time)
+        TimeProvider time,
+        Func<nint, nint>? setThreadDpiContext = null,
+        Func<CaptureBounds>? readDesktopBounds = null)
     {
         _observeActiveWindow = observeActiveWindow;
         _captureRegion = captureRegion;
         _time = time;
+        _setThreadDpiContext = setThreadDpiContext ?? SetThreadDpiAwarenessContext;
+        _readDesktopBounds = readDesktopBounds ?? ReadDesktopBounds;
     }
 
-    public ScreenshotFrame CaptureVirtualScreen()
+    public ScreenshotFrame CaptureVirtualScreen() => CaptureInPhysicalPixels(
+        () => _captureRegion(_readDesktopBounds()));
+
+    public ScreenshotFrame CaptureActiveWindow() => CaptureInPhysicalPixels(CaptureActiveWindowCore);
+
+    private ScreenshotFrame CaptureInPhysicalPixels(Func<ScreenshotFrame> capture)
     {
-        int x = GetSystemMetrics(76), y = GetSystemMetrics(77);
-        int width = GetSystemMetrics(78), height = GetSystemMetrics(79);
-        return CaptureRegion(x, y, width, height);
+        // DWM bounds are physical pixels. Keep metrics, fallback bounds and GDI in
+        // that same coordinate space, on this synchronous thread only.
+        nint previous = _setThreadDpiContext((nint)(-4));
+        if (previous == 0) throw new IOException("Screenshot DPI context unavailable.");
+        ScreenshotFrame frame;
+        nint restored;
+        try
+        {
+            frame = capture();
+        }
+        finally
+        {
+            restored = _setThreadDpiContext(previous);
+        }
+        if (restored == 0) throw new IOException("Screenshot DPI context restoration failed.");
+        return frame;
     }
 
-    public ScreenshotFrame CaptureActiveWindow()
+    private ScreenshotFrame CaptureActiveWindowCore()
     {
         DateTimeOffset started = _time.GetUtcNow();
         ActiveWindowSnapshot before = _observeActiveWindow();
@@ -164,14 +188,16 @@ internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
             throw new IOException("Active window bounds unavailable.");
         var bounds = new CaptureBounds(rectangle.Left, rectangle.Top,
             checked(rectangle.Right - rectangle.Left), checked(rectangle.Bottom - rectangle.Top));
-        var desktop = new CaptureBounds(GetSystemMetrics(76), GetSystemMetrics(77),
-            GetSystemMetrics(78), GetSystemMetrics(79));
+        CaptureBounds desktop = ReadDesktopBounds();
         if (GetForegroundWindow() != window
             || GetWindowThreadProcessId(window, out uint finalProcessId) == 0 || finalProcessId != processId)
             throw new IOException("Active window changed while observing its identity.");
         return new ActiveWindowSnapshot((long)window, processId, DateTimeOffset.FromFileTime(created),
             bounds, desktop);
     }
+
+    private static CaptureBounds ReadDesktopBounds() => new(
+        GetSystemMetrics(76), GetSystemMetrics(77), GetSystemMetrics(78), GetSystemMetrics(79));
 
     private static ScreenshotFrame CaptureRegion(int x, int y, int width, int height)
     {
@@ -245,6 +271,9 @@ internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
 
     [LibraryImport("user32.dll")]
     private static partial int GetSystemMetrics(int index);
+
+    [LibraryImport("user32.dll")]
+    private static partial nint SetThreadDpiAwarenessContext(nint context);
 
     [LibraryImport("user32.dll")]
     private static partial nint GetForegroundWindow();

@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-11T09:31:12.357983+00:00",
+  "exit_code": 0,
+  "source_pins_unchanged": true,
+  "source_pins_sha256": "b0ea5aeae1792f1d0ef8fea8a66c071f30c1ec41e3f004e90df859ddb78aaaf5",
+  "log_sha256": "b198ceaf96e8ef03e647adebc2c225a6cc5e300db586ada473b09648d73aa53d",
+  "private_log": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-observation837-private\\owners.log",
+  "command": [
+    "C:/Users/usuario/.dotnet/dotnet.exe",
+    "test",
+    "tests/Baxy.Providers.Windows.Tests/Baxy.Providers.Windows.Tests.csproj",
+    "-c",
+    "Release",
+    "--nologo",
+    "-v:quiet",
+    "--filter",
+    "FullyQualifiedName~WindowsScreenshotProviderTests|FullyQualifiedName~CaptureOcrLayoutTests",
+    "-p:UseSharedCompilation=false",
+    "-nodeReuse:false"
+  ],
+  "adopted": false
+}

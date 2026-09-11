@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "OCR832 collected0 f7243c,6/8 root-valid. D04 inventedPID7; D07 false tie. Geometry/hash intact to wire8/8; native drafts equal published,0veto/retry/cut. VRAM3495,56MiB/RAM755,20MiB/32,25s. Native framing836 preparation; DPI835 isolated repair. Survey36/706/0,H0675open,C03active.",
-  "continuation": "Review/run last framing control838 on unchanged46pins, then integrate reviewed DPI835 and run owners/Fast/native837/Full when adopted. No repeated836 or broadened timeouts.",
+  "checkpoint": "8326/8,8361/8 con7timeouts,8384/8 con1timeout. Ambos controles sin ganancia neta vs832: framing cerrado, compositor sin cambios. DPI835 integrado como candidato837:46pinsb0ea5aea, dueñas/Fast sesión97344; luego captura837 yFull. Encuesta36/706/0,H0675abierto,C03active.",
+  "continuation": "Full837 has NOT started. Root owners47/0skip and Fast0 collectedfb3ea7; native20checks/0fail collected19ea01, full physical crop2564x1320 and context restored. Reproduce OCR sensitive-read handler blocker839 before accumulated Full. Agentcapture826 owns red test/proposal; process_counts812 prepares834 runner. No new framing controls.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,7 +34,7 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "f70ea94c7ef04a2b623cf3be5c1bfd2218d59385",
-  "workStatus": "ocr836_timeout_control838_prepared_dpi835_waiting",
+  "workStatus": "dpi837_owners_fast_native_green_ocr839_diagnosis_before_full",
   "goalStatusNote": "All C03 remains active;36covered/706open and49/50 process panel; generic screen prerequisites not H0675 completion.",
   "previousGoalTurnClassification": "progress",
   "publishedEvidenceCommit": "c5d0f476facd538b1226c5d3c4c0ced22a1ee7ec",
@@ -120,7 +120,7 @@
     "source_pins_unchanged": true,
     "adopted": false
   },
-  "activeReadOnlyAgent": "capture826_provenance: isolated DPI835 repair preparation, no build during GPU",
+  "activeReadOnlyAgent": "capture826_provenance: OCR839 red test/proposal isolated; process_counts812: real834 staged runner preparation",
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
     "name": "process824",
@@ -128,7 +128,7 @@
     "launcherPid": 33712,
     "runnerPid": 7440,
     "processReceipt": {
-      "utc": "2026-09-11T07:29:32.171877+00:00",
+      "utc": "2026-09-11T04:29:32.171877-03:00",
       "launcher": 33712,
       "runner": 7440,
       "command": [
@@ -907,7 +907,7 @@
     "confirmed_absent": true,
     "evidence": "C:/Users/usuario/AppData/Local/BAXY/C03-task-manager-observation804-private/OBSERVATION.json",
     "product_credit": false,
-    "atUtc": "2026-09-11T02:24:13.989550+00:00"
+    "atUtc": "2026-09-10T23:24:13.98955-03:00"
   },
   "repair806": {
     "active_agent_limit": 2,
@@ -928,7 +928,7 @@
     "release_seconds": 21.84
   },
   "taskManager814LatestCheck": {
-    "utc": "2026-09-11T05:56:33.896601+00:00",
+    "utc": "2026-09-11T02:56:33.896601-03:00",
     "pid": 8204,
     "windowId": 5704926,
     "processPresent": true,
@@ -969,12 +969,13 @@
     "coverageAdded": 0
   },
   "latestNativeOcrRun": {
-    "name": "OCR836",
-    "sessionId": 58658,
-    "collectionChunk": "e3f938",
+    "name": "OCR838",
+    "sessionId": 28404,
+    "collectionChunk": "717bbe",
     "exitCode": 1,
-    "pass": 1,
-    "timeouts": 7,
+    "pass": 4,
+    "contentFailures": 3,
+    "timeouts": 1,
     "coverageAdded": 0
   }
 }

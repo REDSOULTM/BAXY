@@ -1,0 +1,110 @@
+{
+  "utc": "2026-09-11T09:32:56.491602+00:00",
+  "root_adjudicated": true,
+  "collection": {
+    "session_id": 28404,
+    "chunk": "717bbe",
+    "exit_code": 1
+  },
+  "pass": 4,
+  "fail": 4,
+  "content_failures": 3,
+  "timeouts": 1,
+  "cases": [
+    {
+      "case_id": "OCR832-D01",
+      "user_message": "En esta tabla, ¿qué aplicación tiene el valor más alto en Memoria y cuánto indica?",
+      "answer": "La aplicación con el valor más alto en Memoria es **Orilla**, y indica **980,2 MB**.",
+      "error": null,
+      "pass": true,
+      "root_reason": "Orilla980,2MB correcto; alcance definido por el pedido.",
+      "seconds": 0.9219999999986612,
+      "physical_payload_matches_plan": true
+    },
+    {
+      "case_id": "OCR832-D02",
+      "user_message": "¿Cuál de las tres filas muestra menos memoria y qué valor tiene?",
+      "answer": "La fila que muestra menos memoria es **\"Río (1)\"**, con un valor de **105,0 MB**.  \n\n✅ Respuesta: **Río (1)** con **105,0 MB**.",
+      "error": null,
+      "pass": true,
+      "root_reason": "Identifica Río(1),105,0MB correctamente; repetición estilística no invalida.",
+      "seconds": 1.2030000000013388,
+      "physical_payload_matches_plan": true
+    },
+    {
+      "case_id": "OCR832-D03",
+      "user_message": "¿Esta observación demuestra cuál es la aplicación que más memoria usa en todo mi PC?",
+      "answer": "No, esta observación no demuestra cuál es la aplicación que más memoria usa en todo tu PC. Muestra el uso de memoria por aplicaciones específicas (Cosmos, Orilla, Río), pero no indica cuál es la que consume más memoria en total. Además, el texto indica que \"Memoria\" se refiere al uso de memoria RAM por cada aplicación, no al total del sistema.",
+      "error": null,
+      "pass": true,
+      "root_reason": "Niega máximo global y limita observación a las aplicaciones indicadas; no declara inventario completo.",
+      "seconds": 1.735000000000582,
+      "physical_payload_matches_plan": true
+    },
+    {
+      "case_id": "OCR832-D04",
+      "user_message": "Junto a Orilla aparece un número entre paréntesis: ¿cuál es y permite saber los PID de sus integrantes?",
+      "answer": "El número entre paréntesis junto a \"Orilla\" es **7**. Este número indica que **Orilla tiene 7 procesos activos**, es decir, el PID (Process ID) de sus integrantes es **7**.  \n\nSin embargo, en el contexto de un sistema operativo como Windows, el número en paréntesis en una lista de procesos (como en el panel de tareas) **no es el PID**, sino el **número de procesos** asociados a esa aplicación.\n\nPor lo tanto, **el número 7 no es un PID**, sino el **número de procesos** que tiene la aplicación \"Orilla\".  \n\n👉 **Respuesta final**: El número es **7**, pero **no es un PID**; indica que Orilla tiene 7 procesos activos.",
+      "error": null,
+      "pass": false,
+      "root_reason": "Afirma al principio PID7 y siete procesos activos, después niega que7 sea PID. Respuesta íntegra contradictoria; certifica procesos activos sin evidencia de miembros.",
+      "seconds": 3.0159999999996217,
+      "physical_payload_matches_plan": true
+    },
+    {
+      "case_id": "OCR832-D05",
+      "user_message": "List the three applications from highest to lowest in the Memoria column, including each displayed value.",
+      "answer": "From highest to lowest in the Memoria column:\n\n1. Orilla – 980,2 MB  \n2. Cosmos – 420,5 MB  \n3. Río – 105,0 MB",
+      "error": null,
+      "pass": true,
+      "root_reason": "Orden descendente y las tres asociaciones correctas en inglés.",
+      "seconds": 1.1879999999982829,
+      "physical_payload_matches_plan": true
+    },
+    {
+      "case_id": "OCR832-D06",
+      "user_message": "Read the Memoria column from top to bottom as displayed, pairing each value with its application name. Keep the displayed row order.",
+      "answer": "- Memoria: 420,5 MB  \n- Orilla: 980,2 MB  \n- Río: 105,0 MB",
+      "error": null,
+      "pass": false,
+      "root_reason": "Empareja420,5MB con el encabezado Memoria en lugar de Cosmos.",
+      "seconds": 1.014999999999418,
+      "physical_payload_matches_plan": true
+    },
+    {
+      "case_id": "OCR832-D07",
+      "user_message": "Are any of the three applications tied in the displayed memory values? Show the values you used.",
+      "answer": null,
+      "error": "TimeoutError: se agotó el presupuesto local del LLM",
+      "pass": false,
+      "root_reason": "Timeout4s antes de headers; no respuesta ni contenido recuperado. No se adjudica un borrador imaginario.",
+      "seconds": 4.0,
+      "physical_payload_matches_plan": true
+    },
+    {
+      "case_id": "OCR832-D08",
+      "user_message": "Compare Cosmos y Río por memoria y dime en español si también puedes comparar su CPU con esta tabla.",
+      "answer": "No, no puedo comparar la CPU de Cosmos, Orilla o Río con la tabla que mencionas, porque **no hay información sobre el rendimiento de CPU** en el texto proporcionado. Solo se muestra un dato de **memoria utilizada** (420,5 MB para Cosmos, 980,2 MB para Orilla, 105,0 MB para Río).\n\nPor lo tanto, **no es posible realizar una comparación de CPU** con la información disponible. Solo se puede comparar en cuanto a **uso de memoria**.\n\n**Resumen en español:**  \nNo se puede comparar la CPU de Cosmos, Orilla y Río con la información dada, ya que no se menciona ningún dato sobre el rendimiento de la CPU. Solo se proporciona información sobre el uso de memoria.",
+      "error": null,
+      "pass": false,
+      "root_reason": "No realiza la comparación de memoria pedida. Da cifras pero dedica la respuesta a negar comparación CPU; no establece Cosmos>Río. Ausencia CPU correcta no satisface todo el pedido.",
+      "seconds": 3.0320000000028813,
+      "physical_payload_matches_plan": true
+    }
+  ],
+  "comparison_to832": {
+    "baseline_pass": 6,
+    "this_pass": 4,
+    "gains": 0,
+    "losses": 2
+  },
+  "resources": {
+    "seconds": 37.23399999999674,
+    "gpu_peak_mib": 3495.55859375,
+    "ram_peak_mib": 756.5390625,
+    "violations": []
+  },
+  "coverage_added": 0,
+  "framing_strategy_closed": true,
+  "decision": "Do not replace composer or tune this framing further. Same8 showed no net gain in both native controls. Keep measured false PID/tie and new alignment/omission failures open; change next work to physical capture and real observation834, not another prompt sweep."
+}

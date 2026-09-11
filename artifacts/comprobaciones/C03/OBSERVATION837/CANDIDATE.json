@@ -1,0 +1,26 @@
+{
+  "utc": "2026-09-11T09:30:45.319430+00:00",
+  "base_commit": "1f3b0b137294cb8a708853cf9f2ca598ec396145",
+  "changed_files": [
+    "src/Baxy.Providers.Windows/Capture/WindowsScreenshotProvider.cs",
+    "tests/Baxy.Providers.Windows.Tests/WindowsScreenshotProviderTests.cs"
+  ],
+  "source_pins_count": 46,
+  "source_pins_sha256": "b0ea5aeae1792f1d0ef8fea8a66c071f30c1ec41e3f004e90df859ddb78aaaf5",
+  "adopted": false,
+  "scope": "Synchronous thread-local physical DPI context around both native GDI capture paths; restore before persistence. No Python change or OCR/composer behavior change.",
+  "parent_validation": "OBSERVATION829/UNICODE_RETRY2",
+  "root_review": "Both source/test diff reviewed. Native probe837 adapts independent postread to physical pixels, verifies original context restored and native thread stable.",
+  "agent_owners": {
+    "pass": 22,
+    "failed": 0,
+    "skipped": 0,
+    "log_sha256": "3b3f025050c5c7f60b675fdd1bee8b7c044d5847c1aa3bc2beb718a021d8b5f5"
+  },
+  "coverage_added": 0,
+  "survey_counts": {
+    "covered": 36,
+    "open": 706,
+    "not_applicable": 0
+  }
+}

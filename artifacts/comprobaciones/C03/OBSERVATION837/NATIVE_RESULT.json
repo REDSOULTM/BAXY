@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-11T09:33:25.724756+00:00",
+  "summary": {
+    "status": "passed",
+    "reportPath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-capture837-native-probe\\private\\20260911T0933254419973Z_fb49ec8de43b441cb505ba2d369fb0c7\\OBSERVATION.json",
+    "reportSha256": "cdd40d0a478919f4eb53d884f812f04b1449b032dc6856c16d4702d6cfec903b",
+    "imageSha256": "9f0fcb294be558e917cb39264e50d9a82809b44ea100f14e7ff6e3e8accc6f36",
+    "checksPassed": 20,
+    "checksFailed": [],
+    "failureType": null
+  },
+  "native_capture_passed": true,
+  "probe_source_sha256": "1689103c51742ba1462580317a78fbba24fb3ce4b9a520f9e7c59fd3b23a2170",
+  "probe_project_sha256": "64797e24bfc9e14accc4245095faf6e9b87fd315f1851ce358a6ccf0bc2fcaf5",
+  "coverage_added": 0,
+  "limits": "Native capture and original thread/DPI restoration only; no table completeness, freshness, H0675, UI or model credit."
+}
