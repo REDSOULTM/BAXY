@@ -3411,6 +3411,12 @@ def build_application_catalog_index(
     )
 
 
+_APPLICATION_TRAILING_REQUEST = re.compile(
+    r"\s*[,;:]?\s+(?:por favor|please|para mi|for me|ahora|now)$",
+    re.IGNORECASE,
+)
+
+
 def _application_target_forms(
     raw_target: str,
 ) -> tuple[tuple[str, int], ...]:
@@ -3431,10 +3437,6 @@ def _application_target_forms(
     if without_punctuation and without_punctuation not in punctuation_forms:
         punctuation_forms.append(without_punctuation)
 
-    trailing = re.compile(
-        r"\s*[,;:]?\s+(?:por favor|please|para mi|for me|ahora|now)$",
-        re.IGNORECASE,
-    )
     execution_hint = re.compile(
         r"\s+(?:(?:con\s+)?maximo\s+\d+\s+intentos?|[0-2])$",
         re.IGNORECASE,
@@ -3449,7 +3451,7 @@ def _application_target_forms(
     forms: list[tuple[str, int]] = []
     for punctuation_form in punctuation_forms:
         bases = [punctuation_form]
-        without_trailing = trailing.sub("", punctuation_form).rstrip()
+        without_trailing = _APPLICATION_TRAILING_REQUEST.sub("", punctuation_form).rstrip()
         if without_trailing and without_trailing != punctuation_form:
             bases.append(without_trailing)
         without_execution_hint = execution_hint.sub("", punctuation_form).rstrip()
@@ -3771,6 +3773,48 @@ def resolve_application_window_followup_name(
     return followup(text, reference)
 
 
+def unresolved_application_open_name(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> str | None:
+    """Bind a literal app name for a presence read, never an opening fallback."""
+
+    folded = _fold(text)
+    if (
+        not folded
+        or len(folded) > 16_384
+        or not _application_desire_is_positive(folded)
+    ):
+        return None
+    request = _application_open_request(folded)
+    if request is None or _is_negated_match(folded, request):
+        return None
+    # An explicit application noun establishes the domain without guessing
+    # whether an unfamiliar bare name denotes an app, file, site or game.
+    wrapper = _match(
+        request.group("target"),
+        r"^(?:(?:el|la|un|una|the|a|an)\s+)?"
+        r"(?:aplicacion|application|app|programa|program)\s+",
+    )
+    if (
+        wrapper is None
+        or resolve_application_catalog_app_id(text, application_names) is not None
+    ):
+        return None
+    # Folding proves grammar only. Recover the original tokens for the read
+    # so the provider receives the person's name, including case and accents.
+    target_words = len(request.group("target").split())
+    raw_target = " ".join(text.split()[-target_words:])
+    raw_name = " ".join(raw_target.split()[len(wrapper.group().split()):])
+    # The explicit application wrapper was consumed above. Strip only its
+    # request suffix, never another article or program word inside the name.
+    raw_name = _APPLICATION_TRAILING_REQUEST.sub("", raw_name.rstrip(" ?!.")).rstrip()
+    name = _bounded_application_literal(raw_name)
+    if name is None or len(_request_clauses(folded)) != 1:
+        return None
+    return name
+
+
 def resolve_application_installed_name(
     text: str,
     application_names: Iterable[str] | ApplicationCatalogIndex,
@@ -3785,6 +3829,9 @@ def resolve_application_installed_name(
     sentences continue to abstain.
     """
 
+    opening_name = unresolved_application_open_name(text, application_names)
+    if opening_name is not None:
+        return opening_name
     catalog = build_application_catalog_index(application_names)
     folded = _strip_request_envelope(_fold(text)).strip().rstrip(".?!").strip()
     if not folded:
@@ -3909,20 +3956,34 @@ def resolve_application_installed_name(
         } and catalog_keys & {"bloc de notas", "notepad"}:
             return "windows.notepad"
 
+    return _bounded_application_literal(forms[-1][0])
+
+
+def _bounded_application_literal(candidate: str) -> str | None:
+    """Keep literal presence queries bounded without asserting membership."""
+
     # A pronoun without catalog identity is not an application-name query.
     # Keep it unresolved rather than asking the provider about a literal "it".
     if _has(
-        forms[-1][0],
+        _fold(candidate),
         r"^(?:(?:esta|esa|aquella|this|that)\s+"
         r"(?:app|aplicacion|application|programa|program)|"
         r"esto|eso|esta|esa|aquella|it|this|that|them|esas|aquellas)$",
+    ):
+        return None
+    # A relative clause or its subject still needs an antecedent; it is not
+    # an unfamiliar literal identifier that a catalog can prove absent.
+    if _has(
+        _fold(candidate),
+        r"^(?:(?:el|la|lo|los|las|the)\s+)?"
+        r"(?:que|cual|cuales|quien|which|that|who|you|i|we|he|she|they)\b",
     ):
         return None
 
     # The provider's schema accepts at most 256 UTF-8 bytes and independently
     # verifies both presence and absence.  Reject clause syntax, control
     # characters and generic nouns so only one bounded literal reaches it.
-    literal = forms[-1][0].strip(" \t\r\n\"'“”")
+    literal = candidate.strip(" \t\r\n\"'“”")
     if (
         not literal
         or len(literal.encode("utf-8")) > 256
@@ -13006,6 +13067,13 @@ def resolve_explicit_effects(
         application_names,
     )
     authenticated_games = build_game_catalog_index(game_catalog)
+    if (
+        "app.installed" in available
+        and unresolved_application_open_name(text, authenticated_applications) is not None
+    ):
+        # Identity is still pending. Read once under the original opening
+        # objective; no app.open step or plan is inferred from this result.
+        return EffectIntent(("app.installed",), (text,))
     alias_plan = exact_catalog_operation_plan(folded)
     if alias_plan is not None and set(alias_plan) <= available:
         return EffectIntent(alias_plan, tuple(folded for _ in alias_plan))

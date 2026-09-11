@@ -3641,6 +3641,19 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
     # Planner steps include internal prerequisites, such as resolving a window
     # before closing it. They are evidence, not a demand to narrate every step.
     observed = _merged_observed(situation)
+    if (
+        situation.get("operation") == "app.installed"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+    ):
+        bits.append(
+            "This result verifies application presence only, not an opening. "
+            "Preserve requestedName and the original purpose of the request. "
+            "If opening was requested and installed is false, explain that the "
+            "requested application was not found in the observed authority's "
+            "catalog, so its opening could not proceed. Do not claim physical "
+            "absence beyond that catalog, a launch attempt, or a completed opening."
+        )
     if observed:
         if isinstance(observed.get("app"), str) and observed["app"].strip():
             bits.append(

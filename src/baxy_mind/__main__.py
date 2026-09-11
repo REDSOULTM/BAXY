@@ -69,8 +69,10 @@ from .effect_intent import (
 from .llm import (
     LlmRuntime,
     _literal_recall_reference,
+    _merged_observed,
     _native_selection_description,
     _reads_as_an_observation,
+    _situation_from_facts,
     served_capability_families,
     visible_reply_is_only_questions,
 )
@@ -8108,11 +8110,51 @@ def _run_sidecar(
                         [tool["function"]["canonical_name"] for tool in tools]
                     ),
                 }
-                text = llm.compose_user_message(
-                    str(message.get("userText", ""))[:4096],
-                    str(message.get("intent", "status"))[:32],
-                    facts,
-                )
+                user_text = str(message.get("userText", ""))[:4096]
+                situation = _situation_from_facts(facts)
+                observed = _merged_observed(situation)
+                opening_name = effect_intent.unresolved_application_open_name(
+                    user_text, application_names,
+                ) if situation.get("operation") == "app.installed" else None
+                approximate_identity = False
+                if (
+                    opening_name is not None
+                    and situation.get("verified") is True
+                    and situation.get("succeeded") is True
+                ):
+                    if observed.get("requestedName") != opening_name:
+                        raise ValueError("application lookup result does not bind the request")
+                    candidate_name = observed.get("displayName")
+                    approximate_identity = (
+                        observed.get("installed") is True
+                        and isinstance(candidate_name, str)
+                        and effect_intent._application_name_key(candidate_name)
+                        != effect_intent._application_name_key(opening_name)
+                    )
+                if approximate_identity:
+                    # A presence read may suggest a different catalog name.
+                    # Ask about identity without treating that suggestion as
+                    # an authorized destination or adding an opening step.
+                    text = llm.formulate_missing_argument_question(
+                        user_text,
+                        "Clarify application identity, not opening permission. "
+                        "No opening occurred. This verified presence candidate "
+                        "differs from the name in the original request: "
+                        + json.dumps(
+                            {"displayName": candidate_name},
+                            ensure_ascii=False,
+                        ),
+                        tool_by_name["app.open"],
+                        ("appId",),
+                    )
+                    if not _recovery_question_is_valid(text, user_text):
+                        raise ValueError("invalid application identity question")
+                else:
+                    text = llm.compose_user_message(
+                        user_text,
+                        str(message.get("intent", "status"))[:32],
+                        facts,
+                    )
                 if not text:
                     raise RuntimeError("respuesta vacía")
                 write_request_message(
