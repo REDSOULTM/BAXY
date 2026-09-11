@@ -1,3 +1,109 @@
+# Audio857 validado; listo para producto858 — 2026-09-11T13:11:40.628227+00:00
+
+**45/742 cubiertos,697abiertos,0NA;0/35categorías;últimas24h17altasconfirmadas+2actualizacionescovered de primera fecha indistinguible. HuboFull843.** Audio48open,apps47,web46. Dueñas raíz3545pass/0fail/0skip75,63s;Fast0/Release22,71s,pins63intactos3c0d1ae4...,sesión35989recogida823c22. Worktree857fotografiado yretirado; fuenteaúnpendiente de producto.858sellado35+12+5/104wirea8831683...;runnerf23fb3f2...revisado332a97. Baseline físico fresco31%/sin silencio, endpoint88f8b460...,Corecerrado. Publicar/prepare/runactual, adjudicarcoveredinmediato; restauraraudioalbaseline despuésconreciboactual. NoFull/source duranteGPU. H0675/OCR/newprovidersaparcados.
+
+---
+
+# Checkpoint — audio primero tras los créditos de apps — 2026-09-11T13:01:00.812649+00:00
+
+**45/742 cubiertos, 697 abiertos, 0 no aplican; categorías cerradas 0/35. Últimas24h:17altas confirmadas y2actualizaciones covered de primera fecha indistinguible. HuboFull843.**
+
+853+continuación:22/25casos ejecutados,16válidos/6fallidos;7créditos(H0017,H0361,H0375,H0557,H0633,H0649,H0729) escritos al adjudicar. Tres límites restantes no ejecutados; no hay literales pendientes de admisión de este panel. Dos paradas porRAM conservadas, sin relax ni repetición del panel:85372s/VRAM3497,56MiB/RAM2449,31MiB ytail42,406s/VRAM3497,56MiB/RAM1886,62MiB. Ambos pins intactos; sesiones36966/37234 recogidas wrapper1/guard15. [853](APP_OPEN853/ROOT_ADJUDICATION.json) y[continuación](APP_OPEN853_TAIL/ROOT_ADJUDICATION.json).
+
+**Audio48 abiertos pasa delante de apps47.** 854 permanece sellado30+12+5 para su turno, no ejecutado. Audio858 se prepara con11positivos fuera848+24abiertos previos,12variantes y5límites. Fuente857 sólo en worktreepropio:grounding de cantidades/ámbito existentes; dueña autorizada tras pararGPU. No nueva infraestructura. H0675/OCR/providers nuevos aparcados.
+
+Root cerró normalmente las nuevas instancias Steam tras cada parada (sin juegos hijos, PID/creación comprobados); Steamtail yhelper salieron, RAMlibre4123,37MiB. Appspropias no son cerradas automáticamente porrunner. Taskmgr se conserva. Máximo2subagentes después de guarda. 851852 publicado9ee53ea7 con3504dueñas/0skip yFast0,fuenteadoptada enalcance medido;Full843permanecebaselinehistórico.
+
+| Categoría | Total | Cubiertos | Abiertos | No aplican |
+|---|---:|---:|---:|---:|
+| Audio y volumen | 51 | 3 | 48 | 0 |
+| Abrir aplicaciones | 54 | 7 | 47 | 0 |
+| Navegación y búsqueda web | 46 | 0 | 46 | 0 |
+| Música | 39 | 0 | 39 | 0 |
+| Estado de hardware y sistema | 40 | 2 | 38 | 0 |
+| Alarmas, recordatorios, tareas y agenda | 38 | 0 | 38 | 0 |
+| Conocimiento, razonamiento y creatividad verbal | 37 | 3 | 34 | 0 |
+| Entrada incompleta, ruido y control de diálogo | 34 | 0 | 34 | 0 |
+| Archivos y carpetas | 32 | 0 | 32 | 0 |
+| Mensajería | 31 | 0 | 31 | 0 |
+| Instalar y desinstalar software | 31 | 0 | 31 | 0 |
+| Vídeo y series | 26 | 0 | 26 | 0 |
+| Conversación social y ayuda general | 31 | 9 | 22 | 0 |
+| Interacción dentro de aplicaciones | 22 | 0 | 22 | 0 |
+| Hora y fecha | 23 | 3 | 20 | 0 |
+| Red y Bluetooth | 21 | 1 | 20 | 0 |
+| Cerrar aplicaciones y ventanas | 20 | 0 | 20 | 0 |
+| Pantalla, captura e interpretación visual | 19 | 0 | 19 | 0 |
+| Brillo y pantalla | 17 | 0 | 17 | 0 |
+| Información web actual | 17 | 0 | 17 | 0 |
+| Estado de ventanas y aplicaciones | 14 | 1 | 13 | 0 |
+| Organizar ventanas y pestañas | 13 | 0 | 13 | 0 |
+| Identidad y capacidades del asistente | 19 | 7 | 12 | 0 |
+| Notas | 12 | 0 | 12 | 0 |
+| Memoria personal | 10 | 0 | 10 | 0 |
+| Correo | 6 | 0 | 6 | 0 |
+| Bibliotecas y fichas de juegos | 6 | 0 | 6 | 0 |
+| Contactos | 5 | 0 | 5 | 0 |
+| Desarrollo y ejecución de comandos | 5 | 0 | 5 | 0 |
+| Restricciones negativas de apertura | 4 | 1 | 3 | 0 |
+| Portapapeles | 3 | 0 | 3 | 0 |
+| Energía del sistema | 3 | 0 | 3 | 0 |
+| Crear documentos y editar imágenes | 2 | 0 | 2 | 0 |
+| Leer y resumir páginas web | 2 | 0 | 2 | 0 |
+| Procesos | 9 | 8 | 1 | 0 |
+
+---
+
+# Checkpoint — apps853 adjudicado — 2026-09-11T12:45:10.055563+00:00
+
+**41/742 cubiertos,701 abiertos,0no aplican;0/35categorías cerradas. Últimas24h:13altas confirmadas y2actualizaciones covered de primera fecha indistinguible;huboFull843.**
+
+Apps853:15/25ejecutados,10válidos/5fallidos/10sin ejecutar;3créditosH0017/H0361/H0375 escritos durante adjudicación.7/10variantes válidas. GuardaRAMdetuvo con15terminales/16controles,72s,VRAM3497,56MiB,RAM2449,31MiB; pins intactos. Wrapper1/guard15 recogido c7e7e2. No repetir853completo. [Resultados](APP_OPEN853/ROOT_ADJUDICATION.json).
+
+851852 publicado9ee53ea7 y adoptado en alcance medido;3504pass/0fail/0skip yFast0. Steam/Discord quedan con efecto incierto; nuevas apps arrancadas consumieronRAM. Root envió cierre normal a ventanas nuevasOperaGXCorner/DiscordAmigos, conPID/creación exactos, sinforzar; resultado por verificar. Taskmgr/Notepad/Paint/WhatsApp no se tocaron. Sólo2subagentesmáximotrasguarda.
+
+854sellado30literales+12variantes+5límites,47casos/94wire,sha777d2c09...;runner34d641e6... preparado, sin ejecutar. Apps51abiertos sigue primero; audio48después, diagnóstico855 disponible. H0675/OCR/nuevosproviders aparcados.
+
+| Categoría | Total | Cubiertos | Abiertos | No aplican |
+|---|---:|---:|---:|---:|
+| Abrir aplicaciones | 54 | 3 | 51 | 0 |
+| Audio y volumen | 51 | 3 | 48 | 0 |
+| Navegación y búsqueda web | 46 | 0 | 46 | 0 |
+| Música | 39 | 0 | 39 | 0 |
+| Estado de hardware y sistema | 40 | 2 | 38 | 0 |
+| Alarmas, recordatorios, tareas y agenda | 38 | 0 | 38 | 0 |
+| Conocimiento, razonamiento y creatividad verbal | 37 | 3 | 34 | 0 |
+| Entrada incompleta, ruido y control de diálogo | 34 | 0 | 34 | 0 |
+| Archivos y carpetas | 32 | 0 | 32 | 0 |
+| Mensajería | 31 | 0 | 31 | 0 |
+| Instalar y desinstalar software | 31 | 0 | 31 | 0 |
+| Vídeo y series | 26 | 0 | 26 | 0 |
+| Conversación social y ayuda general | 31 | 9 | 22 | 0 |
+| Interacción dentro de aplicaciones | 22 | 0 | 22 | 0 |
+| Hora y fecha | 23 | 3 | 20 | 0 |
+| Red y Bluetooth | 21 | 1 | 20 | 0 |
+| Cerrar aplicaciones y ventanas | 20 | 0 | 20 | 0 |
+| Pantalla, captura e interpretación visual | 19 | 0 | 19 | 0 |
+| Brillo y pantalla | 17 | 0 | 17 | 0 |
+| Información web actual | 17 | 0 | 17 | 0 |
+| Estado de ventanas y aplicaciones | 14 | 1 | 13 | 0 |
+| Organizar ventanas y pestañas | 13 | 0 | 13 | 0 |
+| Identidad y capacidades del asistente | 19 | 7 | 12 | 0 |
+| Notas | 12 | 0 | 12 | 0 |
+| Memoria personal | 10 | 0 | 10 | 0 |
+| Correo | 6 | 0 | 6 | 0 |
+| Bibliotecas y fichas de juegos | 6 | 0 | 6 | 0 |
+| Contactos | 5 | 0 | 5 | 0 |
+| Desarrollo y ejecución de comandos | 5 | 0 | 5 | 0 |
+| Restricciones negativas de apertura | 4 | 1 | 3 | 0 |
+| Portapapeles | 3 | 0 | 3 | 0 |
+| Energía del sistema | 3 | 0 | 3 | 0 |
+| Crear documentos y editar imágenes | 2 | 0 | 2 | 0 |
+| Leer y resumir páginas web | 2 | 0 | 2 | 0 |
+| Procesos | 9 | 8 | 1 | 0 |
+
+---
+
 # Checkpoint — 847/848 adjudicados; 851/852 validados — 2026-09-11T12:25:15.054382+00:00
 
 **38/742 cubiertos, 704 abiertos, 0 no aplican; categorías cerradas 0/35. Últimas 24 h: 10 altas confirmadas y otras 2 actualizaciones covered cuya fecha de primera alta no se distingue.** Hubo Full843 en la ventana. El registro consultable es [SURVEY_COVERAGE_CURRENT.json](SURVEY_COVERAGE_CURRENT.json). H0383/H0505 se marcaron covered al adjudicarlos, antes de terminar el informe; las otras causas se escribieron por ID.

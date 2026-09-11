@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-11T12:56:23.767681+00:00",
+  "before": {
+    "covered": 41,
+    "open": 701,
+    "not_applicable": 0
+  },
+  "after": {
+    "open": 697,
+    "covered": 45,
+    "not_applicable": 0
+  },
+  "new_covered_ids": [
+    "H0557",
+    "H0633",
+    "H0649",
+    "H0729"
+  ],
+  "requirements_sha256": "4901a08fe29b420c183b0ec318f2c3bec4b6722841e022fe9c53f6b47c736312",
+  "credit_written_at_adjudication": true
+}

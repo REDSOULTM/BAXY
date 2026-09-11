@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-11T12:36:57.738722+00:00",
+  "preparation_sha256": "73eb5f2a72ea5dbbbe6866b35ebcc25476aa774d6f507a1db3024e14837a1446",
+  "head": "9ee53ea78bec0000e4b28bc3bb42a97029719a50",
+  "all652pins_verified": true,
+  "source_count": 584,
+  "postbuild_free_ram_mib": 4544.4765625,
+  "build_exit": 0,
+  "shutdown_exit": 0,
+  "initial_preflight_stopped_before_build": "9d7cb0; idle Fast MSBuild servers subsequently shut down a5a5ed",
+  "review_completed_before_run_chunk": "6a8a32",
+  "review_receipt_write_retry": "415608 KeyError on receipt field; root hash/content review already completed, no validation bypass"
+}

@@ -1,0 +1,47 @@
+{
+  "utc": "2026-09-11T12:40:01.595452+00:00",
+  "root_verdicts": [
+    {
+      "campaign": "APP_OPEN853",
+      "source_candidate": "9ee53ea78bec0000e4b28bc3bb42a97029719a50",
+      "root_adjudication": "artifacts/comprobaciones/C03/APP_OPEN853/ROOT_PARTIAL_CREDIT.json",
+      "case_id": "H0017",
+      "turn_id": "t12",
+      "invocation_id": "3091f885-9d13-47ad-ba86-a3dad6396110",
+      "journal_sequence": 20,
+      "panel_sha256": "957463f180b6fc575b2ffed85e736d45d30a06cf878882ceca8beacda45eb94e",
+      "verdict": "pass",
+      "variants": [
+        "app-open-next-notepad-01",
+        "app-open-next-paint-03"
+      ],
+      "ui_or_voice_credit": false
+    },
+    {
+      "campaign": "APP_OPEN853",
+      "source_candidate": "9ee53ea78bec0000e4b28bc3bb42a97029719a50",
+      "root_adjudication": "artifacts/comprobaciones/C03/APP_OPEN853/ROOT_PARTIAL_CREDIT.json",
+      "case_id": "H0375",
+      "turn_id": "t15",
+      "invocation_id": "c71e0543-ae13-4fae-b173-955c36d49d6f",
+      "journal_sequence": 26,
+      "panel_sha256": "957463f180b6fc575b2ffed85e736d45d30a06cf878882ceca8beacda45eb94e",
+      "verdict": "pass",
+      "variants": [
+        "app-open-next-notepad-01",
+        "app-open-next-paint-03"
+      ],
+      "ui_or_voice_credit": false
+    }
+  ],
+  "registered": 25,
+  "reviewed_through": 15,
+  "counts": {
+    "open": 702,
+    "covered": 40,
+    "not_applicable": 0
+  },
+  "requirements_sha256": "317d3bad061a9388c7c682c1d16d5d31999d6fd8028a9dc43c842c7d84e25324",
+  "credit_at_adjudication": true,
+  "variants_relevance": "Same app.open behavior with wording and app-name variation; per-literal fresh verified receipt resolves that literal target. No UI/voice credit."
+}

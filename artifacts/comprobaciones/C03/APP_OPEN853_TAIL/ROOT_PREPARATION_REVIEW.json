@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-11T12:51:59.042206+00:00",
+  "preparation_sha256": "719ea66c03f3a909831635c62b7e4af68a1c02cc00c0cec2e0338d0eb5f3a51b",
+  "head": "9ee53ea78bec0000e4b28bc3bb42a97029719a50",
+  "pin_count": 652,
+  "source_count": 584,
+  "binary_count": 18,
+  "all_pins_match": true,
+  "postbuild_free_ram_mib": 4525.65234375,
+  "build_exit": 0,
+  "shutdown_exit": 0,
+  "gpu_started": false
+}

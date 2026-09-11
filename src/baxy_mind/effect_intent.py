@@ -3095,13 +3095,14 @@ def resolve_explicit_clarification_intent(
         and (
             _head_is(
                 _request_head(folded),
-                r"(?:sube|subir|aumenta|aumentar|incrementa|incrementar|"
-                r"baja|bajar|reduce|reducir|raise|lower|increase|decrease)",
+                rf"(?:{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB})",
             )
             and _has(folded, r"\b(?:volumen|volume)\b")
             or relative_spoken_volume
         )
         and not _has(folded, r"\b(?:100|[0-9]{1,2})\b")
+        and _literal_percentage_word_value(folded) is None
+        and _literal_volume_adjustment(folded) is None
     ):
         return ClarificationIntent(("audio.volume.adjust",), ("amount",))
     if (
@@ -5028,12 +5029,30 @@ def _network_status_domain(text: str) -> bool:
     )
 
 
+_LOCAL_VOLUME_DEVICE = (
+    r"(?:sistema|equipo|pc|compu|computador(?:a)?|ordenador|system|computer)"
+)
+_LOCAL_OUTPUT_VOLUME_OBJECT = (
+    rf"(?:salida(?:\s+de\s+(?:audio|sonido))?\s+del?\s+{_LOCAL_VOLUME_DEVICE}|"
+    rf"{_LOCAL_VOLUME_DEVICE}(?:'s)?\s+output|"
+    r"nivel\s+(?:actual\s+)?de\s+salida)"
+)
+_VOLUME_OBJECT = (
+    rf"(?:volumen|volume|sonido|sound|{_LOCAL_OUTPUT_VOLUME_OBJECT})"
+    rf"(?:\s+(?:del?|of|on)\s+(?:(?:el|the|my)\s+)?{_LOCAL_VOLUME_DEVICE})?"
+)
+
+
 def _volume_domain(text: str) -> bool:
     if _has_app_scoped_audio(text):
         return False
     if _has(text, r"\b(?:data\s+volume|volumen\s+de\s+datos)\b"):
         return False
     if _has(text, r"\b(?:audio|sonido|sound)\b"):
+        return True
+    if _has(text, rf"\b{_LOCAL_OUTPUT_VOLUME_OBJECT}\b") and _has(
+        text, r"\b(?:nivel|level|volumen|volume|puntos?|points?|por ciento|percent)\b|%",
+    ):
         return True
     if _has(
         text,
@@ -5108,9 +5127,9 @@ def _volume_domain(text: str) -> bool:
         (
             r"^(?:al?|en|esta|estan|actual|actualmente|ahora|ahorita|"
             r"quedo|puesto|configurado|tiene|tienes|tengo|hay|"
-            r"to|at|by|up|down|level|is|are|now|currently|set|"
+            r"to|at|by|up|down|level|is|are|now|currently|set|there|"
             r"\d{1,3}\s*(?:%|por ciento|percent|puntos?|points?)?|"
-            r"por favor|please)\b"
+            rf"por favor|please|que\s+tenga\s+(?:ahora\s+)?(?:el\s+)?{_LOCAL_VOLUME_DEVICE})\b"
         ),
     )
 
@@ -5180,6 +5199,8 @@ _SET_VOLUME_VERB = (
     r"(?:pon(?:me|le)?|poner|fija|ajusta|adjust|establece|set|"
     r"cambia|change|deja|dejame|leave)"
 )
+_VOLUME_UP_VERB = r"(?:sube(?:lo|la)?|subi|subir|aumenta|aumentar|incrementa|incrementar|increase|raise|up)"
+_VOLUME_DOWN_VERB = r"(?:baja(?:lo|la)?|bajar|reduce|reducir|decrease|lower|down)"
 
 # Señales de que se pregunta por el nivel actual de audio, no por cambiarlo.
 _AUDIO_LEVEL_CUE = (
@@ -6726,7 +6747,7 @@ _SEARCH = r"(?:busca|buscar|encuentra|search|find|look\s+up)"
 _COVERAGE_ACTION_HEAD = (
     rf"(?:{_OPEN}|{_LIST}|{_READ}|{_CLOCK_READ_HEAD}|{_CREATE}|{_SEARCH}|{_SET_VOLUME_VERB}|"
     r"haz|toma|captura|take|capture|dejar|put|"
-    r"sube|baja|bajalo|subelo|aumenta|"
+    rf"{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB}|bajalo|subelo|"
     r"pone|arranca|cambiar|get rid|"
     rf"reduce|increment|decrease|silencia|silenciame|mute|{_UNMUTE_VERB}|mutea|mutear|"
     r"quita|quitar|saca|sacar|maximiza|minimiza|"
@@ -7651,7 +7672,7 @@ def _is_direct_request(text: str) -> bool:
         r"do(?=\s+i\s+have)|"
         r"resuelve|resolver|pon|pone|poner|ponle|fija|ajusta|adjust|"
         r"establece|set|deja|dejar|put|leave|turn|"
-        r"sube|subir|baja|bajar|bajalo|subelo|aumenta|reduce|increment|decrease|"
+        rf"{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB}|bajalo|subelo|increment|"
         r"quita|quitar|saca|sacale|sacar|remove|get\s+rid\s+of|"
         r"pega|pegar|pegalo|pegala|paste|"
         r"trancame|tranca|bloqueame|bloquea|lock|"
@@ -9922,7 +9943,15 @@ def _review_audio_effects(
             rf"\b{_MUTE_VERB}\b",
         )
     if audio_level:
-        if _has(
+        literal_level = _literal_percentage_word_value(folded)
+        literal_adjustment = _literal_volume_adjustment(folded)
+        if literal_level is not None and _head_is(
+            head, rf"(?:{_SET_VOLUME_VERB}|{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB})",
+        ):
+            _append(matches, folded, "audio.volume", rf"\b{_VOLUME_OBJECT}\b")
+        elif literal_adjustment is not None:
+            _append(matches, folded, "audio.volume.adjust", rf"\b{_VOLUME_OBJECT}\b")
+        elif _has(
             folded,
             r"\b(?:bajalo|bajala|subelo|subela)\b",
         ):
@@ -10191,22 +10220,76 @@ _PERCENTAGE_WORD_PATTERN = (
 def _literal_percentage_word_value(text: str) -> int | None:
     """Read one bounded ES/EN word-valued literal beside the volume domain."""
 
-    matches = list(
-        re.finditer(
-            rf"\b(?:volumen|volume|sonido|sound)\b\s+"
-            rf"(?:a(?:l)?|en|to|at)\s*(?:la\s+|the\s+)?"
-            rf"(?P<level>{_PERCENTAGE_WORD_PATTERN}|mitad|half)"
-            rf"(?:\s*(?:%|por\s+ciento|percent))?\b",
-            text,
-            re.IGNORECASE,
-        )
+    text = _strip_request_envelope(_fold(text))
+    if (
+        not _volume_domain(text)
+        or _is_negative_effect_clause(text)
+        or _is_meta_or_tool_denial(text)
+        or _has_contradictory_correction(text)
+        or _has_unsupported_deferred_effect(text)
+        or _has(text, r"\d|\b(?:o|or)\b")
+        or _literal_volume_adjustment(text) is not None
+    ):
+        return None
+    value = rf"(?P<level>{_PERCENTAGE_WORD_PATTERN}|mitad|half|maximo|maximum)"
+    patterns = (
+        rf"\b{_VOLUME_OBJECT}\s+(?:justo\s+|exactly\s+)?"
+        rf"(?:a(?:l)?|en|to|at)\s*(?:la\s+|the\s+)?{value}"
+        rf"(?:\s*(?:%|por\s+ciento|percent))?\b",
+        # The numeric antecedent and its reference must be in this same
+        # authored sentence; an absent prior level cannot be manufactured.
+        rf"\b{value}\s+percent\s+is\s+enough\s*:\s*"
+        rf"{_SET_VOLUME_VERB}\s+(?:the\s+)?(?:{_LOCAL_VOLUME_DEVICE}\s+)?"
+        r"volume\s+(?:there|to\s+that\s+level)[.!?]*$",
     )
+    matches = [found for pattern in patterns for found in re.finditer(pattern, text)]
     if len(matches) != 1:
         return None
     level = matches[0].group("level").casefold()
     if level in {"mitad", "half"}:
         return 50
+    if level in {"maximo", "maximum"}:
+        return 100
     return _PERCENTAGE_WORD_VALUES.get(level)
+
+
+def _literal_volume_adjustment(text: str) -> dict[str, object] | None:
+    """Bind a relative quantity to its authored direction and audio object."""
+
+    text = _strip_request_envelope(_fold(text))
+    if (
+        not _volume_domain(text)
+        or _is_negative_effect_clause(text)
+        or _is_meta_or_tool_denial(text)
+        or _has_contradictory_correction(text)
+        or _has_unsupported_deferred_effect(text)
+        or _has(text, r"\b(?:o|or)\b")
+    ):
+        return None
+    up = _has(text, rf"\b{_VOLUME_UP_VERB}\b")
+    down = _has(text, rf"\b{_VOLUME_DOWN_VERB}\b")
+    if up == down:
+        return None
+    direction = rf"(?:{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB})"
+    amount = rf"(?P<amount>\d{{1,3}}|{_PERCENTAGE_WORD_PATTERN})(?![a-z0-9])"
+    unit = r"(?:puntos?|(?:percentage\s+)?points?|por\s+ciento|percent|%)"
+    patterns = (
+        rf"\b{direction}\s+(?:en\s+|by\s+)?{amount}\s+{unit}"
+        rf"\s+(?:(?:el|la|the)\s+)?{_VOLUME_OBJECT}\b",
+        rf"\b{direction}\s+(?:(?:el|la|the)\s+)?{_VOLUME_OBJECT}"
+        rf"\s+(?:en|by)\s+{amount}(?:\s*{unit})?",
+    )
+    matches = [found for pattern in patterns for found in re.finditer(pattern, text)]
+    if len(matches) != 1:
+        return None
+    raw = matches[0].group("amount")
+    value = int(raw) if raw.isdigit() else _PERCENTAGE_WORD_VALUES.get(raw)
+    # Retain the former single-number boundary, including an out-of-range
+    # number elsewhere in the fragment; do not choose among competing values.
+    digits = re.findall(r"\d+", text)
+    if value is None or not 1 <= value <= 100 or digits != ([raw] if raw.isdigit() else []):
+        return None
+    return {"amount": value, "direction": "up" if up else "down"}
 
 
 def _bare_spoken_number_media_query(text: str) -> str | None:

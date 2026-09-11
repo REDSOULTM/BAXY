@@ -1,0 +1,15 @@
+{
+  "utc": "2026-09-11T13:11:40.628227+00:00",
+  "runner_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio858-runner-proposal\\runner.py",
+  "runner_sha256": "f23fb3f2dd89b5ea175c204de176c4f28b95566f9c894762434f95d9faa70b57",
+  "root_review_diff_chunk": "332a97",
+  "checks": [
+    "Exact52case/104wire/52session.new data seal858",
+    "Actual857VALIDATION_EXIT0 plus63pins and full843historical",
+    "Only llm/effect_intent/__main__ differ from60baseline;other57unchanged",
+    "Expected HEAD real afterpublication and ancestry9ee53/843",
+    "4000MiBpre/postbuild768runtimeGPU3800MiB900s120000msturn",
+    "IdentitycheckedBAXYonlycleanup;noaudiorestorationorqualityadjudication"
+  ],
+  "status": "reviewed_before_prepare"
+}

@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-11T12:58:44.580278+00:00",
+  "receipt": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-app-open853-tail-private\\STEAM_SHUTDOWN.json",
+  "receipt_sha256": "90ccf5dc185234b177134458e4ff9c0e0f7b1e437319659e68d40887f6f3d801",
+  "steam_diagnostic_process_exited": true,
+  "helper_exited": true,
+  "forced": false,
+  "free_ram_after_mib": 4123.3671875,
+  "coverage_credit": 0,
+  "other_apps_untouched": true
+}

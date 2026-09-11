@@ -1,0 +1,307 @@
+{
+  "utc": "2026-09-11T12:45:10.055563+00:00",
+  "candidate_commit": "9ee53ea78bec0000e4b28bc3bb42a97029719a50",
+  "panel_sha256": "957463f180b6fc575b2ffed85e736d45d30a06cf878882ceca8beacda45eb94e",
+  "registered": 25,
+  "executed": 15,
+  "pass": 10,
+  "fail": 5,
+  "not_executed": 10,
+  "new_credits": 3,
+  "historical_pass": 3,
+  "historical_fail": 2,
+  "historical_not_executed": 5,
+  "variant_pass": 7,
+  "variant_fail": 3,
+  "boundaries_not_executed": 5,
+  "cases": [
+    {
+      "case_id": "app-open-next-notepad-01",
+      "ordinal": 1,
+      "group": "open_variant",
+      "verdict": "pass",
+      "reason": "Fresh completed and verified app.open matches requested target and useful faithful completion text.",
+      "coverage_credit": false,
+      "invocation_id": "405bd5f7-a5cc-4627-9574-3683b05cbea7",
+      "journal_sequence": 4,
+      "core_status": "completed",
+      "verified": true,
+      "effect_may_have_occurred": false
+    },
+    {
+      "case_id": "app-open-next-notepad-02",
+      "ordinal": 2,
+      "group": "open_variant",
+      "verdict": "pass",
+      "reason": "Fresh completed and verified app.open matches requested target and useful faithful completion text.",
+      "coverage_credit": false,
+      "invocation_id": "7f3eb533-966c-4018-9714-b85c99d15997",
+      "journal_sequence": 6,
+      "core_status": "completed",
+      "verified": true,
+      "effect_may_have_occurred": false
+    },
+    {
+      "case_id": "app-open-next-notepad-04",
+      "ordinal": 3,
+      "group": "open_variant",
+      "verdict": "fail",
+      "reason": "Interpretation failed before dispatch of the explicit opening request.",
+      "coverage_credit": false
+    },
+    {
+      "case_id": "app-open-next-notepad-08",
+      "ordinal": 4,
+      "group": "open_variant",
+      "verdict": "pass",
+      "reason": "Fresh completed and verified app.open matches requested target and useful faithful completion text.",
+      "coverage_credit": false,
+      "invocation_id": "f9b06bec-4b64-4d49-a9cd-25c7654848ef",
+      "journal_sequence": 8,
+      "core_status": "completed",
+      "verified": true,
+      "effect_may_have_occurred": false
+    },
+    {
+      "case_id": "app-open-next-notepad-10",
+      "ordinal": 5,
+      "group": "open_variant",
+      "verdict": "fail",
+      "reason": "Clarification asked what to do inside Notepad instead of opening it.",
+      "coverage_credit": false
+    },
+    {
+      "case_id": "app-open-next-notepad-11",
+      "ordinal": 6,
+      "group": "open_variant",
+      "verdict": "fail",
+      "reason": "Asked whether to open the already explicit target; no operation dispatched.",
+      "coverage_credit": false
+    },
+    {
+      "case_id": "app-open-next-paint-03",
+      "ordinal": 7,
+      "group": "open_variant",
+      "verdict": "pass",
+      "reason": "Fresh completed and verified app.open matches requested target and useful faithful completion text.",
+      "coverage_credit": false,
+      "invocation_id": "adf9e680-c00a-44d5-ac6c-f1ad7e4d0091",
+      "journal_sequence": 10,
+      "core_status": "completed",
+      "verified": true,
+      "effect_may_have_occurred": false
+    },
+    {
+      "case_id": "app-open-next-paint-05",
+      "ordinal": 8,
+      "group": "open_variant",
+      "verdict": "pass",
+      "reason": "Fresh completed and verified app.open matches requested target and useful faithful completion text.",
+      "coverage_credit": false,
+      "invocation_id": "229a9989-ee43-4bab-9709-6708d904041e",
+      "journal_sequence": 12,
+      "core_status": "completed",
+      "verified": true,
+      "effect_may_have_occurred": false
+    },
+    {
+      "case_id": "app-open-next-paint-06",
+      "ordinal": 9,
+      "group": "open_variant",
+      "verdict": "pass",
+      "reason": "Fresh completed and verified app.open matches requested target and useful faithful completion text.",
+      "coverage_credit": false,
+      "invocation_id": "99c10ae2-b0b7-44fd-905f-a43ae44ef83b",
+      "journal_sequence": 14,
+      "core_status": "completed",
+      "verified": true,
+      "effect_may_have_occurred": false
+    },
+    {
+      "case_id": "app-open-next-paint-09",
+      "ordinal": 10,
+      "group": "open_variant",
+      "verdict": "pass",
+      "reason": "Fresh completed and verified app.open matches requested target and useful faithful completion text.",
+      "coverage_credit": false,
+      "invocation_id": "046ed533-5f18-4987-bc1e-ee7e4cc14758",
+      "journal_sequence": 16,
+      "core_status": "completed",
+      "verified": true,
+      "effect_may_have_occurred": false
+    },
+    {
+      "case_id": "H0015",
+      "ordinal": 11,
+      "group": "owner_open",
+      "verdict": "fail",
+      "reason": "Steam opening verification failed with effectMayHaveOccurred=true; actual result remains uncertain.",
+      "coverage_credit": false,
+      "invocation_id": "e597fd99-1b01-4e46-bc4f-c71cad9bdad3",
+      "journal_sequence": 18,
+      "core_status": "failed",
+      "verified": false,
+      "effect_may_have_occurred": true
+    },
+    {
+      "case_id": "H0017",
+      "ordinal": 12,
+      "group": "owner_open",
+      "verdict": "pass",
+      "reason": "Fresh completed and verified app.open matches requested target and useful faithful completion text.",
+      "coverage_credit": true,
+      "invocation_id": "3091f885-9d13-47ad-ba86-a3dad6396110",
+      "journal_sequence": 20,
+      "core_status": "completed",
+      "verified": true,
+      "effect_may_have_occurred": false,
+      "variant_case_ids": [
+        "app-open-next-notepad-01",
+        "app-open-next-paint-03"
+      ]
+    },
+    {
+      "case_id": "H0085",
+      "ordinal": 13,
+      "group": "owner_open",
+      "verdict": "fail",
+      "reason": "Discord opening verification failed with effectMayHaveOccurred=true; actual result remains uncertain.",
+      "coverage_credit": false,
+      "invocation_id": "9ad17fed-f0ec-4994-8f86-916f3fc5e978",
+      "journal_sequence": 22,
+      "core_status": "failed",
+      "verified": false,
+      "effect_may_have_occurred": true
+    },
+    {
+      "case_id": "H0361",
+      "ordinal": 14,
+      "group": "owner_open",
+      "verdict": "pass",
+      "reason": "Fresh completed and verified app.open matches requested target; useful faithful final reports the performed action. A natural present-tense acknowledgement is not rejected merely for lacking a prescribed past-tense phrase.",
+      "coverage_credit": true,
+      "invocation_id": "d797b9ba-8535-4035-bdf6-658fa2b0eb41",
+      "journal_sequence": 24,
+      "core_status": "completed",
+      "verified": true,
+      "effect_may_have_occurred": false,
+      "variant_case_ids": [
+        "app-open-next-notepad-01",
+        "app-open-next-paint-03"
+      ]
+    },
+    {
+      "case_id": "H0375",
+      "ordinal": 15,
+      "group": "owner_open",
+      "verdict": "pass",
+      "reason": "Fresh completed and verified app.open matches requested target and useful faithful completion text.",
+      "coverage_credit": true,
+      "invocation_id": "c71e0543-ae13-4fae-b173-955c36d49d6f",
+      "journal_sequence": 26,
+      "core_status": "completed",
+      "verified": true,
+      "effect_may_have_occurred": false,
+      "variant_case_ids": [
+        "app-open-next-notepad-01",
+        "app-open-next-paint-03"
+      ]
+    },
+    {
+      "case_id": "H0557",
+      "ordinal": 16,
+      "group": "owner_open",
+      "verdict": "not_executed",
+      "reason": "RAM guard stopped the run after15terminal records and16session controls; this case has no turn admission or terminal. No coverage; journal retained for uncertainty audit.",
+      "coverage_credit": false
+    },
+    {
+      "case_id": "H0633",
+      "ordinal": 17,
+      "group": "owner_open",
+      "verdict": "not_executed",
+      "reason": "RAM guard stopped the run after15terminal records and16session controls; this case has no turn admission or terminal. No coverage; journal retained for uncertainty audit.",
+      "coverage_credit": false
+    },
+    {
+      "case_id": "H0649",
+      "ordinal": 18,
+      "group": "owner_open",
+      "verdict": "not_executed",
+      "reason": "RAM guard stopped the run after15terminal records and16session controls; this case has no turn admission or terminal. No coverage; journal retained for uncertainty audit.",
+      "coverage_credit": false
+    },
+    {
+      "case_id": "H0315",
+      "ordinal": 19,
+      "group": "owner_open",
+      "verdict": "not_executed",
+      "reason": "RAM guard stopped the run after15terminal records and16session controls; this case has no turn admission or terminal. No coverage; journal retained for uncertainty audit.",
+      "coverage_credit": false
+    },
+    {
+      "case_id": "H0729",
+      "ordinal": 20,
+      "group": "owner_open",
+      "verdict": "not_executed",
+      "reason": "RAM guard stopped the run after15terminal records and16session controls; this case has no turn admission or terminal. No coverage; journal retained for uncertainty audit.",
+      "coverage_credit": false
+    },
+    {
+      "case_id": "app-open-next-boundary-01",
+      "ordinal": 21,
+      "group": "boundary",
+      "verdict": "not_executed",
+      "reason": "RAM guard stopped the run after15terminal records and16session controls; this case has no turn admission or terminal. No coverage; journal retained for uncertainty audit.",
+      "coverage_credit": false
+    },
+    {
+      "case_id": "app-open-next-boundary-02",
+      "ordinal": 22,
+      "group": "boundary",
+      "verdict": "not_executed",
+      "reason": "RAM guard stopped the run after15terminal records and16session controls; this case has no turn admission or terminal. No coverage; journal retained for uncertainty audit.",
+      "coverage_credit": false
+    },
+    {
+      "case_id": "app-open-next-boundary-03",
+      "ordinal": 23,
+      "group": "boundary",
+      "verdict": "not_executed",
+      "reason": "RAM guard stopped the run after15terminal records and16session controls; this case has no turn admission or terminal. No coverage; journal retained for uncertainty audit.",
+      "coverage_credit": false
+    },
+    {
+      "case_id": "app-open-next-boundary-04",
+      "ordinal": 24,
+      "group": "boundary",
+      "verdict": "not_executed",
+      "reason": "RAM guard stopped the run after15terminal records and16session controls; this case has no turn admission or terminal. No coverage; journal retained for uncertainty audit.",
+      "coverage_credit": false
+    },
+    {
+      "case_id": "app-open-next-boundary-06",
+      "ordinal": 25,
+      "group": "boundary",
+      "verdict": "not_executed",
+      "reason": "RAM guard stopped the run after15terminal records and16session controls; this case has no turn admission or terminal. No coverage; journal retained for uncertainty audit.",
+      "coverage_credit": false
+    }
+  ],
+  "ui_or_voice_credit": false,
+  "resources": {
+    "utc": "2026-09-11T12:37:47.664443+00:00",
+    "violations": [
+      "system_free_ram_bound"
+    ],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2449.3125,
+    "seconds": 72.0,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "guard_violation_preserved": true,
+  "process_collection_chunk": "c7e7e2",
+  "wrapper_exit_code": 1,
+  "product_guard_exit_code": 15
+}

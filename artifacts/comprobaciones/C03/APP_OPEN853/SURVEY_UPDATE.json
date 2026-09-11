@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-11T12:45:10.055563+00:00",
+  "before_partial": {
+    "covered": 38,
+    "open": 704,
+    "not_applicable": 0
+  },
+  "after": {
+    "open": 701,
+    "covered": 41,
+    "not_applicable": 0
+  },
+  "covered_ids": [
+    "H0017",
+    "H0361",
+    "H0375"
+  ],
+  "updated_open_causes": 7,
+  "requirements_sha256": "d0fdc735548e82e7f0868a086f0941fde1222f394707534b24136f1c1ef5cd35",
+  "immediate_first_credit_chunk": "5256ad",
+  "adjudication_sha256": "2467bea02d2bd8571f71b0ac8fdfa70fedfb207f4e35fe1a2776ac5bcc6936d9"
+}

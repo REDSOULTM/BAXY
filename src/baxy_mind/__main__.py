@@ -4810,6 +4810,12 @@ def _explicit_arguments_from_evidence(
                 return {"folder": "all_known", "query": query}
 
     if operation == "audio.volume":
+        if (
+            not effect_intent._volume_domain(folded)
+            or effect_intent._is_negative_effect_clause(folded)
+            or effect_intent._is_meta_or_tool_denial(folded)
+        ):
+            return None
         word_level = effect_intent._literal_percentage_word_value(folded)
         if word_level is not None:
             if numbers:
@@ -4819,7 +4825,7 @@ def _explicit_arguments_from_evidence(
             return None
         level = re.search(
             (
-                r"\b(?:volumen|volume|sonido|sound)\b\s+"
+                rf"\b{effect_intent._VOLUME_OBJECT}\b\s+"
                 r"(?:a(?:l)?|en|to|at)\s*"
                 r"(?P<level>100|[0-9]{1,2})(?![0-9])"
                 r"(?:\s*(?:%|por\s+ciento|percent))?"
@@ -4846,60 +4852,7 @@ def _explicit_arguments_from_evidence(
         return {"level": numbers[0]}
 
     if operation == "audio.volume.adjust":
-        if len(numbers) != 1 or not 1 <= numbers[0] <= 100:
-            return None
-        up = bool(
-            re.search(
-                r"\b(?:up|increase|raise|sube|subir|aumenta|aumentar|"
-                r"incrementa|incrementar)\b",
-                folded,
-            )
-        )
-        down = bool(
-            re.search(
-                r"\b(?:down|decrease|lower|baja|bajar|reduce|reducir)\b",
-                folded,
-            )
-        )
-        if up == down:
-            return None
-        adjustment = re.search(
-            (
-                r"\b(?P<direction>"
-                r"up|increase|raise|sube|subir|aumenta|aumentar|"
-                r"incrementa|incrementar|"
-                r"down|decrease|lower|baja|bajar|reduce|reducir"
-                r")\b(?:\s+\w+){0,3}\s+(?:volumen|volume)\b"
-                r"\s+(?:en|by)\s*"
-                r"(?P<amount>100|[0-9]{1,2})(?![0-9])"
-                r"(?:\s*(?:%|puntos?|points?))?"
-            ),
-            folded,
-        )
-        if (
-            adjustment is None
-            or int(adjustment.group("amount")) != numbers[0]
-            or (
-                adjustment.group("direction")
-                in {
-                    "up",
-                    "increase",
-                    "raise",
-                    "sube",
-                    "subir",
-                    "aumenta",
-                    "aumentar",
-                    "incrementa",
-                    "incrementar",
-                }
-            )
-            != up
-        ):
-            return None
-        return {
-            "amount": numbers[0],
-            "direction": "up" if up else "down",
-        }
+        return effect_intent._literal_volume_adjustment(folded)
 
     if operation == "audio.mute":
         false_pattern = (

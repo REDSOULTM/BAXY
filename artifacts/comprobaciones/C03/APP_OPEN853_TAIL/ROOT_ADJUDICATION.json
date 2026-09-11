@@ -1,0 +1,177 @@
+{
+  "utc": "2026-09-11T12:56:23.767681+00:00",
+  "candidate_commit": "9ee53ea78bec0000e4b28bc3bb42a97029719a50",
+  "panel_sha256": "5df20d82f6306dc9f2ba47a2a0aee942f10c2cb9b546415fe693bfa45b60e2fc",
+  "continuation_of": "APP_OPEN853 originalordinals16-25",
+  "registered": 10,
+  "executed": 7,
+  "pass": 6,
+  "fail": 1,
+  "not_executed": 3,
+  "new_credits": 4,
+  "cases": [
+    {
+      "case_id": "H0557",
+      "local_ordinal": 1,
+      "original_ordinal": 16,
+      "group": "owner_open",
+      "verdict": "pass",
+      "reason": "Fresh completed verified app.open matches requested app/window; final useful and faithful.",
+      "coverage_credit": true,
+      "invocation_id": "1d0b56cc-b0fe-45e1-bb5c-18b227331da6",
+      "journal_sequence": 4,
+      "core_status": "completed",
+      "verified": true,
+      "variant_evidence": {
+        "campaign": "APP_OPEN853",
+        "case_ids": [
+          "app-open-next-notepad-01",
+          "app-open-next-paint-03"
+        ],
+        "candidate_commit": "9ee53ea78bec0000e4b28bc3bb42a97029719a50"
+      }
+    },
+    {
+      "case_id": "H0633",
+      "local_ordinal": 2,
+      "original_ordinal": 17,
+      "group": "owner_open",
+      "verdict": "pass",
+      "reason": "Fresh completed verified app.open matches requested app/window; final useful and faithful.",
+      "coverage_credit": true,
+      "invocation_id": "8c2ae2a9-506b-4cec-9643-5b59d0cdffad",
+      "journal_sequence": 6,
+      "core_status": "completed",
+      "verified": true,
+      "variant_evidence": {
+        "campaign": "APP_OPEN853",
+        "case_ids": [
+          "app-open-next-notepad-01",
+          "app-open-next-paint-03"
+        ],
+        "candidate_commit": "9ee53ea78bec0000e4b28bc3bb42a97029719a50"
+      }
+    },
+    {
+      "case_id": "H0649",
+      "local_ordinal": 3,
+      "original_ordinal": 18,
+      "group": "owner_open",
+      "verdict": "pass",
+      "reason": "Fresh completed verified app.open matches requested app/window; final useful and faithful.",
+      "coverage_credit": true,
+      "invocation_id": "76e16a9d-d2cf-4ac5-9433-c1da5c8b1598",
+      "journal_sequence": 8,
+      "core_status": "completed",
+      "verified": true,
+      "variant_evidence": {
+        "campaign": "APP_OPEN853",
+        "case_ids": [
+          "app-open-next-notepad-01",
+          "app-open-next-paint-03"
+        ],
+        "candidate_commit": "9ee53ea78bec0000e4b28bc3bb42a97029719a50"
+      }
+    },
+    {
+      "case_id": "H0315",
+      "local_ordinal": 4,
+      "original_ordinal": 19,
+      "group": "owner_open",
+      "verdict": "fail",
+      "reason": "Steam verification failed with effectMayHaveOccurred=true; resultnull does not prove which predicate failed.",
+      "coverage_credit": false,
+      "invocation_id": "15c5b9c3-953e-417b-95ce-a25137f0c3a4",
+      "journal_sequence": 10,
+      "core_status": "failed",
+      "verified": false
+    },
+    {
+      "case_id": "H0729",
+      "local_ordinal": 5,
+      "original_ordinal": 20,
+      "group": "owner_open",
+      "verdict": "pass",
+      "reason": "Fresh completed verified app.open matches requested app/window; final useful and faithful.",
+      "coverage_credit": true,
+      "invocation_id": "df91cfe9-f58c-4fbc-9c83-a0ade7c22237",
+      "journal_sequence": 12,
+      "core_status": "completed",
+      "verified": true,
+      "variant_evidence": {
+        "campaign": "APP_OPEN853",
+        "case_ids": [
+          "app-open-next-notepad-01",
+          "app-open-next-paint-03"
+        ],
+        "candidate_commit": "9ee53ea78bec0000e4b28bc3bb42a97029719a50"
+      }
+    },
+    {
+      "case_id": "app-open-next-boundary-01",
+      "local_ordinal": 6,
+      "original_ordinal": 21,
+      "group": "boundary",
+      "verdict": "pass",
+      "reason": "No effect dispatched; faithful acknowledgement of negative request.",
+      "coverage_credit": false
+    },
+    {
+      "case_id": "app-open-next-boundary-02",
+      "local_ordinal": 7,
+      "original_ordinal": 22,
+      "group": "boundary",
+      "verdict": "pass",
+      "reason": "Useful explanation; calculator not opened.",
+      "coverage_credit": false
+    },
+    {
+      "case_id": "app-open-next-boundary-03",
+      "local_ordinal": 8,
+      "original_ordinal": 23,
+      "group": "boundary",
+      "verdict": "not_executed",
+      "reason": "System free RAM guard ended run before this turn admission; no credit and no full-panel replay.",
+      "coverage_credit": false
+    },
+    {
+      "case_id": "app-open-next-boundary-04",
+      "local_ordinal": 9,
+      "original_ordinal": 24,
+      "group": "boundary",
+      "verdict": "not_executed",
+      "reason": "System free RAM guard ended run before this turn admission; no credit and no full-panel replay.",
+      "coverage_credit": false
+    },
+    {
+      "case_id": "app-open-next-boundary-06",
+      "local_ordinal": 10,
+      "original_ordinal": 25,
+      "group": "boundary",
+      "verdict": "not_executed",
+      "reason": "System free RAM guard ended run before this turn admission; no credit and no full-panel replay.",
+      "coverage_credit": false
+    }
+  ],
+  "journal_sha256": "13b11fe174eba9d71df47d1dac099fbde895c983e6aa6f9f8f24fd49b99cae8f",
+  "resources": {
+    "utc": "2026-09-11T12:52:55.218673+00:00",
+    "violations": [
+      "system_free_ram_bound"
+    ],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1886.6171875,
+    "seconds": 42.40600000000268,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "root_review_chunks": [
+    "0d9b37",
+    "9b0bd4"
+  ],
+  "collection_chunk": "26760e",
+  "wrapper_exit": 1,
+  "guard_exit": 15,
+  "pins_unchanged": true,
+  "ui_or_voice_credit": false
+}

@@ -1,0 +1,24 @@
+{
+  "utc": "2026-09-11T12:45:10.055563+00:00",
+  "candidate_commit": "9ee53ea78bec0000e4b28bc3bb42a97029719a50",
+  "source_changes_adopted": true,
+  "category_closed": false,
+  "evidence": "APP_OPEN853/ROOT_ADJUDICATION.json",
+  "verified_repaired_cases": [
+    "app-open-next-paint-03",
+    "app-open-next-paint-05",
+    "app-open-next-paint-06",
+    "H0375"
+  ],
+  "owners_pass": 3504,
+  "owners_fail": 0,
+  "owners_skip": 0,
+  "fast_exit": 0,
+  "limitations": [
+    "853stoppedbyRAMafter15terminals",
+    "3languagevariantsstillfail",
+    "Steam/Discordproviderverificationfailed",
+    "newsourceFullnotclaimed;Pythononlycandidate"
+  ],
+  "reason": "Measured repaired courtesy grounding and completion projection now pass against observed effects; independent remaining defects and resource guard retained."
+}

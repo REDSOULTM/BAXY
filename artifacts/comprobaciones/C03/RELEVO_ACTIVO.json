@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "847:1/52 y0créditos;848:26/52 y2créditos. Encuesta38/704/0;categorías0/35. 851852:3504pass0skip,Fast0,62pins intactos;worktrees retirados. 853:25casos sellados sin ejecutar.",
-  "continuation": "Commit/push only own validated851852 and survey evidence, then prepare/run853 with new HEAD and current candidate pins. Root adjudicates credit live. Agent prepares large854 in parallel.",
+  "checkpoint": "45/742covered697open0NA;audio48open primero.857validado3545pass0fail0skip75,63s,Fast0Release22,71s,63pins3c0d1ae4...intactos;worktreeretirado.858sellado35+12+5,baseline31/unmutedverificada.",
+  "continuation": "Commit/pushown857+survey evidence; shut down idle Fast build servers; prepare858withnewHEAD, reviewpreparationSHA, run858thenrootadjudicatecreditlive andrestoreaudiofreshbaseline31/unmuted. 854data waitsafter858bylargestopen;854runnerrequiresupdate63pins.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -28,16 +28,16 @@
     "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
   },
   "surveyVerificationCounts": {
-    "covered": 38,
-    "open": 704,
+    "open": 697,
+    "covered": 45,
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "291b922de8c604f03d61acbdb88d5e625b465728",
-  "workStatus": "candidate851852_validated_pending_product853",
+  "publishedSourceCommit": "9ee53ea78bec0000e4b28bc3bb42a97029719a50",
+  "workStatus": "audio857_validated_pending_publication_and858",
   "goalStatusNote": "All C03 active;38/742covered,704open,0NA;35categories;H0675parked.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "291b922de8c604f03d61acbdb88d5e625b465728",
+  "publishedEvidenceCommit": "9ee53ea78bec0000e4b28bc3bb42a97029719a50",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -86,34 +86,17 @@
   "activeReadOnlyAgent": null,
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
-    "name": "process824",
-    "sessionId": 55778,
-    "launcherPid": 33712,
-    "runnerPid": 7440,
-    "processReceipt": {
-      "utc": "2026-09-11T04:29:32.171877-03:00",
-      "launcher": 33712,
-      "runner": 7440,
-      "command": [
-        "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
-        "main.py",
-        "--conductor",
-        "--profile",
-        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-profile824",
-        "--capture",
-        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch824-private\\capture",
-        "--turns-file",
-        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch824-private\\turns.jsonl",
-        "--timeout-ms",
-        "120000"
-      ]
-    },
-    "registeredCases": 50,
-    "state": "complete",
-    "adjudication": "49valid/1failed; five generic families adopted, H0675 open",
-    "sourceCandidate": 823,
-    "collectedExitCode": 0,
-    "collectionChunk": "e718b7"
+    "name": "apps853tail",
+    "sessionId": 37234,
+    "state": "guard_stopped_and_root_adjudicated",
+    "collectedExitCode": 1,
+    "guardExitCode": 15,
+    "collectionChunk": "26760e",
+    "sourceCandidate": "9ee53ea78bec0000e4b28bc3bb42a97029719a50",
+    "registeredCases": 10,
+    "executedCases": 7,
+    "newCredits": 4,
+    "adjudication": "APP_OPEN853_TAIL/ROOT_ADJUDICATION.json"
   },
   "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
   "ownerPriority": "Owner ordered model selection after792 and immediate progress on C03 blockers; no further model campaign.",
@@ -898,13 +881,15 @@
     "integration_precondition": "Root must adjudicate819 first; not integrated and not adopted."
   },
   "lastCandidateValidation": {
-    "candidate": "851852",
-    "receipt": "APP_REPAIRS851852/VALIDATION_EXIT.json",
-    "owners_passed": 3504,
+    "candidate": 857,
+    "receipt": "AUDIO_REPAIR857/VALIDATION_EXIT.json",
+    "owners_passed": 3545,
     "owners_failed": 0,
     "owners_skipped": 0,
+    "duration_seconds": 75.63,
     "fast_exit_code": 0,
-    "collection_chunk": "738b81",
+    "release_seconds": 22.71,
+    "collection_chunk": "823c22",
     "source_adopted": false
   },
   "publishedCandidateCommit": "e7fbae65f3beb8d9d7a4986cf217564a5c3c93cf",
