@@ -1,0 +1,14 @@
+{
+  "status": "restored_verified",
+  "restored": true,
+  "volumePercent": 31,
+  "muted": false,
+  "verified_calls": 4,
+  "credit": 0,
+  "private_report": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio848-cleanup-run\\REPORT.json",
+  "private_report_sha256": "b73ef501273106424ea5acea620e47843c6dd89c48b048141ab6ca9702bb9380",
+  "panel_journal_snapshot": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio848-private\\run\\journal-at-panel-end.jsonl",
+  "panel_journal_sha256": "032b37b5036925ec92eaa7c51c6dc6f82ea34b3034a6efdde147bf5f415e49f7",
+  "journal_appended_by_cleanup": true,
+  "last_call": "audio.status"
+}

@@ -1,0 +1,5974 @@
+{
+  "schema": "C03-survey-taxonomy846-proposal-v1",
+  "generated_at_utc": "2026-09-11T11:40:22.081307+00:00",
+  "requirements_sha256": "4f8e8afb8acd409bc03ab2427223e1810c3b7396f2459e8112ddfcb445c7e76d",
+  "classification_method": "Manual semantic review of all 742 literals; explicit ID assignment, no lexical classifier; one primary category by requested end behavior. Auxiliary steps become reasons/tags. Ambiguous isolated inputs remain explicit and open.",
+  "status": "proposal_only_no_credit_no_category_closed",
+  "record_count": 742,
+  "verification_counts": {
+    "covered": 36,
+    "open": 706,
+    "not_applicable": 0
+  },
+  "limit_counts": {
+    "negative_limit": 3,
+    "unmarked_limit": 18
+  },
+  "catalog_source": "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+  "catalog_limits": "Observed operation names show only partial mechanisms; no execution, provider ownership audit or product coverage is asserted. Unknown is not proof of absent infrastructure. Screen capture does not establish OCR; media query does not establish streaming-service support.",
+  "ordering": "Open descending; owner exception: execute apps first, audio second. H0675/OCR/new providers parked until existing mechanisms are covered; any proposed new infrastructure requires at least 10 open cases and an ownership audit.",
+  "coverage_last_24h": {
+    "as_of_utc": "2026-09-11T11:40:22.081307+00:00",
+    "since_utc": "2026-09-10T11:40:22.081307+00:00",
+    "covered_with_verification_updated_at_in_window": 10,
+    "case_ids": [
+      "H0133",
+      "H0158",
+      "H0169",
+      "H0180",
+      "H0364",
+      "H0470",
+      "H0499",
+      "H0650",
+      "H0669",
+      "H0678"
+    ],
+    "unknown_date_count": 0,
+    "unknown_date_case_ids": [],
+    "interpretation": "Existing covered rows last updated within window, not necessarily first-time grants; registry lacks separate first_credit_at. PROCESS_BATCH824 eight grants independently dated by owner at 2026-09-11T07:47:21Z.",
+    "process_batch824_grants": 8,
+    "first_credit_timestamp_unknown_count": 36
+  },
+  "categories": [
+    {
+      "category": "apps_open",
+      "label": "Abrir aplicaciones",
+      "total": 54,
+      "covered": 0,
+      "open": 54,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "app.open",
+        "filesystem.folder.open"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "audio_volume",
+      "label": "Audio y volumen",
+      "total": 51,
+      "covered": 1,
+      "open": 50,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "audio.volume",
+        "audio.volume.adjust",
+        "audio.mute",
+        "audio.status"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "web_navigation_search",
+      "label": "Navegación y búsqueda web",
+      "total": 46,
+      "covered": 0,
+      "open": 46,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "browser.navigate",
+        "browser.navigate.named",
+        "browser.control"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "music",
+      "label": "Música",
+      "total": 39,
+      "covered": 0,
+      "open": 39,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "media.control",
+        "media.play.exact",
+        "media.play.query",
+        "media.play.youtube",
+        "media.status"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "system_hardware_status",
+      "label": "Estado de hardware y sistema",
+      "total": 40,
+      "covered": 2,
+      "open": 38,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "system.status",
+        "system.identity"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "timers_reminders_calendar",
+      "label": "Alarmas, recordatorios, tareas y agenda",
+      "total": 38,
+      "covered": 0,
+      "open": 38,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "reminder.create"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "knowledge_reasoning",
+      "label": "Conocimiento, razonamiento y creatividad verbal",
+      "total": 37,
+      "covered": 3,
+      "open": 34,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [],
+      "mechanism_assessment": "unknown_not_audited",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "clarification_unresolved_input",
+      "label": "Entrada incompleta, ruido y control de diálogo",
+      "total": 34,
+      "covered": 0,
+      "open": 34,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [],
+      "mechanism_assessment": "unknown_not_audited",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "files",
+      "label": "Archivos y carpetas",
+      "total": 32,
+      "covered": 0,
+      "open": 32,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "filesystem.known.search",
+        "filesystem.list",
+        "filesystem.write.text",
+        "filesystem.create.directory",
+        "filesystem.known.trash.named",
+        "filesystem.folder.open"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "messaging",
+      "label": "Mensajería",
+      "total": 31,
+      "covered": 0,
+      "open": 31,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [],
+      "mechanism_assessment": "unknown_not_audited",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "software_installation",
+      "label": "Instalar y desinstalar software",
+      "total": 31,
+      "covered": 0,
+      "open": 31,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [],
+      "mechanism_assessment": "unknown_not_audited",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "video_streaming",
+      "label": "Vídeo y series",
+      "total": 26,
+      "covered": 0,
+      "open": 26,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "media.play.query"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "conversation",
+      "label": "Conversación social y ayuda general",
+      "total": 31,
+      "covered": 9,
+      "open": 22,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [],
+      "mechanism_assessment": "unknown_not_audited",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "ui_interaction",
+      "label": "Interacción dentro de aplicaciones",
+      "total": 22,
+      "covered": 0,
+      "open": 22,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "audio.microphone.mute"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "clock",
+      "label": "Hora y fecha",
+      "total": 23,
+      "covered": 3,
+      "open": 20,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "system.time"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "network_bluetooth",
+      "label": "Red y Bluetooth",
+      "total": 21,
+      "covered": 1,
+      "open": 20,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [],
+      "mechanism_assessment": "unknown_not_audited",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "windows_close",
+      "label": "Cerrar aplicaciones y ventanas",
+      "total": 20,
+      "covered": 0,
+      "open": 20,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "app.close"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "screen_vision",
+      "label": "Pantalla, captura e interpretación visual",
+      "total": 19,
+      "covered": 0,
+      "open": 19,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "capture.active.window"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "brightness_display",
+      "label": "Brillo y pantalla",
+      "total": 17,
+      "covered": 0,
+      "open": 17,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "system.settings.status",
+        "system.settings.set",
+        "system.settings.adjust"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "web_current_information",
+      "label": "Información web actual",
+      "total": 17,
+      "covered": 0,
+      "open": 17,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [],
+      "mechanism_assessment": "unknown_not_audited",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "windows_status",
+      "label": "Estado de ventanas y aplicaciones",
+      "total": 14,
+      "covered": 1,
+      "open": 13,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "window.active",
+        "window.application.status",
+        "window.resolve"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "windows_arrangement",
+      "label": "Organizar ventanas y pestañas",
+      "total": 13,
+      "covered": 0,
+      "open": 13,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "window.focus",
+        "window.minimize",
+        "window.maximize",
+        "window.move",
+        "browser.control"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "assistant_identity_capabilities",
+      "label": "Identidad y capacidades del asistente",
+      "total": 19,
+      "covered": 7,
+      "open": 12,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [],
+      "mechanism_assessment": "unknown_not_audited",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "notes",
+      "label": "Notas",
+      "total": 12,
+      "covered": 0,
+      "open": 12,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [],
+      "mechanism_assessment": "unknown_not_audited",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "personal_memory",
+      "label": "Memoria personal",
+      "total": 10,
+      "covered": 0,
+      "open": 10,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [],
+      "mechanism_assessment": "unknown_not_audited",
+      "new_infrastructure_minimum_mass_met": true
+    },
+    {
+      "category": "email",
+      "label": "Correo",
+      "total": 6,
+      "covered": 0,
+      "open": 6,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [],
+      "mechanism_assessment": "unknown_not_audited",
+      "new_infrastructure_minimum_mass_met": false
+    },
+    {
+      "category": "game_library_navigation",
+      "label": "Bibliotecas y fichas de juegos",
+      "total": 6,
+      "covered": 0,
+      "open": 6,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [],
+      "mechanism_assessment": "unknown_not_audited",
+      "new_infrastructure_minimum_mass_met": false
+    },
+    {
+      "category": "contacts",
+      "label": "Contactos",
+      "total": 5,
+      "covered": 0,
+      "open": 5,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [],
+      "mechanism_assessment": "unknown_not_audited",
+      "new_infrastructure_minimum_mass_met": false
+    },
+    {
+      "category": "development_execution",
+      "label": "Desarrollo y ejecución de comandos",
+      "total": 5,
+      "covered": 0,
+      "open": 5,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [],
+      "mechanism_assessment": "unknown_not_audited",
+      "new_infrastructure_minimum_mass_met": false
+    },
+    {
+      "category": "negative_app_constraints",
+      "label": "Restricciones negativas de apertura",
+      "total": 4,
+      "covered": 1,
+      "open": 3,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [],
+      "mechanism_assessment": "unknown_not_audited",
+      "new_infrastructure_minimum_mass_met": false
+    },
+    {
+      "category": "clipboard",
+      "label": "Portapapeles",
+      "total": 3,
+      "covered": 0,
+      "open": 3,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "clipboard.read.text",
+        "clipboard.write.text",
+        "clipboard.copy"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": false
+    },
+    {
+      "category": "system_power",
+      "label": "Energía del sistema",
+      "total": 3,
+      "covered": 0,
+      "open": 3,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "system.power"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": false
+    },
+    {
+      "category": "document_image_creation",
+      "label": "Crear documentos y editar imágenes",
+      "total": 2,
+      "covered": 0,
+      "open": 2,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [],
+      "mechanism_assessment": "unknown_not_audited",
+      "new_infrastructure_minimum_mass_met": false
+    },
+    {
+      "category": "web_read_summary",
+      "label": "Leer y resumir páginas web",
+      "total": 2,
+      "covered": 0,
+      "open": 2,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "browser.page.read"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": false
+    },
+    {
+      "category": "process_status",
+      "label": "Procesos",
+      "total": 9,
+      "covered": 8,
+      "open": 1,
+      "not_applicable": 0,
+      "catalog_mechanisms_observed": [
+        "system.process.list"
+      ],
+      "mechanism_assessment": "partial_catalog_mechanism_observed_not_coverage",
+      "new_infrastructure_minimum_mass_met": false
+    }
+  ],
+  "app_case_ids": [
+    "H0015",
+    "H0017",
+    "H0055",
+    "H0083",
+    "H0085",
+    "H0134",
+    "H0136",
+    "H0147",
+    "H0151",
+    "H0165",
+    "H0166",
+    "H0183",
+    "H0227",
+    "H0249",
+    "H0251",
+    "H0289",
+    "H0315",
+    "H0317",
+    "H0348",
+    "H0353",
+    "H0361",
+    "H0375",
+    "H0386",
+    "H0391",
+    "H0398",
+    "H0406",
+    "H0418",
+    "H0460",
+    "H0461",
+    "H0487",
+    "H0491",
+    "H0497",
+    "H0503",
+    "H0512",
+    "H0521",
+    "H0522",
+    "H0544",
+    "H0557",
+    "H0558",
+    "H0575",
+    "H0588",
+    "H0608",
+    "H0633",
+    "H0649",
+    "H0653",
+    "H0668",
+    "H0672",
+    "H0683",
+    "H0688",
+    "H0691",
+    "H0706",
+    "H0724",
+    "H0729",
+    "H0730"
+  ],
+  "apps_outside_existing_33": [
+    "H0083",
+    "H0165",
+    "H0166",
+    "H0183",
+    "H0227",
+    "H0249",
+    "H0315",
+    "H0353",
+    "H0386",
+    "H0398",
+    "H0406",
+    "H0460",
+    "H0491",
+    "H0503",
+    "H0512",
+    "H0521",
+    "H0522",
+    "H0608",
+    "H0668",
+    "H0691",
+    "H0730"
+  ],
+  "existing_33_outside_apps_category": [],
+  "audio_case_ids": [
+    "H0027",
+    "H0028",
+    "H0035",
+    "H0058",
+    "H0067",
+    "H0073",
+    "H0075",
+    "H0086",
+    "H0132",
+    "H0150",
+    "H0154",
+    "H0168",
+    "H0189",
+    "H0191",
+    "H0212",
+    "H0233",
+    "H0254",
+    "H0258",
+    "H0294",
+    "H0308",
+    "H0310",
+    "H0331",
+    "H0338",
+    "H0357",
+    "H0383",
+    "H0402",
+    "H0409",
+    "H0436",
+    "H0439",
+    "H0465",
+    "H0471",
+    "H0477",
+    "H0488",
+    "H0501",
+    "H0505",
+    "H0507",
+    "H0519",
+    "H0524",
+    "H0530",
+    "H0538",
+    "H0549",
+    "H0563",
+    "H0577",
+    "H0626",
+    "H0640",
+    "H0652",
+    "H0684",
+    "H0690",
+    "H0695",
+    "H0713",
+    "H0725"
+  ],
+  "cases": [
+    {
+      "case_id": "H0001",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0002",
+      "category": "knowledge_reasoning",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T03:18:53.288060+00:00"
+    },
+    {
+      "case_id": "H0003",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T03:18:53.288060+00:00"
+    },
+    {
+      "case_id": "H0004",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0005",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0006",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0007",
+      "category": "system_hardware_status",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T06:59:58.823485+00:00"
+    },
+    {
+      "case_id": "H0008",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0009",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0010",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0011",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0012",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T08:29:55.815616+00:00"
+    },
+    {
+      "case_id": "H0013",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0014",
+      "category": "contacts",
+      "verification_status": "open",
+      "expectation_kind": "negative_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "negative_limit"
+      ]
+    },
+    {
+      "case_id": "H0015",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0016",
+      "category": "knowledge_reasoning",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T03:18:53.288060+00:00"
+    },
+    {
+      "case_id": "H0017",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0018",
+      "category": "email",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0019",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0020",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0021",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T09:58:31.838664+00:00"
+    },
+    {
+      "case_id": "H0022",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0023",
+      "category": "windows_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0024",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0025",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0026",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0027",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0028",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0029",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0030",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0031",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0032",
+      "category": "conversation",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T09:17:32.526859+00:00"
+    },
+    {
+      "case_id": "H0033",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0034",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0035",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0036",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0037",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:51:01.163290+00:00"
+    },
+    {
+      "case_id": "H0038",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0039",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0040",
+      "category": "windows_status",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T15:25:05.220016+00:00"
+    },
+    {
+      "case_id": "H0041",
+      "category": "knowledge_reasoning",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T03:26:35.605160+00:00"
+    },
+    {
+      "case_id": "H0042",
+      "category": "conversation",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T03:26:35.605160+00:00"
+    },
+    {
+      "case_id": "H0043",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0044",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0045",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0046",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0047",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0048",
+      "category": "development_execution",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0049",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0050",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0051",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0052",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0053",
+      "category": "windows_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0054",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0055",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0056",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0057",
+      "category": "negative_app_constraints",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T05:35:53.985364+00:00",
+      "secondary_tags": [
+        "negative_instruction"
+      ]
+    },
+    {
+      "case_id": "H0058",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0059",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0060",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0061",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0062",
+      "category": "conversation",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T03:26:35.605160+00:00"
+    },
+    {
+      "case_id": "H0063",
+      "category": "system_hardware_status",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T05:35:53.985364+00:00"
+    },
+    {
+      "case_id": "H0064",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0065",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0066",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0067",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Solicitud compuesta: audio principal y consulta de fecha secundaria."
+    },
+    {
+      "case_id": "H0068",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0069",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0070",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0071",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0072",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0073",
+      "category": "audio_volume",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T05:35:53.985364+00:00"
+    },
+    {
+      "case_id": "H0074",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0075",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0076",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0077",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0078",
+      "category": "conversation",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T04:34:14.033989+00:00"
+    },
+    {
+      "case_id": "H0079",
+      "category": "clock",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T04:10:10.964896+00:00",
+      "classification_reason": "Solicitud compuesta: reloj principal y batería secundaria."
+    },
+    {
+      "case_id": "H0080",
+      "category": "network_bluetooth",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T05:41:42.499664+00:00"
+    },
+    {
+      "case_id": "H0081",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0082",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0083",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0084",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0085",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0086",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0087",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0088",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0089",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0090",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0091",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0092",
+      "category": "notes",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0093",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0094",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0095",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0096",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0097",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0098",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0099",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0100",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0101",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0102",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0103",
+      "category": "windows_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0104",
+      "category": "windows_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0105",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0106",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Dos lecturas del sistema: fecha y RAM."
+    },
+    {
+      "case_id": "H0107",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0108",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0109",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0110",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0111",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0112",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0113",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0114",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0115",
+      "category": "conversation",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T09:17:32.526859+00:00"
+    },
+    {
+      "case_id": "H0116",
+      "category": "contacts",
+      "verification_status": "open",
+      "expectation_kind": "negative_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "negative_limit"
+      ]
+    },
+    {
+      "case_id": "H0117",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0118",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0119",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0120",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T09:17:32.526859+00:00"
+    },
+    {
+      "case_id": "H0121",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0122",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T08:29:55.815616+00:00"
+    },
+    {
+      "case_id": "H0123",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0124",
+      "category": "contacts",
+      "verification_status": "open",
+      "expectation_kind": "negative_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "negative_limit"
+      ]
+    },
+    {
+      "case_id": "H0125",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0126",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T19:45:23.501583+00:00"
+    },
+    {
+      "case_id": "H0127",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0128",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0129",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0130",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0131",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T08:29:55.815616+00:00"
+    },
+    {
+      "case_id": "H0132",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0133",
+      "category": "process_status",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-11T07:47:21.510440+00:00"
+    },
+    {
+      "case_id": "H0134",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0135",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0136",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0137",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0138",
+      "category": "contacts",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0139",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0140",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0141",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0142",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0143",
+      "category": "windows_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0144",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:51:01.163290+00:00"
+    },
+    {
+      "case_id": "H0145",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T09:17:32.526859+00:00"
+    },
+    {
+      "case_id": "H0146",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0147",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0148",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0149",
+      "category": "personal_memory",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0150",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0151",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0152",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0153",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0154",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0155",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0156",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0157",
+      "category": "personal_memory",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0158",
+      "category": "process_status",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-11T07:47:21.510440+00:00"
+    },
+    {
+      "case_id": "H0159",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0160",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0161",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0162",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0163",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0164",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0165",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0166",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0167",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0168",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0169",
+      "category": "process_status",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-11T07:47:21.510440+00:00"
+    },
+    {
+      "case_id": "H0170",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0171",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0172",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0173",
+      "category": "personal_memory",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0174",
+      "category": "personal_memory",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0175",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0176",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0177",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0178",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0179",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0180",
+      "category": "clock",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T19:45:23.501583+00:00"
+    },
+    {
+      "case_id": "H0181",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0182",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0183",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Apertura explícita más consulta de hora."
+    },
+    {
+      "case_id": "H0184",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0185",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0186",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0187",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0188",
+      "category": "document_image_creation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0189",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0190",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0191",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0192",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0193",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0194",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0195",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0196",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0197",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0198",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0199",
+      "category": "clipboard",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0200",
+      "category": "conversation",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T09:17:32.526859+00:00"
+    },
+    {
+      "case_id": "H0201",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0202",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0203",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0204",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0205",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0206",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0207",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0208",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0209",
+      "category": "windows_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0210",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0211",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0212",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0213",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0214",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0215",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0216",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0217",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0218",
+      "category": "conversation",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T09:17:32.526859+00:00"
+    },
+    {
+      "case_id": "H0219",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0220",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0221",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0222",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0223",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T19:45:23.501583+00:00"
+    },
+    {
+      "case_id": "H0224",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0225",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0226",
+      "category": "personal_memory",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0227",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Nombre de aplicación transcrito ambiguamente; categoría de apertura, destino pendiente."
+    },
+    {
+      "case_id": "H0228",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0229",
+      "category": "notes",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0230",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0231",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0232",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0233",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0234",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0235",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0236",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0237",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0238",
+      "category": "windows_arrangement",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0239",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0240",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0241",
+      "category": "conversation",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T09:17:32.526859+00:00"
+    },
+    {
+      "case_id": "H0242",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0243",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0244",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0245",
+      "category": "development_execution",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0246",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0247",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0248",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0249",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Nombre de juego transcrito ambiguamente; categoría de lanzamiento, destino pendiente."
+    },
+    {
+      "case_id": "H0250",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0251",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0252",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0253",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0254",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0255",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0256",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0257",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0258",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0259",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0260",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0261",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0262",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0263",
+      "category": "windows_arrangement",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0264",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0265",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0266",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0267",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0268",
+      "category": "windows_arrangement",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0269",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0270",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0271",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0272",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0273",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0274",
+      "category": "game_library_navigation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0275",
+      "category": "game_library_navigation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0276",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0277",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0278",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0279",
+      "category": "email",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0280",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0281",
+      "category": "windows_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0282",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0283",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0284",
+      "category": "notes",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0285",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0286",
+      "category": "notes",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0287",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0288",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0289",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0290",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0291",
+      "category": "windows_arrangement",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0292",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0293",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0294",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0295",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0296",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0297",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0298",
+      "category": "conversation",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T09:17:32.526859+00:00"
+    },
+    {
+      "case_id": "H0299",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Sólo ruta: intención sobre archivo incompleta."
+    },
+    {
+      "case_id": "H0300",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0301",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0302",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0303",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0304",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0305",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0306",
+      "category": "contacts",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0307",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0308",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0309",
+      "category": "windows_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0310",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0311",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0312",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0313",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0314",
+      "category": "windows_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0315",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0316",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0317",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0318",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0319",
+      "category": "notes",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0320",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0321",
+      "category": "notes",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0322",
+      "category": "document_image_creation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0323",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0324",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0325",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0326",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0327",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0328",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0329",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0330",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0331",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0332",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0333",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0334",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Archivo derivado de lectura de procesos; no acredita ninguno de los dos pasos."
+    },
+    {
+      "case_id": "H0335",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0336",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0337",
+      "category": "personal_memory",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0338",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0339",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0340",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0341",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0342",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0343",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0344",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0345",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0346",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0347",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0348",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0349",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0350",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0351",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0352",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Apertura instrumental subordinada a reproducción musical."
+    },
+    {
+      "case_id": "H0353",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0354",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0355",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0356",
+      "category": "clipboard",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0357",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0358",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0359",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:51:01.163290+00:00"
+    },
+    {
+      "case_id": "H0360",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0361",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0362",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0363",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0364",
+      "category": "process_status",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-11T07:47:21.510440+00:00"
+    },
+    {
+      "case_id": "H0365",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0366",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0367",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0368",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0369",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0370",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0371",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0372",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0373",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0374",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0375",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0376",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0377",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0378",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Pulsación indicada sin contexto de aplicación."
+    },
+    {
+      "case_id": "H0379",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:51:01.163290+00:00"
+    },
+    {
+      "case_id": "H0380",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0381",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0382",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0383",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0384",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0385",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0386",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Nombre de aplicación truncado; no resolver destino por similitud sin evidencia."
+    },
+    {
+      "case_id": "H0387",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Instalación explícita con plataforma ambigua."
+    },
+    {
+      "case_id": "H0388",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0389",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0390",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0391",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0392",
+      "category": "windows_arrangement",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0393",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0394",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0395",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0396",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0397",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0398",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Nombre transcrito ambiguamente y asentimiento contextual."
+    },
+    {
+      "case_id": "H0399",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0400",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0401",
+      "category": "system_power",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0402",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0403",
+      "category": "windows_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0404",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0405",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0406",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Aplicación inexistente expresamente solicitada; límite de resolución, sin excluir."
+    },
+    {
+      "case_id": "H0407",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0408",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0409",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0410",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0411",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0412",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0413",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0414",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0415",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0416",
+      "category": "notes",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0417",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0418",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0419",
+      "category": "windows_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0420",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Petición de silencio de micrófono con aplicación transcrita ambiguamente."
+    },
+    {
+      "case_id": "H0421",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0422",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0423",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0424",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0425",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0426",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Contenido solicitado truncado; salida de archivo requiere aclarar alcance."
+    },
+    {
+      "case_id": "H0427",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0428",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0429",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0430",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0431",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0432",
+      "category": "game_library_navigation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0433",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0434",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0435",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0436",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0437",
+      "category": "notes",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0438",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0439",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Cambio numérico sin magnitud explícita; audio provisional, exige contexto."
+    },
+    {
+      "case_id": "H0440",
+      "category": "email",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0441",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0442",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0443",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0444",
+      "category": "windows_arrangement",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0445",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0446",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0447",
+      "category": "negative_app_constraints",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "negative_instruction"
+      ]
+    },
+    {
+      "case_id": "H0448",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T08:29:55.815616+00:00"
+    },
+    {
+      "case_id": "H0449",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T19:45:23.501583+00:00"
+    },
+    {
+      "case_id": "H0450",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T19:45:23.501583+00:00"
+    },
+    {
+      "case_id": "H0451",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0452",
+      "category": "personal_memory",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0453",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0454",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0455",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0456",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Instalación con búsqueda de identificador como paso instrumental."
+    },
+    {
+      "case_id": "H0457",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0458",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0459",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0460",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0461",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0462",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0463",
+      "category": "game_library_navigation",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0464",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0465",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0466",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0467",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0468",
+      "category": "development_execution",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0469",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0470",
+      "category": "process_status",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-11T07:47:21.510440+00:00"
+    },
+    {
+      "case_id": "H0471",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0472",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Apertura instrumental más interacción en calculadora."
+    },
+    {
+      "case_id": "H0473",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0474",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0475",
+      "category": "development_execution",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Línea de consola pegada: distinguir instrucción de ejecutar de evidencia mostrada.",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0476",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0477",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0478",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0479",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0480",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0481",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0482",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0483",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0484",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0485",
+      "category": "notes",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0486",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0487",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0488",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0489",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0490",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0491",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0492",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Captura instrumental dentro de diálogo de instalación; no implica autorización inferida."
+    },
+    {
+      "case_id": "H0493",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0494",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0495",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0496",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0497",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0498",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T19:45:23.501583+00:00"
+    },
+    {
+      "case_id": "H0499",
+      "category": "clock",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T19:45:23.501583+00:00"
+    },
+    {
+      "case_id": "H0500",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0501",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0502",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T09:17:32.526859+00:00"
+    },
+    {
+      "case_id": "H0503",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Destino de aplicación desconocido; requiere resolución real."
+    },
+    {
+      "case_id": "H0504",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0505",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0506",
+      "category": "personal_memory",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0507",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0508",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0509",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0510",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0511",
+      "category": "notes",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0512",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0513",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0514",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0515",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T08:29:55.815616+00:00"
+    },
+    {
+      "case_id": "H0516",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Plan web con captura y cierre: asignado por finalidad de búsqueda."
+    },
+    {
+      "case_id": "H0517",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T09:17:32.526859+00:00"
+    },
+    {
+      "case_id": "H0518",
+      "category": "clipboard",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0519",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0520",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0521",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Nombre de aplicación transcrito ambiguamente; no equiparar destinos sin contexto."
+    },
+    {
+      "case_id": "H0522",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Nombre de aplicación truncado con confirmación contextual."
+    },
+    {
+      "case_id": "H0523",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0524",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0525",
+      "category": "windows_arrangement",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0526",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0527",
+      "category": "windows_arrangement",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Inventario y enfoque: criterio de mejor ventana requiere aclaración."
+    },
+    {
+      "case_id": "H0528",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Petición de interpretación visual sin objeto explícito."
+    },
+    {
+      "case_id": "H0529",
+      "category": "windows_arrangement",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0530",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Dos ajustes: audio principal y brillo secundario."
+    },
+    {
+      "case_id": "H0531",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0532",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0533",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0534",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0535",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0536",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0537",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0538",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0539",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0540",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0541",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Destino web transcrito ambiguamente; requiere resolución."
+    },
+    {
+      "case_id": "H0542",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Plan de archivo, directorio, compresión y apertura; mecanismos parciales no prueban plan."
+    },
+    {
+      "case_id": "H0543",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0544",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0545",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0546",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0547",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0548",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0549",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0550",
+      "category": "negative_app_constraints",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "negative_instruction"
+      ]
+    },
+    {
+      "case_id": "H0551",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0552",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0553",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0554",
+      "category": "email",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0555",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0556",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0557",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0558",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0559",
+      "category": "game_library_navigation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0560",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0561",
+      "category": "web_read_summary",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0562",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0563",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0564",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0565",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0566",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0567",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0568",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0569",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0570",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0571",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Nombre de instalación transcrito ambiguamente."
+    },
+    {
+      "case_id": "H0572",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0573",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0574",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0575",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0576",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0577",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0578",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0579",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0580",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0581",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0582",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0583",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0584",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0585",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0586",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T19:45:23.501583+00:00"
+    },
+    {
+      "case_id": "H0587",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0588",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0589",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Tres lecturas del sistema: fecha, hora y disco."
+    },
+    {
+      "case_id": "H0590",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0591",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0592",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0593",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0594",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0595",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T08:29:55.815616+00:00"
+    },
+    {
+      "case_id": "H0596",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0597",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0598",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0599",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0600",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T19:45:23.501583+00:00"
+    },
+    {
+      "case_id": "H0601",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0602",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T19:45:23.501583+00:00"
+    },
+    {
+      "case_id": "H0603",
+      "category": "system_power",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0604",
+      "category": "personal_memory",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0605",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0606",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0607",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0608",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0609",
+      "category": "email",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0610",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0611",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0612",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0613",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0614",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0615",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0616",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0617",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0618",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0619",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0620",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0621",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Cálculo requerido dentro de aplicación; interacción, no respuesta mental."
+    },
+    {
+      "case_id": "H0622",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0623",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0624",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0625",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0626",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0627",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0628",
+      "category": "windows_arrangement",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0629",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0630",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0631",
+      "category": "windows_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0632",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0633",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0634",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0635",
+      "category": "development_execution",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0636",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0637",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0638",
+      "category": "email",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0639",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0640",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0641",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0642",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0643",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0644",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0645",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0646",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0647",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0648",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T08:29:55.815616+00:00"
+    },
+    {
+      "case_id": "H0649",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0650",
+      "category": "process_status",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-11T07:47:21.510440+00:00"
+    },
+    {
+      "case_id": "H0651",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0652",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0653",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0654",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0655",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0656",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0657",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T09:17:32.526859+00:00"
+    },
+    {
+      "case_id": "H0658",
+      "category": "windows_arrangement",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0659",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0660",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0661",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0662",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0663",
+      "category": "windows_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0664",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0665",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:51:01.163290+00:00"
+    },
+    {
+      "case_id": "H0666",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Resumen de documento: acceso al archivo y lectura de contenido pendientes."
+    },
+    {
+      "case_id": "H0667",
+      "category": "personal_memory",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0668",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "unmarked_limit",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "unmarked_limit"
+      ]
+    },
+    {
+      "case_id": "H0669",
+      "category": "process_status",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-11T07:47:21.510440+00:00"
+    },
+    {
+      "case_id": "H0670",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T08:29:55.815616+00:00"
+    },
+    {
+      "case_id": "H0671",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0672",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0673",
+      "category": "notes",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0674",
+      "category": "brightness_display",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0675",
+      "category": "process_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00",
+      "classification_reason": "Agregación por aplicación no equivale a ordenar procesos; aparcado por instrucción del dueño."
+    },
+    {
+      "case_id": "H0676",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0677",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0678",
+      "category": "process_status",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-11T07:47:21.510440+00:00"
+    },
+    {
+      "case_id": "H0679",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0680",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0681",
+      "category": "windows_arrangement",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0682",
+      "category": "game_library_navigation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Destino de juego transcrito ambiguamente; navegación provisional requiere contexto."
+    },
+    {
+      "case_id": "H0683",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0684",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0685",
+      "category": "negative_app_constraints",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "secondary_tags": [
+        "negative_instruction"
+      ]
+    },
+    {
+      "case_id": "H0686",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0687",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T08:29:55.815616+00:00"
+    },
+    {
+      "case_id": "H0688",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0689",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0690",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0691",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0692",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0693",
+      "category": "windows_close",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0694",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0695",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0696",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0697",
+      "category": "windows_arrangement",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0698",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0699",
+      "category": "web_current_information",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0700",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T19:45:23.501583+00:00"
+    },
+    {
+      "case_id": "H0701",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0702",
+      "category": "conversation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0703",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0704",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Captura y referencia de botón truncada dentro de diálogo de instalación."
+    },
+    {
+      "case_id": "H0705",
+      "category": "ui_interaction",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Cálculo requerido dentro de aplicación; interacción, no respuesta mental."
+    },
+    {
+      "case_id": "H0706",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0707",
+      "category": "system_hardware_status",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0708",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0709",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0710",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0711",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0712",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Título audiovisual ambiguo; no corregir por similitud sin contexto."
+    },
+    {
+      "case_id": "H0713",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Restauración numérica sin magnitud explícita; audio provisional, exige contexto."
+    },
+    {
+      "case_id": "H0714",
+      "category": "system_power",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0715",
+      "category": "timers_reminders_calendar",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0716",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0717",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "covered",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T09:17:32.526859+00:00"
+    },
+    {
+      "case_id": "H0718",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0719",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0720",
+      "category": "messaging",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0721",
+      "category": "software_installation",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Instalación explícita con plataforma ambigua."
+    },
+    {
+      "case_id": "H0722",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0723",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0724",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Mención de hora no pide consultar reloj; apertura es la conducta."
+    },
+    {
+      "case_id": "H0725",
+      "category": "audio_volume",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0726",
+      "category": "knowledge_reasoning",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0727",
+      "category": "clock",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T19:45:23.501583+00:00"
+    },
+    {
+      "case_id": "H0728",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0729",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0730",
+      "category": "apps_open",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0731",
+      "category": "assistant_identity_capabilities",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0732",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-10T18:15:09.243375+00:00"
+    },
+    {
+      "case_id": "H0733",
+      "category": "files",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "Backup a dispositivo: categoría archivos, alcance no demostrado por copia sandbox."
+    },
+    {
+      "case_id": "H0734",
+      "category": "notes",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0735",
+      "category": "clarification_unresolved_input",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00",
+      "classification_reason": "No hay conducta o referente inequívoco en el literal aislado; exige contexto o aclaración, sin excluirlo."
+    },
+    {
+      "case_id": "H0736",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0737",
+      "category": "video_streaming",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0738",
+      "category": "web_read_summary",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0739",
+      "category": "network_bluetooth",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0740",
+      "category": "music",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0741",
+      "category": "web_navigation_search",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    },
+    {
+      "case_id": "H0742",
+      "category": "screen_vision",
+      "verification_status": "open",
+      "expectation_kind": "positive",
+      "verification_updated_at": "2026-09-09T01:45:56.859120+00:00"
+    }
+  ]
+}

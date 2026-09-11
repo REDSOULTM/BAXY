@@ -1,0 +1,490 @@
+{
+  "utc": "2026-09-11T12:06:23.061303+00:00",
+  "root_adjudicated": true,
+  "candidate": 843,
+  "head": "291b922de8c604f03d61acbdb88d5e625b465728",
+  "panel_sha256": "11757cd43549a7cc2b221ee3110d452d12461a551b247259e3044e4018fdb679",
+  "private_review_sha256": "48b7126f1d3f256a28efe6c7c2c52a4a15d8c65da3cfbfb2f8dd0fcb965b5cea",
+  "journal_sha256": "30c1a6e7cc299a7d17dbc1e9bb50b137ba3cfbac3f906b1ea3895fe80dca4e07",
+  "counts": {
+    "passed": 1,
+    "failed": 51,
+    "total": 52,
+    "historical_literals_passed": 0,
+    "historical_literals_failed": 35,
+    "positive_historical_candidates": 34,
+    "historical_unmarked_limits": 1,
+    "coverage_added": 0
+  },
+  "cases": [
+    {
+      "case_id": "app-open-next-notepad-01",
+      "turn_id": "t1",
+      "kind": "variant",
+      "verdict": "pass",
+      "reason": "Opening/focus verified for Notepad already running; final truthfully says it is open.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "app-open-next-calculator-02",
+      "turn_id": "t2",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Calculator opening completed and was verified, but the final says it is not running; confuses baseline alreadyRunning=false with posterior state.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "app-open-next-paint-03",
+      "turn_id": "t3",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Rejects Paint as outside capabilities without dispatch; later same-run Paint opening proves the mechanism exists.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "app-open-next-calculator-04",
+      "turn_id": "t4",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Rejects Calculator as outside capabilities without dispatch, despite prior verified opening.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "app-open-next-paint-05",
+      "turn_id": "t5",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Rejects Paint without dispatch despite the available opening operation.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "app-open-next-paint-06",
+      "turn_id": "t6",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Paint was opened and verified; terminal final only announces future opening and does not report the completed result.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "app-open-next-calculator-07",
+      "turn_id": "t7",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Calculator retry returned verification_failed with effectMayHaveOccurred=true. Honest uncertainty reported, but requested positive result is not verified.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "app-open-next-notepad-08",
+      "turn_id": "t8",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "app-open-next-paint-09",
+      "turn_id": "t9",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "app-open-next-notepad-10",
+      "turn_id": "t10",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "app-open-next-calculator-11",
+      "turn_id": "t11",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "app-open-next-notepad-12",
+      "turn_id": "t12",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "H0015",
+      "turn_id": "t13",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0017",
+      "turn_id": "t14",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0055",
+      "turn_id": "t15",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0085",
+      "turn_id": "t16",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0134",
+      "turn_id": "t17",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0136",
+      "turn_id": "t18",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0147",
+      "turn_id": "t19",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0151",
+      "turn_id": "t20",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0251",
+      "turn_id": "t21",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0289",
+      "turn_id": "t22",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case. No user final was published after composition retries.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0317",
+      "turn_id": "t23",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0348",
+      "turn_id": "t24",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0361",
+      "turn_id": "t25",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0375",
+      "turn_id": "t26",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0391",
+      "turn_id": "t27",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case. Additionally claims Steam was opened although no Steam operation ran.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0418",
+      "turn_id": "t28",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0461",
+      "turn_id": "t29",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case. No user final was published after composition retries.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0487",
+      "turn_id": "t30",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case. No user final was published after composition retries.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0497",
+      "turn_id": "t31",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0544",
+      "turn_id": "t32",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0557",
+      "turn_id": "t33",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0558",
+      "turn_id": "t34",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0575",
+      "turn_id": "t35",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0588",
+      "turn_id": "t36",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0633",
+      "turn_id": "t37",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0649",
+      "turn_id": "t38",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0653",
+      "turn_id": "t39",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0672",
+      "turn_id": "t40",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0683",
+      "turn_id": "t41",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0688",
+      "turn_id": "t42",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0706",
+      "turn_id": "t43",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0724",
+      "turn_id": "t44",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0729",
+      "turn_id": "t45",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0315",
+      "turn_id": "t46",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0730",
+      "turn_id": "t47",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "app-open-next-boundary-01",
+      "turn_id": "t48",
+      "kind": "boundary",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "app-open-next-boundary-02",
+      "turn_id": "t49",
+      "kind": "boundary",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "app-open-next-boundary-03",
+      "turn_id": "t50",
+      "kind": "boundary",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case. Additionally attributes yesterday opening to the assistant without evidence.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "app-open-next-boundary-04",
+      "turn_id": "t51",
+      "kind": "boundary",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "app-open-next-boundary-06",
+      "turn_id": "t52",
+      "kind": "boundary",
+      "verdict": "fail",
+      "reason": "The unresolved Calculator mission from t7 intercepted this independent request; no operation for the current request was attempted. Final fails to satisfy this case.",
+      "survey_credit": false,
+      "verification_status": null
+    }
+  ],
+  "scope": "Task utility and final fidelity, not merely honest reporting of a different pending mission. Kernel success alone does not imply a successful final. No app installation, cleanup, new infrastructure or source adoption."
+}

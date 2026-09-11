@@ -1,0 +1,41 @@
+{
+  "utc": "2026-09-11T12:26:31.846113+00:00",
+  "worktrees": [
+    {
+      "worktree": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-app-projection851-worktree",
+      "status_before": " M src/baxy_mind/llm.py\n?? tests/test_llm_app_open_projection851.py\n",
+      "files": {
+        "src/baxy_mind/llm.py": {
+          "worktree_sha256": "1911e2721ae3a367d2f33aaa89874ede4167ff6e76d658ad9fb946dc769af500",
+          "canonical_sha256": "1911e2721ae3a367d2f33aaa89874ede4167ff6e76d658ad9fb946dc769af500",
+          "ast_equal": true
+        },
+        "tests/test_llm_app_open_projection851.py": {
+          "worktree_sha256": "01c48a7d35eba763230fa2099ecfa0c18514d1baa65e4005310fb8a255215cf0",
+          "canonical_sha256": "1586c0ca4c9741654711ee33bc34b680405a4afd64b47a2e588a4c63fc1a0395",
+          "ast_equal": true
+        }
+      },
+      "remove_exit_code": 0,
+      "removed": true
+    },
+    {
+      "worktree": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-app-intent852-worktree",
+      "status_before": " M src/baxy_mind/effect_intent.py\n A tests/test_app_open_intent852.py\n",
+      "files": {
+        "src/baxy_mind/effect_intent.py": {
+          "worktree_sha256": "bd482c2220148aaf8a5397e23689c4eda832ec1b73ba23a78eb675b3c93910d1",
+          "canonical_sha256": "bd482c2220148aaf8a5397e23689c4eda832ec1b73ba23a78eb675b3c93910d1",
+          "ast_equal": true
+        },
+        "tests/test_app_open_intent852.py": {
+          "worktree_sha256": "93c7625bfc82ddceb73604ec2f8dbce38ffb670b4d64c3773b8a8f9af7af0e08",
+          "canonical_sha256": "93c7625bfc82ddceb73604ec2f8dbce38ffb670b4d64c3773b8a8f9af7af0e08",
+          "ast_equal": true
+        }
+      },
+      "remove_exit_code": 0,
+      "removed": true
+    }
+  ]
+}

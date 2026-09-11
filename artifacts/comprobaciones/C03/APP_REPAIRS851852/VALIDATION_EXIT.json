@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-11T12:24:04.830831+00:00",
+  "exit_code": 0,
+  "source_pins_unchanged": true,
+  "source_pins_sha256": "994a16252641f26085c484f913afb5fc5ae2165747e85a88fb4cc04d7e7c78b8",
+  "owners_passed": 3504,
+  "owners_failed": 0,
+  "owners_skipped": 0,
+  "fast_exit_code": 0,
+  "baseline_full_path": "artifacts/comprobaciones/C03/PROTOCOL843/FULL_EXIT.json",
+  "baseline_full_sha256": "0a21e9aca9e44112552dfc1a1ddd52a398733256ac034af662c1c6d6da6df9c4",
+  "allowed_changed_baseline_paths": [
+    "src/baxy_mind/llm.py",
+    "src/baxy_mind/effect_intent.py"
+  ],
+  "source_adopted": false,
+  "scope": "Python-only candidate851+852, owners and Fast; Full843 remains inherited baseline and is not asserted to cover new Python behavior. Real sealed panel853 remains required."
+}

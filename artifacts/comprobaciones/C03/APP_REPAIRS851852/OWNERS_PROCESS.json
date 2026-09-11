@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-11T12:21:19.961663+00:00",
+  "pid": 15916,
+  "wrapper_pid": 19228,
+  "command": [
+    "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "pytest",
+    "tests/test_llm_app_open_projection851.py",
+    "tests/test_app_open_intent852.py",
+    "tests/test_c03_request_preservation.py",
+    "tests/test_compose_contract.py",
+    "tests/test_c03_window_prose_projection.py",
+    "tests/test_effect_intent.py",
+    "tests/test_turn_policy.py",
+    "-q",
+    "--tb=short"
+  ]
+}

@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "843 adoptado en su alcance de transporte: Full0 recogido c329d6 (.NET4754pass/1omisión agregada; Python12907pass/3omisiones/466subpruebas/658,25s),60 pins intactos. Replay real0 recupera6532UTF16 sin OCR nuevo ni cambio del diario; proyecciónApp8440 conserva texto/layout/hash exactos. Fuente8archivos, dueñas118pass0skip. Sin modelo ni créditoH0675. Encuesta36/706/0, matriz3/11; C03 EN_CURSO.",
-  "continuation": "Publish843 with owners/Full/replay/projection evidence. Fresh capture/OCR and private oracle before834-O; original834-E remains separate. No repeat Full843, replay843, probe preparation scripts or removedworktrees. Apps75 inputs prepared.",
+  "checkpoint": "847:1/52 y0créditos;848:26/52 y2créditos. Encuesta38/704/0;categorías0/35. 851852:3504pass0skip,Fast0,62pins intactos;worktrees retirados. 853:25casos sellados sin ejecutar.",
+  "continuation": "Commit/push only own validated851852 and survey evidence, then prepare/run853 with new HEAD and current candidate pins. Root adjudicates credit live. Agent prepares large854 in parallel.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -28,16 +28,16 @@
     "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
   },
   "surveyVerificationCounts": {
-    "covered": 36,
-    "open": 706,
+    "covered": 38,
+    "open": 704,
     "not_applicable": 0
   },
-  "pendingOwnerClarification": "Maximize Task Manager and leave Processes view; asked once after product window.maximize failed. Await reply; continue protocol843 independently.",
-  "publishedSourceCommit": "f70ea94c7ef04a2b623cf3be5c1bfd2218d59385",
-  "workStatus": "protocol843_adopted_fresh_observation_pending",
-  "goalStatusNote": "All C03 remains active;36covered/706open and49/50 process panel; generic screen prerequisites not H0675 completion.",
+  "pendingOwnerClarification": null,
+  "publishedSourceCommit": "291b922de8c604f03d61acbdb88d5e625b465728",
+  "workStatus": "candidate851852_validated_pending_product853",
+  "goalStatusNote": "All C03 active;38/742covered,704open,0NA;35categories;H0675parked.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "c5d0f476facd538b1226c5d3c4c0ced22a1ee7ec",
+  "publishedEvidenceCommit": "291b922de8c604f03d61acbdb88d5e625b465728",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -797,12 +797,7 @@
     "coverage_added": 0,
     "processes_closed": true
   },
-  "currentDiagnostic": {
-    "sessionId": 3835,
-    "running": true,
-    "pid": 35232,
-    "path": "artifacts/comprobaciones/C03/FULL6_742"
-  },
+  "currentDiagnostic": null,
   "independentDiagnostic": {
     "path": "artifacts/comprobaciones/C03/DOMAIN_TRACE743",
     "cases": 63,
@@ -810,7 +805,7 @@
     "first_disk_loss": "direct_request false while disk domain true"
   },
   "publicationCheck": "PIPE_SOURCE740/PUBLICATION_BYTES.json; normalize live source only after Full terminal; preserve frozen snapshot",
-  "currentGoalTurnProgress": "Full7 terminal,source748published;747probe70and749meta-counterfactual yield precise next implementation.",
+  "currentGoalTurnProgress": "New survey priority applied; taxonomy validated and apps52 sealed; runner/audio preparations parallel.",
   "lastValidation750": {
     "owner_passed": 2687,
     "environmental_skipped": 1,
@@ -818,7 +813,7 @@
     "fast_exit_code": 0,
     "program_tree_sha256": "e6416b4290298d023c4cb600fd3e748393295de8c1cb1588c7f71c859df97f37"
   },
-  "surveyRegistrySha256": "4f8e8afb8acd409bc03ab2427223e1810c3b7396f2459e8112ddfcb445c7e76d",
+  "surveyRegistrySha256": "a06b874d2f06697cc01c486ba19f90789e72dfd79d048aa03274dceb4a793a6a",
   "latestDiagnostic": {
     "name": "PROSE_SAMPLING785",
     "calls": 150,
@@ -836,14 +831,7 @@
     "report": "artifacts/comprobaciones/C03/PROSE_SAMPLING785/REPORT.md"
   },
   "selectedModel": "Qwen3-4B-Instruct-2507 Q4_K_M registered",
-  "activeProductQueue": {
-    "session": 71175,
-    "pid": 27020,
-    "state": "running_product799",
-    "script": "scratchpad/c03-await-full798-run799.py",
-    "receipt": "artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/NEXT799_QUEUE.json",
-    "launcher": 17468
-  },
+  "activeProductQueue": null,
   "completedAgentProposal": {
     "agent": "process_scope_repair",
     "worktree": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-scope799-worktree",
@@ -866,11 +854,11 @@
   "previousRelayThreadId": "01a08e1a-db7f-77a2-bcf2-3bc95483a9e6",
   "relayProcessCheck": "2026-09-11: source and previous relay idle; no llama-server, testhost, dotnet, Python, BAXY or c03 runner processes. No process stopped.",
   "diagnosticTaskManager": {
-    "status": "closed_by_owner",
-    "confirmed_absent": true,
-    "evidence": "C:/Users/usuario/AppData/Local/BAXY/C03-task-manager-observation804-private/OBSERVATION.json",
+    "status": "owner_left_open",
+    "owner_message": "Tambien te dejo el admin de tareas abierto como se pidio",
+    "automaticClose": false,
     "product_credit": false,
-    "atUtc": "2026-09-10T23:24:13.98955-03:00"
+    "purpose_now_parked": true
   },
   "repair806": {
     "active_agent_limit": 2,
@@ -910,14 +898,14 @@
     "integration_precondition": "Root must adjudicate819 first; not integrated and not adopted."
   },
   "lastCandidateValidation": {
-    "candidate": 823,
-    "sessionId": 75105,
-    "exit_code": 0,
-    "owners_python_pass": 696,
-    "owners_python_skip": 0,
-    "owners_reference_pass": 17,
-    "owners_reference_skip": 1,
-    "receipt": "PROCESS_NARRATOR823/ROOT_VALIDATION.json"
+    "candidate": "851852",
+    "receipt": "APP_REPAIRS851852/VALIDATION_EXIT.json",
+    "owners_passed": 3504,
+    "owners_failed": 0,
+    "owners_skipped": 0,
+    "fast_exit_code": 0,
+    "collection_chunk": "738b81",
+    "source_adopted": false
   },
   "publishedCandidateCommit": "e7fbae65f3beb8d9d7a4986cf217564a5c3c93cf",
   "publishedRunnerCommit": "ef88d4c9b891889e127e25c95a1df1086ff50775",
@@ -941,5 +929,32 @@
     "timeouts": 1,
     "coverageAdded": 0
   },
-  "activeRepairAgent": "process_counts812: eight-file protocol843 repair in external worktree; no Core/effects/Full/model."
+  "activeRepairAgent": null,
+  "surveyCategories": {
+    "total": 35,
+    "closed": 0,
+    "taxonomy": "SURVEY_TAXONOMY846.json"
+  },
+  "surveyCoverageLast24h": {
+    "covered_updated_last_24h": 12,
+    "confirmed_new_grants_last_24h": 10,
+    "first_grant_date_not_distinguished_for_recent_ids": [
+      "H0180",
+      "H0499"
+    ]
+  },
+  "updatedAtUtc": "2026-09-11T11:49:41.023667+00:00",
+  "lastAppsBatch": {
+    "candidate": 843,
+    "passed": 1,
+    "total": 52,
+    "coverage_added": 0
+  },
+  "lastAudioBatch": {
+    "candidate": 843,
+    "passed": 26,
+    "total": 52,
+    "coverage_added": 2,
+    "audio_restored": true
+  }
 }

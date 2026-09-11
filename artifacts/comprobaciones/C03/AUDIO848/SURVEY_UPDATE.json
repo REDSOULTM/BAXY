@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-11T12:14:15.382825+00:00",
+  "before_sha256": "144106f5b40a06781e3281eaa66395647bd18bd937b2758d821415b950be9708",
+  "after_sha256": "a06b874d2f06697cc01c486ba19f90789e72dfd79d048aa03274dceb4a793a6a",
+  "updated_open_cases": 33,
+  "coverage_added_already_written": 2,
+  "counts": {
+    "covered": 38,
+    "open": 704,
+    "not_applicable": 0
+  },
+  "negative_limits": 3,
+  "unmarked_limits": 18
+}

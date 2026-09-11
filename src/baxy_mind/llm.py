@@ -3398,6 +3398,16 @@ def _compose_situation_payload(
                 payload[key] = situation[key]
     seen = situation.get("observed")
     operation = str(situation.get("operation") or "").strip()
+    if (
+        operation == "app.open"
+        and kind == "operation"
+        and polarity == "success"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+        and situation.get("effectUncertain") is not True
+    ):
+        # Opening was verified already; this is not a promise to launch later.
+        payload["outcome"] = "completed"
     completed_steps: list[dict] = []
     if _reason_depth < 8:
         for step_result in situation.get("steps") or []:
@@ -3438,6 +3448,10 @@ def _compose_situation_payload(
             visible_seen = project_system_measurements(visible_seen)
         elif operation == "system.process.list":
             visible_seen = project_process_measurements(visible_seen, user_text)
+        elif operation == "app.open" and isinstance(visible_seen.get("alreadyRunning"), bool):
+            # The receipt records whether it was running BEFORE this invocation.
+            # False must not tell the narrator that the app is still closed.
+            visible_seen["was_running_before_open"] = visible_seen.pop("alreadyRunning")
         if (
             situation.get("verified") is True
             and situation.get("succeeded") is True

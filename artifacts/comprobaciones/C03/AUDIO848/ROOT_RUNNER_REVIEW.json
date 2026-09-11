@@ -1,0 +1,9 @@
+{
+  "preparation_sha256": "5bc188afaa0c1f30e4af752bc2663d5bf9a3558ca92e2dca7930ea090c2a1a9a",
+  "runner_sha256": "3c3551de74986dabfdc4695d1f0f5b92c1be0919c8024c660c19af2c0f11184b",
+  "sources": 584,
+  "binary_files": 18,
+  "postbuild_free_ram_mib": 4422.46484375,
+  "root_review": "Full diff847to848 read;52literalwire equality/104controls validated. Existing HttpJson and sessions/new200ok contract confirmed inProductConductorHost/FieldProductChannel. Same limits andidentity guard; no extraeffects or restoration.",
+  "coverage_added": 0
+}

@@ -1,3 +1,128 @@
+# Checkpoint — 847/848 adjudicados; 851/852 validados — 2026-09-11T12:25:15.054382+00:00
+
+**38/742 cubiertos, 704 abiertos, 0 no aplican; categorías cerradas 0/35. Últimas 24 h: 10 altas confirmadas y otras 2 actualizaciones covered cuya fecha de primera alta no se distingue.** Hubo Full843 en la ventana. El registro consultable es [SURVEY_COVERAGE_CURRENT.json](SURVEY_COVERAGE_CURRENT.json). H0383/H0505 se marcaron covered al adjudicarlos, antes de terminar el informe; las otras causas se escribieron por ID.
+
+Apps847: 52/52 turnos, 1 válido/51 fallidos, 0 créditos; 35 históricos siguen open (H0461 conserva unmarked_limit). La cuarta llamada app.open terminó verification_failed con efecto incierto y bloqueó las peticiones siguientes. No se reinterpretó ausencia de despacho como apertura. 106,093s; VRAM3497,56MiB, RAM2392,03MiB; cero guardas. Sesión82046 recogida0, pins intactos. [Adjudicación](APP_OPEN847/ROOT_ADJUDICATION.json).
+
+Audio848: 52/52 turnos y52controles de sesión nueva, 26 válidos/26 fallidos;21literales válidos,14sin completar el criterio;1/12variantes y4/5límites válidos. Dos lecturas (H0383/H0505) reciben crédito por literal actual verificado +2variantes de lectura568 heredadas;19literales válidos esperan generalización pertinente. No se cubren ajustes por éxito de lecturas. 153,953s; VRAM3499,56MiB, RAM2437,42MiB; cero guardas. Sesión63195 recogida0. Audio restaurado mediante4llamadas Core verificadas a31%/sin silencio, sin crédito; diario original del panel preservado por prefijo SHA en snapshot privado. [Adjudicación](AUDIO848/ROOT_ADJUDICATION.json), [restauración](AUDIO848/CLEANUP.json).
+
+851+852 integrados como candidato Python, sin adopción de producto:14líneas conservan apertura completada y estado previo;7altas/3bajas recuperan cortesía final y prefacio «Dale,» mediante gramática existente y destino de catálogo autenticado. Dueñas raíz3504pass/0fail/0skip/70,89s;62pins994a16252641f26085c484f913afb5fc5ae2165747e85a88fb4cc04d7e7c78b8 intactos. Fast terminado con exit0, compilación Release13,96s y pins intactos; sesión84311 recogida0 (738b81). Full843 baseline histórico separado; no Full nuevo exigido por este cambio sólo Python. Parche851 334fe7cf...,852133ffdfd... en propuestas privadas; ambos worktrees fotografiados y retirados (WORKTREE_RELEASE.json).
+
+Próxima ejecución853:25casos sellados(10literales positivos+10variantes exactas heredadas+5límites),50líneas con sesión nueva antes de cada turno. Es subconjunto dirigido después del fallo, no repetición del panel52. Apps54 abiertos sigue siendo mayor masa; Calculator queda fuera de efectos hasta reanudar su diagnóstico con observación vinculada. Sellos en C03-app-open853-proposal; runner853 externo exige los recibos851852 reales y HEAD esperado tras commit. A continuación tanda grande35+12+5 cuando el mecanismo se confirme. H0675/OCR/captura/providers nuevos siguen aparcados.
+
+Orden vigente por abiertos:
+
+| Categoría | Total | Cubiertos | Abiertos | No aplican |
+|---|---:|---:|---:|---:|
+| Abrir aplicaciones | 54 | 0 | 54 | 0 |
+| Audio y volumen | 51 | 3 | 48 | 0 |
+| Navegación y búsqueda web | 46 | 0 | 46 | 0 |
+| Música | 39 | 0 | 39 | 0 |
+| Estado de hardware y sistema | 40 | 2 | 38 | 0 |
+| Alarmas, recordatorios, tareas y agenda | 38 | 0 | 38 | 0 |
+| Conocimiento, razonamiento y creatividad verbal | 37 | 3 | 34 | 0 |
+| Entrada incompleta, ruido y control de diálogo | 34 | 0 | 34 | 0 |
+| Archivos y carpetas | 32 | 0 | 32 | 0 |
+| Mensajería | 31 | 0 | 31 | 0 |
+| Instalar y desinstalar software | 31 | 0 | 31 | 0 |
+| Vídeo y series | 26 | 0 | 26 | 0 |
+| Conversación social y ayuda general | 31 | 9 | 22 | 0 |
+| Interacción dentro de aplicaciones | 22 | 0 | 22 | 0 |
+| Hora y fecha | 23 | 3 | 20 | 0 |
+| Red y Bluetooth | 21 | 1 | 20 | 0 |
+| Cerrar aplicaciones y ventanas | 20 | 0 | 20 | 0 |
+| Pantalla, captura e interpretación visual | 19 | 0 | 19 | 0 |
+| Brillo y pantalla | 17 | 0 | 17 | 0 |
+| Información web actual | 17 | 0 | 17 | 0 |
+| Estado de ventanas y aplicaciones | 14 | 1 | 13 | 0 |
+| Organizar ventanas y pestañas | 13 | 0 | 13 | 0 |
+| Identidad y capacidades del asistente | 19 | 7 | 12 | 0 |
+| Notas | 12 | 0 | 12 | 0 |
+| Memoria personal | 10 | 0 | 10 | 0 |
+| Correo | 6 | 0 | 6 | 0 |
+| Bibliotecas y fichas de juegos | 6 | 0 | 6 | 0 |
+| Contactos | 5 | 0 | 5 | 0 |
+| Desarrollo y ejecución de comandos | 5 | 0 | 5 | 0 |
+| Restricciones negativas de apertura | 4 | 1 | 3 | 0 |
+| Portapapeles | 3 | 0 | 3 | 0 |
+| Energía del sistema | 3 | 0 | 3 | 0 |
+| Crear documentos y editar imágenes | 2 | 0 | 2 | 0 |
+| Leer y resumir páginas web | 2 | 0 | 2 | 0 |
+| Procesos | 9 | 8 | 1 | 0 |
+
+
+El ritmo bajo se explica por los fallos medidos de generalización y la misión pendiente, además del Full previo. Ajuste aplicado: casos independientes, reparaciones mínimas de los dos defectos demostrados y una tanda corta que conduce a la siguiente tanda de acreditación. No hay campaña de modelo, infraestructura nueva ni repetición global por un literal fallido.
+
+---
+
+# Apps847 en ejecución — 2026-09-11 11:58:48 UTC
+
+52 turnos sellados, sesión82046, runner29328, launcher29120. Entrada main.py --conductor, perfil nuevo. Preparación/build/publish y cierre de servidores terminaron0;60pins843intactos,584fuentes y18binarios sellados,4451,04MiB RAMlibre postbuild. PreparaciónSHAa323b09546d1b64133f4fdee7156a2fb89ef09017a7f6dc87756e6ad78ea3abf. NoFull/source duranteGPU.
+
+35literales históricos incluyen H0461 heredado con expectation_kind unmarked_limit: se mantiene como límite,34candidatos positivos; no se reetiqueta el panel.12variantes primero y5límites de desarrollo después. Raíz adjudica y actualiza covered inmediatamente con>=2variantesválidas. Encuesta36/742cubiertos,706abiertos,0NA;categorías0/35;últimas24h10coveredactualizados(8altas824documentadas+2actualizacionesreloj),conFull843enlaventana.
+
+Audio848 revision1 validada porraíz:35positivosabiertos exactos+12variantes+5límites. Transporte104líneas(52session.new+52turns) sellado0cf41e20b1a7470c5721fe03581091d80f307a83577edfc91c0a7105e46314a4. Runner audio externo en preparación, ninguna ejecución. H0675/OCR siguenaparcados.
+
+---
+
+# Prioridad vigente — encuesta846 y panel de apps847 — 2026-09-11T11:49:41.023667+00:00
+
+La instrucción del dueño del 11 de septiembre sustituye ENCUESTA y amplía PIPELINE: [autoridad](AUTORIDAD_ENCUESTA_2026-09-11.md). H0675/OCR/captura/providers nuevos quedan [aparcados con reanudación exacta](H0675_APARCADO.md). El Administrador de tareas disponible por el dueño no reabre esa línea.
+
+**Encuesta: 36/742 cubiertos, 706 abiertos, 0 no aplican. Categorías cerradas: 0/35. Últimas 24 h: 10 filas covered actualizadas (8 créditos nuevos documentados en824 y 2 actualizaciones de reloj; no se inventa fecha de primera concesión).** En este período hubo Full843, ya terminado: no es un Full pendiente. C03 EN_CURSO, matriz3/11.
+
+Clasificación realizada por un único subagente sin GPU y validada estructuralmente por raíz: 742 IDs únicos, misma pertenencia y estados que el registro, una categoría por ID, 3 negativos y 18 sin marca intactos. [Asignación completa](SURVEY_TAXONOMY846.json). Catálogo existente no equivale a cobertura. Orden por abiertos descendente:
+
+| Categoría | Total | Cubiertos | Abiertos | No aplican |
+|---|---:|---:|---:|---:|
+| Abrir aplicaciones | 54 | 0 | 54 | 0 |
+| Audio y volumen | 51 | 1 | 50 | 0 |
+| Navegación y búsqueda web | 46 | 0 | 46 | 0 |
+| Música | 39 | 0 | 39 | 0 |
+| Estado de hardware y sistema | 40 | 2 | 38 | 0 |
+| Alarmas, recordatorios, tareas y agenda | 38 | 0 | 38 | 0 |
+| Conocimiento, razonamiento y creatividad verbal | 37 | 3 | 34 | 0 |
+| Entrada incompleta, ruido y control de diálogo | 34 | 0 | 34 | 0 |
+| Archivos y carpetas | 32 | 0 | 32 | 0 |
+| Mensajería | 31 | 0 | 31 | 0 |
+| Instalar y desinstalar software | 31 | 0 | 31 | 0 |
+| Vídeo y series | 26 | 0 | 26 | 0 |
+| Conversación social y ayuda general | 31 | 9 | 22 | 0 |
+| Interacción dentro de aplicaciones | 22 | 0 | 22 | 0 |
+| Hora y fecha | 23 | 3 | 20 | 0 |
+| Red y Bluetooth | 21 | 1 | 20 | 0 |
+| Cerrar aplicaciones y ventanas | 20 | 0 | 20 | 0 |
+| Pantalla, captura e interpretación visual | 19 | 0 | 19 | 0 |
+| Brillo y pantalla | 17 | 0 | 17 | 0 |
+| Información web actual | 17 | 0 | 17 | 0 |
+| Estado de ventanas y aplicaciones | 14 | 1 | 13 | 0 |
+| Organizar ventanas y pestañas | 13 | 0 | 13 | 0 |
+| Identidad y capacidades del asistente | 19 | 7 | 12 | 0 |
+| Notas | 12 | 0 | 12 | 0 |
+| Memoria personal | 10 | 0 | 10 | 0 |
+| Correo | 6 | 0 | 6 | 0 |
+| Bibliotecas y fichas de juegos | 6 | 0 | 6 | 0 |
+| Contactos | 5 | 0 | 5 | 0 |
+| Desarrollo y ejecución de comandos | 5 | 0 | 5 | 0 |
+| Restricciones negativas de apertura | 4 | 1 | 3 | 0 |
+| Portapapeles | 3 | 0 | 3 | 0 |
+| Energía del sistema | 3 | 0 | 3 | 0 |
+| Crear documentos y editar imágenes | 2 | 0 | 2 | 0 |
+| Leer y resumir páginas web | 2 | 0 | 2 | 0 |
+| Procesos | 9 | 8 | 1 | 0 |
+| **Total** | **742** | **36** | **706** | **0** |
+
+
+**847 sellado antes de ejecutar:** 35 literales exactos (33 heredados + H0315 y H0730), 12 variantes existentes seleccionadas sin cambiar su texto, 5 límites. Orden: variantes, literales, límites, para adjudicar covered durante la tanda en cuanto haya dos variantes válidas. SHA del panel11757cd43549a7cc2b221ee3110d452d12461a551b247259e3044e4018fdb679; sello privado c41d241091cdf59a3aab8ac55544bc74748740d739096cd055456473c065837a. [Sello público](APP_OPEN847/PANEL_SEAL.json). Todavía sin ejecución ni créditos. El panel anterior75 se conserva íntegro y queda sustituido para la próxima ejecución.
+
+Pipeline: preparación del runner847 externo y audio848 en paralelo; sólo raíz ejecuta producto y adjudica. Próxima tanda audio por mandato explícito; después categoría de mayor masa abierta, salvo una sola tanda necesaria para cerrar. Fallos individuales quedan open con causa y no provocan repetición completa. Infraestructura nueva sólo tras agotar mecanismos existentes y con >=10 requisitos desbloqueados declarados antes de construir.
+
+Ritmo: los tramos de OCR y el Full ocuparon la ventana y sólo824 añadió8 créditos documentados. Ajuste aplicado: OCR aparcado y paneles35+12+5 orientados a literales. La preparación845 se detuvo antes de build/GPU por RAM inicial inferior a4000MiB; no se ha relajado esa guarda. La guarda durante ejecución sigue768MiB y VRAM3800MiB. No se cierran aplicaciones del dueño para ganar RAM.
+
+No repetir Full843 (salida0), replay843, probe844, OCR832/836/838, atajo840 ni herencia. Candidato publicado291b922d; main5f572ee1 intacto. Dueñas118pass/0skip; Full4754.NETpass/1omisión agregada,12907Pythonpass/3omisiones/466subpruebas. Los skips no cuentan como pass.
+
+---
+
 843 adoptado en su alcance de transporte: Full0 recogido c329d6 (.NET4754pass/1omisión agregada; Python12907pass/3omisiones/466subpruebas/658,25s),60 pins intactos. Replay real0 recupera6532UTF16 sin OCR nuevo ni cambio del diario; proyecciónApp8440 conserva texto/layout/hash exactos. Fuente8archivos, dueñas118pass0skip. Sin modelo ni créditoH0675. Encuesta36/706/0, matriz3/11; C03 EN_CURSO.
 
 843 integrado: límite compartido de OperationResponse de 48000 unidades UTF-16; otros límites de 4096 y frames de 1 MiB intactos. Dueñas raíz 118 pass / 0 fail / 0 skip (70 Contracts, 27 diario, 21 integración). Full activo sesión33623, wrapper14332/PID32908 desde10:59:53UTC; 60 pins2a79567dd5b22be2ccd8ef39b8d284f3a182872f7c7cb39a3e5e0fad3c7a71ce. No fuente ni GPU durante Full. Replay del completion real y proyecciónApp844 preparados, sin ejecutar. Encuesta36/706/0, matriz3/11, H0675 abierto; C03 EN_CURSO.

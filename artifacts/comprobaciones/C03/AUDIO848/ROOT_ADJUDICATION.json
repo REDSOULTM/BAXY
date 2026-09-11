@@ -1,0 +1,552 @@
+{
+  "utc": "2026-09-11T12:14:15.382825+00:00",
+  "root_adjudicated": true,
+  "candidate": 843,
+  "panel_sha256": "4f4b23376fcc0ee0882d160b7cfb0ae75ddb99aa6d9becea5b507649f7781239",
+  "private_review_sha256": "4e68de223d243c47fd2a602ee982f7a668a930087fa7a76536f9bfaeeefa2a8e",
+  "journal_sha256": "032b37b5036925ec92eaa7c51c6dc6f82ea34b3034a6efdde147bf5f415e49f7",
+  "counts": {
+    "passed": 26,
+    "failed": 26,
+    "total": 52,
+    "historical_literals_passed": 21,
+    "historical_literals_failed": 14,
+    "development_variants_passed": 1,
+    "development_variants_failed": 11,
+    "boundaries_passed": 4,
+    "boundaries_failed": 1,
+    "coverage_added": 2
+  },
+  "credit_already_written": "ROOT_PARTIAL_CREDIT.json",
+  "cases": [
+    {
+      "case_id": "audio848-dev-up-01",
+      "turn_id": "t1",
+      "group": "relative_up",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Asks a redundant distinction instead of interpreting the explicit relative audio-output adjustment.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "audio848-dev-up-02",
+      "turn_id": "t2",
+      "group": "relative_up",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Dispatches only audio.status for a requested +12 adjustment; composition exhausts and no final is published.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "audio848-dev-down-01",
+      "turn_id": "t3",
+      "group": "relative_down",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Asks for amount although the literal explicitly gives nine points.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "audio848-dev-down-02",
+      "turn_id": "t4",
+      "group": "relative_down",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Explicit four-point decrease is rejected as invalid interpretation.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "audio848-dev-absolute-01",
+      "turn_id": "t5",
+      "group": "absolute",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Claims setting27percent without any audio operation; clarification facts do not authorize an effect claim.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "audio848-dev-absolute-02",
+      "turn_id": "t6",
+      "group": "absolute",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Asks to set11percent instead of executing the explicit fully specified request.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "audio848-dev-absolute-03",
+      "turn_id": "t7",
+      "group": "absolute",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Asks for a value although half of the volume scale is specified.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "audio848-dev-mute-01",
+      "turn_id": "t8",
+      "group": "mute",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Reports unsupported for a mute operation present in the catalog; no effect.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "audio848-dev-mute-02",
+      "turn_id": "t9",
+      "group": "mute",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Explicit mute request is rejected as invalid interpretation.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "audio848-dev-status-01",
+      "turn_id": "t10",
+      "group": "status",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Audio-output/percentage question is rejected as invalid interpretation.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "audio848-dev-status-02",
+      "turn_id": "t11",
+      "group": "status",
+      "kind": "variant",
+      "verdict": "fail",
+      "reason": "Default-output/mute question is rejected as invalid interpretation.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "audio848-dev-status-03",
+      "turn_id": "t12",
+      "group": "status",
+      "kind": "variant",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "H0027",
+      "turn_id": "t13",
+      "group": "relative_up",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "Useful request for the absent amount, but the preregistered relative adjustment was not executed and its completion/generalization is not established.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0028",
+      "turn_id": "t14",
+      "group": "relative_up",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "Asks for direction already supplied; no adjustment.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0310",
+      "turn_id": "t15",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0402",
+      "turn_id": "t16",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0436",
+      "turn_id": "t17",
+      "group": "relative_up",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "Asks for direction already supplied; no adjustment.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0308",
+      "turn_id": "t18",
+      "group": "relative_up",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "Asks for direction already supplied; no adjustment.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0357",
+      "turn_id": "t19",
+      "group": "relative_up",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "Reconfirms already requested increase without resolving the numeric adjustment.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0488",
+      "turn_id": "t20",
+      "group": "relative_up",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "Useful request for the absent amount, but no relative adjustment/completion/generalization established.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0465",
+      "turn_id": "t21",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "Provider applied30percent, but final repeats the command in imperative instead of reporting its result.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0695",
+      "turn_id": "t22",
+      "group": "relative_up",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "Asks for direction already supplied; no adjustment.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0058",
+      "turn_id": "t23",
+      "group": "relative_down",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "Asks for direction already supplied; no adjustment.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0294",
+      "turn_id": "t24",
+      "group": "relative_down",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "Useful request for the absent amount, but no relative adjustment/completion/generalization established.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0035",
+      "turn_id": "t25",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0086",
+      "turn_id": "t26",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0132",
+      "turn_id": "t27",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0233",
+      "turn_id": "t28",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0254",
+      "turn_id": "t29",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "Provider changed20to30; final falsely says it lowered volume.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0258",
+      "turn_id": "t30",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0338",
+      "turn_id": "t31",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0409",
+      "turn_id": "t32",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0471",
+      "turn_id": "t33",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0477",
+      "turn_id": "t34",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0501",
+      "turn_id": "t35",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "Asks for a number although maximum specifies100percent.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0524",
+      "turn_id": "t36",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0538",
+      "turn_id": "t37",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0640",
+      "turn_id": "t38",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "Asks for a number although half specifies50percent.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0684",
+      "turn_id": "t39",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0725",
+      "turn_id": "t40",
+      "group": "absolute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0168",
+      "turn_id": "t41",
+      "group": "status",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0331",
+      "turn_id": "t42",
+      "group": "status",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0383",
+      "turn_id": "t43",
+      "group": "status",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable.",
+      "survey_credit": true,
+      "verification_status": "covered"
+    },
+    {
+      "case_id": "H0505",
+      "turn_id": "t44",
+      "group": "status",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable.",
+      "survey_credit": true,
+      "verification_status": "covered"
+    },
+    {
+      "case_id": "H0154",
+      "turn_id": "t45",
+      "group": "mute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0189",
+      "turn_id": "t46",
+      "group": "mute",
+      "kind": "literal",
+      "verdict": "fail",
+      "reason": "Appropriate clarification of the unbound pronoun in a new session; positive mute action and its generalization not established.",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "H0549",
+      "turn_id": "t47",
+      "group": "mute",
+      "kind": "literal",
+      "verdict": "pass",
+      "reason": "Fresh verified product result matches the final value, mute state and requested scope; idempotent outcomes are described honestly where applicable. Remains open: fewer than two passing relevant variants for this specific behavior (absolute adjustment, mute effect or device identification).",
+      "survey_credit": false,
+      "verification_status": "open"
+    },
+    {
+      "case_id": "audio848-boundary-negation",
+      "turn_id": "t48",
+      "group": "negative",
+      "kind": "boundary",
+      "verdict": "pass",
+      "reason": "No mutation dispatch; response respects the negative/missing-reference/per-app/empty-confirmation boundary without inventing a target effect.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "audio848-boundary-range",
+      "turn_id": "t49",
+      "group": "out_of_range",
+      "kind": "boundary",
+      "verdict": "fail",
+      "reason": "Asks for a level without identifying that the supplied137percent is outside0–100; does not fulfill the range-boundary criterion.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "audio848-boundary-reference",
+      "turn_id": "t50",
+      "group": "missing_reference",
+      "kind": "boundary",
+      "verdict": "pass",
+      "reason": "No mutation dispatch; response respects the negative/missing-reference/per-app/empty-confirmation boundary without inventing a target effect.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "audio848-boundary-scope",
+      "turn_id": "t51",
+      "group": "wrong_scope",
+      "kind": "boundary",
+      "verdict": "pass",
+      "reason": "No mutation dispatch; response respects the negative/missing-reference/per-app/empty-confirmation boundary without inventing a target effect.",
+      "survey_credit": false,
+      "verification_status": null
+    },
+    {
+      "case_id": "audio848-boundary-confirmation",
+      "turn_id": "t52",
+      "group": "orphan_confirmation",
+      "kind": "boundary",
+      "verdict": "pass",
+      "reason": "No mutation dispatch; response respects the negative/missing-reference/per-app/empty-confirmation boundary without inventing a target effect.",
+      "survey_credit": false,
+      "verification_status": null
+    }
+  ],
+  "baseline_audio": {
+    "volumePercent": 31,
+    "muted": false
+  },
+  "last_verified_audio": {
+    "volumePercent": 100,
+    "muted": true
+  },
+  "cleanup_restoration_not_part_of_panel": true
+}

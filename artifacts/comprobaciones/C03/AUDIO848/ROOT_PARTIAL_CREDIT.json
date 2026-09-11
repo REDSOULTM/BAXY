@@ -1,0 +1,30 @@
+{
+  "utc": "2026-09-11T12:07:52.271256+00:00",
+  "root_adjudicated": true,
+  "ids": [
+    "H0383",
+    "H0505"
+  ],
+  "coverage_added": 2,
+  "basis": "Current literal audio.status executed, fresh verified result matches each final (volume100/unmuted). Two prior category variants ask volume and mute in English/reordered Spanish and passed according to inherited root568 adjudication. Currentstatus03 also passed. Device-name-specific literals remain open for an additional relevant variant.",
+  "current_journal_sha256": "032b37b5036925ec92eaa7c51c6dc6f82ea34b3034a6efdde147bf5f415e49f7",
+  "current_panel_sha256": "4f4b23376fcc0ee0882d160b7cfb0ae75ddb99aa6d9becea5b507649f7781239",
+  "prior_evidence": {
+    "campaign": "AUDIO848",
+    "source_candidate": 843,
+    "root_adjudication": "artifacts/comprobaciones/C03/AUDIO848/ROOT_PARTIAL_CREDIT.json",
+    "prior_category_campaign": "astra-survey-readonly568",
+    "prior_variant_ordinals": [
+      8,
+      9
+    ],
+    "prior_adjudication_sha256": "3c9dee8572c6d124dade3a8afbe2edc5401ce94185ed3787f4c30dc31966c644",
+    "current_additional_variant": "audio848-dev-status-03",
+    "ui_or_voice_credit": false
+  },
+  "counts_after": {
+    "covered": 38,
+    "open": 704,
+    "not_applicable": 0
+  }
+}

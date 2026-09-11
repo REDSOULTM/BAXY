@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-11T12:00:34.545591+00:00",
+  "exit_code": 0,
+  "stopped": false,
+  "pins_unchanged": true,
+  "terminal_records": 52,
+  "quality_adjudicated": false,
+  "success_count": null,
+  "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-app-open847-profile\\journal\\missions.jsonl",
+  "target_apps_closed_by_guard": false
+}

@@ -1048,6 +1048,7 @@ def _curated_domain_is_grounded(
 
     folded = _fold(text)
     if operation == "app.open":
+        folded = _strip_request_envelope(folded)
         applications = build_application_catalog_index(application_names)
         return (
             _authenticated_application_target(folded, applications) is not None
@@ -3408,7 +3409,7 @@ def _application_target_forms(
         punctuation_forms.append(without_punctuation)
 
     trailing = re.compile(
-        r"\s+(?:por favor|please|para mi|for me|ahora|now)$",
+        r"\s*[,;:]?\s+(?:por favor|please|para mi|for me|ahora|now)$",
         re.IGNORECASE,
     )
     execution_hint = re.compile(
@@ -4003,7 +4004,10 @@ def _authenticated_application_desired_open(
                 r"(?:abras|abran|inicies|inicien|lances|lancen)$"
             ),
         )
-        and not suffix
+        # A terminal courtesy is outside the app identity and does not add
+        # another effect. Keep every other suffix opaque (time, device,
+        # alternative targets and descriptive content still fail closed).
+        and (not suffix or _has(suffix, r"^(?:por favor|porfa|please)$"))
     )
     desired_running = (
         _has(prefix, r"^(?:get|keep)$") and _has(suffix, r"^(?:open|running|started)$")
@@ -4244,7 +4248,7 @@ _REQUEST_PREFIX = (
     rf"\s*[,;:.!?\-\u2013\u2014]+{_PREFIX_GAP}|"
     r"(?:puedes|podrias|can you|could you|would you)\s+|"
     # Speech discourse markers require punctuation so literal content stays intact.
-    rf"(?:a ver|antes que nada|che|oye|oiga|listen)\s*[,;:.!?\-\u2013\u2014]{_PREFIX_GAP}|"
+    rf"(?:a ver|antes que nada|che|oye|oiga|listen|dale)\s*[,;:.!?\-\u2013\u2014]{_PREFIX_GAP}|"
     rf"(?:por curiosidad|una duda|just curious|a question)"
     rf"\s*[,;:.!?\-\u2013\u2014]+{_PREFIX_GAP}|"
     rf"{_DISCOURSE_CLAUSE}\s*[,;:.!?\-\u2013\u2014]+{_PREFIX_GAP}|"

@@ -1,0 +1,15 @@
+{
+  "status": "sealed_not_executed",
+  "panel_parent": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio848-proposal\\revision1\\SEAL.json",
+  "panel_parent_sha256": "c1c69e6b4ab700c6f4bb7e2221e30ec3a9b0e7f11228548545971c4852e5d247",
+  "transport_seal_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio848-proposal\\revision1\\transport\\SEAL.json",
+  "transport_seal_sha256": "0cf41e20b1a7470c5721fe03581091d80f307a83577edfc91c0a7105e46314a4",
+  "positive_open_literals": 35,
+  "variants": 12,
+  "boundaries": 5,
+  "session_new_controls": 52,
+  "root_exact_transport_verified": true,
+  "coverage_added": 0,
+  "original848_preserved": true,
+  "correction": "Four unmarked limits remain limits; replaced in35positive literals by four actual positive open requirements."
+}
