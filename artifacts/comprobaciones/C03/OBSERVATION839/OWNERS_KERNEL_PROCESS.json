@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-11T09:45:45.516296+00:00",
+  "pid": 19032,
+  "wrapper_pid": 18592,
+  "command": [
+    "C:/Users/usuario/.dotnet/dotnet.exe",
+    "test",
+    "tests/Baxy.Kernel.Tests/Baxy.Kernel.Tests.csproj",
+    "-c",
+    "Release",
+    "--nologo",
+    "-v:quiet",
+    "-p:UseSharedCompilation=false",
+    "-nodeReuse:false"
+  ],
+  "source_pins_sha256": "6623fc5e85403552b5bf2ee941468b391ce132cf86351e314a59f00ec4bb6c7a"
+}

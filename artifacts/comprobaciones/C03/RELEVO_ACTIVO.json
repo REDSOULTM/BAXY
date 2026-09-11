@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "8326/8,8361/8 con7timeouts,8384/8 con1timeout. Ambos controles sin ganancia neta vs832: framing cerrado, compositor sin cambios. DPI835 integrado como candidato837:46pinsb0ea5aea, dueñas/Fast sesión97344; luego captura837 yFull. Encuesta36/706/0,H0675abierto,C03active.",
-  "continuation": "Full837 has NOT started. Root owners47/0skip and Fast0 collectedfb3ea7; native20checks/0fail collected19ea01, full physical crop2564x1320 and context restored. Reproduce OCR sensitive-read handler blocker839 before accumulated Full. Agentcapture826 owns red test/proposal; process_counts812 prepares834 runner. No new framing controls.",
+  "checkpoint": "Full839 collected0:4735.NET pass/1 aggregate omission +16 non-disjoint opt-ins;12907Python pass/3skips/466subtests. Supporting source829/837/839 adopted,50 pins unchanged. Real834 resolve succeeds; focus action_failed before capture/OCR. H0675 open; survey36/706/0; C03 active.",
+  "continuation": "Continue read-only diagnosis of real834 focus failure; no blind retry. Real binaries/source62 sealed in REAL_OBSERVATION834/PREREG839.json. No model or Full running. Publish839 supporting source with dueñas/Full receipts; preserve main/user files.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,7 +34,7 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "f70ea94c7ef04a2b623cf3be5c1bfd2218d59385",
-  "workStatus": "dpi837_owners_fast_native_green_ocr839_diagnosis_before_full",
+  "workStatus": "full839_passed_real834_focus_diagnosis",
   "goalStatusNote": "All C03 remains active;36covered/706open and49/50 process panel; generic screen prerequisites not H0675 completion.",
   "previousGoalTurnClassification": "progress",
   "publishedEvidenceCommit": "c5d0f476facd538b1226c5d3c4c0ced22a1ee7ec",
@@ -48,79 +48,40 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Published validated WIP829; root DPI probe proved coordinate mismatch; isolated and repaired driver self-parent false busy guard without changing product source.",
+  "previousGoalTurnClassificationReason": "Completed and collected accumulated Full839, adopted supporting repairs within their tested scope, and executed first real Core stages with honest focus failure before capture.",
   "activeValidation": null,
   "objectiveFile": "C:\\Users\\usuario\\.codex\\attachments\\310753b7-9a38-4a57-951e-007fdcf7693a\\goal-objective.md",
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
   "ownerMethodology": "Model-specific native template and documented presets first, same complete cases for every arm; add BAXY one layer at a time and attribute first lost behavior. API use alone does not imply native isolation. Optimize whole categories without quality loss.",
   "lastValidation": {
     "status": "complete",
-    "full_passed": true,
+    "candidate": 839,
     "exit_code": 0,
-    "sessionId": 77847,
-    "collectionChunk": "f2dfa4",
-    "receipt": "OBSERVATION829/UNICODE_RETRY2/FULL_EXIT.json",
-    "result": "OBSERVATION829/UNICODE_RETRY2/FULL_RESULT.json",
+    "sessionId": 43122,
+    "collectionChunk": "75af48",
+    "receipt": "OBSERVATION839/FULL_EXIT.json",
+    "result": "OBSERVATION839/FULL_RESULT.json",
     "dotnet": {
-      "passed": 4715,
+      "passed": 4735,
       "failed": 0,
-      "aggregate_skipped": 1,
-      "printed_opt_in_skips_nondisjoint": 16,
-      "suites": [
-        {
-          "suite": "Baxy.Contracts.Tests.dll",
-          "failed": 0,
-          "passed": 60,
-          "skipped": 0,
-          "total": 60,
-          "literal": "Correctas! - Con error:     0, Superado:    60, Omitido:     0, Total:    60, Duración: 227 ms - Baxy.Contracts.Tests.dll (net10.0)"
-        },
-        {
-          "suite": "Baxy.Integration.Tests.dll",
-          "failed": 0,
-          "passed": 3433,
-          "skipped": 1,
-          "total": 3434,
-          "literal": "Correctas! - Con error:     0, Superado:  3433, Omitido:     1, Total:  3434, Duración: 8 m 40 s - Baxy.Integration.Tests.dll (net10.0)"
-        },
-        {
-          "suite": "Baxy.Kernel.Tests.dll",
-          "failed": 0,
-          "passed": 161,
-          "skipped": 0,
-          "total": 161,
-          "literal": "Correctas! - Con error:     0, Superado:   161, Omitido:     0, Total:   161, Duración: 1 s - Baxy.Kernel.Tests.dll (net10.0)"
-        },
-        {
-          "suite": "Baxy.Providers.Windows.Tests.dll",
-          "failed": 0,
-          "passed": 584,
-          "skipped": 0,
-          "total": 584,
-          "literal": "Correctas! - Con error:     0, Superado:   584, Omitido:     0, Total:   584, Duración: 37 s - Baxy.Providers.Windows.Tests.dll (net10.0)"
-        },
-        {
-          "suite": "Baxy.Setup.Tests.dll",
-          "failed": 0,
-          "passed": 477,
-          "skipped": 0,
-          "total": 477,
-          "literal": "Correctas! - Con error:     0, Superado:   477, Omitido:     0, Total:   477, Duración: 1 m 17 s - Baxy.Setup.Tests.dll (net10.0)"
-        }
-      ]
+      "skipped_aggregate": 1,
+      "total": 4736
     },
+    "dotnet_opt_in_not_disjoint": 16,
     "python": {
       "passed": 12907,
       "failed": 0,
       "skipped": 3,
       "subtests_passed": 466,
-      "seconds": 682.4,
-      "literal": "12907 passed, 3 skipped, 466 subtests passed in 682.40s (0:11:22)"
+      "duration_seconds": 653.33,
+      "duration_log": "0:10:53",
+      "log_line": 261,
+      "summary_exact": "12907 passed, 3 skipped, 466 subtests passed in 653.33s (0:10:53)",
+      "subtest_accounting": "466 passed subtests are reported separately, not added to 12907 passed tests."
     },
-    "source_pins_unchanged": true,
-    "adopted": false
+    "source_pins_unchanged": true
   },
-  "activeReadOnlyAgent": "capture826_provenance: OCR839 red test/proposal isolated; process_counts812: real834 staged runner preparation",
+  "activeReadOnlyAgent": "capture826_provenance: external bounded window.focus failure diagnosis",
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
     "name": "process824",
@@ -956,7 +917,7 @@
     "owners_reference_skip": 1,
     "receipt": "PROCESS_NARRATOR823/ROOT_VALIDATION.json"
   },
-  "publishedCandidateCommit": "5ab3c01a3c842213bf83f0ba530580c4f121ea60",
+  "publishedCandidateCommit": "80f57efe33700c987a6774ab9d52f6bab7bda821",
   "publishedRunnerCommit": "ef88d4c9b891889e127e25c95a1df1086ff50775",
   "latestOcrRun": {
     "name": "OCR832",

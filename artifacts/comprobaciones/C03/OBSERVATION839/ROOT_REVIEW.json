@@ -1,0 +1,56 @@
+{
+  "utc": "2026-09-11T09:50:53.469158+00:00",
+  "source_pins_sha256": "6623fc5e85403552b5bf2ee941468b391ce132cf86351e314a59f00ec4bb6c7a",
+  "source_pins_count": 50,
+  "root_reviewed_all_four_file_diff": true,
+  "root_owners": {
+    "integration_passed": 35,
+    "integration_failed": 0,
+    "integration_skipped": 0,
+    "integration_milliseconds": 191,
+    "kernel_passed": 161,
+    "kernel_failed": 0,
+    "kernel_skipped": 0,
+    "kernel_seconds": 1,
+    "fast_exit": 0,
+    "release_seconds": 9.33,
+    "collection_session": 22509,
+    "collection_chunk": "c3fdfd"
+  },
+  "red_test": {
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "stage": "handler discards verified OCR due to false mutation requirement",
+    "private_log_sha256": "64e7a7eabf4d43039d13f85735bb02d95a4a6565036e5d8e0b34718916b50ff0",
+    "private_red_patch_sha256": "550636d10f2fafd074cf964292529ff6251d67cc2234f457b728cc02192fd4fd"
+  },
+  "agent_green": {
+    "handler_passed": 16,
+    "catalog_passed": 37,
+    "failed": 0,
+    "skipped": 0,
+    "log_sha256": "d5cad63354ec20783544a1e8f96000ea5285bbbc22524b43976fbb368f8ad8f7"
+  },
+  "patch_sha256": "9886dbb05f78e6991c1acfc19c36de517b3efae74efb7e0efbd2761cefc43c5d",
+  "adopted": false,
+  "full_in_progress": {
+    "sessionId": 43122,
+    "utc": "2026-09-11T09:48:26.867439+00:00",
+    "pid": 32700,
+    "wrapper_pid": 22176,
+    "command": [
+      "C:\\Users\\usuario\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.EXE",
+      "-NoProfile",
+      "-File",
+      "scripts/test_source_quality.ps1",
+      "-Mode",
+      "Full",
+      "-QualityPython",
+      "C:/Users/usuario/AppData/Local/BAXYQuality/source-quality-v1/Scripts/python.exe"
+    ],
+    "source_pins_sha256": "6623fc5e85403552b5bf2ee941468b391ce132cf86351e314a59f00ec4bb6c7a"
+  },
+  "source_intent": "Single catalog property replaces risk-as-mutation inference. Only OCR overrides conservative default. Privacy/confirmation, exact operation, Verified/result/error requirements unchanged. No parallel operation registry or new handler.",
+  "coverage_added": 0
+}

@@ -1,0 +1,25 @@
+{
+  "utc": "2026-09-11T10:17:56.177861+00:00",
+  "adopted_supporting_source": true,
+  "scope": "Generic capture provenance/physical pixels, retained OCR layout and bounded projection, active-window OCR predecessor, sensitive verified read semantics. Source829/837/839 accumulated candidate.",
+  "source_pins_sha256": "6623fc5e85403552b5bf2ee941468b391ce132cf86351e314a59f00ec4bb6c7a",
+  "full_result_sha256": "3d689ec68ce69a3c00824ac523b25ac67349febe09aa6c3801b82e6e8828d7e1",
+  "evidence": [
+    "OBSERVATION839/ROOT_REVIEW.json",
+    "OBSERVATION837/NATIVE_RESULT.json",
+    "OCR_COMPOSER832/ROOT_ADJUDICATION.json"
+  ],
+  "limits": [
+    "No new semantic success from tests.",
+    "OCR832 remains 6/8; controls836/838 closed without improvement.",
+    "Full environmental/opt-in skips are not passes.",
+    "Real834 focus failed before capture/OCR; neither H0675 nor original product route is complete."
+  ],
+  "survey": {
+    "covered": 36,
+    "open": 706,
+    "not_applicable": 0
+  },
+  "H0675_closed": false,
+  "C03_status": "EN_CURSO"
+}

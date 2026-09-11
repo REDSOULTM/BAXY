@@ -1,0 +1,64 @@
+{
+  "utc": "2026-09-11T10:17:56.188360+00:00",
+  "status": "focus_failed_before_capture",
+  "stages": [
+    {
+      "stage": "resolve",
+      "status": "taskmgr_not_foreground_root_selects_next_stage",
+      "runner_exit_code": 0,
+      "collection_chunk": "92ad4b",
+      "report_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real834-private\\runner834\\resolve-c79bdde8f87a4c049dbea9d5d6c2a590\\REPORT.json",
+      "report_sha256": "6ef95b43d08c28a2e458ccfa8b25ca6aa0f743a25dfa6c93e549262ae43a2b8c",
+      "core_exit_code": 0,
+      "pins_unchanged_after": true,
+      "failure": null,
+      "operations": [
+        {
+          "operation": "window.resolve",
+          "response_sha256": "dfb79eb0ac2d0c21792da1be2ac02e2f790d8ae804fc0b606f084f16d26211e4"
+        },
+        {
+          "operation": "window.active",
+          "response_sha256": "2d29aa1a054c2e6cfcfedb07002fd0d4bd55ffe83590c72116488f59734a6300"
+        }
+      ]
+    },
+    {
+      "stage": "focus",
+      "status": "stopped",
+      "runner_exit_code": 1,
+      "collection_chunk": "44fdfc",
+      "report_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-real834-private\\runner834\\focus-e685b59221ae4edaaf11ab0acc7d49b2\\REPORT.json",
+      "report_sha256": "e093d38133469afc2c771dc04843985c3a8e527fad896ed1a8d77e8573239a6b",
+      "core_exit_code": 0,
+      "pins_unchanged_after": true,
+      "failure": {
+        "type": "RuntimeError",
+        "message": "operation_stopped:window.focus:action_failed"
+      },
+      "operations": [
+        {
+          "operation": "window.resolve",
+          "response_sha256": "17295ec442571dc9f3cc2b7eab851b5d8adc2661e9dd57f61c2a42229eb31865"
+        },
+        {
+          "operation": "window.focus",
+          "response_sha256": "200be32565d9ec3eb59b7472f3c988c7f94ac1c13ed10f672d39b6590ae77eed"
+        }
+      ]
+    }
+  ],
+  "root_read_chunks": [
+    "d3f45c",
+    "f393b8",
+    "5c9704"
+  ],
+  "finding": "Core resolves one Taskmgr window (PID8204, normal, not foreground). Fresh window.focus returns failed/verified=false/action_failed. Existing window was not opened by this probe. Cause below Execute boolean unresolved; no elevation diagnosis inferred.",
+  "capture_executed": false,
+  "ocr_executed": false,
+  "model_invoked": false,
+  "original_product_request_executed": false,
+  "H0675_closed": false,
+  "next": "Read-only diagnosis of the exact window.focus owner and prior evidence; no blind repeat or invented success.",
+  "private_content_policy": "Raw window inventory, requests, responses and stderr remain only in the dedicated local profile."
+}

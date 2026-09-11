@@ -1,0 +1,23 @@
+{
+  "utc": "2026-09-11T09:45:01.882491+00:00",
+  "base_commit": "80f57efe33700c987a6774ab9d52f6bab7bda821",
+  "changed_files": [
+    "src/Baxy.Kernel/Operations/ProductOperationSchema.cs",
+    "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+    "src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs",
+    "tests/Baxy.Integration.Tests/ExternalCapabilityHandlerTests.cs"
+  ],
+  "source_pins_count": 50,
+  "source_pins_sha256": "6623fc5e85403552b5bf2ee941468b391ce132cf86351e314a59f00ec4bb6c7a",
+  "adopted": false,
+  "scope": "Catalog-owned effect-verification requirement separates verified OCR observation from mutations while preserving PrivacySensitive policy and confirmation. No adapter effect fabricated, model/prompt/backend/fixture change.",
+  "parent_candidate": "OBSERVATION837",
+  "capture837_source_pins_unchanged": true,
+  "full_required": "Accumulated829/837/839 candidate before adoption; Full837 never launched.",
+  "coverage_added": 0,
+  "survey_counts": {
+    "covered": 36,
+    "open": 706,
+    "not_applicable": 0
+  }
+}

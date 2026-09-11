@@ -1037,7 +1037,8 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "ocr.read.windows.capture.binding.v1",
             ToolExposure.Public,
-            "Ejecuta OCR local sobre una captura identificada y un language pack disponible."),
+            "Ejecuta OCR local sobre una captura identificada y un language pack disponible.",
+            requiresObservedEffect: false),
         Descriptor(
             "office.document.create",
             Schema(
@@ -1733,8 +1734,9 @@ public static class ProductCatalog
         string risk,
         string verifierContractId,
         ToolExposure exposure,
-        string description) =>
-        new(name, schema, risk, verifierContractId, exposure, description);
+        string description,
+        bool? requiresObservedEffect = null) =>
+        new(name, schema, risk, verifierContractId, exposure, description, requiresObservedEffect);
 
     private static OperationArgumentsSchema EmptySchema() => Schema([], []);
 

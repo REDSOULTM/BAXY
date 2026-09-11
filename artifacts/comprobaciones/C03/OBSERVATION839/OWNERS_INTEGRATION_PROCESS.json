@@ -1,0 +1,19 @@
+{
+  "utc": "2026-09-11T09:45:02.140396+00:00",
+  "pid": 29444,
+  "wrapper_pid": 18592,
+  "command": [
+    "C:/Users/usuario/.dotnet/dotnet.exe",
+    "test",
+    "tests/Baxy.Integration.Tests/Baxy.Integration.Tests.csproj",
+    "-c",
+    "Release",
+    "--nologo",
+    "-v:quiet",
+    "--filter",
+    "FullyQualifiedName~ExternalCapabilityHandlerTests|FullyQualifiedName~Goal05LyingExecutorTests|FullyQualifiedName~CaptureHandlerTests|FullyQualifiedName~C03OcrObservationProjectionTests",
+    "-p:UseSharedCompilation=false",
+    "-nodeReuse:false"
+  ],
+  "source_pins_sha256": "6623fc5e85403552b5bf2ee941468b391ce132cf86351e314a59f00ec4bb6c7a"
+}

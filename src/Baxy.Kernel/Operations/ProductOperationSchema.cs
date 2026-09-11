@@ -403,7 +403,8 @@ public sealed class ProductOperationDescriptor
         string risk,
         string verifierContractId,
         ToolExposure toolExposure,
-        string description)
+        string description,
+        bool? requiresObservedEffect = null)
     {
         if (!Baxy.Contracts.ContractValidator.IsOperationName(name))
         {
@@ -437,6 +438,7 @@ public sealed class ProductOperationDescriptor
         VerifierContractId = verifierContractId;
         ToolExposure = toolExposure;
         Description = description;
+        RequiresObservedEffect = requiresObservedEffect ?? (risk != Baxy.Contracts.OperationRisks.ReadOnly);
     }
 
     public string Name { get; }
@@ -450,6 +452,9 @@ public sealed class ProductOperationDescriptor
     public ToolExposure ToolExposure { get; }
 
     public string Description { get; }
+
+    // Privacy risk and requiring an observed mutation are separate contract facts.
+    public bool RequiresObservedEffect { get; }
 
     private static bool IsCanonicalContractId(string? value)
     {

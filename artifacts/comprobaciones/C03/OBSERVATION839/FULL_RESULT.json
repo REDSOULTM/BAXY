@@ -1,0 +1,223 @@
+{
+  "utc": "2026-09-11T10:17:56.176333+00:00",
+  "exit_code": 0,
+  "session_id": 43122,
+  "collection_chunk": "75af48",
+  "full_receipt_sha256": "e83d3b4335f00d2b89f58686ce85d1f413bd5b2d18d172616ca4963d4e23dd9c",
+  "log_sha256": "89c63d902d8edbe8b5582ba42536b08a30ee5e16f0623882053785badd8ecb52",
+  "source_pins_sha256": "6623fc5e85403552b5bf2ee941468b391ce132cf86351e314a59f00ec4bb6c7a",
+  "source_pins_count": 50,
+  "source_pins_unchanged": true,
+  "dotnet": {
+    "suites": [
+      {
+        "suite": "Baxy.Contracts.Tests.dll",
+        "passed": 60,
+        "failed": 0,
+        "skipped_aggregate": 0,
+        "total": 60,
+        "duration_log": "224 ms",
+        "framework_log": "net10.0",
+        "log_line": 41,
+        "summary_exact": "Correctas! - Con error:     0, Superado:    60, Omitido:     0, Total:    60, Duración: 224 ms - Baxy.Contracts.Tests.dll (net10.0)",
+        "opt_in_omission_lines_non_disjoint": 0
+      },
+      {
+        "suite": "Baxy.Integration.Tests.dll",
+        "passed": 3442,
+        "failed": 0,
+        "skipped_aggregate": 1,
+        "total": 3443,
+        "duration_log": "8 m 50 s",
+        "framework_log": "net10.0",
+        "log_line": 58,
+        "summary_exact": "Correctas! - Con error:     0, Superado:  3442, Omitido:     1, Total:  3443, Duración: 8 m 50 s - Baxy.Integration.Tests.dll (net10.0)",
+        "opt_in_omission_lines_non_disjoint": 10
+      },
+      {
+        "suite": "Baxy.Kernel.Tests.dll",
+        "passed": 161,
+        "failed": 0,
+        "skipped_aggregate": 0,
+        "total": 161,
+        "duration_log": "1 s",
+        "framework_log": "net10.0",
+        "log_line": 63,
+        "summary_exact": "Correctas! - Con error:     0, Superado:   161, Omitido:     0, Total:   161, Duración: 1 s - Baxy.Kernel.Tests.dll (net10.0)",
+        "opt_in_omission_lines_non_disjoint": 1
+      },
+      {
+        "suite": "Baxy.Providers.Windows.Tests.dll",
+        "passed": 595,
+        "failed": 0,
+        "skipped_aggregate": 0,
+        "total": 595,
+        "duration_log": "38 s",
+        "framework_log": "net10.0",
+        "log_line": 73,
+        "summary_exact": "Correctas! - Con error:     0, Superado:   595, Omitido:     0, Total:   595, Duración: 38 s - Baxy.Providers.Windows.Tests.dll (net10.0)",
+        "opt_in_omission_lines_non_disjoint": 4
+      },
+      {
+        "suite": "Baxy.Setup.Tests.dll",
+        "passed": 477,
+        "failed": 0,
+        "skipped_aggregate": 0,
+        "total": 477,
+        "duration_log": "1 m 19 s",
+        "framework_log": "net10.0",
+        "log_line": 78,
+        "summary_exact": "Correctas! - Con error:     0, Superado:   477, Omitido:     0, Total:   477, Duración: 1 m 19 s - Baxy.Setup.Tests.dll (net10.0)",
+        "opt_in_omission_lines_non_disjoint": 1
+      }
+    ],
+    "totals_from_suite_aggregate_lines": {
+      "passed": 4735,
+      "failed": 0,
+      "skipped_aggregate": 1,
+      "total": 4736
+    },
+    "opt_in_omission_lines_count": 16,
+    "opt_in_omission_lines": [
+      {
+        "suite": "Baxy.Integration.Tests.dll",
+        "log_line": 44,
+        "text": "Omitidas CompareLegacyAndCurrentJsonHotPaths [1 ms]"
+      },
+      {
+        "suite": "Baxy.Integration.Tests.dll",
+        "log_line": 45,
+        "text": "Omitidas CompareLegacyAndCurrentCoreJsonlTransport [< 1 ms]"
+      },
+      {
+        "suite": "Baxy.Integration.Tests.dll",
+        "log_line": 46,
+        "text": "Omitidas EveryExactRuntimeMessageIsAuditedByTheRealGuiInputPipeline [18 ms]"
+      },
+      {
+        "suite": "Baxy.Integration.Tests.dll",
+        "log_line": 47,
+        "text": "Omitidas SequentialVersusOverlappedRuntimeVerificationAndCoreHello [< 1 ms]"
+      },
+      {
+        "suite": "Baxy.Integration.Tests.dll",
+        "log_line": 48,
+        "text": "Omitidas OptInRealRuntimeTraversesShellMindAndCoreUsingReadOnlyOperations [< 1 ms]"
+      },
+      {
+        "suite": "Baxy.Integration.Tests.dll",
+        "log_line": 49,
+        "text": "Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds(\"abre Steam\",\"Steam\") [< 1 ms]"
+      },
+      {
+        "suite": "Baxy.Integration.Tests.dll",
+        "log_line": 50,
+        "text": "Omitidas ModelAuthoredNotepadAliasOpensThroughRealPipeline [< 1 ms]"
+      },
+      {
+        "suite": "Baxy.Integration.Tests.dll",
+        "log_line": 51,
+        "text": "Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds(\"abre Bloc de notas\",\"Bloc de notas\") [< 1 ms]"
+      },
+      {
+        "suite": "Baxy.Integration.Tests.dll",
+        "log_line": 52,
+        "text": "Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds(\"abre Discord si está instalado\",\"Discord\") [< 1 ms]"
+      },
+      {
+        "suite": "Baxy.Integration.Tests.dll",
+        "log_line": 53,
+        "text": "Omitidas HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds(\"abre Steam pero no maximices ni lances juegos\",\"Steam\") [< 1 ms]"
+      },
+      {
+        "suite": "Baxy.Kernel.Tests.dll",
+        "log_line": 61,
+        "text": "Omitidas CompareMemoryStreamAndArrayBufferWriterImplementations [< 1 ms]"
+      },
+      {
+        "suite": "Baxy.Providers.Windows.Tests.dll",
+        "log_line": 66,
+        "text": "Omitidas NativeAotCoreAudioJsonlRoundTripReplaysWithoutAnotherEffectAndRestoresBaseline [1 ms]"
+      },
+      {
+        "suite": "Baxy.Providers.Windows.Tests.dll",
+        "log_line": 67,
+        "text": "Omitidas WifiStatusReadsActualWindowsStateTwice [< 1 ms]"
+      },
+      {
+        "suite": "Baxy.Providers.Windows.Tests.dll",
+        "log_line": 68,
+        "text": "Omitidas DxgiAndPdhProduceOneCoherentLocalSnapshot [< 1 ms]"
+      },
+      {
+        "suite": "Baxy.Providers.Windows.Tests.dll",
+        "log_line": 69,
+        "text": "Omitidas ActualIpListReturnsStableParseableAddressesWithoutInterfaceNames [< 1 ms]"
+      },
+      {
+        "suite": "Baxy.Setup.Tests.dll",
+        "log_line": 76,
+        "text": "Omitidas InstallationMoveWorksWhileAnExecutableRunsFromTheRoot [< 1 ms]"
+      }
+    ],
+    "opt_in_accounting": "The 16 Omitidas lines are non-disjoint diagnostics, not 16 additional aggregate skips or passes. Do not add them to the aggregate total of 4735 passed / 0 failed / 1 skipped. The log does not identify which line maps to the single aggregate skip."
+  },
+  "python": {
+    "passed": 12907,
+    "failed": 0,
+    "skipped": 3,
+    "subtests_passed": 466,
+    "duration_seconds": 653.33,
+    "duration_log": "0:10:53",
+    "log_line": 261,
+    "summary_exact": "12907 passed, 3 skipped, 466 subtests passed in 653.33s (0:10:53)",
+    "subtest_accounting": "466 passed subtests are reported separately, not added to 12907 passed tests."
+  },
+  "stages_reported_passed": [
+    {
+      "stage": "powershell-source",
+      "log_line": 3
+    },
+    {
+      "stage": "python-ruff",
+      "log_line": 6
+    },
+    {
+      "stage": "python-compileall",
+      "log_line": 8
+    },
+    {
+      "stage": "field-ui-eslint",
+      "log_line": 10
+    },
+    {
+      "stage": "field-ui-tsc-app",
+      "log_line": 12
+    },
+    {
+      "stage": "field-ui-tsc-node",
+      "log_line": 14
+    },
+    {
+      "stage": "dotnet-format",
+      "log_line": 16
+    },
+    {
+      "stage": "dotnet-build-release",
+      "log_line": 36
+    },
+    {
+      "stage": "dotnet-tests",
+      "log_line": 79
+    },
+    {
+      "stage": "python-tests",
+      "log_line": 262
+    }
+  ],
+  "independent_summary_sha256": "dc4d1c5b36fef0c51356b22e7a7018371e7f8dc8d0b98ac460ea034ea44783d6",
+  "root_review": "Root read suite totals and literal summaries, checked full receipt and hashes, collected the completed process. Environmental and opt-in omissions remain explicit; no failed tests.",
+  "coverage_added": 0,
+  "H0675_closed": false,
+  "C03_closed": false
+}

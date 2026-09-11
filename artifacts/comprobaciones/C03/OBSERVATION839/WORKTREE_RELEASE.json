@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-11T09:46:47.023665+00:00",
+  "released_worktree": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dpi835-worktree",
+  "files_preserved_and_matching_canonical": {
+    "src/Baxy.Providers.Windows/Capture/WindowsScreenshotProvider.cs": "1c3837598450ed85d21b30d00f020764142bbe220cf9487665af0edf14024503",
+    "tests/Baxy.Providers.Windows.Tests/WindowsScreenshotProviderTests.cs": "2adb1d28bf83397de8fb91a19bfc444ea8cd4a8f5efe8a388075d8594ef69d27",
+    "src/Baxy.Kernel/Operations/ProductOperationSchema.cs": "1eef995242f9e8dabbcb4216a5361cd9ddf584b25274abe62894e41433179617",
+    "src/Baxy.Kernel/Operations/ProductCatalog.cs": "283522d9b304943980be7c529cb96aa224aaa81a3178ada4d463ffc9a0062710",
+    "src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs": "8e24f9b565387f3486c9f1737d2b0416663a2193d4dfd9b59f99ecb4cd0e0d51",
+    "tests/Baxy.Integration.Tests/ExternalCapabilityHandlerTests.cs": "7762b45d6b3fe22ec231e708eaa49c9938979a9f1d3ead2c5937218ed401ae12"
+  },
+  "private_snapshots": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-observation839-private\\worktree-source",
+  "combined_patch_sha256": "66f4c1a82d399e2fb3095e69cc4e9f5c47b4b589808c5a75757a479f6994bade",
+  "canonical_sources_unchanged": true,
+  "only_owned_six_paths_were_modified": true
+}

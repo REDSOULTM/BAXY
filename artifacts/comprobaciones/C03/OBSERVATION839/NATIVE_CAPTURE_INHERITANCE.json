@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-11T09:45:01.924171+00:00",
+  "receipt": "../OBSERVATION837/NATIVE_RESULT.json",
+  "receipt_sha256": "0f10e89cce4fc4ecbe71a34db1c6b9a1b11facb970364b293038428963b140ee",
+  "native_probe_source_unchanged": true,
+  "all46_capture837_pins_unchanged": true,
+  "root_collection_chunk": "19ea01",
+  "passed": 20,
+  "failed": 0,
+  "scope": "Capture geometry/thread/context/hash only; all candidate837 source bytes unchanged. OCR handler839 requires its own integration/native validation."
+}

@@ -122,7 +122,7 @@ internal sealed class ExternalCapabilityHandler(
         }
         catch (Exception)
         {
-            bool effectMayHaveOccurred = Definition.Risk != OperationRisk.ReadOnly;
+            bool effectMayHaveOccurred = Definition.ProductDescriptor!.RequiresObservedEffect;
             return OperationOutcome.Failure(
                 "external_provider_failed",
                 effectMayHaveOccurred: effectMayHaveOccurred,
@@ -143,7 +143,7 @@ internal sealed class ExternalCapabilityHandler(
                 causeCode: effectMayHaveOccurred ? "external_effect_ambiguous" : null);
         }
 
-        if (Definition.Risk != OperationRisk.ReadOnly && !receipt.EffectObserved)
+        if (Definition.ProductDescriptor!.RequiresObservedEffect && !receipt.EffectObserved)
         {
             return OperationOutcome.Failure(
                 "external_verification_failed",
