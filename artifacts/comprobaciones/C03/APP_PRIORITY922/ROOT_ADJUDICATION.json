@@ -1,0 +1,137 @@
+{
+  "schema": "c03-root-adjudication-v1",
+  "utc": "2026-09-11T18:36:31.7148394Z",
+  "candidate": "989679d45d8cdec930a11108063332e08ae6d835",
+  "source_candidate": "81774290615815caea6e0585156e3b5b24e61fd2",
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "panel_seal_sha256": "53f870daa197582f647eab57f8732bdeef7ca3f9991c1283be656f8923805179",
+  "manifest_sha256": "e6e91a6c5dd6a207257147e8ac38dba709a7540bdfe51b210d58075f724eedd2",
+  "cases": [
+    {
+      "case_id": "H0706",
+      "index": 0,
+      "verdict": "fail",
+      "reason": "Acción solicitada verificada sobre ventana preexistente, sin respuesta final útil: fallo de composición. No se atribuye creación de proceso a esta tanda.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": "5d64886a-6e0d-4bff-9644-22498154fa00"
+    },
+    {
+      "case_id": "app-priority921-boundary-prohibition",
+      "index": 1,
+      "verdict": "pass",
+      "reason": "Respeta prohibición explícita y responde fielmente; ningún efecto de apertura.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Entendido, no iniciaré Paint.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "app-priority921-boundary-later-withdrawal",
+      "index": 2,
+      "verdict": "fail",
+      "reason": "Respeta ausencia de efecto pero responde limitación de capacidad infundada a una retirada de solicitud.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Este pedido está fuera de lo que puedo hacer en este equipo.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "app-priority921-boundary-quotation",
+      "index": 3,
+      "verdict": "fail",
+      "reason": "No ejecuta la cita, pero invierte su significado: la frase citada pide abrir una aplicación.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Pide consultar información, no abrir una aplicación.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "app-priority921-boundary-narration",
+      "index": 4,
+      "verdict": "fail",
+      "reason": "No ejecuta una orden actual, pero contradice el relato: el usuario dijo que abrió Firefox antes de cambiar de idea.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Ahh! Entiendo, entonces no abriste Firefox después de todo. ¿Quieres que te ayude con algo más?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": null
+    },
+    {
+      "case_id": "app-priority921-boundary-missing-target",
+      "index": 5,
+      "verdict": "fail",
+      "reason": "No abre destino arbitrario, pero afirma limitación sobre una aplicación sin identificar en vez de pedir identidad.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Esa aplicación está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false,
+      "invocation_ids": null
+    }
+  ],
+  "executed": 6,
+  "passed": 1,
+  "failed": 5,
+  "not_executed": 0,
+  "coverage_added": 0,
+  "covered": 69,
+  "open": 673,
+  "not_applicable": 0,
+  "registry_before_sha256": "1caa213d00fd76e0203e6dc3b0899e540c052eba068ef13d79d2ff88a870141c",
+  "registry_after_sha256": "cba8b2bf643d6375ad692146e45bc369b57014b53ef16200811ae24849002693",
+  "effect_scope": "Only app.open H0706 completed verified; Settings PID31016/HWND788958 observed preexisting in920 and reused, alreadyRunning=true. No opening effect for five boundaries. Startup memory.status is not a requested application effect.",
+  "prior_variants": [
+    "app-open-next-notepad-05",
+    "app-open-next-paint-08"
+  ],
+  "prior_variant_scope": "Previously passed ordinary opening variants854; no current variant executions and no credit without current useful literal.",
+  "ui_or_voice_credit": false,
+  "session_id": 59793,
+  "collection_chunk": "2c4b53",
+  "pins_unchanged": true,
+  "resources": {
+    "utc": "2026-09-11T15:29:30.87926-03:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2415.140625,
+    "seconds": 44.5,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  }
+}

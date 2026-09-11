@@ -1,3 +1,5 @@
+Continuación922 vigente: seis casos,1pass5fail,0créditos. H0706 apertura verificada sobre Configuración preexistente pero composición fallida; open actualizado. Diagnóstico924 en process_counts812. Reparar primera causa antes de reejecutar sólo literal pertinente. Apps44/web43;69cubiertos673open. Fuente914 intacta, sesión59793 recogida2c4b53, ninguna GPU922 pendiente. Plan923 externo sólo observabilidad5IDs sin adoptar;918/919 reservas web. No suites por dueño. Detalle al final del CHECKPOINT y APP_PRIORITY922/ROOT_ADJUDICATION.json.
+
 # C03 — continuación vigente después de916
 
 El goal está activo. El dueño ordenó omitir suites automáticas, Fast y Full y conservar ejecuciones reales selladas para acreditar encuesta. Compilación necesaria está autorizada. También autorizó cerrar aplicaciones para liberar RAM; no repetir consultas resueltas. Máximo2 subagentes y raíz único escritor canónico/GPU/commit.
@@ -14,7 +16,7 @@ Recoger propuestas externas918 de apps_intent852 (C03-url-question918-proposal, 
 
 - Rama Goal-c03; fuente914 publicada81774290615815caea6e0585156e3b5b24e61fd2. Commits documentales posteriores no cambian fuente. Main intacto5f572ee1b48cb5e2543ee5e06510e51057c9c845.
 -69/742 cubiertos,673 abiertos,0NA;41 altas confirmadas24h más2 actualizaciones cuya primera fecha no se distingue. Recalcular ventana móvil tras19:45UTC de11septiembre.0/35categorías y C03matriz3/11.
-- Registro privado C:/Users/usuario/AppData/Local/BAXY/C03-survey-requirements336-private/requirements.jsonl, SHA1caa213d00fd76e0203e6dc3b0899e540c052eba068ef13d79d2ff88a870141c; última mutación916:+H0490/H0622/H0267 yH0389causaopen; H0397 sigueopen.
+- Registro privado C:/Users/usuario/AppData/Local/BAXY/C03-survey-requirements336-private/requirements.jsonl, SHAcba8b2bf643d6375ad692146e45bc369b57014b53ef16200811ae24849002693; última mutación916:+H0490/H0622/H0267 yH0389causaopen; H0397 sigueopen.
 - effect_intent.py SHA7f3b86c30bf527af5f46520d356a63fd81993fba6950a8a17792a0567c3524a9. __main__.py88276c0394352cb40dc529062b565ff4812d286a720dc9e23a9fdfad3160b1c3;llm.py487d79f477d41d40bf3d9bcc5652b4697a1df8c27af4a2502379e168c1554c6b.
 -910 añade llevame sólo al lector local de navegación y retira siete expresiones duplicadas.914 exige que navegador/browser sea objeto de abrir; «in the browser» no crea segunda app.open. No _OPENglobal, provider nuevo ni respuesta fija.
 - Build904 real: C03-web-confirmation904-private/BUILD_EXIT.json, build/shutdown0,211c15. BUILD_STATE source_sha256875ce5baebf97beaac911ba137a5a0025cb3123b92dec03e39fc668fd9d5b2d0.910/914 sólo Python: binarios904 sin cambio. No presentar suites omitidas como verdes.

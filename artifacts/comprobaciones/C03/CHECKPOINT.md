@@ -1,10 +1,10 @@
 # C03 — cobertura vigente
 
-**69/742 cubiertos, 673 abiertos, 0 no aplican; 41 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Hay dos actualizaciones adicionales de casos cubiertos cuya fecha de primera acreditación no se distingue. Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: 1caa213d00fd76e0203e6dc3b0899e540c052eba068ef13d79d2ff88a870141c. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
+**69/742 cubiertos, 673 abiertos, 0 no aplican; 41 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Hay dos actualizaciones adicionales de casos cubiertos cuya fecha de primera acreditación no se distingue. Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: cba8b2bf643d6375ad692146e45bc369b57014b53ef16200811ae24849002693. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
 
 El dueño reanudó el goal y aclaró el método: omitir suites automáticas, Fast y Full; mantener ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. El bloqueo anterior de alcance está resuelto. También autorizó cerrar aplicaciones para liberar RAM. No se cuentan pruebas omitidas como aprobadas.
 
-Fuente vigente: 81774290615815caea6e0585156e3b5b24e61fd2 (914), publicada. Última ejecución916:4válidas/1fallida,+3créditos,5límites noejecutados. Apps44 abiertos precede ahora web43. Los tramos siguientes conservan historia; novedades al final.
+Fuente vigente: 81774290615815caea6e0585156e3b5b24e61fd2 (914), publicada. Última ejecución922:1válida/5fallidas,0créditos; seis casos ejecutados. Apps44 abiertos precede ahora web43. Los tramos siguientes conservan historia; novedades al final.
 
 Últimos tres tramos:
 
@@ -162,7 +162,7 @@ Candidato b0621ae5537912420c3d71b88a8f0ec34da37524, fuente914 sin cambios. Revis
 
 +H0490 yH0622 escritos covered en70be8f: Google y consultas completas exactas, efectos verificados y respuestas útiles, con dos variantes pertinentes912. +H0267 en c91e5c: gmail.com navega y comunica fielmente redirección pública a workspace.google.com/intl/es-419/gmail/. Par URL: ES909 y EN916, reparada914 y ahora verificada. W3C conserva host/ruta standards y añade parámetro de desafío; acredita navegación al destino, no lectura/carga de contenido ni superación de ese desafío. Se preserva ese límite en adjudicación y registro.
 
-H0389 «andá a github.com» falla interpretación sin operación; causaopen actualizada, no se reintenta. La guarda rechaza sin confirmar y prueba5límites noejecutados. ROOT_ADJUDICATION SHA30f365ecb740d72b64a56b2ade8be73dcf08f00ec3fab41ff0bcf6164db95d84; registro1caa213d00fd76e0203e6dc3b0899e540c052eba068ef13d79d2ff88a870141c.
+H0389 «andá a github.com» falla interpretación sin operación; causaopen actualizada, no se reintenta. La guarda rechaza sin confirmar y prueba5límites noejecutados. ROOT_ADJUDICATION SHA30f365ecb740d72b64a56b2ade8be73dcf08f00ec3fab41ff0bcf6164db95d84; registrocba8b2bf643d6375ad692146e45bc369b57014b53ef16200811ae24849002693.
 
 Estado:69/742cubiertos,673abiertos,0NA;41altasconfirmadas24h y2 primerasfechas adicionales indistinguibles;0/35categorías,C03 3/11. Ventana recalcular después19:45UTC. Este turno:11ejecuciones en906/909/912/916,7válidas4fallidas,+3créditos y2causas literales abiertas actualizadas. Se publicaron dos correcciones Python y ambas recuperaron su variante; sin suites/Fast/Full.
 
@@ -181,3 +181,14 @@ Diagnóstico920 SHA4dff7be5bedcc673b5339d156a4ccce7717912060cabc46978a3e736e102f
 Fixture actual b1d221: SystemSettings preexistente PID31016,creación2026-09-11T01:41:34.1938189Z,HWND788958,títuloConfiguración; no atribuir su existencia al futuro comando. CalculatorApp35076 desde16:23:03.4101928Z tieneHWND0 ahora: no reconstruye el efecto incierto885, no relanzado. Observación privada ENVIRONMENT920 preservada.
 
 918 URLpregunta y919panel6 siguen reservas web, no adoptados/ejecutados. Root leyó parche9186e1fd8: excepciona '?' sólo dentro de URL exacta observada verified+succeeded para el chequeo interrogativo; resto validadores originales. Apps44 sigue primero delante deweb43.69/742,673abiertos,0NA;41altasconfirmadas24h,0/35categorías,C03 3/11. Sin suites/Fast/Full, sin permiso pendiente.
+
+
+## Tramo922 — Configuración ejecutada, respuesta fallida
+
+Panel921 sellado53f870daa197582f647eab57f8732bdeef7ca3f9991c1283be656f8923805179; candidato989679d45d8cdec930a11108063332e08ae6d835, fuente914 intacta, build904 reutilizado. Se ejecutaron6casos:1pass,5fail,0noejecutados,0créditos. Exit0 sólo indica recorrido completo, no calidad. Sesión59793 recogida2c4b53, pins intactos y sin violaciones.
+
+H0706 sí ejecutó app.open completed/verified inv5d64886a-6e0d-4bff-9644-22498154fa00 sobre Configuración PID31016/HWND788958 alreadyRunning=true; coincide con ventana preexistente documentada920, no nueva creación. No hubo respuesta final útil: composition_failed/no_response;recovery:no_response;retry_exhausted. Se escribió open y causa en552937. Pares854 siguen válidos pero no sustituyen el literal actual.
+
+La prohibición de Paint pasó. Retirada, cita, relato y destino ausente no produjeron apertura, pero respondieron respectivamente incapacidad infundada, significado invertido, contradicción del relato y limitación sin identificar app. No se acreditan por mera ausencia de efecto. Adjudicación APP_PRIORITY922/ROOT_ADJUDICATION.json SHA78e0ddf3087249e9e6654c9d4b6793796c4f36e43b14fd534d09ebc5728a51ce.
+
+44,5s; VRAM3497,56MiB y RAM2415,14MiB, por separado frente4096. Encuesta69/742,673abiertos,0NA;41altas confirmadas24h,0/35categorías cerradas. Apps44 sigue antes de web43. No suites/Fast/Full por orden vigente. Próximo: diagnóstico924 del rechazo de respuesta H0706 y reparación mínima; no repetir panel entero.923 conserva plan privado de observabilidad de identidad para5IDs, sin código.918/919 web reservados. Goal activo; ninguna consulta pendiente ni bloqueo de RAM.

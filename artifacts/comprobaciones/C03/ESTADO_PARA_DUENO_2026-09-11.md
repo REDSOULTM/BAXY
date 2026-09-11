@@ -1,3 +1,11 @@
+# Último resultado922
+
+Seguimos en **69/742 cubiertos,673 abiertos y0 no aplican**. Configuración se abrió usando la ventana existente, pero BAXY no publicó una respuesta final útil. Su estado continúa abierto y ya tiene esta causa registrada.
+
+La tanda ejecutó6casos:1válido y5fallidos, sin créditos nuevos. Respetó las cinco restricciones de acción; cuatro respuestas sobre ellas fueron incorrectas. Se está diagnosticando el rechazo de la respuesta de Configuración para una reparación puntual.
+
+Duración44,5s. Pico VRAM3497,56MiB; pico RAM2415,14MiB, cada uno frente4096MiB. Sin cortes ni violaciones de recursos. Ritmo41acreditaciones confirmadas24h,0/35categorías cerradas y3/11filas C03. Aplicaciones44abiertos sigue antes que web43. No hay bloqueo ni decisión pendiente del dueño. Suites/Fast/Full omitidos por instrucción, no aprobados.
+
 # Estado para el dueño — 11 de septiembre
 
 La encuesta subió a **69/742 cubiertos**, con673 abiertos y0 no aplican. Se acreditaron buscar recetas de pasta en Google, buscar teclados mecánicos en Google y abrir Gmail. Cada literal tiene ejecución útil y fiel y dos variantes pertinentes verificadas.
