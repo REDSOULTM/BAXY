@@ -1,3 +1,11 @@
+# Continuación después de930/932 — vigente
+
+Fuente932 publicada5d7fed5124af3394299d39effeb6c087a829ec00. effect_intent.pyff4b81a0cd7d38a42f77b80d63b6e5f924ddbb992937505b87c555be17b3397d;__main__.py9297cf1b7c08b39378e645ef5afa3f0a5037a51d9b6e38f7abd2fd7449e828d75e8;llm.py92696245f75eac6aba2dd54dcc2271082f0993b98f569c233c226ede7f7a58166c8. Registroactual1ae78cd8f28c52d397672f9e0cabe90609da3cd23dbd74e16639a580bc39205c,69/742covered673open0NA,41altas24h,0/35categorías. Apps44>web43.
+
+930terminó11casos4pass7fail0créditos,session6853recogida9e51fd. No efectos app, sólomemory.statusinicio. ROOT_ADJUDICATION38c21f756371882528f9c8825ac1ecf9a9fe9227b8ed6241ae620e7b525e9452. Nuevos cinco motivosopen escritosdf5313. Audit929capturócatalogo293completo:Firefox/Steelunresolved;ENNotepad resueltowindows.notepad pero dominio posteriorretiró.931reporte4638b7b6195e8c9d2f01bd9475dcc7f6f1897faed664907a86432e3c8c7973fa localiza coma de sufijo en _open_application_spans.932añadecomaopcional antes espacioobligatorio,1línea; patch e9167bba37cd394ad484b96664fef9e84819686866ffc2a4c9edae0acabb64b4. Pendienteejecuciónexitosa, no suites por dueño.
+
+Próximo: recoger933 de apps_intent852 C03-terminal933-diagnosis/REPORT.md. Decide si H0688 «abrí una terminal» tiene reparación/catálogo actualizado demostrados respecto854TAIL para panel conENNotepadreparada y límites. No repetir los5fallidos930 sin causaspropias reparadas. H0706Settings sigueincierto925; Calculator/Explorer/Steamfuera.927/919webreservas; no GPUviva. Manifest930completo584/18/5 sirvecomoestructura: actualizar fuente/head/panel/runner y no sobrescribir. Detalleexacto enúltimostres tramosCHECKPOINT. Resto inferior es historia heredada, supersedido donde contradiga esta cabecera.
+
 # C03 — continuación después de925
 
 Goal activo. El dueño ordenó omitir suites automáticas/Fast/Full y conservar ejecuciones reales selladas y adjudicación contra hechos. Compilación necesaria permitida. Cierre de apps autorizado sin nuevas consultas; conservar trabajo y efectos inciertos. Raíz único escritor/GPU/commit, máximo2subagentes. No hay decisiones pendientes ni bloqueo de RAM.
