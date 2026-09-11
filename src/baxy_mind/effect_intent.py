@@ -12144,7 +12144,7 @@ def _open_application_spans(text: str) -> tuple[tuple[int, str], ...]:
             rf"(?:(?:aplicacion|application|app|programa|program)\s+)?"
             rf"(?P<body>{_KNOWN_APPLICATION}"
             rf"(?:\s*,\s*(?:el|la|the)?\s*{_KNOWN_APPLICATION})*)"
-            r"(?:\s+(?:por favor|please|ahora|now))?[\s?!.]*$"
+            r"(?:,?\s+(?:por favor|please|ahora|now))?[\s?!.]*$"
         ),
     )
     if request is None or _is_negated_match(text, request):
