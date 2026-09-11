@@ -1,6 +1,12 @@
+## Último tramo —881 cerrado,885 continuación real
+
+881 terminó8/8,6pass2fail,0créditos: H0353/H0406 útiles pero una variante pertinente de cada conducta falló. RegistrySHA54272ed34131a478a59e025864e663f991e4078c67867a69ee5f3956e7048577; causas actualizadas352c68. VRAM3497,56MiB/RAM2429,65MiB/41,875s, guardas verdes, sin suites. No repetir entero. Diagnóstico886 distingue lector de presencia y premisa ficticia perdida antes de reconfirmar.
+
+885exit2 antes0admisiones: perfil anidado no admitido por WindowsPrivateStorage. Runner885revision2 cambia únicamente rutas a nuevas y profilehijodirecto. Retry1 session29968 confirmado runtime.ready, conservar todosrecibos. Agent888 prepara parche effect_intent.py externo, agent887 preparaGoogle siguiente. No integrar fuente durantecorrida. Candidate97b9d5f5, sin nueva fuente.
+
 # C03 — activo: paneles reales, sin suites
 
-C03 incompleto y goal reanudado. El dueño aprobó omitir suites automáticas, Fast y Full, manteniendo ejecuciones reales selladas para acreditar encuesta. Bloqueo anterior resuelto; no repetir consulta. Guardas y criterio de crédito conservados. RAM inicial observada2855MiB <4000MiB; se pidió al dueño liberar aplicaciones, sin cerrar las suyas. Un agente prepara runner885 externo para877. Taskmgr conservado; BAXY cerrado para uso manual.
+C03 incompleto y goal reanudado. El dueño aprobó omitir suites automáticas, Fast y Full, manteniendo ejecuciones reales selladas para acreditar encuesta. Bloqueo anterior resuelto; no repetir consulta. Guardas y criterio de crédito conservados. Dueño autorizó cerrar aplicaciones para liberar recursos; tras su intervención RAM4545MiB permitió arrancar. No se cerró ninguna aplicación por raíz. Un agente prepara runner885 externo para877. Taskmgr conservado; BAXY cerrado para uso manual.
 
 Fuente:871aliasSettings publicado92e7;872Google y875artículos0731;876desiderativos904b;878rectificación positiva48260462.883 integra pregunta nativa del appId faltante usando método existente, sólo app.open único/positivo/sincompound/mismo operando no resuelto/confirmableapp.open/ceroefectos. Revisiónc72049/3418de/957b86/954bc4, integracióne1b0b2. __main__SHA875911e24697a08417389d18b761568ae89680d60fa5dc1f3cfc5defd5e365fa;effectSHAf91790dacfc210e7e51d316894cb2c3f4ce0b32ad7fb55a83e5317b080f4c276. Fuente883+evidencia publicada en0a945cb407d3f3aaede2796c8924a6630bfd392b. No pruebas/éxito funcional/créditos nuevos. Worktrees871/872/876/878/883 retirados tras integrar y preservar parches; no repetir.
 
@@ -20,3 +26,6 @@ Preservar .codex/config.toml,AGENTS.md,C03_ASTRA_AUTORIDAD.md,C03_RESPUESTA_VERA
 
 Auditoría de continuidad: el bloqueo anterior fue resuelto por autorización explícita y reactivación del goal. No heredar la auditoría de tres turnos. Crear manifiesto881 nuevo al HEAD real, conservar CANDIDATE_NO_EXECUTION.json, ejecutar869 tras cumplir4000MiB RAM libre. El turno anterior fue acuerdo de metodología, sin progreso funcional; este tramo prepara ejecución autorizada.
 
+
+
+885 continuación terminó9/9 en66,922s:1pass8fail,0créditos; VRAM3497,56MiB/RAM2398,76MiB, sin violaciones. H0165/H0183 causas escritas49dc01, registro84c452c4391988bc504a11fa9dd8af029554752433b2c44bda9f8a2eda3a166f. H0183 app.open3cb73ca5-77ab-4802-8f56-8fe73b526ba8 con efecto incierto: no reintentar. Paint de la variante fue abierto/verificado, pero composición falló; cierre normal autorizado solicitado por raíz aed8fa, PID33076/HWND4983644/creation2026-09-11T16:22:45.8377761Z. No repetir885entero.888+889 integrados con revisión manual, sin suites, para consulta de presencia y premisa explícita ficticia; panel890 dirigido en preparación.64/742,678abiertos,0NA;36altas confirmadas24h,0/35categorías;matriz3/11.887Google sóloPLAN: confirmación segura pendiente, alcance3, ninguna infraestructura nueva ni sello ejecutable.

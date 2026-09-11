@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-11T16:23:44.0054114Z",
+  "source_candidate": "97b9d5f5931454f552a96c9c4cc3d95985a0d0ad",
+  "failed_run": "APP_UNEXECUTED885",
+  "exit_code": 2,
+  "controls": 0,
+  "admissions": 0,
+  "turn_terminals": 0,
+  "environment_diagnostic": "runtime_not_ready",
+  "cause": "Runner PROFILE was nested under PRIVATE. WindowsPrivateStorage.PreparePrivateDataRoot requires a direct child of LOCALAPPDATA/BAXY, source lines55-75. Empty profile and startup error before core/commands agree.",
+  "repair": "External runner revision2 changes only PRIVATE/PUBLIC receipt paths and uses a direct-child PROFILE. Original runner, receipts, failed empty profile and panel877 preserved.",
+  "runner_sha256": "16caf45f82ebfba4a32101edf5acd26d8bd3c59308c80cd5c1c7441d685e2cd8",
+  "retry": "APP_UNEXECUTED885_RETRY1",
+  "retry_session": 29968,
+  "retry_runtime_ready": true,
+  "product_source_changed": false,
+  "tests_run": false
+}

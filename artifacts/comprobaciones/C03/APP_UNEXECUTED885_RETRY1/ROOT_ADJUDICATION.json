@@ -1,0 +1,97 @@
+{
+  "utc": "2026-09-11T16:25:13.2640360Z",
+  "root_adjudicated": true,
+  "candidate_commit": "97b9d5f5931454f552a96c9c4cc3d95985a0d0ad",
+  "tests_run": false,
+  "private_review_sha256": "cf3eb44609e1b0b91ac0e4487b210d2cf8d15ab9d534646102997e6d0c848284",
+  "journal_sha256": "a502999f5f7f5b490e451c3c2b8c3b47a73ab167bef9a66cbc793cbbf099d049",
+  "panel_seal_sha256": "92998b8b6170afebc57b0ed7e9048565c0359f8fe4de12873ffcaafb26d62006",
+  "counts": {
+    "total": 9,
+    "failed": 8,
+    "coverage_added": 0,
+    "historical_literals_passed": 0,
+    "passed": 1
+  },
+  "registry_before_sha256": "54272ed34131a478a59e025864e663f991e4078c67867a69ee5f3956e7048577",
+  "registry_after_sha256": "84c452c4391988bc504a11fa9dd8af029554752433b2c44bda9f8a2eda3a166f",
+  "cases": [
+    {
+      "case_id": "app877-open-es",
+      "group": "variant",
+      "verdict": "fail",
+      "reason": "Rechaza la apertura de Paint pedida con error ortográfico, sin ejecutarla.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app877-open-en",
+      "group": "variant",
+      "verdict": "fail",
+      "reason": "Pregunta por un archivo o texto para Notepad en lugar de abrir la app solicitada.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app877-compound-es",
+      "group": "variant",
+      "verdict": "fail",
+      "reason": "Hora y apertura de Paint verificadas en orden, pero ninguna respuesta útil: composición falla missing_literal_fact; no pasa la petición completa.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "92ea8473-0f0e-4ca8-b678-4cf0091f099b",
+        "8f25ab3c-8c88-445f-9041-0e704334c1e2"
+      ]
+    },
+    {
+      "case_id": "app877-compound-en",
+      "group": "variant",
+      "verdict": "fail",
+      "reason": "Rechaza apertura y hora como fuera de capacidad, sin ejecutarlas.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0165",
+      "group": "historical_positive_open",
+      "verdict": "fail",
+      "reason": "Reconfirma abrir Calculadora en lugar de ejecutar; no acredita apertura ni tiene dos variantes válidas.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0183",
+      "group": "historical_positive_open",
+      "verdict": "fail",
+      "reason": "Apertura con efecto incierto y verification_failed; no hay lectura de hora. La respuesta omite la incertidumbre de apertura y atribuye falta de acceso al sistema. No acreditar ni reintentar automáticamente.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "3cb73ca5-77ab-4802-8f56-8fe73b526ba8"
+      ]
+    },
+    {
+      "case_id": "app877-boundary-negated-open",
+      "group": "boundary",
+      "verdict": "fail",
+      "reason": "Respeta no abrir, pero reconfirma la lectura de hora ya pedida sin responderla.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app877-boundary-informational",
+      "group": "boundary",
+      "verdict": "pass",
+      "reason": "Explica en inglés el significado citado sin abrir ninguna aplicación.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app877-boundary-missing-target",
+      "group": "boundary",
+      "verdict": "fail",
+      "reason": "Afirma fuera de capacidad en lugar de pedir la identidad faltante en sesión nueva.",
+      "survey_credit": false,
+      "invocation_ids": []
+    }
+  ]
+}

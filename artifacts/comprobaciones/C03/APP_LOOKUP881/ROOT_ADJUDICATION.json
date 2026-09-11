@@ -1,0 +1,88 @@
+{
+  "utc": "2026-09-11T16:17:47.8336905Z",
+  "root_adjudicated": true,
+  "candidate_commit": "97b9d5f5931454f552a96c9c4cc3d95985a0d0ad",
+  "tests_run": false,
+  "private_review_sha256": "032952b0de35c990e186560182938f741ad7a74d60a26a71f55812c2a5505f45",
+  "journal_sha256": "1dcd9c5a2d767c04267b9ae13a7e0c4e2f42e489187e4a2d1d018eb2539bf33b",
+  "panel_seal_sha256": "e9f1885eb5dea73eb5d76625352d9f39046954c7f2abe82d4d4f33952fadce04",
+  "counts": {
+    "total": 8,
+    "failed": 2,
+    "coverage_added": 0,
+    "passed": 6,
+    "historical_literals_passed": 2
+  },
+  "registry_before_sha256": "ddc2fa026e3f38e1b7c48303c05791aa7c5747d9bfd18a80cd59e3f561849842",
+  "registry_after_sha256": "54272ed34131a478a59e025864e663f991e4078c67867a69ee5f3956e7048577",
+  "cases": [
+    {
+      "case_id": "app-lookup869-variant-presence-es",
+      "group": "installed_app_lookup",
+      "verdict": "fail",
+      "reason": "No consulta el catálogo y no resuelve si Paint figura instalado.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-lookup869-variant-presence-en",
+      "group": "installed_app_lookup",
+      "verdict": "pass",
+      "reason": "Consulta app.installed verificada para Notepad; respuesta coincide con installed:false observado por el catálogo.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "3c92c4f1-59ff-4b81-898f-4638213d0617"
+      ]
+    },
+    {
+      "case_id": "app-lookup869-variant-fiction-es",
+      "group": "explicitly_fictional_application",
+      "verdict": "fail",
+      "reason": "Reconfirma abrir la app pese a la premisa explícita de ficción; no responde útilmente a ella.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-lookup869-variant-fiction-en",
+      "group": "explicitly_fictional_application",
+      "verdict": "pass",
+      "reason": "Declina abrir el destino ficticio sin efectos ni afirmar una inspección inexistente.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0353",
+      "group": "installed_app_lookup",
+      "verdict": "pass",
+      "reason": "Consulta de Configuración útil y respaldada por app.installed verificado; falta una segunda variante válida de consulta.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "676ea571-6bd8-4873-bbad-f5ffc0245e80"
+      ]
+    },
+    {
+      "case_id": "H0406",
+      "group": "explicitly_fictional_application",
+      "verdict": "pass",
+      "reason": "Respuesta útil a la inexistencia declarada por el usuario, sin efectos; falta una segunda variante válida de esa conducta.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-lookup869-boundary-information",
+      "group": "informational_boundary",
+      "verdict": "pass",
+      "reason": "Explicación conceptual útil sin inventario ni efectos.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-lookup869-boundary-fiction-narrative",
+      "group": "fiction_narrative_boundary",
+      "verdict": "pass",
+      "reason": "Respuesta conversacional sobre el cuento sin convertirlo en una orden.",
+      "survey_credit": false,
+      "invocation_ids": []
+    }
+  ]
+}

@@ -8,7 +8,7 @@ Web y apps empatan con46 abiertos. Web864 terminó sus52 casos sin crédito nuev
 
 La continuación de apps terminó24/24 en88,25s sin exceder recursos:3497,56MiB de VRAM y2490,64MiB de RAM del árbol. Spotify reutilizó una ventana existente. Explorer produjo un efecto incierto: no se atribuye éxito ni se reintenta automáticamente. El audio continúa restaurado a31%, sin silencio.
 
-El candidato anterior860 pasó3583 pruebas dueñas, cero fallos y cero omisiones, más estática y compilación Release. El Full843 histórico aprobó4754 pruebas.NET y12907 Python, con una omisión agregada.NET y tres Python, además de466 subpruebas aprobadas. No se cuentan las omisiones como aprobaciones ni se atribuye ese Full al Python posterior. Falta el Full final.
+El candidato anterior860 pasó3583 pruebas dueñas, cero fallos y cero omisiones, más estática y compilación Release. El Full843 histórico aprobó4754 pruebas.NET y12907 Python, con una omisión agregada.NET y tres Python, además de466 subpruebas aprobadas. No se cuentan las omisiones como aprobaciones ni se atribuye ese Full al Python posterior. El Full final se omite por decisión posterior del dueño.
 
 H0675, OCR y nuevos providers siguen aparcados. El Administrador de tareas se conserva como lo dejaste. C03 sigue en curso; main y tus cambios se conservan. La [tabla de categorías del checkpoint](CHECKPOINT.md) está ordenada por abiertos.
 
@@ -26,3 +26,9 @@ Cuatro fallos de apps compartían una pregunta redundante sobre si abrirlas. Aho
 
 Reanudación autorizada: el dueño aceptó omitir suites automáticas, Fast y Full y mantener los paneles reales de encuesta. La duda de alcance queda resuelta. Próximo paso869/881 sobre candidato actual; se prepara885 para877 en paralelo. RAM libre observada2855MiB frente a4000MiB de arranque: se solicitó liberar aplicaciones, sin cerrar ninguna del dueño. Cobertura64/742,678abiertos,0NA;0/35categorías; último cómputo24h36altas confirmadas a15:42UTC. Ninguna suite omitida se declara aprobada.
 
+
+
+881: ocho casos ejecutados, seis respuestas válidas y dos variantes fallidas; los dos literales útiles siguen abiertos por falta de generalización. Cobertura64/742,678abiertos,0NA;0/35categorías;36altas confirmadas24h al último recuento. VRAM3497,56MiB y RAM2429,65MiB frente a4096MiB;41,875s. No suites/Fast/Full.885 no admitió casos por una ruta de perfil incorrecta del runner; se corrigió sólo esa ruta y su continuación está en marcha. Causas escritas por case_id; no se repite881 completa.
+
+
+885 continuación terminó9/9 en66,922s:1pass8fail,0créditos; VRAM3497,56MiB/RAM2398,76MiB, sin violaciones. H0165/H0183 causas escritas49dc01, registro84c452c4391988bc504a11fa9dd8af029554752433b2c44bda9f8a2eda3a166f. H0183 app.open3cb73ca5-77ab-4802-8f56-8fe73b526ba8 con efecto incierto: no reintentar. Paint de la variante fue abierto/verificado, pero composición falló; cierre normal autorizado solicitado por raíz aed8fa, PID33076/HWND4983644/creation2026-09-11T16:22:45.8377761Z. No repetir885entero.888+889 integrados con revisión manual, sin suites, para consulta de presencia y premisa explícita ficticia; panel890 dirigido en preparación.64/742,678abiertos,0NA;36altas confirmadas24h,0/35categorías;matriz3/11.887Google sóloPLAN: confirmación segura pendiente, alcance3, ninguna infraestructura nueva ni sello ejecutable.

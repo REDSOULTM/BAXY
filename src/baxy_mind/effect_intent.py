@@ -3803,11 +3803,17 @@ def resolve_application_installed_name(
         ),
         (
             r"^(?:verifica|verificar|confirma|confirmar|comprueba|comprobar|"
-            r"averigua|averiguar|checkea|chequea|check|verify|confirm|see|"
-            r"find\s+out|dime|tell\s+me)\s+(?:si|if|whether)\s+"
+            r"averigua|averiguar|checkea|chequea|fijate|fijese|mira|revisa|"
+            r"check|verify|confirm|see|find\s+out|dime|tell\s+me)\s+"
+            r"(?:si|if|whether)\s+"
             r"(?:(?:tengo|tienes|tiene|tenemos|i\s+have|we\s+have)\s+)?"
             r"(?P<target>.+?)\s+"
-            r"(?:figura\s+entre\s+(?:las\s+)?aplicaciones\s+instaladas|"
+            r"(?:(?:figura|aparece)\s+(?:entre|en)\s+(?:las\s+)?"
+            r"(?:aplicaciones|apps)\s+(?:instaladas|de\s+(?:este|mi|el)\s+"
+            r"(?:equipo|pc|ordenador|computador))|"
+            r"(?:exists|appears|is\s+listed)\s+(?:among|in)\s+(?:the\s+)?"
+            r"(?:installed\s+(?:apps|applications)|(?:apps|applications)\s+"
+            r"on\s+(?:this|my|the)\s+(?:pc|computer|machine))|"
             r"(?:esta|is)\s+(?:disponible\s+como\s+(?:programa\s+)?"
             r"instalad[oa]|present\s+in\s+(?:my\s+|the\s+)?installed\s+"
             r"apps?|instalad[oa]|installed)|instalad[oa]|installed)"
@@ -3880,6 +3886,16 @@ def resolve_application_installed_name(
             "notepad",
         } and catalog_keys & {"bloc de notas", "notepad"}:
             return "windows.notepad"
+
+    # A pronoun without catalog identity is not an application-name query.
+    # Keep it unresolved rather than asking the provider about a literal "it".
+    if _has(
+        forms[-1][0],
+        r"^(?:(?:esta|esa|aquella|this|that)\s+"
+        r"(?:app|aplicacion|application|programa|program)|"
+        r"esto|eso|esta|esa|aquella|it|this|that|them|esas|aquellas)$",
+    ):
+        return None
 
     # The provider's schema accepts at most 256 UTF-8 bytes and independently
     # verifies both presence and absence.  Reject clause syntax, control
@@ -7724,6 +7740,7 @@ def _is_direct_request(text: str) -> bool:
         r"recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|play|tune|"
         r"pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
         r"consulta|consultar|comprueba|comprobar|checkea|chequea|averigua|averiguar|"
+        r"(?:fijate|fijese)(?=\s+si\b)|"
         r"find\s+out|inspect|inspecciona|give|prepara|prepare|resolve|"
         r"cierra|cerra|cerrar|close|envia|enviar|enviale|enviales|"
         r"manda|mandar|mandale|mandales|"
@@ -8980,6 +8997,8 @@ def _strict_catalog_request(
         r"inventario\s+de\s+aplicaciones\s+(?:de\s+)?inicio|"
         r"software\s+local|local\s+software\s+inventory|"
         r"figura\s+en\s+(?:el\s+)?software|"
+        r"(?:figura|aparece|exists|appears|listed)\s+(?:entre|en|among|in)\s+"
+        r"(?:(?:las|the|installed)\s+)?(?:aplicaciones|apps|applications)\b|"
         r"menu\s+inicio|start\s+menu\s+apps?)\b",
     )
     generic_installed_inventory_query = request_observation and _has(
