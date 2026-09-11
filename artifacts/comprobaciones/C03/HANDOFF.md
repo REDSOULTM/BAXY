@@ -1,3 +1,15 @@
+## Tramos937–940 — negativa verificable según nota original del dueño
+
+937 REPORT SHA bc9cb2daae571a53ed7df042ba90cfb05ca38e59f6c30cd923fd644a06b177c5 no recupera la observación descartada en los fallos antiguos de Calculator/Settings/Explorer. Propone retención privada, pero no demuestra12 desbloqueos: no se construye infraestructura ni se reintentan efectos inciertos.
+
+938 REPORT SHA b54f264a2c75d62fe242273b46512574a8d46541f90ca540b791b2fc0abad6d9 distingue tres pérdidas de operación y destinos sin identidad disponible; no justifica parche común de apertura ni alias improvisados.
+
+Raíz084634 verificó la nota original de H0503: «Debe responder honestamente que no puede abrirla si se verifica que no existe/no se encuentra; no fingir éxito.» Su marca positiva se conserva y no exige fingir apertura. Los fallos930 quedan intactos; una futura negativa sólo será válida con consulta actual observada. app.installed devuelve installed=false/Verified=true con autoridad de catálogo real; root74085d/b5e8af lee el camino. No se infiere ausencia física por nombre extraño ni por snapshot930.
+
+939 agente apps_intent852 prepara reparación mínima en worktree externo, sólo effect_intent.py/__main__.py, para lectura previa cuando la identidad de apertura no se resuelve. El resolver de apertura admite coincidencia aproximada: no enviar desconocidos hacia efectos ni construir dependencia automática app.installed→app.open. Si el catálogo devuelve identidad aproximada, aclarar sin abrir. Aún NO hay parche adoptado.
+
+940 agente prepare934 prepara propuesta sellada externa: H0503 original,2 variantes nuevas ES/EN sin declarar ficción y5límites. Candidato pendiente; sin ejecución ni créditos anticipados. Root revisará parche/propuesta antes de decidir.71/742,671open,0NA;43altas24h,0/35categorías; fuente publicada76a6c094 y última corrida919 cerrada.
+
 ## Tramo919 — búsqueda Google acreditada después de927
 
 71/742 cubiertos,671 abiertos,0 no aplican;43 altas confirmadas24h,0/35 categorías cerradas.6 casos ejecutados,4válidos/2fallidos,+H0397 escrito al verificar efecto y respuesta. Navegación a https://www.google.com/search?q=toreo completed/verified inva5c2c6d4-954f-4306-b005-030b701a1d54; final «Confirmado, se navegó a https://www.google.com/search?q=toreo.». Pares pertinentes Google912 se referencian sin repetir. Prohibición y condición futura recibieron mensajes de fallo inadecuados, sin efectos; cita, aclaración y privacidad conceptual válidas.

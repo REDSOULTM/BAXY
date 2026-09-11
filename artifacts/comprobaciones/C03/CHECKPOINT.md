@@ -255,3 +255,14 @@ Raíz revisó y adoptó repair927 SHA7e9bd891cd94238a1bc3b83ae41aacece4291730209
 Exit0,7admisiones reales incluida1confirmación exacta ordinaria,6finales, pins intactos.48,937s, VRAM3549,50MiB/RAM2957,55MiB, sin violaciones. Sin suites/build ni crédito UI/voz/lectura de contenido. La reparación927 de signo de consulta sí queda observada.
 
 Apps43 vuelve primera frente a web42.937 revisa pérdida de observaciones en fallos de proveedor;938 busca causa anterior al provider que permita varios literales, sin repetir efectos inciertos.936 PLAN SHA dbf9d37031ea561f4fa5017f28f7d18fc9e2e3f994f60e225c4ed991a8559c26 conserva controles web nuevos H0084/H0326/H0605 y grupo5 de navegador nombrado, todavía sin panel ni ejecución. No rellenar35 con fallos no reparados. Registro SHA e3d5526e6e3d27944c14ddb7e610381adb7bebeb40ef20ef68fc5f1d1b2e5492.
+## Tramos937–940 — negativa verificable según nota original del dueño
+
+937 REPORT SHA bc9cb2daae571a53ed7df042ba90cfb05ca38e59f6c30cd923fd644a06b177c5 no recupera la observación descartada en los fallos antiguos de Calculator/Settings/Explorer. Propone retención privada, pero no demuestra12 desbloqueos: no se construye infraestructura ni se reintentan efectos inciertos.
+
+938 REPORT SHA b54f264a2c75d62fe242273b46512574a8d46541f90ca540b791b2fc0abad6d9 distingue tres pérdidas de operación y destinos sin identidad disponible; no justifica parche común de apertura ni alias improvisados.
+
+Raíz084634 verificó la nota original de H0503: «Debe responder honestamente que no puede abrirla si se verifica que no existe/no se encuentra; no fingir éxito.» Su marca positiva se conserva y no exige fingir apertura. Los fallos930 quedan intactos; una futura negativa sólo será válida con consulta actual observada. app.installed devuelve installed=false/Verified=true con autoridad de catálogo real; root74085d/b5e8af lee el camino. No se infiere ausencia física por nombre extraño ni por snapshot930.
+
+939 agente apps_intent852 prepara reparación mínima en worktree externo, sólo effect_intent.py/__main__.py, para lectura previa cuando la identidad de apertura no se resuelve. El resolver de apertura admite coincidencia aproximada: no enviar desconocidos hacia efectos ni construir dependencia automática app.installed→app.open. Si el catálogo devuelve identidad aproximada, aclarar sin abrir. Aún NO hay parche adoptado.
+
+940 agente prepare934 prepara propuesta sellada externa: H0503 original,2 variantes nuevas ES/EN sin declarar ficción y5límites. Candidato pendiente; sin ejecución ni créditos anticipados. Root revisará parche/propuesta antes de decidir.71/742,671open,0NA;43altas24h,0/35categorías; fuente publicada76a6c094 y última corrida919 cerrada.
