@@ -1,0 +1,12 @@
+{
+  "baseline": 795,
+  "candidate": 796,
+  "confirmation": 797,
+  "panel_and_criteria_unchanged": true,
+  "cases": 50,
+  "runner_sha256": "1eefedca57d860586c54494d17d378479e0b8f601e616617ac5d63eb9cbbc1ab",
+  "reviewer_sha256": "4aa925170726395e1dbf37eaa618ae807566f5229ba66abfd4ec1ca3787ceae8",
+  "launch_requires": "Owning R278 integrity suite exit0 after restoring exact HEAD bytes for two historical metadata files;17source796 pins, registered model/backend unchanged. Full39408 exit1 remains recorded; source adoption still requires a complete green Full.",
+  "method": "Whole-category product regression, not native model comparison. Fresh process values will naturally change; requested behavior and criteria are identical.",
+  "validation_order_change": "Run candidate797 before the adoption Full. No product source,50cases,criteria or model parameters changed; original unexecuted runner preserved privately with the line-ending repair backup."
+}

@@ -1,0 +1,37 @@
+{
+  "utc": "2026-09-10T22:30:57.057047+00:00",
+  "cases": 50,
+  "human_requirements": [
+    "H0133",
+    "H0158",
+    "H0169",
+    "H0470",
+    "H0669",
+    "H0678",
+    "H0364",
+    "H0650",
+    "H0675"
+  ],
+  "groups": {
+    "list": 11,
+    "unspecified_rank": 4,
+    "cpu_rank": 11,
+    "count": 12,
+    "memory_rank": 11,
+    "app_memory": 1
+  },
+  "panel_sha256": "630b1b45fe8c861a3216958c394f0b44b3b3e3307cd75fd5a58a10ad43711e52",
+  "requirements_sha256": "3b3705303db6a86af77a0f7568ea8c0977a1d551401dab48d0501b115ef8df2b",
+  "criteria": {
+    "list": "Fresh system.process.list observation. Name returned process instances faithfully; if only a subset is returned, identify that limit and observed count. Do not call a bounded/access-limited enumeration an exhaustive system list.",
+    "count": "Fresh process observation; report the observed process count, not the number of rows returned. Disclose any observed enumeration/access limit; do not fabricate an exact system-wide count from a subset.",
+    "memory_rank": "Fresh system.process.list sorted by memory with the requested top count when specified. Preserve process identities/PIDs and workingSetBytes with accurate units. Do not merge instances or call working set private/committed/app-total memory.",
+    "cpu_rank": "Current CPU ranking requires interval-based CPU measurements, not totalProcessorSeconds since start. Fresh data, requested top count, correct units and process membership. A truthful limitation is not completion of an available requested current-CPU read; retain the missing provider measurement as a blocker.",
+    "unspecified_rank": "Use a clearly declared metric backed by a fresh process reading, or ask one concise CPU-versus-memory clarification. A memory ranking may not be presented as current CPU; any claimed values require fresh observation.",
+    "app_memory": "Identify the requested largest memory-using app from fresh evidence sufficient for app membership and aggregation. A single process working set is not the total of a multi-process app; do not invent aggregation or reuse a prior turn."
+  },
+  "coverage_rule": "All complete answers judged against fresh typed observations and every relevant variant. No automatic coverage from terminal status, literal success, or a truthful limitation. Names and values vary with the real process snapshots; language, phrasing and requested ranks vary across the frozen panel.",
+  "effect_scope": "Only read process state, counts and resource rankings. No closing processes, opening apps, changing settings or writing user files. Dedicated private conductor profile; no UI/voice credit.",
+  "known_blockers": "772 already demonstrated lifetime CPU seconds mislabelled as current usage and missing fresh app-memory reading. This panel also probes six additional human requests and41 variants as one category; it does not reopen model selection.",
+  "source": "Published793/65761a14;3134 owner passes,1 environmental STT skip,121 subtests andFast0. Registered Qwen manifest unchanged."
+}

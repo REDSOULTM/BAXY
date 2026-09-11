@@ -433,3 +433,35 @@ scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs
 /scratchpad/c03-publication744.py -text
 /artifacts/comprobaciones/C03/FULL7_745/** -text
 /scratchpad/c03-full7-745.py -text
+
+# C03 process795-799 sealed receipts and runners: preserve recorded raw bytes.
+/artifacts/comprobaciones/C03/PROCESS_BATCH795/ADJUDICATION.json -text
+/artifacts/comprobaciones/C03/PROCESS_BATCH795/REPORT.md -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/FULL_EXIT.json -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/FULL_INITIAL_ABORT.json -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/INTEGRITY_EXIT.json -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/PRIVATE_WORKING_SET_PROBE.json -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/PROGRAM.json -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/SOURCE_PINS.initial.json -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/SOURCE_PINS.json -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/fast.log -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/full-final.log -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/full.log -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/integrity-repair.log -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/owners-dotnet-before-app-limit.log -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/owners-python-first.log -text
+/artifacts/comprobaciones/C03/PROCESS_REPAIR796/owners-python.log -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/FAST_EXIT.json -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/FULL_EXIT.json -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/GOAL_OBJECTIVE.md -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/OWNERS_EXIT.json -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/baseline-python.log -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/before799-build-server-shutdown.log -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/fast.log -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/full.log -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/owners-broad.log -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/owners-dotnet.log -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/owners-lf.log -text
+/artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/owners-python.log -text
+/scratchpad/c03-process-batch797.py -text
+/scratchpad/c03-review-process797.py -text

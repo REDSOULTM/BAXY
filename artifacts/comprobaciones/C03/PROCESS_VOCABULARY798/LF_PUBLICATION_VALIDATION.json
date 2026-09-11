@@ -1,0 +1,11 @@
+{
+  "exit_code": 0,
+  "session": 25574,
+  "command": "registered python -X utf8 -m pytest tests/test_effect_intent.py -q",
+  "passed": 1961,
+  "skipped": 0,
+  "seconds": 70.68,
+  "change": "Only25CRLF normalized toLF in one test; AST identical. Production byte-identical toFull798 and799.",
+  "historical_pins": "SOURCE_PINS_FINAL.json",
+  "publication_pins": "SOURCE_PINS_PUBLISH.json"
+}

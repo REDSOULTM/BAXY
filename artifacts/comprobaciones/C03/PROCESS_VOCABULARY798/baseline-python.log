@@ -1,0 +1,717 @@
+FFFFFFFFFFFFFFF......FFFFFFFFF                                           [100%]
+================================== FAILURES ===================================
+_ test_verified_process_name_is_published_unchanged_in_one_call[\xbfQu\xe9 proceso usa m\xe1s CPU?-El proceso {name} usa el 4,5 % de CPU.-baxy-core] _
+
+name = 'baxy-core', question = '¿Qué proceso usa más CPU?'
+reply = 'El proceso {name} usa el 4,5 % de CPU.'
+
+    @pytest.mark.parametrize("name", ["baxy-core", "gpu_router", "Qwen Worker"])
+    @pytest.mark.parametrize("question,reply", [
+        ("¿Qué proceso usa más CPU?", "El proceso {name} usa el 4,5 % de CPU."),
+        ("Which process uses the most CPU?", "The process {name} uses 4.5% CPU."),
+        ("Mostrame el top process por CPU.", "El proceso {name} usa el 4,5 % de CPU."),
+    ])
+    def test_verified_process_name_is_published_unchanged_in_one_call(name, question, reply):
+        answer = reply.format(name=name)
+        client = Recorder([answer])
+>       assert client.compose_user_message(question, "status", facts(name)) == answer
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_process_vocabulary.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10262: in compose_user_message
+    retry = post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9259: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000018D8A49FE60>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...ds": 0.2}]}, "operation": "system.process.list"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+_ test_verified_process_name_is_published_unchanged_in_one_call[\xbfQu\xe9 proceso usa m\xe1s CPU?-El proceso {name} usa el 4,5 % de CPU.-gpu_router] _
+
+name = 'gpu_router', question = '¿Qué proceso usa más CPU?'
+reply = 'El proceso {name} usa el 4,5 % de CPU.'
+
+    @pytest.mark.parametrize("name", ["baxy-core", "gpu_router", "Qwen Worker"])
+    @pytest.mark.parametrize("question,reply", [
+        ("¿Qué proceso usa más CPU?", "El proceso {name} usa el 4,5 % de CPU."),
+        ("Which process uses the most CPU?", "The process {name} uses 4.5% CPU."),
+        ("Mostrame el top process por CPU.", "El proceso {name} usa el 4,5 % de CPU."),
+    ])
+    def test_verified_process_name_is_published_unchanged_in_one_call(name, question, reply):
+        answer = reply.format(name=name)
+        client = Recorder([answer])
+>       assert client.compose_user_message(question, "status", facts(name)) == answer
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_process_vocabulary.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10262: in compose_user_message
+    retry = post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9259: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000018D89FF0C20>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...ds": 0.2}]}, "operation": "system.process.list"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+_ test_verified_process_name_is_published_unchanged_in_one_call[\xbfQu\xe9 proceso usa m\xe1s CPU?-El proceso {name} usa el 4,5 % de CPU.-Qwen Worker] _
+
+name = 'Qwen Worker', question = '¿Qué proceso usa más CPU?'
+reply = 'El proceso {name} usa el 4,5 % de CPU.'
+
+    @pytest.mark.parametrize("name", ["baxy-core", "gpu_router", "Qwen Worker"])
+    @pytest.mark.parametrize("question,reply", [
+        ("¿Qué proceso usa más CPU?", "El proceso {name} usa el 4,5 % de CPU."),
+        ("Which process uses the most CPU?", "The process {name} uses 4.5% CPU."),
+        ("Mostrame el top process por CPU.", "El proceso {name} usa el 4,5 % de CPU."),
+    ])
+    def test_verified_process_name_is_published_unchanged_in_one_call(name, question, reply):
+        answer = reply.format(name=name)
+        client = Recorder([answer])
+>       assert client.compose_user_message(question, "status", facts(name)) == answer
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_process_vocabulary.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10262: in compose_user_message
+    retry = post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9259: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000018D89FCCE30>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...ds": 0.2}]}, "operation": "system.process.list"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+_ test_verified_process_name_is_published_unchanged_in_one_call[Which process uses the most CPU?-The process {name} uses 4.5% CPU.-baxy-core] _
+
+name = 'baxy-core', question = 'Which process uses the most CPU?'
+reply = 'The process {name} uses 4.5% CPU.'
+
+    @pytest.mark.parametrize("name", ["baxy-core", "gpu_router", "Qwen Worker"])
+    @pytest.mark.parametrize("question,reply", [
+        ("¿Qué proceso usa más CPU?", "El proceso {name} usa el 4,5 % de CPU."),
+        ("Which process uses the most CPU?", "The process {name} uses 4.5% CPU."),
+        ("Mostrame el top process por CPU.", "El proceso {name} usa el 4,5 % de CPU."),
+    ])
+    def test_verified_process_name_is_published_unchanged_in_one_call(name, question, reply):
+        answer = reply.format(name=name)
+        client = Recorder([answer])
+>       assert client.compose_user_message(question, "status", facts(name)) == answer
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_process_vocabulary.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10262: in compose_user_message
+    retry = post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9259: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000018D89FA6450>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...ds": 0.2}]}, "operation": "system.process.list"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+_ test_verified_process_name_is_published_unchanged_in_one_call[Which process uses the most CPU?-The process {name} uses 4.5% CPU.-gpu_router] _
+
+name = 'gpu_router', question = 'Which process uses the most CPU?'
+reply = 'The process {name} uses 4.5% CPU.'
+
+    @pytest.mark.parametrize("name", ["baxy-core", "gpu_router", "Qwen Worker"])
+    @pytest.mark.parametrize("question,reply", [
+        ("¿Qué proceso usa más CPU?", "El proceso {name} usa el 4,5 % de CPU."),
+        ("Which process uses the most CPU?", "The process {name} uses 4.5% CPU."),
+        ("Mostrame el top process por CPU.", "El proceso {name} usa el 4,5 % de CPU."),
+    ])
+    def test_verified_process_name_is_published_unchanged_in_one_call(name, question, reply):
+        answer = reply.format(name=name)
+        client = Recorder([answer])
+>       assert client.compose_user_message(question, "status", facts(name)) == answer
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_process_vocabulary.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10262: in compose_user_message
+    retry = post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9259: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000018D89FF0B90>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...ds": 0.2}]}, "operation": "system.process.list"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+_ test_verified_process_name_is_published_unchanged_in_one_call[Which process uses the most CPU?-The process {name} uses 4.5% CPU.-Qwen Worker] _
+
+name = 'Qwen Worker', question = 'Which process uses the most CPU?'
+reply = 'The process {name} uses 4.5% CPU.'
+
+    @pytest.mark.parametrize("name", ["baxy-core", "gpu_router", "Qwen Worker"])
+    @pytest.mark.parametrize("question,reply", [
+        ("¿Qué proceso usa más CPU?", "El proceso {name} usa el 4,5 % de CPU."),
+        ("Which process uses the most CPU?", "The process {name} uses 4.5% CPU."),
+        ("Mostrame el top process por CPU.", "El proceso {name} usa el 4,5 % de CPU."),
+    ])
+    def test_verified_process_name_is_published_unchanged_in_one_call(name, question, reply):
+        answer = reply.format(name=name)
+        client = Recorder([answer])
+>       assert client.compose_user_message(question, "status", facts(name)) == answer
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_process_vocabulary.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10262: in compose_user_message
+    retry = post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9259: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000018D89FCDD90>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...ds": 0.2}]}, "operation": "system.process.list"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+_ test_verified_process_name_is_published_unchanged_in_one_call[Mostrame el top process por CPU.-El proceso {name} usa el 4,5 % de CPU.-baxy-core] _
+
+name = 'baxy-core', question = 'Mostrame el top process por CPU.'
+reply = 'El proceso {name} usa el 4,5 % de CPU.'
+
+    @pytest.mark.parametrize("name", ["baxy-core", "gpu_router", "Qwen Worker"])
+    @pytest.mark.parametrize("question,reply", [
+        ("¿Qué proceso usa más CPU?", "El proceso {name} usa el 4,5 % de CPU."),
+        ("Which process uses the most CPU?", "The process {name} uses 4.5% CPU."),
+        ("Mostrame el top process por CPU.", "El proceso {name} usa el 4,5 % de CPU."),
+    ])
+    def test_verified_process_name_is_published_unchanged_in_one_call(name, question, reply):
+        answer = reply.format(name=name)
+        client = Recorder([answer])
+>       assert client.compose_user_message(question, "status", facts(name)) == answer
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_process_vocabulary.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10262: in compose_user_message
+    retry = post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9259: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000018D8A3E18B0>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...ds": 0.2}]}, "operation": "system.process.list"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+_ test_verified_process_name_is_published_unchanged_in_one_call[Mostrame el top process por CPU.-El proceso {name} usa el 4,5 % de CPU.-gpu_router] _
+
+name = 'gpu_router', question = 'Mostrame el top process por CPU.'
+reply = 'El proceso {name} usa el 4,5 % de CPU.'
+
+    @pytest.mark.parametrize("name", ["baxy-core", "gpu_router", "Qwen Worker"])
+    @pytest.mark.parametrize("question,reply", [
+        ("¿Qué proceso usa más CPU?", "El proceso {name} usa el 4,5 % de CPU."),
+        ("Which process uses the most CPU?", "The process {name} uses 4.5% CPU."),
+        ("Mostrame el top process por CPU.", "El proceso {name} usa el 4,5 % de CPU."),
+    ])
+    def test_verified_process_name_is_published_unchanged_in_one_call(name, question, reply):
+        answer = reply.format(name=name)
+        client = Recorder([answer])
+>       assert client.compose_user_message(question, "status", facts(name)) == answer
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_process_vocabulary.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10262: in compose_user_message
+    retry = post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9259: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000018D8A3E2FF0>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...ds": 0.2}]}, "operation": "system.process.list"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+_ test_verified_process_name_is_published_unchanged_in_one_call[Mostrame el top process por CPU.-El proceso {name} usa el 4,5 % de CPU.-Qwen Worker] _
+
+name = 'Qwen Worker', question = 'Mostrame el top process por CPU.'
+reply = 'El proceso {name} usa el 4,5 % de CPU.'
+
+    @pytest.mark.parametrize("name", ["baxy-core", "gpu_router", "Qwen Worker"])
+    @pytest.mark.parametrize("question,reply", [
+        ("¿Qué proceso usa más CPU?", "El proceso {name} usa el 4,5 % de CPU."),
+        ("Which process uses the most CPU?", "The process {name} uses 4.5% CPU."),
+        ("Mostrame el top process por CPU.", "El proceso {name} usa el 4,5 % de CPU."),
+    ])
+    def test_verified_process_name_is_published_unchanged_in_one_call(name, question, reply):
+        answer = reply.format(name=name)
+        client = Recorder([answer])
+>       assert client.compose_user_message(question, "status", facts(name)) == answer
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_process_vocabulary.py:33: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10262: in compose_user_message
+    retry = post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9259: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000018D89FA4200>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...ds": 0.2}]}, "operation": "system.process.list"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+_ test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers[ The core chose it.] _
+
+suffix = ' The core chose it.'
+
+    @pytest.mark.parametrize("suffix", [
+        " The core chose it.", " The router confirmed it.", " system.process.list.",
+        " baxy-core.worker.", " internal.baxy-core.", " baxy-core_extra.",
+    ])
+    def test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers(suffix):
+        good = "The process baxy-core uses 4.5% CPU."
+        client = Recorder([good + suffix, good])
+>       assert client.compose_user_message("Which process uses the most CPU?", "status", facts()) == good
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_process_vocabulary.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10303: in compose_user_message
+    third = post(third_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9259: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000018D89FCE000>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...ds": 0.2}]}, "operation": "system.process.list"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+_ test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers[ The router confirmed it.] _
+
+suffix = ' The router confirmed it.'
+
+    @pytest.mark.parametrize("suffix", [
+        " The core chose it.", " The router confirmed it.", " system.process.list.",
+        " baxy-core.worker.", " internal.baxy-core.", " baxy-core_extra.",
+    ])
+    def test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers(suffix):
+        good = "The process baxy-core uses 4.5% CPU."
+        client = Recorder([good + suffix, good])
+>       assert client.compose_user_message("Which process uses the most CPU?", "status", facts()) == good
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_process_vocabulary.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10303: in compose_user_message
+    third = post(third_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9259: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000018D8A3E0620>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...ds": 0.2}]}, "operation": "system.process.list"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+_ test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers[ system.process.list.] _
+
+suffix = ' system.process.list.'
+
+    @pytest.mark.parametrize("suffix", [
+        " The core chose it.", " The router confirmed it.", " system.process.list.",
+        " baxy-core.worker.", " internal.baxy-core.", " baxy-core_extra.",
+    ])
+    def test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers(suffix):
+        good = "The process baxy-core uses 4.5% CPU."
+        client = Recorder([good + suffix, good])
+>       assert client.compose_user_message("Which process uses the most CPU?", "status", facts()) == good
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_process_vocabulary.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10303: in compose_user_message
+    third = post(third_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9259: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000018D8A3C0050>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...ds": 0.2}]}, "operation": "system.process.list"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+_ test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers[ baxy-core.worker.] _
+
+suffix = ' baxy-core.worker.'
+
+    @pytest.mark.parametrize("suffix", [
+        " The core chose it.", " The router confirmed it.", " system.process.list.",
+        " baxy-core.worker.", " internal.baxy-core.", " baxy-core_extra.",
+    ])
+    def test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers(suffix):
+        good = "The process baxy-core uses 4.5% CPU."
+        client = Recorder([good + suffix, good])
+>       assert client.compose_user_message("Which process uses the most CPU?", "status", facts()) == good
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_process_vocabulary.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10303: in compose_user_message
+    third = post(third_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9259: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000018D8A3E04D0>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...ds": 0.2}]}, "operation": "system.process.list"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+_ test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers[ internal.baxy-core.] _
+
+suffix = ' internal.baxy-core.'
+
+    @pytest.mark.parametrize("suffix", [
+        " The core chose it.", " The router confirmed it.", " system.process.list.",
+        " baxy-core.worker.", " internal.baxy-core.", " baxy-core_extra.",
+    ])
+    def test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers(suffix):
+        good = "The process baxy-core uses 4.5% CPU."
+        client = Recorder([good + suffix, good])
+>       assert client.compose_user_message("Which process uses the most CPU?", "status", facts()) == good
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_process_vocabulary.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10303: in compose_user_message
+    third = post(third_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9259: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000018D8A3E2990>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...ds": 0.2}]}, "operation": "system.process.list"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+_ test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers[ baxy-core_extra.] _
+
+suffix = ' baxy-core_extra.'
+
+    @pytest.mark.parametrize("suffix", [
+        " The core chose it.", " The router confirmed it.", " system.process.list.",
+        " baxy-core.worker.", " internal.baxy-core.", " baxy-core_extra.",
+    ])
+    def test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers(suffix):
+        good = "The process baxy-core uses 4.5% CPU."
+        client = Recorder([good + suffix, good])
+>       assert client.compose_user_message("Which process uses the most CPU?", "status", facts()) == good
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_process_vocabulary.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10303: in compose_user_message
+    third = post(third_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9259: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000018D8A3C0350>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...ds": 0.2}]}, "operation": "system.process.list"}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+________ test_verified_process_in_a_mission_retains_its_own_provenance ________
+
+    def test_verified_process_in_a_mission_retains_its_own_provenance():
+        value = facts()
+        step = copy.deepcopy(value["situation"])
+        value["situation"] = {"kind": "status", "cause": "mission_completed", "polarity": "success",
+                              "stepCount": 1, "steps": [json.dumps(step)], "observed": step["observed"]}
+        answer = "The process baxy-core uses 4.5% CPU."
+        client = Recorder([answer])
+>       assert client.compose_user_message("Which process uses the most CPU?", "status", value) == answer
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests\test_c03_observed_process_vocabulary.py:78: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src\baxy_mind\llm.py:10262: in compose_user_message
+    retry = post(retry_payload)
+            ^^^^^^^^^^^^^^^^^^^
+src\baxy_mind\llm.py:9259: in post
+    return self._post(payload)
+           ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <test_c03_window_state_facts.Recorder object at 0x0000018D8A3A6000>
+payload = {'messages': [{'role': 'system', 'content': 'Eres BAXY, un compañero. Eres un él. Tuteas. Responde de forma breve y na...: 0.2}]}, "operation": "system.process.list"}}]}'}], 'temperature': 0.0, 'max_tokens': 256, 'cache_prompt': False, ...}
+
+    def _post(self, payload):
+        self.requests.append(payload)
+>       return {"choices":[{"message":{"content":next(self.replies)}, "finish_reason":"stop"}]}
+                                                 ^^^^^^^^^^^^^^^^^^
+E       StopIteration
+
+tests\test_c03_window_state_facts.py:105: StopIteration
+_________ test_observed_process_name_retains_sentence_punctuation[.] __________
+
+punctuation = '.'
+
+    @pytest.mark.parametrize("punctuation", [".", ",", ":", ";", "!", "?", ")", '"'])
+    def test_observed_process_name_retains_sentence_punctuation(punctuation):
+>       assert without_observed_window_names(
+            f"baxy-core{punctuation}", facts()["situation"],
+        ) == f"\ufffc{punctuation}"
+E       AssertionError: assert 'baxy-core.' == '￼.'
+E         
+E         - ￼.
+E         + baxy-core.
+
+tests\test_c03_observed_process_vocabulary.py:84: AssertionError
+_________ test_observed_process_name_retains_sentence_punctuation[,] __________
+
+punctuation = ','
+
+    @pytest.mark.parametrize("punctuation", [".", ",", ":", ";", "!", "?", ")", '"'])
+    def test_observed_process_name_retains_sentence_punctuation(punctuation):
+>       assert without_observed_window_names(
+            f"baxy-core{punctuation}", facts()["situation"],
+        ) == f"\ufffc{punctuation}"
+E       AssertionError: assert 'baxy-core,' == '￼,'
+E         
+E         - ￼,
+E         + baxy-core,
+
+tests\test_c03_observed_process_vocabulary.py:84: AssertionError
+_________ test_observed_process_name_retains_sentence_punctuation[:] __________
+
+punctuation = ':'
+
+    @pytest.mark.parametrize("punctuation", [".", ",", ":", ";", "!", "?", ")", '"'])
+    def test_observed_process_name_retains_sentence_punctuation(punctuation):
+>       assert without_observed_window_names(
+            f"baxy-core{punctuation}", facts()["situation"],
+        ) == f"\ufffc{punctuation}"
+E       AssertionError: assert 'baxy-core:' == '￼:'
+E         
+E         - ￼:
+E         + baxy-core:
+
+tests\test_c03_observed_process_vocabulary.py:84: AssertionError
+_________ test_observed_process_name_retains_sentence_punctuation[;] __________
+
+punctuation = ';'
+
+    @pytest.mark.parametrize("punctuation", [".", ",", ":", ";", "!", "?", ")", '"'])
+    def test_observed_process_name_retains_sentence_punctuation(punctuation):
+>       assert without_observed_window_names(
+            f"baxy-core{punctuation}", facts()["situation"],
+        ) == f"\ufffc{punctuation}"
+E       AssertionError: assert 'baxy-core;' == '￼;'
+E         
+E         - ￼;
+E         + baxy-core;
+
+tests\test_c03_observed_process_vocabulary.py:84: AssertionError
+_________ test_observed_process_name_retains_sentence_punctuation[!] __________
+
+punctuation = '!'
+
+    @pytest.mark.parametrize("punctuation", [".", ",", ":", ";", "!", "?", ")", '"'])
+    def test_observed_process_name_retains_sentence_punctuation(punctuation):
+>       assert without_observed_window_names(
+            f"baxy-core{punctuation}", facts()["situation"],
+        ) == f"\ufffc{punctuation}"
+E       AssertionError: assert 'baxy-core!' == '￼!'
+E         
+E         - ￼!
+E         + baxy-core!
+
+tests\test_c03_observed_process_vocabulary.py:84: AssertionError
+_________ test_observed_process_name_retains_sentence_punctuation[?] __________
+
+punctuation = '?'
+
+    @pytest.mark.parametrize("punctuation", [".", ",", ":", ";", "!", "?", ")", '"'])
+    def test_observed_process_name_retains_sentence_punctuation(punctuation):
+>       assert without_observed_window_names(
+            f"baxy-core{punctuation}", facts()["situation"],
+        ) == f"\ufffc{punctuation}"
+E       AssertionError: assert 'baxy-core?' == '￼?'
+E         
+E         - ￼?
+E         + baxy-core?
+
+tests\test_c03_observed_process_vocabulary.py:84: AssertionError
+_________ test_observed_process_name_retains_sentence_punctuation[)] __________
+
+punctuation = ')'
+
+    @pytest.mark.parametrize("punctuation", [".", ",", ":", ";", "!", "?", ")", '"'])
+    def test_observed_process_name_retains_sentence_punctuation(punctuation):
+>       assert without_observed_window_names(
+            f"baxy-core{punctuation}", facts()["situation"],
+        ) == f"\ufffc{punctuation}"
+E       AssertionError: assert 'baxy-core)' == '￼)'
+E         
+E         - ￼)
+E         + baxy-core)
+
+tests\test_c03_observed_process_vocabulary.py:84: AssertionError
+_________ test_observed_process_name_retains_sentence_punctuation["] __________
+
+punctuation = '"'
+
+    @pytest.mark.parametrize("punctuation", [".", ",", ":", ";", "!", "?", ")", '"'])
+    def test_observed_process_name_retains_sentence_punctuation(punctuation):
+>       assert without_observed_window_names(
+            f"baxy-core{punctuation}", facts()["situation"],
+        ) == f"\ufffc{punctuation}"
+E       assert 'baxy-core"' == '￼"'
+E         
+E         - ￼"
+E         + baxy-core"
+
+tests\test_c03_observed_process_vocabulary.py:84: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_c03_observed_process_vocabulary.py::test_verified_process_name_is_published_unchanged_in_one_call[\xbfQu\xe9 proceso usa m\xe1s CPU?-El proceso {name} usa el 4,5 % de CPU.-baxy-core]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_verified_process_name_is_published_unchanged_in_one_call[\xbfQu\xe9 proceso usa m\xe1s CPU?-El proceso {name} usa el 4,5 % de CPU.-gpu_router]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_verified_process_name_is_published_unchanged_in_one_call[\xbfQu\xe9 proceso usa m\xe1s CPU?-El proceso {name} usa el 4,5 % de CPU.-Qwen Worker]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_verified_process_name_is_published_unchanged_in_one_call[Which process uses the most CPU?-The process {name} uses 4.5% CPU.-baxy-core]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_verified_process_name_is_published_unchanged_in_one_call[Which process uses the most CPU?-The process {name} uses 4.5% CPU.-gpu_router]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_verified_process_name_is_published_unchanged_in_one_call[Which process uses the most CPU?-The process {name} uses 4.5% CPU.-Qwen Worker]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_verified_process_name_is_published_unchanged_in_one_call[Mostrame el top process por CPU.-El proceso {name} usa el 4,5 % de CPU.-baxy-core]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_verified_process_name_is_published_unchanged_in_one_call[Mostrame el top process por CPU.-El proceso {name} usa el 4,5 % de CPU.-gpu_router]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_verified_process_name_is_published_unchanged_in_one_call[Mostrame el top process por CPU.-El proceso {name} usa el 4,5 % de CPU.-Qwen Worker]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers[ The core chose it.]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers[ The router confirmed it.]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers[ system.process.list.]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers[ baxy-core.worker.]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers[ internal.baxy-core.]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_process_name_does_not_exempt_unobserved_words_or_longer_identifiers[ baxy-core_extra.]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_verified_process_in_a_mission_retains_its_own_provenance
+FAILED tests/test_c03_observed_process_vocabulary.py::test_observed_process_name_retains_sentence_punctuation[.]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_observed_process_name_retains_sentence_punctuation[,]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_observed_process_name_retains_sentence_punctuation[:]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_observed_process_name_retains_sentence_punctuation[;]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_observed_process_name_retains_sentence_punctuation[!]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_observed_process_name_retains_sentence_punctuation[?]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_observed_process_name_retains_sentence_punctuation[)]
+FAILED tests/test_c03_observed_process_vocabulary.py::test_observed_process_name_retains_sentence_punctuation["]
+24 failed, 6 passed in 3.79s

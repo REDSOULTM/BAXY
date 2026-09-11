@@ -1,14 +1,14 @@
-"""Keep verified window names opaque to vocabulary checks, not factual checks."""
+"""Keep verified observed names opaque to vocabulary checks, not factual checks."""
 from __future__ import annotations
 
 import json
 import re
 
 
-def without_observed_window_names(text: str, situation: object) -> str:
+def without_observed_names(text: str, situation: object) -> str:
     """Mask complete observed names in a scratch copy; never change public prose.
 
-    Only successful typed window observations supply vocabulary. Mission steps
+    Only successful typed window/process observations supply vocabulary. Mission steps
     keep their own verification envelope; merged observations and dialogue do not.
     """
     names: set[str] = set()
@@ -23,18 +23,21 @@ def without_observed_window_names(text: str, situation: object) -> str:
                 return
         if not isinstance(node, dict):
             return
+        operation = node.get("operation")
         if (node.get("kind") == "operation"
-                and isinstance(node.get("operation"), str)
-                and node["operation"].startswith("window.")
+                and isinstance(operation, str)
+                and (operation.startswith("window.") or operation == "system.process.list")
                 and node.get("verified") is True and node.get("succeeded") is True
                 and node.get("polarity") == "success"):
             observed = node.get("observed")
-            windows = observed.get("windows") if isinstance(observed, dict) else None
-            if isinstance(windows, list):
-                for window in windows:
-                    if isinstance(window, dict):
-                        names.update(value for key in ("title", "processName")
-                                     if isinstance(value := window.get(key), str)
+            process_inventory = operation == "system.process.list"
+            entries = observed.get("processes" if process_inventory else "windows") if isinstance(observed, dict) else None
+            fields = ("name",) if process_inventory else ("title", "processName")
+            if isinstance(entries, list):
+                for entry in entries:
+                    if isinstance(entry, dict):
+                        names.update(value for key in fields
+                                     if isinstance(value := entry.get(key), str)
                                      and value.strip() and len(value) <= 4096)
         steps = node.get("steps")
         if isinstance(steps, list):

@@ -45,7 +45,7 @@ from .effect_intent import (
     explicit_non_action_body,
 )
 from .cpu_prose_adapter import CpuProseAdapter, applies_to_cpu_prose
-from .measurement_prose_projection import project_system_measurements
+from .measurement_prose_projection import project_process_measurements, project_system_measurements
 from .llm_transport import (
     ChatCompletionCancellation,
     ChatCompletionConnectionPool,
@@ -83,7 +83,7 @@ from .window_prose_facts import (
     window_fact_feedback,
     window_status_assertions,
 )
-from .observed_response_literals import without_observed_window_names
+from .observed_response_literals import without_observed_names
 
 
 MAX_CONTEXT_TOKENS = 4096
@@ -3436,6 +3436,8 @@ def _compose_situation_payload(
         visible_seen = dict(merged_seen)
         if operation == "system.status":
             visible_seen = project_system_measurements(visible_seen)
+        elif operation == "system.process.list":
+            visible_seen = project_process_measurements(visible_seen, user_text)
         if (
             situation.get("verified") is True
             and situation.get("succeeded") is True
@@ -4085,7 +4087,7 @@ def compose_visible_defect(
         for source in identifier_sources
         for match in _IDENTIFIER_TOKEN.findall(source)
     }
-    vocabulary_text = without_observed_window_names(stripped, _situation_from_facts(facts))
+    vocabulary_text = without_observed_names(stripped, _situation_from_facts(facts))
     without_user_identifiers = _IDENTIFIER_TOKEN.sub(
         lambda match: "" if match[0].casefold() in user_identifiers else match[0],
         vocabulary_text,
@@ -9707,7 +9709,7 @@ class LlmRuntime:
             if intent == "status" and _starts_with_request_imperative(text):
                 return False
             folded = text.casefold()
-            vocabulary = without_observed_window_names(text, situation).casefold()
+            vocabulary = without_observed_names(text, situation).casefold()
             if any(term.casefold() in vocabulary for term in forbidden_terms):
                 return False
             if any(
@@ -9799,7 +9801,7 @@ class LlmRuntime:
                         "los marcadores verbales deben ser exactamente "
                         f"{action_marker_contract}"
                     )
-                folded_scaffold = without_observed_window_names(scaffold, situation).casefold()
+                folded_scaffold = without_observed_names(scaffold, situation).casefold()
                 folded_intro = intro.casefold()
                 observed_forbidden = next(
                     (
@@ -9991,7 +9993,7 @@ class LlmRuntime:
             if intent == "status" and _starts_with_request_imperative(candidate):
                 return "imperative_echo"
             folded_candidate = candidate.casefold()
-            vocabulary = without_observed_window_names(candidate, situation).casefold()
+            vocabulary = without_observed_names(candidate, situation).casefold()
             if any(term.casefold() in vocabulary for term in forbidden_terms):
                 return "forbidden_term"
             if any(
@@ -10112,7 +10114,7 @@ class LlmRuntime:
             """Nombrar lo que falta: un reintento a ciegas repite el fallo."""
 
             folded = (candidate or "").casefold()
-            vocabulary = without_observed_window_names(candidate, situation).casefold()
+            vocabulary = without_observed_names(candidate, situation).casefold()
             present = [term for term in forbidden_terms if term.casefold() in vocabulary]
             if present:
                 return "No incluyas ninguno de estos terminos: " + ", ".join(present)

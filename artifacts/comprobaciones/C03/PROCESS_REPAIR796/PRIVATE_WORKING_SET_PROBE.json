@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-10T23:08:02.810678+00:00",
+  "api": "K32GetProcessMemoryInfo/PROCESS_MEMORY_COUNTERS_EX2",
+  "scope": "Disposable observer process only; no product acceptance or survey credit.",
+  "structure_bytes": 96,
+  "temporary_allocation_bytes": 8388608,
+  "before": {
+    "working_set_bytes": 17285120,
+    "private_working_set_bytes": 7753728,
+    "private_commit_bytes": 9089024,
+    "shared_commit_bytes": 9322496,
+    "api_milliseconds": 0.03159999323543161
+  },
+  "after": {
+    "working_set_bytes": 25677824,
+    "private_working_set_bytes": 16146432,
+    "private_commit_bytes": 17498112,
+    "shared_commit_bytes": 9322496,
+    "api_milliseconds": 0.01920000067912042
+  },
+  "private_resident_delta_bytes": 8392704
+}

@@ -273,7 +273,7 @@ internal static class UserMessagePolicy
         }
         // «Un router enruta el tráfico» sólo es jerga si nadie preguntó por un
         // router: sin el pedido, explicar uno era imposible.
-        string vocabularyText = ObservedResponseLiterals.WithoutWindowNames(modelText, draft.Source);
+        string vocabularyText = ObservedResponseLiterals.WithoutObservedNames(modelText, draft.Source);
         if (LeakedInternalTerm(vocabularyText, userText, priorUserText) is not null)
         {
             return "unsafe_language";

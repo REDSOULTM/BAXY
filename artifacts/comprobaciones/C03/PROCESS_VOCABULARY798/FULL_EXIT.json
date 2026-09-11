@@ -1,0 +1,5 @@
+{
+  "exit_code": 0,
+  "command": ".\\scripts\\test_source_quality.ps1 -Mode Full",
+  "utc": "2026-09-11T00:41:43.8870866Z"
+}

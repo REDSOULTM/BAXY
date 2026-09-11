@@ -1,0 +1,284 @@
+{
+  "source_sha256": "3684b7aee39d248038bee4dc903d2ccc4e5309312e4aabd6f085caa4156efb9b",
+  "private_replay_sha256": "07a5241a68d612c41ac0fbf721f3c4ae7b25879ed48047c8fc4a08003e5dfe39",
+  "drafts": 55,
+  "unchanged_first_call": 55,
+  "cases": [
+    {
+      "case_id": "H0364",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "H0364",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "H0364",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "H0364",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "H0364",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "H0364",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-01",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-01",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-01",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-01",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-01",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-01",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-02",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-02",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-02",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-02",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-02",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-02",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-03",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-03",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-03",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-03",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-03",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-03",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-04",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-04",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-04",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-04",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-04",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-04",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-05",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-05",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-05",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-05",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-05",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-05",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-06",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-06",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-06",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-06",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-06",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-06",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-07",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-07",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-07",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-07",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-07",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-07",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-08",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-10",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-10",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-10",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-10",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-10",
+      "unchanged": true,
+      "calls": 1
+    },
+    {
+      "case_id": "process795-cpu_rank-10",
+      "unchanged": true,
+      "calls": 1
+    }
+  ],
+  "method": "Replay captured first CPU drafts rejected for forbidden_term using existing Recorder and full shell forbidden terms. No new inference, no fresh product acceptance or coverage claim."
+}

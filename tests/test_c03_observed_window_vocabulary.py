@@ -5,7 +5,7 @@ import json
 import pytest
 
 from test_c03_window_state_facts import Recorder, situation
-from baxy_mind.observed_response_literals import without_observed_window_names
+from baxy_mind.observed_response_literals import without_observed_names
 
 
 NAMES = ["Qwen", "Qwen3 - Research", "Router notes", "Core designs", "Tool atlas", "router_notes.txt - Editor"]
@@ -118,7 +118,7 @@ def test_lowercase_prose_outside_the_observed_name_still_requires_recovery():
 ])
 def test_observed_name_cannot_hide_a_longer_identifier(name, compound):
     good = f'The window "{name}" is active.'
-    assert without_observed_window_names(
+    assert without_observed_names(
         f"{good} {compound}.", facts(name)["situation"]
     ) == f'The window "\ufffc" is active. {compound}.'
     # The existing code-shape veto recognizes lowercase dotted operations;
@@ -130,6 +130,6 @@ def test_observed_name_cannot_hide_a_longer_identifier(name, compound):
 
 @pytest.mark.parametrize("punctuation", [".", ",", ":", ";", "!", "?", ")", '"'])
 def test_complete_name_next_to_sentence_punctuation_remains_opaque(punctuation):
-    assert without_observed_window_names(
+    assert without_observed_names(
         f"Router notes{punctuation}", facts("Router notes")["situation"]
     ) == f"\ufffc{punctuation}"

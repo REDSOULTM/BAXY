@@ -1,0 +1,68 @@
+{
+  "source_adjudication": "PROCESS_BATCH797/ADJUDICATION.json",
+  "source_candidate": 796,
+  "adopted": false,
+  "new_coverage": 0,
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "cases": [
+    {
+      "case_id": "H0133",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Returned subset is not disclosed with observed count; list completeness/identity not established."
+    },
+    {
+      "case_id": "H0158",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Returned subset is not disclosed with observed count; list completeness/identity not established. Adds unobserved absence of errors/blocking and memory-severity claims."
+    },
+    {
+      "case_id": "H0169",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Verified fresh value/ranking and requested scope, identities and language retained."
+    },
+    {
+      "case_id": "H0364",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Verified interval CPU data exist, but observed baxy-core hits the core vocabulary veto; requested result not delivered."
+    },
+    {
+      "case_id": "H0470",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Observed count is numerically correct but answer states an unqualified running/system count without accessible-observation scope."
+    },
+    {
+      "case_id": "H0650",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Homonymous process instances lose their PIDs, despite correct measured values/order."
+    },
+    {
+      "case_id": "H0669",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Verified fresh value/ranking and requested scope, identities and language retained."
+    },
+    {
+      "case_id": "H0675",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Single process working set is claimed as application memory; app membership and aggregation unmeasured."
+    },
+    {
+      "case_id": "H0678",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Observed count is numerically correct but answer states an unqualified running/system count without accessible-observation scope."
+    }
+  ],
+  "reason_no_coverage": "Source remains unadopted and corresponding generalized behavior has not passed all required variants.41generated panel cases are regression evidence, not new survey rows."
+}

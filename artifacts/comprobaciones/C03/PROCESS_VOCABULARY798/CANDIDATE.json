@@ -1,0 +1,19 @@
+{
+  "utc": "2026-09-11T00:06:54.002454+00:00",
+  "candidate": 798,
+  "adopted": false,
+  "inherits_unadopted_candidate": 796,
+  "private_snapshot": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-source798-private",
+  "source_paths": 24,
+  "behavior_change": "Extend existing verified-name vocabulary masking from window names to complete observed system.process.list names. Retain exact success/verified/succeeded envelope, wrappers and token boundaries. Rename shared helper; no duplicate layer. Original prose and factual checks unchanged.",
+  "model_prompt_sampler_changed": false,
+  "baseline_python": "24failed/6passed in3.79s",
+  "owners_python": "104passed/0skips in1.79s",
+  "owners_dotnet": "71passed/0skips,2s;67841 terminal0 collected",
+  "pending": "Broader Python owners, Fast, captured-first-draft proof/product validation and complete Full before adoption.796Full failure preserved; R278 repaired3pass.",
+  "survey": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  }
+}

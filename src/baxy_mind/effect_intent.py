@@ -4876,10 +4876,15 @@ def _system_status_domain(text: str) -> bool:
 
 
 def _process_list_domain(text: str) -> bool:
+    if _is_past_or_hypothetical_state(text) or _has(
+        text, r"\b(?:explica(?:me|r)?|explain|como funciona(?:n)?|por que|why)\b|"
+        r"\b(?:que es un|que son los|what is a|what are)\s+(?:proceso|process)",
+    ):
+        return False
     names_process = _has(
         text,
-        r"\b(?:procesos?|processes|task manager|administrador de tareas)\b|"
-        r"\b(?:programas?|programs?)\b.{0,48}"
+        r"\b(?:procesos?|process(?:es)?|task manager|administrador de tareas)\b|"
+        r"\b(?:programas?|programs?|apps?|aplicacion(?:es)?)\b.{0,64}"
         r"\b(?:memoria|memory|cpu|ram|comiendo|eating)\b",
     )
     excluded = _has(
@@ -4896,12 +4901,69 @@ def _process_list_domain(text: str) -> bool:
         text,
         (
             r"\b(?:sistema|system|computador|computer|pc|windows|"
-            r"ejecucion|ejecutando|running|activos?|active|"
+            r"ejecucion|ejecutando|corriendo|funcionando|dando vueltas|running|activos?|active|"
             r"task manager|administrador de tareas|"
-            r"cpu|ram|memoria|memory|consume|consumen|usan?|use|usage)\b"
+            r"cpu|ram|procesador|processor|memoria|memory|working set|consume|consumen|consuming|usan?|uses?|usage|"
+            r"recursos|resources|por nombre|by name|observados?|observed|observar|ves ahora|"
+            r"cuantos|cantidad|numero|how many|count)\b"
         ),
     )
-    return names_process and computing and not excluded
+    direct_inventory = re.fullmatch(
+        r"(?:lista|listar|list|show|muestra|muestrame|mostrame|enumera|enumerate)\s+"
+        r"(?:(?:los|the|active|activos?)\s+)?(?:procesos?|process(?:es)?)"
+        r"[\s.!?]*", text, re.IGNORECASE,
+    ) is not None
+    return names_process and (computing or direct_inventory) and not excluded
+
+
+def _direct_process_inventory_request(text: str) -> bool:
+    return _process_list_domain(text) and _has(
+        text, rf"^[¿?¡!\s]*{_REQUEST_PREFIX}(?:{_LIST}|mostrame|dime|dame|tell|"
+        r"cuenta|count|ordena|sort|quiero|which|what|que|cual|cuales|cuantos|how)\b",
+    )
+
+
+def process_inventory_arguments(text: str) -> dict[str, object] | None:
+    """Keep rank, metric and spoken page size bound to the process request."""
+    text = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.")
+    if not _process_list_domain(text):
+        return None
+    sorts = {
+        sort for sort, pattern in (
+            ("cpu", r"\b(?:cpu|procesador|processor)\b"),
+            ("memory", r"\b(?:ram|memoria|memory|working set)\b"),
+            ("name", r"\b(?:por nombre|by name)\b"),
+        ) if _has(text, pattern)
+    }
+    if len(sorts) > 1:
+        return None
+    result: dict[str, object] = {"sort": next(iter(sorts))} if sorts else {}
+    number = r"(?:\d+|" + "|".join(
+        re.escape(word) for word in sorted(_PERCENTAGE_WORD_VALUES, key=len, reverse=True)
+    ) + r")"
+    sizes = list(re.finditer(
+        rf"\b(?:top|primeros|first|hasta|up\s+to)\s+(?P<rank>{number})\b|"
+        rf"\b(?P<count>{number})\s+(?:(?:running|active|activos)\s+)?"
+        r"(?:procesos?|process(?:es)?)\b", text,
+    ))
+    values = set()
+    for match in sizes:
+        raw = match.group("rank") or match.group("count")
+        values.add(int(raw) if raw.isdecimal() else _PERCENTAGE_WORD_VALUES[raw])
+    # A number outside a rank frame may be a PID, threshold or another action.
+    remainder = text
+    for match in reversed(sizes):
+        remainder = remainder[:match.start()] + remainder[match.end():]
+    if len(values) > 1 or _has(remainder, r"\d"):
+        return None
+    if values:
+        value = next(iter(values))
+        if not 1 <= value <= 50:
+            return None
+        result["limit"] = value
+    elif _has(text, r"\b(?:que proceso|which process|what process)\b"):
+        result["limit"] = 1
+    return result
 
 
 def _other_device_effect_scope(text: str) -> bool:
@@ -6456,6 +6518,7 @@ def _is_definition_question(text: str) -> bool:
             r"sonando|playing|usando|using)\b",
         )
         and not _has(text, r"^what\s+is\s+going\s+on\b")
+        and not (_process_list_domain(text) and _has(text, r"\bobserved\b"))
     )
 
 
@@ -7545,6 +7608,8 @@ def _is_direct_request(text: str) -> bool:
     if topic is not None:
         text = topic.group("body")
     text = _negative_state_question_body(text) or text
+    if _direct_process_inventory_request(text):
+        return True
     request_head = (
         rf"(?:{_OPEN}|{_LIST}|{_READ}|{_CREATE}|{_SEARCH}|{_MUTE_VERB}|"
         r"haz|hacer|hazme|haceme|hace|toma|tomar|fotografia|fotografiar|"
@@ -9618,30 +9683,17 @@ def _review_system_and_network_effects(
     if _direct_current_time_request(folded):
         _append(matches, folded, "system.time", r"\b(?:hora|time|fecha|date)\b")
     process_domain = _process_list_domain(folded)
-    direct_process_inventory = (
-        re.fullmatch(
-            r"(?:lista|listar|list|show|muestra|muestrame)\s+"
-            r"(?:(?:los|the|active|activos?)\s+)?(?:procesos?|processes)"
-            r"[\s.!?]*",
-            folded,
-            re.IGNORECASE,
-        )
-        is not None
-    )
-    if (
-        _head_is(head, _LIST)
-        and (process_domain or direct_process_inventory)
-        and _has(folded, rf"\b{_LIST}\b|\b(?:usan?|uso|consume|memory|memoria)\b")
-    ):
+    if _direct_process_inventory_request(folded):
         _append(
             matches,
             folded,
             "system.process.list",
-            r"\b(?:procesos?|processes)\b",
+            r"^",
         )
     if (
         not any(entry[2] == "system.process.list" for entry in matches)
-        and _has(folded, r"\b(?:programas?|programs?)\b")
+        and process_domain
+        and _has(folded, r"\b(?:programas?|programs?|apps?|aplicaciones?)\b")
         and _has(
             folded,
             r"\b(?:memoria|memory|cpu|ram|comiendo|eating)\b",
@@ -9652,7 +9704,7 @@ def _review_system_and_network_effects(
             matches,
             folded,
             "system.process.list",
-            r"\b(?:programas?|programs?)\b",
+            r"^",
         )
     if (
         not any(entry[2] == "system.process.list" for entry in matches)

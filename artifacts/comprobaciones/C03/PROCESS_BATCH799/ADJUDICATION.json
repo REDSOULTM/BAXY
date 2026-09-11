@@ -1,0 +1,71 @@
+{
+  "utc": "2026-09-11T00:51:43.009508+00:00",
+  "candidate": 798,
+  "cases": 50,
+  "passed": 19,
+  "failed_or_not_credited": 31,
+  "baseline797_passed": 13,
+  "retained_previous_passes": 12,
+  "gained_cases": [
+    "H0364",
+    "process795-cpu_rank-01",
+    "process795-cpu_rank-02",
+    "process795-cpu_rank-03",
+    "process795-cpu_rank-08",
+    "process795-cpu_rank-09",
+    "process795-unspecified_rank-02"
+  ],
+  "lost_cases": [
+    "H0169"
+  ],
+  "groups": {
+    "list": {
+      "failed": 11
+    },
+    "unspecified_rank": {
+      "failed": 1,
+      "passed": 3
+    },
+    "cpu_rank": {
+      "passed": 6,
+      "failed": 5
+    },
+    "count": {
+      "failed": 9,
+      "passed": 3
+    },
+    "memory_rank": {
+      "failed": 4,
+      "passed": 7
+    },
+    "app_memory": {
+      "failed": 1
+    }
+  },
+  "terminal_kinds": {
+    "published_final": 50
+  },
+  "core_reads": 50,
+  "rejected_attempts": 0,
+  "resources": {
+    "utc": "2026-09-11T00:46:46.003087+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2404.6171875,
+    "seconds": 270.328,
+    "scope": "Owned conductor product process tree; no voice or visible desktop UI credit."
+  },
+  "guard_samples_rss_peak_mib": 2419.43359375,
+  "private_commit_peak_mib": 6565.39453125,
+  "minimum_free_ram_mib": 3932.7578125,
+  "private_adjudication_sha256": "45013121b3aa27ac1d1ed6834414f390033d09c117136928a4096dac14276aaa",
+  "method": "Same frozen50cases/criteria/model as795/797;799 completed continuously without RAM guards.797 used42+5+3fresh-profile segments, so do not make a controlled aggregate latency claim. Fresh process values differ; gains/losses outside the lexical defect do not isolate a causal source effect.",
+  "review_interpretation": "Homonymous instances require identity; a plural request reduced to only the maximum is not credited. Preserve numeric conservatism from797case50. Name-only top results with distinct names and no requested values can pass.",
+  "source_adopted": false,
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  }
+}

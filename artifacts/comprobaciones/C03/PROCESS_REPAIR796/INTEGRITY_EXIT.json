@@ -1,0 +1,5 @@
+{
+  "command": "python -X utf8 -m pytest tests/test_line_ending_seal_damage_r278.py -q",
+  "exit_code": 0,
+  "utc": "2026-09-10T23:32:59.1010788Z"
+}

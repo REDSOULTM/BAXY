@@ -102,7 +102,9 @@ internal sealed class ProcessListHandler(IProcessStatusProvider provider) : IOpe
         result = null;
         if (snapshot.ObservedProcessCount < 1
             || snapshot.Processes.Count is < 1 or > 50
-            || snapshot.Processes.Count > limit)
+            || snapshot.Processes.Count > limit
+            || snapshot.Processes.Count > snapshot.ObservedProcessCount
+            || (sort == ProcessStatusSort.Cpu && snapshot.LogicalProcessorCount is null or < 1))
         {
             return false;
         }
@@ -118,6 +120,9 @@ internal sealed class ProcessListHandler(IProcessStatusProvider provider) : IOpe
                 || item.WorkingSetBytes < 0
                 || !double.IsFinite(item.TotalProcessorSeconds)
                 || item.TotalProcessorSeconds < 0
+                || (sort == ProcessStatusSort.Cpu
+                    && (item.CpuUsagePercent is not { } cpu || !double.IsFinite(cpu) || cpu is < 0 or > 100
+                        || item.SampleDurationSeconds is not { } duration || !double.IsFinite(duration) || duration <= 0))
                 || !identities.Add((item.ProcessId, item.CreationTimeUtcTicks)))
             {
                 return false;
@@ -126,7 +131,9 @@ internal sealed class ProcessListHandler(IProcessStatusProvider provider) : IOpe
                 item.ProcessId,
                 item.Name,
                 item.WorkingSetBytes,
-                item.TotalProcessorSeconds);
+                item.TotalProcessorSeconds,
+                item.CpuUsagePercent,
+                item.SampleDurationSeconds);
         }
         string publicSort = sort switch
         {
@@ -135,7 +142,8 @@ internal sealed class ProcessListHandler(IProcessStatusProvider provider) : IOpe
             ProcessStatusSort.Name => "name",
             _ => throw new InvalidOperationException(),
         };
-        result = new ProcessListResult(1, publicSort, snapshot.ObservedProcessCount, items);
+        result = new ProcessListResult(2, publicSort, snapshot.ObservedProcessCount, items,
+            items.Length, "accessible_processes", snapshot.LogicalProcessorCount);
         return true;
     }
 }

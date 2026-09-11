@@ -110,13 +110,18 @@ internal sealed record ProcessListItemResult(
     int ProcessId,
     string Name,
     long WorkingSetBytes,
-    double TotalProcessorSeconds);
+    double TotalProcessorSeconds,
+    double? CpuUsagePercent,
+    double? SampleDurationSeconds);
 
 internal sealed record ProcessListResult(
     int Version,
     string Sort,
     int ObservedProcessCount,
-    IReadOnlyList<ProcessListItemResult> Processes);
+    IReadOnlyList<ProcessListItemResult> Processes,
+    int ReturnedProcessCount,
+    string ObservationScope,
+    int? LogicalProcessorCount);
 
 internal sealed record SystemStatusCpuResult(
     double UsagePercent,

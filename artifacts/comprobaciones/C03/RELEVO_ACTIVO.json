@@ -2,10 +2,10 @@
   "threadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "sourceThreadId": "01a074f6-9e0e-7fb3-8282-a6b706198a7e",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-10T20:35:47.442315+00:00",
+  "confirmedAtUtc": "2026-09-11T00:57:10.065545+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "794 completada:36/50 correctos,4 recuperaciones y0 pérdidas frente792A; cuatro primeros borradores entregados exactos en1petición.3134pass/1skipSTT+121subtests,Fast0. Se adopta793 con787/789/791 heredados; fuente lista para publicar.136,516s;3499,56MiBVRAM/764,42MiBRSS compositor.56452terminal0 recogida, sin inferencia. Qwen elegido; siguiente categoría process.list795, sólo bloqueantes. Encuesta28/714/0.",
-  "continuation": "Publish validated793 sources and794 evidence immediately. Then run actual product process.list category795 (six historical requirements plus variants>=50), following NEXT_PROCESS_CATEGORY795.json. No more model selection, no prompt experiments without a demonstrated blocker.",
+  "checkpoint": "796+798 adoptados con Full798 exit0 y confirmacion799:19/50 validos,50 finales/0 vetos;31 abiertos en panel. SoloLF en un test normalizado, AST equivalente y1961 dueñas pass/0skip. Publicacion explicita en Goal-c03; main intacto. Siguiente alcance800/confirmacion801; Qwen elegido. Encuesta28/714/0.",
+  "continuation": "Publish796+798 after test-only LF owning validation; preserve original pins/Full798 evidence. Integrate reviewed scope800, run owners/Fast and same50confirmation801. No model campaign.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -33,11 +33,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "63fc4f56f4a90fb434773b58fefffbfbec3c1e07",
-  "workStatus": "inventory_veto793_adopted_publish_next_process795",
+  "publishedSourceCommit": "65761a14dff7ee12092321878c154edccfc7268d",
+  "workStatus": "source798_adopted_commit_pending",
   "goalStatusNote": "get_goal confirms active after owner authorization; no owner decision pending.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "ae274b8b4c65a90b3f5707e408a6a63c43b4566a",
+  "publishedEvidenceCommit": "65761a14dff7ee12092321878c154edccfc7268d",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,80 +48,87 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Published791/792 and model decision ae274b8b. Implemented three demonstrated shared false-veto repairs with72 controls and exact replay of four captured drafts.",
+  "previousGoalTurnClassificationReason": "Full798 green collected;799 all50 root-adjudicated with19passes and0prose vetoes.",
   "activeValidation": null,
-  "objectiveFile": "C:/Users/usuario/.codex/attachments/58161a42-37e6-4347-94a2-4e3beae4353c/goal-objective.md",
-  "objectiveSha256": "621020a31266e98d043b07f214e8a8c6c3cb48f1287d27e411bf805402dadb86",
+  "objectiveFile": "C:\\Users\\usuario\\.codex\\attachments\\9fef4dbc-0c33-4d2f-ab08-5839846b2ed3\\goal-objective.md",
+  "objectiveSha256": "e8c8bb362392f93e44f56e51de0808b761f2bbf8fe5b1446de669cf07690368c",
   "ownerMethodology": "Model-specific native template and documented presets first, same complete cases for every arm; add BAXY one layer at a time and attribute first lost behavior. API use alone does not imply native isolation. Optimize whole categories without quality loss.",
   "lastValidation": {
-    "name": "Full7/745",
-    "utc": "2026-09-10T10:46:36.567397-03:00",
-    "exit_code": 0,
-    "elapsed_seconds": 1543.5469999999987,
-    "dotnet_projects": [
+    "utc": "2026-09-11T00:43:25.469574+00:00",
+    "full_session": 24887,
+    "status": "complete",
+    "dotnet": [
       {
-        "project": "Baxy.Contracts.Tests.dll",
         "failed": 0,
         "passed": 60,
         "aggregate_skipped": 0,
-        "duration": "239 ms"
+        "total": 60,
+        "duration": "237 ms",
+        "project": "Baxy.Contracts.Tests.dll (net10.0)"
       },
       {
-        "project": "Baxy.Integration.Tests.dll",
         "failed": 0,
-        "passed": 3339,
+        "passed": 3387,
         "aggregate_skipped": 1,
-        "duration": "9 m 40 s"
+        "total": 3388,
+        "duration": "10 m 15 s",
+        "project": "Baxy.Integration.Tests.dll (net10.0)"
       },
       {
-        "project": "Baxy.Kernel.Tests.dll",
         "failed": 0,
         "passed": 152,
         "aggregate_skipped": 0,
-        "duration": "1 s"
+        "total": 152,
+        "duration": "2 s",
+        "project": "Baxy.Kernel.Tests.dll (net10.0)"
       },
       {
-        "project": "Baxy.Providers.Windows.Tests.dll",
         "failed": 0,
-        "passed": 546,
+        "passed": 549,
         "aggregate_skipped": 0,
-        "duration": "40 s"
+        "total": 549,
+        "duration": "47 s",
+        "project": "Baxy.Providers.Windows.Tests.dll (net10.0)"
       },
       {
-        "project": "Baxy.Setup.Tests.dll",
         "failed": 0,
         "passed": 477,
         "aggregate_skipped": 0,
-        "duration": "1 m 18 s"
+        "total": 477,
+        "duration": "1 m 31 s",
+        "project": "Baxy.Setup.Tests.dll (net10.0)"
       }
     ],
-    "dotnet_passed": 4574,
-    "dotnet_failed": 0,
-    "dotnet_aggregate_skipped": 1,
-    "explicit_opt_in_omission_log_lines": 16,
-    "python_passed": 11399,
-    "python_failed": 0,
-    "python_environmental_skipped": 3,
-    "python_subtests_passed": 466,
-    "python_seconds": 706.7,
-    "sources_unchanged": true,
-    "source_count": 1233,
-    "private_raw_log_sha256": "bf52a98f11a8782c2bfa6f9e5d9b21fbc5195e231428be0bddf6618c7d849080",
-    "public_lf_log_sha256": "1e05fc386a04258a9a100439f0d5faaee84304c97084013e5c72a98389eb03a1",
-    "eligible_for_source_adoption": true,
-    "goal_complete": false,
-    "coverage_added": 0,
-    "limitations": "Environmental skips and opt-in omissions are not passes; no UI, physical audio, full-resource or survey acceptance is inferred."
+    "dotnet_passed": 4625,
+    "aggregate_skipped": 1,
+    "printed_omissions": 16,
+    "full_passed": true,
+    "source_pins_unchanged": true,
+    "exit_code": 0,
+    "python": {
+      "passed": 12684,
+      "skipped": 3,
+      "subtests_passed": 466,
+      "seconds": 762.59
+    },
+    "full_log_sha256": "daa51e100da95dfbffa931752b9fdc892b92c2f5e057421b9e4ba4560829f4be",
+    "command": ".\\scripts\\test_source_quality.ps1 -Mode Full",
+    "adopted": false,
+    "pending": "Root adjudication of registered product799; Git line-ending normalization of one test and owning validation before publication. Runtime source stays unchanged during the product run."
   },
   "activeReadOnlyAgent": null,
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
-    "name": "product769",
-    "sessionId": 63153,
-    "exitCode": 0,
-    "turns": 73,
-    "appDllUnchanged": true,
-    "adjudication": "52correct/21failures; no coverage/UI/voice credit; report pending"
+    "name": "process799",
+    "sessionId": 71175,
+    "launcher": 17468,
+    "registeredCases": 50,
+    "state": "complete",
+    "adjudication": "root_complete",
+    "sourcePins": 24,
+    "exit_code": 0,
+    "passed": 19,
+    "failed_or_not_credited": 31
   },
   "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
   "ownerPriority": "Owner ordered model selection after792 and immediate progress on C03 blockers; no further model campaign.",
@@ -843,5 +850,26 @@
     "surveyCredit": 0,
     "report": "artifacts/comprobaciones/C03/PROSE_SAMPLING785/REPORT.md"
   },
-  "selectedModel": "Qwen3-4B-Instruct-2507 Q4_K_M registered"
+  "selectedModel": "Qwen3-4B-Instruct-2507 Q4_K_M registered",
+  "activeProductQueue": {
+    "session": 71175,
+    "pid": 27020,
+    "state": "running_product799",
+    "script": "scratchpad/c03-await-full798-run799.py",
+    "receipt": "artifacts/comprobaciones/C03/PROCESS_VOCABULARY798/NEXT799_QUEUE.json",
+    "launcher": 17468
+  },
+  "completedAgentProposal": {
+    "agent": "process_scope_repair",
+    "worktree": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-scope799-worktree",
+    "proposal": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-scope799-proposal\\repair.patch",
+    "owner_tests": "124 passed in3.14s",
+    "root_apply_check_exit": 0,
+    "integrated": false
+  },
+  "pendingPublicationNormalization": {
+    "path": "tests/test_effect_intent.py",
+    "crlf_line_endings": 25,
+    "note": "Normalize for Git only after all current validation/inference ends; preserve previous bytes, prove AST unchanged, run owner suite and record exact validation scope. Do not edit sealed24 sources while Full/799 runs."
+  }
 }

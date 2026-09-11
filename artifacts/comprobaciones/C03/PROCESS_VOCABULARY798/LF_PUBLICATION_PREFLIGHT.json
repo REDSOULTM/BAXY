@@ -1,0 +1,8 @@
+{
+  "path": "tests\\test_effect_intent.py",
+  "working_file_unchanged": true,
+  "crlf_count": 25,
+  "ast_unchanged_when_normalized_to_lf": true,
+  "normalized_sha256": "03b0bc8df9acacbc99ddae7443e1165c5e713b34a28cbd8e048c7851510b029d",
+  "purpose": "Read-only preparation for Git publication. Do not normalize the sealed current source during Full798 or product799."
+}

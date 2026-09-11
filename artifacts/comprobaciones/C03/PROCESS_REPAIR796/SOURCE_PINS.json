@@ -1,0 +1,19 @@
+{
+  "src/Baxy.App/OperationResponseProjection.cs": "20c18b412b0cbc02cdf89a51ba4ac5d2c07bdaa9a1039ff17bf9aa9e6e8d11f1",
+  "src/Baxy.Core/Operations/CoreOperationModels.cs": "d6cabea5e090ba543babdac22ccbc75614851dbae0ed429452a13f68a0bfc90a",
+  "src/Baxy.Core/Operations/ProcessListHandler.cs": "481e02f1691adbed22b998781ca285b953d697d435429a3d76730e6f535624ce",
+  "src/Baxy.Kernel/Operations/OperationVisibleFacts.cs": "9db3d4ec85dcc4c02ed29deadb2b6d24cbf4f361a827178e308dd80b2176923a",
+  "src/Baxy.Providers.Windows/SystemStatus/ProcessStatusContracts.cs": "0b47fd69199b4f0a12b501cf88a205b5e5b605424ef5c3ee09384de53655bc42",
+  "src/Baxy.Providers.Windows/SystemStatus/WindowsProcessStatusProvider.cs": "fe5ec1c8867009d14e2cc2e014417ac6afa1a32a92601f933c62b90a0751b4ba",
+  "src/baxy_mind/__main__.py": "db333cd34b11d7e099d2b69501d0134e436460086c2f7b0d0c912393cf125a29",
+  "src/baxy_mind/effect_intent.py": "4902857abbeca975517d71b677dda5104ae2d4eee383590701c55c299c16fee4",
+  "src/baxy_mind/llm.py": "6b6b7a15538fc90ce294b38e20d4f4692cf4936ce9419f48d8dcbd93459f98c6",
+  "src/baxy_mind/measurement_prose_projection.py": "e01fa68ac6ac12e8ef0ac7258354f45686915b9d9b508de4edea44e668e0c4eb",
+  "tests/Baxy.Integration.Tests/ProcessListHandlerTests.cs": "2eeedc862df1b0299a7e1aa05c7fb2979ebef881f039eb8b0276cd8514610978",
+  "tests/Baxy.Providers.Windows.Tests/SystemStatus/WindowsProcessStatusProviderTests.cs": "ce5458a321518cb97fb865b859c429b01af88fee9c4627e9809a89a7282874c9",
+  "tests/test_effect_intent.py": "d51ce4b3d1b83e0083be8d7a03706af85ca53f740efcb3d329178990c00a6342",
+  "tests/test_c03_process_inventory.py": "648478a3d4f7112e49d67471df921fbe01ec13f0eca62f699b07c4feb0eb9ae7",
+  "experiments/stt_quality/evaluate_reserved_stt.py": "fc2ad8510e370f4bd0fa0666b54c8cc45e486c425cca1f610d88ec4e46cffb3e",
+  "experiments/stt_quality/audit_fresh_postweight_stt_sources.py": "d41e23c3cc99c1948341acb53ee37dd80c076f71416109165c167f359792755b",
+  "tests/test_price_v8_veto_damage_by_cause.py": "7650b3998fa302dd49f7fb20c604c676add570651bacf6d1cd621914f899dffb"
+}

@@ -4596,18 +4596,7 @@ def _explicit_arguments_from_evidence(
         return {"status": next(iter(statuses))} if len(statuses) == 1 else {}
 
     if operation == "system.process.list":
-        if numbers:
-            return None
-        sorts = {
-            sort
-            for sort, pattern in (
-                ("cpu", r"\b(?:cpu|procesador)\b"),
-                ("memory", r"\b(?:memoria|memory)\b"),
-                ("name", r"\b(?:por\s+nombre|by\s+name)\b"),
-            )
-            if re.search(pattern, folded)
-        }
-        return {"sort": next(iter(sorts))} if len(sorts) == 1 else {}
+        return effect_intent.process_inventory_arguments(evidence)
 
     if operation == "reminder.create":
         relative_reminder = _explicit_relative_reminder_arguments(evidence)
@@ -4988,6 +4977,7 @@ def _ground_explicit_arguments(
         "game.launch",
         "media.control",
         "media.play.query",
+        "system.process.list",
         "system.status",
         "window.application.status",
     }:
@@ -4999,6 +4989,7 @@ def _ground_explicit_arguments(
         # query parser preserves the literal query and supplies the catalog's
         # sole provider value. System scopes are enum identities selected by
         # the existing domain parser, not words the user must spell literally.
+        # Process ranks use that same closed metric/cardinal parser.
         # Every path still crosses the exact catalog JSON
         # Schema here.
         return explicit if validate_json_schema_instance(explicit, schema) else None

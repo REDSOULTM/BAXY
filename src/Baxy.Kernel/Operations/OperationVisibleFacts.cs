@@ -23,6 +23,9 @@ public static class OperationVisibleFacts
         ArgumentException.ThrowIfNullOrWhiteSpace(operation);
         ArgumentNullException.ThrowIfNull(outcome);
         bool success = outcome.Succeeded && outcome.Verified;
+        bool processInventory = operation == "system.process.list";
+        int observedLimit = processInventory ? 48_000 : MaximumObservedUtf8Bytes;
+        int messageLimit = processInventory ? 48_000 : MaximumMessageChars;
         var payload = new JsonObject
         {
             ["kind"] = "operation",
@@ -56,11 +59,11 @@ public static class OperationVisibleFacts
             && result.ValueKind is JsonValueKind.Object or JsonValueKind.Array)
         {
             string raw = result.GetRawText();
-            if (raw.Length <= MaximumObservedUtf8Bytes)
+            if (raw.Length <= observedLimit)
             {
                 try
                 {
-                    payload["observed"] = Sanitize(JsonNode.Parse(raw));
+                    payload["observed"] = Sanitize(JsonNode.Parse(raw), processInventory: processInventory);
                 }
                 catch (JsonException)
                 {
@@ -74,15 +77,15 @@ public static class OperationVisibleFacts
         }
 
         string json = payload.ToJsonString(JsonOptions);
-        if (json.Length > MaximumMessageChars)
+        if (json.Length > messageLimit)
         {
             payload.Remove("observed");
             json = payload.ToJsonString(JsonOptions);
         }
 
-        return json.Length <= MaximumMessageChars
+        return json.Length <= messageLimit
             ? json
-            : json[..MaximumMessageChars];
+            : json[..messageLimit];
     }
 
     public static string FromStatus(string operation, string status, string? errorCode)
@@ -105,7 +108,7 @@ public static class OperationVisibleFacts
         return payload.ToJsonString(JsonOptions);
     }
 
-    private static JsonNode? Sanitize(JsonNode? node, int depth = 0)
+    private static JsonNode? Sanitize(JsonNode? node, int depth = 0, bool processInventory = false)
     {
         if (node is null || depth > 4)
         {
@@ -117,15 +120,15 @@ public static class OperationVisibleFacts
             var clean = new JsonObject();
             foreach ((string key, JsonNode? value) in obj)
             {
-                if (key is "id" or "noteId" or "hwnd" or "handle" or "fingerprint"
+                if ((key is "id" or "noteId" or "hwnd" or "handle" or "fingerprint"
                     or "hash" or "sha256" or "pid" or "processId" or "invocationId"
                     or "requestId" or "missionId" or "token" or "recordId"
-                    or "deviceId")
+                    or "deviceId") && !(processInventory && key == "processId"))
                 {
                     continue;
                 }
 
-                JsonNode? sanitized = Sanitize(value, depth + 1);
+                JsonNode? sanitized = Sanitize(value, depth + 1, processInventory);
                 if (sanitized is not null && !clean.ContainsKey(key))
                 {
                     clean[key] = sanitized;
@@ -138,9 +141,9 @@ public static class OperationVisibleFacts
         if (node is JsonArray array)
         {
             var clean = new JsonArray();
-            foreach (JsonNode? item in array.Take(20))
+            foreach (JsonNode? item in array.Take(processInventory ? 50 : 20))
             {
-                clean.Add(Sanitize(item, depth + 1));
+                clean.Add(Sanitize(item, depth + 1, processInventory));
             }
 
             return clean;

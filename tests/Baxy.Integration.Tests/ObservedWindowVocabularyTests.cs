@@ -127,7 +127,7 @@ public sealed class ObservedWindowVocabularyTests
     public void KnownNameCannotHideALongerIdentifier(string name, string compound)
     {
         var draft = new UserMessageDraft(Source(name), "status", null);
-        Assert.That(ObservedResponseLiterals.WithoutWindowNames(
+        Assert.That(ObservedResponseLiterals.WithoutObservedNames(
             $"The window \"{name}\" is active. {compound}.", Source(name)),
             Is.EqualTo($"The window \"\uFFFC\" is active. {compound}."));
         // Exercise the existing lowercase code veto independently from the
@@ -147,7 +147,7 @@ public sealed class ObservedWindowVocabularyTests
     [TestCase("\"")]
     public void SentencePunctuationDoesNotChangeAnObservedName(string punctuation)
     {
-        Assert.That(ObservedResponseLiterals.WithoutWindowNames(
+        Assert.That(ObservedResponseLiterals.WithoutObservedNames(
             $"Router notes{punctuation}", Source("Router notes")), Is.EqualTo($"\uFFFC{punctuation}"));
     }
 }

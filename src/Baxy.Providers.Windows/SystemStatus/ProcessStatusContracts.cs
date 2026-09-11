@@ -12,11 +12,14 @@ public sealed record ProcessStatusEntry(
     long CreationTimeUtcTicks,
     string Name,
     long WorkingSetBytes,
-    double TotalProcessorSeconds);
+    double TotalProcessorSeconds,
+    double? CpuUsagePercent = null,
+    double? SampleDurationSeconds = null);
 
 public sealed record ProcessStatusSnapshot(
     int ObservedProcessCount,
-    IReadOnlyList<ProcessStatusEntry> Processes);
+    IReadOnlyList<ProcessStatusEntry> Processes,
+    int? LogicalProcessorCount = null);
 
 public interface IProcessStatusProvider
 {

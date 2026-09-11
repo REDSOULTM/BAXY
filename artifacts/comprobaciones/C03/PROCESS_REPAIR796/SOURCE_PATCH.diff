@@ -1,0 +1,890 @@
+diff --git a/experiments/stt_quality/audit_fresh_postweight_stt_sources.py b/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
+index 95b08e6b..5bd8dd4b 100644
+--- a/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
++++ b/experiments/stt_quality/audit_fresh_postweight_stt_sources.py
+@@ -62,7 +62,7 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
+ # Historical STT/wake campaign pins remain unchanged; this declaration does
+ # not claim new audio acceptance.
+ EXPECTED_PROGRAM_TREE_SHA256 = (
+-    "5584f52ee0601dd0e6f8bba8a42cfa5ffd046ad124e7863441dc790ddcf0be93"
++    "9a0462f762eeb763ffb676f5330ce67706a80e0388c636ad1bada16f30a1421c"
+ )
+ CONSUMED_BLIND_CONTRACT = (
+     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"
+diff --git a/experiments/stt_quality/evaluate_reserved_stt.py b/experiments/stt_quality/evaluate_reserved_stt.py
+index e53e2590..35b7e6d3 100644
+--- a/experiments/stt_quality/evaluate_reserved_stt.py
++++ b/experiments/stt_quality/evaluate_reserved_stt.py
+@@ -79,7 +79,7 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
+ # Historical STT/wake campaign pins remain unchanged; this declaration does
+ # not claim new audio acceptance.
+ EXPECTED_PROGRAM_TREE_SHA256 = (
+-    "5584f52ee0601dd0e6f8bba8a42cfa5ffd046ad124e7863441dc790ddcf0be93"
++    "9a0462f762eeb763ffb676f5330ce67706a80e0388c636ad1bada16f30a1421c"
+ )
+ SAMPLE_RATE = 16_000
+ SILENCE_SAMPLES = SAMPLE_RATE // 5
+diff --git a/src/Baxy.App/OperationResponseProjection.cs b/src/Baxy.App/OperationResponseProjection.cs
+index 9a59d9ed..8ec1b64f 100644
+--- a/src/Baxy.App/OperationResponseProjection.cs
++++ b/src/Baxy.App/OperationResponseProjection.cs
+@@ -20,7 +20,10 @@ internal sealed record OperationResponseProjection(string Message)
+ 
+         if (!string.IsNullOrWhiteSpace(response.Message))
+         {
+-            return new OperationResponseProjection(TruncateMessage(response.Message.Trim()));
++            // The process catalog allows fifty verified rows. Keep its bounded
++            // structured facts whole; cutting JSON makes every observation vanish.
++            return new OperationResponseProjection(TruncateMessage(response.Message.Trim(),
++                maximumLength: operationName == "system.process.list" ? 48_000 : MaximumMessageLength));
+         }
+ 
+         return new OperationResponseProjection(
+@@ -33,14 +36,15 @@ internal sealed record OperationResponseProjection(string Message)
+ 
+     private static string TruncateMessage(
+         string value,
+-        string suffix = "… [respuesta truncada]")
++        string suffix = "… [respuesta truncada]",
++        int maximumLength = MaximumMessageLength)
+     {
+-        if (value.Length <= MaximumMessageLength)
++        if (value.Length <= maximumLength)
+         {
+             return value;
+         }
+ 
+-        int keep = Math.Max(0, MaximumMessageLength - suffix.Length);
++        int keep = Math.Max(0, maximumLength - suffix.Length);
+         if (keep > 0
+             && keep < value.Length
+             && char.IsHighSurrogate(value[keep - 1])
+diff --git a/src/Baxy.Core/Operations/CoreOperationModels.cs b/src/Baxy.Core/Operations/CoreOperationModels.cs
+index 30d0715e..532cac1c 100644
+--- a/src/Baxy.Core/Operations/CoreOperationModels.cs
++++ b/src/Baxy.Core/Operations/CoreOperationModels.cs
+@@ -110,13 +110,18 @@ internal sealed record ProcessListItemResult(
+     int ProcessId,
+     string Name,
+     long WorkingSetBytes,
+-    double TotalProcessorSeconds);
++    double TotalProcessorSeconds,
++    double? CpuUsagePercent,
++    double? SampleDurationSeconds);
+ 
+ internal sealed record ProcessListResult(
+     int Version,
+     string Sort,
+     int ObservedProcessCount,
+-    IReadOnlyList<ProcessListItemResult> Processes);
++    IReadOnlyList<ProcessListItemResult> Processes,
++    int ReturnedProcessCount,
++    string ObservationScope,
++    int? LogicalProcessorCount);
+ 
+ internal sealed record SystemStatusCpuResult(
+     double UsagePercent,
+diff --git a/src/Baxy.Core/Operations/ProcessListHandler.cs b/src/Baxy.Core/Operations/ProcessListHandler.cs
+index 26079192..c3542c36 100644
+--- a/src/Baxy.Core/Operations/ProcessListHandler.cs
++++ b/src/Baxy.Core/Operations/ProcessListHandler.cs
+@@ -102,7 +102,9 @@ internal sealed class ProcessListHandler(IProcessStatusProvider provider) : IOpe
+         result = null;
+         if (snapshot.ObservedProcessCount < 1
+             || snapshot.Processes.Count is < 1 or > 50
+-            || snapshot.Processes.Count > limit)
++            || snapshot.Processes.Count > limit
++            || snapshot.Processes.Count > snapshot.ObservedProcessCount
++            || (sort == ProcessStatusSort.Cpu && snapshot.LogicalProcessorCount is null or < 1))
+         {
+             return false;
+         }
+@@ -118,6 +120,9 @@ internal sealed class ProcessListHandler(IProcessStatusProvider provider) : IOpe
+                 || item.WorkingSetBytes < 0
+                 || !double.IsFinite(item.TotalProcessorSeconds)
+                 || item.TotalProcessorSeconds < 0
++                || (sort == ProcessStatusSort.Cpu
++                    && (item.CpuUsagePercent is not { } cpu || !double.IsFinite(cpu) || cpu is < 0 or > 100
++                        || item.SampleDurationSeconds is not { } duration || !double.IsFinite(duration) || duration <= 0))
+                 || !identities.Add((item.ProcessId, item.CreationTimeUtcTicks)))
+             {
+                 return false;
+@@ -126,7 +131,9 @@ internal sealed class ProcessListHandler(IProcessStatusProvider provider) : IOpe
+                 item.ProcessId,
+                 item.Name,
+                 item.WorkingSetBytes,
+-                item.TotalProcessorSeconds);
++                item.TotalProcessorSeconds,
++                item.CpuUsagePercent,
++                item.SampleDurationSeconds);
+         }
+         string publicSort = sort switch
+         {
+@@ -135,7 +142,8 @@ internal sealed class ProcessListHandler(IProcessStatusProvider provider) : IOpe
+             ProcessStatusSort.Name => "name",
+             _ => throw new InvalidOperationException(),
+         };
+-        result = new ProcessListResult(1, publicSort, snapshot.ObservedProcessCount, items);
++        result = new ProcessListResult(2, publicSort, snapshot.ObservedProcessCount, items,
++            items.Length, "accessible_processes", snapshot.LogicalProcessorCount);
+         return true;
+     }
+ }
+diff --git a/src/Baxy.Kernel/Operations/OperationVisibleFacts.cs b/src/Baxy.Kernel/Operations/OperationVisibleFacts.cs
+index bff9a5f1..e72f2c94 100644
+--- a/src/Baxy.Kernel/Operations/OperationVisibleFacts.cs
++++ b/src/Baxy.Kernel/Operations/OperationVisibleFacts.cs
+@@ -23,6 +23,9 @@ public static class OperationVisibleFacts
+         ArgumentException.ThrowIfNullOrWhiteSpace(operation);
+         ArgumentNullException.ThrowIfNull(outcome);
+         bool success = outcome.Succeeded && outcome.Verified;
++        bool processInventory = operation == "system.process.list";
++        int observedLimit = processInventory ? 48_000 : MaximumObservedUtf8Bytes;
++        int messageLimit = processInventory ? 48_000 : MaximumMessageChars;
+         var payload = new JsonObject
+         {
+             ["kind"] = "operation",
+@@ -56,11 +59,11 @@ public static class OperationVisibleFacts
+             && result.ValueKind is JsonValueKind.Object or JsonValueKind.Array)
+         {
+             string raw = result.GetRawText();
+-            if (raw.Length <= MaximumObservedUtf8Bytes)
++            if (raw.Length <= observedLimit)
+             {
+                 try
+                 {
+-                    payload["observed"] = Sanitize(JsonNode.Parse(raw));
++                    payload["observed"] = Sanitize(JsonNode.Parse(raw), processInventory: processInventory);
+                 }
+                 catch (JsonException)
+                 {
+@@ -74,15 +77,15 @@ public static class OperationVisibleFacts
+         }
+ 
+         string json = payload.ToJsonString(JsonOptions);
+-        if (json.Length > MaximumMessageChars)
++        if (json.Length > messageLimit)
+         {
+             payload.Remove("observed");
+             json = payload.ToJsonString(JsonOptions);
+         }
+ 
+-        return json.Length <= MaximumMessageChars
++        return json.Length <= messageLimit
+             ? json
+-            : json[..MaximumMessageChars];
++            : json[..messageLimit];
+     }
+ 
+     public static string FromStatus(string operation, string status, string? errorCode)
+@@ -105,7 +108,7 @@ public static class OperationVisibleFacts
+         return payload.ToJsonString(JsonOptions);
+     }
+ 
+-    private static JsonNode? Sanitize(JsonNode? node, int depth = 0)
++    private static JsonNode? Sanitize(JsonNode? node, int depth = 0, bool processInventory = false)
+     {
+         if (node is null || depth > 4)
+         {
+@@ -117,15 +120,15 @@ public static class OperationVisibleFacts
+             var clean = new JsonObject();
+             foreach ((string key, JsonNode? value) in obj)
+             {
+-                if (key is "id" or "noteId" or "hwnd" or "handle" or "fingerprint"
++                if ((key is "id" or "noteId" or "hwnd" or "handle" or "fingerprint"
+                     or "hash" or "sha256" or "pid" or "processId" or "invocationId"
+                     or "requestId" or "missionId" or "token" or "recordId"
+-                    or "deviceId")
++                    or "deviceId") && !(processInventory && key == "processId"))
+                 {
+                     continue;
+                 }
+ 
+-                JsonNode? sanitized = Sanitize(value, depth + 1);
++                JsonNode? sanitized = Sanitize(value, depth + 1, processInventory);
+                 if (sanitized is not null && !clean.ContainsKey(key))
+                 {
+                     clean[key] = sanitized;
+@@ -138,9 +141,9 @@ public static class OperationVisibleFacts
+         if (node is JsonArray array)
+         {
+             var clean = new JsonArray();
+-            foreach (JsonNode? item in array.Take(20))
++            foreach (JsonNode? item in array.Take(processInventory ? 50 : 20))
+             {
+-                clean.Add(Sanitize(item, depth + 1));
++                clean.Add(Sanitize(item, depth + 1, processInventory));
+             }
+ 
+             return clean;
+diff --git a/src/Baxy.Providers.Windows/SystemStatus/ProcessStatusContracts.cs b/src/Baxy.Providers.Windows/SystemStatus/ProcessStatusContracts.cs
+index 71f9b0e8..de664fbd 100644
+--- a/src/Baxy.Providers.Windows/SystemStatus/ProcessStatusContracts.cs
++++ b/src/Baxy.Providers.Windows/SystemStatus/ProcessStatusContracts.cs
+@@ -12,11 +12,14 @@ public sealed record ProcessStatusEntry(
+     long CreationTimeUtcTicks,
+     string Name,
+     long WorkingSetBytes,
+-    double TotalProcessorSeconds);
++    double TotalProcessorSeconds,
++    double? CpuUsagePercent = null,
++    double? SampleDurationSeconds = null);
+ 
+ public sealed record ProcessStatusSnapshot(
+     int ObservedProcessCount,
+-    IReadOnlyList<ProcessStatusEntry> Processes);
++    IReadOnlyList<ProcessStatusEntry> Processes,
++    int? LogicalProcessorCount = null);
+ 
+ public interface IProcessStatusProvider
+ {
+diff --git a/src/Baxy.Providers.Windows/SystemStatus/WindowsProcessStatusProvider.cs b/src/Baxy.Providers.Windows/SystemStatus/WindowsProcessStatusProvider.cs
+index 1f37059f..04ee8846 100644
+--- a/src/Baxy.Providers.Windows/SystemStatus/WindowsProcessStatusProvider.cs
++++ b/src/Baxy.Providers.Windows/SystemStatus/WindowsProcessStatusProvider.cs
+@@ -6,7 +6,7 @@ public sealed class WindowsProcessStatusProvider : IProcessStatusProvider
+ {
+     private const int MaximumObservedProcesses = 4_096;
+ 
+-    public ValueTask<ProcessStatusSnapshot> GetProcessesAsync(
++    public async ValueTask<ProcessStatusSnapshot> GetProcessesAsync(
+         ProcessStatusSort sort,
+         int limit,
+         CancellationToken cancellationToken)
+@@ -16,18 +16,43 @@ public sealed class WindowsProcessStatusProvider : IProcessStatusProvider
+             throw new ArgumentOutOfRangeException(nameof(limit));
+         }
+ 
++        if (!Enum.IsDefined(sort))
++        {
++            throw new ArgumentOutOfRangeException(nameof(sort));
++        }
+         cancellationToken.ThrowIfCancellationRequested();
+-        Dictionary<ProcessIdentity, ProcessStatusEntry> first = Observe(
++        int? logicalProcessorCount = sort == ProcessStatusSort.Cpu
++            ? new WindowsSystemStatusProbe().ReadLogicalProcessorCount()
++            : null;
++        Dictionary<ProcessIdentity, ProcessSample> first = Observe(
+             cancellationToken);
+-        Dictionary<ProcessIdentity, ProcessStatusEntry> second = Observe(
++        if (sort == ProcessStatusSort.Cpu)
++        {
++            await Task.Delay(WindowsSystemStatusProvider.DefaultCpuSamplingInterval,
++                cancellationToken).ConfigureAwait(false);
++        }
++        Dictionary<ProcessIdentity, ProcessSample> second = Observe(
+             cancellationToken);
++        return CreateSnapshot(first, second, sort, limit, logicalProcessorCount);
++    }
++
++    internal static ProcessStatusSnapshot CreateSnapshot(
++        IReadOnlyDictionary<ProcessIdentity, ProcessSample> first,
++        IReadOnlyDictionary<ProcessIdentity, ProcessSample> second,
++        ProcessStatusSort sort,
++        int limit,
++        int? logicalProcessorCount)
++    {
+         IEnumerable<ProcessStatusEntry> stable = second
+             .Where(pair => first.ContainsKey(pair.Key))
+-            .Select(static pair => pair.Value);
++            .Select(pair => sort == ProcessStatusSort.Cpu
++                ? MeasureCpu(first[pair.Key], pair.Value, logicalProcessorCount)
++                : pair.Value.Entry)
++            .OfType<ProcessStatusEntry>();
+         stable = sort switch
+         {
+             ProcessStatusSort.Cpu => stable
+-                .OrderByDescending(static item => item.TotalProcessorSeconds)
++                .OrderByDescending(static item => item.CpuUsagePercent)
+                 .ThenBy(static item => item.Name, StringComparer.OrdinalIgnoreCase)
+                 .ThenBy(static item => item.ProcessId),
+             ProcessStatusSort.Memory => stable
+@@ -39,18 +64,40 @@ public sealed class WindowsProcessStatusProvider : IProcessStatusProvider
+                 .ThenBy(static item => item.ProcessId),
+             _ => throw new ArgumentOutOfRangeException(nameof(sort)),
+         };
+-        return ValueTask.FromResult(new ProcessStatusSnapshot(
++        return new ProcessStatusSnapshot(
+             second.Count,
+-            stable.Take(limit).ToArray()));
++            stable.Take(limit).ToArray(),
++            logicalProcessorCount);
+     }
+ 
+-    private static Dictionary<ProcessIdentity, ProcessStatusEntry> Observe(
++    private static ProcessStatusEntry? MeasureCpu(
++        ProcessSample first,
++        ProcessSample second,
++        int? logicalProcessorCount)
++    {
++        double elapsed = Stopwatch.GetElapsedTime(first.Timestamp, second.Timestamp).TotalSeconds;
++        double processorSeconds = second.Entry.TotalProcessorSeconds - first.Entry.TotalProcessorSeconds;
++        if (logicalProcessorCount is null or < 1 || elapsed <= 0
++            || !double.IsFinite(processorSeconds) || processorSeconds < 0)
++        {
++            return null;
++        }
++        // Normalize to the whole machine, not this process's affinity or CPU quota.
++        // Counter granularity can slightly exceed physical capacity over a short sample.
++        return second.Entry with
++        {
++            CpuUsagePercent = Math.Clamp(processorSeconds / elapsed / logicalProcessorCount.Value * 100, 0, 100),
++            SampleDurationSeconds = elapsed,
++        };
++    }
++
++    private static Dictionary<ProcessIdentity, ProcessSample> Observe(
+         CancellationToken cancellationToken)
+     {
+         Process[] processes = Process.GetProcesses();
+         try
+         {
+-            var result = new Dictionary<ProcessIdentity, ProcessStatusEntry>();
++            var result = new Dictionary<ProcessIdentity, ProcessSample>();
+             foreach (Process process in processes.Take(MaximumObservedProcesses))
+             {
+                 cancellationToken.ThrowIfCancellationRequested();
+@@ -60,12 +107,13 @@ public sealed class WindowsProcessStatusProvider : IProcessStatusProvider
+                     string name = process.ProcessName;
+                     long created = process.StartTime.ToUniversalTime().Ticks;
+                     var identity = new ProcessIdentity(process.Id, created, name);
+-                    result[identity] = new ProcessStatusEntry(
++                    var entry = new ProcessStatusEntry(
+                         process.Id,
+                         created,
+                         name,
+                         Math.Max(0, process.WorkingSet64),
+                         Math.Max(0, process.TotalProcessorTime.TotalSeconds));
++                    result[identity] = new ProcessSample(entry, Stopwatch.GetTimestamp());
+                 }
+                 catch (Exception error) when (error is
+                     InvalidOperationException or NotSupportedException or
+@@ -94,7 +142,9 @@ public sealed class WindowsProcessStatusProvider : IProcessStatusProvider
+         }
+     }
+ 
+-    private sealed record ProcessIdentity(
++    internal sealed record ProcessSample(ProcessStatusEntry Entry, long Timestamp);
++
++    internal sealed record ProcessIdentity(
+         int ProcessId,
+         long CreationTimeUtcTicks,
+         string Name);
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index a843b6ba..928b2666 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -4596,18 +4596,7 @@ def _explicit_arguments_from_evidence(
+         return {"status": next(iter(statuses))} if len(statuses) == 1 else {}
+ 
+     if operation == "system.process.list":
+-        if numbers:
+-            return None
+-        sorts = {
+-            sort
+-            for sort, pattern in (
+-                ("cpu", r"\b(?:cpu|procesador)\b"),
+-                ("memory", r"\b(?:memoria|memory)\b"),
+-                ("name", r"\b(?:por\s+nombre|by\s+name)\b"),
+-            )
+-            if re.search(pattern, folded)
+-        }
+-        return {"sort": next(iter(sorts))} if len(sorts) == 1 else {}
++        return effect_intent.process_inventory_arguments(evidence)
+ 
+     if operation == "reminder.create":
+         relative_reminder = _explicit_relative_reminder_arguments(evidence)
+@@ -4988,6 +4977,7 @@ def _ground_explicit_arguments(
+         "game.launch",
+         "media.control",
+         "media.play.query",
++        "system.process.list",
+         "system.status",
+         "window.application.status",
+     }:
+@@ -4999,6 +4989,7 @@ def _ground_explicit_arguments(
+         # query parser preserves the literal query and supplies the catalog's
+         # sole provider value. System scopes are enum identities selected by
+         # the existing domain parser, not words the user must spell literally.
++        # Process ranks use that same closed metric/cardinal parser.
+         # Every path still crosses the exact catalog JSON
+         # Schema here.
+         return explicit if validate_json_schema_instance(explicit, schema) else None
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 0df039fb..7c894824 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -4876,10 +4876,15 @@ def _system_status_domain(text: str) -> bool:
+ 
+ 
+ def _process_list_domain(text: str) -> bool:
++    if _is_past_or_hypothetical_state(text) or _has(
++        text, r"\b(?:explica(?:me|r)?|explain|como funciona(?:n)?|por que|why)\b|"
++        r"\b(?:que es un|que son los|what is a|what are)\s+(?:proceso|process)",
++    ):
++        return False
+     names_process = _has(
+         text,
+-        r"\b(?:procesos?|processes|task manager|administrador de tareas)\b|"
+-        r"\b(?:programas?|programs?)\b.{0,48}"
++        r"\b(?:procesos?|process(?:es)?|task manager|administrador de tareas)\b|"
++        r"\b(?:programas?|programs?|apps?|aplicacion(?:es)?)\b.{0,64}"
+         r"\b(?:memoria|memory|cpu|ram|comiendo|eating)\b",
+     )
+     excluded = _has(
+@@ -4896,12 +4901,69 @@ def _process_list_domain(text: str) -> bool:
+         text,
+         (
+             r"\b(?:sistema|system|computador|computer|pc|windows|"
+-            r"ejecucion|ejecutando|running|activos?|active|"
++            r"ejecucion|ejecutando|corriendo|funcionando|dando vueltas|running|activos?|active|"
+             r"task manager|administrador de tareas|"
+-            r"cpu|ram|memoria|memory|consume|consumen|usan?|use|usage)\b"
++            r"cpu|ram|procesador|processor|memoria|memory|working set|consume|consumen|consuming|usan?|uses?|usage|"
++            r"recursos|resources|por nombre|by name|observados?|observed|observar|ves ahora|"
++            r"cuantos|cantidad|numero|how many|count)\b"
+         ),
+     )
+-    return names_process and computing and not excluded
++    direct_inventory = re.fullmatch(
++        r"(?:lista|listar|list|show|muestra|muestrame|mostrame|enumera|enumerate)\s+"
++        r"(?:(?:los|the|active|activos?)\s+)?(?:procesos?|process(?:es)?)"
++        r"[\s.!?]*", text, re.IGNORECASE,
++    ) is not None
++    return names_process and (computing or direct_inventory) and not excluded
++
++
++def _direct_process_inventory_request(text: str) -> bool:
++    return _process_list_domain(text) and _has(
++        text, rf"^[¿?¡!\s]*{_REQUEST_PREFIX}(?:{_LIST}|mostrame|dime|dame|tell|"
++        r"cuenta|count|ordena|sort|quiero|which|what|que|cual|cuales|cuantos|how)\b",
++    )
++
++
++def process_inventory_arguments(text: str) -> dict[str, object] | None:
++    """Keep rank, metric and spoken page size bound to the process request."""
++    text = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.")
++    if not _process_list_domain(text):
++        return None
++    sorts = {
++        sort for sort, pattern in (
++            ("cpu", r"\b(?:cpu|procesador|processor)\b"),
++            ("memory", r"\b(?:ram|memoria|memory|working set)\b"),
++            ("name", r"\b(?:por nombre|by name)\b"),
++        ) if _has(text, pattern)
++    }
++    if len(sorts) > 1:
++        return None
++    result: dict[str, object] = {"sort": next(iter(sorts))} if sorts else {}
++    number = r"(?:\d+|" + "|".join(
++        re.escape(word) for word in sorted(_PERCENTAGE_WORD_VALUES, key=len, reverse=True)
++    ) + r")"
++    sizes = list(re.finditer(
++        rf"\b(?:top|primeros|first|hasta|up\s+to)\s+(?P<rank>{number})\b|"
++        rf"\b(?P<count>{number})\s+(?:(?:running|active|activos)\s+)?"
++        r"(?:procesos?|process(?:es)?)\b", text,
++    ))
++    values = set()
++    for match in sizes:
++        raw = match.group("rank") or match.group("count")
++        values.add(int(raw) if raw.isdecimal() else _PERCENTAGE_WORD_VALUES[raw])
++    # A number outside a rank frame may be a PID, threshold or another action.
++    remainder = text
++    for match in reversed(sizes):
++        remainder = remainder[:match.start()] + remainder[match.end():]
++    if len(values) > 1 or _has(remainder, r"\d"):
++        return None
++    if values:
++        value = next(iter(values))
++        if not 1 <= value <= 50:
++            return None
++        result["limit"] = value
++    elif _has(text, r"\b(?:que proceso|which process|what process)\b"):
++        result["limit"] = 1
++    return result
+ 
+ 
+ def _other_device_effect_scope(text: str) -> bool:
+@@ -6456,6 +6518,7 @@ def _is_definition_question(text: str) -> bool:
+             r"sonando|playing|usando|using)\b",
+         )
+         and not _has(text, r"^what\s+is\s+going\s+on\b")
++        and not (_process_list_domain(text) and _has(text, r"\bobserved\b"))
+     )
+ 
+ 
+@@ -7545,6 +7608,8 @@ def _is_direct_request(text: str) -> bool:
+     if topic is not None:
+         text = topic.group("body")
+     text = _negative_state_question_body(text) or text
++    if _direct_process_inventory_request(text):
++        return True
+     request_head = (
+         rf"(?:{_OPEN}|{_LIST}|{_READ}|{_CREATE}|{_SEARCH}|{_MUTE_VERB}|"
+         r"haz|hacer|hazme|haceme|hace|toma|tomar|fotografia|fotografiar|"
+@@ -9618,30 +9683,17 @@ def _review_system_and_network_effects(
+     if _direct_current_time_request(folded):
+         _append(matches, folded, "system.time", r"\b(?:hora|time|fecha|date)\b")
+     process_domain = _process_list_domain(folded)
+-    direct_process_inventory = (
+-        re.fullmatch(
+-            r"(?:lista|listar|list|show|muestra|muestrame)\s+"
+-            r"(?:(?:los|the|active|activos?)\s+)?(?:procesos?|processes)"
+-            r"[\s.!?]*",
+-            folded,
+-            re.IGNORECASE,
+-        )
+-        is not None
+-    )
+-    if (
+-        _head_is(head, _LIST)
+-        and (process_domain or direct_process_inventory)
+-        and _has(folded, rf"\b{_LIST}\b|\b(?:usan?|uso|consume|memory|memoria)\b")
+-    ):
++    if _direct_process_inventory_request(folded):
+         _append(
+             matches,
+             folded,
+             "system.process.list",
+-            r"\b(?:procesos?|processes)\b",
++            r"^",
+         )
+     if (
+         not any(entry[2] == "system.process.list" for entry in matches)
+-        and _has(folded, r"\b(?:programas?|programs?)\b")
++        and process_domain
++        and _has(folded, r"\b(?:programas?|programs?|apps?|aplicaciones?)\b")
+         and _has(
+             folded,
+             r"\b(?:memoria|memory|cpu|ram|comiendo|eating)\b",
+@@ -9652,7 +9704,7 @@ def _review_system_and_network_effects(
+             matches,
+             folded,
+             "system.process.list",
+-            r"\b(?:programas?|programs?)\b",
++            r"^",
+         )
+     if (
+         not any(entry[2] == "system.process.list" for entry in matches)
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 16930d98..0f2978e2 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -45,7 +45,7 @@ from .effect_intent import (
+     explicit_non_action_body,
+ )
+ from .cpu_prose_adapter import CpuProseAdapter, applies_to_cpu_prose
+-from .measurement_prose_projection import project_system_measurements
++from .measurement_prose_projection import project_process_measurements, project_system_measurements
+ from .llm_transport import (
+     ChatCompletionCancellation,
+     ChatCompletionConnectionPool,
+@@ -3436,6 +3436,8 @@ def _compose_situation_payload(
+         visible_seen = dict(merged_seen)
+         if operation == "system.status":
+             visible_seen = project_system_measurements(visible_seen)
++        elif operation == "system.process.list":
++            visible_seen = project_process_measurements(visible_seen, user_text)
+         if (
+             situation.get("verified") is True
+             and situation.get("succeeded") is True
+diff --git a/src/baxy_mind/measurement_prose_projection.py b/src/baxy_mind/measurement_prose_projection.py
+index bc4242a7..535d65af 100644
+--- a/src/baxy_mind/measurement_prose_projection.py
++++ b/src/baxy_mind/measurement_prose_projection.py
+@@ -8,8 +8,11 @@ different names because they measure different things.
+ from __future__ import annotations
+ 
+ import math
++import re
+ from typing import Any
+ 
++from .request_reading import fold
++
+ 
+ def _byte_count(value: object) -> bool:
+     return type(value) is int and 0 <= value <= 2**64 - 1
+@@ -71,3 +74,45 @@ def project_system_measurements(seen: dict[str, Any]) -> dict[str, Any]:
+         projected_adapters.append(projected)
+     result["adapters"] = projected_adapters
+     return result
++
++
++def project_process_measurements(seen: dict[str, Any], user_text: str) -> dict[str, Any]:
++    """Separate observed count, returned instances and the requested resource."""
++    result = dict(seen)
++    request = fold(user_text)
++    count_request = re.search(
++        r"\b(?:cuantos|cuenta|cantidad|numero|how many|count)\b", request,
++    ) is not None
++    also_list = re.search(r"\b(?:lista(?:los)?|list|show|muestra(?:los|me)?)\b", request)
++    count_only = count_request and (not also_list or re.search(
++        r"\b(?:sin listarlos|without listing|do not list)\b", request,
++    ))
++    if count_only:
++        # Ten returned rows say nothing about a count of two hundred observed.
++        # Keep the authoritative count and its scope without an irrelevant list.
++        return {key: value for key, value in result.items() if key in {
++            "observedProcessCount", "observationScope",
++        }}
++    rows = seen.get("processes")
++    if not isinstance(rows, list):
++        return result
++    projected_rows = []
++    for row in rows:
++        if not isinstance(row, dict):
++            projected_rows.append(row)
++            continue
++        projected = {key: value for key, value in row.items() if key not in {
++            "totalProcessorSeconds", "workingSetBytes", "cpuUsagePercent", "sampleDurationSeconds",
++        }}
++        memory = row.get("workingSetBytes")
++        if seen.get("sort") != "cpu" and _byte_count(memory):
++            projected["resident_memory"] = _quantity(memory / 10**6, "MB")
++        cpu = row.get("cpuUsagePercent")
++        if seen.get("sort") == "cpu" and type(cpu) in (int, float) and math.isfinite(cpu):
++            projected["current_cpu_usage"] = _quantity(cpu, "%")
++            projected["sampleDurationSeconds"] = row.get("sampleDurationSeconds")
++        if re.search(r"\b(?:acumulad[oa]|cumulative|lifetime|total processor seconds)\b", request):
++            projected["lifetime_cpu_time_seconds"] = row.get("totalProcessorSeconds")
++        projected_rows.append(projected)
++    result["processes"] = projected_rows
++    return result
+diff --git a/tests/Baxy.Integration.Tests/ProcessListHandlerTests.cs b/tests/Baxy.Integration.Tests/ProcessListHandlerTests.cs
+index 6f5125c9..a3eb88af 100644
+--- a/tests/Baxy.Integration.Tests/ProcessListHandlerTests.cs
++++ b/tests/Baxy.Integration.Tests/ProcessListHandlerTests.cs
+@@ -1,5 +1,7 @@
+ using System.Text.Json;
+ using System.Text.Json.Nodes;
++using Baxy.App;
++using Baxy.Contracts;
+ using Baxy.Core.Operations;
+ using Baxy.Kernel.Operations;
+ using Baxy.Providers.Windows.SystemStatus;
+@@ -31,10 +33,12 @@ public sealed class ProcessListHandlerTests
+             Assert.That(handler.Definition.Risk, Is.EqualTo(OperationRisk.ReadOnly));
+             Assert.That(outcome.Succeeded, Is.True);
+             Assert.That(outcome.Verified, Is.True);
+-            Assert.That(outcome.Result?.GetProperty("version").GetInt32(), Is.EqualTo(1));
++            Assert.That(outcome.Result?.GetProperty("version").GetInt32(), Is.EqualTo(2));
+             Assert.That(outcome.Result?.GetProperty("sort").GetString(), Is.EqualTo("memory"));
+             Assert.That(outcome.Result?.GetProperty("observedProcessCount").GetInt32(), Is.EqualTo(42));
+             Assert.That(outcome.Result?.GetProperty("processes").GetArrayLength(), Is.EqualTo(2));
++            Assert.That(outcome.Result?.GetProperty("returnedProcessCount").GetInt32(), Is.EqualTo(2));
++            Assert.That(outcome.Result?.GetProperty("observationScope").GetString(), Is.EqualTo("accessible_processes"));
+             Assert.That(provider.LastSort, Is.EqualTo(ProcessStatusSort.Memory));
+             Assert.That(provider.LastLimit, Is.EqualTo(10));
+             Assert.That(
+@@ -47,6 +51,87 @@ public sealed class ProcessListHandlerTests
+         });
+     }
+ 
++    [Test]
++    public async Task CurrentCpuFactsKeepPercentIntervalAndMachineDenominator()
++    {
++        var handler = new ProcessListHandler(new StubProvider(new ProcessStatusSnapshot(
++            42, [new ProcessStatusEntry(101, 10_000, "busy", 2048, 200, 25, 0.2)], 8)));
++
++        OperationOutcome outcome = await handler.ExecuteAsync(Invocation("{\"sort\":\"cpu\"}"), CancellationToken.None);
++
++        Assert.Multiple(() =>
++        {
++            Assert.That(outcome.Succeeded, Is.True);
++            Assert.That(outcome.Result?.GetProperty("logicalProcessorCount").GetInt32(), Is.EqualTo(8));
++            Assert.That(outcome.Result?.GetProperty("processes")[0].GetProperty("cpuUsagePercent").GetDouble(), Is.EqualTo(25));
++            Assert.That(outcome.Result?.GetProperty("processes")[0].GetProperty("sampleDurationSeconds").GetDouble(), Is.EqualTo(0.2));
++        });
++    }
++
++    [Test]
++    public async Task FullProcessPageKeepsEveryInstanceThroughVisibleFacts()
++    {
++        var rows = Enumerable.Range(1, 50).Select(index =>
++            new ProcessStatusEntry(index, 1000 + index, new string('a', 400), 2048, index, 0.5, 0.2)).ToArray();
++        var handler = new ProcessListHandler(new StubProvider(new ProcessStatusSnapshot(207, rows, 8)));
++        OperationOutcome outcome = await handler.ExecuteAsync(
++            Invocation("{\"sort\":\"cpu\",\"limit\":50}"), CancellationToken.None);
++
++        string rawFacts = OperationVisibleFacts.FromOutcome("system.process.list", outcome);
++        var response = new OperationResponse(ProtocolTypes.OperationResponse, "request", "mission", "invocation",
++            OperationStatuses.Completed, rawFacts, true, false, outcome.Result, null);
++        string projected = OperationResponseProjection.Create(response, "system.process.list").Message;
++        JsonNode facts = JsonNode.Parse(projected)!;
++        JsonArray visibleRows = facts["observed"]!["processes"]!.AsArray();
++
++        Assert.Multiple(() =>
++        {
++            Assert.That(rawFacts.Length, Is.GreaterThan(16_384));
++            Assert.That(projected, Is.EqualTo(rawFacts));
++            Assert.That(visibleRows.Count, Is.EqualTo(50));
++            Assert.That(visibleRows.Select(row => row!["processId"]!.GetValue<int>()), Is.EqualTo(Enumerable.Range(1, 50)));
++            Assert.That(facts["observed"]!["observedProcessCount"]!.GetValue<int>(), Is.EqualTo(207));
++            Assert.That(facts["observed"]!["returnedProcessCount"]!.GetValue<int>(), Is.EqualTo(50));
++        });
++    }
++
++    [TestCase("system.process.list", true)]
++    [TestCase("app.open", false)]
++    public void ProcessIdsAreVisibleOnlyForTheRequestedInventory(string operation, bool visible)
++    {
++        using var result = JsonDocument.Parse("""{"processId":731,"token":"secret","handle":99,"name":"Editor"}""");
++        JsonNode facts = JsonNode.Parse(OperationVisibleFacts.FromOutcome(operation,
++            OperationOutcome.Success(result.RootElement.Clone())))!;
++        JsonObject observed = facts["observed"]!.AsObject();
++
++        Assert.Multiple(() =>
++        {
++            Assert.That(observed.ContainsKey("processId"), Is.EqualTo(visible));
++            Assert.That(observed.ContainsKey("token"), Is.False);
++            Assert.That(observed.ContainsKey("handle"), Is.False);
++            Assert.That(observed["name"]!.GetValue<string>(), Is.EqualTo("Editor"));
++        });
++    }
++
++    [TestCase(null, 0.2, 8)]
++    [TestCase(101.0, 0.2, 8)]
++    [TestCase(-1.0, 0.2, 8)]
++    [TestCase(double.NaN, 0.2, 8)]
++    [TestCase(25.0, null, 8)]
++    [TestCase(25.0, 0.0, 8)]
++    [TestCase(25.0, double.PositiveInfinity, 8)]
++    [TestCase(25.0, 0.2, null)]
++    public async Task LifetimeCpuAloneAndInvalidMeasurementsCannotClaimCurrentCpu(
++        double? percent, double? duration, int? logicalCount)
++    {
++        var handler = new ProcessListHandler(new StubProvider(new ProcessStatusSnapshot(
++            42, [new ProcessStatusEntry(101, 10_000, "busy", 2048, 200, percent, duration)], logicalCount)));
++
++        OperationOutcome outcome = await handler.ExecuteAsync(Invocation("{\"sort\":\"cpu\"}"), CancellationToken.None);
++
++        Assert.That(outcome.ErrorCode, Is.EqualTo("process_inventory_unavailable"));
++    }
++
+     [TestCase("null")]
+     [TestCase("[]")]
+     [TestCase("{\"sort\":\"CPU\"}")]
+diff --git a/tests/Baxy.Providers.Windows.Tests/SystemStatus/WindowsProcessStatusProviderTests.cs b/tests/Baxy.Providers.Windows.Tests/SystemStatus/WindowsProcessStatusProviderTests.cs
+index df4fe340..b1092865 100644
+--- a/tests/Baxy.Providers.Windows.Tests/SystemStatus/WindowsProcessStatusProviderTests.cs
++++ b/tests/Baxy.Providers.Windows.Tests/SystemStatus/WindowsProcessStatusProviderTests.cs
+@@ -1,5 +1,7 @@
++using System.Diagnostics;
+ using Baxy.Providers.Windows.SystemStatus;
+ using NUnit.Framework;
++using static Baxy.Providers.Windows.SystemStatus.WindowsProcessStatusProvider;
+ 
+ namespace Baxy.Providers.Windows.Tests;
+ 
+@@ -24,6 +26,13 @@ public sealed class WindowsProcessStatusProviderTests
+             Assert.That(snapshot.ObservedProcessCount, Is.GreaterThan(0));
+             Assert.That(snapshot.Processes, Is.Not.Empty);
+             Assert.That(snapshot.Processes, Has.Count.LessThanOrEqualTo(5));
++            if (sort == ProcessStatusSort.Cpu)
++            {
++                Assert.That(snapshot.LogicalProcessorCount, Is.GreaterThan(0));
++                Assert.That(snapshot.Processes.All(static item =>
++                    item.CpuUsagePercent is >= 0 and <= 100
++                    && item.SampleDurationSeconds >= 0.15), Is.True);
++            }
+             Assert.That(snapshot.Processes.All(static item =>
+                 item.ProcessId > 0
+                 && item.CreationTimeUtcTicks > 0
+@@ -39,4 +48,68 @@ public sealed class WindowsProcessStatusProviderTests
+                 Is.EqualTo(snapshot.Processes.Count));
+         });
+     }
++
++    [Test]
++    public void CpuRanksRecentActivityInsteadOfLifetimeAndNormalizesToMachine()
++    {
++        var first = new Dictionary<ProcessIdentity, ProcessSample>([
++            Sample(101, 1, "old-idle", 9000, 10),
++            Sample(202, 2, "new-busy", 1, 12),
++            Sample(303, 3, "medium", 500, 10),
++        ]);
++        var second = new Dictionary<ProcessIdentity, ProcessSample>([
++            Sample(101, 1, "old-idle", 9000, 12),
++            Sample(202, 2, "new-busy", 5, 13),
++            Sample(303, 3, "medium", 502, 12),
++        ]);
++
++        ProcessStatusSnapshot result = CreateSnapshot(first, second, ProcessStatusSort.Cpu, 2, 8);
++
++        Assert.Multiple(() =>
++        {
++            Assert.That(result.ObservedProcessCount, Is.EqualTo(3));
++            Assert.That(result.Processes.Select(static item => item.ProcessId), Is.EqualTo(new[] { 202, 303 }));
++            Assert.That(result.Processes[0].CpuUsagePercent, Is.EqualTo(50));
++            Assert.That(result.Processes[0].SampleDurationSeconds, Is.EqualTo(1));
++            Assert.That(result.Processes[1].CpuUsagePercent, Is.EqualTo(12.5));
++            Assert.That(result.Processes[1].SampleDurationSeconds, Is.EqualTo(2));
++        });
++    }
++
++    [Test]
++    public void ReusedPidAndInvalidDeltasCannotEnterCpuRanking()
++    {
++        var first = new Dictionary<ProcessIdentity, ProcessSample>([
++            Sample(101, 1, "reused", 100, 10),
++            Sample(202, 2, "rollback", 100, 10),
++            Sample(303, 3, "no-time", 100, 10),
++            Sample(404, 4, "valid", 100, 10),
++        ]);
++        var second = new Dictionary<ProcessIdentity, ProcessSample>([
++            Sample(101, 5, "reused", 1, 11),
++            Sample(202, 2, "rollback", 99, 11),
++            Sample(303, 3, "no-time", 101, 10),
++            Sample(404, 4, "valid", 101, 11),
++        ]);
++
++        ProcessStatusSnapshot result = CreateSnapshot(first, second, ProcessStatusSort.Cpu, 5, 8);
++
++        Assert.That(result.Processes.Select(static item => item.ProcessId), Is.EqualTo(new[] { 404 }));
++    }
++
++    [Test]
++    public void CancelledRequestDoesNotObserveProcesses()
++    {
++        var provider = new WindowsProcessStatusProvider();
++        using var cancellation = new CancellationTokenSource();
++        cancellation.Cancel();
++        Assert.ThrowsAsync<OperationCanceledException>(async () =>
++            await provider.GetProcessesAsync(ProcessStatusSort.Cpu, 5, cancellation.Token));
++    }
++
++    private static KeyValuePair<ProcessIdentity, ProcessSample> Sample(
++        int pid, long created, string name, double cpuSeconds, long wallSeconds) => new(
++            new ProcessIdentity(pid, created, name),
++            new ProcessSample(new ProcessStatusEntry(pid, created, name, 1024, cpuSeconds),
++                wallSeconds * Stopwatch.Frequency));
+ }
+diff --git a/tests/test_effect_intent.py b/tests/test_effect_intent.py
+index 132affb9..41655120 100644
+--- a/tests/test_effect_intent.py
++++ b/tests/test_effect_intent.py
+@@ -4201,7 +4201,6 @@ def test_state_questions_are_recognized_across_languages_and_forms(
+         "¿Por qué mi GPU no se usa?",
+         "¿Qué está usando la VRAM ahora?",
+         "¿Hay algo más usando la GPU ahora?",
+-        "¿Qué proceso me come tanta RAM?",
+         # Fuera del enum medido.
+         "¿A qué temperatura está la GPU?",
+         "gpu temp right now",
+diff --git a/tests/test_price_v8_veto_damage_by_cause.py b/tests/test_price_v8_veto_damage_by_cause.py
+index 22897982..2a72f668 100644
+--- a/tests/test_price_v8_veto_damage_by_cause.py
++++ b/tests/test_price_v8_veto_damage_by_cause.py
+@@ -101,10 +101,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
+ # CPU actor/quantity repairs; consumed V8 evidence and verdict remain unchanged.
+ V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
+     "src/baxy_mind/__main__.py": (
+-        "1f651f36f7c755c47c78bfb8b2b7f3b859d886c72aaf8bfdf53907e315871211"
++        "db333cd34b11d7e099d2b69501d0134e436460086c2f7b0d0c912393cf125a29"
+     ),
+     "src/baxy_mind/llm.py": (
+-        "16b3b078d61673fed9b28276d645b79e341c5c4b8f0632cc40cc2e7c6cf8bbea"
++        "6b6b7a15538fc90ce294b38e20d4f4692cf4936ce9419f48d8dcbd93459f98c6"
+     ),
+ }
+ 

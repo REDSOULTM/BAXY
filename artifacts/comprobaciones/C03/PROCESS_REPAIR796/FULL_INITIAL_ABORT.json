@@ -1,0 +1,6 @@
+{
+  "status": "aborted_not_passed",
+  "utc": "2026-09-10T23:01:03.8094221Z",
+  "pid": 35812,
+  "reason": "Read-only audit proved current-source declarations still pin pre796 __main__, llm and program tree. Stop before spending the remaining Full time on a known mismatch; preserve partial log and rerun complete Full after declaration update."
+}

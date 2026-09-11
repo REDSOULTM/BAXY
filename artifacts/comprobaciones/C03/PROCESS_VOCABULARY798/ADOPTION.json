@@ -1,0 +1,33 @@
+{
+  "utc": "2026-09-11T00:59:29.049963+00:00",
+  "adopted": true,
+  "sources": [
+    796,
+    798
+  ],
+  "source_pins": "SOURCE_PINS_PUBLISH.json",
+  "full": "FULL_RESULT.json",
+  "full_exit_code": 0,
+  "python_passed": 12684,
+  "python_skips": 3,
+  "python_subtests": 466,
+  "dotnet_passed": 4625,
+  "dotnet_aggregate_skips": 1,
+  "dotnet_printed_opt_in_lines": 16,
+  "publication_test_validation": "LF_PUBLICATION_VALIDATION.json",
+  "product": "../PROCESS_BATCH799/ADJUDICATION.json",
+  "decision": "Root adopts verified current-CPU measurements, process inventory facts and observed-name lexical handling.799 delivers50/50finals without prose veto;6CPU responses pass. Total19/50 vs13/50, with1fresh-value rounding loss preserved; no claim of zero regressions or global completion. Scope, homonym identity, rounding and application aggregation remain open.",
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "main_unchanged": true,
+  "publication_integrity": {
+    "initial_failed": 1,
+    "initial_passed": 2,
+    "repair_passed": 1,
+    "repair_seconds": 21.57,
+    "scope": "Two metadata receipts normalized to original published LF content, JSON unchanged; failed owner re-run green. Initial log preserved."
+  }
+}

@@ -8,7 +8,10 @@ different names because they measure different things.
 from __future__ import annotations
 
 import math
+import re
 from typing import Any
+
+from .request_reading import fold
 
 
 def _byte_count(value: object) -> bool:
@@ -70,4 +73,46 @@ def project_system_measurements(seen: dict[str, Any]) -> dict[str, Any]:
             projected["dedicated_vram_utilization"] = _quantity(100 * used / total, "%")
         projected_adapters.append(projected)
     result["adapters"] = projected_adapters
+    return result
+
+
+def project_process_measurements(seen: dict[str, Any], user_text: str) -> dict[str, Any]:
+    """Separate observed count, returned instances and the requested resource."""
+    result = dict(seen)
+    request = fold(user_text)
+    count_request = re.search(
+        r"\b(?:cuantos|cuenta|cantidad|numero|how many|count)\b", request,
+    ) is not None
+    also_list = re.search(r"\b(?:lista(?:los)?|list|show|muestra(?:los|me)?)\b", request)
+    count_only = count_request and (not also_list or re.search(
+        r"\b(?:sin listarlos|without listing|do not list)\b", request,
+    ))
+    if count_only:
+        # Ten returned rows say nothing about a count of two hundred observed.
+        # Keep the authoritative count and its scope without an irrelevant list.
+        return {key: value for key, value in result.items() if key in {
+            "observedProcessCount", "observationScope",
+        }}
+    rows = seen.get("processes")
+    if not isinstance(rows, list):
+        return result
+    projected_rows = []
+    for row in rows:
+        if not isinstance(row, dict):
+            projected_rows.append(row)
+            continue
+        projected = {key: value for key, value in row.items() if key not in {
+            "totalProcessorSeconds", "workingSetBytes", "cpuUsagePercent", "sampleDurationSeconds",
+        }}
+        memory = row.get("workingSetBytes")
+        if seen.get("sort") != "cpu" and _byte_count(memory):
+            projected["resident_memory"] = _quantity(memory / 10**6, "MB")
+        cpu = row.get("cpuUsagePercent")
+        if seen.get("sort") == "cpu" and type(cpu) in (int, float) and math.isfinite(cpu):
+            projected["current_cpu_usage"] = _quantity(cpu, "%")
+            projected["sampleDurationSeconds"] = row.get("sampleDurationSeconds")
+        if re.search(r"\b(?:acumulad[oa]|cumulative|lifetime|total processor seconds)\b", request):
+            projected["lifetime_cpu_time_seconds"] = row.get("totalProcessorSeconds")
+        projected_rows.append(projected)
+    result["processes"] = projected_rows
     return result

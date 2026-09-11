@@ -1,0 +1,71 @@
+{
+  "utc": "2026-09-10T23:31:32.068461+00:00",
+  "command": ".\\scripts\\test_source_quality.ps1 -Mode Full",
+  "session": 39408,
+  "exit_code": 1,
+  "dotnet_projects": [
+    {
+      "project": "Baxy.Contracts.Tests.dll",
+      "failed": 0,
+      "passed": 60,
+      "aggregate_skipped": 0,
+      "duration": "99 ms"
+    },
+    {
+      "project": "Baxy.Integration.Tests.dll",
+      "failed": 0,
+      "passed": 3373,
+      "aggregate_skipped": 1,
+      "duration": "9 m 59 s"
+    },
+    {
+      "project": "Baxy.Kernel.Tests.dll",
+      "failed": 0,
+      "passed": 152,
+      "aggregate_skipped": 0,
+      "duration": "1 s"
+    },
+    {
+      "project": "Baxy.Providers.Windows.Tests.dll",
+      "failed": 0,
+      "passed": 549,
+      "aggregate_skipped": 0,
+      "duration": "44 s"
+    },
+    {
+      "project": "Baxy.Setup.Tests.dll",
+      "failed": 0,
+      "passed": 477,
+      "aggregate_skipped": 0,
+      "duration": "1 m 24 s"
+    }
+  ],
+  "python": {
+    "failed": 1,
+    "passed": 12653,
+    "skipped": 3,
+    "subtests_passed": 466,
+    "seconds": 732.89
+  },
+  "failed_test": "test_r278_reports_a_repaired_tree_with_no_restorable_files_left",
+  "cause": "Two historical REVIEW_CAPTURE.json files had CRLF; their LF bytes equal published HEAD blobs. No candidate source changed.",
+  "source796_unchanged": true,
+  "repairs": [
+    {
+      "path": "artifacts/comprobaciones/C03/STATUS_BATCH772/REVIEW_CAPTURE.json",
+      "after_sha256": "12d632bb55711467babb044fe07365320fcfe63f87d75a6df9ed9c6f07717701",
+      "restored_exact_head_blob": true,
+      "json_values_unchanged": true
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/STATUS_BATCH774/REVIEW_CAPTURE.json",
+      "after_sha256": "4e13bb1eee03e0ca3f56ee3a0cc913bdac8b8f22b0c8622471d73e5e1a0603b4",
+      "restored_exact_head_blob": true,
+      "json_values_unchanged": true
+    }
+  ],
+  "eligible_for_adoption": false,
+  "full_log_sha256": "ae43bf229fdfa70508dc6873c3a8d24ebaeb878e0e873029288d63d81e074961",
+  "next": "Run owning integrity tests; then registered process797 as unadopted candidate. Full remains required before adoption.",
+  "invalid_byte_hashes_private_only": "Original CRLF bytes and hashes are preserved privately; the existing R278 checker treats every public 64-hex value as an accepted seal."
+}

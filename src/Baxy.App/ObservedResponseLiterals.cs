@@ -3,10 +3,10 @@ using System.Text.RegularExpressions;
 
 namespace Baxy.App;
 
-/// <summary>Observed window names are data, not vocabulary about BAXY internals.</summary>
+/// <summary>Verified observed names are data, not vocabulary about BAXY internals.</summary>
 internal static class ObservedResponseLiterals
 {
-    internal static string WithoutWindowNames(string text, string source)
+    internal static string WithoutObservedNames(string text, string source)
     {
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         CollectSource(source, names, 0);
@@ -51,24 +51,30 @@ internal static class ObservedResponseLiterals
         if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
             && node.TryGetProperty("operation", out JsonElement operation)
             && operation.ValueKind == JsonValueKind.String
-            && operation.GetString()!.StartsWith("window.", StringComparison.Ordinal)
+            && (operation.GetString()!.StartsWith("window.", StringComparison.Ordinal)
+                || operation.GetString() == "system.process.list")
             && node.TryGetProperty("verified", out JsonElement verified) && verified.ValueKind == JsonValueKind.True
             && node.TryGetProperty("succeeded", out JsonElement succeeded) && succeeded.ValueKind == JsonValueKind.True
-            && node.TryGetProperty("observed", out JsonElement observed) && observed.ValueKind == JsonValueKind.Object
-            && observed.TryGetProperty("windows", out JsonElement windows) && windows.ValueKind == JsonValueKind.Array)
+            && node.TryGetProperty("observed", out JsonElement observed) && observed.ValueKind == JsonValueKind.Object)
         {
-            foreach (JsonElement window in windows.EnumerateArray())
+            bool processInventory = operation.GetString() == "system.process.list";
+            string[] fields = processInventory ? ["name"] : ["title", "processName"];
+            if (observed.TryGetProperty(processInventory ? "processes" : "windows", out JsonElement entries)
+                && entries.ValueKind == JsonValueKind.Array)
             {
-                if (window.ValueKind != JsonValueKind.Object)
+                foreach (JsonElement entry in entries.EnumerateArray())
                 {
-                    continue;
-                }
-                foreach (string field in new[] { "title", "processName" })
-                {
-                    if (window.TryGetProperty(field, out JsonElement value) && value.ValueKind == JsonValueKind.String
-                        && value.GetString() is { Length: > 0 and <= 4096 } name && !string.IsNullOrWhiteSpace(name))
+                    if (entry.ValueKind != JsonValueKind.Object)
                     {
-                        names.Add(name);
+                        continue;
+                    }
+                    foreach (string field in fields)
+                    {
+                        if (entry.TryGetProperty(field, out JsonElement value) && value.ValueKind == JsonValueKind.String
+                            && value.GetString() is { Length: > 0 and <= 4096 } name && !string.IsNullOrWhiteSpace(name))
+                        {
+                            names.Add(name);
+                        }
                     }
                 }
             }

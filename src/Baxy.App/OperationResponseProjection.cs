@@ -20,7 +20,10 @@ internal sealed record OperationResponseProjection(string Message)
 
         if (!string.IsNullOrWhiteSpace(response.Message))
         {
-            return new OperationResponseProjection(TruncateMessage(response.Message.Trim()));
+            // The process catalog allows fifty verified rows. Keep its bounded
+            // structured facts whole; cutting JSON makes every observation vanish.
+            return new OperationResponseProjection(TruncateMessage(response.Message.Trim(),
+                maximumLength: operationName == "system.process.list" ? 48_000 : MaximumMessageLength));
         }
 
         return new OperationResponseProjection(
@@ -33,14 +36,15 @@ internal sealed record OperationResponseProjection(string Message)
 
     private static string TruncateMessage(
         string value,
-        string suffix = "… [respuesta truncada]")
+        string suffix = "… [respuesta truncada]",
+        int maximumLength = MaximumMessageLength)
     {
-        if (value.Length <= MaximumMessageLength)
+        if (value.Length <= maximumLength)
         {
             return value;
         }
 
-        int keep = Math.Max(0, MaximumMessageLength - suffix.Length);
+        int keep = Math.Max(0, maximumLength - suffix.Length);
         if (keep > 0
             && keep < value.Length
             && char.IsHighSurrogate(value[keep - 1])

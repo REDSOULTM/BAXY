@@ -4201,7 +4201,6 @@ def test_state_questions_are_recognized_across_languages_and_forms(
         "¿Por qué mi GPU no se usa?",
         "¿Qué está usando la VRAM ahora?",
         "¿Hay algo más usando la GPU ahora?",
-        "¿Qué proceso me come tanta RAM?",
         # Fuera del enum medido.
         "¿A qué temperatura está la GPU?",
         "gpu temp right now",

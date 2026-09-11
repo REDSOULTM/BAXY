@@ -1,0 +1,15 @@
+F..                                                                      [100%]
+================================== FAILURES ===================================
+_______ test_r278_reports_a_repaired_tree_with_no_restorable_files_left _______
+
+    def test_r278_reports_a_repaired_tree_with_no_restorable_files_left() -> None:
+        result = _module().classify(ROOT)
+    
+        # The sweep already ran, so nothing may still be broken by the checkout.
+>       assert result["restorableCount"] == 0
+E       assert 2 == 0
+
+tests\test_line_ending_seal_damage_r278.py:26: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_line_ending_seal_damage_r278.py::test_r278_reports_a_repaired_tree_with_no_restorable_files_left
+1 failed, 2 passed in 242.96s (0:04:02)

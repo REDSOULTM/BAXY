@@ -1,0 +1,63 @@
+{
+  "utc": "2026-09-11T00:43:25.469574+00:00",
+  "full_session": 24887,
+  "status": "complete",
+  "dotnet": [
+    {
+      "failed": 0,
+      "passed": 60,
+      "aggregate_skipped": 0,
+      "total": 60,
+      "duration": "237 ms",
+      "project": "Baxy.Contracts.Tests.dll (net10.0)"
+    },
+    {
+      "failed": 0,
+      "passed": 3387,
+      "aggregate_skipped": 1,
+      "total": 3388,
+      "duration": "10 m 15 s",
+      "project": "Baxy.Integration.Tests.dll (net10.0)"
+    },
+    {
+      "failed": 0,
+      "passed": 152,
+      "aggregate_skipped": 0,
+      "total": 152,
+      "duration": "2 s",
+      "project": "Baxy.Kernel.Tests.dll (net10.0)"
+    },
+    {
+      "failed": 0,
+      "passed": 549,
+      "aggregate_skipped": 0,
+      "total": 549,
+      "duration": "47 s",
+      "project": "Baxy.Providers.Windows.Tests.dll (net10.0)"
+    },
+    {
+      "failed": 0,
+      "passed": 477,
+      "aggregate_skipped": 0,
+      "total": 477,
+      "duration": "1 m 31 s",
+      "project": "Baxy.Setup.Tests.dll (net10.0)"
+    }
+  ],
+  "dotnet_passed": 4625,
+  "aggregate_skipped": 1,
+  "printed_omissions": 16,
+  "full_passed": true,
+  "source_pins_unchanged": true,
+  "exit_code": 0,
+  "python": {
+    "passed": 12684,
+    "skipped": 3,
+    "subtests_passed": 466,
+    "seconds": 762.59
+  },
+  "full_log_sha256": "daa51e100da95dfbffa931752b9fdc892b92c2f5e057421b9e4ba4560829f4be",
+  "command": ".\\scripts\\test_source_quality.ps1 -Mode Full",
+  "adopted": false,
+  "pending": "Root adjudication of registered product799; Git line-ending normalization of one test and owning validation before publication. Runtime source stays unchanged during the product run."
+}

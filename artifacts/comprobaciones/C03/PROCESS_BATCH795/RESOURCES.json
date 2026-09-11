@@ -1,0 +1,9 @@
+{
+  "utc": "2026-09-10T22:35:40.555304+00:00",
+  "violations": [],
+  "gpu_peak_mib": 3499.55859375,
+  "gpu_telemetry_available": true,
+  "ram_peak_mib": 2445.0625,
+  "seconds": 258.594,
+  "scope": "Owned conductor product process tree; no voice or visible desktop UI credit."
+}

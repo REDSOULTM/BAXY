@@ -1,0 +1,66 @@
+{
+  "source_adjudication": "PROCESS_BATCH799/ADJUDICATION.json",
+  "source_candidate": 798,
+  "new_coverage": 0,
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "cases": [
+    {
+      "case_id": "H0133",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Returned process subset is not disclosed with the full observed count; instance identity/completeness is not retained where names repeat."
+    },
+    {
+      "case_id": "H0158",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Returned process subset is not disclosed with the full observed count; instance identity/completeness is not retained where names repeat. Also calls memory use high without evidence of pressure or a stated relative comparison."
+    },
+    {
+      "case_id": "H0169",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Unspecified memory ranking is backed by fresh facts, but1012.6MB truncates1012.6787MB instead of rounding to1012.7 at one decimal. Same conservative numeric criterion retained from797case50."
+    },
+    {
+      "case_id": "H0364",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Fresh requested ranking/metric or explicitly scoped observed count is preserved. Values match observed measurements at displayed precision."
+    },
+    {
+      "case_id": "H0470",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Numerically correct observed count is stated as an unqualified running/system total; accessible observation scope is missing."
+    },
+    {
+      "case_id": "H0650",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Requested memory top5 retains ranked names and values but same-name ChatGPT instances lose their PIDs."
+    },
+    {
+      "case_id": "H0669",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Fresh requested ranking/metric or explicitly scoped observed count is preserved. Values match observed measurements at displayed precision."
+    },
+    {
+      "case_id": "H0675",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "One process working set is asserted as app memory without verified application membership/aggregation."
+    },
+    {
+      "case_id": "H0678",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Numerically correct observed count is stated as an unqualified running/system total; accessible observation scope is missing."
+    }
+  ]
+}

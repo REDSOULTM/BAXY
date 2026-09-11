@@ -1,3 +1,35 @@
+796+798 adoptados con Full798 exit0 y confirmacion799:19/50 validos,50 finales/0 vetos;31 abiertos en panel. SoloLF en un test normalizado, AST equivalente y1961 dueñas pass/0skip. Publicacion explicita en Goal-c03; main intacto. Siguiente alcance800/confirmacion801; Qwen elegido. Encuesta28/714/0.
+
+799 terminado y adjudicado por raiz:19/50 validos,31 sin credito,50 respuestas publicadas/50 lecturas/0 vetos. Full798 exit0 recogido. No procesos activos;796+798 pendientes de publicacion tras normalizar solo LF de un test y ejecutar su suite duena. Encuesta28 cubiertos/714 abiertos/0NA. Siguiente integrar alcance800 y confirmar mismos50 en801; Qwen elegido, comparaciones cerradas.
+
+Full7980 recogido24887:12684Pythonpass/3skips/466subtests762,59s;4625.NETpass/1omisiónagregada,16opt-ins impresos.799 activo71175/launcher17468, mismos50casos795/24pinsfinales. No editar fuente ni duplicar. Encuesta28/714/0, sin adopción.
+
+Full798 sigue activo24887: cinco suites.NET con4625pases/1omisión agregada; Python en curso.24pins intactos. Cola71175/PID27020 espera Full0 y arrancará799. Preparada vista compacta scratchpad/c03-view-process-review.py, sin adjudicación automática. Normalización futura de25CRLF del test_effect_intent tiene AST idéntico; archivo actual sin tocar. Encuesta28/714/0; ninguna fuente adoptada.
+
+798: Full activo24887, sin cambio de fuente.799 en cola71175/PID27020; espera Full0 y apaga build servers antes de mismos50 casos. Replay55/55ocurrencias de10casosCPU exactas en1stub; casoCPU09 también conserva sus2borradores en prueba focalizada. Parche de alcance/PID preparado en worktree aislado:124pass, aún sin integrar ni inferir. Matriz actualizada sin cerrar filas; encuesta28/714/0.796+798 sin adoptar.
+
+798: replay de55ocurrencias capturadas en10casosCPU conserva55/55 textos en1llamada simulada; no inferencia nueva ni cobertura. Full completo activo24887, fuente24pinsfinales intacta.799 preparado mismos50casos, exigeFull0. Reparación de alcance/PID en worktree aislado por agente.28/714/0.
+
+797 completada en42+5+3 segmentos:13/50 válidos,9 ganancias y0 pérdidas respecto795.798 corrige veto a nombres observados de procesos;104Python/71C# dueñas pass. Regresión3247pass/1skip/121subtests; Fast rojo sólo formato del nuevo test C#, corregido sin cambio de runtime.24pins finales SOURCE_PINS_FINAL.json. No inferencia activa ni adopción; prueba capturada y Full pendientes. Qwen elegido; encuesta28/714/0.
+
+797/8485 terminó1 por system_free_ram_bound tras42turnos;17fuentes intactas,3497,56MiBVRAM/2384,50MiBRAM/384,828s. Servidores de compilación apagados, disponible después4739,89MiB. Restantes8 activos en87257/launcher24448 con mismo candidato796 yDLL, perfil nuevo declarado; no llamar50continuos. R2783pass; Fulladopciónpendiente. Qwen elegido;28/714/0.
+
+R278 reparado:3pass/0skip en57,47s;31356terminal0 recogido.797 arrancando en8485: mismos50casos795 y17fuentes796 intactas; candidato sin adoptar. Full39408 terminó1 por dosJSON históricosCRLF ya restaurados exactamente aHEAD; futuroFullverde sigue exigido antesdeadopción. Qwen elegido;28/714/0.
+
+Full796 /39408 terminó1: .NET4611pass y1omisión agregada; Python12653pass,3skips,466subtests y1falloR278. Se restauraron dos REVIEW_CAPTURE772/774 a los bytes exactos deHEAD (sólo CRLF→LF);17fuentes796 intactas. DueñaR278 activa31356.797 se ejecutará como candidato sin adoptar tras esa dueña verde; Full verde sigue obligatorio antes de adopción. Qwen elegido. Encuesta28cubiertos/714abiertos/0NA.
+
+Full796 sigue confirmado vivo en39408;17pins intactos,contratos60pass e integraciónen curso. Se obtuvo evidencia nueva paraH0675: EX2Windows mide memoria residente privada; probe desechable8MiB→delta8.392.704bytes,0,0192–0,0316ms. AppDiagnosticInfo sólo appsconpaquete; membresíaWin32/auxiliares siguependiente. APP_MEMORY_FINDING.md. Sin editarcandidato,28/714/0.
+
+796 candidato17fuentes selladas;3248Pythonpass0skip,Fast0,provider6pass e integración33pass antes del último límiteApp. Full inicial85398abortado al detectar declaraciones actuales obsoletas; log conservado,no pass. Declaraciones actualizadas,programa4079a0462f7,V8control5pass. Full completo activo39408/full-final.log; no editar fuente.797 preparado mismos50casos795, exige Full0. Qwen elegido;28/714/0,sinadopción.
+
+796 candidato sellado14fuentes;3248Pythonpass0skip/89,31s,Fast0/Release22,87s. Provider6pass;33integración anteriores al último límiteApp. Full pendiente por cambiosC#+Python; sin adoptar.795 baseline4/50,28/714/0. SelecciónQwencerrada.
+
+795 completa50/50,4correctas/46fallos;48385terminal0 recogida, fuentes793 intactas durante corrida.796 candidato CPU intervalar/conteo/PID/routing en reparación, no adoptado. Provider6pass0skip; integración33pass0skip. DueñasPython activas80153. Modelo Qwen elegido; sin más comparaciones.28/714/0.
+
+795 categoría procesos activa48385,launcher27892:9requisitos humanos y41variantes,50turnos reales con Qwen registrado. Fuente793/65761a14intacta; no editar durante corrida. CPU acumulada no se puntúa como uso actual; conteo observado no es longitud de lista.28/714/0.
+
+793 fuente publicada 65761a14dff7ee12092321878c154edccfc7268d: HEAD=origin=remoto,13pins fuente verificados enGit;main intacto.794 confirma36/50,4recuperaciones y0pérdidas.3134pass/1skipSTT+121subtests,Fast0. Modelo Qwen elegido; siguiente categoría process.list795 sin más comparaciones. Sin procesos activos.28/714/0.
+
 794 completada:36/50 correctos,4 recuperaciones y0 pérdidas frente792A; cuatro primeros borradores entregados exactos en1petición.3134pass/1skipSTT+121subtests,Fast0. Se adopta793 con787/789/791 heredados; fuente lista para publicar.136,516s;3499,56MiBVRAM/764,42MiBRSS compositor.56452terminal0 recogida, sin inferencia. Qwen elegido; siguiente categoría process.list795, sólo bloqueantes. Encuesta28/714/0.
 
 794 categoría completa activa56452:50casos con Qwen registrado, primeros payloads iguales788, sólo nuevos vetos793. Modelo ya elegido, sin ablation ni otros modelos.793 validado3134pass/1skipSTT+121subtests,Fast0/Release23,74s;66681recogida.28/714/0.
