@@ -1,0 +1,20 @@
+{
+  "exit_code": 1,
+  "dotnet_summaries": [
+    "Correctas! - Con error:     0, Superado:    60, Omitido:     0, Total:    60, Duración: 257 ms - Baxy.Contracts.Tests.dll (net10.0)",
+    "Correctas! - Con error:     0, Superado:  3404, Omitido:     1, Total:  3405, Duración: 9 m 16 s - Baxy.Integration.Tests.dll (net10.0)",
+    "Correctas! - Con error:     0, Superado:   152, Omitido:     0, Total:   152, Duración: 1 s - Baxy.Kernel.Tests.dll (net10.0)",
+    "Correctas! - Con error:     0, Superado:   549, Omitido:     0, Total:   549, Duración: 43 s - Baxy.Providers.Windows.Tests.dll (net10.0)",
+    "Correctas! - Con error:     0, Superado:   477, Omitido:     0, Total:   477, Duración: 1 m 24 s - Baxy.Setup.Tests.dll (net10.0)"
+  ],
+  "dotnet_printed_omissions": 16,
+  "python": {
+    "failed": 1,
+    "passed": 12713,
+    "skipped": 3,
+    "subtests_passed": 466,
+    "seconds": 729.37
+  },
+  "source_pins_unchanged": true,
+  "adopted": false
+}

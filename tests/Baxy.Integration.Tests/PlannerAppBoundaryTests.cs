@@ -559,6 +559,105 @@ public sealed class PlannerAppBoundaryTests
             Is.EqualTo(TimeSpan.FromSeconds(5)));
     }
 
+    [TestCase(0, false)]
+    [TestCase(7, false)]
+    [TestCase(8, true)]
+    [TestCase(50, true)]
+    public void ProcessInventoryCompositionBudgetUsesReturnedRows(int count, bool dense)
+    {
+        var processes = new JsonArray();
+        foreach (int index in Enumerable.Range(0, count))
+        {
+            processes.Add(new JsonObject { ["processId"] = index + 1, ["name"] = "p" });
+        }
+        var situation = new JsonObject
+        {
+            ["kind"] = "operation",
+            ["operation"] = "system.process.list",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject
+            {
+                ["processes"] = processes,
+                ["returnedProcessCount"] = count,
+                ["observedProcessCount"] = 200,
+            },
+        };
+        UserMessageDraft draft = UserMessagePolicy.Create(
+            situation.ToJsonString(), UserMessageEvent.Status);
+        JsonObject facts = ModelMessageComposer.CreateFacts(draft);
+        string before = facts.ToJsonString();
+
+        Assert.Multiple(() =>
+        {
+            TimeSpan gpu = MindSidecarClient.SelectMessageCompositionTimeout(facts);
+            TimeSpan cpu = MindSidecarClient.SelectMessageCompositionTimeout(facts, cpuFallback: true);
+            Assert.That(gpu, Is.EqualTo(TimeSpan.FromSeconds(dense ? 10 : 5)));
+            Assert.That(cpu, Is.EqualTo(TimeSpan.FromSeconds(dense ? 130 : 60)));
+            Assert.That(MindSidecarClient.SelectMessageCompositionProtocolBudget(gpu),
+                Is.EqualTo(dense ? 9d : 4d));
+            Assert.That(MindSidecarClient.SelectMessageCompositionProtocolBudget(cpu),
+                Is.EqualTo(dense ? 120d : 55d));
+            Assert.That(facts.ToJsonString(), Is.EqualTo(before));
+        });
+    }
+
+    [TestCase(511, false)]
+    [TestCase(512, true)]
+    public void ProcessInventoryCompositionBudgetUsesSerializedCharacterBoundary(int length, bool dense)
+    {
+        var processes = new JsonArray(new JsonObject { ["processId"] = 1, ["name"] = "" });
+        int overhead = processes.ToJsonString().Length;
+        processes[0]!["name"] = new string('a', length - overhead);
+        Assert.That(processes.ToJsonString().Length, Is.EqualTo(length));
+        var situation = new JsonObject
+        {
+            ["operation"] = "system.process.list",
+            ["verified"] = true,
+            ["succeeded"] = true,
+            ["observed"] = new JsonObject { ["processes"] = processes },
+        };
+        var facts = new JsonObject { ["situation"] = situation.ToJsonString() };
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindSidecarClient.SelectMessageCompositionTimeout(facts),
+                Is.EqualTo(TimeSpan.FromSeconds(dense ? 10 : 5)));
+            Assert.That(MindSidecarClient.SelectMessageCompositionTimeout(facts, cpuFallback: true),
+                Is.EqualTo(TimeSpan.FromSeconds(dense ? 130 : 60)));
+        });
+    }
+
+    [TestCase("false", "true", "{\"processes\":[1,2,3,4,5,6,7,8]}")]
+    [TestCase("true", "false", "{\"processes\":[1,2,3,4,5,6,7,8]}")]
+    [TestCase("null", "true", "{\"processes\":[1,2,3,4,5,6,7,8]}")]
+    [TestCase("\"true\"", "true", "{\"processes\":[1,2,3,4,5,6,7,8]}")]
+    [TestCase("true", "1", "{\"processes\":[1,2,3,4,5,6,7,8]}")]
+    [TestCase("true", "true", "[]")]
+    [TestCase("true", "true", "{\"processes\":8}")]
+    [TestCase("true", "true", "{\"processes\":\"12345678\"}")]
+    [TestCase("true", "true", "{\"processes\":{},\"observedProcessCount\":200}")]
+    [TestCase("true", "true", "{\"observedProcessCount\":200}")]
+    [TestCase("true", "true", "{\"processes\":null,\"observedProcessCount\":200}")]
+    public void ProcessCountOrInvalidInventoryRetainsOrdinaryCompositionBudget(
+        string verified, string succeeded, string observed)
+    {
+        var situation = new JsonObject
+        {
+            ["operation"] = "system.process.list",
+            ["verified"] = JsonNode.Parse(verified),
+            ["succeeded"] = JsonNode.Parse(succeeded),
+            ["observed"] = JsonNode.Parse(observed),
+        };
+        var facts = new JsonObject { ["situation"] = situation.ToJsonString() };
+        Assert.Multiple(() =>
+        {
+            Assert.That(MindSidecarClient.SelectMessageCompositionTimeout(facts),
+                Is.EqualTo(TimeSpan.FromSeconds(5)));
+            Assert.That(MindSidecarClient.SelectMessageCompositionTimeout(facts, cpuFallback: true),
+                Is.EqualTo(TimeSpan.FromSeconds(60)));
+        });
+    }
+
     [TestCase("Son las 07 horas y 58 minutos.", true)]
     [TestCase("It is 07 hours and 58 minutes.", true)]
     [TestCase("Son las 07 horas y 59 minutos.", false)]

@@ -1,0 +1,13 @@
+{
+  "utc": "2026-09-11T03:21:45.428748+00:00",
+  "status": "prepared_not_run",
+  "runner": "scratchpad/c03-application-category-next.py",
+  "runner_sha256": "64b849888cfc546a30d2aa625fb52b833b5dcff20d160a4608cc7d93d6accf21",
+  "reviewer": "scratchpad/c03-review-application-next.py",
+  "reviewer_sha256": "8f7d48a2ffecbf103dc3f036474551df2229b91fe70cc84f3485ceb463a960af",
+  "original_panel_sha256": "207b772a600bc7c5e334c470ab95eb56eb8831c52c10bb1d5166e6726099e8e2",
+  "root_review": "Read all75 inputs/criteria; no panel changes. Source/Full linked, infrastructure-only cleanup, observed bookends do not prove successful effects. Independent read-only review found no blockers.",
+  "fixtures": "Root6 pure cursor controls; agent15 correlator controls; syntax checked in memory. No product/GPU/UI launch.",
+  "adjudication": "root only, not started",
+  "coverage_added": 0
+}

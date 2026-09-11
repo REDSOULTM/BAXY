@@ -60,6 +60,9 @@ panel = read(panel_path)
 assert len(panel) == 50 and len({c['case_id'] for c in panel}) == 50
 previous = ROOT / 'artifacts/comprobaciones/C03/PROCESS_BATCH803'
 previous_private = PRIVATE.parent / 'C03-process-batch803-private'
+previous_prereg = read(previous / 'PREREG.json')
+assert sha(panel_path) == previous_prereg['panel_sha256']
+assert sha(plan_path) == previous_prereg['plan_sha256']
 previous_exit = read(previous / 'EXIT.json')
 assert previous_exit['exit_code'] == 1
 assert all(previous_exit[key] for key in ('manifest_unchanged', 'sources_unchanged',
@@ -86,9 +89,10 @@ paths = subprocess.check_output(
     ['git', 'ls-files', '--cached', '--others', '--exclude-standard', '--', 'src', 'scripts', 'main.py'],
     cwd=ROOT, text=True, encoding='utf-8').splitlines()
 sources = {name: sha(ROOT / name) for name in sorted(set(paths)) if (ROOT / name).is_file()}
+assert sources == previous_prereg['sources'], 'source differs from original803 candidate'
 app = ROOT / 'src/Baxy.App/bin/Release/net10.0-windows10.0.19041.0/Baxy.dll'
 app_sha = sha(app)
-assert app_sha == read(previous / 'PREREG.json')['app_dll_sha256']
+assert app_sha == previous_prereg['app_dll_sha256']
 OUT.mkdir()
 PRIVATE.mkdir()
 (PRIVATE / 'build-preparation.log').write_bytes(preparation_stdout)
@@ -114,6 +118,10 @@ command = [sys.executable, 'main.py', '--conductor', '--profile', str(PROFILE), 
 prereg = {
     'utc': utc(), 'method': 'Remaining41 of sealed50 after RAM interruption803. First9 finals and interrupted next attempt preserved. Same candidate802 and DLL; new isolated profile, so not50 continuous turns. No model comparison.',
     'head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
+    'original_segment': {'prereg_sha256': sha(previous / 'PREREG.json'),
+                         'exit_sha256': sha(previous / 'EXIT.json'),
+                         'review_sha256': sha(previous_private / 'live-review.json'),
+                         'root_adjudication_sha256': sha(previous_private / 'root-adjudication.json')},
     'private': str(PRIVATE), 'panel_sha256': sha(panel_path), 'turns_sha256': sha(turns),
     'plan_sha256': sha(plan_path), 'cases': [{'case_id': c['case_id'], 'group': c['group']} for c in panel],
     'criteria': plan['criteria'], 'coverage_rule': plan['coverage_rule'],

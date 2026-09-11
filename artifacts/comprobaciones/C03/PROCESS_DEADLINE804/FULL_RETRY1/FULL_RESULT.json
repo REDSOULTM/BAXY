@@ -1,0 +1,162 @@
+{
+  "kind": "root_reviewed_validation_result",
+  "adopted": false,
+  "coverage_delta": 0,
+  "first_full_red_preserved": {
+    "utc": "2026-09-11T03:11:25.660336+00:00",
+    "exit_code": 1,
+    "source_pins_unchanged": true,
+    "log_sha256": "6709ba30397c1cff9c46a71e25f2207bd9688a3c4d31df3dce868e78e9f4dfc4",
+    "adopted": false
+  },
+  "retry1": {
+    "utc": "2026-09-11T03:41:04.302647+00:00",
+    "exit_code": 0,
+    "source_pins_unchanged": true,
+    "source_pins_sha256": "4df87d346761614c42090452867af99aa27056e9e10a45f941f39d4da02e7022",
+    "log_sha256": "5f9bcf879bfa4ec6382a8775cd224e393958749c3e9e9684815dfb6556f79a5b",
+    "adopted": false,
+    "previous_failure": "../FULL_EXIT.json",
+    "repair": "../LINE_ENDING_REPAIR.json",
+    "collector": "Windows psutil.Process.wait on verified PID/create time; original wrapper error preserved in FULL_PROCESS.json"
+  },
+  "process": {
+    "utc": "2026-09-11T03:18:27.174261+00:00",
+    "pid": 18268,
+    "create_time": 1789096660.159235,
+    "command": [
+      "C:\\Users\\usuario\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.EXE",
+      "-NoProfile",
+      "-File",
+      "scripts/test_source_quality.ps1",
+      "-Mode",
+      "Full"
+    ],
+    "log": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-deadline804-private\\full-retry1\\full.log",
+    "source_pins_sha256": "4df87d346761614c42090452867af99aa27056e9e10a45f941f39d4da02e7022",
+    "runner_sha256": "e94ec63583c92b0ae18935594872e056e36431fae039a4ec11cda34843cbe642",
+    "wrapper_error": "Initial wrapper passed __file__ string to a Path-only hash helper after starting Full. Child remained live; root attaches to exact PID/create time and waits with Windows psutil.Process.wait. No second Full launched."
+  },
+  "line_ending_repair": {
+    "cause": "Two historical REVIEW_CAPTURE receipts had CRLF on disk but their exact HEAD/index bytes are LF. Git normalization hid this from status. Only byte identity restored; JSON unchanged.",
+    "restored_head_bytes": {
+      "artifacts/comprobaciones/C03/PROCESS_BATCH801/REVIEW_CAPTURE.json": "5af0712d0db009eadd063e486a567b634780303204492e28ed912374689fa39c",
+      "artifacts/comprobaciones/C03/STATUS_BATCH761/REVIEW_CAPTURE.json": "12d632bb55711467babb044fe07365320fcfe63f87d75a6df9ed9c6f07717701"
+    },
+    "private_backup": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-deadline804-private\\line-ending-repair",
+    "owner_command": "python -m pytest tests/test_line_ending_seal_damage_r278.py -q",
+    "owner_exit_code": 0,
+    "passed": 3,
+    "skipped": 0,
+    "seconds": 57.69,
+    "owner_log_sha256": "039610a88b280bceb7711bf5e4c9f9d239a477e753d11a9770065c07d927f7d0",
+    "original_full_failure": "FULL_EXIT.json",
+    "bad_hashes_not_published": "Do not turn defective CRLF hashes into accepted published constants."
+  },
+  "log_sha256_computed": "5f9bcf879bfa4ec6382a8775cd224e393958749c3e9e9684815dfb6556f79a5b",
+  "source_pins_verification": "Hash y estado unchanged consignados en FULL_EXIT/FULL_PROCESS; no se abrió el fichero de pins.",
+  "release": {
+    "duration_printed": "00:00:04.58",
+    "seconds": 4.58,
+    "warnings": 0,
+    "errors": 0
+  },
+  "dotnet": {
+    "suites": [
+      {
+        "suite": "Baxy.Contracts.Tests",
+        "failed": 0,
+        "passed": 60,
+        "skipped_aggregate": 0,
+        "total_aggregate": 60,
+        "duration_printed": "239 ms",
+        "optional_omissions_printed": []
+      },
+      {
+        "suite": "Baxy.Integration.Tests",
+        "failed": 0,
+        "passed": 3404,
+        "skipped_aggregate": 1,
+        "total_aggregate": 3405,
+        "duration_printed": "9 m 18 s",
+        "optional_omissions_printed": [
+          "CompareLegacyAndCurrentJsonHotPaths [1 ms]",
+          "CompareLegacyAndCurrentCoreJsonlTransport [< 1 ms]",
+          "EveryExactRuntimeMessageIsAuditedByTheRealGuiInputPipeline [16 ms]",
+          "SequentialVersusOverlappedRuntimeVerificationAndCoreHello [< 1 ms]",
+          "OptInRealRuntimeTraversesShellMindAndCoreUsingReadOnlyOperations [< 1 ms]",
+          "HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds(\"abre Steam\",\"Steam\") [< 1 ms]",
+          "ModelAuthoredNotepadAliasOpensThroughRealPipeline [< 1 ms]",
+          "HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds(\"abre Bloc de notas\",\"Bloc de notas\") [< 1 ms]",
+          "HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds(\"abre Discord si está instalado\",\"Discord\") [< 1 ms]",
+          "HistoricalApplicationCommandOpensThroughTheRealPipelineUnderFourSeconds(\"abre Steam pero no maximices ni lances juegos\",\"Steam\") [< 1 ms]"
+        ]
+      },
+      {
+        "suite": "Baxy.Kernel.Tests",
+        "failed": 0,
+        "passed": 152,
+        "skipped_aggregate": 0,
+        "total_aggregate": 152,
+        "duration_printed": "1 s",
+        "optional_omissions_printed": [
+          "CompareMemoryStreamAndArrayBufferWriterImplementations [< 1 ms]"
+        ]
+      },
+      {
+        "suite": "Baxy.Providers.Windows.Tests",
+        "failed": 0,
+        "passed": 549,
+        "skipped_aggregate": 0,
+        "total_aggregate": 549,
+        "duration_printed": "43 s",
+        "optional_omissions_printed": [
+          "NativeAotCoreAudioJsonlRoundTripReplaysWithoutAnotherEffectAndRestoresBaseline [1 ms]",
+          "WifiStatusReadsActualWindowsStateTwice [< 1 ms]",
+          "DxgiAndPdhProduceOneCoherentLocalSnapshot [< 1 ms]",
+          "ActualIpListReturnsStableParseableAddressesWithoutInterfaceNames [< 1 ms]"
+        ]
+      },
+      {
+        "suite": "Baxy.Setup.Tests",
+        "failed": 0,
+        "passed": 477,
+        "skipped_aggregate": 0,
+        "total_aggregate": 477,
+        "duration_printed": "1 m 23 s",
+        "optional_omissions_printed": [
+          "InstallationMoveWorksWhileAnExecutableRunsFromTheRoot [< 1 ms]"
+        ]
+      }
+    ],
+    "passed_aggregate": 4642,
+    "failed_aggregate": 0,
+    "skipped_aggregate": 1,
+    "optional_omission_lines_printed": 16,
+    "omission_accounting": "Los resúmenes agregados y las líneas optativas impresas son dos representaciones del runner. No se suman como categorías disjuntas y ninguna omisión cuenta como pass."
+  },
+  "python": {
+    "passed": 12714,
+    "skipped": 3,
+    "subtests_passed": 466,
+    "seconds": 603.4,
+    "skip_reasons": "No detallados en el resumen de full.log."
+  },
+  "prior_context_from_parent_not_reverified": {
+    "source804": "Selector C# existente extendido a inventarios de procesos únicamente.",
+    "owner_csharp_passed": 153,
+    "owner_csharp_skipped": 0,
+    "fast_exit_code": 0,
+    "survey": {
+      "counts": [
+        28,
+        714,
+        0
+      ],
+      "total": 742
+    },
+    "matrix": "3/11"
+  },
+  "product805": "37 valid / 13 failed; no source adoption; see PROCESS_BATCH805/ROOT_ADJUDICATION.json",
+  "root_reviewed": true
+}

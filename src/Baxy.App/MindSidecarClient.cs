@@ -184,7 +184,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         bool dense = partialMission
             || requiredFactCount >= DenseMessageFactCount
             || requiredFactCharacters >= DenseMessageFactCharacters
-            || HasDenseWindowInventory(facts);
+            || HasDenseObservedInventory(facts);
         if (cpuFallback)
         {
             return dense
@@ -197,7 +197,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             : MessageCompositionRequestTimeout;
     }
 
-    private static bool HasDenseWindowInventory(JsonObject facts)
+    private static bool HasDenseObservedInventory(JsonObject facts)
     {
         if (facts["situation"] is not JsonValue value
             || !value.TryGetValue<string>(out string? source)
@@ -210,19 +210,24 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         try
         {
             if (JsonNode.Parse(source) is not JsonObject situation
-                || situation["operation"]?.ToString() != "window.resolve"
                 || situation["verified"]?.GetValueKind() != JsonValueKind.True
                 || situation["succeeded"]?.GetValueKind() != JsonValueKind.True
-                || situation["observed"] is not JsonObject observed
-                || observed["windows"] is not JsonArray windows)
+                || situation["observed"] is not JsonObject observed)
             {
                 return false;
             }
 
             // Inventory observations travel in situation, outside requiredFacts.
             // Apply the same dense budget without changing the factual contract.
-            return windows.Count >= DenseMessageFactCount
-                || windows.ToJsonString().Length >= DenseMessageFactCharacters;
+            string? collection = situation["operation"]?.ToString() switch
+            {
+                "window.resolve" => "windows",
+                "system.process.list" => "processes",
+                _ => null,
+            };
+            return collection is not null && observed[collection] is JsonArray rows
+                && (rows.Count >= DenseMessageFactCount
+                    || rows.ToJsonString().Length >= DenseMessageFactCharacters);
         }
         catch (JsonException)
         {

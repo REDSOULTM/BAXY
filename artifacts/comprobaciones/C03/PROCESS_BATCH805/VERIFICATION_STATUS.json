@@ -1,0 +1,66 @@
+{
+  "source_candidate": 804,
+  "source_adopted": false,
+  "new_coverage": 0,
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "cases": [
+    {
+      "case_id": "H0133",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Enumera las diez instancias devueltas sin colapsar nombres repetidos;158observados y10devueltos coinciden, con alcance accesible explícito. El pedido de nombres no exige PIDs."
+    },
+    {
+      "case_id": "H0158",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Conserva las diez ocurrencias de nombres, incluidas tresChatGPT y dospython; explica muestra10de158 dentro del alcance accesible."
+    },
+    {
+      "case_id": "H0169",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Declara memoria como métrica; diez instancias y sus valoresMB decimales redondeados coinciden con workingSetBytes, incluidos nombres repetidos sin agregarlos.158observados/10devueltos y límite accesible correctos; este criterio permite una métrica explícita sin exigir mostrar PIDs."
+    },
+    {
+      "case_id": "H0364",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "CPU por intervalo, cinco PIDs y porcentajes mostrados correctos, pero la lista omite cinco de las diez filas devueltas y afirma que se devolvieron10 sin explicar el recorte visible."
+    },
+    {
+      "case_id": "H0470",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Cuenta158 observados, no las10filas, y explicita alcance accesible; coincide con la observación contemporánea."
+    },
+    {
+      "case_id": "H0650",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Top5, cinco instancias y valoresMB correctos, con límite5de158; distingue dosChatGPT pero omite todos losPIDs, exigidos por el criterio de identidad de memoria sellado."
+    },
+    {
+      "case_id": "H0669",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Declara memoria y los tres valores/PIDs visibles son correctos, pero muestra3de10filas mientras afirma que se devolvieron10. No explica ese recorte; no es la lista devuelta completa."
+    },
+    {
+      "case_id": "H0675",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Afirma una app ganadora a partir del working set de un proceso sin membresía ni agregación. Además llama-server744,39MB ni siquiera encabeza la lectura individual: python883,82MB está antes."
+    },
+    {
+      "case_id": "H0678",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "158procesos observados y alcance accesible coinciden con la lectura nueva; no confunde las10filas con el total observado."
+    }
+  ]
+}

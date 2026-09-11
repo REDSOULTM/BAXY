@@ -1,0 +1,10 @@
+{
+  "replaces_prelaunch_preparation": "NEXT_CONFIRMATION.json",
+  "reason": "Require separate Full retry receipt after preserved original seal failure; public summary writer now uses LF bytes.",
+  "required": "Full804/FULL_RETRY1/FULL_EXIT.json exit0 and pins unchanged; owners/Fast0; original panel50, same model/profile/guards.",
+  "runner": "scratchpad/c03-process-batch805.py",
+  "runner_sha256": "ed0857c7b8972203c3e847352c6e8bc75539aee0ef03a6ee4e884fc23b584f5c",
+  "reviewer": "scratchpad/c03-review-process805.py",
+  "reviewer_sha256": "7401e56d058557dc8bae0b79dcb890e94bd0d02498e775ed8df6d13cd39ff124",
+  "adopted": false
+}

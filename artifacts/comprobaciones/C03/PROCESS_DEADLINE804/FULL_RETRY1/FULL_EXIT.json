@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-11T03:41:04.302647+00:00",
+  "exit_code": 0,
+  "source_pins_unchanged": true,
+  "source_pins_sha256": "4df87d346761614c42090452867af99aa27056e9e10a45f941f39d4da02e7022",
+  "log_sha256": "5f9bcf879bfa4ec6382a8775cd224e393958749c3e9e9684815dfb6556f79a5b",
+  "adopted": false,
+  "previous_failure": "../FULL_EXIT.json",
+  "repair": "../LINE_ENDING_REPAIR.json",
+  "collector": "Windows psutil.Process.wait on verified PID/create time; original wrapper error preserved in FULL_PROCESS.json"
+}

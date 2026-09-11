@@ -468,3 +468,10 @@ scratchpad/c03-lingua-deps/lingua/lingua.cp312-win_amd64.pyd filter=lfs diff=lfs
 
 # C03 relay validation logs are hashed as captured, including CRLF.
 /artifacts/comprobaciones/C03/PROCESS_BUDGET802/*.log -text
+/artifacts/comprobaciones/C03/PROCESS_DEADLINE804/*.log -text
+/artifacts/comprobaciones/C03/PROCESS_DEADLINE804/FULL_RETRY1/*.log -text
+# New C03 receipts retain their original measured bytes on first publication.
+/artifacts/comprobaciones/C03/PROCESS_BATCH803_RESUME/REVIEW_CAPTURE.json -text
+/artifacts/comprobaciones/C03/PROCESS_DEADLINE804/FAST_EXIT.json -text
+/artifacts/comprobaciones/C03/PROCESS_DEADLINE804/NEXT_CONFIRMATION.json -text
+/artifacts/comprobaciones/C03/PROCESS_DEADLINE804/VALIDATION_EXIT.json -text

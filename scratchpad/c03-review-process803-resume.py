@@ -1,6 +1,7 @@
 """Correlate frozen803 outputs; no verdict inferred from terminal status."""
 from pathlib import Path
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -38,6 +39,11 @@ def rows(path):
 
 panel = read(private / 'panel.json')
 assert len(panel) == 41
+prereg = read(public / 'PREREG.json')
+original_panel_path = private.parent / 'C03-process-panel795-private/panel.json'
+assert hashlib.sha256(original_panel_path.read_bytes()).hexdigest() == prereg['panel_sha256']
+assert panel == read(original_panel_path)[9:]
+assert [{'case_id': c['case_id'], 'group': c['group']} for c in panel] == prereg['cases']
 if not args.partial:
     outcome = read(public / 'EXIT.json')
     assert outcome['exit_code'] == 0, outcome

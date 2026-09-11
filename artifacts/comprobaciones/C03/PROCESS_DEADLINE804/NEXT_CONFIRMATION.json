@@ -1,0 +1,9 @@
+{
+  "panel": "Unchanged original50 from795; original803 panel and plan hashes required.",
+  "required": "804 owners+Fast+Full exit0;28 pins intact;no concurrent tests/inference;4000MiB free RAM.",
+  "runner": "D:/Perfil/Escritorio/ETC/Programacion/BAXY DEFINITIVO/scratchpad/c03-process-batch805.py",
+  "runner_sha256": "fd186f5777b5eb7892762a301585ca2795fda3ba943fb0dca63c81ca44e3e023",
+  "reviewer": "D:/Perfil/Escritorio/ETC/Programacion/BAXY DEFINITIVO/scratchpad/c03-review-process805.py",
+  "reviewer_sha256": "8b03837198fa61c9fb2e52b0c03b76735a69b451ca5fc17b418351ffc190ab98",
+  "adopted": false
+}

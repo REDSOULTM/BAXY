@@ -1,0 +1,590 @@
+{
+  "method": "Root read every final against its newly observed facts and the sealed criterion; this script assembles only those saved judgments.",
+  "candidate": 804,
+  "adopted": false,
+  "continuous_50": true,
+  "valid": 37,
+  "failed": 13,
+  "by_group": {
+    "list": {
+      "valid": 10,
+      "failed": 1
+    },
+    "unspecified_rank": {
+      "valid": 2,
+      "failed": 2
+    },
+    "cpu_rank": {
+      "failed": 3,
+      "valid": 8
+    },
+    "count": {
+      "valid": 12
+    },
+    "memory_rank": {
+      "failed": 6,
+      "valid": 5
+    },
+    "app_memory": {
+      "failed": 1
+    }
+  },
+  "comparison": {
+    "801": {
+      "previous_valid": 35,
+      "gains": [
+        "H0158",
+        "H0169",
+        "process795-list-01",
+        "process795-list-05",
+        "process795-list-06",
+        "process795-list-09"
+      ],
+      "losses": [
+        "process795-memory_rank-02",
+        "process795-memory_rank-03",
+        "process795-memory_rank-05",
+        "process795-memory_rank-08"
+      ]
+    },
+    "803": {
+      "previous_valid": 28,
+      "gains": [
+        "H0133",
+        "H0158",
+        "H0169",
+        "process795-list-01",
+        "process795-list-02",
+        "process795-list-03",
+        "process795-list-06",
+        "process795-list-07",
+        "process795-list-09",
+        "process795-memory_rank-10",
+        "process795-cpu_rank-04",
+        "process795-unspecified_rank-02"
+      ],
+      "losses": [
+        "H0650",
+        "process795-memory_rank-02",
+        "process795-memory_rank-05"
+      ]
+    }
+  },
+  "latency": {
+    "metric": "Difference between first and last recorded turn-scoped shell event; completed finals only. Not acoustic latency.803 combines9+41 profiles and excludes its interrupted tenth attempt.",
+    "805": {
+      "all": {
+        "count": 50,
+        "median_seconds": 4.394,
+        "p95_nearest_rank_seconds": 7.118,
+        "max_seconds": 29.626
+      },
+      "by_group": {
+        "list": {
+          "count": 11,
+          "median_seconds": 5.119,
+          "p95_nearest_rank_seconds": 7.118,
+          "max_seconds": 7.118
+        },
+        "unspecified_rank": {
+          "count": 4,
+          "median_seconds": 4.909,
+          "p95_nearest_rank_seconds": 6.436,
+          "max_seconds": 6.436
+        },
+        "cpu_rank": {
+          "count": 11,
+          "median_seconds": 4.353,
+          "p95_nearest_rank_seconds": 7.186,
+          "max_seconds": 7.186
+        },
+        "count": {
+          "count": 12,
+          "median_seconds": 2.991,
+          "p95_nearest_rank_seconds": 4.191,
+          "max_seconds": 4.191
+        },
+        "memory_rank": {
+          "count": 11,
+          "median_seconds": 4.115,
+          "p95_nearest_rank_seconds": 29.626,
+          "max_seconds": 29.626
+        },
+        "app_memory": {
+          "count": 1,
+          "median_seconds": 3.198,
+          "p95_nearest_rank_seconds": 3.198,
+          "max_seconds": 3.198
+        }
+      }
+    },
+    "803": {
+      "all": {
+        "count": 50,
+        "median_seconds": 7.675,
+        "p95_nearest_rank_seconds": 31.084,
+        "max_seconds": 31.552
+      },
+      "by_group": {
+        "list": {
+          "count": 11,
+          "median_seconds": 30.817,
+          "p95_nearest_rank_seconds": 31.552,
+          "max_seconds": 31.552
+        },
+        "unspecified_rank": {
+          "count": 4,
+          "median_seconds": 21.367,
+          "p95_nearest_rank_seconds": 30.975,
+          "max_seconds": 30.975
+        },
+        "cpu_rank": {
+          "count": 11,
+          "median_seconds": 7.401,
+          "p95_nearest_rank_seconds": 30.877,
+          "max_seconds": 30.877
+        },
+        "count": {
+          "count": 12,
+          "median_seconds": 4.627,
+          "p95_nearest_rank_seconds": 8.777,
+          "max_seconds": 8.777
+        },
+        "memory_rank": {
+          "count": 11,
+          "median_seconds": 7.605,
+          "p95_nearest_rank_seconds": 31.084,
+          "max_seconds": 31.084
+        },
+        "app_memory": {
+          "count": 1,
+          "median_seconds": 7.69,
+          "p95_nearest_rank_seconds": 7.69,
+          "max_seconds": 7.69
+        }
+      }
+    }
+  },
+  "resources": {
+    "utc": "2026-09-11T03:46:53.639557+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2392.74609375,
+    "seconds": 265.078,
+    "scope": "Owned conductor product process tree; no voice or visible desktop UI credit."
+  },
+  "cases": [
+    {
+      "case_id": "H0133",
+      "group": "list",
+      "turn_id": "t1",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Enumera las diez instancias devueltas sin colapsar nombres repetidos;158observados y10devueltos coinciden, con alcance accesible explícito. El pedido de nombres no exige PIDs."
+    },
+    {
+      "case_id": "H0158",
+      "group": "list",
+      "turn_id": "t2",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Conserva las diez ocurrencias de nombres, incluidas tresChatGPT y dospython; explica muestra10de158 dentro del alcance accesible."
+    },
+    {
+      "case_id": "H0169",
+      "group": "unspecified_rank",
+      "turn_id": "t3",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Declara memoria como métrica; diez instancias y sus valoresMB decimales redondeados coinciden con workingSetBytes, incluidos nombres repetidos sin agregarlos.158observados/10devueltos y límite accesible correctos; este criterio permite una métrica explícita sin exigir mostrar PIDs."
+    },
+    {
+      "case_id": "H0364",
+      "group": "cpu_rank",
+      "turn_id": "t4",
+      "terminal_kind": "published_final",
+      "passed": false,
+      "reason": "CPU por intervalo, cinco PIDs y porcentajes mostrados correctos, pero la lista omite cinco de las diez filas devueltas y afirma que se devolvieron10 sin explicar el recorte visible."
+    },
+    {
+      "case_id": "H0470",
+      "group": "count",
+      "turn_id": "t5",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Cuenta158 observados, no las10filas, y explicita alcance accesible; coincide con la observación contemporánea."
+    },
+    {
+      "case_id": "H0650",
+      "group": "memory_rank",
+      "turn_id": "t6",
+      "terminal_kind": "published_final",
+      "passed": false,
+      "reason": "Top5, cinco instancias y valoresMB correctos, con límite5de158; distingue dosChatGPT pero omite todos losPIDs, exigidos por el criterio de identidad de memoria sellado."
+    },
+    {
+      "case_id": "H0669",
+      "group": "unspecified_rank",
+      "turn_id": "t7",
+      "terminal_kind": "published_final",
+      "passed": false,
+      "reason": "Declara memoria y los tres valores/PIDs visibles son correctos, pero muestra3de10filas mientras afirma que se devolvieron10. No explica ese recorte; no es la lista devuelta completa."
+    },
+    {
+      "case_id": "H0675",
+      "group": "app_memory",
+      "turn_id": "t8",
+      "terminal_kind": "published_final",
+      "passed": false,
+      "reason": "Afirma una app ganadora a partir del working set de un proceso sin membresía ni agregación. Además llama-server744,39MB ni siquiera encabeza la lectura individual: python883,82MB está antes."
+    },
+    {
+      "case_id": "H0678",
+      "group": "count",
+      "turn_id": "t9",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "158procesos observados y alcance accesible coinciden con la lectura nueva; no confunde las10filas con el total observado."
+    },
+    {
+      "case_id": "process795-list-01",
+      "group": "list",
+      "turn_id": "t10",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Las diez filas conservanPIDs,nombres yMB decimales redondeados correctos; explica10mostrados de158accesibles sin colapsar instancias."
+    },
+    {
+      "case_id": "process795-list-02",
+      "group": "list",
+      "turn_id": "t11",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Diez instancias conPIDs y valoresMB decimales correctos;158observados/10devueltos y límite accesible explícitos."
+    },
+    {
+      "case_id": "process795-list-03",
+      "group": "list",
+      "turn_id": "t12",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Diez nombres yPIDs correctos, sin colapso; declara10de158 y alcance accesible."
+    },
+    {
+      "case_id": "process795-list-04",
+      "group": "list",
+      "turn_id": "t13",
+      "terminal_kind": "published_final",
+      "passed": false,
+      "reason": "Los diez nombres/PIDs son correctos y declara158observados accesibles, pero no identifica el límite de la lista devuelta ni explica que sólo presenta una muestra. Falta el alcance parcial exigido por el criterio sellado."
+    },
+    {
+      "case_id": "process795-list-05",
+      "group": "list",
+      "turn_id": "t14",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Cinco instancias solicitadas, nombres/PIDs exactos;5de158accesibles explícito."
+    },
+    {
+      "case_id": "process795-list-06",
+      "group": "list",
+      "turn_id": "t15",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Respuesta inglesa; diezPIDs/nombres yMB con dosdecimales fieles,10de158accesibles explícito."
+    },
+    {
+      "case_id": "process795-list-07",
+      "group": "list",
+      "turn_id": "t16",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Inglés, diez identidades yPIDs correctos;10devueltos de158accesibles explícito."
+    },
+    {
+      "case_id": "process795-list-08",
+      "group": "list",
+      "turn_id": "t17",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Diez nombres ordenados como la observación por nombre; declara10de158accesibles y subconjunto. Este pedido por nombres no exigePIDs."
+    },
+    {
+      "case_id": "process795-list-09",
+      "group": "list",
+      "turn_id": "t18",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Entiende petición mixta y responde español; diezPIDs,nombres yMB a undecimal fieles;10de158accesibles explícito."
+    },
+    {
+      "case_id": "process795-count-01",
+      "group": "count",
+      "turn_id": "t19",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "158observados accesibles coinciden con lectura actual, sin confundir10filas."
+    },
+    {
+      "case_id": "process795-count-02",
+      "group": "count",
+      "turn_id": "t20",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "158observados y alcance accesible correctos."
+    },
+    {
+      "case_id": "process795-count-03",
+      "group": "count",
+      "turn_id": "t21",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Cuenta158procesos accesibles, no10filas; coincide con lectura nueva."
+    },
+    {
+      "case_id": "process795-count-04",
+      "group": "count",
+      "turn_id": "t22",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Responde158observados dentro del alcance accesible solicitado."
+    },
+    {
+      "case_id": "process795-count-05",
+      "group": "count",
+      "turn_id": "t23",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "158procesos y limitación accesible correctos."
+    },
+    {
+      "case_id": "process795-count-06",
+      "group": "count",
+      "turn_id": "t24",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "En inglés comunica158procesos dentro del alcance observado accesible."
+    },
+    {
+      "case_id": "process795-count-07",
+      "group": "count",
+      "turn_id": "t25",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Final inglés fiel:158observados y límite accesible. El borrador con accessible_processes fue corregido antes de publicarse."
+    },
+    {
+      "case_id": "process795-count-08",
+      "group": "count",
+      "turn_id": "t26",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Final inglés fiel:158observados accesibles; reintentos eliminan el código interno del borrador sin perder el dato."
+    },
+    {
+      "case_id": "process795-count-09",
+      "group": "count",
+      "turn_id": "t27",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Comprende mezcla natural; español válido,158accesibles observados correctos."
+    },
+    {
+      "case_id": "process795-count-10",
+      "group": "count",
+      "turn_id": "t28",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Sólo el conteo solicitado,158accesibles; no añade lista."
+    },
+    {
+      "case_id": "process795-memory_rank-01",
+      "group": "memory_rank",
+      "turn_id": "t29",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Top3 solicitado, tresPIDs/nombres exactos y883,95/747,44/719,46MB decimales correctamente redondeados;3de158accesibles."
+    },
+    {
+      "case_id": "process795-memory_rank-02",
+      "group": "memory_rank",
+      "turn_id": "t30",
+      "terminal_kind": "published_final",
+      "passed": false,
+      "reason": "Ganador individual y883,92MB correctos, pero faltaPID16132 requerido por el criterio de identidad de memoria sellado."
+    },
+    {
+      "case_id": "process795-memory_rank-03",
+      "group": "memory_rank",
+      "turn_id": "t31",
+      "terminal_kind": "published_final",
+      "passed": false,
+      "reason": "Cinco filas/valoresMB correctos y dosChatGPT separados, pero no muestra ninguno de losPIDs exigidos, aunque dice que son distintos."
+    },
+    {
+      "case_id": "process795-memory_rank-04",
+      "group": "memory_rank",
+      "turn_id": "t32",
+      "terminal_kind": "published_final",
+      "passed": false,
+      "reason": "Conserva diezPIDs y valores, pero ordenaChatGPT397,09MB antes de codex481,81MB, contradiciendo el orden por consumo solicitado."
+    },
+    {
+      "case_id": "process795-memory_rank-05",
+      "group": "memory_rank",
+      "turn_id": "t33",
+      "terminal_kind": "published_final",
+      "passed": false,
+      "reason": "Dos procesos y883,92/747,47MB correctos con alcance; faltan ambosPIDs exigidos por el criterio de memoria."
+    },
+    {
+      "case_id": "process795-memory_rank-06",
+      "group": "memory_rank",
+      "turn_id": "t34",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Top3 inglés, PIDs/nombres y883,92/747,53/720,57MB correctos;3de158accesibles."
+    },
+    {
+      "case_id": "process795-memory_rank-07",
+      "group": "memory_rank",
+      "turn_id": "t35",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Ganador pythonPID16132 con883,92MB correcto; inglés y límite1de158accesibles explícitos."
+    },
+    {
+      "case_id": "process795-memory_rank-08",
+      "group": "memory_rank",
+      "turn_id": "t36",
+      "terminal_kind": "composition_failed",
+      "passed": false,
+      "reason": "Termina composition_failed/no_response tras seis vetos internal_code. Hay datos y borrador factual, pero accessible_processes reaparece y no llega respuesta útil al usuario."
+    },
+    {
+      "case_id": "process795-memory_rank-09",
+      "group": "memory_rank",
+      "turn_id": "t37",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Top2 solicitado, PIDs y883,92/749,72MB fieles; español válido para mezcla natural,2de158accesibles."
+    },
+    {
+      "case_id": "process795-memory_rank-10",
+      "group": "memory_rank",
+      "turn_id": "t38",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "DiezPIDs/nombres y valoresMB a dosdecimales correctos, orden descendente fiel;10de158accesibles explícitos."
+    },
+    {
+      "case_id": "process795-cpu_rank-01",
+      "group": "cpu_rank",
+      "turn_id": "t39",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Dos procesos solicitados, nombres distintos y5,55%/3,33% coinciden con CPU por intervalo;158observados/2devueltos accesibles. Este criterio no exigePIDs cuando las instancias son inequívocas."
+    },
+    {
+      "case_id": "process795-cpu_rank-02",
+      "group": "cpu_rank",
+      "turn_id": "t40",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Top3 actual por intervalo, PIDs/nombres y5,53/3,52/1,64% correctos;3de158accesibles."
+    },
+    {
+      "case_id": "process795-cpu_rank-03",
+      "group": "cpu_rank",
+      "turn_id": "t41",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Ganador baxy-corePID30220,5,353% correctamente redondeado del intervalo nuevo;1de158accesibles."
+    },
+    {
+      "case_id": "process795-cpu_rank-04",
+      "group": "cpu_rank",
+      "turn_id": "t42",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "CincoPIDs y5,57/2,96/0,88/0,40/0,00% correctos por intervalo; muestra5de158accesibles."
+    },
+    {
+      "case_id": "process795-cpu_rank-05",
+      "group": "cpu_rank",
+      "turn_id": "t43",
+      "terminal_kind": "published_final",
+      "passed": false,
+      "reason": "Muestra tresprocesos conPIDs y porcentajes correctos pero afirma que se mostraron10. Siete filas observadas quedan fuera sin explicación."
+    },
+    {
+      "case_id": "process795-cpu_rank-06",
+      "group": "cpu_rank",
+      "turn_id": "t44",
+      "terminal_kind": "published_final",
+      "passed": false,
+      "reason": "Tresinstancias y porcentajes correctos, pero afirma que10se devuelven en la lista aunque sólo nombra3. No conserva la lista observada."
+    },
+    {
+      "case_id": "process795-cpu_rank-07",
+      "group": "cpu_rank",
+      "turn_id": "t45",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Top3inglés conPIDs correctos y5,4457/4,5044/0,4796% redondeados a cuatrodecimales;3de158accesibles."
+    },
+    {
+      "case_id": "process795-cpu_rank-08",
+      "group": "cpu_rank",
+      "turn_id": "t46",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Ganador inglés baxy-corePID30220 y5,39% correctos por intervalo;1de158accesibles."
+    },
+    {
+      "case_id": "process795-cpu_rank-09",
+      "group": "cpu_rank",
+      "turn_id": "t47",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "DosPIDs/nombres y5,47/3,87% correctos por intervalo;158accesibles y top2explícito."
+    },
+    {
+      "case_id": "process795-cpu_rank-10",
+      "group": "cpu_rank",
+      "turn_id": "t48",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Entiende mezcla y responde español: tresPIDs,5,56/4,11/1,87% correctos;3de158accesibles."
+    },
+    {
+      "case_id": "process795-unspecified_rank-01",
+      "group": "unspecified_rank",
+      "turn_id": "t49",
+      "terminal_kind": "published_final",
+      "passed": false,
+      "reason": "Declara memoria y la frase final da el ganador y siguientes correctos, pero sólo presenta3de10filas sin identificar ese recorte al afirmar10devueltas. El límite visible queda ambiguo."
+    },
+    {
+      "case_id": "process795-unspecified_rank-02",
+      "group": "unspecified_rank",
+      "turn_id": "t50",
+      "terminal_kind": "published_final",
+      "passed": true,
+      "reason": "Declara memoria y explicita que muestra el top3 de10devueltos entre158accesibles. El conjunto python883,92/llama-server749,96/ChatGPT726,18MB y susPIDs es correcto; las viñetas no afirman orden descendente. Las otras instancias citadas consumen menos, con valores/PIDs correctos."
+    }
+  ],
+  "evidence_sha256": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch805-private\\root-adjudication.json": "f8f448de680b3d03ef32997eb584a9e9365a6c29898d040068ffb23c25f2bd6c",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch805-private\\review.json": "28d931657404524c5ef135820b808dd5c697c19cf294a5e1f46aae62933c94eb",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_BATCH805\\PREREG.json": "30d24ec1aa5130f022438bbe45881d874dc21e3e3cc5c4c2d25ffbc759812c69",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_BATCH805\\EXIT.json": "5ade29ba48ac21ad91cff40488b1099f939f54e08449fec0347e3633a94462c0"
+  },
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  }
+}

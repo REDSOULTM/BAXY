@@ -1,0 +1,135 @@
+  Determinando los proyectos que se van a restaurar...
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\Baxy.Contracts.csproj (en 318 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\Baxy.Security.Windows.csproj (en 318 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\Baxy.Kernel.csproj (en 318 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\Baxy.Providers.Windows.csproj (en 318 ms).
+  Se ha restaurado D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\Baxy.Core.csproj (en 318 ms).
+  2 de 7 proyectos están actualizados para la restauración.
+  Baxy.Contracts -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Contracts\bin\Release\net10.0\Baxy.Contracts.dll
+  Baxy.Security.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Security.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Security.Windows.dll
+  Baxy.Kernel -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Kernel\bin\Release\net10.0\Baxy.Kernel.dll
+  Baxy.Providers.Windows -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Providers.Windows\bin\Release\net10.0-windows10.0.19041.0\Baxy.Providers.Windows.dll
+  Baxy.Core -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.Core\bin\Release\net10.0-windows10.0.19041.0\baxy-core.dll
+  Baxy.App -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\src\Baxy.App\bin\Release\net10.0-windows10.0.19041.0\Baxy.dll
+  Baxy.Integration.Tests -> D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll
+Serie de pruebas para D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\bin\Release\net10.0-windows10.0.19041.0\Baxy.Integration.Tests.dll (.NETCoreApp,Version=v10.0)
+1 archivos de prueba en total coincidieron con el patrón especificado.
+  Con error ProcessInventoryCompositionBudgetUsesReturnedRows(8,True) [35 ms]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(gpu, Is.EqualTo(TimeSpan.FromSeconds(dense ? 10 : 5)))
+  Expected: 00:00:10
+  But was:  00:00:05
+
+  2)   Assert.That(cpu, Is.EqualTo(TimeSpan.FromSeconds(dense ? 130 : 60)))
+  Expected: 00:02:10
+  But was:  00:01:00
+
+  3)   Assert.That(MindSidecarClient.SelectMessageCompositionProtocolBudget(gpu), Is.EqualTo(dense ? 9d : 4d))
+  Expected: 9.0d
+  But was:  4.0d
+
+  4)   Assert.That(MindSidecarClient.SelectMessageCompositionProtocolBudget(cpu), Is.EqualTo(dense ? 120d : 55d))
+  Expected: 120.0d
+  But was:  55.0d
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Int32 count, Boolean dense) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 591
+   at InvokeStub_PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.<>c__DisplayClass15_0.<ProcessInventoryCompositionBudgetUsesReturnedRows>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 593
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Int32 count, Boolean dense) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 591
+   at InvokeStub_PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Object, Span`1)
+
+2)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.<>c__DisplayClass15_0.<ProcessInventoryCompositionBudgetUsesReturnedRows>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 596
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Int32 count, Boolean dense) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 591
+   at InvokeStub_PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Object, Span`1)
+
+3)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.<>c__DisplayClass15_0.<ProcessInventoryCompositionBudgetUsesReturnedRows>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 597
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Int32 count, Boolean dense) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 591
+   at InvokeStub_PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Object, Span`1)
+
+4)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.<>c__DisplayClass15_0.<ProcessInventoryCompositionBudgetUsesReturnedRows>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 599
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Int32 count, Boolean dense) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 591
+   at InvokeStub_PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Object, Span`1)
+
+
+  Con error ProcessInventoryCompositionBudgetUsesReturnedRows(50,True) [< 1 ms]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(gpu, Is.EqualTo(TimeSpan.FromSeconds(dense ? 10 : 5)))
+  Expected: 00:00:10
+  But was:  00:00:05
+
+  2)   Assert.That(cpu, Is.EqualTo(TimeSpan.FromSeconds(dense ? 130 : 60)))
+  Expected: 00:02:10
+  But was:  00:01:00
+
+  3)   Assert.That(MindSidecarClient.SelectMessageCompositionProtocolBudget(gpu), Is.EqualTo(dense ? 9d : 4d))
+  Expected: 9.0d
+  But was:  4.0d
+
+  4)   Assert.That(MindSidecarClient.SelectMessageCompositionProtocolBudget(cpu), Is.EqualTo(dense ? 120d : 55d))
+  Expected: 120.0d
+  But was:  55.0d
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Int32 count, Boolean dense) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 591
+   at InvokeStub_PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.<>c__DisplayClass15_0.<ProcessInventoryCompositionBudgetUsesReturnedRows>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 593
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Int32 count, Boolean dense) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 591
+   at InvokeStub_PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Object, Span`1)
+
+2)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.<>c__DisplayClass15_0.<ProcessInventoryCompositionBudgetUsesReturnedRows>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 596
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Int32 count, Boolean dense) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 591
+   at InvokeStub_PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Object, Span`1)
+
+3)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.<>c__DisplayClass15_0.<ProcessInventoryCompositionBudgetUsesReturnedRows>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 597
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Int32 count, Boolean dense) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 591
+   at InvokeStub_PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Object, Span`1)
+
+4)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.<>c__DisplayClass15_0.<ProcessInventoryCompositionBudgetUsesReturnedRows>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 599
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Int32 count, Boolean dense) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 591
+   at InvokeStub_PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesReturnedRows(Object, Span`1)
+
+
+  Con error ProcessInventoryCompositionBudgetUsesSerializedCharacterBoundary(512,True) [< 1 ms]
+  Mensaje de error:
+   Multiple failures or warnings in test:
+  1)   Assert.That(MindSidecarClient.SelectMessageCompositionTimeout(facts), Is.EqualTo(TimeSpan.FromSeconds(dense ? 10 : 5)))
+  Expected: 00:00:10
+  But was:  00:00:05
+
+  2)   Assert.That(MindSidecarClient.SelectMessageCompositionTimeout(facts, cpuFallback: true), Is.EqualTo(TimeSpan.FromSeconds(dense ? 130 : 60)))
+  Expected: 00:02:10
+  But was:  00:01:00
+
+
+  Seguimiento de la pila:
+     at Baxy.Integration.Tests.PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesSerializedCharacterBoundary(Int32 length, Boolean dense) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 621
+   at InvokeStub_PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesSerializedCharacterBoundary(Object, Span`1)
+
+1)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.<>c__DisplayClass16_0.<ProcessInventoryCompositionBudgetUsesSerializedCharacterBoundary>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 623
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesSerializedCharacterBoundary(Int32 length, Boolean dense) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 621
+   at InvokeStub_PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesSerializedCharacterBoundary(Object, Span`1)
+
+2)    at Baxy.Integration.Tests.PlannerAppBoundaryTests.<>c__DisplayClass16_0.<ProcessInventoryCompositionBudgetUsesSerializedCharacterBoundary>b__0() in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 625
+   at NUnit.Framework.Assert.Multiple(TestDelegate testDelegate)
+   at Baxy.Integration.Tests.PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesSerializedCharacterBoundary(Int32 length, Boolean dense) in D:\Perfil\Escritorio\ETC\Programacion\BAXY DEFINITIVO\tests\Baxy.Integration.Tests\PlannerAppBoundaryTests.cs:line 621
+   at InvokeStub_PlannerAppBoundaryTests.ProcessInventoryCompositionBudgetUsesSerializedCharacterBoundary(Object, Span`1)
+
+
+
+Con error! - Con error:     3, Superado:    14, Omitido:     0, Total:    17, Duración: 76 ms - Baxy.Integration.Tests.dll (net10.0)

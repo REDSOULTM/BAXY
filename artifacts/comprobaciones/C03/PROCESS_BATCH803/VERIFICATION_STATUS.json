@@ -1,0 +1,66 @@
+{
+  "source_candidate": 802,
+  "source_adopted": false,
+  "new_coverage": 0,
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "cases": [
+    {
+      "case_id": "H0133",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Names collapse ten returned instances; repeated processes have no identifying PIDs."
+    },
+    {
+      "case_id": "H0158",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Returned repeated instances are collapsed; saying processId distinguishes them does not supply those identities."
+    },
+    {
+      "case_id": "H0169",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "The named opera instance is ambiguous among five observed instances; no PID distinguishes the quoted measurement."
+    },
+    {
+      "case_id": "H0364",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Requested list contains only four of ten returned CPU rows; repeated process names are not identified."
+    },
+    {
+      "case_id": "H0470",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Fresh observed count206 and accessible scope are preserved."
+    },
+    {
+      "case_id": "H0650",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Requested top5 contains all five distinct returned names, correct memory rounding and observed subset."
+    },
+    {
+      "case_id": "H0669",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Only four of ten requested list instances are given despite claiming the list identifies repeated names."
+    },
+    {
+      "case_id": "H0675",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Single-process working set is asserted as largest application total without app membership or aggregation."
+    },
+    {
+      "case_id": "H0678",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Fresh observed count212 and accessible scope are preserved."
+    }
+  ]
+}
