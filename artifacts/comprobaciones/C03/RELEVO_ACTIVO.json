@@ -1,11 +1,6 @@
 {
   "threadId": "01a08e22-0ac1-7f93-9c99-5d2d0730d6c6",
   "sourceThreadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
-  "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-11T22:09:17.632306+00:00",
-  "branch": "Goal-c03",
-  "checkpoint": "89/742covered,653open,0NA;61confirmed grants24h;0/35categories,C03 3/11.966+9credits;970partial music recovery,9750credit.",
-  "continuation": "Read current HANDOFF: source969 published, no GPU/build/agent or root source WIP. Music39 diagnosis972 targeted generation/EN-contract failures; agenda38 alarm9 PLAN976 readiness974, task4 diagnosis977. Source patches not prepared for972/977. Seal next panel, capture alarm clock/baseline/own exact cleanup if selecting9alarms. Do not repeat full panels or duplicate preserved975objects. No tests/Full.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -27,16 +22,6 @@
     "automaticClose": false,
     "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
   },
-  "surveyVerificationCounts": {
-    "covered": 89,
-    "open": 653,
-    "not_applicable": 0
-  },
-  "pendingOwnerClarification": null,
-  "publishedSourceCommit": "d3a853fc47391c1420e6e943ebf94d0a68f6010a",
-  "workStatus": "975_adjudicated_972_977_diagnosed_976_alarm_preparation",
-  "goalStatusNote": "Owner approved the proposed methodology: omit automated suites, Fast and Full; retain sealed product executions and evidence-based survey credit. Previous scope blocker resolved.",
-  "previousGoalTurnClassification": "progress",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -47,946 +32,115 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Five sealed current-product runs and direct provider preparation completed,9literal credits added in966,source969 integrated and one musical literal improved; further failures precisely diagnosed and9alarm frontier prepared. No impasse requiring user input.",
-  "activeValidation": null,
-  "objectiveFile": "C:\\Users\\usuario\\.codex\\attachments\\310753b7-9a38-4a57-951e-007fdcf7693a\\goal-objective.md",
-  "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
-  "ownerMethodology": "Model-specific native template and documented presets first, same complete cases for every arm; add BAXY one layer at a time and attribute first lost behavior. API use alone does not imply native isolation. Optimize whole categories without quality loss.",
-  "lastValidation": {
-    "candidate": 843,
-    "status": "complete",
-    "exit_code": 0,
-    "sessionId": 33623,
-    "collectionChunk": "c329d6",
-    "receipt": "PROTOCOL843/FULL_EXIT.json",
-    "result": "PROTOCOL843/FULL_RESULT.json",
-    "dotnet": {
-      "passed": 4754,
-      "failed": 0,
-      "skipped_aggregate": 1,
-      "total": 4755
-    },
-    "dotnet_opt_in_not_disjoint": 16,
-    "python": {
-      "passed": 12907,
-      "failed": 0,
-      "skipped": 3,
-      "subtests_passed": 466,
-      "duration_seconds": 658.25,
-      "duration_display": "0:10:58",
-      "summary_line": 261,
-      "summary_text": "12907 passed, 3 skipped, 466 subtests passed in 658.25s (0:10:58)",
-      "failed_basis": "No failures in the final pytest summary; python-tests stage and Full gate passed; exit code 0.",
-      "subtests_counted_separately": true,
-      "skip_reasons": "Not printed in this log; no reason invented and no skip counted as pass."
-    },
-    "source_pins_unchanged": true
+  "schema": "c03-active-relay-current-v2",
+  "goalStatus": "active",
+  "confirmedAtUtc": "2026-09-11T22:55:02.900856+00:00",
+  "branch": "Goal-c03",
+  "checkpoint": "97/742covered,645open,0NA;69confirmed grants24h;0/35categories,C03 3/11. This turn+8credits983/986.",
+  "continuation": "Read NEXT_989.json, apply reviewed988 and execute already sealed989. No owner question or active runner. Source985 published;988 not yet adopted.",
+  "pendingOwnerClarification": null,
+  "publishedSourceCommit": "2121245f8eebd5c024144daf4ec76b085a3bcd7d",
+  "surveyVerificationCounts": {
+    "covered": 97,
+    "open": 645,
+    "not_applicable": 0
   },
-  "activeReadOnlyAgent": null,
-  "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
-  "latestProductRun": {
-    "exitCode": 0,
-    "sourceCandidate": "d3a853fc47391c1420e6e943ebf94d0a68f6010a",
-    "state": "complete",
-    "sessionId": 85904,
-    "coverageAdded": 0,
-    "failed": 15,
-    "receipt": "TASK_CREATE975/ROOT_ADJUDICATION.json",
-    "notExecuted": 0,
-    "passed": 2,
-    "collectionChunk": "3a3279"
-  },
-  "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
-  "ownerPriority": "Owner ordered model selection after792 and immediate progress on C03 blockers; no further model campaign.",
-  "k2Comparison": {
-    "weightsVerified": 5,
-    "weights": "artifacts/comprobaciones/C03/K2_HORIZON_COMPARISON696/WEIGHTS.json",
-    "panelCases": 50,
-    "panelHash": "5a5aa1d46bbc60eb757566ac535c89ebf0755f4da7ed4f03b7215241787cea76",
-    "modelInferenceStarted": true,
-    "smokeScript": "scratchpad/c03-k2-smoke696.py",
-    "downloadSession": 93590,
-    "downloadExit": 0,
-    "backendReceipt": "artifacts/comprobaciones/C03/K2_HORIZON_LATENCY697/BACKEND_BUILD698.json",
-    "smokeAttempts": [
-      "q8-auto: regex_error before readiness",
-      "q8-unicode1: 261/285 token IDs; missing NFC; no generation",
-      "q8-nfc1: 285/285 and three smoke cases pass",
-      "37-q4-high-cpu-kv1: 285/285 and three smoke cases pass"
-    ],
-    "tokenizerParity": "0.9B and3.7B:285/285each with Windows regex+NFC backend",
-    "smokeExit": 0,
-    "panelTag": null,
-    "completedNativePanels": {
-      "qwen-registered1": {
-        "pass": 30,
-        "fail": 20,
-        "selector_pass": 7,
-        "prose_and_conversation_pass": 23,
-        "cases": 50,
-        "gpu_mib": 3497.55859375,
-        "ram_mib": 728.8125,
-        "median_seconds": 0.6489999999998872,
-        "max_seconds": 2.235000000000582
-      },
-      "qwen-documented1": {
-        "pass": 29,
-        "fail": 21,
-        "selector_pass": 7,
-        "prose_and_conversation_pass": 22,
-        "cases": 50,
-        "gpu_mib": 3169.5546875,
-        "ram_mib": 727.55078125,
-        "median_seconds": 0.6875,
-        "max_seconds": 2.1719999999986612
-      },
-      "09-bf16-high-practical-parser697-1": {
-        "pass": 33,
-        "fail": 17,
-        "selector_pass": 9,
-        "prose_and_conversation_pass": 24,
-        "cases": 50,
-        "gpu_mib": 2279.9140625,
-        "ram_mib": 709.20703125,
-        "median_seconds": 1.3284999999996217,
-        "max_seconds": 37.79699999999866
-      },
-      "37-q4-high-parser698-1": {
-        "pass": 31,
-        "fail": 19,
-        "selector_pass": 10,
-        "prose_and_conversation_pass": 21,
-        "cases": 50,
-        "gpu_mib": 3448.23046875,
-        "ram_mib": 809.421875,
-        "median_seconds": 3.41399999999976,
-        "max_seconds": 48.45300000000134
-      },
-      "37-q4-low-parser698-1": {
-        "pass": 32,
-        "fail": 18,
-        "selector_pass": 11,
-        "prose_and_conversation_pass": 21,
-        "cases": 50,
-        "gpu_mib": 3448.23046875,
-        "ram_mib": 809.203125,
-        "median_seconds": 1.1094999999995707,
-        "max_seconds": 2.8280000000013388
-      },
-      "37-q4-medium-parser698-1": {
-        "pass": 17,
-        "fail": 33,
-        "selector_pass": 9,
-        "prose_and_conversation_pass": 8,
-        "cases": 50,
-        "gpu_mib": 3448.23046875,
-        "ram_mib": 796.34375,
-        "median_seconds": 1.9844999999995707,
-        "max_seconds": 11.15599999999904
-      },
-      "09-q8-low-parser698-1": {
-        "pass": 20,
-        "fail": 30,
-        "selector_pass": 3,
-        "prose_and_conversation_pass": 17,
-        "cases": 50,
-        "gpu_mib": 1389.734375,
-        "ram_mib": 487.1171875,
-        "median_seconds": 0.3279999999995198,
-        "max_seconds": 1.3119999999998981
-      },
-      "09-q8-medium-parser698-1": {
-        "pass": 32,
-        "fail": 18,
-        "selector_pass": 12,
-        "prose_and_conversation_pass": 20,
-        "cases": 50,
-        "gpu_mib": 1389.734375,
-        "ram_mib": 481.80859375,
-        "median_seconds": 1.0474999999996726,
-        "max_seconds": 9.031999999999243
-      },
-      "q8-high-reference1": {
-        "pass": 21,
-        "fail": 29,
-        "selector_pass": 4,
-        "prose_and_conversation_pass": 17,
-        "cases": 50,
-        "gpu_mib": 2285.55859375,
-        "ram_mib": 1387.45703125,
-        "median_seconds": 1.0464999999999236,
-        "max_seconds": 434.0630000000001
-      },
-      "09-bf16-high-reference1": {
-        "pass": 32,
-        "fail": 18,
-        "selector_pass": 9,
-        "prose_and_conversation_pass": 23,
-        "cases": 50,
-        "gpu_mib": 3175.56640625,
-        "ram_mib": 2410.73046875,
-        "median_seconds": 1.5785000000005311,
-        "max_seconds": 37.70299999999952
-      },
-      "37-q4-high-cpu-kv1": {
-        "pass": 31,
-        "fail": 19,
-        "selector_pass": 9,
-        "prose_and_conversation_pass": 22,
-        "cases": 50,
-        "gpu_mib": 3070.24609375,
-        "ram_mib": 3597.9453125,
-        "median_seconds": 10.500500000000102,
-        "max_seconds": 104.625
-      },
-      "37-q4-high-gpu8k1": {
-        "pass": 31,
-        "fail": 19,
-        "selector_pass": 10,
-        "prose_and_conversation_pass": 21,
-        "cases": 50,
-        "gpu_mib": 3448.23046875,
-        "ram_mib": 842.08203125,
-        "median_seconds": 3.9140000000006694,
-        "max_seconds": 49.35999999999876
-      },
-      "37-q4-high-native-selectors1": {
-        "pass": 10,
-        "fail": 10,
-        "selector_pass": 10,
-        "prose_and_conversation_pass": 0,
-        "cases": 20,
-        "gpu_mib": 3448.23046875,
-        "ram_mib": 809.59375,
-        "median_seconds": 1.71100000000024,
-        "max_seconds": 6.906999999999243
-      },
-      "37-q8-high-native-gpu24-noop1": {
-        "pass": 10,
-        "fail": 10,
-        "selector_pass": 10,
-        "prose_and_conversation_pass": 0,
-        "cases": 20,
-        "gpu_mib": 3665.578125,
-        "ram_mib": 2739.08984375,
-        "median_seconds": 28.88250000000062,
-        "max_seconds": 183.40600000000086
-      },
-      "09-bf16-high-native-selectors1": {
-        "pass": 7,
-        "fail": 13,
-        "selector_pass": 7,
-        "prose_and_conversation_pass": 0,
-        "cases": 20,
-        "gpu_mib": 3173.56640625,
-        "ram_mib": 2374.2421875,
-        "median_seconds": 1.4455000000007203,
-        "max_seconds": 25.203999999999724
-      },
-      "37-q4-low-native-gpu8k1": {
-        "pass": 11,
-        "fail": 39,
-        "selector_pass": 11,
-        "prose_and_conversation_pass": 0,
-        "cases": 50,
-        "gpu_mib": 3448.23046875,
-        "ram_mib": 814.7578125,
-        "median_seconds": 1.0544999999992797,
-        "max_seconds": 2.7659999999996217
-      },
-      "37-q4-low-parser697-1": {
-        "pass": 32,
-        "fail": 18,
-        "selector_pass": 11,
-        "prose_and_conversation_pass": 21,
-        "cases": 50,
-        "gpu_mib": 3448.23046875,
-        "ram_mib": 827.25,
-        "median_seconds": 0.9769999999998618,
-        "max_seconds": 2.5
-      },
-      "37-q4-medium-parser697-1": {
-        "pass": 8,
-        "fail": 42,
-        "selector_pass": 0,
-        "prose_and_conversation_pass": 8,
-        "cases": 50,
-        "gpu_mib": 3448.23046875,
-        "ram_mib": 795.7421875,
-        "median_seconds": 1.78899999999976,
-        "max_seconds": 9.235000000000582
-      },
-      "09-q8-medium-parser697-1": {
-        "pass": 28,
-        "fail": 22,
-        "selector_pass": 8,
-        "prose_and_conversation_pass": 20,
-        "cases": 50,
-        "gpu_mib": 1389.734375,
-        "ram_mib": 484.36328125,
-        "median_seconds": 0.9375,
-        "max_seconds": 9.906999999999243
-      }
-    },
-    "additionalQ8_37Download": {
-      "sessionId": 30065,
-      "exit": 0,
-      "sha256": "8203991019c36dd618145aa76246097252e45283a4f75c0991a0ce902a0ad7d3",
-      "bytes": 5386404224
-    },
-    "runtimeIntegrationGap": "Current manifest hashes exe only; IFM thin executable requires whole backend package validation before promotion.",
-    "rejectedResourceProfiles": [
-      {
-        "tag": "37-q8-high-native-gpu28-1",
-        "gpu_peak_mib": 4154.70703125,
-        "reason": "Exceeded product 4096 MiB ceiling during load, before readiness; zero generations. Sampler guard overshot."
-      }
-    ],
-    "queuedControls": {
-      "sessionId": 63450,
-      "exitCode": 0,
-      "status": "completed_and_manually_adjudicated"
-    },
-    "investigationCompleted": true,
-    "decision": "retain_registered_qwen_as_working_candidate",
-    "promotion": false,
-    "ownerDecisionPending": false,
-    "reportOpenStatus": "queued_in_current_task_panel",
-    "evidenceValidation": "artifacts/comprobaciones/C03/K2_HORIZON_SELECTOR700/EVIDENCE_VALIDATION700.json",
-    "methodologyAmendment": "artifacts/comprobaciones/C03/K2_HORIZON_NATIVE699/AMENDMENT_RECEIPT.json",
-    "closure": "artifacts/comprobaciones/C03/K2_HORIZON_SELECTOR700/CLOSURE700.json",
-    "independentOutputs": 300,
-    "pairedNewOutputs": 40
-  },
-  "independentNative699": {
-    "09-bf16-high-reference699": {
-      "tag": "09-bf16-high-reference699",
-      "sessionId": 43329,
-      "status": "completed",
-      "panel_sha256": "a29167820a7a40ca2c43571276d98596ab0e146eb6b82ac699f768b85a035443",
-      "directory": "artifacts/comprobaciones/C03/K2_HORIZON_NATIVE699/run-09-bf16-high-reference699",
-      "measurements": {
-        "responses": 50,
-        "seconds": {
-          "median": 4.585999999999331,
-          "max": 511.1090000000022
-        },
-        "resources": {
-          "gpu_peak_mib": 3173.9375,
-          "ram_peak_mib": 689.19140625,
-          "seconds": 891.5310000000009,
-          "violations": [],
-          "manifest_unchanged": true,
-          "backend_exit": 1
-        }
-      },
-      "adjudication": {
-        "passed": 33,
-        "failed": 17,
-        "cases": 50,
-        "raw_results_sha256": "2229a587a5e81ea313d88cc37791352afea6ad9c001dcd4cd34dc63341cf74de"
-      }
-    },
-    "qwen-q4-reference699": {
-      "tag": "qwen-q4-reference699",
-      "sessionId": 44601,
-      "status": "completed",
-      "panel_sha256": "a29167820a7a40ca2c43571276d98596ab0e146eb6b82ac699f768b85a035443",
-      "directory": "artifacts/comprobaciones/C03/K2_HORIZON_NATIVE699/run-qwen-q4-reference699",
-      "measurements": {
-        "responses": 50,
-        "seconds": {
-          "median": 3.327999999997701,
-          "max": 25.889999999999418
-        },
-        "resources": {
-          "gpu_peak_mib": 2645.5546875,
-          "ram_peak_mib": 2244.875,
-          "seconds": 270.54699999999866,
-          "violations": [],
-          "manifest_unchanged": true,
-          "backend_exit": 1
-        }
-      },
-      "adjudication": {
-        "passed": 40,
-        "failed": 10,
-        "cases": 50,
-        "raw_results_sha256": "bd492f17841bdd5159523f44cb844edb5b4790e766517df7fed765a8c883effd"
-      }
-    },
-    "37-q4-high-reference699": {
-      "tag": "37-q4-high-reference699",
-      "sessionId": null,
-      "status": "completed",
-      "panel_sha256": "a29167820a7a40ca2c43571276d98596ab0e146eb6b82ac699f768b85a035443",
-      "directory": "artifacts/comprobaciones/C03/K2_HORIZON_NATIVE699/run-37-q4-high-reference699",
-      "measurements": {
-        "responses": 50,
-        "seconds": {
-          "median": 21.91400000000067,
-          "max": 233.2970000000023
-        },
-        "resources": {
-          "gpu_peak_mib": 3064.24609375,
-          "ram_peak_mib": 3544.57421875,
-          "seconds": 2034.969000000001,
-          "violations": [],
-          "manifest_unchanged": true,
-          "backend_exit": 1
-        }
-      },
-      "adjudication": {
-        "passed": 39,
-        "failed": 11,
-        "cases": 50,
-        "raw_results_sha256": "3b75b0789318a06e36d4a0b820e61260537e25d0dc93e89df87eea1491b52267"
-      }
-    },
-    "qwen-q4-practical699": {
-      "tag": "qwen-q4-practical699",
-      "sessionId": null,
-      "status": "completed",
-      "panel_sha256": "a29167820a7a40ca2c43571276d98596ab0e146eb6b82ac699f768b85a035443",
-      "directory": "artifacts/comprobaciones/C03/K2_HORIZON_NATIVE699/run-qwen-q4-practical699",
-      "measurements": {
-        "responses": 50,
-        "seconds": {
-          "median": 1.3520000000007713,
-          "max": 9.71900000000096
-        },
-        "resources": {
-          "gpu_peak_mib": 3165.5546875,
-          "ram_peak_mib": 715.3828125,
-          "seconds": 111.35899999999674,
-          "violations": [],
-          "manifest_unchanged": true,
-          "backend_exit": 1
-        }
-      },
-      "adjudication": {
-        "passed": 40,
-        "failed": 10,
-        "cases": 50,
-        "raw_results_sha256": "5c49de78acaff63857fb956fc254fadbaa7a2500a54b219d5b86011e7d586056"
-      }
-    },
-    "37-q4-low-practical699": {
-      "tag": "37-q4-low-practical699",
-      "sessionId": null,
-      "status": "completed",
-      "panel_sha256": "a29167820a7a40ca2c43571276d98596ab0e146eb6b82ac699f768b85a035443",
-      "directory": "artifacts/comprobaciones/C03/K2_HORIZON_NATIVE699/run-37-q4-low-practical699",
-      "measurements": {
-        "responses": 50,
-        "seconds": {
-          "median": 1.8985000000011496,
-          "max": 16.014999999999418
-        },
-        "resources": {
-          "gpu_peak_mib": 3444.23046875,
-          "ram_peak_mib": 785.41015625,
-          "seconds": 163.18800000000192,
-          "violations": [],
-          "manifest_unchanged": true,
-          "backend_exit": 1
-        }
-      },
-      "adjudication": {
-        "passed": 28,
-        "failed": 22,
-        "cases": 50,
-        "raw_results_sha256": "5d5b9cfeb5bcc912cb5743244b3c3d9b08b2b139c024b1d83b2ad7292fbf046a"
-      }
-    },
-    "37-q4-high-practical699": {
-      "tag": "37-q4-high-practical699",
-      "sessionId": null,
-      "status": "completed",
-      "panel_sha256": "a29167820a7a40ca2c43571276d98596ab0e146eb6b82ac699f768b85a035443",
-      "directory": "artifacts/comprobaciones/C03/K2_HORIZON_NATIVE699/run-37-q4-high-practical699",
-      "measurements": {
-        "responses": 50,
-        "seconds": {
-          "median": 8.828499999999622,
-          "max": 74.78200000000288
-        },
-        "resources": {
-          "gpu_peak_mib": 3444.23046875,
-          "ram_peak_mib": 787.55859375,
-          "seconds": 778.2819999999992,
-          "violations": [],
-          "manifest_unchanged": true,
-          "backend_exit": 1
-        }
-      },
-      "adjudication": {
-        "passed": 38,
-        "failed": 12,
-        "cases": 50,
-        "raw_results_sha256": "dc966c7753e1a39e26c27dddd71895a68638e09c7cb790f31e663c0bdae81d2b"
-      }
-    }
-  },
-  "preparedNextProduct": {
-    "name": "product706",
-    "script": "scratchpad/c03-status-batch706.py",
-    "observer": "scratchpad/c03-status706-hook/sitecustomize.py",
-    "started": false
-  },
-  "nextWindowDomainProbe": {
-    "path": "artifacts/comprobaciones/C03/astra-window-domain-probe707",
-    "cases": 60,
-    "baseline_correct": 28,
-    "candidate_correct": 42,
-    "gains": 15,
-    "losses": 1,
-    "adopted": false,
-    "coverage_added": 0
-  },
-  "nextProductBlocker": {
-    "evidence": "artifacts/comprobaciones/C03/astra-window-inventory-gap708/RESULT.json",
-    "kind": "missing_typed_window_inventory",
-    "supersedes": "Treating H0023 as a correct executable read removed only by lexical domain veto",
-    "next": "Implement bounded typed global window inventory708, preserving exact selectors, identity, cancellation and honest pagination/errors. Then measure native proposal and first wrong transformation; do not simply remove the domain guard."
-  },
-  "activeDiagnostic": {
-    "name": "Native product736 comparison",
-    "status": "terminal_adjudicated_k2_incomplete",
-    "live_sessions": [],
-    "terminal_sessions": [
-      63813,
-      48438,
-      84322,
-      5502
-    ],
-    "output": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736",
-    "k2_completed": 50,
-    "k2_pending": 23,
-    "qwen_completed": 73
-  },
-  "activeCatalogProbe": {
-    "sessionId": 73101,
-    "status": "terminal_completed",
-    "script": "scratchpad/c03-catalog-phases710.py",
-    "public": "artifacts/comprobaciones/C03/astra-catalog-phases710",
-    "exit_code": 0
-  },
-  "singleEnumerationProbe": {
-    "sessionId": 86021,
-    "status": "terminal_completed",
-    "exit_code": 0,
-    "result": "artifacts/comprobaciones/C03/astra-catalog-single-enumeration711/RESULT.json",
-    "all_entries_identical": true,
-    "completed_pairs": 3
-  },
-  "catalogCandidate": {
-    "source": "artifacts/comprobaciones/C03/astra-catalog-source712/CANDIDATE.json",
-    "adopted": false,
-    "startup_probe": "scratchpad/c03-fixture-startup-probe713.py",
-    "startup_probe_started": true,
-    "startup_probe_session": 56033,
-    "startup_probe_status": "terminal_tests_passed_cleanup_repaired",
-    "startup_probe_wrapper_exit": 1,
-    "startup_ready_count": 50,
-    "startup_failed_count": 0,
-    "fixture_restored_sha256": "628ab599ecae26227707d479220bbab41a06f17e9a3980c828c8dd6c45119ae3",
-    "provider_owners": {
-      "passed": 50,
-      "failed": 0,
-      "skipped": 0,
-      "sessionId": 85662,
-      "exit_code": 0
-    }
-  },
-  "currentIntegratedFull": {
-    "sessionId": 65777,
-    "status": "terminal_failed",
-    "observed_at_utc": "2026-09-10T03:49:24-03:00",
-    "progress": "Terminal exit1: .NET4532 passed/0 failed/1 aggregate skip; Python11135 passed/2 failed/3 skips,466 subtests. Original packaging45s and sidecar3s timeouts; no Full6 yet.",
-    "candidate": "artifacts/comprobaciones/C03/astra-catalog-source712/CANDIDATE.json",
-    "log": "%TEMP%/c03-catalog712-full5.log",
-    "exit_record": "%TEMP%/c03-catalog712-full5-exit.json",
-    "model_inference": false,
-    "coverage_added": 0,
-    "exit_code": 1,
-    "terminal_at_utc": "2026-09-10T07:00:24.021404Z",
-    "result": "artifacts/comprobaciones/C03/astra-catalog-source712/FULL5_RESULT.json"
-  },
-  "activeOwnerDiagnostics": {
-    "status": "terminal",
-    "last_probe": 727,
-    "session": 27178,
-    "wrapper_exit": 0,
-    "acceptance_credit": false,
-    "candidate724": "withdrawn"
-  },
-  "activeProductDiagnostic": {
-    "batch": 736,
-    "status": "terminal_adjudicated_k2_incomplete",
-    "k2": {
-      "completed": 50,
-      "correct": 11,
-      "failed": 39,
-      "not_evaluated": 23,
-      "exit_code": 1,
-      "cause": "free_ram_bound"
-    },
-    "qwen": {
-      "completed": 73,
-      "correct": 48,
-      "failed": 25,
-      "exit_code": 0
-    },
-    "matched50": {
-      "k2_correct": 11,
-      "qwen_correct": 35
-    },
-    "result": "NATIVE_PRODUCT736/COMPARISON.json",
-    "full_gate_passed": false,
-    "adopted": false,
-    "coverage_added": 0,
-    "processes_closed": true
-  },
-  "lastGoalTurn": {
-    "utc": "2026-09-10T06:26:27.940831-03:00",
-    "classification": "progress",
-    "goal_status": "active",
-    "completed": "Measured and adjudicated all50 isolated K2 thinking-override pairs; deterministic template change and38to19 quality difference established in local profile; original source/runtime preserved.",
-    "remaining": "Fair K2 product adapter/integration, C03 generalization742,8routes,reserve100,UI/voice/loopbackAEC,recovery,combinedresources,Full originaltimeouts,continuity.",
-    "next": "Prepare an experimental K2 product adapter preserving native reasoning/profile across roles and inspect exact requests before paired integration. Reuse699/700/731; do not repeat disabled-thinking campaign.730 Python integration remains pending. No live process."
-  },
-  "activeWindowInventory730": {
-    "utc": "2026-09-10T06:00:04.474774-03:00",
-    "status": "candidate_csharp_owners_passed",
-    "provider_first": "compile failed CS8604, no tests run; private normalizer now accepts nullable input and retains its validation",
-    "provider_final": {
-      "passed": 41,
-      "failed": 0,
-      "skipped": 0,
-      "duration_ms": 932,
-      "exit_code": 0
-    },
-    "scope": "Includes controlled native Windows global enumeration, title literal*, *.exe not global, page counts/offset/complete, identity/cancellation/absence/failure. Does not certify user prose.",
-    "python_unchanged_this_stage": true,
-    "full_gate_passed": false,
-    "adopted": false,
-    "coverage_added": 0,
-    "kernel": {
-      "passed": 37,
-      "failed": 0,
-      "skipped": 0,
-      "duration_ms": 174,
-      "exit_code": 0,
-      "session_id": 1999
-    },
-    "core": {
-      "passed": 5,
-      "failed": 0,
-      "skipped": 0,
-      "duration_ms": 285,
-      "exit_code": 0,
-      "session_id": 1999
-    },
-    "next": "Verify model integration compatibility in response to owner concern before further model batches; Python inventory integration remains pending.",
-    "source_sha256": {
-      "src/Baxy.Providers.Windows/Windows/WindowControlContracts.cs": "e5cbfd254108b80bc3fb18147fd132bc4db7c2cadd2016a6fe6559a705b3a827",
-      "src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs": "ba7456425f07d8fc9e39e84c275810510d8ee96e497fc2e28d3ee9162d71c95f",
-      "src/Baxy.Core/Operations/WindowControlHandlers.cs": "faae9e5f356284e4de92d5a0ff4579ab71653ac7785d23de0419bd9972b6d3c4",
-      "src/Baxy.Kernel/Operations/ProductCatalog.cs": "837ac551fac21f3da5b98cf9c2254008a342cf87d2a22422e1c1814c91f324cd",
-      "tests/Baxy.Providers.Windows.Tests/WindowInventoryProviderTests.cs": "5d1795af0fc6eece27ef5ac0841d0a135352341cad4467def1f824e39924ddae",
-      "tests/Baxy.Providers.Windows.Tests/WindowsWindowControlProviderTests.cs": "2da1415c1c5ac1aa6d501ab1d389dc3a17319599b980787de0bc8b1aaa5cbac5",
-      "tests/Baxy.Providers.Windows.Tests/WindowTitleResolutionTests.cs": "1fdbe34b49c78dd4efed166402dd82ce4f2de2ee2541c2ccb03da5458c9c0fc3",
-      "tests/Baxy.Integration.Tests/MvpLocalTransientHandlerMatrixTests.cs": "35a5b88241adfa6db85d17c43fe436e6935f9ac4013c817c1eaf625c0d055b4a",
-      "tests/Baxy.Kernel.Tests/ProductCatalogTests.cs": "0e773ffd758d89dd4d9ee463b6e8a3f72220e7c2f3c9d5e19d8dc372f53398e5"
-    }
-  },
-  "activeModelAdapter731": {
-    "sessionId": 42807,
-    "status": "terminal_adjudicated",
-    "log": "%TEMP%/c03-k2-adapter731.log",
-    "exit_record": "%TEMP%/c03-k2-adapter731-exit.json",
-    "source_frozen": "llm.py and731 script remain unchanged during execution",
-    "scope": "50 native699 same tasks, only K2 enable_thinking=False; no product/model adoption or survey credit",
-    "utc": "2026-09-10T06:07:46.157511-03:00",
-    "exit_code": 0,
-    "finished_at_utc": "2026-09-10T09:18:33.3484265Z",
-    "resources": "K2_HORIZON_ADAPTER731/RESOURCES.json",
-    "adjudication": "K2_HORIZON_ADAPTER731/ADJUDICATION.json",
-    "summary": "K2_HORIZON_ADAPTER731/SUMMARY.json",
-    "before_correct": 38,
-    "after_correct": 19,
-    "sensitivity_correct": 20,
-    "gains": 3,
-    "losses": 22,
-    "processes_closed": true,
-    "adopted": false,
-    "publication": {
-      "commit": "626082b07056edd3f63077aef05b6e2c2d7707bd",
-      "origin_Goal_c03_matches": true,
-      "sealed_files_verified_in_HEAD": 12,
-      "main_unchanged": "5f572ee1b48cb5e2543ee5e06510e51057c9c845",
-      "verified_at_utc": "2026-09-10T06:31:29.227748-03:00"
-    },
-    "report_open_status": "queued_by_Codex; not claimed visible"
-  },
-  "publicationReceipt": {
-    "commit": "58f45e270451dbaf6c285ae56e5207f29a9f70e2",
-    "remote_branch": "origin/Goal-c03",
-    "head_matches_origin": true,
-    "sealed_files_verified_in_head": 25,
-    "main_unchanged": true,
-    "source_adopted": false
-  },
-  "comparison736": {
-    "status": "diagnostic_adjudicated_incomplete_k2_campaign",
-    "live_sessions": [],
-    "k2_completed": 50,
-    "k2_not_evaluated": 23,
-    "qwen_completed": 73,
-    "matched50": {
-      "k2_correct": 11,
-      "qwen_correct": 35
-    },
-    "report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
-    "handoff": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/HANDOFF.md",
-    "memory_startup_observed": false,
-    "publication": {
-      "commit": "2bbb41d49ca15850b9a32b7cbfc0cf25b925bff1",
-      "remote_equal": true,
-      "committed_byte_seals_verified": 31,
-      "main_unchanged": true,
-      "report_open_status": "queued; not claimed visible"
-    }
-  },
-  "previousProductDiagnostic729": {
-    "batch": 729,
-    "session": 94146,
-    "status": "terminal_adjudicated",
-    "exit_code": 0,
-    "correct": 49,
-    "failed": 24,
-    "comparison704": {
-      "gains": 0,
-      "losses": [
-        "H0655"
-      ]
-    },
-    "result": "astra-status-batch729/RESULT.json",
-    "full_gate_passed": false,
-    "adopted": false,
-    "coverage_added": 0,
-    "processes_closed": true
-  },
-  "currentDiagnostic": null,
-  "independentDiagnostic": {
-    "path": "artifacts/comprobaciones/C03/DOMAIN_TRACE743",
-    "cases": 63,
-    "source_changed": false,
-    "first_disk_loss": "direct_request false while disk domain true"
-  },
-  "publicationCheck": "PIPE_SOURCE740/PUBLICATION_BYTES.json; normalize live source only after Full terminal; preserve frozen snapshot",
-  "currentGoalTurnProgress": "New survey priority applied; taxonomy validated and apps52 sealed; runner/audio preparations parallel.",
-  "lastValidation750": {
-    "owner_passed": 2687,
-    "environmental_skipped": 1,
-    "owner_seconds": 61.99,
-    "fast_exit_code": 0,
-    "program_tree_sha256": "e6416b4290298d023c4cb600fd3e748393295de8c1cb1588c7f71c859df97f37"
-  },
-  "surveyRegistrySha256": "a06b874d2f06697cc01c486ba19f90789e72dfd79d048aa03274dceb4a793a6a",
-  "latestDiagnostic": {
-    "name": "PROSE_SAMPLING785",
-    "calls": 150,
-    "pass_by_arm": [
-      30,
-      32,
-      33
-    ],
-    "sessionId": 10660,
-    "exitCode": 0,
-    "effectiveParamsVerified": 150,
-    "outputCuts": 17,
-    "sourceAdopted": false,
-    "surveyCredit": 0,
-    "report": "artifacts/comprobaciones/C03/PROSE_SAMPLING785/REPORT.md"
-  },
-  "selectedModel": "Qwen3-4B-Instruct-2507 Q4_K_M registered",
-  "activeProductQueue": null,
-  "completedAgentProposal": {
-    "agent": "process_scope_repair",
-    "worktree": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-scope799-worktree",
-    "proposal": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-scope799-proposal\\repair.patch",
-    "owner_tests": "124 passed in3.14s",
-    "root_apply_check_exit": 0,
-    "integrated": false
-  },
-  "pendingPublicationNormalization": {
-    "path": "tests/test_effect_intent.py",
-    "crlf_line_endings": 25,
-    "note": "Normalize for Git only after all current validation/inference ends; preserve previous bytes, prove AST unchanged, run owner suite and record exact validation scope. Do not edit sealed24 sources while Full/799 runs."
-  },
-  "relayStartup": {
-    "sourceThreadStatus": "idle; last turn interrupted",
-    "orphanProcesses": [],
-    "head": "d1a040d62fd57ef1db583121eda2c67c1efde632",
-    "inheritedWipPreservation": "chore(c03): preserve WIP at relay; preservation only, no source800/802 adoption"
-  },
-  "previousRelayThreadId": "01a08e1a-db7f-77a2-bcf2-3bc95483a9e6",
-  "relayProcessCheck": "2026-09-11: source and previous relay idle; no llama-server, testhost, dotnet, Python, BAXY or c03 runner processes. No process stopped.",
-  "diagnosticTaskManager": {
-    "status": "owner_left_open",
-    "owner_message": "Tambien te dejo el admin de tareas abierto como se pidio",
-    "automaticClose": false,
-    "product_credit": false,
-    "purpose_now_parked": true
-  },
-  "repair806": {
-    "active_agent_limit": 2,
-    "scope_worktree": "C:/Users/usuario/AppData/Local/BAXY/worktrees/c03-process-scope806",
-    "rows_worktree": "C:/Users/usuario/AppData/Local/BAXY/worktrees/c03-process-rows806",
-    "status": "Both isolated proposals delivered and integrated separately:806measured807;808rowsinFast, awaiting809. No product adoption.",
-    "iteration_limit_each": 2
-  },
-  "latestCandidateValidation": {
-    "candidate": 808,
-    "owners_passed": 204,
-    "owners_skipped": 0,
-    "seconds": 2.78,
-    "fast_status": "complete",
-    "source_pins": 29,
-    "adopted": false,
-    "fast_exit": 0,
-    "release_seconds": 21.84
-  },
-  "taskManager814LatestCheck": {
-    "utc": "2026-09-11T02:56:33.896601-03:00",
-    "pid": 8204,
-    "windowId": 5704926,
-    "processPresent": true,
-    "windowPresent": true,
-    "ownerReply": "Ya lo cerre",
-    "replyRefersTo": "Earlier question quoting Acceso denegado; new814 closure not verified. Do not repeat the pending question."
-  },
-  "boundedProposalInProgress": null,
-  "boundedProposalReady": {
-    "candidate": 821,
-    "path": "C:/Users/usuario/AppData/Local/BAXY/C03-list-count821-proposal/proposal821.patch",
-    "sha256": "19efc2c036e95b2a55cfe0d7b812bbb9de96908910e3026bd652891204c94996",
-    "worktree": "C:/Users/usuario/AppData/Local/BAXY/C03-list-count821",
-    "base_llm_sha256": "ffd1c8ca159069044ac5dbc449d00fcc833649c728f421604b7f1f0c3d27f0a8",
-    "agent_owners": "20pass/0skip/1.23s with Recorders, no model",
-    "integration_precondition": "Root must adjudicate819 first; not integrated and not adopted."
-  },
-  "lastCandidateValidation": {
-    "candidate": 857,
-    "receipt": "AUDIO_REPAIR857/VALIDATION_EXIT.json",
-    "owners_passed": 3545,
-    "owners_failed": 0,
-    "owners_skipped": 0,
-    "duration_seconds": 75.63,
-    "fast_exit_code": 0,
-    "release_seconds": 22.71,
-    "collection_chunk": "823c22",
-    "source_adopted": false
-  },
-  "publishedCandidateCommit": "e7fbae65f3beb8d9d7a4986cf217564a5c3c93cf",
-  "publishedRunnerCommit": "ef88d4c9b891889e127e25c95a1df1086ff50775",
-  "latestOcrRun": {
-    "name": "OCR832",
-    "sessionId": 80419,
-    "collectionChunk": "f7243c",
-    "exitCode": 0,
-    "pass": 6,
-    "fail": 2,
-    "sourceAdopted": false,
-    "coverageAdded": 0
-  },
-  "latestNativeOcrRun": {
-    "name": "OCR838",
-    "sessionId": 28404,
-    "collectionChunk": "717bbe",
-    "exitCode": 1,
-    "pass": 4,
-    "contentFailures": 3,
-    "timeouts": 1,
-    "coverageAdded": 0
-  },
-  "activeRepairAgent": null,
+  "surveyRegistrySha256": "40c530c681cb18b03cc46b7f1217757d46c80f8a2666fec59fae4cc611dd1108",
   "surveyCategories": {
-    "total": 35,
     "closed": 0,
-    "taxonomy": "SURVEY_TAXONOMY846.json"
+    "total": 35
   },
-  "surveyCoverageLast24h": {
-    "covered_updated_last_24h": 12,
-    "confirmed_new_grants_last_24h": 10,
-    "first_grant_date_not_distinguished_for_recent_ids": [
-      "H0180",
-      "H0499"
-    ]
+  "surveyCoverageLast24h": 69,
+  "workStatus": "986_adjudicated_988_reviewed_not_adopted_989_sealed",
+  "goalStatusNote": "Owner waived automated suites/Fast/Full; scope blocker resolved. No new blocked condition.",
+  "previousGoalTurnClassification": "progress",
+  "previousGoalTurnClassificationReason": "Four sealed product batches, three source repairs adopted and published, eight literal credits adjudicated, real scheduled effects reconciled; next repair reviewed and panel sealed.",
+  "objectiveFile": "C:/Users/usuario/.codex/attachments/310753b7-9a38-4a57-951e-007fdcf7693a/goal-objective.md",
+  "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
+  "latestProductRun": {
+    "state": "complete",
+    "batch": 986,
+    "sessionId": 87108,
+    "collection": "7942c6",
+    "exitCode": 0,
+    "executed": 12,
+    "passed": 7,
+    "failed": 5,
+    "coverageAdded": 4,
+    "sourceCandidate": "2121245f8eebd5c024144daf4ec76b085a3bcd7d"
   },
-  "updatedAtUtc": "2026-09-11T08:49:41.023667-03:00",
-  "lastAppsBatch": {
+  "activeValidation": null,
+  "activeRepairAgent": null,
+  "currentUnpublishedSource": null,
+  "preparedNextPanel": "NEXT_989.json",
+  "lastValidation": {
+    "status": "historical_only",
     "candidate": 843,
-    "passed": 1,
-    "total": 52,
-    "coverage_added": 0
+    "receipt": "PROTOCOL843/FULL_EXIT.json",
+    "not_current_source_validation": true
   },
-  "lastAudioBatch": {
-    "candidate": 843,
-    "passed": 26,
-    "total": 52,
-    "coverage_added": 2,
-    "audio_restored": true
+  "currentGoalTurnProgress": {
+    "978": {
+      "executed": 24,
+      "passed": 4,
+      "failed": 20,
+      "coverage_added": 0,
+      "resources": {
+        "utc": "2026-09-11T22:18:10.227023+00:00",
+        "violations": [],
+        "gpu_peak_mib": 3497.55859375,
+        "gpu_telemetry_available": true,
+        "ram_peak_mib": 2469.3828125,
+        "seconds": 187.15600000000268,
+        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+      }
+    },
+    "980": {
+      "executed": 14,
+      "passed": 7,
+      "failed": 7,
+      "coverage_added": 0,
+      "resources": {
+        "utc": "2026-09-11T22:29:24.363725+00:00",
+        "violations": [],
+        "gpu_peak_mib": 3497.55859375,
+        "gpu_telemetry_available": true,
+        "ram_peak_mib": 2440.72265625,
+        "seconds": 48.5,
+        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+      }
+    },
+    "983": {
+      "executed": 17,
+      "passed": 10,
+      "failed": 7,
+      "coverage_added": 4,
+      "resources": {
+        "utc": "2026-09-11T22:40:56.260112+00:00",
+        "violations": [],
+        "gpu_peak_mib": 3497.55859375,
+        "gpu_telemetry_available": true,
+        "ram_peak_mib": 2478.78515625,
+        "seconds": 95.7039999999979,
+        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+      }
+    },
+    "986": {
+      "executed": 12,
+      "passed": 7,
+      "failed": 5,
+      "coverage_added": 4,
+      "resources": {
+        "utc": "2026-09-11T22:48:02.969893+00:00",
+        "violations": [],
+        "gpu_peak_mib": 3497.55859375,
+        "gpu_telemetry_available": true,
+        "ram_peak_mib": 2419.703125,
+        "seconds": 48.01499999999942,
+        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+      }
+    }
   },
-  "ownerLatestInstruction": {
-    "utc": "2026-09-11T11:38:26.312269-03:00",
-    "text": "no hagas test, saca el goal lo mas rápido posible, sin perder calidad",
-    "suites_and_full": "do_not_run",
-    "product_panels_scope": "one clarification pending; no new runs meanwhile"
-  },
-  "currentUnpublishedSource": {
-    "effect_intent_sha256": "83895b3df64e33e4a3875ed5d6d4a9446fbd73e3a1ffc3c9a44ef8c1616e2f2b",
-    "main_sha256": "628d9ce0bedd4263014bbe7374c097bc5c733a340dffb444ba3871e2db0bb783",
-    "changes": [
-      "GOOGLE_ROUTING872",
-      "APP_ARTICLES875"
-    ],
-    "validation": "manual review only; tests explicitly prohibited by owner"
-  },
-  "noTestsScopeAudit": {
-    "condition": "Clarification required whether owner no-tests instruction also excludes product executions needed for survey accreditation",
-    "consecutive_goal_turns": 3,
-    "current_turn_classification": "no_progress",
-    "previous_turn_classification": "no_progress",
-    "scope_question_already_sent": true,
-    "answer_received": false,
-    "revalidated_at_utc": "2026-09-11T16:00:33.205924Z",
-    "evidence_chunks": [
-      "673dee"
-    ],
-    "agents": "All child agents observed terminal via collaboration.list_agents",
-    "manifest_execution_authorized": false,
-    "preparation_exists": false,
-    "run_exists": false,
-    "goal_status": "blocked",
-    "next_step": "Resume after owner clarifies product execution scope. Preserve disabled manifest; create a newly authorized manifest only if product panels are allowed, bound to actual current HEAD and verified hashes. If resumed with same unresolved blocker, reset audit count and apply fresh three-turn rule."
-  },
-  "completedWorktreeCleanup": {
-    "collection": "d49f82",
-    "utc": "2026-09-11T17:59:18.0872577Z",
-    "basis": "Resolved exact parent/name and all changed source hashes equal adopted canonical files; no extra worktree changes. Patches and branches preserved.",
-    "removed": [
-      "C:/Users/usuario/AppData/Local/BAXY/C03-web-confirmation904-worktree",
-      "C:/Users/usuario/AppData/Local/BAXY/C03-web-navigation910-worktree"
-    ]
-  },
-  "nextDiagnostics": {
-    "webEnglish913": "C:/Users/usuario/AppData/Local/BAXY/C03-web-english913-diagnosis/REPORT.md",
-    "calculator911SHA": "4780fca4d0874f1a8e0f05cacd2ef5adc86e6b8b6212d898eced0ade35ecbf90",
-    "webEnglish913SHA": "46bd024a2e8d7cdac5996731eaf5fb02e7800ad4a55105246a2dcf5078e2a0d6",
-    "calculator911": "C:/Users/usuario/AppData/Local/BAXY/C03-app-calculator911-diagnosis/REPORT.md"
-  },
-  "preparedNextPanel": "921 H0706+5boundaries; runner922 pending final seal"
+  "ownerLatestInstruction": "Accelerate C03 without automated tests/Fast/Full; no loss of truthful product behavior. Real sealed execution required for coverage.",
+  "nextProductBlocker": null
 }

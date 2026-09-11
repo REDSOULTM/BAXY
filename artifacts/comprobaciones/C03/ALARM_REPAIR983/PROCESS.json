@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-11T22:39:20.620770+00:00",
+  "runner_pid": 29352,
+  "launcher_pid": 38692,
+  "launcher_creation": 1789166360.6137245,
+  "command": [
+    "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "main.py",
+    "--conductor",
+    "--profile",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-profile",
+    "--capture",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-private\\run\\capture",
+    "--turns-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-proposal\\turns.jsonl",
+    "--timeout-ms",
+    "120000"
+  ]
+}

@@ -1,28 +1,67 @@
-# C03 — cobertura vigente
+# C03 — cobertura vigente tras986
 
-**89/742 cubiertos, 653 abiertos, 0 no aplican; 61 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Matriz C03: 3/11. Registro `612cea4488562029e1b35e3681791f49702e62c04dcb36e28bed8d7f309749ac`; tabla por masa en SURVEY_COVERAGE_CURRENT.json y más abajo.
+**97/742 cubiertos,645 abiertos,0 no aplican;69 altas confirmadas en24h;0/35 categorías cerradas.** C03:3/11 cumplidos,5 contradichos,3 pendientes. Goal activo, sin decisión pendiente del dueño. RegistroSHA `40c530c681cb18b03cc46b7f1217757d46c80f8a2666fec59fae4cc611dd1108`.
 
-Goal activo, sin bloqueo ni decisión pendiente del dueño. Orden vigente: omitir suites, Fast y Full; mantener ejecuciones reales selladas y crédito factual con variantes. Omitidas no significa aprobadas. No fue necesario cerrar aplicaciones; permiso persistente para RAM, conservando trabajo no guardado.
+Este tramo añade8 créditos: H0090/H0280/H0413/H0710 en983 y H0020/H0056/H0469/H0599 en986. Cada literal tiene ejecución actual, respuesta útil y al menos dos variantes pertinentes acreditadas. Estado escrito al adjudicar: e806d2 y75bc21. Ninguna variante fallida ni límite se ha reclasificado para sumar.
 
-Este tramo añadió nueve créditos en966: cuatro consultas de disco y cinco GPU, con literales actuales y dos variantes pertinentes por conducta.15/25pass. H0442 falla por gigabits en lugar de GB; no repetir toda la tanda.89/742 tras adjudicación inmediata, sin créditos musicales o de tareas.
+La programación de alarmas funcionaba; la composición rechazaba respuestas por exigir un título de nota y desconocer la autoridad de la hora programada.982 corrige esa comprobación.979/985 corrigen extracción y selección de notas/tareas;982 elimina la filtración de instrucciones internas del prompt979. Fuente vigente publicada: `2121245f8eebd5c024144daf4ec76b085a3bcd7d`. Sin suites, Fast o Full por orden del dueño; omitidas no significa aprobadas. Build949 reutilizado, sólo cambios Python.
 
-Fuente969 publicada: `d3a853fc47391c1420e6e943ebf94d0a68f6010a`, sólo effect_intent.py/llm.py,54+/3−. Mantiene metadata musical y verifica paused/playing.970:9 ejecutados,4pass/5fail; H0543 identifica canción/artista y pausa, pero queda open porque sus pares fallan. H0224 y varianteES leen bien, generación contradice pausa; EN PlannerContractError sin ubicación capturada y error final inventa ausencia de reproducción. DIAGNOSIS972 distingue esas causas; no más regex de estado ni repetición sin reparar. Build949 reutilizado, sin suites.
+| Tanda | Útiles / ejecutados | Nuevos créditos | Pico VRAM MiB | Pico RAM MiB | Segundos |
+|---|---:|---:|---:|---:|---:|
+| 978 | 4/24 | 0 | 3497.56 | 2469.38 | 187.156 |
+| 980 | 7/14 | 0 | 3497.56 | 2440.72 | 48.500 |
+| 983 | 10/17 | 4 | 3497.56 | 2478.79 | 95.704 |
+| 986 | 7/12 | 4 | 3497.56 | 2419.70 | 48.015 |
 
-975:17 ejecutados,2pass/15fail,0créditos. H0020/H0056/H0469 preguntan datos ya presentes; H0599 guarda nota verificada pero no responde. Dos tareas y una nota persisten en perfil aislado975; identidades en ROOT_ADJUDICATION, no recrear a ciegas allí. DIAGNOSIS977: extracción no admite operandos ya reconocidos, y una confirmación útil de tarea se veta por exigir vocabulario de nota. 973 no se ejecutó;975 corrigió su criterio antes de ejecución, conservando17textos/IDs/roles: «anota» admite tarea o nota fiel, pares según mecanismo realmente usado.
 
-971 diagnóstico normal falla antes de notification.diagnose; no demuestra avería Windows.974 ejecuta sólo script efectivo existente en modo diagnose: schedulerRunning y toastEnabled true; healthy false por886 de906tareas BAXY existentes con LastTaskResult4294770688, otras20con0. Ninguna alarma creada, tarea cancelada ni configuración modificada. Sin significado adicional atribuido al código, sin limpieza global. Diagnóstico directo no acredita NLP/kernel/encuesta.
+Todas recogidas con exit0, pins intactos y cero violaciones de recursos; exit0 no acredita utilidad. RAM y VRAM son medidas separadas, no consumo exclusivo del modelo. No hubo que cerrar aplicaciones. Última lectura e5b174:4994MiB libres, sin BAXY/core/llama/dotnet/testhost.
 
-Orden por abiertos: apps40 condiciones957; música39 reparación972; agenda38 con9alarmas preparadas PLAN976 y cuatro fallos de tareas977; web36; sistema29. Para alarmas, notification.schedule no exige confirmación normal: sellar reloj/baseline y ligar taskName/dueUTC/acción al nuevo perfil; cancelación sólo de identidades propias. No exigir reparar906tareas ni healthy=true por inferencia. H0675/OCR/nuevos providers siguen aparcados. Spotify962 conserva efecto incierto; lecturas pausadas965/970 no resuelven el pasado.
+Pendientes concretos: H0100/H0523 respondieron útilmente pero el intervalo temporal sellado no contemplaba el truncado a segundos ya existente; siguen open, sin tolerancia añadida después.986 conserva cinco límites fallidos (prohibición/cita/futuro/referencia ausente/relato), por lo que no se cierra la categoría. La variante inglesa de timer983 falla interpretación; otra llama BAXY al usuario y no se usa como par.
 
-| Tanda | Resultado | Pico VRAM MiB | Pico RAM MiB | Duración |
-|---|---|---:|---:|---:|
-|965|0/4, sin crédito|3497,56|2337,18|54,407s|
-|966|15/25, +9 créditos|3497,56|2513,54|72,438s|
-|970|4/9, sin crédito|3497,56|2453,60|69,641s|
-|971|0/1 control preparatorio|3497,56|1661,85|26,266s|
-|975|2/17, sin crédito|3497,56|2429,02|121,578s|
+Efectos reconciliados:978 creó9 alarmas,5 canceladas por identidad exacta y4 expiradas conservadas sin próxima ejecución; las906 anteriores intactas.983 creó11 y canceló las11 con due,acción y ausencia verificados; baseline910 intacto. `.fired` no demuestra sonido audible ni despertar. Perfiles975/980/986 conservan objetos reales; no duplicar allí por fallos de respuesta. Spotify962 y las aperturas inciertas conservan sus condiciones; H0675/OCR/nuevos providers aparcados.
 
-Todas las sesiones recogidas, exit0, pins intactos y cero violaciones de recursos. Exit0 no acredita calidad. RAM y VRAM por separado frente a4096MiB.974diagnóstico directo duró12,683s, sin modelo/GPU; RAM no medida, no se declara cero. Raíz8e9132: ningún BAXY/core/llama/dotnet/testhost activo y4693MiB libres. Agentes inactivos; worktree969 retirado07d7d3 tras comprobar fuente adoptada y parche conservado.
+Siguiente por masa disponible: música39.987 diagnostica;988 revisado pero no adoptado;989 sellado,11casos, sin ejecución. Reanudar por [NEXT_989.json](NEXT_989.json). Apps40 mantiene condiciones957; web36 y agenda30 siguen en cola. Ritmo69/24h supera20, sin Full en este tramo. Clasificación846 inmutable; tabla recalculada por sus742 IDs y ordenada por abiertos:
+
+| Categoría | Total | Cubiertos | Abiertos | No aplican |
+|---|---:|---:|---:|---:|
+| Abrir aplicaciones | 54 | 14 | 40 | 0 |
+| Música | 39 | 0 | 39 | 0 |
+| Navegación y búsqueda web | 46 | 10 | 36 | 0 |
+| Entrada incompleta, ruido y control de diálogo | 34 | 0 | 34 | 0 |
+| Conocimiento, razonamiento y creatividad verbal | 37 | 3 | 34 | 0 |
+| Archivos y carpetas | 32 | 0 | 32 | 0 |
+| Mensajería | 31 | 0 | 31 | 0 |
+| Instalar y desinstalar software | 31 | 0 | 31 | 0 |
+| Audio y volumen | 51 | 21 | 30 | 0 |
+| Alarmas, recordatorios, tareas y agenda | 38 | 8 | 30 | 0 |
+| Estado de hardware y sistema | 40 | 11 | 29 | 0 |
+| Vídeo y series | 26 | 0 | 26 | 0 |
+| Conversación social y ayuda general | 31 | 9 | 22 | 0 |
+| Interacción dentro de aplicaciones | 22 | 0 | 22 | 0 |
+| Hora y fecha | 23 | 3 | 20 | 0 |
+| Red y Bluetooth | 21 | 1 | 20 | 0 |
+| Cerrar aplicaciones y ventanas | 20 | 0 | 20 | 0 |
+| Pantalla, captura e interpretación visual | 19 | 0 | 19 | 0 |
+| Brillo y pantalla | 17 | 0 | 17 | 0 |
+| Información web actual | 17 | 0 | 17 | 0 |
+| Organizar ventanas y pestañas | 13 | 0 | 13 | 0 |
+| Estado de ventanas y aplicaciones | 14 | 1 | 13 | 0 |
+| Identidad y capacidades del asistente | 19 | 7 | 12 | 0 |
+| Notas | 12 | 0 | 12 | 0 |
+| Memoria personal | 10 | 0 | 10 | 0 |
+| Correo | 6 | 0 | 6 | 0 |
+| Bibliotecas y fichas de juegos | 6 | 0 | 6 | 0 |
+| Contactos | 5 | 0 | 5 | 0 |
+| Desarrollo y ejecución de comandos | 5 | 0 | 5 | 0 |
+| Portapapeles | 3 | 0 | 3 | 0 |
+| Restricciones negativas de apertura | 4 | 1 | 3 | 0 |
+| Energía del sistema | 3 | 0 | 3 | 0 |
+| Crear documentos y editar imágenes | 2 | 0 | 2 | 0 |
+| Leer y resumir páginas web | 2 | 0 | 2 | 0 |
+| Procesos | 9 | 8 | 1 | 0 |
+
+
+Material histórico conservado; no representa el candidato vigente:
 
 Resumen histórico al cerrar892 — no es el estado vigente:
 

@@ -1,0 +1,609 @@
+{
+  "schema": "c03-task-note986-root-adjudication-v1",
+  "adjudicator": "root",
+  "adjudicated_at_utc": "2026-09-11T22:50:06.503245+00:00",
+  "source_commit": "2121245f8eebd5c024144daf4ec76b085a3bcd7d",
+  "seal_sha256": "eb63e935cb7daf30b5b1aa721621e2891f1c4ba585f397b162fa0b3279e5b046",
+  "runner_sha256": "1a535b4b0c2ed533e41e015eb5a249c9c991ff33f6ad239f982959a5c11b3113",
+  "manifest_sha256": "3b0d66051ebbbbc9ebcc67a82697b9d0f2429c6282c5fa883b70476ce75b9532",
+  "preparation_sha256": "6ca613191d267a30b02541c4c7d9e50cce850a4fe2f1ae7d8a42dbb7b253ea07",
+  "session_id": 87108,
+  "collection": "7942c6",
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "executed": 12,
+  "passed": 7,
+  "failed": 5,
+  "not_executed": 0,
+  "coverage_added": 4,
+  "covered_case_ids": [
+    "H0020",
+    "H0056",
+    "H0469",
+    "H0599"
+  ],
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "resources": {
+    "utc": "2026-09-11T22:48:02.969893+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2419.703125,
+    "seconds": 48.01499999999942,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0020",
+      "literal": "creá una tarea: terminar el informe",
+      "criterion": "Persist the explicitly requested task with task.create and verify current product identity/postread. Preserve complete action, names, quantities and supplied details; optional due must not become an invented deadline, reminder or calendar event. Final response must truthfully identify the persisted task and state. Do not perform the action described. Ask only for genuinely missing content; due omission alone is not missing required task content. Credit requires pertinent task-persistence variants, not note-only outcomes.",
+      "verdict": "pass",
+      "coverage_added": true,
+      "reason": "Task with exact title and pending state verified; natural faithful confirmation. Current ES pending-list variant and prior980 EN task variant both pass.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Listo, creé la tarea: \"terminar el informe\". Está pendiente y lista para ser trabajada.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 4,
+        "timestampUtc": "2026-09-11T22:47:29.978448+00:00",
+        "phase": "completed",
+        "requestId": "dc614c03-7116-4f2e-a076-89598e2a7458",
+        "missionId": "29b22bd6-9572-404d-bd5e-4697d608a14e",
+        "invocationId": "cfdf0c2e-30c3-4dfe-9ef5-28a57bdf4b5f",
+        "operation": "task.create",
+        "requestFingerprint": "07f795ce262356b50bc4f012523efbb1efb5518c41162525d0d1b9bb68b822d4",
+        "response": {
+          "type": "operation.response",
+          "requestId": "dc614c03-7116-4f2e-a076-89598e2a7458",
+          "missionId": "29b22bd6-9572-404d-bd5e-4697d608a14e",
+          "invocationId": "cfdf0c2e-30c3-4dfe-9ef5-28a57bdf4b5f",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"task.create\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"taskId\":\"566d3a76-38b2-4c52-83fd-111deb04f4f5\",\"title\":\"terminar el informe\",\"details\":\"\",\"completed\":false,\"deleted\":false,\"createdAtUtc\":\"2026-09-11T22:47:29.9659527+00:00\",\"updatedAtUtc\":\"2026-09-11T22:47:29.9659527+00:00\",\"version\":1}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "taskId": "566d3a76-38b2-4c52-83fd-111deb04f4f5",
+            "title": "terminar el informe",
+            "details": "",
+            "dueUtc": null,
+            "completed": false,
+            "completedAtUtc": null,
+            "deleted": false,
+            "createdAtUtc": "2026-09-11T22:47:29.9659527+00:00",
+            "updatedAtUtc": "2026-09-11T22:47:29.9659527+00:00",
+            "version": 1
+          },
+          "errorCode": null
+        }
+      },
+      "generalizing_variant_ids": [
+        "task-create973-dev-01",
+        "task-repair980-dev-task-colon-en"
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0056",
+      "literal": "anota llamar al dentista",
+      "criterion": "Persist the complete requested action faithfully as a task OR a note, since this request does not mandate a storage type. Verify product receipt/current identity/postread and complete content, including names and details. Final response must honestly identify the actual persisted type and state. Do not invent an alarm, deadline or calendar event, and do not perform the action described. Credit requires pertinent variants of the mechanism actually used; task variants do not automatically generalize a note outcome. If pertinent note pairs are missing, no credit.",
+      "verdict": "pass",
+      "coverage_added": true,
+      "reason": "Complete annotation saved as a note with useful faithful confirmation. Current EN note variant and prior980 ES annotation variant both pass.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Listo, anoté llamar al dentista.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 6,
+        "timestampUtc": "2026-09-11T22:47:31.4225119+00:00",
+        "phase": "completed",
+        "requestId": "0cdd399a-173f-4772-969e-d7b530721224",
+        "missionId": "7d4e5889-88ec-4ca9-acf6-8e3596f2e3a0",
+        "invocationId": "38f25906-f2ca-4fa8-a311-f7c002dd8d0f",
+        "operation": "note.create",
+        "requestFingerprint": "cba28c0fab533d362cdcace2087bd345f65e306c2f7c36fc9a4ea86d80fc4346",
+        "response": {
+          "type": "operation.response",
+          "requestId": "0cdd399a-173f-4772-969e-d7b530721224",
+          "missionId": "7d4e5889-88ec-4ca9-acf6-8e3596f2e3a0",
+          "invocationId": "38f25906-f2ca-4fa8-a311-f7c002dd8d0f",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"note.create\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"title\":\"llamar al dentista\",\"content\":\"llamar al dentista\",\"createdAtUtc\":\"2026-09-11T22:47:31.4113778+00:00\",\"updatedAtUtc\":\"2026-09-11T22:47:31.4113778+00:00\",\"revision\":1,\"isTrashed\":false}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "noteId": "640e0881-a03f-47d1-b8f2-3118bf6d2d34",
+            "title": "llamar al dentista",
+            "content": "llamar al dentista",
+            "createdAtUtc": "2026-09-11T22:47:31.4113778+00:00",
+            "updatedAtUtc": "2026-09-11T22:47:31.4113778+00:00",
+            "trashedAtUtc": null,
+            "revision": 1,
+            "isTrashed": false
+          },
+          "errorCode": null
+        }
+      },
+      "generalizing_variant_ids": [
+        "task-repair980-dev-annotation-en",
+        "task-repair980-dev-annotation-es"
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "H0469",
+      "literal": "anotá llamar al dentista",
+      "criterion": "Persist the complete requested action faithfully as a task OR a note, since this request does not mandate a storage type. Verify product receipt/current identity/postread and complete content, including names and details. Final response must honestly identify the actual persisted type and state. Do not invent an alarm, deadline or calendar event, and do not perform the action described. Credit requires pertinent variants of the mechanism actually used; task variants do not automatically generalize a note outcome. If pertinent note pairs are missing, no credit.",
+      "verdict": "pass",
+      "coverage_added": true,
+      "reason": "Complete annotation saved as a note with useful faithful confirmation. Current EN note variant and prior980 ES annotation variant both pass.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Anoté llamar al dentista.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 8,
+        "timestampUtc": "2026-09-11T22:47:32.6667205+00:00",
+        "phase": "completed",
+        "requestId": "7e515f0e-1c5d-4e50-9afb-11f6441e7258",
+        "missionId": "d24c9695-8c62-4074-9368-f05280642dba",
+        "invocationId": "c3e85280-cc78-41f0-b16d-42ced37da364",
+        "operation": "note.create",
+        "requestFingerprint": "e87530b10df73e9060428b32ff68e6005c5897ebb4b5ebf38c52ba44e3607fee",
+        "response": {
+          "type": "operation.response",
+          "requestId": "7e515f0e-1c5d-4e50-9afb-11f6441e7258",
+          "missionId": "d24c9695-8c62-4074-9368-f05280642dba",
+          "invocationId": "c3e85280-cc78-41f0-b16d-42ced37da364",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"note.create\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"title\":\"llamar al dentista\",\"content\":\"llamar al dentista\",\"createdAtUtc\":\"2026-09-11T22:47:32.655029+00:00\",\"updatedAtUtc\":\"2026-09-11T22:47:32.655029+00:00\",\"revision\":1,\"isTrashed\":false}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "noteId": "600593ec-e7c1-4728-b540-de15f272c3cb",
+            "title": "llamar al dentista",
+            "content": "llamar al dentista",
+            "createdAtUtc": "2026-09-11T22:47:32.655029+00:00",
+            "updatedAtUtc": "2026-09-11T22:47:32.655029+00:00",
+            "trashedAtUtc": null,
+            "revision": 1,
+            "isTrashed": false
+          },
+          "errorCode": null
+        }
+      },
+      "generalizing_variant_ids": [
+        "task-repair980-dev-annotation-en",
+        "task-repair980-dev-annotation-es"
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "H0599",
+      "literal": "anotá que tengo que llamar al dentista",
+      "criterion": "Persist the complete requested action faithfully as a task OR a note, since this request does not mandate a storage type. Verify product receipt/current identity/postread and complete content, including names and details. Final response must honestly identify the actual persisted type and state. Do not invent an alarm, deadline or calendar event, and do not perform the action described. Credit requires pertinent variants of the mechanism actually used; task variants do not automatically generalize a note outcome. If pertinent note pairs are missing, no credit.",
+      "verdict": "pass",
+      "coverage_added": true,
+      "reason": "Original obligation content saved as a note; final faithfully confirms recording the user obligation. Current EN note variant and prior980 ES annotation variant both pass.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Vale! Anoté que tenés que llamar al dentista.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 10,
+        "timestampUtc": "2026-09-11T22:47:33.611778+00:00",
+        "phase": "completed",
+        "requestId": "cbd217fd-ae1b-455d-86dd-ab30f836da30",
+        "missionId": "9a8e08cb-a999-4eef-bbee-14e956680f7d",
+        "invocationId": "39c2e7c9-28ae-48fb-9010-12e0f820f63b",
+        "operation": "note.create",
+        "requestFingerprint": "bedf4bd131622acad8995261a37989a90bef3a0616f2fb50e6988031236d57ad",
+        "response": {
+          "type": "operation.response",
+          "requestId": "cbd217fd-ae1b-455d-86dd-ab30f836da30",
+          "missionId": "9a8e08cb-a999-4eef-bbee-14e956680f7d",
+          "invocationId": "39c2e7c9-28ae-48fb-9010-12e0f820f63b",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"note.create\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"title\":\"llamar al dentista\",\"content\":\"tengo que llamar al dentista\",\"createdAtUtc\":\"2026-09-11T22:47:33.6002121+00:00\",\"updatedAtUtc\":\"2026-09-11T22:47:33.6002121+00:00\",\"revision\":1,\"isTrashed\":false}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "noteId": "8f53a9d3-10c8-4770-ab29-6b9701e7cc7e",
+            "title": "llamar al dentista",
+            "content": "tengo que llamar al dentista",
+            "createdAtUtc": "2026-09-11T22:47:33.6002121+00:00",
+            "updatedAtUtc": "2026-09-11T22:47:33.6002121+00:00",
+            "trashedAtUtc": null,
+            "revision": 1,
+            "isTrashed": false
+          },
+          "errorCode": null
+        }
+      },
+      "generalizing_variant_ids": [
+        "task-repair980-dev-annotation-en",
+        "task-repair980-dev-annotation-es"
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "task-create973-dev-01",
+      "literal": "Agregá a mis pendientes comprar tres sobres acolchados.",
+      "criterion": "Persist the explicitly requested task with task.create and verify current product identity/postread. Preserve complete action, names, quantities and supplied details; optional due must not become an invented deadline, reminder or calendar event. Final response must truthfully identify the persisted task and state. Do not perform the action described. Ask only for genuinely missing content; due omission alone is not missing required task content. Credit requires pertinent task-persistence variants, not note-only outcomes.",
+      "verdict": "pass",
+      "coverage_added": false,
+      "reason": "Verified pending task preserves content and quantity; natural confirmation replaces prior leaked instructions.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Listo, agregué a tus pendientes: comprar tres sobres acolchados.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 12,
+        "timestampUtc": "2026-09-11T22:47:36.1234621+00:00",
+        "phase": "completed",
+        "requestId": "7d0b3307-b401-4dd5-8114-d6f791503917",
+        "missionId": "c78dbbd2-50e7-4eb7-b28e-be216d57abca",
+        "invocationId": "7da4693b-f357-40fc-825e-b4d7134e8c40",
+        "operation": "task.create",
+        "requestFingerprint": "b7c96df5703c4d5b4b0f1af0e4ee172e81dae01a3c866a057e959c6eeb475bf3",
+        "response": {
+          "type": "operation.response",
+          "requestId": "7d0b3307-b401-4dd5-8114-d6f791503917",
+          "missionId": "c78dbbd2-50e7-4eb7-b28e-be216d57abca",
+          "invocationId": "7da4693b-f357-40fc-825e-b4d7134e8c40",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"task.create\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"taskId\":\"985983f7-a2af-4892-a83b-fcedb9f74786\",\"title\":\"comprar tres sobres acolchados\",\"details\":\"comprar tres sobres acolchados\",\"completed\":false,\"deleted\":false,\"createdAtUtc\":\"2026-09-11T22:47:36.1110442+00:00\",\"updatedAtUtc\":\"2026-09-11T22:47:36.1110442+00:00\",\"version\":1}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "taskId": "985983f7-a2af-4892-a83b-fcedb9f74786",
+            "title": "comprar tres sobres acolchados",
+            "details": "comprar tres sobres acolchados",
+            "dueUtc": null,
+            "completed": false,
+            "completedAtUtc": null,
+            "deleted": false,
+            "createdAtUtc": "2026-09-11T22:47:36.1110442+00:00",
+            "updatedAtUtc": "2026-09-11T22:47:36.1110442+00:00",
+            "version": 1
+          },
+          "errorCode": null
+        }
+      },
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 5,
+      "case_id": "task-create973-dev-02",
+      "literal": "Necesito dejar anotado que tengo que devolver el libro a Lucía.",
+      "criterion": "Persist the complete requested action faithfully as a task OR a note, since this request does not mandate a storage type. Verify product receipt/current identity/postread and complete content, including names and details. Final response must honestly identify the actual persisted type and state. Do not invent an alarm, deadline or calendar event, and do not perform the action described. Credit requires pertinent variants of the mechanism actually used; task variants do not automatically generalize a note outcome. If pertinent note pairs are missing, no credit.",
+      "verdict": "pass",
+      "coverage_added": false,
+      "reason": "Verified note preserves exact original first-person content and Lucia identity; final acknowledges saving that content, without saying the described activity was performed. First-person echo is less clear than quoting it but does not invalidate the saved annotation.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Listo, anoté que tengo que devolver el libro a Lucía.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 14,
+        "timestampUtc": "2026-09-11T22:47:37.2865675+00:00",
+        "phase": "completed",
+        "requestId": "c378502a-d9d3-4a13-80fa-82959cd44a61",
+        "missionId": "2081da28-a122-4004-b91c-6397d52c097d",
+        "invocationId": "5323c786-63a7-4bf6-9ee1-eb1fb1474124",
+        "operation": "note.create",
+        "requestFingerprint": "4e7eddc2f611f0fceff04045feb0eade5788bf69fbc32e541f575ad22e3ab0fc",
+        "response": {
+          "type": "operation.response",
+          "requestId": "c378502a-d9d3-4a13-80fa-82959cd44a61",
+          "missionId": "2081da28-a122-4004-b91c-6397d52c097d",
+          "invocationId": "5323c786-63a7-4bf6-9ee1-eb1fb1474124",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"note.create\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"title\":\"devolver el libro a Lucía\",\"content\":\"tengo que devolver el libro a Lucía\",\"createdAtUtc\":\"2026-09-11T22:47:37.2740144+00:00\",\"updatedAtUtc\":\"2026-09-11T22:47:37.2740144+00:00\",\"revision\":1,\"isTrashed\":false}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "noteId": "20ad98de-617b-4c87-b8f8-d02d125373a0",
+            "title": "devolver el libro a Lucía",
+            "content": "tengo que devolver el libro a Lucía",
+            "createdAtUtc": "2026-09-11T22:47:37.2740144+00:00",
+            "updatedAtUtc": "2026-09-11T22:47:37.2740144+00:00",
+            "trashedAtUtc": null,
+            "revision": 1,
+            "isTrashed": false
+          },
+          "errorCode": null
+        }
+      },
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 6,
+      "case_id": "task-repair980-dev-annotation-en",
+      "literal": "Write down that I need to return the camera to Maya.",
+      "criterion": "Persist the complete requested action faithfully as a task OR a note, since this request does not mandate a storage type. Verify product receipt/current identity/postread and complete content, including names and details. Final response must honestly identify the actual persisted type and state. Do not invent an alarm, deadline or calendar event, and do not perform the action described. Credit requires pertinent variants of the mechanism actually used; task variants do not automatically generalize a note outcome. If pertinent note pairs are missing, no credit.",
+      "verdict": "pass",
+      "coverage_added": false,
+      "reason": "Verified note preserves camera/Maya content; English final explicitly confirms saving and correctly attributes obligation to the user. No messaging-channel question or message operation.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Got it, I saved your note: \"return the camera to Maya\" – you need to return the camera to Maya.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 16,
+        "timestampUtc": "2026-09-11T22:47:38.3856215+00:00",
+        "phase": "completed",
+        "requestId": "5999d484-85a3-432e-9955-b7e19e53099a",
+        "missionId": "46578bc4-a1e4-4429-9907-38239b28cf54",
+        "invocationId": "7c30e524-769c-4d1b-9822-2296ac358fc1",
+        "operation": "note.create",
+        "requestFingerprint": "b557ef4369cabf2caf208e86ed84044bbfdaa0ce19a48a1e0d09f83dbb7f08a0",
+        "response": {
+          "type": "operation.response",
+          "requestId": "5999d484-85a3-432e-9955-b7e19e53099a",
+          "missionId": "46578bc4-a1e4-4429-9907-38239b28cf54",
+          "invocationId": "7c30e524-769c-4d1b-9822-2296ac358fc1",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"note.create\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"title\":\"return the camera to Maya\",\"content\":\"I need to return the camera to Maya\",\"createdAtUtc\":\"2026-09-11T22:47:38.3722011+00:00\",\"updatedAtUtc\":\"2026-09-11T22:47:38.3722011+00:00\",\"revision\":1,\"isTrashed\":false}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "noteId": "3b599ff0-56c9-4523-bc28-49ed1b6150db",
+            "title": "return the camera to Maya",
+            "content": "I need to return the camera to Maya",
+            "createdAtUtc": "2026-09-11T22:47:38.3722011+00:00",
+            "updatedAtUtc": "2026-09-11T22:47:38.3722011+00:00",
+            "trashedAtUtc": null,
+            "revision": 1,
+            "isTrashed": false
+          },
+          "errorCode": null
+        }
+      },
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 7,
+      "case_id": "task-repair980-boundary-prohibition",
+      "literal": "No anotes comprar pilas ni crees una tarea sobre eso.",
+      "criterion": "No task/note creation or persisted substitute; honor both prohibitions.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "No effect but invalid-request failure does not usefully acknowledge prohibition.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La solicitud no se interpretó correctamente y falló. Se puede intentar nuevamente.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null,
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 8,
+      "case_id": "task-repair980-boundary-quotation",
+      "literal": "Explain the text \"create a task: return the camera\" without saving anything.",
+      "criterion": "Explain quoted text only, no persistence or execution of embedded action.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "No effect but incorrectly explains quoted task creation as not storing/saving; same semantic failure as980.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "The text \"create a task: return the camera\" means to generate a task instructing someone to return a camera, without storing or saving that action.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null,
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 9,
+      "case_id": "task-repair980-boundary-future",
+      "literal": "Si la próxima semana te lo confirmo, anotá renovar el carnet; por ahora no lo guardes.",
+      "criterion": "Preserve unsatisfied future condition and present prohibition; no implicit reminder.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "No effect but unsupported refusal does not acknowledge future condition/current prohibition.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No hago eso, está fuera de mi ámbito.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null,
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 10,
+      "case_id": "task-repair980-boundary-missing",
+      "literal": "Dejá anotado eso.",
+      "criterion": "Independent session has no antecedent; ask which content, never invent or persist eso as resolved data.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Asks about a list or specificity without resolving the missing content referred to by eso; not a useful clarification for the sealed criterion.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Claro! ¿Quieres que lo agreguemos a una lista o algo más específico?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null,
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 11,
+      "case_id": "task-repair980-boundary-narrative",
+      "literal": "I already wrote down checking the bicycle brakes yesterday; this is just a report.",
+      "criterion": "Past narrative is not a current creation request; no new object or unobserved current-state assertion.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Claims BAXY already recorded the action yesterday without a supporting receipt and changes English report into Spanish first-person action.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Ya anoté revisar los frenos de la bicicleta ayer; esto es solo un informe.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null,
+      "generalizing_variant_ids": []
+    }
+  ],
+  "prior_generalizing_variants": {
+    "source_commit": "84c4c3a6c19e61527b8a431329b5c9d1e76db66d",
+    "root_path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\TASK_REPAIR980\\ROOT_ADJUDICATION.json",
+    "root_sha256": "5dd90dbb9561d7c6eb5b465ba9d298f691f74f30a4a841e88ce68cec4dae7188",
+    "cases": [
+      {
+        "index": 6,
+        "case_id": "task-repair980-dev-task-colon-en",
+        "literal": "Create a task: check the bicycle brakes.",
+        "criterion": "Persist the explicitly requested task with task.create and verify current product identity/postread. Preserve complete action, names, quantities and supplied details; optional due must not become an invented deadline, reminder or calendar event. Final response must truthfully identify the persisted task and state. Do not perform the action described. Ask only for genuinely missing content; due omission alone is not missing required task content. Credit requires pertinent task-persistence variants, not note-only outcomes.",
+        "verdict": "pass",
+        "coverage_added": false,
+        "reason": "Verified task with exact title check the bicycle brakes and faithful confirmation; pertinent task persistence variant passes, despite awkward technical phrasing.",
+        "terminal": {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "The persisted object type is a task. Its observed title is \"check the bicycle brakes\".",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200
+        },
+        "receipt": {
+          "sequence": 14,
+          "timestampUtc": "2026-09-11T22:29:01.3736185+00:00",
+          "phase": "completed",
+          "requestId": "cc7c58e0-047e-4ea7-9fe2-5f0af8bdb1d0",
+          "missionId": "c02be479-ccd6-443f-919a-da12dacab43b",
+          "invocationId": "a1d55e40-5213-44df-8a6a-bed210f41054",
+          "operation": "task.create",
+          "requestFingerprint": "f6f3a40f124f232183ed1e35f752ab0c6c4f12a04a406c60f739d2dc1d9c9c65",
+          "response": {
+            "type": "operation.response",
+            "requestId": "cc7c58e0-047e-4ea7-9fe2-5f0af8bdb1d0",
+            "missionId": "c02be479-ccd6-443f-919a-da12dacab43b",
+            "invocationId": "a1d55e40-5213-44df-8a6a-bed210f41054",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"task.create\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"taskId\":\"95db8353-edaf-4b08-90c8-23db36e38a4f\",\"title\":\"check the bicycle brakes\",\"details\":\"\",\"completed\":false,\"deleted\":false,\"createdAtUtc\":\"2026-09-11T22:29:01.3632617+00:00\",\"updatedAtUtc\":\"2026-09-11T22:29:01.3632617+00:00\",\"version\":1}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "taskId": "95db8353-edaf-4b08-90c8-23db36e38a4f",
+              "title": "check the bicycle brakes",
+              "details": "",
+              "dueUtc": null,
+              "completed": false,
+              "completedAtUtc": null,
+              "deleted": false,
+              "createdAtUtc": "2026-09-11T22:29:01.3632617+00:00",
+              "updatedAtUtc": "2026-09-11T22:29:01.3632617+00:00",
+              "version": 1
+            },
+            "errorCode": null
+          }
+        }
+      },
+      {
+        "index": 7,
+        "case_id": "task-repair980-dev-annotation-es",
+        "literal": "Anotá renovar el carnet de la biblioteca.",
+        "criterion": "Persist the complete requested action faithfully as a task OR a note, since this request does not mandate a storage type. Verify product receipt/current identity/postread and complete content, including names and details. Final response must honestly identify the actual persisted type and state. Do not invent an alarm, deadline or calendar event, and do not perform the action described. Credit requires pertinent variants of the mechanism actually used; task variants do not automatically generalize a note outcome. If pertinent note pairs are missing, no credit.",
+        "verdict": "pass",
+        "coverage_added": false,
+        "reason": "Verified note with complete renovar el carnet de la biblioteca content and faithful confirmation; pertinent note persistence variant passes.",
+        "terminal": {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "Se ha anotado la renovación del carnet de la biblioteca. El objeto persiste con el título \"renovar el carnet de la biblioteca\".",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200
+        },
+        "receipt": {
+          "sequence": 16,
+          "timestampUtc": "2026-09-11T22:29:02.3377791+00:00",
+          "phase": "completed",
+          "requestId": "289d84fb-7501-421f-b0af-0a1c171fb348",
+          "missionId": "ae56ddc0-29f6-40fc-9eff-fdbad07765a8",
+          "invocationId": "c190016a-2c44-4c14-b6af-76e89067b0a8",
+          "operation": "note.create",
+          "requestFingerprint": "3840803aa8a87f3d4d1900aa854d30d9a756863f3b77f226ec880d8b1d21dd96",
+          "response": {
+            "type": "operation.response",
+            "requestId": "289d84fb-7501-421f-b0af-0a1c171fb348",
+            "missionId": "ae56ddc0-29f6-40fc-9eff-fdbad07765a8",
+            "invocationId": "c190016a-2c44-4c14-b6af-76e89067b0a8",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"note.create\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"title\":\"renovar el carnet de la biblioteca\",\"content\":\"renovar el carnet de la biblioteca\",\"createdAtUtc\":\"2026-09-11T22:29:02.3274686+00:00\",\"updatedAtUtc\":\"2026-09-11T22:29:02.3274686+00:00\",\"revision\":1,\"isTrashed\":false}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "noteId": "49bfa2b6-9dc8-4778-8a11-3913f43f8667",
+              "title": "renovar el carnet de la biblioteca",
+              "content": "renovar el carnet de la biblioteca",
+              "createdAtUtc": "2026-09-11T22:29:02.3274686+00:00",
+              "updatedAtUtc": "2026-09-11T22:29:02.3274686+00:00",
+              "trashedAtUtc": null,
+              "revision": 1,
+              "isTrashed": false
+            },
+            "errorCode": null
+          }
+        }
+      }
+    ],
+    "reason": "Earlier category variants permitted by owner credit rule. Current literal proves source985 behavior. Prior task is task.create with full title; prior annotation is note.create with full content. Neither negative controls nor failed outputs are reused as passes."
+  },
+  "receipt_binding": "Seven serialized task/note create shell traces t1..t7 match ordered journal completed invocations, no other product operations.",
+  "effects": "Two tasks and five notes verified and preserved in isolated986profile. No scheduled reminders, outbound messages or completion of described activities. Prior975/980 profiles preserved.",
+  "registry_before_sha256": "aef1d8598043ff48721a60726b2d31aef2c8dba6cc7fad0abc848d0abfa70c44",
+  "registry_after_sha256": "40c530c681cb18b03cc46b7f1217757d46c80f8a2666fec59fae4cc611dd1108",
+  "evidence_sha256": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-task-note-repair986-private\\run\\case-observations.json": "584cf59b74523b16efb3a0afdb4335c6bdcbcffebdf6f37d42ea4aa29fdbc4ae",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-task-note-repair986-private\\run\\compose-audit.jsonl": "fda6c60795714bb1a8f801294b8402dcc87487da25b9f1682c0497cc72c11261",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-task-note-repair986-private\\run\\shell-trace.jsonl": "03e2c3c705b9a3cbd23b8643a4347243293a3a02d01cac3479ea2803c2cfb6ce",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-task-note-repair986-private\\run\\turn-audit.jsonl": "189e289cf70a440200c163e60f2c319cca2b68d672893a8d395e2e552be2fc20",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-task-note-repair986-profile\\journal\\missions.jsonl": "b762a3e51a8f43d41d5602dd578f8c6f545ce16d00368b7be2ba44c480c4acde"
+  }
+}

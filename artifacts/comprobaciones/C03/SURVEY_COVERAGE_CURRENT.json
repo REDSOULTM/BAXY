@@ -1,21 +1,24 @@
 {
-  "utc": "2026-09-11T22:09:17.632306+00:00",
-  "covered": 89,
-  "open": 653,
+  "utc": "2026-09-11T22:55:02.900856+00:00",
+  "covered": 97,
+  "open": 645,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 61,
+  "covered_updated_last_24h": 69,
   "updated_recent_ids": [
     "H0017",
+    "H0020",
     "H0025",
     "H0026",
     "H0035",
     "H0044",
+    "H0056",
     "H0070",
     "H0086",
     "H0087",
+    "H0090",
     "H0132",
     "H0133",
     "H0158",
@@ -26,6 +29,7 @@
     "H0233",
     "H0258",
     "H0267",
+    "H0280",
     "H0292",
     "H0310",
     "H0338",
@@ -40,6 +44,8 @@
     "H0402",
     "H0406",
     "H0409",
+    "H0413",
+    "H0469",
     "H0470",
     "H0471",
     "H0477",
@@ -54,6 +60,7 @@
     "H0557",
     "H0577",
     "H0597",
+    "H0599",
     "H0622",
     "H0625",
     "H0633",
@@ -66,11 +73,12 @@
     "H0684",
     "H0688",
     "H0690",
+    "H0710",
     "H0725",
     "H0729",
     "H0736"
   ],
-  "confirmed_new_grants_last_24h": 61,
+  "confirmed_new_grants_last_24h": 69,
   "first_grant_date_not_distinguished_for_recent_ids": [],
   "categories": [
     {
@@ -90,14 +98,6 @@
       "not_applicable": 0
     },
     {
-      "category": "timers_reminders_calendar",
-      "label": "Alarmas, recordatorios, tareas y agenda",
-      "total": 38,
-      "covered": 0,
-      "open": 38,
-      "not_applicable": 0
-    },
-    {
       "category": "web_navigation_search",
       "label": "Navegación y búsqueda web",
       "total": 46,
@@ -106,18 +106,18 @@
       "not_applicable": 0
     },
     {
-      "category": "knowledge_reasoning",
-      "label": "Conocimiento, razonamiento y creatividad verbal",
-      "total": 37,
-      "covered": 3,
-      "open": 34,
-      "not_applicable": 0
-    },
-    {
       "category": "clarification_unresolved_input",
       "label": "Entrada incompleta, ruido y control de diálogo",
       "total": 34,
       "covered": 0,
+      "open": 34,
+      "not_applicable": 0
+    },
+    {
+      "category": "knowledge_reasoning",
+      "label": "Conocimiento, razonamiento y creatividad verbal",
+      "total": 37,
+      "covered": 3,
       "open": 34,
       "not_applicable": 0
     },
@@ -130,16 +130,16 @@
       "not_applicable": 0
     },
     {
-      "category": "software_installation",
-      "label": "Instalar y desinstalar software",
+      "category": "messaging",
+      "label": "Mensajería",
       "total": 31,
       "covered": 0,
       "open": 31,
       "not_applicable": 0
     },
     {
-      "category": "messaging",
-      "label": "Mensajería",
+      "category": "software_installation",
+      "label": "Instalar y desinstalar software",
       "total": 31,
       "covered": 0,
       "open": 31,
@@ -150,6 +150,14 @@
       "label": "Audio y volumen",
       "total": 51,
       "covered": 21,
+      "open": 30,
+      "not_applicable": 0
+    },
+    {
+      "category": "timers_reminders_calendar",
+      "label": "Alarmas, recordatorios, tareas y agenda",
+      "total": 38,
+      "covered": 8,
       "open": 30,
       "not_applicable": 0
     },
@@ -234,18 +242,18 @@
       "not_applicable": 0
     },
     {
-      "category": "windows_status",
-      "label": "Estado de ventanas y aplicaciones",
-      "total": 14,
-      "covered": 1,
-      "open": 13,
-      "not_applicable": 0
-    },
-    {
       "category": "windows_arrangement",
       "label": "Organizar ventanas y pestañas",
       "total": 13,
       "covered": 0,
+      "open": 13,
+      "not_applicable": 0
+    },
+    {
+      "category": "windows_status",
+      "label": "Estado de ventanas y aplicaciones",
+      "total": 14,
+      "covered": 1,
       "open": 13,
       "not_applicable": 0
     },
@@ -274,16 +282,16 @@
       "not_applicable": 0
     },
     {
-      "category": "game_library_navigation",
-      "label": "Bibliotecas y fichas de juegos",
+      "category": "email",
+      "label": "Correo",
       "total": 6,
       "covered": 0,
       "open": 6,
       "not_applicable": 0
     },
     {
-      "category": "email",
-      "label": "Correo",
+      "category": "game_library_navigation",
+      "label": "Bibliotecas y fichas de juegos",
       "total": 6,
       "covered": 0,
       "open": 6,
@@ -306,18 +314,18 @@
       "not_applicable": 0
     },
     {
-      "category": "negative_app_constraints",
-      "label": "Restricciones negativas de apertura",
-      "total": 4,
-      "covered": 1,
-      "open": 3,
-      "not_applicable": 0
-    },
-    {
       "category": "clipboard",
       "label": "Portapapeles",
       "total": 3,
       "covered": 0,
+      "open": 3,
+      "not_applicable": 0
+    },
+    {
+      "category": "negative_app_constraints",
+      "label": "Restricciones negativas de apertura",
+      "total": 4,
+      "covered": 1,
       "open": 3,
       "not_applicable": 0
     },
@@ -330,16 +338,16 @@
       "not_applicable": 0
     },
     {
-      "category": "web_read_summary",
-      "label": "Leer y resumir páginas web",
+      "category": "document_image_creation",
+      "label": "Crear documentos y editar imágenes",
       "total": 2,
       "covered": 0,
       "open": 2,
       "not_applicable": 0
     },
     {
-      "category": "document_image_creation",
-      "label": "Crear documentos y editar imágenes",
+      "category": "web_read_summary",
+      "label": "Leer y resumir páginas web",
       "total": 2,
       "covered": 0,
       "open": 2,
@@ -354,7 +362,8 @@
       "not_applicable": 0
     }
   ],
-  "requirements_sha256": "612cea4488562029e1b35e3681791f49702e62c04dcb36e28bed8d7f309749ac",
+  "requirements_sha256": "40c530c681cb18b03cc46b7f1217757d46c80f8a2666fec59fae4cc611dd1108",
+  "registry_sha256": "40c530c681cb18b03cc46b7f1217757d46c80f8a2666fec59fae4cc611dd1108",
   "classification_source": "SURVEY_TAXONOMY846.json",
   "latest_adjudications": [
     "APP_OPEN847/ROOT_ADJUDICATION.json",
@@ -378,17 +387,19 @@
     "SYSTEM_READ966/ROOT_ADJUDICATION.json",
     "MEDIA_STATUS970/ROOT_ADJUDICATION.json",
     "NOTIFICATION_READY971/ROOT_ADJUDICATION.json",
-    "TASK_CREATE975/ROOT_ADJUDICATION.json"
+    "TASK_CREATE975/ROOT_ADJUDICATION.json",
+    "ALARM_PANEL978/ROOT_ADJUDICATION.json",
+    "TASK_REPAIR980/ROOT_ADJUDICATION.json",
+    "ALARM_REPAIR983/ROOT_ADJUDICATION.json",
+    "TASK_NOTE_REPAIR986/ROOT_ADJUDICATION.json"
   ],
-  "equal_maximum_open_next_selection": "Apps40 conditions957; music39 diagnosed972 pending targeted repair; agenda38 has9alarms with existing provider readiness974/PLAN976, tasks4failures diagnosed977; web36 then system29. Next panel must credit literals or directly prepare them. No global cleanup of906existing scheduled tasks.",
+  "equal_maximum_open_next_selection": "Apps40 conditions957; music39 next987/988/989; web36; agenda30 with8 newly covered. Prepared989 targets current playback read, no replay of uncertain music962. Source985 current;988 pending root adoption.",
   "latest_product_run": {
-    "batch": 975,
-    "executed": 17,
-    "passed": 2,
-    "failed": 15,
-    "not_executed": 0,
-    "coverage_added": 0,
+    "batch": 986,
+    "executed": 12,
+    "passed": 7,
+    "failed": 5,
+    "coverage_added": 4,
     "exit_code": 0
-  },
-  "registry_sha256": "612cea4488562029e1b35e3681791f49702e62c04dcb36e28bed8d7f309749ac"
+  }
 }

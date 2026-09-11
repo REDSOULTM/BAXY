@@ -1,0 +1,1221 @@
+{
+  "schema": "c03-alarm983-root-adjudication-v1",
+  "adjudicator": "root",
+  "adjudicated_at_utc": "2026-09-11T22:44:21.041167+00:00",
+  "source_commit": "89f0d9d4b88bef952134f84e6a320b77fb0b1b3c",
+  "seal_sha256": "4342ccc9a4f9153a4ca9ea6286a09a8952b521e16427216f9efded17c084c973",
+  "runner_sha256": "557886dd283d94c5e4e5c5b5c2279d99f32aac7573a08a0032117c1b8c6edb7f",
+  "manifest_sha256": "545aa78844fdd9d18c3a009a5e74a2451b48b4064a697b0fc7070f500c0452a3",
+  "preparation_sha256": "f27d68f434958934d852f6e2ba4763f4fa7a6b50dc9d56c913339756d268a23b",
+  "session_id": 24768,
+  "collection": "3bb1d0",
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "executed": 17,
+  "passed": 10,
+  "failed": 7,
+  "not_executed": 0,
+  "coverage_added": 4,
+  "covered_case_ids": [
+    "H0090",
+    "H0280",
+    "H0413",
+    "H0710"
+  ],
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "resources": {
+    "utc": "2026-09-11T22:40:56.260112+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2478.78515625,
+    "seconds": 95.7039999999979,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0090",
+      "literal": "pon una alarma en 2 minutos",
+      "criterion": "Preserve requested one-shot alarm/timer and complete temporal meaning. Product computes dueUtc using current observed clock/timezone: relative due lies within pre-admission..kernel-admission clock interval plus requested duration; use observed binding timestamp when available. Explicit clock means next future occurrence in observed real timezone, unless actual context supplies another date. Require notification.schedule, new taskName identity, action under authorized new profile, matching dueUtc/nextRunUtc postread and useful faithful final. Never inject dueUtc/arguments or claim an alarm rang from scheduled-task creation alone; waking requests are not proof of actual awakening. No unrequested recurrence.",
+      "verdict": "pass",
+      "coverage_added": true,
+      "reason": "Verified new one-shot relative alarm/timer, due within frozen pre-admission-to-kernel bracket plus requested duration; final faithfully confirms scheduling at matching UTC time. No claim of having rung or awakened anyone.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Ya puse la alarma para las 22:41 UTC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 4,
+        "timestampUtc": "2026-09-11T22:39:42.0015202+00:00",
+        "phase": "completed",
+        "requestId": "7fbba062-b34b-47e2-97cc-f70c1160d7b4",
+        "missionId": "9ef2973c-0134-438f-a4f3-4d873f244ecb",
+        "invocationId": "c1ff5f0d-297a-4d38-a2ad-d30d10d0804c",
+        "operation": "notification.schedule",
+        "requestFingerprint": "900b9da3411336847005b1e2a0d4f9624c90f4764c17ba69c47f7638c269789c",
+        "response": {
+          "type": "operation.response",
+          "requestId": "7fbba062-b34b-47e2-97cc-f70c1160d7b4",
+          "missionId": "9ef2973c-0134-438f-a4f3-4d873f244ecb",
+          "invocationId": "c1ff5f0d-297a-4d38-a2ad-d30d10d0804c",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"notification.schedule\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"kind\":\"alarm\",\"title\":\"alarma en 2 minutos\",\"dueUtc\":\"2026-09-11T22:41:38+00:00\",\"taskName\":\"BAXY-Alarm-343ef2397ba845218d8351c2c00ff338\",\"state\":\"Ready\",\"nextRunUtc\":\"2026-09-11T22:41:38.0000000+00:00\",\"authority\":\"windows_task_scheduler_postread\"}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "kind": "alarm",
+            "title": "alarma en 2 minutos",
+            "dueUtc": "2026-09-11T22:41:38+00:00",
+            "taskName": "BAXY-Alarm-343ef2397ba845218d8351c2c00ff338",
+            "state": "Ready",
+            "nextRunUtc": "2026-09-11T22:41:38.0000000+00:00",
+            "authority": "windows_task_scheduler_postread"
+          },
+          "errorCode": null
+        }
+      },
+      "temporal_evidence": {
+        "index": 0,
+        "case_id": "H0090",
+        "lower": "2026-09-11T22:39:20.554570+00:00",
+        "upper": "2026-09-11T22:39:38.571004+00:00",
+        "due": "2026-09-11T22:41:38+00:00",
+        "requested_duration_seconds": 120,
+        "inferred_binding": "2026-09-11T22:39:38+00:00",
+        "within_bracket": true
+      },
+      "owned_task_postread": {
+        "utc": "2026-09-11T22:41:18.9258005Z",
+        "invocationId": "c1ff5f0d-297a-4d38-a2ad-d30d10d0804c",
+        "taskName": "BAXY-Alarm-343ef2397ba845218d8351c2c00ff338",
+        "dueUtc": "2026-09-11T22:41:38+00:00",
+        "actions": [
+          {
+            "Execute": "powershell.exe",
+            "Arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-profile\\scheduled-notifications\\BAXY-Alarm-343ef2397ba845218d8351c2c00ff338.ps1\"",
+            "WorkingDirectory": null
+          }
+        ],
+        "triggers": [
+          {
+            "StartBoundary": "2026-09-11T19:41:38-03:00",
+            "Enabled": true
+          }
+        ],
+        "nextRunUtc": "2026-09-11T22:41:38.0000000Z",
+        "lastRunUtc": "1999-11-30T03:00:00.0000000Z",
+        "lastResult": 267011,
+        "firedReceiptExists": false,
+        "cleanup": "cancelled_exact_identity",
+        "result": {
+          "version": 1,
+          "ok": true,
+          "effectObserved": true,
+          "effectBoundaryCrossed": true,
+          "canceled": true,
+          "taskName": "BAXY-Alarm-343ef2397ba845218d8351c2c00ff338",
+          "nextRunUtc": "2026-09-11T22:41:38.0000000+00:00",
+          "authority": "windows_task_scheduler_exact_identity_absence_postread"
+        }
+      },
+      "generalizing_variant_ids": [
+        "alarm-panel978-dev-04",
+        "alarm-panel978-dev-05"
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0100",
+      "literal": "Pone una alarma en dos minutos.",
+      "criterion": "Preserve requested one-shot alarm/timer and complete temporal meaning. Product computes dueUtc using current observed clock/timezone: relative due lies within pre-admission..kernel-admission clock interval plus requested duration; use observed binding timestamp when available. Explicit clock means next future occurrence in observed real timezone, unless actual context supplies another date. Require notification.schedule, new taskName identity, action under authorized new profile, matching dueUtc/nextRunUtc postread and useful faithful final. Never inject dueUtc/arguments or claim an alarm rang from scheduled-task creation alone; waking requests are not proof of actual awakening. No unrequested recurrence.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Useful faithful scheduling response and verified creation, but strict preregistered temporal bracket is missed by 0.451 seconds. Source __main__.py5205 truncates microseconds. No post-hoc tolerance added; remains open for precise time-evidence criterion, not asserted as user-visible delay defect.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Claro! La alarma se ha programado para sonar a las 22:41 UTC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 6,
+        "timestampUtc": "2026-09-11T22:39:46.2045467+00:00",
+        "phase": "completed",
+        "requestId": "31358564-2d84-4b75-ae01-32d970b254be",
+        "missionId": "6d98e089-7bbc-4968-b820-8b6284a9dbcd",
+        "invocationId": "322a4aa0-404d-4da8-8535-e7b2f49e5e61",
+        "operation": "notification.schedule",
+        "requestFingerprint": "58e7138c1a12cc2b83c708786cc1013e4d28ebe4f36718f96125e8d2e7ebac24",
+        "response": {
+          "type": "operation.response",
+          "requestId": "31358564-2d84-4b75-ae01-32d970b254be",
+          "missionId": "6d98e089-7bbc-4968-b820-8b6284a9dbcd",
+          "invocationId": "322a4aa0-404d-4da8-8535-e7b2f49e5e61",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"notification.schedule\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"kind\":\"alarm\",\"title\":\"alarma en dos minutos\",\"dueUtc\":\"2026-09-11T22:41:42+00:00\",\"taskName\":\"BAXY-Alarm-d144868098494e28864ca50026b54113\",\"state\":\"Ready\",\"nextRunUtc\":\"2026-09-11T22:41:42.0000000+00:00\",\"authority\":\"windows_task_scheduler_postread\"}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "kind": "alarm",
+            "title": "alarma en dos minutos",
+            "dueUtc": "2026-09-11T22:41:42+00:00",
+            "taskName": "BAXY-Alarm-d144868098494e28864ca50026b54113",
+            "state": "Ready",
+            "nextRunUtc": "2026-09-11T22:41:42.0000000+00:00",
+            "authority": "windows_task_scheduler_postread"
+          },
+          "errorCode": null
+        }
+      },
+      "temporal_evidence": {
+        "index": 1,
+        "case_id": "H0100",
+        "lower": "2026-09-11T22:39:42.451000+00:00",
+        "upper": "2026-09-11T22:39:42.966584+00:00",
+        "due": "2026-09-11T22:41:42+00:00",
+        "requested_duration_seconds": 120,
+        "inferred_binding": "2026-09-11T22:39:42+00:00",
+        "within_bracket": false
+      },
+      "owned_task_postread": {
+        "utc": "2026-09-11T22:41:27.3812053Z",
+        "invocationId": "322a4aa0-404d-4da8-8535-e7b2f49e5e61",
+        "taskName": "BAXY-Alarm-d144868098494e28864ca50026b54113",
+        "dueUtc": "2026-09-11T22:41:42+00:00",
+        "actions": [
+          {
+            "Execute": "powershell.exe",
+            "Arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-profile\\scheduled-notifications\\BAXY-Alarm-d144868098494e28864ca50026b54113.ps1\"",
+            "WorkingDirectory": null
+          }
+        ],
+        "triggers": [
+          {
+            "StartBoundary": "2026-09-11T19:41:42-03:00",
+            "Enabled": true
+          }
+        ],
+        "nextRunUtc": "2026-09-11T22:41:42.0000000Z",
+        "lastRunUtc": "1999-11-30T03:00:00.0000000Z",
+        "lastResult": 267011,
+        "firedReceiptExists": false,
+        "cleanup": "cancelled_exact_identity",
+        "result": {
+          "version": 1,
+          "ok": true,
+          "effectObserved": true,
+          "effectBoundaryCrossed": true,
+          "canceled": true,
+          "taskName": "BAXY-Alarm-d144868098494e28864ca50026b54113",
+          "nextRunUtc": "2026-09-11T22:41:42.0000000+00:00",
+          "authority": "windows_task_scheduler_exact_identity_absence_postread"
+        }
+      },
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 2,
+      "case_id": "H0280",
+      "literal": "poné un timer de 5 minutos",
+      "criterion": "Preserve requested one-shot alarm/timer and complete temporal meaning. Product computes dueUtc using current observed clock/timezone: relative due lies within pre-admission..kernel-admission clock interval plus requested duration; use observed binding timestamp when available. Explicit clock means next future occurrence in observed real timezone, unless actual context supplies another date. Require notification.schedule, new taskName identity, action under authorized new profile, matching dueUtc/nextRunUtc postread and useful faithful final. Never inject dueUtc/arguments or claim an alarm rang from scheduled-task creation alone; waking requests are not proof of actual awakening. No unrequested recurrence.",
+      "verdict": "pass",
+      "coverage_added": true,
+      "reason": "Verified new one-shot relative alarm/timer, due within frozen pre-admission-to-kernel bracket plus requested duration; final faithfully confirms scheduling at matching UTC time. No claim of having rung or awakened anyone.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Listo, el timer de 5 minutos está programado para sonar a las 22:44 UTC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 8,
+        "timestampUtc": "2026-09-11T22:39:50.9377402+00:00",
+        "phase": "completed",
+        "requestId": "ead2cb44-c498-4e08-a1b3-58093b6a00dd",
+        "missionId": "826bc182-b262-4bf1-9731-59435c356345",
+        "invocationId": "c0fa99de-2b7b-4526-a019-568c82d9eb9b",
+        "operation": "notification.schedule",
+        "requestFingerprint": "dc11095519ec8ab75b6b6d25b6f7fddea506bbc749c1c62dc0c6c8497c342b93",
+        "response": {
+          "type": "operation.response",
+          "requestId": "ead2cb44-c498-4e08-a1b3-58093b6a00dd",
+          "missionId": "826bc182-b262-4bf1-9731-59435c356345",
+          "invocationId": "c0fa99de-2b7b-4526-a019-568c82d9eb9b",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"notification.schedule\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"kind\":\"alarm\",\"title\":\"timer de 5 minutos\",\"dueUtc\":\"2026-09-11T22:44:47+00:00\",\"taskName\":\"BAXY-Alarm-50edab4e252a42a085a99e2aeda30fce\",\"state\":\"Ready\",\"nextRunUtc\":\"2026-09-11T22:44:47.0000000+00:00\",\"authority\":\"windows_task_scheduler_postread\"}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "kind": "alarm",
+            "title": "timer de 5 minutos",
+            "dueUtc": "2026-09-11T22:44:47+00:00",
+            "taskName": "BAXY-Alarm-50edab4e252a42a085a99e2aeda30fce",
+            "state": "Ready",
+            "nextRunUtc": "2026-09-11T22:44:47.0000000+00:00",
+            "authority": "windows_task_scheduler_postread"
+          },
+          "errorCode": null
+        }
+      },
+      "temporal_evidence": {
+        "index": 2,
+        "case_id": "H0280",
+        "lower": "2026-09-11T22:39:46.797000+00:00",
+        "upper": "2026-09-11T22:39:47.511904+00:00",
+        "due": "2026-09-11T22:44:47+00:00",
+        "requested_duration_seconds": 300,
+        "inferred_binding": "2026-09-11T22:39:47+00:00",
+        "within_bracket": true
+      },
+      "owned_task_postread": {
+        "utc": "2026-09-11T22:41:35.8252048Z",
+        "invocationId": "c0fa99de-2b7b-4526-a019-568c82d9eb9b",
+        "taskName": "BAXY-Alarm-50edab4e252a42a085a99e2aeda30fce",
+        "dueUtc": "2026-09-11T22:44:47+00:00",
+        "actions": [
+          {
+            "Execute": "powershell.exe",
+            "Arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-profile\\scheduled-notifications\\BAXY-Alarm-50edab4e252a42a085a99e2aeda30fce.ps1\"",
+            "WorkingDirectory": null
+          }
+        ],
+        "triggers": [
+          {
+            "StartBoundary": "2026-09-11T19:44:47-03:00",
+            "Enabled": true
+          }
+        ],
+        "nextRunUtc": "2026-09-11T22:44:47.0000000Z",
+        "lastRunUtc": "1999-11-30T03:00:00.0000000Z",
+        "lastResult": 267011,
+        "firedReceiptExists": false,
+        "cleanup": "cancelled_exact_identity",
+        "result": {
+          "version": 1,
+          "ok": true,
+          "effectObserved": true,
+          "effectBoundaryCrossed": true,
+          "canceled": true,
+          "taskName": "BAXY-Alarm-50edab4e252a42a085a99e2aeda30fce",
+          "nextRunUtc": "2026-09-11T22:44:47.0000000+00:00",
+          "authority": "windows_task_scheduler_exact_identity_absence_postread"
+        }
+      },
+      "generalizing_variant_ids": [
+        "alarm-panel978-dev-04",
+        "alarm-panel978-dev-05"
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "H0413",
+      "literal": "pon un timer de 10 minutos",
+      "criterion": "Preserve requested one-shot alarm/timer and complete temporal meaning. Product computes dueUtc using current observed clock/timezone: relative due lies within pre-admission..kernel-admission clock interval plus requested duration; use observed binding timestamp when available. Explicit clock means next future occurrence in observed real timezone, unless actual context supplies another date. Require notification.schedule, new taskName identity, action under authorized new profile, matching dueUtc/nextRunUtc postread and useful faithful final. Never inject dueUtc/arguments or claim an alarm rang from scheduled-task creation alone; waking requests are not proof of actual awakening. No unrequested recurrence.",
+      "verdict": "pass",
+      "coverage_added": true,
+      "reason": "Verified new one-shot relative alarm/timer, due within frozen pre-admission-to-kernel bracket plus requested duration; final faithfully confirms scheduling at matching UTC time. No claim of having rung or awakened anyone.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Listo, el timer de 10 minutos está programado para sonar a las 22:49 UTC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 10,
+        "timestampUtc": "2026-09-11T22:39:56.4015253+00:00",
+        "phase": "completed",
+        "requestId": "2c3ada88-fcd5-46f7-bde4-01dd3e367e68",
+        "missionId": "b0627a23-0df8-4d27-949b-5cbfe9fd37d3",
+        "invocationId": "fbbdd296-9941-4edb-8191-890e1f751c18",
+        "operation": "notification.schedule",
+        "requestFingerprint": "c1f1896b85f31e719ec1a8844cc3e5310d3200c80ba2ac58ca6af237a343195a",
+        "response": {
+          "type": "operation.response",
+          "requestId": "2c3ada88-fcd5-46f7-bde4-01dd3e367e68",
+          "missionId": "b0627a23-0df8-4d27-949b-5cbfe9fd37d3",
+          "invocationId": "fbbdd296-9941-4edb-8191-890e1f751c18",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"notification.schedule\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"kind\":\"alarm\",\"title\":\"timer de 10 minutos\",\"dueUtc\":\"2026-09-11T22:49:52+00:00\",\"taskName\":\"BAXY-Alarm-b04ec59a70ca46e78c1caedf7e905d72\",\"state\":\"Ready\",\"nextRunUtc\":\"2026-09-11T22:49:52.0000000+00:00\",\"authority\":\"windows_task_scheduler_postread\"}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "kind": "alarm",
+            "title": "timer de 10 minutos",
+            "dueUtc": "2026-09-11T22:49:52+00:00",
+            "taskName": "BAXY-Alarm-b04ec59a70ca46e78c1caedf7e905d72",
+            "state": "Ready",
+            "nextRunUtc": "2026-09-11T22:49:52.0000000+00:00",
+            "authority": "windows_task_scheduler_postread"
+          },
+          "errorCode": null
+        }
+      },
+      "temporal_evidence": {
+        "index": 3,
+        "case_id": "H0413",
+        "lower": "2026-09-11T22:39:51.608000+00:00",
+        "upper": "2026-09-11T22:39:52.277770+00:00",
+        "due": "2026-09-11T22:49:52+00:00",
+        "requested_duration_seconds": 600,
+        "inferred_binding": "2026-09-11T22:39:52+00:00",
+        "within_bracket": true
+      },
+      "owned_task_postread": {
+        "utc": "2026-09-11T22:41:44.5002129Z",
+        "invocationId": "fbbdd296-9941-4edb-8191-890e1f751c18",
+        "taskName": "BAXY-Alarm-b04ec59a70ca46e78c1caedf7e905d72",
+        "dueUtc": "2026-09-11T22:49:52+00:00",
+        "actions": [
+          {
+            "Execute": "powershell.exe",
+            "Arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-profile\\scheduled-notifications\\BAXY-Alarm-b04ec59a70ca46e78c1caedf7e905d72.ps1\"",
+            "WorkingDirectory": null
+          }
+        ],
+        "triggers": [
+          {
+            "StartBoundary": "2026-09-11T19:49:52-03:00",
+            "Enabled": true
+          }
+        ],
+        "nextRunUtc": "2026-09-11T22:49:52.0000000Z",
+        "lastRunUtc": "1999-11-30T03:00:00.0000000Z",
+        "lastResult": 267011,
+        "firedReceiptExists": false,
+        "cleanup": "cancelled_exact_identity",
+        "result": {
+          "version": 1,
+          "ok": true,
+          "effectObserved": true,
+          "effectBoundaryCrossed": true,
+          "canceled": true,
+          "taskName": "BAXY-Alarm-b04ec59a70ca46e78c1caedf7e905d72",
+          "nextRunUtc": "2026-09-11T22:49:52.0000000+00:00",
+          "authority": "windows_task_scheduler_exact_identity_absence_postread"
+        }
+      },
+      "generalizing_variant_ids": [
+        "alarm-panel978-dev-04",
+        "alarm-panel978-dev-05"
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "H0523",
+      "literal": "poné un timer de 10 minutos",
+      "criterion": "Preserve requested one-shot alarm/timer and complete temporal meaning. Product computes dueUtc using current observed clock/timezone: relative due lies within pre-admission..kernel-admission clock interval plus requested duration; use observed binding timestamp when available. Explicit clock means next future occurrence in observed real timezone, unless actual context supplies another date. Require notification.schedule, new taskName identity, action under authorized new profile, matching dueUtc/nextRunUtc postread and useful faithful final. Never inject dueUtc/arguments or claim an alarm rang from scheduled-task creation alone; waking requests are not proof of actual awakening. No unrequested recurrence.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Useful faithful scheduling response and verified creation, but strict preregistered temporal bracket is missed by 0.127 seconds. Source __main__.py5205 truncates microseconds. No post-hoc tolerance added; remains open for precise time-evidence criterion, not asserted as user-visible delay defect.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Listo, el timer de 10 minutos está programado para sonar a las 22:49 UTC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 12,
+        "timestampUtc": "2026-09-11T22:40:01.3079486+00:00",
+        "phase": "completed",
+        "requestId": "72b67b53-61a6-4e9e-994e-54e804ed9872",
+        "missionId": "1864ae49-8df1-406d-b7d7-96f7622681e6",
+        "invocationId": "01c30bef-6de6-432e-950a-192bb2815713",
+        "operation": "notification.schedule",
+        "requestFingerprint": "16562cbce5fb22ecc7010897986247f9051949779f491805871f289cb2eb4cdb",
+        "response": {
+          "type": "operation.response",
+          "requestId": "72b67b53-61a6-4e9e-994e-54e804ed9872",
+          "missionId": "1864ae49-8df1-406d-b7d7-96f7622681e6",
+          "invocationId": "01c30bef-6de6-432e-950a-192bb2815713",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"notification.schedule\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"kind\":\"alarm\",\"title\":\"timer de 10 minutos\",\"dueUtc\":\"2026-09-11T22:49:57+00:00\",\"taskName\":\"BAXY-Alarm-7f41f1ebbb204c7286a3b52199772165\",\"state\":\"Ready\",\"nextRunUtc\":\"2026-09-11T22:49:57.0000000+00:00\",\"authority\":\"windows_task_scheduler_postread\"}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "kind": "alarm",
+            "title": "timer de 10 minutos",
+            "dueUtc": "2026-09-11T22:49:57+00:00",
+            "taskName": "BAXY-Alarm-7f41f1ebbb204c7286a3b52199772165",
+            "state": "Ready",
+            "nextRunUtc": "2026-09-11T22:49:57.0000000+00:00",
+            "authority": "windows_task_scheduler_postread"
+          },
+          "errorCode": null
+        }
+      },
+      "temporal_evidence": {
+        "index": 4,
+        "case_id": "H0523",
+        "lower": "2026-09-11T22:39:57.127000+00:00",
+        "upper": "2026-09-11T22:39:57.926621+00:00",
+        "due": "2026-09-11T22:49:57+00:00",
+        "requested_duration_seconds": 600,
+        "inferred_binding": "2026-09-11T22:39:57+00:00",
+        "within_bracket": false
+      },
+      "owned_task_postread": {
+        "utc": "2026-09-11T22:41:52.9521178Z",
+        "invocationId": "01c30bef-6de6-432e-950a-192bb2815713",
+        "taskName": "BAXY-Alarm-7f41f1ebbb204c7286a3b52199772165",
+        "dueUtc": "2026-09-11T22:49:57+00:00",
+        "actions": [
+          {
+            "Execute": "powershell.exe",
+            "Arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-profile\\scheduled-notifications\\BAXY-Alarm-7f41f1ebbb204c7286a3b52199772165.ps1\"",
+            "WorkingDirectory": null
+          }
+        ],
+        "triggers": [
+          {
+            "StartBoundary": "2026-09-11T19:49:57-03:00",
+            "Enabled": true
+          }
+        ],
+        "nextRunUtc": "2026-09-11T22:49:57.0000000Z",
+        "lastRunUtc": "1999-11-30T03:00:00.0000000Z",
+        "lastResult": 267011,
+        "firedReceiptExists": false,
+        "cleanup": "cancelled_exact_identity",
+        "result": {
+          "version": 1,
+          "ok": true,
+          "effectObserved": true,
+          "effectBoundaryCrossed": true,
+          "canceled": true,
+          "taskName": "BAXY-Alarm-7f41f1ebbb204c7286a3b52199772165",
+          "nextRunUtc": "2026-09-11T22:49:57.0000000+00:00",
+          "authority": "windows_task_scheduler_exact_identity_absence_postread"
+        }
+      },
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 5,
+      "case_id": "H0710",
+      "literal": "ponme una alarma en una hora",
+      "criterion": "Preserve requested one-shot alarm/timer and complete temporal meaning. Product computes dueUtc using current observed clock/timezone: relative due lies within pre-admission..kernel-admission clock interval plus requested duration; use observed binding timestamp when available. Explicit clock means next future occurrence in observed real timezone, unless actual context supplies another date. Require notification.schedule, new taskName identity, action under authorized new profile, matching dueUtc/nextRunUtc postread and useful faithful final. Never inject dueUtc/arguments or claim an alarm rang from scheduled-task creation alone; waking requests are not proof of actual awakening. No unrequested recurrence.",
+      "verdict": "pass",
+      "coverage_added": true,
+      "reason": "Verified new one-shot relative alarm/timer, due within frozen pre-admission-to-kernel bracket plus requested duration; final faithfully confirms scheduling at matching UTC time. No claim of having rung or awakened anyone.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Listo, la alarma está programada para las 23:40 UTC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 14,
+        "timestampUtc": "2026-09-11T22:40:05.2685665+00:00",
+        "phase": "completed",
+        "requestId": "a5b18446-02ab-48dc-afb2-26f7a36bbc79",
+        "missionId": "43ca7da1-8ad0-4762-869b-07ee074b9dc7",
+        "invocationId": "1caeadbe-8435-41e9-905f-d4413ad58d0a",
+        "operation": "notification.schedule",
+        "requestFingerprint": "3653219a989fef9a1daa30e03ea105747ac73d3109e41baf1c8f7c25ec42ab62",
+        "response": {
+          "type": "operation.response",
+          "requestId": "a5b18446-02ab-48dc-afb2-26f7a36bbc79",
+          "missionId": "43ca7da1-8ad0-4762-869b-07ee074b9dc7",
+          "invocationId": "1caeadbe-8435-41e9-905f-d4413ad58d0a",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"notification.schedule\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"kind\":\"alarm\",\"title\":\"alarma en una hora\",\"dueUtc\":\"2026-09-11T23:40:02+00:00\",\"taskName\":\"BAXY-Alarm-d3dae586c56f47fd8df21628662d4b14\",\"state\":\"Ready\",\"nextRunUtc\":\"2026-09-11T23:40:02.0000000+00:00\",\"authority\":\"windows_task_scheduler_postread\"}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "kind": "alarm",
+            "title": "alarma en una hora",
+            "dueUtc": "2026-09-11T23:40:02+00:00",
+            "taskName": "BAXY-Alarm-d3dae586c56f47fd8df21628662d4b14",
+            "state": "Ready",
+            "nextRunUtc": "2026-09-11T23:40:02.0000000+00:00",
+            "authority": "windows_task_scheduler_postread"
+          },
+          "errorCode": null
+        }
+      },
+      "temporal_evidence": {
+        "index": 5,
+        "case_id": "H0710",
+        "lower": "2026-09-11T22:40:01.860000+00:00",
+        "upper": "2026-09-11T22:40:02.417960+00:00",
+        "due": "2026-09-11T23:40:02+00:00",
+        "requested_duration_seconds": 3600,
+        "inferred_binding": "2026-09-11T22:40:02+00:00",
+        "within_bracket": true
+      },
+      "owned_task_postread": {
+        "utc": "2026-09-11T22:42:01.5841031Z",
+        "invocationId": "1caeadbe-8435-41e9-905f-d4413ad58d0a",
+        "taskName": "BAXY-Alarm-d3dae586c56f47fd8df21628662d4b14",
+        "dueUtc": "2026-09-11T23:40:02+00:00",
+        "actions": [
+          {
+            "Execute": "powershell.exe",
+            "Arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-profile\\scheduled-notifications\\BAXY-Alarm-d3dae586c56f47fd8df21628662d4b14.ps1\"",
+            "WorkingDirectory": null
+          }
+        ],
+        "triggers": [
+          {
+            "StartBoundary": "2026-09-11T20:40:02-03:00",
+            "Enabled": true
+          }
+        ],
+        "nextRunUtc": "2026-09-11T23:40:02.0000000Z",
+        "lastRunUtc": "1999-11-30T03:00:00.0000000Z",
+        "lastResult": 267011,
+        "firedReceiptExists": false,
+        "cleanup": "cancelled_exact_identity",
+        "result": {
+          "version": 1,
+          "ok": true,
+          "effectObserved": true,
+          "effectBoundaryCrossed": true,
+          "canceled": true,
+          "taskName": "BAXY-Alarm-d3dae586c56f47fd8df21628662d4b14",
+          "nextRunUtc": "2026-09-11T23:40:02.0000000+00:00",
+          "authority": "windows_task_scheduler_exact_identity_absence_postread"
+        }
+      },
+      "generalizing_variant_ids": [
+        "alarm-panel978-dev-04",
+        "alarm-panel978-dev-05"
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "alarm-panel978-dev-02",
+      "literal": "Start a timer for four minutes.",
+      "criterion": "Preserve requested one-shot alarm/timer and complete temporal meaning. Product computes dueUtc using current observed clock/timezone: relative due lies within pre-admission..kernel-admission clock interval plus requested duration; use observed binding timestamp when available. Explicit clock means next future occurrence in observed real timezone, unless actual context supplies another date. Require notification.schedule, new taskName identity, action under authorized new profile, matching dueUtc/nextRunUtc postread and useful faithful final. Never inject dueUtc/arguments or claim an alarm rang from scheduled-task creation alone; waking requests are not proof of actual awakening. No unrequested recurrence.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Timer and UTC time verified, but final addresses the person as BAXY without supporting identity; do not use this variant as faithful generalization.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Got it, BAXY. The four-minute timer is scheduled for 22:44 UTC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 16,
+        "timestampUtc": "2026-09-11T22:40:09.7391696+00:00",
+        "phase": "completed",
+        "requestId": "01d15bd9-1392-4125-a487-0af1c06bc3fa",
+        "missionId": "b18bbcdf-bbd3-4c01-930f-08f391bbdfd9",
+        "invocationId": "1471a13d-4ac8-4f22-9c50-49cfc6b6272f",
+        "operation": "notification.schedule",
+        "requestFingerprint": "19cef2eb18e7dc767959956e1950e5ee953ee18cd32f538c11e7035654ea9dba",
+        "response": {
+          "type": "operation.response",
+          "requestId": "01d15bd9-1392-4125-a487-0af1c06bc3fa",
+          "missionId": "b18bbcdf-bbd3-4c01-930f-08f391bbdfd9",
+          "invocationId": "1471a13d-4ac8-4f22-9c50-49cfc6b6272f",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"notification.schedule\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"kind\":\"alarm\",\"title\":\"timer for four minutes\",\"dueUtc\":\"2026-09-11T22:44:06+00:00\",\"taskName\":\"BAXY-Alarm-1b8e4ab00e87448080e3181a7823a695\",\"state\":\"Ready\",\"nextRunUtc\":\"2026-09-11T22:44:06.0000000+00:00\",\"authority\":\"windows_task_scheduler_postread\"}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "kind": "alarm",
+            "title": "timer for four minutes",
+            "dueUtc": "2026-09-11T22:44:06+00:00",
+            "taskName": "BAXY-Alarm-1b8e4ab00e87448080e3181a7823a695",
+            "state": "Ready",
+            "nextRunUtc": "2026-09-11T22:44:06.0000000+00:00",
+            "authority": "windows_task_scheduler_postread"
+          },
+          "errorCode": null
+        }
+      },
+      "temporal_evidence": {
+        "index": 6,
+        "case_id": "alarm-panel978-dev-02",
+        "lower": "2026-09-11T22:40:05.749000+00:00",
+        "upper": "2026-09-11T22:40:06.441243+00:00",
+        "due": "2026-09-11T22:44:06+00:00",
+        "requested_duration_seconds": 240,
+        "inferred_binding": "2026-09-11T22:40:06+00:00",
+        "within_bracket": true
+      },
+      "owned_task_postread": {
+        "utc": "2026-09-11T22:42:10.0150938Z",
+        "invocationId": "1471a13d-4ac8-4f22-9c50-49cfc6b6272f",
+        "taskName": "BAXY-Alarm-1b8e4ab00e87448080e3181a7823a695",
+        "dueUtc": "2026-09-11T22:44:06+00:00",
+        "actions": [
+          {
+            "Execute": "powershell.exe",
+            "Arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-profile\\scheduled-notifications\\BAXY-Alarm-1b8e4ab00e87448080e3181a7823a695.ps1\"",
+            "WorkingDirectory": null
+          }
+        ],
+        "triggers": [
+          {
+            "StartBoundary": "2026-09-11T19:44:06-03:00",
+            "Enabled": true
+          }
+        ],
+        "nextRunUtc": "2026-09-11T22:44:06.0000000Z",
+        "lastRunUtc": "1999-11-30T03:00:00.0000000Z",
+        "lastResult": 267011,
+        "firedReceiptExists": false,
+        "cleanup": "cancelled_exact_identity",
+        "result": {
+          "version": 1,
+          "ok": true,
+          "effectObserved": true,
+          "effectBoundaryCrossed": true,
+          "canceled": true,
+          "taskName": "BAXY-Alarm-1b8e4ab00e87448080e3181a7823a695",
+          "nextRunUtc": "2026-09-11T22:44:06.0000000+00:00",
+          "authority": "windows_task_scheduler_exact_identity_absence_postread"
+        }
+      },
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 7,
+      "case_id": "alarm-panel978-dev-04",
+      "literal": "In eight minutes, sound an alarm for me.",
+      "criterion": "Preserve requested one-shot alarm/timer and complete temporal meaning. Product computes dueUtc using current observed clock/timezone: relative due lies within pre-admission..kernel-admission clock interval plus requested duration; use observed binding timestamp when available. Explicit clock means next future occurrence in observed real timezone, unless actual context supplies another date. Require notification.schedule, new taskName identity, action under authorized new profile, matching dueUtc/nextRunUtc postread and useful faithful final. Never inject dueUtc/arguments or claim an alarm rang from scheduled-task creation alone; waking requests are not proof of actual awakening. No unrequested recurrence.",
+      "verdict": "pass",
+      "coverage_added": false,
+      "reason": "Verified new one-shot relative alarm/timer, due within frozen pre-admission-to-kernel bracket plus requested duration; final faithfully confirms scheduling at matching UTC time. No claim of having rung or awakened anyone.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Alarm scheduled for 22:48 UTC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 18,
+        "timestampUtc": "2026-09-11T22:40:15.5208072+00:00",
+        "phase": "completed",
+        "requestId": "7762ea0d-af17-4b37-a933-03f7751f6189",
+        "missionId": "c0722def-36e0-48c5-90b1-f0330ca638ad",
+        "invocationId": "128c637e-0886-48ce-a196-67c163666b49",
+        "operation": "notification.schedule",
+        "requestFingerprint": "26cff6f9ebf9f7adb408941cc647c6e2f038ba93ac317b2fc885c41264a33a52",
+        "response": {
+          "type": "operation.response",
+          "requestId": "7762ea0d-af17-4b37-a933-03f7751f6189",
+          "missionId": "c0722def-36e0-48c5-90b1-f0330ca638ad",
+          "invocationId": "128c637e-0886-48ce-a196-67c163666b49",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"notification.schedule\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"kind\":\"alarm\",\"title\":\"alarm for me\",\"dueUtc\":\"2026-09-11T22:48:12+00:00\",\"taskName\":\"BAXY-Alarm-e96c0a6e604743cfb396efa37c94b5f9\",\"state\":\"Ready\",\"nextRunUtc\":\"2026-09-11T22:48:12.0000000+00:00\",\"authority\":\"windows_task_scheduler_postread\"}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "kind": "alarm",
+            "title": "alarm for me",
+            "dueUtc": "2026-09-11T22:48:12+00:00",
+            "taskName": "BAXY-Alarm-e96c0a6e604743cfb396efa37c94b5f9",
+            "state": "Ready",
+            "nextRunUtc": "2026-09-11T22:48:12.0000000+00:00",
+            "authority": "windows_task_scheduler_postread"
+          },
+          "errorCode": null
+        }
+      },
+      "temporal_evidence": {
+        "index": 7,
+        "case_id": "alarm-panel978-dev-04",
+        "lower": "2026-09-11T22:40:10.448000+00:00",
+        "upper": "2026-09-11T22:40:12.508412+00:00",
+        "due": "2026-09-11T22:48:12+00:00",
+        "requested_duration_seconds": 480,
+        "inferred_binding": "2026-09-11T22:40:12+00:00",
+        "within_bracket": true
+      },
+      "owned_task_postread": {
+        "utc": "2026-09-11T22:42:18.3848531Z",
+        "invocationId": "128c637e-0886-48ce-a196-67c163666b49",
+        "taskName": "BAXY-Alarm-e96c0a6e604743cfb396efa37c94b5f9",
+        "dueUtc": "2026-09-11T22:48:12+00:00",
+        "actions": [
+          {
+            "Execute": "powershell.exe",
+            "Arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-profile\\scheduled-notifications\\BAXY-Alarm-e96c0a6e604743cfb396efa37c94b5f9.ps1\"",
+            "WorkingDirectory": null
+          }
+        ],
+        "triggers": [
+          {
+            "StartBoundary": "2026-09-11T19:48:12-03:00",
+            "Enabled": true
+          }
+        ],
+        "nextRunUtc": "2026-09-11T22:48:12.0000000Z",
+        "lastRunUtc": "1999-11-30T03:00:00.0000000Z",
+        "lastResult": 267011,
+        "firedReceiptExists": false,
+        "cleanup": "cancelled_exact_identity",
+        "result": {
+          "version": 1,
+          "ok": true,
+          "effectObserved": true,
+          "effectBoundaryCrossed": true,
+          "canceled": true,
+          "taskName": "BAXY-Alarm-e96c0a6e604743cfb396efa37c94b5f9",
+          "nextRunUtc": "2026-09-11T22:48:12.0000000+00:00",
+          "authority": "windows_task_scheduler_exact_identity_absence_postread"
+        }
+      },
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 8,
+      "case_id": "alarm-panel978-dev-05",
+      "literal": "Poneme una alarma dentro de quince minutos.",
+      "criterion": "Preserve requested one-shot alarm/timer and complete temporal meaning. Product computes dueUtc using current observed clock/timezone: relative due lies within pre-admission..kernel-admission clock interval plus requested duration; use observed binding timestamp when available. Explicit clock means next future occurrence in observed real timezone, unless actual context supplies another date. Require notification.schedule, new taskName identity, action under authorized new profile, matching dueUtc/nextRunUtc postread and useful faithful final. Never inject dueUtc/arguments or claim an alarm rang from scheduled-task creation alone; waking requests are not proof of actual awakening. No unrequested recurrence.",
+      "verdict": "pass",
+      "coverage_added": false,
+      "reason": "Verified new one-shot relative alarm/timer, due within frozen pre-admission-to-kernel bracket plus requested duration; final faithfully confirms scheduling at matching UTC time. No claim of having rung or awakened anyone.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Listo, te puse una alarma programada para las 22:55 UTC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 20,
+        "timestampUtc": "2026-09-11T22:40:20.7056618+00:00",
+        "phase": "completed",
+        "requestId": "9de36e7a-8c52-47ba-bb64-6a682d91c406",
+        "missionId": "13720eaa-5af7-4d85-bb4d-73a607038816",
+        "invocationId": "36d29e80-600a-4755-9ee7-f89bf89548ff",
+        "operation": "notification.schedule",
+        "requestFingerprint": "9d18721f7874c5e9401ac0fc04c3f5f452c25a82edba021d7a7a4482b4bf49b6",
+        "response": {
+          "type": "operation.response",
+          "requestId": "9de36e7a-8c52-47ba-bb64-6a682d91c406",
+          "missionId": "13720eaa-5af7-4d85-bb4d-73a607038816",
+          "invocationId": "36d29e80-600a-4755-9ee7-f89bf89548ff",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"notification.schedule\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"kind\":\"alarm\",\"title\":\"alarma dentro de quince minutos\",\"dueUtc\":\"2026-09-11T22:55:17+00:00\",\"taskName\":\"BAXY-Alarm-21e97b49b5b04780af3a2548bdf8dcc8\",\"state\":\"Ready\",\"nextRunUtc\":\"2026-09-11T22:55:17.0000000+00:00\",\"authority\":\"windows_task_scheduler_postread\"}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "kind": "alarm",
+            "title": "alarma dentro de quince minutos",
+            "dueUtc": "2026-09-11T22:55:17+00:00",
+            "taskName": "BAXY-Alarm-21e97b49b5b04780af3a2548bdf8dcc8",
+            "state": "Ready",
+            "nextRunUtc": "2026-09-11T22:55:17.0000000+00:00",
+            "authority": "windows_task_scheduler_postread"
+          },
+          "errorCode": null
+        }
+      },
+      "temporal_evidence": {
+        "index": 8,
+        "case_id": "alarm-panel978-dev-05",
+        "lower": "2026-09-11T22:40:15.905000+00:00",
+        "upper": "2026-09-11T22:40:17.787847+00:00",
+        "due": "2026-09-11T22:55:17+00:00",
+        "requested_duration_seconds": 900,
+        "inferred_binding": "2026-09-11T22:40:17+00:00",
+        "within_bracket": true
+      },
+      "owned_task_postread": {
+        "utc": "2026-09-11T22:42:26.6520454Z",
+        "invocationId": "36d29e80-600a-4755-9ee7-f89bf89548ff",
+        "taskName": "BAXY-Alarm-21e97b49b5b04780af3a2548bdf8dcc8",
+        "dueUtc": "2026-09-11T22:55:17+00:00",
+        "actions": [
+          {
+            "Execute": "powershell.exe",
+            "Arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-profile\\scheduled-notifications\\BAXY-Alarm-21e97b49b5b04780af3a2548bdf8dcc8.ps1\"",
+            "WorkingDirectory": null
+          }
+        ],
+        "triggers": [
+          {
+            "StartBoundary": "2026-09-11T19:55:17-03:00",
+            "Enabled": true
+          }
+        ],
+        "nextRunUtc": "2026-09-11T22:55:17.0000000Z",
+        "lastRunUtc": "1999-11-30T03:00:00.0000000Z",
+        "lastResult": 267011,
+        "firedReceiptExists": false,
+        "cleanup": "cancelled_exact_identity",
+        "result": {
+          "version": 1,
+          "ok": true,
+          "effectObserved": true,
+          "effectBoundaryCrossed": true,
+          "canceled": true,
+          "taskName": "BAXY-Alarm-21e97b49b5b04780af3a2548bdf8dcc8",
+          "nextRunUtc": "2026-09-11T22:55:17.0000000+00:00",
+          "authority": "windows_task_scheduler_exact_identity_absence_postread"
+        }
+      },
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 9,
+      "case_id": "alarm-repair983-dev-relative-es",
+      "literal": "En siete minutos, que suene una alarma.",
+      "criterion": "Preserve requested one-shot alarm/timer and complete temporal meaning. Product computes dueUtc using current observed clock/timezone: relative due lies within pre-admission..kernel-admission clock interval plus requested duration; use observed binding timestamp when available. Explicit clock means next future occurrence in observed real timezone, unless actual context supplies another date. Require notification.schedule, new taskName identity, action under authorized new profile, matching dueUtc/nextRunUtc postread and useful faithful final. Never inject dueUtc/arguments or claim an alarm rang from scheduled-task creation alone; waking requests are not proof of actual awakening. No unrequested recurrence.",
+      "verdict": "pass",
+      "coverage_added": false,
+      "reason": "Verified new one-shot relative alarm/timer, due within frozen pre-admission-to-kernel bracket plus requested duration; final faithfully confirms scheduling at matching UTC time. No claim of having rung or awakened anyone.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Claro! La alarma se programó para sonar a las 22:47 UTC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 22,
+        "timestampUtc": "2026-09-11T22:40:26.0638688+00:00",
+        "phase": "completed",
+        "requestId": "52773869-bff8-4cf1-9283-133715313847",
+        "missionId": "996e73df-85df-4f6f-89a3-0a6fe1bc321f",
+        "invocationId": "78dea30f-7a0a-43d3-81a2-18d874413599",
+        "operation": "notification.schedule",
+        "requestFingerprint": "fe2b2d2735eecdebd8b3f4958255b33b64aece5e8be694ee6d785a80fb59dac9",
+        "response": {
+          "type": "operation.response",
+          "requestId": "52773869-bff8-4cf1-9283-133715313847",
+          "missionId": "996e73df-85df-4f6f-89a3-0a6fe1bc321f",
+          "invocationId": "78dea30f-7a0a-43d3-81a2-18d874413599",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"notification.schedule\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"kind\":\"alarm\",\"title\":\"alarma\",\"dueUtc\":\"2026-09-11T22:47:23+00:00\",\"taskName\":\"BAXY-Alarm-9ff3ea041c1c40918b8720cfe8e143ce\",\"state\":\"Ready\",\"nextRunUtc\":\"2026-09-11T22:47:23.0000000+00:00\",\"authority\":\"windows_task_scheduler_postread\"}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "kind": "alarm",
+            "title": "alarma",
+            "dueUtc": "2026-09-11T22:47:23+00:00",
+            "taskName": "BAXY-Alarm-9ff3ea041c1c40918b8720cfe8e143ce",
+            "state": "Ready",
+            "nextRunUtc": "2026-09-11T22:47:23.0000000+00:00",
+            "authority": "windows_task_scheduler_postread"
+          },
+          "errorCode": null
+        }
+      },
+      "temporal_evidence": {
+        "index": 9,
+        "case_id": "alarm-repair983-dev-relative-es",
+        "lower": "2026-09-11T22:40:21.198000+00:00",
+        "upper": "2026-09-11T22:40:23.135186+00:00",
+        "due": "2026-09-11T22:47:23+00:00",
+        "requested_duration_seconds": 420,
+        "inferred_binding": "2026-09-11T22:40:23+00:00",
+        "within_bracket": true
+      },
+      "owned_task_postread": {
+        "utc": "2026-09-11T22:42:35.2020258Z",
+        "invocationId": "78dea30f-7a0a-43d3-81a2-18d874413599",
+        "taskName": "BAXY-Alarm-9ff3ea041c1c40918b8720cfe8e143ce",
+        "dueUtc": "2026-09-11T22:47:23+00:00",
+        "actions": [
+          {
+            "Execute": "powershell.exe",
+            "Arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-profile\\scheduled-notifications\\BAXY-Alarm-9ff3ea041c1c40918b8720cfe8e143ce.ps1\"",
+            "WorkingDirectory": null
+          }
+        ],
+        "triggers": [
+          {
+            "StartBoundary": "2026-09-11T19:47:23-03:00",
+            "Enabled": true
+          }
+        ],
+        "nextRunUtc": "2026-09-11T22:47:23.0000000Z",
+        "lastRunUtc": "1999-11-30T03:00:00.0000000Z",
+        "lastResult": 267011,
+        "firedReceiptExists": false,
+        "cleanup": "cancelled_exact_identity",
+        "result": {
+          "version": 1,
+          "ok": true,
+          "effectObserved": true,
+          "effectBoundaryCrossed": true,
+          "canceled": true,
+          "taskName": "BAXY-Alarm-9ff3ea041c1c40918b8720cfe8e143ce",
+          "nextRunUtc": "2026-09-11T22:47:23.0000000+00:00",
+          "authority": "windows_task_scheduler_exact_identity_absence_postread"
+        }
+      },
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 10,
+      "case_id": "alarm-repair983-dev-relative-en",
+      "literal": "Please start a nine-minute timer.",
+      "criterion": "Preserve requested one-shot alarm/timer and complete temporal meaning. Product computes dueUtc using current observed clock/timezone: relative due lies within pre-admission..kernel-admission clock interval plus requested duration; use observed binding timestamp when available. Explicit clock means next future occurrence in observed real timezone, unless actual context supplies another date. Require notification.schedule, new taskName identity, action under authorized new profile, matching dueUtc/nextRunUtc postread and useful faithful final. Never inject dueUtc/arguments or claim an alarm rang from scheduled-task creation alone; waking requests are not proof of actual awakening. No unrequested recurrence.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Unsupported refusal of a clear nine-minute timer; no scheduling receipt.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "I can't start a nine-minute timer because that's outside what I do on this PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null,
+      "temporal_evidence": null,
+      "owned_task_postread": null,
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 11,
+      "case_id": "alarm-repair983-dev-relative-order",
+      "literal": "Una alarma dentro de once minutos, por favor.",
+      "criterion": "Preserve requested one-shot alarm/timer and complete temporal meaning. Product computes dueUtc using current observed clock/timezone: relative due lies within pre-admission..kernel-admission clock interval plus requested duration; use observed binding timestamp when available. Explicit clock means next future occurrence in observed real timezone, unless actual context supplies another date. Require notification.schedule, new taskName identity, action under authorized new profile, matching dueUtc/nextRunUtc postread and useful faithful final. Never inject dueUtc/arguments or claim an alarm rang from scheduled-task creation alone; waking requests are not proof of actual awakening. No unrequested recurrence.",
+      "verdict": "pass",
+      "coverage_added": false,
+      "reason": "Verified new one-shot relative alarm/timer, due within frozen pre-admission-to-kernel bracket plus requested duration; final faithfully confirms scheduling at matching UTC time. No claim of having rung or awakened anyone.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Claro! La alarma está programada para sonar a las 22:51 UTC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": {
+        "sequence": 24,
+        "timestampUtc": "2026-09-11T22:40:34.302999+00:00",
+        "phase": "completed",
+        "requestId": "d7a5c437-5ada-4850-a56d-53f723588452",
+        "missionId": "6659ce43-f6a4-4e3b-9655-65c23cd0b291",
+        "invocationId": "bd34152f-65f2-4605-9cd2-7ca1eb3e4a98",
+        "operation": "notification.schedule",
+        "requestFingerprint": "a7fdf0303e71a8b26174bbb2444ea2f77bd3820591f29e4129f50c3ff7eb6a4d",
+        "response": {
+          "type": "operation.response",
+          "requestId": "d7a5c437-5ada-4850-a56d-53f723588452",
+          "missionId": "6659ce43-f6a4-4e3b-9655-65c23cd0b291",
+          "invocationId": "bd34152f-65f2-4605-9cd2-7ca1eb3e4a98",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"notification.schedule\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"kind\":\"alarm\",\"title\":\"alarma dentro de once minutos, por favor\",\"dueUtc\":\"2026-09-11T22:51:31+00:00\",\"taskName\":\"BAXY-Alarm-86195537176441bc9422417d77666d19\",\"state\":\"Ready\",\"nextRunUtc\":\"2026-09-11T22:51:31.0000000+00:00\",\"authority\":\"windows_task_scheduler_postread\"}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "kind": "alarm",
+            "title": "alarma dentro de once minutos, por favor",
+            "dueUtc": "2026-09-11T22:51:31+00:00",
+            "taskName": "BAXY-Alarm-86195537176441bc9422417d77666d19",
+            "state": "Ready",
+            "nextRunUtc": "2026-09-11T22:51:31.0000000+00:00",
+            "authority": "windows_task_scheduler_postread"
+          },
+          "errorCode": null
+        }
+      },
+      "temporal_evidence": {
+        "index": 11,
+        "case_id": "alarm-repair983-dev-relative-order",
+        "lower": "2026-09-11T22:40:29.457000+00:00",
+        "upper": "2026-09-11T22:40:31.443511+00:00",
+        "due": "2026-09-11T22:51:31+00:00",
+        "requested_duration_seconds": 660,
+        "inferred_binding": "2026-09-11T22:40:31+00:00",
+        "within_bracket": true
+      },
+      "owned_task_postread": {
+        "utc": "2026-09-11T22:42:43.8011994Z",
+        "invocationId": "bd34152f-65f2-4605-9cd2-7ca1eb3e4a98",
+        "taskName": "BAXY-Alarm-86195537176441bc9422417d77666d19",
+        "dueUtc": "2026-09-11T22:51:31+00:00",
+        "actions": [
+          {
+            "Execute": "powershell.exe",
+            "Arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-profile\\scheduled-notifications\\BAXY-Alarm-86195537176441bc9422417d77666d19.ps1\"",
+            "WorkingDirectory": null
+          }
+        ],
+        "triggers": [
+          {
+            "StartBoundary": "2026-09-11T19:51:31-03:00",
+            "Enabled": true
+          }
+        ],
+        "nextRunUtc": "2026-09-11T22:51:31.0000000Z",
+        "lastRunUtc": "1999-11-30T03:00:00.0000000Z",
+        "lastResult": 267011,
+        "firedReceiptExists": false,
+        "cleanup": "cancelled_exact_identity",
+        "result": {
+          "version": 1,
+          "ok": true,
+          "effectObserved": true,
+          "effectBoundaryCrossed": true,
+          "canceled": true,
+          "taskName": "BAXY-Alarm-86195537176441bc9422417d77666d19",
+          "nextRunUtc": "2026-09-11T22:51:31.0000000+00:00",
+          "authority": "windows_task_scheduler_exact_identity_absence_postread"
+        }
+      },
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 12,
+      "case_id": "alarm-repair983-boundary-prohibition",
+      "literal": "No programes una alarma de siete minutos; no la necesito.",
+      "criterion": "Preserve prohibition; no alarm/timer creation or other scheduled substitute.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "No effect but asks to cancel an alarm rather than acknowledge prohibition on creating it; unnecessary change of requested action.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Quieres que cancelé la alarma de siete minutos?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null,
+      "temporal_evidence": null,
+      "owned_task_postread": null,
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 13,
+      "case_id": "alarm-repair983-boundary-quotation",
+      "literal": "Translate the sentence \"start a timer for nine minutes\" into Spanish without starting it.",
+      "criterion": "Translate quoted sentence only, no timer/alarm creation.",
+      "verdict": "pass",
+      "coverage_added": false,
+      "reason": "Faithful requested translation of quoted instruction; no scheduling operation.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Empieza un temporizador para nueve minutos.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null,
+      "temporal_evidence": null,
+      "owned_task_postread": null,
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 14,
+      "case_id": "alarm-repair983-boundary-future",
+      "literal": "Si el viernes te lo pido, programá una alarma de once minutos; no lo hagas todavía.",
+      "criterion": "Unsatisfied future request and current prohibition mean no current scheduling.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "No effect, but interpretation-failure message does not usefully acknowledge future condition/current prohibition.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No puedo programar la alarma porque la solicitud no fue interpretada correctamente.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null,
+      "temporal_evidence": null,
+      "owned_task_postread": null,
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 15,
+      "case_id": "alarm-repair983-boundary-missing",
+      "literal": "Poné un temporizador, pero aún no sé por cuánto tiempo.",
+      "criterion": "Ask genuinely missing duration without inventing dueUtc or starting a timer.",
+      "verdict": "fail",
+      "coverage_added": false,
+      "reason": "Unsupported refusal instead of requesting missing timer duration; no effect.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No puedo poner un temporizador porque eso no forma parte de lo que hago aquí.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null,
+      "temporal_evidence": null,
+      "owned_task_postread": null,
+      "generalizing_variant_ids": []
+    },
+    {
+      "index": 16,
+      "case_id": "alarm-repair983-boundary-narrative",
+      "literal": "Yesterday I set a fifteen-minute timer; I am just telling you what happened.",
+      "criterion": "Past narrative does not authorize new alarm or prove any current timer.",
+      "verdict": "pass",
+      "coverage_added": false,
+      "reason": "Acknowledges the user report in English without claiming BAXY executed it; no scheduling operation.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "You set a fifteen-minute timer yesterday.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "receipt": null,
+      "temporal_evidence": null,
+      "owned_task_postread": null,
+      "generalizing_variant_ids": []
+    }
+  ],
+  "receipt_binding": "Eleven ordered serialized shell notification.schedule core calls match eleven completed journal invocations. Exact trace and chronology in TEMPORAL_REVIEW. Latest prior boot_stage UTC before admission, first case PREREG before launcher, no tolerance added.",
+  "generalization": "Current EN eight-minute alarm and ES fifteen-minute alarm both pass: same one-shot relative notification.schedule behavior as literal alarms/timers, different values and order/language. Also two new relative ES variants pass; no reliance on addressed-as-BAXY timer variant.",
+  "precision_limitation": "H0100/H0523 are useful but strict bracket misses the microsecond-truncated due time. Keep open and preserve current good behavior; future preregistration must represent actual second precision explicitly. Do not rerun all literals or adjust these outcomes after seeing them.",
+  "cleanup_summary": {
+    "cancelled_exact": 11,
+    "retained": 0,
+    "preexisting_tasks_touched": false,
+    "baseline_count": 910,
+    "source": "existing provider cancel-exact with exact original trigger, new name and own983 action path then absence postread; session97299 collected06d52f"
+  },
+  "registry_before_sha256": "9c6f58dd95d8a056551ada9bac703c16c81d1dcfad2f70bc48e329f8ce54dcdc",
+  "registry_after_sha256": "aef1d8598043ff48721a60726b2d31aef2c8dba6cc7fad0abc848d0abfa70c44",
+  "evidence_sha256": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-private\\run\\case-observations.json": "b4d0a7da660aae82d38dd94d2a76d61a6e60e472053d8f24c1aa5d706a6c8b76",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-private\\run\\compose-audit.jsonl": "5f9fe96cbbdb0d01e82d8a0a3e14bcb0b988a83e82e9ec48cf12c720d7ca05e1",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-private\\run\\shell-trace.jsonl": "7f3185f4144745bbf87dfd2b715a6d908b19fab00c9a18aa58c6ee38eaecb43b",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-private\\run\\capture\\events.jsonl": "bc884e2ea014112b7debd0f1c01ddeaedc21c37ce26b94edffaa1dcc872948b8",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-profile\\journal\\missions.jsonl": "dd03a1b2c4b9e0f3566ad5ef0d809cefafb9566c12b1ad6dbccc56f8ef55312e",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-private\\TEMPORAL_REVIEW.json": "e3bdf2f8ed276816af5640177029b0795f11463bc2ec07e2b166e394e8b4c1d2",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-private\\BASELINE.json": "77aa1cb854c8400dafd42d17f6315523a1f9ba79cd13a50d84179fb2dc1df1d7",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-repair983-private\\OWNED_CLEANUP.json": "e3540e778e9f449b52280fcbf6cd991d5d2f0602e6875d603ced5a49afb54793"
+  }
+}

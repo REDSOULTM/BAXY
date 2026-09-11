@@ -1,20 +1,16 @@
 # Estado para el dueño — 11 de septiembre
 
-**89/742 cubiertos, 653 abiertos y 0 no aplican. Este tramo añadió 9 créditos:** cuatro consultas de disco y cinco de tarjeta gráfica. Cada crédito tiene un literal ejecutado con el candidato correspondiente y dos variantes pertinentes comprobadas.
+**97/742 cubiertos,645 abiertos y0 no aplican. Este tramo sumó8:** cuatro peticiones de alarma y cuatro de guardar tareas o notas. Las últimas ya responden de forma breve y conservan correctamente el contenido.
 
-La corrección musical permite que una consulta identifique la canción y diga que está pausada. Todavía fallan el otro literal y sus variantes: no se concedió crédito musical. Las cuatro peticiones de guardar pendientes también siguen abiertas: algunas piden datos ya presentes; otras guardan el contenido pero no responden bien. Las causas están localizadas, con los registros creados conservados para evitar duplicarlos.
+El principal fallo corregido estaba después de ejecutar: BAXY rechazaba respuestas útiles por exigir vocabulario de nota para otras operaciones. También confundía «write down» con enviar un mensaje. Las correcciones están publicadas y comprobadas en el producto.
 
-| Medición | Hardware | Música corregida | Guardar pendientes |
-|---|---:|---:|---:|
-| Casos útiles | 15/25 | 4/9 | 2/17 |
-| Créditos nuevos | 9 | 0 | 0 |
-| Pico VRAM | 3497,56 MiB | 3497,56 MiB | 3497,56 MiB |
-| Pico RAM | 2513,54 MiB | 2453,60 MiB | 2429,02 MiB |
-| Duración | 72,438 s | 69,641 s | 121,578 s |
-| Violaciones de recursos | 0 | 0 | 0 |
+Quedan fallos reales en límites y variantes; ninguna categoría se declara cerrada. Dos alarmas útiles siguen pendientes porque su medición sellada no contemplaba el redondeo a segundos: se conserva el resultado, sin inflar el contador. Las alarmas de la última tanda fueron canceladas por identidad exacta; tus tareas anteriores quedaron intactas.
 
-RAM y VRAM se informan por separado frente a 4096 MiB. No fue necesario cerrar tus aplicaciones. Mantengo tu autorización para liberar RAM, conservando el trabajo sin guardar.
+| Tanda | Útiles / ejecutados | Nuevos créditos | Pico VRAM MiB | Pico RAM MiB | Segundos |
+|---|---:|---:|---:|---:|---:|
+| 978 | 4/24 | 0 | 3497.56 | 2469.38 | 187.156 |
+| 980 | 7/14 | 0 | 3497.56 | 2440.72 | 48.500 |
+| 983 | 10/17 | 4 | 3497.56 | 2478.79 | 95.704 |
+| 986 | 7/12 | 4 | 3497.56 | 2419.70 | 48.015 |
 
-Para las alarmas, una lectura directa del componente existente encontró el programador activo y las notificaciones habilitadas. Su diagnóstico agregado registra problemas en tareas BAXY existentes; quedaron intactas. No se crearon alarmas ni se modificó Windows. Está preparado el procedimiento para comprobar nueve peticiones de alarma sin confundir programarlas con haberlas oído sonar.
-
-Ritmo: **61 acreditaciones confirmadas en 24 horas**, 0/35 categorías cerradas y 3/11 filas C03 cumplidas. No hay fecha de cierre fiable. Fuente corregida publicada; la evidencia se publica con este checkpoint. Suites, Fast y Full omitidos por tu instrucción, sin contarlos como aprobados. Goal activo, sin decisiones pendientes tuyas.
+**69 acreditaciones en24h,0/35 categorías cerradas; C03 sigue3/11.** No fue necesario cerrar aplicaciones. Suites, Fast y Full omitidos por tu instrucción. Goal activo, sin bloqueo ni decisión pendiente tuya. El siguiente panel de música está sellado; su corrección está preparada y revisada, aún sin adoptar ni ejecutar.

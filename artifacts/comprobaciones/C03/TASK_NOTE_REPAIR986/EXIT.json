@@ -1,0 +1,19 @@
+{
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "candidate_manifest_sha256": "3b0d66051ebbbbc9ebcc67a82697b9d0f2429c6282c5fa883b70476ce75b9532",
+  "execution_authorized": true,
+  "utc": "2026-09-11T22:48:02.969893+00:00",
+  "exit_code": 0,
+  "stopped": false,
+  "pins_unchanged": true,
+  "terminal_records": 12,
+  "session_controls_observed": 12,
+  "turn_admissions_observed": 12,
+  "app_cleanup_by_runner": false,
+  "audio_restoration_by_runner": false,
+  "quality_adjudicated": false,
+  "success_count": null,
+  "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-task-note-repair986-profile\\journal\\missions.jsonl",
+  "target_apps_closed_by_guard": false
+}

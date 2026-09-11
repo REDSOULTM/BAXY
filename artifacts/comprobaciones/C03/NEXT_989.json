@@ -1,0 +1,466 @@
+{
+  "schema": "c03-next989-handoff-v1",
+  "utc": "2026-09-11T22:55:02.900856+00:00",
+  "goal_status": "active",
+  "objective_file": "C:/Users/usuario/.codex/attachments/310753b7-9a38-4a57-951e-007fdcf7693a/goal-objective.md",
+  "objective_sha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
+  "source_candidate": 985,
+  "source_commit": "2121245f8eebd5c024144daf4ec76b085a3bcd7d",
+  "source_pins": {
+    "src/baxy_mind/__main__.py": "5bcad8decc873aff9e77846bc59d03152937fcc55ca9edc83eff9117a7f01d9a",
+    "src/baxy_mind/llm.py": "a4e5721f2a3b651ee201506eefb252d1a46e0e666e6dd82e77ffe52da3b600bf",
+    "src/baxy_mind/effect_intent.py": "e078c1438403548e61f490e694371cc074bda5acfac8fe42905a4e4f65ce98e1"
+  },
+  "registry_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-survey-requirements336-private\\requirements.jsonl",
+  "registry_sha256": "40c530c681cb18b03cc46b7f1217757d46c80f8a2666fec59fae4cc611dd1108",
+  "counts": {
+    "utc": "2026-09-11T22:55:02.900856+00:00",
+    "covered": 97,
+    "open": 645,
+    "not_applicable": 0,
+    "total": 742,
+    "closed_categories": 0,
+    "total_categories": 35,
+    "covered_updated_last_24h": 69,
+    "updated_recent_ids": [
+      "H0017",
+      "H0020",
+      "H0025",
+      "H0026",
+      "H0035",
+      "H0044",
+      "H0056",
+      "H0070",
+      "H0086",
+      "H0087",
+      "H0090",
+      "H0132",
+      "H0133",
+      "H0158",
+      "H0166",
+      "H0169",
+      "H0194",
+      "H0207",
+      "H0233",
+      "H0258",
+      "H0267",
+      "H0280",
+      "H0292",
+      "H0310",
+      "H0338",
+      "H0353",
+      "H0361",
+      "H0364",
+      "H0370",
+      "H0375",
+      "H0383",
+      "H0384",
+      "H0397",
+      "H0402",
+      "H0406",
+      "H0409",
+      "H0413",
+      "H0469",
+      "H0470",
+      "H0471",
+      "H0477",
+      "H0490",
+      "H0501",
+      "H0503",
+      "H0505",
+      "H0512",
+      "H0524",
+      "H0538",
+      "H0553",
+      "H0557",
+      "H0577",
+      "H0597",
+      "H0599",
+      "H0622",
+      "H0625",
+      "H0633",
+      "H0644",
+      "H0649",
+      "H0650",
+      "H0669",
+      "H0672",
+      "H0678",
+      "H0684",
+      "H0688",
+      "H0690",
+      "H0710",
+      "H0725",
+      "H0729",
+      "H0736"
+    ],
+    "confirmed_new_grants_last_24h": 69,
+    "first_grant_date_not_distinguished_for_recent_ids": [],
+    "categories": [
+      {
+        "category": "apps_open",
+        "label": "Abrir aplicaciones",
+        "total": 54,
+        "covered": 14,
+        "open": 40,
+        "not_applicable": 0
+      },
+      {
+        "category": "music",
+        "label": "Música",
+        "total": 39,
+        "covered": 0,
+        "open": 39,
+        "not_applicable": 0
+      },
+      {
+        "category": "web_navigation_search",
+        "label": "Navegación y búsqueda web",
+        "total": 46,
+        "covered": 10,
+        "open": 36,
+        "not_applicable": 0
+      },
+      {
+        "category": "clarification_unresolved_input",
+        "label": "Entrada incompleta, ruido y control de diálogo",
+        "total": 34,
+        "covered": 0,
+        "open": 34,
+        "not_applicable": 0
+      },
+      {
+        "category": "knowledge_reasoning",
+        "label": "Conocimiento, razonamiento y creatividad verbal",
+        "total": 37,
+        "covered": 3,
+        "open": 34,
+        "not_applicable": 0
+      },
+      {
+        "category": "files",
+        "label": "Archivos y carpetas",
+        "total": 32,
+        "covered": 0,
+        "open": 32,
+        "not_applicable": 0
+      },
+      {
+        "category": "messaging",
+        "label": "Mensajería",
+        "total": 31,
+        "covered": 0,
+        "open": 31,
+        "not_applicable": 0
+      },
+      {
+        "category": "software_installation",
+        "label": "Instalar y desinstalar software",
+        "total": 31,
+        "covered": 0,
+        "open": 31,
+        "not_applicable": 0
+      },
+      {
+        "category": "audio_volume",
+        "label": "Audio y volumen",
+        "total": 51,
+        "covered": 21,
+        "open": 30,
+        "not_applicable": 0
+      },
+      {
+        "category": "timers_reminders_calendar",
+        "label": "Alarmas, recordatorios, tareas y agenda",
+        "total": 38,
+        "covered": 8,
+        "open": 30,
+        "not_applicable": 0
+      },
+      {
+        "category": "system_hardware_status",
+        "label": "Estado de hardware y sistema",
+        "total": 40,
+        "covered": 11,
+        "open": 29,
+        "not_applicable": 0
+      },
+      {
+        "category": "video_streaming",
+        "label": "Vídeo y series",
+        "total": 26,
+        "covered": 0,
+        "open": 26,
+        "not_applicable": 0
+      },
+      {
+        "category": "conversation",
+        "label": "Conversación social y ayuda general",
+        "total": 31,
+        "covered": 9,
+        "open": 22,
+        "not_applicable": 0
+      },
+      {
+        "category": "ui_interaction",
+        "label": "Interacción dentro de aplicaciones",
+        "total": 22,
+        "covered": 0,
+        "open": 22,
+        "not_applicable": 0
+      },
+      {
+        "category": "clock",
+        "label": "Hora y fecha",
+        "total": 23,
+        "covered": 3,
+        "open": 20,
+        "not_applicable": 0
+      },
+      {
+        "category": "network_bluetooth",
+        "label": "Red y Bluetooth",
+        "total": 21,
+        "covered": 1,
+        "open": 20,
+        "not_applicable": 0
+      },
+      {
+        "category": "windows_close",
+        "label": "Cerrar aplicaciones y ventanas",
+        "total": 20,
+        "covered": 0,
+        "open": 20,
+        "not_applicable": 0
+      },
+      {
+        "category": "screen_vision",
+        "label": "Pantalla, captura e interpretación visual",
+        "total": 19,
+        "covered": 0,
+        "open": 19,
+        "not_applicable": 0
+      },
+      {
+        "category": "brightness_display",
+        "label": "Brillo y pantalla",
+        "total": 17,
+        "covered": 0,
+        "open": 17,
+        "not_applicable": 0
+      },
+      {
+        "category": "web_current_information",
+        "label": "Información web actual",
+        "total": 17,
+        "covered": 0,
+        "open": 17,
+        "not_applicable": 0
+      },
+      {
+        "category": "windows_arrangement",
+        "label": "Organizar ventanas y pestañas",
+        "total": 13,
+        "covered": 0,
+        "open": 13,
+        "not_applicable": 0
+      },
+      {
+        "category": "windows_status",
+        "label": "Estado de ventanas y aplicaciones",
+        "total": 14,
+        "covered": 1,
+        "open": 13,
+        "not_applicable": 0
+      },
+      {
+        "category": "assistant_identity_capabilities",
+        "label": "Identidad y capacidades del asistente",
+        "total": 19,
+        "covered": 7,
+        "open": 12,
+        "not_applicable": 0
+      },
+      {
+        "category": "notes",
+        "label": "Notas",
+        "total": 12,
+        "covered": 0,
+        "open": 12,
+        "not_applicable": 0
+      },
+      {
+        "category": "personal_memory",
+        "label": "Memoria personal",
+        "total": 10,
+        "covered": 0,
+        "open": 10,
+        "not_applicable": 0
+      },
+      {
+        "category": "email",
+        "label": "Correo",
+        "total": 6,
+        "covered": 0,
+        "open": 6,
+        "not_applicable": 0
+      },
+      {
+        "category": "game_library_navigation",
+        "label": "Bibliotecas y fichas de juegos",
+        "total": 6,
+        "covered": 0,
+        "open": 6,
+        "not_applicable": 0
+      },
+      {
+        "category": "contacts",
+        "label": "Contactos",
+        "total": 5,
+        "covered": 0,
+        "open": 5,
+        "not_applicable": 0
+      },
+      {
+        "category": "development_execution",
+        "label": "Desarrollo y ejecución de comandos",
+        "total": 5,
+        "covered": 0,
+        "open": 5,
+        "not_applicable": 0
+      },
+      {
+        "category": "clipboard",
+        "label": "Portapapeles",
+        "total": 3,
+        "covered": 0,
+        "open": 3,
+        "not_applicable": 0
+      },
+      {
+        "category": "negative_app_constraints",
+        "label": "Restricciones negativas de apertura",
+        "total": 4,
+        "covered": 1,
+        "open": 3,
+        "not_applicable": 0
+      },
+      {
+        "category": "system_power",
+        "label": "Energía del sistema",
+        "total": 3,
+        "covered": 0,
+        "open": 3,
+        "not_applicable": 0
+      },
+      {
+        "category": "document_image_creation",
+        "label": "Crear documentos y editar imágenes",
+        "total": 2,
+        "covered": 0,
+        "open": 2,
+        "not_applicable": 0
+      },
+      {
+        "category": "web_read_summary",
+        "label": "Leer y resumir páginas web",
+        "total": 2,
+        "covered": 0,
+        "open": 2,
+        "not_applicable": 0
+      },
+      {
+        "category": "process_status",
+        "label": "Procesos",
+        "total": 9,
+        "covered": 8,
+        "open": 1,
+        "not_applicable": 0
+      }
+    ],
+    "requirements_sha256": "40c530c681cb18b03cc46b7f1217757d46c80f8a2666fec59fae4cc611dd1108",
+    "registry_sha256": "40c530c681cb18b03cc46b7f1217757d46c80f8a2666fec59fae4cc611dd1108",
+    "classification_source": "SURVEY_TAXONOMY846.json",
+    "latest_adjudications": [],
+    "equal_maximum_open_next_selection": "Apps40 conditions957; music39 next987/988/989; web36; agenda30 with8 newly covered. Prepared989 targets current playback read, no replay of uncertain music962. Source985 current;988 pending root adoption.",
+    "latest_product_run": {
+      "batch": 986,
+      "executed": 12,
+      "passed": 7,
+      "failed": 5,
+      "coverage_added": 4,
+      "exit_code": 0
+    }
+  },
+  "next_action": "Root apply reviewed988 patch, commit/push source, then build989 runner from986 normal transport and seal current actual HEAD/source manifest. Run989, adjudicate both literals immediately. No tests/Fast/Full. No build needed for Python-only change.",
+  "pending_patch": {
+    "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-media-recovery988-proposal\\repair.patch",
+    "sha256": "271a9a3176d71e7bca492f8e74cd843030b06ab98e1551a93e481ceda4407952",
+    "report": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-media-recovery988-proposal\\REPORT.md",
+    "report_sha256": "43272b9c3b52c4314aa5eb6b2c6e9745762fb378995456719ca06777a4125332",
+    "root_review": "faa73c: bounded existing failure reason/stage handles owned __main__ frame; media recovery uses actual playback state, existing factual guard remains. No arbitrary exception text captured. Not adopted or executed.",
+    "expected_after": {
+      "src/baxy_mind/llm.py": "977106f54aa79a75a723daed4bae064b3f5e3ae1b153cf6252fd4f0834da500f",
+      "src/baxy_mind/__main__.py": "65b80de65e0c28ecb445fba8a84ff7625c2adc71fd8c36d7056187a3e55564c2"
+    }
+  },
+  "panel": {
+    "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-media-status989-proposal",
+    "seal_sha256": "a7502201edf1211588831c51ce6cb6015c9fd6fe50f3a2639985b71a050cffed",
+    "cases": 11,
+    "literals": 2,
+    "failed_variants": 2,
+    "new_variants": 2,
+    "boundaries": 5,
+    "wire_lines": 22,
+    "execution_authorized": false,
+    "runner_prepared": false
+  },
+  "diagnosis987": {
+    "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-media-next987-proposal\\DIAGNOSIS.md",
+    "sha256": "b7d7e7a95a3dbcd0cd157b9cabc253fb48cf35bb6acef7d4e66d10b8acfa1ba6",
+    "limitation": "EN970 has PlannerContractError class only, precise location not retained.988 records stable source location in existing audit; does not claim to repair unknown EN cause."
+  },
+  "runtime": {
+    "manifest": "C:/Users/usuario/AppData/Local/BAXYRuntime/mind-runtime-v1.json",
+    "manifest_sha256": "13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed",
+    "python": "C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe",
+    "flags": [
+      "-B",
+      "-X",
+      "utf8"
+    ],
+    "template_runner": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-task-note-repair986-proposal\\runner.py",
+    "template_manifest": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-task-note-repair986-private\\CANDIDATE_AUTHORIZED.json",
+    "manifest_sha256_template": "3b0d66051ebbbbc9ebcc67a82697b9d0f2429c6282c5fa883b70476ce75b9532",
+    "source_count": 584,
+    "binary_count": 18,
+    "runtime_count": 5,
+    "build": "949 effective binaries; no new model/backend campaign",
+    "guard": "4000MiB initial free,768MiB minimum,GPU3800MiB,wall900s,turn120s; one GPU root only",
+    "parameters": "prepare/run --seal-sha256 --expected-head --candidate-manifest --candidate-manifest-sha256; run adds --preparation-sha256"
+  },
+  "preserved_effects": {
+    "alarms978": "Nine created:5future canceled exact,4expired retained with noNextRun/.fired/result0.906older untouched.",
+    "alarms983": "Eleven created then all canceled exact.910baseline identities untouched. No alarm pending from983.",
+    "notes_tasks": "975:2tasks1note;980:3tasks4notes;986:2tasks5notes. Preserve profiles/journals; never duplicate in these profiles because prose failed.",
+    "uncertain": {
+      "Spotify962": "inv88672a39-9448-4096-accb-10d3f48873f8,spotify_exact_result_not_found,effectMayHaveOccurredtrue; no blind replay/close. Current paused status does not resolve past.",
+      "CalculatorH0183": "inv3cb73ca5-77ab-4802-8f56-8fe73b526ba8",
+      "SettingsH0706": "inv380e0e5d-3242-4759-b7c6-00b2efa5396a",
+      "ExplorerH0151": "invb125b87e-692a-4715-a73c-c3b93aa3d92c",
+      "Steam/Discord": "Prior uncertainty retained. Nine Steam rows need6000MiB and target reconciliation; source957 partition remains authoritative."
+    }
+  },
+  "temporal_open": "H0100/H0523 useful983 but strict millisecond bracket failed by0.451/0.127s. Existing __main__.py5205 truncates microseconds. Keep open; future sealed temporal criterion must represent actual precision explicitly. No repeated full panel, no product rounding change merely to satisfy bad measurement.",
+  "worktrees": {
+    "reusable": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-alarm-compose982-worktree",
+    "status": "Working files effect985 plus llm/main988; patch988 excludes already adopted982/985. Root canonical remains985. Previous979 worktree remains with preserved patch; no active agents/GPU at checkpoint."
+  },
+  "owner_policy": "No automated tests/Fast/Full. Actual sealed product runs and factual credits retained. Root sole canonical/GPU/registry/commit writer, max2 external agents. Permission to close apps persists; preserve unsaved work. H0675/OCR/newproviders parked; new infra only≥10open after existing mechanisms.3negative and18unmarked remain limits.",
+  "machine_check": {
+    "collection": "e5b174",
+    "free_ram_mib": 4994,
+    "product_core_llama_dotnet_testhost_running": false,
+    "main_commit": "5f572ee1b48cb5e2543ee5e06510e51057c9c845"
+  }
+}
