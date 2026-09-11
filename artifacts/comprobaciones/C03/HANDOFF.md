@@ -1,4 +1,17 @@
-# Relevo C03 — vigente después de963
+# Relevo C03 — vigente después de966
+
+89/742covered,653open,0NA;61nuevos24h,0/35categorías,C03 3/11. RegistroSHAee727191d31f0f34408a8d81ef4675b41db12f97e840c9cd03f546e5527f964d. Última fuente961 c1c796096ce81319cdd9fe8419282171f5eeb3c1;HEAD2f673741 previo a publicar nueva evidencia. Build949sin cambios, no pruebas/Fast/Full por orden del dueño. Goal activo, sin decisiones del dueño. No procesos GPU/build activos tras966.
+
+965/966 hechos y hashes en CHECKPOINT y ROOT de MUSIC_STATUS965/SYSTEM_READ966.9650/4;96615/25,+9créditos escritosal adjudicarb9b476,UTC21:44:42.906288. No repetir panelescompletos. H0442 errorgigabits; demásfallosvariantes/2límites. Variantes pertinentes: dosdiscoactuales; GPUactual966-gpu-02+gpu-identity-en772 también pide VRAM.772read SHAef7760c1d5734bf08e4f4181ec0908df761e987d19047eaca781c26d55039a8b, adjud9fae1d2106e22cc5783c7bf262d58320da688597e99d53a0302709ad8096977b. No usar gpu-usage-es como par identidad.
+
+Próximo969: agente apps_intent852 repara SOLO effect_intent.py/llm.py en C:/Users/usuario/AppData/Local/BAXY/C03-media-status969-worktree, rama codex/c03-media-status969 creada805fc5 recogida799b71. Fuente aún no adoptada. DIAGNOSIS967 SHA7e5a023d6b6bb613d4fa6316d73d2fd27253c2e8c7de4b3ff9bb586ef35aeb8d: title exige nota/name incluso canción; drafts contradicen paused; grounding retira variantes. Revisión raíz debe abarcar ambos, no retirar sólo veto.
+
+970 ya sellado carpeta C03-media-status970-proposal: SHA65691f0619a66fbc82055d1ee41cb70de5389c797ceaefbba93da9c634e7f034,9casos18wire (4fallidos965 exactos+5límites), mapa marca2failed_variant_reexecution pero panel conserva originalkind. Registro snapshot965319c33... no es actual;selectedrowsH0224/H0543 no cambiaron tras966. Raíz crear runner/manifest actuales antesejecución. Panel/expectativas no se editan. prepare934 inactivo tras970.
+
+Ordenapps40condiciones957,música39(969/970),agenda38PLAN968 SHA7ac454b81817950f93c357a4c2ca8d76350def51583b86b993e7f566e1ddc054 ROWS92d2e9e03331476605f46a57c4b4d876c47bd2797b515ead47cebaaf14b568a7,web36,sistema29. Agenda9alarmas requieren notification.diagnose actual y pin script juntoAPP_EXE, tiempos derivadosproducto,perfilprivado y cancelación exactapropia; no fueron creadas. Alternativa4tareas. No fabricarfecha/sonódeprogramación.
+
+
+## Herencia anterior963 — contexto conservado; cabecera966 manda
 
 Goal activo, no bloqueado. Raíz única escritora/GPU/commit en Goal-c03; main intacto. Usuario omite suites/Fast/Full; mantiene ejecuciones reales selladas, crédito factual y variantes. Permiso persistente para cerrar apps si falta RAM, conservando trabajo no guardado. No pedirlo otra vez. BAXY cerrado para uso manual; máximo2secundarios activos, externos, sinGPU/tests/canónico/registro.
 

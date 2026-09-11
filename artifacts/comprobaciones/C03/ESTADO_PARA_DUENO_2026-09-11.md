@@ -1,18 +1,16 @@
 # Estado para el dueño — 11 de septiembre
 
-**80/742 cubiertos, 662 abiertos y 0 no aplican. Este tramo añadió 2 créditos.** BAXY ya ejecutó las dos búsquedas pendientes en Opera GX y respondió de acuerdo con las páginas de resultados observadas. Cada crédito tiene su literal actual y dos variantes pertinentes aprobadas.
+**89/742 cubiertos,653abiertos,0no aplican. Este tramo añadió9créditos:** cuatro consultas de disco y cinco de tarjeta gráfica. Se ejecutaron los literales actuales y se comprobaron dos variantes pertinentes por conducta.
 
-También corregí que pidiera otra aclaración cuando ya se había indicado el artista. Ahora reconoce Daft Punk y confirma la reproducción solicitada. Spotify se abrió, pero no se pudo verificar que reprodujera música: BAXY lo dijo y ese requisito sigue abierto. Los 17 casos pendientes de esa tanda no se repitieron ni se dieron por fallidos.
+La tanda de hardware tuvo15casos útiles y10fallidos de25. Una respuesta dijo gigabits donde correspondían gigabytes; varias variantes negaron capacidades disponibles. Los fallos quedan abiertos. Las consultas de música leyeron una pista pausada, pero BAXY no dio una respuesta útil. Está localizada la causa y se prepara la reparación con los mismos casos fallidos.
 
-| Medición | Última tanda web | Última tanda musical |
+| Medición | Hardware966 | Consulta musical965 |
 |---|---:|---:|
-| Pico VRAM | 3573,36 MiB | 3497,56 MiB |
-| Pico RAM | 3477,16 MiB | 1922,23 MiB |
-| Duración | 39 s | 34,703 s |
-| Violaciones de recursos | 0 | 0 |
+| Pico VRAM |3497,56MiB|3497,56MiB|
+| Pico RAM |2513,54MiB|2337,18MiB|
+| Duración |72,438s|54,407s|
+| Violaciones de recursos |0|0|
 
-RAM y VRAM se informan por separado frente a4096MiB. No fue necesario cerrar tus aplicaciones. Tu permiso para liberar RAM sigue vigente, conservando el trabajo sin guardar.
+RAM yVRAM por separado frente a4096MiB. No fue necesario cerrar tus aplicaciones; mantengo tu autorización, conservando trabajo sin guardar.
 
-Ritmo:52 acreditaciones confirmadas en24h;0/35 categorías cerradas y3/11 filas C03 cumplidas. No hay fecha de cierre fiable. Fuente corregida publicada; la evidencia y las cifras se publican al cerrar este tramo. Suites, Fast y Full omitidos por tu instrucción, sin contarlos como aprobados.
-
-Siguiente trabajo preparado: dos lecturas sobre qué está sonando, que pueden ejecutarse sin volver a ordenar reproducción; después, según el número de abiertos, lecturas del sistema. La acción musical incierta conserva su causa y reanudación exacta. Goal activo, sin decisiones pendientes tuyas.
+Ritmo:61acreditaciones confirmadas en24h;0/35categorías cerradas y3/11filas C03 cumplidas. Sin fecha de cierre fiable. Suites,Fast yFull omitidos por tu instrucción, sin contarlos como aprobados. Goal activo,sin decisiones pendientes tuyas. La reproducción anterior deSpotify sigue sin verificarse; la lectura actual no resuelve ese efecto pasado.

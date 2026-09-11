@@ -1,0 +1,19 @@
+{
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "candidate_manifest_sha256": "53026a5803285d65d67e89c60014189852bd85adf1661504b765a4b8af74ba4c",
+  "execution_authorized": true,
+  "utc": "2026-09-11T21:36:34.939986+00:00",
+  "exit_code": 0,
+  "stopped": false,
+  "pins_unchanged": true,
+  "terminal_records": 4,
+  "session_controls_observed": 4,
+  "turn_admissions_observed": 4,
+  "app_cleanup_by_runner": false,
+  "audio_restoration_by_runner": false,
+  "quality_adjudicated": false,
+  "success_count": null,
+  "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music-status965-profile\\journal\\missions.jsonl",
+  "target_apps_closed_by_guard": false
+}

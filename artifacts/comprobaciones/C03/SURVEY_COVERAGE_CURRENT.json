@@ -1,23 +1,28 @@
 {
-  "utc": "2026-09-11T21:22:46.9247046+00:00",
-  "covered": 80,
-  "open": 662,
+  "utc": "2026-09-11T21:47:16.625605+00:00",
+  "covered": 89,
+  "open": 653,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 52,
+  "covered_updated_last_24h": 61,
   "updated_recent_ids": [
     "H0017",
+    "H0025",
+    "H0026",
     "H0035",
     "H0044",
     "H0070",
     "H0086",
+    "H0087",
     "H0132",
     "H0133",
     "H0158",
     "H0166",
     "H0169",
+    "H0194",
+    "H0207",
     "H0233",
     "H0258",
     "H0267",
@@ -27,8 +32,10 @@
     "H0353",
     "H0361",
     "H0364",
+    "H0370",
     "H0375",
     "H0383",
+    "H0384",
     "H0397",
     "H0402",
     "H0406",
@@ -48,7 +55,9 @@
     "H0577",
     "H0597",
     "H0622",
+    "H0625",
     "H0633",
+    "H0644",
     "H0649",
     "H0650",
     "H0669",
@@ -61,7 +70,7 @@
     "H0729",
     "H0736"
   ],
-  "confirmed_new_grants_last_24h": 52,
+  "confirmed_new_grants_last_24h": 61,
   "first_grant_date_not_distinguished_for_recent_ids": [],
   "categories": [
     {
@@ -78,14 +87,6 @@
       "total": 39,
       "covered": 0,
       "open": 39,
-      "not_applicable": 0
-    },
-    {
-      "category": "system_hardware_status",
-      "label": "Estado de hardware y sistema",
-      "total": 40,
-      "covered": 2,
-      "open": 38,
       "not_applicable": 0
     },
     {
@@ -150,6 +151,14 @@
       "total": 51,
       "covered": 21,
       "open": 30,
+      "not_applicable": 0
+    },
+    {
+      "category": "system_hardware_status",
+      "label": "Estado de hardware y sistema",
+      "total": 40,
+      "covered": 11,
+      "open": 29,
       "not_applicable": 0
     },
     {
@@ -345,7 +354,7 @@
       "not_applicable": 0
     }
   ],
-  "requirements_sha256": "2cd24a85e335f8274396d7d13a780407f6c144196af2cce2c6cf051ee3a70e73",
+  "requirements_sha256": "ee727191d31f0f34408a8d81ef4675b41db12f97e840c9cd03f546e5527f964d",
   "classification_source": "SURVEY_TAXONOMY846.json",
   "latest_adjudications": [
     "APP_OPEN847/ROOT_ADJUDICATION.json",
@@ -364,17 +373,19 @@
     "WEB_RESPONSE919/ROOT_ADJUDICATION.json",
     "MUSIC_PANEL958/ROOT_ADJUDICATION.json",
     "MUSIC_TAIL962/ROOT_ADJUDICATION.json",
-    "WEB_TAIL963/ROOT_ADJUDICATION.json"
+    "WEB_TAIL963/ROOT_ADJUDICATION.json",
+    "MUSIC_STATUS965/ROOT_ADJUDICATION.json",
+    "SYSTEM_READ966/ROOT_ADJUDICATION.json"
   ],
-  "equal_maximum_open_next_selection": "Apps40 conditions957; music39 independent current status2 preparedPLAN964 while uncertain Spotify play962 is parked with invocation88672a39-9448-4096-accb-10d3f48873f8. Hardware38 and agenda38 follow; PLAN959 prepares10 hardware readings. Web36 after2 current credits963. No retry uncertain playback or whole panels.",
+  "equal_maximum_open_next_selection": "Apps40 conditions957; music39 pending967 repair/970 sealed read-only retry, then agenda38 PLAN968 readiness and9 alarms, web36 existing failures, system29 after9grants966. No rerun entire panels or uncertain Spotify effect.",
   "latest_product_run": {
-    "batch": 963,
-    "executed": 2,
-    "passed": 2,
-    "failed": 0,
+    "batch": 966,
+    "executed": 25,
+    "passed": 15,
+    "failed": 10,
     "not_executed": 0,
-    "coverage_added": 2,
+    "coverage_added": 9,
     "exit_code": 0
   },
-  "registry_sha256": "2cd24a85e335f8274396d7d13a780407f6c144196af2cce2c6cf051ee3a70e73"
+  "registry_sha256": "ee727191d31f0f34408a8d81ef4675b41db12f97e840c9cd03f546e5527f964d"
 }

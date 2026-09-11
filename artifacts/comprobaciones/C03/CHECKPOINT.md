@@ -1,14 +1,17 @@
 # C03 — cobertura vigente
 
-**80/742 cubiertos, 662 abiertos, 0 no aplican; 52 acreditaciones confirmadas en las últimas24h; 0/35 categorías cerradas.** Matriz C03:3/11. Registro2cd24a85e335f8274396d7d13a780407f6c144196af2cce2c6cf051ee3a70e73; cifras en SURVEY_COVERAGE_CURRENT.json.
+**89/742 cubiertos, 653 abiertos, 0 no aplican; 61 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Matriz C03: 3/11. Registro ee727191d31f0f34408a8d81ef4675b41db12f97e840c9cd03f546e5527f964d; cifras en SURVEY_COVERAGE_CURRENT.json.
 
-El dueño ordenó omitir suites automáticas, Fast y Full; se mantienen ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. Goal activo, sin bloqueo ni decisión pendiente del dueño. Autorizó cerrar aplicaciones para RAM; no fue necesario. Pruebas omitidas no son aprobadas.
+El dueño ordenó omitir suites automáticas, Fast y Full; se mantienen ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. Goal activo, sin bloqueo ni decisión pendiente del dueño. Permiso persistente para cerrar aplicaciones por RAM; no fue necesario. Omitidas no equivale a aprobadas.
 
-Última963:2/2pass,+H0553/H0597 con consulta/URL/navegador verificados y dos variantes pertinentes950.39s,VRAM3573,36/RAM3477,16MiB,0violaciones. Fuente961 publicada c1c796096ce81319cdd9fe8419282171f5eeb3c1. No UI/voz/lectura de contenido ni cierre global de confirmación.
+Última966: 25/25 ejecutados,15pass/10fail,+9créditos. Cuatro literales de disco y cinco GPU, cada uno con lectura actual y dos variantes pertinentes. Disco usa dos variantes actuales; GPU usa966-gpu-02 y gpu-identity-en772 que también pide VRAM, revalidada por SHA, sin repetirla. H0442 sigue abierto:113,9gigabits confunde unidad conGB. Límites conceptual y futuro fallaron.72,438s,VRAM3497,56/RAM2513,54MiB,0violaciones. Fuente961 c1c796096ce81319cdd9fe8419282171f5eeb3c1 ybuild949, sin cambios nuevos de fuente.
 
-962 confirmó que la reparación elimina la aclaración innecesaria de Daft Punk: operación y confirmación exactas. Spotify no verificó reproducción (inv88672a39-9448-4096-accb-10d3f48873f8,efecto incierto); final honesto,0créditos.34,703s,VRAM3497,56/RAM1922,23MiB.17casos de cola no ejecutados por parada ante misión pendiente. No reintentar ni cerrarSpotify a ciegas.958 original:3admitidos,3sinreproducción/17noejecutados; sóloH0068 se repitió tras reparación. Las causas se escribieron al adjudicar.
+965:4/4ejecutados,0pass/4fail,0créditos. Dos lecturas media.status verifican pista pausada, pero composición termina sin respuesta. Variantes retiradas por grounding; causas escritas al adjudicar.54,407s,VRAM3497,56/RAM2337,18MiB.967 localiza veto genérico de título de notas aplicado a canción y dominio demasiado estrecho; eliminar sólo el veto admitiría drafts que dicen sonando pese paused.969 reparación externa en dos Python;970 sellado9casos (4fallidos intactos+5límites), aún sin ejecutar ni adoptar fuente969.
 
-Siguiente por masa elegible: apps40 conserva condiciones957; música39 tiene dos lecturas actuales independientes (PLAN964) mientras reproducción962 queda pendiente de reconciliar/corregirUIA existente. Sistema38 y agenda38 después; PLAN959 ofrece10lecturas previas de disco/GPU para ligarlas al candidato actual. Web36 tras963. Sin nuevos providers, OCR ni infraestructura. H0675 continúa aparcado.
+963 permanece+2búsquedas verificadas.962 artista comprendido/confirmación exacta pero Spotify inv88672a39-9448-4096-accb-10d3f48873f8 efecto incierto: no repetir ni cerrarSpotify a ciegas. Estado pausado actual965 no acredita retrospectivamente962.17casos musicales de cola siguen no ejecutados.
+
+Orden por abiertos:apps40 con condiciones957,música39 con reparación967/969 ypanel970,agenda38 PLAN968 (9alarmas requieren diagnóstico actual y recibo programación),web36,sistema29. Sin nuevos providers/OCR/infraestructura; H0675 aparcado. No repetir966 completo: sólo fallo literal/variantes tras reparación pertinente.
+
 Resumen histórico al cerrar892 — no es el estado vigente:
 
 - 881: 8/8 ejecutados, 6 válidos y 2 fallidos, sin crédito. Ambos literales fueron útiles pero faltaba una variante de cada conducta. Sus causas se escribieron al adjudicar. [Adjudicación](APP_LOOKUP881/ROOT_ADJUDICATION.json).
@@ -33,7 +36,6 @@ Cobertura vigente por categoría de la taxonomía846, ordenada por abiertos:
 |---|---:|---:|---:|---:|
 | Abrir aplicaciones | 54 | 14 | 40 | 0 |
 | Música | 39 | 0 | 39 | 0 |
-| Estado de hardware y sistema | 40 | 2 | 38 | 0 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 0 | 38 | 0 |
 | Navegación y búsqueda web | 46 | 10 | 36 | 0 |
 | Conocimiento, razonamiento y creatividad verbal | 37 | 3 | 34 | 0 |
@@ -42,6 +44,7 @@ Cobertura vigente por categoría de la taxonomía846, ordenada por abiertos:
 | Instalar y desinstalar software | 31 | 0 | 31 | 0 |
 | Mensajería | 31 | 0 | 31 | 0 |
 | Audio y volumen | 51 | 21 | 30 | 0 |
+| Estado de hardware y sistema | 40 | 11 | 29 | 0 |
 | Vídeo y series | 26 | 0 | 26 | 0 |
 | Conversación social y ayuda general | 31 | 9 | 22 | 0 |
 | Interacción dentro de aplicaciones | 22 | 0 | 22 | 0 |
@@ -344,3 +347,6 @@ Fuente954 publicada18437a35b0e1210c16b619c73cbbd7b9ab2ff0bb. Última955:9casos5p
 Cita válida; negación, condición, nombres distintos y referencia ausente no causaron efectos, pero recibieron respuestas inadecuadas. Sesión44746 recogida7a8728exit0,9turnos/9controles,pins íntegros;52,343s,VRAM3497,56MiB/RAM2396,84MiB,cero violaciones. Sin suites/Fast/Full, UI o voz. Chrome yPaint nuevos no se cerraron; Notepad preexistente se conserva. Fuente954 publicada18437a35b0e1210c16b619c73cbbd7b9ab2ff0bb, sólo Python; build949 reutilizado sin cambios.
 
 El tramo añadió7 créditos: H0503, H0044/H0070/H0292/H0736 yH0166/H0512. Siguiente preparación956: música39, doce reproducciones sin plataforma impuesta, diez primeros literales para diagnóstico10+10 si el mecanismo no está probado. PLANd6115e4b0c83f7c377392072be324fc2f711b1ecde0378a166bea1b3cecb2bb6 leídoae3ba0. Antes de sellar, ligar ruta/provider efectivo de media.play.query y evidencia de reproducción/metadatos; catálogo no prueba soporte. No inventar servicio, completar argumentos desde runner ni construir infraestructura nueva. Apps40 sigue primera formalmente:953 deja pendientes bajo exclusiones de identidad/instalación/efectos inciertos; documentar elegibilidad antes de saltar a música. No repetir953/937–939 ni paneles enteros. Goal activo/progreso, ningún permiso pendiente.
+
+
+965/966 adjudicados por raíz: sesiones77867/40136 recogidas68660f/9e449c,exit0 y pinsintactos. ROOT965SHAa775d0469575028aa1187d224fac09120ba621900519c017b0d48f9d2522f55e; ROOT966SHA46c1a85477355f9b4e55a1bd04ff3dd0cd824869e82cf2731b5d51945ce35fff. Grant966b9b476 UTC2026-09-11T21:44:42.906288+00:00: +H0025/H0207/H0384/H0644/H0026/H0087/H0194/H0370/H0625.89/742,653open,0NA;61nuevos24h,0/35categorías. GPU literal en primera persona conserva hecho delPC observado; no atribuye hardware separado al asistente y no se acredita UI/voz. Evidencia772 ligada a su propio candidato, no fresca por herencia.

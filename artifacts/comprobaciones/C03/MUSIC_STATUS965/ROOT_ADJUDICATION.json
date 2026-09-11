@@ -1,0 +1,155 @@
+{
+  "cases": [
+    {
+      "literal": "qué está sonando",
+      "coverage_added": false,
+      "receipt": {
+        "sequence": 4,
+        "timestampUtc": "2026-09-11T21:35:55.128062+00:00",
+        "phase": "completed",
+        "requestId": "9b78161c-5659-483f-92ec-f102392b9b0b",
+        "missionId": "7967346f-a5a5-4d58-89b8-2538a6d64dbe",
+        "invocationId": "22040020-a42d-4095-8f79-975b4ed800b3",
+        "operation": "media.status",
+        "requestFingerprint": "e1e9d271c0e3fed3022a955043b160be4ba986a2f0de73b40b989aa5ec8bca73",
+        "response": {
+          "type": "operation.response",
+          "requestId": "9b78161c-5659-483f-92ec-f102392b9b0b",
+          "missionId": "7967346f-a5a5-4d58-89b8-2538a6d64dbe",
+          "invocationId": "22040020-a42d-4095-8f79-975b4ed800b3",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"media.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"sourceAppUserModelId\":\"SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify\",\"title\":\"Volando - Remix\",\"artist\":\"Mora\",\"playbackStatus\":\"paused\",\"authority\":\"windows_smtc_current_session_read\"}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "sourceAppUserModelId": "SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify",
+            "title": "Volando - Remix",
+            "artist": "Mora",
+            "playbackStatus": "paused",
+            "authority": "windows_smtc_current_session_read"
+          },
+          "errorCode": null
+        }
+      },
+      "verdict": "fail",
+      "case_id": "H0224",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "reason": "The exact literal reached a verified current media.status read: Spotify title Volando - Remix, artist Mora, paused. Product response composition exhausted retries and published no useful answer. Read success alone is not survey coverage."
+    },
+    {
+      "literal": "qué canción está sonando",
+      "coverage_added": false,
+      "receipt": {
+        "sequence": 6,
+        "timestampUtc": "2026-09-11T21:36:05.616788+00:00",
+        "phase": "completed",
+        "requestId": "06545644-ceeb-491e-93c2-d6f51dc06ce6",
+        "missionId": "8b939deb-01cf-4629-b6c7-c226612d2531",
+        "invocationId": "d3dd130a-e612-4575-b6dc-6a34ba6a3cc9",
+        "operation": "media.status",
+        "requestFingerprint": "3e91a6103b2e5dab48fd8cdb917e5937d1d6d70330bf73c4a2fe1a9751b38489",
+        "response": {
+          "type": "operation.response",
+          "requestId": "06545644-ceeb-491e-93c2-d6f51dc06ce6",
+          "missionId": "8b939deb-01cf-4629-b6c7-c226612d2531",
+          "invocationId": "d3dd130a-e612-4575-b6dc-6a34ba6a3cc9",
+          "status": "completed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"media.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"sourceAppUserModelId\":\"SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify\",\"title\":\"Volando - Remix\",\"artist\":\"Mora\",\"playbackStatus\":\"paused\",\"authority\":\"windows_smtc_current_session_read\"}}",
+          "verified": true,
+          "replayed": false,
+          "result": {
+            "version": 1,
+            "sourceAppUserModelId": "SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify",
+            "title": "Volando - Remix",
+            "artist": "Mora",
+            "playbackStatus": "paused",
+            "authority": "windows_smtc_current_session_read"
+          },
+          "errorCode": null
+        }
+      },
+      "verdict": "fail",
+      "case_id": "H0543",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "reason": "The exact literal reached a separate verified current media.status read: Spotify title Volando - Remix, artist Mora, paused. Product response composition exhausted retries and published no useful answer. Read success alone is not survey coverage."
+    },
+    {
+      "literal": "Decime el título y el artista de lo que está sonando ahora.",
+      "coverage_added": false,
+      "receipt": null,
+      "verdict": "fail",
+      "case_id": "music-status965-dev-01",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Quieres que te diga el título y el artista de lo que está sonando ahora?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "reason": "The product asked whether to provide the title and artist already explicitly requested; no media.status invocation and no useful requested observation. Unnecessary clarification fails this read behavior."
+    },
+    {
+      "literal": "Is anything playing right now, and which track is it?",
+      "coverage_added": false,
+      "receipt": null,
+      "verdict": "fail",
+      "case_id": "music-status965-dev-02",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "reason": "The English variant ended in composition_failed/no_response after retries; no media.status invocation or useful current observation. No comprehension or response credit."
+    }
+  ],
+  "session_id": 77867,
+  "execution_head": "2f673741a2491f59cf32c8f1a80b55b77a60274d",
+  "resources": {
+    "utc": "2026-09-11T21:36:34.939986+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2337.17578125,
+    "seconds": 54.40699999999197,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "preparation_sha256": "1cf3fab265c184bd7337bbcb834fe7b537720c8028de6c94427121e77f47bb5c",
+  "passed": 0,
+  "failed": 4,
+  "adjudicator": "root",
+  "coverage_added": 0,
+  "executed": 4,
+  "scope": "Real product conductor; no UI/voice credit. Current paused track does not establish outcome of prior uncertain Spotify invocation88672a39-9448-4096-accb-10d3f48873f8. No playback or target-app close was commanded.",
+  "schema": "c03-music965-root-adjudication-v1",
+  "adjudicated_at_utc": "2026-09-11T21:38:16.7633510Z",
+  "not_executed": 0,
+  "candidate_manifest_sha256": "53026a5803285d65d67e89c60014189852bd85adf1661504b765a4b8af74ba4c",
+  "source_commit": "c1c796096ce81319cdd9fe8419282171f5eeb3c1",
+  "tests_run": false,
+  "exit_code": 0,
+  "seal_sha256": "de56c9410de2c2639a174a29a4404d63b6e128577a2c24b4235e5a59549edaae",
+  "validation_policy": "owner_directed_no_tests",
+  "registry_before_sha256": "2cd24a85e335f8274396d7d13a780407f6c144196af2cce2c6cf051ee3a70e73",
+  "pins_unchanged": true,
+  "collection": "68660f",
+  "runner_sha256": "3a47b25f8970680439aec7e43c49828c02d6fd8d7a8d0503fce6f895d3b7805b"
+}
