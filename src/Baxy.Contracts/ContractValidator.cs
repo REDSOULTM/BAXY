@@ -267,7 +267,7 @@ public static class ContractValidator
             ThrowInvalid("status is unknown");
         }
 
-        RequireText(value.Message, "message");
+        RequireText(value.Message, "message", ProtocolLimits.MaximumOperationResponseMessageChars);
         if (value.Result is { ValueKind: JsonValueKind.Undefined })
         {
             ThrowInvalid("result cannot be undefined");
@@ -391,11 +391,11 @@ public static class ContractValidator
         }
     }
 
-    private static void RequireText(string? value, string fieldName)
+    private static void RequireText(string? value, string fieldName, int maximumLength = MaximumTextLength)
     {
-        if (string.IsNullOrWhiteSpace(value) || value.Length > MaximumTextLength)
+        if (string.IsNullOrWhiteSpace(value) || value.Length > maximumLength)
         {
-            ThrowInvalid($"{fieldName} must be non-empty and at most {MaximumTextLength} characters");
+            ThrowInvalid($"{fieldName} must be non-empty and at most {maximumLength} characters");
         }
     }
 

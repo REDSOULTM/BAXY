@@ -1,0 +1,76 @@
+{
+  "utc": "2026-09-11T11:19:29.1595088Z",
+  "status": "prepared_not_executed",
+  "root_review_chunks": [
+    "7fb3af",
+    "b26dbd",
+    "57344b",
+    "72cbc1",
+    "fb881d",
+    "a9974d"
+  ],
+  "files": [
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-replay843.py",
+      "sha256": "a9a12dc7e069105c02534ce792005d17a896d30921fb665e7fb9dc4e3020963f",
+      "bytes": 6305
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-prepare-projection844.py",
+      "sha256": "4d3181560e42eac61e3c21db1f93ae0c0e49d8570d3e445c4b105c28308433cd",
+      "bytes": 3452
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-app-projection844-proposal/Program.cs",
+      "sha256": "dfe5a95e7c3e129a3a9d09ced239d7a3aaa53e242deac2035a52270258679cc3",
+      "bytes": 11972
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-app-projection844-proposal/Probe.csproj",
+      "sha256": "9fa74575e673db7f51a159d80e8fe40faa85aec444e9def158018c32f84122ba",
+      "bytes": 1395
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-app-projection844-proposal/PLAN.md",
+      "sha256": "8299c5a1000b2b39fedce90992f07933e26eef2f7a8f58632d367d606d683854",
+      "bytes": 5813
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-app-projection844-REVIEW.md",
+      "sha256": "5f917718b9ee495fa7bf23593faa99e9a9c8b2dfec9e529bdc4b1a6cfd855bd6",
+      "bytes": 5974
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-real834-composition-proposal/runner.py",
+      "sha256": "fd0f1a59299973f0ce2aeb11385e12079d86e47be699b1f2546bdf44c35474cf",
+      "bytes": 32221
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-real834-composition-proposal/PLAN.md",
+      "sha256": "3104dafa04369e81565850f6016689738c31fe5bc541f1dda445c1dfe4810528",
+      "bytes": 7868
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-app-open-next-proposal/turns.jsonl",
+      "sha256": "3d71889d09edbd30b50ad79c91b1d39229d793804b048c0c14e719d288953e59",
+      "bytes": 3675
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-app-open-next-proposal/case-map.json",
+      "sha256": "16c237e08d711a8553d986dee3af2cf31e0ad133365ce5263d4dcdffef697552",
+      "bytes": 16312
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-app-open-next-proposal/PLAN.md",
+      "sha256": "0c23721be8f384a11bb18367bb08439f3f7808bd75ecf4621235d1209c6f9225",
+      "bytes": 3417
+    }
+  ],
+  "notes": [
+    "Root revised844 to use strict ProtocolJson and verify all loaded Baxy DLLs and consumed buffers.",
+    "Root linked relative Full pins to absolute844 pins by normalized path/hash equality; fresh OCR requires replayed=false,error=null,no physical clipping.",
+    "Full843 still running. Replay843, projection844 and real834-O have not executed.",
+    "Next application75 exact texts verified against existing frozen panel, no added turns."
+  ],
+  "worktree843_removed": true
+}

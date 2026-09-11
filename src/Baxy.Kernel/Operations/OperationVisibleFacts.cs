@@ -13,7 +13,6 @@ public static class OperationVisibleFacts
 {
     private const int MaximumObservedUtf8Bytes = 8_192;
     private const int MaximumMessageChars = 4_096;
-    public const int MaximumDenseMessageChars = 48_000;
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
@@ -27,8 +26,8 @@ public static class OperationVisibleFacts
         bool processInventory = operation == "system.process.list";
         bool ocrObservation = operation == "ocr.read";
         bool captureObservation = operation is "capture.active.window" or "capture.screenshot";
-        int observedLimit = processInventory || ocrObservation ? MaximumDenseMessageChars : MaximumObservedUtf8Bytes;
-        int messageLimit = processInventory || ocrObservation ? MaximumDenseMessageChars : MaximumMessageChars;
+        int observedLimit = processInventory || ocrObservation ? ProtocolLimits.MaximumOperationResponseMessageChars : MaximumObservedUtf8Bytes;
+        int messageLimit = processInventory || ocrObservation ? ProtocolLimits.MaximumOperationResponseMessageChars : MaximumMessageChars;
         var payload = new JsonObject
         {
             ["kind"] = "operation",

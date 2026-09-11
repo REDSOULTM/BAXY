@@ -24,7 +24,7 @@ internal sealed record OperationResponseProjection(string Message)
             if (operationName == "ocr.read")
             {
                 string message = response.Message.Trim();
-                if (message.Length <= OperationVisibleFacts.MaximumDenseMessageChars)
+                if (message.Length <= ProtocolLimits.MaximumOperationResponseMessageChars)
                     return new OperationResponseProjection(message);
                 // An omitted observation does not change the executed operation's outcome.
                 bool completed = response.Status == OperationStatuses.Completed;
@@ -50,7 +50,7 @@ internal sealed record OperationResponseProjection(string Message)
             // structured facts whole; cutting JSON makes every observation vanish.
             return new OperationResponseProjection(TruncateMessage(response.Message.Trim(),
                 maximumLength: operationName == "system.process.list"
-                    ? OperationVisibleFacts.MaximumDenseMessageChars : MaximumMessageLength));
+                    ? ProtocolLimits.MaximumOperationResponseMessageChars : MaximumMessageLength));
         }
 
         return new OperationResponseProjection(

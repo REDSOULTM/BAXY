@@ -5,6 +5,12 @@ public static class ProtocolVersion
     public const string Current = "baxy.local.v1";
 }
 
+public static class ProtocolLimits
+{
+    // Decoded .NET string length (UTF-16 code units), independent of JSON wire bytes.
+    public const int MaximumOperationResponseMessageChars = 48_000;
+}
+
 public static class ProtocolTypes
 {
     public const string Hello = "hello";

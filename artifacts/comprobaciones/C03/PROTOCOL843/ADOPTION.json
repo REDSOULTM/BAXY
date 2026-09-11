@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-11T11:28:47.386127+00:00",
+  "adopted": true,
+  "candidate": 843,
+  "scope": "Shared dense OperationResponse contract, authenticated persistence/replay and exact App projection. No OCR semantic or application-memory coverage claimed.",
+  "root_owner_passed": 118,
+  "root_owner_failed": 0,
+  "root_owner_skipped": 0,
+  "full_result_sha256": "05e2d308dc3b9bf80a9fd5376539115fe896567c7abdaf7971259cdcda929817",
+  "replay_result_sha256": "e627666d8d6a7146b6303cec3f33381646ec6b79bd71a50e396655a154217dc3",
+  "projection844_result_sha256": "1af4e3e673d660ed7e9b51917728f245ef388f60d98556ce2ef288b9762e48d0",
+  "source_pins_sha256": "2a79567dd5b22be2ccd8ef39b8d284f3a182872f7c7cb39a3e5e0fad3c7a71ce",
+  "H0675_closed": false,
+  "credit_added": 0,
+  "survey": {
+    "covered": 36,
+    "open": 706,
+    "not_applicable": 0
+  },
+  "goal_status": "active"
+}

@@ -41,6 +41,51 @@ public sealed class FileInvocationJournalTests
             new JournalHmacAuthenticator(_authenticationKey));
 
     [Test]
+    public async Task DenseOcrCompletionReopensAndReplaysWithoutExecutingAgain()
+    {
+        OperationRequest request = CreateRequest() with
+        {
+            Operation = "ocr.read",
+            Arguments = JsonSerializer.SerializeToElement(new { captureId = "capture_test" }),
+        };
+        JsonElement observed = JsonSerializer.SerializeToElement(new
+        {
+            text = new string('é', 6000),
+            layout = new { available = true, lines = Array.Empty<object>() },
+        });
+        string message = OperationVisibleFacts.FromOutcome("ocr.read", OperationOutcome.Success(observed));
+        var response = new OperationResponse(
+            ProtocolTypes.OperationResponse, request.RequestId, request.MissionId, request.InvocationId,
+            OperationStatuses.Completed, message, true, false, observed, null);
+        await using (FileInvocationJournal journal = await OpenJournalAsync())
+        {
+            string fingerprint = RequestFingerprint.Compute(request);
+            await journal.RecordStartedAsync(request, fingerprint, CancellationToken.None);
+            await journal.RecordCompletedAsync(request, fingerprint, response, CancellationToken.None);
+        }
+
+        var handler = new CountingHandler("ocr.read");
+        OperationRequest replayRequest = request with { RequestId = Guid.NewGuid().ToString("D") };
+        await using FileInvocationJournal reopened = await OpenJournalAsync();
+        using var engine = new MissionEngine(new OperationRegistry([handler]), reopened);
+        OperationResponse replay = await engine.ExecuteAsync(replayRequest, CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(message.Length, Is.GreaterThan(4096).And.LessThanOrEqualTo(48_000));
+            Assert.That(replay.Message, Is.EqualTo(message));
+            Assert.That(JsonElement.DeepEquals(replay.Result!.Value, observed), Is.True);
+            Assert.That(replay.RequestId, Is.EqualTo(replayRequest.RequestId));
+            Assert.That(replay.MissionId, Is.EqualTo(request.MissionId));
+            Assert.That(replay.InvocationId, Is.EqualTo(request.InvocationId));
+            Assert.That(replay.Status, Is.EqualTo(OperationStatuses.Completed));
+            Assert.That(replay.Verified, Is.True);
+            Assert.That(replay.Replayed, Is.True);
+            Assert.That(handler.ExecutionCount, Is.Zero);
+        });
+    }
+
+    [Test]
     public async Task ReopenReplaysCompletedInvocationWithCurrentRequestId()
     {
         OperationRequest request = CreateRequest();
@@ -973,12 +1018,12 @@ public sealed class FileInvocationJournalTests
                 .RootElement.Clone(),
         };
 
-    private sealed class CountingHandler : IOperationHandler
+    private sealed class CountingHandler(string operation = "note.create") : IOperationHandler
     {
         public int ExecutionCount { get; private set; }
 
         public OperationDefinition Definition { get; } =
-            new("note.create", OperationRisk.Reversible, "Create a local note.");
+            new(operation, OperationRisk.Reversible, "Create a local note.");
 
         public ValueTask<OperationOutcome> ExecuteAsync(
             OperationInvocation invocation,

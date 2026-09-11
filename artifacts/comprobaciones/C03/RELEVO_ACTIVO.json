@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "841 root20pass0skip/Fast0/Release13.06s;55pins unchanged. Real focus skipped because Taskmgr already foreground. Capture1530x948 verified, viewport clips labels/units; maximize failed. OCR completed in journal6532UTF16chars but Core exit70 at protocol4096 limit.843 eight-file protocol repair underway. Survey36/706/0,C03active.",
-  "continuation": "Collect protocol843 patch/red-green, review and integrate, owner/Fast then accumulated Full for shared contract. No more UI effects or repeated maximize/shortcut. Driver capture-previous guard fixed privately. User maximize response pending; two future fresh observations after transport repair before real composition.",
+  "checkpoint": "843 adoptado en su alcance de transporte: Full0 recogido c329d6 (.NET4754pass/1omisión agregada; Python12907pass/3omisiones/466subpruebas/658,25s),60 pins intactos. Replay real0 recupera6532UTF16 sin OCR nuevo ni cambio del diario; proyecciónApp8440 conserva texto/layout/hash exactos. Fuente8archivos, dueñas118pass0skip. Sin modelo ni créditoH0675. Encuesta36/706/0, matriz3/11; C03 EN_CURSO.",
+  "continuation": "Publish843 with owners/Full/replay/projection evidence. Fresh capture/OCR and private oracle before834-O; original834-E remains separate. No repeat Full843, replay843, probe preparation scripts or removedworktrees. Apps75 inputs prepared.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,7 +34,7 @@
   },
   "pendingOwnerClarification": "Maximize Task Manager and leave Processes view; asked once after product window.maximize failed. Await reply; continue protocol843 independently.",
   "publishedSourceCommit": "f70ea94c7ef04a2b623cf3be5c1bfd2218d59385",
-  "workStatus": "protocol843_external_repair",
+  "workStatus": "protocol843_adopted_fresh_observation_pending",
   "goalStatusNote": "All C03 remains active;36covered/706open and49/50 process panel; generic screen prerequisites not H0675 completion.",
   "previousGoalTurnClassification": "progress",
   "publishedEvidenceCommit": "c5d0f476facd538b1226c5d3c4c0ced22a1ee7ec",
@@ -54,18 +54,18 @@
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
   "ownerMethodology": "Model-specific native template and documented presets first, same complete cases for every arm; add BAXY one layer at a time and attribute first lost behavior. API use alone does not imply native isolation. Optimize whole categories without quality loss.",
   "lastValidation": {
+    "candidate": 843,
     "status": "complete",
-    "candidate": 839,
     "exit_code": 0,
-    "sessionId": 43122,
-    "collectionChunk": "75af48",
-    "receipt": "OBSERVATION839/FULL_EXIT.json",
-    "result": "OBSERVATION839/FULL_RESULT.json",
+    "sessionId": 33623,
+    "collectionChunk": "c329d6",
+    "receipt": "PROTOCOL843/FULL_EXIT.json",
+    "result": "PROTOCOL843/FULL_RESULT.json",
     "dotnet": {
-      "passed": 4735,
+      "passed": 4754,
       "failed": 0,
       "skipped_aggregate": 1,
-      "total": 4736
+      "total": 4755
     },
     "dotnet_opt_in_not_disjoint": 16,
     "python": {
@@ -73,11 +73,13 @@
       "failed": 0,
       "skipped": 3,
       "subtests_passed": 466,
-      "duration_seconds": 653.33,
-      "duration_log": "0:10:53",
-      "log_line": 261,
-      "summary_exact": "12907 passed, 3 skipped, 466 subtests passed in 653.33s (0:10:53)",
-      "subtest_accounting": "466 passed subtests are reported separately, not added to 12907 passed tests."
+      "duration_seconds": 658.25,
+      "duration_display": "0:10:58",
+      "summary_line": 261,
+      "summary_text": "12907 passed, 3 skipped, 466 subtests passed in 658.25s (0:10:58)",
+      "failed_basis": "No failures in the final pytest summary; python-tests stage and Full gate passed; exit code 0.",
+      "subtests_counted_separately": true,
+      "skip_reasons": "Not printed in this log; no reason invented and no skip counted as pass."
     },
     "source_pins_unchanged": true
   },

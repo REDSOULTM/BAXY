@@ -198,11 +198,17 @@ public sealed class C03OcrObservationProjectionTests
     {
         using JsonDocument document = JsonDocument.Parse(observation.ToJsonString());
         string facts = OperationVisibleFacts.FromOutcome(operation, OperationOutcome.Success(document.RootElement.Clone()));
-        return OperationResponseProjection.Create(Response(facts), operation).Message;
+        OperationResponse response = Response(facts) with { Result = document.RootElement.Clone() };
+        byte[] wire = ProtocolJson.SerializeBoundedToUtf8Bytes(response, 1024 * 1024);
+        OperationResponse restored = ProtocolJson.DeserializeResponse(wire);
+        Assert.That(restored.Message, Is.EqualTo(facts));
+        Assert.That(JsonElement.DeepEquals(restored.Result!.Value, document.RootElement), Is.True);
+        return OperationResponseProjection.Create(restored, operation).Message;
     }
 
     private static OperationResponse Response(string message) => new(
-        ProtocolTypes.OperationResponse, "request", "mission", "invocation",
+        ProtocolTypes.OperationResponse, Guid.NewGuid().ToString("D"),
+        Guid.NewGuid().ToString("D"), Guid.NewGuid().ToString("D"),
         OperationStatuses.Completed, message, true, false, null, null);
 
     private static JsonObject Observation(int lineCount, int wordsPerLine, int wordLength)

@@ -1,0 +1,68 @@
+{
+  "root_execution_chunk": "8c24c0",
+  "root_review_chunk": "26c0b3",
+  "exit_code": 0,
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-app-projection844-private\\replay-result",
+  "metadata_sha256": "45c0264e20e6d2f0a9ad47270cfe5bc6bd21d811f8e11784f0adcc3d9869c45e",
+  "receipt_sha256": "325a0f327c65659209a0b10d2ebfeafc2f92ec7c15a993c20605308e93807e22",
+  "metadata": {
+    "Status": "completed",
+    "Verified": true,
+    "core": {
+      "utf16Length": 6532,
+      "utf8Bytes": 6535,
+      "utf8Sha256": "5eba86f6fb4960c9886364c222847e94dff6a1e332e55184bf6dc6f63cf79cb7"
+    },
+    "app": {
+      "utf16Length": 6532,
+      "utf8Bytes": 6535,
+      "utf8Sha256": "5eba86f6fb4960c9886364c222847e94dff6a1e332e55184bf6dc6f63cf79cb7"
+    },
+    "coreObserved": {
+      "utf16Length": 6443,
+      "utf8Bytes": 6443,
+      "utf8Sha256": "99e533aef2d3a345bb4bb98f38b1ccc8e42db75f7980b929fd72c2847ee10fcf"
+    },
+    "appObserved": {
+      "utf16Length": 6443,
+      "utf8Bytes": 6443,
+      "utf8Sha256": "99e533aef2d3a345bb4bb98f38b1ccc8e42db75f7980b929fd72c2847ee10fcf"
+    },
+    "responseBytes": 18716,
+    "responseSha256": "794e021dda9e5e4fc12c06804898c6a188d61e37fe2a87343e1fecd7a26c4219",
+    "comparisons": {
+      "text": {
+        "resultPresent": true,
+        "corePresent": true,
+        "appPresent": true,
+        "resultToCoreEqual": true,
+        "coreToAppEqual": true,
+        "resultToAppEqual": true
+      },
+      "layout": {
+        "resultPresent": true,
+        "corePresent": true,
+        "appPresent": true,
+        "resultToCoreEqual": true,
+        "coreToAppEqual": true,
+        "resultToAppEqual": true
+      },
+      "imageSha256": {
+        "resultPresent": true,
+        "corePresent": true,
+        "appPresent": true,
+        "resultToCoreEqual": true,
+        "coreToAppEqual": true,
+        "resultToAppEqual": true
+      }
+    },
+    "qualityAdjudicated": false
+  },
+  "program_sha256": "8876c7e4db3ddd3ea4dd5c3de08bb6e6c77646189d0ffc336c97a26959fb0b95",
+  "build_final_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-app-projection844-private\\BUILD_FINAL.json",
+  "build_final_sha256": "837c3a5f0bf56697fa924a9213fb67d83075b1cda520fafd6a5b7e041c83bf0c",
+  "scope": "Real App projection of an authenticated Core replay; exact text/layout/imageHash retention. Not fresh OCR, App-to-Mind, UI or model.",
+  "earlier_private_builds": "Initial missing System.IO failed; next build passed with nullable filename warning; final build0 warnings0 errors. All logs retained.",
+  "H0675_closed": false,
+  "credit_added": 0
+}

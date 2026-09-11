@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-11T10:59:53.199826+00:00",
+  "exit_code": 0,
+  "source_pins_unchanged": true,
+  "source_pins_sha256": "2a79567dd5b22be2ccd8ef39b8d284f3a182872f7c7cb39a3e5e0fad3c7a71ce",
+  "log_sha256": "6cd9e144e7618124c2ec642e1e99f13d235819d52d5b78a3f6df66dbf8db7b47",
+  "private_log": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-protocol843-private\\owners_integration.log",
+  "command": [
+    "C:/Users/usuario/.dotnet/dotnet.exe",
+    "test",
+    "tests/Baxy.Integration.Tests/Baxy.Integration.Tests.csproj",
+    "-c",
+    "Release",
+    "--nologo",
+    "-v:minimal",
+    "--filter",
+    "FullyQualifiedName~C03OcrObservationProjectionTests|FullyQualifiedName~CoreJsonlProtocolTests",
+    "-p:UseSharedCompilation=false",
+    "-nodeReuse:false"
+  ],
+  "adopted": false
+}
