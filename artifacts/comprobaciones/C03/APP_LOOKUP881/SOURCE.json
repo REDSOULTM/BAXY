@@ -1,0 +1,30 @@
+{
+  "utc": "2026-09-11T15:41:58.0583160Z",
+  "private_runner": "C:/Users/usuario/AppData/Local/BAXY/C03-app-lookup881-runner-proposal/runner.py",
+  "runner_sha256": "2bfebcf0d9bf6345d37779a62cc7ee4bd97fcc6b865f6c4b90466dbdedec48df",
+  "private_report": "C:/Users/usuario/AppData/Local/BAXY/C03-app-lookup881-runner-proposal/REPORT.md",
+  "report_sha256": "a491a43c5c3ef6d7a6fe28c5a9733bd670d320898c98dab9f057f1173c6dce85",
+  "panel_seal_sha256": "e9f1885eb5dea73eb5d76625352d9f39046954c7f2abe82d4d4f33952fadce04",
+  "root_review_chunks": [
+    "f91162",
+    "06ef4d",
+    "cd61ca",
+    "b76d30"
+  ],
+  "counts": {
+    "cases": 8,
+    "boundaries": 2,
+    "wire": 16,
+    "variants": 4,
+    "literals": 2
+  },
+  "status": "external_runner_manually_reviewed_not_executed",
+  "candidate_manifest_created": false,
+  "execution_authorized": false,
+  "tests_run": false,
+  "preparation_executed": false,
+  "product_executed": false,
+  "coverage_added": 0,
+  "change": "Reuse869 sealed data and inherited resource/admission/identity guards. Require explicit immutable current source/runtime/binary/runner manifest with tests_run:false. Remove false860 validation attribution. Prepare reads already prepared binaries only; run checks main fingerprint before launching.",
+  "limitation": "Syntax and runtime untested. Root manifest/preparation receipts must record real existing output preparation, never invented zero exits. Current fingerprint unobserved; no future build silently authorized. Owner clarification about product executions remains pending."
+}

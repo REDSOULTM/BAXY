@@ -1,0 +1,19 @@
+{
+  "utc": "2026-09-11T15:41:58.1157233Z",
+  "private_report": "C:/Users/usuario/AppData/Local/BAXY/C03-app-identity882-diagnosis/REPORT.md",
+  "report_sha256": "629ce5c1b4c488aedbb97223c76e1a51639e3cadfff5388bb42e48cd972e72d5",
+  "root_review_chunk": "a46c4a",
+  "observed_cases": 11,
+  "shared_presentation_path_cases": [
+    "H0227",
+    "H0289",
+    "H0503",
+    "H0558"
+  ],
+  "common_internal_cause_proven": false,
+  "source_integrated": false,
+  "tests_run": false,
+  "product_executed": false,
+  "coverage_added": 0,
+  "continuation": "883 proposes native missing-appId clarification only on precise identity-resolution veto, using existing schema-grounded generator and zero effects. Other seven have different/lacking observed causes."
+}

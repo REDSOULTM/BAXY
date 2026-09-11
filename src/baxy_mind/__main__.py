@@ -6227,11 +6227,46 @@ def _prepare_turn_result(
             llm,
             application_names,
         )
-        question = (
-            _domain_confirmation_question(objective, confirmable, tool_by_name, llm)
-            if confirmable
-            else ""
+        app_evidence = (
+            explicit_intent.evidence
+            if explicit_intent is not None
+            and explicit_intent.operations == effects_before_domain_grounding
+            else (objective,)
         )
+        if (
+            effects_before_domain_grounding == ("app.open",)
+            and unresolved_compound_effects is None
+            and confirmable == ("app.open",)
+            and effect_request_is_authoritative(objective)
+            and len(app_evidence) == 1
+            and isinstance(app_evidence[0], str)
+            and app_evidence[0].strip()
+            and resolve_application_catalog_app_id(app_evidence[0], application_names)
+            is None
+        ):
+            # This is the same single identity operand that withheld execution.
+            # Ask for the missing target, not permission to repeat its opening.
+            try:
+                question = str(
+                    llm.formulate_missing_argument_question(
+                        objective,
+                        "The requested application has no uniquely resolved catalog "
+                        "identity. The missing detail is its identity, not permission "
+                        "to open it. Installation absence has not been established.",
+                        tool_by_name["app.open"],
+                        ("appId",),
+                    )
+                )
+                if not _recovery_question_is_valid(question, objective):
+                    question = ""
+            except Exception:  # noqa: BLE001 - no identity question grants authority
+                question = ""
+        else:
+            question = (
+                _domain_confirmation_question(objective, confirmable, tool_by_name, llm)
+                if confirmable
+                else ""
+            )
         if question:
             decision = {
                 "mode": "clarify",

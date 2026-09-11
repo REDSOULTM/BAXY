@@ -16,6 +16,8 @@ Fuente860 publicada0634a8d5:3583 pruebas dueñas aprobadas,0 fallos,0 omisiones;
 
 La tabla usa la taxonomía846 sobre742 case_id y el registro actual; ordenada por abiertos, con web elegida para el empate máximo. SHA del registro: ddc2fa026e3f38e1b7c48303c05791aa7c5747d9bfd18a80cd59e3f561849842.
 
+878 publicado48260462.883 sustituye la reconfirmación de apertura por una pregunta nativa sobre la identidad faltante, únicamente ante el mismo operando no resuelto de un app.open positivo y único; conserva el veto y cero efectos. Revisión manual, sin tests/producto,0créditos.882 distingue4 recorridos de presentación de otros7 fallos: no son11 causas iguales.884 quedó fuera del pipeline: aclarar identidad no demuestra apertura conforme al criterio854 original; todos sus archivos provisionales se preservan.869 sigue primero entre continuaciones dirigidas;881 ya tiene runner revisado con manifiesto obligatorio de no-tests, aún sin manifiesto real, prepare ni run.877/880 sellados sin ejecutar. Conteos de24h contrastados de nuevo74d9f7:38 actualizaciones recientes,36 altas confirmadas y2 primeras fechas indistinguibles;64/742 total intacto.
+
 | Categoría | Total | Cubiertos | Abiertos | No aplican |
 |---|---:|---:|---:|---:|
 | Navegación y búsqueda web | 46 | 0 | 46 | 0 |
