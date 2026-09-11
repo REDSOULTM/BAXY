@@ -1,0 +1,20 @@
+{
+  "schema": "c03-existing-music-readiness958-v1",
+  "observed_at_utc": "2026-09-11T20:51:39.7960966Z",
+  "source_commit": "18437a35b0e1210c16b619c73cbbd7b9ab2ff0bb",
+  "available_ram_mib": 5530.0,
+  "start_apps_matches": [
+    {
+      "Name": "Spotify",
+      "AppID": "SpotifyAB.SpotifyMusic_zpdnekdrzrea0!Spotify"
+    }
+  ],
+  "spotify_api_token_present": false,
+  "spotify_running": false,
+  "effective_spotify_script_sha256": "4416b58568074dad789ae29740866adc684e834d2e9f94beacfd8a099d8d0916",
+  "playback_observed": false,
+  "source_edited": false,
+  "tests_run": false,
+  "coverage_credit": 0,
+  "interpretation": "Spotify appears in Windows Start catalogue; actual session/login and playback remain unverified. Photoshop absent from this query is not proof of physical absence. Existing SMTC/API then UIA route, no new provider. Generic requests must not receive invented driver arguments."
+}

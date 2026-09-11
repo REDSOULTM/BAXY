@@ -1,5 +1,5 @@
 {
-  "utc": "2026-09-11T20:40:18.1525700Z",
+  "utc": "2026-09-11T21:06:41.9538238Z",
   "covered": 78,
   "open": 664,
   "not_applicable": 0,
@@ -343,7 +343,7 @@
       "not_applicable": 0
     }
   ],
-  "requirements_sha256": "96d6ca83640517f8f972b4749bb2398d3588bc648e4a2b3dcd98d2fe4eb53626",
+  "requirements_sha256": "c1c06d83716c582e4fb958aac372885682eac1eac6f5ecbb8100eb7387c14fcc",
   "classification_source": "SURVEY_TAXONOMY846.json",
   "latest_adjudications": [
     "APP_OPEN847/ROOT_ADJUDICATION.json",
@@ -359,16 +359,20 @@
     "APP_RESPONSE925/ROOT_ADJUDICATION.json",
     "APP_GROUNDING930/ROOT_ADJUDICATION.json",
     "APP_TERMINAL934/ROOT_ADJUDICATION.json",
-    "WEB_RESPONSE919/ROOT_ADJUDICATION.json"
+    "WEB_RESPONSE919/ROOT_ADJUDICATION.json",
+    "MUSIC_PANEL958/ROOT_ADJUDICATION.json"
   ],
-  "equal_maximum_open_next_selection": "Apps43 now precedes web42 after H0397 credit919.937 investigates missing provider observations;938 pre-provider largest app intent group.936 preserves future web controls and five named-browser failures.",
+  "equal_maximum_open_next_selection": "Apps40 conditions retained957; music39 active with source961 repair and sealed continuation962 (H0068 plus17 never admitted). Web38 has2 eligible named searches960; system38 has10 prior correct readings959 requiring current-candidate evidence/pertinent variants. No broad replay or new infrastructure.",
   "latest_product_run": {
-    "batch": 919,
-    "executed": 6,
-    "passed": 4,
-    "failed": 2,
-    "not_executed": 0,
-    "coverage_added": 1
+    "batch": 958,
+    "executed": 3,
+    "passed": 0,
+    "failed": 3,
+    "not_executed": 17,
+    "coverage_added": 0,
+    "useful_partial_clarification": 1,
+    "host_exit_code": 3,
+    "resources_violations": 0
   },
-  "registry_sha256": "2efc6f2a4798f98b8693ac7bfa0269463a983be46e60d2130d11863c11259cb2"
+  "registry_sha256": "c1c06d83716c582e4fb958aac372885682eac1eac6f5ecbb8100eb7387c14fcc"
 }

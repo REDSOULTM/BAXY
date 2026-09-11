@@ -1,0 +1,552 @@
+{
+  "schema": "c03-music958-root-adjudication-v1",
+  "adjudicated_at_utc": "2026-09-11T21:03:28.0100655Z",
+  "adjudicator": "root",
+  "source_commit": "18437a35b0e1210c16b619c73cbbd7b9ab2ff0bb",
+  "head": "28163dc40711c104d901cdd50e923c6d705cee83",
+  "seal_sha256": "57c4fc94e92a88045660f9e6b3caa98fffdbf1ff6210de80f86db126f629806f",
+  "runner_sha256": "6d1c118819db0a1731ad932db732701217d8ef89e2470ca366a814be7cfbe5d2",
+  "candidate_manifest_sha256": "49e7574ddaa49f53df196e7c8078483ade86ab10165fc42d814561e10aa46b06",
+  "preparation_sha256": "23152b4563fa09e0b89b71371b3ff07aebb76e57253575d739d522b14b5decb0",
+  "collection": "3aeee5",
+  "session_id": 3619,
+  "host_exit_code": 3,
+  "runner_exit_code": 1,
+  "real_case_admissions": 3,
+  "synthetic_final_rejections": 1,
+  "confirmation_submissions": 0,
+  "played_music_operations": 0,
+  "passed": 0,
+  "failed": 3,
+  "not_executed": 17,
+  "useful_partial_clarification": [
+    "H0066"
+  ],
+  "coverage_added": 0,
+  "resources": {
+    "utc": "2026-09-11T21:00:59.677976+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1766.91015625,
+    "seconds": 24.625,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "cases": [
+    {
+      "case_id": "H0009",
+      "literal": "poneme una canción",
+      "kind": "historical_literal",
+      "status": "fail",
+      "coverage_added": false,
+      "reason": "Falsa incapacidad: interpretó canción como streaming.navigate y domain_grounding convirtió la petición en unsupported. No reproducción. Reanudar con resolución musical pertinente; no repetir panel entero.",
+      "observation": {
+        "index": 0,
+        "case_id": "H0009",
+        "control_observed": {
+          "index": 0,
+          "case_id": "H0009",
+          "response": {
+            "type": "admission",
+            "command": "session.new",
+            "status": 200,
+            "body": "{\"ok\":true,\"id\":\"08245efd3ffb\"}"
+          },
+          "ok": true
+        },
+        "phases": [
+          {
+            "phase": "normal_turn_terminal",
+            "case_index": 0,
+            "envelope": {
+              "type": "admission",
+              "command": "turn",
+              "status": 200,
+              "body": "{\"ok\":true,\"status\":\"accepted\"}"
+            },
+            "real_submission_events": [
+              {
+                "type": "admission",
+                "turnId": "t1",
+                "accepted": true,
+                "status": 200,
+                "error": null
+              }
+            ],
+            "terminal": {
+              "type": "terminal",
+              "kind": "published_final",
+              "final": "No puedo ponerle una canción, eso no forma parte de lo que hago aquí.",
+              "diagnostic": null,
+              "timedOut": false,
+              "admissionStatus": 200
+            },
+            "synthetic_guard_rejection": false,
+            "counts_as_confirmation_submission": false,
+            "counts_as_variant_or_credit": false
+          }
+        ],
+        "final_terminal": {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "No puedo ponerle una canción, eso no forma parte de lo que hago aquí.",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200
+        },
+        "verdict": null,
+        "execution_state": "final_observed_not_adjudicated"
+      }
+    },
+    {
+      "case_id": "H0066",
+      "literal": "pon música",
+      "kind": "historical_literal",
+      "status": "fail",
+      "coverage_added": false,
+      "reason": "Aclaración útil sobre el tipo de música, pero no reprodujo contenido: cobertura de reproducción sigue abierta. No inventar query desde el conductor.",
+      "observation": {
+        "index": 1,
+        "case_id": "H0066",
+        "control_observed": {
+          "index": 1,
+          "case_id": "H0066",
+          "response": {
+            "type": "admission",
+            "command": "session.new",
+            "status": 200,
+            "body": "{\"ok\":true,\"id\":\"08245efd3ffb\"}"
+          },
+          "ok": true
+        },
+        "phases": [
+          {
+            "phase": "normal_turn_terminal",
+            "case_index": 1,
+            "envelope": {
+              "type": "admission",
+              "command": "turn",
+              "status": 200,
+              "body": "{\"ok\":true,\"status\":\"accepted\"}"
+            },
+            "real_submission_events": [
+              {
+                "type": "admission",
+                "turnId": "t2",
+                "accepted": true,
+                "status": 200,
+                "error": null
+              }
+            ],
+            "terminal": {
+              "type": "terminal",
+              "kind": "published_final",
+              "final": "¿Qué tipo de música quieres escuchar?",
+              "diagnostic": null,
+              "timedOut": false,
+              "admissionStatus": 200
+            },
+            "synthetic_guard_rejection": false,
+            "counts_as_confirmation_submission": false,
+            "counts_as_variant_or_credit": false
+          }
+        ],
+        "final_terminal": {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "¿Qué tipo de música quieres escuchar?",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200
+        },
+        "verdict": null,
+        "execution_state": "final_observed_not_adjudicated"
+      }
+    },
+    {
+      "case_id": "H0068",
+      "literal": "pon música de daft punk",
+      "kind": "historical_literal",
+      "status": "fail",
+      "coverage_added": false,
+      "reason": "Sobreaclaración: el literal ya da Daft Punk; la regla incomplete_media_clause (musica/music y hasta cinco palabras) lo trata como query ausente. No operación ni reproducción. La comparación de confirmación rechazó honestamente continuar; reparar interpretación/binding antes de repetir este caso.",
+      "observation": {
+        "index": 2,
+        "case_id": "H0068",
+        "control_observed": {
+          "index": 2,
+          "case_id": "H0068",
+          "response": {
+            "type": "admission",
+            "command": "session.new",
+            "status": 200,
+            "body": "{\"ok\":true,\"id\":\"08245efd3ffb\"}"
+          },
+          "ok": true
+        },
+        "phases": [
+          {
+            "phase": "request",
+            "case_index": 2,
+            "envelope": {
+              "type": "admission",
+              "command": "turn",
+              "status": 200,
+              "body": "{\"ok\":true,\"status\":\"accepted\"}"
+            },
+            "real_submission_events": [
+              {
+                "type": "admission",
+                "turnId": "t3",
+                "accepted": true,
+                "status": 200,
+                "error": null
+              }
+            ],
+            "terminal": {
+              "type": "terminal",
+              "kind": "published_final",
+              "final": "¿Qué tipo de música de Daft Punk quieres escuchar?",
+              "diagnostic": null,
+              "timedOut": false,
+              "admissionStatus": 200,
+              "caseId": "H0068",
+              "phase": "request"
+            },
+            "synthetic_guard_rejection": false,
+            "counts_as_confirmation_submission": false,
+            "counts_as_variant_or_credit": false
+          },
+          {
+            "phase": "final",
+            "case_index": 2,
+            "envelope": {
+              "type": "admission",
+              "command": "turn",
+              "status": 409,
+              "body": "{\"error\":\"confirmation_expectation_not_met\"}"
+            },
+            "real_submission_events": [],
+            "terminal": {
+              "type": "terminal",
+              "kind": "rejected",
+              "final": null,
+              "diagnostic": "confirmation_expectation_not_met",
+              "timedOut": false,
+              "admissionStatus": 409,
+              "caseId": "H0068",
+              "phase": "final"
+            },
+            "synthetic_guard_rejection": true,
+            "counts_as_confirmation_submission": false,
+            "counts_as_variant_or_credit": false
+          }
+        ],
+        "final_terminal": {
+          "type": "terminal",
+          "kind": "rejected",
+          "final": null,
+          "diagnostic": "confirmation_expectation_not_met",
+          "timedOut": false,
+          "admissionStatus": 409,
+          "caseId": "H0068",
+          "phase": "final"
+        },
+        "verdict": null,
+        "execution_state": "guard_rejected"
+      }
+    },
+    {
+      "case_id": "H0213",
+      "literal": "pon una cancion de michael jackson",
+      "kind": "historical_literal",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 3,
+        "case_id": "H0213",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    },
+    {
+      "case_id": "H0250",
+      "literal": "Pon una cancion de michael jackson",
+      "kind": "historical_literal",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 4,
+        "case_id": "H0250",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    },
+    {
+      "case_id": "H0388",
+      "literal": "Pon bad de michael jackson",
+      "kind": "historical_literal",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 5,
+        "case_id": "H0388",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    },
+    {
+      "case_id": "H0405",
+      "literal": "poné una canción",
+      "kind": "historical_literal",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 6,
+        "case_id": "H0405",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    },
+    {
+      "case_id": "H0526",
+      "literal": "poné música",
+      "kind": "historical_literal",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 7,
+        "case_id": "H0526",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    },
+    {
+      "case_id": "H0598",
+      "literal": "poneme algo de música tranqui",
+      "kind": "historical_literal",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 8,
+        "case_id": "H0598",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    },
+    {
+      "case_id": "H0601",
+      "literal": "ponme musika",
+      "kind": "historical_literal",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 9,
+        "case_id": "H0601",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    },
+    {
+      "case_id": "V958-01",
+      "literal": "Elegí una canción para escuchar ahora.",
+      "kind": "original_development_variant",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 10,
+        "case_id": "V958-01",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    },
+    {
+      "case_id": "V958-02",
+      "literal": "Could you put some music on?",
+      "kind": "original_development_variant",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 11,
+        "case_id": "V958-02",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    },
+    {
+      "case_id": "V958-03",
+      "literal": "Quiero que me pongas The Beatles.",
+      "kind": "original_development_variant",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 12,
+        "case_id": "V958-03",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    },
+    {
+      "case_id": "V958-04",
+      "literal": "Play music by Nina Simone.",
+      "kind": "original_development_variant",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 13,
+        "case_id": "V958-04",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    },
+    {
+      "case_id": "V958-05",
+      "literal": "I want you to play Billie Jean by Michael Jackson.",
+      "kind": "original_development_variant",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 14,
+        "case_id": "V958-05",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    },
+    {
+      "case_id": "V958-06",
+      "literal": "Pon Take Five de Dave Brubeck.",
+      "kind": "original_development_variant",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 15,
+        "case_id": "V958-06",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    },
+    {
+      "case_id": "V958-07",
+      "literal": "Necesito un poco de jazz.",
+      "kind": "original_development_variant",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 16,
+        "case_id": "V958-07",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    },
+    {
+      "case_id": "V958-08",
+      "literal": "Comfort my ears with bossa nova.",
+      "kind": "original_development_variant",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 17,
+        "case_id": "V958-08",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    },
+    {
+      "case_id": "V958-09",
+      "literal": "Reproduce música tranquila en Spotify.",
+      "kind": "original_development_variant",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 18,
+        "case_id": "V958-09",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    },
+    {
+      "case_id": "V958-10",
+      "literal": "Play relaxing music on Spotify, please.",
+      "kind": "original_development_variant",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Host exit3 and guarded stop index2 prove no queue admission; original sealed case retained for continuation.",
+      "observation": {
+        "index": 19,
+        "case_id": "V958-10",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "not_executed_host_stopped_before_next_command"
+      }
+    }
+  ],
+  "qualification": "No playback pass; H0066 useful clarification is a partial diagnostic only. There are no media invocation records: journal contains only bootstrap memory.status start/completed. Effective UIA script is app_exe sibling, not scratchpad path stated by external PLAN. No Spotify process observed after run; no target apps closed."
+}

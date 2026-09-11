@@ -3063,7 +3063,7 @@ def resolve_explicit_clarification_intent(
     incomplete_media_clause = any(
         _head_is(_request_head(clause), r"(?:pon|pone|poneme|reproduce|play)")
         and _has(clause, r"\b(?:musica|music)\b")
-        and len(clause.split()) <= 5
+        and _desired_music_query(clause) is None
         for clause in _request_clauses(folded)
     )
     if (
@@ -5764,7 +5764,7 @@ def _spoken_radio_station_request(text: str) -> bool:
 
 
 def _desired_music_query(text: str) -> str | None:
-    """Extract one bounded genre request such as ``I need some rap``."""
+    """Extract a bounded genre, artist or title query without choosing music."""
 
     folded = _strip_request_envelope(_fold(text))
     request = re.fullmatch(
@@ -5806,14 +5806,49 @@ def _desired_music_query(text: str) -> str | None:
         folded,
         re.IGNORECASE,
     )
-    if named is None:
+    query = named.group("query").strip() if named is not None else _explicit_named_music_query(text)
+    if query is None:
         return None
-    query = named.group("query").strip()
     if not 1 <= len(query.split()) <= 12 or _has(
-        query,
+        _fold(query),
         r"\b(?:alarma|alarm|temporizador|timer|volumen|volume|sonido|sound|"
         r"pantalla|screen|modo|mode|video|movie|pelicula|juego|game|"
         r"multijugador|multiplayer|with|against|conmigo|contra)\b",
+    ):
+        return None
+    return query
+
+
+def _explicit_named_music_query(text: str) -> str | None:
+    """Keep the supplied artist/title of one current imperative verbatim."""
+
+    named = re.fullmatch(
+        r"(?:pon|ponme|poneme|pone|poné|reproduce|reproducir|reproduc[ií]|play)\s+"
+        r"(?:(?P<music>(?:(?:una?|la|las|the|a|some)\s+)?"
+        r"(?:m[uú]sica|music|canci[oó]n(?:es)?|songs?|tracks?))\s+"
+        r"(?:de|by|from)\s+)?"
+        r"(?P<query>\S(?:.{0,160}?\S)?)\s*[.!?]*",
+        _strip_request_envelope(text), re.IGNORECASE,
+    )
+    if named is None:
+        return None
+    folded = _fold(text)
+    query = named.group("query").strip()
+    if (
+        named.group("music") is None
+        and not _has(_fold(query), r"\S\s+(?:de|by)\s+\S")
+    ) or (
+        not effect_request_is_authoritative(text)
+        or _has_unsupported_deferred_effect(folded)
+        or len(_request_clauses(folded)) != 1
+        or _other_device_effect_scope(folded)
+        or _fold(query) in {"it", "them", "this", "that", "esto", "eso", "esa", "ese"}
+        or _has(
+            _fold(query),
+            r"\b(?:archivo|file|carpeta|folder|pagina|page|fondo|wallpaper|"
+            r"portapapeles|clipboard|contrasena|password)\b|"
+            r"\b(?:en|on)\s+(?:youtube|netflix|apple\s+music)\b",
+        )
     ):
         return None
     return query
@@ -11551,7 +11586,12 @@ def _review_media_and_email_effects(
         )
         and _has(folded, r"\b(?:reproduce|reproducir|play|pon)\b")
     )
-    if _desired_music_query(folded) is not None:
+    if _explicit_named_music_query(folded) is not None and _desired_music_query(folded) is not None:
+        _append(
+            matches, folded, "media.play.query",
+            r"\b(?:pon|ponme|poneme|pone|reproduce|reproducir|reproduci|play)\b",
+        )
+    elif _desired_music_query(folded) is not None:
         _append(
             matches,
             folded,
@@ -13290,7 +13330,8 @@ def resolve_explicit_effects(
         _direct_media_discovery_or_play_request(folded)
         or _desired_music_query(folded) is not None
     ):
-        return EffectIntent(("media.play.query",), (folded,))
+        evidence = text if _explicit_named_music_query(text) is not None else folded
+        return EffectIntent(("media.play.query",), (evidence,))
     if "web.search" in available and _public_live_lookup_request(folded):
         return EffectIntent(("web.search",), (folded,))
     if {

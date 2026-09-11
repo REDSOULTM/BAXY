@@ -1,12 +1,13 @@
 # C03 — cobertura vigente
 
-**78/742 cubiertos, 664 abiertos, 0 no aplican; 50 acreditaciones confirmadas en las últimas24h; 0/35 categorías cerradas.** Matriz C03: 3/11. Registro2efc6f2a4798f98b8693ac7bfa0269463a983be46e60d2130d11863c11259cb2; cifras en SURVEY_COVERAGE_CURRENT.json.
+**78/742 cubiertos, 664 abiertos, 0 no aplican; 50 acreditaciones confirmadas en las últimas24h; 0/35 categorías cerradas.** Matriz C03:3/11. Registroc1c06d83716c582e4fb958aac372885682eac1eac6f5ecbb8100eb7387c14fcc; cifras en SURVEY_COVERAGE_CURRENT.json.
 
-El dueño reanudó el goal y aclaró el método: omitir suites automáticas, Fast y Full; mantener ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. El bloqueo anterior de alcance está resuelto. También autorizó cerrar aplicaciones para liberar RAM. No se cuentan pruebas omitidas como aprobadas.
+El dueño ordenó omitir suites automáticas, Fast y Full; se mantienen ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. El bloqueo anterior está resuelto. También autorizó cerrar aplicaciones para liberar RAM; hoy no fue necesario. No se cuentan pruebas omitidas como aprobadas.
 
-Fuente954 publicada18437a35b0e1210c16b619c73cbbd7b9ab2ff0bb. Última955:9casos5pass/4fail,+2créditos. Apps40 primera; PLAN956 prepara música39 sin autorizar ejecución. Historia debajo.
+Última958:3peticiones admitidas,0pass de reproducción/3fail,17noejecutadas comprobadas,+0créditos. H0066 aclaró útilmente sin reproducir; H0068 pidió aclaración pese a tener artista. Parada exacta de confirmación, host3/runner1,0violaciones,24,625s,VRAM3497,56/RAM1766,91MiB. [Resultado](MUSIC_PANEL958/REPORT.md).
 
-Últimos tres tramos:
+Fuente954 publicada18437a35b0e1210c16b619c73cbbd7b9ab2ff0bb.961 repara query explícita;962 sellada como continuación, únicamenteH0068+17pendientes originales. Apps40 conservan condiciones957; música39 sigueactiva, web38 tiene2literales habilitados960 y sistema38 conserva10lecturasprevias para ligar evidencia959. [Decisión](MUSIC_PREPARATION958/DECISION.md). No infraestructura nueva ni repetición de paneles completos.
+Resumen histórico al cerrar892 — no es el estado vigente:
 
 - 881: 8/8 ejecutados, 6 válidos y 2 fallidos, sin crédito. Ambos literales fueron útiles pero faltaba una variante de cada conducta. Sus causas se escribieron al adjudicar. [Adjudicación](APP_LOOKUP881/ROOT_ADJUDICATION.json).
 - 885: el primer arranque falló antes de cargar comandos por un perfil anidado no admitido. Se corrigieron sólo rutas externas y se preservó todo. La continuación ejecutó 9/9: 1 válido y 8 fallidos, sin crédito. Paint y hora fueron verificados, pero la respuesta correcta fue rechazada después; Calculadora dejó efecto incierto en H0183. [Adjudicación](APP_UNEXECUTED885_RETRY1/ROOT_ADJUDICATION.json).
@@ -328,7 +329,7 @@ H0094 conserva open: Opera normal no fue encontrado por el provider (inv9f0483c4
 
 ROOT_ADJUDICATION950 SHA c07f0881ec1de4a6aa1f52d93c737236fe1dc26f9cb2e45ca7d9e5c9466776e6. Sesión44047 recogidaad21a4, exit0, 19 admisiones reales/7 confirmaciones/12 finales, pins íntegros.86,641s; VRAM3566,19MiB y RAM4013,52MiB; cero violaciones. Sin suites/Fast/Full, UI o voz. El fallo previo prepare0389ae fue sólo transporte antes de GPU: revisión1 corrigió cinco booleanos conservando panel y wire byteidénticos. No se repitió una ejecución de producto.
 
-Fuente954 publicada18437a35b0e1210c16b619c73cbbd7b9ab2ff0bb. Última955:9casos5pass/4fail,+2créditos. Apps40 primera; PLAN956 prepara música39 sin autorizar ejecución. Historia debajo.
+Fuente954 publicada18437a35b0e1210c16b619c73cbbd7b9ab2ff0bb. Última955:9casos5pass/4fail,+2créditos.957 conserva40apps abiertas y documenta sus condiciones concretas;958 prepara10literales musicales+10variantes usando la vía Spotify existente. [Decisión y reanudaciones](MUSIC_PREPARATION958/DECISION.md). Sin nueva ejecución ni crédito todavía. Historia debajo.
 
 954 adoptado tras revisión raíz e50f0c/f2a37a: repetición íntegra de una identidad única, comparación canónica por resolver existente para Bloc de notas/windows.notepad. Sólo effect_intent.py; no build ni suites nuevos.955 revisado completo08f348: 9casos18wire, dos históricos íntegros incluidas diferencias de whitespace,2variantes y5límites. SEAL5e7d81063c22cd6ea71f579d3cabefb326e87ac587755f7d8e93ad9563dfd97f runner720f8e88288504ddd83fac3c25676f0b087203b62de721fed2bba6dd0013d048.76/742,666open,0NA;48altas24h,0/35categorías. Siguiente: manifest955, prepare/run.
 
