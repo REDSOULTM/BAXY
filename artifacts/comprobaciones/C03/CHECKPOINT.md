@@ -57,3 +57,6 @@ La tabla usa la taxonomía846 sobre742 case_id y el registro actual; ordenada po
 | Procesos | 9 | 8 | 1 | 0 |
 
 [Checkpoint histórico preservado íntegro hasta Audio861](CHECKPOINT_HISTORICO_2026-09-11_HASTA_AUDIO861.md). Fuente exacta05990551, SHA256 afc270de71667d338af133c99aa719a8c75df12de5d2784768ffcbbfd2dc9e12.
+
+Goal marcado **bloqueado, sin completar C03**, tras tres turnos con la misma aclaración pendiente sobre «no hagas test» y las ejecuciones necesarias para acreditar encuesta. Las reparaciones están publicadas; no hay tanda ni agente trabajando que esperar. Se conserva64/742,678abiertos,0NA;36altas confirmadas24h y0/35categorías. No se ejecutan pruebas ni se adjudican resultados sin observar el producto. La reanudación está detallada en HANDOFF.md.
+

@@ -23,3 +23,6 @@ Las órdenes directas y los pedidos «quiero que abras…» comparten ahora la e
 También se ajustó «no, mejor abrí…» para conservar la nueva orden sin borrar las negaciones o correcciones que contenga. Los dos literales pendientes ya están sellados con cuatro variantes y tres límites. No se ejecutaron: la cobertura sigue en64/742. El próximo paso de acreditación depende de aclarar si tu indicación de no hacer tests permite las ejecuciones del producto; las suites y el Full siguen detenidos.
 
 Cuatro fallos de apps compartían una pregunta redundante sobre si abrirlas. Ahora, cuando lo que falta es resolver una identidad única, se usa la pregunta de argumentos faltantes que ya tenía BAXY. Esto conserva la ejecución detenida y evita afirmar que la app no existe. Sólo se revisó el código. Se descartó una tanda que habría medido esa aclaración sin acreditar aperturas: esos cuatro requisitos siguen abiertos.
+
+Goal marcado **bloqueado, sin completar C03**, tras tres turnos con la misma aclaración pendiente sobre «no hagas test» y las ejecuciones necesarias para acreditar encuesta. Las reparaciones están publicadas; no hay tanda ni agente trabajando que esperar. Se conserva64/742,678abiertos,0NA;36altas confirmadas24h y0/35categorías. No se ejecutan pruebas ni se adjudican resultados sin observar el producto. La reanudación está detallada en HANDOFF.md.
+

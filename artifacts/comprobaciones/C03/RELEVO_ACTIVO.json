@@ -1,7 +1,7 @@
 {
   "threadId": "01a08e22-0ac1-7f93-9c99-5d2d0730d6c6",
   "sourceThreadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
-  "goalStatus": "active",
+  "goalStatus": "blocked",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
   "checkpoint": "64/742 cubiertos,678 abiertos,0NA;36 altas confirmadas24h+2fechas indistinguibles,0/35 categorías. Fuente883 integrada sin tests;881runner manualmente revisado.884noaprobado.869/877/880sellados noejecutados.",
@@ -34,9 +34,9 @@
   },
   "pendingOwnerClarification": "One async question already sent: does no-tests exclude product survey panels as well as suites? No answer received; no dependent execution.",
   "publishedSourceCommit": "0a945cb407d3f3aaede2796c8924a6630bfd392b",
-  "workStatus": "awaiting_product_execution_scope_no_tests",
-  "goalStatusNote": "All C03 active;64/742 covered,678 open,0NA;0/35categories,H0675parked.",
-  "previousGoalTurnClassification": "progress",
+  "workStatus": "blocked_pending_owner_product_execution_scope",
+  "goalStatusNote": "C03 incomplete:64/742,678open,0NA. Same required clarification about no-tests versus survey product execution recurred three goal turns; goal tool marked blocked. No tests or new credits.",
+  "previousGoalTurnClassification": "no_progress",
   "publishedEvidenceCommit": "0a945cb407d3f3aaede2796c8924a6630bfd392b",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Previous turn integrated and published876/878/883, completed runner881 and froze real source/runtime/binary hashes without execution. It ended awaiting the no-tests scope answer.",
+  "previousGoalTurnClassificationReason": "Previous continuation revalidated the unchanged execution-scope blocker and documented state only; no behavioral progress or live job wait.",
   "activeValidation": null,
   "objectiveFile": "C:\\Users\\usuario\\.codex\\attachments\\310753b7-9a38-4a57-951e-007fdcf7693a\\goal-objective.md",
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
@@ -961,21 +961,20 @@
   },
   "noTestsScopeAudit": {
     "condition": "Clarification required whether owner no-tests instruction also excludes product executions needed for survey accreditation",
-    "consecutive_goal_turns": 2,
+    "consecutive_goal_turns": 3,
     "current_turn_classification": "no_progress",
-    "previous_turn_classification": "progress",
+    "previous_turn_classification": "no_progress",
     "scope_question_already_sent": true,
     "answer_received": false,
-    "revalidated_at_utc": "2026-09-11T15:57:34.3750351Z",
+    "revalidated_at_utc": "2026-09-11T16:00:33.2059240Z",
     "evidence_chunks": [
-      "52dee2",
-      "bdc0b6"
+      "673dee"
     ],
     "agents": "All child agents observed terminal via collaboration.list_agents",
     "manifest_execution_authorized": false,
     "preparation_exists": false,
     "run_exists": false,
-    "goal_status": "active",
-    "next_step": "If same blocker recurs next goal turn and no independent meaningful work exists, strict three-turn audit permits marking blocked. Do not mark complete."
+    "goal_status": "blocked",
+    "next_step": "Resume after owner clarifies product execution scope. Preserve disabled manifest; create a newly authorized manifest only if product panels are allowed, bound to actual current HEAD and verified hashes. If resumed with same unresolved blocker, reset audit count and apply fresh three-turn rule."
   }
 }
