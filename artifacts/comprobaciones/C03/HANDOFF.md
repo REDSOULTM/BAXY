@@ -1,3 +1,11 @@
+## Reanudación concreta941/940 — sin otra auditoría
+
+939 concluyó sin parche, REPORT SHA dd41a67deca5db50e3625a387966692a6c82386cac1119ae5463280ab8624b47: no hace falta nuevo planificador/kernel; faltan dos conexiones de enrutamiento y resultado. Raíz encarga IMPLEMENTAR esas conexiones en941, worktree codex/c03-app-missing941, entregable C:/Users/usuario/AppData/Local/BAXY/C03-app-missing941-proposal/{repair.patch,REPORT.md}. Archivos permitidos effect_intent.py/__main__.py/llm.py; sin canónico/tests/build/GPU. Lectura previa app.installed con nombre literal, después negativa verificada o aclaración si identidad aproximada, sin apertura automática, scores ni nombres específicos. Identidades exactas conocidas conservan app.open. No confundir una conexión entre piezas existentes con nuevo proveedor/infraestructura.
+
+940 ya sellado y revisado por raíz0d2a2b/24c7a8: panel íntegro, diff de runner934 sólo rutas/schemas/conteos/material940, wire16líneas y4pins históricos íntegros. SEAL fec750af6d546effc40b80e040b1f698cdb7e68019c25c9d3879dd72fe5b2842; runner e47dc1d2fa2fb549d2df6c3fc216eeb4d1348b73c2c655cffcf729b64bcfbc00. Propuesta C:/Users/usuario/AppData/Local/BAXY/C03-app-missing940-proposal.8casos:1literal/2variantes/5límites,8controles,16wire. Manifest futuro c03-app-missing940-root-manifest-v1, fuentes584/binarios18/runtime5. Clonar estructura manifest919, verificar sólo cambios941 esperados y todos pins. Perfil directo C03-app-missing940-profile y privado C03-app-missing940-private; stages prepare/run aún NO ejecutados. Adoptar941 sólo tras review raíz; después sellar HEAD/manifest y ejecutar940. No volver a investigar939 ni repetir930.
+
+Actual:71/742,671open,0NA,43altas24h,0/35categorías,C03 3/11. Fuente76a6c094, binarios904 conservados. Última corrida919 recogidaffce4a exit0; no GPU activa. goal active/progress, ningún permiso pendiente.941 es único subagente activo.
+
 ## Tramos937–940 — negativa verificable según nota original del dueño
 
 937 REPORT SHA bc9cb2daae571a53ed7df042ba90cfb05ca38e59f6c30cd923fd644a06b177c5 no recupera la observación descartada en los fallos antiguos de Calculator/Settings/Explorer. Propone retención privada, pero no demuestra12 desbloqueos: no se construye infraestructura ni se reintentan efectos inciertos.
