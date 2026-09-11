@@ -9384,17 +9384,16 @@ class LlmRuntime:
             and _merged_observed(situation).get("observationScope") == "accessible_processes"
         ):
             scope = (
-                " For this process inventory, observationScope is the accessible observation"
-                " boundary, not every process on the system. observedProcessCount is the"
-                " count observed within that boundary; returnedProcessCount is only the"
-                " returned rows. For a requested list, disclose the observed count and"
-                " whether returned rows are a subset, naming every returned instance."
-                " Respect requested cardinality; a plural ranking with several observed"
-                " instances is not a single maximum. Distinguish same-name instances by"
-                " processId. A top-one result need not list every process and needs processId"
-                " only when its name is ambiguous. A count-only reply states the observed"
-                " count and scope without rows. A process working set is not an application"
-                " total."
+                " For this process inventory, observationScope limits the observation to"
+                " accessible processes. observedProcessCount counts that observation;"
+                " returnedProcessCount counts the supplied rows. For a requested list or"
+                " ranking, processes already contains the selected rows in the requested"
+                " order. Include every supplied row once, in that order, keeping its name,"
+                " processId and observed resource value and unit together, even for a single result. Do not"
+                " shorten or reorder the list. State how many rows you actually list and"
+                " how many processes were observed; disclose when the list is a subset."
+                " A count-only reply states the observed count and scope without rows."
+                " A process working set is not an application total."
             )
             message_prompt += scope
             cpu_prompt += scope

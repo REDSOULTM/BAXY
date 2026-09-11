@@ -1,0 +1,66 @@
+{
+  "source_candidate": 806,
+  "source_adopted": false,
+  "new_coverage": 0,
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "cases": [
+    {
+      "case_id": "H0133",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Declara10devueltos pero colapsa tresChatGPT y dospython en nombres generales; no enumera las diez instancias.147observados y alcance correctos no reparan lista incompleta."
+    },
+    {
+      "case_id": "H0158",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Afirma dos instanciasChatGPT cuando la observación tiene tres. Cuenta147/10 correcto; lista de identidades incompleta y multiplicidad contradicha."
+    },
+    {
+      "case_id": "H0169",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Declara memoria y los cuatro valores son correctos, pero presenta cuatro de diez filas sin identificar el recorte visible; anuncia10devueltos. Conserva criterio aplicado a recortes ambiguos en805."
+    },
+    {
+      "case_id": "H0364",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Cuatro de diez filasCPU, con PIDs y porcentajes actuales correctos, pero omite seis del listado pedido mientras anuncia diez devueltas."
+    },
+    {
+      "case_id": "H0470",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "147coincide con observedProcessCount y explica límite observable sin afirmar totalidad del sistema; lectura fresca."
+    },
+    {
+      "case_id": "H0650",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Cinco instancias y valoresMB correctos en orden; conserva dosChatGPT separados, pero omite todos los PIDs exigidos por el criterio de memoria."
+    },
+    {
+      "case_id": "H0669",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Declara memoria y enumera las diez filas con PIDs y MB correctos, en orden; explica147observados/10devueltos dentro del alcance de esta lectura."
+    },
+    {
+      "case_id": "H0675",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Presenta working set del proceso python16116 como memoria de una app, sin evidencia de membresía ni agregado de aplicación."
+    },
+    {
+      "case_id": "H0678",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "147procesos coincide con observado y delimita acceso sin exhaustividad del sistema."
+    }
+  ]
+}

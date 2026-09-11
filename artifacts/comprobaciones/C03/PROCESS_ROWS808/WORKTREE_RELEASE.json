@@ -1,0 +1,10 @@
+{
+  "worktree": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\worktrees\\c03-process-rows806",
+  "snapshot": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-rows806-proposal\\ROOT_SOURCE",
+  "files": {
+    "src/baxy_mind/llm.py": "da3e024a62a99d5eebd403294b0f07d7b32bc0356594be35a49a7656e6a6022f",
+    "tests/test_c03_process_scope_prompt.py": "5718d14ab62e2fd27d77a1366aeaf8e8a1a23000e1f1ad847ed8cb20cd527876"
+  },
+  "status": "removed after verifying exact proposal snapshot",
+  "canonical_delta": "Root808generalizes memory wording to observed resource value/unit and tests CPU; canonical snapshot separately under C03-process-rows808-private/source."
+}

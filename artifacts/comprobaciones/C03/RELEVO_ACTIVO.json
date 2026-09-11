@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "806 integrado sólo como candidato:6líneas de proyección de alcance,198dueñas pass/0skip,Fast0/Release22,36s/0advertencias/errores,29pins intactos.807 preparado mismos50; filas/PIDs/orden sigue propuesta aislada.805 conserva37/50 y4pérdidas frente801; fuente sinadoptar, sincrédito. Full804verde anterior; Full final pendiente. Encuesta28/714/0; matriz3/11;C03EN_CURSO.",
-  "continuation": "Commit/push validated scope806 candidate preservation, launch scratchpad/c03-process-batch807.py immediately. Root live adjudication original50; do not integrate rows prompt until807 complete. No new model campaign, no Full alongside GPU.",
+  "checkpoint": "808 validado:204dueñas pass/0skip/2,78s,Fast0/Release21,84s/0advertencias/errores,29pins intactos. Sólo párrafo existente de filas y testdueño cambian.807completo37/50,5ganancias/5pérdidas frente805;806/808sinadopción.809listo mismos50 tras commit/push;worktrees de ambas propuestas retirados con snapshots. Encuesta28/714/0;matriz3/11;C03EN_CURSO.",
+  "continuation": "Publish validated808 candidate and807evidence, launch scratchpad/c03-process-batch809.py original50. No source edits/Full during GPU. Root live/final adjudication. Full804 previous, no new product adoption until criteria recovered. Apps75 prepared next; full C03 scope remains.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,10 +34,10 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "d1a040d62fd57ef1db583121eda2c67c1efde632",
-  "workStatus": "scope806_validated_process807_ready",
-  "goalStatusNote": "Activo; Full804 verde, producto805 completo37/50; sin decisión pendiente del dueño.",
+  "workStatus": "rows808_validated_process809_ready",
+  "goalStatusNote": "Activo;807cerrado37/50,808validado y809preparado,sin pregunta pendiente.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "7ecd2274102df409a141b0f20f5b0a2e1218308c",
+  "publishedEvidenceCommit": "86197f8966ae1d90363f0164706def441353b424",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Full retry collected0; product805 completed50 and root adjudicated37valid/13failed. All seals intact; no runtime processes left. Preparing two isolated minimal repairs without new verifier.",
+  "previousGoalTurnClassificationReason": "Published804/805 and806;807completed and rootjudged37/50, repaired targetnoresponse but5regressions.808existingparagraph integrated,204owners+Fastgreen,809ready;allhistoricalverdicts intact.",
   "activeValidation": null,
   "objectiveFile": "C:\\Users\\usuario\\.codex\\attachments\\310753b7-9a38-4a57-951e-007fdcf7693a\\goal-objective.md",
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
@@ -76,22 +76,21 @@
   "activeReadOnlyAgent": null,
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
-    "name": "process805",
-    "launcherPid": 29596,
-    "runnerPid": 5708,
-    "sourcePins": 28,
-    "sessionId": 58021,
+    "name": "process807",
+    "launcherPid": 29724,
+    "runnerPid": 33372,
+    "sessionId": 58028,
     "registeredCases": 50,
     "state": "complete",
     "adjudication": "root_complete",
-    "candidate": 804,
+    "candidate": 806,
+    "adopted": false,
     "valid": 37,
     "failed": 13,
     "exitCode": 0,
     "sessionCollected": true,
     "runtimeProcessesRemaining": 0,
-    "adopted": false,
-    "report": "PROCESS_BATCH805/REPORT.md"
+    "report": "PROCESS_BATCH807/REPORT.md"
   },
   "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
   "ownerPriority": "Owner ordered model selection after792 and immediate progress on C03 blockers; no further model campaign.",
@@ -854,16 +853,18 @@
     "active_agent_limit": 2,
     "scope_worktree": "C:/Users/usuario/AppData/Local/BAXY/worktrees/c03-process-scope806",
     "rows_worktree": "C:/Users/usuario/AppData/Local/BAXY/worktrees/c03-process-rows806",
-    "status": "scope806 integrated+owners198+Fast0; scope worktree removed; rows proposal isolated, not integrated",
+    "status": "Both isolated proposals delivered and integrated separately:806measured807;808rowsinFast, awaiting809. No product adoption.",
     "iteration_limit_each": 2
   },
   "latestCandidateValidation": {
-    "candidate": 806,
-    "owners_passed": 198,
+    "candidate": 808,
+    "owners_passed": 204,
     "owners_skipped": 0,
-    "fast_exit": 0,
-    "release_seconds": 22.36,
+    "seconds": 2.78,
+    "fast_status": "complete",
     "source_pins": 29,
-    "adopted": false
+    "adopted": false,
+    "fast_exit": 0,
+    "release_seconds": 21.84
   }
 }

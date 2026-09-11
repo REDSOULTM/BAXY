@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-11T04:21:38.522122+00:00",
+  "candidate": 808,
+  "adopted": false,
+  "base_commit": "86197f8966ae1d90363f0164706def441353b424",
+  "changed_files": [
+    "src/baxy_mind/llm.py",
+    "tests/test_c03_process_scope_prompt.py"
+  ],
+  "difference": "Replace existing process-inventory paragraph: narrate supplied selected rows once in original order, preserve name/PID/observed resource value/unit, actual narrated count and observed scope; count-only and process-vs-app distinction retained. No additional checker or prompt layer.",
+  "root_review": "Agent memory-only wording generalized to observed resource value/unit, tested on CPU and memory. Canonical evidence and scope806 projection remain unchanged. Existing top-one PID exception removed to meet memory criterion.",
+  "cause": "80737/50: incomplete lists, missing memory PIDs and contradictory row counts remain. Scope806 recovered memory08 but produced5gains/5losses vs805; no adoption. All root judgments preserved.",
+  "owners": "Root six complete suites204 passed/0skipped/2.78s, tool chunkffb3ac exit0. Includes CPU and memory on first/retry seams; no inference.",
+  "baseline_full": "PROCESS_DEADLINE804/FULL_RETRY1/FULL_EXIT.json is previous Full804 only.808 is Python-only; owners+Fast then product809. Cumulative adoption and final Full remain required by goal.",
+  "unchanged": "Model, backend, sampler, budgets, factual checker, canonical observations, frozen50 panel.",
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  }
+}

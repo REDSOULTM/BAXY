@@ -1,0 +1,21 @@
+{
+  "batch": 809,
+  "candidate": 808,
+  "adopted": false,
+  "runner": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\scratchpad\\c03-process-batch809.py",
+  "runner_sha256": "fcf6eb5520d012010ea66a8f9c7ad305d09e07f66decdf0866fd6f70d10ed6ed",
+  "reviewer": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\scratchpad\\c03-review-process809.py",
+  "reviewer_sha256": "d0ac54cee32b483a1bf969a29f8067011e6eed7739bd30487e239ce72cd504ac",
+  "root_review": "Exact replacements from807 only: batch/profile807to809 and source806to808. Full804 baseline/source804pins chain unchanged; own808pins29+owners/Fast0 required and hash-bound. Original50panel795/input/model/backend/budgets/sampler/guards unchanged. AST pass.",
+  "owners_passed": 204,
+  "owners_skipped": 0,
+  "owners_seconds": 2.78,
+  "fast_exit": 0,
+  "release_seconds": 21.84,
+  "warnings": 0,
+  "errors": 0,
+  "source_pins": 29,
+  "source_pins_unchanged": true,
+  "required": "Commit/push candidate after owners/Fast green, then809 original50; root adjudicates all finals. No Full or competing GPU;4000MiB free preflight.",
+  "difference": "Only existing process-row paragraph replacement; scope806 remains. No new checker."
+}
