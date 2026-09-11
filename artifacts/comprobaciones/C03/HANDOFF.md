@@ -1,3 +1,9 @@
+## Tramo934 — Terminal acreditado; variante inglesa reparada
+
+70/742 cubiertos,672 abiertos,0 no aplican;42 altas confirmadas24h,0/35 categorías. Se ejecutaron7 casos,6válidos y1fallido en34,484s. Terminal abrió y la respuesta fue fiel; H0688 pasó a covered durante la adjudicación, apoyado por variantes pertinentes854. La corrección inglesa con «Notepad, please» abrió Notepad y respondió correctamente. La prohibición no ejecutó efectos pero recibió una limitación de capacidad injustificada. VRAM3497,56MiB/RAM2130,32MiB, sin violaciones, exit0/pins intactos. Suite/Fast/Full omitidos por orden; no se acredita UI/voz ni cierreC03.
+
+Apps43/web43 empatan: raíz selecciona web.935 verifica reserva919 intacta; próxima adopción927 corrige rechazo del signo de consulta dentro de URL exacta observada. No repetir pares912 ni H0389 sin reparar. H0706/H0183/H0151 conservan efecto incierto. La taxonomía846 conserva su instantánea original; tabla actual arriba y SURVEY_COVERAGE_CURRENT.json contienen la cobertura vigente.
+
 # Continuación después de930/932 — vigente
 
 Fuente932 publicada5d7fed5124af3394299d39effeb6c087a829ec00. effect_intent.pyff4b81a0cd7d38a42f77b80d63b6e5f924ddbb992937505b87c555be17b3397d;__main__.py9297cf1b7c08b39378e645ef5afa3f0a5037a51d9b6e38f7abd2fd7449e828d75e8;llm.py92696245f75eac6aba2dd54dcc2271082f0993b98f569c233c226ede7f7a58166c8. Registroactual1ae78cd8f28c52d397672f9e0cabe90609da3cd23dbd74e16639a580bc39205c,69/742covered673open0NA,41altas24h,0/35categorías. Apps44>web43.

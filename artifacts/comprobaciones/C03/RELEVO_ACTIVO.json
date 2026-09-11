@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "69/742covered,673open,0NA;41grants24h,0/35categories,C03 3/11.93011executed4pass7fail,0credits;five literal causes updated immediately.",
-  "continuation": "933 readcab6cc proves relevant existing872 indefinite-article fix for H0688 and uniqueTerminal in actual930catalog. prepare934 agent prepares7cases14wire: literalH0688+EN932repairedvariant+five originalboundaries; prior ordinaryopening854 pairs reference only. Root next review/seal/bind584/18/5 and run. Source932published, no liveGPU. Apps44>web43.",
+  "checkpoint": "70/742covered,672open,0NA;42grants24h,0/35categories,C03 3/11.9347executed6pass1fail,+H0688.",
+  "continuation": "Apps43/web43 tied after H0688 grant934. Root selects web; adopt reserved927 then directed919, no full panel replay.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -29,12 +29,12 @@
   },
   "surveyVerificationCounts": {
     "not_applicable": 0,
-    "open": 673,
-    "covered": 69
+    "open": 672,
+    "covered": 70
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "5d7fed5124af3394299d39effeb6c087a829ec00",
-  "workStatus": "preparing_terminal934_after933",
+  "workStatus": "adjudicated934_select_web919",
   "goalStatusNote": "Owner approved the proposed methodology: omit automated suites, Fast and Full; retain sealed product executions and evidence-based survey credit. Previous scope blocker resolved.",
   "previousGoalTurnClassification": "progress",
   "publishedEvidenceCommit": "0a945cb407d3f3aaede2796c8924a6630bfd392b",
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Previous turn changed authoritative source926, completed/adjudicated922 and925, updated H0706 open causes, and obtained928 evidence excluding blind retry. Source published10456653 and evidence8805e9ac; not a no-progress turn.",
+  "previousGoalTurnClassificationReason": "Actual934 verified Terminal and English correction; H0688 granted immediately. Next web ties maximum mass; no blocker.",
   "activeValidation": null,
   "objectiveFile": "C:\\Users\\usuario\\.codex\\attachments\\310753b7-9a38-4a57-951e-007fdcf7693a\\goal-objective.md",
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
@@ -87,15 +87,15 @@
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
     "exitCode": 0,
-    "sourceCandidate": "652a96a76815d3b50dd1e47bddfe8cd97c2e6c35",
+    "sourceCandidate": "5d7fed5124af3394299d39effeb6c087a829ec00",
     "state": "complete",
-    "sessionId": 6853,
-    "coverageAdded": 0,
-    "failed": 7,
-    "receipt": "APP_GROUNDING930/ROOT_ADJUDICATION.json",
+    "sessionId": 95633,
+    "coverageAdded": 1,
+    "failed": 1,
+    "receipt": "APP_TERMINAL934/ROOT_ADJUDICATION.json",
     "notExecuted": 0,
-    "passed": 4,
-    "collectionChunk": "9e51fd"
+    "passed": 6,
+    "collectionChunk": "646b09"
   },
   "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
   "ownerPriority": "Owner ordered model selection after792 and immediate progress on C03 blockers; no further model campaign.",

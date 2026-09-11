@@ -1,10 +1,10 @@
 # C03 — cobertura vigente
 
-**69/742 cubiertos, 673 abiertos, 0 no aplican; 41 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Hay dos actualizaciones adicionales de casos cubiertos cuya fecha de primera acreditación no se distingue. Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: 1ae78cd8f28c52d397672f9e0cabe90609da3cd23dbd74e16639a580bc39205c. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
+**70/742 cubiertos, 672 abiertos, 0 no aplican; 42 acreditaciones confirmadas en las últimas 24 h; 0/35 categorías cerradas.** Hay dos actualizaciones adicionales de casos cubiertos cuya fecha de primera acreditación no se distingue. Matriz C03: 3/11 cumplidas; C03 continúa EN_CURSO. Registro SHA256: c6b76f41751102fb244888ea972f345f90aaa9e48a413b2ad53d682dcbc7a922. Cifras consultables en SURVEY_COVERAGE_CURRENT.json.
 
 El dueño reanudó el goal y aclaró el método: omitir suites automáticas, Fast y Full; mantener ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. El bloqueo anterior de alcance está resuelto. También autorizó cerrar aplicaciones para liberar RAM. No se cuentan pruebas omitidas como aprobadas.
 
-Fuente vigente: 652a96a76815d3b50dd1e47bddfe8cd97c2e6c35 (929), publicada. Última ejecución930:4válidas/7fallidas,0créditos; once casos ejecutados, sin efectos de aplicaciones. Apps44 abiertos precede ahora web43. Los tramos siguientes conservan historia; novedades al final.
+Fuente vigente932:5d7fed5124af3394299d39effeb6c087a829ec00. Última ejecución934:7 ejecutados,6 válidos,1 fallido,+H0688. Apps43/web43 empatadas; raíz selecciona web919 tras reparación927. Los apartados de tandas anteriores son historia; novedades al final.
 
 Últimos tres tramos:
 
@@ -27,7 +27,7 @@ No repetir: paneles completos854/TAIL,861,864,881,885,892; campañas de modelo/b
 Tabla de la taxonomía846, ordenada por requisitos abiertos:
 | Categoría | Total | Cubiertos | Abiertos | No aplican |
 |---|---:|---:|---:|---:|
-| Abrir aplicaciones | 54 | 10 | 44 | 0 |
+| Abrir aplicaciones | 54 | 11 | 43 | 0 |
 | Navegación y búsqueda web | 46 | 3 | 43 | 0 |
 | Música | 39 | 0 | 39 | 0 |
 | Estado de hardware y sistema | 40 | 2 | 38 | 0 |
@@ -236,3 +236,9 @@ Raíz adjudicó y escribió cinco causasopen df5313. Registro1ae78cd8f28c52d3976
 933diagnosticaH0688 «abrí una terminal» comparando fallo854TAIL con mecanismo/catálogo actualTerminal, para seleccionar literal real en siguiente panel con varianteENreparada; no se repiten los cinco fallidos930 ni efectosinciertos. Apps44>web43,69/742covered673open0NA,41altas24h,0/35categorías.927/919reservas web.
 
 933reporte69e362fd5b20c4aeda6eca60e09cdf1c13c691538c15d9c4ce97df0ea3dd05b1 revisado cab6cc: commit8720731ea99fa9a4fe614ffcdde38897cd5264047c5 añadió un/una/a/an al extractor compartido después854. H0688 no tenía Core/efecto incierto propio; en930hay únicaidentidadTerminal. Esto justifica literal dirigido con arregloyaadoptado, no prueba éxito ni causalidad históricaúnica. Preparación934delegadaenmedium(métododelgoal) con7casos14wire; no nuevareparaciónTerminal. Pares854ordinaryopeningaceptadosporraíz previamente; ENcorrecciónnointercambiableautomáticamente. No ejecutarhasta selloymanifestactuales.
+
+## Tramo934 — Terminal acreditado; variante inglesa reparada
+
+70/742 cubiertos,672 abiertos,0 no aplican;42 altas confirmadas24h,0/35 categorías. Se ejecutaron7 casos,6válidos y1fallido en34,484s. Terminal abrió y la respuesta fue fiel; H0688 pasó a covered durante la adjudicación, apoyado por variantes pertinentes854. La corrección inglesa con «Notepad, please» abrió Notepad y respondió correctamente. La prohibición no ejecutó efectos pero recibió una limitación de capacidad injustificada. VRAM3497,56MiB/RAM2130,32MiB, sin violaciones, exit0/pins intactos. Suite/Fast/Full omitidos por orden; no se acredita UI/voz ni cierreC03.
+
+Apps43/web43 empatan: raíz selecciona web.935 verifica reserva919 intacta; próxima adopción927 corrige rechazo del signo de consulta dentro de URL exacta observada. No repetir pares912 ni H0389 sin reparar. H0706/H0183/H0151 conservan efecto incierto. La taxonomía846 conserva su instantánea original; tabla actual arriba y SURVEY_COVERAGE_CURRENT.json contienen la cobertura vigente.

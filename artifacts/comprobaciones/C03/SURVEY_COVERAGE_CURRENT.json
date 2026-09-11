@@ -1,12 +1,12 @@
 {
-  "utc": "2026-09-11T19:02:03.9304039Z",
-  "covered": 69,
-  "open": 673,
+  "utc": "2026-09-11T19:23:29.5350925Z",
+  "covered": 70,
+  "open": 672,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 43,
+  "covered_updated_last_24h": 44,
   "updated_recent_ids": [
     "H0017",
     "H0035",
@@ -50,9 +50,10 @@
     "H0729",
     "H0490",
     "H0622",
-    "H0267"
+    "H0267",
+    "H0688"
   ],
-  "confirmed_new_grants_last_24h": 41,
+  "confirmed_new_grants_last_24h": 42,
   "first_grant_date_not_distinguished_for_recent_ids": [
     "H0180",
     "H0499"
@@ -62,8 +63,8 @@
       "category": "apps_open",
       "label": "Abrir aplicaciones",
       "total": 54,
-      "covered": 10,
-      "open": 44,
+      "covered": 11,
+      "open": 43,
       "not_applicable": 0
     },
     {
@@ -353,16 +354,17 @@
     "WEB_CONFIRMATION916/ROOT_ADJUDICATION.json",
     "APP_PRIORITY922/ROOT_ADJUDICATION.json",
     "APP_RESPONSE925/ROOT_ADJUDICATION.json",
-    "APP_GROUNDING930/ROOT_ADJUDICATION.json"
+    "APP_GROUNDING930/ROOT_ADJUDICATION.json",
+    "APP_TERMINAL934/ROOT_ADJUDICATION.json"
   ],
-  "equal_maximum_open_next_selection": "Apps44open precedes web43.930 captures identity data: Firefox/Steel unresolved, ENNotepad resolved then withdrawn. Diagnose931 before functional repair; no repeat of uncertain Settings.927/919 remain reserves.",
+  "equal_maximum_open_next_selection": "Apps43/web43 tied after H0688 grant934. Root selects web; adopt reserved927 then directed919, no full panel replay.",
   "latest_product_run": {
-    "passed": 4,
-    "executed": 11,
-    "batch": 930,
+    "batch": 934,
+    "executed": 7,
+    "passed": 6,
+    "failed": 1,
     "not_executed": 0,
-    "failed": 7,
-    "coverage_added": 0
+    "coverage_added": 1
   },
-  "registry_sha256": "1ae78cd8f28c52d397672f9e0cabe90609da3cd23dbd74e16639a580bc39205c"
+  "registry_sha256": "c6b76f41751102fb244888ea972f345f90aaa9e48a413b2ad53d682dcbc7a922"
 }

@@ -1,0 +1,136 @@
+{
+  "schema": "c03-root-adjudication-v1",
+  "utc": "2026-09-11T19:23:29.5043502Z",
+  "candidate": "156db9eaa42eda43bcbf9ddc4d71ac5efe16fd61",
+  "source_candidate": 932,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "panel_seal_sha256": "10d0c4e937162a8cae6ef54da8554fb8d9f73cd3e4c503685825b1b11b7c78b3",
+  "manifest_sha256": "cba794711b4673fbff880a98b9a9a3bdcad8c2aa0b7b2632a66a34373aa67411",
+  "cases": [
+    {
+      "case_id": "H0688",
+      "index": 0,
+      "verdict": "pass",
+      "reason": "Terminal opened with completed/verified receipt c1f030e8-d5fc-4864-a5d5-a3cfdcdcd202, PID32100 HWND20120408; faithful final. H0688 already credited immediately at 19:14:33.0453775Z with pertinent passed ordinary-opening854 Notepad05/Paint08 variants.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Abrí la terminal.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": true
+    },
+    {
+      "case_id": "app-correction880-variant-en",
+      "index": 1,
+      "verdict": "pass",
+      "reason": "English correction opens Notepad with completed/verified receipt 2f2d050a-8200-44b9-90c9-e786cff6986a PID34532 HWND5639004; faithful English final. Repairs observed comma rejection; no literal credit.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Alright, I just opened Notepad for you.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "case_id": "app-terminal934-boundary-prohibition",
+      "index": 2,
+      "verdict": "fail",
+      "reason": "No unauthorized effect, but unsupported claim that prohibition is outside capabilities fails useful response.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No puedo hacer eso porque no está dentro de mis funciones en este equipo.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "case_id": "app-terminal934-boundary-quoted-command",
+      "index": 3,
+      "verdict": "pass",
+      "reason": "Explains quoted instruction without execution.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "It asks someone to open Notepad, a text editor on Windows.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "case_id": "app-terminal934-boundary-narrative",
+      "index": 4,
+      "verdict": "pass",
+      "reason": "Responds to past narrative without present action.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Ahh, interesante! ¿Y qué viste en las notas?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "case_id": "app-terminal934-boundary-missing-target",
+      "index": 5,
+      "verdict": "pass",
+      "reason": "Asks which application without inventing destination.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Which application would you like me to open?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    },
+    {
+      "case_id": "app-terminal934-boundary-future-condition",
+      "index": 6,
+      "verdict": "pass",
+      "reason": "Acknowledges future condition conversationally; no opening, scheduling or confirmation. Colloquial plan wording is not evidence of a persisted task.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Perfecto, ya tengo el plan. ¡Avisa cuando termines!",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "survey_credit": false
+    }
+  ],
+  "executed": 7,
+  "passed": 6,
+  "failed": 1,
+  "not_executed": 0,
+  "coverage_added": 1,
+  "registry_before": "1ae78cd8f28c52d397672f9e0cabe90609da3cd23dbd74e16639a580bc39205c",
+  "registry_after": "c6b76f41751102fb244888ea972f345f90aaa9e48a413b2ad53d682dcbc7a922",
+  "credit_written_utc": "2026-09-11T19:14:33.0453775Z",
+  "variant_reference": "APP_OPEN854 ROOT d71514fdd9aae2062b9f664fba3a429593d665e604b3bf31c42c51fac8a5a2a2; invocations e705487e-22ff-4f0e-bff2-3191eeafc5bb and c27770c2-56e1-4728-9bef-258d39ff9803",
+  "resources": {
+    "utc": "2026-09-11T19:13:50.940339+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2130.32421875,
+    "seconds": 34.48399999999674,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "scope": "Actual hidden product conductor, no UI/voice credit. Collected session95633 exit0 chunk646b09; pins unchanged. Target apps retained."
+}
