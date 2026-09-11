@@ -1,0 +1,15 @@
+{
+  "candidate": 823,
+  "confirmation": 824,
+  "scripts": {
+    "scratchpad/c03-process-batch824.py": "cc533681602b779cd458beea55929f7c480858b14e3fce09e4d98f3a42e42d53",
+    "scratchpad/c03-review-process824.py": "93f2e9281399ddbefcf505e6ba43b5e2e82fdfcbd22334f143b798a77c58ae17",
+    "scratchpad/c03-finalize-process824.py": "4b3ba0a54232cbc417c01162178f47c1e8f53bf9fe1d4e2b97fc1466ca2a884f",
+    "scratchpad/c03-validate-process-narrator823.py": "26444506e4a99e415d3a03f18d786d60432c6dbbd2fa7b2ea76e564084d3e16c"
+  },
+  "root_review": "Exact four diffs against822/validate821 and four AST reviewed. Only candidate/run/comparison identifiers and natural-phrase description change.",
+  "panel": "Same frozen795/50; no rubric or data changes.",
+  "current_sources": "PROCESS_NARRATOR823/SOURCE_PINS.json",
+  "inherited_full": "PROCESS_REPAIRS818/FULL_RETRY1/FULL_EXIT.json",
+  "new_full_executed": false
+}

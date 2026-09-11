@@ -1,0 +1,30 @@
+{
+  "utc": "2026-09-11T07:24:19.053597+00:00",
+  "candidate": 823,
+  "adopted": false,
+  "base_commit": "df941680407e3087871da7efaa5b3078278111c0",
+  "changed_files": [
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py",
+    "experiments/stt_quality/evaluate_reserved_stt.py",
+    "src/baxy_mind/llm.py",
+    "tests/test_c03_process_scope_prompt.py",
+    "tests/test_price_v8_veto_damage_by_cause.py"
+  ],
+  "difference": "One process prompt clause replaces its camelCase reference with: State how many accessible processes were observed before row selection. One owner assertion covers the wording. Three current reference identities updated by root. No data, budgets, model, backend, panel or rubric changes.",
+  "baseline": "822:43/50;801:35/50. No regrading or survey credit.",
+  "measurement_plan": "824 repeats the frozen panel795/50 after current Python/reference owners and Fast pass.",
+  "full_baseline": "Python-only823 inherits Full818/FULL_RETRY1 and baseline .NET owners explicitly; this is not Full823, and baseline source hashes need not equal current candidate hashes. Adoption and final Full remain governed by the goal.",
+  "baseline_source_pins_path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_REPAIRS818\\FULL_RETRY1\\SOURCE_PINS.json",
+  "baseline_source_pins_sha256": "952a061bf291456f415ec67a810f5b8fd5054602c01a761d76f7bb5576beaa45",
+  "baseline_full_path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_REPAIRS818\\FULL_RETRY1\\FULL_EXIT.json",
+  "baseline_full_sha256": "08e681a72a850c70e14ddac27f1a89bb4521279aa76aa16ec548727d43030b9f",
+  "baseline_owners_dotnet_path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\PROCESS_REPAIRS818\\FULL_RETRY1\\OWNERS_DOTNET_EXIT.json",
+  "baseline_owners_dotnet_sha256": "acf5322befab79a320756d9056bbdfbd5cd03d0466f3d5265d88d0db2e78f330",
+  "source_pins_sha256": "5b738e727c7a32bd8bb4f38da99d63a02a7a5ad08db2748e8ac438ff639065f2",
+  "runner_sha256": "26444506e4a99e415d3a03f18d786d60432c6dbbd2fa7b2ea76e564084d3e16c",
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  }
+}

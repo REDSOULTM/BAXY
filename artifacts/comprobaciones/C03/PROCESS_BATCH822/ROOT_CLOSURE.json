@@ -1,0 +1,69 @@
+{
+  "utc": "2026-09-11T07:22:39.154276+00:00",
+  "session": 98543,
+  "collected_exit_code": 0,
+  "collection_chunk": "7d1472",
+  "product_runtime_absent": true,
+  "runtime_absence_check": "CIM no Baxy.exe/baxy-core.exe/llama-server.exe/testhost.exe nor runner20496/launcher31648 after collection.",
+  "terminals": {
+    "published_final": 50,
+    "composition_failed": 0
+  },
+  "adopted": false,
+  "adoption_reason": "43/50 vs81940, seven gains and four losses. Observed-population statement restores lists, but four internal-field labels and two unscoped counts remain alongside app-membership blocker. One natural-wording proposal823 targets the four new field leaks; no new checker or layer.",
+  "rubric_notes": [
+    "Root reviewed every response against its fresh observation before one-time finalizer.",
+    "A brief enumeration plus separately stated larger accessible observed population communicates a subset without requiring a literal phrase or repetition of displayed-row count. No exhaustiveness claim is allowed.",
+    "Memory/CPU/unspecified rankings do not inherit an unrequested row quota or observed-count obligation; CPU06 correct maximum remains valid.",
+    "Observed process count with separated natural words is valid prose; literal camelCase observedProcessCount is internal-field leakage.",
+    "Historical judgments unchanged; no survey/acceptance/UI/voice credit."
+  ],
+  "comparison": {
+    "801": {
+      "previous_valid": 35,
+      "gains": [
+        "H0158",
+        "H0169",
+        "H0364",
+        "H0650",
+        "H0669",
+        "process795-list-01",
+        "process795-list-04",
+        "process795-list-05",
+        "process795-list-06",
+        "process795-list-09",
+        "process795-memory_rank-04",
+        "process795-cpu_rank-05",
+        "process795-cpu_rank-06",
+        "process795-unspecified_rank-01"
+      ],
+      "losses": [
+        "process795-list-08",
+        "process795-count-02",
+        "process795-count-05",
+        "process795-memory_rank-06",
+        "process795-memory_rank-08",
+        "process795-cpu_rank-07"
+      ]
+    },
+    "819": {
+      "previous_valid": 40,
+      "gains": [
+        "H0158",
+        "process795-list-02",
+        "process795-list-04",
+        "process795-list-05",
+        "process795-list-06",
+        "process795-list-07",
+        "process795-cpu_rank-05"
+      ],
+      "losses": [
+        "process795-count-05",
+        "process795-memory_rank-06",
+        "process795-memory_rank-08",
+        "process795-cpu_rank-07"
+      ]
+    }
+  },
+  "scope": "Full818retry1 separate cumulative baseline. Candidate821 not category acceptance; final Full pending."
+}

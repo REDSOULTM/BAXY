@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "821 validado:696dueñasPythonpass/0skip/6,16s;17referenciaspass/1skipambiental/1,77s;Fast0,33pins b5fb5117e2c32ba2ce162eb6553ade3d34436297eaa9e18cf43e20ed65354c1c intactos. Una frase pide población observada, sin obligación de conteo mostrado; tres referencias actuales actualizadas.822listo mismos50 tras publicar; worktree821retirado.81940/50 íntegro sinadopción. Full818retry1baseline;encuesta28/714/0;matriz3/11;C03EN_CURSO.",
-  "continuation": "Publish own source821 and819evidence; run822 immediately after commit; same50, root adjudication and no source/Full during GPU.",
+  "checkpoint": "823 validado:696Pythonpass/0skip/6,15s;17referenciaspass/1skipambiental/1,81s;Fast0/Release21,62s/0advertencias/errores,33pins5b738e727c7a32bd8bb4f38da99d63a02a7a5ad08db2748e8ac438ff639065f2intactos. Frase natural sin identificador, una diferencia.82243/50 íntegro;824 listo tras publicación. Sesión75105 recogida0. Full818retry1baseline,encuesta28/714/0,matriz3/11,C03EN_CURSO.",
+  "continuation": "Publish source823 and evidence822; run824same50, root live/complete adjudication. Do not rerun822 finalizer. No source/Full duringGPU.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,10 +34,10 @@
   },
   "pendingOwnerClarification": "Owner closure confirmation received; Windows still registers Taskmgr8204. No repeated request and no block for independent C03 work.",
   "publishedSourceCommit": "d1a040d62fd57ef1db583121eda2c67c1efde632",
-  "workStatus": "process821_validated_822_ready",
-  "goalStatusNote": "Active.81940/50 with10 failures; no new coverage or category adoption.",
+  "workStatus": "process823_validated_824_ready",
+  "goalStatusNote": "Active;82243/50 with7 failures, no new coverage/category adoption.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "1b395b18ad77b366044c24105d3c439663baccef",
+  "publishedEvidenceCommit": "df941680407e3087871da7efaa5b3078278111c0",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -79,24 +79,24 @@
   "activeReadOnlyAgent": null,
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
-    "name": "process819",
-    "sessionId": 23227,
-    "launcherPid": 10072,
-    "runnerPid": 5524,
+    "name": "process822",
+    "sessionId": 98543,
+    "launcherPid": 31648,
+    "runnerPid": 20496,
     "processReceipt": {
-      "utc": "2026-09-11T06:57:36.814879+00:00",
-      "launcher": 10072,
-      "runner": 5524,
+      "utc": "2026-09-11T07:15:36.181465+00:00",
+      "launcher": 31648,
+      "runner": 20496,
       "command": [
         "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
         "main.py",
         "--conductor",
         "--profile",
-        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-profile819",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-profile822",
         "--capture",
-        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch819-private\\capture",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch822-private\\capture",
         "--turns-file",
-        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch819-private\\turns.jsonl",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch822-private\\turns.jsonl",
         "--timeout-ms",
         "120000"
       ]
@@ -104,11 +104,11 @@
     "registeredCases": 50,
     "state": "complete",
     "adjudication": "root_complete",
-    "sourceCandidate": 818,
-    "valid": 40,
-    "failed": 10,
+    "sourceCandidate": 821,
+    "valid": 43,
+    "failed": 7,
     "collectedExitCode": 0,
-    "rootClosure": "PROCESS_BATCH819/ROOT_CLOSURE.json"
+    "rootClosure": "PROCESS_BATCH822/ROOT_CLOSURE.json"
   },
   "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
   "ownerPriority": "Owner ordered model selection after792 and immediate progress on C03 blockers; no further model campaign.",
@@ -905,14 +905,13 @@
     "integration_precondition": "Root must adjudicate819 first; not integrated and not adopted."
   },
   "lastCandidateValidation": {
-    "candidate": 821,
-    "sessionId": 52343,
-    "mode": "owners plus Fast",
+    "candidate": 823,
+    "sessionId": 75105,
     "exit_code": 0,
     "owners_python_pass": 696,
     "owners_python_skip": 0,
     "owners_reference_pass": 17,
     "owners_reference_skip": 1,
-    "receipt": "PROCESS_NARRATOR821/ROOT_VALIDATION.json"
+    "receipt": "PROCESS_NARRATOR823/ROOT_VALIDATION.json"
   }
 }

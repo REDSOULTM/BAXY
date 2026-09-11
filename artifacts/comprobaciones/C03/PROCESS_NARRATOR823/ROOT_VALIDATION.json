@@ -1,0 +1,14 @@
+{
+  "session": 75105,
+  "collected_exit_code": 0,
+  "collection_chunk": "78d828",
+  "source_pins_intact": 33,
+  "python_summary": "696 passed in 6.15s",
+  "reference_summary": "17 passed, 1 skipped in 1.81s",
+  "reference_skip": "Missing historical blind STT campaign inputs, environmental omission not credited as pass.",
+  "fast_exit_code": 0,
+  "release_seconds": 21.62,
+  "warnings": 0,
+  "errors": 0,
+  "full_policy": "Python-only823 inherits Full818/FULL_RETRY1 separately; final Full pending."
+}

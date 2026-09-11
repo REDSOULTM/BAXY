@@ -1,0 +1,20 @@
+{
+  "worktree": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-natural-count823",
+  "checked_parent": "C:\\Users\\usuario\\AppData\\Local\\BAXY",
+  "only_owned_changes": [
+    " M src/baxy_mind/llm.py",
+    " M tests/test_c03_process_scope_prompt.py"
+  ],
+  "matching_sources": {
+    "src/baxy_mind/llm.py": {
+      "root": "fd6c58fb90f6e19b172ce8bb3fe1b1f0c0cfdc447277701d7f1487610654d22b",
+      "worktree": "fd6c58fb90f6e19b172ce8bb3fe1b1f0c0cfdc447277701d7f1487610654d22b",
+      "snapshot": "fd6c58fb90f6e19b172ce8bb3fe1b1f0c0cfdc447277701d7f1487610654d22b"
+    },
+    "tests/test_c03_process_scope_prompt.py": {
+      "root": "408527870ccde888eb59b329ca4b676be16d5b6a0cce8b6c1db5f4740c5fda6f",
+      "worktree": "408527870ccde888eb59b329ca4b676be16d5b6a0cce8b6c1db5f4740c5fda6f",
+      "snapshot": "408527870ccde888eb59b329ca4b676be16d5b6a0cce8b6c1db5f4740c5fda6f"
+    }
+  }
+}

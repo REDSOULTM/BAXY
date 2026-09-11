@@ -75,7 +75,7 @@ def test_verified_process_scope_reaches_first_prompt_and_existing_retry(
         assert "keeping its name, processid and observed resource value and unit together" in system
         assert "even for a single result" in system
         assert "disclose when the list is a subset" in system
-        assert "state observedprocesscount as the number of accessible processes observed" in system
+        assert "state how many accessible processes were observed before row selection" in system
         assert "state how many rows you actually list" not in system
         assert "a process working set is not an application total" in system
 

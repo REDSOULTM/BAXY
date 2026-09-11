@@ -1,0 +1,26 @@
+{
+  "utc": "2026-09-11T07:24:19.114752+00:00",
+  "pid": 4048,
+  "command": [
+    "C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_c03_process_scope_vocabulary.py",
+    "tests/test_compose_contract.py",
+    "tests/test_c03_request_preservation.py",
+    "tests/test_c03_process_projection_scope.py",
+    "tests/test_c03_process_inventory.py",
+    "tests/test_c03_process_scope_prompt.py",
+    "tests/test_c03_process_identity_projection.py",
+    "tests/test_c03_process_output_budget.py",
+    "tests/test_system_measurement_prose_projection.py",
+    "tests/test_c03_observed_process_vocabulary.py",
+    "tests/test_c03_process_count_projection.py"
+  ],
+  "private_log": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-narrator823-private\\owners_python.log",
+  "source_pins_sha256": "5b738e727c7a32bd8bb4f38da99d63a02a7a5ad08db2748e8ac438ff639065f2",
+  "runner_sha256": "26444506e4a99e415d3a03f18d786d60432c6dbbd2fa7b2ea76e564084d3e16c"
+}
