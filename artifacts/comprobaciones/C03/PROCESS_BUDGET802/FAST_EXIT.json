@@ -1,0 +1,6 @@
+{
+  "command": "./scripts/test_source_quality.ps1",
+  "attempt": 2,
+  "log_sha256": "b58f09e28387f193383b99878a60e2d7bdbeb934f2d5f2a1a70dbc01afb6c488",
+  "exit_code": 0
+}

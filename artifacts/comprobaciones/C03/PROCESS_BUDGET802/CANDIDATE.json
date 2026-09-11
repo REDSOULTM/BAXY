@@ -1,0 +1,26 @@
+{
+  "utc": "2026-09-11T01:48:42.818356+00:00",
+  "source": 802,
+  "adopted": false,
+  "base_commit": "e65360bc4e998eace892a1957bca6aec40fc5047",
+  "hypothesis": "Reuse existing 512-token dense allowance for projected process rows; keep 256 for count-only answers. Five length cuts in801, inherited implementation passes30 focused controls.",
+  "runtime_changes": [
+    "src/baxy_mind/llm.py"
+  ],
+  "declarations_only": [
+    "tests/test_price_v8_veto_damage_by_cause.py",
+    "experiments/stt_quality/evaluate_reserved_stt.py",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py"
+  ],
+  "baseline": "Inherited baseline.log:6 failed/13 passed; implemented WIP already preserved in9ea1ce56. Focused current test30 passed/0 skips.",
+  "prior_evidence": [
+    "PROCESS_BATCH801/REPORT.md",
+    "INVENTORY_BUDGET786/REPORT.md",
+    "INVENTORY_BUDGET787/REPORT.md"
+  ],
+  "source800_pins_sha256": "0bad574c5950ecbfd9960738fe054c27fbc5a91b0374e9d9b36d9594dcc7ca7c",
+  "private_snapshot": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-budget802-private",
+  "acceptance": "Same sealed50 panel795; root reviews against fresh facts, preserves prior valid behavior and seeks complete uncropped lists. No automatic survey credit.",
+  "environment_recovery": "Bare py selects incomplete Python313 without pytest. Use existing registered BAXY Python for validation and same main.py product entry. No installation or runtime registration change.",
+  "full_scope": "Python-only budget addition to source800. Owners and Fast now; Full798 remains prior baseline and global final Full remains required."
+}

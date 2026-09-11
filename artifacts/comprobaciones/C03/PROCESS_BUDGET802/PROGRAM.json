@@ -1,0 +1,10 @@
+{
+  "schema": "baxy.wake-validation-program-tree.v1",
+  "roots": [
+    "experiments/voice_latency",
+    "scripts",
+    "src/baxy_mind"
+  ],
+  "pythonFiles": 407,
+  "sha256": "f5097ca94014924aadd6e60006c9f1ebc68f17cba7e1e7fdb0600e8c1af3114f"
+}
