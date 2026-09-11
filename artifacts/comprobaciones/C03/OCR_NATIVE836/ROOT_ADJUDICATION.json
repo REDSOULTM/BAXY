@@ -1,0 +1,110 @@
+{
+  "utc": "2026-09-11T09:27:10.510738+00:00",
+  "root_adjudicated": true,
+  "collection": {
+    "session_id": 58658,
+    "chunk": "e3f938",
+    "exit_code": 1
+  },
+  "pass": 1,
+  "fail": 7,
+  "content_valid": 1,
+  "unavailable_content": 7,
+  "cases": [
+    {
+      "case_id": "OCR832-D01",
+      "user_message": "En esta tabla, ¿qué aplicación tiene el valor más alto en Memoria y cuánto indica?",
+      "answer": "En la tabla proporcionada, se muestra la memoria utilizada por diferentes aplicaciones:\n\n- **Cosmos**: 420,5 MB  \n- **Orilla**: 980,2 MB  \n- **Río**: 105,0 MB  \n\nEl valor más alto en **Memoria** es **980,2 MB**, y corresponde a la aplicación **Orilla**.\n\n✅ **Respuesta final**:  \n**Aplicación con el mayor uso de memoria: Orilla**  \n**Valor: 980,2 MB**",
+      "error": null,
+      "pass": true,
+      "root_reason": "Respuesta completa correcta: Orilla980,2MB, pares de las tres filas correctos, alcance explícito de tabla.",
+      "seconds": 2.2190000000009604,
+      "wire_payload_matches_sealed_control": true
+    },
+    {
+      "case_id": "OCR832-D02",
+      "user_message": "¿Cuál de las tres filas muestra menos memoria y qué valor tiene?",
+      "answer": null,
+      "error": "TimeoutError: se agotó el presupuesto local del LLM",
+      "pass": false,
+      "root_reason": "Sin respuesta en el plazo4s; getresponse_failed antes de headers. Fallo de ejecución, contenido/modelo no adjudicable. No bytes de respuesta recuperados y no se inventa borrador.",
+      "seconds": 4.015999999999622,
+      "wire_payload_matches_sealed_control": true
+    },
+    {
+      "case_id": "OCR832-D03",
+      "user_message": "¿Esta observación demuestra cuál es la aplicación que más memoria usa en todo mi PC?",
+      "answer": null,
+      "error": "TimeoutError: se agotó el presupuesto local del LLM",
+      "pass": false,
+      "root_reason": "Sin respuesta en el plazo4s; getresponse_failed antes de headers. Fallo de ejecución, contenido/modelo no adjudicable. No bytes de respuesta recuperados y no se inventa borrador.",
+      "seconds": 4.014999999999418,
+      "wire_payload_matches_sealed_control": true
+    },
+    {
+      "case_id": "OCR832-D04",
+      "user_message": "Junto a Orilla aparece un número entre paréntesis: ¿cuál es y permite saber los PID de sus integrantes?",
+      "answer": null,
+      "error": "TimeoutError: se agotó el presupuesto local del LLM",
+      "pass": false,
+      "root_reason": "Sin respuesta en el plazo4s; getresponse_failed antes de headers. Fallo de ejecución, contenido/modelo no adjudicable. No bytes de respuesta recuperados y no se inventa borrador.",
+      "seconds": 4.0,
+      "wire_payload_matches_sealed_control": true
+    },
+    {
+      "case_id": "OCR832-D05",
+      "user_message": "List the three applications from highest to lowest in the Memoria column, including each displayed value.",
+      "answer": null,
+      "error": "TimeoutError: se agotó el presupuesto local del LLM",
+      "pass": false,
+      "root_reason": "Sin respuesta en el plazo4s; getresponse_failed antes de headers. Fallo de ejecución, contenido/modelo no adjudicable. No bytes de respuesta recuperados y no se inventa borrador.",
+      "seconds": 4.014999999999418,
+      "wire_payload_matches_sealed_control": true
+    },
+    {
+      "case_id": "OCR832-D06",
+      "user_message": "Read the Memoria column from top to bottom as displayed, pairing each value with its application name. Keep the displayed row order.",
+      "answer": null,
+      "error": "TimeoutError: se agotó el presupuesto local del LLM",
+      "pass": false,
+      "root_reason": "Sin respuesta en el plazo4s; getresponse_failed antes de headers. Fallo de ejecución, contenido/modelo no adjudicable. No bytes de respuesta recuperados y no se inventa borrador.",
+      "seconds": 4.0,
+      "wire_payload_matches_sealed_control": true
+    },
+    {
+      "case_id": "OCR832-D07",
+      "user_message": "Are any of the three applications tied in the displayed memory values? Show the values you used.",
+      "answer": null,
+      "error": "TimeoutError: se agotó el presupuesto local del LLM",
+      "pass": false,
+      "root_reason": "Sin respuesta en el plazo4s; getresponse_failed antes de headers. Fallo de ejecución, contenido/modelo no adjudicable. No bytes de respuesta recuperados y no se inventa borrador.",
+      "seconds": 4.015999999999622,
+      "wire_payload_matches_sealed_control": true
+    },
+    {
+      "case_id": "OCR832-D08",
+      "user_message": "Compare Cosmos y Río por memoria y dime en español si también puedes comparar su CPU con esta tabla.",
+      "answer": null,
+      "error": "TimeoutError: se agotó el presupuesto local del LLM",
+      "pass": false,
+      "root_reason": "Sin respuesta en el plazo4s; getresponse_failed antes de headers. Fallo de ejecución, contenido/modelo no adjudicable. No bytes de respuesta recuperados y no se inventa borrador.",
+      "seconds": 4.0,
+      "wire_payload_matches_sealed_control": true
+    }
+  ],
+  "comparison_to832": {
+    "baseline_pass": 6,
+    "this_pass": 1,
+    "gains": 0,
+    "losses": 5,
+    "meaning": "Removing full framing is not a usable improvement under same4s budget. Missing drafts do not prove intrinsic model reasoning failure."
+  },
+  "resources": {
+    "seconds": 51.46900000000096,
+    "gpu_peak_mib": 3495.55859375,
+    "ram_peak_mib": 756.546875,
+    "violations": []
+  },
+  "coverage_added": 0,
+  "next": "One final control838 adds only Answer briefly. to the same native input and keeps4s/256tokens. No PID/tie rules or oracle. Then stop this framing strategy if no net improvement."
+}

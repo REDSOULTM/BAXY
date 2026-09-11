@@ -5,7 +5,7 @@
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
   "checkpoint": "OCR832 collected0 f7243c,6/8 root-valid. D04 inventedPID7; D07 false tie. Geometry/hash intact to wire8/8; native drafts equal published,0veto/retry/cut. VRAM3495,56MiB/RAM755,20MiB/32,25s. Native framing836 preparation; DPI835 isolated repair. Survey36/706/0,H0675open,C03active.",
-  "continuation": "Review and run native framing control836 with same8 sealedcases, no product source changes during GPU. Review DPI835 repair afterowners, integrate and verify physical capture before adoption/real834.",
+  "continuation": "Review/run last framing control838 on unchanged46pins, then integrate reviewed DPI835 and run owners/Fast/native837/Full when adopted. No repeated836 or broadened timeouts.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -34,7 +34,7 @@
   },
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "f70ea94c7ef04a2b623cf3be5c1bfd2218d59385",
-  "workStatus": "ocr832_adjudicated6of8_dpi835_repair",
+  "workStatus": "ocr836_timeout_control838_prepared_dpi835_waiting",
   "goalStatusNote": "All C03 remains active;36covered/706open and49/50 process panel; generic screen prerequisites not H0675 completion.",
   "previousGoalTurnClassification": "progress",
   "publishedEvidenceCommit": "c5d0f476facd538b1226c5d3c4c0ced22a1ee7ec",
@@ -966,6 +966,15 @@
     "pass": 6,
     "fail": 2,
     "sourceAdopted": false,
+    "coverageAdded": 0
+  },
+  "latestNativeOcrRun": {
+    "name": "OCR836",
+    "sessionId": 58658,
+    "collectionChunk": "e3f938",
+    "exitCode": 1,
+    "pass": 1,
+    "timeouts": 7,
     "coverageAdded": 0
   }
 }
