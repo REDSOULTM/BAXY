@@ -1,0 +1,19 @@
+{
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "candidate_manifest_sha256": "99edf29f59a111a0b022a2937875309202d77dc56c2d7936ade086d95341c0d1",
+  "execution_authorized": true,
+  "utc": "2026-09-11T18:45:30.790554+00:00",
+  "exit_code": 0,
+  "stopped": false,
+  "pins_unchanged": true,
+  "terminal_records": 6,
+  "session_controls_observed": 6,
+  "turn_admissions_observed": 6,
+  "app_cleanup_by_runner": false,
+  "audio_restoration_by_runner": false,
+  "quality_adjudicated": false,
+  "success_count": null,
+  "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-app-response925-profile\\journal\\missions.jsonl",
+  "target_apps_closed_by_guard": false
+}

@@ -1,31 +1,21 @@
-# Último resultado922
-
-Seguimos en **69/742 cubiertos,673 abiertos y0 no aplican**. Configuración se abrió usando la ventana existente, pero BAXY no publicó una respuesta final útil. Su estado continúa abierto y ya tiene esta causa registrada.
-
-La tanda ejecutó6casos:1válido y5fallidos, sin créditos nuevos. Respetó las cinco restricciones de acción; cuatro respuestas sobre ellas fueron incorrectas. Se está diagnosticando el rechazo de la respuesta de Configuración para una reparación puntual.
-
-Duración44,5s. Pico VRAM3497,56MiB; pico RAM2415,14MiB, cada uno frente4096MiB. Sin cortes ni violaciones de recursos. Ritmo41acreditaciones confirmadas24h,0/35categorías cerradas y3/11filas C03. Aplicaciones44abiertos sigue antes que web43. No hay bloqueo ni decisión pendiente del dueño. Suites/Fast/Full omitidos por instrucción, no aprobados.
-
 # Estado para el dueño — 11 de septiembre
 
-La encuesta subió a **69/742 cubiertos**, con673 abiertos y0 no aplican. Se acreditaron buscar recetas de pasta en Google, buscar teclados mecánicos en Google y abrir Gmail. Cada literal tiene ejecución útil y fiel y dos variantes pertinentes verificadas.
+La encuesta permanece en **69/742 cubiertos,673 abiertos y0 no aplican**. Las últimas dos tandas no añadieron crédito.
 
-Se publicaron dos correcciones pequeñas: reconocer «llévame» al navegar y evitar que «en el navegador» se interprete como abrir una segunda aplicación. Las dos variantes que fallaban por esas causas ya pasaron. En este turno se ejecutaron11casos reales:7válidos,4fallidos y3acreditaciones nuevas. Se conservaron todas las paradas y los casos no ejecutados.
+Se corrigió un filtro que rechazaba una respuesta correcta sobre Configuración por coincidir con la petición. Al ejecutarlo de nuevo, apareció otro problema: Windows no dejó verificar la apertura. BAXY informó esa incertidumbre; no se contó como éxito ni se repetirá la acción automáticamente. La corrección aún necesita comprobarse en una apertura exitosa.
 
-| Última tanda916 | Resultado |
-|---|---|
-| Casos ejecutados |5:4válidos,1fallido |
-| Casos restantes |5límites no ejecutados |
-| Créditos nuevos |3 |
-| Pico VRAM |3563,54MiB |
-| Pico RAM |2978,20MiB |
-| Referencia de memoria |4096MiB, comparada por separado |
-| Guardas |Sin violaciones |
+| Últimas ejecuciones reales |922 |925 |
+|---|---:|---:|
+| Casos ejecutados |6 |6 |
+| Respuestas que cumplen el caso |1 |3 |
+| Casos fallidos |5 |3 |
+| Créditos nuevos |0 |0 |
+| Pico VRAM |3497,56MiB |3497,56MiB |
+| Pico RAM |2415,14MiB |2342,03MiB |
+| Duración |44,5s |39,344s |
 
-Github sigue fallando al interpretar la petición. La búsqueda de toreo navega correctamente pero queda sin respuesta: ya se localizó una comprobación que confunde el signo de interrogación de su URL con una pregunta. Su reparación está en preparación; no se le concedió crédito.
+RAM y VRAM se comparan por separado con4096MiB. No hubo cortes ni violaciones de recursos. En925 pasaron la prohibición, la aplicación explícitamente ficticia y la petición de aclarar el destino ausente. Fallaron la apertura verificable, la condición futura y la explicación conceptual.
 
-Con los nuevos créditos, aplicaciones tiene44 abiertos y web43: aplicaciones vuelve a ser la primera categoría por masa. Se prepararán reparaciones sobre fallos observados; no se repetirán aperturas inciertas para obtener una cifra.
+Aplicaciones sigue primera con44abiertos, seguida de web43. El próximo tramo diagnostica la verificación fallida con los recibos existentes; la reparación web ya quedó preparada para cuando corresponda. Se conservan los tres créditos anteriores de Google y Gmail.
 
-Ritmo:41acreditaciones confirmadas en las últimas24h; dos actualizaciones adicionales no permiten fechar la primera acreditación.0/35categorías cerradas y3/11filas C03 cumplidas. No hay fecha de cierre fiable todavía. Suites automáticas,Fast yFull se omiten por tu instrucción; no se presentan como aprobadas. El goal sigue activo y ya no hay bloqueo de RAM ni decisiones pendientes tuyas.
-
-Los recibos y estados anteriores están preservados en Git y CHECKPOINT. Gmail acredita navegación pública, no acceso a cuenta/correo. La variante W3C acredita navegar al host/ruta solicitados; el destino añadió un parámetro de desafío y no se afirma lectura de su contenido.
+Ritmo:41acreditaciones confirmadas en24h; dos actualizaciones adicionales no permiten distinguir la primera fecha. Categorías cerradas0/35; filasC03cumplidas3/11. No hay fecha de cierre fiable. Suites automáticas,Fast yFull se omiten por tu instrucción y no se presentan como aprobadas. El goal está activo, sin bloqueo de RAM ni decisiones pendientes tuyas.

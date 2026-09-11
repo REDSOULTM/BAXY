@@ -1,5 +1,5 @@
 {
-  "utc": "2026-09-11T18:40:54.0158542Z",
+  "utc": "2026-09-11T18:48:12.7807536Z",
   "covered": 69,
   "open": 673,
   "not_applicable": 0,
@@ -351,16 +351,17 @@
     "WEB_SEARCH900/ROOT_ADJUDICATION.json",
     "APP_CORRECTION902/ROOT_ADJUDICATION.json",
     "WEB_CONFIRMATION916/ROOT_ADJUDICATION.json",
-    "APP_PRIORITY922/ROOT_ADJUDICATION.json"
+    "APP_PRIORITY922/ROOT_ADJUDICATION.json",
+    "APP_RESPONSE925/ROOT_ADJUDICATION.json"
   ],
-  "equal_maximum_open_next_selection": "Apps44open precedes web43 after916;922 adds no credit. Repair verified Settings response before directed retry; web918/919 remain reserved.",
+  "equal_maximum_open_next_selection": "Apps44open precedes web43. H0706 now uncertain after925, no automatic repeat. Read928 verification diagnosis or implement existing private identity audit923 for five open IDs;927/919 remain web reserves.",
   "latest_product_run": {
-    "passed": 1,
+    "passed": 3,
     "executed": 6,
-    "batch": 922,
+    "batch": 925,
     "not_executed": 0,
-    "failed": 5,
+    "failed": 3,
     "coverage_added": 0
   },
-  "registry_sha256": "cba8b2bf643d6375ad692146e45bc369b57014b53ef16200811ae24849002693"
+  "registry_sha256": "66a8879d4be17016a094758341a237b7fc487337f77ad46e8efd029db66b68b9"
 }

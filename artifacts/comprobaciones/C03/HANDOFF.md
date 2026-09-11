@@ -1,51 +1,41 @@
-Continuación922 vigente: seis casos,1pass5fail,0créditos. H0706 apertura verificada sobre Configuración preexistente pero composición fallida; open actualizado. Diagnóstico924 en process_counts812. Reparar primera causa antes de reejecutar sólo literal pertinente. Apps44/web43;69cubiertos673open. Fuente914 intacta, sesión59793 recogida2c4b53, ninguna GPU922 pendiente. Plan923 externo sólo observabilidad5IDs sin adoptar;918/919 reservas web. No suites por dueño. Detalle al final del CHECKPOINT y APP_PRIORITY922/ROOT_ADJUDICATION.json.
+# C03 — continuación después de925
 
-# C03 — continuación vigente después de916
+Goal activo. El dueño ordenó omitir suites automáticas/Fast/Full y conservar ejecuciones reales selladas y adjudicación contra hechos. Compilación necesaria permitida. Cierre de apps autorizado sin nuevas consultas; conservar trabajo y efectos inciertos. Raíz único escritor/GPU/commit, máximo2subagentes. No hay decisiones pendientes ni bloqueo de RAM.
 
-El goal está activo. El dueño ordenó omitir suites automáticas, Fast y Full y conservar ejecuciones reales selladas para acreditar encuesta. Compilación necesaria está autorizada. También autorizó cerrar aplicaciones para liberar RAM; no repetir consultas resueltas. Máximo2 subagentes y raíz único escritor canónico/GPU/commit.
+## Próxima acción
 
-## Primera acción
+Apps44abiertos precede web43. 928 ya recogido y revisado38dbaa: REPORT.md externo SHAef7005086f3dabfe48ce21b90c8b353fa3fea7010ff4a549720249e3ba3fd1b2. No demuestra reparación funcional: result=null oculta agotamiento de proveedor frente a rechazo del receipt en handler. Único ID H0706, no sumar Calculator/Steam. Continuar923 identidad. H0706 Configuración ahora tiene efecto incierto925: app.open inv380e0e5d-3242-4759-b7c6-00b2efa5396a,verification_failed,resultnull,effectMayHaveOccurred=true. No reintentar/cerrar automáticamente ni atribuir causa sin evidencia.928 compara925 con922 y dueño existente; no construye provider ni ejecuta.
 
-La siguiente categoría por masa es **apps44 abiertos**, delante de web43 tras los3créditos916. Abrir diagnóstico acotado de H0706 Configuración y H0691 corrección positiva, contrastando recibos previos/sourceactual y907; elegir reparación mínima que prepare/acredite literales. No repetir efectos inciertos ni pedir autorización ya otorgada.
+Siguiente trabajo concreto: plan923 C03-app-grounding923-proposal/PLAN.md SHA d290c06d083103852c865f05b9d12c1fda14357eab1a946cd2ca82d4cb5cd4d3 propone ampliar audit privado ya existente paraH0691/H0227/H0289/H0503/H0558 y varianteENNotepad. Falta evidencia/operando efectivo de domain_grounding; no inferir app ausente. Plan sin adoptar; minimizar cambios, no nuevo provider.
 
-Recoger propuestas externas918 de apps_intent852 (C03-url-question918-proposal, sólo llm.py en worktree) y919 de process_counts812 (C03-web-response919-proposal, H0397+5límites intactos).917 demuestra rechazo de URL correcta por '?' interpretado como pregunta. Estos entregables NO están adoptados/ejecutados; revisar y conservar sin saltar prioridad apps44.919 requiere nueva fuente918 antes de reejecutar H0397. No repetir916 ni variantes pasadas.
+Web927 queda reserva hasta prioridad adecuada. C03-url-question927-proposal/repair.patch SHA7e9bd891cd94238a1bc3b83ae41aacece4291730209b58814bd2bd779b80cc59,base10456653,propuesta llm.py8b92e63fa0ad0f7ce741cfd962f8e31da3d41e8699e0e8dfe984a7828e48a37c. Conserva926 y rebase918 (URLobservada con?noes pregunta). Panel919 H0397+5límites nuncaejecutados reservado, revisar y vincular fuente antes de ejecutar. No repetir variantes Google912/URL909/916 ya pasadas.
 
-916 terminó y se recogió8d7883:5ejecutados4pass1fail,+H0490/H0622/H0267 escritos covered durante adjudicación;H0389open;5límites noejecutados. ROOT_ADJUDICATION30f365ecb740d72b64a56b2ade8be73dcf08f00ec3fab41ff0bcf6164db95d84. Fuente914 estable, no GPU viva. Detalle en último tramo de CHECKPOINT.
+## Estado exacto
 
-## Estado y fuente
+- Rama Goal-c03. Fuente926 publicada1045665366a14a0e051dbcf85ec296cb19d503ec. Main5f572ee1b48cb5e2543ee5e06510e51057c9c845 intacto. Commits documentales posteriores no cambian candidato fuente.
+- Encuesta69/742cubiertos,673open,0NA;41altas confirmadas24h más2actualizaciones sin fecha primera distinguible. Recalcular ventana tras19:45UTC11sept.0/35categorías,matrizC03 3/11.
+- Registro C:/Users/usuario/AppData/Local/BAXY/C03-survey-requirements336-private/requirements.jsonl SHA66a8879d4be17016a094758341a237b7fc487337f77ad46e8efd029db66b68b9. Últimos cambios H0706causaopen922/925; últimos créditos916 H0490/H0622/H0267.
+- llm.py926 SHA96245f75eac6aba2dd54dcc2271082f0993b98f569c233c226ede7f7a58166c8. effect_intent.py914 SHA7f3b86c30bf527af5f46520d356a63fd81993fba6950a8a17792a0567c3524a9;__main__.py88276c0394352cb40dc529062b565ff4812d286a720dc9e23a9fdfad3160b1c3.
+- No producto vivo925; sesiones59793/28050 recogidas2c4b53/0fa5b8. No cierre adicional de apps realizado.
 
-- Rama Goal-c03; fuente914 publicada81774290615815caea6e0585156e3b5b24e61fd2. Commits documentales posteriores no cambian fuente. Main intacto5f572ee1b48cb5e2543ee5e06510e51057c9c845.
--69/742 cubiertos,673 abiertos,0NA;41 altas confirmadas24h más2 actualizaciones cuya primera fecha no se distingue. Recalcular ventana móvil tras19:45UTC de11septiembre.0/35categorías y C03matriz3/11.
-- Registro privado C:/Users/usuario/AppData/Local/BAXY/C03-survey-requirements336-private/requirements.jsonl, SHAcba8b2bf643d6375ad692146e45bc369b57014b53ef16200811ae24849002693; última mutación916:+H0490/H0622/H0267 yH0389causaopen; H0397 sigueopen.
-- effect_intent.py SHA7f3b86c30bf527af5f46520d356a63fd81993fba6950a8a17792a0567c3524a9. __main__.py88276c0394352cb40dc529062b565ff4812d286a720dc9e23a9fdfad3160b1c3;llm.py487d79f477d41d40bf3d9bcc5652b4697a1df8c27af4a2502379e168c1554c6b.
--910 añade llevame sólo al lector local de navegación y retira siete expresiones duplicadas.914 exige que navegador/browser sea objeto de abrir; «in the browser» no crea segunda app.open. No _OPENglobal, provider nuevo ni respuesta fija.
-- Build904 real: C03-web-confirmation904-private/BUILD_EXIT.json, build/shutdown0,211c15. BUILD_STATE source_sha256875ce5baebf97beaac911ba137a5a0025cb3123b92dec03e39fc668fd9d5b2d0.910/914 sólo Python: binarios904 sin cambio. No presentar suites omitidas como verdes.
-- Manifiesto912 completo reutilizable como estructura: C03-web-confirmation912-private/CANDIDATE_AUTHORIZED.json SHA16ef36f7fc91c5b3899e7a3699a76719119578bfd1b4d6aa6b67acafc58f9aee. Actualizar schema/HEAD/panel/runner y verificar inventarios completos.
-- No producto vivo. Sesiones58941,26169,67978,75959 recogidas c23966/abc236/c08280/8d7883. Worktrees904 y910 eliminados tras cotejo de todas las fuentes adoptadas, d49f82; parches/ramas preservados. Worktree914 aún existe, ya adoptado; limpiar cuando sea útil con comprobación de ruta exacta y hashes.
+## Resultado y alcance926
 
-## Resultados que no se repiten
+922:6ejecutados1pass5fail,0créditos. Configuración app.open completed/verified sobre PID31016/HWND788958 alreadyRunningtrue, existente desdeantes920.18borradores «Abrí la configuración de Windows.» rechazados por echo asked==answered. Fuente871ya había reparado alias; no era provider ni C#891. Diagnóstico924e62d640305611ef76cb140f8941e23d5cc3f005a4bcd25dcc1539db40febfc56.
 
--906: primer var URL-ES falla sin browser candidate, guarda rechaza sin confirmar;13noejecutados.0pass1fail.
--909 tras910: URL-ES pasa con navegación verificada a RFC Editor, inv897b5f13-0044-4ae8-b22e-1a61b6cc0b28. URL-EN añade app.open y falla;12noejecutados.1pass1fail. ES útil como variante precedente; EN ya reparada914, pendiente ejecución916.
--912 bajo914: dos variantes Google pasan. Inv06a734e5-fee6-4e37-b8b5-a5260a2d5ae7 (Lisboa) y07aa9032-418b-48d2-84f4-c03c91c0abe7 (tidal energy research), URL/query exactos y respuesta fiel. Control ordinario confirmar en español explica respuesta final española EN, sin idioma exigido.
--H0397 en912: browser.navigate ec0adbeb-9d50-407c-b81e-ba70a897ced7 verified Google/toreo, pero final composition_failed/no_response; open. No reejecutar hasta reparar esa causa.9posteriores noejecutados.
--Root912 adjudicación841936a0c10188d7a964ad98f23ce4094eda055f266489d104106adc117e2fab. Mapper automático conservador sólo resuelve rechazo sintético; raíz resolvió stop por composition_failed con Host foreach→return3, captura/posterior completos y6admisiones6terminales3controls. EXIT intacto, explicación en ROOT_ADJUDICATION.
-- Picos912 VRAM3546,68MiB y RAM2936,30MiB,34,219s;9093557/2383,43MiB,24,906s;9063497,56/1598,58MiB,23,094s. Sin violaciones; pins intactos.
-- No repetir paneles completos854/TAIL,861,864,881,885,892,895,900,902. Últimos créditos916 H0490/H0622/H0267;69total.
-- H0183Calculator, H0151Explorer y Steam/Discord inciertos: conservar evidencia; no relanzar automáticamente. Paint de885 y902 ya cerrado, no repetir limpieza. Audio861 restaurado31/sin silencio, no repetir.
-- H0675/OCR/nuevos providers aparcados. Nueve Steam854 aplazados con guardas heredadas. Tres negativos y18sinmarca conservan límites; no reetiquetar.
+926 sólo llm.py+30/-2; patch455df8face7ebd96355abbc68c23eadf21641fd0557acd7665d472f0164e325e. Excepción local eco: app.open success verified/succeededtrue, afirmación pasada completa ligada a displayNameobservado, sin pregunta/promesa/negación, calificador nominal del mismo pedido. Resto validadores intacto. No imports/catálogo/provider/prompt/respuesta fija. Revisión raíz1d0fe1,adopción7b3d66; no suites por dueño.
 
-## Diagnósticos y propuestas preservados
+925:6ejecutados3pass3fail,0créditos. H0706efecto incierto, respuesta honesta no validado; falso «Ya abrí...» veto missing_failure. Por ello la corrección926 sigue pendiente de observación exitosa; no proclamar reparación validada. Pasaronprohibición/ficción/clarificación; fallaroncondicional/conceptual.
+ROOT925 SHA808e5d12c128a0aaf2dc94f5c5668b7a8929fa7f1291a93fe949e8c11b5327ec.39,344s,VRAM3497,56MiB/RAM2342,03MiB,pinsintactos,sinviolaciones.92244,5s/3497,56/2415,14MiB.
 
--907 inventario44apps:40positivos+4límites; cero positivos nuevos bajo exclusiones. Categoría no cerrada: hay que reparar fallos observados. PLAN y panel-draft externos C03-app-next907-proposal.
--911 Calculator: C03-app-calculator911-diagnosis/REPORT.md SHA4780fca4d0874f1a8e0f05cacd2ef5adc86e6b8b6212d898eced0ade35ecbf90.10potenciales,0desbloqueados probados. Fallo466ms no corresponde agotamiento29*100ms; postlectura o handler, observaciones descartadas. No culpar ausenciaUWP (null/null admitido). No prueba para reparar funcionalmente ni reejecutar incierto; futura conservación privada de evidencias dentro provider/handler, no nueva autoridad.
--913 causa inglesa raíz af78da, reporte46bd024a2e8d7cdac5996731eaf5fb02e7800ad4a55105246a2dcf5078e2a0d6;914 adoptado.915 era borrador8casos;916 lo sustituye combinando cola912 para evitar repeticiones.
--903 H0708 query exacta el clima en internet; alcance confundido con consulta. No quitar internet globalmente ni de temas/citas.900 filtro exige todos los tokens y ya evita falsos positivos, pero no recupera resultados útiles.
--891 parche C# de prosa app+hora externo, no adoptado.863audio externo no adoptado. No abrir estos frentes mientras queden siguientes literales web.
-- Historial detallado preservado en Git (HANDOFF anterior5958af30), CHECKPOINT y recibos por tramo. No leer CHECKPOINT_HISTORICO completo.
+Manifest925 C03-app-response925-private/CANDIDATE_AUTHORIZED.json SHA99edf29f59a111a0b022a2937875309202d77dc56c2d7936ade086d95341c0d1:584fuentes/18binarios/5runtime. Preparación147ef41d0b5c49bc69b2297214cac8da196e624492532475fc053496853d7d84. Panel925sello3af4c4dc7823776d0329d53dfbbcd68f4da8e0df3972b07649045cc3fadfdb94,runner49b5513c1e8a4d237bf89706f71379d8c3a3bf6c42dea4ce0d646a11ee733d5b. No sobrescribir estos directorios.
 
-## Operación
+## No repetir y operación
 
-Python: C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe -B -X utf8.
-Runner posicional prepare/run con --seal-sha256, --expected-head completo, --candidate-manifest, --candidate-manifest-sha256; run añade --preparation-sha256. Nunca sobrescribir manifiesto/preparación/run/perfil.4000MiB RAM inicial,768mínima,3800GPU,900s,120000ms por turno. Runtime/model/backend fijos heredados, no campaña nueva.
-No tocar .codex/config.toml, AGENTS.md, autoridad/promptC03 del dueño, autorizaciónUltra ni attachment remoto. Modificaciones fantasma vacías de artefactos históricos no se incluyen en commits.
+Pares854Notepad05/Paint08 válidos apertura normal ES/EN,referencia fueraejecución925. No sustituir literal actual por pares. No repetir paneles854/TAIL,861,864,881,885,892,895,900,902,906,909,912,916,922,925enteros. H0675/OCR/newproviders y9Steam aparcados;3negativos/18sinmarca conservados.
+H0183Calculator inv3cb73ca5-77ab-4802-8f56-8fe73b526ba8,H0151Explorer invb125b87e-692a-4715-a73c-c3b93aa3d92c,Steam/Discordinciertos: no reintentoautomático.911Calculatorreport4780fca4d0874f1a8e0f05cacd2ef5adc86e6b8b6212d898eced0ade35ecbf90 demuestra466msnoagotamiento; no inferircausaUWP. Paintpropio885/902yacerrado,Audio861yarestaurado31/sinsilencio; no repetir.
+891C#prosaapp+hora propuestaexterna noadoptada;863audioexterna.907inventario44apps40positivos4límites no da positivos nuevos bajoexclusiones; necesidad de reparar no cierre categoría.
+Build904real reutilizado, receiptC03-web-confirmation904-private/BUILD_EXIT.json build0shutdown0. BUILD_STATE source-build-v1.json fingerprint875ce5baebf97beaac911ba137a5a0025cb3123b92dec03e39fc668fd9d5b2d0. CambiosPython910/914/926noexigenbuild; no representarFull843histórico como validación actual.
+
+Python C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe -B -X utf8. Runnerprepare/run posicional con sealSHA,HEADcompleto,manifestpath/SHA,runprepSHA. PerfilhijodirectoLOCALAPPDATA/BAXY.4000MiBRAMinicial768mínima3800GPU900s120000ms/turn. Modelo/backend/registropinsfijosheredados,no campaña nueva. Manifest925estructura completa; actualizar todasfuentesyHEAD,conservarprovenanciabinarioshonesta. LeerJSONLliveconFileShare.ReadWrite. No recorrerartifacts/biblioteca. Evidencia histórica enCHECKPOINT/Git.
+
+Protegidos: .codex/config.toml,AGENTS.md,autoridad/promptC03del dueño, AUTORIZACION_ULTRA_2026-09-10.md y attachmentremoto. Modificaciones históricas fantasma vacías no se incluyen. Worktrees914/926aplicados siguenexternos; limpiar sólo trasvalidaciónruta/hash/propiedad cuandoútil.927noadoptado.
