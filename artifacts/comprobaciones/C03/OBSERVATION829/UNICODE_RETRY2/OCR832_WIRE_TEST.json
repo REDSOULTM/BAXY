@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-11T08:36:31.659098+00:00",
+  "driver_sha256": "b370cc5c341fb829b664263ec00727643186f5836a28c114fb9910fe1c939134",
+  "passed": true,
+  "transport": "existing pooled HTTP with original retry503 to200",
+  "physical_posts": 2,
+  "requests_byte_exact": true,
+  "responses_byte_exact": true,
+  "ids_linked": true,
+  "functions_restored": true,
+  "private_events": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-observation829-private\\wire832-events.json",
+  "events_sha256": "65c43fe2ce18a12fc4ebd089eb6ad64d59674cf2d109010e6d597a988eda2b34",
+  "model_started": false,
+  "production_source_edited": false,
+  "scope": "Instrumentation only; no OCR quality, real inference or UI credit."
+}

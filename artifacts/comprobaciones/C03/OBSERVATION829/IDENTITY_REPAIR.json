@@ -1,0 +1,12 @@
+{
+  "utc": "2026-09-11T08:08:02.574937+00:00",
+  "files": [
+    "experiments/stt_quality/evaluate_reserved_stt.py",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py"
+  ],
+  "previous_program_tree_sha256": "501832a7c1dc9eddf68952588b7f16ed4efb0ed23a9913c224b059ccbc83b63e",
+  "program_tree_sha256": "fa2db24c808f22939c6129d20cba3e12400a5623915def3a9e13ab1c19068bdf",
+  "python_files": 407,
+  "llm_and_price_v8_reference_unchanged": true,
+  "historical_receipts_unchanged": true
+}

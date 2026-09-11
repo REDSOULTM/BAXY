@@ -1,0 +1,19 @@
+{
+  "utc": "2026-09-11T08:30:35.253749+00:00",
+  "exit_code": 15,
+  "source_pins_unchanged": true,
+  "source_pins_sha256": "a596aa58a9e161123a6cc06a294dcb01c794ddcf72c8769206074056d5c23482",
+  "log_sha256": "9dd293b695c238da411d5009e9812c0731a00b53d35138e5c0cb0922c2e69328",
+  "private_log": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-observation829-private\\format-retry1\\full.log",
+  "command": [
+    "C:\\Users\\usuario\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.EXE",
+    "-NoProfile",
+    "-File",
+    "scripts/test_source_quality.ps1",
+    "-Mode",
+    "Full",
+    "-QualityPython",
+    "C:/Users/usuario/AppData/Local/BAXYQuality/source-quality-v1/Scripts/python.exe"
+  ],
+  "adopted": false
+}

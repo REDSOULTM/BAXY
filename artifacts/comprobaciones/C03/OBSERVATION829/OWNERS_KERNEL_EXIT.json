@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-11T08:08:22.264880+00:00",
+  "exit_code": 0,
+  "source_pins_unchanged": true,
+  "source_pins_sha256": "f4f206175dbde85b2f335654fe11508d33979ef28705a6deacd4472b2f02f25e",
+  "log_sha256": "efa7e104cf88c57c452e6c823b3145ce5d74770ab2b4d63089511c4958fd2500",
+  "private_log": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-observation829-private\\owners_kernel.log",
+  "command": [
+    "C:/Users/usuario/.dotnet/dotnet.exe",
+    "test",
+    "tests/Baxy.Kernel.Tests/Baxy.Kernel.Tests.csproj",
+    "-c",
+    "Release",
+    "--nologo",
+    "-v:quiet",
+    "-p:UseSharedCompilation=false",
+    "-nodeReuse:false"
+  ],
+  "adopted": false
+}

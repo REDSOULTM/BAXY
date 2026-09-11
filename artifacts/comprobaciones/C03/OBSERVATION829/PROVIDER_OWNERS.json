@@ -1,0 +1,11 @@
+{
+  "root_session": 54931,
+  "collected_exit_code": 0,
+  "chunk": "ae1f8c",
+  "passed": 38,
+  "failed": 0,
+  "skipped": 0,
+  "log_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch824-private\\root-capture-ocr-owners.log",
+  "log_sha256": "d5f89b87eb59988023f0038bec20d0f5e71ade6791084de699cf61635ae354e1",
+  "scope": "Capture and OCR provider sources unchanged since these owners; later829 touches only planner producer contract and current STT tree references."
+}

@@ -156,7 +156,7 @@ public static class MissionPlanValidator
             "game.purchase.commit" => ["game.purchase.prepare"],
             "message.send" => ["message.recipient.resolve"],
             "notification.dismiss" => ["notification.list.due"],
-            "ocr.read" => ["capture.screenshot"],
+            "ocr.read" => ["capture.screenshot", "capture.active.window"],
             "package.install.commit" => ["package.install.prepare"],
             "peripheral.print" or "peripheral.scan" => ["peripheral.list"],
             "reminder.delete" => ["reminder.resolve.exact"],

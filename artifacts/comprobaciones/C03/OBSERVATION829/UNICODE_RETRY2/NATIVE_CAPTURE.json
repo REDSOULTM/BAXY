@@ -1,0 +1,37 @@
+{
+  "started_at_utc": "2026-09-11T09:00:04.358244+00:00",
+  "finished_at_utc": "2026-09-11T09:00:13.532130+00:00",
+  "exit_code": 0,
+  "command": [
+    "C:/Users/usuario/.dotnet/dotnet.exe",
+    "run",
+    "--project",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-capture829-native-probe\\Probe.csproj",
+    "-c",
+    "Release",
+    "--verbosity",
+    "quiet",
+    "-p:UseSharedCompilation=false",
+    "-p:BuildInParallel=false"
+  ],
+  "summary": {
+    "status": "passed",
+    "reportPath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-capture829-native-probe\\private\\20260911T0900133141814Z_2a7b2eedfe694d34925580a23450f57e\\OBSERVATION.json",
+    "reportSha256": "25d18ac20e2ba0415985f8f3480ccd577d130f669d9912518ef82f0a5f5c5c6a",
+    "imageSha256": "d4638db8c6be8c74fbf0a0b0d97e6ab1090b855de98f7f81044014eb06172c52",
+    "checksPassed": 16,
+    "checksFailed": [],
+    "failureType": null
+  },
+  "private_log": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-observation829-private\\native-capture829.log",
+  "log_sha256": "3f7f10def92064211405d7162005709c7f59c2ddac64caae8412b942ce48c6d8",
+  "source_pins_unchanged": true,
+  "source_pins_sha256": "1e552541c0a18d816026c9139e82263f173ff29184f91d4a84aabce6cfb205ac",
+  "probe_csproj_sha256": "d6d951a4eabd4b4fb50246756c57ae4300e1f7b8d219f7aff4a2ab03126a5789",
+  "probe_source_sha256": "32803d6e175c8dee0dbeebcab622e98429975e6f30cf2ffcf8712480872cfef5",
+  "native_capture_passed": true,
+  "model_invoked": false,
+  "UI_inputs_or_window_manipulation": false,
+  "H0675_credit": false,
+  "BAXY_UI_credit": false
+}

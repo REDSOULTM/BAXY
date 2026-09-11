@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-11T08:35:03.493052+00:00",
+  "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\scratchpad\\c03-ocr-composer832.py",
+  "sha256": "b370cc5c341fb829b664263ec00727643186f5836a28c114fb9910fe1c939134",
+  "source_proposal_sha256": "69751de67905bc9002719b08aadb6b0500062d405290d08f406b09e3a0f208f3",
+  "root_change": "Update descriptive prereg candidate to match UNICODE_RETRY2; all execution logic identical to reviewed runner.",
+  "ast_valid": true,
+  "inference_executed": false,
+  "final_pins_sha256": "1e552541c0a18d816026c9139e82263f173ff29184f91d4a84aabce6cfb205ac",
+  "full_receipt_sha256": "Required from collected green UNICODE_RETRY2/FULL_EXIT.json, not yet available."
+}

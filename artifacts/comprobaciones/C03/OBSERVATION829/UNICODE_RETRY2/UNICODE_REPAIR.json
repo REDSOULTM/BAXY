@@ -1,0 +1,46 @@
+{
+  "utc": "2026-09-11T08:33:41.541428+00:00",
+  "changed_files": [
+    "src/Baxy.Kernel/Operations/OperationVisibleFacts.cs",
+    "tests/Baxy.Integration.Tests/C03OcrObservationProjectionTests.cs"
+  ],
+  "source_pins_sha256": "1e552541c0a18d816026c9139e82263f173ff29184f91d4a84aabce6cfb205ac",
+  "source_pins_count": 46,
+  "cause": "Escaped input JSON can exceed 48000 characters while the actual sanitized UTF-8-friendly message fits. Premature layout omission removed; final existing message limit retained.",
+  "root_red": {
+    "pass": 0,
+    "fail": 1,
+    "skip": 0,
+    "collected_session": 60962,
+    "collection_chunk": "9f331d",
+    "detail_chunk": "6b299e",
+    "log_sha256": "3f72792e615dcf9f2ead3b7f4689ec5ba89a076f0538d0a0f98e5784ab303d96"
+  },
+  "root_green": {
+    "pass": 13,
+    "fail": 0,
+    "skip": 0,
+    "milliseconds": 109,
+    "collected_session": 59840,
+    "collection_chunk": "63b9ae",
+    "log_sha256": "596022da0147f9c1fb888a8289d5a6aa6addd724b9e140bf202b9be3d7cc6211"
+  },
+  "previous_full_interrupted": {
+    "receipt": "../FORMAT_RETRY1/FULL_EXIT.json",
+    "exit_code": 15,
+    "wrapper_collected_exit": 1,
+    "session": 19095,
+    "collection_chunk": "a33515",
+    "source_pins_unchanged_at_exit": true,
+    "dotnet_passed": 4714,
+    "dotnet_aggregate_skipped": 1,
+    "printed_opt_in_skips_nondisjoint": 16,
+    "python_completed": false,
+    "full_passed": false
+  },
+  "python_sources_unchanged": true,
+  "model_profile_panel_unchanged": true,
+  "budget_unchanged": 48000,
+  "adopted": false,
+  "all_previous_receipts_preserved": true
+}

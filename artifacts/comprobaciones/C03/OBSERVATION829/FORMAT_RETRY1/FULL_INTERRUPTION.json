@@ -1,0 +1,28 @@
+{
+  "utc": "2026-09-11T08:30:34.945594+00:00",
+  "reason": "Root stops unadopted candidate after review found premature OCR layout omission from escaped Unicode raw JSON. Reproduce and repair before final validation; this interruption is not a passed Full or a test failure.",
+  "source_review": "C:/Users/usuario/AppData/Local/BAXY/C03-ocr829-final-review.md",
+  "session_id": 19095,
+  "targets": [
+    {
+      "pid": 29800,
+      "name": "conhost.exe",
+      "created_at": 1789114512.3411655
+    },
+    {
+      "pid": 27012,
+      "name": "python.exe",
+      "created_at": 1789115219.409155
+    },
+    {
+      "pid": 11252,
+      "name": "python.exe",
+      "created_at": 1789115219.4272895
+    },
+    {
+      "pid": 11652,
+      "name": "pwsh.exe",
+      "created_at": 1789114512.120185
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-11T09:05:20.161411+00:00",
+  "source_candidate": 829,
+  "adopted": false,
+  "status": "validated_candidate_pending_native_coordinate_diagnosis",
+  "source_pins_sha256": "1e552541c0a18d816026c9139e82263f173ff29184f91d4a84aabce6cfb205ac",
+  "full_result": "UNICODE_RETRY2/FULL_RESULT.json",
+  "full_passed": true,
+  "native_capture_structural_checks_passed": 16,
+  "reason": "Native capture recorded clipping with DWM window2564x1320 and desktop1244x818. Shared API checks do not prove a common DPI coordinate space. Root will isolate DPI virtualization before claiming sufficient real-window capture. The same DWM/GetSystemMetrics mix existed in base c5d0f476.",
+  "OCR832_can_run": "Its sealed real OCR of a synthetic BMP does not use active-window capture. Full passed on exact46pins; measure composer before introducing a table parser.",
+  "H0675_closed": false,
+  "survey_credit_added": 0,
+  "C03_status": "EN_CURSO",
+  "coverage": {
+    "covered": 36,
+    "open": 706,
+    "not_applicable": 0
+  }
+}

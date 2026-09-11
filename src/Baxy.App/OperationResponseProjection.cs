@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Baxy.Contracts;
 using Baxy.Kernel.Operations;
 
@@ -20,10 +21,36 @@ internal sealed record OperationResponseProjection(string Message)
 
         if (!string.IsNullOrWhiteSpace(response.Message))
         {
+            if (operationName == "ocr.read")
+            {
+                string message = response.Message.Trim();
+                if (message.Length <= OperationVisibleFacts.MaximumDenseMessageChars)
+                    return new OperationResponseProjection(message);
+                // An omitted observation does not change the executed operation's outcome.
+                bool completed = response.Status == OperationStatuses.Completed;
+                return new OperationResponseProjection(new JsonObject
+                {
+                    ["kind"] = "operation",
+                    ["operation"] = operationName,
+                    ["status"] = response.Status,
+                    ["verified"] = response.Verified,
+                    ["succeeded"] = completed,
+                    ["polarity"] = response.Status == OperationStatuses.Pending ? "pending"
+                        : completed && response.Verified ? "success" : "failure",
+                    ["error"] = response.ErrorCode,
+                    ["effectUncertain"] = response.EffectMayHaveOccurred,
+                    ["observed"] = new JsonObject
+                    {
+                        ["available"] = false,
+                        ["reason"] = "observation_size_limit",
+                    },
+                }.ToJsonString());
+            }
             // The process catalog allows fifty verified rows. Keep its bounded
             // structured facts whole; cutting JSON makes every observation vanish.
             return new OperationResponseProjection(TruncateMessage(response.Message.Trim(),
-                maximumLength: operationName == "system.process.list" ? 48_000 : MaximumMessageLength));
+                maximumLength: operationName == "system.process.list"
+                    ? OperationVisibleFacts.MaximumDenseMessageChars : MaximumMessageLength));
         }
 
         return new OperationResponseProjection(

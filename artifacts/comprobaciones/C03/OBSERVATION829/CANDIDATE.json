@@ -1,0 +1,36 @@
+{
+  "utc": "2026-09-11T08:08:02.770695+00:00",
+  "candidate": 829,
+  "adopted": false,
+  "base_commit": "c5d0f476facd538b1226c5d3c4c0ced22a1ee7ec",
+  "changed_files": [
+    "src/Baxy.App/OperationResponseProjection.cs",
+    "src/Baxy.Core/Operations/CaptureHandlers.cs",
+    "src/Baxy.Kernel/Operations/OperationVisibleFacts.cs",
+    "src/Baxy.Kernel/Planning/MissionPlanProposal.cs",
+    "src/Baxy.Providers.Windows/Capture/CaptureContracts.cs",
+    "src/Baxy.Providers.Windows/Capture/WindowsScreenshotProvider.cs",
+    "src/Baxy.Providers.Windows/External/CaptureVisionAdapter.cs",
+    "src/Baxy.Providers.Windows/External/CaptureOcrLayout.cs",
+    "src/baxy_mind/planner.py",
+    "tests/Baxy.Integration.Tests/CaptureHandlerTests.cs",
+    "tests/Baxy.Integration.Tests/C03OcrObservationProjectionTests.cs",
+    "tests/Baxy.Kernel.Tests/C03ActiveWindowOcrDependencyTests.cs",
+    "tests/Baxy.Providers.Windows.Tests/WindowsScreenshotProviderTests.cs",
+    "tests/Baxy.Providers.Windows.Tests/CaptureOcrLayoutTests.cs",
+    "tests/test_c03_active_window_ocr_dependency.py",
+    "experiments/stt_quality/evaluate_reserved_stt.py",
+    "experiments/stt_quality/audit_fresh_postweight_stt_sources.py"
+  ],
+  "source_pins_sha256": "f4f206175dbde85b2f335654fe11508d33979ef28705a6deacd4472b2f02f25e",
+  "source_pins_count": 46,
+  "runner_sha256": "bc97d8880b5d6308183b9e4c67b6923c7ceb7487d3afcdc9a7e361f4598ccf16",
+  "scope": "826capture provenance,827localOCR layout,828bounded evidence transfer,829active-window producer alternative. Prerequisites only: no H0675 app aggregation or C03 category credit. No Taskmgr-specific reader, new model, new checker, fixed prose or new operation.",
+  "root_repairs": "Oversized OCR preserves original terminal status; capture source SHA/PID survive evidence projection.",
+  "full_required": "Combined C#/Python candidate requires Full before adoption; Full818 remains separate baseline.",
+  "survey_counts": {
+    "covered": 36,
+    "open": 706,
+    "not_applicable": 0
+  }
+}

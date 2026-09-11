@@ -1,0 +1,19 @@
+{
+  "utc": "2026-09-11T08:33:54.720610+00:00",
+  "pid": 31604,
+  "wrapper_pid": 33592,
+  "command": [
+    "C:/Users/usuario/.dotnet/dotnet.exe",
+    "test",
+    "tests/Baxy.Integration.Tests/Baxy.Integration.Tests.csproj",
+    "-c",
+    "Release",
+    "--nologo",
+    "-v:quiet",
+    "--filter",
+    "FullyQualifiedName~CaptureHandlerTests|FullyQualifiedName~C03OcrObservationProjectionTests|FullyQualifiedName~ProcessListHandlerTests|FullyQualifiedName~PlannerAppBoundaryTests|FullyQualifiedName~C03FactPreservationTests|FullyQualifiedName~Goal06VisibleVoiceTests|FullyQualifiedName~ObservedProcessVocabularyTests|FullyQualifiedName~C03NaturalContextPhraseTests",
+    "-p:UseSharedCompilation=false",
+    "-nodeReuse:false"
+  ],
+  "source_pins_sha256": "1e552541c0a18d816026c9139e82263f173ff29184f91d4a84aabce6cfb205ac"
+}

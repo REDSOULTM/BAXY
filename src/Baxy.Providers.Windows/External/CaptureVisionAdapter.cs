@@ -6,7 +6,6 @@ using System.Text.Json;
 using Windows.Globalization;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
-using Windows.Storage;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -134,29 +133,48 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
                 cancellationToken).ConfigureAwait(false);
         }
 
-        StorageFile file = await StorageFile.GetFileFromPathAsync(path);
-        using global::Windows.Storage.Streams.IRandomAccessStream stream = await file.OpenReadAsync();
+        using FileStream image = OpenOcrImage(path);
+        string imageSha256 = await HashOcrImageAsync(image, cancellationToken).ConfigureAwait(false);
+        using global::Windows.Storage.Streams.IRandomAccessStream stream = image.AsRandomAccessStream();
         BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
         using SoftwareBitmap bitmap = await decoder.GetSoftwareBitmapAsync(
             BitmapPixelFormat.Bgra8,
             BitmapAlphaMode.Ignore);
         OcrResult recognized = await engine.RecognizeAsync(bitmap);
+        DateTimeOffset recognizedAtUtc = DateTimeOffset.UtcNow;
         cancellationToken.ThrowIfCancellationRequested();
-        string text = recognized.Text ?? string.Empty;
-        string digest = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(text)));
-        JsonElement result = ExternalJson.Create(writer =>
+        try
         {
-            writer.WriteStartObject();
-            writer.WriteNumber("version", 1);
-            writer.WriteString("captureId", captureId);
-            writer.WriteString("language", engine.RecognizerLanguage.LanguageTag);
-            writer.WriteString("text", text);
-            writer.WriteString("textSha256", digest);
-            writer.WriteNumber("lineCount", recognized.Lines.Count);
-            writer.WriteString("authority", "windows_media_ocr");
-            writer.WriteEndObject();
-        });
-        return ExternalJson.Success(operation, result, effectObserved: false);
+            JsonElement result = CaptureOcrLayout.CreateResult(
+                captureId, engine.RecognizerLanguage.LanguageTag, recognized.Text ?? string.Empty,
+                imageSha256, bitmap.PixelWidth, bitmap.PixelHeight, recognizedAtUtc, recognized.TextAngle,
+                recognized.Lines.Select(line => new CaptureOcrLine(line.Text,
+                    line.Words.Select(word => new CaptureOcrWord(word.Text,
+                        word.BoundingRect.X, word.BoundingRect.Y,
+                        word.BoundingRect.Width, word.BoundingRect.Height)).ToArray())).ToArray());
+            return ExternalJson.Success(operation, result, effectObserved: false);
+        }
+        catch (InvalidDataException)
+        {
+            return ExternalJson.Failure(operation, "ocr_layout_invalid");
+        }
+    }
+
+    // Deny writes and replacement until decoding and recognition have finished.
+    internal static FileStream OpenOcrImage(string path) =>
+        new(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+    internal static async Task<string> HashOcrImageAsync(
+        FileStream image, CancellationToken cancellationToken)
+    {
+        if (image.Length is <= 54 or > MaximumImageBytes)
+        {
+            throw new InvalidDataException("Capture storage size is invalid.");
+        }
+        image.Position = 0;
+        byte[] digest = await SHA256.HashDataAsync(image, cancellationToken).ConfigureAwait(false);
+        image.Position = 0;
+        return Convert.ToHexStringLower(digest);
     }
 
     private static async ValueTask<ExternalCapabilityReceipt> ReadTesseractOcrAsync(
@@ -232,6 +250,7 @@ internal sealed partial class CaptureVisionAdapter : IExternalOperationAdapter, 
                 writer.WriteString("textSha256", digest);
                 writer.WriteNumber("lineCount", lineCount);
                 writer.WriteString("authority", "tesseract_cli_ocr");
+                CaptureOcrLayout.WriteUnavailable(writer);
                 writer.WriteEndObject();
             });
             return ExternalJson.Success(operation, result, effectObserved: false);

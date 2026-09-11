@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-11T08:08:03.072059+00:00",
+  "pid": 19696,
+  "wrapper_pid": 28100,
+  "command": [
+    "C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "pytest",
+    "-q",
+    "tests/test_planner.py",
+    "tests/test_planner_corpus.py",
+    "tests/test_c03_active_window_ocr_dependency.py"
+  ],
+  "source_pins_sha256": "f4f206175dbde85b2f335654fe11508d33979ef28705a6deacd4472b2f02f25e"
+}

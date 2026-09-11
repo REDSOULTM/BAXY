@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "824 completo:49/50, seis ganancias y cero pérdidas frente82243. Cinco familias genéricas49/49 verificadas; fuente823 adoptada para ellas y ocho requisitos acreditados: encuesta36/706/0. H0675 app-memory y categoría siguen abiertos.50publicados/0agotados/0vetos;246,829s,mediana4,229s,p956,672s,máximo7,352s;VRAM3497,56MiB/RAM2454,28MiB,0infracciones. Sesión55778 recogida0(e718b7),finalizador ejecutado una vez(5428ce),33pins exactos. Full818base separado; final pendiente. Preparación826captura/827OCR aislada, sin fuente canónica nueva. C03EN_CURSO, matriz3/11.",
-  "continuation": "Do not rerun824 finalizer/reviewer.826capture and827OCR agents own separate worktrees; root reviews/integrates prerequisite patches, then implements complete observed table semantics through existing catalog. No H0675 credit from geometry alone.",
+  "checkpoint": "829 Full verde recogido0 f2dfa4:12907Pythonpass/3skip/466subtests/682,40s;4715.NETpass/1omisiónagregada/16optinsno disjuntos;46pins1e552541c0a18d816026c9139e82263f173ff29184f91d4a84aabce6cfb205ac. Nativo16checks estructuralespass; recorte1108x694 frenteventana2564x1320/escritorio1244x818 requiere diagnósticoDPI835. Candidato829sinadoptar,publicarWIPvalidado. 832listo conFullSHAd7858325857a250d1a5aeafaebe327cd6aa8aad3b4d26fa1ff5f9997f832c9ed,driverb370cc5c. Sinmodelo aún. Encuesta36/706/0,82449/50,H0675abierto,C03EN_CURSO.",
+  "continuation": "Publish validated WIP829 with capture coordinate limitation, then run OCR832 immediately on exact Full/pins. Root adjudicates8answers. DPI835 probe external preparation may continue; no source edits during GPU. Do not re-run Full77847 or nativecapture829. Diagnose DPI separately before real app observation834. All C03 remains active.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -33,11 +33,11 @@
     "not_applicable": 0
   },
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "d1a040d62fd57ef1db583121eda2c67c1efde632",
-  "workStatus": "process824_closed_app_observation_in_progress",
-  "goalStatusNote": "Active;36covered/706open.49/50 process category, app-memory remains open.",
+  "publishedSourceCommit": "f70ea94c7ef04a2b623cf3be5c1bfd2218d59385",
+  "workStatus": "observation829_validated_ocr832_pending",
+  "goalStatusNote": "All C03 remains active;36covered/706open and49/50 process panel; generic screen prerequisites not H0675 completion.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "f70ea94c7ef04a2b623cf3be5c1bfd2218d59385",
+  "publishedEvidenceCommit": "c5d0f476facd538b1226c5d3c4c0ced22a1ee7ec",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Root completed82449/50 with six gains/no losses, adopted five generic process families and eight individually verified requirements, started isolated capture/OCR prerequisite implementations.",
+  "previousGoalTurnClassificationReason": "Root reproduced Unicode layout loss in new829 projection (1 failing test), removed premature check/helper, 13 targeted and325 integration pass, Fast0; interrupted oldFull receipts preserved; newFull77847started. Driver832 transport byte preservation dynamically verified without model. No new survey/category credit.",
   "activeValidation": null,
   "objectiveFile": "C:\\Users\\usuario\\.codex\\attachments\\310753b7-9a38-4a57-951e-007fdcf7693a\\goal-objective.md",
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
@@ -57,26 +57,70 @@
     "status": "complete",
     "full_passed": true,
     "exit_code": 0,
-    "sessionId": 56418,
-    "receipt": "PROCESS_REPAIRS818/FULL_RETRY1/FULL_EXIT.json",
-    "result": "PROCESS_REPAIRS818/FULL_RETRY1/FULL_RESULT.json",
+    "sessionId": 77847,
+    "collectionChunk": "f2dfa4",
+    "receipt": "OBSERVATION829/UNICODE_RETRY2/FULL_EXIT.json",
+    "result": "OBSERVATION829/UNICODE_RETRY2/FULL_RESULT.json",
     "dotnet": {
-      "passed": 4657,
+      "passed": 4715,
+      "failed": 0,
       "aggregate_skipped": 1,
       "printed_opt_in_skips_nondisjoint": 16,
-      "failed": 0
+      "suites": [
+        {
+          "suite": "Baxy.Contracts.Tests.dll",
+          "failed": 0,
+          "passed": 60,
+          "skipped": 0,
+          "total": 60,
+          "literal": "Correctas! - Con error:     0, Superado:    60, Omitido:     0, Total:    60, Duración: 227 ms - Baxy.Contracts.Tests.dll (net10.0)"
+        },
+        {
+          "suite": "Baxy.Integration.Tests.dll",
+          "failed": 0,
+          "passed": 3433,
+          "skipped": 1,
+          "total": 3434,
+          "literal": "Correctas! - Con error:     0, Superado:  3433, Omitido:     1, Total:  3434, Duración: 8 m 40 s - Baxy.Integration.Tests.dll (net10.0)"
+        },
+        {
+          "suite": "Baxy.Kernel.Tests.dll",
+          "failed": 0,
+          "passed": 161,
+          "skipped": 0,
+          "total": 161,
+          "literal": "Correctas! - Con error:     0, Superado:   161, Omitido:     0, Total:   161, Duración: 1 s - Baxy.Kernel.Tests.dll (net10.0)"
+        },
+        {
+          "suite": "Baxy.Providers.Windows.Tests.dll",
+          "failed": 0,
+          "passed": 584,
+          "skipped": 0,
+          "total": 584,
+          "literal": "Correctas! - Con error:     0, Superado:   584, Omitido:     0, Total:   584, Duración: 37 s - Baxy.Providers.Windows.Tests.dll (net10.0)"
+        },
+        {
+          "suite": "Baxy.Setup.Tests.dll",
+          "failed": 0,
+          "passed": 477,
+          "skipped": 0,
+          "total": 477,
+          "literal": "Correctas! - Con error:     0, Superado:   477, Omitido:     0, Total:   477, Duración: 1 m 17 s - Baxy.Setup.Tests.dll (net10.0)"
+        }
+      ]
     },
     "python": {
-      "passed": 12898,
+      "passed": 12907,
       "failed": 0,
       "skipped": 3,
       "subtests_passed": 466,
-      "seconds": 620.88
+      "seconds": 682.4,
+      "literal": "12907 passed, 3 skipped, 466 subtests passed in 682.40s (0:11:22)"
     },
     "source_pins_unchanged": true,
     "adopted": false
   },
-  "activeReadOnlyAgent": null,
+  "activeReadOnlyAgent": "capture826_provenance: external DPI835 metadata-only probe preparation",
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
     "name": "process824",

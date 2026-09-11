@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-11T08:15:12.337368+00:00",
+  "pid": 11652,
+  "wrapper_pid": 23616,
+  "command": [
+    "C:\\Users\\usuario\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.EXE",
+    "-NoProfile",
+    "-File",
+    "scripts/test_source_quality.ps1",
+    "-Mode",
+    "Full",
+    "-QualityPython",
+    "C:/Users/usuario/AppData/Local/BAXYQuality/source-quality-v1/Scripts/python.exe"
+  ],
+  "source_pins_sha256": "a596aa58a9e161123a6cc06a294dcb01c794ddcf72c8769206074056d5c23482"
+}

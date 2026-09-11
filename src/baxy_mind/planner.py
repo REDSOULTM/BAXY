@@ -981,7 +981,7 @@ def _required_predecessors(operation: str) -> tuple[str, ...]:
         "game.purchase.commit": ("game.purchase.prepare",),
         "message.send": ("message.recipient.resolve",),
         "notification.dismiss": ("notification.list.due",),
-        "ocr.read": ("capture.screenshot",),
+        "ocr.read": ("capture.screenshot", "capture.active.window"),
         "package.install.commit": ("package.install.prepare",),
         "peripheral.print": ("peripheral.list",),
         "peripheral.scan": ("peripheral.list",),

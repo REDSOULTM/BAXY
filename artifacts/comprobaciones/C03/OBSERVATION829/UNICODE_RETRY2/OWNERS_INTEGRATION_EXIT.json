@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-11T08:34:18.990992+00:00",
+  "exit_code": 0,
+  "source_pins_unchanged": true,
+  "source_pins_sha256": "1e552541c0a18d816026c9139e82263f173ff29184f91d4a84aabce6cfb205ac",
+  "log_sha256": "c34bb5850947d049fdff14c729b9ce0e530cea4d431932c648d766c7111126e2",
+  "private_log": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-observation829-private\\unicode-retry2\\owners_integration.log",
+  "command": [
+    "C:/Users/usuario/.dotnet/dotnet.exe",
+    "test",
+    "tests/Baxy.Integration.Tests/Baxy.Integration.Tests.csproj",
+    "-c",
+    "Release",
+    "--nologo",
+    "-v:quiet",
+    "--filter",
+    "FullyQualifiedName~CaptureHandlerTests|FullyQualifiedName~C03OcrObservationProjectionTests|FullyQualifiedName~ProcessListHandlerTests|FullyQualifiedName~PlannerAppBoundaryTests|FullyQualifiedName~C03FactPreservationTests|FullyQualifiedName~Goal06VisibleVoiceTests|FullyQualifiedName~ObservedProcessVocabularyTests|FullyQualifiedName~C03NaturalContextPhraseTests",
+    "-p:UseSharedCompilation=false",
+    "-nodeReuse:false"
+  ],
+  "adopted": false
+}

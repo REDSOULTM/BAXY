@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-11T08:14:54.279878+00:00",
+  "engine_available": "es-MX",
+  "engine_check_chunk": "c946f4",
+  "native_probe_chunk": "8abd0c",
+  "production_adapter_verified": true,
+  "fixture_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ocr827-native-probe\\bin\\Release\\net10.0-windows10.0.19041.0\\OBSERVATION.json",
+  "fixture_sha256": "2802dd120159999abe082c2ace23c652e67fcddc99d53566f5dd50612a7962fa",
+  "image_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ocr827-native-probe\\bin\\Release\\net10.0-windows10.0.19041.0\\capture_a0118b4ec18648e9bea6d07d7921d79e.bmp",
+  "image_sha256": "0cc1692fd14593c451d84744f57ad1b285647dfe2e1230e38bd30479d0f5fa8a",
+  "ocr_image_sha256_matches_file": true,
+  "recognized_lines": 9,
+  "recognized_words": 16,
+  "python_compose_projection": {
+    "chunk": "524808",
+    "layout_and_image_sha_unchanged": true,
+    "serialized_chars": 2336
+  },
+  "scope": "Synthetic local bitmap recognized by production CaptureVisionAdapter. No actual desktop/application-memory observation, no model execution or H0675 credit."
+}

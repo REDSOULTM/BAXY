@@ -1,0 +1,32 @@
+{
+  "status": "prepared_not_executed",
+  "plan_path": "C:/Users/usuario/AppData/Local/BAXY/C03-real-app-observation834-plan.md",
+  "plan_sha256": "bbec5509fc8067631b82b6438c0865f0455c3e57f2aef7a9fd2d00278edaac19",
+  "root_reviewed": true,
+  "prerequisites": [
+    "Collect a green OBSERVATION829/UNICODE_RETRY2 Full on the exact 46 source pins.",
+    "Root adjudicates all eight sealed OCR832 answers before deciding the next implementation step."
+  ],
+  "original_requirement": {
+    "case_id": "H0675",
+    "text": "qué app usa más memoria",
+    "criterion": "Identify the requested largest memory-using app from fresh evidence sufficient for app membership and aggregation. A single process working set is not the total of a multi-process app; do not invent aggregation or reuse a prior turn.",
+    "source_panel": "C:/Users/usuario/AppData/Local/BAXY/C03-process-panel795-private/panel.json",
+    "source_panel_sha256": "630b1b45fe8c861a3216958c394f0b44b3b3e3307cd75fd5a58a10ad43711e52",
+    "root_read_chunk": "e2475f"
+  },
+  "root_decisions": [
+    "Keep preparation effects, diagnostic composition over a sealed image, and the original product request as distinct measurements. Never insert preparation effects into read-only795/824.",
+    "An explicitly aggregated application row shown by Windows can support that group's aggregate; do not impose an unrequested requirement to enumerate every PID. A suffix alone cannot certify individual members.",
+    "Keep the observed application section, filters, clipping, scroll and update evidence. Do not turn a cropped selection into an unqualified PC-wide maximum.",
+    "Assess the original requirement as written. Do not replace it with a narrower question about a synthetic table or regrade the previous single-process answer.",
+    "Do not introduce a new table parser or operation before measuring the existing composer with retained geometry. A missing data projection must be distinguished from model reasoning.",
+    "Selection and execution of the original request require contemporary product receipts; injecting an evaluator's winner or replayed rows does not prove the product route.",
+    "The proposed single real observation is diagnostic. Requirement adoption still needs verified variants and root adjudication under the existing campaign rules."
+  ],
+  "survey_credit_added": 0,
+  "H0675_closed": false,
+  "original_panels_unchanged": true,
+  "UI_executed": false,
+  "source_change": false
+}

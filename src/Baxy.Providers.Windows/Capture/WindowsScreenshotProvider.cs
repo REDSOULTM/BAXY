@@ -1,6 +1,7 @@
 using System.Buffers.Binary;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
+using Microsoft.Win32.SafeHandles;
 
 namespace Baxy.Providers.Windows.Capture;
 
@@ -67,7 +68,7 @@ public sealed class WindowsScreenshotProvider : IScreenshotProvider
         if (!File.Exists(final)
             || !string.Equals(Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(final))),
                 hash, StringComparison.Ordinal)) throw new IOException("Screenshot verification failed.");
-        return new CaptureResult(id, frame.Width, frame.Height, hash, _time.GetUtcNow());
+        return new CaptureResult(id, frame.Width, frame.Height, hash, _time.GetUtcNow(), frame.ActiveWindow);
     }
 
     private static byte[] EncodeBmp(ScreenshotFrame frame)
@@ -90,6 +91,26 @@ public sealed class WindowsScreenshotProvider : IScreenshotProvider
 
 internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
 {
+    private readonly Func<ActiveWindowSnapshot> _observeActiveWindow;
+    private readonly Func<CaptureBounds, ScreenshotFrame> _captureRegion;
+    private readonly TimeProvider _time;
+
+    public GdiScreenshotPlatform()
+        : this(ObserveActiveWindow, bounds => CaptureRegion(
+            bounds.Left, bounds.Top, bounds.Width, bounds.Height), TimeProvider.System)
+    {
+    }
+
+    internal GdiScreenshotPlatform(
+        Func<ActiveWindowSnapshot> observeActiveWindow,
+        Func<CaptureBounds, ScreenshotFrame> captureRegion,
+        TimeProvider time)
+    {
+        _observeActiveWindow = observeActiveWindow;
+        _captureRegion = captureRegion;
+        _time = time;
+    }
+
     public ScreenshotFrame CaptureVirtualScreen()
     {
         int x = GetSystemMetrics(76), y = GetSystemMetrics(77);
@@ -99,23 +120,57 @@ internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
 
     public ScreenshotFrame CaptureActiveWindow()
     {
+        DateTimeOffset started = _time.GetUtcNow();
+        ActiveWindowSnapshot before = _observeActiveWindow();
+        if (before.WindowHandle == 0 || before.ProcessId == 0
+            || before.ProcessCreatedAtUtc <= DateTimeOffset.FromFileTime(0))
+            throw new IOException("Active window identity unavailable.");
+        CaptureBounds window = before.WindowBounds, screen = before.DesktopBounds;
+        int left = Math.Max(window.Left, screen.Left);
+        int top = Math.Max(window.Top, screen.Top);
+        int right = Math.Min(checked(window.Left + window.Width), checked(screen.Left + screen.Width));
+        int bottom = Math.Min(checked(window.Top + window.Height), checked(screen.Top + screen.Height));
+        if (right <= left || bottom <= top)
+            throw new IOException("Active window is outside the visible desktop.");
+        var crop = new CaptureBounds(left, top, right - left, bottom - top);
+        ScreenshotFrame frame = _captureRegion(crop);
+        ActiveWindowSnapshot after = _observeActiveWindow();
+        if (before != after)
+            throw new IOException("Active window identity, focus or bounds changed during capture.");
+        if (frame.Width != crop.Width || frame.Height != crop.Height)
+            throw new IOException("Active window capture dimensions do not match its bounds.");
+        return frame with
+        {
+            ActiveWindow = new ActiveWindowCaptureProvenance(
+                before.WindowHandle, before.ProcessId, before.ProcessCreatedAtUtc,
+                window, crop, started, _time.GetUtcNow()),
+        };
+    }
+
+    private static ActiveWindowSnapshot ObserveActiveWindow()
+    {
         nint window = GetForegroundWindow();
         if (window == 0) throw new IOException("Active window unavailable.");
+        if (GetWindowThreadProcessId(window, out uint processId) == 0 || processId == 0)
+            throw new IOException("Active window process unavailable.");
+        using SafeProcessHandle process = OpenProcess(0x1000, false, processId);
+        if (process.IsInvalid || !GetProcessTimes(process, out long created, out _, out _, out _)
+            || created <= 0)
+            throw new IOException("Active window process creation identity unavailable.");
         Rectangle rectangle;
         if (DwmGetWindowAttribute(window, 9, out rectangle,
                 Marshal.SizeOf<Rectangle>()) != 0
             && !GetWindowRect(window, out rectangle))
             throw new IOException("Active window bounds unavailable.");
-        int screenLeft = GetSystemMetrics(76), screenTop = GetSystemMetrics(77);
-        int screenRight = checked(screenLeft + GetSystemMetrics(78));
-        int screenBottom = checked(screenTop + GetSystemMetrics(79));
-        int left = Math.Max(rectangle.Left, screenLeft);
-        int top = Math.Max(rectangle.Top, screenTop);
-        int right = Math.Min(rectangle.Right, screenRight);
-        int bottom = Math.Min(rectangle.Bottom, screenBottom);
-        if (right <= left || bottom <= top)
-            throw new IOException("Active window is outside the visible desktop.");
-        return CaptureRegion(left, top, right - left, bottom - top);
+        var bounds = new CaptureBounds(rectangle.Left, rectangle.Top,
+            checked(rectangle.Right - rectangle.Left), checked(rectangle.Bottom - rectangle.Top));
+        var desktop = new CaptureBounds(GetSystemMetrics(76), GetSystemMetrics(77),
+            GetSystemMetrics(78), GetSystemMetrics(79));
+        if (GetForegroundWindow() != window
+            || GetWindowThreadProcessId(window, out uint finalProcessId) == 0 || finalProcessId != processId)
+            throw new IOException("Active window changed while observing its identity.");
+        return new ActiveWindowSnapshot((long)window, processId, DateTimeOffset.FromFileTime(created),
+            bounds, desktop);
     }
 
     private static ScreenshotFrame CaptureRegion(int x, int y, int width, int height)
@@ -193,6 +248,19 @@ internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
 
     [LibraryImport("user32.dll")]
     private static partial nint GetForegroundWindow();
+
+    [LibraryImport("user32.dll")]
+    private static partial uint GetWindowThreadProcessId(nint window, out uint processId);
+
+    [LibraryImport("kernel32.dll")]
+    private static partial SafeProcessHandle OpenProcess(
+        uint desiredAccess, [MarshalAs(UnmanagedType.Bool)] bool inheritHandle, uint processId);
+
+    [LibraryImport("kernel32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetProcessTimes(
+        SafeProcessHandle process, out long creationTime, out long exitTime,
+        out long kernelTime, out long userTime);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
