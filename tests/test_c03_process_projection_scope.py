@@ -66,8 +66,8 @@ def test_list_scope_keeps_counts_order_identity_and_resource_units(sort, user_te
     assert projected["logicalProcessorCount"] == 8
     assert projected["sort"] == sort
     rows = projected["processes"]
-    assert [(row["name"], row["processId"]) for row in rows] == [
-        ("Editor", 731), ("Editor", 927),
+    assert [row["process_identity"] for row in rows] == [
+        "Editor (PID 731)", "Editor (PID 927)",
     ]
     if sort == "cpu":
         assert [row["current_cpu_usage"] for row in rows] == [

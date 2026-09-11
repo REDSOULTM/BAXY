@@ -1,0 +1,66 @@
+{
+  "source_candidate": 808,
+  "source_adopted": false,
+  "new_coverage": 0,
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "cases": [
+    {
+      "case_id": "H0133",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Diez instancias con PIDs y MB correctos;139observados/10mostrados como subconjunto accesible, sin exhaustividad."
+    },
+    {
+      "case_id": "H0158",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Diez instancias fieles, nombres repetidos en filas distintas con MB correctos;139observados/10listados y subconjunto. Criterio de lista no exigePIDs."
+    },
+    {
+      "case_id": "H0169",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Declara memoria y enumera10filas con valoresMB correctos en orden, sin agregar instancias;139observados/10listados y alcance. Criterio noespecificado no exigePIDs de memoria."
+    },
+    {
+      "case_id": "H0364",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Diez miembrosCPU en orden con porcentajes actuales correctos, incluidos ceros;139observados/10listados como subconjunto. Instancias repetidas conservadas en filas separadas."
+    },
+    {
+      "case_id": "H0470",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "139observados correcto y alcance accesible sin garantía de totalidad; lectura fresca."
+    },
+    {
+      "case_id": "H0650",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Cinco instancias y MB correctos en orden, pero omite los PIDs exigidos por el criterio de memoria."
+    },
+    {
+      "case_id": "H0669",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Declara memoria, diez instancias y MB correctos en orden,139observados/10listados como subconjunto accesible; sin agregado de nombres repetidos."
+    },
+    {
+      "case_id": "H0675",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Atribuye el working set de python29240 a una app sin membresía ni agregado verificados."
+    },
+    {
+      "case_id": "H0678",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "139observados coincide; alcance accesible y falta de garantía de completitud explicitados."
+    }
+  ]
+}

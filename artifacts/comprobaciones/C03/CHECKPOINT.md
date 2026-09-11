@@ -1,3 +1,11 @@
+810 validado:247 dueñas pass/0skip/3,04s; Fast0 recogido sesión85129, Release22,18s, 0advertencias/errores,30pins intactos. Cambio único: nombre+PID juntos en proyección existente; modelo/prompt/checker/presupuestos/canónico intactos.811 listo mismos50, antes publicar con80937/50 preservado. Sin adopción ni crédito. Encuesta28/714/0; matriz3/11; C03 EN_CURSO.
+
+810 integrado: seis líneas en proyección existente agrupan nombre y PID como dato, sin cambiar prompt. 247 dueñas pass/0skip/3,04s; Fast activo sesión85129/PID5312,30pins.811 preparado y revisado, mismos50. Worktree810 retirado tras snapshot exacto.80937/50 conservado, sin adopción. Encuesta28/714/0; matriz3/11; C03 EN_CURSO.
+
+809 completo, sesión13207 recogida0 y ausencia de procesos verificada: 37/50 válidos, 13 fallidos; siete ganancias y siete pérdidas frente a807. Listas9/11, conteos12/12, CPU9/11, memoria3/11, recurso no especificado4/4, memoriaapp0/1. 243,25s; mediana4,209s; VRAM3497,56MiB y RAM2399,81MiB, sin infracciones. 808 no adoptado. Tras807 y809 sin mejora total, cambiar estrategia: representar nombre y PID juntos en la proyección existente, sin añadir instrucciones ni verificadores. 810 en worktree aislado, todavía sin integrar. Encuesta28/714/0; matriz3/11; C03 EN_CURSO.
+
+809 activo, sesión13207/launcher33504: mismos50,fuente808párrafo existente de filas/PIDs/orden.204dueñas pass/0skip yFast0/Release21,84s;29pins intactos. Publicado860c9fdc. Raíz adjudica contra observaciones nuevas; no fuentes ni Full duranteGPU.80737/50conservado;sinadopción ni crédito. Encuesta28/714/0;matriz3/11;C03EN_CURSO.
+
 808 validado:204dueñas pass/0skip/2,78s,Fast0/Release21,84s/0advertencias/errores,29pins intactos. Sólo párrafo existente de filas y testdueño cambian.807completo37/50,5ganancias/5pérdidas frente805;806/808sinadopción.809listo mismos50 tras commit/push;worktrees de ambas propuestas retirados con snapshots. Encuesta28/714/0;matriz3/11;C03EN_CURSO.
 
 807completo,58028recogida0,sinprocesos restantes:37/50válidos,13fallidos;5ganancias/5pérdidas frente805. memory08recuperado;mediana4,364s,máximo7,253s,VRAM3497,56MiB/RAM2449,54MiB.806sinadoptar.808integra sólo párrafo existente para filas/identidad/recurso/orden;204dueñas pass/0skip/2,78s,Fastactivo86093/PID5708,29pins.809 preparado mismos50. Encuesta28/714/0;matriz3/11;C03EN_CURSO.

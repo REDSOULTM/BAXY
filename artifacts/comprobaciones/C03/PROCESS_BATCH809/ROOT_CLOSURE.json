@@ -1,0 +1,12 @@
+{
+  "utc": "2026-09-11T04:39:56.923451+00:00",
+  "session": 13207,
+  "collected_exit_code": 0,
+  "runtime_absence_check": "Root Get-CimInstance: no Baxy.exe, baxy-core.exe, llama-server.exe, Taskmgr.exe, testhost.exe, dotnet.exe or c03 Python runner after completion.",
+  "adopted": false,
+  "audit_rejection_occurrences": {
+    "invented": 1
+  },
+  "strategy_change": "805,807,809 each37/50. Stop instruction-only process repairs.810 will bind observed name and PID in existing model-facing projection; canonical observations remain intact. Hypothesis requires product measurement.",
+  "scope": "No quality judgment was delegated; ROOT_ADJUDICATION preserves all50 root decisions."
+}

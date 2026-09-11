@@ -129,7 +129,9 @@ def test_resource_projection_keeps_instance_identity_and_correct_measurement(sor
     original = copy.deepcopy(source)
     seen = _compose_situation_payload(source, "en", "List the running processes.")["seen"]
     assert seen["observedProcessCount"] == 207 and seen["returnedProcessCount"] == 2
-    assert [row["processId"] for row in seen["processes"]] == [731, 927]
+    assert [row["process_identity"] for row in seen["processes"]] == [
+        "Editor (PID 731)", "Editor (PID 927)",
+    ]
     first = seen["processes"][0]
     if sort == "cpu":
         assert first["current_cpu_usage"] == {"value": 12.5, "unit": "%"}

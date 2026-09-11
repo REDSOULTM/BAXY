@@ -1,0 +1,25 @@
+{
+  "utc": "2026-09-11T04:43:42.753933+00:00",
+  "candidate": 810,
+  "adopted": false,
+  "base_commit": "860c9fdc93007e0a2b94dbf3f77df38d36deb767",
+  "changed_files": [
+    "src/baxy_mind/measurement_prose_projection.py",
+    "tests/test_c03_process_identity_projection.py",
+    "tests/test_c03_process_inventory.py",
+    "tests/test_c03_process_output_budget.py",
+    "tests/test_c03_process_projection_scope.py",
+    "tests/test_c03_process_scope_prompt.py"
+  ],
+  "difference": "Six lines in existing process measurement projection replace name and processId with one process_identity datum when both are valid. No new instruction, checker or layer.",
+  "root_review": "Exact names and integer PIDs, including zero, preserved; incomplete or malformed identities remain typed. Canonical observations unchanged, as are row order, counts, scope and resource quantities/units. Owner expectations updated only at narrator projection seam.",
+  "cause": "805,807,809 each37/50.809 has memory3/11 with omitted PIDs despite names/values. Change data representation after two instruction attempts without net improvement. Hypothesis is not an adoption.",
+  "owners": "Root seven complete suites247 passed/0skipped/3.04s; command chunk44d93e exit0.",
+  "baseline_full": "PROCESS_DEADLINE804/FULL_RETRY1/FULL_EXIT.json is previous Full804 only.810 is Python-only; owners+Fast precede811. Cumulative adoption and final Full remain required.",
+  "unchanged": "Model, backend, sampler, prompts, budgets, factual checker, canonical observations, frozen50 panel.",
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  }
+}

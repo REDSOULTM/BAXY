@@ -110,6 +110,12 @@ def project_process_measurements(seen: dict[str, Any], user_text: str) -> dict[s
         projected = {key: value for key, value in row.items() if key not in {
             "totalProcessorSeconds", "workingSetBytes", "cpuUsagePercent", "sampleDurationSeconds",
         }}
+        name, process_id = row.get("name"), row.get("processId")
+        if isinstance(name, str) and name.strip() and type(process_id) is int and process_id >= 0:
+            # One observed instance identity keeps repeated names tied to their PID.
+            projected["process_identity"] = f"{name} (PID {process_id})"
+            projected.pop("name")
+            projected.pop("processId")
         memory = row.get("workingSetBytes")
         if seen.get("sort") != "cpu" and _byte_count(memory):
             projected["resident_memory"] = _quantity(memory / 10**6, "MB")

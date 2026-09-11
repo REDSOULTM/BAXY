@@ -1,0 +1,20 @@
+{
+  "batch": 811,
+  "candidate": 810,
+  "adopted": false,
+  "registered_cases": 50,
+  "runner": "scratchpad/c03-process-batch811.py",
+  "reviewer": "scratchpad/c03-review-process811.py",
+  "runner_sha256": "6936f49ed809114cd1b9e58f1f1c418cf6c63e9c2ec5d34df1cd6fc973a26224",
+  "reviewer_sha256": "0a0412199a8486e61c8e334dd393355794f2603245330ff4a20675393d2399f8",
+  "source_pins_sha256": "e73ff357b43b82312bfced53c6c6b24f95b95609421cb22b3ed22768686e5067",
+  "validation_sha256": "bca34e308df12d42095bf91e499b30e4fd09dabaaddbdda314791271e325cf11",
+  "root_review": "Exact verified derivation from809;30pins, candidate810, independent Full804baseline. All original panel/plan/runtime seals, guards and complete-review checks preserved.",
+  "launch_after": "Root publication of source810+owners/Fast+evidence809, idle build servers, freeRAM>=4000MiB, no other product/test run.",
+  "full_scope": "Full804 is prior baseline only, not Full810. Cumulative adoption/final Full remain pending.",
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  }
+}

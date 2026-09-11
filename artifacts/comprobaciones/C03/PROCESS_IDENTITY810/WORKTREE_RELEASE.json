@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-11T04:44:50.625250+00:00",
+  "worktree": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\worktrees\\c03-process-identity810",
+  "closed_files": [
+    "src/baxy_mind/measurement_prose_projection.py",
+    "tests/test_c03_process_identity_projection.py",
+    "tests/test_c03_process_inventory.py",
+    "tests/test_c03_process_output_budget.py",
+    "tests/test_c03_process_projection_scope.py",
+    "tests/test_c03_process_scope_prompt.py"
+  ],
+  "exact_snapshot": "C:/Users/usuario/AppData/Local/BAXY/C03-process-identity810-private/source",
+  "proposal": "C:/Users/usuario/AppData/Local/BAXY/C03-process-identity810-proposal",
+  "source_hashes_verified_before_removal": true,
+  "root_integrated": true,
+  "adopted": false,
+  "removed": true
+}

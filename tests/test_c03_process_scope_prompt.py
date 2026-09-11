@@ -87,7 +87,9 @@ def test_verified_process_scope_reaches_first_prompt_and_existing_retry(
     )
     assert seen["observedProcessCount"] == 207
     assert seen["returnedProcessCount"] == 2
-    assert [row["processId"] for row in seen["processes"]] == [731, 927]
+    assert [row["process_identity"] for row in seen["processes"]] == [
+        "Editor (PID 731)", "Editor (PID 927)",
+    ]
 
 
 @pytest.mark.parametrize("row_count", [1, 10])
@@ -111,13 +113,13 @@ def test_selected_ranking_keeps_all_rows_and_identities_on_retry(row_count, reso
     source["observed"]["returnedProcessCount"] = row_count
     original = copy.deepcopy(source)
     expected_rows = [
-        {"name": row["name"], "processId": row["processId"],
+        {"process_identity": f"{row['name']} (PID {row['processId']})",
          "resident_memory": {"value": row["workingSetBytes"] / 1_000_000, "unit": "MB"}}
         for row in rows
     ]
     if resource == "cpu":
         expected_rows = [
-            {"name": row["name"], "processId": row["processId"],
+            {"process_identity": f"{row['name']} (PID {row['processId']})",
              "current_cpu_usage": {"value": row["cpuUsagePercent"], "unit": "%"},
              "sampleDurationSeconds": 0.5}
             for row in rows
