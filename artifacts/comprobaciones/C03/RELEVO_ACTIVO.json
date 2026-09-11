@@ -1,8 +1,8 @@
 {
-  "threadId": "01a08e1a-db7f-77a2-bcf2-3bc95483a9e6",
+  "threadId": "01a08e22-0ac1-7f93-9c99-5d2d0730d6c6",
   "sourceThreadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-11T01:36:29.259Z",
+  "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
   "checkpoint": "801 completo0 y recogido47840:35/50 validos,15 sin credito;conteos12/12,5cortes finish_reason=length.800 aun sin adoptar por regresiones de corte.25pins intactos, pico3497,56MiBVRAM/2429,93MiBRSS, compromiso privado6528,39MiB. No procesos801 activos. Siguiente presupuesto802/confirmacion803, reutilizar dense allowance; no comparacion de modelos.798 publicado d1a040d6. Encuesta28/714/0.",
   "continuation": "Reuse existing dense output allowance for process rows in802, validate owners/Fast then same50confirmation803. Preserve80025pins and801 root verdicts. No model campaign. Pending app75 runner proposal803 needs renumbering after process category.",
@@ -50,11 +50,11 @@
   },
   "previousGoalTurnClassificationReason": "Source796+798 published after green full and root799 adjudication; scope800 integrated with owning regression green; next full50confirmation prepared.",
   "activeValidation": null,
-  "objectiveFile": "C:/Users/usuario/.codex/attachments/a913971f-39ae-4c98-a51f-484a1c008d8f/goal-objective.md",
-  "objectiveSha256": "dad0371375d4286fb4c8d3ea301d2e891790336d42dd0a7e8478cd38db4f8420",
+  "objectiveFile": "C:/Users/usuario/.codex/attachments/c8cd89f7-30f8-4f74-8eaa-c8452482e3e1/pasted-text-1.txt",
+  "objectiveSha256": "639b72506a679b4a715baa5fb8261b5a1738fe3a7e2806172eda617edf2b73f0",
   "ownerMethodology": "Model-specific native template and documented presets first, same complete cases for every arm; add BAXY one layer at a time and attribute first lost behavior. API use alone does not imply native isolation. Optimize whole categories without quality loss.",
   "lastValidation": {
-    "utc": "2026-09-11T00:43:25.469574+00:00",
+    "utc": "2026-09-10T21:43:25.469574-03:00",
     "full_session": 24887,
     "status": "complete",
     "dotnet": [
@@ -876,5 +876,7 @@
     "orphanProcesses": [],
     "head": "d1a040d62fd57ef1db583121eda2c67c1efde632",
     "inheritedWipPreservation": "chore(c03): preserve WIP at relay; preservation only, no source800/802 adoption"
-  }
+  },
+  "previousRelayThreadId": "01a08e1a-db7f-77a2-bcf2-3bc95483a9e6",
+  "relayProcessCheck": "2026-09-11: source and previous relay idle; no llama-server, testhost, dotnet, Python, BAXY or c03 runner processes. No process stopped."
 }
