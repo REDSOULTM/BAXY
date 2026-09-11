@@ -1,0 +1,452 @@
+{
+  "schema": "c03-music962-root-adjudication-v1",
+  "adjudicated_at_utc": "2026-09-11T21:19:05.0269134Z",
+  "adjudicator": "root",
+  "source_commit": "c1c796096ce81319cdd9fe8419282171f5eeb3c1",
+  "seal_sha256": "031cb56267c7fa49e7340524d4ad82c6474736a6882bb34146c27cc783e6d31c",
+  "runner_sha256": "06508339d554c441bbd66da7638350c4499b9c290d2d193ea27eac9404a6f919",
+  "candidate_manifest_sha256": "45f2109dc51b8dc3b478cefa17ce0edea520c8414229af9c020c4c074e21e2a5",
+  "preparation_sha256": "ace0a5f5c3a83978da703efc64fd13cbbe2c7f5fc0e696d4f55c79322dfcb8af",
+  "session_id": 69737,
+  "collection": "69970d",
+  "host_exit_code": 3,
+  "runner_exit_code": 1,
+  "cases_admitted": 1,
+  "real_admissions": 2,
+  "confirmation_submissions": 1,
+  "passed": 0,
+  "failed": 1,
+  "not_executed": 17,
+  "coverage_added": 0,
+  "routing_and_exact_confirmation_passed": [
+    "H0068"
+  ],
+  "resources": {
+    "utc": "2026-09-11T21:12:57.300558+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1922.2265625,
+    "seconds": 34.703000000008615,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "operation_receipts": [
+    {
+      "sequence": 3,
+      "timestampUtc": "2026-09-11T21:12:37.6304015+00:00",
+      "phase": "started",
+      "requestId": "8943db99-e817-4189-9220-c0336fcbba1a",
+      "missionId": "526382df-b843-40b2-8e65-111795d67a11",
+      "invocationId": "88672a39-9448-4096-accb-10d3f48873f8",
+      "operation": "media.play.query",
+      "requestFingerprint": "3a79e15d0b1d69b8f710f583759f0436f6a1e7c324ca3ba825ba1016033347d0",
+      "response": null
+    },
+    {
+      "sequence": 4,
+      "timestampUtc": "2026-09-11T21:12:52.0457414+00:00",
+      "phase": "completed",
+      "requestId": "8943db99-e817-4189-9220-c0336fcbba1a",
+      "missionId": "526382df-b843-40b2-8e65-111795d67a11",
+      "invocationId": "88672a39-9448-4096-accb-10d3f48873f8",
+      "operation": "media.play.query",
+      "requestFingerprint": "3a79e15d0b1d69b8f710f583759f0436f6a1e7c324ca3ba825ba1016033347d0",
+      "response": {
+        "type": "operation.response",
+        "requestId": "8943db99-e817-4189-9220-c0336fcbba1a",
+        "missionId": "526382df-b843-40b2-8e65-111795d67a11",
+        "invocationId": "88672a39-9448-4096-accb-10d3f48873f8",
+        "status": "failed",
+        "message": "{\"kind\":\"operation\",\"operation\":\"media.play.query\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"spotify_exact_result_not_found\",\"cause\":\"external_effect_ambiguous\",\"effectUncertain\":true}",
+        "verified": false,
+        "replayed": false,
+        "result": null,
+        "errorCode": "spotify_exact_result_not_found",
+        "effectMayHaveOccurred": true,
+        "causeCode": "external_effect_ambiguous"
+      }
+    }
+  ],
+  "actual_arguments_verified_by_exact_confirmation": {
+    "provider": "spotify",
+    "query": "daft punk"
+  },
+  "root_proves_unexecuted_queue": true,
+  "queue_proof": "ProductConductorHost.cs118-128 stops foreach immediately when command returns false;198-202 returns false for final.Posterior.HasPendingPlan. Actual complete capture has only first request+confirmation and final awaiting_mission_resume/hasPendingPlantrue. Runner helper only recognizes synthetic409 guards, so its host_stop_proves_unexecuted_queue=false is retained unchanged. Root proof does not resolve actual Spotify effect.",
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "cases": [
+    {
+      "case_id": "H0068",
+      "literal": "pon música de daft punk",
+      "status": "fail",
+      "coverage_added": false,
+      "reason": "961 resolvió la sobreaclaración: H0068 preparó y confirmó exactamente media.play.query providerSpotify/querydaft punk. Provider falló spotify_exact_result_not_found, verifiedfalse/resultnull/effectMayHaveOccurredtrue (inv88672a39-9448-4096-accb-10d3f48873f8). Final honesto sin afirmar reproducción; sigueopen. Reanudar sólo tras reconciliar esa invocación y corregir selección/postlectura UIA existente; no reintentar ni cerrarSpotify a ciegas.",
+      "observation": {
+        "index": 0,
+        "case_id": "H0068",
+        "control_observed": {
+          "index": 0,
+          "case_id": "H0068",
+          "response": {
+            "type": "admission",
+            "command": "session.new",
+            "status": 200,
+            "body": "{\"ok\":true,\"id\":\"3d4ee88a9fea\"}"
+          },
+          "ok": true
+        },
+        "phases": [
+          {
+            "phase": "request",
+            "case_index": 0,
+            "envelope": {
+              "type": "admission",
+              "command": "turn",
+              "status": 200,
+              "body": "{\"ok\":true,\"status\":\"accepted\"}"
+            },
+            "real_submission_events": [
+              {
+                "type": "admission",
+                "turnId": "t1",
+                "accepted": true,
+                "status": 200,
+                "error": null
+              }
+            ],
+            "terminal": {
+              "type": "terminal",
+              "kind": "published_final",
+              "final": "¿Quieres confirmar o cancelar que se reproduzca música de Daft Punk en Spotify?",
+              "diagnostic": null,
+              "timedOut": false,
+              "admissionStatus": 200,
+              "caseId": "H0068",
+              "phase": "request"
+            },
+            "synthetic_guard_rejection": false,
+            "counts_as_confirmation_submission": false,
+            "counts_as_variant_or_credit": false
+          },
+          {
+            "phase": "final",
+            "case_index": 0,
+            "envelope": {
+              "type": "admission",
+              "command": "turn",
+              "status": 200,
+              "body": "{\"ok\":true,\"status\":\"accepted\"}"
+            },
+            "real_submission_events": [
+              {
+                "type": "admission",
+                "turnId": "t2",
+                "accepted": true,
+                "status": 200,
+                "error": null
+              }
+            ],
+            "terminal": {
+              "type": "terminal",
+              "kind": "published_final",
+              "final": "No puedo confirmar el resultado porque no está verificado. Sigue pendiente la solicitud de poner música de Daft Punk.",
+              "diagnostic": null,
+              "timedOut": false,
+              "admissionStatus": 200,
+              "caseId": "H0068",
+              "phase": "final"
+            },
+            "synthetic_guard_rejection": false,
+            "counts_as_confirmation_submission": true,
+            "counts_as_variant_or_credit": false
+          }
+        ],
+        "final_terminal": {
+          "type": "terminal",
+          "kind": "published_final",
+          "final": "No puedo confirmar el resultado porque no está verificado. Sigue pendiente la solicitud de poner música de Daft Punk.",
+          "diagnostic": null,
+          "timedOut": false,
+          "admissionStatus": 200,
+          "caseId": "H0068",
+          "phase": "final"
+        },
+        "verdict": null,
+        "execution_state": "final_observed_not_adjudicated"
+      }
+    },
+    {
+      "case_id": "H0213",
+      "literal": "pon una cancion de michael jackson",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 1,
+        "case_id": "H0213",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    },
+    {
+      "case_id": "H0250",
+      "literal": "Pon una cancion de michael jackson",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 2,
+        "case_id": "H0250",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    },
+    {
+      "case_id": "H0388",
+      "literal": "Pon bad de michael jackson",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 3,
+        "case_id": "H0388",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    },
+    {
+      "case_id": "H0405",
+      "literal": "poné una canción",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 4,
+        "case_id": "H0405",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    },
+    {
+      "case_id": "H0526",
+      "literal": "poné música",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 5,
+        "case_id": "H0526",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    },
+    {
+      "case_id": "H0598",
+      "literal": "poneme algo de música tranqui",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 6,
+        "case_id": "H0598",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    },
+    {
+      "case_id": "H0601",
+      "literal": "ponme musika",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 7,
+        "case_id": "H0601",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    },
+    {
+      "case_id": "V958-01",
+      "literal": "Elegí una canción para escuchar ahora.",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 8,
+        "case_id": "V958-01",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    },
+    {
+      "case_id": "V958-02",
+      "literal": "Could you put some music on?",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 9,
+        "case_id": "V958-02",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    },
+    {
+      "case_id": "V958-03",
+      "literal": "Quiero que me pongas The Beatles.",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 10,
+        "case_id": "V958-03",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    },
+    {
+      "case_id": "V958-04",
+      "literal": "Play music by Nina Simone.",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 11,
+        "case_id": "V958-04",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    },
+    {
+      "case_id": "V958-05",
+      "literal": "I want you to play Billie Jean by Michael Jackson.",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 12,
+        "case_id": "V958-05",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    },
+    {
+      "case_id": "V958-06",
+      "literal": "Pon Take Five de Dave Brubeck.",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 13,
+        "case_id": "V958-06",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    },
+    {
+      "case_id": "V958-07",
+      "literal": "Necesito un poco de jazz.",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 14,
+        "case_id": "V958-07",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    },
+    {
+      "case_id": "V958-08",
+      "literal": "Comfort my ears with bossa nova.",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 15,
+        "case_id": "V958-08",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    },
+    {
+      "case_id": "V958-09",
+      "literal": "Reproduce música tranquila en Spotify.",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 16,
+        "case_id": "V958-09",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    },
+    {
+      "case_id": "V958-10",
+      "literal": "Play relaxing music on Spotify, please.",
+      "status": "not_executed",
+      "coverage_added": false,
+      "reason": "Root proves host stopped after first pending mission: complete captured sequence, one session control, request+confirmation admissions, host exit3, ProductConductorHost.cs118-128/198-202. No next queued command executed; playback effect of H0068 remains uncertain.",
+      "observation": {
+        "index": 17,
+        "case_id": "V958-10",
+        "control_observed": null,
+        "phases": [],
+        "final_terminal": null,
+        "verdict": null,
+        "execution_state": "no_final_observed_execution_unresolved"
+      }
+    }
+  ]
+}

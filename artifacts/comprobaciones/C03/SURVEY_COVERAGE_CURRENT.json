@@ -1,22 +1,27 @@
 {
-  "utc": "2026-09-11T21:06:41.9538238Z",
-  "covered": 78,
-  "open": 664,
+  "utc": "2026-09-11T21:22:46.9247046+00:00",
+  "covered": 80,
+  "open": 662,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 50,
+  "covered_updated_last_24h": 52,
   "updated_recent_ids": [
     "H0017",
     "H0035",
+    "H0044",
+    "H0070",
     "H0086",
     "H0132",
     "H0133",
     "H0158",
+    "H0166",
     "H0169",
     "H0233",
     "H0258",
+    "H0267",
+    "H0292",
     "H0310",
     "H0338",
     "H0353",
@@ -24,18 +29,25 @@
     "H0364",
     "H0375",
     "H0383",
+    "H0397",
     "H0402",
     "H0406",
     "H0409",
     "H0470",
     "H0471",
     "H0477",
+    "H0490",
     "H0501",
+    "H0503",
     "H0505",
+    "H0512",
     "H0524",
     "H0538",
+    "H0553",
     "H0557",
     "H0577",
+    "H0597",
+    "H0622",
     "H0633",
     "H0649",
     "H0650",
@@ -43,23 +55,13 @@
     "H0672",
     "H0678",
     "H0684",
+    "H0688",
     "H0690",
     "H0725",
     "H0729",
-    "H0490",
-    "H0622",
-    "H0267",
-    "H0688",
-    "H0397",
-    "H0503",
-    "H0044",
-    "H0070",
-    "H0292",
-    "H0736",
-    "H0166",
-    "H0512"
+    "H0736"
   ],
-  "confirmed_new_grants_last_24h": 50,
+  "confirmed_new_grants_last_24h": 52,
   "first_grant_date_not_distinguished_for_recent_ids": [],
   "categories": [
     {
@@ -79,14 +81,6 @@
       "not_applicable": 0
     },
     {
-      "category": "web_navigation_search",
-      "label": "Navegación y búsqueda web",
-      "total": 46,
-      "covered": 8,
-      "open": 38,
-      "not_applicable": 0
-    },
-    {
       "category": "system_hardware_status",
       "label": "Estado de hardware y sistema",
       "total": 40,
@@ -100,6 +94,14 @@
       "total": 38,
       "covered": 0,
       "open": 38,
+      "not_applicable": 0
+    },
+    {
+      "category": "web_navigation_search",
+      "label": "Navegación y búsqueda web",
+      "total": 46,
+      "covered": 10,
+      "open": 36,
       "not_applicable": 0
     },
     {
@@ -343,7 +345,7 @@
       "not_applicable": 0
     }
   ],
-  "requirements_sha256": "c1c06d83716c582e4fb958aac372885682eac1eac6f5ecbb8100eb7387c14fcc",
+  "requirements_sha256": "2cd24a85e335f8274396d7d13a780407f6c144196af2cce2c6cf051ee3a70e73",
   "classification_source": "SURVEY_TAXONOMY846.json",
   "latest_adjudications": [
     "APP_OPEN847/ROOT_ADJUDICATION.json",
@@ -360,19 +362,19 @@
     "APP_GROUNDING930/ROOT_ADJUDICATION.json",
     "APP_TERMINAL934/ROOT_ADJUDICATION.json",
     "WEB_RESPONSE919/ROOT_ADJUDICATION.json",
-    "MUSIC_PANEL958/ROOT_ADJUDICATION.json"
+    "MUSIC_PANEL958/ROOT_ADJUDICATION.json",
+    "MUSIC_TAIL962/ROOT_ADJUDICATION.json",
+    "WEB_TAIL963/ROOT_ADJUDICATION.json"
   ],
-  "equal_maximum_open_next_selection": "Apps40 conditions retained957; music39 active with source961 repair and sealed continuation962 (H0068 plus17 never admitted). Web38 has2 eligible named searches960; system38 has10 prior correct readings959 requiring current-candidate evidence/pertinent variants. No broad replay or new infrastructure.",
+  "equal_maximum_open_next_selection": "Apps40 conditions957; music39 independent current status2 preparedPLAN964 while uncertain Spotify play962 is parked with invocation88672a39-9448-4096-accb-10d3f48873f8. Hardware38 and agenda38 follow; PLAN959 prepares10 hardware readings. Web36 after2 current credits963. No retry uncertain playback or whole panels.",
   "latest_product_run": {
-    "batch": 958,
-    "executed": 3,
-    "passed": 0,
-    "failed": 3,
-    "not_executed": 17,
-    "coverage_added": 0,
-    "useful_partial_clarification": 1,
-    "host_exit_code": 3,
-    "resources_violations": 0
+    "batch": 963,
+    "executed": 2,
+    "passed": 2,
+    "failed": 0,
+    "not_executed": 0,
+    "coverage_added": 2,
+    "exit_code": 0
   },
-  "registry_sha256": "c1c06d83716c582e4fb958aac372885682eac1eac6f5ecbb8100eb7387c14fcc"
+  "registry_sha256": "2cd24a85e335f8274396d7d13a780407f6c144196af2cce2c6cf051ee3a70e73"
 }

@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-11T21:12:22.653080+00:00",
+  "runner_pid": 15584,
+  "launcher_pid": 25096,
+  "launcher_creation": 1789161142.6467123,
+  "command": [
+    "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "main.py",
+    "--conductor",
+    "--profile",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music-tail962-profile",
+    "--capture",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music-tail962-private\\run\\capture",
+    "--turns-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music-tail962-proposal\\turns.jsonl",
+    "--timeout-ms",
+    "120000"
+  ]
+}

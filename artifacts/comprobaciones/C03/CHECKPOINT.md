@@ -1,12 +1,14 @@
 # C03 — cobertura vigente
 
-**78/742 cubiertos, 664 abiertos, 0 no aplican; 50 acreditaciones confirmadas en las últimas24h; 0/35 categorías cerradas.** Matriz C03:3/11. Registroc1c06d83716c582e4fb958aac372885682eac1eac6f5ecbb8100eb7387c14fcc; cifras en SURVEY_COVERAGE_CURRENT.json.
+**80/742 cubiertos, 662 abiertos, 0 no aplican; 52 acreditaciones confirmadas en las últimas24h; 0/35 categorías cerradas.** Matriz C03:3/11. Registro2cd24a85e335f8274396d7d13a780407f6c144196af2cce2c6cf051ee3a70e73; cifras en SURVEY_COVERAGE_CURRENT.json.
 
-El dueño ordenó omitir suites automáticas, Fast y Full; se mantienen ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. El bloqueo anterior está resuelto. También autorizó cerrar aplicaciones para liberar RAM; hoy no fue necesario. No se cuentan pruebas omitidas como aprobadas.
+El dueño ordenó omitir suites automáticas, Fast y Full; se mantienen ejecuciones reales selladas, respuestas fieles y variantes para acreditar encuesta. Goal activo, sin bloqueo ni decisión pendiente del dueño. Autorizó cerrar aplicaciones para RAM; no fue necesario. Pruebas omitidas no son aprobadas.
 
-Última958:3peticiones admitidas,0pass de reproducción/3fail,17noejecutadas comprobadas,+0créditos. H0066 aclaró útilmente sin reproducir; H0068 pidió aclaración pese a tener artista. Parada exacta de confirmación, host3/runner1,0violaciones,24,625s,VRAM3497,56/RAM1766,91MiB. [Resultado](MUSIC_PANEL958/REPORT.md).
+Última963:2/2pass,+H0553/H0597 con consulta/URL/navegador verificados y dos variantes pertinentes950.39s,VRAM3573,36/RAM3477,16MiB,0violaciones. Fuente961 publicada c1c796096ce81319cdd9fe8419282171f5eeb3c1. No UI/voz/lectura de contenido ni cierre global de confirmación.
 
-Fuente954 publicada18437a35b0e1210c16b619c73cbbd7b9ab2ff0bb.961 repara query explícita;962 sellada como continuación, únicamenteH0068+17pendientes originales. Apps40 conservan condiciones957; música39 sigueactiva, web38 tiene2literales habilitados960 y sistema38 conserva10lecturasprevias para ligar evidencia959. [Decisión](MUSIC_PREPARATION958/DECISION.md). No infraestructura nueva ni repetición de paneles completos.
+962 confirmó que la reparación elimina la aclaración innecesaria de Daft Punk: operación y confirmación exactas. Spotify no verificó reproducción (inv88672a39-9448-4096-accb-10d3f48873f8,efecto incierto); final honesto,0créditos.34,703s,VRAM3497,56/RAM1922,23MiB.17casos de cola no ejecutados por parada ante misión pendiente. No reintentar ni cerrarSpotify a ciegas.958 original:3admitidos,3sinreproducción/17noejecutados; sóloH0068 se repitió tras reparación. Las causas se escribieron al adjudicar.
+
+Siguiente por masa elegible: apps40 conserva condiciones957; música39 tiene dos lecturas actuales independientes (PLAN964) mientras reproducción962 queda pendiente de reconciliar/corregirUIA existente. Sistema38 y agenda38 después; PLAN959 ofrece10lecturas previas de disco/GPU para ligarlas al candidato actual. Web36 tras963. Sin nuevos providers, OCR ni infraestructura. H0675 continúa aparcado.
 Resumen histórico al cerrar892 — no es el estado vigente:
 
 - 881: 8/8 ejecutados, 6 válidos y 2 fallidos, sin crédito. Ambos literales fueron útiles pero faltaba una variante de cada conducta. Sus causas se escribieron al adjudicar. [Adjudicación](APP_LOOKUP881/ROOT_ADJUDICATION.json).
@@ -31,9 +33,9 @@ Cobertura vigente por categoría de la taxonomía846, ordenada por abiertos:
 |---|---:|---:|---:|---:|
 | Abrir aplicaciones | 54 | 14 | 40 | 0 |
 | Música | 39 | 0 | 39 | 0 |
-| Navegación y búsqueda web | 46 | 8 | 38 | 0 |
 | Estado de hardware y sistema | 40 | 2 | 38 | 0 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 0 | 38 | 0 |
+| Navegación y búsqueda web | 46 | 10 | 36 | 0 |
 | Conocimiento, razonamiento y creatividad verbal | 37 | 3 | 34 | 0 |
 | Entrada incompleta, ruido y control de diálogo | 34 | 0 | 34 | 0 |
 | Archivos y carpetas | 32 | 0 | 32 | 0 |
