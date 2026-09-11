@@ -2340,6 +2340,9 @@ def resolve_explicit_clarification_intent(
         return None
     if _is_meta_or_tool_denial(folded):
         return None
+    if _literal_note_payload_request(folded):
+        # The subordinate text is note content, not a message recipient/body.
+        return None
     hourly_dynamic_notification = (
         re.fullmatch(
             r"(?:get|send|give)\s+(?:me\s+)?(?:an?\s+)?hourly\s+"
@@ -6183,12 +6186,17 @@ def _has_unsupported_deferred_effect(text: str) -> bool:
 
 
 def _literal_note_payload_request(text: str) -> bool:
-    """Recognize a temporal expression that is literal note content."""
+    """Recognize a positive note request whose subordinate text is literal data."""
 
+    text = _strip_request_envelope(_fold(text))
+    desired = _explicit_desire_request(text)
+    if desired is not None:
+        text = desired.group("body")
     return _has(
         text,
         r"^[¿?¡!\s]*(?:"
-        r"(?:anota|anotar|anotame|note\s+down|write\s+down)\s+(?:que|that|:)"
+        r"(?:anota|anotar|anotame|note\s+down|write\s+down|"
+        r"deja(?:r)?\s+anotad[oa])\s+(?:que\b|that\b|:)"
         r"|(?:crea|crear|create|make|haz|hacer)\s+"
         r"(?:(?:una?|a)\s+)?(?:nota|note)\s+"
         r"(?:que\s+diga|that\s+says?|saying|:)"
@@ -8047,6 +8055,8 @@ def _strict_catalog_request(
             return None
         return EffectIntent(operations, evidence or tuple(text for _ in operations))
 
+    if not deferred_effect and _literal_note_payload_request(text):
+        return intent("note.create")
     if named_window_query is not None:
         return intent("window.application.status")
 
@@ -11990,6 +12000,9 @@ def _resolve_explicit_effects_single(
 
 
 def _request_clauses(text: str) -> tuple[str, ...]:
+    if _literal_note_payload_request(text):
+        # Actions mentioned after the content marker remain stored text.
+        return (text.strip(),)
     if window_inventory_arguments(text) is not None:
         # A complete inventory topic plus "list them" is one request. The
         # closed reader rejects extra actions before preserving this span.

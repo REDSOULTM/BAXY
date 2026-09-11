@@ -1,0 +1,13 @@
+{
+  "schema": "c03-note-routing985-source-v1",
+  "utc": "2026-09-11T22:44:47.5690719Z",
+  "base": "89f0d9d4b88bef952134f84e6a320b77fb0b1b3c",
+  "patch_sha256": "f8edf8f9898b60ce97146617bb65a020464193a090a96941fffd40726783ddaa",
+  "source_sha256": "e078c1438403548e61f490e694371cc074bda5acfac8fe42905a4e4f65ce98e1",
+  "diagnosis984_sha256": "144fab5467f9ee8c8d21b2630d5d3a9c7ad14e5dad6fa4892ed82cdf08915365",
+  "root_review": "Existing literal-note recognizer handles positive desire and dejar anotado; excludes false message recipient parsing and selects note.create after existing strict guards. Literal content stays one clause. No names/values from survey hardcoded.",
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "product_validation": "pending TASK_NOTE_REPAIR986",
+  "coverage_added": 0
+}
