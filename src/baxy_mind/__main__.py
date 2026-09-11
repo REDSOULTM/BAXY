@@ -237,16 +237,23 @@ def _append_turn_audit(record: dict[str, Any]) -> None:
     if not raw_path:
         return
     try:
-        payload = (
-            json.dumps(
-                record,
-                ensure_ascii=False,
-                sort_keys=True,
-                separators=(",", ":"),
+        candidates = (record,)
+        if "app_open_identity" in record:
+            candidates += (
+                {key: value for key, value in record.items() if key != "app_open_identity"},
             )
-            + "\n"
-        ).encode("utf-8")
-        if len(payload) > TURN_AUDIT_MAX_BYTES:
+        for candidate in candidates:
+            try:
+                payload = (
+                    json.dumps(
+                        candidate, ensure_ascii=False, sort_keys=True, separators=(",", ":"),
+                    ) + "\n"
+                ).encode("utf-8")
+            except (TypeError, ValueError, RecursionError):
+                continue
+            if len(payload) <= TURN_AUDIT_MAX_BYTES:
+                break
+        else:
             return
         path = Path(raw_path).resolve()
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -1544,6 +1551,7 @@ def apply_operation_domain_grounding_veto(
     *,
     previous_user_text: str | None = None,
     available_operations: tuple[str, ...] = (),
+    app_identity_audit: dict[str, Any] | None = None,
 ) -> dict[str, object]:
     """Remove authority when an ambiguous operation lacks its real domain.
 
@@ -1587,9 +1595,11 @@ def apply_operation_domain_grounding_veto(
     app_open_count = operations.count("app.open")
     if app_open_count:
         app_evidence: tuple[str, ...] | None = None
+        evidence_source = "unavailable"
         if explicit_intent is not None and operations == list(
             explicit_intent.operations
         ):
+            evidence_source = "explicit_intent"
             app_evidence = tuple(
                 evidence
                 for operation, evidence in zip(
@@ -1600,25 +1610,58 @@ def apply_operation_domain_grounding_veto(
                 if operation == "app.open"
             )
         elif compound_contract is not None:
+            evidence_source = "compound_contract"
             app_evidence = _compound_operation_evidence(
                 operations,
                 compound_contract,
                 "app.open",
             )
         elif app_open_count == 1:
+            evidence_source = "objective"
             app_evidence = (objective,)
-        if (
-            app_evidence is None
-            or len(app_evidence) != app_open_count
-            or any(
-                resolve_application_catalog_app_id(
-                    evidence,
-                    application_names,
+        identity_reason = "resolved"
+        if app_evidence is None:
+            identity_reason = "evidence_missing"
+        elif len(app_evidence) != app_open_count:
+            identity_reason = "evidence_count_mismatch"
+        else:
+            for evidence_index, evidence in enumerate(app_evidence):
+                resolved_app_id = resolve_application_catalog_app_id(evidence, application_names)
+                if app_identity_audit is not None:
+                    try:
+                        app_identity_audit.setdefault("resolutions", []).append(
+                            {"evidence_index": evidence_index, "resolved_app_id": resolved_app_id}
+                        )
+                    except Exception:  # Diagnostics must not alter resolution or its short circuit.
+                        app_identity_audit.clear()
+                        app_identity_audit = None
+                if resolved_app_id is None:
+                    identity_reason = "resolver_unresolved"
+                    break
+        if app_identity_audit is not None:
+            try:
+                indexed = isinstance(application_names, ApplicationCatalogIndex)
+                catalog_entries = (
+                    application_names.entries if indexed
+                    else application_names if isinstance(application_names, tuple) else None
                 )
-                is None
-                for evidence in app_evidence
-            )
-        ):
+                app_identity_audit.update({
+                    "boundary": "domain_grounding",
+                    "operations": list(operations),
+                    "app_open_count": app_open_count,
+                    "evidence_source": evidence_source,
+                    "evidence": app_evidence,
+                    "evidence_count": None if app_evidence is None else len(app_evidence),
+                    "reason": identity_reason,
+                    "resolutions": app_identity_audit.get("resolutions", []),
+                    "catalog_input_kind": "name_key_pairs" if indexed else type(application_names).__name__,
+                    "catalog_entries": catalog_entries,
+                    "catalog_complete": catalog_entries is not None,
+                    "catalog_entry_count": None if catalog_entries is None else len(catalog_entries),
+                })
+            except Exception:  # Keep the legacy audit if the optional snapshot cannot be captured.
+                app_identity_audit.clear()
+        if identity_reason != "resolved":
             vetoed = dict(decision)
             vetoed.update(
                 {
@@ -6176,6 +6219,7 @@ def _prepare_turn_result(
     )
     turn_audit["stages"].append(_turn_audit_stage("information_question", decision))
     effects_before_domain_grounding = tuple(decision["effect_operations"])
+    app_identity_audit = {} if os.environ.get(TURN_AUDIT_ENV, "").strip() else None
     decision = apply_operation_domain_grounding_veto(
         decision,
         objective,
@@ -6185,7 +6229,10 @@ def _prepare_turn_result(
         game_catalog,
         previous_user_text=_previous_user_request(history, objective),
         available_operations=available_operations,
+        app_identity_audit=app_identity_audit,
     )
+    if app_identity_audit:
+        turn_audit["app_open_identity"] = app_identity_audit
     decision = validate_turn_decision(
         decision,
         {tool.name for tool in shortlist},
