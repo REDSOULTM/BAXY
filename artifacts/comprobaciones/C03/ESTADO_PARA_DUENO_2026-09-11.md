@@ -12,7 +12,7 @@ El candidato anterior860 pasó3583 pruebas dueñas, cero fallos y cero omisiones
 
 H0675, OCR y nuevos providers siguen aparcados. El Administrador de tareas se conserva como lo dejaste. C03 sigue en curso; main y tus cambios se conservan. La [tabla de categorías del checkpoint](CHECKPOINT.md) está ordenada por abiertos.
 
-Por tu nueva instrucción, no se lanzan suites de tests ni Full. La aclaración sobre paneles de producto está pendiente; el trabajo continúa con revisión y cambios mínimos. Ninguna prueba omitida se contará como aprobada.
+Por tu nueva instrucción, no se lanzan suites de tests ni Full. El dueño aprobó mantener los paneles reales para acreditar encuesta. Ninguna prueba omitida se contará como aprobada.
 
 La corrección de Configuración ocupa una línea. La revisión del código conserva la identidad del catálogo y el rechazo de destinos ambiguos; aún no se ha comprobado en el producto. Ya está incorporada la reparación que respeta Google cuando se pide ese buscador, evitando enviar esas palabras como parte de una búsqueda en Bing.
 
@@ -20,9 +20,9 @@ También se ajustó la lectura de nombres para peticiones como «una terminal»,
 
 Las órdenes directas y los pedidos «quiero que abras…» comparten ahora la extracción del nombre. Esto permite usar los artículos y alias que BAXY ya conoce sin duplicar esa gramática. La verificación en el producto sigue pendiente. Se prepara una continuación para dos literales de apps que aún no se habían ejecutado en los recibos consultados.
 
-También se ajustó «no, mejor abrí…» para conservar la nueva orden sin borrar las negaciones o correcciones que contenga. Los dos literales pendientes ya están sellados con cuatro variantes y tres límites. No se ejecutaron: la cobertura sigue en64/742. El próximo paso de acreditación depende de aclarar si tu indicación de no hacer tests permite las ejecuciones del producto; las suites y el Full siguen detenidos.
+También se ajustó «no, mejor abrí…» para conservar la nueva orden sin borrar las negaciones o correcciones que contenga. Los dos literales pendientes ya están sellados con cuatro variantes y tres límites. No se ejecutaron: la cobertura sigue en64/742. Las ejecuciones reales de encuesta están autorizadas; las suites y el Full se omiten por decisión del dueño.
 
 Cuatro fallos de apps compartían una pregunta redundante sobre si abrirlas. Ahora, cuando lo que falta es resolver una identidad única, se usa la pregunta de argumentos faltantes que ya tenía BAXY. Esto conserva la ejecución detenida y evita afirmar que la app no existe. Sólo se revisó el código. Se descartó una tanda que habría medido esa aclaración sin acreditar aperturas: esos cuatro requisitos siguen abiertos.
 
-Goal marcado **bloqueado, sin completar C03**, tras tres turnos con la misma aclaración pendiente sobre «no hagas test» y las ejecuciones necesarias para acreditar encuesta. Las reparaciones están publicadas; no hay tanda ni agente trabajando que esperar. Se conserva64/742,678abiertos,0NA;36altas confirmadas24h y0/35categorías. No se ejecutan pruebas ni se adjudican resultados sin observar el producto. La reanudación está detallada en HANDOFF.md.
+Reanudación autorizada: el dueño aceptó omitir suites automáticas, Fast y Full y mantener los paneles reales de encuesta. La duda de alcance queda resuelta. Próximo paso869/881 sobre candidato actual; se prepara885 para877 en paralelo. RAM libre observada2855MiB frente a4000MiB de arranque: se solicitó liberar aplicaciones, sin cerrar ninguna del dueño. Cobertura64/742,678abiertos,0NA;0/35categorías; último cómputo24h36altas confirmadas a15:42UTC. Ninguna suite omitida se declara aprobada.
 
