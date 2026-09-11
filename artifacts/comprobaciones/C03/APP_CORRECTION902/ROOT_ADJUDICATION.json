@@ -1,0 +1,86 @@
+{
+  "utc": "2026-09-11T17:28:33.8954940Z",
+  "root_adjudicated": true,
+  "candidate_commit": "866672927615379f57c5259daeccf974df40d156",
+  "tests_run": false,
+  "counts": {
+    "total": 8,
+    "historical_literals_passed": 0,
+    "coverage_added": 0,
+    "passed": 2,
+    "failed": 6
+  },
+  "private_review_sha256": "580e895f4daa86c6c4af3d9fa2959b27f0fc301d85cbe75ccfd77c5b7135664a",
+  "journal_sha256": "44efe97997ae9a327ae31179d29d12bafb6756b91e7a1c7541a38f9cb4b093c5",
+  "panel_seal_sha256": "8fe01e99d2486a74336828ae531c89f69ef961f0b5fca5782f5c0bcbbb69a87e",
+  "registry_before_sha256": "1b6b8520e73501d87784500d5a05dd845b1ce1a89fc3bd68126a974e3b1639a0",
+  "registry_after_sha256": "96d6ca83640517f8f972b4749bb2398d3588bc648e4a2b3dcd98d2fe4eb53626",
+  "cases": [
+    {
+      "case_id": "app-correction880-variant-es",
+      "group": "initial_positive_rectification",
+      "verdict": "pass",
+      "reason": "Rectificación positiva ES ejecuta Paint, con app.open verificado y respuesta fiel.",
+      "survey_credit": false,
+      "invocation_ids": [
+        "c4a197e5-ceb3-436a-8b7b-f18bfa89d017"
+      ]
+    },
+    {
+      "case_id": "app-correction880-variant-en",
+      "group": "initial_positive_rectification",
+      "verdict": "fail",
+      "reason": "Variante EN termina composition_failed/model_response_rejected; ninguna app.open observada.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "H0691",
+      "group": "initial_positive_rectification",
+      "verdict": "fail",
+      "reason": "Literal pide abrir Firefox tras corrección; respuesta pide confirmar sin apertura ni recibo. Sigue open.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-correction880-limit-negative",
+      "group": "real_prohibition",
+      "verdict": "fail",
+      "reason": "Respeta no abrir, pero presenta una prohibición como interpretación fallida y solicitud positiva; falla utilidad/fidelidad.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-correction880-limit-negative-correction",
+      "group": "rectification_to_prohibition",
+      "verdict": "fail",
+      "reason": "No abre, pero responde SIEMPRE sin atender la corrección a prohibición; falla utilidad.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-correction880-limit-narrative",
+      "group": "past_narrative",
+      "verdict": "fail",
+      "reason": "Relato de ayer se convierte en explicación de un intento fallido actual no observado.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-correction880-limit-quotation",
+      "group": "informational_quotation",
+      "verdict": "pass",
+      "reason": "Explica la frase citada como cambio de elección sin ejecutar apertura.",
+      "survey_credit": false,
+      "invocation_ids": []
+    },
+    {
+      "case_id": "app-correction880-limit-later-retraction",
+      "group": "later_contradictory_correction",
+      "verdict": "fail",
+      "reason": "No abre, pero afirma un intento fallido no observado en vez de respetar la retractación; falla fidelidad.",
+      "survey_credit": false,
+      "invocation_ids": []
+    }
+  ]
+}

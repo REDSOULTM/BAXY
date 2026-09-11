@@ -1,0 +1,10 @@
+{
+  "utc": "2026-09-11T17:28:33.8044038Z",
+  "pid": 39048,
+  "creation_utc": "2026-09-11T17:26:29.823739Z",
+  "window_handle": 28313962,
+  "source_invocation": "c4a197e5-ceb3-436a-8b7b-f18bfa89d017",
+  "normal_close_requested": true,
+  "force_killed": false,
+  "gone": true
+}
