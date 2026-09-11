@@ -1,0 +1,20 @@
+{
+  "worktree": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-list-count821",
+  "within_checked_parent": "C:\\Users\\usuario\\AppData\\Local\\BAXY",
+  "only_owned_changes": [
+    " M src/baxy_mind/llm.py",
+    " M tests/test_c03_process_scope_prompt.py"
+  ],
+  "matching_source_snapshots": {
+    "src/baxy_mind/llm.py": {
+      "root": "c51220e7c96b77150bd5d8c9016da5f20de5d2f700605c5d8e74165e0d7be384",
+      "worktree": "c51220e7c96b77150bd5d8c9016da5f20de5d2f700605c5d8e74165e0d7be384",
+      "proposal_final": "c51220e7c96b77150bd5d8c9016da5f20de5d2f700605c5d8e74165e0d7be384"
+    },
+    "tests/test_c03_process_scope_prompt.py": {
+      "root": "5a7c1d171e99249302eebb419f74c5d3249cdae8d11e09fb20ec41b95e836972",
+      "worktree": "5a7c1d171e99249302eebb419f74c5d3249cdae8d11e09fb20ec41b95e836972",
+      "proposal_final": "5a7c1d171e99249302eebb419f74c5d3249cdae8d11e09fb20ec41b95e836972"
+    }
+  }
+}

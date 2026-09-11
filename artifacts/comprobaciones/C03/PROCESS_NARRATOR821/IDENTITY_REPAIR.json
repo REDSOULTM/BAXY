@@ -1,0 +1,22 @@
+{
+  "reason": "Update current program references after one Python prompt sentence; historical campaign receipts and data unchanged.",
+  "python_files": 407,
+  "program_tree_sha256": "1d3f9543fe639a316c955853687cc702c0d57061342d939fd7cc930262c57f93",
+  "changes": [
+    {
+      "path": "tests/test_price_v8_veto_damage_by_cause.py",
+      "old_current_identity": "ffd1c8ca159069044ac5dbc449d00fcc833649c728f421604b7f1f0c3d27f0a8",
+      "new_current_identity": "c51220e7c96b77150bd5d8c9016da5f20de5d2f700605c5d8e74165e0d7be384"
+    },
+    {
+      "path": "experiments/stt_quality/evaluate_reserved_stt.py",
+      "old_current_identity": "26d5c4919721acf8f84da85545d0cdd024ab255ddbb90473acb04b2d89fefb91",
+      "new_current_identity": "1d3f9543fe639a316c955853687cc702c0d57061342d939fd7cc930262c57f93"
+    },
+    {
+      "path": "experiments/stt_quality/audit_fresh_postweight_stt_sources.py",
+      "old_current_identity": "26d5c4919721acf8f84da85545d0cdd024ab255ddbb90473acb04b2d89fefb91",
+      "new_current_identity": "1d3f9543fe639a316c955853687cc702c0d57061342d939fd7cc930262c57f93"
+    }
+  ]
+}

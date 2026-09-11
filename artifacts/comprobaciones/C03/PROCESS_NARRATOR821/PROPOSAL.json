@@ -1,0 +1,16 @@
+{
+  "candidate": 821,
+  "reason": "Seven819 list failures omit observed population. Restore only the population statement, retaining simpler instructions and no displayed-row-count obligation.",
+  "runtime_delta": "One sentence in existing process prose paragraph. No data, model, sampler, guard, classifier or budget change.",
+  "proposal_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-list-count821-proposal\\proposal821.patch",
+  "proposal_sha256": "19efc2c036e95b2a55cfe0d7b812bbb9de96908910e3026bd652891204c94996",
+  "agent_owner_result": {
+    "passed": 20,
+    "skipped": 0,
+    "seconds": 1.23,
+    "scope": "existing prompt Recorder tests, not inference, not root validation"
+  },
+  "root_validation": "696pass/0skip;17referencepass/1environmentalskip;Fast exit0;33pins unchanged",
+  "full_policy": "Python-only. Inherit cumulative Full818/FULL_RETRY1 with its own source pins; final Full still required.",
+  "whole_category_adopted": false
+}

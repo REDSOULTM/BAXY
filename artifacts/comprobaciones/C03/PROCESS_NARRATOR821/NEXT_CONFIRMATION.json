@@ -1,0 +1,15 @@
+{
+  "candidate": 821,
+  "confirmation": 822,
+  "scripts": {
+    "scratchpad/c03-process-batch822.py": "66f185f90c4093c5836b9258d0bac9da83fce3488fd0a39317654e940c7217d7",
+    "scratchpad/c03-review-process822.py": "2acbcba242beadc9f86b1a6e57359336b0fef48a6a0903c2372ed210d567300e",
+    "scratchpad/c03-finalize-process822.py": "2f9af1a5361d822bdc9e92b2157babc8a552563ade551bd3c906379f45c69c5c",
+    "scratchpad/c03-validate-process-narrator821.py": "62808dc6e7ee050d5ed2bc8fb0f8d0c16d996a6a749e455ef92d63d9ab3e81e3"
+  },
+  "root_review": "Reviewed exact diffs against819 and full validation wrapper. One preparation-only change permits four existing root metadata files while rejecting prior validation output/private directory. No measured runtime change.",
+  "panel": "Frozen795 same50, no criteria edits.",
+  "current_sources": "PROCESS_NARRATOR821/SOURCE_PINS.json",
+  "inherited_full": "PROCESS_REPAIRS818/FULL_RETRY1/FULL_EXIT.json",
+  "new_full_executed": false
+}

@@ -4,8 +4,8 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-11T01:44:15.1215226Z",
   "branch": "Goal-c03",
-  "checkpoint": "Full818 retry1 recogido0: .NET4657pass/1omisión agregada(16optativas impresas no disjuntas); Python12898pass/3skip/466subtests/620,88s;33pins intactos. PrimerFull rojo y3referenciasactuales reparadas preservados. Preparado819, mismos50; publicar propios y arrancar, sin adopción ni crédito.81539/50; encuesta28/714/0;matriz3/11;C03EN_CURSO.",
-  "continuation": "Stage own815/818/819/820 files only; verify33pins and stagediff, commit/push Goal-c03 then start prepared819. Proposal821 remains outside canonical until root adjudicates819.",
+  "checkpoint": "821 validado:696dueñasPythonpass/0skip/6,16s;17referenciaspass/1skipambiental/1,77s;Fast0,33pins b5fb5117e2c32ba2ce162eb6553ade3d34436297eaa9e18cf43e20ed65354c1c intactos. Una frase pide población observada, sin obligación de conteo mostrado; tres referencias actuales actualizadas.822listo mismos50 tras publicar; worktree821retirado.81940/50 íntegro sinadopción. Full818retry1baseline;encuesta28/714/0;matriz3/11;C03EN_CURSO.",
+  "continuation": "Publish own source821 and819evidence; run822 immediately after commit; same50, root adjudication and no source/Full during GPU.",
   "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
   "userOwnedInstance": {
     "automaticClose": true,
@@ -32,12 +32,12 @@
     "open": 714,
     "not_applicable": 0
   },
-  "pendingOwnerClarification": "Close newly created TaskManager814 window; one request sent, not a block for BAXY work.",
+  "pendingOwnerClarification": "Owner closure confirmation received; Windows still registers Taskmgr8204. No repeated request and no block for independent C03 work.",
   "publishedSourceCommit": "d1a040d62fd57ef1db583121eda2c67c1efde632",
-  "workStatus": "repairs818_full_green_pending_publication",
-  "goalStatusNote": "Active. Identity reference repairs passed17tests/1environmentalskip, cumulative Full retry ongoing. No adoption or new coverage.",
+  "workStatus": "process821_validated_822_ready",
+  "goalStatusNote": "Active.81940/50 with10 failures; no new coverage or category adoption.",
   "previousGoalTurnClassification": "progress",
-  "publishedEvidenceCommit": "b997816d",
+  "publishedEvidenceCommit": "1b395b18ad77b366044c24105d3c439663baccef",
   "resolvedBlockedAudit": {
     "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
     "consecutive_goal_turns": 3,
@@ -48,7 +48,7 @@
     "no_model_campaign_running": true,
     "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
   },
-  "previousGoalTurnClassificationReason": "Integrated and tested816/817/818, completed original cumulative Full, diagnosed three stale identities, repaired them with17pass/1environmentalskip, launched separately sealed Fullretry1. Current poll confirmed PID31492 and session56418 live with33pins unchanged.",
+  "previousGoalTurnClassificationReason": "Collected green cumulative Full818retry1, published repairs1b395b18, completed819 and saved all50 root judgments; source821 minimal next proposal preparing.",
   "activeValidation": null,
   "objectiveFile": "C:\\Users\\usuario\\.codex\\attachments\\310753b7-9a38-4a57-951e-007fdcf7693a\\goal-objective.md",
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
@@ -79,23 +79,24 @@
   "activeReadOnlyAgent": null,
   "completedReadOnlyReview": "survey_status_scope:29additional IDs in STATUS_FAMILY_SCOPE_NEXT.json",
   "latestProductRun": {
-    "name": "process815",
-    "sessionId": 26072,
-    "launcherPid": 22608,
+    "name": "process819",
+    "sessionId": 23227,
+    "launcherPid": 10072,
+    "runnerPid": 5524,
     "processReceipt": {
-      "utc": "2026-09-11T05:27:24.807744+00:00",
-      "launcher": 22608,
-      "runner": 3440,
+      "utc": "2026-09-11T06:57:36.814879+00:00",
+      "launcher": 10072,
+      "runner": 5524,
       "command": [
         "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
         "main.py",
         "--conductor",
         "--profile",
-        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-profile815",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-profile819",
         "--capture",
-        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch815-private\\capture",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch819-private\\capture",
         "--turns-file",
-        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch815-private\\turns.jsonl",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-batch819-private\\turns.jsonl",
         "--timeout-ms",
         "120000"
       ]
@@ -103,11 +104,11 @@
     "registeredCases": 50,
     "state": "complete",
     "adjudication": "root_complete",
-    "sourceCandidate": 814,
-    "exitCode": 0,
-    "valid": 39,
-    "failed": 11,
-    "runtimeAbsent": true
+    "sourceCandidate": 818,
+    "valid": 40,
+    "failed": 10,
+    "collectedExitCode": 0,
+    "rootClosure": "PROCESS_BATCH819/ROOT_CLOSURE.json"
   },
   "k2Report": "artifacts/comprobaciones/C03/NATIVE_PRODUCT736/REPORT.md",
   "ownerPriority": "Owner ordered model selection after792 and immediate progress on C03 blockers; no further model campaign.",
@@ -902,5 +903,16 @@
     "base_llm_sha256": "ffd1c8ca159069044ac5dbc449d00fcc833649c728f421604b7f1f0c3d27f0a8",
     "agent_owners": "20pass/0skip/1.23s with Recorders, no model",
     "integration_precondition": "Root must adjudicate819 first; not integrated and not adopted."
+  },
+  "lastCandidateValidation": {
+    "candidate": 821,
+    "sessionId": 52343,
+    "mode": "owners plus Fast",
+    "exit_code": 0,
+    "owners_python_pass": 696,
+    "owners_python_skip": 0,
+    "owners_reference_pass": 17,
+    "owners_reference_skip": 1,
+    "receipt": "PROCESS_NARRATOR821/ROOT_VALIDATION.json"
   }
 }

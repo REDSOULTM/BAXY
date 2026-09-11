@@ -1,0 +1,66 @@
+{
+  "source_candidate": 818,
+  "source_adopted": false,
+  "new_coverage": 0,
+  "survey_counts": {
+    "covered": 28,
+    "open": 714,
+    "not_applicable": 0
+  },
+  "cases": [
+    {
+      "case_id": "H0133",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Diez nombres/PID y magnitudes coinciden con la lectura fresca; declara 148 accesibles, diez mostrados y subconjunto ordenado por memoria."
+    },
+    {
+      "case_id": "H0158",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Nombres/PID y magnitudes fieles y límite de acceso declarado, pero omite los 148 procesos observados exigidos por el criterio sellado de listado parcial."
+    },
+    {
+      "case_id": "H0169",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Declara memoria como métrica y muestra los cuatro máximos observados con PID y MB, limitados al acceso; la petición no fija cantidad."
+    },
+    {
+      "case_id": "H0364",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Los diez procesos/PID y porcentajes coinciden con la muestra actual por intervalo; orden correcto y alcance accesible expresado."
+    },
+    {
+      "case_id": "H0470",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Informa 150 procesos de la observación fresca y distingue expresamente los accesibles del total no garantizado del sistema."
+    },
+    {
+      "case_id": "H0650",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Top cinco solicitado: nombres/PID, orden y MB coinciden con los cinco máximos frescos; declara alcance accesible."
+    },
+    {
+      "case_id": "H0669",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Declara memoria y presenta diez máximos frescos con identidad y MB correctos, acotados a procesos observados/accesibles."
+    },
+    {
+      "case_id": "H0675",
+      "verification_status": "open",
+      "candidate_pass": false,
+      "reason": "Llama app de mayor memoria a codex PID9312 y sus 980,28 MB de un proceso. No hay evidencia de membresía ni agregación de los procesos de cada aplicación."
+    },
+    {
+      "case_id": "H0678",
+      "verification_status": "open",
+      "candidate_pass": true,
+      "reason": "Da los 150 procesos accesibles observados, diferenciados del recorte de filas; no afirma total exhaustivo del PC."
+    }
+  ]
+}

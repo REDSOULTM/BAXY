@@ -1,0 +1,15 @@
+{
+  "utc": "2026-09-11T07:12:16.870991+00:00",
+  "pid": 8508,
+  "command": [
+    "C:\\Users\\usuario\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.EXE",
+    "-NoProfile",
+    "-File",
+    "scripts/test_source_quality.ps1",
+    "-Mode",
+    "Fast"
+  ],
+  "private_log": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-narrator821-private\\validation.log",
+  "source_pins_sha256": "b5fb5117e2c32ba2ce162eb6553ade3d34436297eaa9e18cf43e20ed65354c1c",
+  "runner_sha256": "62808dc6e7ee050d5ed2bc8fb0f8d0c16d996a6a749e455ef92d63d9ab3e81e3"
+}

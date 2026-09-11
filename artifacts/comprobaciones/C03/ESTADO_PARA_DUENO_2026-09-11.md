@@ -1,49 +1,46 @@
 # Estado de C03 — 11 de septiembre de 2026
 
-**C03 sigue abierto.** La última tanda, 815, obtuvo **39 respuestas válidas de 50**, igual que 813: recuperó diez casos y perdió diez. Al simplificar las instrucciones mejoraron los conteos y rankings, pero muchas listas dejaron de indicar cuántos procesos se habían observado. La variante no resuelve la categoría.
+**C03 sigue abierto.** La tanda819 obtuvo **40 respuestas válidas de 50**, frente a39 en815: recuperó tres casos y perdió dos. Todos los turnos entregaron respuesta. Las correcciones de reglas y plazos eliminaron los agotamientos de esta ejecución.
 
-Ahora se han corregido dos reglas que descartaban expresiones normales y se ha dado a las respuestas de varios procesos el plazo que ya existía para listas densas. La primera confundía «current context» con código; la segunda confundía «complete» con una palabra cortada. Pasan 289 pruebas C# y 696 Python, sin omisiones. La validación completa ya pasó; ahora falta medir estas correcciones en BAXY.
-
-| Conducta medida | Válidas 815 | Válidas 813 |
+| Conducta medida | Válidas819 | Válidas815 |
 |---|---:|---:|
-| Listas | 3/11 | 11/11 |
-| Conteos | 12/12 | 10/12 |
-| Memoria | 9/11 | 9/11 |
-| CPU | 11/11 | 9/11 |
-| Recurso no especificado | 4/4 | 0/4 |
+| Listas | 4/11 | 3/11 |
+| Conteos | 11/12 | 12/12 |
+| Memoria | 11/11 | 9/11 |
+| CPU | 10/11 | 11/11 |
+| Recurso no especificado | 4/4 | 4/4 |
 | Memoria de aplicaciones | 0/1 | 0/1 |
-| Total | 39/50 | 39/50 |
+| Total | 40/50 | 39/50 |
 
-| Qué falló en 815 | Casos |
+| Qué falló en819 | Casos |
 |---|---:|
-| Publica la lista sin indicar cuántos procesos se observaron; algunas tampoco explican el alcance o recorte. | 7 |
-| Agota los reintentos y no entrega la lista. | 1 |
-| Agota el plazo al preparar un ranking de cinco procesos. | 1 |
-| Identifica los dos procesos de mayor memoria, pero omite sus cantidades y unidades. | 1 |
+| Enumera procesos sin indicar cuántos se observaron; algunas listas también omiten su alcance. | 7 |
+| Da el conteo correcto sin explicar que sólo incluye procesos accesibles. | 1 |
+| Dice que muestra diez procesos, pero enumera dos. | 1 |
 | Atribuye la memoria de un proceso a toda una aplicación. | 1 |
 
-Retirar un rechazo falso no convierte en correcta una respuesta que también omite datos solicitados. Los 50 veredictos de 815 se conservan.
+La siguiente corrección añade una frase a las instrucciones existentes para que se informe la población observada. Pasará sus pruebas y una nueva tanda con los mismos50 casos antes de decidir su resultado.
 
-| Tiempo y recursos 815 | Resultado |
+| Tiempo y recursos819 | Resultado |
 |---|---:|
-| Duración de 50 consultas consecutivas | 414,11 segundos |
-| Espera mediana hasta terminar el turno | 5,262 segundos |
-| Percentil 95 de espera | 11,051 segundos |
-| Máximo de espera | 60,002 segundos |
+| Duración de50 consultas consecutivas | 243,828 segundos |
+| Espera mediana hasta terminar el turno | 4,024 segundos |
+| Percentil95 de espera | 7,145 segundos |
+| Máximo de espera | 7,550 segundos |
 | Pico de VRAM | 3.497,56 MiB |
-| Pico de RAM residente, por separado | 2.429,73 MiB |
+| Pico de RAM residente, por separado | 2.405,50 MiB |
 
-La VRAM queda bajo el techo de 4 GB y la guarda de 3.800 MiB. La RAM se mide aparte. Hubo cero infracciones. La espera incluye 48 respuestas publicadas y dos turnos fallidos; no mide voz ni acredita interfaz visible. El Administrador de tareas estaba abierto en 815 y no en 813: no se atribuye el aumento de espera exclusivamente al cambio de instrucciones.
+La VRAM queda bajo el techo de4GB y la guarda de3.800MiB. Hubo cero infracciones. La RAM se mide por separado. La espera incluye los50 terminales; no mide voz ni acredita interfaz visible. En815 la mediana era5,262 segundos y el máximo60,002. Las observaciones del PC cambian entre ejecuciones, por lo que no se atribuye toda variación a una reparación aislada.
 
-La validación completa de las correcciones pasó: **12.898 pruebas Python aprobadas, 3 omisiones ambientales y 466 subpruebas**; .NET dio **4.657 aprobadas y una omisión agregada**. El registro imprime además 16 pruebas optativas que se solapan. Ninguna omisión cuenta como aprobada. El primer intento falló por tres huellas antiguas del código actual; se actualizaron esas referencias, sin cambiar los datos históricos, y se repitió la compuerta entera. Falta la medición de respuestas y el Full final de cierre.
+La validación completa de las reparaciones pasó: **12.898 pruebas Python aprobadas,3 omisiones ambientales y466 subpruebas**; .NET dio **4.657 aprobadas y una omisión agregada**. El registro imprime además16 pruebas optativas que se solapan. Ninguna omisión cuenta como aprobada. El primer intento falló por tres huellas antiguas del código actual; se corrigieron esas referencias y se repitió la compuerta completa. El primer resultado rojo se conserva. Falta el Full final sobre el candidato de cierre.
 
 | Avance formal | Estado |
 |---|---|
-| Encuesta | 28/742 cubiertos; 714 abiertos; 0 no aplicables. |
-| Matriz C03 | 3/11 cumplidas; 5 contradichas; 3 pendientes. |
+| Encuesta | 28/742 cubiertos;714 abiertos;0 no aplicables. |
+| Matriz C03 | 3/11 cumplidas;5 contradichas;3 pendientes. |
 | Categorías nuevas cerradas | 0; total completo no definido. |
 | Apertura de aplicaciones | 75 casos preparados, sin ejecutar. |
 
 Estos recuentos no son un porcentaje de cierre. Faltan las conductas restantes, las ocho rutas, cien turnos de aceptación, recuperación, interfaz real, voz y validación final. No hay un plazo fiable de cierre.
 
-La prueba de permisos ordinarios del Administrador de tareas no funcionó: Windows creó una instancia elevada y no expuso las filas. Esa vía queda descartada. Tras la respuesta del dueño sobre el cierre anterior, Windows todavía muestra la nueva ventana de diagnóstico; la petición de cierre ya está enviada y no bloquea las correcciones. BAXY permanece cerrado para uso manual. Encuesta 742/revisión 1248 y cambios del dueño conservados. Última publicación verificada: b997816d en Goal-c03; main 5f572ee1 intacto.
+La vía de permisos ordinarios del Administrador de tareas quedó descartada: Windows creó una instancia elevada y no expuso las filas. La confirmación de cierre del dueño está recibida; Windows todavía registra PID8204, sin bloquear este trabajo. No se repite la solicitud. BAXY permanece cerrado para uso manual. Encuesta742/revisión1248 y cambios del dueño conservados. Última publicación verificada:1b395b18 en Goal-c03; main5f572ee1 intacto.

@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-11T07:13:45.258273+00:00",
+  "exit_code": 0,
+  "command": [
+    "C:\\Users\\usuario\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\native\\powershell\\pwsh.EXE",
+    "-NoProfile",
+    "-File",
+    "scripts/test_source_quality.ps1",
+    "-Mode",
+    "Fast"
+  ],
+  "source_pins_unchanged": true,
+  "source_pins_sha256": "b5fb5117e2c32ba2ce162eb6553ade3d34436297eaa9e18cf43e20ed65354c1c",
+  "log_sha256": "c45c49a6d247d89a3903a9d0f2f635c14f4a0ce76352f5e2be5b9d9307f6550c",
+  "private_log": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-process-narrator821-private\\validation.log",
+  "adopted": false
+}

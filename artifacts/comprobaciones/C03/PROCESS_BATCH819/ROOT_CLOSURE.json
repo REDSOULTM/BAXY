@@ -1,0 +1,54 @@
+{
+  "utc": "2026-09-11T07:08:09.773432+00:00",
+  "session": 23227,
+  "collected_exit_code": 0,
+  "collection_chunk": "2724d2",
+  "product_runtime_absent": true,
+  "runtime_absence_check": "CIM confirms no Baxy.exe, baxy-core.exe, llama-server.exe or testhost.exe after collection; runner5524/launcher10072 absent. Taskmgr8204 still registered separately.",
+  "terminals": {
+    "published_final": 50,
+    "composition_failed": 0
+  },
+  "adopted": false,
+  "adoption_reason": "40/50 vs81539: three gains and two losses. Deterministic false-veto/deadline repairs remain in development, but the category is not accepted. Next measured difference821 restores only the observed population instruction, without displayed-row-count obligation.",
+  "rubric_notes": [
+    "All fifty root judgments saved before the one-time assembler.",
+    "Seven lists omit observed population; count02 omits accessible scope; CPU05 claims ten shown but shows two; H0675 lacks application membership and aggregation.",
+    "Memory and CPU criteria do not impose an unrequested row quota or observed-count statement. No historical verdict was changed."
+  ],
+  "comparison": {
+    "801": {
+      "previous_valid": 35,
+      "gains": [
+        "H0169",
+        "H0364",
+        "H0650",
+        "H0669",
+        "process795-list-01",
+        "process795-list-09",
+        "process795-memory_rank-04",
+        "process795-cpu_rank-06",
+        "process795-unspecified_rank-01"
+      ],
+      "losses": [
+        "process795-list-02",
+        "process795-list-07",
+        "process795-list-08",
+        "process795-count-02"
+      ]
+    },
+    "815": {
+      "previous_valid": 39,
+      "gains": [
+        "process795-list-03",
+        "process795-memory_rank-03",
+        "process795-memory_rank-05"
+      ],
+      "losses": [
+        "process795-count-02",
+        "process795-cpu_rank-05"
+      ]
+    }
+  },
+  "scope": "No acceptance100, desktop UI, acoustic latency, survey or category-closure credit. Full818 retry1 green remains cumulative baseline; final Full pending."
+}
