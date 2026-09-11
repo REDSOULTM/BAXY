@@ -3519,6 +3519,46 @@ def _authenticated_application_target(
     )
 
 
+def _application_desire_is_positive(folded: str) -> bool:
+    """Keep the existing desired-open exclusions on the complete request."""
+
+    return not (
+        _is_negative_effect_clause(folded)
+        or _is_meta_or_tool_denial(folded)
+        or _has_contradictory_correction(folded)
+        or _has_unsupported_deferred_effect(folded)
+        or _is_past_or_hypothetical_state(folded)
+        or _has(
+            folded,
+            r"\b(?:on|en)\s+(?:my|mi|the|el|la)?\s*"
+            r"(?:phone|telefono|movil|celular|tablet|ipad|iphone|console|consola)\b",
+        )
+    )
+
+
+def _application_open_request(text: str) -> re.Match[str] | None:
+    """Extract an ordinary or positive desired opening without resolving identity."""
+
+    request = _match(
+        text,
+        (
+            r"^[¿?¡!\s]*(?:(?:(?:por favor|please)\s*[,;:]?\s*|"
+            r"(?:puedes|podrias|can you|could you|would you)\s+)?"
+            rf"{_OPEN}\b|"
+            r"(?P<desire>(?:(?:i|we)\s+(?:need|want)\s+(?:you\s+)?to|"
+            r"(?:i|we)\s+would\s+like\s+(?:you\s+)?to)\s+"
+            r"(?:open|start|launch)|"
+            r"(?:necesito|quiero|quisiera)\s+que\s+"
+            r"(?:abras|abran|inicies|inicien|lances|lancen)))\s+"
+            r"(?P<target>.+)$"
+        ),
+    )
+    if request is not None and request.group("desire") is not None:
+        if not _application_desire_is_positive(text):
+            return None
+    return request
+
+
 def resolve_application_catalog_app_id(
     text: str,
     application_names: Iterable[str] | ApplicationCatalogIndex,
@@ -3534,16 +3574,20 @@ def resolve_application_catalog_app_id(
         matches = [entry for entry in catalog.entries if entry[1] == target[1]]
         return matches[0][0] if len(matches) == 1 else None
 
-    request = _match(
-        folded,
-        (
-            r"^[Â¿?Â¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*|"
-            r"(?:puedes|podrias|can you|could you|would you)\s+)?"
-            rf"{_OPEN}\b\s+(?P<target>.+)$"
-        ),
-    )
+    request = _application_open_request(folded)
     raw_target = request.group("target") if request is not None else folded
     forms = _application_target_forms(raw_target)
+    if request is not None and request.group("desire") is not None:
+        occurrence = catalog.occurrence_pattern
+        if occurrence is not None and len(list(occurrence.finditer(folded))) > 1:
+            return None
+        # Alias resolution must retain the desired-open suffix boundary too.
+        forms = tuple(
+            (form, offset)
+            for form, offset in forms
+            if raw_target[offset + len(form) :].strip(" ¿?¡!,:;.-")
+            in {"", "por favor", "porfa", "please"}
+        )
     keys = tuple(
         dict.fromkeys(
             _application_name_key(form)
@@ -3975,19 +4019,7 @@ def _authenticated_application_desired_open(
     folded = _fold(text)
     catalog = build_application_catalog_index(application_names)
     occurrence = catalog.occurrence_pattern
-    if (
-        occurrence is None
-        or _is_negative_effect_clause(folded)
-        or _is_meta_or_tool_denial(folded)
-        or _has_contradictory_correction(folded)
-        or _has_unsupported_deferred_effect(folded)
-        or _is_past_or_hypothetical_state(folded)
-        or _has(
-            folded,
-            r"\b(?:on|en)\s+(?:my|mi|the|el|la)?\s*"
-            r"(?:phone|telefono|movil|celular|tablet|ipad|iphone|console|consola)\b",
-        )
-    ):
+    if occurrence is None or not _application_desire_is_positive(folded):
         return None
     found = list(occurrence.finditer(folded))
     if len(found) != 1:
@@ -3995,20 +4027,16 @@ def _authenticated_application_desired_open(
     target = found[0]
     prefix = folded[: target.start()].strip(" ¿?¡!,:;.-")
     suffix = folded[target.end() :].strip(" ¿?¡!,:;.-")
+    request = _application_open_request(folded[: target.end()])
     leading_desire = (
-        _has(
-            prefix,
-            (
-                r"^(?:(?:i|we)\s+(?:need|want)\s+(?:you\s+)?to|"
-                r"(?:i|we)\s+would\s+like\s+(?:you\s+)?to)\s+"
-                r"(?:open|start|launch)$|"
-                r"^(?:necesito|quiero|quisiera)\s+que\s+"
-                r"(?:abras|abran|inicies|inicien|lances|lancen)$"
-            ),
+        request is not None
+        and request.group("desire") is not None
+        and any(
+            _application_name_key(form)
+            == _application_name_key(target.group("target"))
+            for form, _ in _application_target_forms(request.group("target"))
         )
-        # A terminal courtesy is outside the app identity and does not add
-        # another effect. Keep every other suffix opaque (time, device,
-        # alternative targets and descriptive content still fail closed).
+        # Courtesy is outside identity; every other suffix stays opaque.
         and (not suffix or _has(suffix, r"^(?:por favor|porfa|please)$"))
     )
     desired_running = (

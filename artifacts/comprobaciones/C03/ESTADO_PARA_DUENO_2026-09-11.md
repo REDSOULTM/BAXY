@@ -17,3 +17,5 @@ Por tu nueva instrucción, no se lanzan suites de tests ni Full. La aclaración 
 La corrección de Configuración ocupa una línea. La revisión del código conserva la identidad del catálogo y el rechazo de destinos ambiguos; aún no se ha comprobado en el producto. Ya está incorporada la reparación que respeta Google cuando se pide ese buscador, evitando enviar esas palabras como parte de una búsqueda en Bing.
 
 También se ajustó la lectura de nombres para peticiones como «una terminal», conservando la comprobación contra aplicaciones instaladas. Los cambios nuevos sólo tienen revisión de código: no se ejecutaron tests ni se sumó cobertura por ellos.
+
+Las órdenes directas y los pedidos «quiero que abras…» comparten ahora la extracción del nombre. Esto permite usar los artículos y alias que BAXY ya conoce sin duplicar esa gramática. La verificación en el producto sigue pendiente. Se prepara una continuación para dos literales de apps que aún no se habían ejecutado en los recibos consultados.
