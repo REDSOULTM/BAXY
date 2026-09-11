@@ -4396,7 +4396,7 @@ def _explicit_arguments_from_evidence(
         search = list(
             re.finditer(
                 (
-                    r"\b(?:busca|buscar|search(?:\s+for)?|look\s+up)\b"
+                    rf"\b(?:{effect_intent._SEARCH}|buscá)(?:\s+for)?\b"
                     r"(?:\s+en\s+(?:google|internet|la\s+web|the\s+web))?"
                     r"\s*[:,-]?\s*(?P<query>.+?)"
                     r"(?=\s+(?:(?:y\s+)?(?:despu[eé]s|luego)|and\s+then|then|"

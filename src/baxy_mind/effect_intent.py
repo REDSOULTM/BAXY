@@ -1251,10 +1251,29 @@ def _curated_domain_is_grounded(
         ) and not _has(folded, r"\b(?:archivo|file|carpeta|folder)\b")
     if operation == "web.search":
         # A semantic selector may confuse local inspection verbs with a web
-        # lookup (for example, "look through Downloads").  Require either an
-        # explicit public-search verb or the separately audited location
-        # recommendation shape, and reject literal local stores.  This gate
-        # only removes authority; it never selects web.search.
+        # lookup (for example, "look through Downloads"). A direct search with
+        # its own query need not repeat "internet", but cannot borrow a private
+        # or local operand. This gate only retains a proposal, never selects it.
+        direct_search = re.fullmatch(
+            rf"[¿?¡!\s]*{_REQUEST_PREFIX}{_SEARCH}(?:\s+for)?\s+"
+            r"(?P<query>\S.*)",
+            _strip_request_envelope(folded),
+            re.IGNORECASE,
+        )
+        direct_public_search = (
+            direct_search is not None
+            and bool(direct_search.group("query").strip(" \t.,;:!?\"'“”«»"))
+            and not _has(direct_search.group("query"), r"^(?:for|en|on)[.!?]*$")
+            and effect_request_is_authoritative(text)
+            and len(_request_clauses(folded)) == 1
+            and not _has(
+                folded,
+                r"\b(?:mi|mis|my|our|nuestros?|nuestras?|tus?|your|"
+                r"privad[oa]s?|private|local(?:es|ly)?|portapapeles|clipboard|"
+                r"contrasenas?|passwords?|correos?|emails?|mensajes?|messages?)\b|"
+                r"\b[a-z]:[\\/]|\\\\",
+            )
+        )
         return (
             _location_recommendation_request(folded)
             or _public_route_lookup_request(folded)
@@ -1267,9 +1286,12 @@ def _curated_domain_is_grounded(
                     rf"\b(?:{_SEARCH}|consulta|consultar|investiga|investigar|"
                     r"investigate|look\s+on)\b",
                 )
-                and _has(
-                    folded,
-                    r"\b(?:web|internet|online|google|bing|public\s+api)\b",
+                and (
+                    direct_public_search
+                    or _has(
+                        folded,
+                        r"\b(?:web|internet|online|google|bing|public\s+api)\b",
+                    )
                 )
                 and not _has(
                     folded,

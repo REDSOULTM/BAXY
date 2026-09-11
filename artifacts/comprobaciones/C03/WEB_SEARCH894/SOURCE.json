@@ -1,0 +1,18 @@
+{
+  "utc": "2026-09-11T16:57:50.7868013Z",
+  "base_commit": "502302925b4ef878a4b77e1c8f25670ac9d4787a",
+  "owner_policy": "omit_suites_Fast_Full_keep_sealed_product_survey_runs",
+  "tests_run": false,
+  "functional_validation": "pending_directed895",
+  "coverage_added": 0,
+  "source_pins": {
+    "src/baxy_mind/effect_intent.py": "4625052505bd1d5963dbbec30d55184d21d451654bf81506ccf960d0a5fed10a",
+    "src/baxy_mind/__main__.py": "88276c0394352cb40dc529062b565ff4812d286a720dc9e23a9fdfad3160b1c3"
+  },
+  "patch_path": "C:/Users/usuario/AppData/Local/BAXY/C03-web-search894-proposal/repair.patch",
+  "patch_sha256": "9ab52ec81ec9aad23430de9b9e9e26ef6fda6b0e736234dbde618eef4af35418",
+  "diagnosis_sha256": "898422b45b39c1ecf9389c344dd27bb5570d271d0e098d1d3ea38c832d181746",
+  "review": "Root c893c2/e2e04a/750f9f/31e4f3 and b4dd90 manual review; applied37bf87 with matching hashes. Direct authoritative public query may retain proposed web.search without redundant web keyword; local/private/compound exclusions retained. Shared query verb matcher preserves original query including accented buscaphrase. No new provider, call or visible template.",
+  "panel_path": "C:/Users/usuario/AppData/Local/BAXY/C03-web-search895-proposal",
+  "panel_seal_sha256": "0af2e16c9384fcf07001f2d155c312a552cbb132fc9b5b5d666163b4de8152d9"
+}
