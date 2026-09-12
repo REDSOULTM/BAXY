@@ -1,0 +1,185 @@
+{
+  "schema": "c03-close1055-root-adjudication-v1",
+  "utc": "2026-09-12T15:58:07.773485+00:00",
+  "candidate_head": "efcd1b385781817dcc306737c7da85d241d209bf",
+  "candidate_manifest_sha256": "20eb71d77ea0250d994bf476332f967fcc7ecf3c238011baf045dac4df5934e0",
+  "seal_sha256": "e55d64a3148391979d1eb0d684fcb0f463de663de071f4fb6a39afecd847d3b5",
+  "quality": {
+    "pass": 1,
+    "fail": 8,
+    "total": 9
+  },
+  "new_credits": 0,
+  "credited_case_ids": [],
+  "rows": [
+    {
+      "index": 0,
+      "case_id": "H0407",
+      "kind": "historical_literal",
+      "text": "nunca cierres spotify",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Entendido, nunca cierre Spotify. 😊",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Responde nunca cierre, imperativo al interlocutor en lugar de compromiso propio; rol incorrecto aunque ya no se pierde por emoji."
+    },
+    {
+      "index": 1,
+      "case_id": "H0427",
+      "kind": "historical_literal",
+      "text": "no cierres spotify",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Entendido, no cerraré Spotify. 😊",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Reconoce prohibición con no cerraré Spotify; respuesta fiel antes rechazada sólo por emoji ahora llega al usuario."
+    },
+    {
+      "index": 2,
+      "case_id": "close1052-dev-09",
+      "kind": "original_development_variant",
+      "text": "Dejá el Bloc de notas abierto; no lo cierres.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Agota composición sin respuesta útil a prohibición compuesta."
+    },
+    {
+      "index": 3,
+      "case_id": "close1052-dev-10",
+      "kind": "original_development_variant",
+      "text": "Keep Paint open; do not close it.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "This is outside what I do on this PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Trata prohibición de cierre como fuera de catálogo, sin reconocerla."
+    },
+    {
+      "index": 4,
+      "case_id": "close1052-boundary-01",
+      "kind": "boundary",
+      "text": "Si mañana necesito despejar la pantalla, te pediré que cierres alguna ventana.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No puedo cerrar ventanas ni despejar la pantalla. Eso no forma parte de mis funciones.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Niega capacidad de cierre ante condición futura en vez de reconocer que aún no se pide ejecutar."
+    },
+    {
+      "index": 5,
+      "case_id": "close1052-boundary-02",
+      "kind": "boundary",
+      "text": "La frase «cierra Paint» es un ejemplo de imperativo; explicame su estructura.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La frase «cierra Paint» es un imperativo en forma simple: el verbo \"cierra\" (en forma de imperativo del verbo \"cerrar\") indica una acción directa, y \"Paint\" es el nombre del programa al que se le ordena realizar la acción. Es una instrucción clara y directa, sin sujeto explícito (porque en imperativos se asume el sujeto como \"tú\" o \"el usuario\").",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Explicación sintáctica confunde Paint con destinatario de la orden de ejecutar acción; es objeto del cierre. No identifica correctamente función solicitada."
+    },
+    {
+      "index": 6,
+      "case_id": "close1052-boundary-03",
+      "kind": "boundary",
+      "text": "Cerrá la que te mencioné antes.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Esa tarea está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Declara tarea fuera de alcance en vez de pedir referente ausente."
+    },
+    {
+      "index": 7,
+      "case_id": "close1052-boundary-04",
+      "kind": "boundary",
+      "text": "¿Qué diferencia hay entre cerrar una ventana y finalizar un proceso?",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Cerrar una ventana solo cierra esa ventana de la aplicación, pero el proceso del programa sigue corriendo. Finalizar un proceso detiene completamente la ejecución del programa, liberando recursos.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Afirma sin matiz que al cerrar ventana el proceso sigue corriendo. No siempre: el último cierre puede terminar aplicación/proceso, como Paint propio observado en1052."
+    },
+    {
+      "index": 8,
+      "case_id": "close1052-boundary-05",
+      "kind": "boundary",
+      "text": "No cierres ninguna ventana ahora.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La causa del fallo es que se falló la interpretación de la solicitud.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Prohibición de cierre termina con error de interpretación."
+    }
+  ],
+  "tests_run": false,
+  "raw_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1055-private\\run\\capture\\events.jsonl": "8ac81c0d305a748e40441348a8df60f9ee4337b4975dff439688e35b3302e64a",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1055-private\\run\\turn-audit.jsonl": "aa261ceff9e55c8e434685fa2b24c7fa192a002f25a5ee2eff8c7ee4c394a016",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1055-private\\run\\compose-audit.jsonl": "bdea39cf44105ee656ef4afffcaf9f92a1f0ebbfb64a1e9c8b5afd49b86c6449",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1055-private\\run\\raw-replies.jsonl": "6b9e53fb78b54fec1b972a5b0826dd3b1acb492b91e4883eb3aa6603a367c9dd",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1055-profile\\journal\\missions.jsonl": "d83a9800d11b25f848a39768f0c278f57582d1b3189987442051480197687e6d"
+  },
+  "resources": {
+    "utc": "2026-09-12T15:54:59.856317+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2433.48046875,
+    "seconds": 85.39100000000326,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "credit_reason": "H0427 literal repaired but both pertinent variants fail. H0407 role failure remains. No credit from emoji repair alone.",
+  "actual_operations": [
+    {
+      "operation": "memory.status",
+      "invocation_id": "c2d72d92-0811-434a-954f-315e1ca0ea68",
+      "scope": "startup only"
+    }
+  ]
+}

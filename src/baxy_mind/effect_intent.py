@@ -1117,6 +1117,8 @@ def _curated_domain_is_grounded(
         applications = build_application_catalog_index(application_names)
         return _authenticated_application_target(
             folded, applications
+        ) is not None or _authenticated_application_close_target(
+            folded, applications
         ) is not None or _has(
             folded,
             r"\b(?:aplicacion|aplicaciones|application|applications|app|apps|"
@@ -1930,9 +1932,10 @@ def _curated_domain_is_grounded(
     }:
         return _window_domain(folded)
     if operation == "window.resolve":
-        return window_inventory_arguments(folded) is not None or _window_domain(folded) or _has(
-            folded,
-            r"\b(?:aplicacion|application|proceso|process)\b",
+        return (
+            _authenticated_application_close_target(folded, application_names) is not None
+            or window_inventory_arguments(folded) is not None or _window_domain(folded)
+            or _has(folded, r"\b(?:aplicacion|application|proceso|process)\b")
         )
     return None
 
@@ -3677,6 +3680,45 @@ def resolve_application_catalog_app_id(
             continue
         return ranked[0][1]
     return None
+
+
+def _authenticated_application_close_target(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> tuple[int, str] | None:
+    """Recognize one complete close request over an exact authenticated name.
+
+    This supplies intent/domain evidence only: process/window identity still
+    comes from window.resolve and the existing exact confirmation contract.
+    """
+    if (
+        not effect_request_is_authoritative(text)
+        or _has_unsupported_deferred_effect(_fold(text))
+        or _other_device_effect_scope(_fold(text))
+    ):
+        return None
+    request = _match(
+        _strip_request_envelope(_fold(text)),
+        r"^[¿?¡!\s]*(?:cierra|cerra|cerrar|close)\s+(?P<target>.+)$",
+    )
+    if request is None:
+        return None
+    catalog = build_application_catalog_index(application_names)
+    raw_target = request.group("target")
+    matches: list[tuple[int, str]] = []
+    for target, offset in _application_target_forms(raw_target):
+        # Do not inherit open's execution-count hints for a work-loss effect.
+        # Only punctuation or the existing bounded courtesy is removable.
+        suffix = raw_target[offset + len(target):].strip(" ,;:.!?")
+        if suffix and _APPLICATION_TRAILING_REQUEST.fullmatch(" " + suffix) is None:
+            continue
+        key = _application_name_key(target)
+        if key in catalog.keys:
+            matches.append((request.start("target") + offset, key))
+    identities = {key for _, key in matches}
+    if len(identities) != 1:
+        return None
+    return min(matches, key=lambda item: item[0])
 
 
 def _repeated_application_target(
@@ -10879,6 +10921,7 @@ def _review_application_and_window_effects(
         _head_is(head, r"(?:cierra|cerra|cerrar|close|cierralo|cierrala)")
         and (
             has_named_window_target(folded)
+            or _authenticated_application_close_target(folded, application_names) is not None
             or (
                 _has(folded, r"\b(?:cierra|cerra|cerrar|close)\b")
                 and _has(

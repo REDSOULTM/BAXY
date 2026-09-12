@@ -1,0 +1,548 @@
+{
+  "0": {
+    "turn-audit.jsonl": [
+      {
+        "candidate_operations": [
+          "routine.list",
+          "audio.volume",
+          "game.catalog.list",
+          "notification.diagnose",
+          "office.document.read",
+          "game.install.status",
+          "input.keyboard.status",
+          "backup.known.verify.latest",
+          "audio.microphone.mute",
+          "media.play.youtube",
+          "app.installed",
+          "input.select.all",
+          "game.install.cancel",
+          "filesystem.file.open.latest",
+          "app.close",
+          "browser.page.read",
+          "system.settings.status",
+          "input.keyboard.layout",
+          "audio.volume.adjust",
+          "input.keyboard.open",
+          "system.application.crash.diagnose",
+          "wifi.connect.named",
+          "system.process.terminate.named",
+          "reminder.list",
+          "note.list",
+          "routine.read",
+          "wifi.disconnect",
+          "task.list"
+        ],
+        "decision_path": "model",
+        "phase": "raw_attempt",
+        "raw_decision": {
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "note.list"
+          ],
+          "effect_verification": "primary",
+          "intent_operations": [
+            "note.list"
+          ],
+          "mode": "action",
+          "operation": "note.list",
+          "question": "",
+          "response_language": "es"
+        },
+        "request_id": "8",
+        "retrieval": "lexical",
+        "schema": "baxy.mind-turn-audit.v1",
+        "stages": []
+      },
+      {
+        "candidate_operations": [
+          "routine.list",
+          "audio.volume",
+          "game.catalog.list",
+          "notification.diagnose",
+          "office.document.read",
+          "game.install.status",
+          "input.keyboard.status",
+          "backup.known.verify.latest",
+          "audio.microphone.mute",
+          "media.play.youtube",
+          "app.installed",
+          "input.select.all",
+          "game.install.cancel",
+          "filesystem.file.open.latest",
+          "app.close",
+          "browser.page.read",
+          "system.settings.status",
+          "input.keyboard.layout",
+          "audio.volume.adjust",
+          "input.keyboard.open",
+          "system.application.crash.diagnose",
+          "wifi.connect.named",
+          "system.process.terminate.named",
+          "reminder.list",
+          "note.list",
+          "routine.read",
+          "wifi.disconnect",
+          "task.list"
+        ],
+        "decision_path": "model",
+        "final": {
+          "effect_operations": [],
+          "intent_operations": [],
+          "kind": "conversation"
+        },
+        "honesty": {
+          "offered_before_veto": [
+            "note.list"
+          ],
+          "proposed_before_veto": [
+            "note.list"
+          ],
+          "visible_text": "No puedo cerrar el bloc de notas tal como fue pedido."
+        },
+        "phase": "final",
+        "raw_decision": {
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "note.list"
+          ],
+          "effect_verification": "primary",
+          "intent_operations": [
+            "note.list"
+          ],
+          "mode": "action",
+          "operation": "note.list",
+          "question": "",
+          "response_language": "es"
+        },
+        "request_id": "8",
+        "retrieval": "lexical",
+        "schema": "baxy.mind-turn-audit.v1",
+        "stages": [
+          {
+            "conversation_kind": "",
+            "effect_operations": [
+              "note.list"
+            ],
+            "effect_verification": "primary",
+            "mode": "action",
+            "name": "validated_raw",
+            "operation": "note.list"
+          },
+          {
+            "conversation_kind": "",
+            "effect_operations": [
+              "note.list"
+            ],
+            "effect_verification": "primary",
+            "mode": "action",
+            "name": "explicit_contract",
+            "operation": "note.list"
+          },
+          {
+            "conversation_kind": "",
+            "effect_operations": [
+              "note.list"
+            ],
+            "effect_verification": "primary",
+            "mode": "action",
+            "name": "information_question",
+            "operation": "note.list"
+          },
+          {
+            "conversation_kind": "unsupported",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "domain_grounding",
+            "operation": null
+          },
+          {
+            "conversation_kind": "unsupported",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "compound_conservation",
+            "operation": null
+          },
+          {
+            "conversation_kind": "unsupported",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "action_relevance",
+            "operation": null
+          },
+          {
+            "conversation_kind": "unsupported",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "action_grounding",
+            "operation": null
+          },
+          {
+            "conversation_kind": "unsupported",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "conversation_presentation",
+            "operation": null
+          }
+        ]
+      }
+    ],
+    "raw-replies.jsonl": [
+      {
+        "schema": "baxy.raw-conversation-reply.v1",
+        "stage": "pre_veto",
+        "attempt": 1,
+        "request_sha256": "1c47d1bb4ca3612d0aaf5727072ef7023aeb30ecb3be015db6d6d82f2e43683d",
+        "conversation_kind": "unsupported",
+        "presentation_shape": "",
+        "followup_subject": "",
+        "history_users": 0,
+        "raw_reply": "No puedo cerrar el bloc de notas tal como fue pedido.",
+        "raw_reply_chars": 53,
+        "raw_reply_sha256": "bd10d6007c461bb75690e07802dd98f4754601979306fd7ead3efbda11d80f98"
+      }
+    ],
+    "compose-audit.jsonl": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 72,
+        "draft_sha256": "f87323ae2c2b38f21f961ca6670f87ca34df91d87da05f1c098171d1380efbc0",
+        "payload": {
+          "outcome": "failed",
+          "cause": "outside what I do"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"out_of_catalog\"}",
+        "draft": "No puedo cerrar el bloc de notas porque no tengo permiso para hacer eso."
+      }
+    ],
+    "journal.snapshot.jsonl": [
+      {
+        "sequence": 1,
+        "operation": "memory.status",
+        "phase": "started"
+      },
+      {
+        "sequence": 2,
+        "operation": "memory.status",
+        "phase": "completed"
+      },
+      {
+        "sequence": 3,
+        "operation": "memory.status",
+        "phase": "started"
+      },
+      {
+        "sequence": 4,
+        "operation": "memory.status",
+        "phase": "completed"
+      },
+      {
+        "sequence": 5,
+        "operation": "memory.status",
+        "phase": "started"
+      },
+      {
+        "sequence": 6,
+        "operation": "memory.status",
+        "phase": "completed"
+      }
+    ]
+  },
+  "10": {
+    "turn-audit.jsonl": [
+      {
+        "candidate_operations": [
+          "routine.list",
+          "note.read",
+          "reminder.resolve.exact",
+          "task.complete",
+          "note.search",
+          "note.trash",
+          "note.restore",
+          "routine.resolve.exact",
+          "game.install.status",
+          "note.update",
+          "peripheral.list",
+          "audio.status",
+          "email.latest.reply",
+          "filesystem.known.search",
+          "window.application.status",
+          "wifi.connect.named",
+          "game.installed.named",
+          "app.open",
+          "system.process.list",
+          "input.visible.click",
+          "system.process.terminate.named",
+          "window.active",
+          "wifi.status",
+          "wifi.profile.list",
+          "wifi.ensure.connected",
+          "wifi.disconnect",
+          "task.list",
+          "system.time"
+        ],
+        "decision_path": "model",
+        "phase": "raw_attempt",
+        "raw_decision": {
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "window.active"
+          ],
+          "effect_verification": "primary",
+          "intent_operations": [
+            "window.active"
+          ],
+          "mode": "action",
+          "operation": "window.active",
+          "question": "",
+          "response_language": "es"
+        },
+        "request_id": "8",
+        "retrieval": "lexical",
+        "schema": "baxy.mind-turn-audit.v1",
+        "stages": []
+      },
+      {
+        "candidate_operations": [
+          "routine.list",
+          "note.read",
+          "reminder.resolve.exact",
+          "task.complete",
+          "note.search",
+          "note.trash",
+          "note.restore",
+          "routine.resolve.exact",
+          "game.install.status",
+          "note.update",
+          "peripheral.list",
+          "audio.status",
+          "email.latest.reply",
+          "filesystem.known.search",
+          "window.application.status",
+          "wifi.connect.named",
+          "game.installed.named",
+          "app.open",
+          "system.process.list",
+          "input.visible.click",
+          "system.process.terminate.named",
+          "window.active",
+          "wifi.status",
+          "wifi.profile.list",
+          "wifi.ensure.connected",
+          "wifi.disconnect",
+          "task.list",
+          "system.time"
+        ],
+        "decision_path": "model",
+        "final": {
+          "effect_operations": [],
+          "intent_operations": [],
+          "kind": "conversation"
+        },
+        "honesty": {
+          "offered_before_veto": [
+            "window.active"
+          ],
+          "proposed_before_veto": [
+            "window.active"
+          ],
+          "visible_text": "No puedo cerrar Paint tal como fue pedido."
+        },
+        "phase": "final",
+        "raw_decision": {
+          "conversation_kind": "",
+          "effect_count": "one",
+          "effect_operations": [
+            "window.active"
+          ],
+          "effect_verification": "primary",
+          "intent_operations": [
+            "window.active"
+          ],
+          "mode": "action",
+          "operation": "window.active",
+          "question": "",
+          "response_language": "es"
+        },
+        "request_id": "8",
+        "retrieval": "lexical",
+        "schema": "baxy.mind-turn-audit.v1",
+        "stages": [
+          {
+            "conversation_kind": "",
+            "effect_operations": [
+              "window.active"
+            ],
+            "effect_verification": "primary",
+            "mode": "action",
+            "name": "validated_raw",
+            "operation": "window.active"
+          },
+          {
+            "conversation_kind": "",
+            "effect_operations": [
+              "window.active"
+            ],
+            "effect_verification": "primary",
+            "mode": "action",
+            "name": "explicit_contract",
+            "operation": "window.active"
+          },
+          {
+            "conversation_kind": "",
+            "effect_operations": [
+              "window.active"
+            ],
+            "effect_verification": "primary",
+            "mode": "action",
+            "name": "information_question",
+            "operation": "window.active"
+          },
+          {
+            "conversation_kind": "unsupported",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "domain_grounding",
+            "operation": null
+          },
+          {
+            "conversation_kind": "unsupported",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "compound_conservation",
+            "operation": null
+          },
+          {
+            "conversation_kind": "unsupported",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "action_relevance",
+            "operation": null
+          },
+          {
+            "conversation_kind": "unsupported",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "action_grounding",
+            "operation": null
+          },
+          {
+            "conversation_kind": "unsupported",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "conversation_presentation",
+            "operation": null
+          }
+        ]
+      }
+    ],
+    "raw-replies.jsonl": [
+      {
+        "schema": "baxy.raw-conversation-reply.v1",
+        "stage": "pre_veto",
+        "attempt": 1,
+        "request_sha256": "5a4e991b2b168467abcb66f8700fcc595bd666a3dbad5926c866c192d7344675",
+        "conversation_kind": "unsupported",
+        "presentation_shape": "",
+        "followup_subject": "",
+        "history_users": 0,
+        "raw_reply": "No puedo cerrar Paint tal como fue pedido.",
+        "raw_reply_chars": 42,
+        "raw_reply_sha256": "e321df3d661d22c694554ba30e55affa2b80475ac355a22c18f50bef53348a57"
+      }
+    ],
+    "compose-audit.jsonl": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 76,
+        "draft_sha256": "de9d519e61e58ff2a55633eefbbf144746055c73581e0559f451e1ad6d91fa81",
+        "payload": {
+          "outcome": "failed",
+          "cause": "outside what I do"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"out_of_catalog\"}",
+        "draft": "No puedo cerrar Paint porque no tengo permiso para hacer eso en este equipo."
+      }
+    ],
+    "journal.snapshot.jsonl": [
+      {
+        "sequence": 1,
+        "operation": "memory.status",
+        "phase": "started"
+      },
+      {
+        "sequence": 2,
+        "operation": "memory.status",
+        "phase": "completed"
+      },
+      {
+        "sequence": 3,
+        "operation": "memory.status",
+        "phase": "started"
+      },
+      {
+        "sequence": 4,
+        "operation": "memory.status",
+        "phase": "completed"
+      },
+      {
+        "sequence": 5,
+        "operation": "memory.status",
+        "phase": "started"
+      },
+      {
+        "sequence": 6,
+        "operation": "memory.status",
+        "phase": "completed"
+      },
+      {
+        "sequence": 7,
+        "operation": "memory.status",
+        "phase": "started"
+      },
+      {
+        "sequence": 8,
+        "operation": "memory.status",
+        "phase": "completed"
+      }
+    ]
+  }
+}
