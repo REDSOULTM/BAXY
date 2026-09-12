@@ -2815,17 +2815,48 @@ def _assistant_capability_aspiration(objective: str) -> bool:
     )
 
 
-def _standalone_deictic_request(objective: str) -> bool:
+def _deictic_open_request(objective: str) -> bool:
+    """Recognize an opening whose operand is a reference, not a catalog name."""
+
+    folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
+    if (
+        effect_intent.explicit_non_action_frame(objective)
+        or not effect_intent._application_desire_is_positive(folded)
+        or len(effect_intent._request_clauses(folded)) != 1
+    ):
+        return False
+    opening = effect_intent._application_open_request(folded)
+    if opening is None:
+        return re.fullmatch(
+            r"[¿?¡!\s]*(?:abre|abri)(?:lo|la|los|las)"
+            r"(?:\s*,?\s*por favor)?[.!?\s]*", folded,
+        ) is not None
+    target = re.sub(
+        r"\s*,?\s*(?:por favor|please|for me)[.!?\s]*$", "",
+        opening.group("target"),
+    ).strip(" .!?\t\r\n")
+    return re.fullmatch(
+        r"(?:est[aeo]s?|es[aeo]s?|aquell[ao]s?|it|them|"
+        r"(?:this|that|these|those)(?:\s+ones?)?)"
+        r"(?:\s*,?\s*(?:el|la|los|las)\s+que\s+"
+        r"(?:(?:te|le|les)\s+)?(?:digo|dije|indico|indique|menciono|mencione))?",
+        target,
+    ) is not None
+
+
+def _standalone_deictic_request(objective: str, history: object = None) -> bool:
     """Recognize a command whose required referent is entirely absent."""
 
+    if _deictic_open_request(objective):
+        return _previous_user_request(
+            history if isinstance(history, list) else [], objective,
+        ) is None
     if read_request(objective).has(INTENT_AMBIGUOUS_ACTION):
         return True
     folded = effect_intent._fold(objective).strip()
     return (
         re.fullmatch(
             r"(?:(?:por favor|please)\s*,?\s+)?(?:"
-            r"abre(?:lo|la|los|las|\s+(?:eso|esto|aquello))|"
-            r"open\s+(?:it|that|this)|"
             r"haz(?:lo|\s+(?:eso|esto|aquello))|"
             r"dale(?:\s+con)?\s+(?:eso|esto)|"
             r"do\s+(?:it|that|this)|"
@@ -3097,7 +3128,7 @@ def _explicit_stable_no_effect_turn_decision(
         return None
 
     assistant_capability_aspiration = _assistant_capability_aspiration(objective)
-    standalone_deictic_request = _standalone_deictic_request(objective)
+    standalone_deictic_request = _standalone_deictic_request(objective, history)
     personal_checkin_statement = _personal_checkin_statement(objective)
     closed_unsupported_request = _closed_unsupported_request(objective)
 
@@ -5636,7 +5667,7 @@ def _catalog_unavailable_turn_decision(
 ) -> dict[str, object] | None:
     """Close literal app/game requests that lack an authenticated identity."""
 
-    if explicit_intent is not None:
+    if explicit_intent is not None or _deictic_open_request(objective):
         return None
     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
     if not folded:
@@ -5796,18 +5827,42 @@ def _prepare_turn_result(
             authenticated_operations,
         )
     )
-    if explicit_clarification is not None:
-        question = llm.formulate_explicit_clarification_question(
-            objective,
-            explicit_clarification.operations,
-            explicit_clarification.missing_fields,
-        )
+    missing_open_referent = (
+        non_target_language is None
+        and not content_drafting
+        and not explicit_non_action
+        and not nothing_to_clarify
+        and not _history_has_pending_clarification(history, message.get("pendingClarification"))
+        and _previous_user_request(history, objective) is None
+        and _deictic_open_request(objective)
+    )
+    if explicit_clarification is not None or missing_open_referent:
+        if missing_open_referent:
+            intent_operations = []
+            question = llm.clarify_missing_referent(
+                objective,
+                timeout=(
+                    DEICTIC_CLARIFICATION_CPU_BUDGET_SECONDS
+                    if os.environ.get("BAXY_MIND_NGL", "").strip() == "0"
+                    else TURN_DECIDE_RECOVERY_BUDGET_SECONDS
+                ),
+            )
+            if not _recovery_question_is_valid(question):
+                raise PlannerContractError("aclaración de referente inválida")
+        else:
+            assert explicit_clarification is not None
+            intent_operations = list(explicit_clarification.operations)
+            question = llm.formulate_explicit_clarification_question(
+                objective,
+                explicit_clarification.operations,
+                explicit_clarification.missing_fields,
+            )
         result = {
             "type": "turn.result",
             "id": message.get("id"),
             "kind": "clarify",
             "operation": None,
-            "intentOperations": list(explicit_clarification.operations),
+            "intentOperations": intent_operations,
             "effectOperations": [],
             "question": question,
             "reply": "",
@@ -5821,12 +5876,18 @@ def _prepare_turn_result(
                 "schema": "baxy.mind-turn-audit.v1",
                 "request_id": message.get("id"),
                 "phase": "final",
-                "decision_path": "explicit_clarification",
+                "decision_path": (
+                    "deictic_referent_clarification"
+                    if missing_open_referent else "explicit_clarification"
+                ),
                 "candidate_operations": [],
                 "raw_decision": None,
                 "stages": [
                     {
-                        "name": "explicit_clarification",
+                        "name": (
+                            "deictic_referent_clarification"
+                            if missing_open_referent else "explicit_clarification"
+                        ),
                         "mode": "clarify",
                         "operation": None,
                         "effect_operations": [],
@@ -6499,7 +6560,9 @@ def _prepare_turn_result(
             "effect_verification": "not_applicable",
             "response_language": decision["response_language"],
         }
-    if _standalone_deictic_conversation_needs_clarification(objective, decision):
+    if _standalone_deictic_conversation_needs_clarification(
+        objective, decision, history, message.get("pendingClarification"),
+    ):
         question = llm.clarify_missing_referent(
             objective,
             timeout=(
@@ -6808,12 +6871,18 @@ def _recovery_question_is_valid(
 def _standalone_deictic_conversation_needs_clarification(
     objective: str,
     decision: dict[str, Any],
+    history: object = None,
+    pending_clarification: bool | None = None,
 ) -> bool:
     """Ask for a referent when a bare deictic command lacks a direct action."""
 
     if decision.get("mode") not in {"conversation", "plan"}:
         return False
-    return _standalone_deictic_request(objective)
+    if _deictic_open_request(objective) and _history_has_pending_clarification(
+        history, pending_clarification,
+    ):
+        return False
+    return _standalone_deictic_request(objective, history)
 
 
 def _recover_failed_turn(

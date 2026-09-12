@@ -1,0 +1,15 @@
+{
+  "utc": "2026-09-12T00:20:12.232618+00:00",
+  "parent_head": "6bdf3b48fb53f2fb64fcb13e464efcd2783bec27",
+  "source_base": "04ae6daa2c28cf711eaca78b77affd7126bcd67e",
+  "patch_sha256": "45ab8bfaa43fa8230c291480a2e3f8e7e3cf589383aac7604ab8a169dfb242cd",
+  "source_pins": {
+    "src/baxy_mind/__main__.py": "9fb721f62c013222cc3c0806dfce10f30280a71199e6c0b488e05b0e43f69ab3"
+  },
+  "tests_run": false,
+  "build_run": false,
+  "build_reused": 996,
+  "status": "candidate_integrated_pending_real1009",
+  "root_review": "e98d11/bc7c7d and finaloptionalnarrowing. Existingpositiveopening grammar plus completepronoun, nocatalognameassumption; reuseearlydynamicclarification, preservehistory/pendingcontext andnegative/metaguards. No fixed visible text. Diffcheckclean dbb1dc.",
+  "coverage_added": 0
+}
