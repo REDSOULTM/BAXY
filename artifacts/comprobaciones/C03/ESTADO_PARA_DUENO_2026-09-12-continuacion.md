@@ -1,3 +1,25 @@
+## WEB1102 — estado vigente 2026-09-12T22:21:25.4583586Z
+
+Parcial: 3 aprobados, 4 fallidos, 5 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 197/742 | 545 | 0 | >=71 | 0/35 |
+
+Procedencia de primeras altas: Cota inferior de primeras altas: 28 en Kiro y 43 tras el retorno, todas dentro del 12 de septiembre. Se cuentan adjudicaciones iniciales, no actualizaciones de verification_updated_at ni revalidaciones.
+
+Siguiente acción: Ejecutar AGENDA1104 con fuente1103 ya integrada: pares6/7 antes de cuatro literales de alarma y8/9 antes de dos recordatorios. WEB1102 conserva siete ejecutados, tres aprobados, cuatro fallidos y cero créditos; no repetir búsqueda incierta del índice2. WEB1105 descarta una regla que sólo mejora variantes; propuesta de completitud semántica pendiente de decisión.
+
+Evidencia: `artifacts/comprobaciones/C03/WEB1102/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 186.53 s acumulados; pico GPU 3497.56 MiB; pico RAM 1815.68 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 7; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WEB1102 precedente. -->
+
 ## AGENDA1101 — estado vigente 2026-09-12T21:53:11.2194319Z
 
 Parcial: 1 aprobados, 6 fallidos, 8 sin ejecutar; 0 créditos.
