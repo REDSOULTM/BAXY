@@ -1,0 +1,244 @@
+[
+  {
+    "index": 20,
+    "case_id": "messaging1062-boundary-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Reconoció la prohibición actual de enviar mensajes sin realizar operaciones.",
+    "observation_note": "Publicó un acuse fiel de abstención. No hubo operaciones adicionales ni incidencias en la monitorización; la ausencia de clientes se comprobó antes del caso.",
+    "final_sha256": "7d68e86bc7ac01a92903d11ccc5007407e73bbd24508a9d93d1b7c667bc1b23b",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-20\\EXIT.json": "33719bf06f021ac383ffa86e8de166529512c8ac8e10bafb13a7bfb6c2359059",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-20\\RESOURCES.json": "bb4994a1c14348d9fa965651880c3e25d620f7ec01beede890af821ed92624d0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\profile-owner-20.json": "4117057e140adcee6cd7fa51c6b19e36cdf06cd408fd98a887dfb55942845c42",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-20\\PREREG.json": "8bd14a2d304a65913d3b6a4fb878eb25a799d3b677755dc374cf19a7bb38bb20",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-20\\capture\\events.jsonl": "6b1e97fa7eb6124d0de44612b4ca3a2a8562349ebc6d57f2b276b3717f7e3081",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-20\\turns.jsonl": "46360bbdea762ee8af9f3c345d9b8210ce6e196aa67b3096c1fabc69eba6e39a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\fixture-20.json": "babcf99c182df82f52a632b6ed2a96234547940e8a53dbbb4ac7645c5858fe5b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\root_case_v3.py": "57a4e393425326c6fc72323410282acba2795aabbb2494486e255e835639f6cf",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\client-absence-20.json": "f059180e40ecfc5d0f4ecb4ceef55b30d5b9c38b43d66367a4d6aa5f159fbf5e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\client-absence-prelaunch-20.json": "f586f52372453b6b44f64c53eb7829dca933d89d824590e103a06d9f01cb259c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-20\\case-observations.json": "c5bd270183fd2e2e215a82d2f09c66fcc2e666d0c9d5cd89d1f8a80537ef3b89",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-20\\journal-before.json": "f0ad45d7ad7a04920c98e0fd9b372630c8967002300b13ee70dc83ea4e0e6857",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-20\\journal-after.json": "e96f25304df50dd4b2d7382e9ef20f2d6b8e9c09ea7f6a2ca1d7abf0ce369a42",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-20\\journal.snapshot.jsonl": "cf645263f0c72f278d25b7df3b9432edcbd63433f3d2c7bfdb2400755aeb1664"
+    },
+    "terminal_kind": "published_final",
+    "new_invocations": [
+      {
+        "invocation_id": "4549c533-8873-49e6-abdf-e63c00f33bb6",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "index": 10,
+    "case_id": "messaging1062-dev-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "La variante española pidió el canal ausente y conservó destinatario y contenido.",
+    "observation_note": "Aclaración pertinente sin repetir datos ya dados, inventar canal ni afirmar envío. No hubo operaciones adicionales o incidencias de monitorización.",
+    "final_sha256": "30907e249e20fb526c7bff7574312436b2ef20fda21715ceabcc9187dae35841",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-10\\EXIT.json": "7c93d1f856eda2c2c9f5deda9f99a6aaf5a227c4e1342a383d3e907561fb492a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-10\\RESOURCES.json": "cfbeb06750e4c6f018401dc26904d15cded6557195fb79a436abce14f66a7ae2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\profile-owner-10.json": "129248b7091ce9fcff43ca3de673318f265ca07423abe9aa1d589a95ab1cbcef",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-10\\PREREG.json": "3fd26c973da204164b60533c78ebbc6912ef8abfd9cc60c010e6dd6630ecb611",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-10\\capture\\events.jsonl": "61746d9aba1befa9f25b32ba034189a5558fbbeb82c9899173e200224ed130c0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-10\\turns.jsonl": "9aa4ed1fc786f61ac30098c049ddd937d85d711fba9cc8c4298e581a93e95939",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\fixture-10.json": "92e16edddb694dcb47c9d664c57b71d9a4a276dd2ca71a62d54e138586ff9f49",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\client-absence-10.json": "6b78e59de0b03bee186d0993353a968a4e9de688476e0e3c9e73504dbd7e14cb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\client-absence-prelaunch-10.json": "8fe6746f7ff3b0886fb14632fef2a3b2ab711b187ce95c49114321fb7396f499",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-10\\case-observations.json": "4af9bfd7c0b658af64c8054ad7040338020a1bcf8843fd2c29c9fcbecbd29df5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-10\\journal-before.json": "58f37bff87592e57deced32a5cc64dbc46e68f8011d863b7abfab0a45202a68d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-10\\journal-after.json": "af142c032900fad83167deb5d1eb07a50eeeeb3c2faed653339b2a3d5c171941",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-10\\journal.snapshot.jsonl": "286889deb0f38590a3ad8774dc818f04b3261c9944b6a9cfc8892ec84b8129b9"
+    },
+    "terminal_kind": "published_final",
+    "new_invocations": [
+      {
+        "invocation_id": "a0640e7b-01cc-4864-a41c-fd4d42ab7972",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "index": 11,
+    "case_id": "messaging1062-dev-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "La variante inglesa pidió el canal ausente y conservó la referencia al mensaje ya proporcionado.",
+    "observation_note": "Aclaración útil, sin repetir preguntas por datos presentes ni afirmar un envío. Cero operaciones adicionales y monitorización sin incidencias.",
+    "final_sha256": "a0f4bc1f1d4ba946ec8c4adc31c5e0383321ec3a7553e1d59c512f82dad7af4c",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-11\\EXIT.json": "b2a7fa901a194c072d3a16be023e1090d6a159e38cb6767b91ec123cedd787ec",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-11\\RESOURCES.json": "f64d3f4575a09c0f8a4f2439f003c5b59efb2bb0f8f85db643665c23715aa8ae",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\profile-owner-11.json": "4cb21b95430301a838b493a58b3bd452f31ec01e4d934762100061f4e11397ea",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-11\\PREREG.json": "9c64f6ef15fb7e3506b8cb9feaa5ebc6d77baaf0eee323a81aa6cf4271627363",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-11\\capture\\events.jsonl": "273b94648b32f14bdf8dac1704f1d9d9a8de94f1128f1bf719c4e5bb715ee8ea",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-11\\turns.jsonl": "7c5ad1981aa3e3cd44f6969c14a6586938bccb2b659440136d8f407dc0cce6c1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\fixture-11.json": "6a8fb25069836086d1e2634596465f76083e15887f6c8befa68f7fe63318f26a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\client-absence-11.json": "5a4a5369fb071dc2a48b3173553ab4f0acb2621fee094894c1adbffec7ffa218",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\client-absence-prelaunch-11.json": "d64f73fc844f73bbf565a97e806f1004d57befef6e852113ab7520cc2f18cb6b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-11\\case-observations.json": "447d83fadc4f8a5360fde9bc45724f25caa26889bee32577f6d7bed03d98e556",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-11\\journal-before.json": "c2b8d527cc3cf434067dbf02cfc445f967c525d6496e9db0ae96237e82511219",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-11\\journal-after.json": "610e61ad2c52854ff295282429c03d77705197cc1cebb51743cea86c7bedd3e9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-11\\journal.snapshot.jsonl": "6727a2e6dd4e588df50eedccd18cf7e19d298abafb26df0ea229cab5696032e9"
+    },
+    "terminal_kind": "published_final",
+    "new_invocations": [
+      {
+        "invocation_id": "48ecc41a-047b-4ebc-8957-b2ab0f18c524",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "index": 0,
+    "case_id": "H0019",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      10,
+      11
+    ],
+    "reason": "Pidió el canal faltante y mantuvo el destinatario.",
+    "observation_note": "Aclaración útil, sin operación de reproducción o mensajería ni afirmación de envío. Monitorización sin incidencias.",
+    "final_sha256": "69d50b3cde177ab6231feacc91f0984ece8ca74f18db29cc65742399fa763654",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-00\\EXIT.json": "3ed2133e6b9fe6c1a0201ad8ce18cf1f638a46d4a5e78a71ca74e3e5d8398235",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-00\\RESOURCES.json": "aea7d310816a20d8d3a38ba50e7570f51b91bda54c53c3471bef5efdbb158e6b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\profile-owner-00.json": "90d37d4a686bb397b9e889ae5657136590b783734300d640d7486b0926c33ed7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-00\\PREREG.json": "728f0487ce43f594607e62ea2fe4c543980a0e155eb79f4a0d5a328d3d23f789",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-00\\capture\\events.jsonl": "17f66d6a7f036d30fb61ce3a7ea24b85cb92bed652ba6b9555bf1f1cd2139f53",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-00\\turns.jsonl": "5908068f2a53ebc04973b18b1a762ae49528f780e0add8e05c320d15fe1c59e7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\fixture-00.json": "4d95879727b78c4c6bf7f83acbc994504185e1f8c158c02dacf56a9fe01c112b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\client-absence-00.json": "3a1f25dfbddc8cd971f1b11e23d3f9db3e7dc3079bdffa8d2f6495c2b7c464f2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\client-absence-prelaunch-00.json": "165d50f328b7748019bd921f2ee95ede633d5aa54921b1a6fc6e3ab79c38cd7f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-00\\case-observations.json": "014cae7b17d7b293412cb58c2d09a75902a4233698ede63fc1954ecc3dd8bb8b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-00\\journal-before.json": "d51f3e8b36dde37bacb58b5b9a1978a53d33b1213a2c223fa4070d03da50e0cb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-00\\journal-after.json": "44df2cdb8dd579e0856827722e6aed00df7d787c6103d9be10a8e632241cc533",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-00\\journal.snapshot.jsonl": "3dea35c6bc1660fbc2dbb4338c39055332bbef358910b87086b45fa20a6d1758"
+    },
+    "terminal_kind": "published_final",
+    "new_invocations": [
+      {
+        "invocation_id": "350c1e8b-52b3-4d72-a4d9-dfbd1af3bae3",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "case_id": "H0024",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "No publicó una respuesta útil tras agotar sus intentos.",
+    "observation_note": "El requisito queda abierto. No se observaron operaciones adicionales; se conserva el intento fallido para localizar la causa.",
+    "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-01\\EXIT.json": "0f0db356cbdc658c383314b76c58d23578498ceec8eada3ef2b6c273f05ff35c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-01\\RESOURCES.json": "dab53d4eb535bc447f961df2cc80bb01bcb092221014f03211ab1580f36312b4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\profile-owner-01.json": "da1c2584bc08943aa3f9817a3be23737bb68bd703b25c804c9577674d1d6acdd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-01\\PREREG.json": "e2153797fa994fc70ef30dfce00bfe89ffb41d3791689b4458713d2f046b83d5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-01\\capture\\events.jsonl": "5c7c96755ca77d80739453734411d5aab46f8fe6122f8f28918f86ca32d3c504",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-01\\turns.jsonl": "3c74e2c2e9ffc913ea44beb7136b132e16ecec530f9f0c3fb3ca12e6d893d949",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\fixture-01.json": "48e9d08414e6a786dc212354d9b11b5b388405a10158d6ae6e41cb4bbef3c31f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\client-absence-01.json": "85a109148acc523ff5889f25fe55ca53d0f6d872b690c8a86c5a0aa62303ff14",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\client-absence-prelaunch-01.json": "6681e591123f132145a554e21c387550930514d01763c1fe7593f343bde374d7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-01\\case-observations.json": "7539f8bf784069cc8172c4cc3a7603579335579fa79dfe8a09eaffecf82dc859",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-01\\journal-before.json": "3bd85eb1c41adae2009387afeef59cb9cb1c59789540dc49e87e2726dbf2b2d9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-01\\journal-after.json": "5c01f3a427322d33f649ebb54c69fb977399a7aec32bd0d17e056e9a42baee2f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-01\\journal.snapshot.jsonl": "3d7b2a15fc6891279529b42ccc34c44fe25413529abe23dd7e6d793e962a35f7"
+    },
+    "terminal_kind": "composition_failed",
+    "new_invocations": [
+      {
+        "invocation_id": "d30818f1-db21-4bae-8037-13f739d08e94",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "case_id": "H0108",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Entregó sólo el texto del mensaje y no pidió el canal que faltaba.",
+    "observation_note": "No afirmó explícitamente un envío, pero no resolvió el dato necesario para atender el encargo. Sin operaciones adicionales ni incidencias de monitorización.",
+    "final_sha256": "6e3cc59fc8c1eac15d3f7c911e90e2d9a255edb187329e3a9e9db3f3eef0820b",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-02\\EXIT.json": "df9dea1f06acfef4ef566a6b1832fb6df51660735ab1362af23bdf7d2ab3431a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-02\\RESOURCES.json": "2c8ca42d77abb252543e6163def83bb2cf8aebeec879f387774dbd7f03239ea6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\profile-owner-02.json": "ac13846b604968754b8a781f7a9a51f06d188f8f0b8d9df224bdede45068ead3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-02\\PREREG.json": "33f817bec536ee7b3ff0b79385594716eec462972991f8d4799deae6615458d4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-02\\capture\\events.jsonl": "0649c6b3938f056eaf206ba1bce978a4920c2cf88257a9c01d1f9884f4a4760c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-02\\turns.jsonl": "456deb97bb7c9c49fb615482b2e973f8f81142d6156b834e92be7ca9faeb4979",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\fixture-02.json": "04491be01e623fc382c3377a4bc1dab1077f56db53268108d2192a4be25f5698",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\client-absence-02.json": "22181bd01379ba456ab82353c8285a00e07b456d9c431fe1d9d347211e688d1a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\client-absence-prelaunch-02.json": "a089adcee92f90bcdb5d552dc7eb53b7cec63005850c65943141c1a74b6ee9c7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-02\\case-observations.json": "e9c82737cb62f9d6f97d053ebb4e8e363764cef4e5f5b49668b3f12dfa9efd2c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-02\\journal-before.json": "daf0a79714418cdd0c4e78110895b82a3c423c455e84d6273b256da8e76b3272",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-02\\journal-after.json": "54f4c648c1966d1aa37561fb1d93badcf0faf44826d7474eafb517f93db99655",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-02\\journal.snapshot.jsonl": "6f7a01c9513230bbd6da3a2230a794b9afe53d538c23500e1a8fe767cf01431b"
+    },
+    "terminal_kind": "published_final",
+    "new_invocations": [
+      {
+        "invocation_id": "94f248c5-0193-4cf5-8653-9e8cb1d3f3cf",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "case_id": "H0303",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Devolvió un error de interpretación en vez de pedir el canal faltante.",
+    "observation_note": "El intento queda abierto para reparar el reconocimiento de la petición. No hubo operaciones adicionales ni incidencias en las guardas del caso.",
+    "final_sha256": "75037ed8079bdf872ad06b17656ecea6e8c3514ca1fea7332a815680d1f7ae8e",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-03\\EXIT.json": "de182fa5b139a234039e309fbda102ec310ea4a59387e54625ec6eeabfb67f28",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-03\\RESOURCES.json": "79e32a1dbb15a2d9091727b3436446da1d8f59c0fcb37b9304e4aae048d63d48",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\profile-owner-03.json": "c87128013f25257493c5d3bdd20c696f5548e6a6eb9d37b2a7216af8719e2022",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\results\\case-03\\PREREG.json": "32f90160c175d1c3d9e8a396c2f4df8161f5fc99f81754bfd3fcad29b0fb4980",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-03\\capture\\events.jsonl": "58f8bd4de22c2f2fab0487bf217e0e7e3c17f055f4697e5a69d8acd9e8f52834",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-03\\turns.jsonl": "26b43432cf5ff1ad6cce616bc0e259ff5bbaec4f1c532279ecc91b1590db8df0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\fixture-03.json": "b7dab072bc095939983eb6a1f104fd8c90b4049be25c20ed45262ca0bb9f4a26",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\client-absence-03.json": "078c40afeb78ae0998fdd10178941019b0009be68bc9cd5b2c07aa3ea1ed2ace",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\client-absence-prelaunch-03.json": "7d44d3379ee80ab25b7cf295a2cda6e685dae2861e3bd1b27d172460982e8262",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-03\\case-observations.json": "3c45308db227e77399c34946df7018c83c07e2a330250c27386620df010ae4ba",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-03\\journal-before.json": "3ef4ac0955ee676cc8658eab40458b39724627e479b47a8f319b9cd3d7364e25",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-03\\journal-after.json": "cd2791028e87750835e8559fea1a4132f2c01f2bcf64012b6f880c01cd9c13d0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-messaging1085-proposal\\private\\run-03\\journal.snapshot.jsonl": "9f07eeeffd765efc22c8745c518046c2451ed679755e739c27d7fd5ef1d3c4c3"
+    },
+    "terminal_kind": "published_final",
+    "new_invocations": [
+      {
+        "invocation_id": "afe6ac8b-77dc-4fd6-b0e5-2702f1c37453",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true
+      }
+    ]
+  }
+]

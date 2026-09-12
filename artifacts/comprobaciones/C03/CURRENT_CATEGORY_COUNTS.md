@@ -1,12 +1,12 @@
-# Categorías actuales — adjudicación1091
+# Categorías actuales — adjudicación MESSAGING1085
 
-190/742 cubiertos; 552 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 64 primeras altas (28 Kiro + 36 retorno), sin revalidaciones. Registro canónico SHA256: ff8ad86d89bbf940d70256756ed48e94e7be9539ae321ed85cbcf579720889df.
+191/742 cubiertos; 551 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 65 primeras altas (28 Kiro + 37 retorno), sin revalidaciones. Registro canónico SHA256: c9972dfbd20282c2f1cd50a1fd68c9c6c24e600b9bc508d718874925820caf6a.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
 | Música | 39 | 6 | 33 |
-| Mensajería | 31 | 0 | 31 |
 | Instalar y desinstalar software | 31 | 0 | 31 |
+| Mensajería | 31 | 1 | 30 |
 | Navegación y búsqueda web | 46 | 17 | 29 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 9 | 29 |
 | Entrada incompleta, ruido y control de diálogo | 34 | 5 | 29 |

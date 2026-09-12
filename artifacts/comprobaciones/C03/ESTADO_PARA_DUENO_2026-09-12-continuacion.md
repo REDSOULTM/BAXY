@@ -1,3 +1,23 @@
+## MESSAGING1085 — estado vigente 2026-09-12T20:01:03.7369091+00:00
+
+Parcial: 4 aprobados, 3 fallidos, 18 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 191/742 | 551 | 0 | >=65 | 0/35 |
+
+Procedencia de primeras altas: Cota inferior: 28 primeras altas verificadas del relevo Kiro más 36 de la continuación anterior. No se cuentan actualizaciones de fecha de requisitos ya cubiertos.
+
+Siguiente acción: Reparar el reconocimiento de formas verbales de mensajería omitidas y sellar una continuación con los fallos y el material pendiente. DIALOGUE1093 está preparado como siguiente categoría disponible. Índice 4 se detuvo antes de crear run/perfil o lanzar producto; conserva ancla y recibos. Índice 5 sólo tiene observación de cliente presente; ambos permanecen sin ejecutar.
+
+Evidencia: `artifacts/comprobaciones/C03/MESSAGING1085/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 178.84 s acumulados; pico GPU 3497.56 MiB; pico RAM 2356.30 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MESSAGING1085 precedente. -->
+
 ## MUSIC1091 — estado vigente 2026-09-12T19:33:48.110013+00:00
 
 Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

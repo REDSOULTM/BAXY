@@ -2742,6 +2742,10 @@ def resolve_explicit_clarification_intent(
             ("browser.navigate.named",),
             ("destination_url",),
         )
+    # Share the speech-act head so supplied recipient/content stay present.
+    message_speech_act = (
+        r"(?:dile|decile|mandale|enviale|avisale|escrib[ei]le|respondele)"
+    )
     incomplete_message_shape = _has(
         folded,
         (
@@ -2752,7 +2756,7 @@ def resolve_explicit_clarification_intent(
             r"^[^\w]*message\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+"
             r"(?:and\s+tell|and\s+say|that|saying)\b|"
             r"^[^\w]*tell\s+[a-z0-9][a-z0-9 _-]{0,80}?\s+that\b|"
-            r"^[^\w]*(?:dile|decile|mandale|enviale|avisale|escribele)\s+(?:a\s+)?"
+            rf"^[^\w]*{message_speech_act}\s+(?:a\s+)?"
             r"[a-z0-9][a-z0-9 ._-]{0,80}?\s+(?:que|el\s+texto|el\s+mensaje)\b|"
             r"^[^\w]*let\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+know\s+that\b|"
             r"^[^\w]*write\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+"
@@ -2921,7 +2925,7 @@ def resolve_explicit_clarification_intent(
                 r"^[^\w]*message\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+"
                 r"(?:and\s+tell|and\s+say|that|saying)\b|"
                 r"^[^\w]*tell\s+[a-z0-9][a-z0-9 _-]{0,80}?\s+that\b|"
-                r"^[^\w]*(?:dile|decile|mandale|enviale|avisale|escribele)\s+"
+                rf"^[^\w]*{message_speech_act}\s+"
                 r"(?:a\s+)?"
                 r"[a-z0-9][a-z0-9 ._-]{0,80}?\s+(?:que|el\s+texto|el\s+mensaje)\b|"
                 r"^[^\w]*let\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+know\s+that\b|"
@@ -2947,7 +2951,7 @@ def resolve_explicit_clarification_intent(
                 r"^[^\w]*ask\s+.+?\s+(?:if|whether|what|when)\s+\S|"
                 r"^[^\w]*message\s+.+?\s+(?:and\s+tell|and\s+say|that|saying)\s+\S|"
                 r"^[^\w]*tell\s+[^.;!?]{1,80}?\s+that\s+\S|"
-                r"^[^\w]*(?:dile|decile|mandale|enviale|avisale|escribele)\s+"
+                rf"^[^\w]*{message_speech_act}\s+"
                 r"(?:a\s+)?"
                 r".+?\s+(?:que|el\s+texto|el\s+mensaje)\s+\S|"
                 r"^[^\w]*let\s+.+?\s+know\s+that\s+\S|"
