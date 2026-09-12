@@ -1,13 +1,13 @@
-# Categorías actuales — adjudicación1050
+# Categorías actuales — adjudicación1054
 
-179/742 cubiertos;563 abiertos;0 no aplican;0/35 categorías cerradas. Primeras altas verificadas últimas24h: al menos53 (28Kiro+25retorno); total global exacto pendiente de historial de primeras altas. Registro canónico, no proyección.
+184/742cubiertos;558abiertos;0noaplican;0/35categoríascerradas. Últimas24h:almenos58primerasaltas (28Kiro+30retorno),sin revalidaciones. Registro canónico.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
 | Música | 39 | 0 | 39 |
-| Navegación y búsqueda web | 46 | 12 | 34 |
 | Mensajería | 31 | 0 | 31 |
 | Instalar y desinstalar software | 31 | 0 | 31 |
+| Navegación y búsqueda web | 46 | 17 | 29 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 9 | 29 |
 | Entrada incompleta, ruido y control de diálogo | 34 | 5 | 29 |
 | Archivos y carpetas | 32 | 3 | 29 |

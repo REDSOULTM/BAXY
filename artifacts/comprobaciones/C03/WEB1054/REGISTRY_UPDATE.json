@@ -1,0 +1,45 @@
+{
+  "utc": "2026-09-12T15:49:48.715705+00:00",
+  "before_sha256": "86b2295ba39ba17a78c611c0889c0a1ae16e93156ce324ae44e357254e513b32",
+  "after_sha256": "55cf172e8c553665fb322940c059474dbcf2e09ab0c8360f20164bcf48bed4e3",
+  "covered": 184,
+  "open": 558,
+  "not_applicable": 0,
+  "new_credits": 5,
+  "credited_case_ids": [
+    "H0152",
+    "H0206",
+    "H0244",
+    "H0479",
+    "H0692"
+  ],
+  "first_coverage_grants": [
+    {
+      "case_id": "H0152",
+      "utc": "2026-09-12T15:49:48.715705+00:00",
+      "evidence": "WEB1054/ROOT_ADJUDICATION.json"
+    },
+    {
+      "case_id": "H0206",
+      "utc": "2026-09-12T15:49:48.715705+00:00",
+      "evidence": "WEB1054/ROOT_ADJUDICATION.json"
+    },
+    {
+      "case_id": "H0244",
+      "utc": "2026-09-12T15:49:48.715705+00:00",
+      "evidence": "WEB1054/ROOT_ADJUDICATION.json"
+    },
+    {
+      "case_id": "H0479",
+      "utc": "2026-09-12T15:49:48.715705+00:00",
+      "evidence": "WEB1054/ROOT_ADJUDICATION.json"
+    },
+    {
+      "case_id": "H0692",
+      "utc": "2026-09-12T15:49:48.715705+00:00",
+      "evidence": "WEB1054/ROOT_ADJUDICATION.json"
+    }
+  ],
+  "backup": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1054-panel-proposal\\private\\requirements-before-adjud179.jsonl",
+  "immutable_fields_preserved": true
+}

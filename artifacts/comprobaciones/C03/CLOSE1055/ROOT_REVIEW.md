@@ -1,0 +1,3 @@
+# CLOSE1055 — falso límite de oración
+
+Root reviewed llm.py shape gate and original first faithful H0427 reply. Replace boundary followed by arbitrary nonspace with boundary followed by optional decorations then a Unicode word: terminal emoji alone is not a second sentence. Lexical second proposition, newline, question, ungrounded states, fabricated infinitives, fixed stalls and shape-specific checks remain. No word whitelist, stripping visible answer, model instructions or canned reply. H0407 role error remains separate. Python-only; build1052 unchanged. Real nine-case run pending; no tests/Fast/Full by owner order, no green claim.

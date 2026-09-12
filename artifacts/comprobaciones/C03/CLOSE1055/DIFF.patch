@@ -1,0 +1,15 @@
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 55351dbf..397cb0ee 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -2101,7 +2101,9 @@ def _shaped_conversation_answer_violates_contract(
+         or "\n" in content
+         or "\r" in content
+         or any(marker in content for marker in ("?", "¿", "？"))
+-        or re.search(r"[.!…]\s+\S", content) is not None
++        # A trailing decorative symbol is not another sentence. Still reject
++        # lexical content after the boundary, including after decorations.
++        or re.search(r"[.!…]\s+\W*\w", content) is not None
+     ):
+         return True
+     folded = _policy_guard_text(content)

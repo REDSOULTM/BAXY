@@ -1,0 +1,56 @@
+{
+  "base_head": "943e937d65d5d7364402d2bb6817b3a3b27f2899",
+  "base_llm_sha256": "dbc5d1454da8700f18af7b2ef05f4b69fe04aa0696d7e1b56789695d65243d00",
+  "proposal_llm_sha256": "90cd02cc192c102ac46df7f67226daaecc78dda6a013fd03a5dec8275cc4d2af",
+  "patch_sha256": "90b6a97f9a2a3db6c44476651318ba3ee64c001f1cdbb6ecfdef170fd7c3053f",
+  "evidence": [
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-close1052-panel-proposal/private/run-08/case-observations.json",
+      "sha256": "922a286fb18f06c6e79729bddc5d478d0476ce7e6d9fe404e3228137f549cdab"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-close1052-panel-proposal/private/run-08/compose-audit.jsonl",
+      "sha256": "4ef3894c13244b46f6403e192bb188040c4670e201898688885746753d56b1af"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-close1052-panel-proposal/private/run-08/raw-replies.jsonl",
+      "sha256": "be1537ed6588c3f5d66becd669e271b1de55d32a756bdabd2368c2fb73dab0a0"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-close1052-panel-proposal/private/run-08/turn-audit.jsonl",
+      "sha256": "664cb318b5e5093004ca82af33c7961348bc07f064c12b09326145e300043781"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-close1052-panel-proposal/private/run-08/shell-trace.jsonl",
+      "sha256": "a383130aaf70d2a3a18124fb46cb0575de9184a5ef25218988d7eb371a1f2875"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-close1052-panel-proposal/private/run-08/capture/events.jsonl",
+      "sha256": "c85d923a6537378e8111f3bc6bc34fdf2b7d5de4041561b33c3af985ffaa0bb8"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-close1052-panel-proposal/private/run-09/case-observations.json",
+      "sha256": "20c2457ca3058beaa031550308dec063ddaafd0e68b5736aef6a3d2eea26328c"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-close1052-panel-proposal/private/run-09/compose-audit.jsonl",
+      "sha256": "b3591d27b6c2e91855572bf566f9af5154ada2b0badf6571e1c60687fc179950"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-close1052-panel-proposal/private/run-09/raw-replies.jsonl",
+      "sha256": "b888a2381418f2a65880387b4dfd8a9a03d6a5bfe2ba461c1e0cb063a199821a"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-close1052-panel-proposal/private/run-09/turn-audit.jsonl",
+      "sha256": "664cb318b5e5093004ca82af33c7961348bc07f064c12b09326145e300043781"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-close1052-panel-proposal/private/run-09/shell-trace.jsonl",
+      "sha256": "8dbc8f0970945bcb6a49c5e6f2079dc7fc2d89ab45940e1e0f14cbe8766891e6"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-close1052-panel-proposal/private/run-09/capture/events.jsonl",
+      "sha256": "4a92e83aa69cb1894939c994fb229cc0227a34bdd9ebadcf18c681af17483b5e"
+    }
+  ]
+}

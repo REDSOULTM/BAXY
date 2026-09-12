@@ -1,7 +1,9 @@
-# C03 — 179 cubiertos; ejecución continua
+# C03 — 184 cubiertos; ejecución continua
 
-**179/742 cubiertos, 563 abiertos, 0 no aplican; 0/35 categorías cerradas.**
-Últimas 24 h: al menos 53 primeras altas verificadas (28 Kiro + 25 retorno); no se cuentan revalidaciones. C03 formal: 3/11. Goal activo. Suites, Fast y Full omitidos por orden del dueño; no verdes.
+**184/742 cubiertos,558 abiertos,0 no aplican;0/35categorías cerradas.**
+Últimas24h:almenos58primerasaltas verificadas (28Kiro+30retorno),sin revalidaciones. C03formal3/11;goalactivo. Suites/Fast/Full omitidos pororden,no verdes.
+
+WEB1054:10/12 cumplen,2fallan,+5requisitos H0152/H0206/H0244/H0479/H0692. MozillaES yDebianEN ya resuelven por nombre y navegan;5literales actuales con esos2pares pertinentes,7confirmacionesexactas revisadas porraíz. Gmail sólo loginpúblico. Siguenfallando condiciónfutura y sitio sin nombre; no repetir panelentero. Encuesta184/742,558abiertos,0NA;almenos58primerasaltas24h (28Kiro+30retorno),0/35categorías,C03formal3/11. PicoVRAM3788.84MiB,picoRAM3694.58MiB,duración382.031s incluyendo revisiónmanual;exit0,pinsintactos,singuardas. Producto/GPU/browserpropio ya salidos,0pendientes. Sin suites/Fast/Full pororden,no verdes. Próximo CLOSE1055: quitar falso rechazo de emoji final y ejecutar9casossinefecto sellados. CLOSE1056 propuestaexterna para cierres positivos por identidad autenticada. Registro `55cf172e8c553665fb322940c059474dbcf2e09ab0c8360f20164bcf48bed4e3`.
 
 SOCIAL1050: 23/25 cumplen, 2 fallan; +10 literales acreditados. Encuesta179/742,563abiertos,0NA;0/35categorías cerradas;C03formal3/11. Al menos53primerasaltas verificadas últimas24h (28Kiro+25retorno), sin revalidaciones. Saludos8 y ayuda2, cada uno con dos variantes pertinentes ES/EN actuales. Fallos: petición idiomática de ayuda en inglés no interpretada; petición de escribir sólo HOLA convertida en pregunta sobre un archivo inexistente. No repetir panel completo. Exit0,pinsintactos,sin guardas. PicoVRAM3497.56MiB; picoRAM2510.21MiB; duración86.625s. Journal sólo memory.status inicial; procesos propios recogidos por runner. Suites/Fast/Full omitidos por orden del dueño, no verdes. Próximo AUDIO1051:3literales útiles pendientes de pares,6variantes,5límites; pre/postlecturas de estado real y cero efectos esperados. Registro `2516a3ea3a10a000c50e511015fbd3a93970702b52383feb0716ef2fba870518`.
 
@@ -12,6 +14,8 @@ CLOSE1052: fuente App0722d469 integrada para revisión manual de window.resolve/
 CLOSE1052 parcial adjudicado:4ejecutados,4fallos,0créditos;21sellados no ejecutados. Dos cierres (Bloc de notas y Paint) seleccionan otra operación y luego inventan falta de permisos; dos prohibiciones Spotify terminan en error de interpretación. Nunca se alcanzó app.close ni propuesta/confirmación: extensión de revisión1052 compilada pero aún sin ejercicio dinámico. Journal sólo4memory.status iniciales. Panel terminado para reparar tras dos intentos comparables, no se repetirá entero. Ventanas vacías preparadas mediante sky, sin helperCore ejecutado; limpieza raíz separada sin crédito de producto. PicoVRAM3497.56MiB,picoRAM1585.79MiB,4arranques total102.390s;exit0/pinsintactos/sin guardas. Encuesta179/742,563abiertos,0NA;almenos53primerasaltas24h;0/35categorías,C03formal3/11. Siguiente WEB1054: reparación existente de resolución de nombres,5literales pendientesdepares. CLOSE1055 propone reparar falso rechazo de emoji final; cierre positivo necesita diagnóstico de intent/retrieval. Suites/Fast/Full omitidos pororden,no verdes. Registro `86b2295ba39ba17a78c611c0889c0a1ae16e93156ce324ae44e357254e513b32`.
 
 WEB1054: reparación mínima de reconocimiento del nombre público integrada; resolver Mozilla con cortesía y Debian con posesivo mantiene guardas originales y búsqueda verificada. Potencial5requisitos; panel5+2+5 sellado, ejecución pendiente. Sin suites por orden del dueño.
+
+CLOSE1055: corrección de frontera de oración integrada en llm.py; emoji terminal no equivale a segunda proposición. Panel9ordinarios sellado (2literales,2variantes,5límites), ejecución pendiente; no créditos porfuente. Build1052 sin cambios, ninguna suite.
 
 ## Historial previo — sus cifras y siguientes pasos son históricos
 

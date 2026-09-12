@@ -159,28 +159,28 @@
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
   "surveyVerificationCounts": {
-    "covered": 179,
-    "open": 563,
+    "covered": 184,
+    "open": 558,
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "86b2295ba39ba17a78c611c0889c0a1ae16e93156ce324ae44e357254e513b32",
+  "surveyRegistrySha256": "55cf172e8c553665fb322940c059474dbcf2e09ab0c8360f20164bcf48bed4e3",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
-  "surveyCoverageLast24h": 53,
-  "surveyCoverageLast24hNote": "At least53verifiedfirstgrants in last24h:28Kiro+25return; globalexactfirstgrant countunknown; revalidation timestamps notused.",
+  "surveyCoverageLast24h": 58,
+  "surveyCoverageLast24hNote": "At least58verifiedfirstgrants in24h:28Kiro+30return; globalexactfirstgrant countunknown; revalidation timestamps excluded.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
-  "latestProductRun": "CLOSE1052 partial ended",
+  "latestProductRun": "WEB1054",
   "activeValidation": null,
   "activeRepairAgent": null,
   "currentUnpublishedSource": null,
-  "preparedNextPanel": "WEB1054",
-  "preparedNextPanelNote": "5 literals+2 pertinent failed variants+5 boundaries, source repair pending adoption.",
+  "preparedNextPanel": "CLOSE1055",
+  "preparedNextPanelNote": "9 ordinary cases sealed; llm.py emoji-boundary repair pending adoption. No fixture or closure approvals.",
   "pendingOwnerClarification": null,
   "ownerLatestInstruction": "Accelerate C03 without automated tests/Fast/Full; no loss of truthful product behavior. Real sealed execution required for coverage.",
   "nextProductBlocker": null,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-12T15:35:16.159913+00:00",
+  "utcUpdated": "2026-09-12T15:49:48.715705+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -522,7 +522,39 @@
   },
   "currentContinuation1054": {
     "source_proposal_sha256": "97056f9df82ba582bdbe5c19454e524eef3b10d7f59ef2a4e44ae2c9f787be73",
-    "next": "Bind584sources18binaries5runtime to current head then run WEB1054; manual review of each verified web search URL.",
+    "next": "CLOSE1055 llm.py repair+9ordinarycases; then CLOSE1056 positive closures proposal review.",
+    "coverage_credit": 0,
+    "tests_run": false,
+    "head": "52a49b005718822a1caaa7019daa4df223e11cea",
+    "registry_sha256": "55cf172e8c553665fb322940c059474dbcf2e09ab0c8360f20164bcf48bed4e3",
+    "survey": 184,
+    "quality": {
+      "pass": 10,
+      "fail": 2,
+      "total": 12
+    },
+    "new_credits": 5,
+    "credited": [
+      "H0152",
+      "H0206",
+      "H0244",
+      "H0479",
+      "H0692"
+    ],
+    "resources": {
+      "utc": "2026-09-12T15:46:47.003876+00:00",
+      "violations": [],
+      "gpu_peak_mib": 3788.83984375,
+      "gpu_telemetry_available": true,
+      "ram_peak_mib": 3694.58203125,
+      "seconds": 382.0310000000027,
+      "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+    },
+    "processes": "Product/Core/GPU and owned browser exited;0remaining."
+  },
+  "currentContinuation1055": {
+    "source_proposal_sha256": "90b6a97f9a2a3db6c44476651318ba3ee64c001f1cdbb6ecfdef170fd7c3053f",
+    "next": "Bind current source to9ordinary sealed cases and run; no fixtures or closure approvals.",
     "coverage_credit": 0,
     "tests_run": false
   }
