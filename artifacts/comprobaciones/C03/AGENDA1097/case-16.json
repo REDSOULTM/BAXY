@@ -1,0 +1,23 @@
+{
+  "index": 16,
+  "case_id": "agenda1097-dev-09",
+  "terminal_kind": "published_final",
+  "final_sha256": "7dcd34f15e1a801907f53ea603ee9d503815eb690dfc1c47321dcbd6e4cf31da",
+  "verdict": "failed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 24.812999999994645,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1552.3984375,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1097-proposal\\results\\case-16\\EXIT.json": "e4ebddaf4feba3b8eba5e01890e18cd9aac36aabc2a4ef13a239b65a37f7a66b",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1097-proposal\\results\\case-16\\RESOURCES.json": "6eb730390df87d655243ffeee9cbf7d1016a138241760e62273c2012e43a54ac",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1097-proposal\\private\\run-16\\case-observations.json": "9d49f525a5376f86b9bc0bcdaeaad859f73e7ee643ab0b19a6e237a6736a5e20"
+  }
+}

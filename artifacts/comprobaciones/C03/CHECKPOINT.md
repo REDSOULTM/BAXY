@@ -1,3 +1,25 @@
+## AGENDA1097 — estado vigente 2026-09-12T21:14:14.6044640Z
+
+Parcial: 1 aprobados, 12 fallidos, 10 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 197/742 | 545 | 0 | >=71 | 0/35 |
+
+Procedencia de primeras altas: Al menos 28 primeras altas de Kiro y 43 del retorno acreditadas el 12 de septiembre; esta tanda no suma crédito. No se cuentan revalidaciones.
+
+Siguiente acción: Ejecutar FILES1099, dos literales de contenido truncado con pares y límites sellados, mientras se prepara AGENDA1100 para conservar información ya suministrada al pedir una aclaración temporal. Los ocho literales de agenda permanecen sin ejecutar por pares fallidos; no repetir la tanda completa. Fuente 1100 aún no integrada ni medida, con seis literales potencialmente relacionados y un séptimo pendiente de aislamiento. Límites conversacionales fallidos separados; ningún cierre de categoría o de C03.
+
+Evidencia: `artifacts/comprobaciones/C03/AGENDA1097/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 322.33 s acumulados; pico GPU 3497.56 MiB; pico RAM 1684.26 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 13; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque AGENDA1097 precedente. -->
+
 ## DIALOGUE1093 — estado vigente 2026-09-12T20:55:24.6551435Z
 
 Parcial: 12 aprobados, 5 fallidos, 8 sin ejecutar; 2 créditos.
