@@ -1,3 +1,23 @@
+## MUSIC1090 — estado vigente 2026-09-12T19:17:16.256353+00:00
+
+Parcial: 4 aprobados, 0 fallidos, 8 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 189/742 | 553 | 0 | >=63 | 0/35 |
+
+Procedencia de primeras altas: Al menos 61 primeras altas previas verificadas hoy: 28 Kiro y 33 retorno hasta1080. MUSIC1090 añade H0351 y H0567, total al menos 63; no se cuentan revalidaciones.
+
+Siguiente acción: Registrar estos dos créditos ahora. Sellar MUSIC1091 con el registro actualizado: únicamente ocho objetos aún sin ejecutar1090, H0311 + dos variantes previous + cinco límites, sin repetir los cuatro aprobados. Música conserva la mayor masa abierta. MESSAGING1085 tiene diez literales, diez variantes y cinco límites sellados, con runner aislado y auxiliares listos para revisión raíz; arrancar después del último grupo directo de navegación. H0675 y efectos inciertos continúan aparcados. C03 activo, formal 3/11; sin suites, Fast ni Full por orden expresa del dueño.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1090/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 89.16 s acumulados; pico GPU 3497.56 MiB; pico RAM 1582.75 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1090 precedente. -->
+
 Los tres literales de navegación ya ejecutaron el cambio de pista correcto y publicaron estados fieles. Todavía no se acreditan: las variantes de siguiente pista ejecutaron el efecto, pero sus borradores omitieron datos requeridos y no se publicaron. La corrección1089 comunica al compositor el contrato de nombres y estado que ya exigían sus filtros. Se comprueba a continuación en el panel1090 sellado.
 
 Encuesta:187/742,555 abiertos,0 no aplican; al menos61 primeras altas en24h;0/35 categorías cerradas. C03 sigue activo,formal3/11. No se ejecutaron suites,Fast ni Full por orden del dueño. BUILD1079 sigue vigente para el binario si sus huellas coinciden; la fuente Python nueva debe medirse. Mensajería1085 queda lista y WhatsApp se cerró bajo la autorización del dueño, sin enviar mensajes. Instalación1087 tiene diez candidatos Steam condicionales, todavía sin precondiciones reales verificadas.

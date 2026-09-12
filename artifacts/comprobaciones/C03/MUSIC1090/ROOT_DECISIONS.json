@@ -1,0 +1,56 @@
+{
+  "schema": "music1090-root-decisions-v1",
+  "approved_by_root": true,
+  "head": "149bf129db4fe382d528669acbbdc1a3e5e13ce1",
+  "preparation_sha256": "6174767915635dc22e801d947edcc3e847d263f79567251063200091e2fc9eee",
+  "registry_before_sha256": "d201b5036b6ef64683f34c00eb1b48ba5ecba7c453d3c36a74e2b4d8a6ffa596",
+  "decided_at_utc": "2026-09-12T19:17:16.256353+00:00",
+  "metrics": {
+    "first_covered_last24h_before": 61,
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_evidence_note": "Al menos 61 primeras altas previas verificadas hoy: 28 Kiro y 33 retorno hasta1080. MUSIC1090 añade H0351 y H0567, total al menos 63; no se cuentan revalidaciones.",
+    "categories_closed_after": 0,
+    "categories_total": 35
+  },
+  "next_action": "Registrar estos dos créditos ahora. Sellar MUSIC1091 con el registro actualizado: únicamente ocho objetos aún sin ejecutar1090, H0311 + dos variantes previous + cinco límites, sin repetir los cuatro aprobados. Música conserva la mayor masa abierta. MESSAGING1085 tiene diez literales, diez variantes y cinco límites sellados, con runner aislado y auxiliares listos para revisión raíz; arrancar después del último grupo directo de navegación. H0675 y efectos inciertos continúan aparcados. C03 activo, formal 3/11; sin suites, Fast ni Full por orden expresa del dueño.",
+  "decisions": [
+    {
+      "index": 3,
+      "verdict": "passed",
+      "reason": "Variante inglesa aprobada: avanzó al vecino correcto y publicó título, artista y estado fieles.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Aurora de cobre playing cerca de cero → Rio de cristal playing; invocación 26d94d6e-9e68-426b-9f0c-dc83b38d2dac completed, verified true, replayed false. La respuesta enumera Title, Artist y PlaybackStatus: playing. Formato escueto y técnico, pero comprensible, atiende la petición y coincide con operación, lectura posterior y UI; no exige la rúbrica una frase exacta."
+    },
+    {
+      "index": 5,
+      "verdict": "passed",
+      "reason": "Variante española aprobada: avanzó al vecino correcto y publicó sus datos observados.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Rio de cristal playing cerca de cero → Sendero azul playing; invocación 25a002ee-e85f-4e7b-a1f9-23a3f6a4af0f completed, verified true, replayed false. Final en español: Título, Artista y Estado de reproducción: playing. El término inglés del estado es poco natural, pero indica el estado real sin falsearlo; lectura posterior y UI coinciden. No se acredita sólo el efecto."
+    },
+    {
+      "index": 1,
+      "verdict": "passed",
+      "reason": "Cubierto: el literal ejecutó la siguiente canción y publicó resultado útil y fiel con dos variantes pertinentes aprobadas en este mismo candidato.",
+      "credit": true,
+      "pair_indices": [
+        3,
+        5
+      ],
+      "observation_note": "Aurora de cobre → Rio de cristal playing; invocación 357edf46-0873-4f88-be1a-ab09b29c3d55 completed, verified true, replayed false. Final identifica Rio de cristal, Original BAXY preparation composition y Estado de reproducción: reproduciéndose. Lectura posterior y UI coinciden. Pares 3 y 5 cambian idioma, formulación y pista de partida."
+    },
+    {
+      "index": 2,
+      "verdict": "passed",
+      "reason": "Cubierto: el literal ejecutó la siguiente canción y publicó resultado útil y fiel con dos variantes pertinentes aprobadas en este mismo candidato.",
+      "credit": true,
+      "pair_indices": [
+        3,
+        5
+      ],
+      "observation_note": "Rio de cristal → Sendero azul playing; invocación cb3bd7b4-8d47-403d-b607-9af61104afe5 completed, verified true, replayed false. Final identifica Sendero azul, Original BAXY preparation composition y Estado de reproducción: reproduciéndose. Lectura posterior y UI coinciden. Pares 3 y 5 cubren la misma conducta con idioma y formulación distintos."
+    }
+  ]
+}

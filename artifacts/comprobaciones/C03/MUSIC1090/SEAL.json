@@ -1,0 +1,54 @@
+{
+  "schema": "music1090-conditional-data-seal-v1",
+  "candidate": null,
+  "fixture": null,
+  "coverage_credit": 0,
+  "execution_ready": false,
+  "execution_authorized": false,
+  "transport_shape_frozen": true,
+  "registry_sha256": "afedd6798f617c137b86c170c9992deedec96f0e01ae6124b5f06580cfd1bf13",
+  "historical_case_ids": [
+    "H0311",
+    "H0351",
+    "H0567"
+  ],
+  "counts": {
+    "cases": 12,
+    "historical_literals": 3,
+    "original_development_variants": 4,
+    "boundaries": 5,
+    "ordinary_turns": 12,
+    "reviewed_turns": 0,
+    "session_controls": 12,
+    "wire_lines": 24,
+    "case_final_terminals": 12,
+    "maximum_request_phase_terminals": 0,
+    "maximum_reportable_terminals": 12,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 3,
+    "original_development_variant": 4,
+    "original_boundary": 5
+  },
+  "read_source_pins": {
+    "C:/Users/usuario/AppData/Local/BAXY/C03-music1086-proposal/SEAL.json": "3f3ba71862cb5eabb974afafbfc229f9a545f3c7655d685a498ae46a0ae3f879",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-music1086-proposal/panel.json": "9c6f9fd19f8a727cd0def290d47b2790c6617d13e71292db5f50fd76ad4c1144",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-music1086-proposal/turns.jsonl": "3fa66330b0c27452fa1cf0773df3fadafe80c8061cfdb4f4b132bbe554d410fd",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-music1086-proposal/case-map.json": "a8f132f0fd03e0270a11ef405a3dcbe9bed2704524c639ea71f737e4de3cab48",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-music1086-proposal/runner.py": "6af9e12875dbaa172191f53602c88787c956e3e0336c996daa5fb800ca690f05"
+  },
+  "files": {
+    "panel.json": "9c6f9fd19f8a727cd0def290d47b2790c6617d13e71292db5f50fd76ad4c1144",
+    "turns.jsonl": "3fa66330b0c27452fa1cf0773df3fadafe80c8061cfdb4f4b132bbe554d410fd",
+    "case-map.json": "0783daa0e60aebf2b1da2d19b56c89555d7c37fef8dc1ccdd8c88d4350c5fc82",
+    "PLAN.md": "a2c19d9e4f71adbf604e8fe401743adbc6a740aa687a8e0261c48ab83de38a88",
+    "PLAN_RUNNER.md": "a7b3ebfe1c9f1f81331ba7a9e00d5755085cb226d10ab3b5298ba2bc36c7d94d",
+    "requirements-snapshot.jsonl": "afedd6798f617c137b86c170c9992deedec96f0e01ae6124b5f06580cfd1bf13"
+  },
+  "execution_provenance_counts": {
+    "not_executed_in_parent": 6,
+    "new_original_development": 0,
+    "reexecutions": 6
+  }
+}

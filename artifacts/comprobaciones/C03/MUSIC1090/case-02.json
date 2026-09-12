@@ -1,0 +1,52 @@
+{
+  "index": 2,
+  "terminal": [
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Título: Sendero azul  \nArtista: Original BAXY preparation composition  \nEstado de reproducción: reproduciéndose",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    }
+  ],
+  "exit": {
+    "case_index": 2,
+    "case_id": "H0567",
+    "segment_sha256": "19f5638d21ceafad240366ab4866897d808ae40227a5ae324ad7fa4ae724e709",
+    "fixture_receipt_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1090-proposal\\private\\fixture-02.json",
+    "fixture_receipt_sha256": "df5ad8d0fad83a690e3333aab75838865205f532db3be3d03db705ccfd6d93d7",
+    "tests_run": false,
+    "validation_policy": "owner_directed_no_tests",
+    "candidate_manifest_sha256": "537a6109a8c47dcfacabf1c4e3b3dcba1d6ee18b714a4a7833c96dd1c5e9424f",
+    "execution_authorized": true,
+    "utc": "2026-09-12T19:16:01.857247+00:00",
+    "exit_code": 0,
+    "stopped": false,
+    "pins_unchanged": true,
+    "terminal_records": 1,
+    "session_controls_observed": 1,
+    "turn_envelopes_observed": 1,
+    "real_submission_events_observed": 1,
+    "case_final_records": 1,
+    "confirmation_submissions_observed": 0,
+    "reviews_observed": 0,
+    "guarded_stop_index": null,
+    "host_stop_proves_unexecuted_queue": false,
+    "app_cleanup_by_runner": false,
+    "audio_restoration_by_runner": false,
+    "quality_adjudicated": false,
+    "success_count": null,
+    "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1090-case02-profile\\journal\\missions.jsonl",
+    "target_apps_closed_by_guard": false
+  },
+  "resources": {
+    "utc": "2026-09-12T19:16:01.855619+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1557.4296875,
+    "seconds": 20.656999999999243,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  }
+}
