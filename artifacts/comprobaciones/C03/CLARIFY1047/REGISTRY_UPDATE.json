@@ -1,0 +1,26 @@
+{
+  "utc": "2026-09-12T14:04:42.354632+00:00",
+  "before_sha256": "a077b4073d94ae22a2d98ba8e6dbc1f5cee4ab76ff18e0f66ced12259059e95a",
+  "after_sha256": "66f1364eb21e8dd38fb13201aa08108c04848118af03c723d28543367ce7b91d",
+  "covered": 163,
+  "open": 579,
+  "not_applicable": 0,
+  "new_credits": 1,
+  "credited_case_ids": [
+    "H0694"
+  ],
+  "first_coverage_grants": [
+    {
+      "case_id": "H0694",
+      "utc": "2026-09-12T14:04:42.354632+00:00",
+      "evidence": "CLARIFY1047/ROOT_ADJUDICATION.json"
+    }
+  ],
+  "updated_causes": [
+    "H0694",
+    "H0287",
+    "H0581"
+  ],
+  "backup": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clarify1047-private\\requirements-before-adjud162.jsonl",
+  "immutable_fields_preserved": true
+}
