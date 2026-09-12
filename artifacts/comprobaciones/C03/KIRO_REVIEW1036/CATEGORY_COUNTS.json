@@ -1,0 +1,331 @@
+{
+  "utc": "2026-09-12T11:56:11.590375+00:00",
+  "kind": "published_status_projection_not_private_registry_recovery",
+  "registry_mutated": false,
+  "sources": [
+    {
+      "path": "artifacts/comprobaciones/C03/SYSTEM1028/REGISTRY_UPDATE.json",
+      "sha256": "b53ed2882a3ff542f0df8c0da9dfd6e84da7ad00939be4ad5110c4f40650cc84",
+      "new_ids": [
+        "H0539",
+        "H0655",
+        "H0442",
+        "H0422"
+      ],
+      "utc": "2026-09-12T03:30:04.335580+00:00"
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/APPS1029/REGISTRY_UPDATE.json",
+      "sha256": "124599fca468cd5e97314c84546b125429e22c4f51be32dc6f2a994d8566327a",
+      "new_ids": [
+        "H0085",
+        "H0315",
+        "H0317"
+      ],
+      "utc": "2026-09-12T04:58:56.075109+00:00"
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/REPAIR1032/REGISTRY_UPDATE.json",
+      "sha256": "57879aa0c70bf3a026496528272dcae881f57c9d05010f87f97c1f107815b53d",
+      "new_ids": [
+        "H0251",
+        "H0588",
+        "H0683",
+        "H0706"
+      ],
+      "utc": "2026-09-12T05:35:50.111146+00:00"
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/REPAIR1033/REGISTRY_UPDATE.json",
+      "sha256": "838e05dc4701ed462c37d3a3f1dc41b59a00259f05d61023d6df74e5b7b8c5ee",
+      "new_ids": [
+        "H0015",
+        "H0055",
+        "H0134",
+        "H0136",
+        "H0391",
+        "H0418",
+        "H0653"
+      ],
+      "utc": "2026-09-12T05:56:18.451540+00:00"
+    },
+    {
+      "path": "artifacts/comprobaciones/C03/CLOCK1034/REGISTRY_UPDATE.json",
+      "sha256": "653433ffba8ad92ced95fcbb3d8520dcd480c11548703da40c6a73454eafbc17",
+      "new_ids": [
+        "H0126",
+        "H0223",
+        "H0449",
+        "H0450",
+        "H0498",
+        "H0586",
+        "H0600",
+        "H0602",
+        "H0700",
+        "H0727"
+      ],
+      "utc": "2026-09-12T06:05:51.146025+00:00"
+    }
+  ],
+  "categories": [
+    {
+      "category": "music",
+      "label": "Música",
+      "total": 39,
+      "open": 39,
+      "not_applicable": 0
+    },
+    {
+      "category": "web_navigation_search",
+      "label": "Navegación y búsqueda web",
+      "total": 46,
+      "open": 36,
+      "covered": 10,
+      "not_applicable": 0
+    },
+    {
+      "category": "files",
+      "label": "Archivos y carpetas",
+      "total": 32,
+      "open": 32,
+      "not_applicable": 0
+    },
+    {
+      "category": "clarification_unresolved_input",
+      "label": "Entrada incompleta, ruido y control de diálogo",
+      "total": 34,
+      "open": 31,
+      "covered": 3,
+      "not_applicable": 0
+    },
+    {
+      "category": "messaging",
+      "label": "Mensajería",
+      "total": 31,
+      "open": 31,
+      "not_applicable": 0
+    },
+    {
+      "category": "software_installation",
+      "label": "Instalar y desinstalar software",
+      "total": 31,
+      "open": 31,
+      "not_applicable": 0
+    },
+    {
+      "category": "timers_reminders_calendar",
+      "label": "Alarmas, recordatorios, tareas y agenda",
+      "total": 38,
+      "open": 29,
+      "covered": 9,
+      "not_applicable": 0
+    },
+    {
+      "category": "apps_open",
+      "label": "Abrir aplicaciones",
+      "total": 54,
+      "covered": 28,
+      "open": 26,
+      "not_applicable": 0
+    },
+    {
+      "category": "video_streaming",
+      "label": "Vídeo y series",
+      "total": 26,
+      "open": 26,
+      "not_applicable": 0
+    },
+    {
+      "category": "knowledge_reasoning",
+      "label": "Conocimiento, razonamiento y creatividad verbal",
+      "total": 37,
+      "covered": 12,
+      "open": 25,
+      "not_applicable": 0
+    },
+    {
+      "category": "audio_volume",
+      "label": "Audio y volumen",
+      "total": 51,
+      "covered": 27,
+      "open": 24,
+      "not_applicable": 0
+    },
+    {
+      "category": "conversation",
+      "label": "Conversación social y ayuda general",
+      "total": 31,
+      "covered": 9,
+      "open": 22,
+      "not_applicable": 0
+    },
+    {
+      "category": "ui_interaction",
+      "label": "Interacción dentro de aplicaciones",
+      "total": 22,
+      "open": 22,
+      "not_applicable": 0
+    },
+    {
+      "category": "network_bluetooth",
+      "label": "Red y Bluetooth",
+      "total": 21,
+      "open": 20,
+      "covered": 1,
+      "not_applicable": 0
+    },
+    {
+      "category": "windows_close",
+      "label": "Cerrar aplicaciones y ventanas",
+      "total": 20,
+      "open": 20,
+      "not_applicable": 0
+    },
+    {
+      "category": "screen_vision",
+      "label": "Pantalla, captura e interpretación visual",
+      "total": 19,
+      "open": 19,
+      "not_applicable": 0
+    },
+    {
+      "category": "brightness_display",
+      "label": "Brillo y pantalla",
+      "total": 17,
+      "open": 17,
+      "not_applicable": 0
+    },
+    {
+      "category": "web_current_information",
+      "label": "Información web actual",
+      "total": 17,
+      "open": 17,
+      "not_applicable": 0
+    },
+    {
+      "category": "system_hardware_status",
+      "label": "Estado de hardware y sistema",
+      "total": 40,
+      "covered": 25,
+      "open": 15,
+      "not_applicable": 0
+    },
+    {
+      "category": "windows_arrangement",
+      "label": "Organizar ventanas y pestañas",
+      "total": 13,
+      "open": 13,
+      "not_applicable": 0
+    },
+    {
+      "category": "windows_status",
+      "label": "Estado de ventanas y aplicaciones",
+      "total": 14,
+      "open": 13,
+      "covered": 1,
+      "not_applicable": 0
+    },
+    {
+      "category": "assistant_identity_capabilities",
+      "label": "Identidad y capacidades del asistente",
+      "total": 19,
+      "open": 12,
+      "covered": 7,
+      "not_applicable": 0
+    },
+    {
+      "category": "notes",
+      "label": "Notas",
+      "total": 12,
+      "open": 12,
+      "not_applicable": 0
+    },
+    {
+      "category": "clock",
+      "label": "Hora y fecha",
+      "total": 23,
+      "open": 10,
+      "covered": 13,
+      "not_applicable": 0
+    },
+    {
+      "category": "personal_memory",
+      "label": "Memoria personal",
+      "total": 10,
+      "open": 10,
+      "not_applicable": 0
+    },
+    {
+      "category": "email",
+      "label": "Correo",
+      "total": 6,
+      "open": 6,
+      "not_applicable": 0
+    },
+    {
+      "category": "game_library_navigation",
+      "label": "Bibliotecas y fichas de juegos",
+      "total": 6,
+      "open": 6,
+      "not_applicable": 0
+    },
+    {
+      "category": "contacts",
+      "label": "Contactos",
+      "total": 5,
+      "open": 5,
+      "not_applicable": 0
+    },
+    {
+      "category": "development_execution",
+      "label": "Desarrollo y ejecución de comandos",
+      "total": 5,
+      "open": 5,
+      "not_applicable": 0
+    },
+    {
+      "category": "clipboard",
+      "label": "Portapapeles",
+      "total": 3,
+      "open": 3,
+      "not_applicable": 0
+    },
+    {
+      "category": "negative_app_constraints",
+      "label": "Restricciones negativas de apertura",
+      "total": 4,
+      "covered": 1,
+      "open": 3,
+      "not_applicable": 0
+    },
+    {
+      "category": "system_power",
+      "label": "Energía del sistema",
+      "total": 3,
+      "open": 3,
+      "not_applicable": 0
+    },
+    {
+      "category": "document_image_creation",
+      "label": "Crear documentos y editar imágenes",
+      "total": 2,
+      "open": 2,
+      "not_applicable": 0
+    },
+    {
+      "category": "web_read_summary",
+      "label": "Leer y resumir páginas web",
+      "total": 2,
+      "open": 2,
+      "not_applicable": 0
+    },
+    {
+      "category": "process_status",
+      "label": "Procesos",
+      "total": 9,
+      "covered": 8,
+      "open": 1,
+      "not_applicable": 0
+    }
+  ]
+}

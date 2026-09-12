@@ -4190,11 +4190,15 @@ def _states_it_was_already_running(folded: str) -> bool:
 def _claims_a_relaunch(folded: str) -> bool:
     """True when the reply says it opened the target again over a reused process."""
 
+    # As with opening claims and failure assertions, keep polarity scoped to
+    # each clause. An affirmative subject/verb head cannot skip over a denial;
+    # a later independent affirmative clause must still be checked.
     return re.search(
-        r"volv[ií](?:\s+a\s+|ó\s+a\s+)(?:abrir|lanzar)|"
+        r"(?:^|[.;]\s*|\b(?:pero|but)\s+|\b(?:y|and)\s+(?=(?:yo|i)\b))"
+        r"(?:ya\s+|yo\s+|i\s+|i've\s+|i\s+have\s+)*(?:(?:lo|la)\s+)?"
+        r"(?:volv[ií]\s+a\s+(?:abrir|lanzar)|"
         r"(?:abrí|abri|abro|lancé|lance)\s+(?:de\s+nuevo|otra\s+vez|igual)|"
-        r"(?:opened|launched|started|reopened|relaunched)\s+(?:it\s+|the\s+app\s+)?(?:again|anyway)|"
-        r"again\s*[.,]?\s*$",
+        r"(?:opened|launched|started|reopened|relaunched)\s+(?:it\s+|the\s+app\s+)?(?:again|anyway))\b",
         folded,
     ) is not None
 
@@ -4209,7 +4213,7 @@ def _claims_the_target_was_open_before(folded: str) -> bool:
 
     return re.search(
         r"ya\s+estaba\b|ya\s+se\s+encontraba\b|ya\s+ten[íi]a\b|"
-        r"ya\s+(?:la|lo)\s+ten[íi]a\b|ya\s+tengo\b[^.;]{0,40}abiert|"
+        r"ya\s+(?:la|lo)\s+ten[íi]a\b|"
         r"was\s+already\b|were\s+already\b|"
         r"already\s+(?:running|open|opened|started|launched)\s+(?:before|previously)\b|"
         r"(?:estaba|estuvo)\s+(?:ya\s+)?(?:en\s+ejecución|en\s+ejecucion|abiert[oa]|corriendo)\b",

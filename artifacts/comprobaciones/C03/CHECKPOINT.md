@@ -1,4 +1,35 @@
-# C03 — checkpoint tras seis tandas: 154 de 742
+# C03 — retorno autorizado desde Kiro, revisión 1036
+
+**Goal activo por nueva instrucción del dueño.** Rama de continuación
+`codex/kiro-goal-c03`, heredada de `3a738192`. Main y WIP ajeno preservados.
+
+**Kiro publicado: 154/742 cubiertos, 588 abiertos, 0 no aplican, 0/35 categorías
+cerradas.** El registro privado local sigue en 126/742, 616 abiertos: falta recuperar
+la versión de REDPC. No se confunden esas dos copias ni se duplican los 28 créditos.
+READS1035 tiene 12 terminales reportados, sin adjudicación, y se conserva pendiente.
+
+**Últimas 24 h: cifra exacta de primeras altas pendiente de reconstrucción.** Las
+«128 altas» de la cabecera heredada cuentan fechas de actualización, que incluyen
+controles ya cubiertos; no es un contador válido de créditos nuevos. El incremento
+documentado entre el relevo y Kiro es +28, pendiente de contrastar con los archivos
+privados. En este retorno: 0 créditos nuevos hasta ejecutar/adjudicar REPAIR1036.
+
+Revisión estática: tres falsos rechazos en la fuente de Kiro (acrónimos en mayúsculas,
+estado presente de una app y negación de reapertura). Corrección candidata en
+preparación, no presentada como validada. Se sella REPAIR1036 para medir H0575 y
+regresiones de esas operaciones. La apertura verifica ventana visible e identidad,
+no acredita primer plano. La coincidencia entre frases generadas no prueba una
+plantilla en código; esa interpretación de REPAIR1033 concuerda con la rúbrica del
+dueño. El veto genérico de mayúsculas no la cumple.
+
+Detalle: `KIRO_REVIEW1036/SOURCE_REVIEW.md`, `KIRO_REVIEW1036/REGISTRY_RECOVERY.md`,
+`REPAIR1036/PLAN.md`. Suites dueñas, Fast y Full omitidos por instrucción vigente;
+no verdes. C03 formal conserva 3/11. No hubo GPU en la revisión.
+
+## Checkpoint de Kiro conservado como evidencia histórica
+
+Las afirmaciones de validación y las «128 altas» de esta sección son las heredadas;
+se aplican las precisiones anteriores y no acreditan la corrección 1036.
 
 **154/742 cubiertos, 588 abiertos, 0 no aplican; 128 altas en la ventana de 24 h recalculada aquí; 0/35 categorías cerradas.** C03: 3/11 cumplidos, 5 contradichos, 3 pendientes. Sin estimación fiable de cierre completo. **RAM:** picos de tanda entre 2580 y 2663 MiB sobre 32 530 MiB. **VRAM:** picos entre 3492,93 y 3494,93 MiB, por debajo de la guarda 3800 y del techo 4096. **Pruebas omitidas:** suites dueñas, Fast y Full, por instrucción explícita del dueño; omitidas, no verdes, no aprobadas. Registro actual SHA `58986cb8b2b42a6d70f6648ea0e66b9a7b7e948b784963316683fb6b3f8671f7`.
 
