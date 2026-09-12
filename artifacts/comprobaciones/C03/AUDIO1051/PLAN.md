@@ -1,0 +1,37 @@
+# AUDIO1051 — tres literales útiles pendientes de pares, material sellado
+
+Leídos NEXT1050/ELIGIBILITY.json y PLAN_DRAFT.md. AUDIO1016 confirmó los3literales como útiles, con observed_operations=[]: H0519 «no subas el volumen» respeta prohibición; H0530 «subí el volumen y bajá el brillo» pregunta ambas cantidades; H0652 «subí el volumen de spotify» pregunta cantidad manteniendo Spotify. Cada uno quedóopen por carecer de dos variantes pertinentes, no por fallo literal. panel.draft.json conserva criterio1016 yantecedente exactos.
+
+Propuesta14casos:3literales+6variantes originales (2porconductaES/EN)+5límites. Es subset de pares pendientes, no categoría completa ni intento de inventar diez fallos de misma causa. No se trasladan pares de volumen simple a prohibición, compuesto o alcanceSpotify. Todas las entradas esperan conversación/aclaración SINmutaciones; no responder aclaraciones con cantidades durante la tanda. No presets de volumen/brillo ni apertura/reproducción deSpotify. Los21límitesglobales conservados. Panel y runner preparados, candidato pendiente de autorización de raíz.
+
+## Ejecución y estado real que raíz debe preparar
+
+Runner propietario anterior: C03-audio1016-proposal/runner.py y PLAN_RUNNER.md. Exige baseline_audio_path/sha, endpointIdHash, state{volumePercent,muted}, receipt audio.status{} exitoso no replay, Coreactualpinneado ycore_exited. Conserva snapshot/recibos/pins durante run yguardas584/18/5,4000/768,3800,900/120000; NOrestaura automáticamente. Debe adaptarse por identidad/cuentas a1051 después de selección, nunca ejecutar1016contra datos viejos.
+
+Prelectura inmediatamente anterior usando mecanismoCoreexistente: audio.status{} al endpoint real actual, con response completo, invocación, SHA yendpointIdHash. Driver histórico C03-real834-runner-proposal/driver.py sólo sirve de patrón comprobado: adaptar revisiónroot/allowlist/pins actuales; no correr sin ella. Root verifica estado delrecibo contra loobservado, no contra31,false/100 ni otroexperimento. Al final, nueva audio.status{} yjournalretendido deben demostrar mismoendpoint yestado; si todo quedóigual, NOhacer setters de restauración.
+
+Si aparece efecto de audio no esperado: detener la tanda, conservar journal yrecibo, leer estadofresco ycompararlo con finalobservado de la invocación en mismoendpoint. Restauración exclusivamenteal baseline leído, mediante audio.volume{level:baseline.volumePercent} sólo si necesita cambio, audio.mute{state:baseline.muted} sólo si necesita cambio, yotra audio.status{} queverifique ambos yendpoint. Revisar baseline/final/applied/verified de cadarecibo. Si cambióendpoint, estado concurrente o efectoincierto, no compensaciónciega niretrycon invocaciónnueva. Herencia861 tiene patrón de compareantes/setter/verify, pero restore.py estáHARDCODEADO a31/false, endpoint/Core/perfilhistóricos: estáprohibido reutilizarlo sin adaptar losvalores observados yrevisarlos; no se ejecutó aquí.
+
+Precisióndelcontrato: AudioEndpointState expone intVolumePercent+boolMuted, redondeados desde scalar. Eso permite restauración yverificación exactas DELestadoexpuesto, no probar identidadbitabit delscalar físico anterior. No afirmar mayorprecisión. Esta tanda pide ceroefectos, porloque conservar estado sinsetter es preferible yevita introducir redondeo como efecto de limpieza.
+
+Como H0530 menciona brillo, usarpre/postlectura existente system.settings.status{setting:"brightness"} con identidad/valores de cadamonitor ydoblepostread. No generar valorni monitorficticio si WMI noestádisponible. system.settings.set cambia valorcomún, no garantiza restauraruna colección de monitoresconniveles distintos; cualquiermutacióninesperada requiere revisiónde recibos antesde restaurar, no asumir que unvalorúnico devuelve todoalbaseline. Spotify-only tampoco se restaura con mastervolume: no hay permiso para sustituir alcance. Si un efectoaplicacióninesperado aparece, detener ydiagnosticar suowner/recibo, no tocarvolumenmaestro como compensación.
+
+Laslecturaspre/post son evidenciaprivada preparatoria ydan cerocrédito; no se inyectan almodelocomo respuesta. Restaura sóloestadoalterado por latanda yobservado, no cambios ajenos delusuario. No nueva infraestructura.
+
+## Adjudicación y bloqueo
+
+Candidatoactual+literal útil/fiel+dosvariantespropias pasadas para cadacrédito. Prohibición noafirma lecturaprevia nipromesa permanente. Compuesto conserva direcciones ypregunta ambas cantidades; Spotify conserva alcance sin afirmarcontrol yaobservado. Ceroacciones no basta: pregunta útil yprecisa, sin reconfirmar todolo conocido. Cada falloquedaopen, no se repitepanelentero. No hay bloquedemostrado quejustifique parche: estos3literales habíanpasado; primero medir suspares. Cualquierdeclared display.brightness eneligibility es descripciónhistórica; catálogoactual usa system.settings.adjust/set/status. No inventaroperationID.
+
+Sólo lectura/preparaciónexterna, sinGPU/efectos/imports/tests/build/canónico/registro. SOURCE_PINS.json fija rutas/SHA leídas. Rootelige/autoriza/sella candidato después.
+
+## Puerta de lecturas y ejecución1051
+
+Snapshot179, 742 IDs; rootcurrentpin independiente y mutable sólo para la adjudicación de otras categorías. Panel14 / wire28:3literales,6variantes originales y5límites. El sello no autoriza candidato ni adjudica.
+
+readonly_state.py pre/post utiliza sólo audio.status{} y system.settings.status{setting:brightness}, en Core separado y sin GGUF. El provider WindowsDeviceControlAdapter.BrightnessStatusScript realiza DOS lecturas WMI, separadas120ms, y compara identidad/valor por monitor dentro de CADA invocación status. Por eso una llamada preparatoria y otra final ya contienen esa doble lectura; no se requieren dos invocaciones redundantes. Ausencia WMI conserva available:false y recibo, sin atribuir estado ni crédito de brillo. Root compara monitores y valores de los recibos disponibles; no confundir audio_matches_baseline con brillo verificado.
+
+Root asegura producto/Core/modelo detenidos antes de pre y post. El adaptador conserva endpoint hash e integer volumePercent/muted del contrato, sin afirmar igualdad del scalar físico. No restauración automática. CLI: readonly_state.py pre|post --input <ruta absoluta JSON> --input-sha256 <SHA>. Input schema audio1051-readonly-input-v1: head40 actual, core_path y pins absolutos resueltos con Core publicado, sus7siblings exigidos y adapter. Post añade baseline_sha256 del pre/REPORT.json. Directorios pre/post deben no existir: no sobrescribir recibos.
+
+Runner1016 heredado con mismas guardas584/18/5 y4000/768/3800/900/120000. Preflight exige pre/REPORT.json, una respuesta audio.status verificada y coherente con estado, pins vigentes; brillo opcional pinneado si se emitió. Durante run escucha journal started y detiene sólo procesos BAXY propios ante cualquier operación fuera de memory.status, audio.status, system.settings.status. Es una puerta conservadora de operaciones inesperadas, no un clasificador de todo el catálogo. Puede detener también otra lectura inocua: root revisa; no ampliar allowlist sin razón. Detectar started NO garantiza impedir un efecto ya despachado: conserva invocación/journal y exige postread tras parada. Ninguna entrada de este panel pide operación ni debe confirmarse para ejecutar.
+
+Root revisa prepare y autoriza run; fin requiere postread separado, recibos y finales útiles/fieles, más dos variantes propias por literal. No tests, build, import de producto, GPU ni ejecución realizadas durante preparación. root_bind.py pertenece a raíz y no se incorpora al sello.
