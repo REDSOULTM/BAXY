@@ -1313,6 +1313,9 @@ def apply_conversation_effect_presentation(
     llm: object,
     *,
     explicit_conversation_contract: bool = False,
+    history: object = None,
+    retired_catalog_effect: bool = False,
+    audit: list[dict[str, object]] | None = None,
 ) -> dict[str, object]:
     """Mark unsupported effects without ever promoting conversation to action."""
 
@@ -1327,8 +1330,40 @@ def apply_conversation_effect_presentation(
         state, _ = llm._verify_semantic_effect_shape(objective)
     except ValueError:
         return decision
+    if audit is not None:
+        audit.append({"name": "conversation_effect_shape", "effect_state": state})
     if state not in {"complete", "not_complete"}:
         return decision
+    # Incompleteness is not a capability verdict. Only a fresh, zero-effect
+    # knowledge turn can use this path; retired observations and previously
+    # selected unsupported decisions retain their existing boundary.
+    reading = read_request(objective)
+    if (
+        state == "not_complete"
+        and not decision.get("effect_operations")
+        and not decision.get("intent_operations")
+        and not retired_catalog_effect
+        and not history
+        and not effect_intent.explicit_non_action_frame(objective)
+        and not effect_intent._negative_action_forms(effect_intent._fold(objective))
+        and not reading.intents & {INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
+        and not unsupported_live_machine_query(objective)
+        and not unsupported_effect_demonstration_request(objective)
+    ):
+        try:
+            question = llm.clarify_after_turn_failure(
+                objective, history=history, timeout=TURN_DECIDE_RECOVERY_BUDGET_SECONDS,
+            )
+        except ValueError:
+            question = ""
+        if _recovery_question_is_valid(question, objective, history):
+            clarified = dict(decision)
+            clarified.update(
+                mode="clarify", operation=None, question=question,
+                conversation_kind="", effect_count="zero",
+                effect_operations=[], effect_verification="not_applicable",
+            )
+            return clarified
     unsupported = dict(decision)
     unsupported["conversation_kind"] = "unsupported"
     return unsupported
@@ -6476,6 +6511,11 @@ def _prepare_turn_result(
         objective,
         llm,
         explicit_conversation_contract=(explicit_conversation_decision is not None),
+        history=history,
+        retired_catalog_effect=bool(
+            effects_before_information_veto or effects_before_domain_grounding
+        ),
+        audit=turn_audit["stages"],
     )
     decision = apply_non_effect_conversation_classification(
         decision,
