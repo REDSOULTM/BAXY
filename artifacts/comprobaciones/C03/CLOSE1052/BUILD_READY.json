@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-12T14:56:25.805561+00:00",
+  "head": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
+  "build_exit": 0,
+  "shutdown_exit": 0,
+  "logs": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1052-build\\build.log": "611eb9f760ac0abbc55bb7d14c630b33762f8a43246cd29469b2fdb30f44a89b",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1052-build\\shutdown.log": "b7964357198bc541e6acce911dad8604545e4d2b7890693469a998ff070f24fe"
+  },
+  "source_fingerprint": "34886d1571a1edc8ed902ec1f80d0aa98cd50c3fd09bf00432611b5839714bac",
+  "app_sha256": "ebfb7a456cb16564c7866ee3e6391ef98f51bf67295221c782065b6a9adfb2e3",
+  "published_core_sha256": "d07f3e2b23aeaeccf2067ab8073e4c6ab38346ffb8c985658caffc39fd4eab4f",
+  "effective_core_sha256": "d07f3e2b23aeaeccf2067ab8073e4c6ab38346ffb8c985658caffc39fd4eab4f",
+  "tests_run": false,
+  "gpu_started": false,
+  "build_method": "main.compile_if_needed(force=False); copy published Core to effective; C:/Users/usuario/.dotnet/dotnet.exe build-server shutdown"
+}

@@ -157,7 +157,7 @@
   "branch": "codex/kiro-goal-c03",
   "checkpoint": "154/742covered,588open,0NA; seis tandas propias: 1029 +3, 1030 0, 1031 invalidada, 1032 +4, 1033 +7, 1034 +10. apps_open 28/54, clock 13/23.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
-  "publishedSourceCommit": "db6f7b2f27b940572cd5d178dc1c6bccca6134ad",
+  "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
   "surveyVerificationCounts": {
     "covered": 179,
     "open": 563,
@@ -179,7 +179,7 @@
   "activeValidation": null,
   "activeRepairAgent": null,
   "currentUnpublishedSource": null,
-  "preparedNextPanel": "CLOSE1052 material preparation and review-instrument proposal",
+  "preparedNextPanel": "CLOSE1052 segmented runner and owned-window fixtures in preparation",
   "preparedNextPanelNote": "No source adoption yet; needs build and owned empty-window observations before reviewed closure.",
   "pendingOwnerClarification": null,
   "ownerLatestInstruction": "Accelerate C03 without automated tests/Fast/Full; no loss of truthful product behavior. Real sealed execution required for coverage.",
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-12T14:50:24.603560+00:00",
+  "utcUpdated": "2026-09-12T14:58:17.871694+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -478,5 +478,30 @@
       "seconds": 77.53199999999924,
       "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
     }
+  },
+  "currentContinuation1052": {
+    "source_head": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
+    "build": {
+      "utc": "2026-09-12T14:56:25.805561+00:00",
+      "head": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
+      "build_exit": 0,
+      "shutdown_exit": 0,
+      "logs": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1052-build\\build.log": "611eb9f760ac0abbc55bb7d14c630b33762f8a43246cd29469b2fdb30f44a89b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1052-build\\shutdown.log": "b7964357198bc541e6acce911dad8604545e4d2b7890693469a998ff070f24fe"
+      },
+      "source_fingerprint": "34886d1571a1edc8ed902ec1f80d0aa98cd50c3fd09bf00432611b5839714bac",
+      "app_sha256": "ebfb7a456cb16564c7866ee3e6391ef98f51bf67295221c782065b6a9adfb2e3",
+      "published_core_sha256": "d07f3e2b23aeaeccf2067ab8073e4c6ab38346ffb8c985658caffc39fd4eab4f",
+      "effective_core_sha256": "d07f3e2b23aeaeccf2067ab8073e4c6ab38346ffb8c985658caffc39fd4eab4f",
+      "tests_run": false,
+      "gpu_started": false,
+      "build_method": "main.compile_if_needed(force=False); copy published Core to effective; C:/Users/usuario/.dotnet/dotnet.exe build-server shutdown"
+    },
+    "next": "Prepare root manifest, segmented runner, one owned empty window per closure and exact manual approval. No CLOSE1052 inference yet.",
+    "registry_sha256": "3089b9ade50ffd12d0bcf1d37ca085978223a52b191010a920176d42b2f24e4c",
+    "survey": 179,
+    "agent_fixture": "apps_intent852",
+    "agent_runner": "kiro_registry1036"
   }
 }
