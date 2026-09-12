@@ -101,7 +101,7 @@ internal sealed class ProductConductor : IAsyncDisposable
         JsonObject expectedArguments,
         TimeSpan timeout,
         CancellationToken cancellationToken,
-        bool allowVerifiedWebSearchPrefix = false)
+        bool allowVerifiedReadPrefix = false)
     {
         cancellationToken.ThrowIfCancellationRequested();
         if (initial.TimedOut || initial.Terminal != ProductTurnTerminal.PublishedFinal
@@ -110,7 +110,7 @@ internal sealed class ProductConductor : IAsyncDisposable
                 observed.Prepared.OperationName, expectedOperation, StringComparison.Ordinal)
             || !JsonNode.DeepEquals(
                 JsonNode.Parse(observed.Prepared.Arguments.GetRawText()), expectedArguments)
-            || !ReferenceEquals(observed, _viewModel.CaptureConductorConfirmation(allowVerifiedWebSearchPrefix)))
+            || !ReferenceEquals(observed, _viewModel.CaptureConductorConfirmation(allowVerifiedReadPrefix)))
         {
             return Task.FromResult(RejectConfirmation("confirmation_expectation_not_met"));
         }

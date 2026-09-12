@@ -574,7 +574,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     internal bool HasPendingPlan => _mindPlans.HasPending;
 
-    internal PendingOperationConfirmation? CaptureConductorConfirmation(bool allowVerifiedWebSearchPrefix = false)
+    internal PendingOperationConfirmation? CaptureConductorConfirmation(bool allowVerifiedReadPrefix = false)
     {
         if (Environment.CurrentManagedThreadId != _uiThreadId
             || _isDisposed || !IsInputEnabled || _coreClient?.IsReady != true
@@ -583,7 +583,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             || _memoryTurns.HasConfirmation || _memoryTurns.HasPendingOperation
             || _pendingAudioOperation is not null || _pendingNoteInteraction.Current is not null
             || _mindPlans.Current is not { } execution
-            || !ConductorConfirmationShape(execution, allowVerifiedWebSearchPrefix)
+            || !ConductorConfirmationShape(execution, allowVerifiedReadPrefix)
             || execution.ReplanCount != 0 || execution.PendingEffectMayHaveOccurred
             || execution.Confirmation is not { ReconciliationRequired: false } confirmation
             || !ReferenceEquals(execution.PendingOperation, confirmation.Prepared)
@@ -599,34 +599,80 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     private static bool ConductorConfirmationShape(
         PendingMindPlanExecution execution,
-        bool allowVerifiedWebSearchPrefix)
+        bool allowVerifiedReadPrefix)
     {
         if (execution.Steps.Count == 1 && execution.NextIndex == 0
             && execution.Observations.Count == 0 && execution.CompletedMessages.Count == 0)
         {
-            return true;
+            // Reviewed closure must carry the window observation to its reviewer.
+            return !allowVerifiedReadPrefix || execution.CurrentStep.Operation != "app.close";
         }
 
         // CompleteStep records completed, verified responses. Failed/uncertain
         // steps retain a boundary or replan; Capture rejects replans separately.
-        return allowVerifiedWebSearchPrefix
-            && execution.Steps.Count == 2 && execution.NextIndex == 1
-            && execution.Steps[0].Operation == "web.search"
-            && execution.CurrentStep.Operation is "browser.navigate" or "browser.navigate.named"
-            && execution.PendingOperation?.OperationName == execution.CurrentStep.Operation
-            && execution.CompletedMessages.Count == 1
-            && execution.Observations.Count == 1
-            && execution.Observations[0] is JsonObject observation
-            && (string?)observation["stepId"] == execution.Steps[0].Id
-            && (string?)observation["operation"] == "web.search"
-            && (string?)observation["status"] == OperationStatuses.Completed
-            && (bool?)observation["verified"] == true
-            && observation["result"] is JsonObject;
+        if (!allowVerifiedReadPrefix
+            || execution.Steps.Count != 2 || execution.NextIndex != 1
+            || execution.PendingOperation?.OperationName != execution.CurrentStep.Operation
+            || execution.CompletedMessages.Count != 1
+            || execution.Observations.Count != 1
+            || execution.Observations[0] is not JsonObject observation
+            || (string?)observation["stepId"] != execution.Steps[0].Id
+            || (string?)observation["operation"] != execution.Steps[0].Operation
+            || (string?)observation["status"] != OperationStatuses.Completed
+            || (bool?)observation["verified"] != true
+            || observation["result"] is not JsonObject result)
+        {
+            return false;
+        }
+
+        if (execution.Steps[0].Operation == "web.search")
+        {
+            return execution.CurrentStep.Operation is "browser.navigate" or "browser.navigate.named";
+        }
+
+        if (execution.Steps[0].Operation is not ("window.resolve" or "window.active")
+            || execution.CurrentStep.Operation != "app.close"
+            || execution.PendingOperation is not { } prepared
+            || prepared.Arguments.ValueKind != JsonValueKind.Object
+            || prepared.Arguments.EnumerateObject().Count() != 1
+            || !prepared.Arguments.TryGetProperty("windowId", out JsonElement target)
+            || target.ValueKind != JsonValueKind.String
+            || string.IsNullOrWhiteSpace(target.GetString())
+            || result["windows"] is not JsonArray { Count: 1 } windows
+            || windows[0] is not JsonObject window
+            || result["count"] is not JsonValue countValue
+            || !countValue.TryGetValue(out int count) || count != 1
+            || window["windowId"] is not JsonValue identityValue
+            || !identityValue.TryGetValue(out string? windowId)
+            || !string.Equals(windowId, target.GetString(), StringComparison.Ordinal)
+            || window["processId"] is not JsonValue processValue
+            || !processValue.TryGetValue(out int processId) || processId <= 0)
+        {
+            return false;
+        }
+
+        if (execution.Steps[0].Operation == "window.active")
+        {
+            return window["foreground"] is JsonValue foregroundValue
+                && foregroundValue.TryGetValue(out bool foreground) && foreground;
+        }
+
+        // One item on a truncated/later page does not establish one candidate.
+        return result["complete"] is JsonValue completeValue
+            && completeValue.TryGetValue(out bool complete) && complete
+            && result["offset"] is JsonValue offsetValue
+            && offsetValue.TryGetValue(out int offset) && offset == 0
+            && result["observedCount"] is JsonValue observedValue
+            && observedValue.TryGetValue(out int observedCount) && observedCount == 1
+            && result["totalCount"] is JsonValue totalValue
+            && totalValue.TryGetValue(out int totalCount) && totalCount == 1
+            && result["hasMore"] is JsonValue moreValue
+            && moreValue.TryGetValue(out bool hasMore) && !hasMore;
     }
 
-    internal JsonArray CaptureConductorWebSearchEvidence()
+    internal JsonArray CaptureConductorReadEvidence()
     {
-        if (CaptureConductorConfirmation(allowVerifiedWebSearchPrefix: true) is null
+        if (CaptureConductorConfirmation(allowVerifiedReadPrefix: true) is null
             || _mindPlans.Current is not { NextIndex: 1 } execution
             || execution.Observations[0] is not JsonObject observation)
         {

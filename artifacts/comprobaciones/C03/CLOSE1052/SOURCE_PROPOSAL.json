@@ -1,0 +1,22 @@
+{
+  "base_head": "7b13a91f3adef7ab4875ecb7e8490ec004382df5",
+  "status": "external_proposal_only",
+  "files": [
+    {
+      "path": "src/Baxy.App/MainWindowViewModel.cs",
+      "base_sha256": "8d644fb2806bcaaa82f957f36ac6f8bab5754e648ac7d31821db81bc76834a7d",
+      "proposal_sha256": "7cca118cc4d4d2f271d1b498f1251eaf9b2019aea8881c707d41bb02bfc463fe"
+    },
+    {
+      "path": "src/Baxy.App/ProductConductor.cs",
+      "base_sha256": "e70c69c422386effc60c14559614b9edd30f71009a81ebadf6196f38c34fea75",
+      "proposal_sha256": "7a688bdadee1f8002b426b78a6b4068d51539b40c6e3c9f477bfaae2cecdb6c4"
+    },
+    {
+      "path": "src/Baxy.App/ProductConductorHost.cs",
+      "base_sha256": "a663a9b8651c575804455cd3af92e5174e37e04b451f77549b917effec5f6772",
+      "proposal_sha256": "be005348749b572e7abb62b249f80db54081936b6eab4fa931c839c328860298"
+    }
+  ],
+  "patch_sha256": "f0e6a3c8a379363992790177af95bc36aaa8bc0b473f174420232fb8aca83c7a"
+}

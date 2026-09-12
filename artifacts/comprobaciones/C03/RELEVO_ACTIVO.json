@@ -164,7 +164,7 @@
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "2516a3ea3a10a000c50e511015fbd3a93970702b52383feb0716ef2fba870518",
+  "surveyRegistrySha256": "3089b9ade50ffd12d0bcf1d37ca085978223a52b191010a920176d42b2f24e4c",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
@@ -175,12 +175,12 @@
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
-  "latestProductRun": "SOCIAL1050",
+  "latestProductRun": "AUDIO1051",
   "activeValidation": null,
   "activeRepairAgent": null,
   "currentUnpublishedSource": null,
-  "preparedNextPanel": "AUDIO1051 in preparation",
-  "preparedNextPanelNote": "3 literals +6 pertinent variants +5 boundaries; current audio/brightness observations required. All cases expect no mutations.",
+  "preparedNextPanel": "CLOSE1052 material preparation and review-instrument proposal",
+  "preparedNextPanelNote": "No source adoption yet; needs build and owned empty-window observations before reviewed closure.",
   "pendingOwnerClarification": null,
   "ownerLatestInstruction": "Accelerate C03 without automated tests/Fast/Full; no loss of truthful product behavior. Real sealed execution required for coverage.",
   "nextProductBlocker": null,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-12T14:35:27.567988+00:00",
+  "utcUpdated": "2026-09-12T14:50:24.603560+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -454,6 +454,28 @@
       "gpu_telemetry_available": true,
       "ram_peak_mib": 2510.20703125,
       "seconds": 86.625,
+      "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+    }
+  },
+  "currentContinuation1051": {
+    "head": "990946e035b64426d3c0c7e5b5a4a0e3a1e9b1c1",
+    "registry_sha256": "3089b9ade50ffd12d0bcf1d37ca085978223a52b191010a920176d42b2f24e4c",
+    "survey": 179,
+    "quality": {
+      "pass_count": 7,
+      "fail_count": 7,
+      "total": 14
+    },
+    "new_credits": 0,
+    "next": "CLOSE1052 proposal3Appfiles; AUDIO1053 diagnosis external.",
+    "processes": "Product/Core/GPU exited; post-state unchanged, no restoration.",
+    "resources": {
+      "utc": "2026-09-12T14:47:46.929320+00:00",
+      "violations": [],
+      "gpu_peak_mib": 3497.55859375,
+      "gpu_telemetry_available": true,
+      "ram_peak_mib": 2390.4609375,
+      "seconds": 77.53199999999924,
       "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
     }
   }

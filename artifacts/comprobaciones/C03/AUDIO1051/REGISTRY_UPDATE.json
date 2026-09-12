@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-12T14:50:24.603560+00:00",
+  "before_sha256": "2516a3ea3a10a000c50e511015fbd3a93970702b52383feb0716ef2fba870518",
+  "after_sha256": "3089b9ade50ffd12d0bcf1d37ca085978223a52b191010a920176d42b2f24e4c",
+  "covered": 179,
+  "open": 563,
+  "not_applicable": 0,
+  "new_credits": 0,
+  "first_coverage_grants": [],
+  "updated_causes": [
+    "H0519",
+    "H0530",
+    "H0652"
+  ],
+  "backup": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1051-proposal\\private\\requirements-before-adjud179.jsonl",
+  "immutable_fields_preserved": true
+}

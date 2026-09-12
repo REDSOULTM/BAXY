@@ -329,7 +329,7 @@ internal static class ProductConductorHost
         ProductTurnResult initial = await conductor.TurnAsync(text, timeout, cancellationToken)
             .ConfigureAwait(true);
         PendingOperationConfirmation? observed = conductor.ViewModel
-            .CaptureConductorConfirmation(allowVerifiedWebSearchPrefix: true);
+            .CaptureConductorConfirmation(allowVerifiedReadPrefix: true);
         if (observed is null && !initial.Posterior.HasPendingPlan)
         {
             // A genuine non-confirming result has one admission/final, not a
@@ -344,7 +344,7 @@ internal static class ProductConductorHost
         if (observed is null || initial.TimedOut
             || initial.Terminal != ProductTurnTerminal.PublishedFinal
             || initial.Diagnostic is not null
-            || observed.Prepared.OperationName is not ("browser.navigate" or "browser.navigate.named"))
+            || observed.Prepared.OperationName is not ("browser.navigate" or "browser.navigate.named" or "app.close"))
         {
             return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
         }
@@ -368,8 +368,9 @@ internal static class ProductConductorHost
             ["missionId"] = prepared.MissionId,
             ["invocationId"] = prepared.InvocationId,
             ["expiresAtUtc"] = observed.ExpiresAtUtc.ToString("O"),
-            ["webSearchObservations"] = conductor.ViewModel.CaptureConductorWebSearchEvidence(),
         };
+        proposal[prepared.OperationName == "app.close" ? "windowObservations" : "webSearchObservations"] =
+            conductor.ViewModel.CaptureConductorReadEvidence();
         try
         {
             ValidateReviewDirectory(directory, profileDirectory);
@@ -400,7 +401,7 @@ internal static class ProductConductorHost
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 if (!ReferenceEquals(observed, conductor.ViewModel
-                    .CaptureConductorConfirmation(allowVerifiedWebSearchPrefix: true)))
+                    .CaptureConductorConfirmation(allowVerifiedReadPrefix: true)))
                 {
                     return await RejectAsync("review_pending_changed").ConfigureAwait(true);
                 }
@@ -444,10 +445,10 @@ internal static class ProductConductorHost
                     ProductTurnResult final = await conductor.ConfirmPendingAsync(
                         initial, observed, prepared.OperationName, arguments,
                         timeout - elapsed.Elapsed, cancellationToken,
-                        allowVerifiedWebSearchPrefix: true).ConfigureAwait(true);
+                        allowVerifiedReadPrefix: true).ConfigureAwait(true);
                     await EmitTurnAsync(final, capture, cancellationToken, caseId, "final")
                         .ConfigureAwait(true);
-                    // One reviewed navigation only. Never auto-approve a suffix.
+                    // One reviewed effect only. Never auto-approve a suffix.
                     return !final.TimedOut
                         && final.Terminal == ProductTurnTerminal.PublishedFinal
                         && !final.Posterior.HasPendingPlan && !final.Posterior.HasCompositionError;
