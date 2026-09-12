@@ -1,12 +1,12 @@
 {
-  "utc": "2026-09-12T01:36:29.615753+00:00",
-  "covered": 123,
-  "open": 619,
+  "utc": "2026-09-12T01:43:36.059531+00:00",
+  "covered": 126,
+  "open": 616,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 95,
+  "covered_updated_last_24h": 98,
   "updated_recent_ids": [
     "H0017",
     "H0020",
@@ -32,9 +32,11 @@
     "H0166",
     "H0168",
     "H0169",
+    "H0172",
     "H0184",
     "H0194",
     "H0207",
+    "H0214",
     "H0216",
     "H0233",
     "H0258",
@@ -101,10 +103,11 @@
     "H0690",
     "H0710",
     "H0725",
+    "H0726",
     "H0729",
     "H0736"
   ],
-  "confirmed_new_grants_last_24h": 95,
+  "confirmed_new_grants_last_24h": 98,
   "first_grant_date_not_distinguished_for_recent_ids": [],
   "categories": [
     {
@@ -172,19 +175,19 @@
       "not_applicable": 0
     },
     {
-      "category": "knowledge_reasoning",
-      "label": "Conocimiento, razonamiento y creatividad verbal",
-      "total": 37,
-      "covered": 9,
-      "open": 28,
-      "not_applicable": 0
-    },
-    {
       "category": "video_streaming",
       "label": "Vídeo y series",
       "total": 26,
       "covered": 0,
       "open": 26,
+      "not_applicable": 0
+    },
+    {
+      "category": "knowledge_reasoning",
+      "label": "Conocimiento, razonamiento y creatividad verbal",
+      "total": 37,
+      "covered": 12,
+      "open": 25,
       "not_applicable": 0
     },
     {
@@ -388,8 +391,8 @@
       "not_applicable": 0
     }
   ],
-  "requirements_sha256": "cde1f5b5180f79cdcba2978fa98aae14f4826e054341c5579e161e6fdfca8b34",
-  "registry_sha256": "cde1f5b5180f79cdcba2978fa98aae14f4826e054341c5579e161e6fdfca8b34",
+  "requirements_sha256": "1a7ec3d381e4d972cb0bbdf9c55ed632216618e932614e31d2ea602a74a3eae6",
+  "registry_sha256": "1a7ec3d381e4d972cb0bbdf9c55ed632216618e932614e31d2ea602a74a3eae6",
   "classification_source": "SURVEY_TAXONOMY846.json",
   "latest_adjudications": [
     "APP_OPEN847/ROOT_ADJUDICATION.json",
@@ -431,7 +434,8 @@
     "AUDIO1016/ROOT_ADJUDICATION.json",
     "AUDIO1020/ROOT_ADJUDICATION.json",
     "AGENDA1021/ROOT_ADJUDICATION.json",
-    "SYSTEM1022/ROOT_ADJUDICATION.json"
+    "SYSTEM1022/ROOT_ADJUDICATION.json",
+    "KNOWLEDGE1025/ROOT_PARTIAL_CREDIT.json"
   ],
   "equal_maximum_open_next_selection": "Higher categories retain recorded prerequisites; agenda29 repair1024 pending. Knowledge28 has eligible sealed1025 next; system19 after10credits.",
   "latest_product_run": {

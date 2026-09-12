@@ -1,0 +1,126 @@
+{
+  "schema": "c03-knowledge1025-root-partial-credit-v1",
+  "utc": "2026-09-12T01:43:36.059531+00:00",
+  "adjudicator": "root",
+  "source_commit": "20dab7edcd34ce87eff2d176613bb5ae4e968e1b",
+  "session_id": 36967,
+  "exit_existed_at_write": false,
+  "observed_terminals": 17,
+  "coverage_added": 3,
+  "credit_pairs": {
+    "H0172": [
+      "knowledge1025-dev-01",
+      "knowledge1025-dev-02"
+    ],
+    "H0214": [
+      "knowledge1025-dev-01",
+      "knowledge1025-dev-02"
+    ],
+    "H0726": [
+      "knowledge1025-dev-01",
+      "knowledge1025-dev-02"
+    ]
+  },
+  "variant_scope": "Generalization of named concept explanation across programming and astronomy; each literal independently checked for correctness. Does not credit entire knowledge domain. Dev03 failed and remains failed.",
+  "sources": [
+    "https://www.nasa.gov/image-article/beaming-with-the-light-of-millions-of-suns/"
+  ],
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0172",
+      "literal": "qué es un agujero negro",
+      "kind": "historical_literal",
+      "group": "concept_explanation",
+      "criterion": "Explain the explicitly named concept accurately and accessibly, with a coherent definition and relevant mechanism/example. No invented facts, unrequested current news, PC inventory or execution. The answer must actually explain, not just ask a preference or offer to explain later.",
+      "verdict": "pass",
+      "reason": "Definición básica correcta de horizonte sin escape y colapso estelar como mecanismo.",
+      "coverage_added": true,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Un agujero negro es una región del espacio donde la gravedad es tan intensa que nada, ni siquiera la luz, puede escapar de ella. Se forma cuando una estrella masiva colapsa al final de su vida.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 1,
+      "case_id": "H0214",
+      "literal": "qué es una GPU",
+      "kind": "historical_literal",
+      "group": "concept_explanation",
+      "criterion": "Explain the explicitly named concept accurately and accessibly, with a coherent definition and relevant mechanism/example. No invented facts, unrequested current news, PC inventory or execution. The answer must actually explain, not just ask a preference or offer to explain later.",
+      "verdict": "pass",
+      "reason": "Describe GPU y su función gráfica correctamente.",
+      "coverage_added": true,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Una GPU, o Unidad de Procesamiento Gráfico, es una pieza de hardware que procesa y renderiza imágenes, videos y gráficos en pantallas, ideal para tareas como juegos, edición de video o renderizado 3D.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 2,
+      "case_id": "H0726",
+      "literal": "qué es una lista enlazada",
+      "kind": "historical_literal",
+      "group": "concept_explanation",
+      "criterion": "Explain the explicitly named concept accurately and accessibly, with a coherent definition and relevant mechanism/example. No invented facts, unrequested current news, PC inventory or execution. The answer must actually explain, not just ask a preference or offer to explain later.",
+      "verdict": "pass",
+      "reason": "Define nodos/enlace al siguiente, inserción/eliminación y coste de enlaces frente a arreglo estático.",
+      "coverage_added": true,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Una lista enlazada es una estructura de datos en la que cada elemento (nodo) contiene un valor y una referencia (enlace) al siguiente elemento de la lista. Es flexible y eficiente para agregar o eliminar elementos, pero requiere más memoria que una lista estática.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 10,
+      "case_id": "knowledge1025-dev-01",
+      "literal": "Explícame de forma sencilla qué es una pila en programación y para qué sirve.",
+      "kind": "original_development_variant",
+      "group": "concept_explanation",
+      "criterion": "Explain the explicitly named concept accurately and accessibly, with a coherent definition and relevant mechanism/example. No invented facts, unrequested current news, PC inventory or execution. The answer must actually explain, not just ask a preference or offer to explain later.",
+      "verdict": "pass",
+      "reason": "Analogía de pila explica extracción por cima y aplicaciones a llamadas/recursión.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Una pila es como una pila de libros: si pones un libro en la cima, para sacarlo tienes que quitar todos los que están encima. En programación, sirve para guardar y recuperar datos en orden, como cuando usas funciones o manejas errores. Es muy útil para hacer llamadas recursivas o gestionar el flujo de ejecución.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 11,
+      "case_id": "knowledge1025-dev-02",
+      "literal": "What is a neutron star? Give a short explanation of the basic idea.",
+      "kind": "original_development_variant",
+      "group": "concept_explanation",
+      "criterion": "Explain the explicitly named concept accurately and accessibly, with a coherent definition and relevant mechanism/example. No invented facts, unrequested current news, PC inventory or execution. The answer must actually explain, not just ask a preference or offer to explain later.",
+      "verdict": "pass",
+      "reason": "Describe remanente de supernova denso; orden de magnitud de cucharadita respaldado por NASA.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "A neutron star is the incredibly dense remnant left after a massive star explodes in a supernova. It's made mostly of neutrons packed together tightly—so dense that a teaspoon of it would weigh more than a billion tons.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    }
+  ],
+  "tests_run": false
+}

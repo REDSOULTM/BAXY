@@ -36,39 +36,38 @@
   "goalStatus": "active",
   "confirmedAtUtc": "2026-09-12T01:36:29.615753+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "123/742covered,619open,0NA;95altas24h;0/35categorías,C03 3/11.",
-  "continuation": "Review knowledge1025 material and runner; source1019 unchanged. Agenda1024 proposal reviewed, not integrated or measured.",
+  "checkpoint": "126/742covered,616open,0NA;98altas24h;1025partial.",
+  "continuation": "OWNER PAUSED C03 for transfer to Opus5 on another PC. Do not resume inference, repairs or auto-goal work unless explicitly resumed. 1025 collected ad4693,25terminals exit0;3credits already recorded, full root adjudication pending. Prepare portable handoff only.",
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "20dab7edcd34ce87eff2d176613bb5ae4e968e1b",
   "surveyVerificationCounts": {
-    "covered": 123,
-    "open": 619,
+    "covered": 126,
+    "open": 616,
     "not_applicable": 0
   },
-  "surveyRegistrySha256": "cde1f5b5180f79cdcba2978fa98aae14f4826e054341c5579e161e6fdfca8b34",
+  "surveyRegistrySha256": "1a7ec3d381e4d972cb0bbdf9c55ed632216618e932614e31d2ea602a74a3eae6",
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
-  "surveyCoverageLast24h": 95,
-  "workStatus": "system1022_adjudicated",
+  "surveyCoverageLast24h": 98,
+  "workStatus": "paused_by_owner_for_opus5_handoff",
   "goalStatusNote": "Owner waived automated suites/Fast/Full; scope blocker resolved. No new blocked condition.",
   "previousGoalTurnClassification": "progress",
   "previousGoalTurnClassificationReason": "Previous goal turn106→112 verifiedliteralcredits; repaired1019 and executed1016/1020, restoredaudio andpublishedd97670db. Currentobjective rereadce4772; repo/processstate7ea145 confirmsnoGPU/Core/build andsamepublishedHEAD.",
   "objectiveFile": "C:/Users/usuario/.codex/attachments/310753b7-9a38-4a57-951e-007fdcf7693a/goal-objective.md",
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
   "latestProductRun": {
-    "batch": 1022,
-    "state": "adjudicated",
-    "sessionId": 74955,
-    "collection": "f42d77",
+    "batch": 1025,
+    "state": "collected_partial_adjudication",
+    "sessionId": 36967,
+    "collection": "ad4693",
     "executed": 25,
-    "passed": 21,
-    "failed": 4,
-    "coverageAdded": 10
+    "coverageAdded": 3,
+    "fullAdjudicationPending": true
   },
   "activeValidation": null,
-  "activeRepairAgent": "apps_intent852:agenda1024;prepare934:system1022 runner",
+  "activeRepairAgent": null,
   "currentUnpublishedSource": null,
   "preparedNextPanel": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-system1022-proposal\\SEAL.json",
   "lastValidation": {
@@ -254,5 +253,7 @@
     "sessionId": 63721,
     "path": "C:/Users/usuario/AppData/Local/BAXY/C03-web-build1013-private",
     "tests_run": false
-  }
+  },
+  "executionPausedByOwner": true,
+  "pauseRequestedAtUtc": "2026-09-12T01:44:57.196913+00:00"
 }
