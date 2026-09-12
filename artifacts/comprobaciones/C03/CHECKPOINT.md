@@ -1,3 +1,25 @@
+## AGENDA1101 — estado vigente 2026-09-12T21:53:11.2194319Z
+
+Parcial: 1 aprobados, 6 fallidos, 8 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 197/742 | 545 | 0 | >=71 | 0/35 |
+
+Procedencia de primeras altas: Al menos 71 primeras altas verificadas: 28 del relevo Kiro y 43 del retorno hasta DIALOGUE1093. No se cuentan revalidaciones ni verification_updated_at.
+
+Siguiente acción: Integrar AGENDA1103: recolocar la llamada existente de aclaración temporal antes de la guarda que impedía alcanzarla; sin nuevas reglas ni efectos. Medir WEB1102 según masa y disponibilidad mientras se prepara AGENDA1104 con nuevo candidato y pares antes de seis literales. Los fallos de composición siguen separados. Sin tests por instrucción del dueño.
+
+Evidencia: `artifacts/comprobaciones/C03/AGENDA1101/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 184.63 s acumulados; pico GPU 3497.56 MiB; pico RAM 1694.97 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 7; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque AGENDA1101 precedente. -->
+
 ## FILES1099 — estado vigente 2026-09-12T21:35:32.1366154Z
 
 Parcial: 1 aprobados, 5 fallidos, 3 sin ejecutar; 0 créditos.

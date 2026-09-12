@@ -1,0 +1,318 @@
+[
+  {
+    "index": 6,
+    "case_id": "agenda1097-dev-01",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Volvió a pedir una hora ya indicada.",
+    "observation_note": "La reparación no mejoró esta variante; sin operaciones adicionales.",
+    "final_sha256": "70bb33976201de548be7ed0e24300e52fce7dbd1f5491a5d870bbb10b0e4238f",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-06\\EXIT.json": "c80a99ebffa3c52185753e490a5a3c1938f2ffa065202c76b9717ab9538e1d3f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-06\\RESOURCES.json": "9d9e40af46ba99311fbc98ba741ef86af149cf01efe274e32cc03f0c425a973e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\profile-owner-06.json": "6c93638749b1542b12dc2e5fa8fabcd6dc11b8d130f76184788e5a971b0c2c25",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-06\\PREREG.json": "df9923dfeb91de3d007082e9971916cb029c8e9723f92d5c9df6a8cc253fa029",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-06\\capture\\events.jsonl": "4997ea320ca8e8af37a6c3fa9273e60e7a18b3eac3a01054bbab50ce63c9b523",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-06\\turns.jsonl": "36c6f77a69ff698aa7ef20cd0a7cac0d86ce4f4fdf374b05487b6f89fc773984",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\fixture-06.json": "0a1c4cae2cdb73a52a1725b22fd83c07781467edba945b8d4ec49b38d45556ee",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\root_case.py": "95a14135b12fe517a6ee571273d4c193ace74201a538ba9af2af9f5b6f710163",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\context-06.json": "b6f7d52c7fcd3c9c887bb1baa604bf8805e07e790e6e4f7cc1a86a0b1e6aa99a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\context-prelaunch-06.json": "1cdd6dc68b1fa5766310b5c16f5ee15afba20ffcb8c94b1cc22486a19f5277e2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-06\\case-observations.json": "7de0bfa3fe185b4018475c971d59458125cac11b9a9ee5d46c7dcfd0d3847df9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-06\\journal-before.json": "972dd649e9d494395ca594d2c3179d12f8989a414f9bd63b52f75d934fcfaef8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-06\\journal-after.json": "0905581d72c45435ce92371c85a38c7435736c00dcfef45427f10adae75499c3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-06\\journal.snapshot.jsonl": "5bf8b249ab704aeb241bf27678bbb628eae5dd100e801e7e84a335ce195d0a1f"
+    },
+    "terminal_kind": "published_final",
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "681c4e9f-e950-435c-bc5f-d6c69019e37c",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 8,
+    "case_id": "agenda1097-dev-07",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Promesa de recordatorio no creado y ausencia de aclaración.",
+    "observation_note": "La reparación no mejoró esta variante; sin operaciones adicionales.",
+    "final_sha256": "54459df8b2560940e9a2fc31ba3906ec649d47a31622adaee7f7486eff54a987",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-08\\EXIT.json": "86e8db392f4fa14f8d84063f756e2356c32160dfdfd5d4a983f7b30cc15088a8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-08\\RESOURCES.json": "bff3625624b3ca62db4604455c2b5fbfa855bc6c7a8b8093a6ff0243fabc0637",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\profile-owner-08.json": "fbecceb16cb5155d63fab2cb4e594306d1ce8802e8800cc0603cbadde421a0bd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-08\\PREREG.json": "c6537f5b981485bba828fac6f12dbb9616e431858e0392f5881554c490b5b38e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-08\\capture\\events.jsonl": "13836c02a04d0e0617c08505da28151d46acebe07a6b611e2d8109dee8b1b1a9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-08\\turns.jsonl": "37869fd9ad99ffa2f07f5bc9ee89e6e55944def67d4d0fcc97faa4c3ea53acfc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\fixture-08.json": "45546ff3b05296b21bc219396a2787e871a5090187d096eccb87761ec5213b11",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\context-08.json": "7decb34de76ed1ba477de7b0afe4f9a0757622b2b3cd0101af89d8346a2957ff",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\context-prelaunch-08.json": "456b1bfaa7de23d230a20a5e809edbc545bc035d497fa56d70bac0ad3bdb1e51",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-08\\case-observations.json": "76dfdeda70d005292bf9b10b6469bca9dc3586ba324c7c5e9a5c5df29f4f0651",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-08\\journal-before.json": "b0ae6a916b3ca1090ddd2c2db4fd66e62eb511188f4244de13df2b2716d2d860",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-08\\journal-after.json": "3de0338748045224b72daa7050bf1919873a29edb269d2c6ae815f69f5e15e27",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-08\\journal.snapshot.jsonl": "eb16a79736c1c4c24a0a0da0577901168b062addd3db04f840525bc4bfa6c2f0"
+    },
+    "terminal_kind": "published_final",
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "9f2acdc3-5c30-48be-a2af-17fc02d38ca4",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 10,
+    "case_id": "agenda1097-boundary-01",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Respuesta inconexa ante prohibición explícita.",
+    "observation_note": "Sin programación, pero la respuesta no es útil.",
+    "final_sha256": "c84b7401c1fa378c9ac67bcb3d87e9369ca2f7cdf82c7cd75345d5585998da40",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-10\\EXIT.json": "b23d7c7b612a4cbc234d0b510fa90dc2c6b62a9a3270af10becc2c121d3f60fa",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-10\\RESOURCES.json": "111530e9f624e6a39600061028fc26e4397d5189c2ae9f7c4982d548fb34042d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\profile-owner-10.json": "76c7ed0e329ae177a1774a00eaa56a8bf00eb52712dfc2e42607b89a1aef318a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-10\\PREREG.json": "29fa5fbf2d04eee0d642110b5778d446cb8e468d7b839e6faa31de0cf9e33380",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-10\\capture\\events.jsonl": "88c496267ec538bdf292e4e077168b24445d2b2d9af19fcc3d3940b13ec447c9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-10\\turns.jsonl": "1cac3f9d192c50359d3fc85b35dee93b282f2b1a30eae93582c276c7a11b7326",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\fixture-10.json": "8d079663e289058ed814b6beedb315221dabaa09914120a40d038f19eeeebc9b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\context-10.json": "10f3580b6e3868214a2b6ab4ee50e0912cffe02cbbd61b240e49087a3c10773a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\context-prelaunch-10.json": "6e9625b13251e0822246c98558e82af9eb66ab3c9ce78245e17f5c8a116bddfc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-10\\case-observations.json": "bf5f138f86ccc8169d620d944cf0f76f2921d0d14d7a75af5bcaf1110f6d6ccc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-10\\journal-before.json": "a25a15eaf4c50db913d56f681e0669da6e91204b091710a3d1e74824dc18d252",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-10\\journal-after.json": "79ba1163ee5127da5088c812c78e1b94454b287d20cee6ee212687f9a1d2a136",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-10\\journal.snapshot.jsonl": "d098599acca515399329001ad5e687c253b216df16ee7430f02ed251dedd6c7d"
+    },
+    "terminal_kind": "published_final",
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "a3a5809e-b40f-4fc4-b4fe-a0d92f38116b",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 11,
+    "case_id": "agenda1097-boundary-02",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Añadió un período temporal ausente en la cita.",
+    "observation_note": "Explicación no fiel aunque no hubo programación.",
+    "final_sha256": "7148f8a1d2df8f672a3b8e1f5ab159c83d6b3238b375c7d8d4afc0a3f47d26cd",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-11\\EXIT.json": "77a8c7f94996f88f17859afb2942417cc42836ec52965626a0c1dc62fd6294b6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-11\\RESOURCES.json": "66a0dc982957fa0708f983e4ffe2576a661568ce4716f22d8f6ea9a4400d6394",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\profile-owner-11.json": "a1c3593876c543b4d42f05db188bd3135c748bd16578eb320a2f5d10dfc0f78f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-11\\PREREG.json": "c826fbf92332987308e6d316fa28c96241a31390a2ee3e210a2e19bdd055a663",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-11\\capture\\events.jsonl": "29b8802805004ec5769519685f004b2870a9dcdb2e278ac4c4aec59f336f5546",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-11\\turns.jsonl": "48adacb2b5e64f89ac4bca688142ea5db207b21373ddfdc504aacc7c3279f3e8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\fixture-11.json": "9cfd64bea62be96e0245672450f9ec7bcd80fa5c8cc8ae1acf9f58105a5a66ba",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\context-11.json": "da15ff90ae38734ebb42ca0b57e5b394bd807c78872959d5e43b5ae8ec477c6e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\context-prelaunch-11.json": "b5f49f3531fa02f3c5a512ebd6ac3efcae44c53fe274d24960950bdea409f6f6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-11\\case-observations.json": "32c2c4e1954ba80b97abb48195c6656696df2db8b0d1f3d8af402b5b2d54c83c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-11\\journal-before.json": "b55b39d52ca0be833f6c91cd1af44b43c66ff536a8ff8aafcc42906252863c45",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-11\\journal-after.json": "ce1bc7107b469ed03dc2510185677bbed079d1c50121f1288f69901eb128ebb5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-11\\journal.snapshot.jsonl": "5a2c1d78d03e989034c3670c1d024077633c1647fdfe10a68b63e9e0d52d8288"
+    },
+    "terminal_kind": "published_final",
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "8baed4b6-2961-4cda-b338-a8ec8663231d",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 12,
+    "case_id": "agenda1097-boundary-03",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Trató una hipótesis como solicitud fuera de alcance.",
+    "observation_note": "Respuesta no pertinente; sin programación.",
+    "final_sha256": "015eaffb6746cd040355eced13779eda51cd7db7d6a8acb0f3daf49f4c0dc693",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-12\\EXIT.json": "d0ef58415df4302566ae9068916e0c241d76dd12ff36553bf143b787f64ba221",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-12\\RESOURCES.json": "1b0ab37c51252ac458e88baf263012cd191515b819d5bbcac4a88d90b99b2682",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\profile-owner-12.json": "0897a2943b71dea25ec50bdbbdac068b73cc1fa0b7613d78c1b868684b6e0f53",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-12\\PREREG.json": "5b1afcef62e6592a5046984397ac7e218762b3d81ee46c283e3a3d740b3da44a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-12\\capture\\events.jsonl": "d02791115f5d5c9e5a27ebbe3515a7ed00d20cbb6c63e4b0a1b28a22b50c0936",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-12\\turns.jsonl": "16d3c9ff7b25ea84a008caf32b6d8d994a77476edddb85e8ee756365f2b59033",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\fixture-12.json": "35c6352a0c473442abb0a1f3c772bbbab32a59e96ea68a1c160b1251088ff1de",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\context-12.json": "465dc9f3a9c51a3aa5aff5acdb3f607441c2f9897ae0da7b51fbb20fe7d2a460",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\context-prelaunch-12.json": "117dc8c002ad84168aa477a917e6e6bf5630cb50f6c5eebdff1bcb36fa65cf67",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-12\\case-observations.json": "65dc376b6b2409317d21ed22bbeda9d1ed0e097280ec4950aede715b38101c2c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-12\\journal-before.json": "bd7773bcd4e638bc04e22dfe7a39027447124dc57c662d0bc1035e1aec393876",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-12\\journal-after.json": "6ea8b2178c559d2646a5a11476a14c4877750f01648610723ab86df0cc79e48b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-12\\journal.snapshot.jsonl": "0b609d7fd82b52bce196034ad6166a3fbb81f3508e27eff6408e895e94820e04"
+    },
+    "terminal_kind": "published_final",
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "4bafbae9-9064-4511-9ba2-d478cf52b6cc",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 13,
+    "case_id": "agenda1097-boundary-04",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Trató el relato de un hecho pasado como pedido fuera de alcance.",
+    "observation_note": "No respondió a la intención narrativa; sin operaciones adicionales.",
+    "final_sha256": "a8f7c0f7baa2f42562c4707d082b7854e043531467cb26aa40643c6eaecec3a0",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-13\\EXIT.json": "c0f90e7f1b798fe9a6016b8f9ed20ed9d64ea73ee71233da4efee3114f77b7d5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-13\\RESOURCES.json": "ece5902402e4e196de4c502d9204766b204ea4d97ce585b6f06330bd66c766ef",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\profile-owner-13.json": "6cb512bba043b86911112aefe9f32ec3b6895efe670c213cdd8d83bb3b427888",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-13\\PREREG.json": "358cc6aa14c8c7ca74bab2378a04d4ed48c78e6d04c47ebcc9f13b7ba7b0009d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-13\\capture\\events.jsonl": "e28cad9754733d00ddbae3085d7ade2dc6831d0c9a4b1f7d67fe27e24a1d25c8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-13\\turns.jsonl": "3849a26ba8db3e74867bcb0567fce79f99d4ece687797b3e026abd66727297ed",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\fixture-13.json": "a2f37706fd505552ba3b5233abbf5d7ecc802c2c2b2b3baf47ad9d350a9e5d91",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\context-13.json": "422082d0f2952a61886f4e63897d58f58bb37ff32c253a5b4f1511868357dfc5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\context-prelaunch-13.json": "d89f1f1cbc2596357cd651a53018b63ce90f0e4cb7249d1cabeacbdef4ca291b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-13\\case-observations.json": "b87a7e3653a98faede350484db263834e3e4b0f820650ccb34348b4dcd069d5d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-13\\journal-before.json": "5d2fac5357c93a0e41a0bd4b72dbf9dc2848900788d14e8f9bbf0f79a44f012d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-13\\journal-after.json": "1ca61b68183b8b0d37e354a30430ff5458b40f8eefc2ef53c1d814b7b4a0eb15",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-13\\journal.snapshot.jsonl": "e77a157e224c0761ffd0ee7b20144468b3b909a6decf5fddb1be02f698cb6f56"
+    },
+    "terminal_kind": "published_final",
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "53710820-19f1-4eab-96d4-5d3d830dbe87",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 14,
+    "case_id": "agenda1097-boundary-05",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Explicó la diferencia conceptual pedida.",
+    "observation_note": "Respuesta útil sin consultar ni modificar agenda.",
+    "final_sha256": "04512de1c0cd88fbdbc0aa5d41b3bcc1d067e2690894e4742948435325ddb942",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-14\\EXIT.json": "6632ccdd68835f1d9fa6d33d8a4fae410f3ff09f0e5e665460504a1e67ce51d0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-14\\RESOURCES.json": "8b7a67e3c92a2b3e5710124294c76a5d31d5f70b12933af9e1783267fe374a5c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\profile-owner-14.json": "a565bdb27c9bf0eeb7c33bd201a61df5c20e235d26dfaba9f915857fcfc9d44c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\results\\case-14\\PREREG.json": "37087ad29073c96abbab8276a5841c5314f97acc129e3f1725227c6eeb01fad4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-14\\capture\\events.jsonl": "c90f100f8737b8b82772c7cdbe471ea7e2e6e7b86a7e8f82a665cd0ed783b835",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-14\\turns.jsonl": "b5ed2f5af35c0bb42f2db18dadf0a93353fa5267897959c5d4cec58899ea83c7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\fixture-14.json": "c8bb06cf47c99b43222dc949eed875f37099af978a22adc99dd237c8bfe3110f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\context-14.json": "4d13d3d89bb538d87f7f16aadeb81f2b9ba34c4c31eaa111f14c0d026f690892",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\context-prelaunch-14.json": "774dcbc7ba429b873e45f92e2744a1816f5308bcf64b0ffc03721191dfc95e51",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-14\\case-observations.json": "3d3a18f7b01c49013a0750faebc9aedaff3575dd5d6af0f0c40eaabc588ecd1f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-14\\journal-before.json": "8f89ed1b520c7c526d182e73917d906766aa967a3c8e491c5fc47c26d306b8b8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-14\\journal-after.json": "dfa645b77efe2f7a66e0c7aa95e72286d64955feec69e0c1d1adc41ba6688b96",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1101-proposal\\private\\run-14\\journal.snapshot.jsonl": "b65c65a8ad2c82c761c74a09ff209d9aec4902a2c76438da854f8c439aff9fef"
+    },
+    "terminal_kind": "published_final",
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "c94d90d0-b1b0-46a5-895d-76fd83e97c9a",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  }
+]

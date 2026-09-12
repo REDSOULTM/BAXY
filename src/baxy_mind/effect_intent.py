@@ -2908,6 +2908,9 @@ def resolve_explicit_clarification_intent(
         )
         is not None
     )
+    incomplete_schedule = _incomplete_scheduled_request(text, available)
+    if incomplete_schedule is not None:
+        return incomplete_schedule
     if (
         not _is_direct_request(folded)
         and not _alarm_turn_off_request(folded)
@@ -3258,9 +3261,6 @@ def resolve_explicit_clarification_intent(
             ("office.document.create",),
             ("topic_or_content",),
         )
-    incomplete_schedule = _incomplete_scheduled_request(text, available)
-    if incomplete_schedule is not None:
-        return incomplete_schedule
     if (
         "reminder.create" in available
         and _has(folded, r"\b(?:recordatorio|reminder)\b")
