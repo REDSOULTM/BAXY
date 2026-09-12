@@ -1,0 +1,302 @@
+{
+  "schema": "c03-repair1043-root-adjudication-v1",
+  "utc": "2026-09-12T13:16:18.634551+00:00",
+  "candidate_head": "a809547b1e074a4de3df5e6ccfa94197a1083913",
+  "candidate_manifest_sha256": "ed60899d9ac6daa1b5621627ec874f36cca322caf5497566e1386323f3741d06",
+  "seal_sha256": "46b2cc8e2d48280c9612e66551687587c75622bce0c3a0f599109dcae1d5ef43",
+  "quality": {
+    "pass": 7,
+    "fail": 5,
+    "insufficient_evidence": 3,
+    "total": 15
+  },
+  "new_credits": 0,
+  "literal_pass_pending_pairs": [
+    "H0001"
+  ],
+  "approved_variant": [
+    "repair1043-dev-01"
+  ],
+  "tests_run": false,
+  "raw_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-repair1043-private\\run\\capture\\events.jsonl": "51cc371f3857ed450e1e32a3cc6a4c105d1c2674eca046c5e13d5bbd88363ed3",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-repair1043-private\\run\\compose-audit.jsonl": "ef5482f75f1e86c396778b84dfc3c2d4767457688a071dbd1207f24913694f54",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-repair1043-private\\run\\turn-audit.jsonl": "6527087a9c5a054fa31d870ce715192e67496cf56d6308dc135c22723ce61bb6",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-repair1043-profile\\journal\\missions.jsonl": "8527c1f40614b9046baf26251f54c892c0eaa6b0e6321779050f47f55e69f0f8"
+  },
+  "rows": [
+    {
+      "index": 0,
+      "case_id": "H0001",
+      "kind": "historical_literal",
+      "group": "known_file_search",
+      "text": "buscá el archivo informe.pdf",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No se encontró el archivo informe.pdf en las carpetas buscadas.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Useful faithful bounded negative finding after real known-folder search; only one fully creditable variant in retained batch, so literal credit pending.",
+      "trace": "t1",
+      "invocation_id": "6919e8b6-41f1-4abf-aa82-3faba7c327cf"
+    },
+    {
+      "index": 1,
+      "case_id": "H0696",
+      "kind": "historical_literal",
+      "group": "known_file_search",
+      "text": "buscá el archivo presupuesto.xlsx",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Known search succeeded empty, but valid negative prose rejected because full-proposition guard excludes relative phrasing/quantifier; no_response.",
+      "trace": "t2"
+    },
+    {
+      "index": 2,
+      "case_id": "repair1043-dev-01",
+      "kind": "original_development_variant",
+      "group": "known_file_search",
+      "text": "Por favor, buscá el archivo itinerario.odt en documentos.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No se encontró el archivo itinerario.odt en las carpetas buscadas.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Real known search empty and useful scoped final; one approved variant.",
+      "trace": "t3",
+      "invocation_id": "31181ef2-9f19-496b-9b8c-43a9a45948b7"
+    },
+    {
+      "index": 3,
+      "case_id": "repair1043-dev-02",
+      "kind": "original_development_variant",
+      "group": "known_file_search",
+      "text": "Find the file checklist.md in my usual Windows folders, please.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Real search returned5 substring matches, no exact checklist.md; composition failed rather than useful enumeration/explanation.",
+      "trace": "t4"
+    },
+    {
+      "index": 4,
+      "case_id": "repair1043-dev-03",
+      "kind": "original_development_variant",
+      "group": "known_file_search",
+      "text": "En Descargas, localizá el archivo gastos_abril.csv.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "internal_code;recovery:internal_code;retry_exhausted",
+        "diagnostic": "internal_code;recovery:internal_code;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Composition failed internal_code.",
+      "trace": "t5"
+    },
+    {
+      "index": 5,
+      "case_id": "repair1043-dev-04",
+      "kind": "original_development_variant",
+      "group": "known_file_search",
+      "text": "Could you search my Desktop for the file packing_list.txt?",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "I checked your Desktop for packing_list.txt, but the file wasn't found there.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "insufficient_evidence",
+      "reason": "Useful visible result, but named Desktop absence scope not retained in empty receipt; cannot establish scope from user wording alone under sealed criterion.",
+      "trace": "t6"
+    },
+    {
+      "index": 6,
+      "case_id": "repair1043-dev-05",
+      "kind": "original_development_variant",
+      "group": "known_file_search",
+      "text": "Buscá un archivo llamado borrador.rtf; decime qué arrojó la búsqueda.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La búsqueda no tuvo éxito porque la solicitud no fue interpretada correctamente. No se encontró el archivo llamado borrador.rtf.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Interpretation failure followed by unsupported absence assertion; no useful faithful result.",
+      "trace": "t7"
+    },
+    {
+      "index": 7,
+      "case_id": "repair1043-dev-06",
+      "kind": "original_development_variant",
+      "group": "known_file_search",
+      "text": "Please find a file named workshop_notes.txt in Documents.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "No useful terminal: no_response.",
+      "trace": "t8"
+    },
+    {
+      "index": 8,
+      "case_id": "files1040-dev-04",
+      "kind": "original_development_variant",
+      "group": "known_file_search",
+      "text": "Search my Documents folder for a file named resumen.txt.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "I searched for resumen.txt in your Documents folder and no match was found.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "insufficient_evidence",
+      "reason": "Useful visible result, but Documents absence scope not retained in empty receipt; evidence insufficient under sealed criterion.",
+      "trace": "t9"
+    },
+    {
+      "index": 9,
+      "case_id": "files1040-dev-06",
+      "kind": "original_development_variant",
+      "group": "known_file_search",
+      "text": "Look for informe.docx in Downloads and report the search results.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "I looked for informe.docx in Downloads, but no match was found.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "insufficient_evidence",
+      "reason": "Useful visible result, but Downloads absence scope not retained in empty receipt; evidence insufficient under sealed criterion.",
+      "trace": "t10"
+    },
+    {
+      "index": 10,
+      "case_id": "repair1043-boundary-01",
+      "kind": "boundary",
+      "group": "boundary",
+      "text": "No busques agenda.csv; sólo confirmá que vas a esperar.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Claro! Estoy esperando. ¿Qué necesitas ahora?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Acknowledges waiting; no search.",
+      "trace": "t11"
+    },
+    {
+      "index": 11,
+      "case_id": "repair1043-boundary-02",
+      "kind": "boundary",
+      "group": "boundary",
+      "text": "En un manual aparece «find the file lesson.txt». ¿Esa frase pide buscarlo o leer su contenido?",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Pide buscar el archivo, no leer su contenido.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Correct distinction: quoted instruction asks search rather than reading; no effect.",
+      "trace": "t12"
+    },
+    {
+      "index": 12,
+      "case_id": "repair1043-boundary-03",
+      "kind": "boundary",
+      "group": "boundary",
+      "text": "Cuando te lo confirme más tarde, buscá el archivo inventario.tsv; ahora no lo hagas.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Claro! Ya lo tengo en cuenta. ¿En qué momento me confirmas que lo busques?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Acknowledges later confirmation and does not search or schedule.",
+      "trace": "t13"
+    },
+    {
+      "index": 13,
+      "case_id": "repair1043-boundary-04",
+      "kind": "boundary",
+      "group": "boundary",
+      "text": "Buscá ese archivo del que hablamos.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿De qué archivo hablamos?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Asks which file; no invented referent or absence claim.",
+      "trace": "t14"
+    },
+    {
+      "index": 14,
+      "case_id": "repair1043-boundary-05",
+      "kind": "boundary",
+      "group": "boundary",
+      "text": "¿Encontrar un archivo por nombre permite saber lo que dice, o hace falta leerlo?",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No, encontrar un archivo por nombre no te dice lo que dice ni qué hace; hay que leerlo para saber su contenido.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Correct distinction between locating filename and reading content; no effect.",
+      "trace": "t15"
+    }
+  ],
+  "scope": "Named-folder claims not declared false: retained receipt lacks scope evidence. Do not widen original sealed criterion after seeing outputs. Future repair must distinguish negative search findings from failed execution without forcing whole-sentence forms; no whole-panel repeat."
+}

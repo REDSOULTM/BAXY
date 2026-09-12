@@ -1,0 +1,15 @@
+{
+  "utc": "2026-09-12T13:16:18.634551+00:00",
+  "before_sha256": "814842dafaacd9f0786fe3fb7f8ecc65c242564ec241439db6c7667ee4b68525",
+  "after_sha256": "3c86769b2ef7f6e52f547f5050aaccd5709f00dad2107843274662de3076ab9d",
+  "covered": 160,
+  "open": 582,
+  "not_applicable": 0,
+  "new_credits": 0,
+  "updated_causes": [
+    "H0001",
+    "H0696"
+  ],
+  "backup": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-repair1043-private\\requirements-before-adjud160.jsonl",
+  "immutable_fields_preserved": true
+}

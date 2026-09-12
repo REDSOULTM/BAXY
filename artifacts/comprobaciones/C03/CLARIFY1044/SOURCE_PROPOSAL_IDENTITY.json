@@ -1,0 +1,7 @@
+{
+  "original_sha256": "c3818dc7eb87be37653a067281f4d29f3d09f3519a6b5a32a12d2bdfe75a5f56",
+  "proposed_sha256": "6bd644ed39848a9c92f9ab8243ae3a083a78114df99589f164eba950fd3eccb2",
+  "patch_sha256": "b6ba7a0c4a15db5720986467fd39d57d14bd933b1ec2bd614cbfb1643a0059bb",
+  "status": "external rebase only; root applies after REPAIR1043",
+  "other_current_source_edits_preserved": true
+}
