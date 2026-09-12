@@ -77,8 +77,28 @@ Descartadas:
 - `assets.local.json` es configuración de esta máquina, no del repositorio: si se reinstala el runtime
   sin él, el descriptor volverá a resolver el Instruct AWQ por nombre.
 
+## El cuello de botella, medido
+`artifacts/comprobaciones/C03/CUELLO_DE_BOTELLA_RECONOCEDOR.md`. El reconocedor determinista cubre
+**238 de 742** literales; los otros 504 caen al modelo. En 1028 el camino determinista cumplió 9/14 y
+el del modelo 3/15. Cada literal que se mueve al camino determinista triplica su probabilidad.
+Instrumento: `scratchpad/c03-recogniser-baseline.py`, línea base en
+`%LOCALAPPDATA%/BAXY/C03-recogniser-baseline.json`. Mide una hipótesis en segundos, sin GPU.
+
+`catalog_unavailable_decision` **no** es la causa: sólo cubre app/game sin identidad. El
+`out_of_catalog` de estos casos viene del shell, `MainWindowViewModel.cs:2337`, cuando la mente
+devuelve `conversationKind: "unsupported"`; y el modelo lo decide porque su lista de candidatos a
+veces ni incluye `system.status` (H0146: 28 candidatos, ninguno era él).
+
+## Reparación probada y no adoptada
+Patrón de dominio para el reloj presente/local en la composición multidominio, más
+`frozenset(("system.status","system.time"))` en los pares permitidos: H0106 gana
+`['system.time','system.status']`, ningún otro de los 742 se mueve, pero **H0589 pierde su resolución**
+y caería al modelo. No adoptada; `effect_intent.py` revertido a `3bb83dc8…`, diff cero. Añadir sólo el
+par sin el patrón de dominio es inerte, medido.
+
 ## Siguiente acción recomendada
-Sellar la reparación dirigida de la causa A de `SYSTEM1028/DIAGNOSIS.md` —lectura del catálogo
-clasificada `out_of_catalog` en la decisión— con su subconjunto exacto y con H0442, H0539, H0655,
-H0422, H0037 y H0114 como controles de no regresión. Empieza leyendo `__main__.py:6638-6655` y de dónde
-sale `catalog_unavailable_decision`.
+Averiguar por qué H0589 deja de resolver cuando aparecen dos dominios, con `sys.settrace` acotado a
+`effect_intent.py`: su resolución actual sale del resolutor estricto que retorna en `:13811`, no de la
+composición multidominio. Con eso resuelto, la reparación del reloj compuesto queda adoptable y se
+mide con un subconjunto exacto —H0106, H0589 y sus pares— más H0442, H0539, H0655, H0422, H0037 y
+H0114 como controles de no regresión.
