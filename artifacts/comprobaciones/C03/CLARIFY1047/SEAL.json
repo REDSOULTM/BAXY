@@ -1,0 +1,49 @@
+{
+  "runner_delivered": true,
+  "schema": "clarify1047-directed-material-seal-v1",
+  "historical_case_ids": [
+    "H0694",
+    "H0287",
+    "H0581"
+  ],
+  "coverage_credit": 0,
+  "registry_sha256": "bfa69dc68d97223e82f8be9f4d9deb7f712cbff1b0748d2f38e692b6d15d0682",
+  "read_source_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clarify1044-proposal\\runner.py": "a10027347cfde2c3e5cc0ffba74e1bcb3d87fd8fae7388f20dee45ff247fc4ee",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clarify1044-proposal\\panel.json": "89ab08810fba3233a9a0a182b88c40cac5375c043a003e47867620264a0258fb",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clarify1047-proposal\\PRIOR_SELECTION.json": "c729ee73c44000a20ff5b5d8b10aa4d622036116e20011809319fc6a8ff78af8",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clarify1044-diagnosis\\HISTORY_GATE.patch": "c3df598306334b584e9e1bdc72d272abc16caf1f6f2bb3df5f65942d3abb1cde",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clarify1044-diagnosis\\DIAGNOSIS.md": "fb6a604d7eb40cbc0427327928fe7305c46522654b9c0a6b51cad15dae29a3e6",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\CLARIFY1044\\ROOT_ADJUDICATION.json": "e91e83b7c21c4a5a7e80170d7ded3ef50e89ceecbc97971861df7e3b3c753878"
+  },
+  "counts": {
+    "cases": 13,
+    "historical_positive_open": 3,
+    "failed_variant_reexecutions": 3,
+    "original_development_variants": 2,
+    "boundaries": 5,
+    "wire_lines": 26,
+    "controls": 13,
+    "session_new": 13,
+    "conditional_positive_commands": 0,
+    "normal_diagnostic_commands": 13,
+    "maximum_turn_admissions": 13,
+    "maximum_reportable_terminals": 13,
+    "case_final_terminals": 13,
+    "maximum_internal_confirmations": 0
+  },
+  "candidate": {
+    "commit": null,
+    "execution_authorized_by_proposal": false,
+    "tests_run": false,
+    "status": "current_source_binding_pending_root"
+  },
+  "files": {
+    "turns.jsonl": "7eea23c399d2c88247d7d6013559e68da7969c719d3fbed200a4109470a3ea9b",
+    "case-map.json": "22650cf8d6b0e18205428cfb9b8491ded6e3bf443eb54857a5b1a41c8e639e4c",
+    "panel.json": "b56f6252e2c6f01a9ba3845c26518d6d0c9b334278449c9bd83eb5e9ceb2f217",
+    "PLAN.md": "808c923cb31fa73ccb16a0dbc2d82ef2412c633e299ac917cc4f6cc34df44028",
+    "requirements-snapshot.jsonl": "bfa69dc68d97223e82f8be9f4d9deb7f712cbff1b0748d2f38e692b6d15d0682"
+  },
+  "execution_authorized_by_proposal": false
+}

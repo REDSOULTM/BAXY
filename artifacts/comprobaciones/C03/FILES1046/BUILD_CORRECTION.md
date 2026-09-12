@@ -1,0 +1,1 @@
+Initial required build failed CA1859: enumerationRoots parameter must use concrete List rather than ICollection. Root corrected the one parameter type; behavior unchanged. Original build.log/build.exit=1 retained privately. No tests run. Retry required before candidate binding.

@@ -282,7 +282,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
 
     private static IEnumerable<(string Label, string Path)> Enumerate(
         IReadOnlyList<(string Label, string Root)> roots,
-        ICollection<(string Label, string Root)>? enumerationRoots = null)
+        List<(string Label, string Root)>? enumerationRoots = null)
     {
         var options = new EnumerationOptions
         {
