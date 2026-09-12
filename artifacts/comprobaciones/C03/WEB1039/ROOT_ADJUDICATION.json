@@ -1,0 +1,343 @@
+{
+  "schema": "c03-web1039-root-adjudication-v1",
+  "utc": "2026-09-12T12:39:55.863783+00:00",
+  "candidate_head": "0a013133fbff9646edecaa08d565e6185a317489",
+  "candidate_manifest_sha256": "1128d45c75f6d9c2957a349f73689f7120eca9a8b5d067ee94b12990ec97b53c",
+  "seal_sha256": "5a153d1202eb0e6b978418bbb4ce15a3bd2423c687e2596a3db8c8596b7b7d81",
+  "quality": {
+    "pass": 4,
+    "fail": 13,
+    "total": 17
+  },
+  "new_credits": 0,
+  "survey_covered": 156,
+  "survey_open": 586,
+  "survey_not_applicable": 0,
+  "tests_run": false,
+  "automated_validation": "owner_directed_omission_not_green",
+  "raw_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1039-private\\run\\capture\\events.jsonl": "77d13604704ccb5730b6a0aed53c2b61b2e702ff8cca8bc6c37f6b002b806dcc",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1039-private\\run\\compose-audit.jsonl": "5765c5ca8a1131a9dfa018afa90e6ac073d8ea2711bf1df0b7e0cb7af7e9ffbf",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1039-private\\run\\turn-audit.jsonl": "0e411d8272e13717c5f264d713cc46044d137db19b366e1473fe2445c7656d91",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1039-profile\\journal\\missions.jsonl": "745008f6b77506bd3dee1dabd896f7d8291a50760186ca11c1f7e5fbdaa8983f",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1039-browser-preparation\\AFTER_WEB1039.json": "b6ef0493a43c443480ac713e06c3bb4c4f5da52287866a60edb14d87d5352c50"
+  },
+  "history": {
+    "initial_index": 25,
+    "final_index": 23,
+    "entries": 26,
+    "target_id": "0D53F3E1B61109A8E635149DC9E29DD2",
+    "owned_browser_retained_for_targeted_repair": true
+  },
+  "rows": [
+    {
+      "index": 0,
+      "case_id": "H0326",
+      "kind": "historical_literal",
+      "group": "browser_history_back",
+      "text": "regresá a la página anterior",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Qué acción quieres realizar en la página actual?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Unnecessary clarification despite explicit back direction.",
+      "trace": "t1"
+    },
+    {
+      "index": 1,
+      "case_id": "H0605",
+      "kind": "historical_literal",
+      "group": "browser_history_back",
+      "text": "volvé a la página anterior",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿qué acción quieres realizar en la página actual?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Unnecessary clarification despite explicit back direction.",
+      "trace": "t2"
+    },
+    {
+      "index": 2,
+      "case_id": "web1039-dev-01",
+      "kind": "original_development_variant",
+      "group": "browser_history_back",
+      "text": "Devolveme a la página que tenía abierta antes de esta.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "No useful terminal: composition failed.",
+      "trace": "t3"
+    },
+    {
+      "index": 3,
+      "case_id": "web1039-dev-02",
+      "kind": "original_development_variant",
+      "group": "browser_history_back",
+      "text": "Go back one page in this browser.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "The web search results were irrelevant, so I couldn't find the information needed to proceed.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Wrong web.search route; irrelevant search failed, no requested back.",
+      "trace": "t4"
+    },
+    {
+      "index": 4,
+      "case_id": "web1039-dev-03",
+      "kind": "original_development_variant",
+      "group": "browser_history_back",
+      "text": "Quiero volver a la página previa.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Qué acción quieres realizar en la página actual?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Unnecessary clarification despite explicit previous page.",
+      "trace": "t5"
+    },
+    {
+      "index": 5,
+      "case_id": "web1039-dev-04",
+      "kind": "original_development_variant",
+      "group": "browser_history_back",
+      "text": "Take this tab back to the previous page.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "I'm taking this tab back to the previous page.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Verified CDP back; useful contemporary statement agrees with actual history transition.",
+      "trace": "t6",
+      "invocation_id": "28a7b94c-8a4f-46d2-ab55-56c1c52d800d"
+    },
+    {
+      "index": 6,
+      "case_id": "web1039-dev-05",
+      "kind": "original_development_variant",
+      "group": "browser_history_back",
+      "text": "En esta pestaña, regresá a la página de antes.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Qué acción debes realizar para regresar a la página anterior en la pestaña?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Asks which action despite explicit return.",
+      "trace": "t7"
+    },
+    {
+      "index": 7,
+      "case_id": "web1039-dev-06",
+      "kind": "original_development_variant",
+      "group": "browser_history_back",
+      "text": "Could you return the current page to the previous one?",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "What action should be taken on the current page?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Unnecessary clarification despite explicit previous page.",
+      "trace": "t8"
+    },
+    {
+      "index": 8,
+      "case_id": "web1039-dev-07",
+      "kind": "original_development_variant",
+      "group": "browser_history_back",
+      "text": "Retrocedé una página en el navegador, por favor.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Te refieres a retroceder una página en el navegador actual o en un sitio específico?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Asks browser/site although prepared unique current browser exists.",
+      "trace": "t9"
+    },
+    {
+      "index": 9,
+      "case_id": "web1039-dev-08",
+      "kind": "original_development_variant",
+      "group": "browser_history_back",
+      "text": "Use the browser's Back action for this page.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "I'm using the browser's Back action to go back to the previous page.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Verified CDP back; useful contemporary statement agrees with actual history transition.",
+      "trace": "t10",
+      "invocation_id": "3be43742-a28a-4b50-8511-7a48ad124c21"
+    },
+    {
+      "index": 10,
+      "case_id": "web1039-dev-09",
+      "kind": "original_development_variant",
+      "group": "browser_history_back",
+      "text": "Necesito ver de nuevo la página anterior; volvé a ella.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Quieres confirmar o cancelar?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Requests confirmation without exact pending invocation.",
+      "trace": "t11"
+    },
+    {
+      "index": 11,
+      "case_id": "web1039-dev-10",
+      "kind": "original_development_variant",
+      "group": "browser_history_back",
+      "text": "Please move back a single page in the current tab.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "I can't move back a page in the current tab. That's outside what I do on this PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "False out-of-scope denial for supported browser back.",
+      "trace": "t12"
+    },
+    {
+      "index": 12,
+      "case_id": "web1039-boundary-01",
+      "kind": "boundary",
+      "group": "prohibition",
+      "text": "No vuelvas a la página anterior; quedate en esta.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La causa del fallo es que la interpretación de la solicitud no fue válida.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "No effect, but interpretation failure is not a useful response to clear prohibition.",
+      "trace": "t13"
+    },
+    {
+      "index": 13,
+      "case_id": "web1039-boundary-02",
+      "kind": "boundary",
+      "group": "quotation",
+      "text": "Traduce al español «go back to the previous page».",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Vuelve a la página anterior.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Translation answered without executing quoted action.",
+      "trace": "t14"
+    },
+    {
+      "index": 14,
+      "case_id": "web1039-boundary-03",
+      "kind": "boundary",
+      "group": "conditional_future",
+      "text": "Si más tarde te lo pido, retrocederemos una página; ahora no hagas nada.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Este pedido está fuera de mi ámbito de acción.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "No effect, but unsupported-capability denial does not answer deferred/no-action statement.",
+      "trace": "t15"
+    },
+    {
+      "index": 15,
+      "case_id": "web1039-boundary-04",
+      "kind": "boundary",
+      "group": "past_narration",
+      "text": "Ayer volví a la página anterior para revisar un dato.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Quieres confirmar o cancelar?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Requests confirmation without pending invocation after a historical statement.",
+      "trace": "t16"
+    },
+    {
+      "index": 16,
+      "case_id": "web1039-boundary-05",
+      "kind": "boundary",
+      "group": "conceptual",
+      "text": "¿Qué diferencia hay entre volver a la página anterior y recargar la actual?",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Volver a la página anterior te lleva al sitio o pantalla anterior en tu navegación, mientras que recargar la actual vuelve a cargar la misma página desde el servidor.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Faithful explanation of browser history versus reload; no effect.",
+      "trace": "t17"
+    }
+  ],
+  "scope": "Technical exit0 is not quality pass. Two English back variants can support future repaired literals. No whole-panel repeat; two literal failures remain open. Registry cause update follows FILES1040 frozen run."
+}

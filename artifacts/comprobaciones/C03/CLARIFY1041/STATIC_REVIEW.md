@@ -1,0 +1,9 @@
+# CLARIFY1041 — revisión de entrega
+25casos/50wire/mapa25:10literales positivosopen,10variantes originales,5boundaries. Comparación estática de datos confirmó los25textos/criterios/kinds idénticos al draft y todos los hashes del sello coherentes.21límitesglobales íntegros enmapa. No se alteró literalH0639 ni su redacción privada; no hay números recuperados.
+Herencia revisada mediante evidencia-baxy en el draft:1006,1011,DEICTIC1012,KNOWLEDGE1025. El sello liga draft/PLAN_DRAFT y esa evidencia; no adjudica ni declara reparadas sus pérdidas.
+Diff completo del runner frenteFILES1040 leído:21líneas añadidas/21retiradas, sólo identidad/rutas/schemas/IDs/conteos y nuevo sello. Kindboundary se conserva del draft, sin reetiquetar. Inventario584fuentes/18binarios/5runtime yguardas4000/768/3800/900/120000 permanecen intactos; mismas comprobaciones de permisos, pins, etapas, PIDycleanup.
+Sin códigoCDP ni recibopreparaciónbrowser heredado. Filtroenv deFILES1040 intacto: no borra BAXY_CDP_ENDPOINT si el padre aún lo exporta; raíz debe quitarlo al lanzar esta tanda, sin preparación de navegador requerida. No se añadió nuevo filtro/flag como cambio lateral.
+Hash de modelos por sha() heredado con apertura binaria y hashlib.file_digest streaming; no lectura read_bytes de modelos. Este agente no abrió/hashó modelo ni backend: sólo inspeccionó texto del runner ymateriales.
+No runner stage, import, AST, tests, build, GPU, HTTP, fuente, registro, candidato ni público ejecutados/escritos. Perfil propio C03-clarify1041-profile hijo directoLOCALAPPDATA/BAXY. Manifiesto futuro c03-clarify1041-root-manifest-v1 raíz, sin atribuir verdes anteriores. Material noautoriza corrida ni crédito.
+SEAL SHA2566ee33b464e48df06f2b49bcfb496469c90c332af789ea8ba423f489a2a290898.
+Runner SHA256ea6cff542aa0f5dfb953beec2b6eef6812dcc1bd59f411b942119062b7c98b1a.

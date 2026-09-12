@@ -1,0 +1,21 @@
+{
+  "owners": {
+    "src/baxy_mind/effect_intent.py": {
+      "original_sha256": "3bb83dc8f0c8736c86d402d0faf656915044a9089b8b27b9b9a430b36365cade",
+      "proposed_sha256": "08b378b7c6fb4b46ee4fbbbbff51ae04e6ecfba93fcbcb7c5b91d535cc44143d"
+    },
+    "src/baxy_mind/__main__.py": {
+      "original_sha256": "6d4a5856d5fc8827d9024b3f38312679e15f2cf9bf00692a895137556a0279ba",
+      "proposed_sha256": "35b0e2f62978e4ed21bc7f51b0e5ab577c6e79f077ca5ae54e8b7e6bdad61581"
+    }
+  },
+  "scope": "atomic external proposal only",
+  "ast_parse": "both proposed texts parsed; no imports or execution",
+  "prior_pairs": {
+    "WEB1039": [
+      "dev04",
+      "dev08"
+    ],
+    "root_verdict": "approved; contemporary present and observed effect are valid"
+  }
+}

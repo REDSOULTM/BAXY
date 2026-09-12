@@ -1,3 +1,7 @@
+Actualización1041:158/742 cubiertos,584 abiertos,0 no aplican;0/35categorías cerradas. Al menos32primeras altas verificadas últimas24h. +H0140 con paresES/EN; reparación1042 de browser back integrada para medición dirigida. No tests/Fast/Full por orden del dueño; no cierre afirmado.
+
+Actualización1040:157/742 cubiertos,585 abiertos,0 no aplican;0/35categorías cerradas. Al menos31primeras altas verificadas últimas24h. FILES1040 añadeH0711;WEB1039 detecta anclaje faltante del argumento back español. CLARIFY1041 en ejecución; reparación1042 preparada. No tests/Fast/Full por orden del dueño. No se declara cierre.
+
 # Continuación con el archivo de Kiro
 
 Recuperé y comprobé348archivos. Los28créditos nuevos de Kiro tienen recibos y

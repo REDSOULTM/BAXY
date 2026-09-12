@@ -1,28 +1,15 @@
-# C03 — 156 cubiertos tras recuperar Kiro
+# C03 —158 cubiertos; ejecución continua
 
-**156/742 cubiertos, 586 abiertos, 0 no aplican; 0/35 categorías cerradas.**
-Últimas24h: al menos30 primeras altas verificadas (28Kiro +2retorno); total global
-exacto pendiente de historial de primeras altas, sin usar fechas de actualización.
-C03 formal3/11; goal activo. Suites/Fast/Full omitidos por instrucción del dueño.
+**158/742 cubiertos,584 abiertos,0 no aplican;0/35 categorías cerradas.**
+Últimas24h: al menos32 primeras altas verificadas (28Kiro+4retorno); no se usan fechas de revalidación como primeras altas. C03 formal3/11. Goal activo; suites/Fast/Full omitidos por orden del dueño, no verdes.
 
-RAR recibido,348 archivos comprobados con SHA. Registro154 recuperado sin cambiar
-literales, marcas o IDs;28 créditos Kiro contrastados con recibos y pares. READS1035
-adjudicada sin repetición:8/12 cumplen,+1H0104 por ventana activa con parES/EN.
-H0575 ahora+1: literal1036 útil y fiel y dos variantes previas de lanzamiento real
-1032 recuperadas y comprobadas. Los cuatro desarrollos fallidos1036 se conservan;
-no se exige que las variantes pasen todas ni que sean de la última tanda.
+RAR recuperado:348 archivos verificados;28 créditos Kiro auditados. READS1035+1H0104 y REPAIR1036+1H0575 adjudicados contra recibos y pares recuperados, sin repetir corridas. FILES1040+1H0711: Downloads abierto y dos variantesES/EN con postread real;5/18 cumplen. H0001/H0696 siguen open: búsqueda confinada al sandbox y fallo de composición.
 
-Registro SHA11fc78167e4e935b5f2e63913214e88e4d966923496a4b808dfc54bf83c00229.
-Evidencia: KIRO_RETURN1038/, READS1035/ROOT_ADJUDICATION.json,
-REPAIR1036/CREDIT_AFTER_TRANSFER.json. Tabla categoría→total→cubiertos→abiertos,
-orden descendente: KIRO_RETURN1038/CATEGORY_COUNTS.md.
+WEB1039:4/17 cumplen,0créditos; dos variantes inglesas ejecutaron back con CDP verificado; los2literales españoles pierden argumento en action_grounding. Historial real pasó de índice25 a23,26entradas. Reparación1042 atómica externa en revisión, sólo subset fallido.
 
-Música1037: Core actual leyó media.status sinGPU y devolvió media_session_not_found;
-no hay sesión/cola real para los controles y no se añade infraestructura para8filas.
-Siguiente WEB1039:2literales de volver atrás+10variantes+5límites, historial real de
-25navegaciones en Edge privado preparado y observado. FILES1040 se sella en paralelo:
-3literales de buscar nombres/abrir Descargas+10variantes+5límites. Cantidades menores
-por elegibilidad real, sin rellenar con destinos del sandbox o búsquedasRSS fallidas.
+CLARIFY1041:8/25 cumplen,+1H0140 por rechazo útil con paresES/EN sin efectos; otros9literales conservan causas individuales. REPAIR1042 integra parser acotado de retroceso y cableado;13casos sellados pendientes. .NET/runtime assets conservan fingerprint1036; fuentePython nueva se liga por separado. No nueva compilación ni pruebas afirmadas. Registro actualizado al adjudicar:be01258b0c7f52675e2686fcc806df7f0cb696de34b8d5b37d9ae0b200a67424.
+
+Música1037: no sesiónSMTC expuesta observada; controles/cola pendientes, sin infraestructura nueva para8casos. H0675 sigue aparcado. Siguiente: medir reparación1042 y reejecutar sólo2literales+variantes/límites dirigidos; diagnóstico búsqueda1040 en paralelo. Tabla actual ordenada por abiertos: CURRENT_CATEGORY_COUNTS.md.
 
 ## Checkpoint anterior1036, conservado como historial
 

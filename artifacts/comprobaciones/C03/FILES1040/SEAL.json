@@ -1,0 +1,50 @@
+{
+  "runner_delivered": true,
+  "schema": "files1040-directed-material-seal-v1",
+  "historical_case_ids": [
+    "H0001",
+    "H0696",
+    "H0711"
+  ],
+  "coverage_credit": 0,
+  "registry_sha256": "11fc78167e4e935b5f2e63913214e88e4d966923496a4b808dfc54bf83c00229",
+  "read_source_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-repair1036-proposal\\runner.py": "804f98036bbff65e7cfccf8ef930db6c57d8a9e1aae5df906484ee3e33b5ef5d",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\FILES1040\\PLAN.md": "79a54aeb848f05b3aa0a0d8ee22f95c8fe9c0b827cdc612663216520132d32f5",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1040-proposal\\panel.draft.json": "e2ce0281e3e7b29f13e48515e0345f2bd9353d27ca97007b851ad6acd69f60db",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1040-proposal\\PLAN_DRAFT.md": "5001c541c7934e69f947022a9b8c4fd23d4bce359dcdd85c226c0f6758d98d3d",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Kernel\\Operations\\ProductCatalog.cs": "22362a7ae7b62b6b28972ffdbe974e6a3964a37f626e3dd990d4c046feddc938",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Core\\Program.cs": "7671087321487f4a274fb6128652e9f18ed60b212b816eef69f2deb5adb5c751",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Providers.Windows\\External\\WindowsKnownFileAdapter.cs": "b31ae69befe455555b864ba9b646fa9fc779cab2f8131b0975c8ce1232db10ae"
+  },
+  "counts": {
+    "cases": 18,
+    "historical_positive_open": 3,
+    "failed_variant_reexecutions": 0,
+    "original_development_variants": 10,
+    "boundaries": 5,
+    "wire_lines": 36,
+    "controls": 18,
+    "session_new": 18,
+    "conditional_positive_commands": 0,
+    "normal_diagnostic_commands": 18,
+    "maximum_turn_admissions": 18,
+    "maximum_reportable_terminals": 18,
+    "case_final_terminals": 18,
+    "maximum_internal_confirmations": 0
+  },
+  "candidate": {
+    "commit": null,
+    "status": "current_source_binding_pending_root",
+    "tests_run": false,
+    "execution_authorized_by_proposal": false
+  },
+  "files": {
+    "panel.json": "56f455551adf81056ef5d1d73f083369289a50ad65acf4241fb98b9a8fe2f3ef",
+    "turns.jsonl": "d0bf523048cba9c608fb64368d180790d6da622ca00253abff52777a1058a6f9",
+    "case-map.json": "d1ae43486a2791ba7764e8c44fe7704e0479ba0505ca6d0daead1404417e917a",
+    "PLAN.md": "79a54aeb848f05b3aa0a0d8ee22f95c8fe9c0b827cdc612663216520132d32f5",
+    "requirements-snapshot.jsonl": "11fc78167e4e935b5f2e63913214e88e4d966923496a4b808dfc54bf83c00229"
+  },
+  "execution_authorized_by_proposal": false
+}

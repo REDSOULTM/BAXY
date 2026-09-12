@@ -1,0 +1,481 @@
+{
+  "schema": "c03-clarify1041-root-adjudication-v1",
+  "utc": "2026-09-12T12:47:53.950029+00:00",
+  "candidate_head": "0a013133fbff9646edecaa08d565e6185a317489",
+  "candidate_manifest_sha256": "ec80080e7ac8a6f31e2f6607a2dd32d6207fd51f88826823e09dc27df1eea2c4",
+  "seal_sha256": "6ee33b464e48df06f2b49bcfb496469c90c332af789ea8ba423f489a2a290898",
+  "quality": {
+    "pass": 8,
+    "fail": 17,
+    "total": 25
+  },
+  "new_credits": 1,
+  "credited_ids": [
+    "H0140"
+  ],
+  "supporting_variants": [
+    "clarify1041-dev-07",
+    "clarify1041-dev-08"
+  ],
+  "tests_run": false,
+  "raw_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clarify1041-private\\run\\capture\\events.jsonl": "3da9add8a2fa944ee87e5d8047b3cfec0fda44011180b1b510b3a39bf3f941bb",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clarify1041-private\\run\\compose-audit.jsonl": "7ae533792c1313953051a8db71219dbc6f0465ba3a92d6e0fd5d35a67941caa7",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clarify1041-private\\run\\turn-audit.jsonl": "7447cf1b50d54aedabe0d1499f77215850c8353cd7cae7affd5fc6a13914bc4a",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clarify1041-profile\\journal\\missions.jsonl": "24cef6869a50c99e113393b955c2375a9f35ea56c28462d5c2a5484491801cce"
+  },
+  "operations": "Only startup memory.status; no effects during25cases. Each isolated by successful session.new.",
+  "rows": [
+    {
+      "index": 0,
+      "case_id": "H0610",
+      "kind": "historical_literal",
+      "group": "degraded_transcription",
+      "text": "no a firmar primero firmar primero firmar le le cuelde 10 horas en blanco el cheque en blanco y le denuncia",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No, no firmar primero, firmar primero, firmar le le cuelde 10 horas en blanco el cheque en blanco y le denuncia",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Echoes degraded fragment as statement without useful clarification.",
+      "trace": "t1"
+    },
+    {
+      "index": 1,
+      "case_id": "H0694",
+      "kind": "historical_literal",
+      "group": "degraded_transcription",
+      "text": "No sé el común señor, eso no sé el común, no sé el común Usted tener un día de descanso, domingo día de descanso, todo, trabajar, trabajar todo",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Eso está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "False scope denial for unclear conversational input.",
+      "trace": "t2"
+    },
+    {
+      "index": 2,
+      "case_id": "H0735",
+      "kind": "historical_literal",
+      "group": "degraded_transcription",
+      "text": "a ocho de la noche descansar domingo, tu tenes que firmar 10 hojas en blanco y un cheque",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No pude procesar la solicitud porque la interpretación de la petición no es válida.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Technical interpretation error; no useful clarification of degraded fragment.",
+      "trace": "t3"
+    },
+    {
+      "index": 3,
+      "case_id": "H0160",
+      "kind": "historical_literal",
+      "group": "isolated_fragment",
+      "text": "Calendar Devil?",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No, no soy el Calendar Devil.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Invents identity question and denies being Calendar Devil instead of resolving fragment.",
+      "trace": "t4"
+    },
+    {
+      "index": 4,
+      "case_id": "H0271",
+      "kind": "historical_literal",
+      "group": "isolated_fragment",
+      "text": "potencial de rendimiento.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "El potencial de rendimiento depende de factores como el hardware, el software y las condiciones de uso.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Generic explanation assumes hardware/software context and does not resolve the incomplete request.",
+      "trace": "t5"
+    },
+    {
+      "index": 5,
+      "case_id": "H0639",
+      "kind": "historical_literal",
+      "group": "isolated_fragment",
+      "text": "[PHONE_REDACTED]",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "The request could not be interpreted correctly.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Honestly states inability to interpret redacted placeholder; meets owner explicit expectation, but no two pertinent variants passed.",
+      "trace": "t6"
+    },
+    {
+      "index": 6,
+      "case_id": "H0091",
+      "kind": "historical_literal",
+      "group": "missing_open_target",
+      "text": "ahí que me abre este",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No se pudo interpretar la solicitud.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Does not ask for missing object to open.",
+      "trace": "t7"
+    },
+    {
+      "index": 7,
+      "case_id": "H0140",
+      "kind": "historical_literal",
+      "group": "standalone_rejection",
+      "text": "¡No! ¡No! ¡No!",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡No! ¿Qué pasa? ¿Necesitas ayuda con algo en particular?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Natural acknowledgement of rejection with offer of help, no invented cancellation.",
+      "trace": "t8"
+    },
+    {
+      "index": 8,
+      "case_id": "H0181",
+      "kind": "historical_literal",
+      "group": "standalone_rejection",
+      "text": "No.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La causa del fallo es que la interpretación de la solicitud no fue válida.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Technical failure instead of acknowledging rejection.",
+      "trace": "t9"
+    },
+    {
+      "index": 9,
+      "case_id": "H0562",
+      "kind": "historical_literal",
+      "group": "unbound_assent",
+      "text": "Si hazlo",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No lo pude hacer porque falló la interpretación de la solicitud.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Implies failed attempt rather than asking which action assent refers to.",
+      "trace": "t10"
+    },
+    {
+      "index": 10,
+      "case_id": "clarify1041-dev-01",
+      "kind": "original_development_variant",
+      "group": "degraded_transcription",
+      "text": "el paquete el jueves pero antes no porque la mesa y después lo de siempre entonces",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "El paquete es para el jueves, pero antes no porque la mesa, y después lo de siempre.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Reconstructs and asserts degraded text rather than acknowledging uncertainty.",
+      "trace": "t11"
+    },
+    {
+      "index": 11,
+      "case_id": "clarify1041-dev-02",
+      "kind": "original_development_variant",
+      "group": "degraded_transcription",
+      "text": "we were on the bus and the meeting no the other room because yesterday then I",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "no sé qué querías decir con 'we were on the bus and the meeting no the other room because yesterday then I'",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Explicitly acknowledges not understanding the fragment, without inventing intent.",
+      "trace": "t12"
+    },
+    {
+      "index": 12,
+      "case_id": "clarify1041-dev-03",
+      "kind": "original_development_variant",
+      "group": "isolated_fragment",
+      "text": "contraste.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "El pedido está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "False scope denial rather than fragment clarification.",
+      "trace": "t13"
+    },
+    {
+      "index": 13,
+      "case_id": "clarify1041-dev-04",
+      "kind": "original_development_variant",
+      "group": "isolated_fragment",
+      "text": "draft version",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La solicitud está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "False scope denial rather than fragment clarification.",
+      "trace": "t14"
+    },
+    {
+      "index": 14,
+      "case_id": "clarify1041-dev-05",
+      "kind": "original_development_variant",
+      "group": "missing_open_target",
+      "text": "Abrí el que estoy señalando, por favor.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Este pedido está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "False incapability denial instead of asking missing object.",
+      "trace": "t15"
+    },
+    {
+      "index": 15,
+      "case_id": "clarify1041-dev-06",
+      "kind": "original_development_variant",
+      "group": "missing_open_target",
+      "text": "Could you open the one I meant a moment ago?",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "This is outside what I do on this PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "False incapability denial instead of asking missing object.",
+      "trace": "t16"
+    },
+    {
+      "index": 16,
+      "case_id": "clarify1041-dev-07",
+      "kind": "original_development_variant",
+      "group": "standalone_rejection",
+      "text": "Eso no, prefiero que no sigamos.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Vale, entendido. ¿En qué puedo ayudarte entonces?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Acknowledges rejection and offers further help without effect.",
+      "trace": "t17"
+    },
+    {
+      "index": 17,
+      "case_id": "clarify1041-dev-08",
+      "kind": "original_development_variant",
+      "group": "standalone_rejection",
+      "text": "No, let's leave it at that.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Alright, got it. Peace out. 🙌",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Natural closure respects rejection without effect.",
+      "trace": "t18"
+    },
+    {
+      "index": 18,
+      "case_id": "clarify1041-dev-09",
+      "kind": "original_development_variant",
+      "group": "unbound_assent",
+      "text": "Bueno, dale con eso.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La causa del fallo fue que el sistema no pudo interpretar la solicitud.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Technical failure instead of requesting assent reference.",
+      "trace": "t19"
+    },
+    {
+      "index": 19,
+      "case_id": "clarify1041-dev-10",
+      "kind": "original_development_variant",
+      "group": "unbound_assent",
+      "text": "All right, proceed with it.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Alright, go for it. What's on the list? 😎",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Reverses actor by telling user go for it and assumes a list.",
+      "trace": "t20"
+    },
+    {
+      "index": 20,
+      "case_id": "clarify1041-boundary-01",
+      "kind": "boundary",
+      "group": "self_contained_calculation",
+      "text": "¿Cuánto es siete por tres?",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "21",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Correct calculation21 without unnecessary clarification.",
+      "trace": "t21"
+    },
+    {
+      "index": 21,
+      "case_id": "clarify1041-boundary-02",
+      "kind": "boundary",
+      "group": "self_contained_explanation",
+      "text": "Explicá qué es un sinónimo.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Un sinónimo es una palabra que tiene un significado similar o idéntico al de otra palabra.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Correct useful definition of synonym.",
+      "trace": "t22"
+    },
+    {
+      "index": 22,
+      "case_id": "clarify1041-boundary-03",
+      "kind": "boundary",
+      "group": "quoted_opening",
+      "text": "Traduce al inglés la frase «abre eso».",
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "model_response_rejected;recovery:model_response_rejected;retry_exhausted",
+        "diagnostic": "model_response_rejected;recovery:model_response_rejected;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Composition failed on quoted translation.",
+      "trace": "t23"
+    },
+    {
+      "index": 23,
+      "case_id": "clarify1041-boundary-04",
+      "kind": "boundary",
+      "group": "future_condition",
+      "text": "Si después te doy el nombre, te pediré que lo abras; por ahora esperá.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No puedo hacer eso. Está fuera de mi ámbito de acción.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "False scope denial instead of respecting deferred action.",
+      "trace": "t24"
+    },
+    {
+      "index": 24,
+      "case_id": "clarify1041-boundary-05",
+      "kind": "boundary",
+      "group": "negative_action",
+      "text": "No llames a nadie ni envíes mensajes.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Entendido, no haré nada sin pedirte permiso. ¿Qué necesitas ahora?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Acknowledges no action, no calls/messages/contact reads or invented cancellation.",
+      "trace": "t25"
+    }
+  ],
+  "scope": "No claim full dialogue category repaired. Technical exit0 is not quality green. Owner omitted automated tests."
+}

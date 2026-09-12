@@ -1,0 +1,20 @@
+{
+  "utc": "2026-09-12T12:42:24.814232+00:00",
+  "before_sha256": "11fc78167e4e935b5f2e63913214e88e4d966923496a4b808dfc54bf83c00229",
+  "after_sha256": "66d566758103a2b34b49b00490a4e73849f28fcb17e867e4515a9ae5e2a5c904",
+  "before_covered": 156,
+  "after_covered": 157,
+  "open": 585,
+  "not_applicable": 0,
+  "credited_ids": [
+    "H0711"
+  ],
+  "cause_only_updated": [
+    "H0001",
+    "H0696",
+    "H0326",
+    "H0605"
+  ],
+  "backup": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1040-private\\requirements-before-adjud156.jsonl",
+  "immutable_fields_preserved": true
+}

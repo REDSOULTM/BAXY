@@ -5512,6 +5512,49 @@ def _browser_page_domain(text: str) -> bool:
     return not document_domain or explicit_browser
 
 
+def browser_back_arguments(text: str) -> dict[str, str] | None:
+    """Ground one complete browser-history request, preserving its full scope.
+
+    The closed grammar supplies the enum identity, not rewritten user text.
+    Quotes, prohibitions, document pages, extra effects and deferred requests
+    do not match; their existing interpretation and conservation remain.
+    """
+
+    # Keep the complete speech act. Broad request envelopes are not needed
+    # for this closed grammar and must not erase qualifiers or conditions.
+    if not text or len(text) > 16_384:
+        return None
+    folded = _fold(text).strip(" ¿?¡!. ")
+    if not _browser_page_domain(folded):
+        return None
+    spanish_head = (
+        r"(?:regresa|regrese|vuelve|volve|retrocede|"
+        r"(?:quiero|necesito)\s+(?:volver|regresar|retroceder))"
+    )
+    spanish_target = (
+        r"(?:a\s+)?(?:la\s+)?pagina\s+(?:anterior|previa|de\s+antes)|"
+        r"(?:una|1)\s+pagina"
+    )
+    english_request = (
+        r"(?:go|move)\s+back\s+(?:(?:one|a(?:\s+single)?)\s+page|"
+        r"to\s+the\s+(?:previous|prior)\s+page)|"
+        r"return\s+to\s+the\s+(?:previous|prior)\s+page"
+    )
+    context = (
+        r"(?:\s+(?:en\s+(?:el|este)\s+navegador|"
+        r"in\s+(?:the|this|current)\s+(?:browser|tab)))?"
+    )
+    prefix = r"(?:(?:por\s+favor|please)\s*[,;:]?\s+)?"
+    courtesy = r"(?:\s*,?\s*(?:por\s+favor|please))?"
+    if re.fullmatch(
+        rf"{prefix}(?:{spanish_head}\s+(?:{spanish_target})|{english_request})"
+        rf"{context}{courtesy}",
+        folded,
+    ) is None:
+        return None
+    return {"action": "back"}
+
+
 def explicit_window_title(text: str) -> str | None:
     """Copy one explicitly named window title; never infer a process or HWND."""
     matches = tuple(
@@ -7850,7 +7893,8 @@ def _is_direct_request(text: str) -> bool:
         text = topic.group("body")
     text = _negative_state_question_body(text) or text
     if (
-        _direct_process_inventory_request(text)
+        browser_back_arguments(text) is not None
+        or _direct_process_inventory_request(text)
         or _explicit_google_search_query(text) is not None
     ):
         return True
@@ -13316,6 +13360,9 @@ def resolve_explicit_effects(
         application_names,
     )
     authenticated_games = build_game_catalog_index(game_catalog)
+    if "browser.control" in available and browser_back_arguments(text) is not None:
+        # A complete history request is not a destination to search.
+        return EffectIntent(("browser.control",), (text,))
     destination = _symbolic_web_destination(text)
     if (
         destination is not None

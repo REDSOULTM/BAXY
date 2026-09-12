@@ -1,0 +1,19 @@
+{
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "candidate_manifest_sha256": "ec80080e7ac8a6f31e2f6607a2dd32d6207fd51f88826823e09dc27df1eea2c4",
+  "execution_authorized": true,
+  "utc": "2026-09-12T12:45:59.536391+00:00",
+  "exit_code": 0,
+  "stopped": false,
+  "pins_unchanged": true,
+  "terminal_records": 25,
+  "session_controls_observed": 25,
+  "turn_admissions_observed": 25,
+  "app_cleanup_by_runner": false,
+  "audio_restoration_by_runner": false,
+  "quality_adjudicated": false,
+  "success_count": null,
+  "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clarify1041-profile\\journal\\missions.jsonl",
+  "target_apps_closed_by_guard": false
+}

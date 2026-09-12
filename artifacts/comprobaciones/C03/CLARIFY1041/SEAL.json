@@ -1,0 +1,56 @@
+{
+  "runner_delivered": true,
+  "schema": "clarify1041-directed-material-seal-v1",
+  "historical_case_ids": [
+    "H0610",
+    "H0694",
+    "H0735",
+    "H0160",
+    "H0271",
+    "H0639",
+    "H0091",
+    "H0140",
+    "H0181",
+    "H0562"
+  ],
+  "coverage_credit": 0,
+  "registry_sha256": "11fc78167e4e935b5f2e63913214e88e4d966923496a4b808dfc54bf83c00229",
+  "read_source_pins": {
+    "C:/Users/usuario/AppData/Local/BAXY/C03-clarify1041-proposal/panel.draft.json": "43c3d4b7553213791c615d5fcb024717647bb89a47791368d205aa89b8b4c4f1",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\DEICTIC1012\\ROOT_ADJUDICATION.json": "176f2406c1dc016203424ff4bd00a8dedd9a04e63cefaf158905d8e4bcf5ca83",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-knowledge1025-proposal/PLAN.md": "0fc3a39e32efe7bc3eb458fcad190cef8def0ed1214bf3775879e98e51dd830e",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-files1040-proposal/runner.py": "e146a028bc4817d7632fe6ad083577b7abc61f900ce0287511076610a02cd2c5",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\KNOWLEDGE1025\\ROOT_ADJUDICATION.json": "7ac525bc80363fcd22b9c1085f328226ec549cb8d3a8f68949d20d56c674e028",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-clarify1041-proposal/PLAN_DRAFT.md": "6a760c87e1cc492e09087a50b018680934f8040ff4463e44be1f479cc2023ca8"
+  },
+  "counts": {
+    "cases": 25,
+    "historical_positive_open": 10,
+    "failed_variant_reexecutions": 0,
+    "original_development_variants": 10,
+    "boundaries": 5,
+    "wire_lines": 50,
+    "controls": 25,
+    "session_new": 25,
+    "conditional_positive_commands": 0,
+    "normal_diagnostic_commands": 25,
+    "maximum_turn_admissions": 25,
+    "maximum_reportable_terminals": 25,
+    "case_final_terminals": 25,
+    "maximum_internal_confirmations": 0
+  },
+  "candidate": {
+    "commit": null,
+    "execution_authorized_by_proposal": false,
+    "tests_run": false,
+    "status": "current_source_binding_pending_root"
+  },
+  "files": {
+    "turns.jsonl": "043ef435a303e9534496c05fb630017ae731fcef6c291d4f53f07fd26fd3f95f",
+    "case-map.json": "34cd119b12d60e190719d21bf61b80d60692fab79c9b7b9890e1804cb32df050",
+    "panel.json": "2ce2f2ec4d17e9350d3b0a50c4095d6ea2c0a1c3169c7c3acbd24b7ec286bbd4",
+    "PLAN.md": "a33f16a880f50552f52716a3834e326f3144211f119527b03990b4789eba0a06",
+    "requirements-snapshot.jsonl": "11fc78167e4e935b5f2e63913214e88e4d966923496a4b808dfc54bf83c00229"
+  },
+  "execution_authorized_by_proposal": false
+}

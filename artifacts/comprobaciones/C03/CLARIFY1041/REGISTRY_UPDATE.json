@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-12T12:47:53.950029+00:00",
+  "before_sha256": "66d566758103a2b34b49b00490a4e73849f28fcb17e867e4515a9ae5e2a5c904",
+  "after_sha256": "be01258b0c7f52675e2686fcc806df7f0cb696de34b8d5b37d9ae0b200a67424",
+  "before_covered": 157,
+  "after_covered": 158,
+  "open": 584,
+  "not_applicable": 0,
+  "credited_ids": [
+    "H0140"
+  ],
+  "backup": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clarify1041-private\\requirements-before-adjud157.jsonl",
+  "immutable_fields_preserved": true
+}

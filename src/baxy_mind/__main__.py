@@ -4346,6 +4346,9 @@ def _explicit_arguments_from_evidence(
 
         return value.strip().rstrip(".!?").rstrip()
 
+    if operation == "browser.control":
+        return effect_intent.browser_back_arguments(evidence)
+
     if operation == "system.status":
         return _explicit_system_status_scope(evidence)
 
@@ -5037,6 +5040,7 @@ def _ground_explicit_arguments(
         "audio.mute",
         "audio.volume",
         "audio.volume.adjust",
+        "browser.control",
         "browser.navigate",
         "browser.navigate.named",
         "calendar.event.list",
@@ -5050,6 +5054,7 @@ def _ground_explicit_arguments(
         # Core's verified installed application/game snapshots own identity
         # canonicalization. Requiring a canonical display name or opaque AppID
         # to also appear literally in user text would discard that authority.
+        # Browser history directions cross a complete-request grammar.
         # Browser destinations cross an equally closed parser: only a literal
         # URL, bare host, named service, or explicitly requested Google query
         # encoded by that parser is canonical. The media
