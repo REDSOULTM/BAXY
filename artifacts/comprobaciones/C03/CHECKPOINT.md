@@ -1,3 +1,25 @@
+## AGENDA1110 — estado vigente 2026-09-12T23:12:53.2394109Z
+
+Parcial: 8 aprobados, 1 fallidos, 5 sin ejecutar; 4 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 202/742 | 540 | 0 | >=76 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas del 12 de septiembre: 28 Kiro y 44 desde el retorno antes de1110; no contar revalidaciones ni verification_updated_at como primera alta.
+
+Siguiente acción: Medir MESSAGING1113 con fuente1109 actual antes de integrar1111 y ejecutar DIALOGUE1112. H0137 sigue abierto por inversión del beneficiario. Límites9..12 conservados: fallos no afectados, no repetir sin hipótesis;13 conceptual pasado en1104, ruta no alterada por1109, sin nueva revalidación. Cero tests por instrucción del dueño; goal activo.
+
+Evidencia: `artifacts/comprobaciones/C03/AGENDA1110/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 199.40 s acumulados; pico GPU 3497.56 MiB; pico RAM 1582.11 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque AGENDA1110 precedente. -->
+
 ## AGENDA1108 — estado vigente 2026-09-12T22:46:26.1663680Z
 
 Parcial: 1 aprobados, 1 fallidos, 9 sin ejecutar; 0 créditos.
