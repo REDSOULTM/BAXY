@@ -77,9 +77,47 @@ def main(argv: list[str]) -> int:
                  for folder in {app.parent, published.parent}
                  for path in sorted(folder.iterdir())
                  if path.is_file() and path.suffix.lower() in {".exe", ".dll", ".json"}}
-    if inventory != provenance["binary_pins"]:
-        raise SystemExit("binary inventory differs from the recorded preparation; rebuild and write a "
-                         "fresh receipt instead of reusing that one")
+
+    # Si la tanda trae recibo de build propio, esa es su procedencia y los binarios son suyos.
+    # Si no, se reutiliza la preparación que los produjo y se exige que sigan siendo byte a byte
+    # los mismos: sin eso habría que compilar, y no se finge una compilación que no ocurrió.
+    own_receipt = private / "BUILD_RECEIPT.json"
+    if own_receipt.is_file():
+        receipt = json.loads(own_receipt.read_text(encoding="utf-8"))
+        for key, expected in (("build_exit", 0), ("shutdown_exit", 0), ("warmup_exit", 0)):
+            if receipt.get(key) != expected:
+                raise SystemExit(f"own build receipt reports {key}={receipt.get(key)}")
+        if not receipt.get("effective_equals_published") or not receipt.get("fingerprint_matches"):
+            raise SystemExit("own build receipt does not attest effective==published and fingerprint")
+        logs = {str((private / name).resolve()): sha(private / name)
+                for name in ("build.log", "warmup.log", "shutdown.log")}
+        preparation = {"build_exit": receipt["build_exit"], "shutdown_exit": receipt["shutdown_exit"],
+                       "warmup_exit": receipt["warmup_exit"],
+                       "receipt_path": str(own_receipt.resolve()),
+                       "receipt_sha256": sha(own_receipt), "logs": logs}
+        reuse = {"receipt_from": f"C03-{batch} own build on this machine", "no_build_for_this_batch": False,
+                 "why": "The .NET change required a real compilation, so this batch carries its own "
+                        "receipt: build, one product warmup that substitutes the effective Core, and "
+                        "the compiler server shutdown.",
+                 "verified_here": ["build_exit 0", "warmup_exit 0", "shutdown_exit 0",
+                                   "source_fingerprint == recorded_fingerprint",
+                                   "effective Core == published Core", "runtime pins re-hashed"]}
+    else:
+        if inventory != provenance["binary_pins"]:
+            raise SystemExit("binary inventory differs from the recorded preparation; rebuild and "
+                             "write a fresh receipt instead of reusing that one")
+        preparation = provenance["preparation"]
+        reuse = {
+            "receipt_from": "SYSTEM1028 root preparation on this same machine",
+            "no_build_for_this_batch": True,
+            "why": "Only Python changed since that build; main.py's .NET source fingerprint equals the "
+                   "recorded build state and the complete binary inventory re-hashed here is "
+                   "byte-identical, so these binaries are that build's output. No compilation was "
+                   "performed for this batch and none is claimed.",
+            "verified_here": ["source_fingerprint == recorded_fingerprint",
+                              "binary inventory identical to the recorded preparation",
+                              "effective Core == published Core", "runtime pins re-hashed"],
+        }
 
     config = json.loads(MANIFEST.read_text(encoding="utf-8"))
     runtime_paths = {MANIFEST.resolve(), pathlib.Path(config["gguf"]).resolve(),
@@ -109,18 +147,8 @@ def main(argv: list[str]) -> int:
         "build_state_path": str(state),
         "build_state_sha256": sha(state),
         "build_fingerprint": fingerprint,
-        "preparation": provenance["preparation"],
-        "preparation_reuse": {
-            "receipt_from": "SYSTEM1028 root preparation on this same machine",
-            "no_build_for_this_batch": True,
-            "why": "Only Python changed since that build; main.py's .NET source fingerprint equals the "
-                   "recorded build state and the complete binary inventory re-hashed here is "
-                   "byte-identical, so these binaries are that build's output. No compilation was "
-                   "performed for this batch and none is claimed.",
-            "verified_here": ["source_fingerprint == recorded_fingerprint",
-                              "binary inventory identical to the recorded preparation",
-                              "effective Core == published Core", "runtime pins re-hashed"],
-        },
+        "preparation": preparation,
+        "preparation_reuse": reuse,
         "tests_run": False,
         "validation_policy": "owner_directed_no_tests",
         "owner_instruction": OWNER_INSTRUCTION,
