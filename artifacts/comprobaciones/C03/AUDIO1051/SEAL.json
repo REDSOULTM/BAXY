@@ -4,7 +4,7 @@
     "panel.json": "ea866ec53611b8f978019ebea50a244c86865c9e931e4846e904bbe25fb55e48",
     "turns.jsonl": "e9bad516358b26c2939e18713cc923910e18e8bc919c6b804c003227dd607244",
     "case-map.json": "1d2c82fcb3bfdb7b0c9c1e241bc3a9e371dbe32a2ae0b39c2349818f48e29c98",
-    "PLAN.md": "fd97246d05379300a660603910ed3ce0594104b941a728ad24b7d79fc1875b77",
+    "PLAN.md": "79c377122a12ef4ba9ce1b6fcd7935fb1a97212327dd6341540d383fc479e2f7",
     "requirements-snapshot.jsonl": "2516a3ea3a10a000c50e511015fbd3a93970702b52383feb0716ef2fba870518"
   },
   "registry_sha256": "2516a3ea3a10a000c50e511015fbd3a93970702b52383feb0716ef2fba870518",
@@ -27,8 +27,9 @@
     "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Providers.Windows\\Audio\\AudioContracts.cs": "7a06452450a307713cd746e13bef2b40a6aeb8277c591d544c09cdac2175be6f",
     "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Providers.Windows\\Audio\\WindowsAudioControlProvider.cs": "9f2cac8fd94d4a30370fb5b609db96c1f403772dfd051787371403037b78159a",
     "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Kernel\\Operations\\ProductCatalog.cs": "22362a7ae7b62b6b28972ffdbe974e6a3964a37f626e3dd990d4c046feddc938",
-    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1051-proposal\\readonly_state.py": "ef67cdf0dcfb7c645ae4fdfe987e4a7ad9bc82fb9379744fbf3d76f93a74251b",
-    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Providers.Windows\\External\\WindowsDeviceControlAdapter.cs": "d9f305137c4cc9b420bc3feb2f0a4f09ebe9bd35c7a62dbc6474b5e882e01494"
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1051-proposal\\readonly_state.py": "0e893b0eb05fe3670c408e0f59159f5954b803e107c7f7b37e1347f429c17d9f",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Providers.Windows\\External\\WindowsDeviceControlAdapter.cs": "d9f305137c4cc9b420bc3feb2f0a4f09ebe9bd35c7a62dbc6474b5e882e01494",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Security.Windows\\WindowsPrivateStorage.cs": "8fae0952757ff1b47326ffabd969ca25164f61c0ef794878a82348b4d996a158"
   },
   "counts": {
     "cases": 14,
