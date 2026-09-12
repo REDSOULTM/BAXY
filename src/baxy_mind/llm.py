@@ -5147,7 +5147,7 @@ def compose_visible_defect(
                     r"\b(?:(?P<negative>no|not|nothing|isn't|isn’t|aren't|aren’t)\s+)?"
                     r"(?:(?:se|est[aá]|est[aá]n|is|are|sigue|still|currently|"
                     r"hay|nada|ahora|actualmente)\s+)*"
-                    r"(?:(?P<playing>sonando|suena|reproduciendo|playing)|"
+                    r"(?:(?P<playing>sonando|suena|reproduci[eé]ndo(?:se)?|playing)|"
                     r"(?P<paused>pausad[oa]s?|en\s+pausa|paused)|"
                     r"(?P<stopped>detenid[oa]s?|parad[oa]s?|stopped))\b",
                     playback_text,

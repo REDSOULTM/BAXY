@@ -1,0 +1,5 @@
+# Revisión de raíz — MUSIC1070
+
+La raíz comparó el primer borrador de reanudación con el recibo media.control y la lectura real posterior: el título y artista coinciden y el estado pasó de pausado a reproduciéndose. El texto completo fiel fue rechazado por missing_state. Se leyó el único hunk: la forma reflexiva reproduciéndose se incorpora a la misma alternativa morfológica que ya admite reproduciendo, con y sin tilde. Se conservan negación, estado observado, título y artista; ninguna respuesta fija, operación ni proveedor nuevo.
+
+Se integra después de adjudicar MUSIC1069. La tanda no acredita H0110: el efecto sin respuesta útil falló. MUSIC1071 volverá a medir ese literal y sus pares originales, y continuará controles pendientes; las pausas acreditadas no se vuelven a ejecutar. Fuente sólo Python; el siguiente prepare comprobará la reutilización de BUILD1064 por fingerprint .NET y hashes de binarios idénticos. Suites, Fast y Full omitidos por orden del dueño, no verdes. No se afirma validación funcional posterior del parche por inspección estática.

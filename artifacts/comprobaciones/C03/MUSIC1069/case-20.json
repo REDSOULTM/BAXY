@@ -1,0 +1,52 @@
+{
+  "index": 20,
+  "terminal": [
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Pasa a la siguiente pista.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    }
+  ],
+  "exit": {
+    "case_index": 20,
+    "case_id": "music1037-boundary-03",
+    "segment_sha256": "c56eb0c38971dcad9c3f088264610a26a272508ffe07d4f7c3cde4f2e8b485a0",
+    "fixture_receipt_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1069-proposal\\private\\fixture-20.json",
+    "fixture_receipt_sha256": "d45de06651d7632c5ae07ea087190d19e095a20518d90a90d9feefde341e3a50",
+    "tests_run": false,
+    "validation_policy": "owner_directed_no_tests",
+    "candidate_manifest_sha256": "f7d1fab37411cfbdccd8ea7eb912ad913026efca93acb39435b0c8c3037cdb4f",
+    "execution_authorized": true,
+    "utc": "2026-09-12T17:21:21.917787+00:00",
+    "exit_code": 0,
+    "stopped": false,
+    "pins_unchanged": true,
+    "terminal_records": 1,
+    "session_controls_observed": 1,
+    "turn_envelopes_observed": 1,
+    "real_submission_events_observed": 1,
+    "case_final_records": 1,
+    "confirmation_submissions_observed": 0,
+    "reviews_observed": 0,
+    "guarded_stop_index": null,
+    "host_stop_proves_unexecuted_queue": false,
+    "app_cleanup_by_runner": false,
+    "audio_restoration_by_runner": false,
+    "quality_adjudicated": false,
+    "success_count": null,
+    "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1069-profile\\journal\\missions.jsonl",
+    "target_apps_closed_by_guard": false
+  },
+  "resources": {
+    "utc": "2026-09-12T17:21:21.917787+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1534.203125,
+    "seconds": 19.860000000000582,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  }
+}

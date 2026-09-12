@@ -1,0 +1,52 @@
+{
+  "index": 22,
+  "terminal": [
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "No pude detener la música como querías. El sistema no entendió la solicitud.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    }
+  ],
+  "exit": {
+    "case_index": 22,
+    "case_id": "music1037-boundary-05",
+    "segment_sha256": "65acb79d3b36ce4905f275b590a5ff9a9dbba56b71bcda2d9e24fcda3ac66185",
+    "fixture_receipt_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1069-proposal\\private\\fixture-22.json",
+    "fixture_receipt_sha256": "faade0233a16a1bc4a266a69fd44fd53b551e489180c51357101c756f0d95add",
+    "tests_run": false,
+    "validation_policy": "owner_directed_no_tests",
+    "candidate_manifest_sha256": "f7d1fab37411cfbdccd8ea7eb912ad913026efca93acb39435b0c8c3037cdb4f",
+    "execution_authorized": true,
+    "utc": "2026-09-12T17:25:06.046816+00:00",
+    "exit_code": 0,
+    "stopped": false,
+    "pins_unchanged": true,
+    "terminal_records": 1,
+    "session_controls_observed": 1,
+    "turn_envelopes_observed": 1,
+    "real_submission_events_observed": 1,
+    "case_final_records": 1,
+    "confirmation_submissions_observed": 0,
+    "reviews_observed": 0,
+    "guarded_stop_index": null,
+    "host_stop_proves_unexecuted_queue": false,
+    "app_cleanup_by_runner": false,
+    "audio_restoration_by_runner": false,
+    "quality_adjudicated": false,
+    "success_count": null,
+    "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1069-profile\\journal\\missions.jsonl",
+    "target_apps_closed_by_guard": false
+  },
+  "resources": {
+    "utc": "2026-09-12T17:25:06.045786+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1615.578125,
+    "seconds": 26.29699999999866,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  }
+}

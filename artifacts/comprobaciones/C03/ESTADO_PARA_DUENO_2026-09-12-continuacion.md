@@ -1,3 +1,27 @@
+La pausa acredita dos requisitos de la encuesta: H0046 y H0637. Ambos literales y dos variantes en español e inglés ejecutaron pausas reales y respondieron con los datos correctos. La reanudación ya ejecuta el control, pero sigue abierta porque una respuesta fiel fue rechazada por no reconocer reproduciéndose; su corrección mínima queda integrada para la próxima medición.
+
+Encuesta 186/742, 556 abiertos, 0 no aplican; al menos 60 primeras altas verificadas en 24 h; categorías cerradas 0/35; C03 formal 3/11. Sin fecha de cierre demostrable. Suites, Fast y Full omitidos por orden del dueño, no verdes. El objetivo continúa activo.
+
+## MUSIC1069 — estado vigente 2026-09-12T17:26:50.786460+00:00
+
+Parcial: 8 aprobados, 2 fallidos, 13 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 186/742 | 556 | 0 | >=60 | 0/35 |
+
+Procedencia de primeras altas: Al menos58 primeras altas verificadas hoy antes deesta tanda:28Kiro y30retorno; añadir las2altas actuales, sin revalidaciones.
+
+Siguiente acción: Integrar MUSIC1070 después de esta adjudicación: corregir reconocimiento morfológico de reproduciéndose en respuesta fiel verificada. MUSIC1071 conserva seis literales y ocho variantes pendientes de controles existentes; no repetir pausas acreditadas. El límite narrativo22 queda fallido con diagnóstico1072 pendiente; no reejecutarlo sin hipótesis causal. Cuatro límites pasan, no se relaja la rúbrica. C03 sigue activo, formal3/11.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1069/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 249.64 s acumulados; pico GPU 3497.56 MiB; pico RAM 1939.50 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1069 precedente. -->
+
 Las correcciones de reconocimiento de pausa y reanudación están integradas para la siguiente medición. El literal de pausa ya produjo el estado y una respuesta fiel; faltan sus dos variantes para dar crédito. Esta tanda parcial termina con 1 aprobado, 3 fallidos y 19 sin ejecutar, sin repetirlos todos por los fallos.
 
 Pico VRAM: 3497.56 MiB; pico RAM: 1614.36 MiB, separados frente a 4096 MiB. Encuesta 184/742, 558 abiertos, 0 no aplican; al menos 58 primeras altas en 24 h; categorías cerradas 0/35; C03 formal 3/11. Sin estimación de cierre defendible. La compilación necesaria de los cambios anteriores terminó con código 0 y servidores cerrados; suites, Fast y Full omitidos por orden del dueño, no verdes.

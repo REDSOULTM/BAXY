@@ -1,0 +1,269 @@
+{
+  "schema": "music1069-root-adjudication-v1",
+  "decided_at_utc": "2026-09-12T17:26:50.786460+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "31e7d33a62292ba496a2839acf7b5bd09ab96031",
+  "decisions_sha256": "4663d59d8199a369db9b4c05f6b41385e126fd3186a5710abfcb0995c6bb3a93",
+  "passed": 8,
+  "failed": 2,
+  "unexecuted": 13,
+  "credits": [
+    "H0046",
+    "H0637"
+  ],
+  "counters": {
+    "covered": 186,
+    "open": 556,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_before": 58,
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_evidence_note": "Al menos58 primeras altas verificadas hoy antes deesta tanda:28Kiro y30retorno; añadir las2altas actuales, sin revalidaciones.",
+    "categories_closed_after": 0,
+    "categories_total": 35,
+    "first_covered_last24h_after": 60
+  },
+  "resources": {
+    "seconds_sum": 249.6440000000075,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1939.5
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0046",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        8,
+        9
+      ],
+      "reason": "Pausó la pista actual verificada y publicó su título, artista y estado reales. Dos variantes pertinentes ES/EN pasaron sobre pistas distintas en esta misma tanda.",
+      "observation_note": "Aurora de cobre playing antes y paused después. Invocación nueva media.control 6766acee-886b-49e2-ae63-5a7bb5b2063e. Se concede con pares8/9, no por revisión de código.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "976c1585-c0d9-437a-a60c-184c9883774d",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        },
+        {
+          "invocation_id": "6766acee-886b-49e2-ae63-5a7bb5b2063e",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "case_id": "music1037-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Interpretó dejar en pausa, pausó Rio de cristal y publicó una respuesta fiel con título y artista.",
+      "observation_note": "Rio de cristal playing→paused; media.control 0a893759-0877-4299-9021-675cbc6a4056.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "5f37bf78-70ff-45dd-b6f6-0f8d5409c93e",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        },
+        {
+          "invocation_id": "0a893759-0877-4299-9021-675cbc6a4056",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "case_id": "music1037-dev-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Interpretó la petición inglesa de pausar la pista actual, ejecutó la pausa y describió el estado resultante con título y artista reales.",
+      "observation_note": "Sendero azul playing→paused; media.control 38041f6c-ab20-44d4-9451-0d790d3e83f3. La respuesta presente is already paused describe el estado resultante; no dice que estuviese pausada antes.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "8764c920-4fc6-4e01-91be-b99f239a281a",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        },
+        {
+          "invocation_id": "38041f6c-ab20-44d4-9451-0d790d3e83f3",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0110",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Reanudó la pista mediante media.control verificado, pero no publicó respuesta final: composition_failed. Sigue open por el falso rechazo de reproduciéndose como descripción de playing.",
+      "observation_note": "Sendero azul paused→playing; media.control a4db3d12-1304-4c7e-acc9-cdcff01ef428. Borrador completo fiel rechazado missing_state. No se concede crédito por el efecto sin respuesta útil.",
+      "terminal_kind": "composition_failed",
+      "new_invocations": [
+        {
+          "invocation_id": "6b4ce7de-ce24-4f18-9854-29494a9dfe07",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        },
+        {
+          "invocation_id": "a4db3d12-1304-4c7e-acc9-cdcff01ef428",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "H0637",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        8,
+        9
+      ],
+      "reason": "Pausó la pista actual verificada y publicó título, artista y estado reales. Los dos pares pertinentes ES/EN de pausa pasaron en esta tanda.",
+      "observation_note": "Aurora de cobre playing→paused; media.control 3b8811d5-4077-4406-bea5-74e7cb622735. Se ejecutó este literal pendiente para completar crédito de pausa tras aislar el fallo de composición de reanudación; criterios y texto originales intactos.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "4f61e92d-bfbf-4271-af7b-5c5a41d5bc57",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        },
+        {
+          "invocation_id": "3b8811d5-4077-4406-bea5-74e7cb622735",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "case_id": "music1037-boundary-01",
+      "verdict": "passed",
+      "reason": "Reconoció la prohibición y mantuvo la reproducción como estaba, sin ejecutar controles.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Respuesta: ¡Claro! La música sigue como está. La cola propia permaneció pausada; ninguna operación solicitada fuera del memory.status inicial del conductor.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "298fc1c6-7ee8-4ef1-8aa5-a9fa9b7ef7a1",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "case_id": "music1037-boundary-02",
+      "verdict": "passed",
+      "reason": "Explicó que pausar detiene temporalmente la reproducción; no interpretó la pregunta conceptual como una orden.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Respuesta útil de significado; reiniciarla se entiende como volver a reproducir y no afirma volver al comienzo. Sin media.control ni lectura multimedia pedida por el producto; sesión propia pausada antes y después.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "390af2dc-6cf1-4195-bfd4-8535335368bb",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "case_id": "music1037-boundary-03",
+      "verdict": "passed",
+      "reason": "Tradujo la frase citada correctamente y no la ejecutó.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Respuesta: Pasa a la siguiente pista. Ningún media.control; sesión propia pausada antes y después.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "a4e0d71d-1aa2-410b-82a6-03461a0f143a",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 21,
+      "case_id": "music1037-boundary-04",
+      "verdict": "passed",
+      "reason": "Respondió al condicional futuro sin ejecutar ni programar reproducción.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Acuse conversacional: Perfecto, ya lo tengo en cuenta. ¡A cualquier hora, dime qué pones! No afirma una grabación persistente ni ejecución; no hubo operaciones multimedia y la sesión permaneció pausada.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "fb32e5a5-b7cf-4d0d-9f80-d712a6269009",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 22,
+      "case_id": "music1037-boundary-05",
+      "verdict": "failed",
+      "reason": "Convirtió el relato de una acción de ayer en una petición actual fallida y respondió que no pudo detener la música.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Texto original: Ayer detuve la música antes de salir. Ningún media.control; no hubo efecto y la sesión siguió pausada. No es una regresión demostrada: era primera ejecución. Diagnóstico1072 externo pendiente.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "db1b5cd3-2071-4007-ada8-da111ca0e45e",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [
+    2,
+    3,
+    4,
+    5,
+    7,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17
+  ],
+  "next_action": "Integrar MUSIC1070 después de esta adjudicación: corregir reconocimiento morfológico de reproduciéndose en respuesta fiel verificada. MUSIC1071 conserva seis literales y ocho variantes pendientes de controles existentes; no repetir pausas acreditadas. El límite narrativo22 queda fallido con diagnóstico1072 pendiente; no reejecutarlo sin hipótesis causal. Cuatro límites pasan, no se relaja la rúbrica. C03 sigue activo, formal3/11.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

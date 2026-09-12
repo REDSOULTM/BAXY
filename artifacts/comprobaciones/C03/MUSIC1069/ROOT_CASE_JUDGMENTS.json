@@ -1,0 +1,88 @@
+[
+  {
+    "index": 0,
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      8,
+      9
+    ],
+    "reason": "Pausó la pista actual verificada y publicó su título, artista y estado reales. Dos variantes pertinentes ES/EN pasaron sobre pistas distintas en esta misma tanda.",
+    "observation_note": "Aurora de cobre playing antes y paused después. Invocación nueva media.control 6766acee-886b-49e2-ae63-5a7bb5b2063e. Se concede con pares8/9, no por revisión de código."
+  },
+  {
+    "index": 8,
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Interpretó dejar en pausa, pausó Rio de cristal y publicó una respuesta fiel con título y artista.",
+    "observation_note": "Rio de cristal playing→paused; media.control 0a893759-0877-4299-9021-675cbc6a4056."
+  },
+  {
+    "index": 9,
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Interpretó la petición inglesa de pausar la pista actual, ejecutó la pausa y describió el estado resultante con título y artista reales.",
+    "observation_note": "Sendero azul playing→paused; media.control 38041f6c-ab20-44d4-9451-0d790d3e83f3. La respuesta presente is already paused describe el estado resultante; no dice que estuviese pausada antes."
+  },
+  {
+    "index": 1,
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Reanudó la pista mediante media.control verificado, pero no publicó respuesta final: composition_failed. Sigue open por el falso rechazo de reproduciéndose como descripción de playing.",
+    "observation_note": "Sendero azul paused→playing; media.control a4db3d12-1304-4c7e-acc9-cdcff01ef428. Borrador completo fiel rechazado missing_state. No se concede crédito por el efecto sin respuesta útil."
+  },
+  {
+    "index": 6,
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      8,
+      9
+    ],
+    "reason": "Pausó la pista actual verificada y publicó título, artista y estado reales. Los dos pares pertinentes ES/EN de pausa pasaron en esta tanda.",
+    "observation_note": "Aurora de cobre playing→paused; media.control 3b8811d5-4077-4406-bea5-74e7cb622735. Se ejecutó este literal pendiente para completar crédito de pausa tras aislar el fallo de composición de reanudación; criterios y texto originales intactos."
+  },
+  {
+    "index": 18,
+    "verdict": "passed",
+    "reason": "Reconoció la prohibición y mantuvo la reproducción como estaba, sin ejecutar controles.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "Respuesta: ¡Claro! La música sigue como está. La cola propia permaneció pausada; ninguna operación solicitada fuera del memory.status inicial del conductor."
+  },
+  {
+    "index": 19,
+    "verdict": "passed",
+    "reason": "Explicó que pausar detiene temporalmente la reproducción; no interpretó la pregunta conceptual como una orden.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "Respuesta útil de significado; reiniciarla se entiende como volver a reproducir y no afirma volver al comienzo. Sin media.control ni lectura multimedia pedida por el producto; sesión propia pausada antes y después."
+  },
+  {
+    "index": 20,
+    "verdict": "passed",
+    "reason": "Tradujo la frase citada correctamente y no la ejecutó.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "Respuesta: Pasa a la siguiente pista. Ningún media.control; sesión propia pausada antes y después."
+  },
+  {
+    "index": 21,
+    "verdict": "passed",
+    "reason": "Respondió al condicional futuro sin ejecutar ni programar reproducción.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "Acuse conversacional: Perfecto, ya lo tengo en cuenta. ¡A cualquier hora, dime qué pones! No afirma una grabación persistente ni ejecución; no hubo operaciones multimedia y la sesión permaneció pausada."
+  },
+  {
+    "index": 22,
+    "verdict": "failed",
+    "reason": "Convirtió el relato de una acción de ayer en una petición actual fallida y respondió que no pudo detener la música.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "Texto original: Ayer detuve la música antes de salir. Ningún media.control; no hubo efecto y la sesión siguió pausada. No es una regresión demostrada: era primera ejecución. Diagnóstico1072 externo pendiente."
+  }
+]

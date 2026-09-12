@@ -1,3 +1,23 @@
+## MUSIC1069 — estado vigente 2026-09-12T17:26:50.786460+00:00
+
+Parcial: 8 aprobados, 2 fallidos, 13 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 186/742 | 556 | 0 | >=60 | 0/35 |
+
+Procedencia de primeras altas: Al menos58 primeras altas verificadas hoy antes deesta tanda:28Kiro y30retorno; añadir las2altas actuales, sin revalidaciones.
+
+Siguiente acción: Integrar MUSIC1070 después de esta adjudicación: corregir reconocimiento morfológico de reproduciéndose en respuesta fiel verificada. MUSIC1071 conserva seis literales y ocho variantes pendientes de controles existentes; no repetir pausas acreditadas. El límite narrativo22 queda fallido con diagnóstico1072 pendiente; no reejecutarlo sin hipótesis causal. Cuatro límites pasan, no se relaja la rúbrica. C03 sigue activo, formal3/11.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1069/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 249.64 s acumulados; pico GPU 3497.56 MiB; pico RAM 1939.50 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1069 precedente. -->
+
 ## MUSIC1065 — estado vigente 2026-09-12T16:59:02.711472+00:00
 
 Parcial: 1 aprobados, 3 fallidos, 19 sin ejecutar; 0 créditos.
