@@ -4199,6 +4199,24 @@ def _claims_a_relaunch(folded: str) -> bool:
     ) is not None
 
 
+def _claims_the_target_was_open_before(folded: str) -> bool:
+    """True when the reply asserts the target was ALREADY open before this request.
+
+    Only unambiguous prior-state claims count. «ya está abierta» right after opening
+    it is a true statement about the present, so it stays out; «ya estaba», «ya la
+    tenía» and «was already running» assert a state the receipt may deny.
+    """
+
+    return re.search(
+        r"ya\s+estaba\b|ya\s+se\s+encontraba\b|ya\s+ten[íi]a\b|"
+        r"ya\s+(?:la|lo)\s+ten[íi]a\b|ya\s+tengo\b[^.;]{0,40}abiert|"
+        r"was\s+already\b|were\s+already\b|"
+        r"already\s+(?:running|open|opened|started|launched)\s+(?:before|previously)\b|"
+        r"(?:estaba|estuvo)\s+(?:ya\s+)?(?:en\s+ejecución|en\s+ejecucion|abiert[oa]|corriendo)\b",
+        folded,
+    ) is not None
+
+
 def compose_visible_defect(
     text: str,
     intent: str,
@@ -4568,16 +4586,21 @@ def compose_visible_defect(
         kind == "operation"
         and operation == "app.open"
         and polarity == "success"
-        and _app_open_was_already_running(situation)
-        and (
+    ):
+        already_running = _app_open_was_already_running(situation)
+        if already_running and (
             (_claims_it_performed_the_open(folded)
              and not _states_it_was_already_running(folded))
             # Decir el hecho y añadir «pero la volví a abrir» lo deshace: el recibo
             # reutilizó el proceso vivo, no lo relanzó (REPAIR1030 dev-02).
             or _claims_a_relaunch(folded)
-        )
-    ):
-        return "unstated_already_running"
+        ):
+            return "unstated_already_running"
+        # La dirección espejo, que REPAIR1032 destapó en H0575: con el recibo
+        # diciendo alreadyRunning=false, «Ya tengo la calculadora abierta.» da por
+        # anterior un estado que este turno acaba de crear.
+        if not already_running and _claims_the_target_was_open_before(folded):
+            return "invented_prior_open_state"
     if _clock_only_from_situation(situation) and re.search(
         r"\bbaxy\b|confianza|sigue adelante|t[uú] eres|"
         r"parte de esta|te dice|responsable|cuidar lo que",
@@ -10571,6 +10594,11 @@ class LlmRuntime:
                 if response_language == "en"
                 else "Nombra la app. Di que ya estaba abierta. Nunca digas que la abriste "
                      "ni que la volviste a abrir."
+            ),
+            "invented_prior_open_state": (
+                "The app was closed and you opened it now. Do not say it was already open."
+                if response_language == "en"
+                else "La app estaba cerrada y la abriste ahora. No digas que ya estaba abierta."
             ),
             "missing_state": (
                 "Give the scheduled time in UTC, not the current time or a restarted countdown."

@@ -23,7 +23,9 @@ from datetime import datetime, timezone
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 BASE = pathlib.Path.home() / "AppData/Local/BAXY"
-BUILD_PROVENANCE = BASE / "C03-system1028-private/CANDIDATE_AUTHORIZED.json"
+# Procedencia de build heredable: el candidato más reciente que compiló de verdad. Se comprueba que
+# sus binarios sigan siendo byte a byte los de ahora; si no, esta tanda tiene que compilar.
+BUILD_PROVENANCE = BASE / "C03-repair1032-private/CANDIDATE_AUTHORIZED.json"
 MANIFEST = pathlib.Path.home() / "AppData/Local/BAXYRuntime/mind-runtime-v1.json"
 REGISTRY = BASE / "C03-survey-requirements336-private/requirements.jsonl"
 
@@ -108,12 +110,12 @@ def main(argv: list[str]) -> int:
                              "write a fresh receipt instead of reusing that one")
         preparation = provenance["preparation"]
         reuse = {
-            "receipt_from": "SYSTEM1028 root preparation on this same machine",
+            "receipt_from": "the most recent root build on this machine, reused by identity",
             "no_build_for_this_batch": True,
             "why": "Only Python changed since that build; main.py's .NET source fingerprint equals the "
                    "recorded build state and the complete binary inventory re-hashed here is "
-                   "byte-identical, so these binaries are that build's output. No compilation was "
-                   "performed for this batch and none is claimed.",
+                   "byte-identical to that build's output. No compilation was performed for this batch "
+                   "and none is claimed.",
             "verified_here": ["source_fingerprint == recorded_fingerprint",
                               "binary inventory identical to the recorded preparation",
                               "effective Core == published Core", "runtime pins re-hashed"],
