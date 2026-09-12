@@ -1,7 +1,11 @@
-# C03 — 169 cubiertos; ejecución continua
+# C03 — 179 cubiertos; ejecución continua
 
-**169/742 cubiertos, 573 abiertos, 0 no aplican; 0/35 categorías cerradas.**
-Últimas 24 h: al menos 43 primeras altas verificadas (28 Kiro + 15 retorno); no se cuentan revalidaciones. C03 formal: 3/11. Goal activo. Suites, Fast y Full omitidos por orden del dueño; no verdes.
+**179/742 cubiertos, 563 abiertos, 0 no aplican; 0/35 categorías cerradas.**
+Últimas 24 h: al menos 53 primeras altas verificadas (28 Kiro + 25 retorno); no se cuentan revalidaciones. C03 formal: 3/11. Goal activo. Suites, Fast y Full omitidos por orden del dueño; no verdes.
+
+SOCIAL1050: 23/25 cumplen, 2 fallan; +10 literales acreditados. Encuesta179/742,563abiertos,0NA;0/35categorías cerradas;C03formal3/11. Al menos53primerasaltas verificadas últimas24h (28Kiro+25retorno), sin revalidaciones. Saludos8 y ayuda2, cada uno con dos variantes pertinentes ES/EN actuales. Fallos: petición idiomática de ayuda en inglés no interpretada; petición de escribir sólo HOLA convertida en pregunta sobre un archivo inexistente. No repetir panel completo. Exit0,pinsintactos,sin guardas. PicoVRAM3497.56MiB; picoRAM2510.21MiB; duración86.625s. Journal sólo memory.status inicial; procesos propios recogidos por runner. Suites/Fast/Full omitidos por orden del dueño, no verdes. Próximo AUDIO1051:3literales útiles pendientes de pares,6variantes,5límites; pre/postlecturas de estado real y cero efectos esperados. Registro `2516a3ea3a10a000c50e511015fbd3a93970702b52383feb0716ef2fba870518`.
+
+## Historial previo — sus cifras y siguientes pasos son históricos
 
 RAR recuperado: 348 archivos verificados y 28 créditos Kiro auditados. Recuperación READS1035 +1 H0104 y REPAIR1036 +1 H0575, sin repetir corridas históricas. FILES1040 +1 H0711; CLARIFY1041 +1 H0140; REPAIR1042 +2 H0326/H0605. Navegador de back cerrado tras conservar historial: 14 procesos propios cerrados, 0 pendientes.
 

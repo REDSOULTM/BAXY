@@ -159,28 +159,28 @@
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "db6f7b2f27b940572cd5d178dc1c6bccca6134ad",
   "surveyVerificationCounts": {
-    "covered": 169,
-    "open": 573,
+    "covered": 179,
+    "open": 563,
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "883bd1d5d06455dbaef677d8bb92dbe7d17e72e232f10a2f517355837cc7d88f",
+  "surveyRegistrySha256": "2516a3ea3a10a000c50e511015fbd3a93970702b52383feb0716ef2fba870518",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
-  "surveyCoverageLast24h": 43,
-  "surveyCoverageLast24hNote": "Verified minimum first grants28Kiro+15return; no revalidations.",
+  "surveyCoverageLast24h": 53,
+  "surveyCoverageLast24hNote": "At least53verifiedfirstgrants in last24h:28Kiro+25return; globalexactfirstgrant countunknown; revalidation timestamps notused.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
-  "latestProductRun": "KNOWLEDGE1048",
+  "latestProductRun": "SOCIAL1050",
   "activeValidation": null,
   "activeRepairAgent": null,
   "currentUnpublishedSource": null,
-  "preparedNextPanel": "SOCIAL1050 in preparation",
-  "preparedNextPanelNote": "5 current exact literals +2 named-site variants +5 boundaries; root reviewed, candidate binding next.",
+  "preparedNextPanel": "AUDIO1051 in preparation",
+  "preparedNextPanelNote": "3 literals +6 pertinent variants +5 boundaries; current audio/brightness observations required. All cases expect no mutations.",
   "pendingOwnerClarification": null,
   "ownerLatestInstruction": "Accelerate C03 without automated tests/Fast/Full; no loss of truthful product behavior. Real sealed execution required for coverage.",
   "nextProductBlocker": null,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-12T14:12:33.234329+00:00",
+  "utcUpdated": "2026-09-12T14:35:27.567988+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -419,6 +419,41 @@
       "gpu_telemetry_available": true,
       "ram_peak_mib": 2476.09375,
       "seconds": 113.1559999999954,
+      "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+    }
+  },
+  "currentContinuation1050": {
+    "head": "0623077ef64ea32e7925fa2e681c17f93cb22088",
+    "registry_sha256": "2516a3ea3a10a000c50e511015fbd3a93970702b52383feb0716ef2fba870518",
+    "survey": 179,
+    "quality": {
+      "pass": 23,
+      "fail": 2,
+      "total": 25
+    },
+    "new_credits": 10,
+    "credited": [
+      "H0131",
+      "H0448",
+      "H0515",
+      "H0595",
+      "H0648",
+      "H0670",
+      "H0687",
+      "H0417",
+      "H0513",
+      "H0623"
+    ],
+    "next": "AUDIO1051; preparation by kiro_registry1036. Next1052 closes/interacts with owned windows eligibility only.",
+    "no_repeat": "Whole SOCIAL1050 panel; help idiom and output-only-word errors retained separately.",
+    "processes": "Product/GPU exited and collected; no build running.",
+    "resources": {
+      "utc": "2026-09-12T14:33:39.721717+00:00",
+      "violations": [],
+      "gpu_peak_mib": 3497.55859375,
+      "gpu_telemetry_available": true,
+      "ram_peak_mib": 2510.20703125,
+      "seconds": 86.625,
       "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
     }
   }

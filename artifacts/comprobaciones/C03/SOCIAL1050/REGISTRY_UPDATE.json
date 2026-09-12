@@ -1,0 +1,75 @@
+{
+  "utc": "2026-09-12T14:35:27.567988+00:00",
+  "before_sha256": "883bd1d5d06455dbaef677d8bb92dbe7d17e72e232f10a2f517355837cc7d88f",
+  "after_sha256": "2516a3ea3a10a000c50e511015fbd3a93970702b52383feb0716ef2fba870518",
+  "covered": 179,
+  "open": 563,
+  "not_applicable": 0,
+  "new_credits": 10,
+  "credited_case_ids": [
+    "H0131",
+    "H0448",
+    "H0515",
+    "H0595",
+    "H0648",
+    "H0670",
+    "H0687",
+    "H0417",
+    "H0513",
+    "H0623"
+  ],
+  "first_coverage_grants": [
+    {
+      "case_id": "H0131",
+      "utc": "2026-09-12T14:35:27.567988+00:00",
+      "evidence": "SOCIAL1050/ROOT_ADJUDICATION.json"
+    },
+    {
+      "case_id": "H0448",
+      "utc": "2026-09-12T14:35:27.567988+00:00",
+      "evidence": "SOCIAL1050/ROOT_ADJUDICATION.json"
+    },
+    {
+      "case_id": "H0515",
+      "utc": "2026-09-12T14:35:27.567988+00:00",
+      "evidence": "SOCIAL1050/ROOT_ADJUDICATION.json"
+    },
+    {
+      "case_id": "H0595",
+      "utc": "2026-09-12T14:35:27.567988+00:00",
+      "evidence": "SOCIAL1050/ROOT_ADJUDICATION.json"
+    },
+    {
+      "case_id": "H0648",
+      "utc": "2026-09-12T14:35:27.567988+00:00",
+      "evidence": "SOCIAL1050/ROOT_ADJUDICATION.json"
+    },
+    {
+      "case_id": "H0670",
+      "utc": "2026-09-12T14:35:27.567988+00:00",
+      "evidence": "SOCIAL1050/ROOT_ADJUDICATION.json"
+    },
+    {
+      "case_id": "H0687",
+      "utc": "2026-09-12T14:35:27.567988+00:00",
+      "evidence": "SOCIAL1050/ROOT_ADJUDICATION.json"
+    },
+    {
+      "case_id": "H0417",
+      "utc": "2026-09-12T14:35:27.567988+00:00",
+      "evidence": "SOCIAL1050/ROOT_ADJUDICATION.json"
+    },
+    {
+      "case_id": "H0513",
+      "utc": "2026-09-12T14:35:27.567988+00:00",
+      "evidence": "SOCIAL1050/ROOT_ADJUDICATION.json"
+    },
+    {
+      "case_id": "H0623",
+      "utc": "2026-09-12T14:35:27.567988+00:00",
+      "evidence": "SOCIAL1050/ROOT_ADJUDICATION.json"
+    }
+  ],
+  "backup": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-social1050-private\\requirements-before-adjud169.jsonl",
+  "immutable_fields_preserved": true
+}
