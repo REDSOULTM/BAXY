@@ -1,15 +1,15 @@
 {
-  "utc": "2026-09-12T03:30:36.069526+00:00",
-  "covered": 130,
-  "open": 612,
+  "utc": "2026-09-12T04:59:55.285096+00:00",
+  "covered": 133,
+  "open": 609,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 102,
+  "covered_updated_last_24h": 105,
   "covered_updated_last_24h_window": {
-    "since_utc": "2026-09-11T03:30:36.069526+00:00",
-    "as_of_utc": "2026-09-12T03:30:36.069526+00:00"
+    "since_utc": "2026-09-11T04:59:55.285096+00:00",
+    "as_of_utc": "2026-09-12T04:59:55.285096+00:00"
   },
   "updated_recent_ids": [
     "H0017",
@@ -22,6 +22,7 @@
     "H0056",
     "H0065",
     "H0070",
+    "H0085",
     "H0086",
     "H0087",
     "H0090",
@@ -48,6 +49,8 @@
     "H0280",
     "H0292",
     "H0310",
+    "H0315",
+    "H0317",
     "H0323",
     "H0331",
     "H0338",
@@ -115,23 +118,22 @@
     "H0729",
     "H0736"
   ],
-  "recomputed_on_destination": true,
-  "recompute_note": "Ventana recalculada con la hora de esta maquina sobre verification_updated_at del registro restaurado. Cuenta filas covered actualizadas dentro de la ventana, no necesariamente primeras altas: el registro no guarda first_credit_at por separado.",
+  "registry_sha256": "3a5593f9948eb8ab260ce015750d4d801b0b2e288bfc03e0889ee62c4eb73f73",
   "categories": [
-    {
-      "category": "apps_open",
-      "label": "Abrir aplicaciones",
-      "total": 54,
-      "covered": 14,
-      "open": 40,
-      "not_applicable": 0
-    },
     {
       "category": "music",
       "label": "Música",
       "total": 39,
       "covered": 0,
       "open": 39,
+      "not_applicable": 0
+    },
+    {
+      "category": "apps_open",
+      "label": "Abrir aplicaciones",
+      "total": 54,
+      "covered": 17,
+      "open": 37,
       "not_applicable": 0
     },
     {
@@ -151,18 +153,18 @@
       "not_applicable": 0
     },
     {
-      "category": "clarification_unresolved_input",
-      "label": "Entrada incompleta, ruido y control de diálogo",
-      "total": 34,
-      "covered": 3,
-      "open": 31,
-      "not_applicable": 0
-    },
-    {
       "category": "messaging",
       "label": "Mensajería",
       "total": 31,
       "covered": 0,
+      "open": 31,
+      "not_applicable": 0
+    },
+    {
+      "category": "clarification_unresolved_input",
+      "label": "Entrada incompleta, ruido y control de diálogo",
+      "total": 34,
+      "covered": 3,
       "open": 31,
       "not_applicable": 0
     },
@@ -399,29 +401,5 @@
       "not_applicable": 0
     }
   ],
-  "requirements_sha256": "af5ccd83c2e6d567a9631b540f76fde011670fe9aba2de8f4777cb7cb3a0dccd",
-  "registry_sha256": "af5ccd83c2e6d567a9631b540f76fde011670fe9aba2de8f4777cb7cb3a0dccd",
-  "classification_source": "SURVEY_TAXONOMY846.json",
-  "classification_immutable": "742 case_id, clasificacion 846 sin reclasificar ni reiniciar",
-  "counts_source": "Contadas desde el registro privado restaurado y verificado, no desde un contador heredado.",
-  "latest_adjudications": [
-    "KNOWLEDGE1025/ROOT_ADJUDICATION.json",
-    "SYSTEM1028/ROOT_ADJUDICATION.json"
-  ],
-  "latest_product_run": {
-    "batch": 1028,
-    "executed": 31,
-    "passed": 14,
-    "failed": 17,
-    "coverage_added": 4,
-    "exit_code": 0,
-    "violations": 0,
-    "seconds": 154.797,
-    "gpu_peak_mib": 3494.9296875,
-    "ram_peak_mib": 2587.3671875,
-    "adjudication": "artifacts/comprobaciones/C03/SYSTEM1028/ROOT_ADJUDICATION.json"
-  },
-  "equal_maximum_open_next_selection": "system_hardware_status queda con 15 abiertos, de los que 5 no tienen operacion en el catalogo (resolucion, Hz, monitores, version de Python) y 10 fallaron con causa en 1028. La categoria no puede cerrarse sin reparar esas causas ni sin infraestructura de video, que 4 casos no justifican. La siguiente eleccion se hace por mayor masa abierta ejecutable, y las causas repetidas de 1028 —imposibilidad falsa, aclaracion innecesaria y mitad temporal descartada en peticiones compuestas— son reparaciones transversales que afectan a varias categorias.",
-  "tests_run": false,
-  "tests_omitted_by_owner": "Suites duenas, Fast y Full omitidas por instruccion explicita. Omitidas, no verdes."
+  "note": "Recalculado del registro privado tras APPS1029. Las 24 h cuentan filas covered actualizadas en la ventana, no necesariamente primeras altas."
 }
