@@ -1,0 +1,118 @@
+{
+  "schema": "c03-web1010-root-adjudication-v1",
+  "adjudicator": "root",
+  "adjudicated_at_utc": "2026-09-12T00:46:26.514547+00:00",
+  "source_commit": "437e4183e00678172dbc20b0df998bb688a6ffa7",
+  "seal_sha256": "e8b31ff778f0cd3cb0f97052a598d919fc31340c971faed50913eef60fc23507",
+  "candidate_manifest_sha256": "939f29d6ab851d727be35016fc1538ff5192453ce7ca6066876aeafd1659e2bf",
+  "preparation_sha256": "2ff29cbca29c9c8fdc378381ba96688bacf80007a7a26f07e252fd2273d1a95e",
+  "session_id": 34011,
+  "collection": "843c97",
+  "runner_exit_code": 0,
+  "host_exit_code": 0,
+  "pins_unchanged": true,
+  "planned": 4,
+  "executed": 4,
+  "passed": 0,
+  "failed": 4,
+  "coverage_added": 0,
+  "tests_run": false,
+  "resources": {
+    "utc": "2026-09-12T00:45:23.732711+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2380.078125,
+    "seconds": 62.125,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "cases": [
+    {
+      "case_id": "H0723",
+      "literal": "ve a la pagina de marvel rivals en steam",
+      "criterion": "Resolve the requested game page within Steam from current observed public evidence, then navigate to that exact page and verify URL/target. Do not substitute Steam home/search listing, launch the installed game, buy or download. No two complete deep-resolution variants are supplied; no promised credit.",
+      "verdict": "fail",
+      "reason": "No requested navigation; all received RSS items lack requested subject or required page terms.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No pude ir a la página de Marvel Rivals en Steam porque los resultados de búsqueda no son relevantes.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "H0723",
+        "phase": "final"
+      },
+      "actual_query": "marvel rivals en steam",
+      "structurally_valid_items": 7
+    },
+    {
+      "case_id": "web-named993-dev-01",
+      "literal": "Llevame al sitio oficial de la NASA.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "fail",
+      "reason": "No requested navigation; all received RSS items lack requested subject or required page terms.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No pude llevarlo al sitio oficial de la NASA porque los resultados de búsqueda no son relevantes.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web-named993-dev-01",
+        "phase": "final"
+      },
+      "actual_query": "la NASA",
+      "structurally_valid_items": 10
+    },
+    {
+      "case_id": "web-named993-dev-04",
+      "literal": "Navegá hasta la página de Blender para su descarga oficial.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "fail",
+      "reason": "No requested navigation; all received RSS items lack requested subject or required page terms.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No pude navegar hasta la página oficial de Blender porque los resultados de búsqueda no son relevantes.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web-named993-dev-04",
+        "phase": "final"
+      },
+      "actual_query": "Navegá hasta la página de Blender para su descarga oficial.",
+      "structurally_valid_items": 10
+    },
+    {
+      "case_id": "web-named993-dev-07",
+      "literal": "Take me to the official Python website.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "fail",
+      "reason": "Search returned unrelated items; final composition exhausted without useful response.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web-named993-dev-07",
+        "phase": "final"
+      },
+      "actual_query": "the official Python website",
+      "structurally_valid_items": 10
+    }
+  ],
+  "private_rejection_capture": {
+    "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web-diagnostic1010-profile\\captures\\web-search-rejections.jsonl",
+    "sha256": "6dd961c258a8be4d59307f27d0bfeb4169e60353ffc5bb44c0c012bd0463a546",
+    "records": 4,
+    "verified": false
+  },
+  "diagnostic_conclusion": "Private rejection capture works. Responses are actually irrelevant; weakening relevance would admit unrelated pages. Upstream request/response diagnosis remains pending, not a functional fix."
+}

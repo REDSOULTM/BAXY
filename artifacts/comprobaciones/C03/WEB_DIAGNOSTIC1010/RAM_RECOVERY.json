@@ -1,0 +1,11 @@
+{
+  "owner_authorized_app_closure": true,
+  "user_apps_closed": [],
+  "cause": "Idle SDK10.0.100 build servers survived shutdown through other dotnet installation.",
+  "resolved_by": "C:/Users/usuario/.dotnet/dotnet.exe build-server shutdown",
+  "shutdown_exit": 0,
+  "remaining_build_processes": 0,
+  "free_ram_kib_after": 4894708,
+  "prepare_succeeded": true,
+  "run_completed": true
+}

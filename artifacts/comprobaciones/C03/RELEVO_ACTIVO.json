@@ -34,10 +34,10 @@
   },
   "schema": "c03-active-relay-current-v2",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-12T00:32:02.167554+00:00",
+  "confirmedAtUtc": "2026-09-12T00:46:26.514547+00:00",
   "branch": "Goal-c03",
   "checkpoint": "106/742covered,636open,0NA;78confirmedgrants24h;0/35categories,C03 3/11. +9since97.",
-  "continuation": "No active GPU.1012 collectedf678ae,7/11,+3. Source dc91a37a current, exactbuild996 reused. Next root adopt reviewedprivatewebdiagnostic1003, actualbuild, bind prepared1010 and run4failedcases with exactmanualreview. No furtherwholedeicticpanelrepeat forH0531.",
+  "continuation": "Review1015 diagnosis and diagnose exact Bing RSS request/response.1010 complete0/4,0credits; no live GPU. Build1013 exit0. Local .dotnet build servers closed with explicit SDK path; RAM4894708KiB before prepare.",
   "pendingOwnerClarification": null,
   "publishedSourceCommit": "dc91a37a8f223fc5f960a25e108853e7290780a2",
   "surveyVerificationCounts": {
@@ -45,33 +45,32 @@
     "open": 636,
     "not_applicable": 0
   },
-  "surveyRegistrySha256": "7d6ad6f664ad915d064dd3247eaaf61dac2e0846b6cb7e74bb10fbdacd8c8df6",
+  "surveyRegistrySha256": "286ff0ec4e4fd9f632f804d9619ab8e3271fac42f7557500eac36be90d5ea188",
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
   "surveyCoverageLast24h": 78,
-  "workStatus": "1012_adjudicated_1010_next",
+  "workStatus": "1010_adjudicated_search_transport_diagnosis",
   "goalStatusNote": "Owner waived automated suites/Fast/Full; scope blocker resolved. No new blocked condition.",
   "previousGoalTurnClassification": "progress",
-  "previousGoalTurnClassificationReason": "Nine new exact literal credits since97:998+6 and1012+3. Real product executions, bounded source repairs and nextweb diagnostic sealed; no permission or global blockedcondition.",
+  "previousGoalTurnClassificationReason": "Previous turn raised authoritative survey coverage97to106 with9verifiedliteralcredits, integrated1008/1011 and published2358de1a. Current turn re-readobjective/currentrepo and checkedidleprocesses beforebuild.",
   "objectiveFile": "C:/Users/usuario/.codex/attachments/310753b7-9a38-4a57-951e-007fdcf7693a/goal-objective.md",
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
   "latestProductRun": {
-    "batch": 1012,
+    "batch": 1010,
     "state": "adjudicated",
-    "sessionId": 34472,
-    "sourceCandidate": "dc91a37a8f223fc5f960a25e108853e7290780a2",
-    "privatePath": "C:/Users/usuario/AppData/Local/BAXY/C03-deictic1012-private",
-    "preparationSha256": "8baa7b31253815480d625362c37ee55aa86f0da56e04f6c78645ce494c50b275",
-    "collection": "f678ae",
-    "executed": 11,
-    "passed": 7,
+    "sessionId": 34011,
+    "sourceCandidate": "437e4183e00678172dbc20b0df998bb688a6ffa7",
+    "privatePath": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web-diagnostic1010-private",
+    "collection": "843c97",
+    "executed": 4,
+    "passed": 0,
     "failed": 4,
-    "coverageAdded": 3
+    "coverageAdded": 0
   },
   "activeValidation": null,
-  "activeRepairAgent": null,
+  "activeRepairAgent": "apps_intent852:1015 diagnosis only",
   "currentUnpublishedSource": null,
   "preparedNextPanel": "C:/Users/usuario/AppData/Local/BAXY/C03-web-diagnostic1010-proposal/SEAL.json",
   "lastValidation": {
@@ -252,5 +251,10 @@
   },
   "ownerLatestInstruction": "Accelerate C03 without automated tests/Fast/Full; no loss of truthful product behavior. Real sealed execution required for coverage.",
   "nextProductBlocker": null,
-  "sourcePublicationCollection": "e994cc"
+  "sourcePublicationCollection": "e994cc",
+  "activeBuild": {
+    "sessionId": 63721,
+    "path": "C:/Users/usuario/AppData/Local/BAXY/C03-web-build1013-private",
+    "tests_run": false
+  }
 }
