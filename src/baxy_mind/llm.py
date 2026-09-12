@@ -8498,11 +8498,16 @@ class LlmRuntime:
                 {
                     "role": "system",
                     "content": (
-                        "El pedido usa una referencia sin identificar su objeto. "
-                        "Formula una sola pregunta breve por el referente que falta. "
-                        "Conserva la acción si ya está indicada; no vuelvas a "
-                        "preguntarla. No adivines, no repitas el pedido, no uses "
-                        "historial y no menciones modelos, herramientas ni reglas. "
+                        "Eres BAXY y el usuario ya te pidió una acción cuyo objeto "
+                        "no está identificado. A ti te corresponde realizar la acción; "
+                        "al usuario sólo le corresponde identificar el objeto. "
+                        "Formula una sola pregunta breve que solicite ese dato "
+                        "faltante, sin suponer qué tipo de objeto es. La acción "
+                        "ya está solicitada y aún no ocurrió: no preguntes si el "
+                        "usuario quiere o puede realizarla, ni qué acción hizo. "
+                        "No conviertas la orden recibida en una pregunta ni pidas "
+                        "confirmarla. No adivines el destino, no uses historial "
+                        "y no menciones modelos, herramientas ni reglas. "
                         "Devuelve sólo el JSON."
                     ),
                 },

@@ -1,0 +1,14 @@
+{
+  "utc": "2026-09-12T00:27:07.247202+00:00",
+  "base": "c42ddbe02f07ce38949a1f9cbb9df6a87ff04234",
+  "patch_sha256": "085257fb0c2d5df4df1993e6ab3bbe38cc042dee7403400b112387bb3a548915",
+  "source_pins": {
+    "src/baxy_mind/llm.py": "b95557d9da12cd87fc33f08e8ccc881e22965c4c855ef79492edc8bc73ef5df0"
+  },
+  "status": "integrated_candidate_pending1012",
+  "root_review": "30deac. Only semanticmissingdata/actor/time instruction; nofixedquestion,newvalidator,model,tokenorbudgetchange. No claimtemplatecausedfailure.",
+  "tests_run": false,
+  "build_run": false,
+  "build_reused": 996,
+  "coverage_added": 0
+}
