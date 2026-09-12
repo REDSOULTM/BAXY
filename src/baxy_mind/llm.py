@@ -4145,6 +4145,48 @@ def _cpu_only_numbers_contradict(text: str, observed: dict) -> bool:
     return False
 
 
+def _app_open_was_already_running(situation: dict) -> bool:
+    """True when the app.open receipt says the target was running before this turn.
+
+    The receipt field is `alreadyRunning`; the visible payload renames it to
+    `was_running_before_open` so a False value cannot be read as «still closed».
+    Both spellings are accepted here because the validator sees either shape
+    depending on whether the situation was already projected for the narrator.
+    """
+
+    for source in (situation.get("observed"), situation.get("seen"),
+                   _merged_observed(situation)):
+        if not isinstance(source, dict):
+            continue
+        for key in ("alreadyRunning", "was_running_before_open"):
+            value = source.get(key)
+            if isinstance(value, bool):
+                return value
+    return False
+
+
+def _claims_it_performed_the_open(folded: str) -> bool:
+    """True when the reply attributes the opening to BAXY in this turn."""
+
+    return re.search(
+        r"(?:^|[.;:,]\s*|\b(?:y|and|so|pero|but)\s+)(?:ya\s+|yo\s+|i\s+|i've\s+|i\s+have\s+)*"
+        r"(?:abrí|abri|abro|opened|launched|started)\b",
+        folded,
+    ) is not None
+
+
+def _states_it_was_already_running(folded: str) -> bool:
+    """True when the reply says the target was already open or running."""
+
+    return re.search(
+        r"ya\s+(?:estaba|está|esta)\b|ya\s+se\s+encontraba\b|"
+        r"already\s+(?:running|open|opened|started|launched)\b|"
+        r"was\s+already\b|no\s+new\s+instance\b|"
+        r"(?:estaba|está|esta)\s+(?:ya\s+)?(?:en\s+ejecución|en\s+ejecucion|abiert[oa]|corriendo)\b",
+        folded,
+    ) is not None
+
+
 def compose_visible_defect(
     text: str,
     intent: str,
@@ -4505,6 +4547,20 @@ def compose_visible_defect(
     operation = str(situation.get("operation") or "").strip().lower()
     blob = f"{user_text} {json.dumps(situation, ensure_ascii=False)}".casefold()
     folded = stripped.casefold()
+    # Un destino que ya estaba en ejecución no lo abrió este turno. El recibo lo
+    # trae —`alreadyRunning`, publicado como `was_running_before_open`— y en
+    # APPS1029 la prosa lo dijo en tres vueltas de once y lo omitió en ocho,
+    # publicando «Abrí Steam.» sobre un proceso que llevaba horas vivo. El hecho
+    # no estaba en ninguna lista obligatoria, así que omitirlo era legal.
+    if (
+        kind == "operation"
+        and operation == "app.open"
+        and polarity == "success"
+        and _app_open_was_already_running(situation)
+        and _claims_it_performed_the_open(folded)
+        and not _states_it_was_already_running(folded)
+    ):
+        return "unstated_already_running"
     if _clock_only_from_situation(situation) and re.search(
         r"\bbaxy\b|confianza|sigue adelante|t[uú] eres|"
         r"parte de esta|te dice|responsable|cuidar lo que",
@@ -10491,6 +10547,13 @@ class LlmRuntime:
                 "Never say you tried."
                 if cause in {"out_of_catalog", "out-of-catalog"}
                 else "Name the failure cause in prose."
+            ),
+            "unstated_already_running": (
+                "The app was already running before this turn: say it was already open. "
+                "Do not claim you opened or launched it."
+                if response_language == "en"
+                else "La app ya estaba en ejecución antes de este turno: dilo. "
+                     "No digas que la abriste."
             ),
             "missing_state": (
                 "Give the scheduled time in UTC, not the current time or a restarted countdown."
