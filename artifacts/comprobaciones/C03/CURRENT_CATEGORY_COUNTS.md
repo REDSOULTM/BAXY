@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación MESSAGING1120
+# Categorías actuales — adjudicación AGENDA1121
 
-202/742 cubiertos; 540 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 76 primeras altas (28 Kiro + 48 retorno), sin revalidaciones. Registro canónico SHA256: a453d61a5bf7e483d59976e7896948f885ae4a0df480884e292407bfe3cf341c.
+203/742 cubiertos; 539 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 77 primeras altas (28 Kiro + 49 retorno), sin revalidaciones. Registro canónico SHA256: 13ed0c500d2ccd94a75af0ca3196d038154c24e7d56b950d644cc0076fadcf3a.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -13,7 +13,7 @@
 | Vídeo y series | 26 | 0 | 26 |
 | Abrir aplicaciones | 54 | 29 | 25 |
 | Audio y volumen | 51 | 27 | 24 |
-| Alarmas, recordatorios, tareas y agenda | 38 | 14 | 24 |
+| Alarmas, recordatorios, tareas y agenda | 38 | 15 | 23 |
 | Interacción dentro de aplicaciones | 22 | 0 | 22 |
 | Red y Bluetooth | 21 | 1 | 20 |
 | Cerrar aplicaciones y ventanas | 20 | 0 | 20 |

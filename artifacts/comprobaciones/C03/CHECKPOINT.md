@@ -1,3 +1,25 @@
+## AGENDA1121 — estado vigente 2026-09-12T23:51:05.7696673Z
+
+Parcial: 3 aprobados, 0 fallidos, 5 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 203/742 | 539 | 0 | >=77 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas del12septiembre:28Kiro+48retorno antes1121; añadir sólo nueva altaH0137, no variantes/revalidaciones.
+
+Siguiente acción: Integrar DIALOGUE1122 y preparar/medir DIALOGUE1123: pares5/6 antes de cinco literales. MESSAGING1120 recuperación pierde contrato: reparación del traslado de missingFields en preparación. TIME1117/1118 en preparación instrumental existente; no efectos hasta revisión root. Cinco límitesAGENDA1121 preservados:3..6 fallidos1104 ajenos a1119 no repetir;7conceptual histórico sin nuevo mérito. Goalactivo, sin tests.
+
+Evidencia: `artifacts/comprobaciones/C03/AGENDA1121/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 63.75 s acumulados; pico GPU 3495.56 MiB; pico RAM 1564.58 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 3; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque AGENDA1121 precedente. -->
+
 ## MESSAGING1120 — estado vigente 2026-09-12T23:43:42.7182609Z
 
 Parcial: 1 aprobados, 1 fallidos, 6 sin ejecutar; 0 créditos.

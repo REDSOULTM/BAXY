@@ -198,13 +198,14 @@ CONSTRAINT_PRESENTATION_PROMPT = (
 )
 
 OBSERVATION_ACK_PRESENTATION_PROMPT = (
-    "Eres el redactor final de BAXY para una observación de la persona, no para "
-    "un resultado verificado por el computador. Escribe solamente una oración "
-    "breve y declarativa en el idioma del mensaje que reconozca o parafrasee la "
-    "observación sin convertirla en un hecho comprobado, sin preguntar ni "
-    "ofrecer otra acción. Habla directamente con la persona: por ejemplo, "
-    "«Entiendo que observas que la GPU dejó de usarse» o «Mencionas que cerrar "
-    "Word podía perder cambios no guardados»."
+    "Eres el redactor final de BAXY para lo que cuenta la persona, no para un "
+    "resultado verificado por el computador. Responde con una sola oración "
+    "breve y natural en el idioma del mensaje. Si el contenido es comprensible, "
+    "reconócelo sin convertirlo en un hecho comprobado. Si falta un referente "
+    "o el propósito necesario para responder útilmente, pregunta por ese dato "
+    "en vez de completar o repetir el fragmento. Conserva los actores, tiempos "
+    "y la incertidumbre del relato; no inventes hechos, causas ni acciones "
+    "realizadas y no ofrezcas ejecutar otra acción."
 )
 
 CONTENT_DRAFT_PRESENTATION_PROMPT = (
@@ -2100,7 +2101,10 @@ def _shaped_conversation_answer_violates_contract(
         not content
         or "\n" in content
         or "\r" in content
-        or any(marker in content for marker in ("?", "¿", "？"))
+        or (
+            shape != "observation_ack"
+            and any(marker in content for marker in ("?", "¿", "？"))
+        )
         # A trailing decorative symbol is not another sentence. Still reject
         # lexical content after the boundary, including after decorations.
         or re.search(r"[.!…]\s+\W*\w", content) is not None
@@ -7315,6 +7319,13 @@ class LlmRuntime:
                         )
                         if conversation_kind == "unsupported_language"
                         else (
+                            "Cumple el primer contrato con una sola oración natural: "
+                            "reconoce lo que la persona cuenta o pregunta por el "
+                            "referente o propósito que falte para entenderlo. "
+                            "No inventes hechos ni ofrezcas acciones."
+                        )
+                        if shaped_contract_failure and presentation_shape == "observation_ack"
+                        else (
                             "La respuesta debe ser una sola oración declarativa "
                             "que cumpla exactamente el contrato del primer mensaje "
                             "de sistema: nombra la referencia concreta, no inventes "
@@ -10063,6 +10074,19 @@ class LlmRuntime:
                 instruct("\n" + refuse_line + "Do not say you tried and failed.")
             elif response_language == "en":
                 instruct("\nEnglish only. Name the failure cause in prose.")
+            if (
+                situation.get("operationAttempted") is False
+                and cause in {
+                    "turn_runtime_failure", "turn_contract_failure", "turn_unavailable"
+                }
+            ):
+                instruct(
+                    "\nThe failure concerns BAXY's processing of this conversational turn; "
+                    "no operation was attempted. Keep it separate from events or activities "
+                    "the person describes. Do not claim those events failed, were attempted "
+                    "by BAXY, or were caused by this processing failure. Explain only the "
+                    "known difficulty understanding the message, without technical field names."
+                )
         if str(situation.get("operation") or "").strip() == "network.status":
             instruct(
                 "\nSay whether this PC is online. Do not ask. "
