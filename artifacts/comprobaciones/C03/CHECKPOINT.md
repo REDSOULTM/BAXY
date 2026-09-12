@@ -1,7 +1,7 @@
-# C03 — 160 cubiertos; ejecución continua
+# C03 — 162 cubiertos; ejecución continua
 
-**160/742 cubiertos, 582 abiertos, 0 no aplican; 0/35 categorías cerradas.**
-Últimas 24 h: al menos 34 primeras altas verificadas (28 Kiro + 6 retorno); no se cuentan revalidaciones. C03 formal: 3/11. Goal activo. Suites, Fast y Full omitidos por orden del dueño; no verdes.
+**162/742 cubiertos, 580 abiertos, 0 no aplican; 0/35 categorías cerradas.**
+Últimas 24 h: al menos 36 primeras altas verificadas (28 Kiro + 8 retorno); no se cuentan revalidaciones. C03 formal: 3/11. Goal activo. Suites, Fast y Full omitidos por orden del dueño; no verdes.
 
 RAR recuperado: 348 archivos verificados y 28 créditos Kiro auditados. Recuperación READS1035 +1 H0104 y REPAIR1036 +1 H0575, sin repetir corridas históricas. FILES1040 +1 H0711; CLARIFY1041 +1 H0140; REPAIR1042 +2 H0326/H0605. Navegador de back cerrado tras conservar historial: 14 procesos propios cerrados, 0 pendientes.
 
@@ -16,6 +16,8 @@ Registro actual: `bfa69dc68d97223e82f8be9f4d9deb7f712cbff1b0748d2f38e692b6d15d06
 WEB1045 cerrado: 8/12 respuestas cumplen, 4 fallan, ningún crédito. Los cinco literales navegan a sitios verificados, pero Mozilla falla sin lookup y Debian devuelve búsqueda irrelevante. No repetir sin hipótesis nueva ni usar pares de URL explícita. Pico VRAM 3771.75 MiB, RAM 3453.84 MiB, 216.937 s; exit 0, pins intactos, sin guardas. Browser propio ya cerrado, identidades verificadas, sin cierres de raíz. Registro actual: `242085dccc89e6d0e3c6649938964b241a5f28f45168661129d23592975b9856`.
 
 FILES1046 integrado: el hallazgo negativo ligado al nombre ya no se exige como oración completa; se conservan las demás afirmaciones en ambos filtros. El provider existente informa raíces donde intentó enumerar y límites reales, sin exhaustividad. CLARIFY1047 integrado: historial previo real excluye el mensaje actual y respeta aclaración pendiente. Compilación nueva necesaria; ejecución y crédito pendientes. Ninguna suite ejecutada.
+
+FILES1046 adjudicado: **13/13 cumplen, +2 H0001/H0696; 162/742 cubiertos y580 abiertos**. Búsqueda de nombres en carpetas conocidas con scope observado; dos pares nuevos ES/EN cambian nombre/extensión/orden y pasan, otros cuatro pares reejecutados también. No se interpreta count0 como ausencia global. Registro actualizado al adjudicar: `a077b4073d94ae22a2d98ba8e6dbc1f5cee4ab76ff18e0f66ced12259059e95a`. Próximo CLARIFY1047:13casos sellados, misma fuente/build; H0271 queda aparte. Preparación1048 busca masa acreditable en conocimiento tras exclusiones explícitas de agenda/apps, sin repetir campañas fallidas.
 
 ## Checkpoint anterior1036, conservado como historial
 

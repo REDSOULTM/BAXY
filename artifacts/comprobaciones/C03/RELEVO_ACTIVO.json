@@ -152,37 +152,34 @@
     "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "WEB1045 adjudicated8pass4fail0credits; FILES1046 + clarification-history fix integrated, build next.",
+  "workStatus": "FILES1046 thirteen passes; creditedH0001/H0696, survey162. CLARIFY1047 next.",
   "executionPausedByOwner": false,
   "branch": "codex/kiro-goal-c03",
   "checkpoint": "154/742covered,588open,0NA; seis tandas propias: 1029 +3, 1030 0, 1031 invalidada, 1032 +4, 1033 +7, 1034 +10. apps_open 28/54, clock 13/23.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "db6f7b2f27b940572cd5d178dc1c6bccca6134ad",
   "surveyVerificationCounts": {
-    "covered": 160,
-    "open": 582,
+    "covered": 162,
+    "open": 580,
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "242085dccc89e6d0e3c6649938964b241a5f28f45168661129d23592975b9856",
+  "surveyRegistrySha256": "a077b4073d94ae22a2d98ba8e6dbc1f5cee4ab76ff18e0f66ced12259059e95a",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
-  "surveyCoverageLast24h": {
-    "verified_first_grants_lower_bound": 34,
-    "exact_global_total": null
-  },
-  "surveyCoverageLast24hNote": "28Kiro+6root first grants verified within24h, not update timestamps.",
+  "surveyCoverageLast24h": 36,
+  "surveyCoverageLast24hNote": "Verified minimum first grants28Kiro+8return; not revalidation count.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
-  "latestProductRun": "WEB1045",
+  "latestProductRun": "FILES1046",
   "activeValidation": null,
   "activeRepairAgent": null,
   "currentUnpublishedSource": null,
-  "preparedNextPanel": "FILES1046 then CLARIFY1047",
+  "preparedNextPanel": "CLARIFY1047",
   "preparedNextPanelNote": "5 current exact literals +2 named-site variants +5 boundaries; root reviewed, candidate binding next.",
   "pendingOwnerClarification": null,
   "ownerLatestInstruction": "Accelerate C03 without automated tests/Fast/Full; no loss of truthful product behavior. Real sealed execution required for coverage.",
@@ -199,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-12T13:53:06.107904+00:00",
+  "utcUpdated": "2026-09-12T14:01:04.847337+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -370,17 +367,16 @@
     "source_correction": "d7bce9d9 omitted source after git apply failed; db6f7b2f applies exact verified proposal. Source pin6bd644ed39848a9c92f9ab8243ae3a083a78114df99589f164eba950fd3eccb2."
   },
   "currentContinuation1046": {
-    "source": "4owners applied after GPU finished, new build required",
-    "survey": 160,
-    "registry_sha256": "242085dccc89e6d0e3c6649938964b241a5f28f45168661129d23592975b9856",
-    "web1045": {
-      "pass": 8,
-      "fail": 4,
-      "new_credits": 0,
-      "gpu_peak_mib": 3771.74609375,
-      "ram_peak_mib": 3453.8359375,
-      "browser_owned_alive": 0
+    "head": "e0f10caac02d8ffc673359bb8086628a5f1ab6da",
+    "survey": 162,
+    "registry_sha256": "a077b4073d94ae22a2d98ba8e6dbc1f5cee4ab76ff18e0f66ced12259059e95a",
+    "quality": {
+      "pass": 13,
+      "fail": 0,
+      "new_credits": 2
     },
-    "next": "Build1046; seal/bind/runFILES1046; CLARIFY1047 prepared in parallel. No tests per owner; no formal green."
+    "next": "CLARIFY1047 sealed13cases; current source includes history fix, reuse build1046. Then mass panel1048 preparation.",
+    "build": "retry1 build/publish0, fingerprint7586da1ec0232a597d4d2b99fa673b64b099dfdbc8bdfd7985ec2abcbc96750b. Correct SDK .dotnet/dotnet.exe build-server shutdown additionally0; initial CA1859fail retained.",
+    "tests": "Omitted by owner, no formal green."
   }
 }
