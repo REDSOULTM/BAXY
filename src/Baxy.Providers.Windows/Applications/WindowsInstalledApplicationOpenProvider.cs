@@ -527,21 +527,26 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         CancellationToken cancellationToken)
     {
         _platform.RequestForeground(candidate.WindowHandle);
-        InstalledApplicationObservation? ObserveForeground() =>
+        InstalledApplicationObservation? Observe(bool requireForeground) =>
             _platform.Inventory(entry).FirstOrDefault(item =>
                 item.ProcessId == candidate.ProcessId
                 && item.ProcessCreationTimeUtcTicks == candidate.ProcessCreationTimeUtcTicks
                 && item.WindowHandle == candidate.WindowHandle
                 && item.Visible
-                && item.Foreground);
-        InstalledApplicationObservation? observed = ObserveForeground();
+                && (!requireForeground || item.Foreground));
+        InstalledApplicationObservation? observed = Observe(requireForeground: true);
         if (observed is not null)
         {
             return observed;
         }
 
         await _platform.DelayAsync(ObservationDelay, cancellationToken).ConfigureAwait(false);
-        return ObserveForeground();
+        // Bringing the window to the front is asked for, never required to prove the
+        // app is open: Windows refuses the handoff while a system flyout owns the
+        // foreground, and REPAIR1031 lost a whole batch that way with Steam, Discord
+        // and Paint visible on screen. A visible window of the bound process is the
+        // observation; focus is a courtesy.
+        return Observe(requireForeground: true) ?? Observe(requireForeground: false);
     }
 
     private static InstalledApplicationObservation? Choose(

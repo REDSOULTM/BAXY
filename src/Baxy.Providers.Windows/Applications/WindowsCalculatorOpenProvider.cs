@@ -41,18 +41,21 @@ public sealed class WindowsCalculatorOpenProvider : IApplicationOpenProvider
         }
         if (selected is null) return Failure(request, ApplicationOpenErrorCodes.VerificationFailed, !reused);
         _platform.RequestForeground(selected.WindowHandle);
-        CalculatorSnapshot? ObserveForeground() =>
+        CalculatorSnapshot? Observe(bool requireForeground) =>
             _platform.Inventory().FirstOrDefault(candidate =>
                 candidate.ProcessId == selected.ProcessId
                 && candidate.CreationTimeUtcTicks == selected.CreationTimeUtcTicks
                 && candidate.WindowHandle == selected.WindowHandle
                 && candidate.Visible
-                && candidate.Foreground);
-        CalculatorSnapshot? verified = ObserveForeground();
+                && (!requireForeground || candidate.Foreground));
+        CalculatorSnapshot? verified = Observe(requireForeground: true);
         if (verified is null)
         {
             await _platform.DelayAsync(Delay, cancellationToken).ConfigureAwait(false);
-            verified = ObserveForeground();
+            // Focus is requested, not required: a system flyout that owns the
+            // foreground made every open unverifiable in REPAIR1031 while the app
+            // was on screen. A visible window of the bound process is the proof.
+            verified = Observe(requireForeground: true) ?? Observe(requireForeground: false);
         }
         if (verified is null) return Failure(request, ApplicationOpenErrorCodes.VerificationFailed, !reused);
         string executable = Path.Combine(Environment.SystemDirectory, "calc.exe");
