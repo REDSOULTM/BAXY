@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación1047
+# Categorías actuales — adjudicación1048
 
-163/742 cubiertos;579 abiertos;0 no aplican;0/35 categorías cerradas. Primeras altas verificadas últimas24h: al menos37 (28Kiro +9retorno); total global exacto pendiente de historial de primeras altas. Registro canónico reconciliado, no proyección.
+169/742 cubiertos;573 abiertos;0 no aplican;0/35 categorías cerradas. Primeras altas verificadas últimas24h: al menos43 (28Kiro +15retorno); total global exacto pendiente de historial de primeras altas. Registro canónico reconciliado, no proyección.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -13,12 +13,12 @@
 | Alarmas, recordatorios, tareas y agenda | 38 | 9 | 29 |
 | Vídeo y series | 26 | 0 | 26 |
 | Abrir aplicaciones | 54 | 29 | 25 |
-| Conocimiento, razonamiento y creatividad verbal | 37 | 12 | 25 |
 | Audio y volumen | 51 | 27 | 24 |
 | Conversación social y ayuda general | 31 | 9 | 22 |
 | Interacción dentro de aplicaciones | 22 | 0 | 22 |
 | Red y Bluetooth | 21 | 1 | 20 |
 | Cerrar aplicaciones y ventanas | 20 | 0 | 20 |
+| Conocimiento, razonamiento y creatividad verbal | 37 | 18 | 19 |
 | Pantalla, captura e interpretación visual | 19 | 0 | 19 |
 | Brillo y pantalla | 17 | 0 | 17 |
 | Información web actual | 17 | 0 | 17 |
