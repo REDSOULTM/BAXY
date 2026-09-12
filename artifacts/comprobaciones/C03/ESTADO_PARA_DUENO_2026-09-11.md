@@ -1,14 +1,16 @@
-# C03 — checkpoint tras1004
+# C03 — checkpoint tras1012
 
-**103/742 cubiertos,639 abiertos,0 no aplican;75 altas confirmadas en24h;0/35categorías cerradas.** C03:3/11 cumplidos,5 contradichos,3 pendientes. Goal activo, sin permiso ni decisión pendiente. Registro SHA `111e1824b81e0c24f6f05ac50670ad1c8dec789aa0c371a323dd99ae13d3edd0`.
+**106/742 cubiertos, 636 abiertos, 0 no aplican; 78 altas confirmadas en las últimas24h; 0/35 categorías cerradas.** C03:3/11 cumplidos,5 contradichos,3 pendientes. Goal activo, sin permiso ni decisión pendiente del dueño.
 
-998 añadió6 créditos: H0323/H0438/H0504 (multiplicaciones), H0184 (longitud), H0545/H0569 (composición y mezcla). Cada literal actual tiene respuesta útil y dos variantes pertinentes;4estados se escribieron durante la tanda (ROOT_PARTIAL_CREDIT1),2al adjudicar al terminar.18/25casos útiles,7fallidos, sin efectos de catálogo. H0253 y H0142 pasan su literal pero les falta un par completo; H0211 pide aclaración innecesaria y H0596 falla coherencia del sarcasmo. Las variantes de temperaturaimperativa y sarcasmo y tres límites fallidos quedan conservados; no se reetiquetan.
+Desde97 se acreditaron nueve literales: seis en998 (H0323, H0438, H0504, H0184, H0545, H0569) y tres en1012 (H0216, H0534, H0619). Cada uno tiene ejecución literal actual, respuesta útil y dos variantes pertinentes. Los primeros cuatro estados998 se escribieron durante la corrida; los restantes, al adjudicar. Las variantes nunca suman créditos.
 
-1004 ejecutó25casos de aclaración:7útiles,18fallidos,0créditos. Cuatro literales admiten aclaración/acknowledgment válido, pero sólo una variante pasa y ningún subgrupo reúne dos.1006 localiza la causa común de las negativas de capacidad y salidas irrelevantes; no se repite material fallido sin reparación. La consulta de navegadores temporales1007 no encontró procesos propios de997/1000: no se cerró ninguna aplicación,4198.51MiB libres.
+1008 evita confundir una apertura con referente ausente con una aplicación no instalada.1011 pide al usuario la identidad del objeto, manteniendo a BAXY como ejecutor.1012 obtuvo7/11 respuestas útiles y+3créditos. H0531 sigue preguntando por una acción pasada y permanece abierto; tampoco pasan los límites de cita, futuro y relato. No se repetirá todo el panel por ese literal. Fuente actual `dc91a37a8f223fc5f960a25e108853e7290780a2`; sólo cambiaron dos archivos Python respecto de04ae. Compilación996 reutilizada con hashes verificados.
 
-El panel web993 se ejecutó exactamente una vez en cuatro sufijos disjuntos993/997/1000/1002:17literales,12variantes,5límites.5literales útiles (H0152/H0206/H0244/H0479/H0692),12fallidos;ninguna variante logró navegar,3límites útiles y2fallidos. **0créditos web**: los5literales esperan pares. UNIEJ se detuvo por institución ambigua; Gutenberg seleccionó pestañas, no navegación. Algunas búsquedas devuelven RSS válido pero ningún item supera relevancia; diagnóstico1001 no inventa la query ni resultados no registrados.1003 prepara captura local para observarlos; fuente aún no adoptada.
+998 obtuvo18/25 respuestas útiles y+6créditos en multiplicación, longitud y composición química. La conversión de temperatura expresada como orden y parte del humor siguen fallando.1004 obtuvo7/25,+0: faltaban pares por conducta.1006 separa las causas de negativas de capacidad, referencias ausentes y respuestas irrelevantes; no hay un veto global nuevo.
 
-Fuente vigente publicada `04ae6daa2c28cf711eaca78b77affd7126bcd67e` (994/996): selección/resolución de destino público y confirmación de invocación exacta después de búsqueda, sin asignar primeraURL automáticamente. Build996 real exit0, cierre servidores exit0. Sin suites/Fast/Full por orden del dueño; omitidas no significa aprobadas. Main intacta. No se cerraron aplicaciones por RAM.
+El panel web993 se ejecutó una vez mediante cuatro sufijos disjuntos:993,997,1000,1002. De17literales, cinco fueron útiles; ninguna de12variantes completó la navegación. Tres de cinco límites pasaron. No se acreditó web: H0152/H0206/H0244/H0479/H0692 esperan pares. UNIEJ se detuvo por ambigüedad entre instituciones; Gutenberg eligió listar pestañas.1001 demuestra que varias búsquedas recibieron RSS válido, pero todos sus resultados fueron rechazados; la consulta efectiva y los items no quedaron registrados.
+
+Próximo por masa disponible: adoptar la captura privada1003, compilar y ejecutar1010 (H0723 más NASA/Blender/Python, objetos fallidos originales). Eso prepara identificar la causa y reparar navegación, sin aceptar resultados irrelevantes ni repetir el panel grande.1003 todavía no está adoptado. Apps40 y música39 conservan condiciones957/962/991; archivos32 mantiene la frontera1005: diez literales piden Escritorio/Documentos fuera del sandbox actual. No se amplía infraestructura todavía.
 
 | Tanda | Útiles/ejecutados | Créditos | Host/runner exit | VRAM MiB | RAM MiB | Segundos |
 |---|---:|---:|---:|---:|---:|---:|
@@ -19,8 +21,13 @@ Fuente vigente publicada `04ae6daa2c28cf711eaca78b77affd7126bcd67e` (994/996): s
 |1002|3/12|0|0/0|3497.56|2462.83|91.937|
 |998|18/25|6|0/0|3497.56|2486.95|143.844|
 |1004|7/25|0|0/0|3499.56|2524.87|119.531|
+|1009|4/11|0|0/0|3497.56|1724.35|41.297|
+|1012|7/11|3|0/0|3497.56|2352.08|37.187|
 
-Pins intactos y cero violaciones de recursos en todas. Las salidas3 corresponden a guardas de confirmación y sus sufijos no admitidos están demostrados; no se presentan como éxito. RAM/VRAM separadas, no sólo modelo.75altas24h supera20, sin Full. H0675/OCR/nuevos providers siguen aparcados; inciertos962/Calculator/Settings/Explorer/Steam/Discord mantienen condiciones anteriores. No repetir efectos pendientes. Alarmas983 canceladas por identidad; objetos975/980/986 preservados.
+Todas conservaron pins y tuvieron cero violaciones de recursos. Las salidas3 fueron detenciones de confirmación, no éxitos; sus sufijos no admitidos están documentados. RAM y VRAM son mediciones separadas, no consumo exclusivo del modelo. No se ejecutaron suites, Fast ni Full por orden del dueño; omitidas no significa aprobadas. Build996 real:exit0, cierre de servidores:exit0. Main permanece intacta.
 
-Próximo: reparar causas comunes existentes, en orden de masa. Web36 tiene captura diagnóstica1003revisadaexterna, pendienteadopción/build; diálogo34 tiene diagnóstico1006en curso. Archivos32 conserva la frontera demostrada1005: diez literales piden Escritorio/Documentos fuera del sandboxactual; no se amplía infraestructura aún. Apps40/música39 conservan condiciones957/962/991. Conocimiento queda28abiertos, sin repetir los10literales998.
+78altas/24h supera20 sin Full. No hubo que cerrar aplicaciones:1007 no encontró navegadores temporales997/1000 y observó4198.51MiB libres. H0675/OCR/nuevos providers siguen aparcados. Inciertos Spotify962/Calculator/Settings/Explorer/Steam/Discord conservan sus condiciones exactas. Objetos975/980/986 preservados; alarmas983 canceladas por identidad. No repetir esos efectos sin reconciliarlos.
+
+Registro SHA `7d6ad6f664ad915d064dd3247eaaf61dac2e0846b6cb7e74bb10fbdacd8c8df6`. Clasificación846 inmutable; tabla recalculada por742 IDs y ordenada por abiertos:
+
 Tabla por categoría en CHECKPOINT.md.

@@ -1,0 +1,10 @@
+{
+  "utc": "2026-09-12T00:24:38.388912+00:00",
+  "before_sha256": "111e1824b81e0c24f6f05ac50670ad1c8dec789aa0c371a323dd99ae13d3edd0",
+  "after_sha256": "0c466f7095017a2bfb2945a4a0e248cfddcff4141796ef4a3e67155f9e4841a7",
+  "coverage_added": 0,
+  "covered": 103,
+  "open": 639,
+  "not_applicable": 0,
+  "adjudication_sha256": "63250d03f88b957eafd8021bf81690b893ad7104f2952d84c9e67d7c3cede292"
+}

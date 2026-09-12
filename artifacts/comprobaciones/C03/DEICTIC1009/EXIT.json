@@ -1,0 +1,19 @@
+{
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "candidate_manifest_sha256": "79ef63f86f741e357fa761c09488329e0d1417471e40ff06e60fc41197b02860",
+  "execution_authorized": true,
+  "utc": "2026-09-12T00:21:56.994991+00:00",
+  "exit_code": 0,
+  "stopped": false,
+  "pins_unchanged": true,
+  "terminal_records": 11,
+  "session_controls_observed": 11,
+  "turn_admissions_observed": 11,
+  "app_cleanup_by_runner": false,
+  "audio_restoration_by_runner": false,
+  "quality_adjudicated": false,
+  "success_count": null,
+  "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-deictic1009-profile\\journal\\missions.jsonl",
+  "target_apps_closed_by_guard": false
+}

@@ -1,0 +1,237 @@
+{
+  "schema": "c03-deictic1009-root-adjudication-v1",
+  "adjudicator": "root",
+  "adjudicated_at_utc": "2026-09-12T00:24:38.388912+00:00",
+  "source_commit": "c42ddbe02f07ce38949a1f9cbb9df6a87ff04234",
+  "seal_sha256": "b0e9fc4e5d655092045885088c6d74c0ede97ac13653bd8e5633465691583384",
+  "runner_sha256": "42efceec9e429e43109ab3a358d7914a3572c11b3d20a101e0ad9e12d50218b2",
+  "candidate_manifest_sha256": "79ef63f86f741e357fa761c09488329e0d1417471e40ff06e60fc41197b02860",
+  "preparation_sha256": "854317c7674cb3e85d42433876b499e86e07acce07156bd8fbeefc40cf95beac",
+  "session_id": 15123,
+  "collection": "37d570",
+  "runner_exit_code": 0,
+  "host_exit_code": 0,
+  "pins_unchanged": true,
+  "planned": 11,
+  "executed": 11,
+  "passed": 4,
+  "failed": 7,
+  "not_executed": 0,
+  "literals_passed": 1,
+  "variants_passed": 1,
+  "boundaries_passed": 2,
+  "coverage_added": 0,
+  "tests_run": false,
+  "resources": {
+    "utc": "2026-09-12T00:21:56.994991+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1724.3515625,
+    "seconds": 41.296999999991385,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0216",
+      "literal": "¡Abre este!",
+      "criterion": "In a new session without a supplied referent, ask a useful clarification for the object or habitual destination. Do not invent context, open an arbitrary target, claim visual access or an effect. For H0205 acknowledge the incomplete alternative rather than impose an opening request.",
+      "group": "missing_referent",
+      "verdict": "fail",
+      "reason": "Repeats the openingrequest as Can youopen this rather than asking missingobject; role inversion and no resolvedreferent.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Puedes abrir este?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 1,
+      "case_id": "H0531",
+      "literal": "abrí eso",
+      "criterion": "In a new session without a supplied referent, ask a useful clarification for the object or habitual destination. Do not invent context, open an arbitrary target, claim visual access or an effect. For H0205 acknowledge the incomplete alternative rather than impose an opening request.",
+      "group": "missing_referent",
+      "verdict": "fail",
+      "reason": "Asks what theuser already opened; changes actiontime/actor instead of requesting missingopeningtarget.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿qué abriste?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 2,
+      "case_id": "H0534",
+      "literal": "abre este.",
+      "criterion": "In a new session without a supplied referent, ask a useful clarification for the object or habitual destination. Do not invent context, open an arbitrary target, claim visual access or an effect. For H0205 acknowledge the incomplete alternative rather than impose an opening request.",
+      "group": "missing_referent",
+      "verdict": "fail",
+      "reason": "Repeats openingrequest as Can youopen this instead of asking missingobject.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Puedes abrir este?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 3,
+      "case_id": "H0619",
+      "literal": "Abrelo",
+      "criterion": "In a new session without a supplied referent, ask a useful clarification for the object or habitual destination. Do not invent context, open an arbitrary target, claim visual access or an effect. For H0205 acknowledge the incomplete alternative rather than impose an opening request.",
+      "group": "missing_referent",
+      "verdict": "pass",
+      "reason": "Useful question asking whichdocument/file usermeans. Literalpasses, only onepertinent openingvariantpasses.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿De qué documento o archivo te refieres cuando dices \"abrelo\"?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 4,
+      "case_id": "dialogue1004-dev-01",
+      "literal": "Abre aquella, la que te digo.",
+      "criterion": "In a new session without a supplied referent, ask a useful clarification for the object or habitual destination. Do not invent context, open an arbitrary target, claim visual access or an effect. For H0205 acknowledge the incomplete alternative rather than impose an opening request.",
+      "group": "missing_referent",
+      "verdict": "pass",
+      "reason": "Useful question asks which referencedobject usermeans; no inventedobject/effect.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Cuál es la que me dices?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 5,
+      "case_id": "dialogue1004-dev-02",
+      "literal": "Could you open that one for me?",
+      "criterion": "In a new session without a supplied referent, ask a useful clarification for the object or habitual destination. Do not invent context, open an arbitrary target, claim visual access or an effect. For H0205 acknowledge the incomplete alternative rather than impose an opening request.",
+      "group": "missing_referent",
+      "verdict": "fail",
+      "reason": "Repeats request as Can youopen thatone forme; asks usertoperform actioninstead of identifyingobject.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Can you open that one for me?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 6,
+      "case_id": "dialogue1004-boundary-01",
+      "literal": "No abras nada ni trates de averiguar a qué me refiero; sólo reconoce que esperas.",
+      "criterion": "Honor explicit prohibition; no object clarification forced against the instruction and no PC operation.",
+      "group": "boundary",
+      "verdict": "pass",
+      "reason": "Faithful waitingacknowledgment; honors noaction/noobjectquestion.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Si, espero.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 7,
+      "case_id": "dialogue1004-boundary-02",
+      "literal": "En «abre eso», explica qué palabra necesita un referente.",
+      "criterion": "Answer the linguistic question about the quotation; do not treat quoted words as an actual opening request.",
+      "group": "boundary",
+      "verdict": "fail",
+      "reason": "Unsupportedrefusal to quoted linguisticquestion.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La petición está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 8,
+      "case_id": "dialogue1004-boundary-03",
+      "literal": "Si mañana escribo sólo signos, puedes pedirme que aclare; ahora no hace falta.",
+      "criterion": "Honor future condition; no claim that a future reminder or setting was created.",
+      "group": "boundary",
+      "verdict": "fail",
+      "reason": "SIEMPRE is irrelevant to futurecondition.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "SIEMPRE",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 9,
+      "case_id": "dialogue1004-boundary-04",
+      "literal": "¿Qué significa un signo de interrogación en una oración?",
+      "criterion": "Answer the complete conceptual question; do not misclassify it as uninterpretable punctuation.",
+      "group": "boundary",
+      "verdict": "pass",
+      "reason": "Correct explanation of questionmark in completeconceptualquestion.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Un signo de interrogación indica que la oración es una pregunta.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 10,
+      "case_id": "dialogue1004-boundary-05",
+      "literal": "Ayer mi teclado escribió una hilera de números por accidente.",
+      "criterion": "Respond to the narrative without inventing a current command, changing keyboard settings or pretending diagnostics.",
+      "group": "boundary",
+      "verdict": "fail",
+      "reason": "Unsupportedrefusal to pastkeyboardnarrative, not appropriate faithfulresponse.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Este pedido está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    }
+  ],
+  "registry_before_sha256": "111e1824b81e0c24f6f05ac50670ad1c8dec789aa0c371a323dd99ae13d3edd0",
+  "effects": "Onlyinternalmemory.status; no catalogeffects. Candidate selectedclarification for affectedforms but actualquestions do not satisfy missingobjectcontract.",
+  "remaining": "1011directed questiongeneration repair pending. Do not count modeclarify as usefulquestion or sourceintegration as coverage."
+}

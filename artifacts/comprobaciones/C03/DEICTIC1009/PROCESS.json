@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-12T00:21:15.747747+00:00",
+  "runner_pid": 6100,
+  "launcher_pid": 14544,
+  "launcher_creation": 1789172475.741902,
+  "command": [
+    "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "main.py",
+    "--conductor",
+    "--profile",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-deictic1009-profile",
+    "--capture",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-deictic1009-private\\run\\capture",
+    "--turns-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-deictic1009-proposal\\turns.jsonl",
+    "--timeout-ms",
+    "120000"
+  ]
+}

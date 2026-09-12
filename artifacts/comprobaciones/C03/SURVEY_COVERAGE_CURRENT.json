@@ -1,12 +1,12 @@
 {
-  "utc": "2026-09-12T00:12:49.792423+00:00",
-  "covered": 103,
-  "open": 639,
+  "utc": "2026-09-12T00:32:02.167554+00:00",
+  "covered": 106,
+  "open": 636,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 75,
+  "covered_updated_last_24h": 78,
   "updated_recent_ids": [
     "H0017",
     "H0020",
@@ -27,6 +27,7 @@
     "H0184",
     "H0194",
     "H0207",
+    "H0216",
     "H0233",
     "H0258",
     "H0267",
@@ -59,6 +60,7 @@
     "H0505",
     "H0512",
     "H0524",
+    "H0534",
     "H0538",
     "H0545",
     "H0553",
@@ -67,6 +69,7 @@
     "H0577",
     "H0597",
     "H0599",
+    "H0619",
     "H0622",
     "H0625",
     "H0633",
@@ -84,7 +87,7 @@
     "H0729",
     "H0736"
   ],
-  "confirmed_new_grants_last_24h": 75,
+  "confirmed_new_grants_last_24h": 78,
   "first_grant_date_not_distinguished_for_recent_ids": [],
   "categories": [
     {
@@ -112,19 +115,19 @@
       "not_applicable": 0
     },
     {
-      "category": "clarification_unresolved_input",
-      "label": "Entrada incompleta, ruido y control de diálogo",
-      "total": 34,
-      "covered": 0,
-      "open": 34,
-      "not_applicable": 0
-    },
-    {
       "category": "files",
       "label": "Archivos y carpetas",
       "total": 32,
       "covered": 0,
       "open": 32,
+      "not_applicable": 0
+    },
+    {
+      "category": "clarification_unresolved_input",
+      "label": "Entrada incompleta, ruido y control de diálogo",
+      "total": 34,
+      "covered": 3,
+      "open": 31,
       "not_applicable": 0
     },
     {
@@ -368,8 +371,8 @@
       "not_applicable": 0
     }
   ],
-  "requirements_sha256": "111e1824b81e0c24f6f05ac50670ad1c8dec789aa0c371a323dd99ae13d3edd0",
-  "registry_sha256": "111e1824b81e0c24f6f05ac50670ad1c8dec789aa0c371a323dd99ae13d3edd0",
+  "requirements_sha256": "7d6ad6f664ad915d064dd3247eaaf61dac2e0846b6cb7e74bb10fbdacd8c8df6",
+  "registry_sha256": "7d6ad6f664ad915d064dd3247eaaf61dac2e0846b6cb7e74bb10fbdacd8c8df6",
   "classification_source": "SURVEY_TAXONOMY846.json",
   "latest_adjudications": [
     "APP_OPEN847/ROOT_ADJUDICATION.json",
@@ -404,15 +407,17 @@
     "WEB_TAIL1000/ROOT_ADJUDICATION.json",
     "WEB_TAIL1002/ROOT_ADJUDICATION.json",
     "KNOWLEDGE998/ROOT_ADJUDICATION.json",
-    "DIALOGUE1004/ROOT_ADJUDICATION.json"
+    "DIALOGUE1004/ROOT_ADJUDICATION.json",
+    "DEICTIC1009/ROOT_ADJUDICATION.json",
+    "DEICTIC1012/ROOT_ADJUDICATION.json"
   ],
-  "equal_maximum_open_next_selection": "Apps40 parked957;music39 parked962/991;web36 requires1003diagnosticthenbehaviorrepair;dialogue34 requires commoncause1006 after1004. Files32 scopefrontier1005. Knowledge28 after6credits998.",
+  "equal_maximum_open_next_selection": "Apps40 parked957; music39 parked962/991; web36 next1010 after adopting/building private diagnostic1003. Files32 scope1005; dialogue31 after3credits1012 still needs distinct1006repairs. Knowledge28 after6credits998.",
   "latest_product_run": {
-    "batch": 1004,
-    "executed": 25,
+    "batch": 1012,
+    "executed": 11,
     "passed": 7,
-    "failed": 18,
-    "coverage_added": 0,
+    "failed": 4,
+    "coverage_added": 3,
     "exit_code": 0
   }
 }
