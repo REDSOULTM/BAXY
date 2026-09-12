@@ -1,3 +1,25 @@
+## MESSAGING1095 — estado vigente 2026-09-12T20:26:29.4066558+00:00
+
+Parcial: 10 aprobados, 2 fallidos, 12 sin ejecutar; 4 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 195/742 | 547 | 0 | >=69 | 0/35 |
+
+Procedencia de primeras altas: Cota inferior: 28 primeras altas verificadas del relevo Kiro más 37 del retorno hasta MESSAGING1085. Sólo se añaden las altas nuevas de esta adjudicación, no revalidaciones.
+
+Siguiente acción: Preparar y ejecutar DIALOGUE1093 (10 literales, 10 variantes, 5 límites), categoría disponible con 29 abiertos frente a 26 de mensajería tras estos cuatro créditos. Música e instalación conservan sus requisitos condicionados y reanudación documentada. MESSAGING1095 deja H0584 abierto por cambio de autor del contenido y el límite condicional 22 fallido por negativa improcedente; no repetirlos sin reparación pertinente. H0024 no fue admitido por la interrupción ambiental: preservar perfil/captura/flag de incertidumbre, no reutilizar. El resto de índices sin ejecutar conserva material para una continuación sellada. Sin suites/Fast/Full por instrucción expresa del dueño; C03 sigue activo, 3/11 formal.
+
+Evidencia: `artifacts/comprobaciones/C03/MESSAGING1095/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 268.26 s acumulados; pico GPU 3497.56 MiB; pico RAM 1669.62 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 13; abortados antes de admisión: 1. Los abortos ambientales no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MESSAGING1095 precedente. -->
+
 ## MESSAGING1085 — estado vigente 2026-09-12T20:01:03.7369091+00:00
 
 Parcial: 4 aprobados, 3 fallidos, 18 sin ejecutar; 1 créditos.

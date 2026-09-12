@@ -6,7 +6,7 @@ Se comparte la familia verbal entre las tres comprobaciones existentes de forma,
 
 Fuente única: `src/baxy_mind/effect_intent.py`, SHA256 `14cea4af55dd936d79d2e2a83bb3dd9c5311aeeb1ed0d2d3b5a5abf3fdd9a625`. Base `32b3becbdf9b18c459e228b8e4464830cf270aa85e7ba0f2c550c42329a641b5`. Diff revisado por raíz: 7 líneas añadidas y 3 retiradas. El resto del candidato permanece igual.
 
-La reparación aún no tiene resultado dinámico. No se ejecutaron suites, Fast ni Full por instrucción expresa del dueño. BUILD1079 sigue siendo la compilación .NET vigente; se comprobará su fingerprint efectivo al preparar el candidato Python nuevo.
+Resultado posterior: MESSAGING1095 acreditó H0108, H0303, H0408 y H0423 con variantes española e inglesa. Hubo 10 respuestas aprobadas, 2 fallidas y un arranque interrumpido antes de admitir el literal; no se declara la tanda completamente aprobada. El fallo de atribución del contenido y la negativa improcedente ante un comentario condicional quedan documentados en su adjudicación. No se ejecutaron suites, Fast ni Full por instrucción expresa del dueño. BUILD1079 y su fingerprint efectivo se verificaron al preparar el candidato Python nuevo.
 
 MESSAGING1095 preparará los 24 objetos restantes exactos de MESSAGING1085: 9 literales aún abiertos, 10 variantes y 5 límites. Tres literales fallidos requieren esta reparación; las variantes y el límite ya pasados se vuelven a medir por el cambio en su ruta. El literal H0019 ya acreditado se excluye. No se repite la tanda anterior entera.
 
