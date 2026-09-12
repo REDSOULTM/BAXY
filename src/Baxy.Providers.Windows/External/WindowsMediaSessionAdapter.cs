@@ -9,6 +9,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
 {
     private const int SpotifyPlaybackPollIntervals = 20;
     private const int SmtcPostreadPollIntervals = 7;
+    private const int SmtcControlPostreadPollIntervals = 40;
     private static readonly TimeSpan SpotifyPlaybackPollInterval =
         TimeSpan.FromMilliseconds(500);
     private static readonly TimeSpan SmtcPostreadPollInterval =
@@ -471,7 +472,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
             };
             bool verified = false;
             Exception? observationError = null;
-            for (int attempt = 0; attempt <= SmtcPostreadPollIntervals; attempt++)
+            for (int attempt = 0; attempt <= SmtcControlPostreadPollIntervals; attempt++)
             {
                 try
                 {
@@ -486,7 +487,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
                     verified = false;
                 }
 
-                bool terminal = attempt == SmtcPostreadPollIntervals;
+                bool terminal = attempt == SmtcControlPostreadPollIntervals;
                 if ((verified && (!alreadySatisfiedBeforeDispatch || terminal)) || terminal)
                 {
                     if (!verified && observationError is not null)

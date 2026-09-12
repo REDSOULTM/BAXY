@@ -1,0 +1,26 @@
+[
+  {
+    "index": 6,
+    "verdict": "failed",
+    "reason": "El control de reanudación fue emitido, pero el proveedor agotó la postlectura y devolvió efecto incierto. No acredita la variante.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "Pre Aurora de cobre paused0:20; media.control632be546-778b-4699-8e58-bebf5ea30ff8 failed/smtc_postcondition_not_verified/verifiedfalse/resultnull/effectMayHaveOccurredtrue. Postlectura y UI playing0:45 no convierten ese recibo en éxito retrospectivo. Final indica resultado no verificado.1079 propone ampliar sólo la observación, sin repetir dispatch."
+  },
+  {
+    "index": 7,
+    "verdict": "failed",
+    "reason": "No hubo respuesta final útil ni control nuevo; el perfil conservaba la incertidumbre de la variante anterior. La medición no aísla esta conducta.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "La selección recuperó media.control y source_app dejó de bloquear. Ninguna nueva operación multimedia; Aurora permaneció pausada1:09 después de nueva precondición manual de raíz. Auditoría t0 restauró pendingRequest del caso6 y t1 compuso error de resultado no verificado. Terminal composition_failed/no_response; no demuestra regresión de interpretación ni crédito."
+  },
+  {
+    "index": 3,
+    "verdict": "failed",
+    "reason": "El salto se ejecutó y tuvo un borrador fiel aceptado, pero el terminal reportado fue composition_failed; no se acredita con una respuesta final no establecida.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "Pre Rio de cristal playing, control6deb8cde-bad2-4c13-bb8b-00dcdf39e250 completed/verifiedtrue/replayedfalse Sendero azul playing y postlectura coincide. Composer t1 publicó un borrador completo con canción/artista/estado; t0 siguió restaurando incertidumbre anterior. case-observations declaró no_response;recovery:no_response;retry_exhausted. Se conserva discrepancia y se aislarán perfiles de casos, sin borrar la misión incierta ni atribuirle operaciones ajenas."
+  }
+]

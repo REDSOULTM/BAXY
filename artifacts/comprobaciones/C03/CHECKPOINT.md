@@ -1,3 +1,23 @@
+## MUSIC1077 — estado vigente 2026-09-12T18:02:53.762552+00:00
+
+Parcial: 0 aprobados, 3 fallidos, 16 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 186/742 | 556 | 0 | >=60 | 0/35 |
+
+Procedencia de primeras altas: Al menos60 primeras altas verificadas hoy:28 Kiro y32 retorno; no se cuentan las revalidaciones ni actualizaciones de abiertos.
+
+Siguiente acción: Tras adjudicar, integrar hipótesis1079: ampliar postlectura del control SMTC de350ms a2s, mismo dispatch y criterios. Compilar .NET sin suites por orden del dueño. Sellar1080 con los mismos19objetos, perfiles nuevos separados por caso y preservación íntegra del perfil1077 incierto. Reejecutados en1077:3,6,7;16 no ejecutados en ese padre, con historia previa conservada. No contar borradores como terminales ni efectos no verificados como éxito. C03 activo, formal3/11.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1077/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 99.84 s acumulados; pico GPU 3497.56 MiB; pico RAM 2061.00 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1077 precedente. -->
+
 ## MUSIC1071 — estado vigente 2026-09-12T17:50:26.759849+00:00
 
 Parcial: 1 aprobados, 4 fallidos, 14 sin ejecutar; 0 créditos.

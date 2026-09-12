@@ -1,0 +1,42 @@
+{
+  "schema": "music1077-root-decisions-v1",
+  "approved_by_root": true,
+  "head": "6929b5ff388bc1410213380a14f3a965458053eb",
+  "preparation_sha256": "ab26793001d7ac57a97a982e54e213a44e12b628c9498744b23e56a362743bcb",
+  "registry_before_sha256": "f1105d75a2c69ed30e8fff733e1311fa2515bc0296fe8e093d59cef7252bc1e9",
+  "decided_at_utc": "2026-09-12T18:02:53.762552+00:00",
+  "metrics": {
+    "first_covered_last24h_before": 60,
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_evidence_note": "Al menos60 primeras altas verificadas hoy:28 Kiro y32 retorno; no se cuentan las revalidaciones ni actualizaciones de abiertos.",
+    "categories_closed_after": 0,
+    "categories_total": 35
+  },
+  "next_action": "Tras adjudicar, integrar hipótesis1079: ampliar postlectura del control SMTC de350ms a2s, mismo dispatch y criterios. Compilar .NET sin suites por orden del dueño. Sellar1080 con los mismos19objetos, perfiles nuevos separados por caso y preservación íntegra del perfil1077 incierto. Reejecutados en1077:3,6,7;16 no ejecutados en ese padre, con historia previa conservada. No contar borradores como terminales ni efectos no verificados como éxito. C03 activo, formal3/11.",
+  "decisions": [
+    {
+      "index": 6,
+      "verdict": "failed",
+      "reason": "El control de reanudación fue emitido, pero el proveedor agotó la postlectura y devolvió efecto incierto. No acredita la variante.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Pre Aurora de cobre paused0:20; media.control632be546-778b-4699-8e58-bebf5ea30ff8 failed/smtc_postcondition_not_verified/verifiedfalse/resultnull/effectMayHaveOccurredtrue. Postlectura y UI playing0:45 no convierten ese recibo en éxito retrospectivo. Final indica resultado no verificado.1079 propone ampliar sólo la observación, sin repetir dispatch."
+    },
+    {
+      "index": 7,
+      "verdict": "failed",
+      "reason": "No hubo respuesta final útil ni control nuevo; el perfil conservaba la incertidumbre de la variante anterior. La medición no aísla esta conducta.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "La selección recuperó media.control y source_app dejó de bloquear. Ninguna nueva operación multimedia; Aurora permaneció pausada1:09 después de nueva precondición manual de raíz. Auditoría t0 restauró pendingRequest del caso6 y t1 compuso error de resultado no verificado. Terminal composition_failed/no_response; no demuestra regresión de interpretación ni crédito."
+    },
+    {
+      "index": 3,
+      "verdict": "failed",
+      "reason": "El salto se ejecutó y tuvo un borrador fiel aceptado, pero el terminal reportado fue composition_failed; no se acredita con una respuesta final no establecida.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Pre Rio de cristal playing, control6deb8cde-bad2-4c13-bb8b-00dcdf39e250 completed/verifiedtrue/replayedfalse Sendero azul playing y postlectura coincide. Composer t1 publicó un borrador completo con canción/artista/estado; t0 siguió restaurando incertidumbre anterior. case-observations declaró no_response;recovery:no_response;retry_exhausted. Se conserva discrepancia y se aislarán perfiles de casos, sin borrar la misión incierta ni atribuirle operaciones ajenas."
+    }
+  ]
+}

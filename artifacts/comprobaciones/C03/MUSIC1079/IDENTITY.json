@@ -1,0 +1,26 @@
+{
+  "utc": "2026-09-12T18:00:28.105386+00:00",
+  "head": "6929b5ff388bc1410213380a14f3a965458053eb",
+  "candidate_manifest_sha256": "64787c5204402990f44955f68af0b0fc736c6621731ef63c42e774b2962ca9d6",
+  "owner": "src/Baxy.Providers.Windows/External/WindowsMediaSessionAdapter.cs",
+  "base_sha256": "de9cfadbaaf1b236eae3b30b3409e33efb55d8526d348f9f295cdec4247c70b4",
+  "proposal_sha256": "e2be2e0cfcb1603ae6aa0e207b5a850b2c9703cfd8f6356fb1e6738e45c3db25",
+  "diff_sha256": "6aad7bcfda822d90d62c0fa0f0829a4b0cc7c3dbe51f0aba8cc73dac3edc37eb",
+  "evidence_pins": {
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Providers.Windows\\External\\WindowsMediaSessionAdapter.cs": "de9cfadbaaf1b236eae3b30b3409e33efb55d8526d348f9f295cdec4247c70b4",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1077-proposal\\private\\PREPARATION.json": "ab26793001d7ac57a97a982e54e213a44e12b628c9498744b23e56a362743bcb",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1063-repair-proposal\\DIAGNOSIS.md": "e929a35ae0d3ed5a17690148e024b59fb8eae29eb6491c72d7cdb04e395a622b",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\documentacion\\01_ARQUITECTURA\\REGISTRO_DE_MANTENIBILIDAD.md": "39feed1ddae7f49178e338f4d263e0fcab4872bd60f011dac91fe29ec4081ba5",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1077-proposal\\private\\run-06\\journal-before.json": "7a29c59b721fc8c188e2f6d493927859f73150bca16a5810ed409992340dc55c",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1077-proposal\\private\\run-06\\journal-after.json": "7d13c8eaae97d36b10beb496c4eb5f023af561a53a70754888ff1543923c0488",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1077-proposal\\private\\run-06\\journal.snapshot.jsonl": "93e63d3c0682d716489e3b4be3256d61d1d033b886a9f5477aebcf81eaea9c66",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1077-proposal\\private\\run-06\\turn-audit.jsonl": "2c6f5a7cc5f678a6de32251392aff4fe144b6774ab6ea3b708506c6a93f9ab11",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1077-proposal\\private\\run-06\\case-observations.json": "cfc8a90076b71550f685cce4c8476bd6c54c7c12a0cd7ec2d9a7697e22977e5b",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1058-preparation\\read-1077-case06-pre\\REPORT.json": "269aa13d6cc24135aa7a7ff5af345714b55c2dceacbf8b0612f608d59465c410",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1058-preparation\\read-1077-case06-post\\REPORT.json": "24c829e42295d4a5ae5c549c1498aa8aa28e1ad16b3ce43c464a95c56e1b8688"
+  },
+  "hypothesis_only": true,
+  "tests_run": false,
+  "product_imported_or_executed": false,
+  "canonical_writes": false
+}

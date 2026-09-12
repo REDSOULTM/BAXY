@@ -1,0 +1,38 @@
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "reanudá la música"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "canción anterior"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "poné la siguiente canción"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "siguiente canción"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "pará la música"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "para la musica"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Seguí con la reproducción que quedó en pausa."}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Resume the track from where it stopped."}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Pasá al tema que viene."}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Skip forward to the next track."}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Volvé al tema anterior."}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Go back one song in the current queue."}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Detené la reproducción actual."}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Stop playing the current track."}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "No reanudes la música; dejala como está."}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "¿Qué significa poner una canción en pausa?"}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Traduce al español «skip to the next track»."}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Si mañana quiero oír música, te diré qué poner."}
+{"cmd": "session.new"}
+{"cmd": "turn", "text": "Ayer detuve la música antes de salir."}

@@ -1,0 +1,7 @@
+{
+  "patch_apply_initial": "failed before mutation: external patch CRLF, canonical source LF",
+  "canonical_before": "de9cfadbaaf1b236eae3b30b3409e33efb55d8526d348f9f295cdec4247c70b4",
+  "proposal_crlf": "e2be2e0cfcb1603ae6aa0e207b5a850b2c9703cfd8f6356fb1e6738e45c3db25",
+  "canonical_after_lf": "b37130ff45fff19452f1644a746ba709f820aef97fd1c202a8c37b56cb2b2437",
+  "operation": "Preserved canonical LF; proposal content otherwise byte-identical after CRLF normalization."
+}
