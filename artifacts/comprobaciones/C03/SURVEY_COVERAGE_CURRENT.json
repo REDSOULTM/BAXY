@@ -1,12 +1,12 @@
 {
-  "utc": "2026-09-12T00:47:38.850274+00:00",
-  "covered": 106,
-  "open": 636,
+  "utc": "2026-09-12T01:02:55.815065+00:00",
+  "covered": 108,
+  "open": 634,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 78,
+  "covered_updated_last_24h": 80,
   "updated_recent_ids": [
     "H0017",
     "H0020",
@@ -23,6 +23,7 @@
     "H0133",
     "H0158",
     "H0166",
+    "H0168",
     "H0169",
     "H0184",
     "H0194",
@@ -35,6 +36,7 @@
     "H0292",
     "H0310",
     "H0323",
+    "H0331",
     "H0338",
     "H0353",
     "H0361",
@@ -87,7 +89,7 @@
     "H0729",
     "H0736"
   ],
-  "confirmed_new_grants_last_24h": 78,
+  "confirmed_new_grants_last_24h": 80,
   "first_grant_date_not_distinguished_for_recent_ids": [],
   "categories": [
     {
@@ -147,14 +149,6 @@
       "not_applicable": 0
     },
     {
-      "category": "audio_volume",
-      "label": "Audio y volumen",
-      "total": 51,
-      "covered": 21,
-      "open": 30,
-      "not_applicable": 0
-    },
-    {
       "category": "timers_reminders_calendar",
       "label": "Alarmas, recordatorios, tareas y agenda",
       "total": 38,
@@ -168,6 +162,14 @@
       "total": 40,
       "covered": 11,
       "open": 29,
+      "not_applicable": 0
+    },
+    {
+      "category": "audio_volume",
+      "label": "Audio y volumen",
+      "total": 51,
+      "covered": 23,
+      "open": 28,
       "not_applicable": 0
     },
     {
@@ -251,18 +253,18 @@
       "not_applicable": 0
     },
     {
-      "category": "windows_status",
-      "label": "Estado de ventanas y aplicaciones",
-      "total": 14,
-      "covered": 1,
-      "open": 13,
-      "not_applicable": 0
-    },
-    {
       "category": "windows_arrangement",
       "label": "Organizar ventanas y pestañas",
       "total": 13,
       "covered": 0,
+      "open": 13,
+      "not_applicable": 0
+    },
+    {
+      "category": "windows_status",
+      "label": "Estado de ventanas y aplicaciones",
+      "total": 14,
+      "covered": 1,
       "open": 13,
       "not_applicable": 0
     },
@@ -323,18 +325,18 @@
       "not_applicable": 0
     },
     {
-      "category": "negative_app_constraints",
-      "label": "Restricciones negativas de apertura",
-      "total": 4,
-      "covered": 1,
-      "open": 3,
-      "not_applicable": 0
-    },
-    {
       "category": "clipboard",
       "label": "Portapapeles",
       "total": 3,
       "covered": 0,
+      "open": 3,
+      "not_applicable": 0
+    },
+    {
+      "category": "negative_app_constraints",
+      "label": "Restricciones negativas de apertura",
+      "total": 4,
+      "covered": 1,
       "open": 3,
       "not_applicable": 0
     },
@@ -371,8 +373,8 @@
       "not_applicable": 0
     }
   ],
-  "requirements_sha256": "286ff0ec4e4fd9f632f804d9619ab8e3271fac42f7557500eac36be90d5ea188",
-  "registry_sha256": "286ff0ec4e4fd9f632f804d9619ab8e3271fac42f7557500eac36be90d5ea188",
+  "requirements_sha256": "3c6ac2f358f202544a775b35714a910ea5897da4e210e5db8910cf0bf39e448d",
+  "registry_sha256": "3c6ac2f358f202544a775b35714a910ea5897da4e210e5db8910cf0bf39e448d",
   "classification_source": "SURVEY_TAXONOMY846.json",
   "latest_adjudications": [
     "APP_OPEN847/ROOT_ADJUDICATION.json",
@@ -409,15 +411,17 @@
     "KNOWLEDGE998/ROOT_ADJUDICATION.json",
     "DIALOGUE1004/ROOT_ADJUDICATION.json",
     "DEICTIC1009/ROOT_ADJUDICATION.json",
-    "DEICTIC1012/ROOT_ADJUDICATION.json"
+    "DEICTIC1012/ROOT_ADJUDICATION.json",
+    "WEB_DIAGNOSTIC1010/ROOT_ADJUDICATION.json",
+    "AUDIO1016/ROOT_ADJUDICATION.json"
   ],
-  "equal_maximum_open_next_selection": "Apps40 parked957; music39 parked962/991; web36 next1010 after adopting/building private diagnostic1003. Files32 scope1005; dialogue31 after3credits1012 still needs distinct1006repairs. Knowledge28 after6credits998.",
+  "equal_maximum_open_next_selection": "Apps40/music39/Steam19 remain parked with exact prior conditions; web36 transport1017 has no safe repair. Files32 scope1005, messaging31 authorization1014, install31 classification1018. Audio1019 targets two observed failures potentially crediting4literals; source unchanged pending diagnosis.",
   "latest_product_run": {
-    "batch": 1012,
-    "executed": 11,
-    "passed": 7,
-    "failed": 4,
-    "coverage_added": 3,
+    "batch": 1016,
+    "executed": 27,
+    "passed": 14,
+    "failed": 13,
+    "coverage_added": 2,
     "exit_code": 0
   }
 }

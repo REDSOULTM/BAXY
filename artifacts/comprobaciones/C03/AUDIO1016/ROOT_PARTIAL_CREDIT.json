@@ -1,0 +1,76 @@
+{
+  "schema": "audio1016-root-partial-credit-v1",
+  "adjudicator": "root",
+  "utc": "2026-09-12T00:59:06.199145+00:00",
+  "source_candidate": "fa0fbdc56d59c3dd94bbbedb6d95ab5a3de80d4c",
+  "seal_sha256": "2b87158386b2212dba4643527413a0964bb75b30406744e83f52acb2b56841f5",
+  "coverage_added": 2,
+  "case_ids": [
+    "H0168",
+    "H0331"
+  ],
+  "literal_terminals": {
+    "H0168": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Los altavoces (Realtek(R) Audio) están activos, con el volumen en 100 y silenciados.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    },
+    "H0331": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "Los altavoces (Realtek(R) Audio) están activos, con el volumen en 100 y silenciados.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    }
+  },
+  "current_variant": {
+    "case_id": "audio1016-dev-06",
+    "terminal": {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "The audio output device is \"Altavoces (Realtek(R) Audio)\". It is muted. Volume level is 100.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    }
+  },
+  "prior_variant": {
+    "case_id": "audio848-dev-status-03",
+    "literal": "Revisa el sonido sin tocar ajustes: dispositivo de salida predeterminado, volumen y silencio.",
+    "adjudication": "AUDIO861/ROOT_ADJUDICATION.json",
+    "sha256": "fac5f61d3cb4ccccdaa987a3ccb229f7e34e06b8054536db4adb13b0693f2bfc",
+    "result": {
+      "case_id": "audio848-dev-status-03",
+      "turn_id": "t12",
+      "group": "status",
+      "kind": "variant",
+      "verdict": "pass",
+      "reason": "Variante útil y fiel al recibo: cantidad/dirección/dispositivo/nivel/silencio conservados.",
+      "survey_credit": false,
+      "verification_status": null,
+      "invocation_ids": [
+        "1b2dac09-f243-4635-bda5-108faa8e89d6"
+      ]
+    }
+  },
+  "reason": "Two current literals identify Realtek endpoint faithfully; current English variant and earlier Spanish variant both independently read and identify endpoint. Current ES variant composition failure remains fail, not regraded.",
+  "current_invocations": {
+    "H0168": "886895db-0c35-4bfc-b3f9-9a8925941908",
+    "H0331": "67323e78-25f5-4b25-a700-c68f11d5581a"
+  },
+  "root_read_capture": "54736f",
+  "root_read_prior": "0ba593/a63577",
+  "root_read_trace": "dc0bef",
+  "runner_exit_available": true,
+  "registry_before_sha256": "286ff0ec4e4fd9f632f804d9619ab8e3271fac42f7557500eac36be90d5ea188",
+  "registry_after_sha256": "443341a124a4a30294b8aa97550426500b868ff278174b23505688ce6a227ae9",
+  "survey_counts": {
+    "covered": 108,
+    "open": 634,
+    "not_applicable": 0
+  }
+}

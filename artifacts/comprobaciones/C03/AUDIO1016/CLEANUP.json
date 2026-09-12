@@ -1,0 +1,19 @@
+{
+  "restored_verified": true,
+  "baseline": {
+    "volumePercent": 100,
+    "muted": false
+  },
+  "expected_panel_final": {
+    "volumePercent": 100,
+    "muted": true
+  },
+  "calls": 3,
+  "retries": 0,
+  "credit": 0,
+  "private_report": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1016-cleanup-private\\REPORT.json",
+  "private_report_sha256": "deb2097f0807ee17cc90bfc6f2e9581780910a7b7f93fc2aaaa271824fcdd413",
+  "input_sha256": "6284906ecf6fb5ad805c785de652ea3b34bc93aac63104f7e1fa98d3b8a22e42",
+  "script_sha256": "536b10e3b4725338d7a104c18876552a782baff7bf82e13d9b2e4734770fb4e3",
+  "collection": "71ab8d"
+}

@@ -1,37 +1,28 @@
-# C03 — checkpoint tras1010 / compilación1013
+# C03 — checkpoint tras audio1016
 
-**106/742 cubiertos, 636 abiertos, 0 no aplican; 78 altas confirmadas en las últimas24h; 0/35 categorías cerradas.** C03:3/11 cumplidos,5 contradichos,3 pendientes. Goal activo, sin permiso ni decisión pendiente del dueño.
+**108/742 cubiertos, 634 abiertos, 0 no aplican; 80 altas confirmadas en las últimas 24 h; 0/35 categorías cerradas.** C03: 3/11 cumplidos, 5 contradichos, 3 pendientes. Goal activo. Ninguna autorización pendiente. Estimación de cierre: todavía no fiable; quedan categorías con defectos de mecanismo y efectos pendientes de reconciliar.
 
-Desde97 se acreditaron nueve literales: seis en998 (H0323, H0438, H0504, H0184, H0545, H0569) y tres en1012 (H0216, H0534, H0619). Cada uno tiene ejecución literal actual, respuesta útil y dos variantes pertinentes. Los primeros cuatro estados998 se escribieron durante la corrida; los restantes, al adjudicar. Las variantes nunca suman créditos.
+Audio1016 ejecutó 10 literales, 12 variantes y 5 límites: 14/27 cumplen, 13 fallan. Nueve literales respondieron bien; sólo H0168/H0331 obtuvieron crédito: identificaron el dispositivo real, con variante inglesa actual y variante española previa848-dev-status-03 acreditada en861. La variante española actual falló y conserva su fallo. Los dos estados covered se escribieron al adjudicar, antes de cerrar categoría; no se atribuye adjudicación en vivo, porque EXIT ya existía. Registro108/634, sin inflar con variantes.
 
-1008 evita confundir una apertura con referente ausente con una aplicación no instalada.1011 pide al usuario la identidad del objeto, manteniendo a BAXY como ejecutor.1012 obtuvo7/11 respuestas útiles y+3créditos. H0531 sigue preguntando por una acción pasada y permanece abierto; tampoco pasan los límites de cita, futuro y relato. No se repetirá todo el panel por ese literal. Ese candidato Python fue dc91a37a; el actual437e4183 añade la captura privada1003 y usa compilación1013.
+Cantidad y silencio tienen literales útiles, pero falta un segundo ejemplo generalizado.1019 investiga dos pérdidas concretas: el pedido desiderativo acaba en pregunta sí/no en vez de cantidad; «dejar mudo» se rechaza como capacidad inexistente.1020 prepara sólo cuatro literales pertinentes, dos variantes fallidas, dos controles ingleses y cinco límites originales. H0439 y varias prohibiciones/límites permanecen fallidos; no se repite todo1016. Recuperación de audio completada: lectura real100/sin silencio→tanda100/silenciado→lectura fresca, quitar silencio, lectura final100/sin silencio; mismo endpoint, tres llamadas,0reintentos. No se eligió100 para ocultar fallos de dirección.
 
-998 obtuvo18/25 respuestas útiles y+6créditos en multiplicación, longitud y composición química. La conversión de temperatura expresada como orden y parte del humor siguen fallando.1004 obtuvo7/25,+0: faltaban pares por conducta.1006 separa las causas de negativas de capacidad, referencias ausentes y respuestas irrelevantes; no hay un veto global nuevo.
+Web1010 ejecutó cuatro objetos fallidos originales:0/4,+0. La captura privada1003, integrada en437e4183 y compilada en1013, demuestra resultados ajenos anteriores al filtro.1017 comparó cinco lecturas HTTP: cambiar orden/%20/+ en «la NASA» no arregla la respuesta RSS; «NASA» sola devuelve NASA. El título RSS conserva la consulta completa. No hay cambio de transporte demostrado; no se afloja relevancia ni se afirma una causa remota no observada. Reanudación en WEB_HTTP1017/DIAGNOSIS.json; no repetir1010/1017 sin hipótesis nueva.
 
-El panel web993 se ejecutó una vez mediante cuatro sufijos disjuntos:993,997,1000,1002. De17literales, cinco fueron útiles; ninguna de12variantes completó la navegación. Tres de cinco límites pasaron. No se acreditó web: H0152/H0206/H0244/H0479/H0692 esperan pares. UNIEJ se detuvo por ambigüedad entre instituciones; Gutenberg eligió listar pestañas.1001 demuestra que varias búsquedas recibieron RSS válido, pero todos sus resultados fueron rechazados; la consulta efectiva y los items no quedaron registrados.
+Tramo previo1012:7/11,+3 H0216/H0534/H0619.998 había añadido6, de97a103. El candidato actualfa0fbdc5 conserva fuente437e4183 y build1013;1019 aún externo, no integrado. Main intacta. Compilación real1013 exit0; suites/Fast/Full omitidas por orden explícita del dueño, sin llamarlas aprobadas.
 
-1003 integrado en437e4183 y compilación1013 exit0.1010 ejecutó los cuatro objetos fallidos:0/4 útiles,+0créditos,62.125s,VRAM3497.56MiB yRAM2380.08MiB. La captura demuestra resultados ajenos al pedido: NASA recibió WhatsApp; Blender recibió IPPSA; Marvel y Python recibieron páginas genéricas. H0723 permanece abierto con causa actualizada. No se afloja relevancia. Próximo:1015, diagnóstico acotado de la petición/respuesta RSS del mecanismo existente; web conserva36abiertos. Apps40/música39 conservan957/962/991; archivos32 conserva1005. Mensajería1014 clasifica31:28envíos requieren autorización concreta/contexto,1aclaración sincontenido y2lecturas sin mecanismo acreditado; no se transforman envíos en borradores.
+| Tanda | Cumplen/ejecutados | Créditos | VRAM MiB | RAM MiB | Segundos |
+|---|---:|---:|---:|---:|---:|
+|1012|7/11|3|3497.56|2352.08|37.187|
+|1010|0/4|0|3497.56|2380.08|62.125|
+|1016|14/27|2|3499.56|2460.30|111.016|
 
-1017 completó cinco lecturas HTTP públicas, sin GPU ni crédito. Las cuatro formas de «la NASA» (orden y espacios distintos) devolvieron temas ajenos con channel correcto; «NASA» sola devolvió NASA. No hay reparación demostrada del transporte. Web se aparca temporalmente con cuerpo/URI retenidos; próxima tanda elegible:audio1016, en preparación. No se repiten1010/1017 sin una hipótesis distinta.
+Las tres terminaron exit0 con pins intactos y cero violaciones. RAM y VRAM son picos separados, inferiores a4GB; el muestreo de árbol puede incluir descendientes no exclusivos del modelo.80altas/24h supera el mínimo20, sin Full. RAM de arranque resuelta: dotnet global apagaba otra instalación; C:/Users/usuario/.dotnet/dotnet.exe build-server shutdown terminó los servidores restantes. No fue necesario cerrar apps del usuario; su autorización ya está concedida.
 
-| Tanda | Útiles/ejecutados | Créditos | Host/runner exit | VRAM MiB | RAM MiB | Segundos |
-|---|---:|---:|---:|---:|---:|---:|
-|989|5/11|0|0/0|3497.56|2371.46|86.672|
-|993|0/1|0|3/1|3495.56|2284.72|92.766|
-|997|4/13|0|3/1|3644.23|3636.80|306.610|
-|1000|1/8|0|3/1|3528.71|3131.38|78.438|
-|1002|3/12|0|0/0|3497.56|2462.83|91.937|
-|998|18/25|6|0/0|3497.56|2486.95|143.844|
-|1004|7/25|0|0/0|3499.56|2524.87|119.531|
-|1009|4/11|0|0/0|3497.56|1724.35|41.297|
-|1012|7/11|3|0/0|3497.56|2352.08|37.187|
-|1010|0/4|0|0/0|3497.56|2380.08|62.125|
+No repetir: elecciónQwen/backend/perfil792; herencia802; auditoría de frescura536; efectos Spotify962/Steam/Discord/Calculator/Settings/Explorer sin reconciliación exacta; fuente800 rechazada; paneles enteros por un fallo aislado. H0675/OCR/nuevos providers siguen aparcados. Objetos975/980/986 preservados, alarmas983 canceladas por identidad. IDs y reanudación de efectos inciertos en NEXT_989 (sólo historia de efectos/runtime, no fuente/build).
 
-Todas conservaron pins y tuvieron cero violaciones de recursos. Las salidas3 fueron detenciones de confirmación, no éxitos; sus sufijos no admitidos están documentados. RAM y VRAM son mediciones separadas, no consumo exclusivo del modelo. No se ejecutaron suites, Fast ni Full por orden del dueño; omitidas no significa aprobadas. Build1013 real:exit0; cierre correcto de servidores con C:/Users/usuario/.dotnet/dotnet.exe:exit0. El dotnet global apagaba otra instalación; resuelto sin cerrar apps del usuario, RAM libre4894708KiB antes de preparar1010. Main permanece intacta.
+Orden por masa: apps40 y música39 tienen condiciones957/962/991; web36 queda temporalmente aparcado por1017; archivos32 conserva frontera1005. Mensajería1014:28envíos requieren autorización concreta/contexto;1aclaración sin contenido;2lecturas sin mecanismo. Install1018:19Steam con mecanismo existente pero requieren sesión/entitlement/recursos/reconciliación;12casos separados no justifican infraestructura común ficticia. Próxima acción ejecutable: reparación dirigidaaudio1019 y panel1020, con máximo4créditos potenciales.
 
-78altas/24h supera20 sin Full. No hubo que cerrar aplicaciones:1007 no encontró navegadores temporales997/1000 y observó4198.51MiB libres. H0675/OCR/nuevos providers siguen aparcados. Inciertos Spotify962/Calculator/Settings/Explorer/Steam/Discord conservan sus condiciones exactas. Objetos975/980/986 preservados; alarmas983 canceladas por identidad. No repetir esos efectos sin reconciliarlos.
-
-Registro SHA `286ff0ec4e4fd9f632f804d9619ab8e3271fac42f7557500eac36be90d5ea188`. Clasificación846 inmutable; tabla recalculada por742 IDs y ordenada por abiertos:
+Registro SHA `3c6ac2f358f202544a775b35714a910ea5897da4e210e5db8910cf0bf39e448d`. Clasificación846 inmutable, tabla recalculada por742case_ids:
 
 | Categoría | Total | Cubiertos | Abiertos | No aplican |
 |---|---:|---:|---:|---:|
@@ -42,9 +33,9 @@ Registro SHA `286ff0ec4e4fd9f632f804d9619ab8e3271fac42f7557500eac36be90d5ea188`.
 | Entrada incompleta, ruido y control de diálogo | 34 | 3 | 31 | 0 |
 | Mensajería | 31 | 0 | 31 | 0 |
 | Instalar y desinstalar software | 31 | 0 | 31 | 0 |
-| Audio y volumen | 51 | 21 | 30 | 0 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 8 | 30 | 0 |
 | Estado de hardware y sistema | 40 | 11 | 29 | 0 |
+| Audio y volumen | 51 | 23 | 28 | 0 |
 | Conocimiento, razonamiento y creatividad verbal | 37 | 9 | 28 | 0 |
 | Vídeo y series | 26 | 0 | 26 | 0 |
 | Conversación social y ayuda general | 31 | 9 | 22 | 0 |
@@ -55,8 +46,8 @@ Registro SHA `286ff0ec4e4fd9f632f804d9619ab8e3271fac42f7557500eac36be90d5ea188`.
 | Pantalla, captura e interpretación visual | 19 | 0 | 19 | 0 |
 | Brillo y pantalla | 17 | 0 | 17 | 0 |
 | Información web actual | 17 | 0 | 17 | 0 |
-| Estado de ventanas y aplicaciones | 14 | 1 | 13 | 0 |
 | Organizar ventanas y pestañas | 13 | 0 | 13 | 0 |
+| Estado de ventanas y aplicaciones | 14 | 1 | 13 | 0 |
 | Identidad y capacidades del asistente | 19 | 7 | 12 | 0 |
 | Notas | 12 | 0 | 12 | 0 |
 | Memoria personal | 10 | 0 | 10 | 0 |
@@ -64,8 +55,8 @@ Registro SHA `286ff0ec4e4fd9f632f804d9619ab8e3271fac42f7557500eac36be90d5ea188`.
 | Bibliotecas y fichas de juegos | 6 | 0 | 6 | 0 |
 | Contactos | 5 | 0 | 5 | 0 |
 | Desarrollo y ejecución de comandos | 5 | 0 | 5 | 0 |
-| Restricciones negativas de apertura | 4 | 1 | 3 | 0 |
 | Portapapeles | 3 | 0 | 3 | 0 |
+| Restricciones negativas de apertura | 4 | 1 | 3 | 0 |
 | Energía del sistema | 3 | 0 | 3 | 0 |
 | Crear documentos y editar imágenes | 2 | 0 | 2 | 0 |
 | Leer y resumir páginas web | 2 | 0 | 2 | 0 |

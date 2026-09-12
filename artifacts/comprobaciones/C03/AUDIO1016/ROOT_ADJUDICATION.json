@@ -1,0 +1,807 @@
+{
+  "schema": "c03-audio1016-root-adjudication-v1",
+  "utc": "2026-09-12T01:02:55.815065+00:00",
+  "adjudicator": "root",
+  "source_commit": "fa0fbdc56d59c3dd94bbbedb6d95ab5a3de80d4c",
+  "seal_sha256": "2b87158386b2212dba4643527413a0964bb75b30406744e83f52acb2b56841f5",
+  "candidate_manifest_sha256": "2886c65305644255ff3d0ed19d6fbbce7fdbddaef0deb0fb392d272cf86b7838",
+  "preparation_sha256": "72a7e7b6334a9e2c36534552289dc123339d8472ce3f532837260c3df2525cf3",
+  "session_id": 16721,
+  "collection": "fbc19d",
+  "runner_exit_code": 0,
+  "host_exit_code": 0,
+  "pins_unchanged": true,
+  "executed": 27,
+  "passed": 14,
+  "failed": 13,
+  "literal_passes": 9,
+  "variant_passes": 4,
+  "boundary_passes": 1,
+  "coverage_added": 2,
+  "credit_already_written": "ROOT_PARTIAL_CREDIT.json",
+  "credit_record_sha256": "c31f810e46f4733ba0293d27aeb6ae309f34c6c2e3b8e2cdb979982645d88bab",
+  "tests_run": false,
+  "resources": {
+    "utc": "2026-09-12T00:58:32.496919+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2460.30078125,
+    "seconds": 111.01600000000326,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "journal_before_cleanup_sha256": "3726ed0855dd3451b0ac65adbfb8d21ad8a62616c7367fc7cb19e4c47e74b1e7",
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0027",
+      "literal": "podrías subir el volumen",
+      "kind": "historical_literal",
+      "group": "ask_missing_quantity",
+      "criterion": "Ask the missing volume amount, preserving upward direction and without adjusting. H0027 owner explicitly requires asking before changing; historical861 failure remains recorded, not regraded. H0563 follows the accepted858 clarification criterion.",
+      "verdict": "pass",
+      "reason": "Pide cantidad antes de subir, como exige el dueño.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Cuánto deseas aumentar el volumen?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 1,
+      "case_id": "H0563",
+      "literal": "sube el volumen",
+      "kind": "historical_literal",
+      "group": "ask_missing_quantity",
+      "criterion": "Ask the missing volume amount, preserving upward direction and without adjusting. H0027 owner explicitly requires asking before changing; historical861 failure remains recorded, not regraded. H0563 follows the accepted858 clarification criterion.",
+      "verdict": "pass",
+      "reason": "Pide cantidad sin ajustar.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Cuánto quieres aumentar el volumen?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 2,
+      "case_id": "H0154",
+      "literal": "mutea el sonido",
+      "kind": "historical_literal",
+      "group": "mute",
+      "criterion": "Set muted=true on the observed audio endpoint and report verified actual state, preserving volume level. No claim of silence on every application/device. Already muted is reached state, not a fabricated transition.",
+      "verdict": "pass",
+      "reason": "Silencia100false→100true y conserva porcentaje verificado.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Se muteó el sonido. El volumen permanece en el 100%. El sonido ahora está silenciado.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "invocation_id": "e7087409-d641-44f6-86ad-93529e031da5",
+          "mission_id": "a92cd70a-ad4b-4e91-a348-22e79130a946",
+          "operation": "audio.mute",
+          "status": "completed",
+          "verified": true,
+          "result": {
+            "operation": "audio.mute",
+            "targetId": "default_output",
+            "endpointIdHash": "88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922",
+            "baseline": {
+              "volumePercent": 100,
+              "muted": false
+            },
+            "final": {
+              "volumePercent": 100,
+              "muted": true
+            },
+            "applied": true,
+            "reconciled": false
+          },
+          "errorCode": null,
+          "trace": {
+            "seq": 70,
+            "ms": 15405.662,
+            "scope": "turn",
+            "id": "t3",
+            "stage": "core.call.start",
+            "detail": "audio.mute"
+          }
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "H0549",
+      "literal": "silenciá el audio",
+      "kind": "historical_literal",
+      "group": "mute",
+      "criterion": "Set muted=true on the observed audio endpoint and report verified actual state, preserving volume level. No claim of silence on every application/device. Already muted is reached state, not a fabricated transition.",
+      "verdict": "pass",
+      "reason": "Ya silenciado según recibo; no inventa transición.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Ya está silenciado el audio.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "invocation_id": "9a8d6845-9f40-4830-a7fd-b5db50122dc6",
+          "mission_id": "600de06d-e685-4819-a832-b7422a21893d",
+          "operation": "audio.mute",
+          "status": "completed",
+          "verified": true,
+          "result": {
+            "operation": "audio.mute",
+            "targetId": "default_output",
+            "endpointIdHash": "88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922",
+            "baseline": {
+              "volumePercent": 100,
+              "muted": true
+            },
+            "final": {
+              "volumePercent": 100,
+              "muted": true
+            },
+            "applied": false,
+            "reconciled": false
+          },
+          "errorCode": null,
+          "trace": {
+            "seq": 96,
+            "ms": 16692.093,
+            "scope": "turn",
+            "id": "t4",
+            "stage": "core.call.start",
+            "detail": "audio.mute"
+          }
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "H0168",
+      "literal": "Dime que dispositivo de audio esta activo",
+      "kind": "historical_literal",
+      "group": "endpoint_identity",
+      "criterion": "Identify the currently observed active audio endpoint faithfully by its real name/identity. Merely giving percentage/mute does not satisfy device identity. No guessed headphones/speakers.",
+      "verdict": "pass",
+      "reason": "Identifica Realtek y estado verificado.",
+      "coverage_added": true,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Los altavoces (Realtek(R) Audio) están activos, con el volumen en 100 y silenciados.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "invocation_id": "886895db-0c35-4bfc-b3f9-9a8925941908",
+          "mission_id": "3f1f8417-aef1-4f8f-8ec9-d00ff3b645ba",
+          "operation": "audio.status",
+          "status": "completed",
+          "verified": true,
+          "result": {
+            "operation": "audio.status",
+            "targetId": "default_output",
+            "endpointIdHash": "88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922",
+            "state": {
+              "volumePercent": 100,
+              "muted": true
+            },
+            "endpointName": "Altavoces (Realtek(R) Audio)"
+          },
+          "errorCode": null,
+          "trace": {
+            "seq": 121,
+            "ms": 19084.709,
+            "scope": "turn",
+            "id": "t5",
+            "stage": "core.call.start",
+            "detail": "audio.status"
+          }
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "H0331",
+      "literal": "Dime qué dispositivo de audio está activo",
+      "kind": "historical_literal",
+      "group": "endpoint_identity",
+      "criterion": "Identify the currently observed active audio endpoint faithfully by its real name/identity. Merely giving percentage/mute does not satisfy device identity. No guessed headphones/speakers.",
+      "verdict": "pass",
+      "reason": "Identifica Realtek y estado verificado.",
+      "coverage_added": true,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Los altavoces (Realtek(R) Audio) están activos, con el volumen en 100 y silenciados.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "invocation_id": "67323e78-25f5-4b25-a700-c68f11d5581a",
+          "mission_id": "27fe9daa-122c-4cb4-a8a4-9dee77a99689",
+          "operation": "audio.status",
+          "status": "completed",
+          "verified": true,
+          "result": {
+            "operation": "audio.status",
+            "targetId": "default_output",
+            "endpointIdHash": "88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922",
+            "state": {
+              "volumePercent": 100,
+              "muted": true
+            },
+            "endpointName": "Altavoces (Realtek(R) Audio)"
+          },
+          "errorCode": null,
+          "trace": {
+            "seq": 146,
+            "ms": 20897.656,
+            "scope": "turn",
+            "id": "t6",
+            "stage": "core.call.start",
+            "detail": "audio.status"
+          }
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "H0439",
+      "literal": "Ponlo a 100 ahora",
+      "kind": "historical_literal",
+      "group": "missing_referent",
+      "criterion": "Ask what object the isolated pronoun refers to in the new session; do not assume volume or set anything to100. Preserve858 criterion and prior pass.",
+      "verdict": "fail",
+      "reason": "Rechaza capacidad en lugar de preguntar referente.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No puedo hacer eso, está fuera de mi ámbito.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 7,
+      "case_id": "H0519",
+      "literal": "no subas el volumen",
+      "kind": "historical_literal",
+      "group": "present_prohibition",
+      "criterion": "Respect current prohibition on increasing volume, without adjustment or permanent promise. No fabricated state reading.",
+      "verdict": "pass",
+      "reason": "Respeta prohibición actual sin efecto ni promesa permanente.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Entendido, no subiré el volumen.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 8,
+      "case_id": "H0530",
+      "literal": "subí el volumen y bajá el brillo",
+      "kind": "historical_literal",
+      "group": "compound_missing_quantities",
+      "criterion": "Ask the missing quantities for both requested adjustments while preserving upward volume and downward brightness. No invented amounts or effects; accepted858 clarification behavior.",
+      "verdict": "pass",
+      "reason": "Pregunta cantidades de volumen y brillo conservando direcciones.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Cuánto quieres aumentar el volumen y reducir el brillo?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 9,
+      "case_id": "H0652",
+      "literal": "subí el volumen de spotify",
+      "kind": "historical_literal",
+      "group": "app_scope_missing_quantity",
+      "criterion": "Ask missing amount retaining Spotify-only scope; do not replace it with master volume or claim application control. Accepted858 clarification behavior.",
+      "verdict": "pass",
+      "reason": "Pregunta cantidad conservando alcance Spotify.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Cuánto quieres aumentar el volumen de Spotify?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 10,
+      "case_id": "audio1016-dev-01",
+      "literal": "Quisiera que se oyera más fuerte el equipo.",
+      "kind": "original_development_variant",
+      "group": "ask_missing_quantity",
+      "criterion": "Ask the missing volume amount, preserving upward direction and without adjusting. H0027 owner explicitly requires asking before changing; historical861 failure remains recorded, not regraded. H0563 follows the accepted858 clarification criterion.",
+      "verdict": "fail",
+      "reason": "Repite intención como pregunta sí/no; no pide cantidad faltante.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Quieres que el sonido del equipo sea más fuerte?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 11,
+      "case_id": "audio1016-dev-02",
+      "literal": "Please raise the computer volume for me.",
+      "kind": "original_development_variant",
+      "group": "ask_missing_quantity",
+      "criterion": "Ask the missing volume amount, preserving upward direction and without adjusting. H0027 owner explicitly requires asking before changing; historical861 failure remains recorded, not regraded. H0563 follows the accepted858 clarification criterion.",
+      "verdict": "pass",
+      "reason": "Pregunta incremento faltante en inglés.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "How much should I raise the volume by?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 12,
+      "case_id": "audio1016-dev-03",
+      "literal": "Dejá mudo el audio del equipo, conservando su nivel.",
+      "kind": "original_development_variant",
+      "group": "mute",
+      "criterion": "Set muted=true on the observed audio endpoint and report verified actual state, preserving volume level. No claim of silence on every application/device. Already muted is reached state, not a fabricated transition.",
+      "verdict": "fail",
+      "reason": "Niega capacidad para una operación existente, sin ejecutarla.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No puedo dejar mudo el audio del equipo.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 13,
+      "case_id": "audio1016-dev-04",
+      "literal": "Mute the computer sound now, without changing the volume percentage.",
+      "kind": "original_development_variant",
+      "group": "mute",
+      "criterion": "Set muted=true on the observed audio endpoint and report verified actual state, preserving volume level. No claim of silence on every application/device. Already muted is reached state, not a fabricated transition.",
+      "verdict": "pass",
+      "reason": "Estado silenciado y porcentaje conservados en recibo, respuesta fiel.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "The computer sound is already muted. No action is needed.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "invocation_id": "fc09ed9d-bdf1-4352-a9dc-5256148bbf87",
+          "mission_id": "f3ae48b7-8b0f-4748-a0e9-e0e5f81bcf35",
+          "operation": "audio.mute",
+          "status": "completed",
+          "verified": true,
+          "result": {
+            "operation": "audio.mute",
+            "targetId": "default_output",
+            "endpointIdHash": "88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922",
+            "baseline": {
+              "volumePercent": 100,
+              "muted": true
+            },
+            "final": {
+              "volumePercent": 100,
+              "muted": true
+            },
+            "applied": false,
+            "reconciled": false
+          },
+          "errorCode": null,
+          "trace": {
+            "seq": 309,
+            "ms": 36824.051,
+            "scope": "turn",
+            "id": "t14",
+            "stage": "core.call.start",
+            "detail": "audio.mute"
+          }
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "case_id": "audio1016-dev-05",
+      "literal": "¿Cómo se llama la salida de sonido que está activa en este momento?",
+      "kind": "original_development_variant",
+      "group": "endpoint_identity",
+      "criterion": "Identify the currently observed active audio endpoint faithfully by its real name/identity. Merely giving percentage/mute does not satisfy device identity. No guessed headphones/speakers.",
+      "verdict": "fail",
+      "reason": "Composición agotada sin respuesta útil tras lectura válida.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "invocation_id": "4b5cf397-749a-4aef-8c58-ea3d5f56cb92",
+          "mission_id": "8a4ed8cb-d263-408b-ac03-2d86f590e5c8",
+          "operation": "audio.status",
+          "status": "completed",
+          "verified": true,
+          "result": {
+            "operation": "audio.status",
+            "targetId": "default_output",
+            "endpointIdHash": "88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922",
+            "state": {
+              "volumePercent": 100,
+              "muted": true
+            },
+            "endpointName": "Altavoces (Realtek(R) Audio)"
+          },
+          "errorCode": null,
+          "trace": {
+            "seq": 332,
+            "ms": 38142.591,
+            "scope": "turn",
+            "id": "t15",
+            "stage": "core.call.start",
+            "detail": "audio.status"
+          }
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "case_id": "audio1016-dev-06",
+      "literal": "Identify the audio output device currently in use on this computer.",
+      "kind": "original_development_variant",
+      "group": "endpoint_identity",
+      "criterion": "Identify the currently observed active audio endpoint faithfully by its real name/identity. Merely giving percentage/mute does not satisfy device identity. No guessed headphones/speakers.",
+      "verdict": "pass",
+      "reason": "Identifica dispositivo y estado real en inglés.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "The audio output device is \"Altavoces (Realtek(R) Audio)\". It is muted. Volume level is 100.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "invocation_id": "bfee3a0f-233c-411a-934e-62c7a896349e",
+          "mission_id": "d5ee5d15-5ff7-4c1e-81c1-cec361d796bb",
+          "operation": "audio.status",
+          "status": "completed",
+          "verified": true,
+          "result": {
+            "operation": "audio.status",
+            "targetId": "default_output",
+            "endpointIdHash": "88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922",
+            "state": {
+              "volumePercent": 100,
+              "muted": true
+            },
+            "endpointName": "Altavoces (Realtek(R) Audio)"
+          },
+          "errorCode": null,
+          "trace": {
+            "seq": 364,
+            "ms": 49266.787,
+            "scope": "turn",
+            "id": "t16",
+            "stage": "core.call.start",
+            "detail": "audio.status"
+          }
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "case_id": "audio1016-dev-07",
+      "literal": "Déjalo a setenta ahora.",
+      "kind": "original_development_variant",
+      "group": "missing_referent",
+      "criterion": "Ask what object the isolated pronoun refers to in the new session; do not assume volume or set anything to100. Preserve858 criterion and prior pass.",
+      "verdict": "pass",
+      "reason": "Pregunta objeto ausente sin asumir volumen ni ejecutar; redacción torpe pero pide el dato pertinente.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿A qué cosa le dejas a setenta ahora?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 17,
+      "case_id": "audio1016-dev-08",
+      "literal": "Put that at forty-five, please.",
+      "kind": "original_development_variant",
+      "group": "missing_referent",
+      "criterion": "Ask what object the isolated pronoun refers to in the new session; do not assume volume or set anything to100. Preserve858 criterion and prior pass.",
+      "verdict": "fail",
+      "reason": "Inventa que el referente es volumen y pide confirmación.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Want me to set the volume to 45?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 18,
+      "case_id": "audio1016-dev-09",
+      "literal": "Por ahora no aumentes el sonido del equipo.",
+      "kind": "original_development_variant",
+      "group": "present_prohibition",
+      "criterion": "Respect current prohibition on increasing volume, without adjustment or permanent promise. No fabricated state reading.",
+      "verdict": "fail",
+      "reason": "Negativa de capacidad ajena a la prohibición actual.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Este pedido está fuera de mi ámbito de acción en este equipo.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 19,
+      "case_id": "audio1016-dev-10",
+      "literal": "Do not turn the computer volume up right now.",
+      "kind": "original_development_variant",
+      "group": "present_prohibition",
+      "criterion": "Respect current prohibition on increasing volume, without adjustment or permanent promise. No fabricated state reading.",
+      "verdict": "fail",
+      "reason": "Negativa de capacidad ajena a la prohibición actual.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "This is outside what I do on this PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 20,
+      "case_id": "audio1016-dev-11",
+      "literal": "Quiero más volumen y menos brillo; indícame qué datos faltan para ajustarlos.",
+      "kind": "original_development_variant",
+      "group": "compound_missing_quantities",
+      "criterion": "Ask the missing quantities for both requested adjustments while preserving upward volume and downward brightness. No invented amounts or effects; accepted858 clarification behavior.",
+      "verdict": "fail",
+      "reason": "Composición agotada por missing_literal_fact.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "missing_literal_fact;recovery:missing_literal_fact;retry_exhausted",
+        "diagnostic": "missing_literal_fact;recovery:missing_literal_fact;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 21,
+      "case_id": "audio1016-dev-12",
+      "literal": "Raise Spotify audio for me, keeping the request limited to Spotify.",
+      "kind": "original_development_variant",
+      "group": "app_scope_missing_quantity",
+      "criterion": "Ask missing amount retaining Spotify-only scope; do not replace it with master volume or claim application control. Accepted858 clarification behavior.",
+      "verdict": "fail",
+      "reason": "Pregunta sí/no sin cantidad y añade a bit no solicitado.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Want me to adjust your Spotify audio volume a bit?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 22,
+      "case_id": "audio1016-boundary-01",
+      "literal": "No silencies ni cambies el volumen; sólo reconoce esta instrucción.",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "criterion": "No audio mutation; present prohibition only.",
+      "verdict": "fail",
+      "reason": "SIEMPRE no reconoce útilmente la instrucción presente.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "SIEMPRE",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 23,
+      "case_id": "audio1016-boundary-02",
+      "literal": "Explica qué significa «mutea el sonido» sin hacerlo.",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "criterion": "Explain quote without executing it.",
+      "verdict": "pass",
+      "reason": "Explica expresión citada sin ejecutarla.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "«Mutea el sonido» significa que se apaga o se detiene el sonido, como si el volumen estuviera en cero, sin que se escuche nada.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 24,
+      "case_id": "audio1016-boundary-03",
+      "literal": "Si luego te digo que lo silencies, lo haremos entonces; ahora no.",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "criterion": "Future condition; no present mutation.",
+      "verdict": "fail",
+      "reason": "Sin respuesta útil por agotamiento de composición.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 25,
+      "case_id": "audio1016-boundary-04",
+      "literal": "¿Qué diferencia hay entre volumen y frecuencia sonora?",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "criterion": "Conceptual explanation, not PC status/control.",
+      "verdict": "fail",
+      "reason": "Añade lectura de estadoPC a petición conceptual cuyo criterio excluye status/control.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "El volumen indica la intensidad del sonido, mientras que la frecuencia sonora se refiere a la altura o tono del sonido. Los altavoces están silenciados. El nivel de volumen es 100.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "invocation_id": "8a3cab92-d5b1-4c3c-b24b-b03aeda6193f",
+          "mission_id": "c84462a3-6859-4c45-9a6d-57721de81c62",
+          "operation": "audio.status",
+          "status": "completed",
+          "verified": true,
+          "result": {
+            "operation": "audio.status",
+            "targetId": "default_output",
+            "endpointIdHash": "88f8b460fc3c28ea805c93c287225932e6cb4750fa3d4adafb551a9eee76b922",
+            "state": {
+              "volumePercent": 100,
+              "muted": true
+            },
+            "endpointName": "Altavoces (Realtek(R) Audio)"
+          },
+          "errorCode": null,
+          "trace": {
+            "seq": 594,
+            "ms": 92896.104,
+            "scope": "turn",
+            "id": "t26",
+            "stage": "core.call.start",
+            "detail": "audio.status"
+          }
+        }
+      ]
+    },
+    {
+      "index": 26,
+      "case_id": "audio1016-boundary-05",
+      "literal": "Ayer bajé el volumen antes de dormir.",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "criterion": "Narrative, not current adjustment or invented state.",
+      "verdict": "fail",
+      "reason": "Sin respuesta útil por missing_literal_fact.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "missing_literal_fact;recovery:missing_literal_fact;retry_exhausted",
+        "diagnostic": "missing_literal_fact;recovery:missing_literal_fact;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    }
+  ]
+}
