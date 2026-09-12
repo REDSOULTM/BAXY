@@ -80,6 +80,15 @@ Descartadas:
 - **`_time_only_reminder_request` en `effect_intent.py:13842`** es una abstención de la ruta de
   efecto que el diagnóstico 1024 no analiza. Deuda real de revisión antes de integrar.
 
+## Diagnóstico añadido sin GPU
+`KNOWLEDGE1025/DIAGNOSIS_REFERENTE_AUSENTE.md`. Sonda pura con el intérprete del runtime de la
+mente: `_deictic_open_request('¿Cuál es su identidad secreta?')` y `('¿Quién es de verdad?')` dan
+`False` con `read_request(...).intents` vacío. La ruta `llm.clarify_missing_referent` existe y está
+sana; no se alcanza porque el reconocedor de `__main__.py:2818` sólo cubre aperturas. Reparación
+propuesta y **no escrita**: ampliarlo a preguntas de tercera persona sin antecedente reutilizando la
+misma ruta. No se integra sin controles, porque «su» es también tratamiento formal y una regla amplia
+rompería «¿Cuál es su nombre?» dirigido a BAXY, en una categoría con 7 casos ya cubiertos.
+
 ## Siguiente acción recomendada
 Al recibir el ZIP: verificarlo contra `TRANSFER_MANIFEST.json`, extraerlo en carpeta nueva y leer
 `localappdata/BAXY/C03-knowledge1025-private/run/capture/events.jsonl` para cerrar los 11 veredictos

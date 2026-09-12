@@ -269,6 +269,7 @@
     "pending_terminal_text": 11,
     "pending_that_could_change_coverage": 0
   },
+  "diagnosis_written": "KNOWLEDGE1025/DIAGNOSIS_REFERENTE_AUSENTE.md — primera transformación incorrecta de la clase referente_ausente, demostrada con sonda pura sin GPU: _deictic_open_request en __main__.py:2818 sólo reconoce aperturas, así que missing_open_referent (__main__.py:5831) nunca llega a llamar a llm.clarify_missing_referent para una pregunta en tercera persona sin antecedente. Reparación propuesta, no escrita.",
   "failure_pattern": "Ocho de los nueve fallos juzgados son de dos clases: hechos identitarios inventados en descripción de juegos (fecha, estudio, personaje, premisa) y referente ausente resuelto como identidad propia en vez de pregunta. Dos terminaron en composition_failed. El patrón separa la fluidez del contenido: la conducta de explicación conceptual, que sí pasó, no autoriza generalizar a hechos concretos de obras ni a preguntas sin antecedente.",
   "next_step_for_this_batch": "Al llegar el paquete privado: leer events.jsonl, fijar índices y texto verbatim de los 9 fallos ya juzgados, juzgar los 11 pendientes y escribir sus causas por case_id en el registro. El contador 126 no cambia por esto."
 }
