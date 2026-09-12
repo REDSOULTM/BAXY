@@ -1,5 +1,14 @@
 # Handoff C03 — pausa para Opus5, 11 de septiembre
 
+> **Estado vigente (12 de septiembre, 05:40Z).** Esta nota es historia del PC origen. Lo que manda hoy:
+> `CHECKPOINT.md`, `RELEVO_ACTIVO.json`, `SURVEY_COVERAGE_CURRENT.json` y
+> `ESTADO_PARA_DUENO_2026-09-12-madrugada.md`. **137/742 cubiertos, 605 abiertos**, registro SHA
+> `e9622300757b30a26fca21d84fbbde8afc85b5cec73aea1be03c9f600ef10ee3`. El paquete privado sí llegó y está
+> verificado; 1025 quedó cerrada. Cuatro tandas nuevas selladas y adjudicadas: APPS1029 (+3),
+> REPAIR1030 (0, frase fija), REPAIR1031 (invalidada por el escritorio, sin cambio de registro),
+> REPAIR1032 (+4). Dos reparaciones de fuente adoptadas por evidencia, una de ellas .NET compilada por el
+> arranque vigente. Siguiente trabajo y trampas del entorno, en `RELEVO_ACTIVO.json`.
+
 > **Nota del relevo (12 de septiembre).** Esta nota es la del PC origen y se conserva como historia.
 > El estado vigente del PC destino está en `OPUS5_DESTINO/HANDOFF.md`,
 > `OPUS5_DESTINO/DESTINO_INVENTARIO.json` y `OPUS5_DESTINO/SOLICITUD_TRASLADO.md`. El paquete
