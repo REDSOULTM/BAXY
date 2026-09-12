@@ -1,4 +1,4 @@
-# Categorías actuales — adjudicación MESSAGING1116
+# Categorías actuales — adjudicación MESSAGING1120
 
 202/742 cubiertos; 540 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 76 primeras altas (28 Kiro + 48 retorno), sin revalidaciones. Registro canónico SHA256: a453d61a5bf7e483d59976e7896948f885ae4a0df480884e292407bfe3cf341c.
 
