@@ -54,7 +54,7 @@
   "workStatus": "paused_by_owner_for_opus5_handoff",
   "goalStatusNote": "Owner waived automated suites/Fast/Full; scope blocker resolved. No new blocked condition.",
   "previousGoalTurnClassification": "progress",
-  "previousGoalTurnClassificationReason": "Previous goal turn106→112 verifiedliteralcredits; repaired1019 and executed1016/1020, restoredaudio andpublishedd97670db. Currentobjective rereadce4772; repo/processstate7ea145 confirmsnoGPU/Core/build andsamepublishedHEAD.",
+  "previousGoalTurnClassificationReason": "112→126literalcredits,1021/1022complete,1025partial;ownerpausedforOpus5transfer. No technical blocked condition.",
   "objectiveFile": "C:/Users/usuario/.codex/attachments/310753b7-9a38-4a57-951e-007fdcf7693a/goal-objective.md",
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
   "latestProductRun": {
@@ -77,174 +77,10 @@
     "not_current_source_validation": true
   },
   "currentGoalTurnProgress": {
-    "978": {
-      "executed": 24,
-      "passed": 4,
-      "failed": 20,
-      "coverage_added": 0,
-      "resources": {
-        "utc": "2026-09-11T19:18:10.227023-03:00",
-        "violations": [],
-        "gpu_peak_mib": 3497.55859375,
-        "gpu_telemetry_available": true,
-        "ram_peak_mib": 2469.3828125,
-        "seconds": 187.15600000000268,
-        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
-      }
-    },
-    "980": {
-      "executed": 14,
-      "passed": 7,
-      "failed": 7,
-      "coverage_added": 0,
-      "resources": {
-        "utc": "2026-09-11T19:29:24.363725-03:00",
-        "violations": [],
-        "gpu_peak_mib": 3497.55859375,
-        "gpu_telemetry_available": true,
-        "ram_peak_mib": 2440.72265625,
-        "seconds": 48.5,
-        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
-      }
-    },
-    "983": {
-      "executed": 17,
-      "passed": 10,
-      "failed": 7,
-      "coverage_added": 4,
-      "resources": {
-        "utc": "2026-09-11T19:40:56.260112-03:00",
-        "violations": [],
-        "gpu_peak_mib": 3497.55859375,
-        "gpu_telemetry_available": true,
-        "ram_peak_mib": 2478.78515625,
-        "seconds": 95.7039999999979,
-        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
-      }
-    },
-    "986": {
-      "executed": 12,
-      "passed": 7,
-      "failed": 5,
-      "coverage_added": 4,
-      "resources": {
-        "utc": "2026-09-11T19:48:02.969893-03:00",
-        "violations": [],
-        "gpu_peak_mib": 3497.55859375,
-        "gpu_telemetry_available": true,
-        "ram_peak_mib": 2419.703125,
-        "seconds": 48.01499999999942,
-        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
-      }
-    },
-    "993": {
-      "executed": 1,
-      "passed": 0,
-      "failed": 1,
-      "not_executed": 33,
-      "coverage_added": 0,
-      "resources": {
-        "utc": "2026-09-11T23:30:39.939197+00:00",
-        "violations": [],
-        "gpu_peak_mib": 3495.55859375,
-        "gpu_telemetry_available": true,
-        "ram_peak_mib": 2284.72265625,
-        "seconds": 92.76600000000326,
-        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
-      }
-    },
-    "997": {
-      "executed": 13,
-      "passed": 4,
-      "failed": 9,
-      "not_executed": 20,
-      "coverage_added": 0,
-      "resources": {
-        "utc": "2026-09-11T23:39:52.192526+00:00",
-        "violations": [],
-        "gpu_peak_mib": 3644.2265625,
-        "gpu_telemetry_available": true,
-        "ram_peak_mib": 3636.80078125,
-        "seconds": 306.6100000000006,
-        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
-      }
-    },
-    "1002": {
-      "executed": 12,
-      "passed": 3,
-      "failed": 9,
-      "not_executed": 0,
-      "coverage_added": 0,
-      "resources": {
-        "utc": "2026-09-11T23:56:42.997592+00:00",
-        "violations": [],
-        "gpu_peak_mib": 3497.55859375,
-        "gpu_telemetry_available": true,
-        "ram_peak_mib": 2462.83203125,
-        "seconds": 91.93700000000536,
-        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
-      }
-    },
-    "998": {
-      "executed": 25,
-      "passed": 18,
-      "failed": 7,
-      "coverage_added": 6,
-      "resources": {
-        "utc": "2026-09-12T00:02:16.544334+00:00",
-        "violations": [],
-        "gpu_peak_mib": 3497.55859375,
-        "gpu_telemetry_available": true,
-        "ram_peak_mib": 2486.953125,
-        "seconds": 143.84399999999732,
-        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
-      }
-    },
-    "1004": {
-      "executed": 25,
-      "passed": 7,
-      "failed": 18,
-      "coverage_added": 0,
-      "resources": {
-        "utc": "2026-09-12T00:09:33.646907+00:00",
-        "violations": [],
-        "gpu_peak_mib": 3499.55859375,
-        "gpu_telemetry_available": true,
-        "ram_peak_mib": 2524.8671875,
-        "seconds": 119.53099999998813,
-        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
-      }
-    },
-    "1009": {
-      "executed": 11,
-      "passed": 4,
-      "failed": 7,
-      "coverage_added": 0,
-      "resources": {
-        "utc": "2026-09-12T00:21:56.994991+00:00",
-        "violations": [],
-        "gpu_peak_mib": 3497.55859375,
-        "gpu_telemetry_available": true,
-        "ram_peak_mib": 1724.3515625,
-        "seconds": 41.296999999991385,
-        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
-      }
-    },
-    "1012": {
-      "executed": 11,
-      "passed": 7,
-      "failed": 4,
-      "coverage_added": 3,
-      "resources": {
-        "utc": "2026-09-12T00:28:40.506267+00:00",
-        "violations": [],
-        "gpu_peak_mib": 3497.55859375,
-        "gpu_telemetry_available": true,
-        "ram_peak_mib": 2352.08203125,
-        "seconds": 37.1869999999908,
-        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
-      }
-    }
+    "coverage_start": 112,
+    "coverage_current": 126,
+    "coverage_added": 14,
+    "owner_requested_pause": true
   },
   "ownerLatestInstruction": "Accelerate C03 without automated tests/Fast/Full; no loss of truthful product behavior. Real sealed execution required for coverage.",
   "nextProductBlocker": null,
@@ -255,5 +91,8 @@
     "tests_run": false
   },
   "executionPausedByOwner": true,
-  "pauseRequestedAtUtc": "2026-09-12T01:44:57.196913+00:00"
+  "pauseRequestedAtUtc": "2026-09-12T01:44:57.196913+00:00",
+  "handoff": "OPUS5_HANDOFF.md",
+  "handoffPrompt": "GOAL_OPUS5_RELEVO.md",
+  "handoffPackage": "OPUS5_TRANSFER.json"
 }

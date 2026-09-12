@@ -1,6 +1,8 @@
-# C03 — checkpoint tras sistema1022
+# C03 — checkpoint de pausa para Opus5
 
-**123/742 cubiertos, 619 abiertos, 0 no aplican; 95 altas confirmadas en las últimas 24 h; 0/35 categorías cerradas.** C03: 3/11 cumplidos, 5 contradichos, 3 pendientes. Goal activo; ninguna autorización pendiente. Sin estimación fiable de cierre completo.
+**126/742 cubiertos, 616 abiertos, 0 no aplican; 98 altas confirmadas en las últimas 24 h; 0/35 categorías cerradas.** C03: 3/11 cumplidos, 5 contradichos, 3 pendientes. Ejecución pausada por el dueño para relevo; ninguna autorización pendiente. Sin estimación fiable de cierre completo.
+
+**Pausa del dueño:** commit inmediato7a015914 publicado. Fuente sin cambios.1025 terminó con25terminales,exit0,pinsintactos,recogidaad4693;adjudicación completa pendiente. ROOT_PARTIAL_CREDIT ya concedió3conceptos actuales con2variantes ES/EN; registro126, no sumarotra vez. Primeraacción delnuevoagente: terminaradjudicación desdecapturas, no ejecutarotra tanda. PromptGOAL_OPUS5_RELEVO.md y paqueteprivado OPUS5_TRANSFER.json entregan instruccionesparaPCdesactualizado. NoGPU/Core/Baxy/buildactivos; agentesinterrumpidos.
 
 1022: 10literales+10variantes+5límites,21/25cumplen,+10créditos. CPU2,RAMtotal2,RAMdisponible1,RAMusada1,batería4, cada conducta con dos variantes actuales ES/EN. Valores contra recibos system.status frescos;17.18GB son17179869184bytes instalados, noGiB ni memoria libre. RAM usada deriva totalBytes−availableBytes; batería98%real. Cuatro límitesfallan: cita no explicada, condición futura rechazada, concepto convertido en lectura, narración termina en error. Nada mutado. ROOTf3df6a0aa9f101fdfc4dbf499e406bea8428245673364950826168564778cbbb.
 
@@ -37,7 +39,7 @@ No repetir: elecciónQwen/backend/perfil792; herencia802; auditoría de frescura
 
 Orden por masa: apps40 y música39 tienen condiciones957/962/991; web36 queda temporalmente aparcado por1017; archivos32 conserva frontera1005. Mensajería1014:28envíos requieren autorización concreta/contexto;1aclaración sin contenido;2lecturas sin mecanismo. Install1018:19Steam con mecanismo existente pero requieren sesión/entitlement/recursos/reconciliación;12casos separados no justifican infraestructura común ficticia. Esa planificación histórica1021 está ejecutada arriba. Audio conserva24abiertos; los4objetivos1020 ya están acreditados.
 
-Registro actual SHA `cde1f5b5180f79cdcba2978fa98aae14f4826e054341c5579e161e6fdfca8b34`. Clasificación846 inmutable;742case_ids, ordenados por abiertos:
+Registro actual SHA `1a7ec3d381e4d972cb0bbdf9c55ed632216618e932614e31d2ea602a74a3eae6`. Clasificación846 inmutable;742case_ids, ordenados por abiertos:
 
 | Categoría | Total | Cubiertos | Abiertos | No aplican |
 |---|---:|---:|---:|---:|
@@ -49,8 +51,8 @@ Registro actual SHA `cde1f5b5180f79cdcba2978fa98aae14f4826e054341c5579e161e6fdfc
 | Mensajería | 31 | 0 | 31 | 0 |
 | Instalar y desinstalar software | 31 | 0 | 31 | 0 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 9 | 29 | 0 |
-| Conocimiento, razonamiento y creatividad verbal | 37 | 9 | 28 | 0 |
 | Vídeo y series | 26 | 0 | 26 | 0 |
+| Conocimiento, razonamiento y creatividad verbal | 37 | 12 | 25 | 0 |
 | Audio y volumen | 51 | 27 | 24 | 0 |
 | Conversación social y ayuda general | 31 | 9 | 22 | 0 |
 | Interacción dentro de aplicaciones | 22 | 0 | 22 | 0 |

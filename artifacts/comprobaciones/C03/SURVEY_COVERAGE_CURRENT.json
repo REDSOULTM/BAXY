@@ -1,5 +1,5 @@
 {
-  "utc": "2026-09-12T01:43:36.059531+00:00",
+  "utc": "2026-09-12T01:51:51.297103+00:00",
   "covered": 126,
   "open": 616,
   "not_applicable": 0,
@@ -437,13 +437,15 @@
     "SYSTEM1022/ROOT_ADJUDICATION.json",
     "KNOWLEDGE1025/ROOT_PARTIAL_CREDIT.json"
   ],
-  "equal_maximum_open_next_selection": "Higher categories retain recorded prerequisites; agenda29 repair1024 pending. Knowledge28 has eligible sealed1025 next; system19 after10credits.",
+  "equal_maximum_open_next_selection": "Execution paused by owner for Opus5 transfer. First finish1025 adjudication from saved evidence, no rerun. Then choose eligible category by current mass.",
   "latest_product_run": {
-    "batch": 1022,
+    "batch": 1025,
     "executed": 25,
-    "passed": 21,
-    "failed": 4,
-    "coverage_added": 10,
-    "exit_code": 0
+    "adjudication": "partial",
+    "passed": null,
+    "failed": null,
+    "coverage_added": 3,
+    "exit_code": 0,
+    "full_adjudication_pending": true
   }
 }

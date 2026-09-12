@@ -1,0 +1,19 @@
+{
+  "schema": "c03-opus5-transfer-public-v1",
+  "utc": "2026-09-12T01:50:21.346272+00:00",
+  "archive_name": "C03_OPUS5_RELEVO_PRIVADO.zip",
+  "source_local_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-opus5-transfer-20260911\\C03_OPUS5_RELEVO_PRIVADO.zip",
+  "archive_sha256": "95bc3f239a2e5c013469d26143b55e7223b4c254300ea15ae59651259fd8c704",
+  "bytes": 2025743,
+  "entry_count": 96,
+  "all_entry_hashes_verified": true,
+  "registry_sha256": "1a7ec3d381e4d972cb0bbdf9c55ed632216618e932614e31d2ea602a74a3eae6",
+  "missing_optional_or_interrupted": [
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1027-proposal"
+  ],
+  "private_transfer_required": true,
+  "execution_paused": true,
+  "product_tests_run": false,
+  "source_head_before_handoff": "7a0159146bf8bcf924032f4eeb1b9e3fc8263790",
+  "prompt": "GOAL_OPUS5_RELEVO.md"
+}
