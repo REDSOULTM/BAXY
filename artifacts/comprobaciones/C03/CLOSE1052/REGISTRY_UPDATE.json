@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-12T15:35:16.159913+00:00",
+  "before_sha256": "3089b9ade50ffd12d0bcf1d37ca085978223a52b191010a920176d42b2f24e4c",
+  "after_sha256": "86b2295ba39ba17a78c611c0889c0a1ae16e93156ce324ae44e357254e513b32",
+  "covered": 179,
+  "open": 563,
+  "not_applicable": 0,
+  "new_credits": 0,
+  "updated_causes": [
+    "H0095",
+    "H0407",
+    "H0427"
+  ],
+  "backup": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1052-panel-proposal\\private\\requirements-before-adjud179.jsonl",
+  "immutable_fields_preserved": true
+}

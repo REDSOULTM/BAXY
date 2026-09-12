@@ -1,0 +1,579 @@
+{
+  "mozilla": {
+    "request_id": "8",
+    "turn_audit": [
+      {
+        "candidate_operations": [
+          "email.latest.reply",
+          "routine.list",
+          "game.install.status",
+          "routine.phrase.create",
+          "note.update",
+          "peripheral.list",
+          "audio.status",
+          "browser.tabs.list",
+          "filesystem.known.search",
+          "input.keyboard.open",
+          "wifi.connect.named",
+          "game.installed.named",
+          "system.process.list",
+          "system.process.terminate.named",
+          "reminder.list",
+          "routine.read",
+          "wifi.disconnect",
+          "task.list",
+          "web.search",
+          "note.read",
+          "reminder.resolve.exact",
+          "filesystem.search",
+          "audio.volume",
+          "task.complete",
+          "filesystem.move",
+          "filesystem.list",
+          "bluetooth.device.list",
+          "note.search"
+        ],
+        "decision_path": "model",
+        "phase": "raw_attempt",
+        "raw_decision": {
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "intent_operations": [],
+          "mode": "conversation",
+          "operation": null,
+          "question": "",
+          "response_language": "es"
+        },
+        "request_id": "8",
+        "retrieval": "lexical",
+        "schema": "baxy.mind-turn-audit.v1",
+        "stages": []
+      },
+      {
+        "candidate_operations": [
+          "email.latest.reply",
+          "routine.list",
+          "game.install.status",
+          "routine.phrase.create",
+          "note.update",
+          "peripheral.list",
+          "audio.status",
+          "browser.tabs.list",
+          "filesystem.known.search",
+          "input.keyboard.open",
+          "wifi.connect.named",
+          "game.installed.named",
+          "system.process.list",
+          "system.process.terminate.named",
+          "reminder.list",
+          "routine.read",
+          "wifi.disconnect",
+          "task.list",
+          "web.search",
+          "note.read",
+          "reminder.resolve.exact",
+          "filesystem.search",
+          "audio.volume",
+          "task.complete",
+          "filesystem.move",
+          "filesystem.list",
+          "bluetooth.device.list",
+          "note.search"
+        ],
+        "decision_path": "model",
+        "final": {
+          "effect_operations": [],
+          "intent_operations": [],
+          "kind": "conversation"
+        },
+        "honesty": {
+          "offered_before_veto": [],
+          "proposed_before_veto": [],
+          "visible_text": "No puedo entrar al sitio web de Mozilla tal como fue pedido."
+        },
+        "phase": "final",
+        "raw_decision": {
+          "conversation_kind": "knowledge",
+          "effect_count": "zero",
+          "effect_operations": [],
+          "effect_verification": "not_applicable",
+          "intent_operations": [],
+          "mode": "conversation",
+          "operation": null,
+          "question": "",
+          "response_language": "es"
+        },
+        "request_id": "8",
+        "retrieval": "lexical",
+        "schema": "baxy.mind-turn-audit.v1",
+        "stages": [
+          {
+            "conversation_kind": "knowledge",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "validated_raw",
+            "operation": null
+          },
+          {
+            "conversation_kind": "knowledge",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "explicit_contract",
+            "operation": null
+          },
+          {
+            "conversation_kind": "knowledge",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "information_question",
+            "operation": null
+          },
+          {
+            "conversation_kind": "knowledge",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "domain_grounding",
+            "operation": null
+          },
+          {
+            "conversation_kind": "knowledge",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "compound_conservation",
+            "operation": null
+          },
+          {
+            "conversation_kind": "knowledge",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "action_relevance",
+            "operation": null
+          },
+          {
+            "conversation_kind": "knowledge",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "action_grounding",
+            "operation": null
+          },
+          {
+            "effect_state": "complete",
+            "name": "conversation_effect_shape"
+          },
+          {
+            "conversation_kind": "unsupported",
+            "effect_operations": [],
+            "effect_verification": "not_applicable",
+            "mode": "conversation",
+            "name": "conversation_presentation",
+            "operation": null
+          }
+        ]
+      }
+    ],
+    "raw": [
+      {
+        "schema": "baxy.raw-conversation-reply.v1",
+        "stage": "pre_veto",
+        "attempt": 1,
+        "request_sha256": "d447887567bcb39415f7218ef17f14878599f00b37bd8709313a37d542e16370",
+        "conversation_kind": "unsupported",
+        "presentation_shape": "",
+        "followup_subject": "",
+        "history_users": 0,
+        "raw_reply": "No puedo entrar al sitio web de Mozilla tal como fue pedido.",
+        "raw_reply_chars": 60,
+        "raw_reply_sha256": "f99a3203e3beb63e562ce9923882e215f8fc4b6f7c27f0a5733e2af40fbc5681"
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "8",
+        "stage": "first",
+        "intent": "status",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 93,
+        "draft_sha256": "89214a371c5439027a29a39e3532c3b7b6943d88a3315d6d1817e480247a0c37",
+        "payload": {
+          "kind": "status",
+          "state": "reviewing the person's request"
+        },
+        "situation": "{\"kind\": \"status\", \"cause\": \"acting\", \"polarity\": \"success\", \"phase\": \"understanding\"}",
+        "draft": "Estoy revisando la solicitud del usuario. Aún no se han obtenido los resultados solicitados."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t1",
+        "stage": "first",
+        "intent": "error",
+        "language": "es",
+        "greeting": "none",
+        "payload_keys": [
+          "cause",
+          "outcome"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 41,
+        "draft_sha256": "643d8c19d4b495fa6ddfe79de5507e0237b242cea5ed76f3641d5b42d5419d16",
+        "payload": {
+          "outcome": "failed",
+          "cause": "outside what I do"
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"out_of_catalog\"}",
+        "draft": "No puedo acceder al sitio web de Mozilla."
+      }
+    ]
+  },
+  "debian": {
+    "request_id": "14",
+    "turn_audit": [
+      {
+        "candidate_operations": [
+          "web.search",
+          "browser.navigate"
+        ],
+        "decision_path": "explicit_effects",
+        "phase": "raw_attempt",
+        "raw_decision": {
+          "conversation_kind": "",
+          "effect_count": "multiple",
+          "effect_operations": [
+            "web.search",
+            "browser.navigate"
+          ],
+          "effect_verification": "multiple",
+          "mode": "plan",
+          "operation": null,
+          "question": "",
+          "response_language": "en"
+        },
+        "request_id": "14",
+        "retrieval": "lexical",
+        "schema": "baxy.mind-turn-audit.v1",
+        "stages": []
+      },
+      {
+        "candidate_operations": [
+          "web.search",
+          "browser.navigate"
+        ],
+        "decision_path": "explicit_effects",
+        "final": {
+          "effect_operations": [
+            "web.search",
+            "browser.navigate"
+          ],
+          "intent_operations": [
+            "web.search",
+            "browser.navigate"
+          ],
+          "kind": "plan"
+        },
+        "honesty": {
+          "offered_before_veto": [
+            "web.search",
+            "browser.navigate"
+          ],
+          "proposed_before_veto": [
+            "web.search",
+            "browser.navigate"
+          ],
+          "visible_text": ""
+        },
+        "phase": "final",
+        "raw_decision": {
+          "conversation_kind": "",
+          "effect_count": "multiple",
+          "effect_operations": [
+            "web.search",
+            "browser.navigate"
+          ],
+          "effect_verification": "multiple",
+          "mode": "plan",
+          "operation": null,
+          "question": "",
+          "response_language": "en"
+        },
+        "request_id": "14",
+        "retrieval": "lexical",
+        "schema": "baxy.mind-turn-audit.v1",
+        "stages": [
+          {
+            "conversation_kind": "",
+            "effect_operations": [
+              "web.search",
+              "browser.navigate"
+            ],
+            "effect_verification": "multiple",
+            "mode": "plan",
+            "name": "validated_raw",
+            "operation": null
+          },
+          {
+            "conversation_kind": "",
+            "effect_operations": [
+              "web.search",
+              "browser.navigate"
+            ],
+            "effect_verification": "multiple",
+            "mode": "plan",
+            "name": "explicit_contract",
+            "operation": null
+          },
+          {
+            "conversation_kind": "",
+            "effect_operations": [
+              "web.search",
+              "browser.navigate"
+            ],
+            "effect_verification": "multiple",
+            "mode": "plan",
+            "name": "information_question",
+            "operation": null
+          },
+          {
+            "conversation_kind": "",
+            "effect_operations": [
+              "web.search",
+              "browser.navigate"
+            ],
+            "effect_verification": "multiple",
+            "mode": "plan",
+            "name": "domain_grounding",
+            "operation": null
+          },
+          {
+            "conversation_kind": "",
+            "effect_operations": [
+              "web.search",
+              "browser.navigate"
+            ],
+            "effect_verification": "multiple",
+            "mode": "plan",
+            "name": "compound_conservation",
+            "operation": null
+          },
+          {
+            "conversation_kind": "",
+            "effect_operations": [
+              "web.search",
+              "browser.navigate"
+            ],
+            "effect_verification": "multiple",
+            "mode": "plan",
+            "name": "action_relevance",
+            "operation": null
+          },
+          {
+            "conversation_kind": "",
+            "effect_operations": [
+              "web.search",
+              "browser.navigate"
+            ],
+            "effect_verification": "multiple",
+            "mode": "plan",
+            "name": "action_grounding",
+            "operation": null
+          },
+          {
+            "conversation_kind": "",
+            "effect_operations": [
+              "web.search",
+              "browser.navigate"
+            ],
+            "effect_verification": "multiple",
+            "mode": "plan",
+            "name": "conversation_presentation",
+            "operation": null
+          }
+        ]
+      }
+    ],
+    "compose": [
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "14",
+        "stage": "first",
+        "intent": "status",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "kind",
+          "state"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 66,
+        "draft_sha256": "baf66368a0e215d34e39140f4b543cdb2dd09b28a734a8cf08fa822837924cd6",
+        "payload": {
+          "kind": "status",
+          "state": "reviewing the person's request"
+        },
+        "situation": "{\"kind\": \"status\", \"cause\": \"acting\", \"polarity\": \"success\", \"phase\": \"understanding\"}",
+        "draft": "I'm currently reviewing the request. No results are available yet."
+      },
+      {
+        "schema": "baxy.message-compose-diagnostic.v2",
+        "trace": "t2",
+        "stage": "first",
+        "intent": "error",
+        "language": "en",
+        "greeting": "none",
+        "payload_keys": [
+          "outcome",
+          "reason"
+        ],
+        "reason": "",
+        "finish_reason": "stop",
+        "followup_subject": "",
+        "published": true,
+        "draft_bytes": 89,
+        "draft_sha256": "44401252367f05a3f95afdba68ed9d1152a12a7601415756ffb50edb3db5cb8e",
+        "payload": {
+          "outcome": "failed",
+          "reason": {
+            "outcome": "failed",
+            "cause": "web search results irrelevant",
+            "operation": "web.search"
+          }
+        },
+        "situation": "{\"kind\":\"failure\",\"polarity\":\"failure\",\"cause\":\"mission_failed\",\"stepCount\":0,\"steps\":[],\"reason\":{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"web_search_results_irrelevant\"}}",
+        "draft": "The web search returned irrelevant results and couldn't locate Debian's official website."
+      }
+    ],
+    "search_rejection": {
+      "timestampUtc": "2026-09-12T13:45:53.2543558+00:00",
+      "query": "Debian's official website",
+      "queryTerms": [
+        "debian",
+        "official",
+        "website"
+      ],
+      "structurallyValidItems": 10,
+      "omittedItems": 0
+    },
+    "first_two_rejected_items": [
+      {
+        "title": "Debian -- El sistema operativo universal",
+        "url": "https://www.debian.org/index.es.html",
+        "snippet": "Debian es un sistema operativo y una distribución de Software Libre. Se mantiene y actualiza gracias al trabajo de muchos usuarios que contribuyen con su tiempo y esfuerzo.",
+        "textTruncated": false,
+        "missingTerms": [
+          "official",
+          "website"
+        ]
+      },
+      {
+        "title": "Debian -- The Universal Operating System",
+        "url": "https://www.debian.org/",
+        "snippet": "Debian is an operating system and a distribution of Free Software. It is maintained and updated through the work of many users who volunteer their time and effort.",
+        "textTruncated": false,
+        "missingTerms": [
+          "official",
+          "website"
+        ]
+      }
+    ],
+    "all_missing_terms": [
+      [
+        "official",
+        "website"
+      ],
+      [
+        "official",
+        "website"
+      ],
+      [
+        "official",
+        "website"
+      ],
+      [
+        "official",
+        "website"
+      ],
+      [
+        "official",
+        "website"
+      ],
+      [
+        "official",
+        "website"
+      ],
+      [
+        "official",
+        "website"
+      ],
+      [
+        "official",
+        "website"
+      ],
+      [
+        "official",
+        "website"
+      ],
+      [
+        "official",
+        "website"
+      ]
+    ],
+    "journal": [
+      {
+        "sequence": 3,
+        "timestampUtc": "2026-09-12T13:45:52.9039432+00:00",
+        "phase": "started",
+        "requestId": "7e890618-2ee7-4f1a-ac88-3a9ad65f5705",
+        "missionId": "734aa734-73cb-4050-a19a-df50b613afda",
+        "invocationId": "86d0a57c-c1ac-469d-9ea9-2f29a3f1d0d4",
+        "operation": "web.search",
+        "requestFingerprint": "060a38905cc246cecdbbe3a38121cc17b17c8f15e6d205866d11bb9bab20e134",
+        "response": null
+      },
+      {
+        "sequence": 4,
+        "timestampUtc": "2026-09-12T13:45:53.2607735+00:00",
+        "phase": "completed",
+        "requestId": "7e890618-2ee7-4f1a-ac88-3a9ad65f5705",
+        "missionId": "734aa734-73cb-4050-a19a-df50b613afda",
+        "invocationId": "86d0a57c-c1ac-469d-9ea9-2f29a3f1d0d4",
+        "operation": "web.search",
+        "requestFingerprint": "060a38905cc246cecdbbe3a38121cc17b17c8f15e6d205866d11bb9bab20e134",
+        "response": {
+          "type": "operation.response",
+          "requestId": "7e890618-2ee7-4f1a-ac88-3a9ad65f5705",
+          "missionId": "734aa734-73cb-4050-a19a-df50b613afda",
+          "invocationId": "86d0a57c-c1ac-469d-9ea9-2f29a3f1d0d4",
+          "status": "failed",
+          "message": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"web_search_results_irrelevant\"}",
+          "verified": false,
+          "replayed": false,
+          "result": null,
+          "errorCode": "web_search_results_irrelevant"
+        }
+      }
+    ]
+  }
+}

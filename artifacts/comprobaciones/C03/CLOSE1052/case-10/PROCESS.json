@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-12T15:30:53.708781+00:00",
+  "runner_pid": 19872,
+  "launcher_pid": 5072,
+  "launcher_creation": 1789227053.6992002,
+  "command": [
+    "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "main.py",
+    "--conductor",
+    "--profile",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1052-profile",
+    "--capture",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1052-panel-proposal\\private\\run-10\\capture",
+    "--turns-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1052-panel-proposal\\private\\run-10\\turns.jsonl",
+    "--timeout-ms",
+    "120000"
+  ]
+}

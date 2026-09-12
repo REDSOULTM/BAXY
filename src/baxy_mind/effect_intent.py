@@ -11314,11 +11314,25 @@ def _symbolic_web_destination(text: str) -> str | None:
                 r"aplicaciones?|applications?|apps?)\b")
     ):
         return None
-    target = re.sub(
-        r"^(?:(?:la|el|the|a)\s+)?(?:p[aá]gina|page|sitio|site|website)"
-        r"(?:\s+(?:oficial|official|principal|main|home))?\s+(?:(?:de|of)\s+)?",
-        "", found.group("target"), count=1, flags=re.IGNORECASE,
+    # Courtesy and the site-role noun are syntax around the public name, not
+    # required result terms. Keep all authority/privacy checks on original text.
+    operand = re.sub(
+        r",\s*(?:por\s+favor|please)[\s.!?]*$", "", found.group("target"),
+        count=1, flags=re.IGNORECASE,
     ).strip()
+    target = re.sub(
+        r"^(?:(?:la|el|the|a)\s+)?(?:(?:p[aá]gina|page|sitio|site)"
+        r"(?:\s+web)?|website)"
+        r"(?:\s+(?:oficial|official|principal|main|home))?\s+(?:(?:de|of)\s+)?",
+        "", operand, count=1, flags=re.IGNORECASE,
+    ).strip()
+    possessive = re.fullmatch(
+        r"(?P<name>\S.+?)(?:['’]s|['’])\s+"
+        r"(?:(?:official|main|home)\s+)?(?:website|site|web\s+site|page)",
+        target, re.IGNORECASE,
+    )
+    if possessive is not None:
+        target = possessive.group("name")
     target = _bounded_application_literal(target)
     if target is None or _has(
         _fold(target),
