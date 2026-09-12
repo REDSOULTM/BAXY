@@ -1,0 +1,57 @@
+{
+  "runner_delivered": true,
+  "schema": "social1050-directed-material-seal-v1",
+  "historical_case_ids": [
+    "H0131",
+    "H0448",
+    "H0515",
+    "H0595",
+    "H0648",
+    "H0670",
+    "H0687",
+    "H0417",
+    "H0513",
+    "H0623"
+  ],
+  "coverage_credit": 0,
+  "registry_sha256": "883bd1d5d06455dbaef677d8bb92dbe7d17e72e232f10a2f517355837cc7d88f",
+  "read_source_pins": {
+    "C:/Users/usuario/AppData/Local/BAXY/C03-next1048-proposal/runner.py": "6d72492a7f9ac4ebd6d0e9fe4039940807f2f63be3f3dd02da178e1b844529f6",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-next1048-proposal/SEAL.json": "97f870301fcf94d8dcd3f0b2379743507c3d321361c618d13c2f4cfb31a3bd52",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-next1050-proposal/panel.draft.json": "bcc8f9f134b0edfc3ff9c69b10f4bdb798731ad037d9b87359861fbe19ffeb67",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-next1050-proposal/PLAN_DRAFT.md": "c5a6726ba52a609e7de5f7e2bdbce55ae3f62b70dbd4e54aa394363e7e318f62",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-next1050-proposal/ELIGIBILITY.json": "0bd880c4999234d78fa993e2820bcf75b8bc8cb7b7ca5393efc3bef37c5773c0",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-next1050-proposal/GREETING605_REFERENCES.json": "b597af8677737f395b74a54b8b31cae429f266bb4373cd0e4adce848cd4f8a0d",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-conversation-regression605-private/adjudication.json": "ed1aded6515e3298219b32820d853e0d2bfe3a86c4c7553bc6b994805d932538"
+  },
+  "counts": {
+    "cases": 25,
+    "historical_positive_open": 10,
+    "failed_variant_reexecutions": 0,
+    "original_development_variants": 10,
+    "boundaries": 5,
+    "wire_lines": 50,
+    "controls": 25,
+    "session_new": 25,
+    "conditional_positive_commands": 0,
+    "normal_diagnostic_commands": 25,
+    "maximum_turn_admissions": 25,
+    "maximum_reportable_terminals": 25,
+    "case_final_terminals": 25,
+    "maximum_internal_confirmations": 0
+  },
+  "candidate": {
+    "commit": null,
+    "status": "current_source_binding_pending_root",
+    "tests_run": false,
+    "execution_authorized_by_proposal": false
+  },
+  "files": {
+    "panel.json": "2d9708f3273d0bc7778970988e7cfde6cdff72c27fec0a4e8f0cc3ed1ca3f1cf",
+    "turns.jsonl": "283217f0c33a46cf7185ba5a053e74d9aa85658f873ddad209352893d1232a6a",
+    "case-map.json": "3150e71d669da4aa2a64698cc4cb062fcd84d27bd439f0ae3999fe2e0a981843",
+    "PLAN.md": "780fc960b21a33e666105b0a04fc93744b531f3e4541827be38bd8c1bf59c620",
+    "requirements-snapshot.jsonl": "883bd1d5d06455dbaef677d8bb92dbe7d17e72e232f10a2f517355837cc7d88f"
+  },
+  "execution_authorized_by_proposal": false
+}
