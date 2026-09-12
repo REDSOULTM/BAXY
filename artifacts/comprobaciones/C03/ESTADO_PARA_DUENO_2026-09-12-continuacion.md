@@ -1,3 +1,5 @@
+Actualización1042:160/742cubiertos,582abiertos,0noaplican;0/35categoríascerradas. Almenos34primerasaltasverificadasúltimas24h. +2literalesbrowserbackreparados; subset9/13. Browserprivadocerradoporidentidad, sin tocar navegadordelusuario. ContinúaREPAIR1043búsqueda. No tests/Fast/Full por orden deldueño.
+
 Actualización1041:158/742 cubiertos,584 abiertos,0 no aplican;0/35categorías cerradas. Al menos32primeras altas verificadas últimas24h. +H0140 con paresES/EN; reparación1042 de browser back integrada para medición dirigida. No tests/Fast/Full por orden del dueño; no cierre afirmado.
 
 Actualización1040:157/742 cubiertos,585 abiertos,0 no aplican;0/35categorías cerradas. Al menos31primeras altas verificadas últimas24h. FILES1040 añadeH0711;WEB1039 detecta anclaje faltante del argumento back español. CLARIFY1041 en ejecución; reparación1042 preparada. No tests/Fast/Full por orden del dueño. No se declara cierre.

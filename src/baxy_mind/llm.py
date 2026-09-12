@@ -3090,6 +3090,30 @@ def _merged_observed(situation: dict) -> dict:
     return merged
 
 
+def _verified_empty_known_file_query(situation: dict) -> str | None:
+    """A completed bounded name search is not a failed read or global absence."""
+    if (
+        situation.get("kind") != "operation"
+        or situation.get("operation") != "filesystem.known.search"
+        or situation.get("polarity") != "success"
+        or situation.get("verified") is not True
+        or situation.get("succeeded") is not True
+    ):
+        return None
+    observed = _merged_observed(situation)
+    query = observed.get("query")
+    if (
+        observed.get("authority") == "windows_known_folders_bounded_postread"
+        and type(observed.get("count")) is int
+        and observed["count"] == 0
+        and observed.get("files") == []
+        and isinstance(query, str)
+        and query.strip()
+    ):
+        return query.strip()
+    return None
+
+
 def _local_clock_from_situation(situation: dict) -> str | None:
     for blob in _observed_maps_from_situation(situation):
         clock = _local_clock_from_observed(blob)
@@ -3667,6 +3691,15 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
     # Planner steps include internal prerequisites, such as resolving a window
     # before closing it. They are evidence, not a demand to narrate every step.
     observed = _merged_observed(situation)
+    if _verified_empty_known_file_query(situation) is not None:
+        bits.append(
+            "The file-name search completed without matches. Preserve the query "
+            "and limit the negative finding to the folders searched. Their names "
+            "are not retained in this empty result: do not infer them from the "
+            "request or claim absence throughout the computer. This is not a "
+            "failure to search, missing permission, or an unperformed search. "
+            "Explain the finding briefly and naturally in the person's language."
+        )
     if (
         situation.get("operation") == "app.installed"
         and situation.get("verified") is True
@@ -4704,6 +4737,24 @@ def compose_visible_defect(
         return "wrong_language"
     failure_assertions = stripped
     presence = _merged_observed(situation)
+    empty_file_query = _verified_empty_known_file_query(situation)
+    if empty_file_query is not None:
+        name = re.escape(_accent_folded_with_punctuation(empty_file_query))
+        target = rf"[\"'“”‘’«»]?(?:{name})[\"'“”‘’«»]?"
+        file_name = rf"(?:(?:el|un|the|a)\s+)?(?:(?:archivo|file)\s+)?(?:(?:llamado|named)\s+)?{target}"
+        scope_es = r"(?:las\s+carpetas\s+(?:buscadas|consultadas|revisadas)|el\s+ambito\s+consultado)"
+        scope_en = r"(?:the\s+(?:searched\s+folders|folders\s+searched|searched\s+scope))"
+        finding = (
+            rf"(?:no\s+(?:encontre|se\s+encontro)\s+{file_name}\s+en\s+{scope_es}"
+            rf"|{file_name}\s+no\s+se\s+encontro\s+en\s+{scope_es}"
+            rf"|(?:i\s+)?(?:didn't|did\s+not)\s+find\s+{file_name}\s+in\s+{scope_en}"
+            rf"|{file_name}\s+was\s+not\s+found\s+in\s+{scope_en})[.!]?"
+        )
+        # Exempt only a complete, query-bound and scope-bounded finding.
+        # Mixed claims (permissions, inability, global absence) stay unchanged;
+        # all other validators below still inspect the original response.
+        if re.fullmatch(finding, _accent_folded_with_punctuation(stripped)):
+            failure_assertions = ""
     if (
         kind == "operation"
         and situation.get("operation") == "app.installed"
@@ -10556,7 +10607,14 @@ class LlmRuntime:
             "asserted_failure": (
                 "Name several entries of can. One short sentence."
                 if _looks_like_capability_question(user_text)
-                else "Success. State what was seen."
+                else (
+                    "The search completed with no matching file names. Preserve "
+                    "the query and restrict the finding to the folders searched, "
+                    "without naming an unobserved folder or claiming the file "
+                    "is absent everywhere. Do not describe a failed search."
+                    if _verified_empty_known_file_query(situation) is not None
+                    else "Success. State what was seen."
+                )
             ),
             "internal_code": "Sin códigos internos ni jerga de contrato.",
             "confirmation_asserted": "Pregunta; no afirmes.",

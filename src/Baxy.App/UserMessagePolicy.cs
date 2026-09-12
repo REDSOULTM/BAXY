@@ -2501,7 +2501,7 @@ internal static class UserMessagePolicy
 
     private static bool ReversesSuccessfulResult(string source, string result)
     {
-        if (LooksLikeFailure(source))
+        if (LooksLikeFailure(source) || IsVerifiedEmptyKnownFileFinding(source, result))
         {
             return false;
         }
@@ -2549,6 +2549,39 @@ internal static class UserMessagePolicy
         }
 
         return LooksLikeFailure(result);
+    }
+
+    private static bool IsVerifiedEmptyKnownFileFinding(string source, string result)
+    {
+        if (!TryReadJson(source, out JsonElement root)
+            || !root.TryGetProperty("kind", out JsonElement kind) || kind.ValueKind != JsonValueKind.String || kind.GetString() != "operation"
+            || !root.TryGetProperty("operation", out JsonElement operation) || operation.ValueKind != JsonValueKind.String || operation.GetString() != "filesystem.known.search"
+            || !root.TryGetProperty("polarity", out JsonElement polarity) || polarity.ValueKind != JsonValueKind.String || polarity.GetString() != "success"
+            || !root.TryGetProperty("verified", out JsonElement verified) || verified.ValueKind != JsonValueKind.True
+            || !root.TryGetProperty("succeeded", out JsonElement succeeded) || succeeded.ValueKind != JsonValueKind.True
+            || !root.TryGetProperty("observed", out JsonElement observed) || observed.ValueKind != JsonValueKind.Object
+            || !observed.TryGetProperty("authority", out JsonElement authority) || authority.ValueKind != JsonValueKind.String || authority.GetString() != "windows_known_folders_bounded_postread"
+            || !observed.TryGetProperty("count", out JsonElement count) || count.ValueKind != JsonValueKind.Number || !count.TryGetInt32(out int matches) || matches != 0
+            || !observed.TryGetProperty("files", out JsonElement files) || files.ValueKind != JsonValueKind.Array || files.GetArrayLength() != 0
+            || !observed.TryGetProperty("query", out JsonElement query) || query.ValueKind != JsonValueKind.String
+            || query.GetString() is not { Length: > 0 } name || string.IsNullOrWhiteSpace(name))
+        {
+            return false;
+        }
+
+        // Mirror Python's complete query-bound finding, not a count-zero bypass.
+        // Folder identities are absent from the empty receipt. No named folder,
+        // global absence, permission failure or additional assertion is exempted.
+        string target = @"[""'“”‘’«»]?" + Regex.Escape(FoldForPolicy(name.Trim())) + @"[""'“”‘’«»]?";
+        string fileName = @"(?:(?:el|un|the|a)\s+)?(?:(?:archivo|file)\s+)?(?:(?:llamado|named)\s+)?" + target;
+        string scopeEs = @"(?:las\s+carpetas\s+(?:buscadas|consultadas|revisadas)|el\s+ambito\s+consultado)";
+        string scopeEn = @"(?:the\s+(?:searched\s+folders|folders\s+searched|searched\s+scope))";
+        string finding = $@"(?:no\s+(?:encontre|se\s+encontro)\s+{fileName}\s+en\s+{scopeEs}"
+            + $@"|{fileName}\s+no\s+se\s+encontro\s+en\s+{scopeEs}"
+            + $@"|(?:i\s+)?(?:didn't|did\s+not)\s+find\s+{fileName}\s+in\s+{scopeEn}"
+            + $@"|{fileName}\s+was\s+not\s+found\s+in\s+{scopeEn})[.!]?";
+        return Regex.IsMatch(FoldForPolicy(result.Trim()), $@"\A{finding}\z",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
     }
 
     private static bool ReversesFailedResult(string source, string result)

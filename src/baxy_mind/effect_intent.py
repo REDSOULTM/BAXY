@@ -10695,6 +10695,38 @@ def _review_installed_catalog_effects(
         )
 
 
+def _literal_known_file_search(text: str) -> dict[str, object] | None:
+    """Bind a direct file-name request to the existing known-folder scopes."""
+    body = _strip_request_envelope(text).strip()
+    if _is_negative_effect_clause(_fold(body)) or _is_meta_or_tool_denial(_fold(body)):
+        return None
+    found = re.fullmatch(
+        rf"{_SEARCH}\s+(?:(?:el|un|the|a)\s+)?(?:archivo|file)\s+"
+        r"(?:(?:llamado|named)\s+)?"
+        r"(?P<query>[^\s\"'“”‘’«»<>:/\\|?*;,]+\.[\w-]+)"
+        r"(?:\s+(?:en|in)\s+(?:(?:el|la|las|mis|the|my)\s+)?"
+        r"(?P<scope>(?:usual\s+)?Windows\s+folders|carpetas\s+(?:habituales\s+de\s+)?Windows|"
+        r"documents?(?:\s+folder)?|documentos|downloads?(?:\s+folder)?|descargas|"
+        r"desktop(?:\s+folder)?|escritorio))?"
+        r"(?:,?\s+(?:por\s+favor|please))?[.!]?",
+        body,
+        re.IGNORECASE,
+    )
+    if found is None:
+        return None
+    scope = _fold(found.group("scope") or "")
+    folder = "all_known"
+    for canonical, pattern in (
+        ("documents", r"(?:documents?(?: folder)?|documentos)"),
+        ("downloads", r"(?:downloads?(?: folder)?|descargas)"),
+        ("desktop", r"(?:desktop(?: folder)?|escritorio)"),
+    ):
+        if re.fullmatch(pattern, scope):
+            folder = canonical
+            break
+    return {"folder": folder, "query": found.group("query")}
+
+
 def _review_file_and_game_effects(
     matches: list[tuple[int, int, str]],
     folded: str,
@@ -10735,7 +10767,7 @@ def _review_file_and_game_effects(
             "filesystem.list",
             r"\b(?:archivos?|files?)\b",
         )
-    if (
+    if _literal_known_file_search(folded) is not None or (
         _head_is(head, _SEARCH)
         and _has(folded, r"\b(?:archivos?|files?)\b")
         and _has(

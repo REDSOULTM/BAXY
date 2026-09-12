@@ -1,15 +1,15 @@
-# C03 —158 cubiertos; ejecución continua
+# C03 —160 cubiertos; ejecución continua
 
-**158/742 cubiertos,584 abiertos,0 no aplican;0/35 categorías cerradas.**
-Últimas24h: al menos32 primeras altas verificadas (28Kiro+4retorno); no se usan fechas de revalidación como primeras altas. C03 formal3/11. Goal activo; suites/Fast/Full omitidos por orden del dueño, no verdes.
+**160/742 cubiertos,582 abiertos,0 no aplican;0/35 categorías cerradas.**
+Últimas24h: al menos34 primeras altas verificadas (28Kiro+6retorno); no se usan fechas de revalidación como primeras altas. C03 formal3/11. Goal activo; suites/Fast/Full omitidos por orden del dueño, no verdes.
 
 RAR recuperado:348 archivos verificados;28 créditos Kiro auditados. READS1035+1H0104 y REPAIR1036+1H0575 adjudicados contra recibos y pares recuperados, sin repetir corridas. FILES1040+1H0711: Downloads abierto y dos variantesES/EN con postread real;5/18 cumplen. H0001/H0696 siguen open: búsqueda confinada al sandbox y fallo de composición.
 
 WEB1039:4/17 cumplen,0créditos; dos variantes inglesas ejecutaron back con CDP verificado; los2literales españoles pierden argumento en action_grounding. Historial real pasó de índice25 a23,26entradas. Reparación1042 atómica externa en revisión, sólo subset fallido.
 
-CLARIFY1041:8/25 cumplen,+1H0140 por rechazo útil con paresES/EN sin efectos; otros9literales conservan causas individuales. REPAIR1042 integra parser acotado de retroceso y cableado;13casos sellados pendientes. .NET/runtime assets conservan fingerprint1036; fuentePython nueva se liga por separado. No nueva compilación ni pruebas afirmadas. Registro actualizado al adjudicar:be01258b0c7f52675e2686fcc806df7f0cb696de34b8d5b37d9ae0b200a67424.
+CLARIFY1041:8/25 cumplen,+1H0140 por rechazo útil con paresES/EN sin efectos; otros9literales conservan causas individuales. REPAIR1042:9/13 cumplen,+2H0326/H0605; seis back con CDP verificado, historia23→17. Dos formas inglesas siguen fallidas. Navegadorprivado cerrado por identidad tras conservar historial final;14procesos propios cerrados,0pendientes. .NET/runtime assets conservan fingerprint1036; fuentePython nueva se liga por separado. No nueva compilación ni pruebas afirmadas. Registro actualizado al adjudicar:814842dafaacd9f0786fe3fb7f8ecc65c242564ec241439db6c7667ee4b68525.
 
-Música1037: no sesiónSMTC expuesta observada; controles/cola pendientes, sin infraestructura nueva para8casos. H0675 sigue aparcado. Siguiente: medir reparación1042 y reejecutar sólo2literales+variantes/límites dirigidos; diagnóstico búsqueda1040 en paralelo. Tabla actual ordenada por abiertos: CURRENT_CATEGORY_COUNTS.md.
+Música1037: no sesiónSMTC expuesta observada; controles/cola pendientes, sin infraestructura nueva para8casos. H0675 sigue aparcado. Siguiente: REPAIR1043 repara selección de búsqueda real por nombre y hallazgo vacío útil;2literalesfallidos+variantes/límites, sin repetir1040entero. Parche3ownersPython integrado, pendiente sello/candidato/medición. Aclaración1041 se investiga en paralelo por costura not_complete, sin prometer30créditos. Tabla actual ordenada por abiertos: CURRENT_CATEGORY_COUNTS.md.
 
 ## Checkpoint anterior1036, conservado como historial
 

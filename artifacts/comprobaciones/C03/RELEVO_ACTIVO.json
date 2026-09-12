@@ -152,38 +152,38 @@
     "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "repair1042 integrated; sealed real product execution next",
+  "workStatus": "repair1042 adjudicated+2; repair1043 source integrated, sealed run next",
   "executionPausedByOwner": false,
   "branch": "codex/kiro-goal-c03",
   "checkpoint": "154/742covered,588open,0NA; seis tandas propias: 1029 +3, 1030 0, 1031 invalidada, 1032 +4, 1033 +7, 1034 +10. apps_open 28/54, clock 13/23.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "20dab7edcd34ce87eff2d176613bb5ae4e968e1b",
   "surveyVerificationCounts": {
-    "covered": 158,
-    "open": 584,
+    "covered": 160,
+    "open": 582,
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "be01258b0c7f52675e2686fcc806df7f0cb696de34b8d5b37d9ae0b200a67424",
+  "surveyRegistrySha256": "814842dafaacd9f0786fe3fb7f8ecc65c242564ec241439db6c7667ee4b68525",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
   "surveyCoverageLast24h": {
-    "verified_first_grants_lower_bound": 32,
+    "verified_first_grants_lower_bound": 34,
     "exact_global_total": null
   },
-  "surveyCoverageLast24hNote": "28 verified Kiro grants+4root grants within24h; update timestamps not counted as first grants.",
+  "surveyCoverageLast24hNote": "28Kiro+6root first grants verified within24h, not update timestamps.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
-  "latestProductRun": "CLARIFY1041 exit0;8/25qualitypass;+1H0140",
+  "latestProductRun": "REPAIR1042 exit0;9/13qualitypass;+2H0326/H0605",
   "activeValidation": null,
   "activeRepairAgent": null,
   "currentUnpublishedSource": null,
-  "preparedNextPanel": "REPAIR1042:2literals+5original variants+1failed variant reexecution+5boundaries",
-  "preparedNextPanelNote": "Existing owned browser16052 history23/26 observed fresh; no new provider. Candidate source manifest pending commit.",
+  "preparedNextPanel": "REPAIR1043 material preparation:2literals+6originalvariants+2identifiedfailedreexecutions+5boundaries",
+  "preparedNextPanelNote": "NoCDP; source selection/binding for known folders and bounded negative-result narration, no new provider.",
   "pendingOwnerClarification": null,
   "ownerLatestInstruction": "Accelerate C03 without automated tests/Fast/Full; no loss of truthful product behavior. Real sealed execution required for coverage.",
   "nextProductBlocker": null,
@@ -199,7 +199,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-12T12:50:09.860500+00:00",
+  "utcUpdated": "2026-09-12T12:59:31.294454+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -335,5 +335,12 @@
     "source_change": "browser_back_arguments complete request grammar + schema-grounding bridge",
     "build": "1036binaries reused; .NET/runtime asset fingerprint unchanged, Python live source newly pinned",
     "next": "ExecuteREPAIR1042/adjudicate immediately; externally prepare file search repair after1040diagnosis."
+  },
+  "currentContinuation1043": {
+    "survey": 160,
+    "registry_sha256": "814842dafaacd9f0786fe3fb7f8ecc65c242564ec241439db6c7667ee4b68525",
+    "browser1042_cleanup": "14ownedprocessesclosed,0alive; exactpid/creation/exechecked and afterhistorysaved",
+    "next": "Seal/bind/runREPAIR1043; adjudicate same tranche. Source3Pythonowners currently uncommitted; noGPUrunning.",
+    "validation": "No automated tests by owner; existingbuildfingerprint unchanged."
   }
 }

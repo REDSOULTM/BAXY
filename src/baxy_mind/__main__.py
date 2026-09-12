@@ -4912,6 +4912,9 @@ def _explicit_arguments_from_evidence(
             return {"folder": next(iter(folders))}
 
     if operation == "filesystem.known.search":
+        literal_search = effect_intent._literal_known_file_search(evidence)
+        if literal_search is not None:
+            return literal_search
         query_match = re.search(
             r"\b(?:palabra|word)\s+[\"'“”‘’«»]?(?P<query>[^\"'“”‘’«».,;!?]+)",
             evidence,
@@ -5024,6 +5027,13 @@ def _ground_explicit_arguments(
             explicit = {"name": name}
     if explicit is None:
         return None
+    if (
+        operation == "filesystem.known.search"
+        and effect_intent._literal_known_file_search(evidence) == explicit
+    ):
+        # The shared positive request grammar owns the known-folder enum;
+        # the filename remains literal. Keep the authenticated schema boundary.
+        return explicit if validate_json_schema_instance(explicit, schema) else None
     if operation == "window.resolve" and not validate_json_schema_instance(
         explicit, schema
     ):

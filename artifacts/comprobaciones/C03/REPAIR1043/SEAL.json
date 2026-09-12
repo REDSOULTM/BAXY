@@ -1,0 +1,47 @@
+{
+  "runner_delivered": true,
+  "schema": "repair1043-directed-material-seal-v1",
+  "historical_case_ids": [
+    "H0001",
+    "H0696"
+  ],
+  "coverage_credit": 0,
+  "registry_sha256": "814842dafaacd9f0786fe3fb7f8ecc65c242564ec241439db6c7667ee4b68525",
+  "read_source_pins": {
+    "C:/Users/usuario/AppData/Local/BAXY/C03-files1040-proposal/panel.json": "56f455551adf81056ef5d1d73f083369289a50ad65acf4241fb98b9a8fe2f3ef",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-clarify1041-proposal/runner.py": "ea6cff542aa0f5dfb953beec2b6eef6812dcc1bd59f411b942119062b7c98b1a",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-files1040-review/DIAGNOSIS.md": "1d5f218f1ace86783f2e1042a951880bf97aa55da8518a65d5156498679389d2",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-files1040-review/repair.patch": "e16912715a13b1c32faafec811b696472e48986626f7bc57b3776e5ec2780c76",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-files1040-review/UserMessagePolicy.cs.patch": "507807310d8c140c32f2521c7769d4810997a546cc6c194688b2c2fa32fcdda0"
+  },
+  "counts": {
+    "cases": 15,
+    "historical_positive_open": 2,
+    "failed_variant_reexecutions": 2,
+    "original_development_variants": 6,
+    "boundaries": 5,
+    "wire_lines": 30,
+    "controls": 15,
+    "session_new": 15,
+    "conditional_positive_commands": 0,
+    "normal_diagnostic_commands": 15,
+    "maximum_turn_admissions": 15,
+    "maximum_reportable_terminals": 15,
+    "case_final_terminals": 15,
+    "maximum_internal_confirmations": 0
+  },
+  "candidate": {
+    "commit": null,
+    "execution_authorized_by_proposal": false,
+    "tests_run": false,
+    "status": "current_source_binding_pending_root"
+  },
+  "files": {
+    "panel.json": "122a21b17214c0eff926b36154b541703714af974a9e893ec1ccd9936dc28154",
+    "turns.jsonl": "84c2ee6df1ccfc962c7540bc14902b3bc1033c86dad6bbb0a784837ce509ba3c",
+    "case-map.json": "ecec8b452e7b443473caec178523b4fe840703c228db75e2590ad3d4a7f1617f",
+    "PLAN.md": "9aabd01cea6d32e8699ffd2e1b4eb215f68dd813ac5cf6b63e7260a5dc24a2d5",
+    "requirements-snapshot.jsonl": "814842dafaacd9f0786fe3fb7f8ecc65c242564ec241439db6c7667ee4b68525"
+  },
+  "execution_authorized_by_proposal": false
+}
