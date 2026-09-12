@@ -1,4 +1,4 @@
-# Categorías actuales — adjudicación AGENDA1121
+# Categorías actuales — adjudicación DIALOGUE1123
 
 203/742 cubiertos; 539 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 77 primeras altas (28 Kiro + 49 retorno), sin revalidaciones. Registro canónico SHA256: 13ed0c500d2ccd94a75af0ca3196d038154c24e7d56b950d644cc0076fadcf3a.
 

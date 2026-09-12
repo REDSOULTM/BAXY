@@ -1,0 +1,9 @@
+# TIME1117 — adopción de precisión temporal
+
+Dos sustituciones en __main__.py conservan los microsegundos del ISO o del reloj más duración relativa. Fuente anterior d7a19edad4472581288f68adfd31b8d93012e6e051b06cfe0b3a9f84480ace2e; actual1024f9a43d5b21430994aed3df0aec459af0bb8295c9f26e234c65d63838636b. Parcheae0cf7f0f86279247f8727c36eb8bad231dd36d0bf5ffb66e2337b4cbed6f12d. Root leyó propuesta/revisión/evidencia y código dueño; git apply --check/aplicación0 y SHA resultado exacto. No modelos, formatos nuevos ni tolerancia añadida.
+
+H0100/H0523 tenían dos truncamientos demostrados983. No se afirma que diez requisitos estén reparados: sólo tres literales iniciales y cuatro variantes se medirán con notification.schedule; despertar, compactos y reminders tienen otras causas. No infraestructura nueva. llm1122aaa434 permanece actual.
+
+TIME1118 material10literales10variantes5límites intacto, selloc9cf4785ad8fbd445636b2318e61e6250d83a6e92ba9a13332d3fa84cbe68f1a. Instrumento externo C:/Users/usuario/AppData/Local/BAXY/C03-time1118-instrument-v2, transporteeacb5995e59ec12e871667790e61bdd73e4b25350f9a97cbedf27ba3bb5e5c34, runner04069a07ab1b1de76ef4372ae79b074e3d4b622af368cab0628d65b0e7291045. Root revisó runnerdiff completo, prepare/case/collect/observer/cancel completos, planes/identidad y hashes. Sólo índices0,1,2,10,11,12,13, cada uno por orden raíz. Postlectura y cancelación propia son órdenes independientes con SHA; la cancelación compara identidad/acción/trigger/NextRun observado, sin afirmar CAS atómico. Bracket heredado983 informa lower boot_stage/PREREG y upper kernel, sin tolerancia ni reloj inventado. No adjudicador automático.
+
+Integrado trasDIALOGUE1123:var5failed por eco declarativo,0créditos; cinco literales no ejecutados. Registro203/742,539abiertos,0NA,>=77primerasaltas24h,0/35cerradas. Sin tests, dueñas, Fast/Full o build por orden del dueño; .NET intacto/BUILD1079 vigente. Eficacia de1117 pendiente de medición real.

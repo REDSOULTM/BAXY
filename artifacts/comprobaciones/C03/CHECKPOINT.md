@@ -1,3 +1,25 @@
+## DIALOGUE1123 — estado vigente 2026-09-12T23:56:03.0310800Z
+
+Parcial: 0 aprobados, 1 fallidos, 11 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 203/742 | 539 | 0 | >=77 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas del12septiembre:28Kiro+49retorno hastaAGENDA1121. No sumar revalidaciones.
+
+Siguiente acción: Integrar TIME1117 y medir TIME1118 sólo índices0,1,2,10,11,12,13 tras revisión instrumental: no truncar microsegundos, hechos y cancelación propia separadas. DIALOGUE1123var5 sigue en eco declarativo; conservar fallo y diagnosticar ruta antes de otra hipótesis, cinco literales no ejecutados. Reparación contrato de aclaración1124 revisada y pendiente despuésTIME con BUILD1125; no mezclar fuentes durante tanda. Goalactivo sin tests.
+
+Evidencia: `artifacts/comprobaciones/C03/DIALOGUE1123/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 24.17 s acumulados; pico GPU 3497.56 MiB; pico RAM 1553.78 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 1; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque DIALOGUE1123 precedente. -->
+
 ## AGENDA1121 — estado vigente 2026-09-12T23:51:05.7696673Z
 
 Parcial: 3 aprobados, 0 fallidos, 5 sin ejecutar; 1 créditos.

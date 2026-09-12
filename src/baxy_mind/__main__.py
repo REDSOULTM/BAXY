@@ -5298,7 +5298,7 @@ def _canonical_due_utc(
     except ValueError:
         parsed = None
     if parsed is not None and parsed.tzinfo is not None:
-        parsed_utc = parsed.astimezone(timezone.utc).replace(microsecond=0)
+        parsed_utc = parsed.astimezone(timezone.utc)
         if parsed_utc > now + timedelta(seconds=5):
             return parsed_utc.isoformat().replace("+00:00", "Z")
         return None
@@ -5325,7 +5325,7 @@ def _canonical_due_utc(
             delta = timedelta(hours=amount)
         else:
             delta = timedelta(minutes=amount)
-        due = (now + delta).replace(microsecond=0)
+        due = now + delta
         return due.isoformat().replace("+00:00", "Z")
 
     folded_context = effect_intent._fold(context)
