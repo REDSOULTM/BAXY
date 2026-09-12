@@ -1,0 +1,150 @@
+{
+  "schema": "agenda1108-root-adjudication-v2",
+  "decided_at_utc": "2026-09-12T22:46:26.1663680Z",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "df8ba769ef3b37624aebd0623928a00c0adb9705",
+  "decisions_sha256": "31e2de1c2a7064f25562f083b79b084ed1de78fb83589b1b1e9439537ef92b48",
+  "registry_before_sha256": "6d190717550d76602eca21243c01fac7e5253c2d0464fba3dffbb9cd82de0cd7",
+  "registry_before_counts": {
+    "covered": 198,
+    "open": 544,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "ae58468fb4d40bbdcb7aeac6038ecad4ccd264dc674899a3076d8e47ce9243ce",
+  "preparation_sha256": "7609ee942d75c39c17f6e9b75a2fb661d85f075572aeb2b6a8e2e6cc1f9f231f",
+  "passed": 1,
+  "failed": 1,
+  "unexecuted": 9,
+  "executed": 2,
+  "segments_started": 2,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [],
+  "counters": {
+    "covered": 198,
+    "open": 544,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 72,
+    "categories_total": 35,
+    "categories_closed_after": 0,
+    "first_covered_last24h_evidence_note": "Cota inferior: 28 primeras altas Kiro y44 de retorno dentro del12 de septiembre; incluye H0572 de1104 una sola vez. No revalidaciones ni fechas de actualización.",
+    "first_covered_last24h_after": 72
+  },
+  "resources": {
+    "seconds_sum": 45.60899999999674,
+    "gpu_peak_mib": 3493.55859375,
+    "ram_peak_mib": 1580.0546875
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "agenda1097-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Aclaración AM/PM pertinente.",
+      "observation_note": "Conserva la hora dada y pregunta por el periodo, sin programar.",
+      "final_sha256": "0e2c6caf15d5f51d25535806c6f5cc15d470b16d9edbfd53ad4b10cb001ed37b",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\results\\case-00\\EXIT.json": "ed599b9415d6d45d337c26ff8b27e82e36de4fcb800a886e80c547967afb084a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\results\\case-00\\RESOURCES.json": "66b3d1e1792d5c0c9062846075621320f9c40ac6c06d567071fa8f21cf8b59a7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\profile-owner-00.json": "1fbe854d2cc56be49fe62d73d4f5f1d00c487662ff3922494b3e65a2f92b51dc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\results\\case-00\\PREREG.json": "896d66001b5437107bed42240e6641101efdecc374592599b81121fcf10e332f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\run-00\\capture\\events.jsonl": "1d95f57ace66d659f64825a4bdcf94b7343cadd51112d613bb07c93df8fbfb65",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\run-00\\turns.jsonl": "36c6f77a69ff698aa7ef20cd0a7cac0d86ce4f4fdf374b05487b6f89fc773984",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\fixture-00.json": "7a2a309e7cd814fe53d5ec0cc0fc0d0f750e957f2ea8d86b4f45f3008ec9db11",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\root_case.py": "bd93f593aae3ba4eb01f5c6a0154f644e52fab586ce9da006afe9305f33b33fd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\context-00.json": "881a86ad9714cacdd983ac3cc55ecfbb763017a2d88410829b95d5540aa37b0e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\context-prelaunch-00.json": "603f9b7835a3e181b7d329906c8640f01fa5ba726a08e41a1027bcb429f1ca7e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\run-00\\case-observations.json": "22e686db2d4eb707ecfa2c420be937e1f6767538acce2c8b139adcc5b452c441",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\run-00\\journal-before.json": "50560555811b3e18bcd6a40a9db7960ae2423f6430a48679112004899a6d9c10",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\run-00\\journal-after.json": "16f44664cbf14f41540452e3f483b815d496ca2d505f3df4de976f4fcae86869",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\run-00\\journal.snapshot.jsonl": "a2d259a5aadffe0604e871fe3645a8310e4b31b4eefa2df0cff0fcd3e8e87e78"
+      },
+      "terminal_kind": "published_final",
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "aafb830a-6a5b-4297-bcb5-79b1745bbc2d",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "agenda1097-dev-02",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Invierte quién pide y quién recibe la alarma.",
+      "observation_note": "La pregunta usa la voz del usuario y pide que éste despierte al asistente.",
+      "final_sha256": "22124d796848c7991bd3d2c8d5d33d8c3c3606607ff8d9f930cd6a99c45d381d",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\results\\case-01\\EXIT.json": "0a9f0e061ffc0c70e955b40bc52298c0c47f91e58657b4e9ff581053bc1d68c9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\results\\case-01\\RESOURCES.json": "bff5d3cab1ae3355757fa69ec5f1f9498ad92c85c6b2552e8e435724dfd3ac7e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\profile-owner-01.json": "2f6a53cdb49eae3679e0e7630921fde71f7ca870e04ce5865362aad74fb2e7cb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\results\\case-01\\PREREG.json": "fd5ed49317e002862fc7961253cbd4674644af2c4fc78173f07bc8e8c178f9a6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\run-01\\capture\\events.jsonl": "cdf3f1fb020f495143601d6391a2573abea9d3b14cb2d19b67a4ffba677db1f9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\run-01\\turns.jsonl": "c4715b7b6f22070d193e73f78c2883084dc7748e101a60fb769bfb5f6bb6b5a2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\fixture-01.json": "7f4b6464b06e2498f55e01580959c256ff25d343622fabc5662aa5a4c5a828a4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\context-01.json": "34256ad5364f1ddd558f53b7aac255498039cc101bb33681556d2d7a18bd5258",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\context-prelaunch-01.json": "9124acc6c50dafe8883300dc29f3a38665dd4d3a4a91bf43eee9a0acd5f50a8e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\run-01\\case-observations.json": "465c3a77be779b3f402d15434123bcba69cda58568e050537daad59084cc41aa",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\run-01\\journal-before.json": "bc1c6aac80ea55aa278d11642d43b664f906e3ed0f5c724300cc1ed160eb0029",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\run-01\\journal-after.json": "3c24333337a2718ebfef55da90a9bac81ceedab5a035751cb4203cb60a83607f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1108-proposal\\private\\run-01\\journal.snapshot.jsonl": "90d8751aa6a4f1291d630d480b0877941d6f1c6b7076e767f74b1435ae7f26b3"
+      },
+      "terminal_kind": "published_final",
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "088dcf56-1d3a-4479-93bd-cf65d4d59907",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "next_action": "Reparar la inversión de hablante/destinatario en el generador de aclaraciones compartido, propuesta CLARIFICATION1109, y medir AGENDA1110: cuatro alarmas y H0137, conservando pares pertinentes. Fuente1107 resuelve la ambigüedad del slot, no el actor. DIALOGUE1098/1106 siguen pendientes; límites previos sin hipótesis nueva no se repiten.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

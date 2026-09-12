@@ -1,3 +1,25 @@
+## AGENDA1108 — estado vigente 2026-09-12T22:46:26.1663680Z
+
+Parcial: 1 aprobados, 1 fallidos, 9 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 198/742 | 544 | 0 | >=72 | 0/35 |
+
+Procedencia de primeras altas: Cota inferior: 28 primeras altas Kiro y44 de retorno dentro del12 de septiembre; incluye H0572 de1104 una sola vez. No revalidaciones ni fechas de actualización.
+
+Siguiente acción: Reparar la inversión de hablante/destinatario en el generador de aclaraciones compartido, propuesta CLARIFICATION1109, y medir AGENDA1110: cuatro alarmas y H0137, conservando pares pertinentes. Fuente1107 resuelve la ambigüedad del slot, no el actor. DIALOGUE1098/1106 siguen pendientes; límites previos sin hipótesis nueva no se repiten.
+
+Evidencia: `artifacts/comprobaciones/C03/AGENDA1108/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 45.61 s acumulados; pico GPU 3493.56 MiB; pico RAM 1580.05 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 2; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque AGENDA1108 precedente. -->
+
 ## AGENDA1104 — estado vigente 2026-09-12T22:35:57.2332064Z
 
 Parcial: 4 aprobados, 6 fallidos, 5 sin ejecutar; 1 créditos.
