@@ -75,7 +75,10 @@
     "assetsLocalOverride": {
       "path": "C:/Users/usuario/AppData/Local/BAXYRuntime/assets.local.json",
       "createdByRoot": true,
-      "declares": ["conversation_model", "wake_manifest"],
+      "declares": [
+        "conversation_model",
+        "wake_manifest"
+      ],
       "reason": "assets.manifest.json lista Qwen3-4B-Q4_K_M.gguf como primer candidato, que en esta máquina es el modelo activo anterior (Instruct AWQ, 7485fe6f). El override es el mecanismo oficial del propio manifiesto para declarar la ruta atestada. wake_manifest se declara para conservar wake_on_start=true, que el descriptor no encontraba en %LOCALAPPDATA%."
     },
     "bootstrap": {
@@ -130,69 +133,79 @@
     "newModelCampaign": false
   },
   "missingPrivateTransfer": {
-    "required": true,
-    "onlyRemainingBlocker": true,
-    "modelBlockerResolved": "El segundo bloqueo, los pesos decididos, quedó resuelto por raíz restaurando el activo desde la revisión fijada que el propio repositorio registra. Ya no hace falta trasladarlo.",
+    "required": false,
+    "received": true,
     "archive": "C03_OPUS5_RELEVO_PRIVADO.zip",
-    "archiveSha256": "95bc3f239a2e5c013469d26143b55e7223b4c254300ea15ae59651259fd8c704",
-    "expectedBytes": 2025743,
-    "searchedAndAbsent": [
-      "C:/Users/usuario/AppData/Local/BAXY/C03-opus5-transfer-20260911 (no existe)",
-      "búsqueda recursiva por nombre en C:/Users, D:, E:, F:, G:, J: (0 resultados para C03_OPUS5_RELEVO_PRIVADO.zip y TRANSFER_MANIFEST.json)",
-      "%LOCALAPPDATA%/BAXY: 1489 directorios, ninguno C03-*-private ni C03-*-proposal; evidencia local más reciente 2026-09-06"
-    ],
-    "blocks": [
-      "Adjudicación completa de KNOWLEDGE1025: faltan los 25 terminales de C03-knowledge1025-private/run/capture/events.jsonl",
-      "Escritura de verification_status: falta C03-survey-requirements336-private/requirements.jsonl (SHA 1a7ec3d381e4d972cb0bbdf9c55ed632216618e932614e31d2ea602a74a3eae6)",
-      "Sellado de cualquier panel nuevo: los literales exactos de los 742 case_id sólo están en el registro privado; SURVEY_TAXONOMY846.json versionado sólo lleva case_id/categoría/estado",
-      "Revisión del parche 1024 sobre su propio diff: repair.patch b45ff88467f3ea281fb59520687a59bc7b96ad8e5f0f6f507807aa92ea4dd493 viaja en el ZIP"
-    ],
-    "requestFile": "artifacts/comprobaciones/C03/OPUS5_DESTINO/SOLICITUD_TRASLADO.md"
+    "archiveSha256Verified": "95bc3f239a2e5c013469d26143b55e7223b4c254300ea15ae59651259fd8c704",
+    "bytes": 2025743,
+    "entriesVerified": "95/95 contra TRANSFER_MANIFEST.json, byte count y SHA256",
+    "extractedTo": "C:/Users/usuario/AppData/Local/BAXY/C03-opus5-relevo-destino",
+    "overwroteNothing": true,
+    "registryRestored": {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-survey-requirements336-private/requirements.jsonl",
+      "shaOnArrival": "1a7ec3d381e4d972cb0bbdf9c55ed632216618e932614e31d2ea602a74a3eae6",
+      "rows": 742,
+      "coveredOnArrival": 126,
+      "openOnArrival": 616,
+      "noPriorRegistryOnThisMachine": true
+    },
+    "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "runtime_ready_awaiting_private_registry",
+  "workStatus": "measuring_on_original_machine",
   "executionPausedByOwner": false,
   "branch": "Goal-c03",
-  "checkpoint": "126/742covered,616open,0NA; 1025 cerrada en cobertura (3, definitivo) con 14/25 casos juzgados; máquina en ed305c38+, runtime registrado con el modelo decidido y carga verificada; falta sólo el registro privado.",
-  "continuation": "Máquina al día, sin procesos de producto ajenos, Release compilado, runtime registrado con Qwen3-4B-Instruct-2507 Q4_K_M verificado por SHA y carga sana con el perfil de producto (VRAM atribuible 3513 MiB). El único bloqueo que queda es el registro privado de la encuesta: sin requirements.jsonl no hay verification_status ni literales exactos para sellar. 1025 tiene 14/25 casos juzgados y su cobertura es final; los 11 pendientes necesitan events.jsonl y ninguno mueve el contador. Ningún crédito nuevo, ningún panel sellado, ninguna tanda ejecutada.",
+  "checkpoint": "130/742covered,612open,0NA; 1025 cerrada (13/25, credito 3 sin cambios); 1028 ejecutada (14/31, +4); tres causas transversales diagnosticadas sin reparar.",
+  "continuation": "Paquete privado verificado y registro restaurado. Runtime propio con el modelo decidido y carga sana. 1025 adjudicada por completo sin repetirla. SYSTEM1028 sellada, ejecutada y adjudicada: +4 cubiertos (H0539, H0655, H0442, H0422). Siguiente trabajo: reparar las tres causas de SYSTEM1028/DIAGNOSIS.md con el subconjunto exacto y sus controles de no regresion, e integrar 1024 solo despues de decidir el segundo uso de _time_only_reminder_request en effect_intent.py:13842. C03 no esta completado y no se declara.",
   "publishedSourceCommit": "20dab7edcd34ce87eff2d176613bb5ae4e968e1b",
   "surveyVerificationCounts": {
-    "covered": 126,
-    "open": 616,
+    "covered": 130,
+    "open": 612,
     "not_applicable": 0
   },
-  "surveyRegistrySha256": "1a7ec3d381e4d972cb0bbdf9c55ed632216618e932614e31d2ea602a74a3eae6",
-  "surveyRegistryPresentOnDestination": false,
+  "surveyRegistrySha256": "af5ccd83c2e6d567a9631b540f76fde011670fe9aba2de8f4777cb7cb3a0dccd",
+  "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
-  "surveyCoverageLast24h": 98,
-  "surveyCoverageLast24hNote": "Valor heredado del relevo (ventana cerrada 2026-09-12T01:51Z). La hora del destino es 2026-09-12T02:18Z; sin altas nuevas desde entonces, pero recalcular la ventana exige verification_updated_at del registro privado, que no está aquí.",
+  "surveyCoverageLast24h": 102,
+  "surveyCoverageLast24hNote": "Recalculada con la hora de esta maquina sobre verification_updated_at del registro restaurado. Cuenta filas covered actualizadas en la ventana, no necesariamente primeras altas.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": "Suites dueñas, Fast y Full omitidas por instrucción explícita del dueño. Omitidas, no verdes, no aprobadas.",
   "latestProductRun": {
-    "batch": 1025,
-    "state": "collected_partial_adjudication",
-    "sessionId": 36967,
-    "collection": "ad4693",
-    "executed": 25,
-    "adjudicatedCases": 5,
-    "pendingCases": 20,
-    "coverageAdded": 3,
-    "fullAdjudicationPending": true,
-    "rerunForbidden": true,
-    "statusFile": "artifacts/comprobaciones/C03/KNOWLEDGE1025/ADJUDICATION_STATUS.json"
+    "batch": 1028,
+    "state": "adjudicated",
+    "executed": 31,
+    "passed": 14,
+    "failed": 17,
+    "coverageAdded": 4,
+    "exitCode": 0,
+    "violations": 0,
+    "seconds": 154.797,
+    "gpuPeakMib": 3494.9296875,
+    "ramPeakMib": 2587.3671875,
+    "adjudication": "artifacts/comprobaciones/C03/SYSTEM1028/ROOT_ADJUDICATION.json",
+    "sealedBeforeExecution": true,
+    "stoppedAttempt": "stopped-run-1, 1.3 s, sealed_input_or_source_changed, 0 terminales, sin cobertura"
   },
   "activeValidation": null,
   "activeRepairAgent": null,
   "currentUnpublishedSource": null,
   "preparedNextPanel": null,
-  "preparedNextPanelNote": "El SEAL histórico C03-system1022-proposal está en el PC origen. En destino no existe ningún panel preparado; 1027 nunca creó archivos.",
-  "pendingOwnerClarification": "Traslado del paquete privado C03_OPUS5_RELEVO_PRIVADO.zip a este PC. Es el único requisito externo que bloquea cobertura; el resto del trabajo independiente sigue.",
+  "preparedNextPanelNote": "Ninguno sellado. El siguiente panel es la reparacion dirigida de las tres causas de SYSTEM1028/DIAGNOSIS.md, con H0442/H0539/H0655/H0422/H0037/H0114 como controles de no regresion.",
+  "pendingOwnerClarification": null,
   "ownerLatestInstruction": "Accelerate C03 without automated tests/Fast/Full; no loss of truthful product behavior. Real sealed execution required for coverage.",
-  "nextProductBlocker": "private_transfer_absent_on_destination",
+  "nextProductBlocker": null,
   "previousGoalTurnClassification": "progress",
-  "previousGoalTurnClassificationReason": "Destino actualizado sin perder trabajo, procesos verificados, runtime inventariado y 1025 delimitado por caso; 0 créditos nuevos porque el registro privado no está en la máquina."
+  "previousGoalTurnClassificationReason": "126 -> 130 cubiertos con tanda real sellada y adjudicada; paquete privado verificado, registro restaurado, modelo decidido restaurado y registrado, 1025 cerrada por completo y tres causas transversales demostradas.",
+  "openRepairs": {
+    "system1028_cause_A": "lectura del catalogo clasificada out_of_catalog en la decision (__main__.py:6638-6655)",
+    "system1028_cause_B": "mitad temporal de peticion compuesta perdida y luego inventada en el texto publicado",
+    "system1028_cause_C": "scope summary elegido para una pregunta que nombra la GPU",
+    "missing_referent": "ampliar _deictic_open_request a preguntas de tercera persona sin antecedente; necesita controles de segunda persona y de tratamiento formal",
+    "agenda1024": "parche recibido y revisado, sin integrar; decidir effect_intent.py:13842 antes"
+  },
+  "utcUpdated": "2026-09-12T03:34:33.085505+00:00"
 }

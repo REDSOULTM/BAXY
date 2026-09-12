@@ -1,86 +1,82 @@
-# Estado para el dueño — 12 de septiembre, relevo asumido en la máquina original
+# Estado para el dueño — 12 de septiembre, relevo completo y primera tanda propia
 
-Corregido tu punto: REDPC es el BAXY original y el portátil sólo replicó el repositorio, con raíz en
-`D:` porque su `C:` estaba lleno. Eso encaja con lo que encontré: el trabajo de C03 desde el 6 de
-septiembre se hizo en la réplica, y por eso la evidencia privada de esas tandas y la descarga del
-modelo decidido quedaron allí, no aquí.
+**130/742 cubiertos, 612 abiertos, 102 altas en 24 h, 0/35 categorías cerradas.** El tramo pasó de 126
+a 130 con una tanda real sellada y medida en esta máquina. C03 no está completado y no lo declaro.
 
-## Lo que quedó funcionando
+## El traslado funcionó
 
-`Goal-c03` pasó de `2bf3d4c5` a `ed305c38` por fast-forward, 192 commits, sin borrar nada: siguen ahí
-el stash de goal-10, las ramas `goal-10` y `rewrite-10-11-descartado`, los tres worktrees temporales
-y `main` intacta. Cerré la instancia de BAXY del arranque automático de Windows, compilé Release en
-21 segundos con 0 errores y 0 advertencias, y el Core de al lado de `Baxy.exe` es idéntico al de
-`Baxy.Core`. Compilar no demuestra calidad ni pantalla. No ejecuté pruebas: suites, Fast y Full
-siguen omitidas por tu instrucción, omitidas y no verdes.
+El ZIP llegó íntegro: SHA y tamaño exactos, y las 95 entradas verificadas una a una contra su
+manifiesto. Lo extraje en carpeta nueva sin sobreescribir nada tuyo. El registro de la encuesta
+apareció con el SHA declarado, 742 filas, 126 cubiertos y 616 abiertos: exactamente lo prometido.
 
-**El modelo decidido ya está registrado y cargando.** Esto era la mitad de lo que te iba a pedir y lo
-resolví. No estaba en `assets/models`: vivía en
-`D:/BAXYRuntime/experiments/models/qwen3-4b-instruct-2507-a06e946b/`, carpeta que aquí no existía. De
-los 93 GGUF de esta máquina ninguno era el correcto, y hay una trampa que conviene que sepas:
-`D:/BAXYRuntime/assets/models/Qwen3-4B-Q4_K_M.gguf` **se llama igual** que el primer candidato del
-manifiesto, pero el propio repositorio lo identifica como el modelo activo **anterior**, el Instruct
-AWQ. Registrarlo por nombre habría dejado BAXY corriendo con otro modelo y aspecto correcto.
+## Lo que se cerró sin volver a ejecutar nada
 
-Lo restauré desde la procedencia que el repositorio ya tenía sellada en agosto: repositorio de
-cuantización, revisión fijada, bytes y SHA-256 esperados, licencia Apache-2.0, y su propio orden de
-verificación. Descarga a `.partial`, 2 497 281 120 bytes exactos, SHA `3605803b…` exacto, y sólo
-entonces renombrado. No abrí ninguna campaña de modelos ni cambié de modelo: es el activo de la
-decisión 792 puesto donde el proyecto lo declara.
+Leí los 25 terminales de la tanda 1025 y la cerré por completo: 13 cumplen, 12 fallan. Su crédito
+sigue siendo 3, el que ya estaba escrito, y los contadores no se movieron por esa adjudicación.
 
-Después `bootstrap.ps1` falló con `installed_missing`: el entorno Python de la mente estaba desfasado
-respecto a los 192 commits nuevos. Bootstrap instaló lo que faltaba y terminó con «BAXY arranca: los
-activos obligatorios y el runtime registrado son validos». Guardé copia del manifiesto anterior y
-`wake_on_start` volvió a `true` como estaba, para no dejarte la máquina distinta de como la
-encontré.
+Los fallos son de dos clases claras. Hechos inventados sobre obras: Marvel vs. Capcom fechado en 2000
+cuando el estreno original fue arcade en 1998; Doom Eternal atribuido a Bethesda Game Studios, a 2023
+y a enemigos alienígenas cuando es id Software, Bethesda Softworks, 20 de marzo de 2020 y demonios;
+Chell descrita como hombre y Portal como mundos alternativos. Y referente ausente inventado: tres de
+cuatro casos respondieron hablando de la identidad de BAXY en vez de preguntar de quién se hablaba.
+Contrasté cada fecha y cada estudio con fuentes primarias antes de darlos por fallidos.
 
-Comprobé la carga con las banderas exactas del producto, no inventadas: 3 slots, 4096 por slot,
-`/health` en `ok`. VRAM atribuible por delta 3513 MiB, en línea con los 3499 de las tandas de la
-réplica y por debajo de la guarda de 3800 y del techo de 4096. Es comprobación de runtime, no una
-tanda: sin panel, sin turnos, sin crédito.
+Tres casos cumplen y siguen abiertos, y quiero que quede claro por qué: su literal está bien, pero la
+conducta no dejó dos variantes en pie, y sin par no hay crédito. Preferí eso a inflar el contador.
 
-## Lo único que necesito de ti
+## La primera tanda medida aquí
 
-El ZIP privado `C03_OPUS5_RELEVO_PRIVADO.zip` (SHA `95bc3f23…fd8c704`, 2 025 743 bytes), que está en
-la réplica en `C:/Users/usuario/AppData/Local/BAXY/C03-opus5-transfer-20260911/`. Lo busqué por nombre
-exacto en las seis unidades de aquí: no está. Sin el registro de la encuesta que va dentro no puedo
-escribir cobertura ni sellar una tanda nueva, porque los literales exactos de los 742 casos sólo
-están ahí y lo que viaja en Git sólo lleva identificadores y estados. Déjalo en cualquier carpeta y
-yo lo verifico contra su manifiesto.
+Sellé 31 casos antes de ejecutar, sobre los abiertos de estado de hardware y sistema. Salió limpia:
+exit 0, 31 terminales, cero violaciones, 154 segundos, VRAM 3494 MiB y RAM 2587 MiB, las dos por
+debajo del techo. 14 cumplen, 17 fallan, **+4 cubiertos**: memoria instalada por dos vías, espacio
+libre en disco, y nombre de máquina con usuario.
 
-## Lo que avancé sin él
+Dos respuestas me gustaron especialmente porque son veraces donde era fácil mentir: a «está cargando
+la batería» contestó que este equipo no tiene batería y está en corriente, que es exactamente cierto;
+y dio la ocupación real de VRAM. Ninguna de las dos cobra, porque sus variantes fallaron, pero
+demuestran que el mecanismo está.
 
-La tanda 1025 queda **cerrada en cobertura**: su crédito es 3, los que ya estaban escritos, y no
-puede dar más. No es estimación. Las dos conductas que quedaban vivas ya tienen dos de tres y una de
-dos variantes caídas, así que no llegan a las dos variantes en pie que exige un crédito, y la única
-tanda anterior de la categoría con adjudicación pública, la 998, cubrió aritmética y conversiones,
-nada pertinente. Por eso H0236, H0239 y H0582 siguen abiertos pase lo que pase con su literal.
+Cinco abiertos de esa categoría los aparqué con razón, no los rellené: resolución de pantalla, Hz del
+monitor, número de monitores y versión de Python instalada **no tienen operación en el catálogo**.
+Serían infraestructura nueva y son cuatro casos, muy por debajo de los diez que tú pusiste como
+mínimo. Por eso la categoría no puede cerrarse todavía, y lo digo en vez de forzarlo.
 
-De los 25 casos tengo 14 juzgados: 5 pasan y 9 fallan con causa, en dos clases claras. Hechos
-inventados en fichas de juegos: Marvel vs. Capcom fechado en 2000 cuando el estreno original fue
-arcade en 1998; Doom Eternal atribuido a Bethesda Game Studios y 2023 cuando es id Software,
-Bethesda Softworks y 20 de marzo de 2020; Chell descrita como hombre y Portal como mundos
-alternativos. Y referente ausente resuelto inventándolo: H0424, H0645 y la variante inglesa
-respondieron hablando de la identidad de BAXY en vez de preguntar de quién se hablaba. Contrasté las
-fechas y los estudios con fuentes primarias antes de darlos por fallidos.
+## Lo más útil que encontré
 
-De esa segunda clase saqué un diagnóstico que sí pude demostrar sin GPU, ejecutando las funciones
-puras: **la ruta de aclaración por referente ausente existe, está sana, y no se alcanza**. El
-reconocedor que la dispara sólo cubre órdenes de apertura tipo «ábrelo», así que una pregunta en
-tercera persona sin antecedente nunca llega y el modelo hace lo único que puede: suponer que «su» es
-él. La reparación mínima es ampliar ese reconocedor y reutilizar la misma ruta, sin capa nueva. No la
-escribí porque «su» en español es también tratamiento formal: una regla amplia convertiría
-«¿Cuál es su nombre?» dirigido a BAXY en una pregunta innecesaria, y esa categoría tiene 7 casos ya
-cubiertos que no pienso perder por ir rápido. La tanda que lo mida necesita controles de segunda
-persona y de antecedente presente.
+Los 17 fallos no son 17 problemas: son tres, y en los tres el compositor de prosa hace lo correcto con
+lo que recibe. El problema está antes, en la decisión.
 
-También revisé la reparación 1024 de los avisos con plazo. El diseño es el más simple que resuelve el
-caso, pero su diagnóstico no menciona que la función que amplía tiene un segundo uso que hace al
-reconocedor abstenerse de producir el efecto: ampliarla amplía también esa abstención. No la integro
-sin ver el parche real y sin controles.
+1. Una lectura que **sí está** en el catálogo se clasifica como fuera de catálogo. «Cuánto espacio
+   queda en C» dijo que no podía, y «cuánto espacio libre tengo en disco» lo dio, en la misma tanda.
+   Seis casos así.
+2. En una petición de dos mitades se pierde la mitad de la hora, y entonces el texto **la inventa**:
+   publicó «Hoy es 5 de abril de 2025» cuando era el 12 de septiembre de 2026. Sus dos variantes
+   eligieron la otra salida, decir que la hora no estaba disponible. Ninguna de las dos vale.
+3. Para una pregunta sobre la GPU se pidió el resumen general, que no incluye GPU, y luego se declaró
+   sin acceso. Ese mismo resumen traía el estado de batería que otros dos turnos habían declarado
+   imposible. El producto tenía el dato en la mano y lo negó.
 
-## Lo que no hice, a propósito
+Ninguna de las tres necesita infraestructura nueva. Repararlas rinde más que otra tanda ancha, porque
+atraviesan varias categorías. La tanda de reparación necesita los seis casos que hoy funcionan como
+controles de no regresión: no quiero cambiar la decisión y perder lo que ya cobra.
 
-Ningún crédito nuevo, ningún panel sellado, ninguna tanda ejecutada, ninguna reclasificación de la
-encuesta, ninguna prueba, ningún modelo sustituido en silencio. C03 no está completado y no lo
-declaro.
+También dejé demostrado, ejecutando las funciones puras sin GPU, que la ruta de aclaración por
+referente ausente existe, está sana y **no se alcanza**: el reconocedor que la dispara sólo cubre
+órdenes de apertura tipo «ábrelo». No la amplié porque «su» en español es también tratamiento formal y
+una regla amplia rompería «¿Cuál es su nombre?» dirigido a BAXY, en una categoría con 7 cubiertos.
+
+## Dos cosas que corregí de mí mismo
+
+Debilité una comprobación del runner heredado creyendo que era imposible de cumplir, y estaba
+equivocado: el producto sustituye el Core junto a `Baxy.exe` por el publicado al arrancar, así que la
+comprobación original era correcta. La revertí. Antes de eso, una primera medición se detuvo a 1,3
+segundos justo por ese motivo; la conservé como evidencia en lugar de borrarla.
+
+## Ritmo
+
+102 altas en 24 h, por encima del mínimo de 20 sin Full. Pero de esas, sólo 4 son de esta sesión: el
+resto viene del tramo anterior. A este ritmo real, con tandas de 30 casos que rinden 4 créditos, los
+612 abiertos no se cierran pronto, y no te voy a dar una fecha inventada. Lo que sí acelera es
+reparar las tres causas: los 17 fallos de hoy no eran 17 problemas distintos.
+
+Pruebas automatizadas, Fast y Full siguen omitidas por tu instrucción: omitidas, no verdes.
