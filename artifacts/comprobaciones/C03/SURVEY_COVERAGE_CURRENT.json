@@ -1,12 +1,16 @@
 {
-  "utc": "2026-09-12T01:51:51.297103+00:00",
-  "covered": 126,
-  "open": 616,
+  "utc": "2026-09-12T03:30:36.069526+00:00",
+  "covered": 130,
+  "open": 612,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 98,
+  "covered_updated_last_24h": 102,
+  "covered_updated_last_24h_window": {
+    "since_utc": "2026-09-11T03:30:36.069526+00:00",
+    "as_of_utc": "2026-09-12T03:30:36.069526+00:00"
+  },
   "updated_recent_ids": [
     "H0017",
     "H0020",
@@ -64,7 +68,9 @@
     "H0406",
     "H0409",
     "H0413",
+    "H0422",
     "H0438",
+    "H0442",
     "H0469",
     "H0470",
     "H0471",
@@ -78,6 +84,7 @@
     "H0524",
     "H0534",
     "H0538",
+    "H0539",
     "H0545",
     "H0549",
     "H0553",
@@ -94,6 +101,7 @@
     "H0644",
     "H0649",
     "H0650",
+    "H0655",
     "H0665",
     "H0669",
     "H0672",
@@ -107,8 +115,8 @@
     "H0729",
     "H0736"
   ],
-  "confirmed_new_grants_last_24h": 98,
-  "first_grant_date_not_distinguished_for_recent_ids": [],
+  "recomputed_on_destination": true,
+  "recompute_note": "Ventana recalculada con la hora de esta maquina sobre verification_updated_at del registro restaurado. Cuenta filas covered actualizadas dentro de la ventana, no necesariamente primeras altas: el registro no guarda first_credit_at por separado.",
   "categories": [
     {
       "category": "apps_open",
@@ -239,14 +247,6 @@
       "not_applicable": 0
     },
     {
-      "category": "system_hardware_status",
-      "label": "Estado de hardware y sistema",
-      "total": 40,
-      "covered": 21,
-      "open": 19,
-      "not_applicable": 0
-    },
-    {
       "category": "screen_vision",
       "label": "Pantalla, captura e interpretación visual",
       "total": 19,
@@ -271,11 +271,11 @@
       "not_applicable": 0
     },
     {
-      "category": "windows_arrangement",
-      "label": "Organizar ventanas y pestañas",
-      "total": 13,
-      "covered": 0,
-      "open": 13,
+      "category": "system_hardware_status",
+      "label": "Estado de hardware y sistema",
+      "total": 40,
+      "covered": 25,
+      "open": 15,
       "not_applicable": 0
     },
     {
@@ -283,6 +283,14 @@
       "label": "Estado de ventanas y aplicaciones",
       "total": 14,
       "covered": 1,
+      "open": 13,
+      "not_applicable": 0
+    },
+    {
+      "category": "windows_arrangement",
+      "label": "Organizar ventanas y pestañas",
+      "total": 13,
+      "covered": 0,
       "open": 13,
       "not_applicable": 0
     },
@@ -343,18 +351,18 @@
       "not_applicable": 0
     },
     {
-      "category": "clipboard",
-      "label": "Portapapeles",
-      "total": 3,
-      "covered": 0,
-      "open": 3,
-      "not_applicable": 0
-    },
-    {
       "category": "negative_app_constraints",
       "label": "Restricciones negativas de apertura",
       "total": 4,
       "covered": 1,
+      "open": 3,
+      "not_applicable": 0
+    },
+    {
+      "category": "clipboard",
+      "label": "Portapapeles",
+      "total": 3,
+      "covered": 0,
       "open": 3,
       "not_applicable": 0
     },
@@ -391,68 +399,29 @@
       "not_applicable": 0
     }
   ],
-  "requirements_sha256": "1a7ec3d381e4d972cb0bbdf9c55ed632216618e932614e31d2ea602a74a3eae6",
-  "registry_sha256": "1a7ec3d381e4d972cb0bbdf9c55ed632216618e932614e31d2ea602a74a3eae6",
+  "requirements_sha256": "af5ccd83c2e6d567a9631b540f76fde011670fe9aba2de8f4777cb7cb3a0dccd",
+  "registry_sha256": "af5ccd83c2e6d567a9631b540f76fde011670fe9aba2de8f4777cb7cb3a0dccd",
   "classification_source": "SURVEY_TAXONOMY846.json",
+  "classification_immutable": "742 case_id, clasificacion 846 sin reclasificar ni reiniciar",
+  "counts_source": "Contadas desde el registro privado restaurado y verificado, no desde un contador heredado.",
   "latest_adjudications": [
-    "APP_OPEN847/ROOT_ADJUDICATION.json",
-    "AUDIO848/ROOT_ADJUDICATION.json",
-    "APP_OPEN853/ROOT_PARTIAL_CREDIT.json",
-    "APP_OPEN853/ROOT_ADJUDICATION.json",
-    "APP_OPEN853_TAIL/ROOT_ADJUDICATION.json",
-    "WEB_SEARCH895/ROOT_ADJUDICATION.json",
-    "WEB_SEARCH900/ROOT_ADJUDICATION.json",
-    "APP_CORRECTION902/ROOT_ADJUDICATION.json",
-    "WEB_CONFIRMATION916/ROOT_ADJUDICATION.json",
-    "APP_PRIORITY922/ROOT_ADJUDICATION.json",
-    "APP_RESPONSE925/ROOT_ADJUDICATION.json",
-    "APP_GROUNDING930/ROOT_ADJUDICATION.json",
-    "APP_TERMINAL934/ROOT_ADJUDICATION.json",
-    "WEB_RESPONSE919/ROOT_ADJUDICATION.json",
-    "MUSIC_PANEL958/ROOT_ADJUDICATION.json",
-    "MUSIC_TAIL962/ROOT_ADJUDICATION.json",
-    "WEB_TAIL963/ROOT_ADJUDICATION.json",
-    "MUSIC_STATUS965/ROOT_ADJUDICATION.json",
-    "SYSTEM_READ966/ROOT_ADJUDICATION.json",
-    "MEDIA_STATUS970/ROOT_ADJUDICATION.json",
-    "NOTIFICATION_READY971/ROOT_ADJUDICATION.json",
-    "TASK_CREATE975/ROOT_ADJUDICATION.json",
-    "ALARM_PANEL978/ROOT_ADJUDICATION.json",
-    "TASK_REPAIR980/ROOT_ADJUDICATION.json",
-    "ALARM_REPAIR983/ROOT_ADJUDICATION.json",
-    "TASK_NOTE_REPAIR986/ROOT_ADJUDICATION.json",
-    "MEDIA_STATUS989/ROOT_ADJUDICATION.json",
-    "WEB_NAMED993/ROOT_ADJUDICATION.json",
-    "WEB_TAIL997/ROOT_ADJUDICATION.json",
-    "WEB_TAIL1000/ROOT_ADJUDICATION.json",
-    "WEB_TAIL1002/ROOT_ADJUDICATION.json",
-    "KNOWLEDGE998/ROOT_ADJUDICATION.json",
-    "DIALOGUE1004/ROOT_ADJUDICATION.json",
-    "DEICTIC1009/ROOT_ADJUDICATION.json",
-    "DEICTIC1012/ROOT_ADJUDICATION.json",
-    "WEB_DIAGNOSTIC1010/ROOT_ADJUDICATION.json",
-    "AUDIO1016/ROOT_ADJUDICATION.json",
-    "AUDIO1020/ROOT_ADJUDICATION.json",
-    "AGENDA1021/ROOT_ADJUDICATION.json",
-    "SYSTEM1022/ROOT_ADJUDICATION.json",
-    "KNOWLEDGE1025/ROOT_PARTIAL_CREDIT.json",
-    "KNOWLEDGE1025/ADJUDICATION_STATUS.json"
+    "KNOWLEDGE1025/ROOT_ADJUDICATION.json",
+    "SYSTEM1028/ROOT_ADJUDICATION.json"
   ],
-  "equal_maximum_open_next_selection": "Relevo en PC destino (REDPC), rama al día en ed305c38. 1025 cerrada en cobertura: su crédito es 3 y no puede aumentar, así que los contadores de esta tabla no cambian. La siguiente tanda no puede sellarse todavía: los literales exactos viven en el registro privado C03-survey-requirements336-private/requirements.jsonl, que no está en este PC. Ver OPUS5_DESTINO/SOLICITUD_TRASLADO.md. Al recibirlo, elegir por mayor masa abierta ejecutable, registrando por qué se aparcan las superiores.",
-  "counts_unchanged_note": "Ninguna adjudicación del relevo altera covered/open/not_applicable. No se escribió verification_status porque el registro privado no está en el destino.",
   "latest_product_run": {
-    "batch": 1025,
-    "executed": 25,
-    "adjudication": "coverage_final_causes_partial",
-    "adjudicated_cases": 14,
-    "passed": 5,
-    "failed": 9,
-    "pending_terminal_text": 11,
-    "pending_that_could_change_coverage": 0,
-    "coverage_added": 3,
-    "coverage_final": true,
+    "batch": 1028,
+    "executed": 31,
+    "passed": 14,
+    "failed": 17,
+    "coverage_added": 4,
     "exit_code": 0,
-    "rerun_forbidden": true,
-    "detail": "KNOWLEDGE1025/ADJUDICATION_STATUS.json"
-  }
+    "violations": 0,
+    "seconds": 154.797,
+    "gpu_peak_mib": 3494.9296875,
+    "ram_peak_mib": 2587.3671875,
+    "adjudication": "artifacts/comprobaciones/C03/SYSTEM1028/ROOT_ADJUDICATION.json"
+  },
+  "equal_maximum_open_next_selection": "system_hardware_status queda con 15 abiertos, de los que 5 no tienen operacion en el catalogo (resolucion, Hz, monitores, version de Python) y 10 fallaron con causa en 1028. La categoria no puede cerrarse sin reparar esas causas ni sin infraestructura de video, que 4 casos no justifican. La siguiente eleccion se hace por mayor masa abierta ejecutable, y las causas repetidas de 1028 —imposibilidad falsa, aclaracion innecesaria y mitad temporal descartada en peticiones compuestas— son reparaciones transversales que afectan a varias categorias.",
+  "tests_run": false,
+  "tests_omitted_by_owner": "Suites duenas, Fast y Full omitidas por instruccion explicita. Omitidas, no verdes."
 }

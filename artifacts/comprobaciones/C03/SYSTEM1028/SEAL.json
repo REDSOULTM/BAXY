@@ -1,0 +1,57 @@
+{
+  "schema": "system1028-directed-material-seal-v1",
+  "execution_authorized_by_proposal": false,
+  "runner_delivered": true,
+  "coverage_credit": 0,
+  "candidate": {
+    "commit": null,
+    "status": "current_source_binding_pending_root",
+    "tests_run": false,
+    "execution_authorized_by_proposal": false
+  },
+  "historical_case_ids": [
+    "H0532",
+    "H0539",
+    "H0655",
+    "H0146",
+    "H0442",
+    "H0219",
+    "H0607",
+    "H0508",
+    "H0076",
+    "H0037",
+    "H0114",
+    "H0106",
+    "H0589",
+    "H0422"
+  ],
+  "registry_sha256": "113e3b30a59395910996b7f4e4b31bb59f46a3276e68e2fda20024f52aa825cd",
+  "read_source_pins": {
+    "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\artifacts\\comprobaciones\\C03\\SURVEY_TAXONOMY846.json": "8e2764eaac0cf305c398979457d8ef604492efef02a6cccac37c7501d0c11c7b",
+    "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\artifacts\\comprobaciones\\C03\\SYSTEM1022\\ROOT_ADJUDICATION.json": "f3df6a0aa9f101fdfc4dbf499e406bea8428245673364950826168564778cbbb",
+    "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\src\\Baxy.Kernel\\Operations\\ProductCatalog.cs": "22362a7ae7b62b6b28972ffdbe974e6a3964a37f626e3dd990d4c046feddc938"
+  },
+  "files": {
+    "PLAN.md": "7266f31045bb1a33530e3335e363328799e0343f34ec9c7c957cab1b13d0f9ea",
+    "panel.json": "fb4104520f20ad6f2e83bf3d6b1dc9e7d7bfb69810048b66f9903b4074e1ceb3",
+    "turns.jsonl": "bf2077b1a1066764ff6fe0777aca5515da505ab2409f41492ba320712ea44076",
+    "case-map.json": "323dc52922d986554cbee9008638930bdcc744db3444891eb54f7bda2b8e5627",
+    "requirements-snapshot.jsonl": "113e3b30a59395910996b7f4e4b31bb59f46a3276e68e2fda20024f52aa825cd"
+  },
+  "counts": {
+    "cases": 31,
+    "historical_positive_open": 14,
+    "failed_variant_reexecutions": 0,
+    "original_development_variants": 12,
+    "boundaries": 5,
+    "wire_lines": 62,
+    "controls": 31,
+    "session_new": 31,
+    "conditional_positive_commands": 0,
+    "normal_diagnostic_commands": 31,
+    "maximum_turn_admissions": 31,
+    "maximum_reportable_terminals": 31,
+    "case_final_terminals": 31,
+    "maximum_internal_confirmations": 0
+  }
+}
