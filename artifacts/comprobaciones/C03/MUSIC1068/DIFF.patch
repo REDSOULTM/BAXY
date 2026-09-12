@@ -1,0 +1,35 @@
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -11958,12 +11958,18 @@ def _review_media_and_email_effects(
+             priority=1,
+         )
+     if (
+         not any(entry[2] == "media.control" for entry in matches)
+-        and _head_is(head, r"(?:para|pausa|pausar|pause|deten|detener|stop)")
++        and (
++            _head_is(head, r"(?:para|pausa|pausar|pause|deten|detener|stop)")
++            or (
++                _head_is(head, r"(?:deja|dejar)")
++                and _has(folded, r"\b(?:deja|dejar)\s+en\s+pausa\b")
++            )
++        )
+         and _has(
+             folded,
+-            r"\b(?:sonando|playing|reproduciendo|"
++            r"\b(?:sonando|playing|reproduciendo|cancion|song|pista|track|"
+             r"lo\s+que\s+esta\s+sonando)\b",
+         )
+         and not _has(
+             folded,
+@@ -11973,9 +11979,10 @@ def _review_media_and_email_effects(
+         _append(
+             matches,
+             folded,
+             "media.control",
+-            r"\b(?:para|pausa|pausar|pause|deten|detener|stop)\b",
++            r"\b(?:deja\s+en\s+pausa|dejar\s+en\s+pausa|"
++            r"para|pausa|pausar|pause|deten|detener|stop)\b",
+         )
+     if (
+         not any(entry[2] == "media.control" for entry in matches)
+         and _head_is(head, r"(?:pasa|pasar|skip|siguiente|next)")

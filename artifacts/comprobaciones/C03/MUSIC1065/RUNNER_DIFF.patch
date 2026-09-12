@@ -1,0 +1,84 @@
+--- C03-music1061-proposal/runner.py
++++ C03-music1065-proposal/runner.py
+@@ -1,4 +1,4 @@
+-"""External music1061 launcher; explicit preparation and measured run, never adjudication.
++"""External music1065 launcher; explicit preparation and measured run, never adjudication.
+ 
+ Inherits main.py/conductor and resource samplers from batch824. Do not run on import.
+ """
+@@ -16,20 +16,20 @@
+ 
+ ROOT = Path('D:/Perfil/Escritorio/ETC/Programacion/BAXY DEFINITIVO')
+ BASE = Path('C:/Users/usuario/AppData/Local/BAXY')
+-PRIVATE = BASE / 'C03-music1061-proposal/private'
+-PANEL = BASE / 'C03-music1061-proposal'
++PRIVATE = BASE / 'C03-music1065-proposal/private'
++PANEL = BASE / 'C03-music1065-proposal'
+ TRANSPORT = PANEL
+ # Each run binds local RUN/PUBLIC to one selected case; never launch a loop.
+-PROFILE = BASE / 'C03-music1061-profile'
++PROFILE = BASE / 'C03-music1065-profile'
+ RESULTS = PANEL / 'results'
+ MANIFEST = BASE.parent / 'BAXYRuntime/mind-runtime-v1.json'
+ BASELINE_HEAD = '291b922de8c604f03d61acbdb88d5e625b465728'
+ MANIFEST_SHA = '13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed'
+ MODEL_SHA = '3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597'
+ BACKEND_SHA = '38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e'
+-SEAL_SHA = '26ef73075f8366f8a6a556d648d5f133905d56841d410f6222e33ba378df3eb1'
++SEAL_SHA = '4d91142d53add320c6c3b49855c6e7df5213f9052e7c86a5b9d5033bfff08fc1'
+ REGISTRY = BASE / 'C03-survey-requirements336-private/requirements.jsonl'
+-REGISTRY_SEALED_SHA = '0e7f8da607cdbe1b5bbb4c379c4a31076567230e6355a2a6050fa577055f841c'
++REGISTRY_SEALED_SHA = '14a2932b0312f3a8104f2ffb3d205205ebba399253cb3515923629405eff6262'
+ PREPARATION = PRIVATE / 'PREPARATION.json'
+ LIMITS = dict(initial_free_ram_mib=4000, minimum_free_ram_mib=768,
+               gpu_stop_mib=3800, wall_seconds=900, per_turn_timeout_ms=120000)
+@@ -109,18 +109,18 @@
+                               cwd=ROOT, capture_output=True, creationflags=FLAGS, check=False)
+     require(ancestor.returncode == 0, 'candidate outside inherited product lineage')
+     require((ROOT / 'Baxy.slnx').is_file(), 'wrong repository')
+-    require(sha(PANEL / 'SEAL.json') == seal_sha == SEAL_SHA, 'wrong music1061 panel seal')
++    require(sha(PANEL / 'SEAL.json') == seal_sha == SEAL_SHA, 'wrong music1065 panel seal')
+     seal = read(PANEL / 'SEAL.json')
+-    require(set(seal['files']) == {'panel.json', 'turns.jsonl', 'case-map.json', 'PLAN.md', 'requirements-snapshot.jsonl'}, 'panel file map')
++    require(set(seal['files']) == {'panel.json', 'turns.jsonl', 'case-map.json', 'PLAN.md', 'PLAN_RUNNER.md', 'requirements-snapshot.jsonl'}, 'panel file map')
+     require(check_pins({str(PANEL / name): digest for name, digest in seal['files'].items()}), 'panel material changed')
+-    require(seal['schema'] == 'music1061-conditional-data-seal-v1'
++    require(seal['schema'] == 'music1065-conditional-data-seal-v1'
+             and seal['candidate'] is None and seal['fixture'] is None and seal['coverage_credit'] == 0
+             and seal['execution_ready'] is False and seal['execution_authorized'] is False
+             and seal['transport_shape_frozen'] is True, 'data seal is not candidate authorization')
+     require(seal['registry_sha256'] == REGISTRY_SEALED_SHA, 'registry provenance changed')
+     require(check_pins(seal['read_source_pins']), 'historical panel evidence changed')
+     panel, case_map = read(PANEL / 'panel.json'), read(PANEL / 'case-map.json')
+-    require(case_map['schema'] == 'music1061-conditional-case-map-v1'
++    require(case_map['schema'] == 'music1065-conditional-case-map-v1'
+             and case_map['candidate'] is None and case_map['fixture'] is None
+             and case_map['coverage_credit'] == 0 and case_map['execution_ready'] is False
+             and case_map['execution_authorized'] is False, 'case-map authority changed')
+@@ -173,12 +173,16 @@
+             require(position['case_final_index'] == (index if offset else None), 'final/control mapping')
+             if not offset: require(position['counts_as_variant_or_credit'] is False, 'control is not credit')
+     require(case_map['reviewed_case_ids'] == [] and case_map['ordinary_case_ids'] == [case['case_id'] for case in panel], 'reviewed/ordinary counts')
++    provenance = case_map['execution_provenance']
++    require(provenance['counts'] == seal['execution_provenance_counts'] == {'failed_reexecutions': 2, 'not_previously_executed': 21}, 'execution provenance counts')
++    require([item['case_id'] for item in provenance['cases']] == [case['case_id'] for case in panel]
++            and [item['execution_status'] for item in provenance['cases']] == ['failed_reexecution'] * 2 + ['not_previously_executed'] * 21, 'execution provenance order')
+ 
+     candidate_path = Path(candidate_path).resolve()
+     require(sha(candidate_path) == candidate_sha, 'root manifest SHA mismatch')
+     candidate = read(candidate_path)
+     require(sha(REGISTRY) == candidate['registry_current_sha256'], 'root current registry pin mismatch')
+-    require(candidate['schema'] == 'c03-music1061-root-manifest-v1'
++    require(candidate['schema'] == 'c03-music1065-root-manifest-v1'
+             and candidate['head'] == expected_head, 'wrong root manifest/candidate')
+     require(candidate['tests_run'] is False and candidate['validation_policy'] == 'owner_directed_no_tests'
+             and isinstance(candidate['owner_instruction'], str) and candidate['owner_instruction'].strip(),
+@@ -279,7 +283,7 @@
+     fixture_path = Path(fixture_path).resolve()
+     require(sha(fixture_path) == fixture_sha, 'root fixture receipt pin mismatch')
+     fixture = read(fixture_path)
+-    require(fixture['schema'] == 'music1061-root-fixture-v1'
++    require(fixture['schema'] == 'music1065-root-fixture-v1'
+             and fixture['case_index'] == case_index and fixture['case_id'] == case_id
+             and fixture['head'] == expected_head and fixture['candidate_manifest_sha256'] == candidate_sha
+             and fixture['panel_seal_sha256'] == seal_sha and fixture['root_verified'] is True,

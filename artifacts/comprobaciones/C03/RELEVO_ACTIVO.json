@@ -620,5 +620,43 @@
     },
     "freeze_ended_at": "2026-09-12T16:33:18.245252+00:00",
     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
+  },
+  "updatedAtUtc": "2026-09-12T17:04:26.664909+00:00",
+  "currentContinuation1065": {
+    "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
+    "quality": {
+      "passed": 1,
+      "failed": 3,
+      "executed": 4,
+      "not_executed": 19,
+      "sealed_total": 23
+    },
+    "new_credits": 0,
+    "registry_sha256": "316e0d52b7d5ff42b6b60d637c7769e4b6f8fc558a82f765ddca034de1c15209",
+    "survey": 184,
+    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\MUSIC1065\\ROOT_ADJUDICATION.json",
+    "resources": {
+      "seconds_sum": 97.36000000000786,
+      "gpu_peak_mib": 3497.55859375,
+      "ram_peak_mib": 1614.359375
+    },
+    "freeze_ended_at": "2026-09-12T17:04:26.664909+00:00",
+    "next": "MUSIC1069 on integrated MUSIC1067/1068. Prioritize pause literal and two original ES/EN variants, then resume; preserve original remaining objects. BUILD1064 successful and reuse pending identical .NET fingerprint and binaries. CLOSE1066 ready for named-window closure; MESSAGING1062 sealed but WhatsApp is open, no sending authorized by survey."
+  },
+  "currentBuild1064": {
+    "utc": "2026-09-12T16:40:03.377115+00:00",
+    "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
+    "build_exit": 0,
+    "shutdown_exit": 0,
+    "logs": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-repairs1064-build-retry1\\shutdown.log": "b7964357198bc541e6acce911dad8604545e4d2b7890693469a998ff070f24fe"
+    },
+    "source_fingerprint": "9b56d62368313fc62aaf8a3bee99dd9984dec761e0d14df949e9694d73a19967",
+    "app_sha256": "9de85b60450dc1e0415d7442804edf6fade0ab3edccecff21434949a52fafed0",
+    "published_core_sha256": "16d3990195e35b53816b74336facba53a6a7ecfb3213f96d5f4d2e999d29b0bc",
+    "effective_core_sha256": "16d3990195e35b53816b74336facba53a6a7ecfb3213f96d5f4d2e999d29b0bc",
+    "tests_run": false,
+    "gpu_started": false,
+    "build_method": "main.compile_if_needed(force=False); copy published Core to effective; SDK build-server shutdown"
   }
 }

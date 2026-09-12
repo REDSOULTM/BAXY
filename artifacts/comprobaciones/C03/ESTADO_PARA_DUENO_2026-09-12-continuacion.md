@@ -1,3 +1,25 @@
+Las correcciones de reconocimiento de pausa y reanudación están integradas para la siguiente medición. El literal de pausa ya produjo el estado y una respuesta fiel; faltan sus dos variantes para dar crédito. Esta tanda parcial termina con 1 aprobado, 3 fallidos y 19 sin ejecutar, sin repetirlos todos por los fallos.
+
+Pico VRAM: 3497.56 MiB; pico RAM: 1614.36 MiB, separados frente a 4096 MiB. Encuesta 184/742, 558 abiertos, 0 no aplican; al menos 58 primeras altas en 24 h; categorías cerradas 0/35; C03 formal 3/11. Sin estimación de cierre defendible. La compilación necesaria de los cambios anteriores terminó con código 0 y servidores cerrados; suites, Fast y Full omitidos por orden del dueño, no verdes.
+
+## MUSIC1065 — estado vigente 2026-09-12T16:59:02.711472+00:00
+
+Parcial: 1 aprobados, 3 fallidos, 19 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 184/742 | 558 | 0 | >=58 | 0/35 |
+
+Procedencia de primeras altas: Al menos 58 primeras altas verificadas hoy: 28 de Kiro importadas y 30 de la continuación; las revalidaciones no se cuentan.
+
+Siguiente acción: Integrar MUSIC1067 y MUSIC1068, revisados por raíz, después de cerrar esta tanda parcial. Ejecutar MUSIC1069 con pausa y reanudación primero, sus variantes pertinentes y los límites. No reconstruir el avance natural del reproductor como efecto de BAXY.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1065/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1065 precedente. -->
+
 # Actualización MUSIC1061
 
 La música propia ya funciona como preparación real: tres composiciones originales, cola visible y sesión Windows SMTC comprobada. BAXY pausó «Aurora de cobre», pero no publicó respuesta. Su recibo llamó Spotify al reproductor de Windows. «Reanudá la música» no llegó al control multimedia. Por ambos defectos, los dos literales siguen abiertos; 21 casos sellados quedaron sin ejecutar.

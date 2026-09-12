@@ -1,0 +1,20 @@
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -7069,7 +7069,7 @@
+     r"restaura|escribe|escribi|type|selecciona|select|copia|copiame|copy|"
+     r"edita|edit|convierte|convert|transforma|arrastra|drag|make|navega|navegar|"
+     r"navigate|ve|go|ir|anda|entra|entrar|recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|"
+-    r"play|pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
++    r"play|reanuda|reanudar|resume|pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
+     r"consulta|consultar|comprueba|comprobar|checkea|averigua|averiguar|"
+     r"find\s+out|inspect|inspecciona|give|prepara|prepare|resolve|"
+     r"envia|enviar|enviale|enviales|manda|mandar|mandale|mandales|"
+@@ -8006,7 +8006,7 @@
+         r"elige|elegir|choose|transforma|arrastra|drag|make|"
+         r"navega|navegar|navigate|ve|go|clic|click|"
+         r"recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|play|tune|"
+-        r"pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
++        r"reanuda|reanudar|resume|pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
+         r"consulta|consultar|comprueba|comprobar|checkea|chequea|averigua|averiguar|"
+         r"(?:fijate|fijese)(?=\s+si\b)|"
+         r"find\s+out|inspect|inspecciona|give|prepara|prepare|resolve|"

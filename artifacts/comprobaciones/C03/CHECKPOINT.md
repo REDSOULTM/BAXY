@@ -1,3 +1,21 @@
+## MUSIC1065 — estado vigente 2026-09-12T16:59:02.711472+00:00
+
+Parcial: 1 aprobados, 3 fallidos, 19 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 184/742 | 558 | 0 | >=58 | 0/35 |
+
+Procedencia de primeras altas: Al menos 58 primeras altas verificadas hoy: 28 de Kiro importadas y 30 de la continuación; las revalidaciones no se cuentan.
+
+Siguiente acción: Integrar MUSIC1067 y MUSIC1068, revisados por raíz, después de cerrar esta tanda parcial. Ejecutar MUSIC1069 con pausa y reanudación primero, sus variantes pertinentes y los límites. No reconstruir el avance natural del reproductor como efecto de BAXY.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1065/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1065 precedente. -->
+
 # C03 — 184 cubiertos; ejecución continua
 
 **184/742 cubiertos,558 abiertos,0 no aplican;0/35categorías cerradas.**
@@ -42,6 +60,10 @@ La música propia ya funciona como preparación real: tres composiciones origina
 Encuesta: **184/742 cubiertos, 558 abiertos, 0 no aplican**. Al menos 58 primeras altas verificadas en las últimas 24 h; categorías cerradas 0/35; C03 formal 3/11. Esta tanda suma cero. Se reparan la reanudación, la identidad del reproductor en el recibo y la composición de la respuesta antes de continuar sus controles. Mensajería1062 se prepara en paralelo.
 
 Pico VRAM 3497.56 MiB; pico RAM 1699.41 MiB. Ambos segmentos terminaron con código 0, archivos sellados intactos y sin guardas activadas. La música propia queda pausada; no se reprodujo el vídeo restaurado del usuario. Suites, Fast y Full omitidos por orden del dueño, no verdes. C03 continúa en curso; sin fecha de cierre demostrable. Registro `14a2932b0312f3a8104f2ffb3d205205ebba399253cb3515923629405eff6262`.
+
+Las correcciones de reconocimiento de pausa y reanudación están integradas para la siguiente medición. El literal de pausa ya produjo el estado y una respuesta fiel; faltan sus dos variantes para dar crédito. Esta tanda parcial termina con 1 aprobado, 3 fallidos y 19 sin ejecutar, sin repetirlos todos por los fallos.
+
+Pico VRAM: 3497.56 MiB; pico RAM: 1614.36 MiB, separados frente a 4096 MiB. Encuesta 184/742, 558 abiertos, 0 no aplican; al menos 58 primeras altas en 24 h; categorías cerradas 0/35; C03 formal 3/11. Sin estimación de cierre defendible. La compilación necesaria de los cambios anteriores terminó con código 0 y servidores cerrados; suites, Fast y Full omitidos por orden del dueño, no verdes.
 
 ## Historial previo — sus cifras y siguientes pasos son históricos
 

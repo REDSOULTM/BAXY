@@ -1,0 +1,134 @@
+{
+  "schema": "music1065-root-adjudication-v1",
+  "decided_at_utc": "2026-09-12T16:59:02.711472+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
+  "decisions_sha256": "3348d7fc0a750ab0f7fdec18fb9f8212811877cf55ed6d373ee689966bae8cb5",
+  "passed": 1,
+  "failed": 3,
+  "unexecuted": 19,
+  "credits": [],
+  "counters": {
+    "covered": 184,
+    "open": 558,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_before": 58,
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_evidence_note": "Al menos 58 primeras altas verificadas hoy: 28 de Kiro importadas y 30 de la continuación; las revalidaciones no se cuentan.",
+    "categories_closed_after": 0,
+    "categories_total": 35,
+    "first_covered_last24h_after": 58
+  },
+  "resources": {
+    "seconds_sum": 97.36000000000786,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1614.359375
+  },
+  "cases": [
+    {
+      "index": 1,
+      "case_id": "H0110",
+      "verdict": "failed",
+      "reason": "No reanudó la música y respondió que no podía hacerlo. El registro del segmento no contiene media.control; el estado observado permaneció pausado.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Aurora de cobre pausada antes y después; las dos puertas de solicitud directa excluyen reanuda antes del lector existente.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "75b1c498-45eb-4cb5-843a-a25672b99ae7",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 0,
+      "case_id": "H0046",
+      "verdict": "passed",
+      "reason": "Pausó la reproducción verificada y respondió con el título y artista reales. El literal pasa, pero sigue open porque las dos variantes pertinentes ejecutadas fallaron.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Aurora de cobre pasó de playing a paused con media.control verificado y sourceAppUserModelId del reproductor observado. Respuesta final: La música de \"Aurora de cobre\" de Original BAXY preparation composition está pausada.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "ff04969a-2d2b-49c4-99c1-c68359432ef0",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        },
+        {
+          "invocation_id": "510b1ba1-5f93-48aa-b867-ac62b74b809a",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "case_id": "music1037-dev-02",
+      "verdict": "failed",
+      "reason": "No pausó la pista y respondió I can't pause tracks on this PC. El segmento no contiene media.control.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Rio de cristal estaba playing antes. La lectura posterior demorada mostró Sendero azul playing: avance natural de la cola, no efecto atribuido a BAXY.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "3fe116ff-2b26-4861-a6b8-2295e434ba13",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "case_id": "music1037-dev-01",
+      "verdict": "failed",
+      "reason": "No ejecutó media.control y afirmó que pausar lo que sonaba no formaba parte de sus funciones.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Sendero azul estaba playing antes. La lectura posterior mostró Aurora de cobre paused en 0:00; es compatible con fin normal de cola y reinicio (inferencia), no una pausa verificada de BAXY.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "81a11554-c92f-4984-811c-3beea2e87db1",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22
+  ],
+  "next_action": "Integrar MUSIC1067 y MUSIC1068, revisados por raíz, después de cerrar esta tanda parcial. Ejecutar MUSIC1069 con pausa y reanudación primero, sus variantes pertinentes y los límites. No reconstruir el avance natural del reproductor como efecto de BAXY.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

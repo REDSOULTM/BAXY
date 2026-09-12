@@ -7069,7 +7069,7 @@ _COVERAGE_ACTION_HEAD = (
     r"restaura|escribe|escribi|type|selecciona|select|copia|copiame|copy|"
     r"edita|edit|convierte|convert|transforma|arrastra|drag|make|navega|navegar|"
     r"navigate|ve|go|ir|anda|entra|entrar|recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|"
-    r"play|pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
+    r"play|reanuda|reanudar|resume|pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
     r"consulta|consultar|comprueba|comprobar|checkea|averigua|averiguar|"
     r"find\s+out|inspect|inspecciona|give|prepara|prepare|resolve|"
     r"envia|enviar|enviale|enviales|manda|mandar|mandale|mandales|"
@@ -8006,7 +8006,7 @@ def _is_direct_request(text: str) -> bool:
         r"elige|elegir|choose|transforma|arrastra|drag|make|"
         r"navega|navegar|navigate|ve|go|clic|click|"
         r"recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|play|tune|"
-        r"pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
+        r"reanuda|reanudar|resume|pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
         r"consulta|consultar|comprueba|comprobar|checkea|chequea|averigua|averiguar|"
         r"(?:fijate|fijese)(?=\s+si\b)|"
         r"find\s+out|inspect|inspecciona|give|prepara|prepare|resolve|"
@@ -11959,10 +11959,16 @@ def _review_media_and_email_effects(
         )
     if (
         not any(entry[2] == "media.control" for entry in matches)
-        and _head_is(head, r"(?:para|pausa|pausar|pause|deten|detener|stop)")
+        and (
+            _head_is(head, r"(?:para|pausa|pausar|pause|deten|detener|stop)")
+            or (
+                _head_is(head, r"(?:deja|dejar)")
+                and _has(folded, r"\b(?:deja|dejar)\s+en\s+pausa\b")
+            )
+        )
         and _has(
             folded,
-            r"\b(?:sonando|playing|reproduciendo|"
+            r"\b(?:sonando|playing|reproduciendo|cancion|song|pista|track|"
             r"lo\s+que\s+esta\s+sonando)\b",
         )
         and not _has(
@@ -11974,7 +11980,8 @@ def _review_media_and_email_effects(
             matches,
             folded,
             "media.control",
-            r"\b(?:para|pausa|pausar|pause|deten|detener|stop)\b",
+            r"\b(?:deja\s+en\s+pausa|dejar\s+en\s+pausa|"
+            r"para|pausa|pausar|pause|deten|detener|stop)\b",
         )
     if (
         not any(entry[2] == "media.control" for entry in matches)
