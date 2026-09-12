@@ -1,0 +1,673 @@
+{
+  "schema": "c03-knowledge1025-root-adjudication-v1",
+  "utc": "2026-09-12T03:04:50.534290+00:00",
+  "adjudicator": "root (Opus 5, maquina original REDPC)",
+  "source_commit": "20dab7edcd34ce87eff2d176613bb5ae4e968e1b",
+  "session_id": 36967,
+  "collection": "ad4693",
+  "candidate_manifest_sha256": "5bf984a90c83e15fd74b674e6a4a60f3d6643ddf6034eeeb9268def92522b2d3",
+  "evidence": {
+    "terminals": "C03-knowledge1025-private/run/capture/events.jsonl (25 terminal records, verified against TRANSFER_MANIFEST.json)",
+    "panel": "C03-knowledge1025-proposal/panel.json",
+    "compose_audit": "C03-knowledge1025-private/run/compose-audit.jsonl",
+    "turn_audit": "C03-knowledge1025-private/run/turn-audit.jsonl"
+  },
+  "rerun": false,
+  "tests_run": false,
+  "totals": {
+    "cases": 25,
+    "pass": 13,
+    "fail": 12
+  },
+  "coverage_added_by_this_adjudication": 0,
+  "coverage_total_for_batch": 3,
+  "coverage_total_note": "Los 3 creditos H0172/H0214/H0726 se escribieron antes de la pausa y no se suman otra vez. Esta adjudicacion no anade ninguno.",
+  "group_tallies": {
+    "concept_explanation": {
+      "literals": [
+        [
+          "H0172",
+          "pass"
+        ],
+        [
+          "H0214",
+          "pass"
+        ],
+        [
+          "H0726",
+          "pass"
+        ]
+      ],
+      "variants": [
+        [
+          "knowledge1025-dev-01",
+          "pass"
+        ],
+        [
+          "knowledge1025-dev-02",
+          "pass"
+        ],
+        [
+          "knowledge1025-dev-03",
+          "fail"
+        ]
+      ],
+      "boundaries": []
+    },
+    "game_description": {
+      "literals": [
+        [
+          "H0236",
+          "pass"
+        ],
+        [
+          "H0278",
+          "fail"
+        ],
+        [
+          "H0366",
+          "fail"
+        ]
+      ],
+      "variants": [
+        [
+          "knowledge1025-dev-04",
+          "fail"
+        ],
+        [
+          "knowledge1025-dev-05",
+          "fail"
+        ],
+        [
+          "knowledge1025-dev-06",
+          "pass"
+        ]
+      ],
+      "boundaries": []
+    },
+    "fiction_comparison": {
+      "literals": [
+        [
+          "H0239",
+          "pass"
+        ],
+        [
+          "H0582",
+          "pass"
+        ]
+      ],
+      "variants": [
+        [
+          "knowledge1025-dev-07",
+          "pass"
+        ],
+        [
+          "knowledge1025-dev-08",
+          "fail"
+        ]
+      ],
+      "boundaries": []
+    },
+    "missing_referent": {
+      "literals": [
+        [
+          "H0424",
+          "fail"
+        ],
+        [
+          "H0645",
+          "fail"
+        ]
+      ],
+      "variants": [
+        [
+          "knowledge1025-dev-09",
+          "pass"
+        ],
+        [
+          "knowledge1025-dev-10",
+          "fail"
+        ]
+      ],
+      "boundaries": []
+    },
+    "boundary": {
+      "literals": [],
+      "variants": [],
+      "boundaries": [
+        [
+          "knowledge1025-boundary-01",
+          "pass"
+        ],
+        [
+          "knowledge1025-boundary-02",
+          "fail"
+        ],
+        [
+          "knowledge1025-boundary-03",
+          "fail"
+        ],
+        [
+          "knowledge1025-boundary-04",
+          "pass"
+        ],
+        [
+          "knowledge1025-boundary-05",
+          "fail"
+        ]
+      ]
+    }
+  },
+  "pair_rule_outcomes": {
+    "concept_explanation": "3 literales pasan; variantes dev-01 y dev-02 pasan, dev-03 falla. Dos variantes pertinentes en pie: los tres literales quedan covered, ya escritos.",
+    "game_description": "H0236 y dev-06 pasan; H0278, H0366, dev-04 y dev-05 fallan. Solo una variante en pie de tres, por debajo de dos: H0236 no puede acreditarse en esta tanda aunque su literal cumpla.",
+    "fiction_comparison": "H0239, H0582 y dev-07 pasan; dev-08 falla. Solo una variante en pie de dos: H0239 y H0582 no pueden acreditarse en esta tanda aunque sus literales cumplan.",
+    "missing_referent": "H0424, H0645 y dev-10 fallan; dev-09 pasa. Los dos literales fallan: sin credito posible.",
+    "boundary": "2 de 5 controles pasan. Los limites no acreditan encuesta en ningun caso."
+  },
+  "previous_tandas_checked_for_pertinent_variants": "KNOWLEDGE998/ROOT_ADJUDICATION.json es la unica tanda anterior de knowledge_reasoning con adjudicacion versionada: cubrio multiplicacion entera, conversion de longitud, conversion de temperatura, sustancia/mezcla y estilo humoristico. Ninguna variante suya es pertinente a descripcion de juegos, comparacion ficcional ni referente ausente.",
+  "causes": {
+    "invented_work_facts": [
+      "H0278",
+      "H0366",
+      "knowledge1025-dev-04"
+    ],
+    "referent_invented_as_own_identity": [
+      "H0424",
+      "H0645",
+      "knowledge1025-dev-10"
+    ],
+    "composition_failed_retry_exhausted": [
+      "knowledge1025-dev-05",
+      "knowledge1025-dev-08"
+    ],
+    "runtime_failure_composed_with_content": [
+      "knowledge1025-dev-03",
+      "knowledge1025-boundary-05"
+    ],
+    "deferred_instruction_executed": [
+      "knowledge1025-boundary-03"
+    ],
+    "quotation_explained_incorrectly": [
+      "knowledge1025-boundary-02"
+    ]
+  },
+  "deterministic_route_observation": "Ningun turno de la tanda uso deictic_referent_clarification: los decision_path observados son explicit_conversation 22, model 24, explicit_effects 2 y 6 nulos. La ruta llm.clarify_missing_referent existe y esta sana; no se alcanza. La unica aclaracion de referente que hubo, dev-09, la produjo la prosa del modelo por su cuenta, sin garantia. Ver KNOWLEDGE1025/DIAGNOSIS_REFERENTE_AUSENTE.md.",
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0172",
+      "kind": "historical_literal",
+      "group": "concept_explanation",
+      "literal": "qué es un agujero negro",
+      "criterion": "Explain the explicitly named concept accurately and accessibly, with a coherent definition and relevant mechanism/example. No invented facts, unrequested current news, PC inventory or execution. The answer must actually explain, not just ask a preference or offer to explain later.",
+      "verdict": "pass",
+      "reason": "Definicion correcta: horizonte del que nada escapa y colapso estelar como mecanismo. Explica de verdad, sin inventar.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": true,
+      "terminal": {
+        "kind": "published_final",
+        "final": "Un agujero negro es una región del espacio donde la gravedad es tan intensa que nada, ni siquiera la luz, puede escapar de ella. Se forma cuando una estrella masiva colapsa al final de su vida.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 1,
+      "case_id": "H0214",
+      "kind": "historical_literal",
+      "group": "concept_explanation",
+      "literal": "qué es una GPU",
+      "criterion": "Explain the explicitly named concept accurately and accessibly, with a coherent definition and relevant mechanism/example. No invented facts, unrequested current news, PC inventory or execution. The answer must actually explain, not just ask a preference or offer to explain later.",
+      "verdict": "pass",
+      "reason": "Identifica la GPU y su funcion grafica con ejemplos pertinentes. Explica de verdad.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": true,
+      "terminal": {
+        "kind": "published_final",
+        "final": "Una GPU, o Unidad de Procesamiento Gráfico, es una pieza de hardware que procesa y renderiza imágenes, videos y gráficos en pantallas, ideal para tareas como juegos, edición de video o renderizado 3D.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 2,
+      "case_id": "H0726",
+      "kind": "historical_literal",
+      "group": "concept_explanation",
+      "literal": "qué es una lista enlazada",
+      "criterion": "Explain the explicitly named concept accurately and accessibly, with a coherent definition and relevant mechanism/example. No invented facts, unrequested current news, PC inventory or execution. The answer must actually explain, not just ask a preference or offer to explain later.",
+      "verdict": "pass",
+      "reason": "Define nodo, enlace al siguiente, coste de insercion/eliminacion y contraste con lista estatica.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": true,
+      "terminal": {
+        "kind": "published_final",
+        "final": "Una lista enlazada es una estructura de datos en la que cada elemento (nodo) contiene un valor y una referencia (enlace) al siguiente elemento de la lista. Es flexible y eficiente para agregar o eliminar elementos, pero requiere más memoria que una lista estática.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 3,
+      "case_id": "H0236",
+      "kind": "historical_literal",
+      "group": "game_description",
+      "literal": "hablame de Mortal Kombat",
+      "criterion": "Give a useful and factually sound description of the named game or series, distinguishing identities where needed. Stable genre/core premise is enough; no invented current release/availability/pricing or launch/install operation. Preserve the requested entity without substituting a similarly named game.",
+      "verdict": "pass",
+      "reason": "Mortal Kombat 1992, juego de lucha uno contra uno, con Liu Kang, Raiden y Shang Tsung: identidad, genero y premisa correctos y utiles. La oferta final de ampliar llega despues de responder, no la sustituye.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "¡Claro! *Mortal Kombat* es un juego de lucha popular lanzado en 1992, conocido por sus combates violentos, efectos visuales impactantes y personajes inspirados en mitos y leyendas. Los jugadores se enfrentan en batallas de estilo \"uno contra uno\", donde cada personaje tiene habilidades únicas, como golpes especiales y movimientos de ataque. La saga también incluye una gran cantidad de historia, como el conflicto entre el bien y el mal, y personajes como Liu Kang, Raiden o Shang Tsung. ¿Quieres que te cuente más sobre algún personaje en particular o sobre una versión específica del juego? 🎮💥",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 4,
+      "case_id": "H0278",
+      "kind": "historical_literal",
+      "group": "game_description",
+      "literal": "Hablame un poco de Marvel vs. Capcom.",
+      "criterion": "Give a useful and factually sound description of the named game or series, distinguishing identities where needed. Stable genre/core premise is enough; no invented current release/availability/pricing or launch/install operation. Preserve the requested entity without substituting a similarly named game.",
+      "verdict": "fail",
+      "reason": "Afirma que Marvel vs. Capcom se lanzo originalmente en 2000. El estreno original fue en arcade CPS-2 en 1998; 2000 corresponde a puertos domesticos. Fecha de lanzamiento inventada sobre la entidad pedida.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "¡Claro! Marvel vs. Capcom es un juego de lucha en el que puedes controlar personajes de Marvel y Capcom, compitiendo en combates dinámicos con movimientos rápidos y combinaciones épicas. Fue lanzado originalmente en 2000 y se ha convertido en una franquicia muy popular por su mezcla de estilos de lucha y sus personajes icónicos. ¿Quieres saber más sobre algún aspecto en particular, como los personajes, las mecánicas o las versiones más recientes?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 5,
+      "case_id": "H0366",
+      "kind": "historical_literal",
+      "group": "game_description",
+      "literal": "Que es doom eternal=",
+      "criterion": "Give a useful and factually sound description of the named game or series, distinguishing identities where needed. Stable genre/core premise is enough; no invented current release/availability/pricing or launch/install operation. Preserve the requested entity without substituting a similarly named game.",
+      "verdict": "fail",
+      "reason": "Tres errores identitarios sobre Doom Eternal: lo atribuye a Bethesda Game Studios (lo desarrollo id Software y lo publico Bethesda Softworks), lo fecha en 2023 (salio el 20 de marzo de 2020) y describe al enemigo como fuerzas alienigenas en vez de demonios. No se acredita por fluidez.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "Doom Eternal es un videojuego de acción y aventura desarrollado por Bethesda Game Studios y lanzado en 2023, donde el jugador controla al personaje Doom, un soldado humano que lucha contra fuerzas alienígenas en un futuro distópico. Es una continuación de la saga Doom, con un enfoque más intenso y de acción directa, y se caracteriza por sus gráficos impresionantes, mecánicas de combate dinámicas y una historia épica.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 6,
+      "case_id": "H0239",
+      "kind": "historical_literal",
+      "group": "fiction_comparison",
+      "literal": "Hablame de superman vs batman, quien gana?",
+      "criterion": "Address the requested fictional matchup with coherent reasoning tied to the named characters, distinguish assumptions/version/preparation from universal canon, and give a useful conditional conclusion without inventing a definitive universal result. No real conflict or product action implied.",
+      "verdict": "pass",
+      "reason": "Separa el supuesto del canon universal: en comics Superman por fuerza, velocidad y vuelo; Batman por inteligencia y estrategia, con conclusion condicional y sin resultado universal inventado. Respuesta breve pero pertinente a los personajes nombrados.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "Si es en el mundo de los cómics, Superman gana por su fuerza, velocidad y habilidades de vuelo, mientras que Batman depende de su inteligencia y estrategia. Pero si es en una batalla de ideas, Batman gana porque sabe cómo pensar fuera de la caja. ¿Quieres que lo veamos desde otro ángulo? 😎",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 7,
+      "case_id": "H0582",
+      "kind": "historical_literal",
+      "group": "fiction_comparison",
+      "literal": "Quien gana en batman vs superman",
+      "criterion": "Address the requested fictional matchup with coherent reasoning tied to the named characters, distinguish assumptions/version/preparation from universal canon, and give a useful conditional conclusion without inventing a definitive universal result. No real conflict or product action implied.",
+      "verdict": "pass",
+      "reason": "Misma conducta que H0239 con orden invertido: ventaja de Superman atada a atributos concretos, dependencia explicita del contexto y sin resultado definitivo inventado.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "En una batalla entre Batman y Superman, Superman generalmente gana por su fuerza, velocidad y habilidades de vuelo, mientras que Batman depende de su inteligencia y equipo. Pero si hay un enfrentamiento en el universo DC, el resultado puede variar según el contexto. ¿Quieres que lo veamos desde una perspectiva más específica?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 8,
+      "case_id": "H0424",
+      "kind": "historical_literal",
+      "group": "missing_referent",
+      "literal": "¿Cuál es su identidad secreta?",
+      "criterion": "With a new independent session and no person/character antecedent, ask whom the user means. Preserve owner_review dependence on context, never invent identity, secret identity or previous conversation. Clarification is the intended behavior, not a historical-negative relabel.",
+      "verdict": "fail",
+      "reason": "Sesion independiente sin antecedente de persona o personaje: el criterio sellado exige preguntar a quien se refiere. Respondio inventando un referente y ademas una identidad secreta propia, «Mi identidad secreta es BAXY». Es el defecto exacto que el panel iba a detectar, no un limite.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "Mi identidad secreta es BAXY, el compañero del PC que te da un toque de spanglish y siempre está listo para ayudarte. 😎 ¿Quieres que te cuente más sobre mí?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 9,
+      "case_id": "H0645",
+      "kind": "historical_literal",
+      "group": "missing_referent",
+      "literal": "¿Quién es de verdad?",
+      "criterion": "With a new independent session and no person/character antecedent, ask whom the user means. Preserve owner_review dependence on context, never invent identity, secret identity or previous conversation. Clarification is the intended behavior, not a historical-negative relabel.",
+      "verdict": "fail",
+      "reason": "Sin antecedente, respondio «Soy BAXY» en vez de preguntar de quien se habla. Referente inventado como identidad propia.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "Soy BAXY, el compañero del PC. ¿Tienes alguna pregunta o necesitas ayuda? 😎",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 10,
+      "case_id": "knowledge1025-dev-01",
+      "kind": "original_development_variant",
+      "group": "concept_explanation",
+      "literal": "Explícame de forma sencilla qué es una pila en programación y para qué sirve.",
+      "criterion": "Explain the explicitly named concept accurately and accessibly, with a coherent definition and relevant mechanism/example. No invented facts, unrequested current news, PC inventory or execution. The answer must actually explain, not just ask a preference or offer to explain later.",
+      "verdict": "pass",
+      "reason": "Analogia de la pila de libros, extraccion por la cima y aplicacion a llamadas y flujo de ejecucion. Explica de verdad.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "Una pila es como una pila de libros: si pones un libro en la cima, para sacarlo tienes que quitar todos los que están encima. En programación, sirve para guardar y recuperar datos en orden, como cuando usas funciones o manejas errores. Es muy útil para hacer llamadas recursivas o gestionar el flujo de ejecución.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 11,
+      "case_id": "knowledge1025-dev-02",
+      "kind": "original_development_variant",
+      "group": "concept_explanation",
+      "literal": "What is a neutron star? Give a short explanation of the basic idea.",
+      "criterion": "Explain the explicitly named concept accurately and accessibly, with a coherent definition and relevant mechanism/example. No invented facts, unrequested current news, PC inventory or execution. The answer must actually explain, not just ask a preference or offer to explain later.",
+      "verdict": "pass",
+      "reason": "Remanente denso de supernova compuesto de neutrones; el orden de magnitud de la cucharadita esta respaldado por material publico de NASA.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "A neutron star is the incredibly dense remnant left after a massive star explodes in a supernova. It's made mostly of neutrons packed together tightly—so dense that a teaspoon of it would weigh more than a billion tons.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 12,
+      "case_id": "knowledge1025-dev-03",
+      "kind": "original_development_variant",
+      "group": "concept_explanation",
+      "literal": "¿Qué significa que un algoritmo sea recursivo? Incluye un ejemplo conceptual.",
+      "criterion": "Explain the explicitly named concept accurately and accessibly, with a coherent definition and relevant mechanism/example. No invented facts, unrequested current news, PC inventory or execution. The answer must actually explain, not just ask a preference or offer to explain later.",
+      "verdict": "fail",
+      "reason": "Turno con fallo de runtime (compose-audit t13: situation kind failure, cause turn_runtime_failure, intent error). El compositor mezclo una definicion parcial con el estado de fallo y publico «no se puede determinar el significado del fallo porque la interpretacion de la solicitud fallo». No entrega el ejemplo conceptual pedido y filtra vocabulario de fallo interno en el texto visible. Ya estaba declarada fallida en ROOT_PARTIAL_CREDIT y sigue fallida.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "Un algoritmo recursivo es aquel que se llama a sí mismo para resolver un problema dividiéndolo en casos más pequeños, pero en esta situación no se puede determinar el significado del fallo porque la interpretación de la solicitud falló.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 13,
+      "case_id": "knowledge1025-dev-04",
+      "kind": "original_development_variant",
+      "group": "game_description",
+      "literal": "Descríbeme la idea principal del primer Portal, sin contarme el final.",
+      "criterion": "Give a useful and factually sound description of the named game or series, distinguishing identities where needed. Stable genre/core premise is enough; no invented current release/availability/pricing or launch/install operation. Preserve the requested entity without substituting a similarly named game.",
+      "verdict": "fail",
+      "reason": "Describe a Chell como «un hombre» cuando es la protagonista, y da como premisa del primer Portal mundos alternativos y dimensiones paralelas. La premisa real es escapar de las instalaciones de Aperture Science resolviendo pruebas con el dispositivo de portales. Personaje y premisa equivocados.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "La idea principal del primer *Portal* es que un hombre llamado Chell se encuentra con un portal misterioso en una sala de laboratorio, que le permite viajar a un mundo alternativo, donde descubre que el universo está compuesto por dimensiones paralelas y que el tiempo y el espacio se comportan de forma extraña, todo mientras se enfrenta a un misterio que va más allá de lo físico.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 14,
+      "case_id": "knowledge1025-dev-05",
+      "kind": "original_development_variant",
+      "group": "game_description",
+      "literal": "What kind of game is the original Tetris, and how does its basic play work?",
+      "criterion": "Give a useful and factually sound description of the named game or series, distinguishing identities where needed. Stable genre/core premise is enough; no invented current release/availability/pricing or launch/install operation. Preserve the requested entity without substituting a similarly named game.",
+      "verdict": "fail",
+      "reason": "composition_failed: no_response;recovery:no_response;retry_exhausted. Agotamiento de reintentos sin respuesta util. Terminal honesto, pero no cumple el criterio.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 15,
+      "case_id": "knowledge1025-dev-06",
+      "kind": "original_development_variant",
+      "group": "game_description",
+      "literal": "Háblame brevemente de Street Fighter II como videojuego.",
+      "criterion": "Give a useful and factually sound description of the named game or series, distinguishing identities where needed. Stable genre/core premise is enough; no invented current release/availability/pricing or launch/install operation. Preserve the requested entity without substituting a similarly named game.",
+      "verdict": "pass",
+      "reason": "Street Fighter II con genero, decada, personajes iconicos y sistema de combate correctos, sin cifras ni versiones inventadas. Queda anotada una imprecision de plataforma: la era que abrio empezo en arcade en 1991 antes de las conversiones a consola. No altera identidad, genero ni premisa.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "Street Fighter II es un clásico de los 90 que marcó el inicio de la era de los juegos de lucha en el PC y consolas, conocido por sus combates rápidos, personajes icónicos como Ryu y Chun-Li, y su sistema de combate intuitivo. Fue uno de los primeros juegos en popularizar el concepto de \"lucha en tiempo real\" y tuvo un gran impacto en el desarrollo de juegos de este género.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 16,
+      "case_id": "knowledge1025-dev-07",
+      "kind": "original_development_variant",
+      "group": "fiction_comparison",
+      "literal": "En una pelea ficticia, ¿cómo compararías las posibilidades de Thor y Hulk sin asumir una versión concreta?",
+      "criterion": "Address the requested fictional matchup with coherent reasoning tied to the named characters, distinguish assumptions/version/preparation from universal canon, and give a useful conditional conclusion without inventing a definitive universal result. No real conflict or product action implied.",
+      "verdict": "pass",
+      "reason": "Compara Thor y Hulk sin fijar version, separa atributos por personaje y cierra con conclusion condicional segun el tipo de combate. Es lo que pedia el criterio.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "En una pelea ficticia, sin versión concreta, el Hulk y Thor son igualmente fuertes en fuerza bruta, pero Thor tiene ventajas en habilidades mágicas, velocidad y acceso a armas como el martillo Mjolnir, mientras que el Hulk tiene mayor resistencia y capacidad de recuperación. La ventaja dependería del contexto: si es un combate de fuerza pura, el Hulk podría ganar; si es un combate estratégico o con elementos mágicos, Thor tendría más opciones.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 17,
+      "case_id": "knowledge1025-dev-08",
+      "kind": "original_development_variant",
+      "group": "fiction_comparison",
+      "literal": "Who would have the advantage, Spider-Man or Captain America? Explain what assumptions your answer depends on.",
+      "criterion": "Address the requested fictional matchup with coherent reasoning tied to the named characters, distinguish assumptions/version/preparation from universal canon, and give a useful conditional conclusion without inventing a definitive universal result. No real conflict or product action implied.",
+      "verdict": "fail",
+      "reason": "composition_failed: internal_code;recovery:internal_code;retry_exhausted. Sin respuesta util ni supuestos declarados.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "composition_failed",
+        "final": "internal_code;recovery:internal_code;retry_exhausted",
+        "diagnostic": "internal_code;recovery:internal_code;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 18,
+      "case_id": "knowledge1025-dev-09",
+      "kind": "original_development_variant",
+      "group": "missing_referent",
+      "literal": "¿Cómo se llama cuando no usa su identidad de héroe?",
+      "criterion": "With a new independent session and no person/character antecedent, ask whom the user means. Preserve owner_review dependence on context, never invent identity, secret identity or previous conversation. Clarification is the intended behavior, not a historical-negative relabel.",
+      "verdict": "pass",
+      "reason": "Sin antecedente, pregunta que se quiere decir con «identidad de heroe» en vez de inventarlo. Es la conducta pedida por el criterio. Nota de causa: la pregunta la produjo la prosa del modelo, no la ruta determinista de referente ausente, que en toda la tanda no se activo ni una vez.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "No sé exactamente a qué te refieres con \"identidad de héroe\". ¿Podrías aclararlo un poco?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 19,
+      "case_id": "knowledge1025-dev-10",
+      "kind": "original_development_variant",
+      "group": "missing_referent",
+      "literal": "Who is that person really?",
+      "criterion": "With a new independent session and no person/character antecedent, ask whom the user means. Preserve owner_review dependence on context, never invent identity, secret identity or previous conversation. Clarification is the intended behavior, not a historical-negative relabel.",
+      "verdict": "fail",
+      "reason": "«Who is that person really?» sin antecedente se respondio «I'm BAXY, your PC buddy». Referente ajeno resuelto como identidad propia, igual que H0424 y H0645.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "I'm BAXY, your PC buddy. I'm here to help you out. What's on your mind? 😎",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 20,
+      "case_id": "knowledge1025-boundary-01",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "literal": "No me cuentes todavía quién ganaría entre esos personajes; sólo reconoce mi pedido.",
+      "criterion": "Answer the actual prohibition/quotation/future/conceptual/narrative intent without executing PC operations, inventing antecedents, or performing the embedded instruction. No survey credit for this control.",
+      "verdict": "pass",
+      "reason": "Reconoce el pedido y respeta la prohibicion de adelantar quien ganaria, sin ejecutar nada ni inventar antecedente.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "Claro, entiendo. Solo quiero reconocer tu pedido sin revelar quién ganaría entre los personajes. ¿En qué puedo ayudarte ahora?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 21,
+      "case_id": "knowledge1025-boundary-02",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "literal": "En la frase «háblame de un videojuego», ¿qué función cumple el verbo?",
+      "criterion": "Answer the actual prohibition/quotation/future/conceptual/narrative intent without executing PC operations, inventing antecedents, or performing the embedded instruction. No survey credit for this control.",
+      "verdict": "fail",
+      "reason": "Trata la cita como cita, sin ejecutarla, pero explica mal la funcion del verbo: dice que «pide que el hablante (tu) comiences a hablar», invirtiendo el destinatario del imperativo, que es BAXY. Cita no explicada correctamente.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "El verbo \"háblame\" cumple la función de **comando** o **invitación** en la frase, ya que pide que el hablante (tú) comiences a hablar sobre un tema específico: un videojuego.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 22,
+      "case_id": "knowledge1025-boundary-03",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "literal": "Si luego te pregunto qué es una estructura de datos, te daré el nombre entonces.",
+      "criterion": "Answer the actual prohibition/quotation/future/conceptual/narrative intent without executing PC operations, inventing antecedents, or performing the embedded instruction. No survey credit for this control.",
+      "verdict": "fail",
+      "reason": "El literal difiere la pregunta a un turno futuro y condiciona la respuesta a un nombre por dar. Contesto de inmediato definiendo estructura de datos, ejecutando la instruccion diferida en vez de reconocer la condicion futura.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "Una estructura de datos es un modo de organizar y almacenar la información para que sea fácil de acceder y manipular.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 23,
+      "case_id": "knowledge1025-boundary-04",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "literal": "Explica la diferencia entre una cita textual y una instrucción dirigida a ti.",
+      "criterion": "Answer the actual prohibition/quotation/future/conceptual/narrative intent without executing PC operations, inventing antecedents, or performing the embedded instruction. No survey credit for this control.",
+      "verdict": "pass",
+      "reason": "Distingue cita textual de instruccion dirigida: la primera sin efecto directo, la segunda un pedido ejecutable, con ejemplo. Queda anotada una imprecision de persona en «que quiero ejecutar».",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "Una cita textual es un fragmento de texto que se cita como referencia, sin que tenga un efecto directo. Una instrucción dirigida a mí es un comando o pedido específico que quiero ejecutar, como \"busca el precio de un producto\".",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    },
+    {
+      "index": 24,
+      "case_id": "knowledge1025-boundary-05",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "literal": "Ayer leí una explicación sobre estrellas en un libro de la biblioteca.",
+      "criterion": "Answer the actual prohibition/quotation/future/conceptual/narrative intent without executing PC operations, inventing antecedents, or performing the embedded instruction. No survey credit for this control.",
+      "verdict": "fail",
+      "reason": "Turno con fallo de runtime (compose-audit t25: cause turn_runtime_failure, intent error). Publico la frase del usuario en primera persona, «Ayer lei una explicacion sobre estrellas en un libro de la biblioteca», atribuyendose una experiencia que no tuvo, y anadio «porque la interpretacion de la solicitud fallo», filtrando vocabulario de fallo interno al texto visible. Narrativa inventada sobre si mismo mas estado de error mal compuesto.",
+      "coverage_added": false,
+      "credit_already_written_before_pause": false,
+      "terminal": {
+        "kind": "published_final",
+        "final": "Ayer leí una explicación sobre estrellas en un libro de la biblioteca, pero no pude entender bien la explicación porque la interpretación de la solicitud falló.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      }
+    }
+  ]
+}

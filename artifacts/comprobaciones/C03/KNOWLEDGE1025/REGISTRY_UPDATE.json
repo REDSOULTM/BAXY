@@ -1,0 +1,55 @@
+{
+  "schema": "c03-knowledge1025-registry-update-v1",
+  "utc": "2026-09-12T03:05:25.654904+00:00",
+  "registry": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-survey-requirements336-private\\requirements.jsonl",
+  "registry_sha256_before": "1a7ec3d381e4d972cb0bbdf9c55ed632216618e932614e31d2ea602a74a3eae6",
+  "registry_sha256_after": "113e3b30a59395910996b7f4e4b31bb59f46a3276e68e2fda20024f52aa825cd",
+  "backup": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-survey-requirements336-private\\requirements.jsonl.before-1025-adjudication.bak",
+  "rows": 742,
+  "counts": {
+    "open": 616,
+    "covered": 126
+  },
+  "counts_unchanged": true,
+  "coverage_added": 0,
+  "rows_touched": [
+    {
+      "case_id": "H0236",
+      "status": "open",
+      "cause": "literal_pass_pair_insufficient"
+    },
+    {
+      "case_id": "H0239",
+      "status": "open",
+      "cause": "literal_pass_pair_insufficient"
+    },
+    {
+      "case_id": "H0278",
+      "status": "open",
+      "cause": "invented_release_date"
+    },
+    {
+      "case_id": "H0366",
+      "status": "open",
+      "cause": "invented_developer_year_and_enemy"
+    },
+    {
+      "case_id": "H0424",
+      "status": "open",
+      "cause": "referent_invented_as_own_identity"
+    },
+    {
+      "case_id": "H0582",
+      "status": "open",
+      "cause": "literal_pass_pair_insufficient"
+    },
+    {
+      "case_id": "H0645",
+      "status": "open",
+      "cause": "referent_invented_as_own_identity"
+    }
+  ],
+  "note": "Solo se escribieron causas en filas open. Ningun estado cambio: 126 covered y 616 open antes y despues. Los tres creditos de 1025 (H0172/H0214/H0726) ya estaban escritos antes de la pausa y no se tocaron.",
+  "adjudication": "artifacts/comprobaciones/C03/KNOWLEDGE1025/ROOT_ADJUDICATION.json",
+  "tests_run": false
+}
