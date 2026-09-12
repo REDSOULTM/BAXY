@@ -1,0 +1,259 @@
+{
+  "schema": "dialogue1093-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dialogue1093-proposal",
+  "seal_sha256": "b951438902767936eda4e1dd2032ddabb3c823e262556ab8b900aaf9b071755c",
+  "runner_sha256": "32fce44990d2bddd2553df23a2e99d1491db0311ff4e0a9bdfab46a0de6d6bae",
+  "transport_seal_sha256": "7443db626ce94d91c99fbaa0c1b9d1dfdb0cdc5b99109e5530ac2182349e823c",
+  "files": {
+    "panel.json": "3f347761b9aafe35b49a53063fa25ae4dc4741fbdd29801273e1dadeae777361",
+    "case-map.json": "63ee7b3735a6d4562e80904c5b5c4382e9d49b8208eb78802238aca0a0af52cb",
+    "turns.jsonl": "2ee5dbef805a9c1f7e26e7a2ac501ee0d80d3a5721b99eb90d5f9dc0aeda9587",
+    "requirements-snapshot.jsonl": "ff8ad86d89bbf940d70256756ed48e94e7be9539ae321ed85cbcf579720889df",
+    "ELIGIBILITY.md": "9f73f1aa7234add1ebdd47c98a4736adc3a7ae8f2f7125e1c3b7801588b51a33",
+    "PLAN.md": "4cc91e6921b53679a5bc8eb476a6a9b4c9afd9987e4632bdd466cbd865be704f"
+  },
+  "counts": {
+    "cases": 25,
+    "historical_literals": 10,
+    "original_development_variants": 10,
+    "boundaries": 5,
+    "wire_lines": 50,
+    "session_controls": 25,
+    "ordinary_turns": 25,
+    "maximum_reportable_terminals": 25,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 10,
+    "original_development_variant": 10,
+    "original_boundary": 2,
+    "boundary": 3
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0006",
+      "kind": "historical_literal",
+      "group": "contextual_fragment",
+      "credit_behavior": "contextual_fragment",
+      "text_sha256": "00d0717422cc78ddfe83c1ccff831e6356546d3992fcb6efb8a5552c497615fc",
+      "criterion_sha256": "9d98580de8dc2418588dd7c4909b458c053ff0bd188837045bdbfe29c47266fd"
+    },
+    {
+      "index": 1,
+      "case_id": "H0139",
+      "kind": "historical_literal",
+      "group": "contextual_fragment",
+      "credit_behavior": "contextual_fragment",
+      "text_sha256": "2b867b5fa9f79abe75375577ddbf57c3e6ff9a02721a72d943ab196f51dc3e06",
+      "criterion_sha256": "9d98580de8dc2418588dd7c4909b458c053ff0bd188837045bdbfe29c47266fd"
+    },
+    {
+      "index": 2,
+      "case_id": "H0313",
+      "kind": "historical_literal",
+      "group": "missing_goal_or_context",
+      "credit_behavior": "missing_goal_or_context",
+      "text_sha256": "669a9f8856b247eb5ece26a5a529efcde86e121fa6cfb21d8f322d0411e4c4c6",
+      "criterion_sha256": "2d8f1852468948bec99e9d5efb0b3d28e834c70f7a124a8a97d3148a81960f8c"
+    },
+    {
+      "index": 3,
+      "case_id": "H0332",
+      "kind": "historical_literal",
+      "group": "contextual_fragment",
+      "credit_behavior": "contextual_fragment",
+      "text_sha256": "6d4fd6663728354b39170e478185b667e67196466e9991a6fd9a26e942d6131a",
+      "criterion_sha256": "9d98580de8dc2418588dd7c4909b458c053ff0bd188837045bdbfe29c47266fd"
+    },
+    {
+      "index": 4,
+      "case_id": "H0336",
+      "kind": "historical_literal",
+      "group": "standalone_rejection",
+      "credit_behavior": "standalone_rejection",
+      "text_sha256": "6e1e0e2adc3252af34001d60e49a304efdd693de0eb28a913636f8b3a22db912",
+      "criterion_sha256": "d16ac969da6c54904579c641b83656e9da9497672fb71ed5fc0ea6c2239e8109"
+    },
+    {
+      "index": 5,
+      "case_id": "H0349",
+      "kind": "historical_literal",
+      "group": "missing_goal_or_context",
+      "credit_behavior": "missing_goal_or_context",
+      "text_sha256": "721c9525ade2ea8903d343ef25cf68b9bf4ab0aad56bb7b01fbe48d09bc7fcf4",
+      "criterion_sha256": "3f704df96715633c686e493f8efd4e28a521e26bb3fd95fe51842597e6951e7d"
+    },
+    {
+      "index": 6,
+      "case_id": "H0429",
+      "kind": "historical_literal",
+      "group": "contextual_fragment",
+      "credit_behavior": "contextual_fragment",
+      "text_sha256": "917164371cfa29922fb536a421ca823bca7443d53bdb22552cc5954626d475ec",
+      "criterion_sha256": "9d98580de8dc2418588dd7c4909b458c053ff0bd188837045bdbfe29c47266fd"
+    },
+    {
+      "index": 7,
+      "case_id": "H0483",
+      "kind": "historical_literal",
+      "group": "contextual_fragment",
+      "credit_behavior": "contextual_fragment",
+      "text_sha256": "a3e07884e4e65b67e55705c66d2eedb2c9c4bfc043f8bfeadc097f4b847f2791",
+      "criterion_sha256": "9d98580de8dc2418588dd7c4909b458c053ff0bd188837045bdbfe29c47266fd"
+    },
+    {
+      "index": 8,
+      "case_id": "H0570",
+      "kind": "historical_literal",
+      "group": "no_clear_request",
+      "credit_behavior": "numeric_no_request",
+      "text_sha256": "c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646",
+      "criterion_sha256": "5f965f6a6bb4c4674ef340c4a14d24f24b7a38f9aecac183b69c7ced6856802d"
+    },
+    {
+      "index": 9,
+      "case_id": "H0639",
+      "kind": "historical_literal",
+      "group": "missing_goal_or_context",
+      "credit_behavior": "redacted_no_request",
+      "text_sha256": "dbfae466b3cd47d340ed8c6647abc15302fdb56dcc4a227b7ea835b47b17731f",
+      "criterion_sha256": "9951605b91a564f371f5d41508a81332310fe543d0d9baa34a9f66fb34d46f48"
+    },
+    {
+      "index": 10,
+      "case_id": "dialogue1093-dev-01",
+      "kind": "original_development_variant",
+      "group": "contextual_fragment",
+      "credit_behavior": "contextual_fragment",
+      "text_sha256": "b2825605516aa9836c01c4c79e7f99d10ff9496825031539806ceec336b738ac",
+      "criterion_sha256": "9d98580de8dc2418588dd7c4909b458c053ff0bd188837045bdbfe29c47266fd"
+    },
+    {
+      "index": 11,
+      "case_id": "dialogue1093-dev-02",
+      "kind": "original_development_variant",
+      "group": "contextual_fragment",
+      "credit_behavior": "contextual_fragment",
+      "text_sha256": "ad886df0e93783d7edae9e71cde808c7562655e989f6d4d41757d6f18c0e7393",
+      "criterion_sha256": "9d98580de8dc2418588dd7c4909b458c053ff0bd188837045bdbfe29c47266fd"
+    },
+    {
+      "index": 12,
+      "case_id": "dialogue1093-dev-03",
+      "kind": "original_development_variant",
+      "group": "missing_goal_or_context",
+      "credit_behavior": "missing_goal_or_context",
+      "text_sha256": "accfc00243f507e0fc552f3d179c02ce3d48fd839318a099b724a3ac4e25234f",
+      "criterion_sha256": "2d8f1852468948bec99e9d5efb0b3d28e834c70f7a124a8a97d3148a81960f8c"
+    },
+    {
+      "index": 13,
+      "case_id": "dialogue1093-dev-04",
+      "kind": "original_development_variant",
+      "group": "missing_goal_or_context",
+      "credit_behavior": "missing_goal_or_context",
+      "text_sha256": "46afe0a3a65b55108fd4158bdb6a1cf0fd5796f7dcde641b6771d62659011010",
+      "criterion_sha256": "2d8f1852468948bec99e9d5efb0b3d28e834c70f7a124a8a97d3148a81960f8c"
+    },
+    {
+      "index": 14,
+      "case_id": "dialogue1093-dev-05",
+      "kind": "original_development_variant",
+      "group": "standalone_rejection",
+      "credit_behavior": "standalone_rejection",
+      "text_sha256": "da2b6110876dc51babd0cd8cfac7346cbdac0fed112689411af0840d55b55572",
+      "criterion_sha256": "d16ac969da6c54904579c641b83656e9da9497672fb71ed5fc0ea6c2239e8109"
+    },
+    {
+      "index": 15,
+      "case_id": "dialogue1093-dev-06",
+      "kind": "original_development_variant",
+      "group": "standalone_rejection",
+      "credit_behavior": "standalone_rejection",
+      "text_sha256": "e6c2ff118fd46095b6c39c11c2cad1bee222ed060046b26845e592af4ea43691",
+      "criterion_sha256": "d16ac969da6c54904579c641b83656e9da9497672fb71ed5fc0ea6c2239e8109"
+    },
+    {
+      "index": 16,
+      "case_id": "dialogue1093-dev-07",
+      "kind": "original_development_variant",
+      "group": "numeric_no_request",
+      "credit_behavior": "numeric_no_request",
+      "text_sha256": "0bfb374e120238801038c33277462ae52e57d053a5281688270e90108254d491",
+      "criterion_sha256": "b16145df6f0a9289a4cc9489359b250325192c20a66e0a80d9f907c21fc298ed"
+    },
+    {
+      "index": 17,
+      "case_id": "dialogue1093-dev-08",
+      "kind": "original_development_variant",
+      "group": "numeric_no_request",
+      "credit_behavior": "numeric_no_request",
+      "text_sha256": "4ddd30b3335a8ef711542d739ff1be110d5984e4eae733ad7c269df6ed47aed7",
+      "criterion_sha256": "b16145df6f0a9289a4cc9489359b250325192c20a66e0a80d9f907c21fc298ed"
+    },
+    {
+      "index": 18,
+      "case_id": "dialogue1093-dev-09",
+      "kind": "original_development_variant",
+      "group": "redacted_no_request",
+      "credit_behavior": "redacted_no_request",
+      "text_sha256": "4d4380355761916fc6d439213eb8a66374997fc9480891182e9d5b929116ee8e",
+      "criterion_sha256": "657ee0da3907c8b678899419f1e5477a27d9362767dd2ab45d7e437521418768"
+    },
+    {
+      "index": 19,
+      "case_id": "dialogue1093-dev-10",
+      "kind": "original_development_variant",
+      "group": "redacted_no_request",
+      "credit_behavior": "redacted_no_request",
+      "text_sha256": "19189d14bae6b125d38162cc5a6c62e210bd7af9bb101073fe660f42ef039e2c",
+      "criterion_sha256": "657ee0da3907c8b678899419f1e5477a27d9362767dd2ab45d7e437521418768"
+    },
+    {
+      "index": 20,
+      "case_id": "dialogue1004-boundary-01",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "credit_behavior": "boundary",
+      "text_sha256": "31335a16572400c4e5b4350ffa49dddd22810f2c6beca54f7d2f992b115dc823",
+      "criterion_sha256": "b801fa7705eb690d0fa4c49f39dc89eab5e0d01190a32425fe0553cec76d583b"
+    },
+    {
+      "index": 21,
+      "case_id": "dialogue1004-boundary-04",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "credit_behavior": "boundary",
+      "text_sha256": "c05ad720bfa92b630982c7bb573388ee859fff11b5b3a7a841f04a2fe0399d31",
+      "criterion_sha256": "f6537d71ddb081609f9e7e199e3f1d17937cf9efb0737fefef9a80ce555ee55e"
+    },
+    {
+      "index": 22,
+      "case_id": "clarify1043-boundary-01",
+      "kind": "boundary",
+      "group": "boundary",
+      "credit_behavior": "boundary",
+      "text_sha256": "1ed2585d66db4f2bcd07138fea3fbb81637736062bd60befa17094627b2017aa",
+      "criterion_sha256": "935a301e00333738066b56c0f787fa1646b384ef3cb11cfeb19f324e56e44bde"
+    },
+    {
+      "index": 23,
+      "case_id": "clarify1043-boundary-04",
+      "kind": "boundary",
+      "group": "boundary",
+      "credit_behavior": "boundary",
+      "text_sha256": "ec70a5699487181b2f98b92014576e1499d755ebd7c2685de4bc40644e977eb2",
+      "criterion_sha256": "d58aa634db12d245fab63846fad615b439162dc4811e5eb408520449e0e771f0"
+    },
+    {
+      "index": 24,
+      "case_id": "clarify1043-boundary-05",
+      "kind": "boundary",
+      "group": "boundary",
+      "credit_behavior": "boundary",
+      "text_sha256": "c1b2a6c176a5ff71c0920c5175c3577034edd5c3021c45d543204f52fba7bf30",
+      "criterion_sha256": "8bc3c250488cd61c38c84ed338fc09b7f547ec8a23b4f886dbe639d74b0b0fbf"
+    }
+  ]
+}

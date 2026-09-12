@@ -1,3 +1,23 @@
+## DIALOGUE1093 — estado vigente 2026-09-12T20:55:24.6551435Z
+
+Parcial: 12 aprobados, 5 fallidos, 8 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 197/742 | 545 | 0 | >=71 | 0/35 |
+
+Procedencia de primeras altas: Al menos 28 primeras altas de Kiro y 41 del retorno acreditadas el 12 de septiembre, más las nuevas de esta tanda. No se cuentan revalidaciones.
+
+Siguiente acción: Ejecutar AGENDA1097, ocho literales preparados de primera aclaración sin efectos. Ocho literales de DIALOGUE1093 quedan sin ejecutar por pares incompletos; requieren reparar las familias fallidas antes de otra tanda. Propuesta 1098 revisada, aún sin integrar ni medir. No se declara cierre de categoría ni de C03.
+
+Evidencia: `artifacts/comprobaciones/C03/DIALOGUE1093/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 463.72 s acumulados; pico GPU 3497.56 MiB; pico RAM 2312.77 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque DIALOGUE1093 precedente. -->
+
 ## MESSAGING1095 — estado vigente 2026-09-12T20:26:29.4066558+00:00
 
 Parcial: 10 aprobados, 2 fallidos, 12 sin ejecutar; 4 créditos.

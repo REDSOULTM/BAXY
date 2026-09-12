@@ -152,26 +152,26 @@
     "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "MESSAGING1095 adjudicado: 10 aprobados, 2 fallidos, 12 sin ejecutar; 4 créditos.",
+  "workStatus": "DIALOGUE1093 adjudicado: 12 aprobados, 5 fallidos, 8 sin ejecutar; 2 créditos.",
   "executionPausedByOwner": false,
   "branch": "codex/kiro-goal-c03",
-  "checkpoint": "195/742 cubiertos, 547 abiertos, 0 no aplican. MESSAGING1095: 4 créditos explícitos de raíz.",
+  "checkpoint": "197/742 cubiertos, 545 abiertos, 0 no aplican. DIALOGUE1093: 2 créditos explícitos de raíz.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
   "surveyVerificationCounts": {
-    "covered": 195,
-    "open": 547,
+    "covered": 197,
+    "open": 545,
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "547606da387c8453497eccfc7f2a093c1703a36c80048ca75bb083c60627f8ec",
+  "surveyRegistrySha256": "1b654764567464461aada937014af28e21be72b6bc3dcf3a4ae5e4b822295e76",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
-  "surveyCoverageLast24h": 69,
-  "surveyCoverageLast24hNote": "Cota inferior: 28 primeras altas verificadas del relevo Kiro más 37 del retorno hasta MESSAGING1085. Sólo se añaden las altas nuevas de esta adjudicación, no revalidaciones.",
+  "surveyCoverageLast24h": 71,
+  "surveyCoverageLast24hNote": "Al menos 28 primeras altas de Kiro y 41 del retorno acreditadas el 12 de septiembre, más las nuevas de esta tanda. No se cuentan revalidaciones.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-12T20:26:29.4066558+00:00",
+  "utcUpdated": "2026-09-12T20:55:24.6551435Z",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -621,7 +621,7 @@
     "freeze_ended_at": "2026-09-12T16:33:18.245252+00:00",
     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
   },
-  "updatedAtUtc": "2026-09-12T20:26:29.4066558+00:00",
+  "updatedAtUtc": "2026-09-12T20:55:24.6551435Z",
   "currentContinuation1065": {
     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
     "quality": {
@@ -888,5 +888,29 @@
       "ram_peak_mib": 1669.62109375
     },
     "next": "Preparar y ejecutar DIALOGUE1093 (10 literales, 10 variantes, 5 límites), categoría disponible con 29 abiertos frente a 26 de mensajería tras estos cuatro créditos. Música e instalación conservan sus requisitos condicionados y reanudación documentada. MESSAGING1095 deja H0584 abierto por cambio de autor del contenido y el límite condicional 22 fallido por negativa improcedente; no repetirlos sin reparación pertinente. H0024 no fue admitido por la interrupción ambiental: preservar perfil/captura/flag de incertidumbre, no reutilizar. El resto de índices sin ejecutar conserva material para una continuación sellada. Sin suites/Fast/Full por instrucción expresa del dueño; C03 sigue activo, 3/11 formal."
+  },
+  "currentContinuation1093": {
+    "head": "94c6b0dc085559ff01e44df9462849a79fea92e7",
+    "quality": {
+      "passed": 12,
+      "failed": 5,
+      "executed": 17,
+      "not_executed": 8,
+      "sealed_total": 25
+    },
+    "new_credits": 2,
+    "credited_ids": [
+      "H0313",
+      "H0349"
+    ],
+    "registry_sha256": "1b654764567464461aada937014af28e21be72b6bc3dcf3a4ae5e4b822295e76",
+    "survey": 197,
+    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\DIALOGUE1093\\ROOT_ADJUDICATION.json",
+    "resources": {
+      "seconds_sum": 463.7169999999969,
+      "gpu_peak_mib": 3497.55859375,
+      "ram_peak_mib": 2312.7734375
+    },
+    "next": "Ejecutar AGENDA1097, ocho literales preparados de primera aclaración sin efectos. Ocho literales de DIALOGUE1093 quedan sin ejecutar por pares incompletos; requieren reparar las familias fallidas antes de otra tanda. Propuesta 1098 revisada, aún sin integrar ni medir. No se declara cierre de categoría ni de C03."
   }
 }
