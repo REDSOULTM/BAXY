@@ -1,3 +1,25 @@
+## AGENDA1104 — estado vigente 2026-09-12T22:35:57.2332064Z
+
+Parcial: 4 aprobados, 6 fallidos, 5 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 198/742 | 544 | 0 | >=72 | 0/35 |
+
+Procedencia de primeras altas: Cota inferior previa: 28 primeras altas en Kiro y 43 tras el retorno, dentro del 12 de septiembre; se suma sólo el crédito nuevo de esta tanda, no revalidaciones o actualizaciones de fecha.
+
+Siguiente acción: Integrar la sustitución de etiqueta AGENDA1107 y medir AGENDA1108: cuatro literales de alarma y sus dos variantes, con límites intactos y sin repetir fallos sin hipótesis pertinente. H0572 covered con pares8/9; H0137 open por inversión del destinatario. DIALOGUE1106 queda preparado para cinco fragmentos después de integrar1098, todavía pendiente.
+
+Evidencia: `artifacts/comprobaciones/C03/AGENDA1104/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 224.17 s acumulados; pico GPU 3497.56 MiB; pico RAM 1659.45 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 10; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque AGENDA1104 precedente. -->
+
 ## WEB1102 — estado vigente 2026-09-12T22:21:25.4583586Z
 
 Parcial: 3 aprobados, 4 fallidos, 5 sin ejecutar; 0 créditos.

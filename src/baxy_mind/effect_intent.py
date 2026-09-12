@@ -2365,7 +2365,7 @@ def _incomplete_scheduled_request(
             for word, value in {**_ENGLISH_SMALL_NUMBERS, **_SPANISH_SMALL_NUMBERS}.items()
         )
         if not complete_clock:
-            return ClarificationIntent((operation,), ("clock_period",))
+            return ClarificationIntent((operation,), ("am_pm_or_part_of_day_for_supplied_hour",))
         return None
     if not _reminder_has_actionable_due(folded):
         return ClarificationIntent((operation,), ("alarm_time" if alarm else "due_time",))

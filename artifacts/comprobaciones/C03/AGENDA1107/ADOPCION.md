@@ -1,0 +1,9 @@
+# AGENDA1107 — candidato con etiqueta temporal precisa
+
+Integrado para medición, todavía sin éxito funcional atribuido. Una línea en effect_intent.py sustituye clock_period por am_pm_or_part_of_day_for_supplied_hour. La pregunta generada confundía el periodo del día con repetición diaria o semanal. El nuevo dato nominal expresa la carencia que la rama ya había reconocido; no es una respuesta visible fija ni un argumento de ejecución.
+
+Raíz leyó diagnóstico, propuesta, patch, consumidores y revisión. __main__ conserva el objetivo y transmite los campos; el schema y validador de llm derivan sus claves de esa misma tupla. No se modifica reconocimiento, hora, fecha, recurrencia, defaults, operación, continuación, alarm_time o due_time. No se añade helper ni capa. Potencial dirigido: cuatro literales de alarmas, pendiente de AGENDA1108 y sus dos variantes.
+
+Fuente anterior a7ae44e4750fbaedb83b69ec2934c2b73532b52a6a1d2ff78f332326c26c45f8; resultado verificado por SHA256 efe84e4ce53672c7e171eeee84be79c76e436836dff316a9c44421644d4846ce. Patch privado C:/Users/usuario/AppData/Local/BAXY/C03-agenda1107-repair/source.patch SHA256 9b2e172f1a9b3e3f4dadcb94af3e0f9a013f2be6023570039ef1c2e419ad396c; identidad 58c1d39ff5c08b66dc2ff4000a67ea8761aaee40cf535f7bac64723998d8c7f9. git apply --check y aplicación terminaron EXIT0; diff de una sustitución revisado. Sin tests ni compilación por instrucción del dueño; BUILD1079 no cambia.
+
+AGENDA1104 quedó adjudicado antes de editar: 10 ejecutados, cuatro aprobados, seis fallidos, cinco sin ejecutar; H0572 covered con pares8/9. H0137 sigue open por cambio de destinatario. Registro 198/742, 544 abiertos, 0 no aplican, al menos72 altas en24 h, 0/35 categorías cerradas. Fuente1107 no afirma corregir esos otros fallos ni los límites narrativos; no repetirlos sin hipótesis pertinente.

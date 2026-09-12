@@ -152,26 +152,26 @@
     "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "WEB1102 adjudicado: 3 aprobados, 4 fallidos, 5 sin ejecutar; 0 créditos.",
+  "workStatus": "AGENDA1104 adjudicado: 4 aprobados, 6 fallidos, 5 sin ejecutar; 1 créditos.",
   "executionPausedByOwner": false,
   "branch": "codex/kiro-goal-c03",
-  "checkpoint": "197/742 cubiertos, 545 abiertos, 0 no aplican. WEB1102: 0 créditos explícitos de raíz.",
+  "checkpoint": "198/742 cubiertos, 544 abiertos, 0 no aplican. AGENDA1104: 1 créditos explícitos de raíz.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
   "surveyVerificationCounts": {
-    "covered": 197,
-    "open": 545,
+    "covered": 198,
+    "open": 544,
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "1b654764567464461aada937014af28e21be72b6bc3dcf3a4ae5e4b822295e76",
+  "surveyRegistrySha256": "6d190717550d76602eca21243c01fac7e5253c2d0464fba3dffbb9cd82de0cd7",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
-  "surveyCoverageLast24h": 71,
-  "surveyCoverageLast24hNote": "Cota inferior de primeras altas: 28 en Kiro y 43 tras el retorno, todas dentro del 12 de septiembre. Se cuentan adjudicaciones iniciales, no actualizaciones de verification_updated_at ni revalidaciones.",
+  "surveyCoverageLast24h": 72,
+  "surveyCoverageLast24hNote": "Cota inferior previa: 28 primeras altas en Kiro y 43 tras el retorno, dentro del 12 de septiembre; se suma sólo el crédito nuevo de esta tanda, no revalidaciones o actualizaciones de fecha.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-12T22:21:25.4583586Z",
+  "utcUpdated": "2026-09-12T22:35:57.2332064Z",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -621,7 +621,7 @@
     "freeze_ended_at": "2026-09-12T13:33:18.245252-03:00",
     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
   },
-  "updatedAtUtc": "2026-09-12T22:21:25.4583586Z",
+  "updatedAtUtc": "2026-09-12T22:35:57.2332064Z",
   "currentContinuation1065": {
     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
     "quality": {
@@ -992,9 +992,9 @@
   "currentSourceCandidate1103": {
     "owner": "src/baxy_mind/effect_intent.py",
     "sha256": "a7ae44e4750fbaedb83b69ec2934c2b73532b52a6a1d2ff78f332326c26c45f8",
-    "status": "integrated_pending_real_product_measurement",
+    "status": "measured_1104_one_literal_covered_then_superseded_by1107",
     "testsRun": false,
-    "next": "WEB1102 por masa y disponibilidad; AGENDA1104 con nueva frontera, pares antes de literales."
+    "next": "H0572 covered; H0137 open por destinatario; cuatro alarmas pendientes de1107."
   },
   "currentContinuation1102": {
     "head": "8a31353d16b143c91f8c0d90f135f0d6f456df77",
@@ -1018,5 +1018,37 @@
       "ram_peak_mib": 1815.68359375
     },
     "next": "Ejecutar AGENDA1104 con fuente1103 ya integrada: pares6/7 antes de cuatro literales de alarma y8/9 antes de dos recordatorios. WEB1102 conserva siete ejecutados, tres aprobados, cuatro fallidos y cero créditos; no repetir búsqueda incierta del índice2. WEB1105 descarta una regla que sólo mejora variantes; propuesta de completitud semántica pendiente de decisión."
+  },
+  "currentContinuation1104": {
+    "head": "c203cfb0418b9054a6a48a7ba3cd1d0a919333cf",
+    "quality": {
+      "passed": 4,
+      "failed": 6,
+      "executed": 10,
+      "not_executed": 5,
+      "sealed_total": 15,
+      "segments_started": 10,
+      "aborted_before_admission": 0
+    },
+    "new_credits": 1,
+    "credited_ids": [
+      "H0572"
+    ],
+    "registry_sha256": "6d190717550d76602eca21243c01fac7e5253c2d0464fba3dffbb9cd82de0cd7",
+    "survey": 198,
+    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\AGENDA1104\\ROOT_ADJUDICATION.json",
+    "resources": {
+      "seconds_sum": 224.16999999999825,
+      "gpu_peak_mib": 3497.55859375,
+      "ram_peak_mib": 1659.4453125
+    },
+    "next": "Integrar la sustitución de etiqueta AGENDA1107 y medir AGENDA1108: cuatro literales de alarma y sus dos variantes, con límites intactos y sin repetir fallos sin hipótesis pertinente. H0572 covered con pares8/9; H0137 open por inversión del destinatario. DIALOGUE1106 queda preparado para cinco fragmentos después de integrar1098, todavía pendiente."
+  },
+  "currentSourceCandidate1107": {
+    "owner": "src/baxy_mind/effect_intent.py",
+    "sha256": "efe84e4ce53672c7e171eeee84be79c76e436836dff316a9c44421644d4846ce",
+    "status": "integrated_pending_real_product_measurement",
+    "testsRun": false,
+    "next": "AGENDA1108: cuatro alarmas con pares0/1 antes de literales2..5; no repetir límites fallidos sin hipótesis pertinente."
   }
 }
