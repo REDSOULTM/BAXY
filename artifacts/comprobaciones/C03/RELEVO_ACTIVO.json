@@ -1,44 +1,109 @@
 {
-  "threadId": "01a08e22-0ac1-7f93-9c99-5d2d0730d6c6",
+  "schema": "c03-active-relay-current-v3",
+  "threadId": "kiro-opus5-redpc-20260912T0218Z",
+  "agent": "Opus 5 (Kiro), escritor raíz del relevo",
+  "machineId": "acp-client",
   "sourceThreadId": "01a07974-2a33-7ed3-ba87-2436944e8115",
-  "confirmation": "Goal persistente activo confirmado por create_goal; esta tarea asume la implementación de C03.",
-  "userOwnedInstance": {
-    "automaticClose": true,
-    "status": "closed_after_owner_demo_finished",
-    "launcherPid": 31232,
-    "instruction": "Owner finished professor demonstration and explicitly resumed goal work. Diagnostic runs authorized; no manual instance requested.",
-    "pid": 105532,
-    "corePid": 28236,
-    "llamaPid": 113740,
-    "windowHandle": 6491458,
-    "windowVisible": true,
-    "windowTitle": "BAXY"
+  "pausedThreadId": "01a08e22-0ac1-7f93-9c99-5d2d0730d6c6",
+  "confirmation": "Relevo autorizado por el dueño en el prompt portable; la sesión anterior sigue prohibida de reanudar. Esta sesión asume la implementación de C03 en el PC de destino.",
+  "historicalPause": {
+    "requestedAtUtc": "2026-09-12T01:44:57.196913+00:00",
+    "reason": "owner_paused_c03_for_opus5_transfer",
+    "previousSessionResumeForbidden": true,
+    "note": "La pausa del repositorio sigue prohibiendo reanudar 01a08e22. No es un fallo técnico del goal."
   },
-  "ownerQuestionnaire": {
-    "pid": 101140,
-    "url": "http://127.0.0.1:63179/",
-    "directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-owner-questionnaire-20260907",
-    "answers": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-owner-questionnaire-20260907\\answers.json",
-    "automaticClose": false,
-    "instruction": "Owner declared questionnaire complete; original remains unchanged and available. Final snapshot revision1248 in C03-owner-review328-private; see astra-owner-review328/SNAPSHOT.json."
+  "destination": {
+    "host": "REDPC",
+    "user": "usuario",
+    "repositoryRoot": "C:/Users/usuario/Desktop/ETC/Programacion/BAXY Definitivo",
+    "branch": "Goal-c03",
+    "remote": "https://github.com/REDSOULTM/baxy-definitivo.git",
+    "headBeforeUpdate": "2bf3d4c5",
+    "headAfterFastForward": "ed305c38",
+    "updateMethod": "git fetch origin + git merge --ff-only origin/Goal-c03 (192 commits, sin reset/clean/stash, worktree limpio antes y después)",
+    "ancestryVerified": [
+      "2637d864",
+      "7a015914",
+      "20dab7edcd34ce87eff2d176613bb5ae4e968e1b"
+    ],
+    "mainUntouched": true,
+    "foreignWipPreserved": [
+      "stash@{0} codex-pre-update-2026-08-31-goal-10",
+      "branch goal-10 (d9d050f4)",
+      "branch rewrite-10-11-descartado (0ee5751c)",
+      "worktree C:/Users/usuario/AppData/Local/Temp/baxy-sprints-review-20260904/BAXY Definitivo",
+      "worktree C:/Users/usuario/AppData/Local/Temp/grok-goal-4c7bba008293/implementer/clone"
+    ],
+    "productProcessesFoundAtArrival": [
+      "Baxy.exe pid29676 (--from-windows-start, arranque automático de Windows)",
+      "baxy-core.exe pid20504",
+      "llama-server.exe pid13588 (granite-4.2-3b-Q4_K_M)",
+      "python -m baxy_mind pid26464/pid35152",
+      "python -m baxy_mind.router_worker pid12328/pid34924"
+    ],
+    "productProcessesStoppedByRoot": true,
+    "productProcessesStopNote": "Cerrados por identidad de ruta (repo/BAXYRuntime) para liberar RAM/VRAM y desbloquear compilación; no eran de la sesión anterior. No se reutilizan PIDs del PC origen.",
+    "otherWriterFound": false,
+    "pytestOrTesthostFound": false
   },
-  "resolvedBlockedAudit": {
-    "condition": "No unused human greeting in the audited reserve; owner decision required by the updated escalation clause.",
-    "consecutive_goal_turns": 3,
-    "previous_goal_turn_classification": "no_progress",
-    "objective_sha256": "6ca6aec0928cb4e50a5cfeb29108d962e7669b9b63a7e2eb77ea92b02889bb5a",
-    "goal_tool_confirmed_status": "blocked",
-    "no_acceptance_frozen": true,
-    "no_model_campaign_running": true,
-    "resolved_by": "artifacts/comprobaciones/C03/AUTORIZACION_DUENO_536.md"
+  "destinationRuntime": {
+    "registeredManifest": "C:/Users/usuario/AppData/Local/BAXYRuntime/mind-runtime-v1.json",
+    "registeredGguf": "D:/BAXYRuntime/assets/models/granite-4.2-3b-Q4_K_M.gguf",
+    "registeredGgufSha256": "e0406663965846ae22a403456eb826ccce5f450840491f71952f18a7cb78e7d5",
+    "decidedModelPresent": false,
+    "decidedModelSha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+    "localGgufInventory": {
+      "granite-4.2-3b-Q4_K_M.gguf": "e0406663965846ae22a403456eb826ccce5f450840491f71952f18a7cb78e7d5",
+      "Qwen3-4B-Q3_K_M.gguf": "e78ff54a67f3b3f57e637fbf0770d5b73c1e215ea7c0153980f1e8140c2b2486",
+      "Qwen3-4B-Q4_K_M.gguf": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
+      "Qwen3-4B-Q5_K_M.gguf": "37edbd37f5b7a4d4e7a766400c57def1f790e809de03513b86bf11bb06979695"
+    },
+    "llamaServerPath": "C:/Users/usuario/AppData/Local/BAXYRuntime/assets/llama-b9980-cuda12.4/llama-server.exe",
+    "llamaServerSha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
+    "llamaServerMatchesDecision": true,
+    "dotnetEffective": "C:/Program Files/dotnet/dotnet.exe",
+    "dotnetSdk": "10.0.100",
+    "dotnetUserProfileInstallPresent": false,
+    "dotnetNote": "En el PC origen el dotnet efectivo era %USERPROFILE%/.dotnet/dotnet.exe; aquí ese directorio no existe y el único SDK 10.0.100 es el global.",
+    "gpu": "NVIDIA GeForce RTX 4060 Ti, 16380 MiB",
+    "freeRamMibAtInventory": 8899,
+    "totalRamMib": 32530,
+    "vramUsedMibAfterStoppingProduct": 1837,
+    "guardsInherited": {
+      "initial_free_ram_mib": 4000,
+      "minimum_free_ram_mib": 768,
+      "gpu_stop_mib": 3800,
+      "wall_seconds": 900,
+      "per_turn_timeout_ms": 120000
+    },
+    "hardwareCompatibleWithDecidedProfile": true,
+    "hardwareCompatibilityBasis": "Picos históricos 3497-3499 MiB VRAM y 2435-2467 MiB RAM caben en 16380 MiB de VRAM y 32530 MiB de RAM; no es medición de este PC.",
+    "newModelCampaign": false
   },
-  "schema": "c03-active-relay-current-v2",
+  "missingPrivateTransfer": {
+    "required": true,
+    "archive": "C03_OPUS5_RELEVO_PRIVADO.zip",
+    "archiveSha256": "95bc3f239a2e5c013469d26143b55e7223b4c254300ea15ae59651259fd8c704",
+    "expectedBytes": 2025743,
+    "searchedAndAbsent": [
+      "C:/Users/usuario/AppData/Local/BAXY/C03-opus5-transfer-20260911 (no existe)",
+      "búsqueda recursiva por nombre en C:/Users, D:, E:, F:, G:, J: (0 resultados para C03_OPUS5_RELEVO_PRIVADO.zip y TRANSFER_MANIFEST.json)",
+      "%LOCALAPPDATA%/BAXY: 1489 directorios, ninguno C03-*-private ni C03-*-proposal; evidencia local más reciente 2026-09-06"
+    ],
+    "blocks": [
+      "Adjudicación completa de KNOWLEDGE1025: faltan los 25 terminales de C03-knowledge1025-private/run/capture/events.jsonl",
+      "Escritura de verification_status: falta C03-survey-requirements336-private/requirements.jsonl (SHA 1a7ec3d381e4d972cb0bbdf9c55ed632216618e932614e31d2ea602a74a3eae6)",
+      "Sellado de cualquier panel nuevo: los literales exactos de los 742 case_id sólo están en el registro privado; SURVEY_TAXONOMY846.json versionado sólo lleva case_id/categoría/estado",
+      "Revisión del parche 1024 sobre su propio diff: repair.patch b45ff88467f3ea281fb59520687a59bc7b96ad8e5f0f6f507807aa92ea4dd493 viaja en el ZIP"
+    ],
+    "requestFile": "artifacts/comprobaciones/C03/OPUS5_DESTINO/SOLICITUD_TRASLADO.md"
+  },
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-12T01:36:29.615753+00:00",
+  "workStatus": "destination_updated_awaiting_private_transfer",
+  "executionPausedByOwner": false,
   "branch": "Goal-c03",
-  "checkpoint": "126/742covered,616open,0NA;98altas24h;1025partial.",
-  "continuation": "OWNER PAUSED C03 for transfer to Opus5 on another PC. Do not resume inference, repairs or auto-goal work unless explicitly resumed. 1025 collected ad4693,25terminals exit0;3credits already recorded, full root adjudication pending. Prepare portable handoff only.",
-  "pendingOwnerClarification": null,
+  "checkpoint": "126/742covered,616open,0NA; 1025 adjudicación parcial sin cambios; destino actualizado a ed305c38; ZIP privado ausente.",
+  "continuation": "PC destino actualizado por fast-forward y sin procesos de producto. Runtime inventariado: backend correcto, pesos decididos ausentes. 1025 sigue con 5 casos juzgados de 25; los 20 restantes no se juzgan sin sus terminales. Ningún crédito nuevo escrito, ningún panel nuevo sellado, ninguna tanda nueva ejecutada.",
   "publishedSourceCommit": "20dab7edcd34ce87eff2d176613bb5ae4e968e1b",
   "surveyVerificationCounts": {
     "covered": 126,
@@ -46,53 +111,37 @@
     "not_applicable": 0
   },
   "surveyRegistrySha256": "1a7ec3d381e4d972cb0bbdf9c55ed632216618e932614e31d2ea602a74a3eae6",
+  "surveyRegistryPresentOnDestination": false,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
   "surveyCoverageLast24h": 98,
-  "workStatus": "paused_by_owner_for_opus5_handoff",
-  "goalStatusNote": "Owner waived automated suites/Fast/Full; scope blocker resolved. No new blocked condition.",
-  "previousGoalTurnClassification": "progress",
-  "previousGoalTurnClassificationReason": "112→126literalcredits,1021/1022complete,1025partial;ownerpausedforOpus5transfer. No technical blocked condition.",
-  "objectiveFile": "C:/Users/usuario/.codex/attachments/310753b7-9a38-4a57-951e-007fdcf7693a/goal-objective.md",
-  "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
+  "surveyCoverageLast24hNote": "Valor heredado del relevo (ventana cerrada 2026-09-12T01:51Z). La hora del destino es 2026-09-12T02:18Z; sin altas nuevas desde entonces, pero recalcular la ventana exige verification_updated_at del registro privado, que no está aquí.",
+  "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
+  "testsRun": false,
+  "testsOmittedByOwner": "Suites dueñas, Fast y Full omitidas por instrucción explícita del dueño. Omitidas, no verdes, no aprobadas.",
   "latestProductRun": {
     "batch": 1025,
     "state": "collected_partial_adjudication",
     "sessionId": 36967,
     "collection": "ad4693",
     "executed": 25,
+    "adjudicatedCases": 5,
+    "pendingCases": 20,
     "coverageAdded": 3,
-    "fullAdjudicationPending": true
+    "fullAdjudicationPending": true,
+    "rerunForbidden": true,
+    "statusFile": "artifacts/comprobaciones/C03/KNOWLEDGE1025/ADJUDICATION_STATUS.json"
   },
   "activeValidation": null,
   "activeRepairAgent": null,
   "currentUnpublishedSource": null,
-  "preparedNextPanel": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-system1022-proposal\\SEAL.json",
-  "lastValidation": {
-    "status": "historical_only",
-    "candidate": 843,
-    "receipt": "PROTOCOL843/FULL_EXIT.json",
-    "not_current_source_validation": true
-  },
-  "currentGoalTurnProgress": {
-    "coverage_start": 112,
-    "coverage_current": 126,
-    "coverage_added": 14,
-    "owner_requested_pause": true
-  },
+  "preparedNextPanel": null,
+  "preparedNextPanelNote": "El SEAL histórico C03-system1022-proposal está en el PC origen. En destino no existe ningún panel preparado; 1027 nunca creó archivos.",
+  "pendingOwnerClarification": "Traslado del paquete privado C03_OPUS5_RELEVO_PRIVADO.zip a este PC. Es el único requisito externo que bloquea cobertura; el resto del trabajo independiente sigue.",
   "ownerLatestInstruction": "Accelerate C03 without automated tests/Fast/Full; no loss of truthful product behavior. Real sealed execution required for coverage.",
-  "nextProductBlocker": null,
-  "sourcePublicationCollection": "e994cc",
-  "activeBuild": {
-    "sessionId": 63721,
-    "path": "C:/Users/usuario/AppData/Local/BAXY/C03-web-build1013-private",
-    "tests_run": false
-  },
-  "executionPausedByOwner": true,
-  "pauseRequestedAtUtc": "2026-09-12T01:44:57.196913+00:00",
-  "handoff": "OPUS5_HANDOFF.md",
-  "handoffPrompt": "GOAL_OPUS5_RELEVO.md",
-  "handoffPackage": "OPUS5_TRANSFER.json"
+  "nextProductBlocker": "private_transfer_absent_on_destination",
+  "previousGoalTurnClassification": "progress",
+  "previousGoalTurnClassificationReason": "Destino actualizado sin perder trabajo, procesos verificados, runtime inventariado y 1025 delimitado por caso; 0 créditos nuevos porque el registro privado no está en la máquina."
 }

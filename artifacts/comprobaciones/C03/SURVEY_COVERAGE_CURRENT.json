@@ -435,17 +435,24 @@
     "AUDIO1020/ROOT_ADJUDICATION.json",
     "AGENDA1021/ROOT_ADJUDICATION.json",
     "SYSTEM1022/ROOT_ADJUDICATION.json",
-    "KNOWLEDGE1025/ROOT_PARTIAL_CREDIT.json"
+    "KNOWLEDGE1025/ROOT_PARTIAL_CREDIT.json",
+    "KNOWLEDGE1025/ADJUDICATION_STATUS.json"
   ],
-  "equal_maximum_open_next_selection": "Execution paused by owner for Opus5 transfer. First finish1025 adjudication from saved evidence, no rerun. Then choose eligible category by current mass.",
+  "equal_maximum_open_next_selection": "Relevo en PC destino (REDPC), rama al día en ed305c38. 1025 cerrada en cobertura: su crédito es 3 y no puede aumentar, así que los contadores de esta tabla no cambian. La siguiente tanda no puede sellarse todavía: los literales exactos viven en el registro privado C03-survey-requirements336-private/requirements.jsonl, que no está en este PC. Ver OPUS5_DESTINO/SOLICITUD_TRASLADO.md. Al recibirlo, elegir por mayor masa abierta ejecutable, registrando por qué se aparcan las superiores.",
+  "counts_unchanged_note": "Ninguna adjudicación del relevo altera covered/open/not_applicable. No se escribió verification_status porque el registro privado no está en el destino.",
   "latest_product_run": {
     "batch": 1025,
     "executed": 25,
-    "adjudication": "partial",
-    "passed": null,
-    "failed": null,
+    "adjudication": "coverage_final_causes_partial",
+    "adjudicated_cases": 14,
+    "passed": 5,
+    "failed": 9,
+    "pending_terminal_text": 11,
+    "pending_that_could_change_coverage": 0,
     "coverage_added": 3,
+    "coverage_final": true,
     "exit_code": 0,
-    "full_adjudication_pending": true
+    "rerun_forbidden": true,
+    "detail": "KNOWLEDGE1025/ADJUDICATION_STATUS.json"
   }
 }

@@ -1,5 +1,10 @@
 # Handoff C03 — pausa para Opus5, 11 de septiembre
 
+> **Nota del relevo (12 de septiembre).** Esta nota es la del PC origen y se conserva como historia.
+> El estado vigente del PC destino está en `OPUS5_DESTINO/HANDOFF.md`,
+> `OPUS5_DESTINO/DESTINO_INVENTARIO.json` y `OPUS5_DESTINO/SOLICITUD_TRASLADO.md`. El paquete
+> privado que esta nota da por trasladado **no llegó a la máquina nueva**.
+
 **Ejecución detenida por el dueño.** No continuar esta sesión ni lanzar GPU. Nuevo agente autorizado mediante GOAL_OPUS5_RELEVO.md, después de actualizar el PC y restaurar el paquete privado. Commit inmediato7a015914 publicado; fuente20dab7ed sin cambios, main5f572ee1 intacta. WIPajeno conservado.
 
 126/742covered,616open,0NA;98altas24h al relevo;0/35categorías,C03 3/11. Registro SHA1a7ec3d381e4d972cb0bbdf9c55ed632216618e932614e31d2ea602a74a3eae6. Fuente actual1019/build1013 son historia del PC origen; no acreditan runtime del destino. Suites/Fast/Full omitidas por orden del dueño, no aprobadas.
