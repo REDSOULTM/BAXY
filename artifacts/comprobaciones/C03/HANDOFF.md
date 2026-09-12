@@ -1,3 +1,7 @@
+# Continuación vigente tras1017
+
+PróximaGPU:audio1016 material en preparación porprepare934, no ejecutado ni runner. Web1017 completó5GET: cambiarorden/%20/+ no arregla la NASA; NASA sola sí entrega NASA. No hay parche seguro, web aparcado temporalmente con reanudación en WEB_HTTP1017/DIAGNOSIS.json.1015 leído y publicado; no volver a ejecutar su propuesta HTTP ya realizada con variante acotada1017. No procesos vivos. Autorización de cierreya concedida; RAM resuelta.106/742,636open,0NA;78altas24h;0/35categorías.
+
 # Actualización vigente1010 /1013
 
 Fuente437e4183, build1013 completado0; captura1003 integrada.1010 terminado y adjudicado0/4,+0, colección843c97, ROOT_SHA4c9ce0e02129c40b3bf3b7d94900d97a2bd0e514e86dfe63c3aba8a95df0c7d1. GPU libre. No repetir preparación ni corrida1010. La respuesta RSS es realmente irrelevante; revisar diagnóstico1015 (apps_intent852) y petición/respuesta antes de reparar. RAM resuelta cerrando servidores con C:/Users/usuario/.dotnet/dotnet.exe, no el dotnet global; permiso de cierre del usuario ya concedido.106/742,636abiertos,0NA;78altas/24h;0/35categorías. Registro actualizado sólo causa H0723: 286ff0ec4e4fd9f632f804d9619ab8e3271fac42f7557500eac36be90d5ea188.

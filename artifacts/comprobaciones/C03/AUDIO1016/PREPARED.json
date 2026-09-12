@@ -1,0 +1,22 @@
+{
+  "proposal": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1016-proposal",
+  "seal_sha256": "2b87158386b2212dba4643527413a0964bb75b30406744e83f52acb2b56841f5",
+  "panel_sha256": "66ecbdf2ec1182d7f0bcf78c8686ac62b436ec0da68143bf80390fda0685b5c6",
+  "runner_sha256": "20e7b957957d70e318e10bca9e70d25b5450009b0fc2d6767d7287a3e5fd1458",
+  "status": "root_reviewed_binding_candidate",
+  "cases": 27,
+  "literals": 10,
+  "variants": 12,
+  "boundaries": 5,
+  "maximum_new_credits_with_current_pairs": 8,
+  "baseline_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1016-baseline-private\\REPORT.json",
+  "baseline_sha256": "371966199ef983fe9f5931921f444380537defac951e2a3d244b8d5683d86940",
+  "baseline_state": {
+    "volumePercent": 100,
+    "muted": false
+  },
+  "endpoint": "Altavoces (Realtek(R) Audio)",
+  "tests_run": false,
+  "coverage_added": 0,
+  "recovery": "No automatic restore. Fresh same-endpoint state and actual last scenario effect required; restore only to observed100/unmuted if still scenario-owned and verify. Baseline100 is observed, not chosen to hide direction defects."
+}

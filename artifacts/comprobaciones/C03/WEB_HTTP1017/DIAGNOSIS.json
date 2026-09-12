@@ -1,0 +1,83 @@
+{
+  "schema": "c03-web-http1017-readonly-diagnosis-v1",
+  "utc": "2026-09-12T00:51:43.699567+00:00",
+  "plan_sha256": "b8fee8b46ca640d0fe3d216e21c5421310635a8c968558332c302a7ef805fb9f",
+  "requests": 5,
+  "tests_run": false,
+  "product_execution": false,
+  "coverage_added": 0,
+  "results": [
+    {
+      "index": 1,
+      "requested_uri": "https://www.bing.com/search?format=rss&q=la%20NASA",
+      "final_uri": "https://www.bing.com/search?format=rss&q=la%20NASA",
+      "status": 200,
+      "channel_title": "Bing: la NASA",
+      "top_titles": [
+        "consideration แปลว่าอะไร ดูความหมาย ตัวอย่างประโยค หมายความว่า ...",
+        "*consideration* แปลว่าอะไร ดูความหมาย ตัวอย่างประโยค หมายความว่า ...",
+        "consideration หมายถึงอะไร? | พจนานุกรมอังกฤษ-ไทย Lingoland"
+      ],
+      "private_result_sha256": "f9c0aef01603b286412a854262a2c314dae3e7312bef672e0652e21d3aaba90a",
+      "body_sha256": "62107cc30c1065db860095a5daee67be999ef6a068d3443a6aac855921fe195f"
+    },
+    {
+      "index": 2,
+      "requested_uri": "https://www.bing.com/search?format=rss&q=la+NASA",
+      "final_uri": "https://www.bing.com/search?format=rss&q=la+NASA",
+      "status": 200,
+      "channel_title": "Bing: la NASA",
+      "top_titles": [
+        "5 Seconds of Summer - 2026 Tour Dates & Concert Schedule - Live Nation",
+        "Tour - 5 Seconds of Summer Official Store",
+        "5 Seconds of Summer Tour 2026 – Dates, Setlist & Tickets"
+      ],
+      "private_result_sha256": "946472346367b46f380c895e1dd092adde40eeaede7d2f471c8eff68f5c63414",
+      "body_sha256": "e4599d8e463b96d6c633990aa2b853f8122a2ab5c9914f2e2eafeb8ff91a2f5a"
+    },
+    {
+      "index": 3,
+      "requested_uri": "https://www.bing.com/search?q=la%20NASA&format=rss",
+      "final_uri": "https://www.bing.com/search?q=la%20NASA&format=rss",
+      "status": 200,
+      "channel_title": "Bing: la NASA",
+      "top_titles": [
+        "UOL - Seu universo online",
+        "UOL Notícias | Notícias do Dia no Brasil e no Mundo",
+        "E-mail UOL"
+      ],
+      "private_result_sha256": "cd24a4ad1d6291cd8ccba52aa6e9f2d3c8ad02d98181d4033f972e5ac8b22f9d",
+      "body_sha256": "fb894a18e45174f95a172e86a90bafb34f48812702beda5ba9f83243bd21b2d6"
+    },
+    {
+      "index": 4,
+      "requested_uri": "https://www.bing.com/search?q=la+NASA&format=rss",
+      "final_uri": "https://www.bing.com/search?q=la+NASA&format=rss",
+      "status": 200,
+      "channel_title": "Bing: la NASA",
+      "top_titles": [
+        "瓜子二手车交易平台-买车,卖车,二手车报价-卖给个人价更高",
+        "China Used Cars Export & Auction | Second Hand Cars - Guazi",
+        "Used Cars for Sale in Ghana: The Complete Buyer's Guide in 2026"
+      ],
+      "private_result_sha256": "35d5aac4d2a209da927d6186ff6cce9b9fe485795e2d25730b6def6b3b0009f1",
+      "body_sha256": "d39bc392f34ce635a037bfb8aebba9a7deef6f9a492d4ace65e3bcc5079f46bb"
+    },
+    {
+      "index": 5,
+      "requested_uri": "https://www.bing.com/search?format=rss&q=NASA",
+      "final_uri": "https://www.bing.com/search?format=rss&q=NASA",
+      "status": 200,
+      "channel_title": "Bing: NASA",
+      "top_titles": [
+        "NASA",
+        "NASA en español - NASA",
+        "NASA - Wikipedia, la enciclopedia libre"
+      ],
+      "private_result_sha256": "f6cccf033263b73fb3e8a6987f561e5b0465a3088350ae8ec4c050e2e2bf51f2",
+      "body_sha256": "93f08b1197a5b4cc6fb2544aade8a348be77bc3d70718d862235840dd7c0b865"
+    }
+  ],
+  "conclusion": "Four representations/orderings of la NASA return irrelevant items despite matching RSS channel title. NASA alone returns NASA. Parameter-order/space-encoding repair unsupported; no source change. This does not prove a universal multiword defect or root cause. Park web transport changes; proceed with eligible audio panel1016.",
+  "resume": "Use existing captured raw RSS/requests to choose a bounded general repair hypothesis; require relevant results for complete sites/deep pages and original variants before credit. Do not repeat1010 or1017 unchanged."
+}

@@ -12,6 +12,8 @@ El panel web993 se ejecutó una vez mediante cuatro sufijos disjuntos:993,997,10
 
 1003 integrado en437e4183 y compilación1013 exit0.1010 ejecutó los cuatro objetos fallidos:0/4 útiles,+0créditos,62.125s,VRAM3497.56MiB yRAM2380.08MiB. La captura demuestra resultados ajenos al pedido: NASA recibió WhatsApp; Blender recibió IPPSA; Marvel y Python recibieron páginas genéricas. H0723 permanece abierto con causa actualizada. No se afloja relevancia. Próximo:1015, diagnóstico acotado de la petición/respuesta RSS del mecanismo existente; web conserva36abiertos. Apps40/música39 conservan957/962/991; archivos32 conserva1005. Mensajería1014 clasifica31:28envíos requieren autorización concreta/contexto,1aclaración sincontenido y2lecturas sin mecanismo acreditado; no se transforman envíos en borradores.
 
+1017 completó cinco lecturas HTTP públicas, sin GPU ni crédito. Las cuatro formas de «la NASA» (orden y espacios distintos) devolvieron temas ajenos con channel correcto; «NASA» sola devolvió NASA. No hay reparación demostrada del transporte. Web se aparca temporalmente con cuerpo/URI retenidos; próxima tanda elegible:audio1016, en preparación. No se repiten1010/1017 sin una hipótesis distinta.
+
 | Tanda | Útiles/ejecutados | Créditos | Host/runner exit | VRAM MiB | RAM MiB | Segundos |
 |---|---:|---:|---:|---:|---:|---:|
 |989|5/11|0|0/0|3497.56|2371.46|86.672|
