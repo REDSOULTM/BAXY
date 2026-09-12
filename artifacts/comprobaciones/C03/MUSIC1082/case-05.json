@@ -1,0 +1,52 @@
+{
+  "index": 5,
+  "terminal": [
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "¡Claro! ¿Qué tal si hablamos de algo más interesante, como tu día o lo que estás haciendo ahora? 😎",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    }
+  ],
+  "exit": {
+    "case_index": 5,
+    "case_id": "music1037-dev-05",
+    "segment_sha256": "f8f1fbf38d6c07cdf7d04529d0138e0c056d0de5aee775f7120cff56394b3331",
+    "fixture_receipt_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1082-proposal\\private\\fixture-05.json",
+    "fixture_receipt_sha256": "b08605a0188b911a4d34e2bc6f858e3fa5c57f87ab45777c4eb20facd8d7458d",
+    "tests_run": false,
+    "validation_policy": "owner_directed_no_tests",
+    "candidate_manifest_sha256": "2bea2c19dfb8ca2bda1b3dd35643bbcf5cb88481c4ff5b0a9ed899094d7abedf",
+    "execution_authorized": true,
+    "utc": "2026-09-12T18:20:04.083588+00:00",
+    "exit_code": 0,
+    "stopped": false,
+    "pins_unchanged": true,
+    "terminal_records": 1,
+    "session_controls_observed": 1,
+    "turn_envelopes_observed": 1,
+    "real_submission_events_observed": 1,
+    "case_final_records": 1,
+    "confirmation_submissions_observed": 0,
+    "reviews_observed": 0,
+    "guarded_stop_index": null,
+    "host_stop_proves_unexecuted_queue": false,
+    "app_cleanup_by_runner": false,
+    "audio_restoration_by_runner": false,
+    "quality_adjudicated": false,
+    "success_count": null,
+    "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1082-case05-profile\\journal\\missions.jsonl",
+    "target_apps_closed_by_guard": false
+  },
+  "resources": {
+    "utc": "2026-09-12T18:20:04.081517+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1560.2890625,
+    "seconds": 26.43699999999808,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  }
+}

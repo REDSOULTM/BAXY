@@ -1,0 +1,17 @@
+{
+  "head_before": "2741e7d502a65011bbefe87cd3e2881093a5eb19",
+  "patch_sha256": "731dc32c05ba9fbc7b10a01480630357e34437fe1bbbd46e4b0cb396157bddf9",
+  "source_pins": {
+    "src/baxy_mind/effect_intent.py": [
+      "db79ad14666531dc11ab471eb4a9292a6d3378ceb5e224832d5b6ca39f957001",
+      "32b3becbdf9b18c459e228b8e4464830cf270aa85e7ba0f2c550c42329a641b5"
+    ],
+    "src/baxy_mind/__main__.py": [
+      "7be3cd8e8bce8a45eec8e2031e3189b422c53b9c46df0b62754a289b7760888f",
+      "d7a19edad4472581288f68adfd31b8d93012e6e051b06cfe0b3a9f84480ace2e"
+    ]
+  },
+  "review": "Root read full patch/report, request-head and append guards, former transport authority and binder. Shared complete media request grammar replaces boolean navigation helper; no template responses, provider changes or hidden variant translation. H0311 failed in1082 before this patch. Candidate requires fresh seal and real product verification; no success inferred.",
+  "tests_run": false,
+  "reason": "owner_directed_no_tests"
+}

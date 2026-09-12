@@ -6065,18 +6065,47 @@ def _stored_note_search_query(text: str) -> str | None:
     return match.group("query").strip() if match is not None else None
 
 
-def _media_navigation_request(text: str) -> bool:
-    """Recognize a complete transport direction and its media object."""
+def _media_transport_action(text: str) -> str | None:
+    """Read one transport action from a complete request with an explicit media object."""
 
     folded = _fold(text)
-    return bool(_request_head(folded)) and _has(
+    if not _request_head(folded):
+        return None
+    if _has(
         folded,
         r"^[^\w]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
-        r"(?:(?:pon|pone|ponme|reproduce|reproducir|play)\s+)?"
-        r"(?:(?:el|la|the)\s+)?(?:siguiente|next|anterior|previous)\s+"
-        r"(?:podcast|episodio|episode|cancion|song|pista|track)"
-        r"(?:\s*[,;:]?\s*(?:por favor|please))?[\s.!?]*$",
-    )
+        r"(?:deten(?:e|er)?|para|parar|stop)\s+(?:(?:el|la|the)\s+)?"
+        r"(?:current\s+)?(?:audio|musica|music|reproduccion|playback|cancion|song|pista|track)"
+        r"(?:\s+actual)?(?:\s*[,;:]?\s*(?:por favor|please))?[\s.!?]*$",
+    ):
+        return "stop"
+    media_object = r"(?:podcast|episodio|episode|cancion|song|pista|track)"
+    for action, direction, movement, relative in (
+        ("next", r"(?:siguiente|next)",
+         r"(?:skip(?:\s+forward)?|salta|saltar|saltea|saltear|pasa|pasar)",
+         r"(?:viene|sigue)"),
+        ("previous", r"(?:anterior|previous)",
+         r"(?:skip(?:\s+back)?|go\s+back|ve|vuelve|pasa|pasar)",
+         r"(?:iba|estaba)\s+antes"),
+    ):
+        nominal = (
+            rf"(?:(?:el|la|the)\s+)?(?:{direction}\s+{media_object}|"
+            rf"{media_object}\s+{direction})"
+        )
+        step_direction = "forward" if action == "next" else "back"
+        destination = rf"(?:{nominal}|(?:el|la)\s+{media_object}\s+que\s+{relative})"
+        if _has(
+            folded,
+            r"^[^\w]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
+            rf"(?:(?:(?:pon|pone|ponme|reproduce|reproducir|play)\s+)?{nominal}|"
+            rf"{movement}\s+(?:(?:to|a)\s+{destination}|al\s+"
+            rf"(?:{direction}\s+{media_object}|{media_object}\s+que\s+{relative}))|"
+            rf"(?:go|skip)\s+{step_direction}\s+one\s+{media_object}"
+            r"(?:\s+in\s+(?:the\s+)?(?:current\s+)?queue)?)"
+            r"(?:\s*[,;:]?\s*(?:por favor|please))?[\s.!?]*$",
+        ):
+            return action
+    return None
 
 
 def _resume_existing_media(text: str) -> bool:
@@ -7990,7 +8019,7 @@ def _is_direct_request(text: str) -> bool:
         or _direct_process_inventory_request(text)
         or _explicit_google_search_query(text) is not None
         or _resume_existing_media(text)
-        or _media_navigation_request(text)
+        or _media_transport_action(text)
     ):
         return True
     request_head = (
@@ -11808,7 +11837,7 @@ def _review_media_and_email_effects(
         r"(?:(?:el|la|the|current|actual)\s+)?(?:artista|artist)"
         r"(?:\s*[,;:]?\s*(?:por favor|please))?[\s.!?]*$",
     )
-    media_navigation = _media_navigation_request(folded)
+    media_transport = _media_transport_action(folded)
     audio_media_setting = _has(
         folded,
         (
@@ -11889,7 +11918,7 @@ def _review_media_and_email_effects(
             _head_is(head, r"(?:reproduce|reproducir|reproduzca|play|pon)")
             and _media_play_domain(folded)
             and not resume_existing_media
-            and not media_navigation
+            and not media_transport
             and not _has(folded, r"\byoutube\b")
             and _has(
                 folded,
@@ -11913,7 +11942,7 @@ def _review_media_and_email_effects(
             r"resultado|result)\b",
         )
         and not resume_existing_media
-        and not media_navigation
+        and not media_transport
         and _has(folded, r"\b(?:reproduce|reproducir|play|pon)\b")
     ):
         _append(
@@ -11923,7 +11952,7 @@ def _review_media_and_email_effects(
             r"\b(?:reproduce|reproducir|play|pon)\b",
         )
     if (
-        media_navigation
+        media_transport
         or change_current_artist
         or resume_existing_media
         or (
@@ -11963,8 +11992,8 @@ def _review_media_and_email_effects(
             folded,
             "media.control",
             (
-                r"\b(?:siguiente|next|anterior|previous)\b"
-                if media_navigation
+                r"\b(?:siguiente|next|anterior|previous|viene|sigue|antes|forward|back|deten(?:e|er)?|para|parar|stop)\b"
+                if media_transport
                 else r"\b(?:cambia|cambiar|change|switch)\b"
                 if change_current_artist
                 else rf"\b(?:{_MEDIA_RESUME_VERB}|reproduce|reproducir|reproduzca|play)\b"

@@ -4312,6 +4312,7 @@ def _explicit_media_control_arguments(evidence: str) -> dict[str, object] | None
 
     folded = effect_intent._fold(evidence)
     resuming = effect_intent._resume_existing_media(folded)
+    transport = effect_intent._media_transport_action(folded)
     action_patterns = {
         "next": (
             r"\b(?:skip|salta|saltar|saltea|saltear)\b",
@@ -4346,8 +4347,11 @@ def _explicit_media_control_arguments(evidence: str) -> dict[str, object] | None
     actions = {
         action
         for action, patterns in action_patterns.items()
-        if any(re.search(pattern, folded, re.IGNORECASE) for pattern in patterns)
+        if (transport is None or action not in {"next", "previous", "stop"})
+        and any(re.search(pattern, folded, re.IGNORECASE) for pattern in patterns)
     }
+    if transport is not None:
+        actions.add(transport)
     if len(actions) != 1:
         return None
     arguments: dict[str, object] = {"action": next(iter(actions))}

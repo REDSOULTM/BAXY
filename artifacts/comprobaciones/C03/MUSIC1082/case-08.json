@@ -1,0 +1,52 @@
+{
+  "index": 8,
+  "terminal": [
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "I can't go back one song in the current queue. That's outside what I do on this PC.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    }
+  ],
+  "exit": {
+    "case_index": 8,
+    "case_id": "music1037-dev-08",
+    "segment_sha256": "e93259ac0bd79d96e9e3db9dbfde7416adeb14e3051ac59dddc6bce007d7cf2e",
+    "fixture_receipt_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1082-proposal\\private\\fixture-08.json",
+    "fixture_receipt_sha256": "eacfefafc87b3f56b8e8ae0e57ab40face1d8a3bcdd233c7ff51c1ee3f6da8a3",
+    "tests_run": false,
+    "validation_policy": "owner_directed_no_tests",
+    "candidate_manifest_sha256": "2bea2c19dfb8ca2bda1b3dd35643bbcf5cb88481c4ff5b0a9ed899094d7abedf",
+    "execution_authorized": true,
+    "utc": "2026-09-12T18:34:15.779991+00:00",
+    "exit_code": 0,
+    "stopped": false,
+    "pins_unchanged": true,
+    "terminal_records": 1,
+    "session_controls_observed": 1,
+    "turn_envelopes_observed": 1,
+    "real_submission_events_observed": 1,
+    "case_final_records": 1,
+    "confirmation_submissions_observed": 0,
+    "reviews_observed": 0,
+    "guarded_stop_index": null,
+    "host_stop_proves_unexecuted_queue": false,
+    "app_cleanup_by_runner": false,
+    "audio_restoration_by_runner": false,
+    "quality_adjudicated": false,
+    "success_count": null,
+    "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1082-case08-profile\\journal\\missions.jsonl",
+    "target_apps_closed_by_guard": false
+  },
+  "resources": {
+    "utc": "2026-09-12T18:34:15.779484+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3495.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1615.828125,
+    "seconds": 26.45300000000134,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  }
+}

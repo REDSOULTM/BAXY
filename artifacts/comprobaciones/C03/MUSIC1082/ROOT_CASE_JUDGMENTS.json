@@ -1,0 +1,58 @@
+[
+  {
+    "index": 5,
+    "verdict": "failed",
+    "reason": "Interpretó el pedido como cambio de conversación y no avanzó la cola.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "Final social sobre hablar de otro tema; cero operaciones multimedia. Aurora de cobre siguió playing en la lectura posterior. Tema carecía de contexto musical acreditado en la decisión."
+  },
+  {
+    "index": 6,
+    "verdict": "failed",
+    "reason": "La petición inglesa inequívoca de siguiente pista terminó como incapacidad, sin control.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "Final: This is outside what I do on this PC. Cero operaciones multimedia. Pre Rio de cristal playing; la lectura posterior tardía encuentra Aurora paused tras el fin natural de la cola, lo cual no acredita un salto de BAXY."
+  },
+  {
+    "index": 9,
+    "verdict": "failed",
+    "reason": "Detené la reproducción actual terminó como incapacidad y no detuvo la música.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "Cero operaciones multimedia; Aurora de cobre playing antes y después. La UI posterior muestra1:10 y control de pausa disponible."
+  },
+  {
+    "index": 10,
+    "verdict": "failed",
+    "reason": "La operación stop fue despachada pero no pudo verificar detención; el requisito permanece sin cumplir.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "Invocación50b6e70f-33bc-4f62-8ced-9c141f82b44b failed/smtc_postcondition_not_verified, verifiedfalse, replayedfalse y effectMayHaveOccurredtrue. Rio de cristal seguía playing en postlectura y UI1:25. Respuesta honesta del fallo, sin efecto útil. Perfil incierto preservado y no reintentado."
+  },
+  {
+    "index": 8,
+    "verdict": "failed",
+    "reason": "La petición inglesa de volver una canción terminó como incapacidad y no ejecutó el control.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "Sendero azul paused0:00, vecino anterior observado Rio de cristal; cero operaciones y postlectura/UI conservan Sendero paused. Final I cannot go back one song, fuera de capacidades."
+  },
+  {
+    "index": 0,
+    "verdict": "failed",
+    "reason": "El literal canción anterior terminó como incapacidad sin ejecutar media.control.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "H0311 permanece open con esta causa. Sendero azul paused0:00 antes/después, vecino esperado Rio de cristal. Cero operaciones; ambas variantes pertinentes aún no aportan dos pases."
+  },
+  {
+    "index": 15,
+    "verdict": "passed",
+    "reason": "Reconoció el relato en pasado sin inventar una acción presente ni ejecutar controles.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "Final: Entiendo que mencionas que detuviste la música antes de salir. Cero operaciones multimedia; Sendero azul paused antes y después. Comprueba la reparación narrativa1072 en producto real."
+  }
+]

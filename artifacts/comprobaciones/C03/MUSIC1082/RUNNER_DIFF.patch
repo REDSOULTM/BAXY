@@ -1,0 +1,160 @@
+--- MUSIC1080/runner.py
++++ MUSIC1082/runner.py
+@@ -1,4 +1,4 @@
+-"""External music1080 launcher; explicit preparation and measured run, never adjudication.
++"""External music1082 launcher; explicit preparation and measured run, never adjudication.
+ 
+ Inherits main.py/conductor and resource samplers from batch824. Do not run on import.
+ """
+@@ -16,21 +16,21 @@
+ 
+ ROOT = Path('D:/Perfil/Escritorio/ETC/Programacion/BAXY DEFINITIVO')
+ BASE = Path('C:/Users/usuario/AppData/Local/BAXY')
+-PRIVATE = BASE / 'C03-music1080-proposal/private'
+-PANEL = BASE / 'C03-music1080-proposal'
++PRIVATE = BASE / 'C03-music1082-proposal/private'
++PANEL = BASE / 'C03-music1082-proposal'
+ TRANSPORT = PANEL
+ # Each run binds local RUN/PUBLIC to one selected case; never launch a loop.
+-PROFILE_PREFIX = 'C03-music1080-case'
++PROFILE_PREFIX = 'C03-music1082-case'
+ RESULTS = PANEL / 'results'
+ MANIFEST = BASE.parent / 'BAXYRuntime/mind-runtime-v1.json'
+ BASELINE_HEAD = '291b922de8c604f03d61acbdb88d5e625b465728'
+ MANIFEST_SHA = '13b971b3165cc84e8d8612289a4e11b3a28b908beaa69576bf566d20a183d1ed'
+ MODEL_SHA = '3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597'
+ BACKEND_SHA = '38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e'
+-SEAL_SHA = '98a994e14a0c53f408a52a2ea2b7f40064883c1a74acc4020602878da64f941a'
++SEAL_SHA = '16d5cc4ac728e3c49a42cb9b129ca44fec6e1bf826d9340bba37fe5f9177a75c'
+ REGISTRY = BASE / 'C03-survey-requirements336-private/requirements.jsonl'
+-REGISTRY_SEALED_SHA = '409977c8aaaf47d48ca89def12245db67ea9efa97ce12996a2c66c4066e76e4f'
+-REEXECUTION_INDICES = {3, 6, 7}
++REGISTRY_SEALED_SHA = 'afedd6798f617c137b86c170c9992deedec96f0e01ae6124b5f06580cfd1bf13'
++REEXECUTION_INDICES = set()
+ PREPARATION = PRIVATE / 'PREPARATION.json'
+ LIMITS = dict(initial_free_ram_mib=4000, minimum_free_ram_mib=768,
+               gpu_stop_mib=3800, wall_seconds=900, per_turn_timeout_ms=120000)
+@@ -100,7 +100,7 @@
+ 
+ 
+ def case_profile(case_index):
+-    require(type(case_index) is int and 0 <= case_index < 19, 'case profile index 0..18 required')
++    require(type(case_index) is int and 0 <= case_index < 16, 'case profile index 0..15 required')
+     profile = BASE / f'{PROFILE_PREFIX}{case_index:02d}-profile'
+     require(profile.parent.resolve() == (Path(os.environ['LOCALAPPDATA']) / 'BAXY').resolve(),
+             'case profile must be a direct child of LOCALAPPDATA/BAXY')
+@@ -118,23 +118,23 @@
+                               cwd=ROOT, capture_output=True, creationflags=FLAGS, check=False)
+     require(ancestor.returncode == 0, 'candidate outside inherited product lineage')
+     require((ROOT / 'Baxy.slnx').is_file(), 'wrong repository')
+-    require(sha(PANEL / 'SEAL.json') == seal_sha == SEAL_SHA, 'wrong music1080 panel seal')
++    require(sha(PANEL / 'SEAL.json') == seal_sha == SEAL_SHA, 'wrong music1082 panel seal')
+     seal = read(PANEL / 'SEAL.json')
+     require(set(seal['files']) == {'panel.json', 'turns.jsonl', 'case-map.json', 'PLAN.md', 'PLAN_RUNNER.md', 'requirements-snapshot.jsonl'}, 'panel file map')
+     require(check_pins({str(PANEL / name): digest for name, digest in seal['files'].items()}), 'panel material changed')
+-    require(seal['schema'] == 'music1080-conditional-data-seal-v1'
++    require(seal['schema'] == 'music1082-conditional-data-seal-v1'
+             and seal['candidate'] is None and seal['fixture'] is None and seal['coverage_credit'] == 0
+             and seal['execution_ready'] is False and seal['execution_authorized'] is False
+             and seal['transport_shape_frozen'] is True, 'data seal is not candidate authorization')
+     require(seal['registry_sha256'] == REGISTRY_SEALED_SHA, 'registry provenance changed')
+     require(check_pins(seal['read_source_pins']), 'historical panel evidence changed')
+     panel, case_map = read(PANEL / 'panel.json'), read(PANEL / 'case-map.json')
+-    require(case_map['schema'] == 'music1080-conditional-case-map-v1'
++    require(case_map['schema'] == 'music1082-conditional-case-map-v1'
+             and case_map['candidate'] is None and case_map['fixture'] is None
+             and case_map['coverage_credit'] == 0 and case_map['execution_ready'] is False
+             and case_map['execution_authorized'] is False, 'case-map authority changed')
+     require(case_map['registry_sha256'] == REGISTRY_SEALED_SHA, 'map registry provenance')
+-    ids = ['H0110', 'H0311', 'H0351', 'H0567', 'H0580', 'H0686']
++    ids = ['H0311', 'H0351', 'H0567', 'H0580', 'H0686']
+     require(case_map['historical_case_ids'] == ids, 'selected IDs changed')
+     registry = [json.loads(line) for line in REGISTRY.read_bytes().splitlines() if line.strip()]
+     require(len(registry) == 742 and len({row['case_id'] for row in registry}) == 742, 'registry identity/count mismatch')
+@@ -153,16 +153,16 @@
+     entries, positions = case_map['cases'], case_map['wire_positions']
+     require([case_map[key] for key in ('index_base', 'wire_index_base', 'wire_line_base', 'case_final_index_base')]
+             == [0, 0, 1, 0], 'case/wire indices')
+-    require(len(panel) == len(entries) == 19 and len({case['case_id'] for case in panel}) == 19, 'expected 19 unique cases')
+-    require(len(wire) == len(positions) == 38, 'expected 38 wire lines')
+-    expected_counts = {'cases': 19, 'historical_literals': 6, 'original_development_variants': 8, 'boundaries': 5, 'ordinary_turns': 19, 'reviewed_turns': 0, 'session_controls': 19, 'wire_lines': 38, 'case_final_terminals': 19, 'maximum_request_phase_terminals': 0, 'maximum_reportable_terminals': 19, 'maximum_internal_confirmations': 0}
++    require(len(panel) == len(entries) == 16 and len({case['case_id'] for case in panel}) == 16, 'expected 16 unique cases')
++    require(len(wire) == len(positions) == 32, 'expected 32 wire lines')
++    expected_counts = {'cases': 16, 'historical_literals': 5, 'original_development_variants': 6, 'boundaries': 5, 'ordinary_turns': 16, 'reviewed_turns': 0, 'session_controls': 16, 'wire_lines': 32, 'case_final_terminals': 16, 'maximum_request_phase_terminals': 0, 'maximum_reportable_terminals': 16, 'maximum_internal_confirmations': 0}
+     require(seal['counts'] == case_map['counts'] == expected_counts, 'panel counts')
+     require([entry['kind'] for entry in entries] == [case['kind'] for case in panel]
+-            == ['historical_literal'] * 6 + ['original_development_variant'] * 8 + ['original_boundary'] * 5,
++            == ['historical_literal'] * 5 + ['original_development_variant'] * 6 + ['original_boundary'] * 5,
+             'material kinds/order')
+     require(seal['kind_counts'] == case_map['kind_counts'] ==
+-            {'historical_literal': 6, 'original_development_variant': 8, 'original_boundary': 5}, 'kind counts')
+-    require([case['case_id'] for case in panel[:6]] == ids, 'literal order')
++            {'historical_literal': 5, 'original_development_variant': 6, 'original_boundary': 5}, 'kind counts')
++    require([case['case_id'] for case in panel[:5]] == ids, 'literal order')
+     for index, (case, mapped) in enumerate(zip(panel, entries)):
+         require(mapped['index'] == mapped['case_final_index'] == index and mapped['case_id'] == case['case_id'], 'case map order')
+         require(mapped['group'] == case.get('group') and mapped['criterion'] == case['criterion'], 'group/criterion mapping')
+@@ -182,19 +182,19 @@
+             require(position['case_final_index'] == (index if offset else None), 'final/control mapping')
+             if not offset: require(position['counts_as_variant_or_credit'] is False, 'control is not credit')
+     require(case_map['reviewed_case_ids'] == [] and case_map['ordinary_case_ids'] == [case['case_id'] for case in panel], 'reviewed/ordinary counts')
+-    parent_indices = list(range(19))
++    parent_indices = [1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+     require([entry['parent_index'] for entry in entries] == parent_indices, 'parent subset order')
+     provenance = case_map['execution_provenance']
+     require(REEXECUTION_INDICES is not None and provenance['finalized'] is True, 'parent execution provenance pending')
+-    require(provenance['counts'] == seal['execution_provenance_counts'] == {'reexecutions': len(REEXECUTION_INDICES), 'not_executed_in_parent': 19 - len(REEXECUTION_INDICES)}, 'execution provenance counts')
++    require(provenance['counts'] == seal['execution_provenance_counts'] == {'reexecutions': len(REEXECUTION_INDICES), 'not_executed_in_parent': 16 - len(REEXECUTION_INDICES)}, 'execution provenance counts')
+     require([item['case_id'] for item in provenance['cases']] == [case['case_id'] for case in panel]
+-            and [item['execution_status'] for item in provenance['cases']] == ['reexecution' if i in REEXECUTION_INDICES else 'not_executed_in_parent' for i in range(19)], 'execution provenance order')
++            and [item['execution_status'] for item in provenance['cases']] == ['reexecution' if i in REEXECUTION_INDICES else 'not_executed_in_parent' for i in range(16)], 'execution provenance order')
+ 
+     candidate_path = Path(candidate_path).resolve()
+     require(sha(candidate_path) == candidate_sha, 'root manifest SHA mismatch')
+     candidate = read(candidate_path)
+     require(sha(REGISTRY) == candidate['registry_current_sha256'], 'root current registry pin mismatch')
+-    require(candidate['schema'] == 'c03-music1080-root-manifest-v1'
++    require(candidate['schema'] == 'c03-music1082-root-manifest-v1'
+             and candidate['head'] == expected_head, 'wrong root manifest/candidate')
+     require(candidate['tests_run'] is False and candidate['validation_policy'] == 'owner_directed_no_tests'
+             and isinstance(candidate['owner_instruction'], str) and candidate['owner_instruction'].strip(),
+@@ -238,7 +238,7 @@
+ def prepare(seal_sha, expected_head, candidate_path, candidate_sha):
+     _, config, candidate = preflight(seal_sha, expected_head, candidate_path, candidate_sha)
+     require(not PREPARATION.exists(), 'preparation exists; root reviews instead of overwrite')
+-    require(all(not case_profile(i).exists() for i in range(19)),
++    require(all(not case_profile(i).exists() for i in range(16)),
+             'first preparation requires unused direct-child profiles for all cases')
+     PRIVATE.mkdir(exist_ok=True)
+     RESULTS.mkdir(exist_ok=True)
+@@ -272,7 +272,7 @@
+ def run(seal_sha, preparation_sha, expected_head, candidate_path, candidate_sha, case_index, fixture_path, fixture_sha):
+     panel, config, candidate = preflight(seal_sha, expected_head, candidate_path, candidate_sha)
+     require(candidate['execution_authorized'] is True, 'root has not authorized execution')
+-    require(type(case_index) is int and 0 <= case_index < 19, 'case-index must select one sealed case 0..18')
++    require(type(case_index) is int and 0 <= case_index < 16, 'case-index must select one sealed case 0..15')
+     profile = case_profile(case_index)
+     selected = panel[case_index]
+     case_id = selected['case_id']
+@@ -297,7 +297,7 @@
+     fixture_path = Path(fixture_path).resolve()
+     require(sha(fixture_path) == fixture_sha, 'root fixture receipt pin mismatch')
+     fixture = read(fixture_path)
+-    require(fixture['schema'] == 'music1080-root-fixture-v1'
++    require(fixture['schema'] == 'music1082-root-fixture-v1'
+             and fixture['case_index'] == case_index and fixture['case_id'] == case_id
+             and fixture['head'] == expected_head and fixture['candidate_manifest_sha256'] == candidate_sha
+             and fixture['panel_seal_sha256'] == seal_sha and fixture['root_verified'] is True,
+@@ -355,10 +355,10 @@
+                BAXY_MIND_RAW_REPLY_AUDIT_PATH=str(RUN / 'raw-replies.jsonl'))
+     command = [sys.executable, '-B', '-X', 'utf8', 'main.py', '--conductor', '--profile', str(profile),
+                '--capture', str(RUN / 'capture'), '--turns-file', str(segment_path), '--timeout-ms', '120000']
+-    write(PUBLIC / 'PREREG.json', {'utc': utc(), 'head': expected_head, 'case_count': 1, 'panel_case_count': 19, 'case_index': case_index, 'case_id': case_id, 'segment_sha256': segment_sha, 'fixture_receipt_path': str(fixture_path), 'fixture_receipt_sha256': fixture_sha, 'limits': LIMITS,
++    write(PUBLIC / 'PREREG.json', {'utc': utc(), 'head': expected_head, 'case_count': 1, 'panel_case_count': 16, 'case_index': case_index, 'case_id': case_id, 'segment_sha256': segment_sha, 'fixture_receipt_path': str(fixture_path), 'fixture_receipt_sha256': fixture_sha, 'limits': LIMITS,
+                                   'seal_sha256': seal_sha, 'preparation_sha256': preparation_sha,
+                                   'runner_sha256': sha(__file__), 'command': command,
+-                                  'session': 'one selected case from sealed19; exact session.new+ordinary turn bytes; root observes own media session/queue before each segment; no automatic approval',
++                                  'session': 'one selected case from sealed16; exact session.new+ordinary turn bytes; root observes own media session/queue before each segment; no automatic approval',
+                                   'wire_lines': 2, 'turns': 1, 'controls': 1, 'maximum_terminals': maximum_emissions, 'maximum_confirmations': maximum_confirmations,
+                                   'registry_current_sha256': sha(REGISTRY),
+                                   'registry_data_seal_sha256': REGISTRY_SEALED_SHA,

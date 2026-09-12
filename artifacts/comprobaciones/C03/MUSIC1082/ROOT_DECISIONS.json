@@ -1,0 +1,74 @@
+{
+  "schema": "music1082-root-decisions-v1",
+  "approved_by_root": true,
+  "head": "2741e7d502a65011bbefe87cd3e2881093a5eb19",
+  "preparation_sha256": "8fc7d7cf2919e4f52ae25a873aa582ea2e49e5066a1e3c31f2a579778d6f2bf6",
+  "registry_before_sha256": "afedd6798f617c137b86c170c9992deedec96f0e01ae6124b5f06580cfd1bf13",
+  "decided_at_utc": "2026-09-12T18:38:48.704245+00:00",
+  "metrics": {
+    "first_covered_last24h_before": 61,
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_evidence_note": "Al menos61 primeras altas verificadas hoy:28 Kiro y33 retorno hasta1080. Esta tanda no añade créditos; no se cuentan revalidaciones.",
+    "categories_closed_after": 0,
+    "categories_total": 35
+  },
+  "next_action": "Revisar e integrar reparación común1084 de reconocimiento de navegación con objetos musicales explícitos; siguiente panel1086 de3literales elegibles y4variantes inequívocas más5límites, sellado antes de ejecutar. Conservar variantes tema ambiguas sin sustituirlas ni acreditarlas. Stop inglés10 queda incierto preservado; no repetirlo sin diagnóstico del proveedor. Preparar en paralelo MESSAGING1085 con10literales incompletos,10variantes y5límites, perfiles separados y clientes ausentes, sin enviar mensajes. Continúa C03 activo:187/742,555open,0NA,formal3/11; sin suites/Fast/Full por orden del dueño.",
+  "decisions": [
+    {
+      "index": 5,
+      "verdict": "failed",
+      "reason": "Interpretó el pedido como cambio de conversación y no avanzó la cola.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Final social sobre hablar de otro tema; cero operaciones multimedia. Aurora de cobre siguió playing en la lectura posterior. Tema carecía de contexto musical acreditado en la decisión."
+    },
+    {
+      "index": 6,
+      "verdict": "failed",
+      "reason": "La petición inglesa inequívoca de siguiente pista terminó como incapacidad, sin control.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Final: This is outside what I do on this PC. Cero operaciones multimedia. Pre Rio de cristal playing; la lectura posterior tardía encuentra Aurora paused tras el fin natural de la cola, lo cual no acredita un salto de BAXY."
+    },
+    {
+      "index": 9,
+      "verdict": "failed",
+      "reason": "Detené la reproducción actual terminó como incapacidad y no detuvo la música.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Cero operaciones multimedia; Aurora de cobre playing antes y después. La UI posterior muestra1:10 y control de pausa disponible."
+    },
+    {
+      "index": 10,
+      "verdict": "failed",
+      "reason": "La operación stop fue despachada pero no pudo verificar detención; el requisito permanece sin cumplir.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Invocación50b6e70f-33bc-4f62-8ced-9c141f82b44b failed/smtc_postcondition_not_verified, verifiedfalse, replayedfalse y effectMayHaveOccurredtrue. Rio de cristal seguía playing en postlectura y UI1:25. Respuesta honesta del fallo, sin efecto útil. Perfil incierto preservado y no reintentado."
+    },
+    {
+      "index": 8,
+      "verdict": "failed",
+      "reason": "La petición inglesa de volver una canción terminó como incapacidad y no ejecutó el control.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Sendero azul paused0:00, vecino anterior observado Rio de cristal; cero operaciones y postlectura/UI conservan Sendero paused. Final I cannot go back one song, fuera de capacidades."
+    },
+    {
+      "index": 0,
+      "verdict": "failed",
+      "reason": "El literal canción anterior terminó como incapacidad sin ejecutar media.control.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "H0311 permanece open con esta causa. Sendero azul paused0:00 antes/después, vecino esperado Rio de cristal. Cero operaciones; ambas variantes pertinentes aún no aportan dos pases."
+    },
+    {
+      "index": 15,
+      "verdict": "passed",
+      "reason": "Reconoció el relato en pasado sin inventar una acción presente ni ejecutar controles.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Final: Entiendo que mencionas que detuviste la música antes de salir. Cero operaciones multimedia; Sendero azul paused antes y después. Comprueba la reparación narrativa1072 en producto real."
+    }
+  ]
+}

@@ -1,3 +1,23 @@
+## MUSIC1082 — estado vigente 2026-09-12T18:38:48.704245+00:00
+
+Parcial: 1 aprobados, 6 fallidos, 9 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 187/742 | 555 | 0 | >=61 | 0/35 |
+
+Procedencia de primeras altas: Al menos61 primeras altas verificadas hoy:28 Kiro y33 retorno hasta1080. Esta tanda no añade créditos; no se cuentan revalidaciones.
+
+Siguiente acción: Revisar e integrar reparación común1084 de reconocimiento de navegación con objetos musicales explícitos; siguiente panel1086 de3literales elegibles y4variantes inequívocas más5límites, sellado antes de ejecutar. Conservar variantes tema ambiguas sin sustituirlas ni acreditarlas. Stop inglés10 queda incierto preservado; no repetirlo sin diagnóstico del proveedor. Preparar en paralelo MESSAGING1085 con10literales incompletos,10variantes y5límites, perfiles separados y clientes ausentes, sin enviar mensajes. Continúa C03 activo:187/742,555open,0NA,formal3/11; sin suites/Fast/Full por orden del dueño.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1082/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 177.41 s acumulados; pico GPU 3497.56 MiB; pico RAM 1615.83 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1082 precedente. -->
+
 La reanudación ya acredita H0110. El literal y sus dos variantes en español e inglés ejecutaron el control real y respondieron con pista, artista y estado correctos, usando dos pistas propias. Encuesta:187/742,555 abiertos,0 no aplican; al menos61 primeras altas en24h;0/35 categorías cerradas; C03 formal3/11. Continúa1082 con los16objetos pendientes, sin repetir esta familia.
 
 Compilación1079 correcta,0 errores y0 advertencias; Core publicado y efectivo coinciden. Suites, Fast y Full omitidos por orden del dueño, no verdes. Perfiles independientes preservan la incertidumbre1077 sin que contamine los siguientes casos. El goal sigue activo.
