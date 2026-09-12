@@ -1,12 +1,12 @@
 {
-  "utc": "2026-09-11T23:09:34.618651+00:00",
-  "covered": 97,
-  "open": 645,
+  "utc": "2026-09-12T00:12:49.792423+00:00",
+  "covered": 103,
+  "open": 639,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 69,
+  "covered_updated_last_24h": 75,
   "updated_recent_ids": [
     "H0017",
     "H0020",
@@ -24,6 +24,7 @@
     "H0158",
     "H0166",
     "H0169",
+    "H0184",
     "H0194",
     "H0207",
     "H0233",
@@ -32,6 +33,7 @@
     "H0280",
     "H0292",
     "H0310",
+    "H0323",
     "H0338",
     "H0353",
     "H0361",
@@ -45,6 +47,7 @@
     "H0406",
     "H0409",
     "H0413",
+    "H0438",
     "H0469",
     "H0470",
     "H0471",
@@ -52,12 +55,15 @@
     "H0490",
     "H0501",
     "H0503",
+    "H0504",
     "H0505",
     "H0512",
     "H0524",
     "H0538",
+    "H0545",
     "H0553",
     "H0557",
+    "H0569",
     "H0577",
     "H0597",
     "H0599",
@@ -78,7 +84,7 @@
     "H0729",
     "H0736"
   ],
-  "confirmed_new_grants_last_24h": 69,
+  "confirmed_new_grants_last_24h": 75,
   "first_grant_date_not_distinguished_for_recent_ids": [],
   "categories": [
     {
@@ -110,14 +116,6 @@
       "label": "Entrada incompleta, ruido y control de diálogo",
       "total": 34,
       "covered": 0,
-      "open": 34,
-      "not_applicable": 0
-    },
-    {
-      "category": "knowledge_reasoning",
-      "label": "Conocimiento, razonamiento y creatividad verbal",
-      "total": 37,
-      "covered": 3,
       "open": 34,
       "not_applicable": 0
     },
@@ -167,6 +165,14 @@
       "total": 40,
       "covered": 11,
       "open": 29,
+      "not_applicable": 0
+    },
+    {
+      "category": "knowledge_reasoning",
+      "label": "Conocimiento, razonamiento y creatividad verbal",
+      "total": 37,
+      "covered": 9,
+      "open": 28,
       "not_applicable": 0
     },
     {
@@ -242,18 +248,18 @@
       "not_applicable": 0
     },
     {
-      "category": "windows_arrangement",
-      "label": "Organizar ventanas y pestañas",
-      "total": 13,
-      "covered": 0,
-      "open": 13,
-      "not_applicable": 0
-    },
-    {
       "category": "windows_status",
       "label": "Estado de ventanas y aplicaciones",
       "total": 14,
       "covered": 1,
+      "open": 13,
+      "not_applicable": 0
+    },
+    {
+      "category": "windows_arrangement",
+      "label": "Organizar ventanas y pestañas",
+      "total": 13,
+      "covered": 0,
       "open": 13,
       "not_applicable": 0
     },
@@ -314,18 +320,18 @@
       "not_applicable": 0
     },
     {
-      "category": "clipboard",
-      "label": "Portapapeles",
-      "total": 3,
-      "covered": 0,
-      "open": 3,
-      "not_applicable": 0
-    },
-    {
       "category": "negative_app_constraints",
       "label": "Restricciones negativas de apertura",
       "total": 4,
       "covered": 1,
+      "open": 3,
+      "not_applicable": 0
+    },
+    {
+      "category": "clipboard",
+      "label": "Portapapeles",
+      "total": 3,
+      "covered": 0,
       "open": 3,
       "not_applicable": 0
     },
@@ -362,8 +368,8 @@
       "not_applicable": 0
     }
   ],
-  "requirements_sha256": "40c530c681cb18b03cc46b7f1217757d46c80f8a2666fec59fae4cc611dd1108",
-  "registry_sha256": "c1b2164bfcf83baea767614a826d7d9b7bec8d82c300dbdd2e50a5ea6e0fa46e",
+  "requirements_sha256": "111e1824b81e0c24f6f05ac50670ad1c8dec789aa0c371a323dd99ae13d3edd0",
+  "registry_sha256": "111e1824b81e0c24f6f05ac50670ad1c8dec789aa0c371a323dd99ae13d3edd0",
   "classification_source": "SURVEY_TAXONOMY846.json",
   "latest_adjudications": [
     "APP_OPEN847/ROOT_ADJUDICATION.json",
@@ -391,15 +397,22 @@
     "ALARM_PANEL978/ROOT_ADJUDICATION.json",
     "TASK_REPAIR980/ROOT_ADJUDICATION.json",
     "ALARM_REPAIR983/ROOT_ADJUDICATION.json",
-    "TASK_NOTE_REPAIR986/ROOT_ADJUDICATION.json"
+    "TASK_NOTE_REPAIR986/ROOT_ADJUDICATION.json",
+    "MEDIA_STATUS989/ROOT_ADJUDICATION.json",
+    "WEB_NAMED993/ROOT_ADJUDICATION.json",
+    "WEB_TAIL997/ROOT_ADJUDICATION.json",
+    "WEB_TAIL1000/ROOT_ADJUDICATION.json",
+    "WEB_TAIL1002/ROOT_ADJUDICATION.json",
+    "KNOWLEDGE998/ROOT_ADJUDICATION.json",
+    "DIALOGUE1004/ROOT_ADJUDICATION.json"
   ],
-  "equal_maximum_open_next_selection": "Apps40 conditions957; music39 next987/988/989; web36; agenda30 with8 newly covered. Prepared989 targets current playback read, no replay of uncertain music962. Source985 current;988 pending root adoption.",
+  "equal_maximum_open_next_selection": "Apps40 parked957;music39 parked962/991;web36 requires1003diagnosticthenbehaviorrepair;dialogue34 requires commoncause1006 after1004. Files32 scopefrontier1005. Knowledge28 after6credits998.",
   "latest_product_run": {
-    "batch": 986,
-    "executed": 12,
+    "batch": 1004,
+    "executed": 25,
     "passed": 7,
-    "failed": 5,
-    "coverage_added": 4,
+    "failed": 18,
+    "coverage_added": 0,
     "exit_code": 0
   }
 }

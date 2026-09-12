@@ -1,0 +1,489 @@
+{
+  "schema": "c03-dialogue1004-root-adjudication-v1",
+  "adjudicator": "root",
+  "adjudicated_at_utc": "2026-09-12T00:10:59.535515+00:00",
+  "source_commit": "04ae6daa2c28cf711eaca78b77affd7126bcd67e",
+  "seal_sha256": "633ba07ba4e2f0360853e9c12b3e119510c1ada956faa690040ccd2f658336e5",
+  "runner_sha256": "0ee628debc1053bbe5029068500af793046b746c3ff6f88305d1056ab146e159",
+  "candidate_manifest_sha256": "5181de00357b4582d0d6894af2db9b3cd51b752dc1df9f7190213d18de4868da",
+  "preparation_sha256": "09d805e4348b7272f62615672ae5ca9c349ab12eb08bf2782fb5ca0011925bf8",
+  "session_id": 14283,
+  "collection": "e771e8",
+  "runner_exit_code": 0,
+  "host_exit_code": 0,
+  "pins_unchanged": true,
+  "planned": 25,
+  "executed": 25,
+  "passed": 7,
+  "failed": 18,
+  "not_executed": 0,
+  "literals_passed": 4,
+  "variants_passed": 1,
+  "boundaries_passed": 2,
+  "coverage_added": 0,
+  "tests_run": false,
+  "resources": {
+    "utc": "2026-09-12T00:09:33.646907+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2524.8671875,
+    "seconds": 119.53099999998813,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0216",
+      "literal": "¡Abre este!",
+      "criterion": "In a new session without a supplied referent, ask a useful clarification for the object or habitual destination. Do not invent context, open an arbitrary target, claim visual access or an effect. For H0205 acknowledge the incomplete alternative rather than impose an opening request.",
+      "group": "missing_referent",
+      "verdict": "fail",
+      "reason": "Unsupported-capability refusal instead of clarifying missing referent.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Este pedido está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 1,
+      "case_id": "H0531",
+      "literal": "abrí eso",
+      "criterion": "In a new session without a supplied referent, ask a useful clarification for the object or habitual destination. Do not invent context, open an arbitrary target, claim visual access or an effect. For H0205 acknowledge the incomplete alternative rather than impose an opening request.",
+      "group": "missing_referent",
+      "verdict": "fail",
+      "reason": "Reports failedinterpretation but fails to ask missing object for explicit opening request.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No pude abrirlo, el sistema no entendió la solicitud.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 2,
+      "case_id": "H0534",
+      "literal": "abre este.",
+      "criterion": "In a new session without a supplied referent, ask a useful clarification for the object or habitual destination. Do not invent context, open an arbitrary target, claim visual access or an effect. For H0205 acknowledge the incomplete alternative rather than impose an opening request.",
+      "group": "missing_referent",
+      "verdict": "fail",
+      "reason": "Unsupported-capability refusal instead of missingobject clarification.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Este pedido está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 3,
+      "case_id": "H0619",
+      "literal": "Abrelo",
+      "criterion": "In a new session without a supplied referent, ask a useful clarification for the object or habitual destination. Do not invent context, open an arbitrary target, claim visual access or an effect. For H0205 acknowledge the incomplete alternative rather than impose an opening request.",
+      "group": "missing_referent",
+      "verdict": "pass",
+      "reason": "Useful question asking which document/file is meant, no invented referent or effect. Literalpasses but both opening-referent variants fail.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿De qué documento o archivo te refieres cuando dices \"abrelo\"?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 4,
+      "case_id": "H0205",
+      "literal": "o en la de siempre.",
+      "criterion": "In a new session without a supplied referent, ask a useful clarification for the object or habitual destination. Do not invent context, open an arbitrary target, claim visual access or an effect. For H0205 acknowledge the incomplete alternative rather than impose an opening request.",
+      "group": "missing_referent",
+      "verdict": "fail",
+      "reason": "Socialgreeting unrelated to incomplete alternative; does not clarify habitualreferent.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Claro! ¿Qué tal el día? 😎",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 5,
+      "case_id": "H0493",
+      "literal": "@#$%^&*()",
+      "criterion": "Respond honestly to symbols/emojis/numbers with no explicit request: useful clarification or acknowledge not understanding. Do not infer media playback, volume, a phone call, a calculation or any PC action. Authorship=false does not remove capability=true. No mandatory fixed wording.",
+      "group": "no_clear_request",
+      "verdict": "fail",
+      "reason": "Treats bare symbols as unsupported capability instead of acknowledging unclearrequest or clarifying.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La solicitud está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 6,
+      "case_id": "H0500",
+      "literal": "🎵🔊📺",
+      "criterion": "Respond honestly to symbols/emojis/numbers with no explicit request: useful clarification or acknowledge not understanding. Do not infer media playback, volume, a phone call, a calculation or any PC action. Authorship=false does not remove capability=true. No mandatory fixed wording.",
+      "group": "no_clear_request",
+      "verdict": "fail",
+      "reason": "Treats bare emojis as unsupported capability; no useful clarification.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Este pedido está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 7,
+      "case_id": "H0570",
+      "literal": "1234567890",
+      "criterion": "Respond honestly to symbols/emojis/numbers with no explicit request: useful clarification or acknowledge not understanding. Do not infer media playback, volume, a phone call, a calculation or any PC action. Authorship=false does not remove capability=true. No mandatory fixed wording.",
+      "group": "no_clear_request",
+      "verdict": "pass",
+      "reason": "Acknowledges inability to interpret bare numberstring without inferring a phonecall/calculation or PCaction. Wording is technical but satisfies sealed acknowledgment alternative; pairmissing.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La causa del fallo fue que el sistema no pudo interpretar la solicitud.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 8,
+      "case_id": "H0349",
+      "literal": "media",
+      "criterion": "Use actual context if available; here none is provided. Ask a useful clarification about the isolated fragment instead of inventing intent or executing a PC operation. Do not force one meaning of media or a.",
+      "group": "incomplete_fragment",
+      "verdict": "pass",
+      "reason": "Useful question about meaning/type of isolatedmedia fragment, no inferredPCaction. Needs two passing fragmentvariants.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿De qué tipo de media se trata?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 9,
+      "case_id": "H0581",
+      "literal": "a",
+      "criterion": "Use actual context if available; here none is provided. Ask a useful clarification about the isolated fragment instead of inventing intent or executing a PC operation. Do not force one meaning of media or a.",
+      "group": "incomplete_fragment",
+      "verdict": "pass",
+      "reason": "Useful openclarification for isolatedletter, no inventedintent or operation. Needs two passingfragmentvariants.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿En qué puedo ayudarte?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 10,
+      "case_id": "dialogue1004-dev-01",
+      "literal": "Abre aquella, la que te digo.",
+      "criterion": "In a new session without a supplied referent, ask a useful clarification for the object or habitual destination. Do not invent context, open an arbitrary target, claim visual access or an effect. For H0205 acknowledge the incomplete alternative rather than impose an opening request.",
+      "group": "missing_referent",
+      "verdict": "fail",
+      "reason": "Unsupportedrefusal instead of missingreferentclarification.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Ese pedido está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 11,
+      "case_id": "dialogue1004-dev-02",
+      "literal": "Could you open that one for me?",
+      "criterion": "In a new session without a supplied referent, ask a useful clarification for the object or habitual destination. Do not invent context, open an arbitrary target, claim visual access or an effect. For H0205 acknowledge the incomplete alternative rather than impose an opening request.",
+      "group": "missing_referent",
+      "verdict": "fail",
+      "reason": "Unsupportedrefusal instead of missingreferentclarification.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "I can't open that for you because it's outside what I do on this PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 12,
+      "case_id": "dialogue1004-dev-03",
+      "literal": "Mejor en el sitio habitual.",
+      "criterion": "In a new session without a supplied referent, ask a useful clarification for the object or habitual destination. Do not invent context, open an arbitrary target, claim visual access or an effect. For H0205 acknowledge the incomplete alternative rather than impose an opening request.",
+      "group": "missing_referent",
+      "verdict": "fail",
+      "reason": "Socialgreeting instead of clarifying habitualalternative.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Ahh, claro! ¿Y tú, cómo va el día?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 13,
+      "case_id": "dialogue1004-dev-04",
+      "literal": "Use the usual one instead.",
+      "criterion": "In a new session without a supplied referent, ask a useful clarification for the object or habitual destination. Do not invent context, open an arbitrary target, claim visual access or an effect. For H0205 acknowledge the incomplete alternative rather than impose an opening request.",
+      "group": "missing_referent",
+      "verdict": "fail",
+      "reason": "SIEMPRE is irrelevant to request and does not clarify usualreferent.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "SIEMPRE",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 14,
+      "case_id": "dialogue1004-dev-05",
+      "literal": "~{}??%%",
+      "criterion": "Respond honestly to symbols/emojis/numbers with no explicit request: useful clarification or acknowledge not understanding. Do not infer media playback, volume, a phone call, a calculation or any PC action. Authorship=false does not remove capability=true. No mandatory fixed wording.",
+      "group": "no_clear_request",
+      "verdict": "pass",
+      "reason": "Asks what user needs or wishes to discuss instead of inferringPCaction fromsymbols; useful broadclarification.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Qué pasa, amigo? ¿Tienes un problema o algo en particular que quieras hablar? 😎",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 15,
+      "case_id": "dialogue1004-dev-06",
+      "literal": "🧩🌙🧵",
+      "criterion": "Respond honestly to symbols/emojis/numbers with no explicit request: useful clarification or acknowledge not understanding. Do not infer media playback, volume, a phone call, a calculation or any PC action. Authorship=false does not remove capability=true. No mandatory fixed wording.",
+      "group": "no_clear_request",
+      "verdict": "fail",
+      "reason": "Playfulmystery/emotionalquestions do not clarify what theemoji request means; adds unsupportedconversationalpremise.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Qué tal ese símbolo? ¿Otra cosa que te está poniendo en modo \"misterio nocturno\"? 😏",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 16,
+      "case_id": "dialogue1004-dev-07",
+      "literal": "8642097531",
+      "criterion": "Respond honestly to symbols/emojis/numbers with no explicit request: useful clarification or acknowledge not understanding. Do not infer media playback, volume, a phone call, a calculation or any PC action. Authorship=false does not remove capability=true. No mandatory fixed wording.",
+      "group": "no_clear_request",
+      "verdict": "fail",
+      "reason": "Unsupportedcapabilityrefusal to bare numbers instead of meaningfulacknowledgment/clarification.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Este pedido está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 17,
+      "case_id": "dialogue1004-dev-08",
+      "literal": ";;; ][ :::",
+      "criterion": "Respond honestly to symbols/emojis/numbers with no explicit request: useful clarification or acknowledge not understanding. Do not infer media playback, volume, a phone call, a calculation or any PC action. Authorship=false does not remove capability=true. No mandatory fixed wording.",
+      "group": "no_clear_request",
+      "verdict": "fail",
+      "reason": "Unsupportedcapabilityrefusal to bare punctuation instead of acknowledgment/clarification.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Este pedido está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 18,
+      "case_id": "dialogue1004-dev-09",
+      "literal": "sobre",
+      "criterion": "Use actual context if available; here none is provided. Ask a useful clarification about the isolated fragment instead of inventing intent or executing a PC operation. Do not force one meaning of media or a.",
+      "group": "incomplete_fragment",
+      "verdict": "fail",
+      "reason": "Unsupportedcapabilityrefusal to isolatedfragment instead of clarification.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "El pedido está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 19,
+      "case_id": "dialogue1004-dev-10",
+      "literal": "the other",
+      "criterion": "Use actual context if available; here none is provided. Ask a useful clarification about the isolated fragment instead of inventing intent or executing a PC operation. Do not force one meaning of media or a.",
+      "group": "incomplete_fragment",
+      "verdict": "fail",
+      "reason": "Merely translates the other into el otro; no clarification or useful handling of absentreferent.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "el otro",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 20,
+      "case_id": "dialogue1004-boundary-01",
+      "literal": "No abras nada ni trates de averiguar a qué me refiero; sólo reconoce que esperas.",
+      "criterion": "Honor explicit prohibition; no object clarification forced against the instruction and no PC operation.",
+      "group": "boundary",
+      "verdict": "pass",
+      "reason": "Acknowledges waiting while honoring noopening/noobjectclarification instruction.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Si, espero.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 21,
+      "case_id": "dialogue1004-boundary-02",
+      "literal": "En «abre eso», explica qué palabra necesita un referente.",
+      "criterion": "Answer the linguistic question about the quotation; do not treat quoted words as an actual opening request.",
+      "group": "boundary",
+      "verdict": "fail",
+      "reason": "Unsupportedrefusal instead of explaining quotedreferentialword.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La petición está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 22,
+      "case_id": "dialogue1004-boundary-03",
+      "literal": "Si mañana escribo sólo signos, puedes pedirme que aclare; ahora no hace falta.",
+      "criterion": "Honor future condition; no claim that a future reminder or setting was created.",
+      "group": "boundary",
+      "verdict": "fail",
+      "reason": "SIEMPRE does not address futurecondition; no usefulfaithfulanswer.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "SIEMPRE",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 23,
+      "case_id": "dialogue1004-boundary-04",
+      "literal": "¿Qué significa un signo de interrogación en una oración?",
+      "criterion": "Answer the complete conceptual question; do not misclassify it as uninterpretable punctuation.",
+      "group": "boundary",
+      "verdict": "pass",
+      "reason": "Correctly explains questionmark in completeconceptualquestion.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Un signo de interrogación indica que la oración es una pregunta.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    },
+    {
+      "index": 24,
+      "case_id": "dialogue1004-boundary-05",
+      "literal": "Ayer mi teclado escribió una hilera de números por accidente.",
+      "criterion": "Respond to the narrative without inventing a current command, changing keyboard settings or pretending diagnostics.",
+      "group": "boundary",
+      "verdict": "fail",
+      "reason": "Invents or exposes interpretationfailure instead of respondingappropriately to pastkeyboardnarrative.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La causa del fallo fue que el sistema no pudo interpretar correctamente la solicitud.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "coverage_added": false
+    }
+  ],
+  "registry_before_sha256": "ba26c2c36fe5f6244fb622951d604e32b4ed06ff4d32ac6ca4e1ec5dfd39a004",
+  "effects": "No catalog effects requested/executed; only internalmemory.status journaloperation.",
+  "remaining": "Fourliteralspass butno subgroup has two pertinentpassingvariants. All remainopen.1006diagnoses recurringunsupported/refusal/irrelevantSIEMPRE before repeatingfailedcases; do notgeneratewholepanelrepeats."
+}

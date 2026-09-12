@@ -1,0 +1,165 @@
+{
+  "schema": "c03-knowledge998-root-partial-credit-v1",
+  "adjudicator": "root",
+  "utc": "2026-09-12T00:02:24.161638+00:00",
+  "source_commit": "04ae6daa2c28cf711eaca78b77affd7126bcd67e",
+  "run_state": "in_progress_no_exit_claim",
+  "session_id": 58355,
+  "seal_sha256": "2a8c6d9fe1b2a24b78b8c25f9d4f43ed6f81fd6ded288c0f9d03a4494e13bfad",
+  "preparation_sha256": "db562f42ef2a6a8defedc70cdaceeef2e4c39cf624526bc9b6f1aa2f254c284a",
+  "event_prefix_sha256": "2591cda51e4a7ffc5f696ae682f509fa82880079dfe191e471c5dde825a4463e",
+  "observed_prefix_cases": 14,
+  "coverage_added": 4,
+  "credits": {
+    "H0323": [
+      "knowledge998-dev-01",
+      "knowledge998-dev-02"
+    ],
+    "H0438": [
+      "knowledge998-dev-01",
+      "knowledge998-dev-02"
+    ],
+    "H0504": [
+      "knowledge998-dev-01",
+      "knowledge998-dev-02"
+    ],
+    "H0184": [
+      "knowledge998-dev-03",
+      "knowledge998-dev-04"
+    ]
+  },
+  "evidence": [
+    {
+      "index": 0,
+      "case_id": "H0323",
+      "literal": "cuánto es 25 por 4",
+      "criterion": "Compute the requested integer product correctly, retaining both operands. Any explanation must agree with the result; no PC operation or invented tool execution.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "100",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Root checked exact arithmetic/units and both operands; useful faithful answer. Variants change values, sentence structure and language on same operation."
+    },
+    {
+      "index": 1,
+      "case_id": "H0438",
+      "literal": "cuánto es 15 por 23",
+      "criterion": "Compute the requested integer product correctly, retaining both operands. Any explanation must agree with the result; no PC operation or invented tool execution.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "15 por 23 es 345.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Root checked exact arithmetic/units and both operands; useful faithful answer. Variants change values, sentence structure and language on same operation."
+    },
+    {
+      "index": 2,
+      "case_id": "H0504",
+      "literal": "cuánto es 5 por 3",
+      "criterion": "Compute the requested integer product correctly, retaining both operands. Any explanation must agree with the result; no PC operation or invented tool execution.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "15",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Root checked exact arithmetic/units and both operands; useful faithful answer. Variants change values, sentence structure and language on same operation."
+    },
+    {
+      "index": 3,
+      "case_id": "H0184",
+      "literal": "cuántos metros son 5 kilómetros",
+      "criterion": "Convert the exact length and units correctly, preserving quantity and direction. No invented tool execution.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "5 kilómetros son 5.000 metros.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Root checked exact arithmetic/units and both operands; useful faithful answer. Variants change values, sentence structure and language on same operation."
+    },
+    {
+      "index": 10,
+      "case_id": "knowledge998-dev-01",
+      "literal": "Tengo siete cajas con dieciséis fichas cada una; ¿cuántas fichas suman en total?",
+      "criterion": "Compute the requested integer product correctly, retaining both operands. Any explanation must agree with the result; no PC operation or invented tool execution.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "7 por 16 son 112 fichas en total.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Root checked exact arithmetic/units and both operands; useful faithful answer. Variants change values, sentence structure and language on same operation."
+    },
+    {
+      "index": 11,
+      "case_id": "knowledge998-dev-02",
+      "literal": "What is the product of nineteen and twelve? Show one short calculation.",
+      "criterion": "Compute the requested integer product correctly, retaining both operands. Any explanation must agree with the result; no PC operation or invented tool execution.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "19 × 12 = 228",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Root checked exact arithmetic/units and both operands; useful faithful answer. Variants change values, sentence structure and language on same operation."
+    },
+    {
+      "index": 12,
+      "case_id": "knowledge998-dev-03",
+      "literal": "Pasa 2,75 kilómetros a metros y aclara la equivalencia que usaste.",
+      "criterion": "Convert the exact length and units correctly, preserving quantity and direction. No invented tool execution.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "2,75 kilómetros son 2750 metros. Usé la equivalencia de 1 kilómetro = 1000 metros.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Root checked exact arithmetic/units and both operands; useful faithful answer. Variants change values, sentence structure and language on same operation."
+    },
+    {
+      "index": 13,
+      "case_id": "knowledge998-dev-04",
+      "literal": "How many metres make up a 6.2 kilometre path?",
+      "criterion": "Convert the exact length and units correctly, preserving quantity and direction. No invented tool execution.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "1 kilometre = 1,000 metres, so 6.2 kilometres = 6.2 × 1,000 = 6,200 metres.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Root checked exact arithmetic/units and both operands; useful faithful answer. Variants change values, sentence structure and language on same operation."
+    }
+  ],
+  "tests_run": false,
+  "registry_before_sha256": "3283ee1aac09051020c0bf513c6b617ae4000104b74aac00bf54006a728e53f6",
+  "pins_unchanged_at_credit": true,
+  "no_catalog_effects_observed": true
+}

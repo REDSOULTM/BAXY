@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-12T00:12:04.011908+00:00",
+  "inspection_collection": "1a5edf",
+  "query": "Win32_Process chrome.exe command line restricted to C03-web-tail997-profile or C03-web-tail1000-profile",
+  "matched_processes": [],
+  "close_actions": [],
+  "free_physical_memory_kib": 4299272,
+  "free_ram_mib": 4198.5078125,
+  "conclusion": "No owned temporary browser matching these profiles remained. No user application was closed. Other browser/application processes were not selected.",
+  "owner_authorization": "User explicitly permits closing applications for RAM; no closure needed."
+}

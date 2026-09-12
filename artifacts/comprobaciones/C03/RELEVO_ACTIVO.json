@@ -34,57 +34,46 @@
   },
   "schema": "c03-active-relay-current-v2",
   "goalStatus": "active",
-  "confirmedAtUtc": "2026-09-11T23:27:13.078331+00:00",
+  "confirmedAtUtc": "2026-09-12T00:14:52.619688+00:00",
   "branch": "Goal-c03",
-  "checkpoint": "97/742covered,645open,0NA;69confirmed grants24h;0/35categories,C03 3/11. This turn+8credits983/986.",
-  "continuation": "Commit reviewed994/996+App URL projection removal; build996 ready. Generate authorized993 manifest from actual build996, prepare and run revision3. No active product or agents.",
+  "checkpoint": "103/742covered,639open,0NA;75confirmedgrants24h;0/35categories,C03 3/11. Latest998+6credits.",
+  "continuation": "No GPU active. Review external1008 deicticopeningclarification patch, adopt only after rootreview;1009repeats exactly4affectedliterals+2variants+5boundaries. Separate1003webdiagnostic remains reviewedexternal notadopted.1006complete distinguishes causes.",
   "pendingOwnerClarification": null,
-  "publishedSourceCommit": "9bc1c38d712a676766fb1738638cc8f68532e06b",
+  "publishedSourceCommit": "04ae6daa2c28cf711eaca78b77affd7126bcd67e",
   "surveyVerificationCounts": {
-    "covered": 97,
-    "open": 645,
+    "open": 639,
+    "covered": 103,
     "not_applicable": 0
   },
-  "surveyRegistrySha256": "c1b2164bfcf83baea767614a826d7d9b7bec8d82c300dbdd2e50a5ea6e0fa46e",
+  "surveyRegistrySha256": "111e1824b81e0c24f6f05ac50670ad1c8dec789aa0c371a323dd99ae13d3edd0",
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
-  "surveyCoverageLast24h": 69,
-  "workStatus": "994_996_compiled_adoption_pending_993_revision3_sealed",
+  "surveyCoverageLast24h": 75,
+  "workStatus": "1008_patch_and1009_panel_preparing",
   "goalStatusNote": "Owner waived automated suites/Fast/Full; scope blocker resolved. No new blocked condition.",
   "previousGoalTurnClassification": "progress",
   "previousGoalTurnClassificationReason": "Four sealed product batches, three source repairs adopted and published, eight literal credits adjudicated, real scheduled effects reconciled; next repair reviewed and panel sealed.",
   "objectiveFile": "C:/Users/usuario/.codex/attachments/310753b7-9a38-4a57-951e-007fdcf7693a/goal-objective.md",
   "objectiveSha256": "951f8c84a15f01282ee1a1a37d8cb45e429d7a0f257a9863e2caad1ce35fbc6d",
   "latestProductRun": {
-    "state": "complete",
-    "batch": 989,
-    "sessionId": 76147,
-    "sourceCandidate": "9bc1c38d712a676766fb1738638cc8f68532e06b",
-    "privatePath": "C:/Users/usuario/AppData/Local/BAXY/C03-media-status989-private",
-    "preparationSha256": "bb76e8c3429e2071cd6736e7320bb7a7ecb238fed4f18c2fa614f4b974c6b730",
-    "collection": "87a79b",
-    "exitCode": 0,
-    "executed": 11,
-    "passed": 5,
-    "failed": 6,
+    "batch": 1004,
+    "state": "adjudicated",
+    "sessionId": 14283,
+    "sourceCandidate": "04ae6daa2c28cf711eaca78b77affd7126bcd67e",
+    "privatePath": "C:/Users/usuario/AppData/Local/BAXY/C03-dialogue1004-private",
+    "preparationSha256": "09d805e4348b7272f62615672ae5ca9c349ab12eb08bf2782fb5ca0011925bf8",
+    "collection": "e771e8",
+    "executed": 25,
+    "passed": 7,
+    "failed": 18,
     "coverageAdded": 0
   },
   "activeValidation": null,
-  "activeRepairAgent": null,
-  "currentUnpublishedSource": {
-    "files": [
-      "src/baxy_mind/__main__.py",
-      "src/baxy_mind/effect_intent.py",
-      "src/Baxy.App/PlannerExecutionSupport.cs",
-      "src/Baxy.App/MainWindowViewModel.cs",
-      "src/Baxy.App/ProductConductor.cs",
-      "src/Baxy.App/ProductConductorHost.cs"
-    ],
-    "build_ready": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conductor-review996-private\\BUILD_READY.json"
-  },
-  "preparedNextPanel": "WEB_NAMED993/PREPARATION.json",
+  "activeRepairAgent": "apps_intent852:1008 Pythonpatch external;prepare934:1009sealedpanel",
+  "currentUnpublishedSource": null,
+  "preparedNextPanel": "C:/Users/usuario/AppData/Local/BAXY/C03-deictic1009-proposal",
   "lastValidation": {
     "status": "historical_only",
     "candidate": 843,
@@ -149,6 +138,84 @@
         "gpu_telemetry_available": true,
         "ram_peak_mib": 2419.703125,
         "seconds": 48.01499999999942,
+        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+      }
+    },
+    "993": {
+      "executed": 1,
+      "passed": 0,
+      "failed": 1,
+      "not_executed": 33,
+      "coverage_added": 0,
+      "resources": {
+        "utc": "2026-09-11T23:30:39.939197+00:00",
+        "violations": [],
+        "gpu_peak_mib": 3495.55859375,
+        "gpu_telemetry_available": true,
+        "ram_peak_mib": 2284.72265625,
+        "seconds": 92.76600000000326,
+        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+      }
+    },
+    "997": {
+      "executed": 13,
+      "passed": 4,
+      "failed": 9,
+      "not_executed": 20,
+      "coverage_added": 0,
+      "resources": {
+        "utc": "2026-09-11T23:39:52.192526+00:00",
+        "violations": [],
+        "gpu_peak_mib": 3644.2265625,
+        "gpu_telemetry_available": true,
+        "ram_peak_mib": 3636.80078125,
+        "seconds": 306.6100000000006,
+        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+      }
+    },
+    "1002": {
+      "executed": 12,
+      "passed": 3,
+      "failed": 9,
+      "not_executed": 0,
+      "coverage_added": 0,
+      "resources": {
+        "utc": "2026-09-11T23:56:42.997592+00:00",
+        "violations": [],
+        "gpu_peak_mib": 3497.55859375,
+        "gpu_telemetry_available": true,
+        "ram_peak_mib": 2462.83203125,
+        "seconds": 91.93700000000536,
+        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+      }
+    },
+    "998": {
+      "executed": 25,
+      "passed": 18,
+      "failed": 7,
+      "coverage_added": 6,
+      "resources": {
+        "utc": "2026-09-12T00:02:16.544334+00:00",
+        "violations": [],
+        "gpu_peak_mib": 3497.55859375,
+        "gpu_telemetry_available": true,
+        "ram_peak_mib": 2486.953125,
+        "seconds": 143.84399999999732,
+        "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+      }
+    },
+    "1004": {
+      "executed": 25,
+      "passed": 7,
+      "failed": 18,
+      "coverage_added": 0,
+      "resources": {
+        "utc": "2026-09-12T00:09:33.646907+00:00",
+        "violations": [],
+        "gpu_peak_mib": 3499.55859375,
+        "gpu_telemetry_available": true,
+        "ram_peak_mib": 2524.8671875,
+        "seconds": 119.53099999998813,
         "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
       }
     }

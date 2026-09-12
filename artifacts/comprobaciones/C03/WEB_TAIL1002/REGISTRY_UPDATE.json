@@ -1,0 +1,11 @@
+{
+  "utc": "2026-09-11T23:57:52.148635+00:00",
+  "before_sha256": "3283ee1aac09051020c0bf513c6b617ae4000104b74aac00bf54006a728e53f6",
+  "after_sha256": "3283ee1aac09051020c0bf513c6b617ae4000104b74aac00bf54006a728e53f6",
+  "coverage_added": 0,
+  "covered": 97,
+  "open": 645,
+  "not_applicable": 0,
+  "reason": "No literal in exact remaining suffix; zero successful navigation variants. No registry rows changed.",
+  "adjudication_sha256": "fed2e089b70adaeebe145c81cac53c67bd712daa4d95d7c117e2df9d2e7e5605"
+}

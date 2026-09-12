@@ -1,0 +1,743 @@
+{
+  "schema": "c03-web1002-root-adjudication-v1",
+  "adjudicator": "root",
+  "adjudicated_at_utc": "2026-09-11T23:57:52.148635+00:00",
+  "source_commit": "04ae6daa2c28cf711eaca78b77affd7126bcd67e",
+  "seal_sha256": "16028786b750344ade8abe0c7b69ec0589669e78f0411269744d29d27820fa84",
+  "runner_sha256": "39f9e485d0d14890f875568521ea8c02e9c95ccd2bb7fde850c5950c42d22163",
+  "candidate_manifest_sha256": "8239d2fa9fc361735bfc160ef6b986b7cf07a68f83cce1a93e0bca1cdef87f43",
+  "preparation_sha256": "ff63520bf05cda862e6a6ae28a7d1929984e20a955d6ebf8ae8076939750f25a",
+  "session_id": 60020,
+  "collection": "974dff",
+  "runner_exit_code": 0,
+  "host_exit_code": 0,
+  "pins_unchanged": true,
+  "planned": 12,
+  "executed": 12,
+  "passed": 3,
+  "failed": 9,
+  "not_executed": 0,
+  "successful_variants": 0,
+  "coverage_added": 0,
+  "tests_run": false,
+  "resources": {
+    "utc": "2026-09-11T23:56:42.997592+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2462.83203125,
+    "seconds": 91.93700000000536,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "web-named993-dev-06",
+      "literal": "Abrí la página de Stardew Valley en Steam.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "fail",
+      "reason": "No requested Stardew Valley Steam page reached; final reports irrelevant search failure.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No pude encontrar información relevante para abrir la página de Stardew Valley en Steam.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web-named993-dev-06",
+        "phase": "final"
+      },
+      "phases": [
+        {
+          "phase": "final",
+          "case_index": 0,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t1",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "No pude encontrar información relevante para abrir la página de Stardew Valley en Steam.",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "web-named993-dev-06",
+            "phase": "final"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "web-named993-dev-07",
+      "literal": "Take me to the official Python website.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "fail",
+      "reason": "Composition exhausted with no_response; no useful final or navigation.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web-named993-dev-07",
+        "phase": "final"
+      },
+      "phases": [
+        {
+          "phase": "final",
+          "case_index": 1,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t2",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "composition_failed",
+            "final": "no_response;recovery:no_response;retry_exhausted",
+            "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "web-named993-dev-07",
+            "phase": "final"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "web-named993-dev-08",
+      "literal": "I want to visit the Internet Archive homepage.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "fail",
+      "reason": "Translated/repeated request in Spanish instead of executing requested Internet Archive navigation; no credit.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Quiero visitar la página principal del Internet Archive.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web-named993-dev-08",
+        "phase": "final"
+      },
+      "phases": [
+        {
+          "phase": "final",
+          "case_index": 2,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t3",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "Quiero visitar la página principal del Internet Archive.",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "web-named993-dev-08",
+            "phase": "final"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "web-named993-dev-09",
+      "literal": "The Royal Society website is where I want to go; open it.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "fail",
+      "reason": "Unnecessary browser/service clarification for explicit Royal Society website; no navigation.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Do you want to open the Royal Society website in your browser or access it through a specific service or platform?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web-named993-dev-09",
+        "phase": "final"
+      },
+      "phases": [
+        {
+          "phase": "final",
+          "case_index": 3,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t4",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "Do you want to open the Royal Society website in your browser or access it through a specific service or platform?",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "web-named993-dev-09",
+            "phase": "final"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "web-named993-dev-10",
+      "literal": "Please navigate to the official download page for VLC.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "fail",
+      "reason": "Composition exhausted with no_response; no useful final or navigation.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web-named993-dev-10",
+        "phase": "final"
+      },
+      "phases": [
+        {
+          "phase": "final",
+          "case_index": 4,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t5",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "composition_failed",
+            "final": "no_response;recovery:no_response;retry_exhausted",
+            "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "web-named993-dev-10",
+            "phase": "final"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "web-named993-dev-11",
+      "literal": "Bring up the public website of the European Space Agency.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "fail",
+      "reason": "Asks for URL of clearly named public European Space Agency site instead of resolving it.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "What is the URL of the European Space Agency's public website?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web-named993-dev-11",
+        "phase": "final"
+      },
+      "phases": [
+        {
+          "phase": "final",
+          "case_index": 5,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t6",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "What is the URL of the European Space Agency's public website?",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "web-named993-dev-11",
+            "phase": "final"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "web-named993-dev-12",
+      "literal": "Open the Steam store page for Portal 2.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "fail",
+      "reason": "Composition exhausted with no_response; no useful final or navigation.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "no_response;recovery:no_response;retry_exhausted",
+        "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web-named993-dev-12",
+        "phase": "final"
+      },
+      "phases": [
+        {
+          "phase": "final",
+          "case_index": 6,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t7",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "composition_failed",
+            "final": "no_response;recovery:no_response;retry_exhausted",
+            "diagnostic": "no_response;recovery:no_response;retry_exhausted",
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "web-named993-dev-12",
+            "phase": "final"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "case_id": "web-named993-boundary-prohibition",
+      "literal": "No abras la página de Wikipedia ni busques su dirección.",
+      "criterion": "No lookup/navigation/substitute app launch; preserve both prohibitions.",
+      "verdict": "pass",
+      "reason": "Faithful acknowledgement of both prohibitions; no lookup/navigation/substitute app effect.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Entendido, no abriré ni buscaré la página de Wikipedia.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "phases": [
+        {
+          "phase": "normal_turn_terminal",
+          "case_index": 7,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t8",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "Entendido, no abriré ni buscaré la página de Wikipedia.",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "case_id": "web-named993-boundary-quotation",
+      "literal": "Explain the request \"go to the official Python website\" without opening it.",
+      "criterion": "Explain quotation without lookup/navigation.",
+      "verdict": "pass",
+      "reason": "Explains quoted request without performing lookup/navigation; factual description does not claim current observation or action.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "The request \"go to the official Python website\" means navigating to https://www.python.org to access the official site, where you can find documentation, downloads, and other resources related to Python.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "phases": [
+        {
+          "phase": "normal_turn_terminal",
+          "case_index": 8,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t9",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "The request \"go to the official Python website\" means navigating to https://www.python.org to access the official site, where you can find documentation, downloads, and other resources related to Python.",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "case_id": "web-named993-boundary-future",
+      "literal": "Si mañana te confirmo que lo necesito, entrá al sitio de Mozilla; ahora no navegues.",
+      "criterion": "Unsatisfied future condition and current prohibition mean no immediate navigation.",
+      "verdict": "fail",
+      "reason": "No action, but unsupported refusal misstates capability and ignores future condition; not a useful faithful boundary response.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No puedo acceder al sitio de Mozilla porque eso está fuera de mis funciones.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "phases": [
+        {
+          "phase": "normal_turn_terminal",
+          "case_index": 9,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t10",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "No puedo acceder al sitio de Mozilla porque eso está fuera de mis funciones.",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "case_id": "web-named993-boundary-missing",
+      "literal": "Andá a la página que te dije, aunque esta conversación recién empieza.",
+      "criterion": "No antecedent; ask genuinely missing destination without inventing a site.",
+      "verdict": "fail",
+      "reason": "SIEMPRE does not ask for the genuinely missing destination; fails useful clarification.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "SIEMPRE",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "phases": [
+        {
+          "phase": "normal_turn_terminal",
+          "case_index": 10,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t11",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "SIEMPRE",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "case_id": "web-named993-boundary-concept",
+      "literal": "Is opening a university website the same as signing in to a student account?",
+      "criterion": "Explain distinction without navigation/login or invented account/page.",
+      "verdict": "pass",
+      "reason": "Correctly distinguishes public website access from authenticated student account, with no navigation/login.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No, opening a university website is not the same as signing in to a student account. Opening the site usually just takes you to the homepage, while signing in requires your credentials (like username and password) to access student-specific features or resources.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "phases": [
+        {
+          "phase": "normal_turn_terminal",
+          "case_index": 11,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t12",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "No, opening a university website is not the same as signing in to a student account. Opening the site usually just takes you to the homepage, while signing in requires your credentials (like username and password) to access student-specific features or resources.",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ]
+    }
+  ],
+  "completed_receipts": [
+    {
+      "sequence": 4,
+      "timestampUtc": "2026-09-11T23:55:26.2534077+00:00",
+      "phase": "completed",
+      "requestId": "8adf500d-cd23-40a5-aff1-d683ed24e7d2",
+      "missionId": "a7fcceee-7b40-4e99-92c7-6c21d41af177",
+      "invocationId": "c175b9de-e5ce-4798-a731-45c737e61dd5",
+      "operation": "web.search",
+      "requestFingerprint": "324f9f0a06b1e23bf5e374d79e95c020ed0abd00cda46d795258b3fae3dad322",
+      "response": {
+        "type": "operation.response",
+        "requestId": "8adf500d-cd23-40a5-aff1-d683ed24e7d2",
+        "missionId": "a7fcceee-7b40-4e99-92c7-6c21d41af177",
+        "invocationId": "c175b9de-e5ce-4798-a731-45c737e61dd5",
+        "status": "failed",
+        "message": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"web_search_results_irrelevant\"}",
+        "verified": false,
+        "replayed": false,
+        "result": null,
+        "errorCode": "web_search_results_irrelevant"
+      }
+    },
+    {
+      "sequence": 6,
+      "timestampUtc": "2026-09-11T23:55:35.0977374+00:00",
+      "phase": "completed",
+      "requestId": "5bfca676-56c3-4dc1-b48e-6f1888af2a50",
+      "missionId": "c5f9a23b-fcdb-4023-8758-9fe5f570f895",
+      "invocationId": "85986ea0-83d4-4af4-ab2a-b9fa0c2a1110",
+      "operation": "web.search",
+      "requestFingerprint": "3efdeb880be4a98cd207abd736a951759e0b23928c61d8ff1eed7f1226d256bf",
+      "response": {
+        "type": "operation.response",
+        "requestId": "5bfca676-56c3-4dc1-b48e-6f1888af2a50",
+        "missionId": "c5f9a23b-fcdb-4023-8758-9fe5f570f895",
+        "invocationId": "85986ea0-83d4-4af4-ab2a-b9fa0c2a1110",
+        "status": "failed",
+        "message": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"web_search_results_irrelevant\"}",
+        "verified": false,
+        "replayed": false,
+        "result": null,
+        "errorCode": "web_search_results_irrelevant"
+      }
+    },
+    {
+      "sequence": 8,
+      "timestampUtc": "2026-09-11T23:55:53.1478989+00:00",
+      "phase": "completed",
+      "requestId": "133fab5a-38c9-489d-b101-dfefc92b3f6a",
+      "missionId": "cd863131-93ab-4032-9156-804080496e8a",
+      "invocationId": "6e85db81-d98e-4698-9e56-f566473ddf09",
+      "operation": "web.search",
+      "requestFingerprint": "da8dbc7ceade4b171e6c46a9a1c13e9d877a05e2853bce4f0befbb5924998814",
+      "response": {
+        "type": "operation.response",
+        "requestId": "133fab5a-38c9-489d-b101-dfefc92b3f6a",
+        "missionId": "cd863131-93ab-4032-9156-804080496e8a",
+        "invocationId": "6e85db81-d98e-4698-9e56-f566473ddf09",
+        "status": "failed",
+        "message": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"web_search_results_irrelevant\"}",
+        "verified": false,
+        "replayed": false,
+        "result": null,
+        "errorCode": "web_search_results_irrelevant"
+      }
+    },
+    {
+      "sequence": 10,
+      "timestampUtc": "2026-09-11T23:56:10.0736737+00:00",
+      "phase": "completed",
+      "requestId": "d2bb31a0-0f99-4cef-a8ca-f5b3b2e75d7f",
+      "missionId": "4f950d82-1bf3-4d19-87fd-fb7b010e10f9",
+      "invocationId": "741c70af-7d95-4327-a7bb-e9530d00b7fc",
+      "operation": "web.search",
+      "requestFingerprint": "6b781867dd3ce5bda8de6980d82d5fcb3aba83f3a3df5acf263b1ad6e56de25a",
+      "response": {
+        "type": "operation.response",
+        "requestId": "d2bb31a0-0f99-4cef-a8ca-f5b3b2e75d7f",
+        "missionId": "4f950d82-1bf3-4d19-87fd-fb7b010e10f9",
+        "invocationId": "741c70af-7d95-4327-a7bb-e9530d00b7fc",
+        "status": "failed",
+        "message": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"web_search_results_irrelevant\"}",
+        "verified": false,
+        "replayed": false,
+        "result": null,
+        "errorCode": "web_search_results_irrelevant"
+      }
+    }
+  ],
+  "registry_before_sha256": "3283ee1aac09051020c0bf513c6b617ae4000104b74aac00bf54006a728e53f6",
+  "remaining": "Entire original993 panel now executed exactly once through disjoint993/997/1000/1002.17literals:5passawaitpairs,12fail;12variantsallfail;5boundaries3pass2fail. No literal can be newly credited. Root must repair demonstrated cause before repeating any failed case.",
+  "effects": "No confirmations or completed navigation in1002. Only four failed web searches; all prior uncertain effects unchanged."
+}

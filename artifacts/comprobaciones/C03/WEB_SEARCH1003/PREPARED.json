@@ -1,0 +1,15 @@
+{
+  "status": "external_patch_reviewed_not_adopted",
+  "base": "04ae6daa2c28cf711eaca78b77affd7126bcd67e",
+  "proposal": "C:/Users/usuario/AppData/Local/BAXY/C03-web-search1003-proposal",
+  "patch_sha256": "45c1c3b09bbdbb483e917ef281871758c1e2b12e945e1674c0716b587c351fc9",
+  "report_sha256": "85faa3a1cc33bd9e480054bd0aac1680d7dc41eabe92a64e3751e469f46fc59d",
+  "source_file": "src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs",
+  "lines_added": 78,
+  "tests_run": false,
+  "build_run": false,
+  "product_run": false,
+  "coverage_added": 0,
+  "next": "After current product run completes, adopt reviewed private rejection diagnostic, build necessary binaries, then execute only targeted sealed failed cases to identify actual query/results before behavior repair. Do not weaken relevance filter without evidence.",
+  "root_review": "Existingprivate storage andsecurityreference, exactsameSearchTokens/missingterms, bounded20items1MiBrecord16MiBfile, localunverifieddiagnosticsoutsideoperationresults. Failurecontractunchanged. No provider/model/schema added."
+}

@@ -1,0 +1,11 @@
+{
+  "proposal": "C:/Users/usuario/AppData/Local/BAXY/C03-files1005-proposal",
+  "plan_sha256": "c81fccdde8400cea0487be9106f03be2b26cec1f61c6213607f39281901d8b80",
+  "rows_sha256": "60f1d051767f9bec6e2e20e92f374da5928c0b7c9ab45e4abcbc634ef9ad7e94",
+  "selected_category_total": 32,
+  "execution_authorized": false,
+  "tests_run": false,
+  "coverage_added": 0,
+  "status": "frontier_diagnosed_no_executable_panel",
+  "next": "Only H0001/H0696 search potentially need ownedfixtures; tencreation/write literals require externalDesktop/Documents scope beyond current provider sandbox. No new infrastructure until higher existing mechanisms covered."
+}

@@ -1,0 +1,928 @@
+{
+  "schema": "c03-web1000-root-adjudication-v1",
+  "adjudicator": "root",
+  "adjudicated_at_utc": "2026-09-11T23:52:23.961732+00:00",
+  "source_commit": "04ae6daa2c28cf711eaca78b77affd7126bcd67e",
+  "seal_sha256": "fe20084f6e06e10793a9cae212667525cd173dad9d9003758c866e8f6da208d1",
+  "runner_sha256": "f6a0c75dfe0bfab5daa3290d82641d1df86604b20d7262a3474f4c79147fd29c",
+  "candidate_manifest_sha256": "2a82a8c889b4e0cff3541192d0aaf3d8317b6c8e0a78e48d7b1a89a4b8b8d2e4",
+  "preparation_sha256": "739d0c091d173634632514f643905398ad9b4d7a38a521767babbf95e7f71788",
+  "session_id": 90303,
+  "collection": "dafca8",
+  "runner_exit_code": 1,
+  "host_exit_code": 3,
+  "pins_unchanged": true,
+  "planned": 20,
+  "executed": 8,
+  "passed": 1,
+  "failed": 7,
+  "not_executed": 12,
+  "coverage_added": 0,
+  "tests_run": false,
+  "resources": {
+    "utc": "2026-09-11T23:50:51.536658+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3528.70703125,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 3131.3828125,
+    "seconds": 78.43799999999464,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0692",
+      "literal": "entrá a la página de wikipedia",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "pass",
+      "reason": "Verified Wikipedia search and exact approved navigation to es.wikipedia.org/wiki/Wikipedia:Portada. Useful final faithfully reports actual navigation. Literal passes; requires two pertinent successful variants before coverage.",
+      "coverage_added": false,
+      "phases": [
+        {
+          "phase": "request",
+          "case_index": 0,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t1",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "¿Quieres confirmar o cancelar?",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "H0692",
+            "phase": "request"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        },
+        {
+          "phase": "final",
+          "case_index": 0,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t2",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "Entré a la página de Wikipedia. La búsqueda por \"wikipedia\" mostró varios resultados, incluyendo la página oficial en español. Navegué a https://es.wikipedia.org/wiki/Wikipedia:Portada. La página se cargó correctamente.",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "H0692",
+            "phase": "final"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": true,
+          "counts_as_variant_or_credit": false
+        }
+      ],
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Entré a la página de Wikipedia. La búsqueda por \"wikipedia\" mostró varios resultados, incluyendo la página oficial en español. Navegué a https://es.wikipedia.org/wiki/Wikipedia:Portada. La página se cargó correctamente.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "H0692",
+        "phase": "final"
+      },
+      "receipts": [
+        {
+          "sequence": 4,
+          "timestampUtc": "2026-09-11T23:49:47.9918002+00:00",
+          "phase": "completed",
+          "requestId": "a3f2ef4d-331d-4a27-b0aa-c1e0873ec2a0",
+          "missionId": "73e35d14-9afd-4d20-a630-6ac57d3d5870",
+          "invocationId": "c7f44926-1533-475b-9272-796cf74b7932",
+          "operation": "web.search",
+          "requestFingerprint": "5d699b980a2b5dc138a91d54f598094309ea7fc37d1235f354ba43df5a8e6871",
+          "response": {
+            "type": "operation.response",
+            "requestId": "a3f2ef4d-331d-4a27-b0aa-c1e0873ec2a0",
+            "missionId": "73e35d14-9afd-4d20-a630-6ac57d3d5870",
+            "invocationId": "c7f44926-1533-475b-9272-796cf74b7932",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"wikipedia\",\"count\":5,\"results\":[{\"title\":\"Wikipedia, la enciclopedia libre\",\"url\":\"https://es.wikipedia.org/wiki/Wikipedia:Portada\",\"snippet\":\"Wikipedia es uno de los proyectos Wikimedia, de contenido libre y administrados técnicamente por la Fundación Wikimedia, una organización estadounidense sin fines de lucro.\"},{\"title\":\"Wikipedia\",\"url\":\"https://www.wikipedia.org/\",\"snippet\":\"Wikipedia is a free online encyclopedia, created and edited by volunteers around the world and hosted by the Wikimedia Foundation.\"},{\"title\":\"Wikipedia - Wikipedia, la enciclopedia libre\",\"url\":\"https://es.wikipedia.org/wiki/Wikipedia\",\"snippet\":\"En enero de 2023, Wikipedia actualizó su interfaz de escritorio por primera vez desde 2012.\"},{\"title\":\"Wikipedia, the free encyclopedia\",\"url\":\"https://en.wikipedia.org/wiki/Main_Page\",\"snippet\":\"Wikipedia is written by volunteer editors and hosted by the Wikimedia Foundation, a non-profit organization that also hosts a range of other volunteer projects:\"},{\"title\":\"Wikipedia - Wikipedia\",\"url\":\"https://en.wikipedia.org/wiki/Wikipedia\",\"snippet\":\"Founded by Jimmy Wales and Larry Sanger in 2001, Wikipedia has been hosted since 2003 by the Wikimedia Foundation, an American nonprofit organization funded mainly by donations from readers. [1] Wikipedia is the largest and most read reference work in history. [2][3]\"}],\"authority\":\"bing_rss_https\"}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "version": 1,
+              "query": "wikipedia",
+              "count": 5,
+              "results": [
+                {
+                  "title": "Wikipedia, la enciclopedia libre",
+                  "url": "https://es.wikipedia.org/wiki/Wikipedia:Portada",
+                  "snippet": "Wikipedia es uno de los proyectos Wikimedia, de contenido libre y administrados técnicamente por la Fundación Wikimedia, una organización estadounidense sin fines de lucro."
+                },
+                {
+                  "title": "Wikipedia",
+                  "url": "https://www.wikipedia.org/",
+                  "snippet": "Wikipedia is a free online encyclopedia, created and edited by volunteers around the world and hosted by the Wikimedia Foundation."
+                },
+                {
+                  "title": "Wikipedia - Wikipedia, la enciclopedia libre",
+                  "url": "https://es.wikipedia.org/wiki/Wikipedia",
+                  "snippet": "En enero de 2023, Wikipedia actualizó su interfaz de escritorio por primera vez desde 2012."
+                },
+                {
+                  "title": "Wikipedia, the free encyclopedia",
+                  "url": "https://en.wikipedia.org/wiki/Main_Page",
+                  "snippet": "Wikipedia is written by volunteer editors and hosted by the Wikimedia Foundation, a non-profit organization that also hosts a range of other volunteer projects:"
+                },
+                {
+                  "title": "Wikipedia - Wikipedia",
+                  "url": "https://en.wikipedia.org/wiki/Wikipedia",
+                  "snippet": "Founded by Jimmy Wales and Larry Sanger in 2001, Wikipedia has been hosted since 2003 by the Wikimedia Foundation, an American nonprofit organization funded mainly by donations from readers. [1] Wikipedia is the largest and most read reference work in history. [2][3]"
+                }
+              ],
+              "authority": "bing_rss_https"
+            },
+            "errorCode": null
+          }
+        },
+        {
+          "sequence": 6,
+          "timestampUtc": "2026-09-11T23:50:18.9568027+00:00",
+          "phase": "completed",
+          "requestId": "8cd1fa15-09b4-4900-b27a-d575a8ec930c",
+          "missionId": "f37dc2cc-24e4-4fed-a159-077c84fda133",
+          "invocationId": "484224ff-f70d-46f5-a473-4e3d4cdc32c7",
+          "operation": "browser.navigate",
+          "requestFingerprint": "fd098773134d9144f020f77396e05188c6013863684b604e635d4c24e856d18f",
+          "response": {
+            "type": "operation.response",
+            "requestId": "8cd1fa15-09b4-4900-b27a-d575a8ec930c",
+            "missionId": "f37dc2cc-24e4-4fed-a159-077c84fda133",
+            "invocationId": "484224ff-f70d-46f5-a473-4e3d4cdc32c7",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"browser.navigate\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"requestedUrl\":\"https://es.wikipedia.org/wiki/Wikipedia:Portada\",\"finalUrl\":\"https://es.wikipedia.org/wiki/Wikipedia:Portada\",\"targetId\":\"7613FB7243A1FD49DE7DBA8B8CB317CD\",\"authority\":\"cdp\"}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "version": 1,
+              "requestedUrl": "https://es.wikipedia.org/wiki/Wikipedia:Portada",
+              "finalUrl": "https://es.wikipedia.org/wiki/Wikipedia:Portada",
+              "targetId": "7613FB7243A1FD49DE7DBA8B8CB317CD",
+              "authority": "cdp"
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0723",
+      "literal": "ve a la pagina de marvel rivals en steam",
+      "criterion": "Resolve the requested game page within Steam from current observed public evidence, then navigate to that exact page and verify URL/target. Do not substitute Steam home/search listing, launch the installed game, buy or download. No two complete deep-resolution variants are supplied; no promised credit.",
+      "verdict": "fail",
+      "reason": "Observed web.search failed web_search_results_irrelevant; no requested Marvel Rivals Steam page reached. Honest failure is not credit.",
+      "coverage_added": false,
+      "phases": [
+        {
+          "phase": "final",
+          "case_index": 1,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t3",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "No pude ir a la página de Marvel Rivals en Steam porque los resultados de búsqueda no son relevantes.",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "H0723",
+            "phase": "final"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ],
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No pude ir a la página de Marvel Rivals en Steam porque los resultados de búsqueda no son relevantes.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "H0723",
+        "phase": "final"
+      },
+      "receipts": [
+        {
+          "sequence": 8,
+          "timestampUtc": "2026-09-11T23:50:21.0672603+00:00",
+          "phase": "completed",
+          "requestId": "c07c265f-9b93-42e2-9f18-8a38244ff99f",
+          "missionId": "6172dc25-e102-4197-8743-404f6b4f664e",
+          "invocationId": "51282039-4ef6-48af-9756-c69a9b9fa72a",
+          "operation": "web.search",
+          "requestFingerprint": "081e20d92c3086bac8bb29fa36df8e7838b29f66eb79b33d52b636ea46e0fff8",
+          "response": {
+            "type": "operation.response",
+            "requestId": "c07c265f-9b93-42e2-9f18-8a38244ff99f",
+            "missionId": "6172dc25-e102-4197-8743-404f6b4f664e",
+            "invocationId": "51282039-4ef6-48af-9756-c69a9b9fa72a",
+            "status": "failed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"web_search_results_irrelevant\"}",
+            "verified": false,
+            "replayed": false,
+            "result": null,
+            "errorCode": "web_search_results_irrelevant"
+          }
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "H0741",
+      "literal": "abrí youtube",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "fail",
+      "reason": "Verified YouTube app already running and faithful final; outside unchanged sealed URL navigation criterion. Legitimate app effect, not uncertain; no web credit.",
+      "coverage_added": false,
+      "phases": [
+        {
+          "phase": "final",
+          "case_index": 2,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t4",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "Abrí YouTube. Ya estaba corriendo.",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "H0741",
+            "phase": "final"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ],
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Abrí YouTube. Ya estaba corriendo.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "H0741",
+        "phase": "final"
+      },
+      "receipts": [
+        {
+          "sequence": 10,
+          "timestampUtc": "2026-09-11T23:50:25.4054682+00:00",
+          "phase": "completed",
+          "requestId": "f6864a45-40b8-4f8d-82e3-15c56e4bbbef",
+          "missionId": "83394886-2ad1-4cfa-945e-68af20e54e1e",
+          "invocationId": "91765352-9aab-4d65-adc0-5ee8945f0270",
+          "operation": "app.open",
+          "requestFingerprint": "d8cb7e17b6d987c6b5c346755ae64dc50605ddf0b2065c30171528dbe10a7d33",
+          "response": {
+            "type": "operation.response",
+            "requestId": "f6864a45-40b8-4f8d-82e3-15c56e4bbbef",
+            "missionId": "83394886-2ad1-4cfa-945e-68af20e54e1e",
+            "invocationId": "91765352-9aab-4d65-adc0-5ee8945f0270",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"app.open\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"appId\":\"YouTube\",\"displayName\":\"YouTube\",\"alreadyRunning\":true,\"windowHandle\":1445766}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "appId": "YouTube",
+              "displayName": "YouTube",
+              "alreadyRunning": true,
+              "processId": 21520,
+              "windowHandle": 1445766
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "web-named993-dev-01",
+      "literal": "Llevame al sitio oficial de la NASA.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "fail",
+      "reason": "NASA lookup failed web_search_results_irrelevant; no navigation.",
+      "coverage_added": false,
+      "phases": [
+        {
+          "phase": "final",
+          "case_index": 3,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t5",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "No pude llevarlo al sitio oficial de la NASA porque los resultados de búsqueda no son relevantes.",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "web-named993-dev-01",
+            "phase": "final"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ],
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No pude llevarlo al sitio oficial de la NASA porque los resultados de búsqueda no son relevantes.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web-named993-dev-01",
+        "phase": "final"
+      },
+      "receipts": [
+        {
+          "sequence": 12,
+          "timestampUtc": "2026-09-11T23:50:26.7068604+00:00",
+          "phase": "completed",
+          "requestId": "6bfaef9f-6b57-4360-a592-57aa68d62073",
+          "missionId": "21069779-064d-4a07-b6f7-36bac7704eb6",
+          "invocationId": "41db7efc-1455-4afb-a7bd-6fd727305dc1",
+          "operation": "web.search",
+          "requestFingerprint": "88abb6c9a7e5d35a3253d2d3e47c62a1751fa13245649edd460c9761cfd6f6be",
+          "response": {
+            "type": "operation.response",
+            "requestId": "6bfaef9f-6b57-4360-a592-57aa68d62073",
+            "missionId": "21069779-064d-4a07-b6f7-36bac7704eb6",
+            "invocationId": "41db7efc-1455-4afb-a7bd-6fd727305dc1",
+            "status": "failed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"web_search_results_irrelevant\"}",
+            "verified": false,
+            "replayed": false,
+            "result": null,
+            "errorCode": "web_search_results_irrelevant"
+          }
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "web-named993-dev-02",
+      "literal": "Quiero entrar a la página principal del Museo del Prado.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "fail",
+      "reason": "Museo del Prado lookup failed web_search_results_irrelevant; no navigation.",
+      "coverage_added": false,
+      "phases": [
+        {
+          "phase": "final",
+          "case_index": 4,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t6",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "No pude acceder a la página principal del Museo del Prado porque los resultados de búsqueda fueron irrelevante.",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "web-named993-dev-02",
+            "phase": "final"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ],
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No pude acceder a la página principal del Museo del Prado porque los resultados de búsqueda fueron irrelevante.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web-named993-dev-02",
+        "phase": "final"
+      },
+      "receipts": [
+        {
+          "sequence": 14,
+          "timestampUtc": "2026-09-11T23:50:34.0041884+00:00",
+          "phase": "completed",
+          "requestId": "b0d6600b-86df-40f8-8978-630d399a1606",
+          "missionId": "64a10277-5a45-4838-ae6f-2bfb1d35aaf5",
+          "invocationId": "7a2e0166-8048-4bef-bdea-f22121f9f5f0",
+          "operation": "web.search",
+          "requestFingerprint": "2f1f41a784c0ed30f2ba57e84b5becd18f5ecb1bc923cbfe3b5a41d478f5aecf",
+          "response": {
+            "type": "operation.response",
+            "requestId": "b0d6600b-86df-40f8-8978-630d399a1606",
+            "missionId": "64a10277-5a45-4838-ae6f-2bfb1d35aaf5",
+            "invocationId": "7a2e0166-8048-4bef-bdea-f22121f9f5f0",
+            "status": "failed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"web_search_results_irrelevant\"}",
+            "verified": false,
+            "replayed": false,
+            "result": null,
+            "errorCode": "web_search_results_irrelevant"
+          }
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "web-named993-dev-03",
+      "literal": "La web de Mozilla, abrila por favor.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "fail",
+      "reason": "Unnecessary exact URL clarification for named Mozilla website; no navigation.",
+      "coverage_added": false,
+      "phases": [
+        {
+          "phase": "final",
+          "case_index": 5,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t7",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "¿A qué URL específica quieres navegar?",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "web-named993-dev-03",
+            "phase": "final"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ],
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿A qué URL específica quieres navegar?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web-named993-dev-03",
+        "phase": "final"
+      },
+      "receipts": []
+    },
+    {
+      "index": 6,
+      "case_id": "web-named993-dev-04",
+      "literal": "Navegá hasta la página de Blender para su descarga oficial.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "fail",
+      "reason": "Blender download-page lookup failed web_search_results_irrelevant; no navigation.",
+      "coverage_added": false,
+      "phases": [
+        {
+          "phase": "final",
+          "case_index": 6,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t8",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "No pude navegar hasta la página oficial de Blender porque los resultados de búsqueda no son relevantes.",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "web-named993-dev-04",
+            "phase": "final"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ],
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No pude navegar hasta la página oficial de Blender porque los resultados de búsqueda no son relevantes.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web-named993-dev-04",
+        "phase": "final"
+      },
+      "receipts": [
+        {
+          "sequence": 16,
+          "timestampUtc": "2026-09-11T23:50:41.2652514+00:00",
+          "phase": "completed",
+          "requestId": "b2f853ba-e7e6-4ee4-a0d6-46d4d435219a",
+          "missionId": "dedb0b3f-e39f-4af2-b8fa-7d35aca01d06",
+          "invocationId": "29d07bd2-1406-44bc-9ac4-172dacfdb6b8",
+          "operation": "web.search",
+          "requestFingerprint": "061fe24e5e506156eea5f9f5b93502a6c1c4188cdf36d6a36a4d72cb51a95ef5",
+          "response": {
+            "type": "operation.response",
+            "requestId": "b2f853ba-e7e6-4ee4-a0d6-46d4d435219a",
+            "missionId": "dedb0b3f-e39f-4af2-b8fa-7d35aca01d06",
+            "invocationId": "29d07bd2-1406-44bc-9ac4-172dacfdb6b8",
+            "status": "failed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"web_search_results_irrelevant\"}",
+            "verified": false,
+            "replayed": false,
+            "result": null,
+            "errorCode": "web_search_results_irrelevant"
+          }
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "case_id": "web-named993-dev-05",
+      "literal": "Me gustaría ir al sitio de Project Gutenberg.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "fail",
+      "reason": "Product requested confirmation but conductor could not capture a supported immutable navigation proposal: review_pending_not_supported. No root approval or completed navigation. Preserve pending state; do not replay failed variant.",
+      "coverage_added": false,
+      "phases": [
+        {
+          "phase": "request",
+          "case_index": 7,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t9",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "¿Quieres confirmar o cancelar?",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "web-named993-dev-05",
+            "phase": "request"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        },
+        {
+          "phase": "final",
+          "case_index": 7,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 409,
+            "body": "{\"error\":\"review_pending_not_supported\"}"
+          },
+          "real_submission_events": [],
+          "terminal": {
+            "type": "terminal",
+            "kind": "rejected",
+            "final": null,
+            "diagnostic": "review_pending_not_supported",
+            "timedOut": false,
+            "admissionStatus": 409,
+            "caseId": "web-named993-dev-05",
+            "phase": "final"
+          },
+          "synthetic_guard_rejection": true,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ],
+      "terminal": {
+        "type": "terminal",
+        "kind": "rejected",
+        "final": null,
+        "diagnostic": "review_pending_not_supported",
+        "timedOut": false,
+        "admissionStatus": 409,
+        "caseId": "web-named993-dev-05",
+        "phase": "final"
+      },
+      "receipts": []
+    },
+    {
+      "index": 8,
+      "case_id": "web-named993-dev-06",
+      "literal": "Abrí la página de Stardew Valley en Steam.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Proved unadmitted suffix after host exit3 at index7.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null,
+      "receipts": []
+    },
+    {
+      "index": 9,
+      "case_id": "web-named993-dev-07",
+      "literal": "Take me to the official Python website.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Proved unadmitted suffix after host exit3 at index7.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null,
+      "receipts": []
+    },
+    {
+      "index": 10,
+      "case_id": "web-named993-dev-08",
+      "literal": "I want to visit the Internet Archive homepage.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Proved unadmitted suffix after host exit3 at index7.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null,
+      "receipts": []
+    },
+    {
+      "index": 11,
+      "case_id": "web-named993-dev-09",
+      "literal": "The Royal Society website is where I want to go; open it.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Proved unadmitted suffix after host exit3 at index7.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null,
+      "receipts": []
+    },
+    {
+      "index": 12,
+      "case_id": "web-named993-dev-10",
+      "literal": "Please navigate to the official download page for VLC.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Proved unadmitted suffix after host exit3 at index7.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null,
+      "receipts": []
+    },
+    {
+      "index": 13,
+      "case_id": "web-named993-dev-11",
+      "literal": "Bring up the public website of the European Space Agency.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Proved unadmitted suffix after host exit3 at index7.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null,
+      "receipts": []
+    },
+    {
+      "index": 14,
+      "case_id": "web-named993-dev-12",
+      "literal": "Open the Steam store page for Portal 2.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Proved unadmitted suffix after host exit3 at index7.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null,
+      "receipts": []
+    },
+    {
+      "index": 15,
+      "case_id": "web-named993-boundary-prohibition",
+      "literal": "No abras la página de Wikipedia ni busques su dirección.",
+      "criterion": "No lookup/navigation/substitute app launch; preserve both prohibitions.",
+      "verdict": "not_executed",
+      "reason": "Proved unadmitted suffix after host exit3 at index7.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null,
+      "receipts": []
+    },
+    {
+      "index": 16,
+      "case_id": "web-named993-boundary-quotation",
+      "literal": "Explain the request \"go to the official Python website\" without opening it.",
+      "criterion": "Explain quotation without lookup/navigation.",
+      "verdict": "not_executed",
+      "reason": "Proved unadmitted suffix after host exit3 at index7.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null,
+      "receipts": []
+    },
+    {
+      "index": 17,
+      "case_id": "web-named993-boundary-future",
+      "literal": "Si mañana te confirmo que lo necesito, entrá al sitio de Mozilla; ahora no navegues.",
+      "criterion": "Unsatisfied future condition and current prohibition mean no immediate navigation.",
+      "verdict": "not_executed",
+      "reason": "Proved unadmitted suffix after host exit3 at index7.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null,
+      "receipts": []
+    },
+    {
+      "index": 18,
+      "case_id": "web-named993-boundary-missing",
+      "literal": "Andá a la página que te dije, aunque esta conversación recién empieza.",
+      "criterion": "No antecedent; ask genuinely missing destination without inventing a site.",
+      "verdict": "not_executed",
+      "reason": "Proved unadmitted suffix after host exit3 at index7.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null,
+      "receipts": []
+    },
+    {
+      "index": 19,
+      "case_id": "web-named993-boundary-concept",
+      "literal": "Is opening a university website the same as signing in to a student account?",
+      "criterion": "Explain distinction without navigation/login or invented account/page.",
+      "verdict": "not_executed",
+      "reason": "Proved unadmitted suffix after host exit3 at index7.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null,
+      "receipts": []
+    }
+  ],
+  "reviews": [
+    {
+      "review": {
+        "utc": "2026-09-11T23:50:17.381058+00:00",
+        "adjudicator": "root",
+        "case_id": "H0692",
+        "decision": "approve",
+        "reason": "Root reviewed original Wikipedia request and verified search: exact Spanish Wikipedia homepage fulfills destination with no ambiguous institution or login assumption.",
+        "proposal_sha256": "d4da70ded2bbdb2402411dc1e8f064be5a86b1d4ae0a0c435b41172e6b33376c",
+        "approval_sha256": "0158c45858994eebf9e489a408757d965b795cfd027cd20160b2b3bd043907c8",
+        "coverage_added": 0
+      },
+      "proposal": {
+        "schema": "conductor-review-proposal-v1",
+        "nonce": "760325705df04cbc99ec31f43141324f",
+        "caseId": "H0692",
+        "requestText": "entrá a la página de wikipedia",
+        "operation": "browser.navigate",
+        "arguments": {
+          "url": "https://es.wikipedia.org/wiki/Wikipedia:Portada"
+        },
+        "missionId": "f37dc2cc-24e4-4fed-a159-077c84fda133",
+        "invocationId": "484224ff-f70d-46f5-a473-4e3d4cdc32c7",
+        "expiresAtUtc": "2026-09-11T23:51:48.5549021+00:00",
+        "webSearchObservations": [
+          {
+            "stepId": "step_1",
+            "operation": "web.search",
+            "verified": true,
+            "status": "completed",
+            "result": {
+              "version": 1,
+              "count": 5,
+              "results": [
+                {
+                  "url": "https://es.wikipedia.org/wiki/Wikipedia:Portada"
+                },
+                {
+                  "url": "https://www.wikipedia.org/"
+                },
+                {
+                  "url": "https://es.wikipedia.org/wiki/Wikipedia"
+                },
+                {
+                  "url": "https://en.wikipedia.org/wiki/Main_Page"
+                },
+                {
+                  "url": "https://en.wikipedia.org/wiki/Wikipedia"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "registry_before_sha256": "4080962b4ffc8174fca0e079dcece64c77fd79ea8bd06e3c1c82c4936668375d",
+  "remaining": "Only12unexecuted suffix. H0692 passes, plus four prior997 literals await two pertinent variants. Five executed variants failed; none credited.",
+  "effects": "Exact approved Wikipedia navigation verified; YouTube existing app verified. Gutenberg pending unsupported, no navigation confirmed; prior uncertainties unchanged."
+}

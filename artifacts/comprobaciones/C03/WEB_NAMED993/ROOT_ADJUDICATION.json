@@ -1,0 +1,570 @@
+{
+  "schema": "c03-web993-root-adjudication-v1",
+  "adjudicator": "root",
+  "adjudicated_at_utc": "2026-09-11T23:32:09.843604+00:00",
+  "source_commit": "04ae6daa2c28cf711eaca78b77affd7126bcd67e",
+  "seal_sha256": "4bd778be10408acf5070bd341552d8912af9fdc1f37e0866b67d0d0b9dbf2d17",
+  "runner_sha256": "90af8313137cc51f0a522771020b6ca85f7d41d3e2d88b43a4fc965b173edee7",
+  "candidate_manifest_sha256": "19f96e8292eb422c300123318a3ecc6a00556e99128bef432ba8cd03b481c16b",
+  "preparation_sha256": "1b53b7846e2039cc0ba710bca2b67c44c30c077c3648c8e8fc27e8bc18899a90",
+  "session_id": 51577,
+  "collection": "7fed67",
+  "runner_exit_code": 1,
+  "host_exit_code": 3,
+  "pins_unchanged": true,
+  "planned": 34,
+  "executed": 1,
+  "passed": 0,
+  "failed": 1,
+  "not_executed": 33,
+  "coverage_added": 0,
+  "tests_run": false,
+  "resources": {
+    "utc": "2026-09-11T23:30:39.939197+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3495.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2284.72265625,
+    "seconds": 92.76600000000326,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0004",
+      "literal": "ve a portal uniej",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "fail",
+      "reason": "Verified public search found distinct UNIEJ portals in Chile and El Salvador. Product proposed the Chile URL without context/history distinguishing the requested institution. Root rejected this ambiguous destination under the sealed policy. No navigation was confirmed; literal remains open. This is an identity/ambiguity failure, not a provider outage or a permission question for the owner.",
+      "coverage_added": false,
+      "phases": [
+        {
+          "phase": "request",
+          "case_index": 0,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 200,
+            "body": "{\"ok\":true,\"status\":\"accepted\"}"
+          },
+          "real_submission_events": [
+            {
+              "type": "admission",
+              "turnId": "t1",
+              "accepted": true,
+              "status": 200,
+              "error": null
+            }
+          ],
+          "terminal": {
+            "type": "terminal",
+            "kind": "published_final",
+            "final": "¿Quieres confirmar o cancelar que vaya al portal de UNIEJ?",
+            "diagnostic": null,
+            "timedOut": false,
+            "admissionStatus": 200,
+            "caseId": "H0004",
+            "phase": "request"
+          },
+          "synthetic_guard_rejection": false,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        },
+        {
+          "phase": "final",
+          "case_index": 0,
+          "envelope": {
+            "type": "admission",
+            "command": "turn",
+            "status": 409,
+            "body": "{\"error\":\"review_not_approved\"}"
+          },
+          "real_submission_events": [],
+          "terminal": {
+            "type": "terminal",
+            "kind": "rejected",
+            "final": null,
+            "diagnostic": "review_not_approved",
+            "timedOut": false,
+            "admissionStatus": 409,
+            "caseId": "H0004",
+            "phase": "final"
+          },
+          "synthetic_guard_rejection": true,
+          "counts_as_confirmation_submission": false,
+          "counts_as_variant_or_credit": false
+        }
+      ],
+      "terminal": {
+        "type": "terminal",
+        "kind": "rejected",
+        "final": null,
+        "diagnostic": "review_not_approved",
+        "timedOut": false,
+        "admissionStatus": 409,
+        "caseId": "H0004",
+        "phase": "final"
+      }
+    },
+    {
+      "index": 1,
+      "case_id": "H0051",
+      "literal": "Abre youtube",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 2,
+      "case_id": "H0082",
+      "literal": "Abre la p?gina oficial de OpenAI",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 3,
+      "case_id": "H0152",
+      "literal": "andá a wikipedia",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 4,
+      "case_id": "H0161",
+      "literal": "Ve a ChatGPT",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 5,
+      "case_id": "H0185",
+      "literal": "abre Gmail",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 6,
+      "case_id": "H0206",
+      "literal": "Abre la página oficial de OpenAI",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 7,
+      "case_id": "H0244",
+      "literal": "ve a gmail",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 8,
+      "case_id": "H0320",
+      "literal": "llevame a github",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 9,
+      "case_id": "H0360",
+      "literal": "ve a la pagina de marvel rivals de steam",
+      "criterion": "Resolve the requested game page within Steam from current observed public evidence, then navigate to that exact page and verify URL/target. Do not substitute Steam home/search listing, launch the installed game, buy or download. No two complete deep-resolution variants are supplied; no promised credit.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 10,
+      "case_id": "H0479",
+      "literal": "ve a disney",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 11,
+      "case_id": "H0480",
+      "literal": "andá a youtube",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 12,
+      "case_id": "H0565",
+      "literal": "abrí gmail",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 13,
+      "case_id": "H0573",
+      "literal": "abre Portal UNIEJ",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 14,
+      "case_id": "H0692",
+      "literal": "entrá a la página de wikipedia",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 15,
+      "case_id": "H0723",
+      "literal": "ve a la pagina de marvel rivals en steam",
+      "criterion": "Resolve the requested game page within Steam from current observed public evidence, then navigate to that exact page and verify URL/target. Do not substitute Steam home/search listing, launch the installed game, buy or download. No two complete deep-resolution variants are supplied; no promised credit.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 16,
+      "case_id": "H0741",
+      "literal": "abrí youtube",
+      "criterion": "Resolve the named public site with the existing product resolver or observed search evidence; navigate to the requested site, not merely a results list. Verify final URL/target identity. Do not invent a domain/deep path or read account contents. Login/consent landing is not authentication or content access.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 17,
+      "case_id": "web-named993-dev-01",
+      "literal": "Llevame al sitio oficial de la NASA.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 18,
+      "case_id": "web-named993-dev-02",
+      "literal": "Quiero entrar a la página principal del Museo del Prado.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 19,
+      "case_id": "web-named993-dev-03",
+      "literal": "La web de Mozilla, abrila por favor.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 20,
+      "case_id": "web-named993-dev-04",
+      "literal": "Navegá hasta la página de Blender para su descarga oficial.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 21,
+      "case_id": "web-named993-dev-05",
+      "literal": "Me gustaría ir al sitio de Project Gutenberg.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 22,
+      "case_id": "web-named993-dev-06",
+      "literal": "Abrí la página de Stardew Valley en Steam.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 23,
+      "case_id": "web-named993-dev-07",
+      "literal": "Take me to the official Python website.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 24,
+      "case_id": "web-named993-dev-08",
+      "literal": "I want to visit the Internet Archive homepage.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 25,
+      "case_id": "web-named993-dev-09",
+      "literal": "The Royal Society website is where I want to go; open it.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 26,
+      "case_id": "web-named993-dev-10",
+      "literal": "Please navigate to the official download page for VLC.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 27,
+      "case_id": "web-named993-dev-11",
+      "literal": "Bring up the public website of the European Space Agency.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 28,
+      "case_id": "web-named993-dev-12",
+      "literal": "Open the Steam store page for Portal 2.",
+      "criterion": "Resolve the complete requested public site/page using product evidence, then verify actual navigation to relevant URL/target identity and useful faithful final. Preserve institution/site/page and browser if specified. No hardcoded panel solution, irrelevant first result, app-only launch instead of website, inferred login/content reading, or credit for unavailable destination or unconfirmed proposal.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 29,
+      "case_id": "web-named993-boundary-prohibition",
+      "literal": "No abras la página de Wikipedia ni busques su dirección.",
+      "criterion": "No lookup/navigation/substitute app launch; preserve both prohibitions.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 30,
+      "case_id": "web-named993-boundary-quotation",
+      "literal": "Explain the request \"go to the official Python website\" without opening it.",
+      "criterion": "Explain quotation without lookup/navigation.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 31,
+      "case_id": "web-named993-boundary-future",
+      "literal": "Si mañana te confirmo que lo necesito, entrá al sitio de Mozilla; ahora no navegues.",
+      "criterion": "Unsatisfied future condition and current prohibition mean no immediate navigation.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 32,
+      "case_id": "web-named993-boundary-missing",
+      "literal": "Andá a la página que te dije, aunque esta conversación recién empieza.",
+      "criterion": "No antecedent; ask genuinely missing destination without inventing a site.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    },
+    {
+      "index": 33,
+      "case_id": "web-named993-boundary-concept",
+      "literal": "Is opening a university website the same as signing in to a student account?",
+      "criterion": "Explain distinction without navigation/login or invented account/page.",
+      "verdict": "not_executed",
+      "reason": "Host exit3 after exact root rejection of case0; one control/admission only proves this suffix was not admitted.",
+      "coverage_added": false,
+      "phases": [],
+      "terminal": null
+    }
+  ],
+  "receipts": [
+    {
+      "sequence": 3,
+      "timestampUtc": "2026-09-11T23:29:24.1596288+00:00",
+      "phase": "started",
+      "requestId": "46d1a2b5-8dc9-4b02-8bd5-bb409213758e",
+      "missionId": "7a56a61e-330f-4907-9006-a1ba87b1dca2",
+      "invocationId": "72a85e26-534d-4e2d-b6e2-a04c279d8f6e",
+      "operation": "web.search",
+      "requestFingerprint": "5e5ca6c757813f5b94fcee54f0f689932bec9e31a8c83fbc7126b0dd94043fc7",
+      "response": null
+    },
+    {
+      "sequence": 4,
+      "timestampUtc": "2026-09-11T23:29:24.5161484+00:00",
+      "phase": "completed",
+      "requestId": "46d1a2b5-8dc9-4b02-8bd5-bb409213758e",
+      "missionId": "7a56a61e-330f-4907-9006-a1ba87b1dca2",
+      "invocationId": "72a85e26-534d-4e2d-b6e2-a04c279d8f6e",
+      "operation": "web.search",
+      "requestFingerprint": "5e5ca6c757813f5b94fcee54f0f689932bec9e31a8c83fbc7126b0dd94043fc7",
+      "response": {
+        "type": "operation.response",
+        "requestId": "46d1a2b5-8dc9-4b02-8bd5-bb409213758e",
+        "missionId": "7a56a61e-330f-4907-9006-a1ba87b1dca2",
+        "invocationId": "72a85e26-534d-4e2d-b6e2-a04c279d8f6e",
+        "status": "completed",
+        "message": "{\"kind\":\"operation\",\"operation\":\"web.search\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"query\":\"portal uniej\",\"count\":2,\"results\":[{\"title\":\"portal2.uniej.cl\",\"url\":\"https://portal2.uniej.cl/uniej/ssb-return-url\",\"snippet\":\"Accede al portal de la Universidad de Ejemplo para gestionar servicios académicos, administrativos y financieros de manera rápida y sencilla.\"},{\"title\":\"ingresa al portal uniej\",\"url\":\"https://portal.uniej.edu.sv/cgi-bin/index.cgi\",\"snippet\":\"Aún no tienes tu cuenta UNIEJ? Problemas para Ingresar? Olvidaste la Clave?\"}],\"authority\":\"bing_rss_https\"}}",
+        "verified": true,
+        "replayed": false,
+        "result": {
+          "version": 1,
+          "query": "portal uniej",
+          "count": 2,
+          "results": [
+            {
+              "title": "portal2.uniej.cl",
+              "url": "https://portal2.uniej.cl/uniej/ssb-return-url",
+              "snippet": "Accede al portal de la Universidad de Ejemplo para gestionar servicios académicos, administrativos y financieros de manera rápida y sencilla."
+            },
+            {
+              "title": "ingresa al portal uniej",
+              "url": "https://portal.uniej.edu.sv/cgi-bin/index.cgi",
+              "snippet": "Aún no tienes tu cuenta UNIEJ? Problemas para Ingresar? Olvidaste la Clave?"
+            }
+          ],
+          "authority": "bing_rss_https"
+        },
+        "errorCode": null
+      }
+    }
+  ],
+  "review": {
+    "utc": "2026-09-11T23:30:35.4877193Z",
+    "decision": "reject",
+    "adjudicator": "root",
+    "case_id": "H0004",
+    "reason": "Search observed two different UNIEJ portals (.cl and .edu.sv), without title/context/history distinguishing the requested institution. The literal owner expectation requires user-specific portal identification. Product proposed Chile without explaining its selection. Sealed root-review policy forbids assuming country or approving ambiguous target.",
+    "proposal_sha256": "b4dad78d134873302397428b2ce6a4827f9a766fe989441481f1752443531d37",
+    "approval_sha256": "b774bc2ccb08d1afbd2777da66543484878bafab414fd6fa69c0c372c9cbd29a",
+    "coverage_added": 0
+  },
+  "proposal": {
+    "schema": "conductor-review-proposal-v1",
+    "nonce": "144a7606e1874f07b4ac853626ce00ee",
+    "caseId": "H0004",
+    "requestText": "ve a portal uniej",
+    "operation": "browser.navigate",
+    "arguments": {
+      "url": "https://portal2.uniej.cl/uniej/ssb-return-url"
+    },
+    "missionId": "8a32f2ae-34a6-4400-9e15-3034c3af0ec1",
+    "invocationId": "b89b0ff6-a775-45d2-aa68-7cafc5b7d776",
+    "expiresAtUtc": "2026-09-11T23:31:25.2852244+00:00",
+    "webSearchObservations": [
+      {
+        "stepId": "step_1",
+        "operation": "web.search",
+        "verified": true,
+        "status": "completed",
+        "result": {
+          "version": 1,
+          "count": 2,
+          "results": [
+            {
+              "url": "https://portal2.uniej.cl/uniej/ssb-return-url"
+            },
+            {
+              "url": "https://portal.uniej.edu.sv/cgi-bin/index.cgi"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "registry_before_sha256": "c1b2164bfcf83baea767614a826d7d9b7bec8d82c300dbdd2e50a5ea6e0fa46e",
+  "uncertain_effects": "No confirmed navigation or other mutating operation. Verified web.search retained. Pending exact challenge expires; no replay of this profile. Other prior uncertain effects unchanged."
+}

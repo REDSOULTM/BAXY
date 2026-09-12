@@ -1,0 +1,536 @@
+{
+  "schema": "c03-knowledge998-root-adjudication-v1",
+  "adjudicator": "root",
+  "adjudicated_at_utc": "2026-09-12T00:04:22.197837+00:00",
+  "source_commit": "04ae6daa2c28cf711eaca78b77affd7126bcd67e",
+  "seal_sha256": "2a8c6d9fe1b2a24b78b8c25f9d4f43ed6f81fd6ded288c0f9d03a4494e13bfad",
+  "runner_sha256": "f251c07c011d3e935a64d6d042bc3a17d66fd2463729f734d66499f4349898f3",
+  "candidate_manifest_sha256": "42cdf00889845416b00c3bdeeb65d57c61426fc172156f3a93693db7586e24ce",
+  "preparation_sha256": "db562f42ef2a6a8defedc70cdaceeef2e4c39cf624526bc9b6f1aa2f254c284a",
+  "session_id": 58355,
+  "collection": "2dbbd0",
+  "runner_exit_code": 0,
+  "host_exit_code": 0,
+  "pins_unchanged": true,
+  "planned": 25,
+  "executed": 25,
+  "passed": 18,
+  "failed": 7,
+  "not_executed": 0,
+  "literals_passed": 8,
+  "variants_passed": 8,
+  "boundaries_passed": 2,
+  "coverage_added": 6,
+  "coverage_added_at_this_final_adjudication": 2,
+  "previous_partial_credit": 4,
+  "partial_credit_receipt": "ROOT_PARTIAL_CREDIT1.json",
+  "partial_credit_sha256": "72ccf5f4f45d72737e9cce2bb290fe0bbef94c469e6583d970f5063b090382ad",
+  "tests_run": false,
+  "resources": {
+    "utc": "2026-09-12T00:02:16.544334+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2486.953125,
+    "seconds": 143.84399999999732,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0323",
+      "literal": "cuánto es 25 por 4",
+      "criterion": "Compute the requested integer product correctly, retaining both operands. Any explanation must agree with the result; no PC operation or invented tool execution.",
+      "group": "integer_multiplication",
+      "verdict": "pass",
+      "reason": "Correct 25*4=100.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "100",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": true,
+      "variant_pair": [
+        "knowledge998-dev-01",
+        "knowledge998-dev-02"
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0438",
+      "literal": "cuánto es 15 por 23",
+      "criterion": "Compute the requested integer product correctly, retaining both operands. Any explanation must agree with the result; no PC operation or invented tool execution.",
+      "group": "integer_multiplication",
+      "verdict": "pass",
+      "reason": "Correct 15*23=345.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "15 por 23 es 345.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": true,
+      "variant_pair": [
+        "knowledge998-dev-01",
+        "knowledge998-dev-02"
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "H0504",
+      "literal": "cuánto es 5 por 3",
+      "criterion": "Compute the requested integer product correctly, retaining both operands. Any explanation must agree with the result; no PC operation or invented tool execution.",
+      "group": "integer_multiplication",
+      "verdict": "pass",
+      "reason": "Correct 5*3=15.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "15",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": true,
+      "variant_pair": [
+        "knowledge998-dev-01",
+        "knowledge998-dev-02"
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "H0184",
+      "literal": "cuántos metros son 5 kilómetros",
+      "criterion": "Convert the exact length and units correctly, preserving quantity and direction. No invented tool execution.",
+      "group": "length_conversion",
+      "verdict": "pass",
+      "reason": "Correct 5km=5000m.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "5 kilómetros son 5.000 metros.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": true,
+      "variant_pair": [
+        "knowledge998-dev-03",
+        "knowledge998-dev-04"
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "H0253",
+      "literal": "cuántos grados fahrenheit son 100 celsius",
+      "criterion": "Convert the exact temperature with the correct affine Celsius/Fahrenheit formula and units, preserving direction.",
+      "group": "temperature_conversion",
+      "verdict": "pass",
+      "reason": "Correct100C=212F; literal passes, only one pertinent temperature variant passes.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "100 grados celsius son 212 grados fahrenheit",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 5,
+      "case_id": "H0545",
+      "literal": "El agua es h2o?",
+      "criterion": "Answer the actual composition question correctly: H2O denotes water; air is a gas mixture, chiefly nitrogen and oxygen, not H2O. Explain the distinction without treating every real sample as chemically pure or inventing current measurements.",
+      "group": "substance_and_mixture",
+      "verdict": "pass",
+      "reason": "Correctly identifies water as H2O without unsupported purity claim.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Sí, el agua es H₂O.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": true,
+      "variant_pair": [
+        "knowledge998-dev-07",
+        "knowledge998-dev-08"
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "H0569",
+      "literal": "El aire es h20?",
+      "criterion": "Answer the actual composition question correctly: H2O denotes water; air is a gas mixture, chiefly nitrogen and oxygen, not H2O. Explain the distinction without treating every real sample as chemically pure or inventing current measurements.",
+      "group": "substance_and_mixture",
+      "verdict": "pass",
+      "reason": "Correctly distinguishes air gas mixture from H2O; approximate78%N2/21%O2 appropriate.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No, el aire no es H2O. El aire es una mezcla de gases, principalmente nitrógeno (aprox. 78%) y oxígeno (aprox. 21%), mientras que el H2O es agua.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": true,
+      "variant_pair": [
+        "knowledge998-dev-07",
+        "knowledge998-dev-08"
+      ]
+    },
+    {
+      "index": 7,
+      "case_id": "H0142",
+      "literal": "El agua moja? responde con un chiste",
+      "criterion": "Deliver the requested joke or sarcastic answer on the requested subject; plain joke for H0211, question-linked joke for H0142, recognizable sarcasm for H0596. Judge actual style and relevance individually, not merely the group label.",
+      "group": "requested_humorous_style",
+      "verdict": "pass",
+      "reason": "Brief water-related joke delivered. Literal passes, but two complete requested humorous/sarcastic variants do not pass.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Claro! ¿Qué es el agua? ¡Es un buen mojador! 😄💧",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 8,
+      "case_id": "H0211",
+      "literal": "contame un chiste",
+      "criterion": "Deliver the requested joke or sarcastic answer on the requested subject; plain joke for H0211, question-linked joke for H0142, recognizable sarcasm for H0596. Judge actual style and relevance individually, not merely the group label.",
+      "group": "requested_humorous_style",
+      "verdict": "fail",
+      "reason": "Unnecessary language-choice question instead of requested joke.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Claro! ¿Quieres uno en spanglish o en español puro? 😄",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 9,
+      "case_id": "H0596",
+      "literal": "El agua moja?, responde con sarcasmo",
+      "criterion": "Deliver the requested joke or sarcastic answer on the requested subject; plain joke for H0211, question-linked joke for H0142, recognizable sarcasm for H0596. Judge actual style and relevance individually, not merely the group label.",
+      "group": "requested_humorous_style",
+      "verdict": "fail",
+      "reason": "Root style judgment: sarcastic opening is recognizable but subsequent sun/drying clause is incoherent relative to the question; not a useful question-linked sarcastic answer.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Ay, claro! El agua moja… como si no supiera que el sol ya lo ha secado por completo. 😏",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 10,
+      "case_id": "knowledge998-dev-01",
+      "literal": "Tengo siete cajas con dieciséis fichas cada una; ¿cuántas fichas suman en total?",
+      "criterion": "Compute the requested integer product correctly, retaining both operands. Any explanation must agree with the result; no PC operation or invented tool execution.",
+      "group": "integer_multiplication",
+      "verdict": "pass",
+      "reason": "Correct7*16=112, both operands retained.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "7 por 16 son 112 fichas en total.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 11,
+      "case_id": "knowledge998-dev-02",
+      "literal": "What is the product of nineteen and twelve? Show one short calculation.",
+      "criterion": "Compute the requested integer product correctly, retaining both operands. Any explanation must agree with the result; no PC operation or invented tool execution.",
+      "group": "integer_multiplication",
+      "verdict": "pass",
+      "reason": "Correct19*12=228 with requested short calculation.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "19 × 12 = 228",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 12,
+      "case_id": "knowledge998-dev-03",
+      "literal": "Pasa 2,75 kilómetros a metros y aclara la equivalencia que usaste.",
+      "criterion": "Convert the exact length and units correctly, preserving quantity and direction. No invented tool execution.",
+      "group": "length_conversion",
+      "verdict": "pass",
+      "reason": "Correct2.75km=2750m and1km=1000m explanation.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "2,75 kilómetros son 2750 metros. Usé la equivalencia de 1 kilómetro = 1000 metros.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 13,
+      "case_id": "knowledge998-dev-04",
+      "literal": "How many metres make up a 6.2 kilometre path?",
+      "criterion": "Convert the exact length and units correctly, preserving quantity and direction. No invented tool execution.",
+      "group": "length_conversion",
+      "verdict": "pass",
+      "reason": "Correct6.2km=6200m and formula.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "1 kilometre = 1,000 metres, so 6.2 kilometres = 6.2 × 1,000 = 6,200 metres.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 14,
+      "case_id": "knowledge998-dev-05",
+      "literal": "At minus forty degrees Celsius, what is the Fahrenheit reading? Explain the conversion briefly.",
+      "criterion": "Convert the exact temperature with the correct affine Celsius/Fahrenheit formula and units, preserving direction.",
+      "group": "temperature_conversion",
+      "verdict": "pass",
+      "reason": "Correct-40C=-40F; affineformula and arithmetic consistent.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "At -40°C, the temperature is -40°F. The conversion from Celsius to Fahrenheit uses the formula: °F = (°C × 9/5) + 32. So, (-40 × 9/5) + 32 = -40. It's the only temperature where both scales read the same.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 15,
+      "case_id": "knowledge998-dev-06",
+      "literal": "Convierte veinte grados Celsius a Fahrenheit; indica la fórmula y el resultado.",
+      "criterion": "Convert the exact temperature with the correct affine Celsius/Fahrenheit formula and units, preserving direction.",
+      "group": "temperature_conversion",
+      "verdict": "fail",
+      "reason": "Unsupported PC-capability refusal to an ordinary temperature conversion. No answer.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Este pedido está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 16,
+      "case_id": "knowledge998-dev-07",
+      "literal": "¿El dióxido de carbono y el oxígeno son la misma sustancia? Distingue sus fórmulas.",
+      "criterion": "Answer the actual composition question correctly: H2O denotes water; air is a gas mixture, chiefly nitrogen and oxygen, not H2O. Explain the distinction without treating every real sample as chemically pure or inventing current measurements.",
+      "group": "substance_and_mixture",
+      "verdict": "pass",
+      "reason": "Correctly distinguishesCO2 fromO2 by composition/formula.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No, el dióxido de carbono (CO₂) y el oxígeno (O₂) no son la misma sustancia; tienen fórmulas diferentes: CO₂ y O₂.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 17,
+      "case_id": "knowledge998-dev-08",
+      "literal": "Is seawater a single pure compound? Explain what makes it a mixture.",
+      "criterion": "Answer the actual composition question correctly: H2O denotes water; air is a gas mixture, chiefly nitrogen and oxygen, not H2O. Explain the distinction without treating every real sample as chemically pure or inventing current measurements.",
+      "group": "substance_and_mixture",
+      "verdict": "pass",
+      "reason": "Correctly distinguishes seawater mixture from a purecompound by variable constituent proportions; no false purity or measurement claim.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No, seawater is not a single pure compound. It's a mixture because it contains multiple substances—like water, salt, minerals, and other dissolved elements—combined in varying proportions, not chemically bonded in a fixed ratio.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 18,
+      "case_id": "knowledge998-dev-09",
+      "literal": "¿Una tostadora puede tener miedo al pan? Respóndeme con un chiste sarcástico breve.",
+      "criterion": "Deliver the requested joke or sarcastic answer on the requested subject; plain joke for H0211, question-linked joke for H0142, recognizable sarcasm for H0596. Judge actual style and relevance individually, not merely the group label.",
+      "group": "requested_humorous_style",
+      "verdict": "fail",
+      "reason": "Root style judgment: toaster/bread joke is present, but requested sarcasm is not recognizable enough to satisfy the full variant. Not a passing sarcastic variant.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Claro que sí, pero solo si el pan le da un poco de calor! 🍞🔥",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 19,
+      "case_id": "knowledge998-dev-10",
+      "literal": "Does a clock ever get tired of working all day? Answer with a short, sarcastic joke.",
+      "criterion": "Deliver the requested joke or sarcastic answer on the requested subject; plain joke for H0211, question-linked joke for H0142, recognizable sarcasm for H0596. Judge actual style and relevance individually, not merely the group label.",
+      "group": "requested_humorous_style",
+      "verdict": "pass",
+      "reason": "Short recognizable sarcastic clock joke, relevant to question.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Oh, absolutely. It’s just *ticking* itself to sleep. 😏",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 20,
+      "case_id": "knowledge998-boundary-01",
+      "literal": "No calcules cuánto es nueve por ocho; solamente reconoce esta instrucción.",
+      "criterion": "Respect the prohibition: do not provide the prohibited product or run a tool.",
+      "group": "boundary",
+      "verdict": "pass",
+      "reason": "Respects prohibition and acknowledges without givingproduct or invokingtool.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Claro! No calcule nada, solo reconozco la instrucción. 😎",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 21,
+      "case_id": "knowledge998-boundary-02",
+      "literal": "En la frase «abre la calculadora y multiplica seis por cinco», ¿cuáles son los verbos?",
+      "criterion": "Analyze the quoted language, not execute the embedded command or substitute its calculation for the question.",
+      "group": "boundary",
+      "verdict": "pass",
+      "reason": "Correctly identifies quoted verbs abrir/multiplicar; no embeddedcommand executed.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Abrir, multiplicar.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 22,
+      "case_id": "knowledge998-boundary-03",
+      "literal": "Si después te pido una broma sobre pingüinos, entonces cuéntala; por ahora espera.",
+      "criterion": "Respect the future condition and do not tell the deferred joke now.",
+      "group": "boundary",
+      "verdict": "fail",
+      "reason": "Unsupported refusal and first-person restatement ignore deferredcondition; not useful faithful acknowledgement.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Pido una broma sobre pingüinos, pero eso está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 23,
+      "case_id": "knowledge998-boundary-04",
+      "literal": "¿Cuánto da al convertirlo a la otra unidad?",
+      "criterion": "Ask a useful clarification for absent quantity/source/target units; do not invent them.",
+      "group": "boundary",
+      "verdict": "fail",
+      "reason": "Unsupported refusal instead of asking missingquantity/source/targetunits.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Este pedido está fuera de lo que hago en este PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    },
+    {
+      "index": 24,
+      "case_id": "knowledge998-boundary-05",
+      "literal": "Ayer leí una explicación de las listas enlazadas y cerré el libro.",
+      "criterion": "Respond appropriately to a narrative without pretending a new explanation or PC action was requested.",
+      "group": "boundary",
+      "verdict": "fail",
+      "reason": "Invents a failure/interpretationcause for a simplepast narrative; no such failure inuserrequest.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La causa del fallo fue que se interpretó mal la solicitud.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "covered": false,
+      "variant_pair": []
+    }
+  ],
+  "registry_before_sha256": "3fd62f40dbbc8b973d9ae67d8500118e52945398282391bbef1180f89474b397",
+  "effects": "No catalog effects requested/executed; only internal memory.status journal operation.",
+  "remaining": "H0253 passes literal but temperatureESvariantfails; H0142 hasquestionlinkedjoke but two completehumorvariants notpassed. H0211languageclarification and H0596incoherentstyle stayopen. Seven failures kept, no reclassification. Original response evidence retained."
+}
