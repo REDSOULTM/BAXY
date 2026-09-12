@@ -1602,16 +1602,17 @@ public static class ProductCatalog
             "window.resolve",
             Schema(
                 [
+                    String("applicationName", maximumUtf8Bytes: 256, nonWhitespace: true),
                     Boolean("byTitle"),
                     Integer("limit", 1, 50),
                     Integer("offset", 0, int.MaxValue),
                     String("process", maximumLength: 260, nonWhitespace: true),
                 ],
-                ["process"]),
+                []),
             OperationRisks.ReadOnly,
-            "window.resolve.identity.inventory.v2",
+            "window.resolve.identity.inventory.v3",
             ToolExposure.Public,
-            "Lee ventanas de nivel superior con estilo visible: process='*' y byTitle=false enumeran todas; otro process busca ese proceso, y byTitle=true busca un título o aplicación. limit limita la página (1–50, defecto20), offset empieza en0. count cuenta la página; observedCount cuenta las observadas; complete=false implica lectura parcial y totalCount desconocido. nextOffset continúa sólo las observadas. Cada página vuelve a enumerar y puede cambiar: no es una foto estable ni prueba de que las ventanas estén descubiertas en pantalla. Devuelve títulos e identificadores efímeros; para modificar una ventana hay que elegir su identificador."),
+            "Lee ventanas de nivel superior con estilo visible. Requiere exactamente un selector: applicationName (nombre exacto instalado, identidad AUMID o ejecutable comprobada, sin byTitle ni offset; devuelve la selección completa o falla), o process. Nunca convierte un nombre de aplicación en título o proceso. process='*' y byTitle=false enumeran todas; otro process busca ese proceso, y byTitle=true busca el título explícito solicitado. limit limita la página (1–50, defecto20), offset empieza en0. count cuenta la página; observedCount cuenta las observadas; complete=false implica lectura parcial y totalCount desconocido. nextOffset continúa sólo las observadas. Cada página vuelve a enumerar y puede cambiar: no es una foto estable ni prueba de que las ventanas estén descubiertas en pantalla. Devuelve títulos e identificadores efímeros; para modificar una ventana hay que elegir su identificador."),
         Descriptor(
             "window.restore",
             WindowIdSchema(),

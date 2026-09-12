@@ -4394,6 +4394,11 @@ def _explicit_arguments_from_evidence(
         return _explicit_system_status_scope(evidence)
 
     if operation == "window.resolve":
+        application_name = effect_intent.resolve_application_close_name(
+            evidence, application_names,
+        )
+        if application_name is not None:
+            return {"applicationName": application_name}
         inventory = effect_intent.window_inventory_arguments(evidence)
         if inventory is not None:
             return inventory
@@ -5081,6 +5086,10 @@ def _ground_explicit_arguments(
         # A legacy process-only schema cannot represent title identity. Never
         # discard the selector to make this literal fit a different contract.
         return None
+    if operation == "window.resolve" and "applicationName" in explicit:
+        # The authenticated catalog owns this display name; the provider alone
+        # binds it to a live OS application identity and issues a window token.
+        return explicit if validate_json_schema_instance(explicit, schema) else None
     if operation == "window.resolve" and explicit.get("process") == "*" and explicit.get("byTitle") is False:
         # The closed inventory request supplies this catalog selector. The
         # person need not spell the provider's wildcard in natural language.

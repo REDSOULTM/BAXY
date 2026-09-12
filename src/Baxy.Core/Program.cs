@@ -107,7 +107,7 @@ internal static class Program
         var processStatusProvider = new WindowsProcessStatusProvider();
         var timeStatusProvider = new WindowsTimeStatusProvider();
         var gpuStatusProvider = new WindowsGpuStatusProvider();
-        var windowControlProvider = new WindowsWindowControlProvider();
+        var windowControlProvider = new WindowsWindowControlProvider(installedApplicationProvider);
         var privatePayload = new WindowsProtectedPayload(
             Path.Combine(dataRoot, "security", "private-payload.v1.key"));
         var memoryStore = new LocalMemoryStore(

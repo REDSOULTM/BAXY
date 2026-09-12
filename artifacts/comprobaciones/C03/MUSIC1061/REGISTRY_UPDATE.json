@@ -1,0 +1,15 @@
+{
+  "utc": "2026-09-12T16:33:18.245252+00:00",
+  "before_sha256": "0e7f8da607cdbe1b5bbb4c379c4a31076567230e6355a2a6050fa577055f841c",
+  "after_sha256": "14a2932b0312f3a8104f2ffb3d205205ebba399253cb3515923629405eff6262",
+  "covered": 184,
+  "open": 558,
+  "not_applicable": 0,
+  "new_credits": 0,
+  "updated_causes": [
+    "H0046",
+    "H0110"
+  ],
+  "immutable_fields_preserved": true,
+  "backup": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1061-proposal\\private\\requirements-before-adjud184.jsonl"
+}

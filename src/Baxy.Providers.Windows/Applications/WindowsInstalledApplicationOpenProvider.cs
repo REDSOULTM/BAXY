@@ -409,6 +409,39 @@ public sealed class WindowsInstalledApplicationOpenProvider :
         return null;
     }
 
+    internal async ValueTask<(IReadOnlyList<InstalledApplicationObservation> Windows, string? ErrorCode)>
+        ResolveWindowIdentitiesAsync(string applicationName, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!ApplicationIds.IsValidRequest(applicationName))
+            return ([], ApplicationOpenErrorCodes.InvalidApplication);
+
+        try
+        {
+            IReadOnlyList<InstalledApplicationEntry> catalog =
+                await ReadCatalogAsync(cancellationToken).ConfigureAwait(false);
+            // This effect prerequisite accepts only a complete installed name.
+            // Do not inherit open's fuzzy ranking or application aliases.
+            InstalledApplicationResolution resolution = InstalledApplicationResolver.Resolve(
+                applicationName, catalog);
+            if (resolution.Ambiguous)
+                return ([], ApplicationOpenErrorCodes.ApplicationAmbiguous);
+            if (resolution.Entry is not { } entry
+                || !string.Equals(InstalledApplicationResolver.Normalize(entry.Name),
+                    InstalledApplicationResolver.Normalize(applicationName), StringComparison.Ordinal))
+                return ([], ApplicationOpenErrorCodes.ApplicationNotFound);
+            if (!entry.AppUserModelId.Contains('!')
+                && WindowsInstalledApplicationPlatform.StrongExecutablePath(entry) is null)
+                return ([], "application_window_identity_unavailable");
+
+            return (_platform.InventoryForWindowResolution(entry, cancellationToken), null);
+        }
+        catch (Exception exception) when (exception is not OperationCanceledException)
+        {
+            return ([], ApplicationOpenErrorCodes.InventoryFailed);
+        }
+    }
+
     public async ValueTask<ApplicationWindowStatusResult> GetWindowStatusAsync(
         string applicationName,
         CancellationToken cancellationToken)
@@ -647,7 +680,8 @@ internal sealed record InstalledApplicationObservation(
     string ExecutablePath,
     long WindowHandle,
     bool Visible,
-    bool Foreground);
+    bool Foreground,
+    string? ProcessName = null);
 
 internal interface IInstalledApplicationPlatform
 {
@@ -655,6 +689,11 @@ internal interface IInstalledApplicationPlatform
         CancellationToken cancellationToken);
 
     IReadOnlyList<InstalledApplicationObservation> Inventory(InstalledApplicationEntry entry);
+
+    IReadOnlyList<InstalledApplicationObservation> InventoryForWindowResolution(
+        InstalledApplicationEntry entry,
+        CancellationToken cancellationToken) =>
+        throw new ApplicationInventoryException("Strong application window identity is unavailable.");
 
     bool Activate(InstalledApplicationEntry entry);
 
@@ -1023,27 +1062,49 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     }
 
     public IReadOnlyList<InstalledApplicationObservation> Inventory(
-        InstalledApplicationEntry entry)
+        InstalledApplicationEntry entry) =>
+        Inventory(entry, strongIdentityOnly: false, CancellationToken.None);
+
+    public IReadOnlyList<InstalledApplicationObservation> InventoryForWindowResolution(
+        InstalledApplicationEntry entry,
+        CancellationToken cancellationToken) =>
+        Inventory(entry, strongIdentityOnly: true, cancellationToken);
+
+    private IReadOnlyList<InstalledApplicationObservation> Inventory(
+        InstalledApplicationEntry entry,
+        bool strongIdentityOnly,
+        CancellationToken cancellationToken)
     {
+        bool packaged = entry.AppUserModelId.Contains('!');
+        string? expectedExecutable = strongIdentityOnly && !packaged
+            ? StrongExecutablePath(entry) : null;
+        if (strongIdentityOnly && !packaged && expectedExecutable is null)
+            throw new ApplicationInventoryException("The installed executable identity is unavailable.");
         Process[] processes = Process.GetProcesses();
         var observations = new List<InstalledApplicationObservation>();
         try
         {
             foreach (Process process in processes)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 try
                 {
                     process.Refresh();
-                    nint window = process.MainWindowHandle;
+                    nint[]? ownedWindows = strongIdentityOnly
+                        ? VisibleTopLevelWindows(process.Id, requireComplete: true) : null;
+                    nint window = ownedWindows is null
+                        ? process.MainWindowHandle : ownedWindows.FirstOrDefault();
                     if (window == 0 || !IsWindowVisible(window))
                     {
                         continue;
                     }
 
-                    string? applicationId = entry.AppUserModelId.Contains('!')
+                    string? applicationId = packaged
                         ? ReadApplicationUserModelId(process.Id)
                         : null;
-                    if (!WindowProcessIdentifiesApplication(
+                    if (strongIdentityOnly
+                        ? packaged && !string.Equals(entry.AppUserModelId, applicationId, StringComparison.Ordinal)
+                        : !WindowProcessIdentifiesApplication(
                             entry, process.ProcessName, process.MainWindowTitle, applicationId))
                     {
                         continue;
@@ -1053,11 +1114,17 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                     if (string.IsNullOrWhiteSpace(executablePath)
                         || !Path.IsPathFullyQualified(executablePath))
                     {
+                        if (strongIdentityOnly)
+                            throw new ApplicationInventoryException("A visible executable could not be verified.");
                         continue;
                     }
+                    if (strongIdentityOnly && !packaged
+                        && !string.Equals(Path.GetFullPath(executablePath), expectedExecutable,
+                            StringComparison.OrdinalIgnoreCase))
+                        continue;
 
                     long creationTime = process.StartTime.ToUniversalTime().Ticks;
-                    foreach (nint operated in VisibleTopLevelWindows(process.Id))
+                    foreach (nint operated in ownedWindows ?? VisibleTopLevelWindows(process.Id))
                     {
                         observations.Add(new InstalledApplicationObservation(
                             process.Id,
@@ -1065,13 +1132,20 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                             executablePath,
                             operated.ToInt64(),
                             Visible: true,
-                            Foreground: GetForegroundWindow() == operated));
+                            Foreground: GetForegroundWindow() == operated,
+                            ProcessName: strongIdentityOnly ? process.ProcessName : null));
                     }
+                    if (strongIdentityOnly && packaged
+                        && !string.Equals(entry.AppUserModelId,
+                            ReadApplicationUserModelId(process.Id), StringComparison.Ordinal))
+                        throw new ApplicationInventoryException("The application identity changed during enumeration.");
                 }
                 catch (Exception exception) when (exception is InvalidOperationException
                     or System.ComponentModel.Win32Exception
                     or NotSupportedException)
                 {
+                    if (strongIdentityOnly)
+                        throw new ApplicationInventoryException("The visible application inventory was incomplete.");
                 }
             }
         }
@@ -1084,6 +1158,27 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         }
 
         return observations;
+    }
+
+    internal static string? StrongExecutablePath(InstalledApplicationEntry entry)
+    {
+        // Shell-supplied executable paths only. No display-name/process-name
+        // inference, prefix match, title fallback, shortcut or command line.
+        foreach (string? value in new[] { entry.TargetPath, entry.AppUserModelId })
+        {
+            if (string.IsNullOrWhiteSpace(value) || !Path.IsPathFullyQualified(value)
+                || !string.Equals(Path.GetExtension(value), ".exe", StringComparison.OrdinalIgnoreCase))
+                continue;
+            try
+            {
+                return Path.GetFullPath(value);
+            }
+            catch (Exception exception) when (exception is ArgumentException or NotSupportedException)
+            {
+                return null;
+            }
+        }
+        return null;
     }
 
     internal static bool WindowProcessIdentifiesApplication(
@@ -1237,9 +1332,10 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         return identities;
     }
 
-    private static nint[] VisibleTopLevelWindows(int processId)
+    private static nint[] VisibleTopLevelWindows(int processId, bool requireComplete = false)
     {
         var windows = new List<(nint Handle, long Area)>();
+        bool complete = true;
         EnumWindowsProc callback = (window, _) =>
         {
             if (!IsWindowVisible(window))
@@ -1248,14 +1344,17 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
             if (owner != unchecked((uint)processId))
                 return true;
             if (!GetWindowRect(window, out Rect rect))
+            {
+                complete = false;
                 return true;
+            }
             long area = (long)Math.Max(0, rect.Right - rect.Left)
                 * Math.Max(0, rect.Bottom - rect.Top);
             if (area > 0)
                 windows.Add((window, area));
             return true;
         };
-        if (!EnumWindows(callback, nint.Zero))
+        if (!EnumWindows(callback, nint.Zero) || (requireComplete && !complete))
             throw new ApplicationInventoryException("Visible windows could not be enumerated.");
         // Preserve the preferred large window for opening, without discarding
         // other observed handles from the status count or foreground choice.

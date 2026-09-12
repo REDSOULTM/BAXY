@@ -1,0 +1,113 @@
+{
+  "schema": "c03-close1060-external-source-proposal-v1",
+  "base_head": "cd1b08ab8c1be8d40c80498b02a5e7aabf9f6990",
+  "head_at_static_review": "6f61529543bc3fa44de7cbf8302bc1ce3b9ac375",
+  "iteration": 1,
+  "owners": [
+    {
+      "path": "src/Baxy.Core/Operations/WindowControlHandlers.cs",
+      "base_sha256": "faae9e5f356284e4de92d5a0ff4579ab71653ac7785d23de0419bd9972b6d3c4",
+      "proposed_sha256": "1c88f136e33a77ba495a0be9ffdd0ff08e638d0f14cf9df71bf520d602e49482",
+      "proposal_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1060-repair-proposal\\proposed\\src\\Baxy.Core\\Operations\\WindowControlHandlers.cs",
+      "base_matches_current": true,
+      "added_lines": 15,
+      "removed_lines": 3
+    },
+    {
+      "path": "src/Baxy.Core/Program.cs",
+      "base_sha256": "7671087321487f4a274fb6128652e9f18ed60b212b816eef69f2deb5adb5c751",
+      "proposed_sha256": "c365f09ec035498023309776cbb8743568d36650ae7380bd5fafa55cfc1ded99",
+      "proposal_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1060-repair-proposal\\proposed\\src\\Baxy.Core\\Program.cs",
+      "base_matches_current": true,
+      "added_lines": 1,
+      "removed_lines": 1
+    },
+    {
+      "path": "src/Baxy.Kernel/Operations/ProductCatalog.cs",
+      "base_sha256": "22362a7ae7b62b6b28972ffdbe974e6a3964a37f626e3dd990d4c046feddc938",
+      "proposed_sha256": "99cbdfde0e93cfb6a3bd3b9aedabf9354289c8da8e85a02a9644ee355bf1444c",
+      "proposal_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1060-repair-proposal\\proposed\\src\\Baxy.Kernel\\Operations\\ProductCatalog.cs",
+      "base_matches_current": true,
+      "added_lines": 6,
+      "removed_lines": 5
+    },
+    {
+      "path": "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs",
+      "base_sha256": "8df84d96bc914b8cb2dbaad6c223e796a6aef3fe3d81eae40a3f685d71aee8ff",
+      "proposed_sha256": "6e125cc182b6f92556023f5e3891268f268bc0150f8a9d9f08e1b584f0a9f311",
+      "proposal_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1060-repair-proposal\\proposed\\src\\Baxy.Providers.Windows\\Applications\\WindowsInstalledApplicationOpenProvider.cs",
+      "base_matches_current": true,
+      "added_lines": 109,
+      "removed_lines": 10
+    },
+    {
+      "path": "src/Baxy.Providers.Windows/Windows/WindowControlContracts.cs",
+      "base_sha256": "e5cbfd254108b80bc3fb18147fd132bc4db7c2cadd2016a6fe6559a705b3a827",
+      "proposed_sha256": "2c8b944fcdb1259fee7e06b28cdc5fafad023ac375d94d5feef0e860f598e636",
+      "proposal_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1060-repair-proposal\\proposed\\src\\Baxy.Providers.Windows\\Windows\\WindowControlContracts.cs",
+      "base_matches_current": true,
+      "added_lines": 7,
+      "removed_lines": 0
+    },
+    {
+      "path": "src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs",
+      "base_sha256": "b4de7953358b94ff1c80864c5e7b99c7a191a65ee04d1c37d1e8837aba07852b",
+      "proposed_sha256": "0eddf28cc9641c734fe4a9baf39848becce527ad47af675563292d7199750755",
+      "proposal_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1060-repair-proposal\\proposed\\src\\Baxy.Providers.Windows\\Windows\\WindowsWindowControlProvider.cs",
+      "base_matches_current": true,
+      "added_lines": 86,
+      "removed_lines": 3
+    },
+    {
+      "path": "src/baxy_mind/__main__.py",
+      "base_sha256": "b3f26deeb5f9f27f71ce572f84d4be4b5a5a118ff7808855b5e614bde1a1c269",
+      "proposed_sha256": "276ec4f95527309ac423a4371046587ca77525c285c1c7a60e3383aa5480c525",
+      "proposal_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1060-repair-proposal\\proposed\\src\\baxy_mind\\__main__.py",
+      "base_matches_current": true,
+      "added_lines": 9,
+      "removed_lines": 0
+    },
+    {
+      "path": "src/baxy_mind/effect_intent.py",
+      "base_sha256": "dd0738d890d529f157fc92bb610bf0abd36c9b4ba8dd445fc04ad61f7b7c1df3",
+      "proposed_sha256": "dbb4bbf6126e4bf964cecb6f29c1b7b98fc567daa1b803d85308791cc557edd5",
+      "proposal_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1060-repair-proposal\\proposed\\src\\baxy_mind\\effect_intent.py",
+      "base_matches_current": true,
+      "added_lines": 13,
+      "removed_lines": 0
+    }
+  ],
+  "diff_sha256": "20ed25b2fc558861026f8c8dd0fbd4d3aca00702ec5ecac7bd366da9e5b0bd75",
+  "evidence": [
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\run-00\\turn-audit.jsonl",
+      "sha256": "77b8b6cc1092a2c5c60d12066495210a42d1af399387e249cf135fb8a796d558"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\run-00\\case-observations.json",
+      "sha256": "03bc794f8d3432053967e1570d20a7e80604e0b835e9a0751a6d2429b919923a"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\run-00\\journal.snapshot.jsonl",
+      "sha256": "06fd51784daa82349a2548c65cdd3cb74a714292962b8d408dc19fd05dbef927"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\run-04\\turn-audit.jsonl",
+      "sha256": "77b8b6cc1092a2c5c60d12066495210a42d1af399387e249cf135fb8a796d558"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\run-04\\case-observations.json",
+      "sha256": "8062755ba5d4ec8e955cd862839672fdbbb1d330bfd4cf483dbc1575a3e9848e"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\run-04\\journal.snapshot.jsonl",
+      "sha256": "f0f6defbed15c296f6adf5f327409db62faa559b2b7a83017ff8580f2c3b14c3"
+    }
+  ],
+  "canonical_edited": false,
+  "product_imported": false,
+  "tests_executed": false,
+  "build_executed": false,
+  "gpu_or_core_executed": false,
+  "adoption_pending_root_review": true
+}

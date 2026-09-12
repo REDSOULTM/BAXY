@@ -1,0 +1,60 @@
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -11775,9 +11775,15 @@
+             head,
+             r"(?:reanuda|reanudar|resume|reproduce|reproducir|reproduzca|play)",
+         )
+-        and _has(
+-            folded,
+-            r"\b(?:pausad[oa]|paused|detenid[oa]|stopped)\b",
++        and (
++            # Resume already requests continuity of the current session. Only
++            # generic play/reproduce needs an explicit paused/stopped qualifier
++            # to distinguish transport control from choosing new media.
++            _head_is(head, r"(?:reanuda|reanudar|resume)")
++            or _has(
++                folded,
++                r"\b(?:pausad[oa]|paused|detenid[oa]|stopped)\b",
++            )
+         )
+         and _has(
+             folded,
+--- a/src/Baxy.Providers.Windows/External/WindowsMediaSessionAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsMediaSessionAdapter.cs
+@@ -388,7 +388,8 @@
+             }
+ 
+             return verified
+-                ? ExternalJson.Success(operation, MediaResult(after, "playing"), dispatched)
++                ? ExternalJson.Success(operation,
++                    MediaResult(after, "playing", session.SourceAppUserModelId, provider: "spotify"), dispatched)
+                 : ExternalJson.Failure(operation, "spotify_now_playing_not_verified", dispatched);
+         }
+         catch when (!cancellationToken.IsCancellationRequested)
+@@ -504,7 +505,7 @@
+             return verified
+                 ? ExternalJson.Success(
+                     operation,
+-                    MediaResult(after, status.ToString().ToLowerInvariant()))
++                    MediaResult(after, status.ToString().ToLowerInvariant(), session.SourceAppUserModelId))
+                 : ExternalJson.Failure(operation, "smtc_postcondition_not_verified", effectObserved: true);
+         }
+         catch when (!cancellationToken.IsCancellationRequested)
+@@ -652,11 +653,15 @@
+ 
+     private static JsonElement MediaResult(
+         GlobalSystemMediaTransportControlsSessionMediaProperties properties,
+-        string status) => ExternalJson.Create(writer =>
++        string status,
++        string sourceAppUserModelId,
++        string? provider = null) => ExternalJson.Create(writer =>
+     {
+         writer.WriteStartObject();
+         writer.WriteNumber("version", 1);
+-        writer.WriteString("provider", "spotify");
++        if (provider is not null)
++            writer.WriteString("provider", provider);
++        writer.WriteString("sourceAppUserModelId", sourceAppUserModelId);
+         writer.WriteString("title", properties.Title);
+         writer.WriteString("artist", properties.Artist);
+         writer.WriteString("playbackStatus", status);

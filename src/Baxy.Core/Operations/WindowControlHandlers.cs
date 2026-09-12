@@ -11,13 +11,25 @@ internal sealed class WindowResolveHandler(IWindowControlProvider provider) : IO
 
     public async ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken)
     {
-        string process = invocation.Arguments.GetProperty("process").GetString()!;
+        bool hasApplication = invocation.Arguments.TryGetProperty("applicationName", out JsonElement application);
+        bool hasProcess = invocation.Arguments.TryGetProperty("process", out JsonElement process);
+        // The flat public schema types each selector. Enforce their exclusive
+        // semantics here before any OS read, including an explicit false byTitle.
+        if (hasApplication == hasProcess
+            || (hasApplication && (invocation.Arguments.TryGetProperty("byTitle", out _)
+                || invocation.Arguments.TryGetProperty("offset", out _))))
+        {
+            return OperationOutcome.Failure(WindowControlErrorCodes.InvalidSelector);
+        }
         int limit = invocation.Arguments.TryGetProperty("limit", out JsonElement value) ? value.GetInt32() : 20;
         int offset = invocation.Arguments.TryGetProperty("offset", out JsonElement offsetValue) ? offsetValue.GetInt32() : 0;
         bool byTitle = invocation.Arguments.TryGetProperty("byTitle", out JsonElement titleValue)
             && titleValue.GetBoolean();
-        WindowResolveResult result = await provider.ResolveAsync(process, limit, cancellationToken, byTitle, offset)
-            .ConfigureAwait(false);
+        WindowResolveResult result = hasApplication
+            ? await provider.ResolveApplicationAsync(application.GetString()!, limit, cancellationToken)
+                .ConfigureAwait(false)
+            : await provider.ResolveAsync(process.GetString()!, limit, cancellationToken, byTitle, offset)
+                .ConfigureAwait(false);
         return result.Succeeded && result.Verified
             ? OperationOutcome.Success(WindowControlResultJson.Serialize(result.Windows, result.Page))
             : OperationOutcome.Failure(result.ErrorCode ?? "window_resolve_failed");

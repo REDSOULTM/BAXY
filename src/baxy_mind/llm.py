@@ -5089,6 +5089,15 @@ def compose_visible_defect(
                 folded,
             ):
                 return "missing_state"
+        verified_media_transport = (
+            operation == "media.control"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and observed_dict.get("authority") == "windows_smtc"
+            and isinstance(observed_dict.get("sourceAppUserModelId"), str)
+            and bool(observed_dict["sourceAppUserModelId"].strip())
+            and observed_dict.get("playbackStatus") in {"playing", "paused", "stopped"}
+        )
         scheduled_due = _verified_notification_due(situation)
         title = observed_dict.get("title")
         if scheduled_due is not None and not re.search(
@@ -5100,7 +5109,8 @@ def compose_visible_defect(
             title = None
         if isinstance(title, str) and title.strip():
             if title.casefold() not in folded or (
-                operation != "media.status" and scheduled_due is None
+                operation != "media.status" and not verified_media_transport
+                and scheduled_due is None
                 and not (
                     operation in {"note.create", "task.create"}
                     and situation.get("verified") is True
@@ -5119,8 +5129,10 @@ def compose_visible_defect(
                 re.IGNORECASE,
             ):
                 return "copied_instruction"
-        if operation == "media.status":
+        if operation == "media.status" or verified_media_transport:
             # Metadata names are literal facts, not assertions of playback.
+            # Verified controls use the same names/state checks; a music title
+            # does not require the unrelated document label "title" or "note".
             playback_text = stripped
             for field in ("title", "artist"):
                 name = observed_dict.get(field)

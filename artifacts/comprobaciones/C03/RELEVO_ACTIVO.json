@@ -164,7 +164,7 @@
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "0e7f8da607cdbe1b5bbb4c379c4a31076567230e6355a2a6050fa577055f841c",
+  "surveyRegistrySha256": "14a2932b0312f3a8104f2ffb3d205205ebba399253cb3515923629405eff6262",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
@@ -175,11 +175,11 @@
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
-  "latestProductRun": "CLOSE1056 partial ended: 2 fail, 11 not executed, 0 credits",
+  "latestProductRun": "MUSIC1061 partial:2 fail/21 not executed/0 credits",
   "activeValidation": null,
   "activeRepairAgent": null,
   "currentUnpublishedSource": null,
-  "preparedNextPanel": "MUSIC1058 preparation",
+  "preparedNextPanel": "MUSIC1063 repairs + MESSAGING1062 preparation",
   "preparedNextPanelNote": "Namedclosure repair proposal,4literals4variants5boundaries; root empty windows and exact manual approval required.",
   "pendingOwnerClarification": null,
   "ownerLatestInstruction": "Accelerate C03 without automated tests/Fast/Full; no loss of truthful product behavior. Real sealed execution required for coverage.",
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-12T16:17:31.026918+00:00",
+  "utcUpdated": "2026-09-12T16:33:18.245252+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -600,5 +600,25 @@
     },
     "freeze_ended_at": "2026-09-12T16:17:31.026918+00:00",
     "closure_instrument_exercised": false
+  },
+  "currentContinuation1061": {
+    "head": "6f61529543bc3fa44de7cbf8302bc1ce3b9ac375",
+    "quality": {
+      "pass_count": 0,
+      "fail_count": 2,
+      "executed": 2,
+      "sealed_total": 23,
+      "not_executed": 21
+    },
+    "new_credits": 0,
+    "registry_sha256": "14a2932b0312f3a8104f2ffb3d205205ebba399253cb3515923629405eff6262",
+    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\MUSIC1061\\ROOT_ADJUDICATION.json",
+    "resources": {
+      "gpu_peak_mib": 3497.55859375,
+      "ram_peak_mib": 1699.4140625,
+      "seconds": 59.89100000000326
+    },
+    "freeze_ended_at": "2026-09-12T16:33:18.245252+00:00",
+    "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
   }
 }

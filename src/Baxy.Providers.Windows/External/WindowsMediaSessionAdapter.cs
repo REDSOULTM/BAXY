@@ -388,7 +388,8 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
             }
 
             return verified
-                ? ExternalJson.Success(operation, MediaResult(after, "playing"), dispatched)
+                ? ExternalJson.Success(operation,
+                    MediaResult(after, "playing", session.SourceAppUserModelId, provider: "spotify"), dispatched)
                 : ExternalJson.Failure(operation, "spotify_now_playing_not_verified", dispatched);
         }
         catch when (!cancellationToken.IsCancellationRequested)
@@ -504,7 +505,7 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
             return verified
                 ? ExternalJson.Success(
                     operation,
-                    MediaResult(after, status.ToString().ToLowerInvariant()))
+                    MediaResult(after, status.ToString().ToLowerInvariant(), session.SourceAppUserModelId))
                 : ExternalJson.Failure(operation, "smtc_postcondition_not_verified", effectObserved: true);
         }
         catch when (!cancellationToken.IsCancellationRequested)
@@ -652,11 +653,15 @@ internal sealed class WindowsMediaSessionAdapter : IExternalOperationAdapter, ID
 
     private static JsonElement MediaResult(
         GlobalSystemMediaTransportControlsSessionMediaProperties properties,
-        string status) => ExternalJson.Create(writer =>
+        string status,
+        string sourceAppUserModelId,
+        string? provider = null) => ExternalJson.Create(writer =>
     {
         writer.WriteStartObject();
         writer.WriteNumber("version", 1);
-        writer.WriteString("provider", "spotify");
+        if (provider is not null)
+            writer.WriteString("provider", provider);
+        writer.WriteString("sourceAppUserModelId", sourceAppUserModelId);
         writer.WriteString("title", properties.Title);
         writer.WriteString("artist", properties.Artist);
         writer.WriteString("playbackStatus", status);

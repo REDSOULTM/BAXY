@@ -70,6 +70,13 @@ public interface IWindowControlProvider
         bool byTitle = false,
         int offset = 0);
 
+    ValueTask<WindowResolveResult> ResolveApplicationAsync(
+        string applicationName,
+        int limit,
+        CancellationToken cancellationToken) =>
+        ValueTask.FromResult(new WindowResolveResult(
+            false, false, [], WindowControlErrorCodes.InvalidSelector));
+
     ValueTask<WindowActionResult> ExecuteAsync(
         string windowId,
         WindowControlAction action,

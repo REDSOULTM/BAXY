@@ -17,18 +17,32 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
     private const int FallbackCloseVerificationAttempts = 20;
 
     private readonly IWindowControlPlatform _platform;
+    private readonly WindowsInstalledApplicationOpenProvider _applications;
     private readonly WindowsWindowControlVerifier _verifier;
     private readonly object _gate = new();
     private readonly Dictionary<string, WindowIdentity> _handles = new(StringComparer.Ordinal);
 
     public WindowsWindowControlProvider()
-        : this(new Win32WindowControlPlatform())
+        : this(new Win32WindowControlPlatform(), new WindowsInstalledApplicationOpenProvider())
+    {
+    }
+
+    public WindowsWindowControlProvider(WindowsInstalledApplicationOpenProvider applications)
+        : this(new Win32WindowControlPlatform(), applications)
     {
     }
 
     internal WindowsWindowControlProvider(IWindowControlPlatform platform)
+        : this(platform, new WindowsInstalledApplicationOpenProvider())
+    {
+    }
+
+    internal WindowsWindowControlProvider(
+        IWindowControlPlatform platform,
+        WindowsInstalledApplicationOpenProvider applications)
     {
         _platform = platform ?? throw new ArgumentNullException(nameof(platform));
+        _applications = applications ?? throw new ArgumentNullException(nameof(applications));
         _verifier = new WindowsWindowControlVerifier(platform);
     }
 
@@ -133,6 +147,71 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         var page = new WindowInventoryPage(limit, offset,
             enumeration.ObservedCount, enumeration.Complete, nextOffset);
         return ValueTask.FromResult(new WindowResolveResult(true, true, candidates, null, page));
+    }
+
+    public async ValueTask<WindowResolveResult> ResolveApplicationAsync(
+        string applicationName,
+        int limit,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!ApplicationIds.IsValidRequest(applicationName) || limit is < 1 or > 50)
+            return new(false, false, [], WindowControlErrorCodes.InvalidSelector);
+
+        var issued = new List<string>();
+        bool published = false;
+        try
+        {
+            var resolution = await _applications.ResolveWindowIdentitiesAsync(
+                applicationName, cancellationToken).ConfigureAwait(false);
+            if (resolution.ErrorCode is not null)
+                return new(false, false, [], resolution.ErrorCode);
+            InstalledApplicationObservation[] observations = resolution.Windows
+                .DistinctBy(static item => (item.WindowHandle, item.ProcessId, item.ProcessCreationTimeUtcTicks))
+                .ToArray();
+            if (observations.Length == 0)
+                return new(false, false, [], WindowControlErrorCodes.WindowNotFound);
+            // A partial application selection must not look like one unambiguous
+            // dependency result. Never issue a first-page-only close candidate.
+            if (observations.Length > limit)
+                return new(false, false, [], "application_window_selection_incomplete");
+
+            var candidates = new List<WindowCandidate>(observations.Length);
+            foreach (InstalledApplicationObservation observation in observations)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                if (!observation.Visible || observation.WindowHandle == 0
+                    || string.IsNullOrWhiteSpace(observation.ProcessName)
+                    || !Path.IsPathFullyQualified(observation.ExecutablePath))
+                    return new(false, false, [], WindowControlErrorCodes.VerificationFailed);
+                var identity = new WindowIdentity(
+                    checked((nint)observation.WindowHandle), observation.ProcessId,
+                    observation.ProcessCreationTimeUtcTicks, observation.ProcessName,
+                    _platform.UtcNow, Path.GetFullPath(observation.ExecutablePath));
+                WindowSnapshot snapshot = _platform.Observe(identity);
+                string windowId = Issue(identity);
+                issued.Add(windowId);
+                WindowCandidate candidate = ToCandidate(snapshot, windowId);
+                if (!_verifier.Verify(identity, candidate, expectedAction: null))
+                    return new(false, false, [], WindowControlErrorCodes.VerificationFailed);
+                candidates.Add(candidate);
+            }
+            published = true;
+            return new(true, true, candidates, null,
+                new WindowInventoryPage(limit, 0, candidates.Count, true, null));
+        }
+        catch (Exception exception) when (exception is Win32Exception
+            or InvalidOperationException or NotSupportedException
+            or ArgumentException or OverflowException)
+        {
+            return new(false, false, [], WindowControlErrorCodes.VerificationFailed);
+        }
+        finally
+        {
+            if (!published)
+                foreach (string windowId in issued)
+                    Revoke(windowId);
+        }
     }
 
     public async ValueTask<WindowActionResult> ExecuteAsync(
@@ -562,7 +641,8 @@ internal sealed record WindowIdentity(
     int ProcessId,
     long ProcessCreationTimeUtcTicks,
     string ProcessName,
-    DateTimeOffset IssuedAtUtc);
+    DateTimeOffset IssuedAtUtc,
+    string? ExecutablePath = null);
 
 internal sealed record WindowBounds(int X, int Y, int Width, int Height);
 
@@ -702,7 +782,10 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         using Process process = Process.GetProcessById(identity.ProcessId);
         if (process.StartTime.ToUniversalTime().Ticks != identity.ProcessCreationTimeUtcTicks
             || !string.Equals(process.ProcessName, identity.ProcessName,
-                StringComparison.OrdinalIgnoreCase))
+                StringComparison.OrdinalIgnoreCase)
+            || (identity.ExecutablePath is not null
+                && !string.Equals(process.MainModule?.FileName, identity.ExecutablePath,
+                    StringComparison.OrdinalIgnoreCase)))
         {
             throw new WindowIdentityChangedException();
         }

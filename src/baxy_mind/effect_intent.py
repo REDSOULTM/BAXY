@@ -3721,6 +3721,19 @@ def _authenticated_application_close_target(
     return min(matches, key=lambda item: item[0])
 
 
+def resolve_application_close_name(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> str | None:
+    """Preserve an authenticated close target as a catalog display name."""
+    catalog = build_application_catalog_index(application_names)
+    target = _authenticated_application_close_target(text, catalog)
+    if target is None:
+        return None
+    names = {name for name, key in catalog.entries if key == target[1]}
+    return next(iter(names)) if len(names) == 1 else None
+
+
 def _repeated_application_target(
     text: str,
     catalog: ApplicationCatalogIndex,
@@ -11775,9 +11788,15 @@ def _review_media_and_email_effects(
             head,
             r"(?:reanuda|reanudar|resume|reproduce|reproducir|reproduzca|play)",
         )
-        and _has(
-            folded,
-            r"\b(?:pausad[oa]|paused|detenid[oa]|stopped)\b",
+        and (
+            # Resume already requests continuity of the current session. Only
+            # generic play/reproduce needs an explicit paused/stopped qualifier
+            # to distinguish transport control from choosing new media.
+            _head_is(head, r"(?:reanuda|reanudar|resume)")
+            or _has(
+                folded,
+                r"\b(?:pausad[oa]|paused|detenid[oa]|stopped)\b",
+            )
         )
         and _has(
             folded,
