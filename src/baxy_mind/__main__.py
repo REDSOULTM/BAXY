@@ -6680,6 +6680,15 @@ def _prepare_turn_result(
             raise PlannerContractError(
                 "no se pudo preparar una respuesta conversacional"
             )
+        if _conversation_reply_is_a_bare_prompt_token(reply_text):
+            # CLOCK1034 publicó «SIEMPRE» dos veces como respuesta visible: es
+            # vocabulario del prompt del sistema —«responde SIEMPRE en el idioma
+            # del…»— copiado tal cual. La ruta conversacional no pasa por el
+            # filtro de defectos visibles, así que la palabra suelta llegó a la
+            # pantalla. Un fallo honesto es mejor que una palabra del prompt.
+            raise PlannerContractError(
+                "una respuesta conversacional no puede ser una palabra suelta del prompt"
+            )
         # Una explicación que sólo devuelve otra pregunta no contesta nada:
         # «para qué lo necesita el PC» salió como «¿Para qué necesita el PC
         # para ejecutar tareas específicas?» (seguimiento-13/020), y «cuáles
@@ -6809,6 +6818,26 @@ _RECOVERY_PROMPT_VOCABULARY = (
     "the sentence you",
     "situacion del turno",
 )
+
+
+def _conversation_reply_is_a_bare_prompt_token(value: str) -> bool:
+    """True when the visible conversational reply is a single shouted keyword.
+
+    CLOCK1034 published «SIEMPRE» twice, which is system-prompt vocabulary
+    (`llm.py`: «responde SIEMPRE en el idioma del…»). The conversational route
+    does not pass through `compose_visible_defect`, so nothing stopped it. One
+    uppercase word is never an answer; «Sí» and «OK» stay out of this rule.
+    """
+
+    stripped = str(value).strip().strip(" .!?¡¿,:;\"'()[]")
+    if not stripped or any(character.isspace() for character in stripped):
+        return False
+    letters = [character for character in stripped if character.isalpha()]
+    if not letters or any(character.isdigit() for character in stripped):
+        # «03:01» es una respuesta legítima de una sola pieza: la regla busca una
+        # palabra gritada del prompt, no una cifra.
+        return False
+    return len(stripped) >= 3 and all(character.isupper() for character in letters)
 
 
 def _recovery_question_repeats_a_previous_turn(
