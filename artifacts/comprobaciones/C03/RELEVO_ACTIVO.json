@@ -312,5 +312,22 @@
       "tests_run": false,
       "general_adoption_claimed": false
     }
+  },
+  "kiroPrivateReturn1038": {
+    "utc": "2026-09-12T12:24:38.679616+00:00",
+    "owner_archive": "C:/Users/usuario/Downloads/BAXY_C03_KIRO_RELEVO_20260912_085443.rar",
+    "verified_files": 348,
+    "registry_current_covered": 156,
+    "registry_current_open": 586,
+    "registry_current_sha256": "11fc78167e4e935b5f2e63913214e88e4d966923496a4b808dfc54bf83c00229",
+    "reads1035_adjudicated": true,
+    "new_credits": [
+      "H0104",
+      "H0575"
+    ],
+    "next_panel": "WEB1039 then FILES1040",
+    "music_precondition": "Core media.status:media_session_not_found on laptop; no queue or playback presumed",
+    "goalStatus": "active",
+    "tests_policy": "owner_directed_no_tests"
   }
 }

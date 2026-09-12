@@ -1,4 +1,32 @@
-# C03 — retorno autorizado desde Kiro, revisión 1036
+# C03 — 156 cubiertos tras recuperar Kiro
+
+**156/742 cubiertos, 586 abiertos, 0 no aplican; 0/35 categorías cerradas.**
+Últimas24h: al menos30 primeras altas verificadas (28Kiro +2retorno); total global
+exacto pendiente de historial de primeras altas, sin usar fechas de actualización.
+C03 formal3/11; goal activo. Suites/Fast/Full omitidos por instrucción del dueño.
+
+RAR recibido,348 archivos comprobados con SHA. Registro154 recuperado sin cambiar
+literales, marcas o IDs;28 créditos Kiro contrastados con recibos y pares. READS1035
+adjudicada sin repetición:8/12 cumplen,+1H0104 por ventana activa con parES/EN.
+H0575 ahora+1: literal1036 útil y fiel y dos variantes previas de lanzamiento real
+1032 recuperadas y comprobadas. Los cuatro desarrollos fallidos1036 se conservan;
+no se exige que las variantes pasen todas ni que sean de la última tanda.
+
+Registro SHA11fc78167e4e935b5f2e63913214e88e4d966923496a4b808dfc54bf83c00229.
+Evidencia: KIRO_RETURN1038/, READS1035/ROOT_ADJUDICATION.json,
+REPAIR1036/CREDIT_AFTER_TRANSFER.json. Tabla categoría→total→cubiertos→abiertos,
+orden descendente: KIRO_RETURN1038/CATEGORY_COUNTS.md.
+
+Música1037: Core actual leyó media.status sinGPU y devolvió media_session_not_found;
+no hay sesión/cola real para los controles y no se añade infraestructura para8filas.
+Siguiente WEB1039:2literales de volver atrás+10variantes+5límites, historial real de
+25navegaciones en Edge privado preparado y observado. FILES1040 se sella en paralelo:
+3literales de buscar nombres/abrir Descargas+10variantes+5límites. Cantidades menores
+por elegibilidad real, sin rellenar con destinos del sandbox o búsquedasRSS fallidas.
+
+## Checkpoint anterior1036, conservado como historial
+
+### Retorno inicial1036
 
 **Goal activo por nueva instrucción del dueño.** Rama de continuación
 `codex/kiro-goal-c03`, heredada de `3a738192`. Main y WIP ajeno preservados.

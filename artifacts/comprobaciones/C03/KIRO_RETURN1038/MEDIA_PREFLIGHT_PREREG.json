@@ -1,0 +1,16 @@
+{
+  "utc": "2026-09-12T12:15:42.264571+00:00",
+  "core": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\bin\\Release\\net10.0-windows10.0.19041.0\\baxy-core.exe",
+  "core_sha256": "ea53d986e50e179833200ec243ed36989be67063c613d0028ba0693b7b20bbab",
+  "request": {
+    "type": "operation.request",
+    "requestId": "f5edf3ff-3da8-483e-b10d-6b0d1356f9a3",
+    "missionId": "3e9820c4-fc37-4b5d-a9ec-1e37703928d4",
+    "invocationId": "2fd0a350-4aba-4b11-b4dd-5f78c2440252",
+    "operation": "media.status",
+    "arguments": {}
+  },
+  "profile": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-media1038-profile",
+  "gpu": false,
+  "tests_run": false
+}

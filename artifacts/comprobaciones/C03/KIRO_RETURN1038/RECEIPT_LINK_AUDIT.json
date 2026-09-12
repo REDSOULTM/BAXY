@@ -1,0 +1,395 @@
+[
+  {
+    "batch": "SYSTEM1028",
+    "case_id": "H0539",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "88605e15-8298-4f2f-8bb5-1e8edaf117e6"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "SYSTEM1028",
+    "case_id": "H0655",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "7589f509-6855-4ee9-86af-fbacb3f34f42"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "SYSTEM1028",
+    "case_id": "H0442",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "8c91db4d-a45a-41c7-8659-7d62b3ef6cb2"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "SYSTEM1028",
+    "case_id": "H0422",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "7dea207c-77ba-4c10-b791-12fd4019f70f",
+      "8e306588-d74a-4313-9198-085ad2945b77",
+      "71238090-08dc-4284-8806-5cfe6d5b7a7c"
+    ],
+    "note": "identity identical response may match several invocations; exact turn payload and terminal were separately bound"
+  },
+  {
+    "batch": "SYSTEM1028",
+    "case_id": "system1028-dev-01",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "13a6fc04-538b-4584-b24a-61768d987b5f"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "SYSTEM1028",
+    "case_id": "system1028-dev-02",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "28869a20-faff-49fb-970f-6006b325ea49"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "SYSTEM1028",
+    "case_id": "system1028-dev-11",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "7dea207c-77ba-4c10-b791-12fd4019f70f",
+      "8e306588-d74a-4313-9198-085ad2945b77",
+      "71238090-08dc-4284-8806-5cfe6d5b7a7c"
+    ],
+    "note": "identity identical response may match several invocations; exact turn payload and terminal were separately bound"
+  },
+  {
+    "batch": "SYSTEM1028",
+    "case_id": "system1028-dev-12",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "7dea207c-77ba-4c10-b791-12fd4019f70f",
+      "8e306588-d74a-4313-9198-085ad2945b77",
+      "71238090-08dc-4284-8806-5cfe6d5b7a7c"
+    ],
+    "note": "identity identical response may match several invocations; exact turn payload and terminal were separately bound"
+  },
+  {
+    "batch": "APPS1029",
+    "case_id": "H0085",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "4932ed1b-a64d-4874-8c53-6946e5cf7705"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "APPS1029",
+    "case_id": "H0315",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "3dbea569-838f-4907-ba6b-8638b43f062f"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "APPS1029",
+    "case_id": "H0317",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "f5d0642f-6550-485a-ab01-4f0f5f8aa88d"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "APPS1029",
+    "case_id": "apps1029-dev-03",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "47617c6c-0fea-4b5e-a2c3-ceefaba20453"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "APPS1029",
+    "case_id": "apps1029-dev-05",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "a68de9fd-509d-41ed-990a-9ad0f1802d70"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "REPAIR1032",
+    "case_id": "H0251",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "88961cc0-a3b3-4fa8-a68a-abe62e950c82"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "REPAIR1032",
+    "case_id": "H0588",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "c457a739-fe59-4559-9554-25996c356466"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "REPAIR1032",
+    "case_id": "H0683",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "9848a99d-ff85-4bf8-9e65-916842370e65"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "REPAIR1032",
+    "case_id": "H0706",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "9c85501a-a3c8-4b60-85c0-e4a0671d2056"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "REPAIR1032",
+    "case_id": "repair1032-dev-01",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "51ef3bee-b180-4778-9500-265f9bb81563"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "REPAIR1032",
+    "case_id": "repair1032-dev-02",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "fb47b399-aaf0-4901-aef2-63fb08065769"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "REPAIR1033",
+    "case_id": "H0015",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "dbede500-a342-4b19-a5a9-1597c530e958"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "REPAIR1033",
+    "case_id": "H0055",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "04731422-e0fa-4f16-8dfc-1d8453574400"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "REPAIR1033",
+    "case_id": "H0134",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "f8c7b99a-45fd-4584-a352-54ebf9514fc7"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "REPAIR1033",
+    "case_id": "H0136",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "10cc8a39-cee1-471f-b658-349fa7cba57d"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "REPAIR1033",
+    "case_id": "H0391",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "ff8f039c-7cfc-4cb1-b202-be21d63b251c"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "REPAIR1033",
+    "case_id": "H0418",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "2a862178-39f2-48c7-a2f3-de2df024cd1c"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "REPAIR1033",
+    "case_id": "H0653",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "62d88cf4-c14a-423c-ad51-dd1d8c8c4ccb"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "REPAIR1033",
+    "case_id": "repair1033-dev-02",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "f64f27df-eafe-488d-a3b0-801b7efc3451"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "REPAIR1033",
+    "case_id": "repair1033-dev-03",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "8f6c69b1-5228-4ef9-a02c-dbfdf2caee79"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "REPAIR1033",
+    "case_id": "repair1033-dev-04",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "f15854c7-a297-4090-a1bf-88625b073646"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "CLOCK1034",
+    "case_id": "H0126",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "88b0a308-fdb2-4024-822c-aaf882acbec7"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "CLOCK1034",
+    "case_id": "H0223",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "cb7c4e09-a093-4ff2-9e50-16c06228bb28"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "CLOCK1034",
+    "case_id": "H0449",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "2205bae4-43e1-4a6f-b28b-cb7d66da5599"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "CLOCK1034",
+    "case_id": "H0450",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "69c39d2e-16e2-42ef-bfbf-560ac086a441"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "CLOCK1034",
+    "case_id": "H0498",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "9fae68c1-7917-41a4-a7b3-71e17b71d645"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "CLOCK1034",
+    "case_id": "H0586",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "f5607905-828f-4ac7-9db0-9cfee3c61986"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "CLOCK1034",
+    "case_id": "H0600",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "ec3a16bb-ef93-4e56-be35-cd278ec76037"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "CLOCK1034",
+    "case_id": "H0602",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "137797ed-47bd-47ca-a7e5-7f8e7e102947"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "CLOCK1034",
+    "case_id": "H0700",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "72d9dfd3-0c80-4f33-b907-8cf9d2e720c7"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "CLOCK1034",
+    "case_id": "H0727",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "0d58bba3-0ed5-468d-bb02-83b026df0393"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "CLOCK1034",
+    "case_id": "clock1034-dev-02",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "c2ef3342-138f-453c-b6f3-6fcad78c4886"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "CLOCK1034",
+    "case_id": "clock1034-dev-04",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "1f02ae20-4f82-4b56-a9f5-2bce9ef4fb05"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "SYSTEM1022",
+    "case_id": "system1022-dev-03",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "0d28b89b-6188-49e4-a978-29521f3a3e19"
+    ],
+    "note": ""
+  },
+  {
+    "batch": "SYSTEM1022",
+    "case_id": "system1022-dev-04",
+    "verified_receipt_match": true,
+    "matching_invocation_ids": [
+      "6dc19eb5-d3fe-4789-a167-b4f0d66a0f38"
+    ],
+    "note": ""
+  }
+]

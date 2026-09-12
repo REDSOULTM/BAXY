@@ -1,0 +1,364 @@
+{
+  "schema": "c03-kiro-credit-audit1038-v1",
+  "audited_at": "2026-09-12T12:16:50.855930+00:00",
+  "confirmed_count": 28,
+  "confirmed_cases": [
+    {
+      "case_id": "H0539",
+      "batch": "SYSTEM1028",
+      "credit_written_at": "2026-09-12T03:30:04.335580+00:00",
+      "pair_case_ids": [
+        "system1022-dev-03",
+        "system1022-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "88605e15-8298-4f2f-8bb5-1e8edaf117e6"
+      ]
+    },
+    {
+      "case_id": "H0655",
+      "batch": "SYSTEM1028",
+      "credit_written_at": "2026-09-12T03:30:04.335580+00:00",
+      "pair_case_ids": [
+        "system1022-dev-03",
+        "system1022-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "7589f509-6855-4ee9-86af-fbacb3f34f42"
+      ]
+    },
+    {
+      "case_id": "H0442",
+      "batch": "SYSTEM1028",
+      "credit_written_at": "2026-09-12T03:30:04.335580+00:00",
+      "pair_case_ids": [
+        "system1028-dev-01",
+        "system1028-dev-02"
+      ],
+      "receipt_invocation_ids": [
+        "8c91db4d-a45a-41c7-8659-7d62b3ef6cb2"
+      ]
+    },
+    {
+      "case_id": "H0422",
+      "batch": "SYSTEM1028",
+      "credit_written_at": "2026-09-12T03:30:04.335580+00:00",
+      "pair_case_ids": [
+        "system1028-dev-11",
+        "system1028-dev-12"
+      ],
+      "receipt_invocation_ids": [
+        "7dea207c-77ba-4c10-b791-12fd4019f70f",
+        "8e306588-d74a-4313-9198-085ad2945b77",
+        "71238090-08dc-4284-8806-5cfe6d5b7a7c"
+      ]
+    },
+    {
+      "case_id": "H0085",
+      "batch": "APPS1029",
+      "credit_written_at": "2026-09-12T04:58:56.075109+00:00",
+      "pair_case_ids": [
+        "apps1029-dev-03",
+        "apps1029-dev-05"
+      ],
+      "receipt_invocation_ids": [
+        "4932ed1b-a64d-4874-8c53-6946e5cf7705"
+      ]
+    },
+    {
+      "case_id": "H0315",
+      "batch": "APPS1029",
+      "credit_written_at": "2026-09-12T04:58:56.075109+00:00",
+      "pair_case_ids": [
+        "apps1029-dev-03",
+        "apps1029-dev-05"
+      ],
+      "receipt_invocation_ids": [
+        "3dbea569-838f-4907-ba6b-8638b43f062f"
+      ]
+    },
+    {
+      "case_id": "H0317",
+      "batch": "APPS1029",
+      "credit_written_at": "2026-09-12T04:58:56.075109+00:00",
+      "pair_case_ids": [
+        "apps1029-dev-03",
+        "apps1029-dev-05"
+      ],
+      "receipt_invocation_ids": [
+        "f5d0642f-6550-485a-ab01-4f0f5f8aa88d"
+      ]
+    },
+    {
+      "case_id": "H0251",
+      "batch": "REPAIR1032",
+      "credit_written_at": "2026-09-12T05:35:50.111146+00:00",
+      "pair_case_ids": [
+        "repair1032-dev-01",
+        "repair1032-dev-02"
+      ],
+      "receipt_invocation_ids": [
+        "88961cc0-a3b3-4fa8-a68a-abe62e950c82"
+      ]
+    },
+    {
+      "case_id": "H0588",
+      "batch": "REPAIR1032",
+      "credit_written_at": "2026-09-12T05:35:50.111146+00:00",
+      "pair_case_ids": [
+        "repair1032-dev-01",
+        "repair1032-dev-02"
+      ],
+      "receipt_invocation_ids": [
+        "c457a739-fe59-4559-9554-25996c356466"
+      ]
+    },
+    {
+      "case_id": "H0683",
+      "batch": "REPAIR1032",
+      "credit_written_at": "2026-09-12T05:35:50.111146+00:00",
+      "pair_case_ids": [
+        "repair1032-dev-01",
+        "repair1032-dev-02"
+      ],
+      "receipt_invocation_ids": [
+        "9848a99d-ff85-4bf8-9e65-916842370e65"
+      ]
+    },
+    {
+      "case_id": "H0706",
+      "batch": "REPAIR1032",
+      "credit_written_at": "2026-09-12T05:35:50.111146+00:00",
+      "pair_case_ids": [
+        "repair1032-dev-01",
+        "repair1032-dev-02"
+      ],
+      "receipt_invocation_ids": [
+        "9c85501a-a3c8-4b60-85c0-e4a0671d2056"
+      ]
+    },
+    {
+      "case_id": "H0015",
+      "batch": "REPAIR1033",
+      "credit_written_at": "2026-09-12T05:56:18.451540+00:00",
+      "pair_case_ids": [
+        "repair1033-dev-02",
+        "repair1033-dev-03",
+        "repair1033-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "dbede500-a342-4b19-a5a9-1597c530e958"
+      ]
+    },
+    {
+      "case_id": "H0055",
+      "batch": "REPAIR1033",
+      "credit_written_at": "2026-09-12T05:56:18.451540+00:00",
+      "pair_case_ids": [
+        "repair1033-dev-02",
+        "repair1033-dev-03",
+        "repair1033-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "04731422-e0fa-4f16-8dfc-1d8453574400"
+      ]
+    },
+    {
+      "case_id": "H0134",
+      "batch": "REPAIR1033",
+      "credit_written_at": "2026-09-12T05:56:18.451540+00:00",
+      "pair_case_ids": [
+        "repair1033-dev-02",
+        "repair1033-dev-03",
+        "repair1033-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "f8c7b99a-45fd-4584-a352-54ebf9514fc7"
+      ]
+    },
+    {
+      "case_id": "H0136",
+      "batch": "REPAIR1033",
+      "credit_written_at": "2026-09-12T05:56:18.451540+00:00",
+      "pair_case_ids": [
+        "repair1033-dev-02",
+        "repair1033-dev-03",
+        "repair1033-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "10cc8a39-cee1-471f-b658-349fa7cba57d"
+      ]
+    },
+    {
+      "case_id": "H0391",
+      "batch": "REPAIR1033",
+      "credit_written_at": "2026-09-12T05:56:18.451540+00:00",
+      "pair_case_ids": [
+        "repair1033-dev-02",
+        "repair1033-dev-03",
+        "repair1033-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "ff8f039c-7cfc-4cb1-b202-be21d63b251c"
+      ]
+    },
+    {
+      "case_id": "H0418",
+      "batch": "REPAIR1033",
+      "credit_written_at": "2026-09-12T05:56:18.451540+00:00",
+      "pair_case_ids": [
+        "repair1033-dev-02",
+        "repair1033-dev-03",
+        "repair1033-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "2a862178-39f2-48c7-a2f3-de2df024cd1c"
+      ]
+    },
+    {
+      "case_id": "H0653",
+      "batch": "REPAIR1033",
+      "credit_written_at": "2026-09-12T05:56:18.451540+00:00",
+      "pair_case_ids": [
+        "repair1033-dev-02",
+        "repair1033-dev-03",
+        "repair1033-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "62d88cf4-c14a-423c-ad51-dd1d8c8c4ccb"
+      ]
+    },
+    {
+      "case_id": "H0126",
+      "batch": "CLOCK1034",
+      "credit_written_at": "2026-09-12T06:05:51.146025+00:00",
+      "pair_case_ids": [
+        "clock1034-dev-02",
+        "clock1034-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "88b0a308-fdb2-4024-822c-aaf882acbec7"
+      ]
+    },
+    {
+      "case_id": "H0223",
+      "batch": "CLOCK1034",
+      "credit_written_at": "2026-09-12T06:05:51.146025+00:00",
+      "pair_case_ids": [
+        "clock1034-dev-02",
+        "clock1034-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "cb7c4e09-a093-4ff2-9e50-16c06228bb28"
+      ]
+    },
+    {
+      "case_id": "H0449",
+      "batch": "CLOCK1034",
+      "credit_written_at": "2026-09-12T06:05:51.146025+00:00",
+      "pair_case_ids": [
+        "clock1034-dev-02",
+        "clock1034-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "2205bae4-43e1-4a6f-b28b-cb7d66da5599"
+      ]
+    },
+    {
+      "case_id": "H0450",
+      "batch": "CLOCK1034",
+      "credit_written_at": "2026-09-12T06:05:51.146025+00:00",
+      "pair_case_ids": [
+        "clock1034-dev-02",
+        "clock1034-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "69c39d2e-16e2-42ef-bfbf-560ac086a441"
+      ]
+    },
+    {
+      "case_id": "H0498",
+      "batch": "CLOCK1034",
+      "credit_written_at": "2026-09-12T06:05:51.146025+00:00",
+      "pair_case_ids": [
+        "clock1034-dev-02",
+        "clock1034-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "9fae68c1-7917-41a4-a7b3-71e17b71d645"
+      ]
+    },
+    {
+      "case_id": "H0586",
+      "batch": "CLOCK1034",
+      "credit_written_at": "2026-09-12T06:05:51.146025+00:00",
+      "pair_case_ids": [
+        "clock1034-dev-02",
+        "clock1034-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "f5607905-828f-4ac7-9db0-9cfee3c61986"
+      ]
+    },
+    {
+      "case_id": "H0600",
+      "batch": "CLOCK1034",
+      "credit_written_at": "2026-09-12T06:05:51.146025+00:00",
+      "pair_case_ids": [
+        "clock1034-dev-02",
+        "clock1034-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "ec3a16bb-ef93-4e56-be35-cd278ec76037"
+      ]
+    },
+    {
+      "case_id": "H0602",
+      "batch": "CLOCK1034",
+      "credit_written_at": "2026-09-12T06:05:51.146025+00:00",
+      "pair_case_ids": [
+        "clock1034-dev-02",
+        "clock1034-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "137797ed-47bd-47ca-a7e5-7f8e7e102947"
+      ]
+    },
+    {
+      "case_id": "H0700",
+      "batch": "CLOCK1034",
+      "credit_written_at": "2026-09-12T06:05:51.146025+00:00",
+      "pair_case_ids": [
+        "clock1034-dev-02",
+        "clock1034-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "72d9dfd3-0c80-4f33-b907-8cf9d2e720c7"
+      ]
+    },
+    {
+      "case_id": "H0727",
+      "batch": "CLOCK1034",
+      "credit_written_at": "2026-09-12T06:05:51.146025+00:00",
+      "pair_case_ids": [
+        "clock1034-dev-02",
+        "clock1034-dev-04"
+      ],
+      "receipt_invocation_ids": [
+        "0d58bba3-0ed5-468d-bb02-83b026df0393"
+      ]
+    }
+  ],
+  "discrepancies": [],
+  "daily_first_credit_metric": {
+    "verified_new_kiro_credits_in_last_24h": 28,
+    "scope": "First additions within reviewed Kiro continuation, all28 open in sealed126-row covered baseline, with actual registry-write timestamps. Not an exhaustive first-ever history audit for all154 covered rows.",
+    "all_survey_exact_total": null,
+    "why_not_exact": "Only66 current covered rows have a located explicit credit date within24h using bounded existing references;88 lack a uniform explicit earliest-credit record in that pass. Located-date is not automatically first-ever grant. verification_updated_at was never used as an award date.",
+    "as_of": "2026-09-12T12:15:35.019043+00:00",
+    "window_start": "2026-09-11T12:15:35.019043+00:00"
+  },
+  "automated_tests_run": false,
+  "product_executed": false,
+  "registry_modified": false
+}

@@ -1,0 +1,46 @@
+{
+  "runner_delivered": true,
+  "schema": "web1039-directed-material-seal-v1",
+  "historical_case_ids": [
+    "H0326",
+    "H0605"
+  ],
+  "coverage_credit": 0,
+  "registry_sha256": "11fc78167e4e935b5f2e63913214e88e4d966923496a4b808dfc54bf83c00229",
+  "read_source_pins": {
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\WEB1039\\PLAN.md": "9e7fa665bff8316708dabda75f919182308ad9d78dc98849136599c828b1583b",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-repair1036-proposal/runner.py": "804f98036bbff65e7cfccf8ef930db6c57d8a9e1aae5df906484ee3e33b5ef5d",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-web1039-proposal/PLAN_DRAFT.md": "98c6c6b2d98e95efa175f73233055f9119e7232a64433470c5e8cdbd57ea754f",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-web1039-proposal/panel.draft.json": "81fb5033fdff24bcb3bd2f0bf60f347a0213759bb0d32495c510049631499dd9"
+  },
+  "counts": {
+    "cases": 17,
+    "historical_positive_open": 2,
+    "failed_variant_reexecutions": 0,
+    "original_development_variants": 10,
+    "boundaries": 5,
+    "wire_lines": 34,
+    "controls": 17,
+    "session_new": 17,
+    "conditional_positive_commands": 0,
+    "normal_diagnostic_commands": 17,
+    "maximum_turn_admissions": 17,
+    "maximum_reportable_terminals": 17,
+    "case_final_terminals": 17,
+    "maximum_internal_confirmations": 0
+  },
+  "candidate": {
+    "execution_authorized_by_proposal": false,
+    "tests_run": false,
+    "commit": null,
+    "status": "current_source_binding_pending_root"
+  },
+  "files": {
+    "requirements-snapshot.jsonl": "11fc78167e4e935b5f2e63913214e88e4d966923496a4b808dfc54bf83c00229",
+    "case-map.json": "f9ad60b628ee54c838950b3a01bd22a66330a985ed9de84c714cc5439d81410a",
+    "panel.json": "bb8c5ba88b456faf21deaf17d8fd5ed07c672f637d88175d7b189c4e306b5cbc",
+    "turns.jsonl": "b2937a09b632ed11942fd9a1d55f5986af1723c942e72f28c69c0ae98f0917ae",
+    "PLAN.md": "9e7fa665bff8316708dabda75f919182308ad9d78dc98849136599c828b1583b"
+  },
+  "execution_authorized_by_proposal": false
+}

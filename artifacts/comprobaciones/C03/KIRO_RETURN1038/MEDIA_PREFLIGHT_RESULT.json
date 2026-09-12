@@ -1,0 +1,27 @@
+{
+  "exit_code": 0,
+  "request": {
+    "type": "operation.request",
+    "requestId": "f5edf3ff-3da8-483e-b10d-6b0d1356f9a3",
+    "missionId": "3e9820c4-fc37-4b5d-a9ec-1e37703928d4",
+    "invocationId": "2fd0a350-4aba-4b11-b4dd-5f78c2440252",
+    "operation": "media.status",
+    "arguments": {}
+  },
+  "responses": [
+    {
+      "type": "operation.response",
+      "requestId": "f5edf3ff-3da8-483e-b10d-6b0d1356f9a3",
+      "missionId": "3e9820c4-fc37-4b5d-a9ec-1e37703928d4",
+      "invocationId": "2fd0a350-4aba-4b11-b4dd-5f78c2440252",
+      "status": "failed",
+      "message": "{\"kind\":\"operation\",\"operation\":\"media.status\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"media_session_not_found\"}",
+      "verified": false,
+      "replayed": false,
+      "result": null,
+      "errorCode": "media_session_not_found"
+    }
+  ],
+  "gpu": false,
+  "tests_run": false
+}
