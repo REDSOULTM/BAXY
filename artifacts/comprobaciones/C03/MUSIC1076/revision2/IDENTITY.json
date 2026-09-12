@@ -1,0 +1,35 @@
+{
+  "schema": "c03-music1076-nominal-navigation-extension-v1",
+  "owner": "src/baxy_mind/effect_intent.py",
+  "measured_head": "fb4d5c528b64517daf5866efefb90bcdf0798a9e",
+  "base_path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1076-repair-proposal/effect_intent.py.PROPOSAL",
+  "base_sha256": "7471e20da024b7f99b80ae98ed5b6ea9da5de02221e152dfa8568e2d1c64a6d3",
+  "result_sha256": "db79ad14666531dc11ab471eb4a9292a6d3378ceb5e224832d5b6ca39f957001",
+  "diff_sha256": "494eabc2c5dd40e026fc93d494e1a36833e81a84506533045b85a63d427d2277",
+  "diagnosis_sha256": "5b15877b8afe662b95e137ad586851dd1c2f1ad6800aff1ea92bf19dce731a10",
+  "evidence": [
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1071-proposal/private/run-03/turns.jsonl",
+      "sha256": "540f0c7202855008f2d1f0825419c5823af0ff1f54127b0ccb1296079e6e5bbf"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1071-proposal/private/run-03/turn-audit.jsonl",
+      "sha256": "b4555210a373522d6406bb3521bbf768af149ef8f99e6b6524ca8debbda2325a"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1071-proposal/private/run-03/raw-replies.jsonl",
+      "sha256": "b98c58ef34e03f457cf8761056b58f104916f554b87dddfcc2a56ffbc03b747a"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1071-proposal/private/run-03/compose-audit.jsonl",
+      "sha256": "6b66dc378a156a8c9096cb17b4af6254a4db24927b7a3fde9cec5e2abc368edf"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1071-proposal/private/run-03/shell-trace.jsonl",
+      "sha256": "c291c3885df535306537c7201abca921eb8b1885acb2fa70c7b8417bf70d932d"
+    }
+  ],
+  "canonical_modified": false,
+  "tests_product_imports_core_gpu_build": false,
+  "coverage_credit": 0
+}

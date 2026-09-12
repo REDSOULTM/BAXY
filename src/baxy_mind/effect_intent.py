@@ -2517,7 +2517,11 @@ def resolve_explicit_clarification_intent(
         )
         is not None
     )
-    if "media.control" in available and named_resume_without_provider:
+    if (
+        "media.control" in available
+        and named_resume_without_provider
+        and not _resume_existing_media(folded)
+    ):
         return ClarificationIntent(
             ("media.control",),
             ("source_app",),
@@ -6061,6 +6065,39 @@ def _stored_note_search_query(text: str) -> str | None:
     return match.group("query").strip() if match is not None else None
 
 
+def _media_navigation_request(text: str) -> bool:
+    """Recognize a complete transport direction and its media object."""
+
+    folded = _fold(text)
+    return bool(_request_head(folded)) and _has(
+        folded,
+        r"^[^\w]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
+        r"(?:(?:pon|pone|ponme|reproduce|reproducir|play)\s+)?"
+        r"(?:(?:el|la|the)\s+)?(?:siguiente|next|anterior|previous)\s+"
+        r"(?:podcast|episodio|episode|cancion|song|pista|track)"
+        r"(?:\s*[,;:]?\s*(?:por favor|please))?[\s.!?]*$",
+    )
+
+
+def _resume_existing_media(text: str) -> bool:
+    """Distinguish continuation of loaded media from selecting new content."""
+
+    folded = _fold(text)
+    head = _request_head(folded)
+    return (
+        _head_is(head, rf"(?:{_MEDIA_RESUME_VERB}|reproduce|reproducir|reproduzca|play)")
+        and (
+            _head_is(head, _MEDIA_RESUME_VERB)
+            or _has(folded, r"\b(?:pausad[oa]|paused|en\s+pausa|detenid[oa]|stopped)\b")
+        )
+        and _has(
+            folded,
+            r"\b(?:audio|media|musica|music|reproduccion|playback|cancion|song|pista|track)\b",
+        )
+        and not _has(folded, r"\b(?:grabacion|recording|microfono|microphone|mic)\b")
+    )
+
+
 def _media_play_domain(text: str) -> bool:
     if _underspecified_video_request(text):
         return False
@@ -7019,6 +7056,7 @@ _DEICTIC_DAY = (
     r"that\s+day|that\s+date|that\s+same\s+day)\b"
 )
 _OPEN = r"(?:abre|abrir|abri|abrime|open|launch|lanza|inicia|start|ejecuta|arranca|arrancame)"
+_MEDIA_RESUME_VERB = r"(?:reanuda|reanudar|resume|segui|seguir|sigue|continua|continuar|continue)"
 _LIST = r"(?:lista|listar|enumera|enumerar|muestra|muestrame|dime|show|list|enumerate)"
 _READ = r"(?:lee|leer|leeme|leela|leelo|leerla|leerlo|read|dime|muestra)"
 _CREATE = (
@@ -7069,7 +7107,7 @@ _COVERAGE_ACTION_HEAD = (
     r"restaura|escribe|escribi|type|selecciona|select|copia|copiame|copy|"
     r"edita|edit|convierte|convert|transforma|arrastra|drag|make|navega|navegar|"
     r"navigate|ve|go|ir|anda|entra|entrar|recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|"
-    r"play|reanuda|reanudar|resume|pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
+    rf"play|{_MEDIA_RESUME_VERB}|pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
     r"consulta|consultar|comprueba|comprobar|checkea|averigua|averiguar|"
     r"find\s+out|inspect|inspecciona|give|prepara|prepare|resolve|"
     r"envia|enviar|enviale|enviales|manda|mandar|mandale|mandales|"
@@ -7951,6 +7989,8 @@ def _is_direct_request(text: str) -> bool:
         browser_back_arguments(text) is not None
         or _direct_process_inventory_request(text)
         or _explicit_google_search_query(text) is not None
+        or _resume_existing_media(text)
+        or _media_navigation_request(text)
     ):
         return True
     request_head = (
@@ -11768,14 +11808,7 @@ def _review_media_and_email_effects(
         r"(?:(?:el|la|the|current|actual)\s+)?(?:artista|artist)"
         r"(?:\s*[,;:]?\s*(?:por favor|please))?[\s.!?]*$",
     )
-    media_navigation = _has(
-        folded,
-        r"^[^\w]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
-        r"(?:(?:pon|ponme|reproduce|reproducir|play)\s+)?"
-        r"(?:(?:el|la|the)\s+)?(?:siguiente|next|anterior|previous)\s+"
-        r"(?:podcast|episodio|episode|cancion|song|pista|track)"
-        r"(?:\s*[,;:]?\s*(?:por favor|please))?[\s.!?]*$",
-    )
+    media_navigation = _media_navigation_request(folded)
     audio_media_setting = _has(
         folded,
         (
@@ -11783,26 +11816,7 @@ def _review_media_and_email_effects(
             r".{0,60}(?:\b\d{1,3}\b|%)"
         ),
     )
-    resume_existing_media = (
-        _head_is(
-            head,
-            r"(?:reanuda|reanudar|resume|reproduce|reproducir|reproduzca|play)",
-        )
-        and (
-            # Resume already requests continuity of the current session. Only
-            # generic play/reproduce needs an explicit paused/stopped qualifier
-            # to distinguish transport control from choosing new media.
-            _head_is(head, r"(?:reanuda|reanudar|resume)")
-            or _has(
-                folded,
-                r"\b(?:pausad[oa]|paused|detenid[oa]|stopped)\b",
-            )
-        )
-        and _has(
-            folded,
-            r"\b(?:audio|media|musica|music|reproduccion|playback)\b",
-        )
-    )
+    resume_existing_media = _resume_existing_media(folded)
     exact_play = (
         spotify
         and not audio_media_setting
@@ -11911,6 +11925,7 @@ def _review_media_and_email_effects(
     if (
         media_navigation
         or change_current_artist
+        or resume_existing_media
         or (
             _head_is(
                 head,
@@ -11952,6 +11967,8 @@ def _review_media_and_email_effects(
                 if media_navigation
                 else r"\b(?:cambia|cambiar|change|switch)\b"
                 if change_current_artist
+                else rf"\b(?:{_MEDIA_RESUME_VERB}|reproduce|reproducir|reproduzca|play)\b"
+                if resume_existing_media
                 else r"\b(?:pausa|pausar|pause|deten|detener|stop|siguiente|next|anterior|previous|"
                 r"reanuda|reanudar|resume|reproduce|reproducir|reproduzca|play)\b"
             ),

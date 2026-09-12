@@ -1,0 +1,35 @@
+{
+  "head_before": "fb4d5c528b64517daf5866efefb90bcdf0798a9e",
+  "source_before": {
+    "src/baxy_mind/llm.py": "6ff34912ed018566a1dabf402644c9b7054e5537223275fbdd650ada42853f8c",
+    "src/baxy_mind/effect_intent.py": "b8e0ef3078c1c97e1a28bcedd2f43207ec9925271457d13466464c1cdf223731",
+    "src/baxy_mind/__main__.py": "6ca507bbd42300121554b627cf4b6e3b5d99331b29cd49628c72085fbf07a35e"
+  },
+  "source_after": {
+    "src/baxy_mind/llm.py": "686ee8c02d7fb9df79ed1462a317998c9f9a2f9e0ffdca31633ebcf23e065579",
+    "src/baxy_mind/effect_intent.py": "db79ad14666531dc11ab471eb4a9292a6d3378ceb5e224832d5b6ca39f957001",
+    "src/baxy_mind/__main__.py": "7be3cd8e8bce8a45eec8e2031e3189b422c53b9c46df0b62754a289b7760888f"
+  },
+  "patches": [
+    [
+      "C03-music1072-repair-proposal",
+      "13ade6cbf5ca448bee1f8b02df97a9147cbe7aeface7cdfac12d8fa68a5f839d"
+    ],
+    [
+      "C03-music1073-repair-proposal",
+      "0f243541af92caf7296c307204aa6dfab370aa39f1ffb08b7fee6f0157c419b0"
+    ],
+    [
+      "C03-music1076-repair-proposal",
+      "b8447ccbb5057f9ea93e1f2ba187e0f5d8080cf83b2e17d2554f4f04721a74cf"
+    ],
+    [
+      "C03-music1076-repair-proposal/revision2",
+      "494eabc2c5dd40e026fc93d494e1a36833e81a84506533045b85a63d427d2277"
+    ]
+  ],
+  "adjudication": "MUSIC1071",
+  "tests_run": false,
+  "next": "MUSIC1077",
+  "utc": "2026-09-12T17:54:00.606349+00:00"
+}

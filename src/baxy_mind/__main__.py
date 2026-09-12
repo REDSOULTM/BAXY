@@ -4311,6 +4311,7 @@ def _explicit_media_control_arguments(evidence: str) -> dict[str, object] | None
     """Ground one literal playback command without interpreting a media query."""
 
     folded = effect_intent._fold(evidence)
+    resuming = effect_intent._resume_existing_media(folded)
     action_patterns = {
         "next": (
             r"\b(?:skip|salta|saltar|saltea|saltear)\b",
@@ -4328,9 +4329,15 @@ def _explicit_media_control_arguments(evidence: str) -> dict[str, object] | None
             r"\b(?:cancion|pista|podcast|episodio)\s+anterior\b",
             r"\b(?:go|ve|vuelve)\s+(?:back|atras)\b",
         ),
-        "pause": (r"\b(?:pause|pausa|pausar)\b",),
+        "pause": (
+            # In a resume request, "en pausa" describes the loaded state.
+            # A separate pause verb or leave-in-pause command still conflicts.
+            r"(?<!en )\b(?:pause|pausa|pausar)\b"
+            if resuming else r"\b(?:pause|pausa|pausar)\b",
+            r"\b(?:deja|dejar)\s+en\s+pausa\b",
+        ),
         "play": (
-            r"\b(?:resume|reanuda|reanudar|continua|continuar)\b",
+            rf"\b{effect_intent._MEDIA_RESUME_VERB}\b",
             r"\b(?:play|reproduce|reproducir)\b[^.;!?]*\b(?:paused|pausad[ao])\b",
         ),
         "stop": (r"\b(?:stop|deten|detener)\b",),

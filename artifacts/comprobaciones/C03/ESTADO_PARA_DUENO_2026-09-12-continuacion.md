@@ -1,3 +1,23 @@
+## MUSIC1071 — estado vigente 2026-09-12T17:50:26.759849+00:00
+
+Parcial: 1 aprobados, 4 fallidos, 14 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 186/742 | 556 | 0 | >=60 | 0/35 |
+
+Procedencia de primeras altas: Al menos60 primeras altas verificadas hoy:28Kiro y32retorno; no se cuentan revalidaciones ni actualizaciones de filas abiertas.
+
+Siguiente acción: Integrar después de esta adjudicación las reparaciones mínimas1072 de relato conversacional,1073 de reanudación y1076 de navegación, junto con la causa demostrada del literal H0567. Sellar MUSIC1077 conservando exactamente los19objetos pendientes de1071 (6literales+8variantes+5límites),5reejecuciones y14nuevos; excluir las pausas ya acreditadas. Validar en producto y adjudicar crédito inmediatamente. No tests por instrucción expresa; C03 sigue activo, formal3/11.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1071/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 126.95 s acumulados; pico GPU 3497.56 MiB; pico RAM 1592.02 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1071 precedente. -->
+
 La pausa acredita dos requisitos de la encuesta: H0046 y H0637. Ambos literales y dos variantes en español e inglés ejecutaron pausas reales y respondieron con los datos correctos. La reanudación ya ejecuta el control, pero sigue abierta porque una respuesta fiel fue rechazada por no reconocer reproduciéndose; su corrección mínima queda integrada para la próxima medición.
 
 Encuesta 186/742, 556 abiertos, 0 no aplican; al menos 60 primeras altas verificadas en 24 h; categorías cerradas 0/35; C03 formal 3/11. Sin fecha de cierre demostrable. Suites, Fast y Full omitidos por orden del dueño, no verdes. El objetivo continúa activo.

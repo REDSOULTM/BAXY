@@ -1,0 +1,147 @@
+{
+  "schema": "music1071-root-adjudication-v1",
+  "decided_at_utc": "2026-09-12T17:50:26.759849+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "fb4d5c528b64517daf5866efefb90bcdf0798a9e",
+  "decisions_sha256": "3a80b61c41e21cce86d90eec9b3c38c0ed98cec27cd86efaefd25813132a9bab",
+  "passed": 1,
+  "failed": 4,
+  "unexecuted": 14,
+  "credits": [],
+  "counters": {
+    "covered": 186,
+    "open": 556,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_before": 60,
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_evidence_note": "Al menos60 primeras altas verificadas hoy:28Kiro y32retorno; no se cuentan revalidaciones ni actualizaciones de filas abiertas.",
+    "categories_closed_after": 0,
+    "categories_total": 35,
+    "first_covered_last24h_after": 60
+  },
+  "resources": {
+    "seconds_sum": 126.95300000000134,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1592.015625
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0110",
+      "verdict": "passed",
+      "reason": "Literal útil y fiel con reanudación real; permanece open porque sus dos variantes fallaron en esta tanda.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Aurora de cobre pasó de paused a playing; media.control fresco verificado. Respuesta completa con estado, título y artista reales. La corrección morfológica1070 permitió publicar el borrador fiel.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "9414c8ce-3dfd-4be7-aeb8-76bcf0bee6bd",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        },
+        {
+          "invocation_id": "8f43673d-82e7-4ba2-9b3e-b6bba9a4e722",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "music1037-dev-03",
+      "verdict": "failed",
+      "reason": "No reconoció la petición de seguir la reproducción pausada y respondió fuera de ámbito.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Rio de cristal permaneció paused. Delta del journal sin operaciones salvo memory.status inicial. MUSIC1073 propone reutilizar el lector de reanudación y distinguir el estado en pausa de una orden pause.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "5541ccab-4baf-4266-b042-66d5b1761b1d",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "case_id": "music1037-dev-04",
+      "verdict": "failed",
+      "reason": "Pidió qué aplicación reproduce la pista pese a existir una sesión actual cargada y observada.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Rio de cristal permaneció paused; ninguna operación multimedia. La aclaración source_app fue innecesaria para este transporte de la sesión actual; reparación1073 externa pendiente.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "a7367bc0-6960-4441-98e7-6d6699a0a166",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "H0351",
+      "verdict": "failed",
+      "reason": "No ejecutó el salto y afirmó que poner esa canción no es algo que haga el equipo.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Aurora de cobre siguió playing en la observación posterior; ninguna operación multimedia nueva. La progresión natural posterior de la cola no se atribuye a BAXY. Diagnóstico1075/1076: pone no admitido por la gramática de navegación.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "a6e4ee73-517b-4910-94c3-b4d823455577",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "H0567",
+      "verdict": "failed",
+      "reason": "No reconoció siguiente canción como control y respondió fuera de lo que hace en este PC.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Rio de cristal siguió playing antes y después; ninguna operación multimedia nueva. Precondición original caducó durante relevo; root_execute abortó antes del fixture/GPU. Se preserva y se usó read-1071-case03-pre-refresh1 con SHA vinculado al fixture. Diagnóstico de autoridad en curso; no hubo salto a Sendero azul.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "0be3cf30-bbfe-40d1-9c91-0409b26b2bc5",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [
+    1,
+    4,
+    5,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+  ],
+  "next_action": "Integrar después de esta adjudicación las reparaciones mínimas1072 de relato conversacional,1073 de reanudación y1076 de navegación, junto con la causa demostrada del literal H0567. Sellar MUSIC1077 conservando exactamente los19objetos pendientes de1071 (6literales+8variantes+5límites),5reejecuciones y14nuevos; excluir las pausas ya acreditadas. Validar en producto y adjudicar crédito inmediatamente. No tests por instrucción expresa; C03 sigue activo, formal3/11.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

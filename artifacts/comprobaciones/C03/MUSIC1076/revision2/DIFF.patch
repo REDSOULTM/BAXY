@@ -1,0 +1,47 @@
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -6065,6 +6065,20 @@ def _stored_note_search_query(text: str) -> str | None:
+     return match.group("query").strip() if match is not None else None
+ 
+ 
++def _media_navigation_request(text: str) -> bool:
++    """Recognize a complete transport direction and its media object."""
++
++    folded = _fold(text)
++    return bool(_request_head(folded)) and _has(
++        folded,
++        r"^[^\w]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
++        r"(?:(?:pon|pone|ponme|reproduce|reproducir|play)\s+)?"
++        r"(?:(?:el|la|the)\s+)?(?:siguiente|next|anterior|previous)\s+"
++        r"(?:podcast|episodio|episode|cancion|song|pista|track)"
++        r"(?:\s*[,;:]?\s*(?:por favor|please))?[\s.!?]*$",
++    )
++
++
+ def _resume_existing_media(text: str) -> bool:
+     """Distinguish continuation of loaded media from selecting new content."""
+ 
+@@ -7976,6 +7990,7 @@ def _is_direct_request(text: str) -> bool:
+         or _direct_process_inventory_request(text)
+         or _explicit_google_search_query(text) is not None
+         or _resume_existing_media(text)
++        or _media_navigation_request(text)
+     ):
+         return True
+     request_head = (
+@@ -11793,14 +11808,7 @@ def _review_media_and_email_effects(
+         r"(?:(?:el|la|the|current|actual)\s+)?(?:artista|artist)"
+         r"(?:\s*[,;:]?\s*(?:por favor|please))?[\s.!?]*$",
+     )
+-    media_navigation = _has(
+-        folded,
+-        r"^[^\w]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
+-        r"(?:(?:pon|pone|ponme|reproduce|reproducir|play)\s+)?"
+-        r"(?:(?:el|la|the)\s+)?(?:siguiente|next|anterior|previous)\s+"
+-        r"(?:podcast|episodio|episode|cancion|song|pista|track)"
+-        r"(?:\s*[,;:]?\s*(?:por favor|please))?[\s.!?]*$",
+-    )
++    media_navigation = _media_navigation_request(folded)
+     audio_media_setting = _has(
+         folded,
+         (

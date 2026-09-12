@@ -6912,7 +6912,8 @@ class LlmRuntime:
         presentation_shape = _conversation_presentation_shape(
             text,
             conversation_kind=conversation_kind,
-            has_history=bool(prior_messages),
+            # A startup greeting is not a prior conversational request.
+            has_history=any(message.get("role") == "user" for message in prior_messages),
         )
         handoff_key = self._chat_handoff_key(
             text,
@@ -6942,7 +6943,8 @@ class LlmRuntime:
         # history, not evidence that a new greeting or topic is elliptical.
         literal_recall = _literal_recall_reference(prior_messages, text)
         contextual_history = literal_recall is not None or (
-            followup_subject is None
+            presentation_shape is None
+            and followup_subject is None
             and bool(last_assistant)
             and conversation_kind
             in {

@@ -1,0 +1,16 @@
+{
+  "schema": "c03-music1076-external-extension-v1",
+  "owner": "src/baxy_mind/effect_intent.py",
+  "base_path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1073-repair-proposal/effect_intent.py.PROPOSAL",
+  "base_sha256": "ec8a2888802056ccc5d6c2206c2fa39993fd51c94bd5a556f57d648eafbcfb31",
+  "result_sha256": "7471e20da024b7f99b80ae98ed5b6ea9da5de02221e152dfa8568e2d1c64a6d3",
+  "diff_sha256": "b8447ccbb5057f9ea93e1f2ba187e0f5d8080cf83b2e17d2554f4f04721a74cf",
+  "diagnosis_sha256": "8513d45e8377f249cb27fdeb9140d26ee64e430ba7c0f930efa597b58870291f",
+  "inherited_diagnosis": {
+    "sha256": "61f2fe0ae341956c1d2c4410339474dbef98b9e82484ec7f8a140b6b0c6026b4",
+    "path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1075-diagnosis/DIAGNOSIS.md"
+  },
+  "canonical_modified": false,
+  "tests_product_imports_core_gpu_build": false,
+  "coverage_credit": 0
+}

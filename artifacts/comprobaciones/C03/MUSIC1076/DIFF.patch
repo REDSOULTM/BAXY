@@ -1,0 +1,13 @@
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -11795,9 +11795,9 @@ def _review_media_and_email_effects(
+     )
+     media_navigation = _has(
+         folded,
+         r"^[^\w]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
+-        r"(?:(?:pon|ponme|reproduce|reproducir|play)\s+)?"
++        r"(?:(?:pon|pone|ponme|reproduce|reproducir|play)\s+)?"
+         r"(?:(?:el|la|the)\s+)?(?:siguiente|next|anterior|previous)\s+"
+         r"(?:podcast|episodio|episode|cancion|song|pista|track)"
+         r"(?:\s*[,;:]?\s*(?:por favor|please))?[\s.!?]*$",
+     )

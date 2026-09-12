@@ -1,0 +1,57 @@
+{
+  "schema": "c03-music1073-external-repair-v1",
+  "base_head": "fb4d5c528b64517daf5866efefb90bcdf0798a9e",
+  "owners": {
+    "src/baxy_mind/effect_intent.py": {
+      "base": "b8e0ef3078c1c97e1a28bcedd2f43207ec9925271457d13466464c1cdf223731",
+      "proposal": "ec8a2888802056ccc5d6c2206c2fa39993fd51c94bd5a556f57d648eafbcfb31"
+    },
+    "src/baxy_mind/__main__.py": {
+      "base": "6ca507bbd42300121554b627cf4b6e3b5d99331b29cd49628c72085fbf07a35e",
+      "proposal": "7be3cd8e8bce8a45eec8e2031e3189b422c53b9c46df0b62754a289b7760888f"
+    }
+  },
+  "diff_sha256": "0f243541af92caf7296c307204aa6dfab370aa39f1ffb08b7fee6f0157c419b0",
+  "diagnosis_sha256": "c2054ae26e181b77c93f10a81596e98892a2e09beaf7fb75df31a9737672b31b",
+  "evidence": [
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1071-proposal/private/run-06/turn-audit.jsonl",
+      "sha256": "93fe5104eab4d08d1835ce27552b564e2a90f81b4bbbd84b1238b96c2b388e0a"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1071-proposal/private/run-06/raw-replies.jsonl",
+      "sha256": "ac4eef28c873929a25445da85d2c7834c2ab1fbba82259577fcffcdf59103869"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1071-proposal/private/run-06/compose-audit.jsonl",
+      "sha256": "9004d502971d163766fe5f9063d4a74893458bbdcc26bbf4d3413fa931ee4497"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1071-proposal/private/run-06/shell-trace.jsonl",
+      "sha256": "f6125679dfb2f235f5fb35d848de14837f749e0196717facae2b64b84021b088"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1071-proposal/private/run-06/turns.jsonl",
+      "sha256": "8f060452a7ec92430f1319e54c518b0f74d62f8fe07b823b83d4bec86e255717"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1071-proposal/private/run-07/turn-audit.jsonl",
+      "sha256": "81e27df01110246092dfd4d35c3fa9e7f416ebb987b2ef59e10cb71dc6530ab4"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1071-proposal/private/run-07/compose-audit.jsonl",
+      "sha256": "61a1b59583d492470bc16e8e8f3014668ee1e64a7ab096a5ba4cf4688976bee8"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1071-proposal/private/run-07/shell-trace.jsonl",
+      "sha256": "1ce09f042a83e70bc8c7bdec76710e2f0cea534f4dcb4369b864df44f4428d2a"
+    },
+    {
+      "path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1071-proposal/private/run-07/turns.jsonl",
+      "sha256": "7be2f57c49dcf56dc59b63a5490cafebb7503536c612ddbe8eb83832408c85e8"
+    }
+  ],
+  "canonical_modified": false,
+  "product_imports_tests_build_core_gpu": false,
+  "coverage_credit": 0
+}
