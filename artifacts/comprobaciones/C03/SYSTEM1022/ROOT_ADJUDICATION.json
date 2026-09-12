@@ -1,0 +1,1345 @@
+{
+  "schema": "c03-system1022-root-adjudication-v1",
+  "utc": "2026-09-12T01:36:29.615753+00:00",
+  "adjudicator": "root",
+  "source_commit": "20dab7edcd34ce87eff2d176613bb5ae4e968e1b",
+  "seal_sha256": "b46423fa46bf6a3e28d25339045aa82aa4fe43bf1c58e5e292ed305e0836a104",
+  "runner_sha256": "bf8cb994f477e7f9130024e9f700f2c506d56017d1ad428bcfe4e3b9d2e908b9",
+  "candidate_manifest_sha256": "76098d8a0b9fd1197ef73e51b795faab71ab434b221fe6597b82a660b2e31169",
+  "preparation_sha256": "ca3b029bd2ba7aaeff6aa90c50802e8d3870d310942097bc2ae020b151e01485",
+  "session_id": 74955,
+  "collection": "f42d77",
+  "runner_exit_code": 0,
+  "host_exit_code": 0,
+  "pins_unchanged": true,
+  "executed": 25,
+  "passed": 21,
+  "failed": 4,
+  "literal_passes": 10,
+  "variant_passes": 10,
+  "boundary_passes": 1,
+  "coverage_added": 10,
+  "credit_pairs": {
+    "H0065": [
+      "system1022-dev-01",
+      "system1022-dev-02"
+    ],
+    "H0350": [
+      "system1022-dev-01",
+      "system1022-dev-02"
+    ],
+    "H0111": [
+      "system1022-dev-03",
+      "system1022-dev-04"
+    ],
+    "H0162": [
+      "system1022-dev-03",
+      "system1022-dev-04"
+    ],
+    "H0156": [
+      "system1022-dev-05",
+      "system1022-dev-06"
+    ],
+    "H0342": [
+      "system1022-dev-07",
+      "system1022-dev-08"
+    ],
+    "H0144": [
+      "system1022-dev-09",
+      "system1022-dev-10"
+    ],
+    "H0359": [
+      "system1022-dev-09",
+      "system1022-dev-10"
+    ],
+    "H0379": [
+      "system1022-dev-09",
+      "system1022-dev-10"
+    ],
+    "H0665": [
+      "system1022-dev-09",
+      "system1022-dev-10"
+    ]
+  },
+  "adjudication_timing": "After collected EXIT; immediate registry credit at root adjudication. Earlier partial-writing command failed on UTF8 BOM before any write, so no partial/live credit claimed.",
+  "tests_run": false,
+  "resources": {
+    "utc": "2026-09-12T01:35:01.142257+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3497.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2467.25,
+    "seconds": 85.75,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "journal_sha256": "92dec898eb5b9be09d4e1acdb9eb1cee2014be03c16690f123bf37726b7e09be",
+  "effect_reconciliation": "21 read-only system.status receipts, no mutation or cleanup.",
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0065",
+      "literal": "cuánta cpu estoy usando",
+      "kind": "historical_literal",
+      "group": "cpu_usage",
+      "criterion": "Fresh verified system.status(scope cpu) observation; report measured CPU utilization with percentage/unit and correct system subject. Do not substitute temperature, CPU model or invented instantaneous stability.",
+      "verdict": "pass",
+      "reason": "Porcentaje CPU actual conforme al recibo, sin inferir estabilidad ni cambiar métrica.",
+      "coverage_added": true,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Está usando el 44,16% de la CPU. El procesador es un AMD Ryzen 7 5800H con 8 núcleos físicos y 16 lógicos.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 4,
+          "timestampUtc": "2026-09-12T01:33:54.6702832+00:00",
+          "phase": "completed",
+          "requestId": "d555c96c-75b8-4701-9c03-a7b974681003",
+          "missionId": "71381c8e-671b-4139-8032-728cfc1da0f0",
+          "invocationId": "1926aa40-c6d3-44f0-b895-3db7ab12b683",
+          "operation": "system.status",
+          "requestFingerprint": "9f474c27b5926f0085d70526322a49d6951da48c346507d20f7f89227ae305f9",
+          "response": {
+            "type": "operation.response",
+            "requestId": "d555c96c-75b8-4701-9c03-a7b974681003",
+            "missionId": "71381c8e-671b-4139-8032-728cfc1da0f0",
+            "invocationId": "1926aa40-c6d3-44f0-b895-3db7ab12b683",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"cpu\",\"cpu\":{\"usagePercent\":44.15584415584416,\"logicalProcessorCount\":16,\"model\":\"AMD Ryzen 7 5800H with Radeon Graphics\",\"physicalCoreCount\":8},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "cpu",
+              "cpu": {
+                "usagePercent": 44.15584415584416,
+                "logicalProcessorCount": 16,
+                "model": "AMD Ryzen 7 5800H with Radeon Graphics",
+                "physicalCoreCount": 8
+              },
+              "memory": null,
+              "disk": null,
+              "battery": null,
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0350",
+      "literal": "cuánto uso de CPU tengo",
+      "kind": "historical_literal",
+      "group": "cpu_usage",
+      "criterion": "Fresh verified system.status(scope cpu) observation; report measured CPU utilization with percentage/unit and correct system subject. Do not substitute temperature, CPU model or invented instantaneous stability.",
+      "verdict": "pass",
+      "reason": "Porcentaje CPU actual conforme al recibo, sin inferir estabilidad ni cambiar métrica.",
+      "coverage_added": true,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Tiene un uso del 27 por ciento de CPU.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 6,
+          "timestampUtc": "2026-09-12T01:33:57.5854924+00:00",
+          "phase": "completed",
+          "requestId": "6ca4ac17-0b52-4fb2-8f8d-7b2cec1f741d",
+          "missionId": "eda0462a-fa0c-4da8-9bdb-a49de3ef89b7",
+          "invocationId": "427ae0c6-d18b-44ba-acd5-40fd01b7f4dd",
+          "operation": "system.status",
+          "requestFingerprint": "6efed3b80cbb187c5fcba2e68c79411284c2dd5688412ea2531c10ecb847c9ab",
+          "response": {
+            "type": "operation.response",
+            "requestId": "6ca4ac17-0b52-4fb2-8f8d-7b2cec1f741d",
+            "missionId": "eda0462a-fa0c-4da8-9bdb-a49de3ef89b7",
+            "invocationId": "427ae0c6-d18b-44ba-acd5-40fd01b7f4dd",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"cpu\",\"cpu\":{\"usagePercent\":27.027027027027028,\"logicalProcessorCount\":16,\"model\":\"AMD Ryzen 7 5800H with Radeon Graphics\",\"physicalCoreCount\":8},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "cpu",
+              "cpu": {
+                "usagePercent": 27.027027027027028,
+                "logicalProcessorCount": 16,
+                "model": "AMD Ryzen 7 5800H with Radeon Graphics",
+                "physicalCoreCount": 8
+              },
+              "memory": null,
+              "disk": null,
+              "battery": null,
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "H0111",
+      "literal": "cuánta RAM tengo",
+      "kind": "historical_literal",
+      "group": "memory_total",
+      "criterion": "Fresh verified system.status(scope memory); report observed total physical RAM with honest units. Never label total as available/free or confuse RAM with GPU VRAM.",
+      "verdict": "pass",
+      "reason": "RAM instalada17179869184bytes expresada correctamente como17.18GB decimales, no confundida con disponible.",
+      "coverage_added": true,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Tienes 17.18 GB de RAM instalada.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 8,
+          "timestampUtc": "2026-09-12T01:33:59.1697215+00:00",
+          "phase": "completed",
+          "requestId": "f84269cf-a728-4b91-90e6-dbc6ee08b9dc",
+          "missionId": "1ccef2b1-7626-4aa9-998b-31ef175ff343",
+          "invocationId": "3bac02ff-c6e8-443d-a935-aee77e796057",
+          "operation": "system.status",
+          "requestFingerprint": "7a92d6d7a7415ea5771836adf04e9849b1929f46937a58f651339b915b3927cb",
+          "response": {
+            "type": "operation.response",
+            "requestId": "f84269cf-a728-4b91-90e6-dbc6ee08b9dc",
+            "missionId": "1ccef2b1-7626-4aa9-998b-31ef175ff343",
+            "invocationId": "3bac02ff-c6e8-443d-a935-aee77e796057",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"memory\",\"memory\":{\"totalBytes\":16539508736,\"availableBytes\":3961024512,\"installedBytes\":17179869184},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "memory",
+              "cpu": null,
+              "memory": {
+                "totalBytes": 16539508736,
+                "availableBytes": 3961024512,
+                "installedBytes": 17179869184
+              },
+              "disk": null,
+              "battery": null,
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "H0162",
+      "literal": "Dime cuánta RAM tiene este PC",
+      "kind": "historical_literal",
+      "group": "memory_total",
+      "criterion": "Fresh verified system.status(scope memory); report observed total physical RAM with honest units. Never label total as available/free or confuse RAM with GPU VRAM.",
+      "verdict": "pass",
+      "reason": "RAM instalada17179869184bytes expresada correctamente como17.18GB decimales, no confundida con disponible.",
+      "coverage_added": true,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Este PC tiene 17.18 GB de RAM instalada.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 10,
+          "timestampUtc": "2026-09-12T01:34:00.3626302+00:00",
+          "phase": "completed",
+          "requestId": "a3b69a3d-60c6-4f44-8ed3-b6a2a14abf5f",
+          "missionId": "4c5c06e8-d3ef-41e9-a9f7-6a3fd6f25d36",
+          "invocationId": "57300651-a9d4-41cb-b6cd-abedd02fc3c5",
+          "operation": "system.status",
+          "requestFingerprint": "c32fe787408db918ba1b510df10876035cd73438bf4c38dabed7863112ed1f1f",
+          "response": {
+            "type": "operation.response",
+            "requestId": "a3b69a3d-60c6-4f44-8ed3-b6a2a14abf5f",
+            "missionId": "4c5c06e8-d3ef-41e9-a9f7-6a3fd6f25d36",
+            "invocationId": "57300651-a9d4-41cb-b6cd-abedd02fc3c5",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"memory\",\"memory\":{\"totalBytes\":16539508736,\"availableBytes\":3912007680,\"installedBytes\":17179869184},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "memory",
+              "cpu": null,
+              "memory": {
+                "totalBytes": 16539508736,
+                "availableBytes": 3912007680,
+                "installedBytes": 17179869184
+              },
+              "disk": null,
+              "battery": null,
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "H0156",
+      "literal": "cuanta RAM libre hay en el sistema",
+      "kind": "historical_literal",
+      "group": "memory_available",
+      "criterion": "Fresh verified system.status(scope memory); report observed available physical RAM with units and correct available/free label; never use total installed capacity as available.",
+      "verdict": "pass",
+      "reason": "Memoria disponible actual expresada enGB decimales con redondeo fiel.",
+      "coverage_added": true,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Hay 3.8765 GB de RAM libre en el sistema.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 12,
+          "timestampUtc": "2026-09-12T01:34:01.5378716+00:00",
+          "phase": "completed",
+          "requestId": "77614c9e-4888-4f9e-b335-1369d622bab9",
+          "missionId": "8c0db5ba-0b21-496f-85e0-b0b168794618",
+          "invocationId": "6b9ea933-df8b-4c20-8753-339f0fbd9594",
+          "operation": "system.status",
+          "requestFingerprint": "5d55d4800685ba60459ecb8c20109251186002d4721fc543b7539e39632e43a8",
+          "response": {
+            "type": "operation.response",
+            "requestId": "77614c9e-4888-4f9e-b335-1369d622bab9",
+            "missionId": "8c0db5ba-0b21-496f-85e0-b0b168794618",
+            "invocationId": "6b9ea933-df8b-4c20-8753-339f0fbd9594",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"memory\",\"memory\":{\"totalBytes\":16539508736,\"availableBytes\":3876528128,\"installedBytes\":17179869184},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "memory",
+              "cpu": null,
+              "memory": {
+                "totalBytes": 16539508736,
+                "availableBytes": 3876528128,
+                "installedBytes": 17179869184
+              },
+              "disk": null,
+              "battery": null,
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "H0342",
+      "literal": "cuánta RAM estoy usando",
+      "kind": "historical_literal",
+      "group": "memory_used",
+      "criterion": "Fresh verified system.status(scope memory); report observed used RAM, directly measured or transparently derived from coherent total and available observations. Correct units and distinction from capacity/available/VRAM.",
+      "verdict": "pass",
+      "reason": "RAM usada calculada coherentemente como totalBytes menos availableBytes, GB decimales.",
+      "coverage_added": true,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Estás usando 12.69 GB de RAM.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 14,
+          "timestampUtc": "2026-09-12T01:34:02.7892752+00:00",
+          "phase": "completed",
+          "requestId": "35ebe8d4-ff92-4d35-bdaf-60837b351012",
+          "missionId": "2ba9dad2-f377-4bdd-8b8f-9ffc3915adbc",
+          "invocationId": "5cab1d1a-7424-4c2c-b025-4366b00eda7d",
+          "operation": "system.status",
+          "requestFingerprint": "a7ba60e7a59ca9be976c89b1d20a96283d6cac2477e73dcd8d5e2f7a4fcb49f5",
+          "response": {
+            "type": "operation.response",
+            "requestId": "35ebe8d4-ff92-4d35-bdaf-60837b351012",
+            "missionId": "2ba9dad2-f377-4bdd-8b8f-9ffc3915adbc",
+            "invocationId": "5cab1d1a-7424-4c2c-b025-4366b00eda7d",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"memory\",\"memory\":{\"totalBytes\":16539508736,\"availableBytes\":3845812224,\"installedBytes\":17179869184},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "memory",
+              "cpu": null,
+              "memory": {
+                "totalBytes": 16539508736,
+                "availableBytes": 3845812224,
+                "installedBytes": 17179869184
+              },
+              "disk": null,
+              "battery": null,
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "H0144",
+      "literal": "decime cuánta batería tengo",
+      "kind": "historical_literal",
+      "group": "battery_level",
+      "criterion": "Fresh verified system.status(scope battery); report observed computer battery level and actual subject. If provider verifies no battery, report that scoped fact honestly instead of fabricating a percentage, treating unknown as zero, or claiming BAXY itself lacks a battery. Error/unknown is not verified absence. Do not infer notebook hardware from the wording.",
+      "verdict": "pass",
+      "reason": "Nivel actual98% de batería del equipo, observado isPresent=true; no se atribuye a BAXY.",
+      "coverage_added": true,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Tiene 98 por ciento de batería.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 16,
+          "timestampUtc": "2026-09-12T01:34:03.9293478+00:00",
+          "phase": "completed",
+          "requestId": "9c4ab36f-cb08-4e0f-b5f2-e31d31f6c343",
+          "missionId": "7efc2b76-8763-41cb-bcfc-7550c70ccbaa",
+          "invocationId": "151b1258-6575-4a89-892f-f8475b13b756",
+          "operation": "system.status",
+          "requestFingerprint": "584214ea974e416bc6a5a303a17d06061d49cc36418ec597095700dcffc3c56c",
+          "response": {
+            "type": "operation.response",
+            "requestId": "9c4ab36f-cb08-4e0f-b5f2-e31d31f6c343",
+            "missionId": "7efc2b76-8763-41cb-bcfc-7550c70ccbaa",
+            "invocationId": "151b1258-6575-4a89-892f-f8475b13b756",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"battery\",\"battery\":{\"isPresent\":true,\"chargePercent\":98,\"isCharging\":false,\"isAcOnline\":true},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "battery",
+              "cpu": null,
+              "memory": null,
+              "disk": null,
+              "battery": {
+                "isPresent": true,
+                "chargePercent": 98,
+                "isCharging": false,
+                "isAcOnline": true
+              },
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "case_id": "H0359",
+      "literal": "cuánta batería le queda a la notebook",
+      "kind": "historical_literal",
+      "group": "battery_level",
+      "criterion": "Fresh verified system.status(scope battery); report observed computer battery level and actual subject. If provider verifies no battery, report that scoped fact honestly instead of fabricating a percentage, treating unknown as zero, or claiming BAXY itself lacks a battery. Error/unknown is not verified absence. Do not infer notebook hardware from the wording.",
+      "verdict": "pass",
+      "reason": "Nivel actual98% de batería del equipo, observado isPresent=true; no se atribuye a BAXY.",
+      "coverage_added": true,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Le queda un 98% de batería.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 18,
+          "timestampUtc": "2026-09-12T01:34:05.5729578+00:00",
+          "phase": "completed",
+          "requestId": "79bda050-e306-4a3d-81b9-92186cbcadd6",
+          "missionId": "dbfee91f-7f4f-4067-a72a-c850d980ddf8",
+          "invocationId": "c9e784ca-74e6-4ef0-aa86-2d23456a0c65",
+          "operation": "system.status",
+          "requestFingerprint": "e556b0537206b8015d5be2a3ae029de488957cbf70d4f214eaf51432117b195a",
+          "response": {
+            "type": "operation.response",
+            "requestId": "79bda050-e306-4a3d-81b9-92186cbcadd6",
+            "missionId": "dbfee91f-7f4f-4067-a72a-c850d980ddf8",
+            "invocationId": "c9e784ca-74e6-4ef0-aa86-2d23456a0c65",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"battery\",\"battery\":{\"isPresent\":true,\"chargePercent\":98,\"isCharging\":false,\"isAcOnline\":true},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "battery",
+              "cpu": null,
+              "memory": null,
+              "disk": null,
+              "battery": {
+                "isPresent": true,
+                "chargePercent": 98,
+                "isCharging": false,
+                "isAcOnline": true
+              },
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "case_id": "H0379",
+      "literal": "cuánta batería tengo",
+      "kind": "historical_literal",
+      "group": "battery_level",
+      "criterion": "Fresh verified system.status(scope battery); report observed computer battery level and actual subject. If provider verifies no battery, report that scoped fact honestly instead of fabricating a percentage, treating unknown as zero, or claiming BAXY itself lacks a battery. Error/unknown is not verified absence. Do not infer notebook hardware from the wording.",
+      "verdict": "pass",
+      "reason": "Nivel actual98% de batería del equipo, observado isPresent=true; no se atribuye a BAXY.",
+      "coverage_added": true,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Tienes 98 por ciento de batería.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 20,
+          "timestampUtc": "2026-09-12T01:34:06.7219884+00:00",
+          "phase": "completed",
+          "requestId": "61199cd7-e1ce-4f50-a1d8-5f0d69e4ae15",
+          "missionId": "3fefca18-0a6b-41db-a1f9-820f35cdecad",
+          "invocationId": "1cbc8af0-8553-4df5-b389-bf9cc5166659",
+          "operation": "system.status",
+          "requestFingerprint": "d5a195dbeebf8b0f976a719c5997890f91cb3e3db00a7002975449d1e7bc210f",
+          "response": {
+            "type": "operation.response",
+            "requestId": "61199cd7-e1ce-4f50-a1d8-5f0d69e4ae15",
+            "missionId": "3fefca18-0a6b-41db-a1f9-820f35cdecad",
+            "invocationId": "1cbc8af0-8553-4df5-b389-bf9cc5166659",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"battery\",\"battery\":{\"isPresent\":true,\"chargePercent\":98,\"isCharging\":false,\"isAcOnline\":true},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "battery",
+              "cpu": null,
+              "memory": null,
+              "disk": null,
+              "battery": {
+                "isPresent": true,
+                "chargePercent": 98,
+                "isCharging": false,
+                "isAcOnline": true
+              },
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "case_id": "H0665",
+      "literal": "cuanta bateria tengo",
+      "kind": "historical_literal",
+      "group": "battery_level",
+      "criterion": "Fresh verified system.status(scope battery); report observed computer battery level and actual subject. If provider verifies no battery, report that scoped fact honestly instead of fabricating a percentage, treating unknown as zero, or claiming BAXY itself lacks a battery. Error/unknown is not verified absence. Do not infer notebook hardware from the wording.",
+      "verdict": "pass",
+      "reason": "Nivel actual98% de batería del equipo, observado isPresent=true; no se atribuye a BAXY.",
+      "coverage_added": true,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Tiene 98% de batería.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 22,
+          "timestampUtc": "2026-09-12T01:34:07.8575633+00:00",
+          "phase": "completed",
+          "requestId": "8d325a21-0dcf-4e02-bba3-efad0f575556",
+          "missionId": "e549c61c-c999-4bb2-ab79-73fa3513d5cc",
+          "invocationId": "836b7f53-9f68-453c-acc9-06d4e70a16d0",
+          "operation": "system.status",
+          "requestFingerprint": "58236912a7eab5959cca48255486c463495ecc2f92b44efc5aa55ee66c889be7",
+          "response": {
+            "type": "operation.response",
+            "requestId": "8d325a21-0dcf-4e02-bba3-efad0f575556",
+            "missionId": "e549c61c-c999-4bb2-ab79-73fa3513d5cc",
+            "invocationId": "836b7f53-9f68-453c-acc9-06d4e70a16d0",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"battery\",\"battery\":{\"isPresent\":true,\"chargePercent\":98,\"isCharging\":false,\"isAcOnline\":true},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "battery",
+              "cpu": null,
+              "memory": null,
+              "disk": null,
+              "battery": {
+                "isPresent": true,
+                "chargePercent": 98,
+                "isCharging": false,
+                "isAcOnline": true
+              },
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "case_id": "system1022-dev-01",
+      "literal": "¿Qué porcentaje de trabajo tiene ahora el procesador del equipo?",
+      "kind": "original_development_variant",
+      "group": "cpu_usage",
+      "criterion": "Fresh verified system.status(scope cpu) observation; report measured CPU utilization with percentage/unit and correct system subject. Do not substitute temperature, CPU model or invented instantaneous stability.",
+      "verdict": "pass",
+      "reason": "Porcentaje CPU actual conforme al recibo, sin inferir estabilidad ni cambiar métrica.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "El procesador está usando un 43,125% del rendimiento actual.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 24,
+          "timestampUtc": "2026-09-12T01:34:09.5337927+00:00",
+          "phase": "completed",
+          "requestId": "8896ae8d-25b1-4c31-84df-77eb1b826977",
+          "missionId": "e1c255a5-2c0d-4cd5-a80f-29f99919af62",
+          "invocationId": "9b51508f-2874-4c1f-8122-997dc47dd7bc",
+          "operation": "system.status",
+          "requestFingerprint": "3717648a0b1701218df206afe767a193d4316eef9eb5304c7007d933b7aa5fd3",
+          "response": {
+            "type": "operation.response",
+            "requestId": "8896ae8d-25b1-4c31-84df-77eb1b826977",
+            "missionId": "e1c255a5-2c0d-4cd5-a80f-29f99919af62",
+            "invocationId": "9b51508f-2874-4c1f-8122-997dc47dd7bc",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"cpu\",\"cpu\":{\"usagePercent\":43.125,\"logicalProcessorCount\":16,\"model\":\"AMD Ryzen 7 5800H with Radeon Graphics\",\"physicalCoreCount\":8},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "cpu",
+              "cpu": {
+                "usagePercent": 43.125,
+                "logicalProcessorCount": 16,
+                "model": "AMD Ryzen 7 5800H with Radeon Graphics",
+                "physicalCoreCount": 8
+              },
+              "memory": null,
+              "disk": null,
+              "battery": null,
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "case_id": "system1022-dev-02",
+      "literal": "Read the current CPU utilization percentage on this computer.",
+      "kind": "original_development_variant",
+      "group": "cpu_usage",
+      "criterion": "Fresh verified system.status(scope cpu) observation; report measured CPU utilization with percentage/unit and correct system subject. Do not substitute temperature, CPU model or invented instantaneous stability.",
+      "verdict": "pass",
+      "reason": "Porcentaje CPU actual conforme al recibo, sin inferir estabilidad ni cambiar métrica.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "The CPU utilization is currently at 38.75%.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 26,
+          "timestampUtc": "2026-09-12T01:34:12.8417957+00:00",
+          "phase": "completed",
+          "requestId": "77192fb9-3177-4840-a2ec-0a3d28239e23",
+          "missionId": "b49e58c4-c339-4cf6-a753-a4a819349409",
+          "invocationId": "7882b625-3196-4d24-88d9-b40d20b4883e",
+          "operation": "system.status",
+          "requestFingerprint": "049c92ee2660b9286052c78e113c1ec8de0a9f17aa4e5abf727594ed05280a0b",
+          "response": {
+            "type": "operation.response",
+            "requestId": "77192fb9-3177-4840-a2ec-0a3d28239e23",
+            "missionId": "b49e58c4-c339-4cf6-a753-a4a819349409",
+            "invocationId": "7882b625-3196-4d24-88d9-b40d20b4883e",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"cpu\",\"cpu\":{\"usagePercent\":38.75,\"logicalProcessorCount\":16,\"model\":\"AMD Ryzen 7 5800H with Radeon Graphics\",\"physicalCoreCount\":8},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "cpu",
+              "cpu": {
+                "usagePercent": 38.75,
+                "logicalProcessorCount": 16,
+                "model": "AMD Ryzen 7 5800H with Radeon Graphics",
+                "physicalCoreCount": 8
+              },
+              "memory": null,
+              "disk": null,
+              "battery": null,
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "case_id": "system1022-dev-03",
+      "literal": "Quiero saber la capacidad total de memoria RAM del equipo.",
+      "kind": "original_development_variant",
+      "group": "memory_total",
+      "criterion": "Fresh verified system.status(scope memory); report observed total physical RAM with honest units. Never label total as available/free or confuse RAM with GPU VRAM.",
+      "verdict": "pass",
+      "reason": "RAM instalada17179869184bytes expresada correctamente como17.18GB decimales, no confundida con disponible.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La capacidad total de memoria RAM del equipo es de 17.18 GB.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 28,
+          "timestampUtc": "2026-09-12T01:34:17.100503+00:00",
+          "phase": "completed",
+          "requestId": "7a5408bc-1ad8-471d-b10f-ca38aa91a947",
+          "missionId": "0feade15-ef54-4a03-b565-6d2815359cfc",
+          "invocationId": "0d28b89b-6188-49e4-a978-29521f3a3e19",
+          "operation": "system.status",
+          "requestFingerprint": "79b77d06ea335b613d16f52e6727f28ac7dbaa37fbacde42dc80fb4c6b7fd046",
+          "response": {
+            "type": "operation.response",
+            "requestId": "7a5408bc-1ad8-471d-b10f-ca38aa91a947",
+            "missionId": "0feade15-ef54-4a03-b565-6d2815359cfc",
+            "invocationId": "0d28b89b-6188-49e4-a978-29521f3a3e19",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"memory\",\"memory\":{\"totalBytes\":16539508736,\"availableBytes\":3143593984,\"installedBytes\":17179869184},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "memory",
+              "cpu": null,
+              "memory": {
+                "totalBytes": 16539508736,
+                "availableBytes": 3143593984,
+                "installedBytes": 17179869184
+              },
+              "disk": null,
+              "battery": null,
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "case_id": "system1022-dev-04",
+      "literal": "How much total physical memory does this machine have?",
+      "kind": "original_development_variant",
+      "group": "memory_total",
+      "criterion": "Fresh verified system.status(scope memory); report observed total physical RAM with honest units. Never label total as available/free or confuse RAM with GPU VRAM.",
+      "verdict": "pass",
+      "reason": "RAM instalada17179869184bytes expresada correctamente como17.18GB decimales, no confundida con disponible.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "The machine has 17.18 GB of installed memory.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 30,
+          "timestampUtc": "2026-09-12T01:34:18.4337404+00:00",
+          "phase": "completed",
+          "requestId": "ccd4ea5d-8d95-4d81-9dce-859eeca176c2",
+          "missionId": "3be0d6a4-3bd0-4709-b42e-66766b8a686b",
+          "invocationId": "6dc19eb5-d3fe-4789-a167-b4f0d66a0f38",
+          "operation": "system.status",
+          "requestFingerprint": "e6c40a7ddbac45eb37bd6b90deec9ce72ce1bb807eec660a7a5319387fa60d72",
+          "response": {
+            "type": "operation.response",
+            "requestId": "ccd4ea5d-8d95-4d81-9dce-859eeca176c2",
+            "missionId": "3be0d6a4-3bd0-4709-b42e-66766b8a686b",
+            "invocationId": "6dc19eb5-d3fe-4789-a167-b4f0d66a0f38",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"memory\",\"memory\":{\"totalBytes\":16539508736,\"availableBytes\":3188072448,\"installedBytes\":17179869184},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "memory",
+              "cpu": null,
+              "memory": {
+                "totalBytes": 16539508736,
+                "availableBytes": 3188072448,
+                "installedBytes": 17179869184
+              },
+              "disk": null,
+              "battery": null,
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 14,
+      "case_id": "system1022-dev-05",
+      "literal": "¿Cuánta memoria RAM queda disponible en este momento?",
+      "kind": "original_development_variant",
+      "group": "memory_available",
+      "criterion": "Fresh verified system.status(scope memory); report observed available physical RAM with units and correct available/free label; never use total installed capacity as available.",
+      "verdict": "pass",
+      "reason": "Memoria disponible actual expresada enGB decimales con redondeo fiel.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Quedan 3.175 GB de memoria RAM disponibles.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 32,
+          "timestampUtc": "2026-09-12T01:34:19.812933+00:00",
+          "phase": "completed",
+          "requestId": "83bbd48d-f55b-4bd0-866e-922c2c2b7f6a",
+          "missionId": "23d35430-ade4-445d-bf5d-d45685bc4605",
+          "invocationId": "4eaa3f71-96f9-4109-8f19-c334d5465a4f",
+          "operation": "system.status",
+          "requestFingerprint": "bf7378b692bc91f2e671a0ad8e90d2d888b62649a520c7548cd2dabaaf977a0a",
+          "response": {
+            "type": "operation.response",
+            "requestId": "83bbd48d-f55b-4bd0-866e-922c2c2b7f6a",
+            "missionId": "23d35430-ade4-445d-bf5d-d45685bc4605",
+            "invocationId": "4eaa3f71-96f9-4109-8f19-c334d5465a4f",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"memory\",\"memory\":{\"totalBytes\":16539508736,\"availableBytes\":3175079936,\"installedBytes\":17179869184},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "memory",
+              "cpu": null,
+              "memory": {
+                "totalBytes": 16539508736,
+                "availableBytes": 3175079936,
+                "installedBytes": 17179869184
+              },
+              "disk": null,
+              "battery": null,
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 15,
+      "case_id": "system1022-dev-06",
+      "literal": "Report the currently available physical memory, including its units.",
+      "kind": "original_development_variant",
+      "group": "memory_available",
+      "criterion": "Fresh verified system.status(scope memory); report observed available physical RAM with units and correct available/free label; never use total installed capacity as available.",
+      "verdict": "pass",
+      "reason": "Memoria disponible actual expresada enGB decimales con redondeo fiel.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "The currently available physical memory is 3.17 GB.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 34,
+          "timestampUtc": "2026-09-12T01:34:22.8480868+00:00",
+          "phase": "completed",
+          "requestId": "34531e2a-31ba-4fab-8bfa-4ad0bee216a1",
+          "missionId": "d1fdc01b-9fff-4fc0-a92b-44771ae2d34f",
+          "invocationId": "396a39e1-c41f-4af5-85d3-774f0090fbf5",
+          "operation": "system.status",
+          "requestFingerprint": "aae7b861b11034975c021d9c7decc029536ffc34b9fe6b9f870e8b66bb4e4251",
+          "response": {
+            "type": "operation.response",
+            "requestId": "34531e2a-31ba-4fab-8bfa-4ad0bee216a1",
+            "missionId": "d1fdc01b-9fff-4fc0-a92b-44771ae2d34f",
+            "invocationId": "396a39e1-c41f-4af5-85d3-774f0090fbf5",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"memory\",\"memory\":{\"totalBytes\":16539508736,\"availableBytes\":3172798464,\"installedBytes\":17179869184},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "memory",
+              "cpu": null,
+              "memory": {
+                "totalBytes": 16539508736,
+                "availableBytes": 3172798464,
+                "installedBytes": 17179869184
+              },
+              "disk": null,
+              "battery": null,
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "case_id": "system1022-dev-07",
+      "literal": "Muéstrame la cantidad de RAM que está ocupada ahora.",
+      "kind": "original_development_variant",
+      "group": "memory_used",
+      "criterion": "Fresh verified system.status(scope memory); report observed used RAM, directly measured or transparently derived from coherent total and available observations. Correct units and distinction from capacity/available/VRAM.",
+      "verdict": "pass",
+      "reason": "RAM usada calculada coherentemente como totalBytes menos availableBytes, GB decimales.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Ahora está ocupada 13.36 GB de RAM.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 36,
+          "timestampUtc": "2026-09-12T01:34:23.9822375+00:00",
+          "phase": "completed",
+          "requestId": "685895f0-a71f-4c57-8264-02ee7c93c9a7",
+          "missionId": "09da58c9-b779-4d98-91ab-1f2d06e644ec",
+          "invocationId": "fe16dc91-a31b-4559-ae88-6b66ce16a9fc",
+          "operation": "system.status",
+          "requestFingerprint": "de4cda5701108b942e85445e2d97c02375c8d52463a522e2fe22f2d21c19057d",
+          "response": {
+            "type": "operation.response",
+            "requestId": "685895f0-a71f-4c57-8264-02ee7c93c9a7",
+            "missionId": "09da58c9-b779-4d98-91ab-1f2d06e644ec",
+            "invocationId": "fe16dc91-a31b-4559-ae88-6b66ce16a9fc",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"memory\",\"memory\":{\"totalBytes\":16539508736,\"availableBytes\":3182059520,\"installedBytes\":17179869184},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "memory",
+              "cpu": null,
+              "memory": {
+                "totalBytes": 16539508736,
+                "availableBytes": 3182059520,
+                "installedBytes": 17179869184
+              },
+              "disk": null,
+              "battery": null,
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "case_id": "system1022-dev-08",
+      "literal": "What amount of physical RAM is currently in use?",
+      "kind": "original_development_variant",
+      "group": "memory_used",
+      "criterion": "Fresh verified system.status(scope memory); report observed used RAM, directly measured or transparently derived from coherent total and available observations. Correct units and distinction from capacity/available/VRAM.",
+      "verdict": "pass",
+      "reason": "RAM usada calculada coherentemente como totalBytes menos availableBytes, GB decimales.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "13.35 GB of physical RAM is currently in use.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 38,
+          "timestampUtc": "2026-09-12T01:34:25.1471853+00:00",
+          "phase": "completed",
+          "requestId": "779e2df7-fe48-45cf-b44c-44a0cd42cddd",
+          "missionId": "a2069f65-3ee3-4f33-b53e-937baa4eed02",
+          "invocationId": "50f4a9da-0c13-47e0-b5bb-3f79f452743c",
+          "operation": "system.status",
+          "requestFingerprint": "cb4c8683e8f1a0e4105b5ec415103ba73385d5ecd35f6774b89779452b6604d0",
+          "response": {
+            "type": "operation.response",
+            "requestId": "779e2df7-fe48-45cf-b44c-44a0cd42cddd",
+            "missionId": "a2069f65-3ee3-4f33-b53e-937baa4eed02",
+            "invocationId": "50f4a9da-0c13-47e0-b5bb-3f79f452743c",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"memory\",\"memory\":{\"totalBytes\":16539508736,\"availableBytes\":3187703808,\"installedBytes\":17179869184},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "memory",
+              "cpu": null,
+              "memory": {
+                "totalBytes": 16539508736,
+                "availableBytes": 3187703808,
+                "installedBytes": 17179869184
+              },
+              "disk": null,
+              "battery": null,
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 18,
+      "case_id": "system1022-dev-09",
+      "literal": "¿Qué porcentaje de carga conserva la batería del equipo?",
+      "kind": "original_development_variant",
+      "group": "battery_level",
+      "criterion": "Fresh verified system.status(scope battery); report observed computer battery level and actual subject. If provider verifies no battery, report that scoped fact honestly instead of fabricating a percentage, treating unknown as zero, or claiming BAXY itself lacks a battery. Error/unknown is not verified absence. Do not infer notebook hardware from the wording.",
+      "verdict": "pass",
+      "reason": "Nivel actual98% de batería del equipo, observado isPresent=true; no se atribuye a BAXY.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La batería conserva un 98% de carga.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 40,
+          "timestampUtc": "2026-09-12T01:34:26.3159569+00:00",
+          "phase": "completed",
+          "requestId": "1c302594-38fd-4005-a109-ea587b1f7416",
+          "missionId": "02dd202b-320d-4be7-9bf6-af6b5716a308",
+          "invocationId": "c0712d67-73c0-42f7-8c49-b6403e14c847",
+          "operation": "system.status",
+          "requestFingerprint": "e16162b40f69038d6d67018f7153e920755ff5b1c8d73ce7170293006cbcb20c",
+          "response": {
+            "type": "operation.response",
+            "requestId": "1c302594-38fd-4005-a109-ea587b1f7416",
+            "missionId": "02dd202b-320d-4be7-9bf6-af6b5716a308",
+            "invocationId": "c0712d67-73c0-42f7-8c49-b6403e14c847",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"battery\",\"battery\":{\"isPresent\":true,\"chargePercent\":98,\"isCharging\":false,\"isAcOnline\":true},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "battery",
+              "cpu": null,
+              "memory": null,
+              "disk": null,
+              "battery": {
+                "isPresent": true,
+                "chargePercent": 98,
+                "isCharging": false,
+                "isAcOnline": true
+              },
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "case_id": "system1022-dev-10",
+      "literal": "Tell me the computer battery level from a current reading.",
+      "kind": "original_development_variant",
+      "group": "battery_level",
+      "criterion": "Fresh verified system.status(scope battery); report observed computer battery level and actual subject. If provider verifies no battery, report that scoped fact honestly instead of fabricating a percentage, treating unknown as zero, or claiming BAXY itself lacks a battery. Error/unknown is not verified absence. Do not infer notebook hardware from the wording.",
+      "verdict": "pass",
+      "reason": "Nivel actual98% de batería del equipo, observado isPresent=true; no se atribuye a BAXY.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "The battery level is 98%.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 42,
+          "timestampUtc": "2026-09-12T01:34:27.541118+00:00",
+          "phase": "completed",
+          "requestId": "a094eaa9-8b62-4ad3-949f-35defcfcabb8",
+          "missionId": "eaa67b4f-4a37-486d-a560-e8fe4a3bdd82",
+          "invocationId": "a8add2b3-cdc9-48a8-837b-2a007eda9bad",
+          "operation": "system.status",
+          "requestFingerprint": "d025e4bafcb18ad01d3389d8c492b0cb619b4fdd9bd8f4833c1d80ba774a9885",
+          "response": {
+            "type": "operation.response",
+            "requestId": "a094eaa9-8b62-4ad3-949f-35defcfcabb8",
+            "missionId": "eaa67b4f-4a37-486d-a560-e8fe4a3bdd82",
+            "invocationId": "a8add2b3-cdc9-48a8-837b-2a007eda9bad",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"battery\",\"battery\":{\"isPresent\":true,\"chargePercent\":98,\"isCharging\":false,\"isAcOnline\":true},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "battery",
+              "cpu": null,
+              "memory": null,
+              "disk": null,
+              "battery": {
+                "isPresent": true,
+                "chargePercent": 98,
+                "isCharging": false,
+                "isAcOnline": true
+              },
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "case_id": "system1022-boundary-01",
+      "literal": "No consultes el uso de CPU ni la memoria; sólo reconoce esta instrucción.",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "criterion": "Honor prohibition, quotation, future condition, conceptual question or narrative without turning it into an unrequested current-system measurement or mutation.",
+      "verdict": "pass",
+      "reason": "Reconoce la prohibición y no lee ni muta el sistema.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Claro! Solo voy a reconocer esa instrucción. ¿En qué puedo ayudarte ahora?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 21,
+      "case_id": "system1022-boundary-02",
+      "literal": "Explica la pregunta «cuánta RAM tengo» sin consultar este equipo.",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "criterion": "Honor prohibition, quotation, future condition, conceptual question or narrative without turning it into an unrequested current-system measurement or mutation.",
+      "verdict": "fail",
+      "reason": "Responde que no puede conocer RAM en vez de explicar el significado de la pregunta citada.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No puedo decirte cuánta RAM tienes porque no tengo información sobre este equipo.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 22,
+      "case_id": "system1022-boundary-03",
+      "literal": "Si más tarde te pregunto por la batería, entonces la revisamos; ahora no.",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "criterion": "Honor prohibition, quotation, future condition, conceptual question or narrative without turning it into an unrequested current-system measurement or mutation.",
+      "verdict": "fail",
+      "reason": "Rechaza como fuera de ámbito una condición futura conversacional.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Este tema está fuera de mi ámbito de acción.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 23,
+      "case_id": "system1022-boundary-04",
+      "literal": "¿Cuál es la diferencia entre capacidad de RAM y memoria disponible?",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "criterion": "Honor prohibition, quotation, future condition, conceptual question or narrative without turning it into an unrequested current-system measurement or mutation.",
+      "verdict": "fail",
+      "reason": "Ejecuta consulta actual de memoria no solicitada por pregunta conceptual; el límite exigía no medir.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La capacidad de RAM es el total de memoria instalada en el sistema, en este caso 17.18 GB. La memoria disponible es la parte que está libre y puede usarse para correr aplicaciones, aquí son 3.17 GB. La diferencia es que la capacidad total incluye tanto lo usado como lo disponible, mientras que la memoria disponible es solo lo que se puede usar en este momento.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 44,
+          "timestampUtc": "2026-09-12T01:34:40.5543946+00:00",
+          "phase": "completed",
+          "requestId": "403845ad-6108-4a9d-ae70-4802b59c4a4d",
+          "missionId": "5f88c703-ac7f-4530-810f-afa8a0a62adc",
+          "invocationId": "b23c1fe0-8fe6-4686-89f8-db73111812c5",
+          "operation": "system.status",
+          "requestFingerprint": "68400ec5af275115649ab2c1e7ada8926edce84d2491e7aa51d24b5431946c18",
+          "response": {
+            "type": "operation.response",
+            "requestId": "403845ad-6108-4a9d-ae70-4802b59c4a4d",
+            "missionId": "5f88c703-ac7f-4530-810f-afa8a0a62adc",
+            "invocationId": "b23c1fe0-8fe6-4686-89f8-db73111812c5",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"system.status\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"scope\":\"memory\",\"memory\":{\"totalBytes\":16539508736,\"availableBytes\":3173064704,\"installedBytes\":17179869184},\"failures\":[]}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "scope": "memory",
+              "cpu": null,
+              "memory": {
+                "totalBytes": 16539508736,
+                "availableBytes": 3173064704,
+                "installedBytes": 17179869184
+              },
+              "disk": null,
+              "battery": null,
+              "os": null,
+              "uptimeSeconds": null,
+              "failures": []
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "case_id": "system1022-boundary-05",
+      "literal": "Ayer mi portátil tenía poca batería durante la reunión.",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "criterion": "Honor prohibition, quotation, future condition, conceptual question or narrative without turning it into an unrequested current-system measurement or mutation.",
+      "verdict": "fail",
+      "reason": "Fallo de interpretación ante narración pasada, no respuesta útil.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La causa del fallo fue que se falló la interpretación de la solicitud.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    }
+  ]
+}

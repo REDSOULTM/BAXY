@@ -1,0 +1,625 @@
+{
+  "schema": "c03-agenda1021-root-adjudication-v1",
+  "utc": "2026-09-12T01:30:47.466515+00:00",
+  "adjudicator": "root",
+  "source_commit": "20dab7edcd34ce87eff2d176613bb5ae4e968e1b",
+  "seal_sha256": "32162079f14acadb58b9ed26224bd8fbf362f01820747d2ee75e411a5d50c052",
+  "candidate_manifest_sha256": "ca9cf15dc3e014dc2d157fa7fe56d8803fed1c27713ea9108c7be1620226a68e",
+  "preparation_sha256": "e7437b4ba930b105a3e1b9a78518cc2ad6a749a253706bdc3c5294600b193379",
+  "runner_sha256": "f4bf8435d22295a5fed6caad81a3070f77052b7696a0475a5b6815325a5c7f8f",
+  "session_id": 68974,
+  "collection": "01416e",
+  "runner_exit_code": 0,
+  "host_exit_code": 0,
+  "pins_unchanged": true,
+  "executed": 22,
+  "passed": 6,
+  "failed": 16,
+  "literal_passes": 1,
+  "variant_passes": 3,
+  "boundary_passes": 2,
+  "coverage_added": 1,
+  "credit_pairs": {
+    "H0363": [
+      "agenda1021-dev-09",
+      "agenda1021-dev-10"
+    ]
+  },
+  "adjudication_timing": "After collected EXIT, immediately written to registry; no live-GPU credit claimed.",
+  "tests_run": false,
+  "resources": {
+    "utc": "2026-09-12T01:23:01.198870+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3499.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 2463.0625,
+    "seconds": 98.25,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "journal_sha256": "c3e52cd45e134995976e59de0da4876ec7745c74005a2d2b655b53b72e4d005f",
+  "effect_reconciliation": {
+    "task_create_invocation": "e48cd6fe-3264-492f-9f8f-d8b739329c03",
+    "status": "failed_invalid_task",
+    "effectMayHaveOccurred_field": "absent; not treated as explicit false",
+    "observed_local_postcondition": "Three later verified task.list receipts empty in the same profile. No task present in queried store; no cleanup performed. Receipt and profile preserved.",
+    "owner": "src/Baxy.Core/Operations/TaskHandlers.cs:45,62; validation exception converted to invalid_task."
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0011",
+      "literal": "cancelá la alarma",
+      "kind": "historical_literal",
+      "group": "cancel_missing_identity",
+      "criterion": "Ask which alarm to cancel in this independent session, preserving the owner exception only if an actual session alarm exists. Do not select latest/global or cancel any alarm without grounded identity.",
+      "verdict": "fail",
+      "reason": "Pregunta cuándo cancelar, no qué alarma identifica.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿A qué hora deseas cancelar la alarma?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 1,
+      "case_id": "H0043",
+      "literal": "crea una tarea para el viernes",
+      "kind": "historical_literal",
+      "group": "task_missing_content",
+      "criterion": "Ask for the task specifications/content missing from the request, preserve the supplied day, and do not create an invented or empty task.",
+      "verdict": "fail",
+      "reason": "Intentó task.create inválido y terminó internal_code; no pide contenido.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "composition_failed",
+        "final": "internal_code;recovery:internal_code;retry_exhausted",
+        "diagnostic": "internal_code;recovery:internal_code;retry_exhausted",
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 4,
+          "timestampUtc": "2026-09-12T01:21:43.8070596+00:00",
+          "phase": "completed",
+          "requestId": "f7ef881a-777d-4afd-8575-1445da33635d",
+          "missionId": "7b7ca5af-b3bc-4b32-b73a-b0eff065e7ce",
+          "invocationId": "e48cd6fe-3264-492f-9f8f-d8b739329c03",
+          "operation": "task.create",
+          "requestFingerprint": "aab4b54977d1de2a88e388a2ea99c08ca8bfd4258452861059e7b6c7f1f6b5b9",
+          "response": {
+            "type": "operation.response",
+            "requestId": "f7ef881a-777d-4afd-8575-1445da33635d",
+            "missionId": "7b7ca5af-b3bc-4b32-b73a-b0eff065e7ce",
+            "invocationId": "e48cd6fe-3264-492f-9f8f-d8b739329c03",
+            "status": "failed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"task.create\",\"polarity\":\"failure\",\"verified\":false,\"succeeded\":false,\"error\":\"invalid_task\"}",
+            "verified": false,
+            "replayed": false,
+            "result": null,
+            "errorCode": "invalid_task"
+          }
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "H0121",
+      "literal": "avisame en 30 minutos",
+      "kind": "historical_literal",
+      "group": "reminder_missing_content",
+      "criterion": "Ask what to remind about, preserving the explicit duration. Independent session supplies no antecedent; do not invent content or schedule a generic substitute.",
+      "verdict": "fail",
+      "reason": "Vuelve a preguntar cuándo pese a duración expresa, invierte actor.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "cuándo y qué quiero que me avise?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 3,
+      "case_id": "H0343",
+      "literal": "avisame en una hora",
+      "kind": "historical_literal",
+      "group": "reminder_missing_content",
+      "criterion": "Ask what to remind about, preserving the explicit duration. Independent session supplies no antecedent; do not invent content or schedule a generic substitute.",
+      "verdict": "fail",
+      "reason": "Vuelve a preguntar cuándo pese a duración expresa, invierte actor.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "cuándo y qué quiero que me avise?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 4,
+      "case_id": "H0371",
+      "literal": "poné una alarma a las 99",
+      "kind": "historical_literal",
+      "group": "time_invalid",
+      "criterion": "Identify that the requested clock hour is invalid and ask for a valid time; do not normalize 99/other invalid hours silently or create an alarm.",
+      "verdict": "fail",
+      "reason": "Propone interpretaciones de99 sin explicar hora inválida ni pedir hora válida inequívoca.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Te refieres a las 9 y 9 minutos o a las 99 horas?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 5,
+      "case_id": "H0585",
+      "literal": "recuérdame comprar pilas",
+      "kind": "historical_literal",
+      "group": "time_missing",
+      "criterion": "Preserve the supplied reminder content and ask when to remind; do not invent a due time or falsely claim a scheduled reminder.",
+      "verdict": "fail",
+      "reason": "Consulta recordatorios existentes en vez de pedir cuándo recordar el contenido dado.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No hay recordatorios de comprar pilas pendientes.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 6,
+          "timestampUtc": "2026-09-12T01:22:02.6106741+00:00",
+          "phase": "completed",
+          "requestId": "751e6232-bf05-42ac-a581-aabe5e4f44bb",
+          "missionId": "2d155bfc-8390-428c-aab8-b11eaf1a2436",
+          "invocationId": "0ae7eed3-8a2a-42c7-9f54-783bee91d30b",
+          "operation": "reminder.list",
+          "requestFingerprint": "56b20506a2e21409b7e97357af5c62f324345dec75a49fa0b4ee08eefc19391f",
+          "response": {
+            "type": "operation.response",
+            "requestId": "751e6232-bf05-42ac-a581-aabe5e4f44bb",
+            "missionId": "2d155bfc-8390-428c-aab8-b11eaf1a2436",
+            "invocationId": "0ae7eed3-8a2a-42c7-9f54-783bee91d30b",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"reminder.list\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"reminders\":[],\"count\":0,\"mode\":\"scheduled\",\"limit\":20}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "version": 1,
+              "reminders": [],
+              "count": 0,
+              "mode": "scheduled",
+              "limit": 20
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "H0363",
+      "literal": "mostrame mis tareas",
+      "kind": "historical_literal",
+      "group": "task_read",
+      "criterion": "Invoke existing task.list with arguments grounded in the request, report actual persisted tasks faithfully and distinguish an observed empty local profile from global absence. Errors are not empty lists; do not create tasks or invent personal history.",
+      "verdict": "pass",
+      "reason": "Consulta task.list actual verificada vacía; respuesta útil dentro del perfil de tareas de BAXY. No implica inventario global de otros servicios.",
+      "coverage_added": true,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Todavía no tienes tareas asignadas.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 8,
+          "timestampUtc": "2026-09-12T01:22:06.8597644+00:00",
+          "phase": "completed",
+          "requestId": "75c413d5-b96c-43eb-90a5-c47f312dc2d4",
+          "missionId": "e8b3b2bc-89f8-44fd-97e8-a9eaa3f80b85",
+          "invocationId": "8a29b706-9601-468f-97f5-f80ed4af712b",
+          "operation": "task.list",
+          "requestFingerprint": "83374d7553e2f4db59ed456cf31bcc84afc5d53e1d7da2408d02c04638c0b213",
+          "response": {
+            "type": "operation.response",
+            "requestId": "75c413d5-b96c-43eb-90a5-c47f312dc2d4",
+            "missionId": "e8b3b2bc-89f8-44fd-97e8-a9eaa3f80b85",
+            "invocationId": "8a29b706-9601-468f-97f5-f80ed4af712b",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"task.list\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"tasks\":[],\"count\":0,\"mode\":\"tasks\",\"limit\":20}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "tasks": [],
+              "count": 0,
+              "mode": "tasks",
+              "limit": 20
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "case_id": "agenda1021-dev-01",
+      "literal": "Quiero cancelar una alarma, pero todavía no he dicho cuál.",
+      "kind": "original_development_variant",
+      "group": "cancel_missing_identity",
+      "criterion": "Ask which alarm to cancel in this independent session, preserving the owner exception only if an actual session alarm exists. Do not select latest/global or cancel any alarm without grounded identity.",
+      "verdict": "fail",
+      "reason": "Pregunta momento de cancelación, no identidad.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿A qué hora deseas cancelar la alarma?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 8,
+      "case_id": "agenda1021-dev-02",
+      "literal": "Cancel the alarm for me.",
+      "kind": "original_development_variant",
+      "group": "cancel_missing_identity",
+      "criterion": "Ask which alarm to cancel in this independent session, preserving the owner exception only if an actual session alarm exists. Do not select latest/global or cancel any alarm without grounded identity.",
+      "verdict": "fail",
+      "reason": "Pregunta momento de cancelación, no identidad.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "What time should I cancel the alarm for?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 9,
+      "case_id": "agenda1021-dev-03",
+      "literal": "Para el miércoles, crea una tarea.",
+      "kind": "original_development_variant",
+      "group": "task_missing_content",
+      "criterion": "Ask for the task specifications/content missing from the request, preserve the supplied day, and do not create an invented or empty task.",
+      "verdict": "fail",
+      "reason": "Error de interpretación en vez de preguntar contenido.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La causa del fallo es que la interpretación de la solicitud no fue válida.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 10,
+      "case_id": "agenda1021-dev-04",
+      "literal": "Put a task on my list for Monday.",
+      "kind": "original_development_variant",
+      "group": "task_missing_content",
+      "criterion": "Ask for the task specifications/content missing from the request, preserve the supplied day, and do not create an invented or empty task.",
+      "verdict": "fail",
+      "reason": "Niega capacidad de tareas disponible.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "This is outside what I do on this PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 11,
+      "case_id": "agenda1021-dev-05",
+      "literal": "Dentro de cuarenta minutos, recuérdamelo.",
+      "kind": "original_development_variant",
+      "group": "reminder_missing_content",
+      "criterion": "Ask what to remind about, preserving the explicit duration. Independent session supplies no antecedent; do not invent content or schedule a generic substitute.",
+      "verdict": "fail",
+      "reason": "Error de interpretación en vez de preguntar contenido.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La causa del fallo es que la interpretación de la solicitud no fue válida.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 12,
+      "case_id": "agenda1021-dev-06",
+      "literal": "Remind me in twelve minutes.",
+      "kind": "original_development_variant",
+      "group": "reminder_missing_content",
+      "criterion": "Ask what to remind about, preserving the explicit duration. Independent session supplies no antecedent; do not invent content or schedule a generic substitute.",
+      "verdict": "pass",
+      "reason": "Pregunta qué recordar sin volver a pedir duración ya expresada.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "What should I remind you about?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 13,
+      "case_id": "agenda1021-dev-07",
+      "literal": "Quiero una alarma para las 28:15.",
+      "kind": "original_development_variant",
+      "group": "time_invalid",
+      "criterion": "Identify that the requested clock hour is invalid and ask for a valid time; do not normalize 99/other invalid hours silently or create an alarm.",
+      "verdict": "fail",
+      "reason": "Repite hora exacta sin aclarar que28:15 es inválida.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿A qué hora exacta y qué tipo de alarma quieres programar?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 14,
+      "case_id": "agenda1021-dev-08",
+      "literal": "Remind me to check the bicycle tires.",
+      "kind": "original_development_variant",
+      "group": "time_missing",
+      "criterion": "Preserve the supplied reminder content and ask when to remind; do not invent a due time or falsely claim a scheduled reminder.",
+      "verdict": "fail",
+      "reason": "Niega capacidad de recordatorios disponible.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "This is outside what I do on this PC.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 15,
+      "case_id": "agenda1021-dev-09",
+      "literal": "Quiero ver la lista de tareas que tengo guardadas.",
+      "kind": "original_development_variant",
+      "group": "task_read",
+      "criterion": "Invoke existing task.list with arguments grounded in the request, report actual persisted tasks faithfully and distinguish an observed empty local profile from global absence. Errors are not empty lists; do not create tasks or invent personal history.",
+      "verdict": "pass",
+      "reason": "task.list verificado vacío; responde sobre lista guardada local.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No tienes tareas guardadas.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 10,
+          "timestampUtc": "2026-09-12T01:22:30.7189872+00:00",
+          "phase": "completed",
+          "requestId": "276fb71a-ecd2-459e-9941-6f0992ad994f",
+          "missionId": "e6c33202-baab-4617-9d01-5ced1430c540",
+          "invocationId": "a98316e0-525a-4e65-b854-9b46dc8ab3d8",
+          "operation": "task.list",
+          "requestFingerprint": "8f6894b77ef63461f2afb21baef5866b4153c93db7f6826a9d4fad6804d3889b",
+          "response": {
+            "type": "operation.response",
+            "requestId": "276fb71a-ecd2-459e-9941-6f0992ad994f",
+            "missionId": "e6c33202-baab-4617-9d01-5ced1430c540",
+            "invocationId": "a98316e0-525a-4e65-b854-9b46dc8ab3d8",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"task.list\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"tasks\":[],\"count\":0,\"mode\":\"tasks\",\"limit\":20}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "tasks": [],
+              "count": 0,
+              "mode": "tasks",
+              "limit": 20
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 16,
+      "case_id": "agenda1021-dev-10",
+      "literal": "Show my current task list, please.",
+      "kind": "original_development_variant",
+      "group": "task_read",
+      "criterion": "Invoke existing task.list with arguments grounded in the request, report actual persisted tasks faithfully and distinguish an observed empty local profile from global absence. Errors are not empty lists; do not create tasks or invent personal history.",
+      "verdict": "pass",
+      "reason": "task.list verificado vacío; responde en inglés sobre lista actual.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Your current task list is empty.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": [
+        {
+          "sequence": 12,
+          "timestampUtc": "2026-09-12T01:22:31.5987611+00:00",
+          "phase": "completed",
+          "requestId": "bf1168b1-0cd4-44a2-b7f5-e6a4af2f6233",
+          "missionId": "946a75a2-7d0e-4ad5-b695-6ea54f1093cc",
+          "invocationId": "0bd25b9b-0123-4eca-a5bc-43e71d33f5ba",
+          "operation": "task.list",
+          "requestFingerprint": "f179fc9dd0513f87a790f5054a306931405ab810ddbd4d6ba871337db0375027",
+          "response": {
+            "type": "operation.response",
+            "requestId": "bf1168b1-0cd4-44a2-b7f5-e6a4af2f6233",
+            "missionId": "946a75a2-7d0e-4ad5-b695-6ea54f1093cc",
+            "invocationId": "0bd25b9b-0123-4eca-a5bc-43e71d33f5ba",
+            "status": "completed",
+            "message": "{\"kind\":\"operation\",\"operation\":\"task.list\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"tasks\":[],\"count\":0,\"mode\":\"tasks\",\"limit\":20}}",
+            "verified": true,
+            "replayed": false,
+            "result": {
+              "tasks": [],
+              "count": 0,
+              "mode": "tasks",
+              "limit": 20
+            },
+            "errorCode": null
+          }
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "case_id": "agenda1021-boundary-01",
+      "literal": "No canceles ninguna alarma ni crees tareas; sólo confirma que entendiste la instrucción.",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "criterion": "Respect prohibition, quoted/hypothetical/narrative/conceptual intent. No task/reminder/notification mutation and no unrequested current personal-data lookup; answer the actual conversational request honestly.",
+      "verdict": "fail",
+      "reason": "SIEMPRE no confirma comprensiblemente la instrucción.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "SIEMPRE",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 18,
+      "case_id": "agenda1021-boundary-02",
+      "literal": "Explica la frase «crea una tarea para el viernes» sin ejecutarla.",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "criterion": "Respect prohibition, quoted/hypothetical/narrative/conceptual intent. No task/reminder/notification mutation and no unrequested current personal-data lookup; answer the actual conversational request honestly.",
+      "verdict": "pass",
+      "reason": "Explica la frase y contenido faltante sin ejecutar.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La frase «crea una tarea para el viernes» significa que se quiere establecer una actividad o responsabilidad que deba realizarse el viernes, pero no se ha especificado qué tipo de tarea ni qué debe incluir.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 19,
+      "case_id": "agenda1021-boundary-03",
+      "literal": "Si mañana te pido que programes un aviso, te daré la hora entonces.",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "criterion": "Respect prohibition, quoted/hypothetical/narrative/conceptual intent. No task/reminder/notification mutation and no unrequested current personal-data lookup; answer the actual conversational request honestly.",
+      "verdict": "fail",
+      "reason": "Niega capacidad de avisos disponible.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No puedo programar avisos.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 20,
+      "case_id": "agenda1021-boundary-04",
+      "literal": "¿En qué se diferencia una tarea de un recordatorio?",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "criterion": "Respect prohibition, quoted/hypothetical/narrative/conceptual intent. No task/reminder/notification mutation and no unrequested current personal-data lookup; answer the actual conversational request honestly.",
+      "verdict": "pass",
+      "reason": "Distingue estado de tarea y función de notificación de recordatorio; sin acciones ni consulta personal.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Una tarea tiene que hacerse y tiene un estado (por ejemplo, pendiente, completada), mientras que un recordatorio es solo una notificación para recordar algo sin necesidad de acción.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    },
+    {
+      "index": 21,
+      "case_id": "agenda1021-boundary-05",
+      "literal": "Ayer anoté mis pendientes en una libreta de papel.",
+      "kind": "original_boundary",
+      "group": "boundary",
+      "criterion": "Respect prohibition, quoted/hypothetical/narrative/conceptual intent. No task/reminder/notification mutation and no unrequested current personal-data lookup; answer the actual conversational request honestly.",
+      "verdict": "fail",
+      "reason": "Mensaje de error ante narración pasada, no respuesta útil.",
+      "coverage_added": false,
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No pude procesar tu solicitud. Vuelve a intentarlo.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "observed_operations": []
+    }
+  ]
+}

@@ -1,12 +1,24 @@
-# C03 — checkpoint tras audio1020
+# C03 — checkpoint tras sistema1022
 
-**112/742 cubiertos, 630 abiertos, 0 no aplican; 84 altas confirmadas en las últimas 24 h; 0/35 categorías cerradas.** C03: 3/11 cumplidos, 5 contradichos, 3 pendientes. Goal activo. Ninguna autorización pendiente. Estimación de cierre: todavía no fiable; quedan categorías con defectos de mecanismo y efectos pendientes de reconciliar.
+**123/742 cubiertos, 619 abiertos, 0 no aplican; 95 altas confirmadas en las últimas 24 h; 0/35 categorías cerradas.** C03: 3/11 cumplidos, 5 contradichos, 3 pendientes. Goal activo; ninguna autorización pendiente. Sin estimación fiable de cierre completo.
+
+1022: 10literales+10variantes+5límites,21/25cumplen,+10créditos. CPU2,RAMtotal2,RAMdisponible1,RAMusada1,batería4, cada conducta con dos variantes actuales ES/EN. Valores contra recibos system.status frescos;17.18GB son17179869184bytes instalados, noGiB ni memoria libre. RAM usada deriva totalBytes−availableBytes; batería98%real. Cuatro límitesfallan: cita no explicada, condición futura rechazada, concepto convertido en lectura, narración termina en error. Nada mutado. ROOTf3df6a0aa9f101fdfc4dbf499e406bea8428245673364950826168564778cbbb.
+
+Colecciónf42d77 de sesión74955,exit0,pinsintactos,0violaciones;85.75s,VRAM3497.56MiB,RAM2467.25MiB. Créditos escritos después de EXIT, sin atribuir ejecución en vivo. Fuente sin cambios. Siguiente conocimiento1025:10literales+10variantes+5límites ya sellados;28abiertos, delante de sistema19. Agenda1024parche externo recibido, no integrado ni medido; no se adopta una reparación a ciegas.
+
+1021: 7 literales,10 variantes,5 límites; 6/22 cumplen y16 fallan. H0363 suma1: task.list actual vacío y dos variantes ES/EN conformes. Crédito escrito al adjudicar, después de recoger EXIT01416e, sin reclamar adjudicación duranteGPU. El ámbito observado es el perfil real de tareas de BAXY, sin fixtures ni inventario global. Las seis consultas de aclaración fallidas permanecen open con causa.
+
+Fallos: cancelar alarma pregunta cuándo cancelarla en vez de cuál; avisos de30minutos/una hora vuelven a preguntar cuándo y confunden el actor; tarea para viernes llega a task.create inválido; recordar comprar pilas se interpreta como lectura. La invocación e48cd6fe-3264-492f-9f8f-d8b739329c03 conserva failed/invalid_task; effectMayHaveOccurred está ausente, no se interpreta como false. Tres lecturas posteriores del mismo store dieron vacío; no se ejecutó limpieza. Diagnóstico1023 separa las fronteras, reparación1024 sólo para avisos temporales en preparación externa.
+
+1021 terminó exit0, pins intactos,0violaciones,98.25s. VRAM3499.56MiB y RAM2463.06MiB, picos separados bajo4GB; el muestreo de árbol puede incluir descendientes no exclusivos del modelo.85altas/24h supera20 sinFull. Suites/Fast/Full omitidas por orden del dueño, no aprobadas. Fuente20dab7ed y build1013 vigentes, sin cambios durante la tanda.
+
+Siguiente elegible: SYSTEM1022,10literales+10variantes+5límites para CPU/RAM/nivelbatería; hasta10 créditos. Con29abiertos empata agenda29; las categorías de mayor masa conservan sus reanudaciones documentadas1005/1014/1017/1018/NEXT_989. H0675 y nueva infraestructura siguen aparcados. No repetir paneles enteros por fallos aislados ni interpretar efectos inciertos como resueltos.
 
 Audio1016 ejecutó 10 literales, 12 variantes y 5 límites: 14/27 cumplen, 13 fallan. Nueve literales respondieron bien; sólo H0168/H0331 obtuvieron crédito: identificaron el dispositivo real, con variante inglesa actual y variante española previa848-dev-status-03 acreditada en861. La variante española actual falló y conserva su fallo. Los dos estados covered se escribieron al adjudicar, antes de cerrar categoría; no se atribuye adjudicación en vivo, porque EXIT ya existía. Registro108/634, sin inflar con variantes.
 
 1020 reparó cantidad y silencio: 13 objetos originales,9/13 cumplen; en esos mismos objetos1016 había7/13. Los cuatro literales H0027/H0563/H0154/H0549 y sus cuatro variantes actuales ES/EN pasaron, añadiendo4créditos. Los cuatro límites fallidos siguen fallando, sin regresiones nuevas observadas en este material. Fuente1019 integrada en20dab7ed: dos lectores existentes,14inserciones/1eliminación, sin prompt ni respuestas fijas. Covered escrito al adjudicar los ocho casos objetivo antes del resto; EXIT ya existía, no se declara crédito duranteGPU.
 
-Audio1016 y1020 recuperados con lectura fresca del mismoendpoint y tres llamadas cada uno:100silenciado→100sin silencio, igual al baseline observado. No reintentos ni restauración ciega. El worktree1019 se retiró tras integrar; parche y diagnóstico preservados. Siguiente tanda1021:7literales de agenda,10variantes,5límites;22casos, hasta5créditos potenciales, runneren preparación. No se crean fixtures ni se repiten alarmas pendientes sin reparación.
+Audio1016 y1020 recuperados con lectura fresca del mismoendpoint y tres llamadas cada uno:100silenciado→100sin silencio, igual al baseline observado. No reintentos ni restauración ciega. El worktree1019 se retiró tras integrar; parche y diagnóstico preservados. Preparación histórica1021:7literales de agenda,10variantes,5límites;22casos, hasta5créditos potenciales, runneren preparación. No se crean fixtures ni se repiten alarmas pendientes sin reparación.
 
 Web1010 ejecutó cuatro objetos fallidos originales:0/4,+0. La captura privada1003, integrada en437e4183 y compilada en1013, demuestra resultados ajenos anteriores al filtro.1017 comparó cinco lecturas HTTP: cambiar orden/%20/+ en «la NASA» no arregla la respuesta RSS; «NASA» sola devuelve NASA. El título RSS conserva la consulta completa. No hay cambio de transporte demostrado; no se afloja relevancia ni se afirma una causa remota no observada. Reanudación en WEB_HTTP1017/DIAGNOSIS.json; no repetir1010/1017 sin hipótesis nueva.
 
@@ -23,9 +35,9 @@ Las cuatro terminaron exit0 con pins intactos y cero violaciones. RAM y VRAM son
 
 No repetir: elecciónQwen/backend/perfil792; herencia802; auditoría de frescura536; efectos Spotify962/Steam/Discord/Calculator/Settings/Explorer sin reconciliación exacta; fuente800 rechazada; paneles enteros por un fallo aislado. H0675/OCR/nuevos providers siguen aparcados. Objetos975/980/986 preservados, alarmas983 canceladas por identidad. IDs y reanudación de efectos inciertos en NEXT_989 (sólo historia de efectos/runtime, no fuente/build).
 
-Orden por masa: apps40 y música39 tienen condiciones957/962/991; web36 queda temporalmente aparcado por1017; archivos32 conserva frontera1005. Mensajería1014:28envíos requieren autorización concreta/contexto;1aclaración sin contenido;2lecturas sin mecanismo. Install1018:19Steam con mecanismo existente pero requieren sesión/entitlement/recursos/reconciliación;12casos separados no justifican infraestructura común ficticia. Próxima acción ejecutable:agenda1021, con hasta5créditos potenciales. Audio conserva24abiertos; los4objetivos1020 ya están acreditados.
+Orden por masa: apps40 y música39 tienen condiciones957/962/991; web36 queda temporalmente aparcado por1017; archivos32 conserva frontera1005. Mensajería1014:28envíos requieren autorización concreta/contexto;1aclaración sin contenido;2lecturas sin mecanismo. Install1018:19Steam con mecanismo existente pero requieren sesión/entitlement/recursos/reconciliación;12casos separados no justifican infraestructura común ficticia. Esa planificación histórica1021 está ejecutada arriba. Audio conserva24abiertos; los4objetivos1020 ya están acreditados.
 
-Registro SHA `103a9aa040371d173d6a5427e9917d12ab1fa085c8e26cfbc55eee14acbed735`. Clasificación846 inmutable;742case_ids, ordenados por abiertos:
+Registro actual SHA `cde1f5b5180f79cdcba2978fa98aae14f4826e054341c5579e161e6fdfca8b34`. Clasificación846 inmutable;742case_ids, ordenados por abiertos:
 
 | Categoría | Total | Cubiertos | Abiertos | No aplican |
 |---|---:|---:|---:|---:|
@@ -36,8 +48,7 @@ Registro SHA `103a9aa040371d173d6a5427e9917d12ab1fa085c8e26cfbc55eee14acbed735`.
 | Entrada incompleta, ruido y control de diálogo | 34 | 3 | 31 | 0 |
 | Mensajería | 31 | 0 | 31 | 0 |
 | Instalar y desinstalar software | 31 | 0 | 31 | 0 |
-| Alarmas, recordatorios, tareas y agenda | 38 | 8 | 30 | 0 |
-| Estado de hardware y sistema | 40 | 11 | 29 | 0 |
+| Alarmas, recordatorios, tareas y agenda | 38 | 9 | 29 | 0 |
 | Conocimiento, razonamiento y creatividad verbal | 37 | 9 | 28 | 0 |
 | Vídeo y series | 26 | 0 | 26 | 0 |
 | Audio y volumen | 51 | 27 | 24 | 0 |
@@ -46,6 +57,7 @@ Registro SHA `103a9aa040371d173d6a5427e9917d12ab1fa085c8e26cfbc55eee14acbed735`.
 | Hora y fecha | 23 | 3 | 20 | 0 |
 | Red y Bluetooth | 21 | 1 | 20 | 0 |
 | Cerrar aplicaciones y ventanas | 20 | 0 | 20 | 0 |
+| Estado de hardware y sistema | 40 | 21 | 19 | 0 |
 | Pantalla, captura e interpretación visual | 19 | 0 | 19 | 0 |
 | Brillo y pantalla | 17 | 0 | 17 | 0 |
 | Información web actual | 17 | 0 | 17 | 0 |

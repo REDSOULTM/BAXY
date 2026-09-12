@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-12T01:21:23.010306+00:00",
+  "runner_pid": 3148,
+  "launcher_pid": 4192,
+  "launcher_creation": 1789176083.0028732,
+  "command": [
+    "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "main.py",
+    "--conductor",
+    "--profile",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1021-profile",
+    "--capture",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1021-private\\run\\capture",
+    "--turns-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1021-proposal\\turns.jsonl",
+    "--timeout-ms",
+    "120000"
+  ]
+}

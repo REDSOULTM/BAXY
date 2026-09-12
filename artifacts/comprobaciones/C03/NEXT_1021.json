@@ -20,7 +20,11 @@
   "active_gpu_session": null,
   "tests_run": false,
   "owner_permission_pending": null,
-  "runner_sha256": "03e74b4eb5a08e0a192493a22ea083fc2cc01e50d5e5130d9787f28d60d1338a",
+  "runner_sha256": "f4bf8435d22295a5fed6caad81a3070f77052b7696a0475a5b6815325a5c7f8f",
   "runner_plan_sha256": "540cc0a80ea1bdf3761756834cc36f3a45a40212d79faf3e7a80352d12224ec0",
-  "runner_status": "delivered_pending_root_review"
+  "runner_status": "delivered_pending_root_review",
+  "state": "executed_adjudicated",
+  "collection": "01416e",
+  "adjudication": "AGENDA1021/ROOT_ADJUDICATION.json",
+  "coverage_added": 1
 }
