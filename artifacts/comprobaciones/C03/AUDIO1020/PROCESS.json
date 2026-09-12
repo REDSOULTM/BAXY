@@ -1,0 +1,22 @@
+{
+  "utc": "2026-09-12T01:10:44.728918+00:00",
+  "runner_pid": 23648,
+  "launcher_pid": 31224,
+  "launcher_creation": 1789175444.7215836,
+  "command": [
+    "C:\\Users\\usuario\\AppData\\Local\\BAXYRuntime\\python\\mind-runtime-v1\\Scripts\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "main.py",
+    "--conductor",
+    "--profile",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1020-profile",
+    "--capture",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1020-private\\run\\capture",
+    "--turns-file",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1020-proposal\\turns.jsonl",
+    "--timeout-ms",
+    "120000"
+  ]
+}

@@ -1,17 +1,18 @@
 {
-  "utc": "2026-09-12T01:02:55.815065+00:00",
-  "covered": 108,
-  "open": 634,
+  "utc": "2026-09-12T01:15:09.334654+00:00",
+  "covered": 112,
+  "open": 630,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 80,
+  "covered_updated_last_24h": 84,
   "updated_recent_ids": [
     "H0017",
     "H0020",
     "H0025",
     "H0026",
+    "H0027",
     "H0035",
     "H0044",
     "H0056",
@@ -21,6 +22,7 @@
     "H0090",
     "H0132",
     "H0133",
+    "H0154",
     "H0158",
     "H0166",
     "H0168",
@@ -65,8 +67,10 @@
     "H0534",
     "H0538",
     "H0545",
+    "H0549",
     "H0553",
     "H0557",
+    "H0563",
     "H0569",
     "H0577",
     "H0597",
@@ -89,7 +93,7 @@
     "H0729",
     "H0736"
   ],
-  "confirmed_new_grants_last_24h": 80,
+  "confirmed_new_grants_last_24h": 84,
   "first_grant_date_not_distinguished_for_recent_ids": [],
   "categories": [
     {
@@ -165,14 +169,6 @@
       "not_applicable": 0
     },
     {
-      "category": "audio_volume",
-      "label": "Audio y volumen",
-      "total": 51,
-      "covered": 23,
-      "open": 28,
-      "not_applicable": 0
-    },
-    {
       "category": "knowledge_reasoning",
       "label": "Conocimiento, razonamiento y creatividad verbal",
       "total": 37,
@@ -186,6 +182,14 @@
       "total": 26,
       "covered": 0,
       "open": 26,
+      "not_applicable": 0
+    },
+    {
+      "category": "audio_volume",
+      "label": "Audio y volumen",
+      "total": 51,
+      "covered": 27,
+      "open": 24,
       "not_applicable": 0
     },
     {
@@ -373,8 +377,8 @@
       "not_applicable": 0
     }
   ],
-  "requirements_sha256": "3c6ac2f358f202544a775b35714a910ea5897da4e210e5db8910cf0bf39e448d",
-  "registry_sha256": "3c6ac2f358f202544a775b35714a910ea5897da4e210e5db8910cf0bf39e448d",
+  "requirements_sha256": "103a9aa040371d173d6a5427e9917d12ab1fa085c8e26cfbc55eee14acbed735",
+  "registry_sha256": "103a9aa040371d173d6a5427e9917d12ab1fa085c8e26cfbc55eee14acbed735",
   "classification_source": "SURVEY_TAXONOMY846.json",
   "latest_adjudications": [
     "APP_OPEN847/ROOT_ADJUDICATION.json",
@@ -413,15 +417,16 @@
     "DEICTIC1009/ROOT_ADJUDICATION.json",
     "DEICTIC1012/ROOT_ADJUDICATION.json",
     "WEB_DIAGNOSTIC1010/ROOT_ADJUDICATION.json",
-    "AUDIO1016/ROOT_ADJUDICATION.json"
+    "AUDIO1016/ROOT_ADJUDICATION.json",
+    "AUDIO1020/ROOT_ADJUDICATION.json"
   ],
-  "equal_maximum_open_next_selection": "Apps40/music39/Steam19 remain parked with exact prior conditions; web36 transport1017 has no safe repair. Files32 scope1005, messaging31 authorization1014, install31 classification1018. Audio1019 targets two observed failures potentially crediting4literals; source unchanged pending diagnosis.",
+  "equal_maximum_open_next_selection": "Apps40/music39/web36/files32/messaging31/install31 retain recorded prerequisites. Next eligible agenda1021 material preparing among30open. Audio now24open, targeted quantity/mute repaired and4credited; no full-panel repetition.",
   "latest_product_run": {
-    "batch": 1016,
-    "executed": 27,
-    "passed": 14,
-    "failed": 13,
-    "coverage_added": 2,
+    "batch": 1020,
+    "executed": 13,
+    "passed": 9,
+    "failed": 4,
+    "coverage_added": 4,
     "exit_code": 0
   }
 }

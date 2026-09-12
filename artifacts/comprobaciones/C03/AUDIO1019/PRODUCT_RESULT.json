@@ -1,0 +1,15 @@
+{
+  "source": "20dab7edcd34ce87eff2d176613bb5ae4e968e1b",
+  "targeted_real_product_cases_passed": 8,
+  "targeted_real_product_cases_total": 8,
+  "all_cases_passed": 9,
+  "all_cases_total": 13,
+  "old_failed_limits_remain": 4,
+  "new_failures_in_same_material": 0,
+  "tests_run": false,
+  "coverage_added": 4,
+  "root_adjudication_sha256": "54d1305baaed157a978019853f9ad9b15b525713ee9ad923ccc8b7a8a76894f6",
+  "worktree_removed": true,
+  "worktree_removal_collection": "9baa90",
+  "scope": "Observed targeted repair; no automated owner suites or global green claim."
+}

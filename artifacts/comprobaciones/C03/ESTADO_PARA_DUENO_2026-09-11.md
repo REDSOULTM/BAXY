@@ -1,11 +1,11 @@
 # Estado para el dueño — 2026-09-11
 
-**108/742 cubiertos; 634 abiertos; 0 no aplican.80 nuevos en24h.0/35 categorías cerradas y C03 3/11.** Cierre aún sin fecha fiable: la encuesta mide conductas verificadas, no porcentaje de todo C03.
+**112/742 cubiertos;630 abiertos;0 no aplican.84 nuevos en24h.0/35 categorías cerradas;C03 3/11.** El cierre completo aún no tiene fecha fiable.
 
-Cambió: dos peticiones más ya identifican el dispositivo de audio real, con variantes comprobadas en español e inglés. La falta de memoria quedó resuelta cerrando servidores de compilación; no fue necesario cerrar tus aplicaciones. La autorización de cierre ya está registrada y no requiere otra confirmación.
+Cambió: seis requisitos más de audio quedaron acreditados. Dos identifican el dispositivo real; cuatro piden correctamente la cantidad o silencian el audio, con variantes en español e inglés. El parche fue pequeño:14líneas añadidas y1retirada en lectores existentes.
 
-Se midió: audio14/27 respuestas correctas y2créditos; web0/4 y0créditos. Audio usó3499.56MiB deVRAM y2460.30MiB deRAM, por separado, bajo4GB. La tanda terminó y se recuperó el estado de audio que había antes.
+Se midió: la última tanda obtuvo9/13 respuestas correctas, con los8casos objetivo correctos y4créditos. Los4límites ya fallaban y siguen abiertos. VRAM3499.56MiB yRAM2408.54MiB, medidas porseparado bajo4GB. Audio recuperado al estado previo y verificado.
 
-Falló: algunas formas de pedir más volumen se convierten en preguntas de permiso en vez de pedir cantidad; algunas formas de pedir silencio se rechazan como imposibles. La búsquedaweb recibió páginas ajenas al pedido; cambiar parámetros no lo arregló. Esos fallos siguen abiertos.
+Falló: la búsquedaweb todavía devuelve páginas ajenas para algunas consultas, y persisten respuestas inútiles ante ciertas prohibiciones, futuros y relatos. Ninguno se acreditó ni se ocultó. Las suites/Fast/Full se omitieron por tu instrucción; no se presentan como aprobadas.
 
-Falta: reparar esas dos conductas de audio y ejecutar el panel dirigido ya en preparación, que puede acreditar hasta4literales. La tabla completa porcategoría está en CHECKPOINT.md.80créditos/24h supera20; no se ejecutaron suites niFull por tu instrucción, y no los presento como aprobados.
+Falta: ejecutar la tanda de agenda preparada con7literales,10variantes y5límites, que puede acreditar hasta5requisitos. El contador y la tabla completa porcategoría están enCHECKPOINT.md.84créditos/24h supera20. RAM resuelta cerrando servidores de compilación con la instalación correcta; no fue necesario cerrar tusaplicaciones y tuautorización ya está registrada.
