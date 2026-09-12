@@ -1,3 +1,23 @@
+## MUSIC1091 — estado vigente 2026-09-12T19:33:48.110013+00:00
+
+Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 190/742 | 552 | 0 | >=64 | 0/35 |
+
+Procedencia de primeras altas: Al menos 63 primeras altas previas verificadas hoy: 28 Kiro y 35 retorno hasta1090. Se añade únicamente el crédito explícito que esta adjudicación demuestre; no se cuentan revalidaciones.
+
+Siguiente acción: Registrar el resultado de H0311 en este tramo y arrancar MESSAGING1085:10 literales+10 variantes+5 límites exactos heredados1062, runner25/50 con perfiles individuales y ausencia actual comprobada de WhatsApp.Root y Discord. No enviar, completar aclaraciones ni aprobar invocaciones. Música conserva requisitos abiertos:1092 documenta H0333 elegible y dos lecturas aplazadas por título truncado/estado paused no corregidos; no repetirlas a ciegas ni facilitar títulos. Otros controles inciertos, Spotify y requisitos nuevos conservan reanudación exacta. Mensajería tiene mayor masa lista para ejecutar. C03 sigue activo, formal3/11, sin suites/Fast/Full por instrucción del dueño.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1091/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 178.19 s acumulados; pico GPU 3497.56 MiB; pico RAM 1640.26 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1091 precedente. -->
+
 ## MUSIC1090 — estado vigente 2026-09-12T19:17:16.256353+00:00
 
 Parcial: 4 aprobados, 0 fallidos, 8 sin ejecutar; 2 créditos.

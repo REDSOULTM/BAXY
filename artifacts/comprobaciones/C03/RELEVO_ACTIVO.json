@@ -152,26 +152,26 @@
     "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "MUSIC1090 adjudicado: 4 aprobados, 0 fallidos, 8 sin ejecutar; 2 créditos.",
+  "workStatus": "MUSIC1091 adjudicado: 8 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.",
   "executionPausedByOwner": false,
   "branch": "codex/kiro-goal-c03",
-  "checkpoint": "189/742 cubiertos, 553 abiertos, 0 no aplican. MUSIC1090: 2 créditos explícitos de raíz.",
+  "checkpoint": "190/742 cubiertos, 552 abiertos, 0 no aplican. MUSIC1091: 1 créditos explícitos de raíz.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
   "surveyVerificationCounts": {
-    "covered": 189,
-    "open": 553,
+    "covered": 190,
+    "open": 552,
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "a0f460cefc2e3189b057fb116a1d080c40436635165024183a7dc4c96e9d530e",
+  "surveyRegistrySha256": "ff8ad86d89bbf940d70256756ed48e94e7be9539ae321ed85cbcf579720889df",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
-  "surveyCoverageLast24h": 63,
-  "surveyCoverageLast24hNote": "Al menos 61 primeras altas previas verificadas hoy: 28 Kiro y 33 retorno hasta1080. MUSIC1090 añade H0351 y H0567, total al menos 63; no se cuentan revalidaciones.",
+  "surveyCoverageLast24h": 64,
+  "surveyCoverageLast24hNote": "Al menos 63 primeras altas previas verificadas hoy: 28 Kiro y 35 retorno hasta1090. Se añade únicamente el crédito explícito que esta adjudicación demuestre; no se cuentan revalidaciones.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-12T19:17:16.256353+00:00",
+  "utcUpdated": "2026-09-12T19:33:48.110013+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -621,7 +621,7 @@
     "freeze_ended_at": "2026-09-12T16:33:18.245252+00:00",
     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
   },
-  "updatedAtUtc": "2026-09-12T19:17:16.256353+00:00",
+  "updatedAtUtc": "2026-09-12T19:33:48.110013+00:00",
   "currentContinuation1065": {
     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
     "quality": {
@@ -814,5 +814,28 @@
       "ram_peak_mib": 1582.74609375
     },
     "next": "Registrar estos dos créditos ahora. Sellar MUSIC1091 con el registro actualizado: únicamente ocho objetos aún sin ejecutar1090, H0311 + dos variantes previous + cinco límites, sin repetir los cuatro aprobados. Música conserva la mayor masa abierta. MESSAGING1085 tiene diez literales, diez variantes y cinco límites sellados, con runner aislado y auxiliares listos para revisión raíz; arrancar después del último grupo directo de navegación. H0675 y efectos inciertos continúan aparcados. C03 activo, formal 3/11; sin suites, Fast ni Full por orden expresa del dueño."
+  },
+  "currentContinuation1091": {
+    "head": "a3c6f7725fd4bf46a3e88ebbd5e028d8d44ccc6b",
+    "quality": {
+      "passed": 8,
+      "failed": 0,
+      "executed": 8,
+      "not_executed": 0,
+      "sealed_total": 8
+    },
+    "new_credits": 1,
+    "credited_ids": [
+      "H0311"
+    ],
+    "registry_sha256": "ff8ad86d89bbf940d70256756ed48e94e7be9539ae321ed85cbcf579720889df",
+    "survey": 190,
+    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\MUSIC1091\\ROOT_ADJUDICATION.json",
+    "resources": {
+      "seconds_sum": 178.18799999999464,
+      "gpu_peak_mib": 3497.55859375,
+      "ram_peak_mib": 1640.26171875
+    },
+    "next": "Registrar el resultado de H0311 en este tramo y arrancar MESSAGING1085:10 literales+10 variantes+5 límites exactos heredados1062, runner25/50 con perfiles individuales y ausencia actual comprobada de WhatsApp.Root y Discord. No enviar, completar aclaraciones ni aprobar invocaciones. Música conserva requisitos abiertos:1092 documenta H0333 elegible y dos lecturas aplazadas por título truncado/estado paused no corregidos; no repetirlas a ciegas ni facilitar títulos. Otros controles inciertos, Spotify y requisitos nuevos conservan reanudación exacta. Mensajería tiene mayor masa lista para ejecutar. C03 sigue activo, formal3/11, sin suites/Fast/Full por instrucción del dueño."
   }
 }

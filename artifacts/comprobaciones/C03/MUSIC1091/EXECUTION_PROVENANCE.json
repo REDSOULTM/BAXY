@@ -1,0 +1,186 @@
+{
+  "parent_panel_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1090-proposal\\panel.json",
+  "parent_panel_sha256": "9c6f9fd19f8a727cd0def290d47b2790c6617d13e71292db5f50fd76ad4c1144",
+  "parent_seal_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1090-proposal\\SEAL.json",
+  "parent_seal_sha256": "e53b8704f17e7f724835ae40b707ed3d06d3ed0715e0e2a45f324b7c405b26f7",
+  "finalized": true,
+  "authority": "Root adjudication MUSIC1090; four passed, eight selected unexecuted",
+  "counts": {
+    "reexecutions": 0,
+    "not_executed_in_parent": 8,
+    "new_original_development": 0
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0311",
+      "kind_preserved": "historical_literal",
+      "execution_status": "not_executed_in_parent",
+      "parent_index": 0,
+      "parent_campaign": "MUSIC1090",
+      "object_unchanged": true,
+      "prior_execution_history": {
+        "kind_preserved": "historical_literal",
+        "parent_index": 0,
+        "parent_campaign": "MUSIC1086",
+        "case_id": "H0311",
+        "prior_result": "pass_revalidation_current_candidate",
+        "object_unchanged": true,
+        "execution_status": "reexecution",
+        "index": 0,
+        "prior_run_path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1086-proposal/private/run-00"
+      },
+      "prior_result": "Root adjudication proves not executed in MUSIC1090"
+    },
+    {
+      "index": 1,
+      "case_id": "music1037-dev-08",
+      "kind_preserved": "original_development_variant",
+      "execution_status": "not_executed_in_parent",
+      "parent_index": 4,
+      "parent_campaign": "MUSIC1090",
+      "object_unchanged": true,
+      "prior_execution_history": {
+        "kind_preserved": "original_development_variant",
+        "parent_index": 4,
+        "parent_campaign": "MUSIC1086",
+        "case_id": "music1037-dev-08",
+        "prior_result": "not_executed_in_1086",
+        "object_unchanged": true,
+        "execution_status": "not_executed_in_parent",
+        "index": 4,
+        "prior_run_path": null
+      },
+      "prior_result": "Root adjudication proves not executed in MUSIC1090"
+    },
+    {
+      "index": 2,
+      "case_id": "music1086-dev-previous-es",
+      "kind_preserved": "original_development_variant",
+      "execution_status": "not_executed_in_parent",
+      "parent_index": 6,
+      "parent_campaign": "MUSIC1090",
+      "object_unchanged": true,
+      "prior_execution_history": {
+        "kind_preserved": "original_development_variant",
+        "parent_index": 6,
+        "parent_campaign": "MUSIC1086",
+        "case_id": "music1086-dev-previous-es",
+        "prior_result": "not_executed_in_1086",
+        "object_unchanged": true,
+        "execution_status": "not_executed_in_parent",
+        "index": 6,
+        "prior_run_path": null
+      },
+      "prior_result": "Root adjudication proves not executed in MUSIC1090"
+    },
+    {
+      "index": 3,
+      "case_id": "music1037-boundary-01",
+      "kind_preserved": "original_boundary",
+      "execution_status": "not_executed_in_parent",
+      "parent_index": 7,
+      "parent_campaign": "MUSIC1090",
+      "object_unchanged": true,
+      "prior_execution_history": {
+        "kind_preserved": "original_boundary",
+        "parent_index": 7,
+        "parent_campaign": "MUSIC1086",
+        "case_id": "music1037-boundary-01",
+        "prior_result": "pass_revalidation_current_candidate",
+        "object_unchanged": true,
+        "execution_status": "reexecution",
+        "index": 7,
+        "prior_run_path": "C:/Users/usuario/AppData/Local/BAXY/C03-music1086-proposal/private/run-07"
+      },
+      "prior_result": "Root adjudication proves not executed in MUSIC1090"
+    },
+    {
+      "index": 4,
+      "case_id": "music1037-boundary-02",
+      "kind_preserved": "original_boundary",
+      "execution_status": "not_executed_in_parent",
+      "parent_index": 8,
+      "parent_campaign": "MUSIC1090",
+      "object_unchanged": true,
+      "prior_execution_history": {
+        "kind_preserved": "original_boundary",
+        "parent_index": 8,
+        "parent_campaign": "MUSIC1086",
+        "case_id": "music1037-boundary-02",
+        "prior_result": "not_executed_in_1086",
+        "object_unchanged": true,
+        "execution_status": "not_executed_in_parent",
+        "index": 8,
+        "prior_run_path": null
+      },
+      "prior_result": "Root adjudication proves not executed in MUSIC1090"
+    },
+    {
+      "index": 5,
+      "case_id": "music1037-boundary-03",
+      "kind_preserved": "original_boundary",
+      "execution_status": "not_executed_in_parent",
+      "parent_index": 9,
+      "parent_campaign": "MUSIC1090",
+      "object_unchanged": true,
+      "prior_execution_history": {
+        "kind_preserved": "original_boundary",
+        "parent_index": 9,
+        "parent_campaign": "MUSIC1086",
+        "case_id": "music1037-boundary-03",
+        "prior_result": "not_executed_in_1086",
+        "object_unchanged": true,
+        "execution_status": "not_executed_in_parent",
+        "index": 9,
+        "prior_run_path": null
+      },
+      "prior_result": "Root adjudication proves not executed in MUSIC1090"
+    },
+    {
+      "index": 6,
+      "case_id": "music1037-boundary-04",
+      "kind_preserved": "original_boundary",
+      "execution_status": "not_executed_in_parent",
+      "parent_index": 10,
+      "parent_campaign": "MUSIC1090",
+      "object_unchanged": true,
+      "prior_execution_history": {
+        "kind_preserved": "original_boundary",
+        "parent_index": 10,
+        "parent_campaign": "MUSIC1086",
+        "case_id": "music1037-boundary-04",
+        "prior_result": "not_executed_in_1086",
+        "object_unchanged": true,
+        "execution_status": "not_executed_in_parent",
+        "index": 10,
+        "prior_run_path": null
+      },
+      "prior_result": "Root adjudication proves not executed in MUSIC1090"
+    },
+    {
+      "index": 7,
+      "case_id": "music1037-boundary-05",
+      "kind_preserved": "original_boundary",
+      "execution_status": "not_executed_in_parent",
+      "parent_index": 11,
+      "parent_campaign": "MUSIC1090",
+      "object_unchanged": true,
+      "prior_execution_history": {
+        "kind_preserved": "original_boundary",
+        "parent_index": 11,
+        "parent_campaign": "MUSIC1086",
+        "case_id": "music1037-boundary-05",
+        "prior_result": "not_executed_in_1086",
+        "object_unchanged": true,
+        "execution_status": "not_executed_in_parent",
+        "index": 11,
+        "prior_run_path": null
+      },
+      "prior_result": "Root adjudication proves not executed in MUSIC1090"
+    }
+  ],
+  "parent_adjudication_path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\MUSIC1090\\ROOT_ADJUDICATION.json",
+  "parent_adjudication_sha256": "04d096d7e9857a584b4835c9f7fa6ba1b5dd38da971e673d4a05681bc3d79a33",
+  "parent_registry_after_sha256": "a0f460cefc2e3189b057fb116a1d080c40436635165024183a7dc4c96e9d530e"
+}

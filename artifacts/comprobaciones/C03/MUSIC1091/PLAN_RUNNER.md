@@ -1,0 +1,19 @@
+# MUSIC1091 — continuación tras adjudicación1090
+
+Ocho objetos exactos del padre1090, índices [0,4,6,7,8,9,10,11]: H0311, dos variantes de previous y cinco límites. Son1 literal +2 variantes +5 límites,16 líneas session.new/turn. No se inventa material para completar proporciones: es el subconjunto pendiente elegible. Textos, kinds, criterios, marcas y objetos originales permanecen completos. El nuevo índice sólo cambia mapa y transporte; la historia anterior se conserva separada de la procedencia pendiente.
+
+Adjudicación real MUSIC1090 SHA 04d096d7e9857a584b4835c9f7fa6ba1b5dd38da971e673d4a05681bc3d79a33: cuatro aprobados [3,5,1,2], cero fallos y estos ocho índices sin ejecutar; créditos H0351/H0567 aplicados por raíz. Registro snapshot a0f460cefc2e3189b057fb116a1d080c40436635165024183a7dc4c96e9d530e: 189 cubiertos / 553 abiertos / 0 no aplicables. Se sella exclusivamente el subconjunto restante: cero reejecuciones de1090 y ocho heredados no ejecutados. La historia de campañas anteriores sigue preservada; no se llama nuevo a un objeto antiguo. Candidato, build y autorización continúan null; raíz fijará HEAD definitivo y manifiesto actual.
+
+Correspondencia nuevo→padre:0→0 H0311,1→4 variante previous EN,2→6 variante previous ES,3→7 límite1,4→8 límite2,5→9 límite3,6→10 límite4,7→11 límite5. Los pares1/2 son pertinentes a H0311; su selección no es un veredicto. Los argumentos esperados siguen siendo criterio, nunca entradas inyectadas al producto.
+
+Adaptación mecánica del runner1090: prefijos/esquemas/rutas1091;12→8 casos,24→16 wire;3/4/5→1/2/5; límites de índice0..7 y lista padre indicada. Mismos guardas584fuentes/18binarios/5runtime,HEAD40,RAM4000/768MiB,GPU3800MiB,900s y120000ms por turno, propiedad de procesos, pins y parada. No se cambió lógica de efectos, confirmación ni reintentos.
+
+Perfiles nuevos directos LOCALAPPDATA/BAXY/C03-music1091-caseNN-profile; no se borran ni reutilizan perfiles. PRIVATE=C03-music1091-proposal/private, PREPARATION=PRIVATE/PREPARATION.json; resultados results/case-NN, trazas private/run-NN, ancla profile-owner-NN.json. Cada execute requiere un solo --case-index y fixture real sellada; no hay loop de ejecuciones ni aprobación automática. Raíz revisa y decide cada siguiente caso.
+
+root_read_media.py cambia sólo prefijo de label1090→1091; conserva CLI y verificación del recibo de build, sin nuevo SHA fijo. root_execute.py cambia campaña/schema/profilepaths y0<=i<12→0<=i<8; conserva prelectura fresca, UI observada, candidato y argumentos. root_collect.py cambia label de campaña y el límite de índice12→8; conserva el pin real BUILD1079 heredado, sujeto a revisión de raíz antes de usarlo. HELPERS_DIFF.patch expone todos los cambios. root_prepare.py no se copia: pertenece a raíz.
+
+La fuente prevista continúa la reparación1090; raíz comprobará identidad vigente antes de elegir candidato. BUILD1079 sólo reutilizable con huellas .NET idénticas y binarios/runtime comprobados. Para previous, raíz prepara cola propia con vecino anterior observado y ventana suficiente sin avance automático; reiniciar la pista actual no acredita retroceso. Lecturas pre/post y journal prueban efecto y estado. Ante fallo o incertidumbre no hay reintento automático.
+
+Los tres negativos y18sin marca globales conservados en el mapa mantienen su función de límites. No se ejecutaron helpers, runner, imports de producto, pruebas, GPU, builds o efectos; no se alteró registro ni árbol canónico. Sólo revisión estática de diferencias y comparación de objetos/bytes.
+
+El helper root_execute conserva la identidad de proceso propia que fijó raíz en1090 (PID y creation_time); no es una observación nueva. Raíz debe verificar su vigencia antes de lanzar1091. Un cambio legítimo de sesión/identidad requiere nueva preparación revisada, nunca eliminar esa comprobación. El pin BUILD1079 en root_collect es heredado y comprobable; no se inventó un build nuevo.

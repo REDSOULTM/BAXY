@@ -1,0 +1,67 @@
+{
+  "schema": "music1091-conditional-data-seal-v1",
+  "candidate": null,
+  "build": null,
+  "fixture": null,
+  "coverage_credit": 0,
+  "execution_ready": false,
+  "execution_authorized": false,
+  "transport_shape_frozen": true,
+  "registry_sha256": "a0f460cefc2e3189b057fb116a1d080c40436635165024183a7dc4c96e9d530e",
+  "historical_case_ids": [
+    "H0311"
+  ],
+  "counts": {
+    "cases": 8,
+    "historical_literals": 1,
+    "original_development_variants": 2,
+    "boundaries": 5,
+    "ordinary_turns": 8,
+    "reviewed_turns": 0,
+    "session_controls": 8,
+    "wire_lines": 16,
+    "case_final_terminals": 8,
+    "maximum_request_phase_terminals": 0,
+    "maximum_reportable_terminals": 8,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 2,
+    "original_boundary": 5
+  },
+  "read_source_pins": {
+    "C:/Users/usuario/AppData/Local/BAXY/C03-music1086-proposal/SEAL.json": "3f3ba71862cb5eabb974afafbfc229f9a545f3c7655d685a498ae46a0ae3f879",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-music1086-proposal/panel.json": "9c6f9fd19f8a727cd0def290d47b2790c6617d13e71292db5f50fd76ad4c1144",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-music1086-proposal/turns.jsonl": "3fa66330b0c27452fa1cf0773df3fadafe80c8061cfdb4f4b132bbe554d410fd",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-music1086-proposal/case-map.json": "a8f132f0fd03e0270a11ef405a3dcbe9bed2704524c639ea71f737e4de3cab48",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-music1086-proposal/runner.py": "6af9e12875dbaa172191f53602c88787c956e3e0336c996daa5fb800ca690f05",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1090-proposal\\panel.json": "9c6f9fd19f8a727cd0def290d47b2790c6617d13e71292db5f50fd76ad4c1144",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1090-proposal\\turns.jsonl": "3fa66330b0c27452fa1cf0773df3fadafe80c8061cfdb4f4b132bbe554d410fd",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1090-proposal\\case-map.json": "0783daa0e60aebf2b1da2d19b56c89555d7c37fef8dc1ccdd8c88d4350c5fc82",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1090-proposal\\SEAL.json": "e53b8704f17e7f724835ae40b707ed3d06d3ed0715e0e2a45f324b7c405b26f7",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1090-proposal\\runner.py": "45482f4291cb6bb97367d297f6b4d9d0846fb6853cb239aa6eb8222153fb1a28",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1090-proposal\\PLAN.md": "a2c19d9e4f71adbf604e8fe401743adbc6a740aa687a8e0261c48ab83de38a88",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1090-proposal\\PLAN_RUNNER.md": "a7b3ebfe1c9f1f81331ba7a9e00d5755085cb226d10ab3b5298ba2bc36c7d94d",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1090-proposal\\root_read_media.py": "6720e843562d8f02a97bfd66dc7b8668b45dcfee0f219cb47341117d39f3e463",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1090-proposal\\root_execute.py": "a81d0ada27e5f6673e350f1f69a278541cba2dccc47c1192b8fbe8d154600761",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1090-proposal\\root_collect.py": "b0bef0ab24caba4dfc5a7efc1206c5414a6cace361aa19d228413d541092e9d7",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\MUSIC1090\\ROOT_ADJUDICATION.json": "04d096d7e9857a584b4835c9f7fa6ba1b5dd38da971e673d4a05681bc3d79a33",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1091-proposal\\root_read_media.py": "2f8c47c553d2fbd7fb298de525f86636580178253eb3cfd44daa0612edf98a0b",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1091-proposal\\root_execute.py": "2448bde203c0b958c309f34689f08bd8370ee40f8328457bfa9a8663c9d415ca",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1091-proposal\\root_collect.py": "69594bd70f25424800a16e7cad610796e6ca01809727256d8227256a192d2972"
+  },
+  "files": {
+    "panel.json": "ff6e2017094e54df1234f2551530e7f5454532555b1be22249c040e27c41d55b",
+    "turns.jsonl": "65ea4f1af2c8cea0abc49265bbe717f0bbe1357c8a80e15466f98cf7f7532067",
+    "case-map.json": "0a218b33641cdf8ab404b9c80dc21f2db5dfd446d518d0df2b600a03a787b6da",
+    "PLAN.md": "f74dd6153c89b0c0fd1a9ebccb671f4fe93b22276c4ac6f5f924054da15792d5",
+    "PLAN_RUNNER.md": "98ff892e1844ab718472456a2835158fd2ffee5805f7e3cfc144a4fb6869ed5a",
+    "requirements-snapshot.jsonl": "a0f460cefc2e3189b057fb116a1d080c40436635165024183a7dc4c96e9d530e"
+  },
+  "execution_provenance_counts": {
+    "reexecutions": 0,
+    "not_executed_in_parent": 8,
+    "new_original_development": 0
+  }
+}

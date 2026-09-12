@@ -1,0 +1,203 @@
+{
+  "schema": "music1091-root-adjudication-v1",
+  "decided_at_utc": "2026-09-12T19:33:48.110013+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "a3c6f7725fd4bf46a3e88ebbd5e028d8d44ccc6b",
+  "decisions_sha256": "e1e83b1a02bc452e02ea7c702cacc885aa4898369f3ffe58bc6714984fe5cc92",
+  "passed": 8,
+  "failed": 0,
+  "unexecuted": 0,
+  "credits": [
+    "H0311"
+  ],
+  "counters": {
+    "covered": 190,
+    "open": 552,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_before": 63,
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_evidence_note": "Al menos 63 primeras altas previas verificadas hoy: 28 Kiro y 35 retorno hasta1090. Se añade únicamente el crédito explícito que esta adjudicación demuestre; no se cuentan revalidaciones.",
+    "categories_closed_after": 0,
+    "categories_total": 35,
+    "first_covered_last24h_after": 64
+  },
+  "resources": {
+    "seconds_sum": 178.18799999999464,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1640.26171875
+  },
+  "cases": [
+    {
+      "index": 3,
+      "case_id": "music1037-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Reconoció la prohibición sin reanudar ni ejecutar controles.",
+      "observation_note": "Final: ¡Claro! La música sigue como está. Cero operaciones multimedia en el delta; Aurora de cobre paused antes y después, UI sin cambio. Respuesta de abstención, sin afirmar lectura ni nombres privados inexistentes.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "224232d9-6aab-4c3f-a1ca-3dc13ab7eace",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "music1037-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Explicó el concepto de pausa temporal sin ejecutar acciones ni leer datos privados.",
+      "observation_note": "Describe detener temporalmente la reproducción y poder continuar después. Usa reiniciarla en sentido general de volver a ponerla, sin afirmar que deba empezar desde el principio. No habla del estado actual del PC. Cero operaciones multimedia; Aurora de cobre paused antes y después, UI sin cambio.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "e5d09b0a-66c9-4c94-b573-0ffc77b95f30",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "music1037-boundary-03",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Tradujo la frase citada y no la ejecutó.",
+      "observation_note": "Final: Pasa a la siguiente pista. Traducción fiel de skip to the next track; cero operaciones multimedia. Aurora de cobre paused antes y después, UI sin cambio. No confundir el imperativo de la traducción con una acción del asistente.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "ae7b6725-f322-450a-87e5-2858354a3f50",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "music1037-boundary-04",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Reconoció que la petición de música sería futura, sin actuar ahora.",
+      "observation_note": "Final: Perfecto, ya lo tengo en cuenta. ¡A cualquier hora, dime qué pones! 🎶. Es un acuse conversacional; no afirma guardado persistente, tarea programada ni reproducción. Cero operaciones multimedia, Aurora de cobre paused antes y después, UI sin cambio.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "a3c68f93-c5a1-471b-b3e6-a2ac7158ea85",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "case_id": "music1037-boundary-05",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Respondió al relato en pasado sin convertirlo en una orden actual.",
+      "observation_note": "Final: Entiendo que mencionas que detuviste la música antes de salir. Acuse fiel de lo dicho por el usuario; no afirma una ejecución propia ni lectura de estado. Cero operaciones multimedia, Aurora de cobre paused antes y después, UI sin cambio.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "f289acfa-3271-468f-a378-d320323c579e",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "music1037-dev-08",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "La variante inglesa volvió a la pista anterior correcta y publicó nombres y estado fieles.",
+      "observation_note": "Sendero azul paused0:00 → Rio de cristal paused0:00; invocación505e3ba4-238d-4bb9-9212-8ab278fa2dc2 completed, verified true, replayed false. Final identifica Rio de cristal, artista Original BAXY preparation composition y paused. Lectura posterior y UI coinciden; no fue reinicio de la misma pista.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "611d5411-4d9c-42f5-80ba-b4cea43808fc",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        },
+        {
+          "invocation_id": "505e3ba4-238d-4bb9-9212-8ab278fa2dc2",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "music1086-dev-previous-es",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "La variante española volvió a la pista anterior correcta y publicó un resultado fiel.",
+      "observation_note": "Rio de cristal paused0:00 → Aurora de cobre paused0:00; invocación996d89c4-f8ee-41ca-8af8-3edf6e5bb745 completed, verified true, replayed false. Final identifica Aurora de cobre, artista y estado pausado. Lectura posterior y UI coinciden; cambió al vecino anterior de la cola, no reinició Rio de cristal.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "3e9c1081-5263-49ad-80a1-c37a0b6f61b0",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        },
+        {
+          "invocation_id": "996d89c4-f8ee-41ca-8af8-3edf6e5bb745",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 0,
+      "case_id": "H0311",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        1,
+        2
+      ],
+      "reason": "Cubierto: el literal canción anterior volvió al vecino correcto y publicó un resultado útil y fiel, con dos variantes pertinentes aprobadas en esta tanda.",
+      "observation_note": "Sendero azul paused0:00 → Rio de cristal paused0:00; invocación5aa26acd-6a9d-46e9-a848-c07429f6a6d2 completed, verified true, replayed false. Final identifica Rio de cristal, Original BAXY preparation composition y estado pausado. Lectura posterior y UI coinciden. Pares1/2 cambian idioma, formulación y vecino de partida; no se acredita un reinicio de la pista actual.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "ea52104d-4a5e-41be-aad5-2f21328c472e",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        },
+        {
+          "invocation_id": "5aa26acd-6a9d-46e9-a848-c07429f6a6d2",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "Registrar el resultado de H0311 en este tramo y arrancar MESSAGING1085:10 literales+10 variantes+5 límites exactos heredados1062, runner25/50 con perfiles individuales y ausencia actual comprobada de WhatsApp.Root y Discord. No enviar, completar aclaraciones ni aprobar invocaciones. Música conserva requisitos abiertos:1092 documenta H0333 elegible y dos lecturas aplazadas por título truncado/estado paused no corregidos; no repetirlas a ciegas ni facilitar títulos. Otros controles inciertos, Spotify y requisitos nuevos conservan reanudación exacta. Mensajería tiene mayor masa lista para ejecutar. C03 sigue activo, formal3/11, sin suites/Fast/Full por instrucción del dueño.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

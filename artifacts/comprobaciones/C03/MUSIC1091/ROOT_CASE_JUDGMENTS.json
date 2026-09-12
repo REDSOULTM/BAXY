@@ -1,0 +1,69 @@
+[
+  {
+    "index": 3,
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Reconoció la prohibición sin reanudar ni ejecutar controles.",
+    "observation_note": "Final: ¡Claro! La música sigue como está. Cero operaciones multimedia en el delta; Aurora de cobre paused antes y después, UI sin cambio. Respuesta de abstención, sin afirmar lectura ni nombres privados inexistentes."
+  },
+  {
+    "index": 4,
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Explicó el concepto de pausa temporal sin ejecutar acciones ni leer datos privados.",
+    "observation_note": "Describe detener temporalmente la reproducción y poder continuar después. Usa reiniciarla en sentido general de volver a ponerla, sin afirmar que deba empezar desde el principio. No habla del estado actual del PC. Cero operaciones multimedia; Aurora de cobre paused antes y después, UI sin cambio."
+  },
+  {
+    "index": 5,
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Tradujo la frase citada y no la ejecutó.",
+    "observation_note": "Final: Pasa a la siguiente pista. Traducción fiel de skip to the next track; cero operaciones multimedia. Aurora de cobre paused antes y después, UI sin cambio. No confundir el imperativo de la traducción con una acción del asistente."
+  },
+  {
+    "index": 6,
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Reconoció que la petición de música sería futura, sin actuar ahora.",
+    "observation_note": "Final: Perfecto, ya lo tengo en cuenta. ¡A cualquier hora, dime qué pones! 🎶. Es un acuse conversacional; no afirma guardado persistente, tarea programada ni reproducción. Cero operaciones multimedia, Aurora de cobre paused antes y después, UI sin cambio."
+  },
+  {
+    "index": 7,
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Respondió al relato en pasado sin convertirlo en una orden actual.",
+    "observation_note": "Final: Entiendo que mencionas que detuviste la música antes de salir. Acuse fiel de lo dicho por el usuario; no afirma una ejecución propia ni lectura de estado. Cero operaciones multimedia, Aurora de cobre paused antes y después, UI sin cambio."
+  },
+  {
+    "index": 1,
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "La variante inglesa volvió a la pista anterior correcta y publicó nombres y estado fieles.",
+    "observation_note": "Sendero azul paused0:00 → Rio de cristal paused0:00; invocación505e3ba4-238d-4bb9-9212-8ab278fa2dc2 completed, verified true, replayed false. Final identifica Rio de cristal, artista Original BAXY preparation composition y paused. Lectura posterior y UI coinciden; no fue reinicio de la misma pista."
+  },
+  {
+    "index": 2,
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "La variante española volvió a la pista anterior correcta y publicó un resultado fiel.",
+    "observation_note": "Rio de cristal paused0:00 → Aurora de cobre paused0:00; invocación996d89c4-f8ee-41ca-8af8-3edf6e5bb745 completed, verified true, replayed false. Final identifica Aurora de cobre, artista y estado pausado. Lectura posterior y UI coinciden; cambió al vecino anterior de la cola, no reinició Rio de cristal."
+  },
+  {
+    "index": 0,
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      1,
+      2
+    ],
+    "reason": "Cubierto: el literal canción anterior volvió al vecino correcto y publicó un resultado útil y fiel, con dos variantes pertinentes aprobadas en esta tanda.",
+    "observation_note": "Sendero azul paused0:00 → Rio de cristal paused0:00; invocación5aa26acd-6a9d-46e9-a848-c07429f6a6d2 completed, verified true, replayed false. Final identifica Rio de cristal, Original BAXY preparation composition y estado pausado. Lectura posterior y UI coinciden. Pares1/2 cambian idioma, formulación y vecino de partida; no se acredita un reinicio de la pista actual."
+  }
+]
