@@ -1,0 +1,21 @@
+{
+  "utc": "2026-09-12T00:37:13.787708+00:00",
+  "parent_head": "2358de1a870035d022a4d43625022b3857996ffd",
+  "patch_sha256": "45c1c3b09bbdbb483e917ef281871758c1e2b12e945e1674c0716b587c351fc9",
+  "source_pins": {
+    "src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs": "0f78170466bde65883904dfd7ef717a67ba7cf96ffa5b53f9cae818b4f411afb"
+  },
+  "build_exit": 0,
+  "shutdown_exit": 0,
+  "tests_run": false,
+  "build_collection": "264c3c",
+  "shutdown_collection": "9e04bd",
+  "build_receipt": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web-build1013-private\\BUILD_READY.json",
+  "build_receipt_sha256": "3f9b6249077e0c38a7af5a1291d788afdf106ba2df145c027561d27b8d4623dd",
+  "logs": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web-build1013-private\\build.log": "a272c9d5b5e187e3ddb91b9ac3beadc596b9976e50fc389fcb0aebfd9ee51382",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web-build1013-private\\shutdown.log": "6abb8581d09e4d9de38fa7a70874e73f5f7bc04ce3aebf23bb7bb4981f2ebfdc"
+  },
+  "status": "integrated_diagnostic_only_pending1010",
+  "coverage_added": 0
+}

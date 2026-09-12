@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Xml;
+using Baxy.Security.Windows;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -14,6 +15,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     private readonly CdpBrowserSession _browser;
     private readonly CdpBrowserSessionContext? _sessionContext;
     private readonly HttpClient _http;
+    private readonly string? _searchDiagnosticPath;
 
     internal WebBrowserAdapter(string dataRoot)
         : this(dataRoot, sessionContext: null)
@@ -24,6 +26,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     {
         _browser = new CdpBrowserSession(Path.Combine(dataRoot, "browser-profile"));
         _sessionContext = sessionContext;
+        _searchDiagnosticPath = Path.Combine(dataRoot, "captures", "web-search-rejections.jsonl");
         _http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
         _http.DefaultRequestHeaders.UserAgent.ParseAdd("BAXY/1.0 structured-search");
     }
@@ -349,6 +352,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         };
         using XmlReader reader = XmlReader.Create(stream, settings);
         var results = new List<(string Title, string Url, string Snippet)>();
+        var rejected = new List<(string Title, Uri Url, string Snippet)>();
         int structurallyValidItems = 0;
         var xml = new XmlDocument { XmlResolver = null };
         xml.Load(reader);
@@ -385,10 +389,15 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 {
                     results.Add((title, parsed.AbsoluteUri, snippet));
                 }
+                else if (_searchDiagnosticPath is not null && rejected.Count < 20)
+                {
+                    rejected.Add((title, parsed, snippet));
+                }
             }
         }
         if (structurallyValidItems > 0 && results.Count == 0)
         {
+            RecordSearchRejection(query, queryTokens, structurallyValidItems, rejected);
             return ExternalJson.FailureBeforeEffect(
                 operation, "web_search_results_irrelevant");
         }
@@ -412,6 +421,75 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    private void RecordSearchRejection(
+        string query,
+        string[] queryTokens,
+        int structurallyValidItems,
+        List<(string Title, Uri Url, string Snippet)> rejected)
+    {
+        if (_searchDiagnosticPath is null) return;
+        try
+        {
+            // These unverified search items stay in private diagnostics, never receipts.
+            JsonElement diagnostic = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", "baxy.web-search-rejection.v1");
+                writer.WriteString("timestampUtc", DateTimeOffset.UtcNow);
+                writer.WriteBoolean("verified", false);
+                writer.WriteString("query", query);
+                writer.WriteStartArray("queryTerms");
+                foreach (string term in queryTokens) writer.WriteStringValue(term);
+                writer.WriteEndArray();
+                writer.WriteNumber("structurallyValidItems", structurallyValidItems);
+                writer.WriteNumber("omittedItems", structurallyValidItems - rejected.Count);
+                writer.WriteStartArray("rejectedItems");
+                foreach ((string title, Uri url, string snippet) in rejected)
+                {
+                    var observed = new HashSet<string>(SearchTokens(string.Concat(
+                        title, " ", url.Host, " ", SafeUnescapedPath(url), " ", snippet)),
+                        StringComparer.Ordinal);
+                    writer.WriteStartObject();
+                    writer.WriteString("title", title);
+                    writer.WriteString("url", url.AbsoluteUri[..Math.Min(url.AbsoluteUri.Length, 4096)]);
+                    writer.WriteString("snippet", snippet[..Math.Min(snippet.Length, 4096)]);
+                    writer.WriteBoolean("textTruncated", url.AbsoluteUri.Length > 4096 || snippet.Length > 4096);
+                    writer.WriteStartArray("missingTerms");
+                    foreach (string term in queryTokens)
+                        if (!observed.Contains(term)) writer.WriteStringValue(term);
+                    writer.WriteEndArray();
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
+                writer.WriteEndObject();
+            });
+            byte[] line = Encoding.UTF8.GetBytes(diagnostic.GetRawText() + "\n");
+            if (line.Length > 1024 * 1024) return;
+            using WindowsPrivateDirectoryLease directory = WindowsPrivateStorage.AcquireDirectory(
+                Path.GetDirectoryName(_searchDiagnosticPath)!, createMissing: true, protectLeaf: true);
+            WindowsPrivateFileLease file;
+            if (WindowsPrivateStorage.TryOpenFile(
+                    _searchDiagnosticPath, FileAccess.ReadWrite, FileShare.None,
+                    deleteAccess: false, out WindowsPrivateFileLease? existing))
+                file = existing;
+            else
+                file = WindowsPrivateStorage.CreateFile(_searchDiagnosticPath);
+            using (file)
+            {
+                if (file.Stream.Length + line.Length > 16 * 1024 * 1024) return;
+                file.Stream.Position = file.Stream.Length;
+                file.Stream.Write(line);
+                file.Stream.Flush(flushToDisk: true);
+            }
+        }
+        catch (Exception exception) when (exception is IOException
+            or UnauthorizedAccessException or ArgumentException
+            or NotSupportedException or System.Security.SecurityException)
+        {
+            // A missing diagnostic must not change the failed search into success.
+        }
     }
 
     private static string[] SearchTokens(string value)
