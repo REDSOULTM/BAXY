@@ -1,0 +1,195 @@
+{
+  "schema": "c03-close1056-root-adjudication-v1",
+  "utc": "2026-09-12T16:17:31.026918+00:00",
+  "candidate_head": "cd1b08ab8c1be8d40c80498b02a5e7aabf9f6990",
+  "candidate_manifest_sha256": "0600d00dfc054c9c9e5c4fb3acef62d0d704539272302b5f22d011c9c951c482",
+  "seal_sha256": "a156eca0e820264ead7a725a25c76bbc74ffeb06ad8ec187c851913f7b72fe1a",
+  "panel_status": "ended_partial_for_repair",
+  "quality": {
+    "pass_count": 0,
+    "fail_count": 2,
+    "executed": 2,
+    "sealed_total": 13,
+    "not_executed": 11
+  },
+  "new_credits": 0,
+  "credited_case_ids": [],
+  "tests_run": false,
+  "rows": [
+    {
+      "index": 0,
+      "case_id": "H0095",
+      "kind": "historical_literal",
+      "group": "named_owned_close",
+      "text": "cierra el bloc de notas",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Cuál es el proceso que deseas cerrar en el bloc de notas?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "H0095",
+        "phase": "final"
+      },
+      "verdict": "fail",
+      "reason": "Reconoce el cierre de la aplicación, pero pide al usuario el nombre del proceso. No resuelve la aplicación ni propone o ejecuta app.close."
+    },
+    {
+      "index": 4,
+      "case_id": "close1052-dev-01",
+      "kind": "original_development_variant",
+      "group": "named_owned_close",
+      "text": "Cerrá Paint, por favor.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¿Cuál es el nombre del proceso que deseas cerrar en Paint?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "close1052-dev-01",
+        "phase": "final"
+      },
+      "verdict": "fail",
+      "reason": "Reconoce el cierre de la aplicación, pero pide al usuario el nombre del proceso. No resuelve la aplicación ni propone o ejecuta app.close."
+    }
+  ],
+  "unexecuted": [
+    {
+      "index": 1,
+      "case_id": "H0186",
+      "text": "cerrá la calculadora",
+      "status": "not_executed"
+    },
+    {
+      "index": 2,
+      "case_id": "H0228",
+      "text": "cerrá el chrome",
+      "status": "not_executed"
+    },
+    {
+      "index": 3,
+      "case_id": "H0346",
+      "text": "cerrá chrome",
+      "status": "not_executed"
+    },
+    {
+      "index": 5,
+      "case_id": "close1052-dev-02",
+      "text": "Would you close the Notepad window for me?",
+      "status": "not_executed"
+    },
+    {
+      "index": 6,
+      "case_id": "close1052-dev-03",
+      "text": "Necesito cerrar la ventana de Chrome.",
+      "status": "not_executed"
+    },
+    {
+      "index": 7,
+      "case_id": "close1052-dev-04",
+      "text": "Could you close Calculator?",
+      "status": "not_executed"
+    },
+    {
+      "index": 8,
+      "case_id": "close1052-boundary-01",
+      "text": "Si mañana necesito despejar la pantalla, te pediré que cierres alguna ventana.",
+      "status": "not_executed"
+    },
+    {
+      "index": 9,
+      "case_id": "close1052-boundary-02",
+      "text": "La frase «cierra Paint» es un ejemplo de imperativo; explicame su estructura.",
+      "status": "not_executed"
+    },
+    {
+      "index": 10,
+      "case_id": "close1052-boundary-03",
+      "text": "Cerrá la que te mencioné antes.",
+      "status": "not_executed"
+    },
+    {
+      "index": 11,
+      "case_id": "close1052-boundary-04",
+      "text": "¿Qué diferencia hay entre cerrar una ventana y finalizar un proceso?",
+      "status": "not_executed"
+    },
+    {
+      "index": 12,
+      "case_id": "close1052-boundary-05",
+      "text": "No cierres ninguna ventana ahora.",
+      "status": "not_executed"
+    }
+  ],
+  "raw_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\run-00\\case-observations.json": "03bc794f8d3432053967e1570d20a7e80604e0b835e9a0751a6d2429b919923a",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\run-00\\capture\\events.jsonl": "191c95654e0cda4c625cb7f1268edc71e4c266e1ec88a1d5e04fe1770393611f",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\run-00\\turn-audit.jsonl": "77b8b6cc1092a2c5c60d12066495210a42d1af399387e249cf135fb8a796d558",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\run-00\\compose-audit.jsonl": "61a1b59583d492470bc16e8e8f3014668ee1e64a7ab096a5ba4cf4688976bee8",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\run-00\\journal.snapshot.jsonl": "06fd51784daa82349a2548c65cdd3cb74a714292962b8d408dc19fd05dbef927",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\fixture-00.json": "47afeb2a07ee1757eb3b2a35f73291bb5dbd7931a1a155329913b0a01936a8af",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\fixture-00-sky-observation.json": "c084fa4441f82e502732e8295b60fd4733135ffe9834cbba70e9beb0c770f7d7",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\run-04\\case-observations.json": "8062755ba5d4ec8e955cd862839672fdbbb1d330bfd4cf483dbc1575a3e9848e",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\run-04\\capture\\events.jsonl": "60a9af109698cdf6fde576493272bb397c79c0062ddaf622f6ac2baea9a19b11",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\run-04\\turn-audit.jsonl": "77b8b6cc1092a2c5c60d12066495210a42d1af399387e249cf135fb8a796d558",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\run-04\\compose-audit.jsonl": "61a1b59583d492470bc16e8e8f3014668ee1e64a7ab096a5ba4cf4688976bee8",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\run-04\\journal.snapshot.jsonl": "f0f6defbed15c296f6adf5f327409db62faa559b2b7a83017ff8580f2c3b14c3",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\fixture-04.json": "7a1225d4f36d593b1ecf6ddcd2a08268ad8789e20dd25e690a9d830c1f809207",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1056-panel-proposal\\private\\fixture-04-sky-observation.json": "2e31805500d8a8551eefe9c8bb3253aaa54472c2eb64051938b26ef469156fe4"
+  },
+  "actual_operations": [
+    {
+      "case_index": 0,
+      "invocationId": "e11be4eb-6794-4121-aa2d-720abac7e64c",
+      "operation": "memory.status",
+      "phase": "started",
+      "verified": null
+    },
+    {
+      "case_index": 0,
+      "invocationId": "e11be4eb-6794-4121-aa2d-720abac7e64c",
+      "operation": "memory.status",
+      "phase": "completed",
+      "verified": true
+    },
+    {
+      "case_index": 4,
+      "invocationId": "e11be4eb-6794-4121-aa2d-720abac7e64c",
+      "operation": "memory.status",
+      "phase": "started",
+      "verified": null
+    },
+    {
+      "case_index": 4,
+      "invocationId": "e11be4eb-6794-4121-aa2d-720abac7e64c",
+      "operation": "memory.status",
+      "phase": "completed",
+      "verified": true
+    },
+    {
+      "case_index": 4,
+      "invocationId": "7d37fc46-f67d-48a5-be5a-f7ae223c7ece",
+      "operation": "memory.status",
+      "phase": "started",
+      "verified": null
+    },
+    {
+      "case_index": 4,
+      "invocationId": "7d37fc46-f67d-48a5-be5a-f7ae223c7ece",
+      "operation": "memory.status",
+      "phase": "completed",
+      "verified": true
+    }
+  ],
+  "resources": {
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1583.37109375,
+    "seconds": 47.15600000000268,
+    "scope": "Maximum of two independent product segments; sum of startup and run durations."
+  },
+  "reason": "Two comparable failures locate the next missing contract: named application cannot supply the process selector required by window.resolve. End partial; no unexecuted case is failed or credited.",
+  "resume": "CLOSE1060: repair existing window.resolve selector using authenticated application identity, preserve token/binder/exact confirmation. Seal affected failed and unexecuted cases with original ids/kinds, new empty owned windows. MUSIC1058 prepares next mass category meanwhile.",
+  "closure_instrument_exercised": false
+}
