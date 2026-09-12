@@ -1,0 +1,29 @@
+[
+  {
+    "index": 6,
+    "verdict": "passed",
+    "reason": "Reanudó la pista cargada y publicó una respuesta útil y fiel en español.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "Aurora de cobre pasó de paused0:20 a playing; controlc1fe0049-3362-4808-9d31-68c6e521a0ba completed/verifiedtrue/replayedfalse. Final: Sigo reproduciendo \"Aurora de cobre\" de Original BAXY preparation composition. La lectura y UI posterior coinciden; no seleccionó otra música."
+  },
+  {
+    "index": 7,
+    "verdict": "passed",
+    "reason": "Reanudó la pista desde la pausa y publicó una respuesta útil y fiel en inglés.",
+    "credit": false,
+    "pair_indices": [],
+    "observation_note": "Aurora de cobre pasó de paused1:04 a playing; control760e85c3-256d-424d-a0c3-6e39d1e70861 completed/verifiedtrue/replayedfalse. Final identifica pista/artista y currently playing. UI posterior1:44 acredita continuidad sin rebobinar; perfil independiente y ninguna restauración del caso6."
+  },
+  {
+    "index": 0,
+    "verdict": "passed",
+    "reason": "Literal de encuesta ejecutado con el candidato actual y respuesta útil y fiel, acreditado por dos variantes pertinentes en español e inglés de la misma tanda.",
+    "credit": true,
+    "pair_indices": [
+      6,
+      7
+    ],
+    "observation_note": "Rio de cristal pasó de paused0:13 a playing; control72ba1b92-e306-4bcd-8349-bb63cbe88569 completed/verifiedtrue/replayedfalse y lectura posterior coincide. El final introduce Vamos a reanudar y especifica que Rio de cristal del artista observado está reproduciéndose actualmente; el estado efectivo queda expresado sin prometer un efecto distinto. Dos pares6/7 pasaron la misma operación play sobre contenido cargado."
+  }
+]

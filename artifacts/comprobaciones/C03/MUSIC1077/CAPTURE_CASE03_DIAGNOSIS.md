@@ -1,0 +1,11 @@
+# MUSIC1077 caso3 — terminal agregado contaminado por confirmación anterior
+
+Lectura estática2026-09-12, sin adjudicación ni cambio de producto. La captura real de H0567 contiene actividad src=BAXY,route=result: «La siguiente canción es "Sendero azul" de Original BAXY preparation composition. Está reproduciéndose actualmente.» La nueva invocación media.control6deb8cde-bad2-4c13-bb8b-00dcdf39e250 fue completed/verified según raíz y journal. No se debe clasificar este caso como ausencia de control ni mera existencia de un borrador.
+
+shell-trace: t1 visible.text a27293,385ms, response.final a27294,689ms y bridge.response.final a27296,916ms. Después empieza t0compose.confirmation a28264,325ms y termina33631,376ms. events.jsonl registra la actividad result antes del evento composition_failed con route=confirmation y causa no_response;recovery:no_response;retry_exhausted. Sólo después publica terminalcomposition_failed. La confirmación corresponde al pending restaurado; no es el resultado multimedia nuevo.
+
+Primera agregación concreta: ProductConductor.cs TryClassify250–291 consulta EventsSince(startEvents), que carece de vínculo turnId en los eventoscomposition_failed. exhaustedThisTurn268–269 es ANY composition_failed; con !busy devuelve CompositionFailed270–279 antes de evaluar finalText282. Un error de confirmación anterior que termina dentro de la ventana del turno vence así al resultado publicado actual. El runner1077 consume ese terminal exactamente en494–514; no creó ni corrigió la clasificación.
+
+La raíz conserva la decisión de mérito. No se cambia receipt, terminal ni audit para fabricar un pass. Para medir las siguientes peticiones, el runner1080 usa perfil fresco por caso; esto aísla la restauración pendiente sin borrar ni resolver la operación incierta del perfil1077. Una reparación del clasificador del conductor requeriría vínculo explícito por turno y otra revisión; no se propone aquí reordenar indiscriminadamente los ifs porque ocultaría fallos reales de una composición del turno actual.
+
+Rutas exactas: C03-music1077-proposal/private/run-03/capture/events.jsonl, shell-trace.jsonl, case-observations.json; src/Baxy.App/ProductConductor.cs250–291. Ninguna nueva ejecución, prueba, import, Core, GPU, fuente canónica o crédito.

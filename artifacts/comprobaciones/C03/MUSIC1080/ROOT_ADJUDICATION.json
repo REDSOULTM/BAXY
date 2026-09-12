@@ -1,0 +1,130 @@
+{
+  "schema": "music1080-root-adjudication-v1",
+  "decided_at_utc": "2026-09-12T18:14:44.438396+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "9cae1d673beb0f630001541bf4211d387f893d07",
+  "decisions_sha256": "b20edc15314cdbc538b6d66281b17049d049e4eaf17e33da5813158ad6c82952",
+  "passed": 3,
+  "failed": 0,
+  "unexecuted": 16,
+  "credits": [
+    "H0110"
+  ],
+  "counters": {
+    "covered": 187,
+    "open": 555,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_before": 60,
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_evidence_note": "Al menos60 primeras altas verificadas hoy antes de1080:28 Kiro y32 retorno. H0110 añade una primera alta; no se cuentan revalidaciones.",
+    "categories_closed_after": 0,
+    "categories_total": 35,
+    "first_covered_last24h_after": 61
+  },
+  "resources": {
+    "seconds_sum": 69.4690000000046,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1577.88671875
+  },
+  "cases": [
+    {
+      "index": 6,
+      "case_id": "music1037-dev-03",
+      "verdict": "passed",
+      "reason": "Reanudó la pista cargada y publicó una respuesta útil y fiel en español.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Aurora de cobre pasó de paused0:20 a playing; controlc1fe0049-3362-4808-9d31-68c6e521a0ba completed/verifiedtrue/replayedfalse. Final: Sigo reproduciendo \"Aurora de cobre\" de Original BAXY preparation composition. La lectura y UI posterior coinciden; no seleccionó otra música.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "5d27bd1c-0de8-418b-a1a2-142ad0300ef9",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        },
+        {
+          "invocation_id": "c1fe0049-3362-4808-9d31-68c6e521a0ba",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "case_id": "music1037-dev-04",
+      "verdict": "passed",
+      "reason": "Reanudó la pista desde la pausa y publicó una respuesta útil y fiel en inglés.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Aurora de cobre pasó de paused1:04 a playing; control760e85c3-256d-424d-a0c3-6e39d1e70861 completed/verifiedtrue/replayedfalse. Final identifica pista/artista y currently playing. UI posterior1:44 acredita continuidad sin rebobinar; perfil independiente y ninguna restauración del caso6.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "6a3c8157-8623-43e6-86ad-999f723dfe2c",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        },
+        {
+          "invocation_id": "760e85c3-256d-424d-a0c3-6e39d1e70861",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    },
+    {
+      "index": 0,
+      "case_id": "H0110",
+      "verdict": "passed",
+      "reason": "Literal de encuesta ejecutado con el candidato actual y respuesta útil y fiel, acreditado por dos variantes pertinentes en español e inglés de la misma tanda.",
+      "credit": true,
+      "pair_indices": [
+        6,
+        7
+      ],
+      "observation_note": "Rio de cristal pasó de paused0:13 a playing; control72ba1b92-e306-4bcd-8349-bb63cbe88569 completed/verifiedtrue/replayedfalse y lectura posterior coincide. El final introduce Vamos a reanudar y especifica que Rio de cristal del artista observado está reproduciéndose actualmente; el estado efectivo queda expresado sin prometer un efecto distinto. Dos pares6/7 pasaron la misma operación play sobre contenido cargado.",
+      "terminal_kind": "published_final",
+      "new_invocations": [
+        {
+          "invocation_id": "305bb00a-3bc9-469d-baa5-0b381142bf69",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true
+        },
+        {
+          "invocation_id": "72ba1b92-e306-4bcd-8349-bb63cbe88569",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+  ],
+  "next_action": "H0110 se adjudica covered en este tramo, sin esperar al resto de Música. Continuar MUSIC1082 con los16objetos intactos restantes (5literales+6variantes+5límites), perfiles separados por caso y BUILD1079 reutilizado con comprobación de identidad. No repetir la familia de reanudación ya acreditada. Fuente actual sin nuevo cambio; congelar candidato/registro tras nuevo sello. Spotify12posibles mantiene diagnóstico1081 y panel1083condicional sin emitir reintento incierto. C03 sigue activo, formal3/11; sin suites/Fast/Full por orden del dueño.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

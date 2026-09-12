@@ -152,26 +152,26 @@
     "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "MUSIC1077 adjudicado: 0 aprobados, 3 fallidos, 16 sin ejecutar; 0 créditos.",
+  "workStatus": "MUSIC1080 adjudicado: 3 aprobados, 0 fallidos, 16 sin ejecutar; 1 créditos.",
   "executionPausedByOwner": false,
   "branch": "codex/kiro-goal-c03",
-  "checkpoint": "186/742 cubiertos, 556 abiertos, 0 no aplican. MUSIC1077: 0 créditos explícitos de raíz.",
+  "checkpoint": "187/742 cubiertos, 555 abiertos, 0 no aplican. MUSIC1080: 1 créditos explícitos de raíz.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
   "surveyVerificationCounts": {
-    "covered": 186,
-    "open": 556,
+    "covered": 187,
+    "open": 555,
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "409977c8aaaf47d48ca89def12245db67ea9efa97ce12996a2c66c4066e76e4f",
+  "surveyRegistrySha256": "afedd6798f617c137b86c170c9992deedec96f0e01ae6124b5f06580cfd1bf13",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
-  "surveyCoverageLast24h": 60,
-  "surveyCoverageLast24hNote": "Al menos60 primeras altas verificadas hoy:28 Kiro y32 retorno; no se cuentan las revalidaciones ni actualizaciones de abiertos.",
+  "surveyCoverageLast24h": 61,
+  "surveyCoverageLast24hNote": "Al menos60 primeras altas verificadas hoy antes de1080:28 Kiro y32 retorno. H0110 añade una primera alta; no se cuentan revalidaciones.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-12T18:02:53.762552+00:00",
+  "utcUpdated": "2026-09-12T18:14:44.438396+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -621,7 +621,7 @@
     "freeze_ended_at": "2026-09-12T16:33:18.245252+00:00",
     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
   },
-  "updatedAtUtc": "2026-09-12T18:02:53.762552+00:00",
+  "updatedAtUtc": "2026-09-12T18:14:44.438396+00:00",
   "currentContinuation1065": {
     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
     "quality": {
@@ -725,5 +725,28 @@
       "ram_peak_mib": 2060.99609375
     },
     "next": "Tras adjudicar, integrar hipótesis1079: ampliar postlectura del control SMTC de350ms a2s, mismo dispatch y criterios. Compilar .NET sin suites por orden del dueño. Sellar1080 con los mismos19objetos, perfiles nuevos separados por caso y preservación íntegra del perfil1077 incierto. Reejecutados en1077:3,6,7;16 no ejecutados en ese padre, con historia previa conservada. No contar borradores como terminales ni efectos no verificados como éxito. C03 activo, formal3/11."
+  },
+  "currentContinuation1080": {
+    "head": "9cae1d673beb0f630001541bf4211d387f893d07",
+    "quality": {
+      "passed": 3,
+      "failed": 0,
+      "executed": 3,
+      "not_executed": 16,
+      "sealed_total": 19
+    },
+    "new_credits": 1,
+    "credited_ids": [
+      "H0110"
+    ],
+    "registry_sha256": "afedd6798f617c137b86c170c9992deedec96f0e01ae6124b5f06580cfd1bf13",
+    "survey": 187,
+    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\MUSIC1080\\ROOT_ADJUDICATION.json",
+    "resources": {
+      "seconds_sum": 69.4690000000046,
+      "gpu_peak_mib": 3497.55859375,
+      "ram_peak_mib": 1577.88671875
+    },
+    "next": "H0110 se adjudica covered en este tramo, sin esperar al resto de Música. Continuar MUSIC1082 con los16objetos intactos restantes (5literales+6variantes+5límites), perfiles separados por caso y BUILD1079 reutilizado con comprobación de identidad. No repetir la familia de reanudación ya acreditada. Fuente actual sin nuevo cambio; congelar candidato/registro tras nuevo sello. Spotify12posibles mantiene diagnóstico1081 y panel1083condicional sin emitir reintento incierto. C03 sigue activo, formal3/11; sin suites/Fast/Full por orden del dueño."
   }
 }

@@ -1,10 +1,10 @@
-# Categorías actuales — adjudicación1077
+# Categorías actuales — adjudicación1080
 
-186/742 cubiertos; 556 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 60 primeras altas (28 Kiro + 32 retorno), sin revalidaciones. Registro canónico SHA256: 409977c8aaaf47d48ca89def12245db67ea9efa97ce12996a2c66c4066e76e4f.
+187/742 cubiertos; 555 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 61 primeras altas (28 Kiro + 33 retorno), sin revalidaciones. Registro canónico SHA256: afedd6798f617c137b86c170c9992deedec96f0e01ae6124b5f06580cfd1bf13.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
-| Música | 39 | 2 | 37 |
+| Música | 39 | 3 | 36 |
 | Mensajería | 31 | 0 | 31 |
 | Instalar y desinstalar software | 31 | 0 | 31 |
 | Navegación y búsqueda web | 46 | 17 | 29 |

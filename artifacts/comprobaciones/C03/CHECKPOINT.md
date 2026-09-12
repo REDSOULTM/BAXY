@@ -1,3 +1,23 @@
+## MUSIC1080 — estado vigente 2026-09-12T18:14:44.438396+00:00
+
+Parcial: 3 aprobados, 0 fallidos, 16 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 187/742 | 555 | 0 | >=61 | 0/35 |
+
+Procedencia de primeras altas: Al menos60 primeras altas verificadas hoy antes de1080:28 Kiro y32 retorno. H0110 añade una primera alta; no se cuentan revalidaciones.
+
+Siguiente acción: H0110 se adjudica covered en este tramo, sin esperar al resto de Música. Continuar MUSIC1082 con los16objetos intactos restantes (5literales+6variantes+5límites), perfiles separados por caso y BUILD1079 reutilizado con comprobación de identidad. No repetir la familia de reanudación ya acreditada. Fuente actual sin nuevo cambio; congelar candidato/registro tras nuevo sello. Spotify12posibles mantiene diagnóstico1081 y panel1083condicional sin emitir reintento incierto. C03 sigue activo, formal3/11; sin suites/Fast/Full por orden del dueño.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1080/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 69.47 s acumulados; pico GPU 3497.56 MiB; pico RAM 1577.89 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1080 precedente. -->
+
 ## MUSIC1077 — estado vigente 2026-09-12T18:02:53.762552+00:00
 
 Parcial: 0 aprobados, 3 fallidos, 16 sin ejecutar; 0 créditos.

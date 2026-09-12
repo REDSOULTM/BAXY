@@ -1,0 +1,45 @@
+{
+  "schema": "music1080-root-decisions-v1",
+  "approved_by_root": true,
+  "head": "9cae1d673beb0f630001541bf4211d387f893d07",
+  "preparation_sha256": "6050c6f4085d74fa90d5adfdd0411f482a53ed929d4e56c77a005fabf8e61193",
+  "registry_before_sha256": "409977c8aaaf47d48ca89def12245db67ea9efa97ce12996a2c66c4066e76e4f",
+  "decided_at_utc": "2026-09-12T18:14:44.438396+00:00",
+  "metrics": {
+    "first_covered_last24h_before": 60,
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_evidence_note": "Al menos60 primeras altas verificadas hoy antes de1080:28 Kiro y32 retorno. H0110 añade una primera alta; no se cuentan revalidaciones.",
+    "categories_closed_after": 0,
+    "categories_total": 35
+  },
+  "next_action": "H0110 se adjudica covered en este tramo, sin esperar al resto de Música. Continuar MUSIC1082 con los16objetos intactos restantes (5literales+6variantes+5límites), perfiles separados por caso y BUILD1079 reutilizado con comprobación de identidad. No repetir la familia de reanudación ya acreditada. Fuente actual sin nuevo cambio; congelar candidato/registro tras nuevo sello. Spotify12posibles mantiene diagnóstico1081 y panel1083condicional sin emitir reintento incierto. C03 sigue activo, formal3/11; sin suites/Fast/Full por orden del dueño.",
+  "decisions": [
+    {
+      "index": 6,
+      "verdict": "passed",
+      "reason": "Reanudó la pista cargada y publicó una respuesta útil y fiel en español.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Aurora de cobre pasó de paused0:20 a playing; controlc1fe0049-3362-4808-9d31-68c6e521a0ba completed/verifiedtrue/replayedfalse. Final: Sigo reproduciendo \"Aurora de cobre\" de Original BAXY preparation composition. La lectura y UI posterior coinciden; no seleccionó otra música."
+    },
+    {
+      "index": 7,
+      "verdict": "passed",
+      "reason": "Reanudó la pista desde la pausa y publicó una respuesta útil y fiel en inglés.",
+      "credit": false,
+      "pair_indices": [],
+      "observation_note": "Aurora de cobre pasó de paused1:04 a playing; control760e85c3-256d-424d-a0c3-6e39d1e70861 completed/verifiedtrue/replayedfalse. Final identifica pista/artista y currently playing. UI posterior1:44 acredita continuidad sin rebobinar; perfil independiente y ninguna restauración del caso6."
+    },
+    {
+      "index": 0,
+      "verdict": "passed",
+      "reason": "Literal de encuesta ejecutado con el candidato actual y respuesta útil y fiel, acreditado por dos variantes pertinentes en español e inglés de la misma tanda.",
+      "credit": true,
+      "pair_indices": [
+        6,
+        7
+      ],
+      "observation_note": "Rio de cristal pasó de paused0:13 a playing; control72ba1b92-e306-4bcd-8349-bb63cbe88569 completed/verifiedtrue/replayedfalse y lectura posterior coincide. El final introduce Vamos a reanudar y especifica que Rio de cristal del artista observado está reproduciéndose actualmente; el estado efectivo queda expresado sin prometer un efecto distinto. Dos pares6/7 pasaron la misma operación play sobre contenido cargado."
+    }
+  ]
+}
