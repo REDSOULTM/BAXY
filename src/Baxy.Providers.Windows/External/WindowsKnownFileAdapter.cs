@@ -190,7 +190,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     {
         string query = ExternalJson.RequiredString(arguments, "query").Trim();
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 20), 1, 100);
-        var matches = Enumerate(roots)
+        List<(string Label, string Root)> enumerationRoots = [];
+        var matches = Enumerate(roots, enumerationRoots)
             .Where(item => MatchesQuery(Path.GetFileName(item.Path), query))
             .OrderBy(item => item.Label, StringComparer.Ordinal)
             .ThenBy(item => Path.GetFileName(item.Path), StringComparer.OrdinalIgnoreCase)
@@ -217,6 +218,23 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
+            writer.WriteStartObject("searchScope");
+            writer.WriteStartArray("enumerationRoots");
+            foreach (var root in enumerationRoots)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("folder", root.Label);
+                writer.WriteString("path", root.Root);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteNumber("maxRecursionDepth", 12);
+            writer.WriteBoolean("ignoreInaccessible", true);
+            writer.WriteBoolean("skipReparsePoints", true);
+            writer.WriteNumber("resultLimit", limit);
+            writer.WriteBoolean("resultsMayBeTruncated", matches.Length == limit);
+            writer.WriteBoolean("exhaustive", false);
+            writer.WriteEndObject();
             writer.WriteString("authority", "windows_known_folders_bounded_postread");
             writer.WriteEndObject();
         });
@@ -263,7 +281,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     }
 
     private static IEnumerable<(string Label, string Path)> Enumerate(
-        IReadOnlyList<(string Label, string Root)> roots)
+        IReadOnlyList<(string Label, string Root)> roots,
+        ICollection<(string Label, string Root)>? enumerationRoots = null)
     {
         var options = new EnumerationOptions
         {
@@ -275,6 +294,9 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         foreach ((string label, string root) in roots)
         {
             if (!Directory.Exists(root)) continue;
+            // Record the attempted enumeration scope, not exhaustive access.
+            // IgnoreInaccessible may skip descendants without reporting them.
+            enumerationRoots?.Add((label, root));
             foreach (string file in Directory.EnumerateFiles(root, "*", options))
                 yield return (label, file);
         }

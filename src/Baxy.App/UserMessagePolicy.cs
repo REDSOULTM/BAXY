@@ -2501,10 +2501,12 @@ internal static class UserMessagePolicy
 
     private static bool ReversesSuccessfulResult(string source, string result)
     {
-        if (LooksLikeFailure(source) || IsVerifiedEmptyKnownFileFinding(source, result))
+        if (LooksLikeFailure(source))
         {
             return false;
         }
+
+        result = WithoutVerifiedEmptyKnownFileFinding(source, result);
 
         if (TryReadJson(source, out JsonElement root)
             && root.TryGetProperty("kind", out JsonElement kind) && kind.ValueKind == JsonValueKind.String && kind.GetString() == "operation"
@@ -2551,7 +2553,7 @@ internal static class UserMessagePolicy
         return LooksLikeFailure(result);
     }
 
-    private static bool IsVerifiedEmptyKnownFileFinding(string source, string result)
+    private static string WithoutVerifiedEmptyKnownFileFinding(string source, string result)
     {
         if (!TryReadJson(source, out JsonElement root)
             || !root.TryGetProperty("kind", out JsonElement kind) || kind.ValueKind != JsonValueKind.String || kind.GetString() != "operation"
@@ -2566,22 +2568,21 @@ internal static class UserMessagePolicy
             || !observed.TryGetProperty("query", out JsonElement query) || query.ValueKind != JsonValueKind.String
             || query.GetString() is not { Length: > 0 } name || string.IsNullOrWhiteSpace(name))
         {
-            return false;
+            return result;
         }
 
-        // Mirror Python's complete query-bound finding, not a count-zero bypass.
-        // Folder identities are absent from the empty receipt. No named folder,
-        // global absence, permission failure or additional assertion is exempted.
-        string target = @"[""'“”‘’«»]?" + Regex.Escape(FoldForPolicy(name.Trim())) + @"[""'“”‘’«»]?";
-        string fileName = @"(?:(?:el|un|the|a)\s+)?(?:(?:archivo|file)\s+)?(?:(?:llamado|named)\s+)?" + target;
-        string scopeEs = @"(?:las\s+carpetas\s+(?:buscadas|consultadas|revisadas)|el\s+ambito\s+consultado)";
-        string scopeEn = @"(?:the\s+(?:searched\s+folders|folders\s+searched|searched\s+scope))";
-        string finding = $@"(?:no\s+(?:encontre|se\s+encontro)\s+{fileName}\s+en\s+{scopeEs}"
-            + $@"|{fileName}\s+no\s+se\s+encontro\s+en\s+{scopeEs}"
-            + $@"|(?:i\s+)?(?:didn't|did\s+not)\s+find\s+{fileName}\s+in\s+{scopeEn}"
-            + $@"|{fileName}\s+was\s+not\s+found\s+in\s+{scopeEn})[.!]?";
-        return Regex.IsMatch(FoldForPolicy(result.Trim()), $@"\A{finding}\z",
-            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+        // Only the query-bound negative finding is neutral in the failure lens.
+        // Keep scope qualifiers and independent assertions; all other validators
+        // still receive the original response and observed facts.
+        string target = @"[""'«»“”‘’]?(?<!\w)" + Regex.Escape(FoldForPolicy(name.Trim()))
+            + @"(?!\w)[""'«»“”‘’]?";
+        string fileName = @"(?:(?:el|un|ningun|ninguno|the|a|any)\s+)?"
+            + @"(?:(?:archivo|file)\s+)?(?:(?:llamado|named)\s+)?" + target;
+        string finding = $@"\bno\s+(?:encontre|se\s+encontro)\s+{fileName}"
+            + $@"|\b(?:i\s+)?(?:didn't|did\s+not)\s+find\s+{fileName}"
+            + $@"|{fileName}\s+(?:no\s+se\s+encontro|was\s+not\s+found)\b";
+        return Regex.Replace(FoldForPolicy(result), finding, string.Empty,
+            RegexOptions.CultureInvariant);
     }
 
     private static bool ReversesFailedResult(string source, string result)

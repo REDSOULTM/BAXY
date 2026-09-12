@@ -1,0 +1,250 @@
+{
+  "schema": "c03-web1045-root-adjudication-v1",
+  "utc": "2026-09-12T13:52:06.167100+00:00",
+  "candidate_head": "15d3a5385db5db8545a0060cfd9bcf0ef4a2957f",
+  "candidate_manifest_sha256": "94a6a9c6b4c1daa13f4b14602daed4adbff9e6347bf8a4e16f99942c42fdea0c",
+  "seal_sha256": "b9f671624ea7eb02639213a7cbdc139cde09a73289a43277f3306233df999ded",
+  "quality": {
+    "fail": 4,
+    "pass": 8,
+    "total": 12
+  },
+  "new_credits": 0,
+  "literal_pass_pending_pairs": [
+    "H0152",
+    "H0206",
+    "H0244",
+    "H0479",
+    "H0692"
+  ],
+  "approved_variants": [],
+  "tests_run": false,
+  "raw_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1045-private\\run\\capture\\events.jsonl": "ee4f9529ebdee7e6bf09991f21925ff64f215c47d843959fef68d563889535f1",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1045-private\\run\\case-observations.json": "248e0193d89f06088c2260ab24d5c6ad14a176ffc15c6ba60d3b1f8f8603b1ea",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1045-private\\run\\compose-audit.jsonl": "fdcd7c9df1fab4308a70d66f10398671e8f428524c0e3191b84e6a31d50b179b",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1045-private\\run\\turn-audit.jsonl": "adf85b1cd1a5e8d0667b306e9df2dfbf80b6461a00e99d08a23ac88554f75d98",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1045-profile\\journal\\missions.jsonl": "7bae38701a8b8e2f3cc3e526bdb492824d989240bf7e94fbdb53f0cd4eff8c12",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1045-private\\BROWSER_CLEANUP.json": "7fa8662f8e3de172527ad152aa56f112e877e226f7d493a083b2ce020007b0b5"
+  },
+  "rows": [
+    {
+      "index": 0,
+      "case_id": "web1045-dev-01",
+      "kind": "original_development_variant",
+      "text": "Entrá al sitio web de Mozilla, por favor.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No puedo acceder al sitio web de Mozilla.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web1045-dev-01",
+        "phase": "final"
+      },
+      "verdict": "fail",
+      "reason": "Incapacidad sin lookup ni navegación observados; no resuelve Mozilla.",
+      "navigation_invocation_id": null
+    },
+    {
+      "index": 1,
+      "case_id": "web1045-dev-02",
+      "kind": "original_development_variant",
+      "text": "Take me to Debian's official website.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "The web search returned irrelevant results and couldn't locate Debian's official website.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "web1045-dev-02",
+        "phase": "final"
+      },
+      "verdict": "fail",
+      "reason": "Lookup real falla web_search_results_irrelevant; error honesto pero sitio Debian no alcanzado.",
+      "navigation_invocation_id": null
+    },
+    {
+      "index": 2,
+      "case_id": "H0152",
+      "kind": "historical_literal",
+      "text": "andá a wikipedia",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Sí, confirmo. Se realizó la búsqueda por \"wikipedia\" y se navegó a la página https://es.wikipedia.org/wiki/Wikipedia:Portada. El resultado es válido y se ha verificado.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "H0152",
+        "phase": "final"
+      },
+      "verdict": "pass",
+      "reason": "Wikipedia resuelta desde búsqueda pública y navegación CDP real; literal aprobado, faltan dos variantes de sitios nombrados.",
+      "navigation_invocation_id": "46383e45-13cb-469b-911b-a91b535f3ca9"
+    },
+    {
+      "index": 3,
+      "case_id": "H0206",
+      "kind": "historical_literal",
+      "text": "Abre la página oficial de OpenAI",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Se confirmó el acceso a la página oficial de OpenAI. La búsqueda inicial mostró resultados relevantes, incluyendo la página principal en español y la plataforma de OpenAI. Se navegó a https://openai.com/es-419/, que es la versión localizada en español. El resultado se verificó como completado.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "H0206",
+        "phase": "final"
+      },
+      "verdict": "pass",
+      "reason": "Sitio oficial OpenAI resuelto y navegación con redirección es-419 verificada; literal aprobado, pares pendientes.",
+      "navigation_invocation_id": "be0a3151-0f54-45ee-ae76-861f2324d03e"
+    },
+    {
+      "index": 4,
+      "case_id": "H0244",
+      "kind": "historical_literal",
+      "text": "ve a gmail",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Sí, se confirmó que se accedió a Gmail mediante la navegación al sitio oficial. El proceso se completó correctamente.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "H0244",
+        "phase": "final"
+      },
+      "verdict": "pass",
+      "reason": "Navegación al sitio Gmail verificada; redirige a acceso Google, sin autenticación ni contenido de correo afirmados. Literal aprobado, pares pendientes.",
+      "navigation_invocation_id": "25f20e9c-b198-4680-a1a0-9924bf767c73"
+    },
+    {
+      "index": 5,
+      "case_id": "H0479",
+      "kind": "historical_literal",
+      "text": "ve a disney",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Se confirmó que se realizó la búsqueda por \"disney\" y se navegó a la página oficial de Disney. Se encontraron resultados relevantes, incluyendo el sitio de Disney+, el login para acceder a Disney+ y la página oficial de Disney con información sobre parques, películas, series y más. La acción de ir a Disney se completó.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "H0479",
+        "phase": "final"
+      },
+      "verdict": "pass",
+      "reason": "Disney resuelto y navegado; descripción de resultados respaldada por búsqueda, sin afirmar lectura de la página. Literal aprobado, pares pendientes.",
+      "navigation_invocation_id": "1a5d8f55-a4c5-4a37-a411-3564c7ae4f1c"
+    },
+    {
+      "index": 6,
+      "case_id": "H0692",
+      "kind": "historical_literal",
+      "text": "entrá a la página de wikipedia",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Entré a la página de Wikipedia. La búsqueda por \"wikipedia\" mostró varios resultados, incluyendo la página oficial en español. Navegué a https://es.wikipedia.org/wiki/Wikipedia:Portada. La página se cargó correctamente.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200,
+        "caseId": "H0692",
+        "phase": "final"
+      },
+      "verdict": "pass",
+      "reason": "Wikipedia resuelta y navegación final CDP verificada; literal aprobado, pares pendientes.",
+      "navigation_invocation_id": "556622d4-d997-4120-87fb-51f84bd9d990"
+    },
+    {
+      "index": 7,
+      "case_id": "web1045-boundary-01",
+      "kind": "boundary",
+      "text": "No entres al sitio de Mozilla ni hagas una búsqueda; sólo reconocé la prohibición.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "¡Claro que no! Entendido, no entraré al sitio de Mozilla ni haré búsquedas. Solo respeto las prohibiciones. ¿En qué puedo ayudarte ahora?",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Reconoce ambas prohibiciones sin búsqueda ni navegación.",
+      "navigation_invocation_id": null
+    },
+    {
+      "index": 8,
+      "case_id": "web1045-boundary-02",
+      "kind": "boundary",
+      "text": "La frase «take me to Debian's official website» ¿pide visitar un sitio o instalar un sistema?",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Pide visitar un sitio.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Explica correctamente visitar un sitio, sin ejecutar la cita.",
+      "navigation_invocation_id": null
+    },
+    {
+      "index": 9,
+      "case_id": "web1045-boundary-03",
+      "kind": "boundary",
+      "text": "Si mañana te lo confirmo, entrá al sitio de LibreOffice; ahora esperá.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "La causa del fallo es que se falló la interpretación de la solicitud.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Fallo de interpretación en vez de reconocer espera bajo condición futura.",
+      "navigation_invocation_id": null
+    },
+    {
+      "index": 10,
+      "case_id": "web1045-boundary-04",
+      "kind": "boundary",
+      "text": "Llevame al sitio oficial.",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "No pude llevarlo al sitio oficial porque los resultados de la búsqueda no son relevantes.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "fail",
+      "reason": "Busca sin identidad de sitio; termina web_search_results_irrelevant en vez de pedir organización.",
+      "navigation_invocation_id": null
+    },
+    {
+      "index": 11,
+      "case_id": "web1045-boundary-05",
+      "kind": "boundary",
+      "text": "¿Por qué buscar un sitio público no implica mandar mis notas locales a internet?",
+      "terminal": {
+        "type": "terminal",
+        "kind": "published_final",
+        "final": "Porque buscar un sitio público solo te permite acceder o compartir información en un espacio público, no significa que tus notas locales se suban al internet en general. Tus notas siguen siendo privadas a menos que las compartas activamente.",
+        "diagnostic": null,
+        "timedOut": false,
+        "admissionStatus": 200
+      },
+      "verdict": "pass",
+      "reason": "Explica distinción entre consulta pública y envío de notas privadas; sin leerlas ni transmitirlas.",
+      "navigation_invocation_id": null
+    }
+  ]
+}

@@ -4739,22 +4739,22 @@ def compose_visible_defect(
     presence = _merged_observed(situation)
     empty_file_query = _verified_empty_known_file_query(situation)
     if empty_file_query is not None:
+        # A successful empty search proves a negative finding, not a failed
+        # execution. Mask only its query-bound predicate in this failure lens.
+        # Keep every qualifier and independent assertion for the normal checks;
+        # no whole-sentence wording or scope vocabulary grants an exemption.
         name = re.escape(_accent_folded_with_punctuation(empty_file_query))
-        target = rf"[\"'“”‘’«»]?(?:{name})[\"'“”‘’«»]?"
-        file_name = rf"(?:(?:el|un|the|a)\s+)?(?:(?:archivo|file)\s+)?(?:(?:llamado|named)\s+)?{target}"
-        scope_es = r"(?:las\s+carpetas\s+(?:buscadas|consultadas|revisadas)|el\s+ambito\s+consultado)"
-        scope_en = r"(?:the\s+(?:searched\s+folders|folders\s+searched|searched\s+scope))"
-        finding = (
-            rf"(?:no\s+(?:encontre|se\s+encontro)\s+{file_name}\s+en\s+{scope_es}"
-            rf"|{file_name}\s+no\s+se\s+encontro\s+en\s+{scope_es}"
-            rf"|(?:i\s+)?(?:didn't|did\s+not)\s+find\s+{file_name}\s+in\s+{scope_en}"
-            rf"|{file_name}\s+was\s+not\s+found\s+in\s+{scope_en})[.!]?"
+        target = rf"[\"'«»“”‘’]?(?<!\w){name}(?!\w)[\"'«»“”‘’]?"
+        determiner = r"(?:(?:el|un|ningun|ninguno|the|a|any)\s+)?"
+        object_name = rf"{determiner}(?:(?:archivo|file)\s+)?(?:(?:llamado|named)\s+)?{target}"
+        finding_predicate = (
+            rf"\bno\s+(?:encontre|se\s+encontro)\s+{object_name}"
+            rf"|\b(?:i\s+)?(?:didn't|did\s+not)\s+find\s+{object_name}"
+            rf"|{object_name}\s+(?:no\s+se\s+encontro|was\s+not\s+found)\b"
         )
-        # Exempt only a complete, query-bound and scope-bounded finding.
-        # Mixed claims (permissions, inability, global absence) stay unchanged;
-        # all other validators below still inspect the original response.
-        if re.fullmatch(finding, _accent_folded_with_punctuation(stripped)):
-            failure_assertions = ""
+        failure_assertions = re.sub(
+            finding_predicate, "", _accent_folded_with_punctuation(stripped),
+        )
     if (
         kind == "operation"
         and situation.get("operation") == "app.installed"

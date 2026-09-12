@@ -13,6 +13,10 @@ Siguiente: WEB1045, cinco literales exactos pendientes de pares, dos variantes d
 
 Registro actual: `bfa69dc68d97223e82f8be9f4d9deb7f712cbff1b0748d2f38e692b6d15d0682`.
 
+WEB1045 cerrado: 8/12 respuestas cumplen, 4 fallan, ningún crédito. Los cinco literales navegan a sitios verificados, pero Mozilla falla sin lookup y Debian devuelve búsqueda irrelevante. No repetir sin hipótesis nueva ni usar pares de URL explícita. Pico VRAM 3771.75 MiB, RAM 3453.84 MiB, 216.937 s; exit 0, pins intactos, sin guardas. Browser propio ya cerrado, identidades verificadas, sin cierres de raíz. Registro actual: `242085dccc89e6d0e3c6649938964b241a5f28f45168661129d23592975b9856`.
+
+FILES1046 integrado: el hallazgo negativo ligado al nombre ya no se exige como oración completa; se conservan las demás afirmaciones en ambos filtros. El provider existente informa raíces donde intentó enumerar y límites reales, sin exhaustividad. CLARIFY1047 integrado: historial previo real excluye el mensaje actual y respeta aclaración pendiente. Compilación nueva necesaria; ejecución y crédito pendientes. Ninguna suite ejecutada.
+
 ## Checkpoint anterior1036, conservado como historial
 
 ### Retorno inicial1036

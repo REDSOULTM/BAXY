@@ -1,0 +1,9 @@
+{
+  "source_pins": {
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\llm.py": "143d88d043533bf284e20cbc8666d136b759ac45fe8e6032385b8fec196b547f",
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Providers.Windows\\External\\WindowsKnownFileAdapter.cs": "b31ae69befe455555b864ba9b646fa9fc779cab2f8131b0975c8ce1232db10ae"
+  },
+  "patch_sha256": "6683e1fae3f4bba2619d1a7ee4fd7ace5ec4c9d6c20b1d310faafe0bd3c4830d",
+  "external_only": true,
+  "tests_run": false
+}

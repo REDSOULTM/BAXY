@@ -1314,6 +1314,7 @@ def apply_conversation_effect_presentation(
     *,
     explicit_conversation_contract: bool = False,
     history: object = None,
+    pending_clarification: bool | None = None,
     retired_catalog_effect: bool = False,
     audit: list[dict[str, object]] | None = None,
 ) -> dict[str, object]:
@@ -1343,7 +1344,12 @@ def apply_conversation_effect_presentation(
         and not decision.get("effect_operations")
         and not decision.get("intent_operations")
         and not retired_catalog_effect
-        and not history
+        # Shell history includes the current user message, even in a new
+        # session. Absence of a prior request is the contextual condition.
+        and _previous_user_request(
+            history if isinstance(history, list) else [], objective,
+        ) is None
+        and not _history_has_pending_clarification(history, pending_clarification)
         and not effect_intent.explicit_non_action_frame(objective)
         and not effect_intent._negative_action_forms(effect_intent._fold(objective))
         and not reading.intents & {INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
@@ -6512,6 +6518,7 @@ def _prepare_turn_result(
         llm,
         explicit_conversation_contract=(explicit_conversation_decision is not None),
         history=history,
+        pending_clarification=message.get("pendingClarification"),
         retired_catalog_effect=bool(
             effects_before_information_veto or effects_before_domain_grounding
         ),
