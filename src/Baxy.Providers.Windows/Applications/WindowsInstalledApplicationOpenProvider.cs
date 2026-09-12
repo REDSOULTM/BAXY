@@ -1070,7 +1070,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         CancellationToken cancellationToken) =>
         Inventory(entry, strongIdentityOnly: true, cancellationToken);
 
-    private IReadOnlyList<InstalledApplicationObservation> Inventory(
+    private static List<InstalledApplicationObservation> Inventory(
         InstalledApplicationEntry entry,
         bool strongIdentityOnly,
         CancellationToken cancellationToken)
