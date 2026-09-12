@@ -24,3 +24,17 @@ techo de 4096 MiB. Esos valores son de REDPC, no de este portátil.
 
 Pruebas automatizadas, Fast y Full omitidos por instrucción del dueño. No se
 presentan como aprobados. La pausa anterior queda superada por la nueva autorización.
+
+## Tanda de reparación terminada
+
+14 casos ejecutados: 7 cumplen y 7 fallan. La calculadora abrió y respondió con un
+estado presente fiel; también salieron correctamente NASA, UTC y CASA. Las cuatro
+variantes de apertura no cumplieron: BAXY rechazó capacidades o pidió aclaraciones
+innecesarias. No se da por generalizada la apertura ni se suma un crédito por ese
+literal aislado. Se conservan los fallos y sus recibos para reparaciones dirigidas.
+
+Créditos nuevos en este retorno: 0. Pico de VRAM3497.56 MiB frente al techo4096;
+pico de RAM2476.55 MiB, medido por separado. La tanda duró67.02 s y terminó sin
+infracciones de recursos o sellos. La compilación necesaria también terminó bien.
+Música ya tiene propuesta de ocho literales elegibles y sus pares, pendiente de
+preparar un estado multimedia real y verificable.

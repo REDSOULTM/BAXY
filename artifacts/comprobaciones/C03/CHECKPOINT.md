@@ -26,6 +26,32 @@ Detalle: `KIRO_REVIEW1036/SOURCE_REVIEW.md`, `KIRO_REVIEW1036/REGISTRY_RECOVERY.
 `REPAIR1036/PLAN.md`. Suites dueñas, Fast y Full omitidos por instrucción vigente;
 no verdes. C03 formal conserva 3/11. No hubo GPU en la revisión.
 
+### REPAIR1036 ejecutada y adjudicada
+
+Candidato `6d33ab06`: 14/14 terminales, 7 cumplen y 7 fallan; **0 créditos nuevos**.
+El literal H0575 respondió «Ya tengo la calculadora abierta» con recibo verificado
+de apertura nueva: es presente verdadero. NASA, UTC y CASA también cumplen. HELLO
+añade contenido no solicitado. Las cuatro variantes de apertura fallan antes de
+comprobar reutilización: rechazos y aclaraciones innecesarias. Tres límites pasan,
+dos fallan por silencio o rechazo injustificado; ninguno produjo una apertura.
+
+Se conserva H0575 como literal pasado con crédito pendiente, sin declarar ausentes
+los pares históricos. El PLAN sellado exige reconciliar el registro remoto antes de
+escribir créditos y la tanda no aporta dos variantes de apertura pasadas. Revisión
+exacta: `REPAIR1036/ROOT_ADJUDICATION.json`. No se declara adopción general ni se
+afirma reparar la filtración original de instrucciones o toda forma de negación.
+
+Build necesario exit0, shutdown0, sin suites. Producto exit0, pins intactos y cero
+infracciones; VRAM pico3497.56 MiB, RAM pico2476.55 MiB, duración67.02 s. Fuente y
+modelo permanecieron congelados durante la ejecución. La calculadora abierta por
+H0575 se conserva; invocación17955b50-3418-4cdf-afe0-8553cbae7df7.
+
+Tabla categoría→total→cubiertos→abiertos, ordenada por abiertos:
+`KIRO_REVIEW1036/CATEGORY_COUNTS.md`. Música1037 preparada como borrador privado:
+8 literales de control,10 variantes,5 límites; necesita una sesión multimedia real
+con estado/cola observables. READS1035 y la sesión incierta Spotify962 no se duplican
+ni se usan para rellenar ese panel. Goal activo, no bloqueado.
+
 ## Checkpoint de Kiro conservado como evidencia histórica
 
 Las afirmaciones de validación y las «128 altas» de esta sección son las heredadas;

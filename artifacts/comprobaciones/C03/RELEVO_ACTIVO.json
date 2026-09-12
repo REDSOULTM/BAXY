@@ -297,10 +297,20 @@
     "kiro_reported_registry_covered": 154,
     "private_transfer": "requested from REDPC; no exact registry reconstruction possible from published metadata alone",
     "pending_executed_batch": "READS1035, 12 terminals, no new credit without private observations",
-    "next_panel": "REPAIR1036",
+    "next_panel": "MUSIC1037 draft: 8 literals,10 variants,5boundaries; real SMTC session precondition pending",
     "tests_policy": "owner_directed_no_tests; suites/Fast/Full omitted, not green",
     "product_autostart_stopped_by_identity": true,
     "foreign_wip_preserved": true,
-    "review": "artifacts/comprobaciones/C03/KIRO_REVIEW1036/SOURCE_REVIEW.md"
+    "review": "artifacts/comprobaciones/C03/KIRO_REVIEW1036/SOURCE_REVIEW.md",
+    "repair1036": {
+      "candidate": "6d33ab060a8a84f9f4e94e895a93dc148be8e43b",
+      "executed": 14,
+      "passed": 7,
+      "failed": 7,
+      "coverage_added": 0,
+      "adjudication": "artifacts/comprobaciones/C03/REPAIR1036/ROOT_ADJUDICATION.json",
+      "tests_run": false,
+      "general_adoption_claimed": false
+    }
   }
 }
