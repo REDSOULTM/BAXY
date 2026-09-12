@@ -1,0 +1,23 @@
+{
+  "utc": "2026-09-12T13:41:39.858595+00:00",
+  "before_sha256": "3c86769b2ef7f6e52f547f5050aaccd5709f00dad2107843274662de3076ab9d",
+  "after_sha256": "bfa69dc68d97223e82f8be9f4d9deb7f712cbff1b0748d2f38e692b6d15d0682",
+  "covered": 160,
+  "open": 582,
+  "not_applicable": 0,
+  "new_credits": 0,
+  "updated_causes": [
+    "H0694",
+    "H0271",
+    "H0639",
+    "H0287",
+    "H0210",
+    "H0349",
+    "H0581",
+    "H0091",
+    "H0205",
+    "H0404"
+  ],
+  "backup": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clarify1044-private\\requirements-before-adjud160.jsonl",
+  "immutable_fields_preserved": true
+}

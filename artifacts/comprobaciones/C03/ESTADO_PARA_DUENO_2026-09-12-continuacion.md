@@ -1,3 +1,5 @@
+Actualización CLARIFY1044: seguimos en 160/742 cubiertos, 582 abiertos y 0 no aplican. Categorías cerradas: 0/35; primeras altas comprobadas en 24 h: al menos 34. La nueva tanda terminó: 6 respuestas cumplen y 19 fallan; ninguna reúne literal y dos variantes para acreditar otro requisito. BAXY pregunta el sentido de «media», pero aún confunde otros fragmentos con incapacidad o saludos. Pico VRAM: 3499.56 MiB; pico RAM: 2485.01 MiB. Paso siguiente: cinco literales web con dos variantes pertinentes. Pruebas automáticas omitidas por tu instrucción; cierre formal pendiente (3/11).
+
 Actualización1042:160/742cubiertos,582abiertos,0noaplican;0/35categoríascerradas. Almenos34primerasaltasverificadasúltimas24h. +2literalesbrowserbackreparados; subset9/13. Browserprivadocerradoporidentidad, sin tocar navegadordelusuario. ContinúaREPAIR1043búsqueda. No tests/Fast/Full por orden deldueño.
 
 Actualización1041:158/742 cubiertos,584 abiertos,0 no aplican;0/35categorías cerradas. Al menos32primeras altas verificadas últimas24h. +H0140 con paresES/EN; reparación1042 de browser back integrada para medición dirigida. No tests/Fast/Full por orden del dueño; no cierre afirmado.

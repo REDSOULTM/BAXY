@@ -1,4 +1,4 @@
-# Categorías actuales — adjudicación1042
+# Categorías actuales — adjudicación1044
 
 160/742 cubiertos;582 abiertos;0 no aplican;0/35 categorías cerradas. Primeras altas verificadas últimas24h: al menos34 (28Kiro +6retorno); total global exacto pendiente de historial de primeras altas. Registro canónico reconciliado, no proyección.
 

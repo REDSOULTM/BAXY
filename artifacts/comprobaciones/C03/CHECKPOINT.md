@@ -1,15 +1,17 @@
-# C03 —160 cubiertos; ejecución continua
+# C03 — 160 cubiertos; ejecución continua
 
-**160/742 cubiertos,582 abiertos,0 no aplican;0/35 categorías cerradas.**
-Últimas24h: al menos34 primeras altas verificadas (28Kiro+6retorno); no se usan fechas de revalidación como primeras altas. C03 formal3/11. Goal activo; suites/Fast/Full omitidos por orden del dueño, no verdes.
+**160/742 cubiertos, 582 abiertos, 0 no aplican; 0/35 categorías cerradas.**
+Últimas 24 h: al menos 34 primeras altas verificadas (28 Kiro + 6 retorno); no se cuentan revalidaciones. C03 formal: 3/11. Goal activo. Suites, Fast y Full omitidos por orden del dueño; no verdes.
 
-RAR recuperado:348 archivos verificados;28 créditos Kiro auditados. READS1035+1H0104 y REPAIR1036+1H0575 adjudicados contra recibos y pares recuperados, sin repetir corridas. FILES1040+1H0711: Downloads abierto y dos variantesES/EN con postread real;5/18 cumplen. H0001/H0696 siguen open: búsqueda confinada al sandbox y fallo de composición.
+RAR recuperado: 348 archivos verificados y 28 créditos Kiro auditados. Recuperación READS1035 +1 H0104 y REPAIR1036 +1 H0575, sin repetir corridas históricas. FILES1040 +1 H0711; CLARIFY1041 +1 H0140; REPAIR1042 +2 H0326/H0605. Navegador de back cerrado tras conservar historial: 14 procesos propios cerrados, 0 pendientes.
 
-WEB1039:4/17 cumplen,0créditos; dos variantes inglesas ejecutaron back con CDP verificado; los2literales españoles pierden argumento en action_grounding. Historial real pasó de índice25 a23,26entradas. Reparación1042 atómica externa en revisión, sólo subset fallido.
+REPAIR1043: 7 aprobados, 5 fallidos, 3 con evidencia insuficiente; ningún crédito nuevo. H0001 respondió con hallazgo vacío fiel, falta un segundo par aprobado. H0696 sigue sin respuesta útil por rechazo de redacción fiel. Las búsquedas vacías no retienen alcance explícito; se prepara reparación de ese dato en el provider existente y de la distinción entre ausencia de archivo y fallo de ejecución. No ampliar listas de frases.
 
-CLARIFY1041:8/25 cumplen,+1H0140 por rechazo útil con paresES/EN sin efectos; otros9literales conservan causas individuales. REPAIR1042:9/13 cumplen,+2H0326/H0605; seis back con CDP verificado, historia23→17. Dos formas inglesas siguen fallidas. Navegadorprivado cerrado por identidad tras conservar historial final;14procesos propios cerrados,0pendientes. .NET/runtime assets conservan fingerprint1036; fuentePython nueva se liga por separado. No nueva compilación ni pruebas afirmadas. Registro actualizado al adjudicar:3c86769b2ef7f6e52f547f5050aaccd5709f00dad2107843274662de3076ab9d.
+CLARIFY1044: 25 casos ejecutados (10 literales, 10 variantes, 5 límites), 6 aprobados y 19 fallidos; 0 créditos. H0639 y H0349 pasan como literales pero sin dos pares pertinentes; sólo una variante aprobada. Estado técnico: exit 0, pins intactos, sin guardas. Pico VRAM 3499.56 MiB y RAM 2485.01 MiB, separados; 135.375 s. La hipótesis no demuestra reparación general: not_complete aún termina en incapacidad en varios casos; otras aclaraciones útiles se pierden en filtros posteriores. No repetir el panel completo. Fuente aplicada realmente en db6f7b2f, que corrige la omisión de fuente del commit d7bce9d9. BUILD1043 reutilizado con fingerprint y binarios idénticos; Python nuevo sellado aparte.
 
-Música1037: no sesiónSMTC expuesta observada; controles/cola pendientes, sin infraestructura nueva para8casos. H0675 sigue aparcado. REPAIR1043 final:7pass/5fail/3evidenciainsuficiente de15,+0. H0001literal útil yuna varianteaprobada, pendiente2pares; H0696hallazgo veraz bloqueado por forma relativa/ningún. No ampliar whitelist de frases; separar resultado de ejecución y alcance observado. Build1043+publishCore+shutdown0, fingerprinted89032d7da7dfe6e7dfe8c29bfb9d40aa1cd6b8a919b215ce68857fd4857f36. SiguienteCLARIFY1044:10lit+10vars+5límites para costura not_complete, auditada; no prometer30créditos. Tabla actual ordenada por abiertos: CURRENT_CATEGORY_COUNTS.md.
+Siguiente: WEB1045, cinco literales exactos pendientes de pares, dos variantes de sitios por nombre y cinco límites. Reejecución de literales para medir candidato actual; no suplir pares de resolución por navegación a URL explícita. FILES1046 se prepara en paralelo. Música1037 sin sesión SMTC observada sigue aparcada; H0675 y nueva infraestructura aplazados. Tabla por abiertos: CURRENT_CATEGORY_COUNTS.md.
+
+Registro actual: `bfa69dc68d97223e82f8be9f4d9deb7f712cbff1b0748d2f38e692b6d15d0682`.
 
 ## Checkpoint anterior1036, conservado como historial
 
