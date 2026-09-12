@@ -1,15 +1,15 @@
 {
-  "utc": "2026-09-12T04:59:55.285096+00:00",
-  "covered": 133,
-  "open": 609,
+  "utc": "2026-09-12T05:36:05.354506+00:00",
+  "covered": 137,
+  "open": 605,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 105,
+  "covered_updated_last_24h": 109,
   "covered_updated_last_24h_window": {
-    "since_utc": "2026-09-11T04:59:55.285096+00:00",
-    "as_of_utc": "2026-09-12T04:59:55.285096+00:00"
+    "since_utc": "2026-09-11T05:36:05.354506+00:00",
+    "as_of_utc": "2026-09-12T05:36:05.354506+00:00"
   },
   "updated_recent_ids": [
     "H0017",
@@ -44,6 +44,7 @@
     "H0214",
     "H0216",
     "H0233",
+    "H0251",
     "H0258",
     "H0267",
     "H0280",
@@ -95,6 +96,7 @@
     "H0563",
     "H0569",
     "H0577",
+    "H0588",
     "H0597",
     "H0599",
     "H0619",
@@ -109,16 +111,18 @@
     "H0669",
     "H0672",
     "H0678",
+    "H0683",
     "H0684",
     "H0688",
     "H0690",
+    "H0706",
     "H0710",
     "H0725",
     "H0726",
     "H0729",
     "H0736"
   ],
-  "registry_sha256": "3a5593f9948eb8ab260ce015750d4d801b0b2e288bfc03e0889ee62c4eb73f73",
+  "registry_sha256": "e9622300757b30a26fca21d84fbbde8afc85b5cec73aea1be03c9f600ef10ee3",
   "categories": [
     {
       "category": "music",
@@ -129,19 +133,19 @@
       "not_applicable": 0
     },
     {
-      "category": "apps_open",
-      "label": "Abrir aplicaciones",
-      "total": 54,
-      "covered": 17,
-      "open": 37,
-      "not_applicable": 0
-    },
-    {
       "category": "web_navigation_search",
       "label": "Navegación y búsqueda web",
       "total": 46,
       "covered": 10,
       "open": 36,
+      "not_applicable": 0
+    },
+    {
+      "category": "apps_open",
+      "label": "Abrir aplicaciones",
+      "total": 54,
+      "covered": 21,
+      "open": 33,
       "not_applicable": 0
     },
     {
@@ -401,5 +405,5 @@
       "not_applicable": 0
     }
   ],
-  "note": "Recalculado del registro privado tras APPS1029. Las 24 h cuentan filas covered actualizadas en la ventana, no necesariamente primeras altas."
+  "note": "Recalculado del registro privado tras REPAIR1032."
 }

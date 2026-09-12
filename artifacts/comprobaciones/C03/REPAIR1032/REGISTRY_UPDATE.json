@@ -1,0 +1,100 @@
+{
+  "schema": "c03-repair1032-registry-update-v1",
+  "utc": "2026-09-12T05:35:50.111146+00:00",
+  "registry": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-survey-requirements336-private\\requirements.jsonl",
+  "registry_sha256_before": "621640c6adbd8b36669ee46ea6239a8da630c048d80508d7fc7b546605d5b14e",
+  "registry_sha256_after": "e9622300757b30a26fca21d84fbbde8afc85b5cec73aea1be03c9f600ef10ee3",
+  "backup": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-survey-requirements336-private\\requirements.jsonl.before-1032.bak",
+  "rows": 742,
+  "counts": {
+    "covered": 137,
+    "open": 605,
+    "not_applicable": 0
+  },
+  "coverage_added": 4,
+  "credited_case_ids": [
+    "H0251",
+    "H0588",
+    "H0683",
+    "H0706"
+  ],
+  "rows_touched": [
+    {
+      "case_id": "H0015",
+      "status": "open",
+      "kind": "repair_measurement"
+    },
+    {
+      "case_id": "H0055",
+      "status": "open",
+      "kind": "repair_measurement"
+    },
+    {
+      "case_id": "H0085",
+      "status": "covered",
+      "kind": "regression_control"
+    },
+    {
+      "case_id": "H0134",
+      "status": "open",
+      "kind": "repair_measurement"
+    },
+    {
+      "case_id": "H0136",
+      "status": "open",
+      "kind": "repair_measurement"
+    },
+    {
+      "case_id": "H0251",
+      "status": "covered",
+      "kind": "repair_measurement"
+    },
+    {
+      "case_id": "H0315",
+      "status": "covered",
+      "kind": "regression_control"
+    },
+    {
+      "case_id": "H0317",
+      "status": "covered",
+      "kind": "regression_control"
+    },
+    {
+      "case_id": "H0391",
+      "status": "open",
+      "kind": "repair_measurement"
+    },
+    {
+      "case_id": "H0418",
+      "status": "open",
+      "kind": "repair_measurement"
+    },
+    {
+      "case_id": "H0575",
+      "status": "open",
+      "kind": "repair_measurement"
+    },
+    {
+      "case_id": "H0588",
+      "status": "covered",
+      "kind": "repair_measurement"
+    },
+    {
+      "case_id": "H0653",
+      "status": "open",
+      "kind": "repair_measurement"
+    },
+    {
+      "case_id": "H0683",
+      "status": "covered",
+      "kind": "repair_measurement"
+    },
+    {
+      "case_id": "H0706",
+      "status": "covered",
+      "kind": "repair_measurement"
+    }
+  ],
+  "adjudication": "artifacts/comprobaciones/C03/REPAIR1032/ROOT_ADJUDICATION.json",
+  "tests_run": false
+}

@@ -1,24 +1,45 @@
-# C03 — checkpoint tras SYSTEM1028 en la máquina original
+# C03 — checkpoint tras APPS1029, REPAIR1030, 1031 y 1032
 
-**130/742 cubiertos, 612 abiertos, 0 no aplican; 102 altas en la ventana de 24 h recalculada aquí; 0/35 categorías cerradas.** C03: 3/11 cumplidos, 5 contradichos, 3 pendientes. Sin estimación fiable de cierre completo. **RAM:** pico de tanda 2587,37 MiB, 32530 MiB totales en la máquina. **VRAM:** pico de tanda 3494,93 MiB, por debajo de la guarda 3800 y del techo 4096; carga del modelo medida aparte en 3513 MiB atribuibles. **Pruebas omitidas:** suites dueñas, Fast y Full, por instrucción explícita del dueño; omitidas, no verdes, no aprobadas. Registro actual SHA `af5ccd83c2e6d567a9631b540f76fde011670fe9aba2de8f4777cb7cb3a0dccd`, contado desde el registro privado restaurado, no desde un contador heredado.
+**137/742 cubiertos, 605 abiertos, 0 no aplican; 109 altas en la ventana de 24 h recalculada aquí; 0/35 categorías cerradas.** C03: 3/11 cumplidos, 5 contradichos, 3 pendientes. Sin estimación fiable de cierre completo. **RAM:** picos de tanda 2662,84 / 2580,30 / 2580,30 / 2652,30 MiB sobre 32 530 MiB de la máquina. **VRAM:** picos 3494,93 / 3492,93 / 3492,93 / 3494,93 MiB, por debajo de la guarda 3800 y del techo 4096. **Pruebas omitidas:** suites dueñas, Fast y Full, por instrucción explícita del dueño; omitidas, no verdes, no aprobadas. Registro actual SHA `e9622300757b30a26fca21d84fbbde8afc85b5cec73aea1be03c9f600ef10ee3`.
 
-**Papeles de las máquinas, corregidos por el dueño.** REDPC es el BAXY original; el portátil sólo replicó el repositorio y su raíz en `D:` era porque su `C:` estaba lleno. El tramo de C03 del 6 al 12 de septiembre se ejecutó en la réplica, y de ahí venían su evidencia privada y la descarga del modelo decidido.
+**Lo que sumó: +7 en esta sesión, de 130 a 137.** APPS1029 aportó 3 (H0085, H0315, H0317) y REPAIR1032 aportó 4 (H0251, H0588, H0683, H0706). REPAIR1030 y REPAIR1031 no aportaron ninguna y se explica por qué más abajo. La categoría «Abrir aplicaciones» pasó de 14 a 21 cubiertos.
 
-**Paquete privado recibido y verificado.** ZIP SHA `95bc3f23…fd8c704`, 2 025 743 bytes, 95/95 entradas coincidentes con `TRANSFER_MANIFEST.json`. Extraído en carpeta nueva `C03-opus5-relevo-destino`, sin sobreescribir nada. Registro restaurado en SHA `1a7ec3d3…`, 742 filas, 126 covered y 616 open al llegar, exactamente lo declarado. Rutas históricas del portátil leídas sin editar sus bytes.
+## El instrumento que ordena el trabajo
 
-**Runtime de esta máquina, listo con el modelo de la decisión 792.** El GGUF decidido no estaba aquí: vivía en `D:/BAXYRuntime/experiments/models/qwen3-4b-instruct-2507-a06e946b/` y esa carpeta no existía; de los 93 GGUF locales ninguno era el correcto, y `assets/models/Qwen3-4B-Q4_K_M.gguf` se llama igual que el primer candidato del manifiesto pero es el modelo activo anterior, Instruct AWQ `7485fe6f…`. Raíz lo restauró desde la procedencia atestada que versiona `artifacts/research/qwen3_4b_instruct_2507_candidate_preregistration_20260811.json`, con su orden congelado: `.partial`, 2 497 281 120 bytes exactos, SHA `3605803b…` exacto, y sólo entonces renombrado. `bootstrap.ps1` falló primero con `runtime_lock_invalid` → `installed_missing` porque el venv de la mente estaba desfasado respecto al `pylock` de los 192 commits; instaló `pywebrtc-audio 0.2.0+baxy.1` y `sherpa-onnx 1.13.4+baxy.2` y quedó válido. Modelo y wake declarados en el override oficial `assets.local.json`, manifiesto anterior respaldado y `wake_on_start` restaurado a `true`. No es campaña de modelos nueva ni sustitución silenciosa.
+`scratchpad/c03-open-mass-by-reach.py` cruza la masa abierta con el alcance del reconocedor: de los 612 abiertos que había, **157 ya llegaban al camino determinista** y 455 caían al modelo. En SYSTEM1028 el determinista cumplió 9/14 y el modelo 3/15, así que el orden de trabajo es por abiertos que ya llegan, no por abiertos totales. Por eso se eligió `apps_open`, con 21 de sus 40 abiertos resolviendo `app.open` sin modelo.
 
-**1025 cerrada por completo, sin repetir su ejecución.** Los 25 terminales leídos y juzgados contra su criterio sellado: 13 cumplen, 12 fallan. Crédito 3, el ya escrito antes de la pausa; esta adjudicación no añadió ninguno y los contadores no se movieron por ella. Tres literales cumplen y siguen open por falta de par: H0236 con dos de tres variantes de juegos caídas, H0239 y H0582 con una de dos de comparación caída. Fallos con causa: Marvel vs. Capcom fechado en 2000 cuando el estreno original fue arcade en 1998; Doom Eternal atribuido a Bethesda Game Studios, a 2023 y a enemigos alienígenas cuando es id Software, Bethesda Softworks, 20 de marzo de 2020 y demonios; Chell descrita como hombre y Portal como mundos alternativos; H0424, H0645 y dev-10 respondieron con la identidad de BAXY en vez de preguntar el referente; dos composition_failed por reintentos agotados; dos fallos de runtime cuyo mensaje de error se compuso junto al contenido y filtró vocabulario interno; una instrucción diferida ejecutada; una cita explicada con el destinatario invertido. Detalle en `KNOWLEDGE1025/ROOT_ADJUDICATION.json`.
+## APPS1029 — la tanda ancha, y lo que midió antes de ejecutar
 
-**Referente ausente: causa demostrada, reparación no escrita.** `_deictic_open_request` en `__main__.py:2818` sólo reconoce aperturas, así que `missing_open_referent` (`:5831`) nunca llega a llamar a `llm.clarify_missing_referent`, que existe y está sana. Los `decision_path` de los 25 turnos lo confirman: ninguno usó `deictic_referent_clarification`. `read_request` no trae intents para esos literales, luego el veto `nothing_to_clarify` no interviene. No se integra la ampliación sin controles: «su» en español es también tratamiento formal y una regla amplia rompería «¿Cuál es su nombre?» dirigido a BAXY, en una categoría con 7 cubiertos. `KNOWLEDGE1025/DIAGNOSIS_REFERENTE_AUSENTE.md`.
+17 literales, 5 variantes, 5 límites; exit 0, 27 terminales, 0 infracciones, 85,5 s. 10 cumplen, 17 fallan, **+3**.
 
-**SYSTEM1028: primera tanda propia, +4 cubiertos.** 31 casos sellados antes de ejecutar, exit0, 31 terminales, 31 controles, 0 violaciones, 154,8 s. 14 cumplen y 17 fallan. Créditos: H0539 y H0655 de memoria instalada con el par heredado de 1022 dev-03/dev-04, declarado en el PLAN antes de ejecutar; H0442 de espacio libre con par fresco dev-01/dev-02; H0422 de identidad de máquina y usuario con par fresco dev-11/dev-12. H0037 cumple —respondió con verdad que este equipo no tiene batería y está en corriente— y H0114 cumple con cifra real de VRAM, pero ambos siguen open porque sus conductas no dejaron dos variantes en pie. Cinco abiertos de la categoría quedan aparcados con razón y sin rellenar: resolución, Hz del monitor, número de monitores y versión de Python instalada no tienen operación en el catálogo tipado, y cuatro casos no justifican infraestructura de vídeo nueva, así que la categoría no puede cerrarse. Una primera medición se detuvo a 1,3 s con `sealed_input_or_source_changed` porque el arranque del producto sustituye el Core junto a `Baxy.exe` por el publicado AOT; se conserva en `stopped-run-1`. La comprobación heredada de Core efectivo igual a publicado era correcta y mi debilitamiento previo estaba equivocado: revertido.
+**Steam quedó declarado como ya en ejecución porque su coste está medido, no supuesto:** su árbol gasta 644,39 MiB de GPU dedicada (`scratchpad/c03-app-gpu-cost.py`, el mismo contador que usa la guarda), y `WindowsInstalledApplicationOpenProvider` arranca con `UseShellExecute = false`, así que dentro del árbol medido habría roto la guarda de 3800 MiB. La guarda no se tocó: se declaró el entorno y el runner lo verifica. Los picos de las cuatro tandas confirman además que las apps que Windows activa por servicio no se atribuyen al árbol: 3492–3495 MiB **con Paint lanzado dentro de la tanda**.
 
-**Tres causas transversales con su primera transformación incorrecta identificada, en `SYSTEM1028/DIAGNOSIS.md`.** El compositor es fiel al payload en las tres; el payload llega mal. A: una lectura que sí está en el catálogo se clasifica `out_of_catalog` en la decisión —`__main__.py:6638-6655`— aunque la misma tanda la ejecutó por otra formulación; seis casos. B: la mitad temporal de una petición compuesta se pierde en la decisión y después se **inventa** en el texto publicado, «Hoy es 5 de abril de 2025» contra el 12 de septiembre de 2026 real; sus dos variantes eligieron la otra salida, declarar la hora indisponible. C: se elige el scope `summary`, que no incluye GPU, para una pregunta que nombra la GPU, y luego se declara sin acceso lo que el mismo `summary` sí traía para batería. Ninguna necesita infraestructura nueva. La asimetría de idioma queda anotada como observación, sin campaña.
+Los 17 fallos son cinco causas, en `APPS1029/DIAGNOSIS.md`. Las dos que se repararon:
 
-**No repetir:** elección Qwen/backend/perfil 792; herencia 802; auditoría de frescura 536; web 1010/1017 sin hipótesis nueva; fuente 800 rechazada; paneles enteros por un fallo aislado; H0675, OCR y providers nuevos siguen aparcados. Efectos Spotify 962, Steam, Discord, Calculator, Settings y Explorer son del PC réplica: no se reconcilian ejecutando acciones sobre apps homónimas de aquí. Objetos 975/980/986 preservados. Sin limpieza global.
+- **B, prosa:** las once vueltas de `app.open` sobre Steam recibieron el MISMO payload, con `was_running_before_open: true`; la prosa lo dijo en tres y lo omitió en ocho, publicando «Abrí Steam.» sobre un proceso vivo desde horas antes. El hecho no estaba en ninguna lista obligatoria: `required_fact_count` era 0.
+- **A, verificación:** calculadora y configuración devolvían `verification_failed` con `effectMayHaveOccurred=true` **mientras la app quedaba abierta** —`CalculatorApp` pid 40560 arrancó a las 01:50:51, dentro de la ventana de la tanda—, porque los tres proveedores de apertura exigían que la ventana tuviera el primer plano.
 
-**Orden por masa abierta:** apps 40, música 39, web 36, archivos 32, aclaración 31, mensajería 31, instalación 31, agenda 29, vídeo 26, conocimiento 22, audio 24, conversación 22, interacción en apps 22. Las tres causas transversales de 1028 atraviesan varias de ellas, así que repararlas rinde más que otra tanda ancha. Agenda tiene además el parche 1024 recibido y revisado, sin integrar ni medir: su punto abierto es el segundo uso de `_time_only_reminder_request` en `effect_intent.py:13842`, que es una abstención de la ruta de efecto que su diagnóstico no analiza.
+## REPAIR1030 — la reparación funcionó y no acreditó, y lo dice
+
+Siete literales, tres controles cubiertos, cuatro variantes, tres límites; exit 0, 17 terminales, 0 infracciones, 52,9 s. Los siete dejaron de mentir y los tres controles volvieron idénticos: **cero regresión**. Pero cuatro de siete publicaron la misma frase byte a byte y los siete publicaron la instrucción de reintento con vocabulario interno («antes de este turno»). El invariante 5 prohíbe respuestas visibles fijas, así que **crédito 0**, y la causa era mía: la instrucción llegaba como oración declarativa publicable.
+
+## REPAIR1031 — invalidada por el escritorio, y de ahí salió la reparación grande
+
+Las diecisiete vueltas devolvieron `verification_failed`, **incluidas Steam y Discord, que ocho minutos antes habían verificado con recibo sobre el mismo proceso y la misma ventana**. La ventana de primer plano era «Configuración rápida» de ShellHost.exe (handle 65862), que no cede el foco; Steam, Discord y el Paint recién lanzado estaban visibles en pantalla (`scratchpad/c03-window-state.py`). Ningún juicio de conducta es posible sobre ese material: **crédito 0, y el registro no cambió de estado por ella**.
+
+Eso convirtió la causa A en hecho general: no es cosa de apps UWP. Exigir primer plano para afirmar «la app está abierta» convierte una condición del escritorio en un fallo de producto.
+
+## REPAIR1032 — las dos reparaciones juntas, +4
+
+12 literales, 3 controles, 5 variantes, 3 límites; exit 0, 23 terminales, 0 infracciones. 13 cumplen, 10 fallan, **+4**: H0251, H0588, H0683 y H0706, todos con recibo verificado de proceso y ventana donde antes había `verification_failed`. Par de crédito: dev-01 (Paint) y dev-02 (Mapa de caracteres), lanzamientos reales con frases distintas. Se declara que el par es español; el inglés del camino lo ejercitan H0588 y H0683, que pasaron en inglés.
+
+Lo que **no** acreditó y por qué: las siete vueltas de Steam publicaron «La app Steam ya estaba abierta.» —verdad, con el destino nombrado— pero idénticas entre sí y con forma de la instrucción. El criterio sellado antes de ejecutar dice que eso falla aunque sea verdad, y no se relaja después de ver el resultado.
+
+**Defecto espejo encontrado:** H0575 publicó «Ya tengo la calculadora abierta.» con `alreadyRunning=false`, dando por anterior un estado que acababa de crear. El chequeo nuevo sólo cubre la dirección contraria.
+
+## Lo que está medido para la próxima reparación
+
+Las tres respuestas veraces y **distintas** de APPS1029 —H0315, H0317 y dev-05— salieron del **primer borrador, sin instrucción correctiva**. La instrucción de reintento homogeniza. La reparación siguiente es que el hecho viaje como hecho con nombre propio y el primer borrador lo diga, no que una instrucción dicte la frase; y cubrir la dirección espejo. Sigue habiendo 7 literales de Steam y H0575 esperando exactamente eso.
 
 | Tanda | Cumplen/ejecutados | Créditos | VRAM MiB | RAM MiB | Segundos |
 |---|---:|---:|---:|---:|---:|
@@ -26,43 +47,13 @@
 |1022|21/25|10|3497.56|2467.25|85.75|
 |1025|13/25|3|3499.56|2435.66|191.56|
 |1028|14/31|4|3494.93|2587.37|154.80|
+|1029|10/27|3|3494.93|2662.84|85.55|
+|1030|7/17|0|3492.93|2580.30|52.94|
+|1031|0/17 (invalidada)|0|3492.93|2580.30|52.94|
+|1032|13/23|4|3494.93|2652.30|—|
 
-Todas terminaron exit0 con pins intactos y cero violaciones. RAM y VRAM son picos separados, por debajo de 4 GB; el muestreo de árbol puede incluir descendientes no exclusivos del modelo.
+**Compilación:** el cambio .NET se compiló por el arranque vigente (`main.compile_if_needed`), con `build_exit 0`, un arranque real del producto que sustituye el Core efectivo (`warmup_exit 0`, contestó «Hola, ¿en qué puedo ayudarte?») y `dotnet build-server shutdown` (`shutdown_exit 0`). El publish AOT necesita `vswhere.exe` en PATH —`%ProgramFiles(x86)%\Microsoft Visual Studio\Installer`—; sin eso el enlazado nativo falla con MSB3073. Y el Core exige que su directorio privado sea **hijo directo** de `%LOCALAPPDATA%\BAXY`: con una ruta anidada se niega a arrancar y el conductor publica `blocked_environment: runtime_not_ready`, que es lo que confundió al primer calentamiento.
 
-| Categoría | Total | Cubiertos | Abiertos |
-|---|---:|---:|---:|
-| Abrir aplicaciones | 54 | 14 | 40 |
-| Música | 39 | 0 | 39 |
-| Navegación y búsqueda web | 46 | 10 | 36 |
-| Archivos y carpetas | 32 | 0 | 32 |
-| Entrada incompleta, ruido y control de diálogo | 34 | 3 | 31 |
-| Mensajería | 31 | 0 | 31 |
-| Instalar y desinstalar software | 31 | 0 | 31 |
-| Alarmas, recordatorios, tareas y agenda | 38 | 9 | 29 |
-| Vídeo y series | 26 | 0 | 26 |
-| Audio y volumen | 51 | 27 | 24 |
-| Conocimiento, razonamiento y creatividad verbal | 37 | 15 | 22 |
-| Conversación social y ayuda general | 31 | 9 | 22 |
-| Interacción dentro de aplicaciones | 22 | 0 | 22 |
-| Hora y fecha | 23 | 3 | 20 |
-| Red y Bluetooth | 21 | 1 | 20 |
-| Cerrar aplicaciones y ventanas | 20 | 0 | 20 |
-| Pantalla, captura e interpretación visual | 19 | 0 | 19 |
-| Brillo y pantalla | 17 | 0 | 17 |
-| Información web actual | 17 | 0 | 17 |
-| Estado de hardware y sistema | 40 | 25 | 15 |
-| Organizar ventanas y pestañas | 13 | 0 | 13 |
-| Estado de ventanas y aplicaciones | 14 | 1 | 13 |
-| Identidad y capacidades del asistente | 19 | 7 | 12 |
-| Notas | 12 | 0 | 12 |
-| Memoria personal | 10 | 0 | 10 |
-| Correo | 6 | 0 | 6 |
-| Bibliotecas y fichas de juegos | 6 | 0 | 6 |
-| Contactos | 5 | 0 | 5 |
-| Desarrollo y ejecución de comandos | 5 | 0 | 5 |
-| Portapapeles | 3 | 0 | 3 |
-| Restricciones negativas de apertura | 4 | 1 | 3 |
-| Energía del sistema | 3 | 0 | 3 |
-| Crear documentos y editar imágenes | 2 | 0 | 2 |
-| Leer y resumir páginas web | 2 | 0 | 2 |
-| Procesos | 9 | 8 | 1 |
+**No repetir:** elección Qwen/backend/perfil 792; herencia 802; frescura 536; web 1010/1017 sin hipótesis nueva; fuente 800; paneles enteros por un fallo aislado; H0675, OCR y providers nuevos siguen aparcados. Efectos Spotify 962, Steam, Discord, Calculator, Settings y Explorer del PC réplica no se reconcilian aquí. Objetos 975/980/986 preservados. Sin limpieza global.
+
+**Orden por masa abierta:** música 39, web 36, apps 33, archivos 32, mensajería 31, aclaración 31, instalación 31, agenda 29, vídeo 26, conocimiento 25, audio 23, conversación 22, interacción 22.
