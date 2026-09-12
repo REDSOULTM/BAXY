@@ -1,0 +1,52 @@
+{
+  "index": 2,
+  "terminal": [
+    {
+      "type": "terminal",
+      "kind": "published_final",
+      "final": "La siguiente canción es \"Sendero azul\" de Original BAXY preparation composition. Está reproduciéndose actualmente.",
+      "diagnostic": null,
+      "timedOut": false,
+      "admissionStatus": 200
+    }
+  ],
+  "exit": {
+    "case_index": 2,
+    "case_id": "H0567",
+    "segment_sha256": "19f5638d21ceafad240366ab4866897d808ae40227a5ae324ad7fa4ae724e709",
+    "fixture_receipt_path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\fixture-02.json",
+    "fixture_receipt_sha256": "e784141d0bd24d2dc3e01d4083a17be45fb1aba97cf95b67d57c3c849c90dd07",
+    "tests_run": false,
+    "validation_policy": "owner_directed_no_tests",
+    "candidate_manifest_sha256": "2d96249acf9df217bd260de21ab72ae085498aa0440d3af336b5ca1f301b5721",
+    "execution_authorized": true,
+    "utc": "2026-09-12T18:49:27.852630+00:00",
+    "exit_code": 0,
+    "stopped": false,
+    "pins_unchanged": true,
+    "terminal_records": 1,
+    "session_controls_observed": 1,
+    "turn_envelopes_observed": 1,
+    "real_submission_events_observed": 1,
+    "case_final_records": 1,
+    "confirmation_submissions_observed": 0,
+    "reviews_observed": 0,
+    "guarded_stop_index": null,
+    "host_stop_proves_unexecuted_queue": false,
+    "app_cleanup_by_runner": false,
+    "audio_restoration_by_runner": false,
+    "quality_adjudicated": false,
+    "success_count": null,
+    "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-case02-profile\\journal\\missions.jsonl",
+    "target_apps_closed_by_guard": false
+  },
+  "resources": {
+    "utc": "2026-09-12T18:49:27.852123+00:00",
+    "violations": [],
+    "gpu_peak_mib": 3495.55859375,
+    "gpu_telemetry_available": true,
+    "ram_peak_mib": 1490.62890625,
+    "seconds": 20.18699999999808,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  }
+}

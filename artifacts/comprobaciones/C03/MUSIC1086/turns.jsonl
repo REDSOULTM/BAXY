@@ -1,0 +1,24 @@
+{"cmd":"session.new"}
+{"cmd":"turn","text":"canción anterior"}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"poné la siguiente canción"}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"siguiente canción"}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"Skip forward to the next track."}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"Go back one song in the current queue."}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"Por favor, pasá a la siguiente pista."}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"Por favor, vuelve a la canción anterior."}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"No reanudes la música; dejala como está."}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"¿Qué significa poner una canción en pausa?"}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"Traduce al español «skip to the next track»."}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"Si mañana quiero oír música, te diré qué poner."}
+{"cmd":"session.new"}
+{"cmd":"turn","text":"Ayer detuve la música antes de salir."}

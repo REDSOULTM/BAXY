@@ -1,0 +1,177 @@
+[
+  {
+    "case_id": "H0311",
+    "kind": "historical_literal",
+    "group": "control_previous",
+    "text": "canción anterior",
+    "criterion": "Return to the preceding item of the observed current queue; verify intended previous identity and resulting playback state. A restart of the same track or changed metadata alone is insufficient.",
+    "expectedOperation": "media.control",
+    "expectedArguments": {
+      "action": "previous"
+    },
+    "expectation_kind": "positive",
+    "verification_status": "open",
+    "owner_review": {
+      "authorship": true,
+      "capability": true,
+      "note": "Revisión del dueño por chat 2026-09-07/08. Expectativa, no prueba de capacidad ni de frescura. Borrador/auditoría: chat-review-20260908.",
+      "updatedAt": "2026-09-08T00:09:45.103372-03:00"
+    },
+    "origin": "Exact literal and marks from current private registry; criteria drafted1037, not adjudicated",
+    "preconditions": "Root must approve a safe controlled queue with known previous item distinct from current; current position must allow previous-track behavior rather than same-track restart. No uncertain Spotify962 session."
+  },
+  {
+    "case_id": "H0351",
+    "kind": "historical_literal",
+    "group": "control_next",
+    "text": "poné la siguiente canción",
+    "criterion": "Advance to the next item of the observed current queue; verify intended next identity and resulting playback state. A changed title alone does not establish queue direction. Do not select unrelated content or claim unheard playback.",
+    "expectedOperation": "media.control",
+    "expectedArguments": {
+      "action": "next"
+    },
+    "expectation_kind": "positive",
+    "verification_status": "open",
+    "owner_review": {
+      "authorship": true,
+      "capability": true,
+      "note": "Revisión del dueño por chat 2026-09-07/08. Expectativa, no prueba de capacidad ni de frescura. Borrador/auditoría: chat-review-20260908.",
+      "updatedAt": "2026-09-08T00:09:45.542738-03:00"
+    },
+    "origin": "Exact literal and marks from current private registry; criteria drafted1037, not adjudicated",
+    "preconditions": "Root must approve a safe controlled queue with known ordered distinct items and current item before execution; observe expected next item and current playing state. No uncertain Spotify962 session or arbitrary unknown personal queue."
+  },
+  {
+    "case_id": "H0567",
+    "kind": "historical_literal",
+    "group": "control_next",
+    "text": "siguiente canción",
+    "criterion": "Advance to the next item of the observed current queue; verify intended next identity and resulting playback state. A changed title alone does not establish queue direction. Do not select unrelated content or claim unheard playback.",
+    "expectedOperation": "media.control",
+    "expectedArguments": {
+      "action": "next"
+    },
+    "expectation_kind": "positive",
+    "verification_status": "open",
+    "owner_review": {
+      "authorship": true,
+      "capability": true,
+      "note": "Revisión del dueño por chat 2026-09-07/08. Expectativa, no prueba de capacidad ni de frescura. Borrador/auditoría: chat-review-20260908.",
+      "updatedAt": "2026-09-08T00:09:48.078494-03:00"
+    },
+    "origin": "Exact literal and marks from current private registry; criteria drafted1037, not adjudicated",
+    "preconditions": "Root must approve a safe controlled queue with known ordered distinct items and current item before execution; observe expected next item and current playing state. No uncertain Spotify962 session or arbitrary unknown personal queue."
+  },
+  {
+    "case_id": "music1037-dev-06",
+    "kind": "original_development_variant",
+    "group": "control_next",
+    "text": "Skip forward to the next track.",
+    "criterion": "Advance to the next item of the observed current queue; verify intended next identity and resulting playback state. A changed title alone does not establish queue direction. Do not select unrelated content or claim unheard playback.",
+    "expectedOperation": "media.control",
+    "expectedArguments": {
+      "action": "next"
+    },
+    "expectation_kind": "development_variant",
+    "verification_status": "not_executed",
+    "origin": "Original preparation1037; new request, not survey literal, historical reexecution, or passed evidence",
+    "preconditions": "Root must approve a safe controlled queue with known ordered distinct items and current item before execution; observe expected next item and current playing state. No uncertain Spotify962 session or arbitrary unknown personal queue."
+  },
+  {
+    "case_id": "music1037-dev-08",
+    "kind": "original_development_variant",
+    "group": "control_previous",
+    "text": "Go back one song in the current queue.",
+    "criterion": "Return to the preceding item of the observed current queue; verify intended previous identity and resulting playback state. A restart of the same track or changed metadata alone is insufficient.",
+    "expectedOperation": "media.control",
+    "expectedArguments": {
+      "action": "previous"
+    },
+    "expectation_kind": "development_variant",
+    "verification_status": "not_executed",
+    "origin": "Original preparation1037; new request, not survey literal, historical reexecution, or passed evidence",
+    "preconditions": "Root must approve a safe controlled queue with known previous item distinct from current; current position must allow previous-track behavior rather than same-track restart. No uncertain Spotify962 session."
+  },
+  {
+    "case_id": "music1086-dev-next-es",
+    "kind": "original_development_variant",
+    "group": "control_next",
+    "text": "Por favor, pasá a la siguiente pista.",
+    "criterion": "Advance to the next item of the observed current queue; verify intended next identity and resulting playback state. A changed title alone does not establish queue direction. Do not select unrelated content or claim unheard playback.",
+    "expectedOperation": "media.control",
+    "expectedArguments": {
+      "action": "next"
+    },
+    "expectation_kind": "development_variant",
+    "verification_status": "not_executed",
+    "origin": "Original development request authored for MUSIC1086; not a replacement, translation or relabel of a historical case or failed variant.",
+    "preconditions": "Root must approve a safe controlled queue with known ordered distinct items and current item before execution; observe expected next item and current playing state. No uncertain Spotify962 session or arbitrary unknown personal queue.",
+    "author": "BAXY preparation agent under explicit root instruction"
+  },
+  {
+    "case_id": "music1086-dev-previous-es",
+    "kind": "original_development_variant",
+    "group": "control_previous",
+    "text": "Por favor, vuelve a la canción anterior.",
+    "criterion": "Return to the preceding item of the observed current queue; verify intended previous identity and resulting playback state. A restart of the same track or changed metadata alone is insufficient.",
+    "expectedOperation": "media.control",
+    "expectedArguments": {
+      "action": "previous"
+    },
+    "expectation_kind": "development_variant",
+    "verification_status": "not_executed",
+    "origin": "Original development request authored for MUSIC1086; not a replacement, translation or relabel of a historical case or failed variant.",
+    "preconditions": "Root must approve a safe controlled queue with known previous item distinct from current; current position must allow previous-track behavior rather than same-track restart. No uncertain Spotify962 session.",
+    "author": "BAXY preparation agent under explicit root instruction"
+  },
+  {
+    "case_id": "music1037-boundary-01",
+    "kind": "original_boundary",
+    "group": "boundary",
+    "text": "No reanudes la música; dejala como está.",
+    "criterion": "Answer the actual prohibition, conceptual, quoted, future or narrative request faithfully. No playback/control, no current private-data read unless requested, no claim of execution or absence without observation.",
+    "expectation_kind": "boundary",
+    "verification_status": "not_executed",
+    "origin": "Original control1037; not H0333 or any survey relabel"
+  },
+  {
+    "case_id": "music1037-boundary-02",
+    "kind": "original_boundary",
+    "group": "boundary",
+    "text": "¿Qué significa poner una canción en pausa?",
+    "criterion": "Answer the actual prohibition, conceptual, quoted, future or narrative request faithfully. No playback/control, no current private-data read unless requested, no claim of execution or absence without observation.",
+    "expectation_kind": "boundary",
+    "verification_status": "not_executed",
+    "origin": "Original control1037; not H0333 or any survey relabel"
+  },
+  {
+    "case_id": "music1037-boundary-03",
+    "kind": "original_boundary",
+    "group": "boundary",
+    "text": "Traduce al español «skip to the next track».",
+    "criterion": "Answer the actual prohibition, conceptual, quoted, future or narrative request faithfully. No playback/control, no current private-data read unless requested, no claim of execution or absence without observation.",
+    "expectation_kind": "boundary",
+    "verification_status": "not_executed",
+    "origin": "Original control1037; not H0333 or any survey relabel"
+  },
+  {
+    "case_id": "music1037-boundary-04",
+    "kind": "original_boundary",
+    "group": "boundary",
+    "text": "Si mañana quiero oír música, te diré qué poner.",
+    "criterion": "Answer the actual prohibition, conceptual, quoted, future or narrative request faithfully. No playback/control, no current private-data read unless requested, no claim of execution or absence without observation.",
+    "expectation_kind": "boundary",
+    "verification_status": "not_executed",
+    "origin": "Original control1037; not H0333 or any survey relabel"
+  },
+  {
+    "case_id": "music1037-boundary-05",
+    "kind": "original_boundary",
+    "group": "boundary",
+    "text": "Ayer detuve la música antes de salir.",
+    "criterion": "Answer the actual prohibition, conceptual, quoted, future or narrative request faithfully. No playback/control, no current private-data read unless requested, no claim of execution or absence without observation.",
+    "expectation_kind": "boundary",
+    "verification_status": "not_executed",
+    "origin": "Original control1037; not H0333 or any survey relabel"
+  }
+]

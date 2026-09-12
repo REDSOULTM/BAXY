@@ -1,3 +1,23 @@
+## MUSIC1086 — estado vigente 2026-09-12T18:58:09.685809+00:00
+
+Parcial: 4 aprobados, 2 fallidos, 6 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 187/742 | 555 | 0 | >=61 | 0/35 |
+
+Procedencia de primeras altas: Al menos61 primeras altas verificadas hoy:28 Kiro y33 retorno hasta1080.1086 no añade créditos; no se cuentan revalidaciones.
+
+Siguiente acción: Integrar reparación mínima1089: comunicar a media.control SMTC verificado la instrucción de nombres y playbackStatus ya existente para media.status, sin cambiar filtros ni respuesta fija. MUSIC1090 conserva12objetos de1086:6revalidaciones o reintentos justificados por nuevo candidato y6noejecutados; sellar antes de ejecutar. No añadir variantes ni repetir efectos inciertos. MUSIC1088 queda draft sin sello porque su supuesto de dos créditos no se cumplió. MESSAGING1085 listo para siguiente categoría, cliente WhatsApp cerrado por raíz con identidad comprobada; volver a comprobar ausencia antes de ejecutar. C03 activo187/555/0,formal3/11; sin suites/Fast/Full por orden del dueño.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1086/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 157.22 s acumulados; pico GPU 3497.56 MiB; pico RAM 1697.29 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1086 precedente. -->
+
 ## MUSIC1082 — estado vigente 2026-09-12T18:38:48.704245+00:00
 
 Parcial: 1 aprobados, 6 fallidos, 9 sin ejecutar; 0 créditos.

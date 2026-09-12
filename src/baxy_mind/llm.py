@@ -3733,7 +3733,15 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
                 "Briefly confirm what you saved, using its title and relevant "
                 "content. Address the person naturally in their language."
             )
-        if situation.get("operation") == "media.status":
+        if situation.get("operation") == "media.status" or (
+            situation.get("operation") == "media.control"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and observed.get("authority") == "windows_smtc"
+            and isinstance(observed.get("sourceAppUserModelId"), str)
+            and bool(observed["sourceAppUserModelId"].strip())
+            and observed.get("playbackStatus") in {"playing", "paused", "stopped"}
+        ):
             bits.append(
                 "Identify the observed title and artist when supplied, and state "
                 "playbackStatus. A loaded track is not evidence that it is playing: "

@@ -1,0 +1,58 @@
+{
+  "effects_executed": false,
+  "pins": [
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-survey-requirements336-private\\requirements.jsonl",
+      "bytes": 2880249,
+      "sha256": "31a9b8897b52e96dce9a073454f3e21996eb92247ddace30dc5af2c0b9c00ddd"
+    },
+    {
+      "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\SURVEY_TAXONOMY846.json",
+      "bytes": 191013,
+      "sha256": "8e2764eaac0cf305c398979457d8ef604492efef02a6cccac37c7501d0c11c7b"
+    },
+    {
+      "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\CURRENT_CATEGORY_COUNTS.md",
+      "bytes": 1912,
+      "sha256": "0a2ee7549af8a6df7341db0f428d9f4f0811be26a7bcf107559fe139a736658b"
+    },
+    {
+      "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Kernel\\Operations\\ProductCatalog.cs",
+      "bytes": 87575,
+      "sha256": "99cbdfde0e93cfb6a3bd3b9aedabf9354289c8da8e85a02a9644ee355bf1444c"
+    },
+    {
+      "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Providers.Windows\\External\\SteamLocalAdapter.cs",
+      "bytes": 40295,
+      "sha256": "2f8ea2f1fdb617802a3315ecfdd90dcc3681cb7190d144dbb68855b746d7dbc2"
+    },
+    {
+      "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.Providers.Windows\\External\\WindowsInventoryAdapter.cs",
+      "bytes": 14941,
+      "sha256": "5c0ebdaa8d37b88a9fd90728604b584f2c977a557bfe16df6ba8d1c54b7adee1"
+    },
+    {
+      "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\Baxy.App\\ProductConductorHost.cs",
+      "bytes": 32793,
+      "sha256": "be005348749b572e7abb62b249f80db54081936b6eab4fa931c839c328860298"
+    },
+    {
+      "path": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\biblioteca\\carter\\la-razon-de-carter\\18_steam_tool_solucion.md",
+      "bytes": 9561,
+      "sha256": "8d67a202b16923507390d8c24f7dc74b2c44e0e79c5ebbe486a741445535e0c8"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-install1087-eligibility\\ELIGIBILITY.md",
+      "bytes": 6562,
+      "sha256": "344422d9e80de8f3f8ace851050ee1e448ea4718c71b8a6432b124de4fc9ca86"
+    },
+    {
+      "path": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-install1087-eligibility\\ROWS_PRIVATE.json",
+      "bytes": 80114,
+      "sha256": "9533700396b9521dfc41f3353832e405b0252f0f9f1f1a51bbf96426f94776a8"
+    }
+  ],
+  "schema": "install1087-identity-v1",
+  "source_head": "88fae0028cd8cb834ab9bdacb40c1e656bfd74b2",
+  "tests_run": false
+}

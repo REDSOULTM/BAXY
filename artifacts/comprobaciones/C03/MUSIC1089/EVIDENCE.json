@@ -1,0 +1,178 @@
+{
+  "head": "88fae0028cd8cb834ab9bdacb40c1e656bfd74b2",
+  "pins": {
+    "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\src\\baxy_mind\\llm.py": "686ee8c02d7fb9df79ed1462a317998c9f9a2f9e0ffdca31633ebcf23e065579",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\run-01\\compose-audit.jsonl": "8a5895597b04984c4a22bc72a490765ded4243ed390a0fa4739b4ceea7884f2c",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\run-02\\compose-audit.jsonl": "79afdf04233ea4453ba98759404f59c6f5f893d05a768d0f464863fab3975242",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\run-03\\compose-audit.jsonl": "0011c985cf6a06ec6b26658ad69a4004aa1934f6734f8e7b0cf183d1b5bc03cb",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\run-03\\turn-audit.jsonl": "507c67d51c8a3d654ac4ec7b81410fa175a3bcbdb9a05b31a3fe5a5f00411b06",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\run-03\\shell-trace.jsonl": "3dc8adcc27f013f59694574067c205dfdeb19123018fe59090d1f3d320dacc58",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\run-03\\case-observations.json": "074463ecd8145a8c44ed19bf95ba825ea380bc25e1ae210522e678e1f2a0aca7",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\run-03\\journal.snapshot.jsonl": "ae1415ca3eab085d71d7b083131cee882ec61f40d8778bb51af73e351133ac7d",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\run-03\\journal-before.json": "29eb3122b89cab0ba8b3c79fb33381b183ecf2922542929f32bb1e607562b944",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\run-03\\journal-after.json": "45d499a5181b1c79c99b96d12b50ba998f7b365ff9da6c76dbf03eb6b0ae1632",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\run-05\\compose-audit.jsonl": "2b677bdd7c25b2754e13cc22c60a9159aa4d07424435b1bbc1cb3fc5ff29bf7a",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\run-05\\turn-audit.jsonl": "2c6f5a7cc5f678a6de32251392aff4fe144b6774ab6ea3b708506c6a93f9ab11",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\run-05\\shell-trace.jsonl": "11b42cf260b75d92909de31eb8174be4130dcda5b16d15bdce68839987aeeac8",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\run-05\\case-observations.json": "473e94bc1f3487abba37be8ab4d594894346a9d94d2854baa59fa9179fd390c4",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\run-05\\journal.snapshot.jsonl": "a1b170c1bd4911965a143b3863495a54646189d31c9a96c5d1d59456bd1b7d4d",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\run-05\\journal-before.json": "bb7de232d41c3216fb62bbd609ec4b6c3f79a328b9410aeebcaf36506a35c925",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1086-proposal\\private\\run-05\\journal-after.json": "74b4aae1d4593de9a9555d7e0add878802252b3676e140d49faa55256e6dc356",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1064-root-composition\\REVIEW1064.md": "bfa8e35741b69246b04bf828d510b84b22863f9c7694a4f53d31109c82e70b9a"
+  },
+  "unique_composition_stages": {
+    "1": [
+      {
+        "stage": "first",
+        "reason": "",
+        "published": true,
+        "draft": "Poné \"Rio de cristal\" de Original BAXY preparation composition. Está reproduciéndose actualmente.",
+        "draft_sha256": "7fb7379b3cfb834a6bb4b1c7b9a6a4962ee8f053283dc699e4739518077c6b7d",
+        "payload": {
+          "seen": {
+            "sourceAppUserModelId": "Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic",
+            "title": "Rio de cristal",
+            "artist": "Original BAXY preparation composition",
+            "playbackStatus": "playing",
+            "authority": "windows_smtc"
+          },
+          "operation": "media.control"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"media.control\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"sourceAppUserModelId\":\"Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic\",\"title\":\"Rio de cristal\",\"artist\":\"Original BAXY preparation composition\",\"playbackStatus\":\"playing\",\"authority\":\"windows_smtc\"}}"
+      }
+    ],
+    "2": [
+      {
+        "stage": "first",
+        "reason": "",
+        "published": true,
+        "draft": "La siguiente canción es \"Sendero azul\" de Original BAXY preparation composition. Está reproduciéndose actualmente.",
+        "draft_sha256": "adf493cef2bd8bbdea2ca48af41f437dce9cee25f16e0934799591f19ac66785",
+        "payload": {
+          "seen": {
+            "sourceAppUserModelId": "Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic",
+            "title": "Sendero azul",
+            "artist": "Original BAXY preparation composition",
+            "playbackStatus": "playing",
+            "authority": "windows_smtc"
+          },
+          "operation": "media.control"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"media.control\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"sourceAppUserModelId\":\"Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic\",\"title\":\"Sendero azul\",\"artist\":\"Original BAXY preparation composition\",\"playbackStatus\":\"playing\",\"authority\":\"windows_smtc\"}}"
+      }
+    ],
+    "3": [
+      {
+        "stage": "first",
+        "reason": "asserted_failure",
+        "published": false,
+        "draft": "I can't skip forward to the next track. The current playback status is playing, and no action has been taken to change the track.",
+        "draft_sha256": "61c1551fa076dba27592f59572df4d2c7b7441dcb36477e77b7bbbec02c277cd",
+        "payload": {
+          "seen": {
+            "sourceAppUserModelId": "Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic",
+            "title": "Rio de cristal",
+            "artist": "Original BAXY preparation composition",
+            "playbackStatus": "playing",
+            "authority": "windows_smtc"
+          },
+          "operation": "media.control"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"media.control\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"sourceAppUserModelId\":\"Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic\",\"title\":\"Rio de cristal\",\"artist\":\"Original BAXY preparation composition\",\"playbackStatus\":\"playing\",\"authority\":\"windows_smtc\"}}"
+      },
+      {
+        "stage": "retry",
+        "reason": "missing_name",
+        "published": false,
+        "draft": "Moved forward to the next track in the playlist.",
+        "draft_sha256": "5cbe29dae146c638ec404e61ef7a51278df17fea98b665ac0dff8beee4701688",
+        "payload": {
+          "seen": {
+            "sourceAppUserModelId": "Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic",
+            "title": "Rio de cristal",
+            "artist": "Original BAXY preparation composition",
+            "playbackStatus": "playing",
+            "authority": "windows_smtc"
+          },
+          "operation": "media.control"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"media.control\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"sourceAppUserModelId\":\"Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic\",\"title\":\"Rio de cristal\",\"artist\":\"Original BAXY preparation composition\",\"playbackStatus\":\"playing\",\"authority\":\"windows_smtc\"}}"
+      },
+      {
+        "stage": "third",
+        "reason": "missing_name",
+        "published": false,
+        "draft": "I skipped forward to the next track.",
+        "draft_sha256": "a82a3c01ec98e7f882954db9a04d8a4cc441294076be65674a3a75ca9329ab71",
+        "payload": {
+          "seen": {
+            "sourceAppUserModelId": "Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic",
+            "title": "Rio de cristal",
+            "artist": "Original BAXY preparation composition",
+            "playbackStatus": "playing",
+            "authority": "windows_smtc"
+          },
+          "operation": "media.control"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"media.control\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"sourceAppUserModelId\":\"Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic\",\"title\":\"Rio de cristal\",\"artist\":\"Original BAXY preparation composition\",\"playbackStatus\":\"playing\",\"authority\":\"windows_smtc\"}}"
+      }
+    ],
+    "5": [
+      {
+        "stage": "first",
+        "reason": "missing_name",
+        "published": false,
+        "draft": "Vamos a la siguiente pista.",
+        "draft_sha256": "76fa76cf79691eff46ddd0ba66b2d8d135e690f40ebe736b7df7cf7239552771",
+        "payload": {
+          "seen": {
+            "sourceAppUserModelId": "Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic",
+            "title": "Sendero azul",
+            "artist": "Original BAXY preparation composition",
+            "playbackStatus": "playing",
+            "authority": "windows_smtc"
+          },
+          "operation": "media.control"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"media.control\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"sourceAppUserModelId\":\"Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic\",\"title\":\"Sendero azul\",\"artist\":\"Original BAXY preparation composition\",\"playbackStatus\":\"playing\",\"authority\":\"windows_smtc\"}}"
+      },
+      {
+        "stage": "retry",
+        "reason": "missing_name",
+        "published": false,
+        "draft": "Vamos a la siguiente pista.",
+        "draft_sha256": "76fa76cf79691eff46ddd0ba66b2d8d135e690f40ebe736b7df7cf7239552771",
+        "payload": {
+          "seen": {
+            "sourceAppUserModelId": "Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic",
+            "title": "Sendero azul",
+            "artist": "Original BAXY preparation composition",
+            "playbackStatus": "playing",
+            "authority": "windows_smtc"
+          },
+          "operation": "media.control"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"media.control\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"sourceAppUserModelId\":\"Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic\",\"title\":\"Sendero azul\",\"artist\":\"Original BAXY preparation composition\",\"playbackStatus\":\"playing\",\"authority\":\"windows_smtc\"}}"
+      },
+      {
+        "stage": "third",
+        "reason": "missing_state",
+        "published": false,
+        "draft": "Ya pasé a la siguiente pista en \"Sendero azul\" de Original BAXY preparation composition.",
+        "draft_sha256": "464b6252b453a73765199f5cd7d9151afbfd3c43ec3b50bbb18c2e7e257b4830",
+        "payload": {
+          "seen": {
+            "sourceAppUserModelId": "Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic",
+            "title": "Sendero azul",
+            "artist": "Original BAXY preparation composition",
+            "playbackStatus": "playing",
+            "authority": "windows_smtc"
+          },
+          "operation": "media.control"
+        },
+        "situation": "{\"kind\":\"operation\",\"operation\":\"media.control\",\"polarity\":\"success\",\"verified\":true,\"succeeded\":true,\"observed\":{\"version\":1,\"sourceAppUserModelId\":\"Microsoft.ZuneMusic_8wekyb3d8bbwe!Microsoft.ZuneMusic\",\"title\":\"Sendero azul\",\"artist\":\"Original BAXY preparation composition\",\"playbackStatus\":\"playing\",\"authority\":\"windows_smtc\"}}"
+      }
+    ]
+  },
+  "raw_reply_file": "raw-replies.jsonl absent in run03; compose-audit v2 retains generated draft and SHA; no raw audit fabricated"
+}

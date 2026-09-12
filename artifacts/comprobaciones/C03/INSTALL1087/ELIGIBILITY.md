@@ -1,0 +1,32 @@
+# INSTALL1087 — elegibilidad estática, sin panel
+
+Categoría exacta **Instalar y desinstalar software** (`software_installation`): **31 positivos abiertos, 0 cubiertos**. Registro SHA `31a9b8897b52e96dce9a073454f3e21996eb92247ddace30dc5af2c0b9c00ddd`; fuente `88fae0028cd8cb834ab9bdacb40c1e656bfd74b2`. Los 31 tienen motivo abierto genérico y ningún recibo individual enlazado: esto no demuestra que nunca se ejecutaran históricamente ni que hayan fallado. Textos y marcas completos permanecen exclusivamente en `ROWS_PRIVATE.json`.
+
+| Conducta | N | IDs exactos | Operación y bloqueo/reanudación |
+|---|---:|---|---|
+| Instalación Steam directa por título | 10 | H0118,H0272,H0345,H0382,H0390,H0434,H0482,H0659,H0671,H0680 | `game.install.named` existente. Candidatos condicionales; faltan licencia autenticada, identidad y estado actuales, espacio y autorización exacta del efecto. |
+| Variaciones ortográficas o de gramática Steam | 4 | H0049,H0295,H0571,H0643 | Misma operación potencial. El diccionario actual ya contempla las unidades de título de H0295 y H0571; no se propone alias nuevo. La selección/binding de la petición completa no se ha medido aquí. H0049/H0643 no se dan por reconocidos. |
+| Diálogo, AppID o secuencia expresamente pedidos | 3 | H0101,H0396,H0456 | Preparación/commit existentes no prueban por sí mismos cumplir la secuencia literal. H0101 necesita el diálogo real exacto; H0396 conserva AppID y alcance del diálogo; H0456 exige búsqueda previa y contiene URL truncada: no repararla ni saltarse ese paso por el agente. |
+| Proveedor explícito incompatible | 2 | H0387,H0721 | No sustituir proveedor por Steam. Aclaración honesta puede ser pertinente, pero no acredita una instalación positiva sin satisfacer el criterio. |
+| Instalación de paquete de escritorio | 5 | H0167,H0217,H0457,H0583,H0651 | `package.install.prepare` lee identidad exacta con Winget; `package.install.commit` devuelve siempre `winget_install_dispatch_not_configured`. Bloqueo concreto en owner existente, no se declara una instalación implementada. Además falta ligar nombre solicitado a packageId acreditado. |
+| Paquete Python | 1 | H0052 | No se observó operación tipada de instalación pip; no sustituir por Winget ni ejecución arbitraria. |
+| Desinstalación de aplicación/juego | 5 | H0039,H0089,H0574,H0612,H0620 | No se observó operación tipada de desinstalación. `game.install.cancel` cancela descargas parciales; su implementación interna no autoriza usarla como desinstalador general. |
+| Instalación Epic | 1 | H0578 | `game.installed.named` puede leer manifiestos Epic; no se observó ruta de instalación Epic en el catálogo/adapters revisados. |
+
+**Selección:** diez candidatos directos Steam, potencialmente ampliables a dos variantes de título que el provider ya resuelve, constituyen el grupo mayor sobre mecanismo de efecto existente. **Cero literales son peticiones puras de lectura/aclaración y cero están listos para ejecutar con la evidencia consultada.** No se sella panel ni se cambia el criterio para acreditar una lectura previa como instalación. Los 12 restantes fuera de los 19 relacionados con Steam/proveedor son cinco paquetes, pip, cinco desinstalaciones y Epic. No se presupone infraestructura nueva: completar Winget sería reparación del dispatch existente; los otros siete sin operación necesitan decisión de alcance antes de diseñar algo.
+
+## Qué verifica hoy el mecanismo
+
+- `ProductCatalog.cs:536–553`: instalación nombrada, prepare/commit y status. `SteamLocalAdapter.cs:170–253`: prepara sin descarga, requiere licencia actual; commit consume preparación de cinco minutos y vuelve a verificar autoridad. Instalación nombrada resuelve diccionario existente o título único del snapshot, exige licencia y puede devolver `already_installed` con manifiesto.
+- `SteamLocalAdapter.cs:256–300`: tras despacho acepta una transición de manifiesto/bytes/flags/hash y devuelve estado y bytes observados. **No toda transición equivale a instalación terminada.** `steam_install_transition_not_verified` puede tener efecto ocurrido; ante ese resultado, reconciliar estado antes de reintentar, nunca repetir automáticamente.
+- `WindowsInventoryAdapter.cs:191–246`: `winget show --id … --exact --disable-interactivity` verifica ID/version y produce preparación; `:75` corta commit con el error señalado. No se ejecutó Winget en esta revisión.
+- `ProductCatalog.cs:557–567` distingue lectura de juego instalado Steam/Epic de instalación. `SteamLocalAdapter.cs:763–783` sitúa `app_uninstall` dentro de `CancelPartialAsync`; no es una capacidad pública general de desinstalación.
+- `ProductConductorHost.cs:291–349`: revisión manual existente admite `browser.navigate`, `browser.navigate.named`, `app.close`, **no instalación**. La confirmación normal del producto no desaparece; el runner revisado no se puede presentar como apto para autoaprobar instalaciones. Raíz debe elegir confirmación ordinaria real ligada a invocación/argumentos o revisar explícitamente esa costura del instrumento, sin nuevo provider ni aprobación por texto de encuesta.
+
+## Reanudación mínima para raíz
+
+Primero autorizar sólo observación actual mediante operaciones de lectura existentes: catálogo local de juegos, estado por AppID, y preparación por identidad exacta cuando corresponda. Comprobar cliente/cuenta autenticada sin capturar credenciales, licencia, estado inicial, espacio y ausencia de trabajo ajeno que pueda afectarse. No se infiere ninguna de esas condiciones de procesos, diccionario de títulos ni snapshot histórico. Después elegir juegos y efectos exactos permitidos, y criterio de inicio/descarga/instalación completo fiel al requisito; conservar los literales y exigir pares pertinentes. Si la observación encuentra una instalación en curso o resultado incierto, reconciliar primero. No inventar compras ni licencias para preparar la tanda.
+
+Herencia acotada: `CURRENT_CATEGORY_COUNTS.md` y `SURVEY_TAXONOMY846.json`; índice `biblioteca/01_INVENTARIO.md` → `biblioteca/carter/la-razon-de-carter/18_steam_tool_solucion.md` (intento anterior con límites UIA, no recibo del provider actual). Se reutiliza el procedimiento evidencia-baxy. La nota histórica impide asumir éxito por diálogo/tiempo, no prueba fallo del código vigente.
+
+Revisión exclusivamente estática: sin instalación, descarga, HTTP, UI, Core, GPU, pruebas, imports, build, edición de fuente o registro. Sin adjudicación ni créditos. No panel creado.

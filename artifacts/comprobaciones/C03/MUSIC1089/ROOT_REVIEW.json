@@ -1,0 +1,9 @@
+{
+  "head_before": "88fae0028cd8cb834ab9bdacb40c1e656bfd74b2",
+  "patch_sha256": "8eae5f7e5c6d97a5f7ef5531a457bf3a141eef987aa40aa0c600790ca871e1ee",
+  "source_before": "686ee8c02d7fb9df79ed1462a317998c9f9a2f9e0ffdca31633ebcf23e065579",
+  "source_after": "8993a12644146d8dd2d37943dd2847c6dc18217890e3f637d317bc2c43018f79",
+  "review": "Root reviewed full diff/diagnosis and existing instruction, validator5092 and retry propagation. Exact verified transport predicate now receives existing media.status instruction. No filter/authority/provider changes and no fixed visible answer. New candidate needs sealed product runs.",
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests"
+}
