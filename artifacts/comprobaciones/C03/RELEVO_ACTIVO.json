@@ -46,17 +46,66 @@
     "otherWriterFound": false,
     "pytestOrTesthostFound": false
   },
+  "machineRoleCorrection": {
+    "correctedBy": "owner",
+    "statement": "Esta máquina (REDPC, C:) es el BAXY original. El portátil sólo replicó el repositorio, y su raíz en D: era únicamente porque su C: estaba lleno. La nomenclatura origen/destino de la primera pasada del relevo queda invertida: aquí es el original, allí la réplica.",
+    "consequence": "El trabajo de C03 desde el 2026-09-06 se hizo en la réplica, así que su evidencia privada y el modelo decidido se descargaron allí. Eso explica que %LOCALAPPDATA%/BAXY de esta máquina se detenga el 2026-09-06 y que D:/BAXYRuntime/experiments no tuviera carpeta models."
+  },
   "destinationRuntime": {
     "registeredManifest": "C:/Users/usuario/AppData/Local/BAXYRuntime/mind-runtime-v1.json",
-    "registeredGguf": "D:/BAXYRuntime/assets/models/granite-4.2-3b-Q4_K_M.gguf",
-    "registeredGgufSha256": "e0406663965846ae22a403456eb826ccce5f450840491f71952f18a7cb78e7d5",
-    "decidedModelPresent": false,
-    "decidedModelSha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+    "registeredGgufBeforeRelay": "D:/BAXYRuntime/assets/models/granite-4.2-3b-Q4_K_M.gguf",
+    "registeredGgufBeforeRelaySha256": "e0406663965846ae22a403456eb826ccce5f450840491f71952f18a7cb78e7d5",
+    "manifestBackupBeforeRelay": "C:/Users/usuario/AppData/Local/BAXYRuntime/mind-runtime-v1.json.pre-c03-relay.bak",
+    "registeredGguf": "D:/BAXYRuntime/experiments/models/qwen3-4b-instruct-2507-a06e946b/Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "registeredGgufSha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+    "registeredMatchesDecision": true,
+    "decidedModelPresent": true,
+    "decidedModelRestoredByRoot": {
+      "provenance": "artifacts/research/qwen3_4b_instruct_2507_candidate_preregistration_20260811.json",
+      "quantRepository": "unsloth/Qwen3-4B-Instruct-2507-GGUF",
+      "pinnedRevision": "a06e946bb6b655725eafa393f4a9745d460374c9",
+      "license": "apache-2.0",
+      "bytesExpected": 2497281120,
+      "bytesActual": 2497281120,
+      "sha256Expected": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+      "sha256Actual": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+      "procedure": "Orden congelado de la propia prerregistración: descarga a .partial desde la revisión fijada, exigencia de byte count y SHA-256 exactos, y sólo entonces renombrado. Ni campaña de modelos nueva ni sustitución silenciosa.",
+      "notANewCampaign": true
+    },
+    "assetsLocalOverride": {
+      "path": "C:/Users/usuario/AppData/Local/BAXYRuntime/assets.local.json",
+      "createdByRoot": true,
+      "declares": ["conversation_model", "wake_manifest"],
+      "reason": "assets.manifest.json lista Qwen3-4B-Q4_K_M.gguf como primer candidato, que en esta máquina es el modelo activo anterior (Instruct AWQ, 7485fe6f). El override es el mecanismo oficial del propio manifiesto para declarar la ruta atestada. wake_manifest se declara para conservar wake_on_start=true, que el descriptor no encontraba en %LOCALAPPDATA%."
+    },
+    "bootstrap": {
+      "command": "scripts/bootstrap.ps1",
+      "firstFailure": "mind_runtime_registration_failed: runtime_lock_invalid → python_runtime_lock_invalid: installed_missing. El venv de la mente estaba desfasado respecto al pylock de los 192 commits nuevos.",
+      "resolution": "bootstrap instaló las dependencias que faltaban: pywebrtc-audio 0.2.0+baxy.1 y sherpa-onnx 1.13.4+baxy.2",
+      "finalResult": "exit0 — «BAXY arranca: los activos obligatorios y el runtime registrado son validos». mind_import_ok. voice: stt/vad/tts/aec/ducking disponibles; wake por manifiesto local; streaming STT y vision ausentes y opcionales."
+    },
+    "loadVerification": {
+      "backend": "llama-b9980-cuda12.4 llama-server.exe",
+      "flags": "-ngl 99 -c 12288 -b 2048 -ub 256 -fa on -ctk q8_0 -ctv q8_0 -np 3 --jinja --reasoning off --reasoning-budget 0 --cache-ram 0 --no-mmap --cont-batching",
+      "flagsProvenance": "copiadas de src/baxy_mind/llm.py:5520-5562, no inventadas",
+      "serverLog": "n_slots = 3, n_ctx_slot = 4096, kv_unified = false; model loaded; listening",
+      "health": "{\"status\":\"ok\"}",
+      "vramWithServerMib": 5528,
+      "vramWithoutServerMib": 2015,
+      "vramAttributableDeltaMib": 3513,
+      "ramWorkingSetMib": 708.25,
+      "comparisonToProductionPeaks": "3513 MiB frente a 3497.56-3499.56 MiB medidos en las tandas 1021/1022/1025 de la réplica: mismo orden, por debajo de la guarda de parada 3800 y del techo de producto 4096.",
+      "noteOnAugustThreshold": "La prerregistración de agosto fijaba 3072 MiB como techo de aceptación de aquel experimento, con su propio conjunto de banderas. Esta comprobación no es ese experimento: es una carga con el perfil de producto vigente. No se declara aquella aceptación cumplida.",
+      "serverStoppedAfterCheck": true,
+      "isNotACoverageRun": "Comprobación de runtime, no tanda: sin panel sellado, sin turnos, sin adjudicación ni crédito."
+    },
     "localGgufInventory": {
       "granite-4.2-3b-Q4_K_M.gguf": "e0406663965846ae22a403456eb826ccce5f450840491f71952f18a7cb78e7d5",
       "Qwen3-4B-Q3_K_M.gguf": "e78ff54a67f3b3f57e637fbf0770d5b73c1e215ea7c0153980f1e8140c2b2486",
-      "Qwen3-4B-Q4_K_M.gguf": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
-      "Qwen3-4B-Q5_K_M.gguf": "37edbd37f5b7a4d4e7a766400c57def1f790e809de03513b86bf11bb06979695"
+      "Qwen3-4B-Q4_K_M.gguf": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5 — el repositorio lo identifica como el modelo activo anterior, Qwen3 4B Instruct AWQ; mismo nombre que el candidato del manifiesto, distinto checkpoint",
+      "Qwen3-4B-Q5_K_M.gguf": "37edbd37f5b7a4d4e7a766400c57def1f790e809de03513b86bf11bb06979695",
+      "Qwen3.5-4B-Q4_K_M.gguf": "00fe7986ff5f6b463e62455821146049db6f9313603938a70800d1fb69ef11a4",
+      "searchScope": "93 ficheros .gguf hasheados o descartados por identidad en C:, D:, E:, F:, G: y J:; ninguno era el decidido antes de restaurarlo"
     },
     "llamaServerPath": "C:/Users/usuario/AppData/Local/BAXYRuntime/assets/llama-b9980-cuda12.4/llama-server.exe",
     "llamaServerSha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
@@ -82,6 +131,8 @@
   },
   "missingPrivateTransfer": {
     "required": true,
+    "onlyRemainingBlocker": true,
+    "modelBlockerResolved": "El segundo bloqueo, los pesos decididos, quedó resuelto por raíz restaurando el activo desde la revisión fijada que el propio repositorio registra. Ya no hace falta trasladarlo.",
     "archive": "C03_OPUS5_RELEVO_PRIVADO.zip",
     "archiveSha256": "95bc3f239a2e5c013469d26143b55e7223b4c254300ea15ae59651259fd8c704",
     "expectedBytes": 2025743,
@@ -99,11 +150,11 @@
     "requestFile": "artifacts/comprobaciones/C03/OPUS5_DESTINO/SOLICITUD_TRASLADO.md"
   },
   "goalStatus": "active",
-  "workStatus": "destination_updated_awaiting_private_transfer",
+  "workStatus": "runtime_ready_awaiting_private_registry",
   "executionPausedByOwner": false,
   "branch": "Goal-c03",
-  "checkpoint": "126/742covered,616open,0NA; 1025 adjudicación parcial sin cambios; destino actualizado a ed305c38; ZIP privado ausente.",
-  "continuation": "PC destino actualizado por fast-forward y sin procesos de producto. Runtime inventariado: backend correcto, pesos decididos ausentes. 1025 sigue con 5 casos juzgados de 25; los 20 restantes no se juzgan sin sus terminales. Ningún crédito nuevo escrito, ningún panel nuevo sellado, ninguna tanda nueva ejecutada.",
+  "checkpoint": "126/742covered,616open,0NA; 1025 cerrada en cobertura (3, definitivo) con 14/25 casos juzgados; máquina en ed305c38+, runtime registrado con el modelo decidido y carga verificada; falta sólo el registro privado.",
+  "continuation": "Máquina al día, sin procesos de producto ajenos, Release compilado, runtime registrado con Qwen3-4B-Instruct-2507 Q4_K_M verificado por SHA y carga sana con el perfil de producto (VRAM atribuible 3513 MiB). El único bloqueo que queda es el registro privado de la encuesta: sin requirements.jsonl no hay verification_status ni literales exactos para sellar. 1025 tiene 14/25 casos juzgados y su cobertura es final; los 11 pendientes necesitan events.jsonl y ninguno mueve el contador. Ningún crédito nuevo, ningún panel sellado, ninguna tanda ejecutada.",
   "publishedSourceCommit": "20dab7edcd34ce87eff2d176613bb5ae4e968e1b",
   "surveyVerificationCounts": {
     "covered": 126,

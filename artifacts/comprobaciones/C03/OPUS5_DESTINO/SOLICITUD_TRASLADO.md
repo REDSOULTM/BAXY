@@ -1,8 +1,17 @@
-# Solicitud de traslado — dos artefactos externos que no están en este PC
+# Solicitud de traslado — un artefacto externo que no está en esta máquina
 
-Este PC (**REDPC**, raíz `C:/Users/usuario/Desktop/ETC/Programacion/BAXY Definitivo`) ya está
-actualizado a `ed305c38` de `Goal-c03` por fast-forward, sin perder nada, y compila en Release.
-Faltan dos cosas que no viajan por Git y que **no puedo reconstruir sin inventar**.
+> **Corrección del dueño.** REDPC es el BAXY **original**. El portátil sólo replicó el repositorio y
+> su raíz en `D:` era porque su `C:` estaba lleno. Léase «origen» como la réplica y «destino» como
+> esta máquina original. El tramo de C03 desde el 6 de septiembre se ejecutó en la réplica, y por eso
+> su evidencia privada y la descarga del modelo decidido quedaron allí.
+
+> **Actualización.** El **segundo** bloqueo, los pesos del modelo decidido, **ya está resuelto**: lo
+> restauré yo desde la revisión fijada que el propio repositorio registra, con byte count y SHA-256
+> verificados, y el runtime quedó registrado y cargando sano. Queda sólo el paquete privado.
+
+Esta máquina (**REDPC**, raíz `C:/Users/usuario/Desktop/ETC/Programacion/BAXY Definitivo`) está
+actualizada a `Goal-c03`, compila en Release y tiene el runtime registrado con el modelo decidido.
+Falta una cosa que no viaja por Git y que **no puedo reconstruir sin inventar**.
 
 ## 1. El paquete privado del relevo — bloquea la cobertura
 
@@ -32,39 +41,49 @@ Faltan dos cosas que no viajan por Git y que **no puedo reconstruir sin inventar
 No contiene ningún literal. Por eso ninguna tanda nueva puede sellarse todavía: sellar sin el
 literal exacto sería fabricar el material, y el goal lo prohíbe.
 
-## 2. Los pesos del modelo decidido — bloquea la ejecución en GPU
+## 2. Los pesos del modelo decidido — RESUELTO, no hace falta trasladarlos
 
-- **Decisión 792:** Qwen3-4B-Instruct-2507 Q4_K_M, SHA256
-  `3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597`.
-- **No está en este PC.** Hay cuatro GGUF en `D:/BAXYRuntime/assets/models` y **ninguno** es ése:
+Lo dejo escrito porque el camino sirve para la próxima máquina.
 
-  | Fichero | SHA256 |
-  |---|---|
-  | `granite-4.2-3b-Q4_K_M.gguf` | `e0406663…78e7d5` (es el que está registrado ahora) |
-  | `Qwen3-4B-Q3_K_M.gguf` | `e78ff54a…2b2486` |
-  | `Qwen3-4B-Q4_K_M.gguf` | `7485fe6f…34fdf5` |
-  | `Qwen3-4B-Q5_K_M.gguf` | `37edbd37…79695` |
+El modelo decidido nunca estuvo en `assets/models`: vivía en
+`D:/BAXYRuntime/experiments/models/qwen3-4b-instruct-2507-a06e946b/`, y aquí esa carpeta no existía
+porque la descarga del 11 de agosto ocurrió en la réplica. De los 93 ficheros `.gguf` de esta máquina
+ninguno era el decidido. Cuidado con uno en particular: `D:/BAXYRuntime/assets/models/Qwen3-4B-Q4_K_M.gguf`
+**se llama igual** que el primer candidato de `assets.manifest.json`, pero el propio repositorio lo
+identifica como el modelo activo **anterior**, Qwen3 4B Instruct AWQ, SHA `7485fe6f…`. Registrarlo por
+nombre habría sido el reemplazo silencioso que el goal prohíbe.
 
-  El tercero **se llama igual** que el candidato de `assets.manifest.json`, así que registrarlo por
-  nombre daría un modelo distinto con aspecto correcto. No lo hago: sería el reemplazo silencioso
-  que el goal prohíbe.
-- El backend sí coincide con la decisión: `llama-server.exe` de `llama-b9980-cuda12.4` tiene el
-  SHA `38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e` esperado.
-- `assets.manifest.json` dice, para este activo, que **BAXY no descarga modelos automáticamente**:
-  se restaura el GGUF atestado o se declara su ruta en el override local. No hay mecanismo oficial
-  del proyecto que lo adquiera por red, así que no invento uno.
-- **Qué necesito:** el fichero de pesos con ese SHA, en `D:/BAXYRuntime/assets/models/` o en
-  cualquier ruta que me digas. Al recibirlo lo registro con
-  `scripts/register_mind_runtime.ps1` y verifico el hash antes de cualquier tanda.
+La procedencia atestada estaba versionada en
+`artifacts/research/qwen3_4b_instruct_2507_candidate_preregistration_20260811.json`: repositorio de
+cuantización `unsloth/Qwen3-4B-Instruct-2507-GGUF`, revisión fijada
+`a06e946bb6b655725eafa393f4a9745d460374c9`, 2 497 281 120 bytes, SHA
+`3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597`, licencia Apache-2.0, y el orden
+congelado de verificación. Lo restauré siguiendo ese orden: descarga a `.partial`, byte count exacto,
+SHA-256 exacto, y sólo entonces renombrado. No es una campaña de modelos nueva ni un cambio de
+modelo; es el activo de la decisión 792 puesto donde el propio proyecto lo declara.
 
-El hardware de este PC es compatible sin campaña nueva: RTX 4060 Ti con 16 380 MiB de VRAM y
-32 530 MiB de RAM, contra picos históricos de 3499 MiB de VRAM y 2467 MiB de RAM. Las guardas
-heredadas (4000 MiB libres al arrancar, 768 MiB mínimo, parar a 3800 MiB de VRAM, 900 s por tanda,
-120 000 ms por turno) se conservan tal cual.
+Después, `scripts/bootstrap.ps1` falló primero con `runtime_lock_invalid` → `installed_missing`: el
+venv de la mente estaba desfasado respecto al `pylock` de los 192 commits nuevos. Bootstrap instaló
+lo que faltaba (`pywebrtc-audio 0.2.0+baxy.1`, `sherpa-onnx 1.13.4+baxy.2`) y terminó con «BAXY
+arranca: los activos obligatorios y el runtime registrado son validos». Para que el descriptor
+resolviera el modelo correcto y no perdiera el wake, declaré ambos en el override oficial
+`%LOCALAPPDATA%/BAXYRuntime/assets.local.json`; guardé copia del manifiesto anterior en
+`mind-runtime-v1.json.pre-c03-relay.bak`, y `wake_on_start` volvió a `true` como estaba.
+
+Carga verificada con las banderas exactas del producto, copiadas de `src/baxy_mind/llm.py:5520-5562`:
+`n_slots = 3`, `n_ctx_slot = 4096`, `model loaded`, `/health` → `status: ok`. VRAM atribuible por
+delta: 5528 MiB con el servidor, 2015 MiB sin él, **3513 MiB**, en línea con los 3497,56–3499,56 MiB
+de las tandas 1021/1022/1025 y por debajo de la guarda de parada 3800 y del techo de producto 4096.
+RAM del servidor 708 MiB. El servidor quedó detenido. Esto es comprobación de runtime, **no una
+tanda**: sin panel sellado, sin turnos, sin adjudicación y sin crédito.
+
+El techo de 3072 MiB que fijaba la prerregistración de agosto pertenecía a la aceptación de aquel
+experimento, con su propio conjunto de banderas. Esto no es aquel experimento y no declaro cumplida
+esa aceptación.
 
 ## Mientras tanto
 
-No estoy parado. Lo hecho sin estos dos artefactos está en
+No estoy parado. Lo hecho sin el paquete privado está en
 `OPUS5_DESTINO/DESTINO_INVENTARIO.json`, `KNOWLEDGE1025/ADJUDICATION_STATUS.json` y
 `AGENDA1024/ROOT_REVIEW_DESTINO.md`. No he escrito ningún crédito nuevo, no he sellado ningún
 panel y no he ejecutado ninguna tanda: hacerlo sin registro sería inventar cobertura.

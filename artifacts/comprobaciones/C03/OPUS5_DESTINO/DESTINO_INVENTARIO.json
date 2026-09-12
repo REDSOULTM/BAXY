@@ -52,21 +52,56 @@
       "pids_from_source_pc_reused": false
     }
   },
+  "machine_role_correction": {
+    "corrected_by": "owner",
+    "statement": "REDPC es el BAXY original. El portátil sólo replicó el repositorio y su raíz en D: era porque su C: estaba lleno. Donde este documento dice destino, léase la máquina original; donde dice origen, la réplica.",
+    "consequence": "El tramo de C03 desde el 2026-09-06 se ejecutó en la réplica: allí quedaron la evidencia privada y la descarga del modelo decidido. De ahí que %LOCALAPPDATA%/BAXY aquí se detenga el 2026-09-06."
+  },
   "runtime": {
     "registered_manifest": "C:/Users/usuario/AppData/Local/BAXYRuntime/mind-runtime-v1.json",
-    "registered_manifest_matches_decision": false,
-    "registered_gguf": "D:/BAXYRuntime/assets/models/granite-4.2-3b-Q4_K_M.gguf",
-    "registered_gguf_sha256": "e0406663965846ae22a403456eb826ccce5f450840491f71952f18a7cb78e7d5",
+    "registered_manifest_matches_decision": true,
+    "registered_gguf": "D:/BAXYRuntime/experiments/models/qwen3-4b-instruct-2507-a06e946b/Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+    "registered_gguf_sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
+    "registered_gguf_before_relay": "D:/BAXYRuntime/assets/models/granite-4.2-3b-Q4_K_M.gguf",
+    "registered_gguf_before_relay_sha256": "e0406663965846ae22a403456eb826ccce5f450840491f71952f18a7cb78e7d5",
+    "manifest_backup_before_relay": "C:/Users/usuario/AppData/Local/BAXYRuntime/mind-runtime-v1.json.pre-c03-relay.bak",
+    "wake_on_start_preserved": true,
     "decided_model": "Qwen3-4B-Instruct-2507 Q4_K_M",
     "decided_model_sha256": "3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597",
-    "decided_model_present_on_destination": false,
+    "decided_model_present_on_destination": true,
+    "decided_model_restored_by_root": true,
+    "load_verification": {
+      "flags_from": "src/baxy_mind/llm.py:5520-5562",
+      "server_log": "n_slots = 3, n_ctx_slot = 4096, kv_unified = false; model loaded; listening on 127.0.0.1:14733",
+      "health": "status ok",
+      "vram_with_server_mib": 5528,
+      "vram_without_server_mib": 2015,
+      "vram_attributable_delta_mib": 3513,
+      "ram_working_set_mib": 708.25,
+      "under_guard_stop_3800": true,
+      "under_product_ceiling_4096": true,
+      "server_stopped_after_check": true,
+      "not_a_coverage_run": true
+    },
     "gguf_inventory_hashed": {
       "D:/BAXYRuntime/assets/models/granite-4.2-3b-Q4_K_M.gguf": "e0406663965846ae22a403456eb826ccce5f450840491f71952f18a7cb78e7d5",
       "D:/BAXYRuntime/assets/models/Qwen3-4B-Q3_K_M.gguf": "e78ff54a67f3b3f57e637fbf0770d5b73c1e215ea7c0153980f1e8140c2b2486",
       "D:/BAXYRuntime/assets/models/Qwen3-4B-Q4_K_M.gguf": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
       "D:/BAXYRuntime/assets/models/Qwen3-4B-Q5_K_M.gguf": "37edbd37f5b7a4d4e7a766400c57def1f790e809de03513b86bf11bb06979695"
     },
-    "gguf_inventory_note": "El fichero se llama igual que el candidato del manifiesto de activos (Qwen3-4B-Q4_K_M.gguf) pero su contenido no es el de la decisión 792. Registrarlo por nombre daría un modelo distinto con apariencia correcta. No se sustituye en silencio.",
+    "gguf_inventory_note": "El fichero se llama igual que el candidato del manifiesto de activos (Qwen3-4B-Q4_K_M.gguf) pero no es el de la decisión 792. El propio repositorio lo identifica: artifacts/research/qwen3_4b_instruct_2507_candidate_preregistration_20260811.json lo declara como el modelo activo anterior, Qwen3 4B Instruct AWQ, 2497280256 bytes, SHA 7485fe6f. El decidido es otro checkpoint, Instruct-2507, 2497281120 bytes. Registrarlo por nombre habría sido un reemplazo silencioso.",
+    "decided_model_provenance": {
+      "recorded_in": "artifacts/research/qwen3_4b_instruct_2507_candidate_preregistration_20260811.json",
+      "upstream_model": "Qwen/Qwen3-4B-Instruct-2507",
+      "quant_repository": "unsloth/Qwen3-4B-Instruct-2507-GGUF",
+      "pinned_revision": "a06e946bb6b655725eafa393f4a9745d460374c9",
+      "expected_bytes": 2497281120,
+      "license": "apache-2.0",
+      "local_destination": "D:/BAXYRuntime/experiments/models/qwen3-4b-instruct-2507-a06e946b/Qwen3-4B-Instruct-2507-Q4_K_M.gguf",
+      "absent_on_this_machine_before_relay": "D:/BAXYRuntime/experiments no contenía carpeta models; la descarga del 2026-08-11 ocurrió en el portátil replicado, no aquí",
+      "restored_by_root": true,
+      "restore_procedure": "El orden congelado de la propia prerregistración: descargar a .partial desde la revisión fijada y exigir byte count y SHA-256 exactos antes de renombrar. No es campaña de modelos nueva ni sustitución."
+    },
     "llama_server": "C:/Users/usuario/AppData/Local/BAXYRuntime/assets/llama-b9980-cuda12.4/llama-server.exe",
     "llama_server_sha256": "38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e",
     "llama_server_matches_decision": true,
@@ -74,7 +109,13 @@
     "stt_parakeet": "C:/Users/usuario/.gemma4/models/sherpa-onnx-nemo-parakeet-tdt-0.6b-v3-int8",
     "wake_manifest": "C:/Users/usuario/AppData/Local/BAXYRuntime/assets/wake/baxy-wakeword-v1.json",
     "tts_model": "C:/Users/usuario/.gemma4/models/piper/es_MX-claude-high.onnx",
-    "asset_acquisition_policy": "assets.manifest.json declara que BAXY no descarga modelos automáticamente; el GGUF conversacional se restaura atestado o se declara en el override local. No hay mecanismo oficial del proyecto para adquirir estos pesos por red.",
+    "asset_acquisition_policy": "assets.manifest.json declara que BAXY no descarga modelos automáticamente: el GGUF conversacional se restaura atestado o se declara en el override local. Ambas cosas se hicieron. La procedencia atestada la registra el propio repositorio en artifacts/research/qwen3_4b_instruct_2507_candidate_preregistration_20260811.json, con repositorio de cuantización, revisión fijada, bytes, SHA-256, licencia y el orden congelado de verificación; restaurarla desde ahí no es descargar un modelo cualquiera ni abrir una campaña.",
+    "assets_local_override": "C:/Users/usuario/AppData/Local/BAXYRuntime/assets.local.json — declara conversation_model y wake_manifest; creado por raíz, no existía",
+    "bootstrap_run": {
+      "first_failure": "runtime_lock_invalid → installed_missing: el venv de la mente estaba desfasado respecto al pylock de los 192 commits nuevos",
+      "packages_installed": ["pywebrtc-audio 0.2.0+baxy.1", "sherpa-onnx 1.13.4+baxy.2"],
+      "final": "exit0, BAXY arranca: activos obligatorios y runtime registrado validos; mind_import_ok"
+    },
     "historical_runtime_manifest_copied": false
   },
   "hardware": {
@@ -111,6 +152,7 @@
     "tests_omitted_by_owner": "suites dueñas, Fast y Full omitidas por instrucción explícita; omitidas, no verdes"
   },
   "blocking_external_artifact": {
+    "only_remaining_blocker": true,
     "archive": "C03_OPUS5_RELEVO_PRIVADO.zip",
     "sha256": "95bc3f239a2e5c013469d26143b55e7223b4c254300ea15ae59651259fd8c704",
     "bytes": 2025743,
