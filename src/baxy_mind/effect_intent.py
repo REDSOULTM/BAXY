@@ -2768,6 +2768,7 @@ def resolve_explicit_clarification_intent(
         # not an incomplete instruction to contact a person named by the
         # greedy ``tell ... that`` messaging surface.
         incomplete_message_shape = False
+    desired_volume = _EXPLICIT_DESIRE_REQUEST.match(folded)
     relative_spoken_volume = (
         re.fullmatch(
             r"(?:(?:speak|talk)\s+(?:softer|quieter|louder)|"
@@ -2779,6 +2780,16 @@ def resolve_explicit_clarification_intent(
             re.IGNORECASE,
         )
         is not None
+        or (
+            desired_volume is not None
+            and re.fullmatch(
+                r"se\s+(?:oiga|oyera|escuche|escuchara)\s+"
+                r"(?:mas\s+(?:fuerte|alto|bajo)|menos\s+fuerte)\s+"
+                rf"(?:el|mi)\s+{_LOCAL_VOLUME_DEVICE}"
+                r"(?:\s*,?\s*por favor)?[.!?]*",
+                desired_volume.group("body"),
+            ) is not None
+        )
     )
     telegraphic_calendar_invite = (
         re.fullmatch(
@@ -5305,10 +5316,11 @@ _UNMUTE_VERB = (
     r"(?:unmute|desmutea(?:me|lo|la)?|desmutear(?:lo|la)?|desmutees|"
     r"des(?:s)?ilenci(?:a(?:r(?:lo|la)?|me|lo|la)?|es))"
 )
+_MUTE_PREDICATIVE_VERB = r"(?:deja|dejar|pon|poner|ponle)\s+mudo"
 _MUTE_VERB = (
     r"(?:silencia|silenciar|silenciame|silencialo|silenciala|mutea|mutear|muteame|"
     rf"mute|{_UNMUTE_VERB}|reactiva|reactivar|reactivalo|"
-    r"reactivala|apaga|apagar|activa|activar)"
+    rf"reactivala|apaga|apagar|activa|activar|{_MUTE_PREDICATIVE_VERB})"
 )
 # «apaga»/«activa» también gobiernan el equipo, la pantalla o la radio; solo
 # valen para el silencio global con un objeto de audio literal. «apaga la

@@ -4978,6 +4978,7 @@ def _explicit_arguments_from_evidence(
         positive_surface = re.sub(false_pattern, " ", folded)
         true_signal = bool(
             re.search(r"\b(?:mute|silencia|silenciar)\b", positive_surface)
+            or re.search(rf"\b{effect_intent._MUTE_PREDICATIVE_VERB}\b", positive_surface)
             or re.search(
                 r"\b(?:pon|poner|deja|dejar|leave|put)\b[^.;!?]{0,48}"
                 r"\b(?:en|on)\s+(?:mute|mudo|silencio)\b",

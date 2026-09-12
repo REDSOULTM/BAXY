@@ -1,0 +1,17 @@
+{
+  "utc": "2026-09-12T01:06:33.677510+00:00",
+  "patch_sha256": "9a4ddcb280c77a65b26310b17c7732d06acc637bcdf084c490ef9c25a596e499",
+  "root_review": [
+    "829cf6",
+    "1014f1",
+    "973d8c"
+  ],
+  "status": "integrated_pending_product1020",
+  "tests_run": false,
+  "source_pins": {
+    "src/baxy_mind/effect_intent.py": "3bb83dc8f0c8736c86d402d0faf656915044a9089b8b27b9b9a430b36365cade",
+    "src/baxy_mind/__main__.py": "6d4a5856d5fc8827d9024b3f38312679e15f2cf9bf00692a895137556a0279ba"
+  },
+  "build_policy": "Python-only; inherit current.NET build1013 and runner verify actualfingerprint. No automatedsuites as ownerrequested.",
+  "coverage_added": 0
+}
