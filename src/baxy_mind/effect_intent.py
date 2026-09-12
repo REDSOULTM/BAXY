@@ -2277,6 +2277,101 @@ def _reminder_has_actionable_due(folded: str) -> bool:
     )
 
 
+def _incomplete_scheduled_request(
+    text: str, available: frozenset[str]
+) -> ClarificationIntent | None:
+    """Clarify a literal partial time without authorizing a scheduled effect."""
+
+    folded = _strip_request_envelope(_fold(text))
+    # Keep scope checks on the whole request before reading a temporal preface.
+    # Quoted payloads and multi-clause requests remain with the existing paths.
+    if (
+        explicit_non_action_frame(text)
+        or _is_meta_or_tool_denial(folded)
+        or _is_past_or_hypothetical_state(folded)
+        or _has_contradictory_correction(folded)
+        or _has(folded, r'["“”«»;]|\b(?:no|nunca|jamas|never|not|without|sin|if|si)\b')
+    ):
+        return None
+    clock = re.search(_CLOCK_TIME_SELECTOR, folded)
+    # The numeric vocabulary is shared with the existing spoken-number reader.
+    number = r"(?:\d{1,2}|" + "|".join(
+        word for word, value in {**_ENGLISH_SMALL_NUMBERS, **_SPANISH_SMALL_NUMBERS}.items()
+        if 0 <= value <= 23
+    ) + r")"
+    if clock is None:
+        clock = re.search(
+            rf"\b(?:for|para)\s+(?:las?\s+)?{number}\b"
+            r"(?!\s+(?:minutes?|minutos?|hours?|horas?|days?|dias?)\b)", folded,
+        )
+    temporal = re.match(rf"^(?:{_CLOCK_TIME_SELECTOR}|{_BOUNDED_TEMPORAL_SELECTOR})", folded)
+    body = folded
+    if temporal is not None and temporal.end() < len(folded):
+        body = _strip_request_envelope(folded[temporal.end():].lstrip(" ,:"))
+    if len(_request_clauses(body)) != 1:
+        return None
+    desire = _EXPLICIT_DESIRE_REQUEST.match(body)
+    if desire is not None:
+        body = desire.group("body")
+    nominal_desire = re.fullmatch(
+        r"(?:me\s+vendria\s+bien|i\s+could\s+use)\s+(?P<body>.+)", body
+    )
+    if nominal_desire is not None:
+        body = nominal_desire.group("body")
+    # These are scheduling speech acts, not matches anywhere in arbitrary prose.
+    noun_request = re.match(
+        rf"^(?:{_SCHEDULING_VERB}|fija)\s+(?:(?:un|una|el|la|an?|the)\s+)?"
+        r"(?P<noun>alarma|alarm|timer|temporizador|recordatorio|reminder)\b(?P<tail>.*)$",
+        body,
+    )
+    if noun_request is None and (desire is not None or nominal_desire is not None):
+        noun_request = re.match(
+            r"^(?:(?:un|una|an?|the)\s+)?"
+            r"(?P<noun>alarma|alarm|timer|temporizador|recordatorio|reminder)\b(?P<tail>.*)$",
+            body,
+        )
+    wake = re.match(r"^(?:wake\s+me(?:\s+up)?|get\s+me\s+up|desp(?:ierta|erta)me|levantame)\b", body)
+    reminder = re.match(r"^(?:recuerdame|recordame|avisame|remind\s+me)\s+(?P<title>.+)$", body)
+    if reminder is None and desire is not None:
+        reminder = re.match(r"^(?:recuerdes|recuerde|avises|avise)\s+(?P<title>.+)$", body)
+    alarm = wake is not None or (
+        noun_request is not None and noun_request.group("noun") in {"alarma", "alarm", "timer", "temporizador"}
+    )
+    title = reminder.group("title") if reminder is not None else ""
+    if noun_request is not None and noun_request.group("noun") in {"recordatorio", "reminder"}:
+        payload = re.search(r"\b(?:about|to|de|que)\s+(?P<title>\S.+)", noun_request.group("tail"))
+        title = payload.group("title") if payload is not None else ""
+    if title:
+        content = re.sub(rf"(?:{_CLOCK_TIME_SELECTOR}|{_BOUNDED_TEMPORAL_SELECTOR})", " ", title)
+        content = re.sub(r"\b(?:at|for|para|a|las?|on|next|el|la|proximo|proxima)\b", " ", content)
+        if not re.search(r"[a-z]", content):
+            title = ""
+    # Only explicitly retained content uses this branch. Time-only reminders
+    # retain the existing title clarification below; no AGENDA1024 WIP is merged.
+    if not alarm and not title:
+        return None
+    operation = "notification.schedule" if alarm else "reminder.create"
+    if operation not in available:
+        return None
+    if clock is not None:
+        literal_clock = clock.group(0)
+        complete_clock = _has(
+            literal_clock,
+            r"\b\d{1,2}:\d{2}\b|\b(?:a\.?\s*m\.?|p\.?\s*m\.?)\b|"
+            r"\b(?:de\s+la|in\s+the)\s+\w+\b|\b(?:0|1[3-9]|2[0-3])\b",
+        )
+        complete_clock = complete_clock or any(
+            (value == 0 or 12 < value <= 23) and _has(literal_clock, rf"\b{word}\b")
+            for word, value in {**_ENGLISH_SMALL_NUMBERS, **_SPANISH_SMALL_NUMBERS}.items()
+        )
+        if not complete_clock:
+            return ClarificationIntent((operation,), ("clock_period",))
+        return None
+    if not _reminder_has_actionable_due(folded):
+        return ClarificationIntent((operation,), ("alarm_time" if alarm else "due_time",))
+    return None
+
+
 def _multiple_alarm_schedule_intent(
     folded: str,
     available: frozenset[str],
@@ -3163,21 +3258,9 @@ def resolve_explicit_clarification_intent(
             ("office.document.create",),
             ("topic_or_content",),
         )
-    if (
-        "notification.schedule" in available
-        and _head_is(
-            _request_head(folded),
-            r"(?:pon|poner|ponme|fija|set|create|crea|programa|schedule)",
-        )
-        and _has(folded, r"\b(?:alarma|alarm|timer|temporizador)\b")
-        and _has(
-            folded,
-            r"\b(?:hora (?:del|de la) (?:desayuno|almuerzo|merienda|cena)|"
-            r"breakfast time|lunch time|snack time|tea time|dinner time|mealtime)\b",
-        )
-        and not _has(folded, _CLOCK_TIME_SELECTOR)
-    ):
-        return ClarificationIntent(("notification.schedule",), ("alarm_time",))
+    incomplete_schedule = _incomplete_scheduled_request(text, available)
+    if incomplete_schedule is not None:
+        return incomplete_schedule
     if (
         "reminder.create" in available
         and _has(folded, r"\b(?:recordatorio|reminder)\b")

@@ -1,3 +1,25 @@
+## FILES1099 — estado vigente 2026-09-12T21:35:32.1366154Z
+
+Parcial: 1 aprobados, 5 fallidos, 3 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 197/742 | 545 | 0 | >=71 | 0/35 |
+
+Procedencia de primeras altas: Al menos 71 primeras altas verificadas: 28 del relevo Kiro y 43 del retorno hasta DIALOGUE1093. No se cuentan revalidaciones ni verification_updated_at.
+
+Siguiente acción: Integrar tras revisión la reparación AGENDA1100 de aclaración temporal y medir AGENDA1101 con pares antes de sus seis literales. FILES1099: tres objetos sin ejecutar tras el fallo de variante2; diagnóstico local conserva la clasificación complete incorrecta. Sin tests por instrucción del dueño; sin crédito por propuestas.
+
+Evidencia: `artifacts/comprobaciones/C03/FILES1099/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 173.22 s acumulados; pico GPU 3497.56 MiB; pico RAM 2082.44 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque FILES1099 precedente. -->
+
 ## AGENDA1097 — estado vigente 2026-09-12T21:14:14.6044640Z
 
 Parcial: 1 aprobados, 12 fallidos, 10 sin ejecutar; 0 créditos.
