@@ -1,17 +1,18 @@
 {
-  "utc": "2026-09-12T05:36:05.354506+00:00",
-  "covered": 137,
-  "open": 605,
+  "utc": "2026-09-12T06:06:16.319648+00:00",
+  "covered": 154,
+  "open": 588,
   "not_applicable": 0,
   "total": 742,
   "closed_categories": 0,
   "total_categories": 35,
-  "covered_updated_last_24h": 109,
+  "covered_updated_last_24h": 128,
   "covered_updated_last_24h_window": {
-    "since_utc": "2026-09-11T05:36:05.354506+00:00",
-    "as_of_utc": "2026-09-12T05:36:05.354506+00:00"
+    "since_utc": "2026-09-11T06:06:16.319648+00:00",
+    "as_of_utc": "2026-09-12T06:06:16.319648+00:00"
   },
   "updated_recent_ids": [
+    "H0015",
     "H0017",
     "H0020",
     "H0025",
@@ -19,6 +20,7 @@
     "H0027",
     "H0035",
     "H0044",
+    "H0055",
     "H0056",
     "H0065",
     "H0070",
@@ -27,8 +29,11 @@
     "H0087",
     "H0090",
     "H0111",
+    "H0126",
     "H0132",
     "H0133",
+    "H0134",
+    "H0136",
     "H0144",
     "H0154",
     "H0156",
@@ -38,11 +43,13 @@
     "H0168",
     "H0169",
     "H0172",
+    "H0180",
     "H0184",
     "H0194",
     "H0207",
     "H0214",
     "H0216",
+    "H0223",
     "H0233",
     "H0251",
     "H0258",
@@ -67,19 +74,25 @@
     "H0379",
     "H0383",
     "H0384",
+    "H0391",
     "H0397",
     "H0402",
     "H0406",
     "H0409",
     "H0413",
+    "H0418",
     "H0422",
     "H0438",
     "H0442",
+    "H0449",
+    "H0450",
     "H0469",
     "H0470",
     "H0471",
     "H0477",
     "H0490",
+    "H0498",
+    "H0499",
     "H0501",
     "H0503",
     "H0504",
@@ -96,9 +109,12 @@
     "H0563",
     "H0569",
     "H0577",
+    "H0586",
     "H0588",
     "H0597",
     "H0599",
+    "H0600",
+    "H0602",
     "H0619",
     "H0622",
     "H0625",
@@ -106,6 +122,7 @@
     "H0644",
     "H0649",
     "H0650",
+    "H0653",
     "H0655",
     "H0665",
     "H0669",
@@ -115,14 +132,16 @@
     "H0684",
     "H0688",
     "H0690",
+    "H0700",
     "H0706",
     "H0710",
     "H0725",
     "H0726",
+    "H0727",
     "H0729",
     "H0736"
   ],
-  "registry_sha256": "e9622300757b30a26fca21d84fbbde8afc85b5cec73aea1be03c9f600ef10ee3",
+  "registry_sha256": "58986cb8b2b42a6d70f6648ea0e66b9a7b7e948b784963316683fb6b3f8671f7",
   "categories": [
     {
       "category": "music",
@@ -138,14 +157,6 @@
       "total": 46,
       "covered": 10,
       "open": 36,
-      "not_applicable": 0
-    },
-    {
-      "category": "apps_open",
-      "label": "Abrir aplicaciones",
-      "total": 54,
-      "covered": 21,
-      "open": 33,
       "not_applicable": 0
     },
     {
@@ -197,6 +208,14 @@
       "not_applicable": 0
     },
     {
+      "category": "apps_open",
+      "label": "Abrir aplicaciones",
+      "total": 54,
+      "covered": 28,
+      "open": 26,
+      "not_applicable": 0
+    },
+    {
       "category": "knowledge_reasoning",
       "label": "Conocimiento, razonamiento y creatividad verbal",
       "total": 37,
@@ -226,14 +245,6 @@
       "total": 22,
       "covered": 0,
       "open": 22,
-      "not_applicable": 0
-    },
-    {
-      "category": "clock",
-      "label": "Hora y fecha",
-      "total": 23,
-      "covered": 3,
-      "open": 20,
       "not_applicable": 0
     },
     {
@@ -314,6 +325,14 @@
       "total": 12,
       "covered": 0,
       "open": 12,
+      "not_applicable": 0
+    },
+    {
+      "category": "clock",
+      "label": "Hora y fecha",
+      "total": 23,
+      "covered": 13,
+      "open": 10,
       "not_applicable": 0
     },
     {
@@ -405,5 +424,5 @@
       "not_applicable": 0
     }
   ],
-  "note": "Recalculado del registro privado tras REPAIR1032."
+  "note": "Recalculado del registro privado tras CLOCK1034."
 }

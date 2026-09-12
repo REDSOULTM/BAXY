@@ -1,0 +1,19 @@
+{
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "candidate_manifest_sha256": "7ad97c76794d898ef8b54bfff3533155e7a738d69b76a515d2e1d651f1e01bb3",
+  "execution_authorized": true,
+  "utc": "2026-09-12T06:01:35.102561+00:00",
+  "exit_code": 0,
+  "stopped": false,
+  "pins_unchanged": true,
+  "terminal_records": 22,
+  "session_controls_observed": 22,
+  "turn_admissions_observed": 22,
+  "app_cleanup_by_runner": false,
+  "audio_restoration_by_runner": false,
+  "quality_adjudicated": false,
+  "success_count": null,
+  "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1034-profile\\journal\\missions.jsonl",
+  "target_apps_closed_by_guard": false
+}
