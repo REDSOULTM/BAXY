@@ -1,0 +1,108 @@
+Loading
+Starting cloud session
+Checkpoint
+Restore
+Goal para Opus 5 — continuar C03 desde otro PC
+Copia desde la línea siguiente hasta el final como goal del nuevo agente. Adjunta también C03_OPUS5_RELEVO_PRIVADO.zip. El ZIP contiene información privada de la encuesta y evidencia: trasládalo directamente al PC de destino, no lo publiques en Git ni en una web.
+
+Completa íntegramente C03, «respuesta veraz de BAXY», continuando el trabajo existente. No empieces de cero, no repitas la herencia ni reduzcas el goal a la encuesta. Trabaja autónomamente, con máxima rapidez, manteniendo respuestas útiles y fieles y el producto lo más simple posible. Eres el nuevo escritor raíz; la tarea anterior 01a08e22-0ac1-7f93-9c99-5d2d0730d6c6 quedó detenida por el dueño para este relevo. Esta instrucción autoriza reanudar en TU sesión después de actualizar y verificar el destino; la pausa del repositorio sigue prohibiendo reanudar la sesión anterior.
+
+1. Primero actualiza el PC desactualizado sin perder trabajo
+Repositorio correcto: BAXY Definitivo, remoto https://github.com/REDSOULTM/baxy-definitivo.git, rama Goal-c03. Existe un repositorio vecino llamado BAXY: es herencia y NO es el destino de escritura. En la máquina anterior la raíz era D:/Perfil/Escritorio/ETC/Programacion/BAXY DEFINITIVO; descubre la raíz real de este PC, no asumas esa letra de unidad ni el usuario usuario. Deben existir Baxy.slnx, main.py y AGENTS.md.
+Empieza con git rev-parse --show-toplevel, git remote -v, git status --short --branch y git log --oneline -5. Después ejecuta git fetch origin. Conserva cambios locales, ramas, archivos no versionados y evidencia. No uses reset --hard, clean, borrado recursivo ni sobrescritura forzada. Si el checkout está limpio y es actualizable sin divergencias: git switch Goal-c03 y git merge --ff-only origin/Goal-c03. Si hay WIP o divergencias, respáldalos y usa un checkout/clon aislado actualizado; no sacrifiques trabajo para hacer pasar el fast-forward. No modifiques ni fusiones a main.
+La entrega incluye los commits 2637d864 (123 cubiertos) y 7a015914 (pausa inmediata,126 cubiertos), más el commit posterior que incorpora este prompt y OPUS5_TRANSFER.json. Usa el tip remoto que contenga estos documentos; el SHA mínimo no es una orden para retroceder si el remoto está más avanzado. Verifica la ascendencia y consulta el estado más reciente antes de decidir. La fuente de producto de esta entrega es 20dab7edcd34ce87eff2d176613bb5ae4e968e1b; los commits posteriores hasta el relevo son evidencia/documentación.
+Comprueba que no haya otro escritor, conductor, Baxy, baxy-core, llama-server, pytest/testhost ni build activo en el PC destino. La máquina anterior quedó sin procesos de producto al recoger su última tanda. No reutilices PIDs de ese PC. Registra tu identificador y las rutas nuevas en RELEVO_ACTIVO conservando sourceThreadId y la pausa histórica. No abras una segunda instancia sobre el mismo candidato.
+
+2. Restaura los datos que no viajan con Git
+Extrae el ZIP en una carpeta NUEVA de relevo, sin sobrescribir el perfil del PC destino. Verifica cada entrada contra TRANSFER_MANIFEST.json (SHA256 y tamaño); OPUS5_TRANSFER.json versionado contiene el SHA del ZIP. El manifiesto distingue ruta de origen y entrada portable. La carpeta localappdata/BAXY/ contiene archivos de evidencia y propuestas; no significa que debas copiar todo encima de %LOCALAPPDATA%.
+Archivo indispensable: 
+requirements.jsonl
+. Su SHA en esta entrega es 1a7ec3d381e4d972cb0bbdf9c55ed632216618e932614e31d2ea602a74a3eae6,742 filas únicas,126 covered,616 open,0 not_applicable. Conserva los literales, case_id, revisiones del dueño y evidencia previa. Si en destino ya hay un registro, compara identidad, fechas y evidencias antes de sustituirlo; nunca sobrescribas avances posteriores. No reconstruyas el registro a partir de un contador ni conviertas expectativas en resultados.
+El ZIP conserva los materiales y capturas recientes1021/1022/1025, diarios de esas tandas, propuesta1024, diagnóstico1023 y planes externos disponibles. authority/ conserva instrucciones originales y las versiones vigentes de AGENTS y los dos goals que estaban como WIP en la máquina anterior. Úsalas como autoridad de la entrega; no apliques a ciegas configuración personal ni parches sobre un destino divergente. runtime_history/ es evidencia del runtime anterior, NO una instalación portable ni autorización actual. El modelo, CUDA, .NET, ejecutables compilados, credenciales y perfiles completos del usuario no están incluidos.
+Las rutas absolutas de capturas y sellos antiguos son referencias históricas. Usa el mapeo del manifiesto para LEERLAS sin editar sus bytes. Para una nueva ejecución crea un runner adaptado y un manifiesto de candidato nuevo, conservando los hashes originales de paneles y evidencias. No falsifiques pins para que un runner viejo acepte el nuevo PC. Si falta un artefacto externo antiguo que resulte indispensable, identifica el archivo exacto y solicita su traslado; sigue mientras tanto con trabajo independiente. No repitas una campaña para suplir evidencia simplemente no localizada.
+
+3. Autoridad y cambios del dueño que mandan
+Lee primero 
+OPUS5_HANDOFF.md
+, RELEVO_ACTIVO.json, SURVEY_COVERAGE_CURRENT.json, la cabecera/No repetir del CHECKPOINT.md y OPUS5_TRANSFER.json. Después lee 
+00_IDENTIDAD.md
+, 
+AI_CONTEXT_MAP.md
+, los objetivos documentacion/sprints/Sprints comprobación/C03_ASTRA_AUTORIDAD.md y C03_RESPUESTA_VERAZ.md, contrastándolos con authority/ del paquete. Lee las filas C03 de 03_MATRIZ_DE_CRITERIOS.md y el contrato de campaña referenciado por los objetivos. El objetivo completo original también está en 
+goal-objective.md
+ y 
+pasted-text-1.txt
+; las siguientes actualizaciones del dueño prevalecen sobre sus partes antiguas:
+
+No ejecutar pruebas automatizadas, suites dueñas, Fast ni Full. El dueño pidió expresamente «no hagas test, saca el goal lo más rápido posible, sin perder calidad». No transformes la antigua exigencia de Full/dueñas en bloqueo ni la ejecutes por un AGENTS viejo. Sí están autorizados compilaciones necesarias, lectura/revisión y tandas selladas en el producto real. Declara las pruebas omitidas, nunca verdes. Una compilación correcta no demuestra calidad ni UI.
+
+La encuesta742 ordena el trabajo: cada tramo suma cubiertos o prepara directamente la tanda que los sumará. H0675 («qué app usa más memoria»), OCR/captura/proveedores nuevos están aparcados. Nueva infraestructura sólo si desbloquea al menos10 requisitos abiertos a la vez; di cuáles y cuántos ANTES de construirla.
+
+Prioriza simplicidad y estabilidad. Si una capa causa pérdidas de una respuesta correcta, identifica la primera transformación incorrecta. Retira la capa que reemplaces; no apiles reglas, prompts, filtros o excepciones por literal. El dueño permite cambios profundos cuando sean el camino más simple y demostrado, no exige conservar complejidad inútil.
+
+Puedes delegar exploración, preparación, implementación y revisión. Sólo raíz escribe fuente canónica, integra, adjudica, toca registro, ejecuta GPU, hace commit/push. Cada subagente: entregable único, archivos cerrados, una iteración, sin GPU ni runtime compartido. Parches en worktrees externos, ownership disjunto. Conserva máximo2 secundarios mientras rija la recuperación de RAM; la tanda tiene prioridad.
+
+Está autorizado cerrar aplicaciones para liberar memoria. No vuelvas a pedir ese permiso. Cierra primero servidores de compilación o procesos ociosos propios; conserva trabajo sin guardar y efectos inciertos. Permiso para cerrar apps NO es permiso para enviar mensajes, comprar, suscribirse ni usar credenciales ajenas.
+
+No declares bloqueado mientras exista trabajo independiente. No pidas reconfirmar elecciones ya tomadas. No hagas una campaña de modelos nueva. Continúa hasta cierre demostrado; un avance parcial no es «C03 completado».
+Se mantienen seis invariantes: catálogo tipado único; mente propone/kernel autoriza/provider ejecuta; nada afirmado sin verificar; terminales honestos; confirmación ligada a invocación exacta; cero respuestas visibles fijas; ejecución del modelo local y privada, sin enviar contenido del usuario a servicios externos. Español primero e inglés obligatorio; no exigir frases exactas ni un acento artificial. Una explicación sencilla útil puede pasar.
+
+4. Estado exacto recibido y primera acción
+126/742 cubiertos,616 abiertos,0 no aplican;98 altas confirmadas en las últimas24h al escribir el relevo;0/35 categorías cerradas;C03 3/11 cumplidos,5 contradichos,3 pendientes. Recalcula la ventana de24h según la hora del destino. La clasificación846 de742casos está hecha y es inmutable: no reclasifiques ni reinicies la encuesta. SURVEY_COVERAGE_CURRENT.json contiene categorías ordenadas por abiertos. No hay fecha fiable de cierre completo.
+Últimos resultados:
+
+Tanda	Estado	Resultado	Crédito
+1021 agenda	recogida01416e, exit0, completa	6/22 cumplen	+1 H0363, lista de tareas local vacía, dos variantesES/EN
+1022 sistema	recogida f42d77, exit0, completa	21/25 cumplen	+10 CPU/RAM/batería, dos variantes por métrica
+1025 conocimiento	recogida ad4693, exit0,25terminales	adjudicación PARCIAL	+3 H0172,H0214,H0726; resto pendiente de juicio raíz
+Primera acción de producto/evidencia tras actualizar y restaurar: termina la adjudicación1025 SIN repetir su ejecución. Lee el panel original, ROOT_PARTIAL_CREDIT.json, EXIT.json y los25terminales de 
+events.jsonl
+; correlaciona auditorías/diario si hay operaciones. Los3créditos ya fueron escritos cuando EXIT aún no existía; no los sumes otra vez. Fuente actual1019, manifest1025 SHA 5bf984a90c83e15fd74b674e6a4a60f3d6643ddf6034eeeb9268def92522b2d3. La ejecución terminó antes de la pausa y no hay sesión que debas volver a lanzar.
+Hechos observados aún no convertidos en adjudicación completa: H0278 afirmó estreno original de Marvel vs.Capcom en2000; H0366 atribuyó Doom Eternal a Bethesda Game Studios y2023; Portal habló de un hombreChell y mundos alternativos. H0424/H0645 y variante inglesa se respondieron como identidad de BAXY sin referente. Tetris y comparación inglesa terminaron en composition_failed. La variante de recursión mezcló definición y error. No acredites esos fallos por fluidez. Contrasta hechos específicos con fuentes primarias cuando sea necesario y deja causas porcase_id; el juicio final te corresponde. No asumas que todo el panel falló por estas filas.
+Después decide por mayor masa ABIERTA EJECUTABLE, registrando por qué se aparcan las superiores. Hay una reparación propuesta 1024, SIN integrar ni medir: sólo effect_intent.py,base d97670db,parche b45ff88467f3ea281fb59520687a59bc7b96ad8e5f0f6f507807aa92ea4dd493, fuente propuesta 868a2e327e81197093f62510b3d0091987b52b7222d552d72486d63d88929b1b. Reutiliza la gramática de duración para avisame/recuerdame/remind me sin contenido y pide sólo title. No toca main/llm. Su revisión estática no demuestra continuación con el título ni conservación efectiva del plazo. Revisa antes de integrar, mide sólo el subconjunto pertinente con pares y límites y adopta por evidencia. Preparación1027 fue interrumpida por la pausa: si no hay SEAL íntegro NO está lista; comprueba el inventario, no presupongas entrega.
+
+5. Método de cobertura y ejecución
+Un case_id pasa a covered sólo si su literal EXACTO se ejecutó en el producto con el candidato actual, produjo respuesta útil y fiel y al menos2variantes pertinentes de la misma conducta pasaron en esa tanda o una anterior de la categoría. Las variantes no suman al742. Escribe verification_status al adjudicar, no al final de categoría. Preserva evidencia anterior; un literal fallido queda open con causa y no obliga a repetir el panel entero. El material no se traduce, plantillea ni reetiqueta. Los3negativos y18sin marca originales siguen siendo límites, no créditos.
+Con mecanismo probado por tanda≥80% o evidencia dueña válida de esa operación:30–40literales+10–15variantes+5límites. Si no está probado: primera tanda10literales+10variantes, diagnosticar/reparar y enseguida una tanda grande. Si no hay tantos abiertos elegibles, declara el número real, sin rellenar con cubiertos ni fallos antiguos. Reparaciones dirigidas usan subconjuntos exactos y controles pertinentes. Sella panel, expectativas, clasificación y SHA ANTES de ejecutar. No cambies criterios después de ver resultados.
+Mientras correN, prepara y sella siguiente categoría por masa. AdjudicaN tú; escribe crédito enseguida. El siguiente panel va a la categoría con más abiertos ejecutables, salvo que otra esté a una sola tanda de cerrar. No priorices lo que ya estaba a medias por comodidad. Cada checkpoint: cubiertos/742,abiertos,noaplican,altas24h,categorías cerradas/total,filasC03/11,RAMyVRAM separadas y pruebas omitidas. Si bajas de20altas/día sinFull, explica causa y ajuste en ESTADO_PARA_DUENO.
+
+6. Runtime del PC nuevo
+Producto sólo Windows, .NET10+Python3.12+React/TS en shell escritorio. Única entrada de desarrollo: py main.py; tandas reales mediante su conductor existente. No es una web: navegador o conductor sin ventana no acreditan pantalla ni voz.
+No copies el manifiesto de runtime histórico encima del destino. Inspecciona 
+bootstrap.ps1
+, 
+register_mind_runtime.ps1
+, 
+mind_runtime_manifest.ps1
+, assets.manifest.json y el runtime registrado del PC. Reutiliza activos locales correctos y adquiere sólo los que falten mediante mecanismos oficiales del proyecto; no cambies a otro modelo porque esté instalado. Registra rutas reales. Compila por el arranque/build vigente y verifica que Core publicado y Core efectivo junto aBaxy sean el mismo. No reutilices DLL/exe ni BuildReady1013 de la otra máquina como prueba de compilación actual.
+Modelo decidido: Qwen3-4B-Instruct-2507 Q4_K_M, GGUF SHA 3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597. Backend histórico llama-b9980-cuda12.4, llama-server SHA 38a9d28ea414442590486459a7d1f5e32655db83148b7a114b79cd1ad242946e. Perfil: ngl99,ctx12288,3slots,b2048,ub256,KVq8_0,FlashAttentionon,thinkingoff,temperatura0,no-mmap,cacheRAM0,continuousbatching. Consulta DECISION_MODELO792 y manifiesto histórico para configuración efectiva exacta; verifica compatibilidad del hardware destino sin campaña nueva ni reemplazo silencioso.
+Antes de GPU: candidato/HEAD, hashes fuente/binarios/runtime, panel sellado, perfil nuevo y RAM real. Guardas heredadas:4000MiB libres al arrancar,768MiB mínimo,VRAMparar3800MiB,900s/tanda,120000ms/turn. Techo deproducto4GBVRAM. El runner normal1025 sirve de referencia, con584fuentes/18binarios/5runtime, pero sus rutas y autorizaciones son de otra máquina: crea las nuevas vinculaciones conservando guardas. No lo lances a ciegas. Al cerrar compilación usa el dotnet efectivo; en origen era %USERPROFILE%/.dotnet/dotnet.exe, no el global deProgramFiles que apagaba otros servidores.
+En origen1021/1022 tuvieron picos VRAM3499.56/3497.56MiB y RAM2463.06/2467.25MiB, respectivamente. Son historia, no medición del PC destino. No entrenes ni ajustes modelo por diferencias de carga del nuevoPC.
+
+7. Reanudaciones y lo que NO se repite
+Apps40abiertos y música39 tienen condiciones/efectos pendientes en957/962/991/NEXT_989. Fuente/build/registro deNEXT_989 son antiguos: úsalo sólo para historial de efectos. No copies sus hashes de candidato.
+
+Web36:1010/1017demostraron resultados RSS ajenos a la consulta ANTES del filtro. Cambiar orden/%20/+ no lo reparó. No relajarAllterms ni hardcodear sitios, ni repetir esas mediciones sin hipótesis nueva.
+
+Archivos32,plan1005: límites de sandbox/ubicaciones y fixtures reales pendientes; no escribir en Desktop/Documents ajenos para fingir cobertura.
+
+Mensajería31,plan1014: permisos generales de apps no autorizan enviar mensajes a terceros. No transformar enviar en borrador para acreditar. Lecturas faltantes de sólo2casos no justifican infraestructura nueva.
+
+Instalación31,plan1018:19Steam tienen mecanismo pero requieren sesión/entitlement/espacio/recursos y reconciliación. No inferir instalación completa de manifest de inicio. No desinstalarsoftware como fixture. Hay subgrupos menores sin provider que no se suman artificialmente para llegar10.
+
+Agenda29 tras1021: H0011pregunta hora de cancelación en vez de identidad; H0043intentó task.create inválido; H0121/H0343repiten tiempo. InvocaciónH0043 e48cd6fe-3264-492f-9f8f-d8b739329c03 fallóinvalid_task; campo effectMayHaveOccurred ausente, nofalse. Tres task.list posteriores vacías en eseperfil, no se hizo limpieza global.
+
+Vídeo26,plan1026:12Netflix posibles con streaming.play.named existente, condicionados a sesión CDP autenticada, título/entitlement y reproducción observada; navegación no acredita reproducción. Disney/Prime no se convierten en Spotify ni implican provider autorizado.
+
+H0675/OCR/providers siguen aparcados. Modelo/backend792, herencia802, frescura536 y fuente800 rechazada no se reabren sin nueva evidencia.
+
+Efecto Spotify962 incierto: invocation88672a39-9448-4096-accb-10d3f48873f8,mission526382df-b843-40b2-8e65-111795d67a11,failed spotify_exact_result_not_found,effectMayHaveOccurred=true. No reproducir ni cerrar Spotify para ocultarlo. Steam/Discord/Calculator/Settings/Explorer conservan sus IDs y reanudaciones enNEXT_989/planes957/953/960/990. Son efectos del PC origen: no intentes reconciliarlos ejecutando acciones sobre apps homónimas del PC destino.
+
+Objetos975/980/986 y alarmas ajenas se conservan. No borrado global de tareas, notas, recordatorios o perfiles. Las restauraciones de audio1016/1020 ya se hicieron con lectura fresca; sus baselines no autorizan tocar audio en otra máquina.
+
+8. Alcance real de cierre y comunicación
+Mantén las ocho rutas de C03: bienvenida,conversación,aclaración,confirmación,progreso,resultado,error,resumen de misión, con idioma y voz adecuados. Revisa contratos y continuidad C04–C09 hasta instalación desde MAPA_COMPLETO_2026-09-05, sin ejecutar esos goals ni cerrar filas ajenas. UI real/voz/loopback requieren evidencia propia; el conductor no los acredita. Voz humana/wake/AEC son ownerC08 donde corresponda. Encuesta126 no es126/742delgoal completo.
+Busca primero en ámbito src tests scripts main.py; usa rg si existe o búsqueda acotada equivalente. Antes de investigar herencia aplica 
+SKILL.md
+: índice→título→fragmento. No recorras artifacts/biblioteca indiscriminadamente ni abras completos JSONL de decenas deMB. Lee sólo evidencia necesaria, no vuelvas a gastar días reconstruyendo el hilo.
+Guarda avances en RELEVO_ACTIVO/CHECKPOINT/ESTADO_PARA_DUENO y handoff breve durante el trabajo. Fuente y evidencia propia en commits pequeños enGoal-c03, push sin tocarWIPajeno/main; no publiques el ZIPprivado. La pausa anterior es un relevo, NO un fracaso técnico delgoal. Da actualizaciones claras y breves, no pidas permisos ya dados ni declares éxito sin prueba. Tu primera entrega verificable es completar la adjudicación pendiente1025 con sus archivos ya existentes y dejar la siguiente ejecución pertinente preparada o reparada
