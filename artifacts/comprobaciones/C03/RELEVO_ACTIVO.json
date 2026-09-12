@@ -1131,5 +1131,12 @@
       "ram_peak_mib": 1588.71875
     },
     "next": "Reparar conservación de roles en aclaraciones con evidencia H0137 de1110 y variante0 de1116; propuesta1119 pendiente de raíz. H0584 y par1 no ejecutados porque falló el par0. Los cinco límites permanecen sellados, fuera de la ruta modificada; el condicional6 fallido1095 no se repite sin hipótesis. DIALOGUE1111/1112 y TIME1117/1118 pendientes. Goalactivo, sin tests."
+  },
+  "currentSourceCandidate1119": {
+    "owner": "src/baxy_mind/llm.py",
+    "sha256": "011243817ac250a56def772a3303051a02c840d7831652e3c60f4656ff4f76e4",
+    "status": "integrated_pending_real_product_measurement",
+    "testsRun": false,
+    "next": "MESSAGING1120 then AGENDA1121; preserve material and fresh context. DIALOGUE1111/1112 need rebase afterwards."
   }
 }
