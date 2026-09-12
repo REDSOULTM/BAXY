@@ -1,0 +1,53 @@
+{
+  "schema": "web1045-reviewed-material-seal-v2",
+  "candidate": {
+    "commit": null,
+    "status": "current_source_binding_pending_root",
+    "tests_run": false,
+    "execution_authorized_by_proposal": false
+  },
+  "execution_authorized_by_proposal": false,
+  "coverage_credit": 0,
+  "maximum_potential_historical_credit": 5,
+  "registry_sha256": "bfa69dc68d97223e82f8be9f4d9deb7f712cbff1b0748d2f38e692b6d15d0682",
+  "files": {
+    "panel.json": "add7fb8fbdac1da29f4374fa7405872a519d85ec53444b960f74c5d1281ec7f1",
+    "turns.jsonl": "daf47e394d9a68854e25010336ab0c8c846398fb9cdc484f8690b041f2859bef",
+    "case-map.json": "6e81ee1402f550034591cc8289995b782f80a978ccca806e66acdfb226aaf14c",
+    "REPORT.md": "99927986b5f4e42ea0c7da713aa539a59c0577400caa3d5c05bd0e3f99b0be95",
+    "PLAN.md": "99927986b5f4e42ea0c7da713aa539a59c0577400caa3d5c05bd0e3f99b0be95",
+    "requirements-snapshot.jsonl": "bfa69dc68d97223e82f8be9f4d9deb7f712cbff1b0748d2f38e692b6d15d0682"
+  },
+  "read_source_pins": {
+    "C:/Users/usuario/AppData/Local/BAXY/C03-web-tail1000-proposal/runner.py": "f6a0c75dfe0bfab5daa3290d82641d1df86604b20d7262a3474f4c79147fd29c",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-web-tail997-proposal/panel.json": "301a7f10deac46eb13fedaa32712828bfbde79a54f99109f4ebd775a9d5b4f35",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-web-tail1000-proposal/panel.json": "9bda204c597fc63d6f51889b4b7dfaa2f03bee21cbfb7924b40536e5c9725818",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-web1045-proposal/ELIGIBILITY.md": "1f48ffa91430bc349da0bf04277762a10144f999038047f11e6da84056a748c9",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-web1045-proposal/REUSE.md": "ab10b4184e800ad6112427fe0d5aaedb919debe19d38412f6ea084c2b3f9d15c",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-web1045-proposal/PAIRED_EVIDENCE.json": "272c04c1ab2057fad06267c5b470139651bed1ac1c43683ffb36034ca99f67fb"
+  },
+  "runner_delivered": true,
+  "counts": {
+    "cases": 12,
+    "historical_positive_open": 5,
+    "failed_variant_reexecutions": 0,
+    "original_development_variants": 2,
+    "boundaries": 5,
+    "wire_lines": 24,
+    "controls": 12,
+    "session_new": 12,
+    "conditional_positive_commands": 7,
+    "normal_diagnostic_commands": 5,
+    "maximum_turn_admissions": 19,
+    "maximum_reportable_terminals": 19,
+    "case_final_terminals": 12,
+    "maximum_internal_confirmations": 7
+  },
+  "historical_case_ids": [
+    "H0152",
+    "H0206",
+    "H0244",
+    "H0479",
+    "H0692"
+  ]
+}

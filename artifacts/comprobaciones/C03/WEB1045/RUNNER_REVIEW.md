@@ -1,0 +1,9 @@
+# Revisión textual final WEB1045
+12casos/24wire:2variantes originales,5literales históricos intactos y5límites. Siete comandos turn.confirm-reviewed, cinco turn normales, doce session.new; máximo19admisiones/terminales y7confirmaciones internas. Los cinco objetos históricos conservan todos sus campos/valores/textos/criterios; comparación JSON sin conversión de fechas a DateTime resultó idéntica. No se reetiquetan como variantes.
+Runner1000 adaptado sólo identidad/rutas/schemas/counts/orden/IDs/pins y comparación mutable de registro heredada1043. Se conservan40caracteres de HEAD,584fuentes/18binarios/5runtime,4000/768/3800MiB/900s/120000ms, divisiones2**20, modelos/backend, secuenciareview/nonce/confirmación, rechazo y limpieza de hijos propios. Revisión del diff detectó y corrigió antes de entregar una sustitución de40delHEAD por24delwire; la guarda final vuelve a40 íntegra. No cambió el sello de datos.
+No hay URLs predeterminadas, autoaprobación ni lector nuevo; raíz revisa resolución pública y propuesta completa mediante mecanismo existente. Las variantes no reutilizan el par URL anterior. Los archivos de auditoría ELIGIBILITY/REUSE/PAIRED_EVIDENCE permanecen intactos y están ligados como herencia.
+SEAL b9f671624ea7eb02639213a7cbdc139cde09a73289a43277f3306233df999ded
+runner e45c0e925ce11543b30bc76f93d44c2ae354b946b4cbbe1d233a61d84442e752
+RUNNER_DIFF 9997e8d94d61a1a5435b40c9acd445abe3af2349abbe9c0e02b145b769fefd63
+Manifest c03-web1045-root-manifest-v1; candidato y ejecución siguen pendientes de raíz después1044. Snapshot bfa69dc68d97223e82f8be9f4d9deb7f712cbff1b0748d2f38e692b6d15d0682; raíz liga el actual en manifiesto y mantiene filas seleccionadas abiertas/positivas e inmutables.
+No ejecución de runner/stages/imports/AST/tests/build/HTTP/GPU/producto ni edición canónica/registro. Sólo material privado y revisión textual.
