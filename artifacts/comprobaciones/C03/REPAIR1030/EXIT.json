@@ -1,0 +1,19 @@
+{
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "candidate_manifest_sha256": "9cb2258e3e4a6a43d42147d93f3d29b002181e1d6b414d0c69c952040b77e2df",
+  "execution_authorized": true,
+  "utc": "2026-09-12T05:08:56.938869+00:00",
+  "exit_code": 0,
+  "stopped": false,
+  "pins_unchanged": true,
+  "terminal_records": 17,
+  "session_controls_observed": 17,
+  "turn_admissions_observed": 17,
+  "app_cleanup_by_runner": false,
+  "audio_restoration_by_runner": false,
+  "quality_adjudicated": false,
+  "success_count": null,
+  "journal_preserved": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-repair1030-profile\\journal\\missions.jsonl",
+  "target_apps_closed_by_guard": false
+}

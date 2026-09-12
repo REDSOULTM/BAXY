@@ -4187,6 +4187,18 @@ def _states_it_was_already_running(folded: str) -> bool:
     ) is not None
 
 
+def _claims_a_relaunch(folded: str) -> bool:
+    """True when the reply says it opened the target again over a reused process."""
+
+    return re.search(
+        r"volv[ií](?:\s+a\s+|ó\s+a\s+)(?:abrir|lanzar)|"
+        r"(?:abrí|abri|abro|lancé|lance)\s+(?:de\s+nuevo|otra\s+vez|igual)|"
+        r"(?:opened|launched|started|reopened|relaunched)\s+(?:it\s+|the\s+app\s+)?(?:again|anyway)|"
+        r"again\s*[.,]?\s*$",
+        folded,
+    ) is not None
+
+
 def compose_visible_defect(
     text: str,
     intent: str,
@@ -4557,8 +4569,13 @@ def compose_visible_defect(
         and operation == "app.open"
         and polarity == "success"
         and _app_open_was_already_running(situation)
-        and _claims_it_performed_the_open(folded)
-        and not _states_it_was_already_running(folded)
+        and (
+            (_claims_it_performed_the_open(folded)
+             and not _states_it_was_already_running(folded))
+            # Decir el hecho y añadir «pero la volví a abrir» lo deshace: el recibo
+            # reutilizó el proceso vivo, no lo relanzó (REPAIR1030 dev-02).
+            or _claims_a_relaunch(folded)
+        )
     ):
         return "unstated_already_running"
     if _clock_only_from_situation(situation) and re.search(
@@ -10549,11 +10566,11 @@ class LlmRuntime:
                 else "Name the failure cause in prose."
             ),
             "unstated_already_running": (
-                "The app was already running before this turn: say it was already open. "
-                "Do not claim you opened or launched it."
+                "Name the app. Say it was already open. Never say you opened, launched "
+                "or reopened it."
                 if response_language == "en"
-                else "La app ya estaba en ejecución antes de este turno: dilo. "
-                     "No digas que la abriste."
+                else "Nombra la app. Di que ya estaba abierta. Nunca digas que la abriste "
+                     "ni que la volviste a abrir."
             ),
             "missing_state": (
                 "Give the scheduled time in UTC, not the current time or a restarted countdown."
