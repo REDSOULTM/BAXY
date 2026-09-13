@@ -4942,7 +4942,10 @@ _REQUEST_PREFIX = (
     r"seis|siete|ocho|nueve|diez|once|doce)"
     r"(?:\s+(?:y|menos)\s+(?:cuarto|media|\d{1,2}))?"
     r"(?:\s+de\s+la\s+(?:manana|tarde|noche))?\s*[,;:.]?\s+"
-    r"(?=(?:abre|abri|abris|abrime|avri|open)\b)))?"
+    r"(?=(?:abre|abri|abris|abrime|avri|open)\b)|"
+    # «es tarde bajá el volumen»: lateness is the reason, the request follows.
+    r"(?:ya\s+)?es\s+(?:muy\s+)?(?:tarde|temprano|de\s+noche)\s*[,;:.]?\s+"
+    r"(?=(?:baja|bajar|bajalo|bajala|sube|subir|subi|suvi|subelo|subela|pone|pon)\b)))?"
     # A language directive changes presentation, not the following speech act.
     # Require its separator; quoted content and unclosed clauses stay literal.
     r"(?:(?:(?:responde|contesta)\s+en|(?:answer|reply|respond)\s+in)\s+"
@@ -5949,10 +5952,10 @@ def _audio_mute_domain(text: str) -> bool:
 
 
 _SET_VOLUME_VERB = (
-    r"(?:pon(?:me|le)?|poner|fija|ajusta|adjust|establece|set|"
+    r"(?:pon(?:me|le|e|elo|ele|lo)?|poner|fija|ajusta|adjust|establece|set|"
     r"cambia|change|deja|dejame|leave)"
 )
-_VOLUME_UP_VERB = r"(?:sube(?:lo|la)?|subi|subir|aumenta|aumentar|incrementa|incrementar|increase|raise|up)"
+_VOLUME_UP_VERB = r"(?:sube(?:lo|la)?|subi|suvi|subir|aumenta|aumentar|incrementa|incrementar|increase|raise|up)"
 _VOLUME_DOWN_VERB = r"(?:baja(?:lo|la)?|bajar|reduce|reducir|decrease|lower|down)"
 
 # Señales de que se pregunta por el nivel actual de audio, no por cambiarlo.
@@ -8674,8 +8677,8 @@ def _is_direct_request(text: str) -> bool:
         r"look(?=\s+on\s+(?:the\s+)?web\b)|"
         r"confirma|confirm|verify|see|"
         r"do(?=\s+i\s+have)|"
-        r"resuelve|resolver|pon|pone|poner|ponle|fija|ajusta|adjust|"
-        r"establece|set|deja|dejar|put|leave|turn|"
+        r"resuelve|resolver|pon|pone|ponelo|ponlo|poner|ponle|fija|ajusta|adjust|"
+        r"establece|set|deja|dejalo|dejala|dejar|put|leave|turn|"
         rf"{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB}|bajalo|subelo|increment|"
         r"quita|quitar|saca|sacale|sacar|remove|get\s+rid\s+of|"
         r"pega|pegar|pegalo|pegala|paste|"
@@ -10973,6 +10976,16 @@ def _review_audio_effects(
             head, rf"(?:{_SET_VOLUME_VERB}|{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB})",
         ):
             _append(matches, folded, "audio.volume", rf"\b{_VOLUME_OBJECT}\b")
+        elif (
+            _head_is(head, rf"(?:{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB})")
+            and _has(
+                folded,
+                rf"\b{_VOLUME_OBJECT}\s+(?:a(?:l)?|to|at)\s*(?:100|[0-9]{{1,2}})(?![0-9])",
+            )
+        ):
+            # «baja el volumen a 30»: the direction only states where the level
+            # is coming from; the target is absolute (AUDIO1239, H0254).
+            _append(matches, folded, "audio.volume", rf"\b{_VOLUME_OBJECT}\b")
         elif literal_adjustment is not None:
             _append(matches, folded, "audio.volume.adjust", rf"\b{_VOLUME_OBJECT}\b")
         elif _has(
@@ -11087,10 +11100,18 @@ def _review_audio_effects(
         _head_is(
             head,
             rf"(?:{_MUTE_VERB}|quita|quitar|saca|sacar|remove|"
-            r"pon|poner|ponle|deja|dejar|put|leave|turn)",
+            r"pon|pone|ponlo|ponelo|poner|ponle|deja|dejalo|dejar|put|leave|turn)",
         )
         and (
             _audio_mute_domain(folded)
+            # «ponelo en mute», «dejalo en mute»: the pronoun with the mute
+            # predicate names the global audio (AUDIO1239, H0189).
+            or _has(
+                folded,
+                r"^[¿?¡!\s]*(?:pon(?:e|lo|elo|le|eme)?|ponlo|deja(?:lo)?|"
+                r"leave\s+it|put\s+it|turn\s+it)\s+(?:en|in|on)\s+"
+                r"(?:mute|mudo|silencio|silent)[\s?!.]*$",
+            )
             or (
                 context_audio
                 and _has(

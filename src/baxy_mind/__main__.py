@@ -5078,7 +5078,7 @@ def _explicit_arguments_from_evidence(
             re.search(r"\b(?:mute|silencia|silenciar)\b", positive_surface)
             or re.search(rf"\b{effect_intent._MUTE_PREDICATIVE_VERB}\b", positive_surface)
             or re.search(
-                r"\b(?:pon|poner|deja|dejar|leave|put)\b[^.;!?]{0,48}"
+                r"\b(?:pon(?:e|lo|elo|le|eme)?|ponlo|poner|deja(?:lo)?|dejar|leave|put)\b[^.;!?]{0,48}"
                 r"\b(?:en|on)\s+(?:mute|mudo|silencio)\b",
                 positive_surface,
             )
