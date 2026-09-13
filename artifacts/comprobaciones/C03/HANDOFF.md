@@ -1,3 +1,13 @@
+# SYSTEM1177 adjudicado — 2026-09-13T07:30:51+00:00
+
+**245/742 cubiertos, 497 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 4ebaca73125594dd358374ad997097df42f9388c2901543c28b0f42a6ed86437. Primeras altas 24 h >= 119 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 46447de6 (effect_intent: «tirame» como cabeza de pedido; SYSTEM1175/SOURCE.json|patch) con BUILD1158.
+
+SYSTEM1177 (H0532 + 2 pares + 1 límite): 4 ejecutados, 2 aprobados, 2 fallidos, 0 créditos. Adjudicación 1821d85b29ca537a0c9fdf9e326c0e01b7744c06c92f192babe71ec95cd6b238. La reparación de la cabeza «tirame» se demuestra (lectura verificada en vez de confirmación), pero la etiqueta «disponible» para total_usable persiste (2 de 3 lecturas de memoria, igual que H0508): la línea de prompt no basta; la única reparación restante es renombrar las claves de la proyección (measurement_prose_projection.py, contrato con tests pinneados) → decisión del dueño. No remedir memoria hasta entonces.
+
+Siguiente por masa (CONDICIONES): cierre de apps propias (20 abiertos; autorización explícita por app); conocimiento residual sólo con causa nueva; elipsis sin antecedente («y disco?», «Y espacio?») y «decime si el wifi…» (fallo de contrato ×2 → recuperación) quedan documentadas. Reanudación: derivar desde build_system1177.py; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 4ebaca73…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h.
+
+---
+
 # SYSTEM1175 adjudicado — 2026-09-13T07:25:42+00:00
 
 **245/742 cubiertos, 497 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 0d93e59c88d65d32d597ef8d5fa46d350fafb6467f13791a2e5cc3806551e962. Primeras altas 24 h >= 119 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 1fa6e2b5 (effect_intent: scope de disco con «espacio»; SYSTEM1173/SOURCE.json|patch) con BUILD1158.

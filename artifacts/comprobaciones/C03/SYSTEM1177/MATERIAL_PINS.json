@@ -1,0 +1,69 @@
+{
+  "schema": "system1177-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-system1177-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-system1177-instrument-v1",
+  "seal_sha256": "50e4f2fb03ba5b8f322a7fa33f096afd25bdc05020a23f14d04e870801094090",
+  "runner_sha256": "7ba08b634ffbe1442da4cf962a1ea3d8f5dba69087db1df834fe8f86f58b4ed5",
+  "transport_seal_sha256": "28232cdca46288a6017d5faaf76290f33906166e2a12819e68c71f813521e623",
+  "files": {
+    "panel.json": "9aa84b8a06daa1424b140e6022c07c9a39d409644152b92514bb2b1d88782d81",
+    "turns.jsonl": "30591e9eeaf4fc7af121f6c0e65a3a26c513f02bd581d9b91df9752054059bf4",
+    "case-map.json": "fb56f3b35d1cc7fe2b1a4f6cd4faa4165e6f2bcd657e2157cb8d87ce18463c88",
+    "PLAN.md": "f3c759b4c1c29b999097c9c06a3876fe5d85d6a51ea04a054216c8f92f7f9f2c"
+  },
+  "counts": {
+    "cases": 4,
+    "historical_literals": 1,
+    "original_development_variants": 2,
+    "boundaries": 1,
+    "wire_lines": 8,
+    "session_controls": 4,
+    "ordinary_turns": 4,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 4,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 2,
+    "boundary": 1
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0532",
+      "kind": "historical_literal",
+      "group": "memory",
+      "credit_behavior": "memory",
+      "text_sha256": "bab4c055d13938bd5f84f9923bb2e8b6cd04a8e09f635b858f29c46efc6da137",
+      "criterion_sha256": "9ed6ffce09686b7a2bd7c741f5a6aebad62493544d6a07ba9bd6b56f6b39a13b"
+    },
+    {
+      "index": 1,
+      "case_id": "system1177-dev-01",
+      "kind": "original_development_variant",
+      "group": "memory",
+      "credit_behavior": "memory",
+      "text_sha256": "466224358bbfd5362bee4ed14106b74e5c42c03d46173073c9ca1a73b5f1f39a",
+      "criterion_sha256": "9ed6ffce09686b7a2bd7c741f5a6aebad62493544d6a07ba9bd6b56f6b39a13b"
+    },
+    {
+      "index": 2,
+      "case_id": "system1177-dev-02",
+      "kind": "original_development_variant",
+      "group": "memory",
+      "credit_behavior": "memory",
+      "text_sha256": "9f725becf8f330d9d35ada0970b3dd68323ec222d91c81db062fde50906660f3",
+      "criterion_sha256": "9ed6ffce09686b7a2bd7c741f5a6aebad62493544d6a07ba9bd6b56f6b39a13b"
+    },
+    {
+      "index": 3,
+      "case_id": "system1177-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "0b6b6d78ed3352d4a6b5747e887d931f328a79e0ca4b96d7d78b573dd7347ae4",
+      "criterion_sha256": "cef4d244ec6ac242d4be03f6caf8bb472768bb391677ed51ac13a5d9cd725ae4"
+    }
+  ]
+}

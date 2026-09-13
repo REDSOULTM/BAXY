@@ -1,0 +1,16 @@
+{
+  "registry_before_sha256": "0d93e59c88d65d32d597ef8d5fa46d350fafb6467f13791a2e5cc3806551e962",
+  "registry_after_sha256": "4ebaca73125594dd358374ad997097df42f9388c2901543c28b0f42a6ed86437",
+  "touched_ids": [
+    "H0532"
+  ],
+  "credited_ids": [],
+  "counters": {
+    "covered": 245,
+    "open": 497,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "decisions_sha256": "e821b032a256c08490a5507a60f8d6eeb72333edab0d46163dfecb770e0ccdd8",
+  "updated_at": "2026-09-13T07:30:51+00:00"
+}

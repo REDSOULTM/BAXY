@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación SYSTEM1175
+# Categorías actuales — adjudicación SYSTEM1177
 
-245/742 cubiertos; 497 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 119 primeras altas (118 anteriores + 1 en SYSTEM1175; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 0d93e59c88d65d32d597ef8d5fa46d350fafb6467f13791a2e5cc3806551e962.
+245/742 cubiertos; 497 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 119 primeras altas (118 anteriores + 1 en SYSTEM1175; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 4ebaca73125594dd358374ad997097df42f9388c2901543c28b0f42a6ed86437.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|

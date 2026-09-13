@@ -1,6 +1,6 @@
 {
   "schema": "c03-system1175-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/effect_intent.py",
   "patch": "artifacts/comprobaciones/C03/SYSTEM1175/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "SYSTEM1177: H0532 con dos pares de memoria.",
+  "measurement": "SYSTEM1177: «tirame cuánta memoria tengo» → system.status verificado (ya no confirma); sin crédito porque la etiqueta «disponible» para total_usable persiste (2 de 3). Reparación de cabeza demostrada; etiqueta de memoria pendiente de decisión del dueño (proyección de claves).",
   "credits": 0
 }
