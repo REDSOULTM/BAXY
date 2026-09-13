@@ -1,3 +1,25 @@
+## UI1275 — estado vigente 2026-09-13T23:06:42.382748+00:00
+
+Parcial: 8 aprobados, 2 fallidos, 0 sin ejecutar; 3 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 351/742 | 391 | 0 | >=225 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 222 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); UI1275 añade 3. No se cuentan revalidaciones.
+
+Siguiente acción: UI1275: 10 ejecutados, 8 aprobados, 2 fallidos, 3 créditos (índices [0, 1, 2]). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/UI1275/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 201.85 s acumulados; pico GPU 3497.56 MiB; pico RAM 2059.61 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 10; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque UI1275 precedente. -->
+
 ## WEB1271 — estado vigente 2026-09-13T22:46:31.726630+00:00
 
 Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.

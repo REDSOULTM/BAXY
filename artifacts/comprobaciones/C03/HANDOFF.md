@@ -1,3 +1,11 @@
+# UI1275 adjudicado — 2026-09-13T23:06:42.382748+00:00
+
+**351/742 cubiertos, 391 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA e9df37555305ea2395895d9357e7387730e1c6627d8c4ebb57c5f9940a25d2a4. Primeras altas 24 h >= 225 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e9cc9bc3 con BUILD1275 (mente: verbos de clic en español y contexto de app; proveedor: verificación por superficie, alias de dígitos, script compilable en PowerShell 5.1; App: input.visible.click en el turno revisado; UI1275/SOURCE.json|PROVIDER_SOURCE.json|APP_SOURCE.json|*.patch). Primer sello preservado (ui1273-attempt1-0e62c26b: script sin recibo).
+
+UI1275 («Interacción dentro de aplicaciones», clics en la Calculadora propia en primer plano; turnos revisados con approve_click.py): 10 ejecutados, 8 aprobados, 2 fallidos, 3 créditos. Adjudicación 2c3036c8f50b9335fbe5c231e5bc6467e8e9458ae8ade5b53d27aa98ca2df439. Los ocho clics se invocaron por UI Automation sobre el botón nombrado («Cinco», «Nueve», «Siete», «Tres») y se verificaron por el cambio de superficie de la calculadora; siete finales dicen que apretaron el botón; «en la calculadora apretá el 5» compuso «Apagué el 5» (verbo equivocado, no fiel) y el límite informativo terminó sin final. Créditos H0293, H0378, H0328 con las variantes «Pulsá el 7.», «Click the 3 button.», «Presioná el nueve.», «Apretá el botón siete.». Interacción dentro de aplicaciones 3/22: quedan H0555 (composición), «abrí la calculadora y apretá el 5» (dos pasos), sumas y multiplicaciones (varios clics), «botón rojo»/«Aceptar» (sin tal control), Discord/WhatsApp/Among Us (clientes y juegos del dueño).
+
+---
+
 # WEB1271 adjudicado — 2026-09-13T22:46:31.726630+00:00
 
 **348/742 cubiertos, 394 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 1e3347ded275e2b6ccbf25b7130d751e0c05d4972478ac414f1fd0fc453861bc. Primeras altas 24 h >= 222 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f5c1241d con BUILD1271 (App: «irrelevant/no results» como afirmación de fallo; WEB1271/APP_SOURCE.json|APP_SOURCE.patch).

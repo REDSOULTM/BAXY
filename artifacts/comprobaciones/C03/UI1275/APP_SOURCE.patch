@@ -1,0 +1,32 @@
+commit 0e62c26ba4a0bb2d90569421a7bf7f9f8990d165
+
+C03: Spanish click verbs reach input.visible.click; surface change verifies a stateless control; digit aliases; reviewed click turns (UI1273 repair)
+
+«apretá el 5», «pulsá el 7», «presioná el nueve», «hacé clic en el botón
+nueve» and «en la calculadora apretá el 5» resolved to nothing: the
+pointing vocabulary and the direct-request heads lacked the Spanish forms
+and the app context was read as label. A UIA-invoked control that stays
+enabled and unselected (a Calculator digit) reported
+visible_button_postread_unchanged; the adapter now compares the foreground
+surface before and after the script and accepts a changed surface, as the
+descriptor already allowed. Digit labels match their spoken names in UI
+Automation («Cinco»). The reviewed turn admits input.visible.click under
+root approval.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/ProductConductorHost.cs b/src/Baxy.App/ProductConductorHost.cs
+index 2b262148..f9162fca 100644
+--- a/src/Baxy.App/ProductConductorHost.cs
++++ b/src/Baxy.App/ProductConductorHost.cs
+@@ -350,7 +350,8 @@ internal static class ProductConductorHost
+         if (observed is null || initial.TimedOut
+             || initial.Terminal != ProductTurnTerminal.PublishedFinal
+             || initial.Diagnostic is not null
+-            || observed.Prepared.OperationName is not ("browser.navigate" or "browser.navigate.named" or "app.close"))
++            || observed.Prepared.OperationName is not (
++                "browser.navigate" or "browser.navigate.named" or "app.close" or "input.visible.click"))
+         {
+             return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
+         }

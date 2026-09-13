@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación WEB1271
+# Categorías actuales — adjudicación UI1275
 
-348/742 cubiertos; 394 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 222 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 1e3347ded275e2b6ccbf25b7130d751e0c05d4972478ac414f1fd0fc453861bc.
+351/742 cubiertos; 391 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 225 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: e9df37555305ea2395895d9357e7387730e1c6627d8c4ebb57c5f9940a25d2a4.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -14,7 +14,7 @@
 | Abrir aplicaciones | 54 | 39 | 15 |
 | Audio y volumen | 51 | 39 | 12 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 34 | 4 |
-| Interacción dentro de aplicaciones | 22 | 0 | 22 |
+| Interacción dentro de aplicaciones | 22 | 3 | 19 |
 | Red y Bluetooth | 21 | 9 | 12 |
 | Cerrar aplicaciones y ventanas | 20 | 11 | 9 |
 | Pantalla, captura e interpretación visual | 19 | 0 | 19 |

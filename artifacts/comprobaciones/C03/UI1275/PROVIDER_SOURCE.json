@@ -1,0 +1,16 @@
+{
+  "schema": "c03-ui1275-provider-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs (verificación por cambio de superficie tras un control invocado sin cambio de estado); src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1 (alias de dígitos; C# compilable en Windows PowerShell 5.1)",
+  "patch": "artifacts/comprobaciones/C03/UI1275/PROVIDER_SOURCE.patch",
+  "commits": [
+    "0e62c26ba4a0bb2d90569421a7bf7f9f8990d165",
+    "e9cc9bc3b893583a1d4fdf146bdbdcbe3e8d2460"
+  ],
+  "build": "BUILD1275",
+  "cause_measured": "UI1273 (primer sello, attempt1-0e62c26b): todo clic terminaba en visible_click_no_receipt porque el C# incrustado del script usaba declaraciones «out» en línea que Add-Type de Windows PowerShell 5.1 no compila; además un dígito de la calculadora sigue habilitado y sin seleccionar tras Invoke (postread_unchanged) y su nombre de UI Automation es «Cinco», no «5».",
+  "change": "Declaraciones «out» compatibles; alias de dígitos por nombre; el adaptador compara la superficie de la ventana en primer plano antes y después del script y acepta el cambio como postlectura (contrato del descriptor).",
+  "measurement": "UI1275: Los ocho clics se invocaron por UI Automation sobre el botón nombrado («Cinco», «Nueve», «Siete», «Tres») y se verificaron por el cambio de superficie de la calculadora; siete finales dicen que apretaron el botón; «en la calculadora apretá el 5» compuso «Apagué el 5» (verbo equivocado, no fiel) y el límite informativo terminó sin final. Créditos H0293, H0378, H0328 con las variantes «Pulsá el 7.», «Click the 3 button.», «Presioná el nueve.», «Apretá el botón siete.». Interacción dentro de aplicaciones 3/22: quedan H0555 (composición), «abrí la calculadora y apretá el 5» (dos pasos), sumas y multiplicaciones (varios clics), «botón rojo»/«Aceptar» (sin tal control), Discord/WhatsApp/Among Us (clientes y juegos del dueño).",
+  "credits": 0
+}

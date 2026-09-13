@@ -1,0 +1,146 @@
+commit 0e62c26ba4a0bb2d90569421a7bf7f9f8990d165
+
+C03: Spanish click verbs reach input.visible.click; surface change verifies a stateless control; digit aliases; reviewed click turns (UI1273 repair)
+
+«apretá el 5», «pulsá el 7», «presioná el nueve», «hacé clic en el botón
+nueve» and «en la calculadora apretá el 5» resolved to nothing: the
+pointing vocabulary and the direct-request heads lacked the Spanish forms
+and the app context was read as label. A UIA-invoked control that stays
+enabled and unselected (a Calculator digit) reported
+visible_button_postread_unchanged; the adapter now compares the foreground
+surface before and after the script and accepts a changed surface, as the
+descriptor already allowed. Digit labels match their spoken names in UI
+Automation («Cinco»). The reviewed turn admits input.visible.click under
+root approval.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1 b/src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1
+index d5c669f3..76cd0895 100644
+--- a/src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1
++++ b/src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1
+@@ -116,6 +116,13 @@ try {
+   elseif($label -match '^(?i:validate|valider)$'){$aliases=@('Validate','Valider')}
+   elseif($label -match '^(?i:biblioteca|library)$'){$aliases=@('Biblioteca','Library')}
+   elseif($label -match '^(?i:configuracion|settings)$'){$aliases=@('Configuracion','Settings')}
++  else {
++    # A digit is announced by its name in UI Automation («Cinco», «Five»); the
++    # person says either (UI1273: «apretá el 5», «hacé clic en el botón nueve»).
++    $digits=@(@('0','Cero','Zero'),@('1','Uno','One'),@('2','Dos','Two'),@('3','Tres','Three'),@('4','Cuatro','Four'),
++              @('5','Cinco','Five'),@('6','Seis','Six'),@('7','Siete','Seven'),@('8','Ocho','Eight'),@('9','Nueve','Nine'))
++    foreach($d in $digits){ foreach($form in $d){ if([string]::Equals($form,$label,[StringComparison]::OrdinalIgnoreCase)){ $aliases=$d } } }
++  }
+   $hwnd=[BaxyVisibleClickNative]::GetForegroundWindow()
+   if($hwnd -eq [IntPtr]::Zero){Emit $false $false 'active_window_not_found' '' '' $false $false 'uia';exit 2}
+   $hwnd=[BaxyVisibleClickNative]::LargestVisible($hwnd)
+diff --git a/src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs b/src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs
+index 6f5c79a1..ff6c6a3a 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs
+@@ -1,5 +1,6 @@
+ using System.Text;
+ using System.Text.Json;
++using System.Text.Json.Nodes;
+ 
+ namespace Baxy.Providers.Windows.External;
+ 
+@@ -109,6 +110,19 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
+     {
+         string encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(label));
+         var effectBoundary = new ExternalEffectBoundary();
++        // The descriptor admits «surface changed» as post-read. A Calculator
++        // digit stays enabled and unselected after Invoke, so the surface is
++        // the only evidence (UI1273); it is compared before/after the script.
++        VisibleControlSurface.CapturedWindow? before = null;
++        try
++        {
++            before = await VisibleControlSurface.CaptureForegroundAsync(cancellationToken)
++                .ConfigureAwait(false);
++        }
++        catch (Exception exception) when (exception is IOException or InvalidOperationException)
++        {
++            before = null;
++        }
+         try
+         {
+             effectBoundary.Cross(cancellationToken);
+@@ -121,7 +135,36 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
+             if (line is null)
+                 return effectBoundary.Failure(operation, "visible_click_no_receipt");
+             using JsonDocument document = JsonDocument.Parse(line);
+-            return ReceiptFromScript(operation, document.RootElement, effectBoundary);
++            ExternalCapabilityReceipt receipt = ReceiptFromScript(
++                operation, document.RootElement, effectBoundary);
++            if (receipt.ErrorCode == "visible_button_postread_unchanged" && before is { } captured)
++            {
++                VisibleControlSurface.CapturedWindow? after = null;
++                try
++                {
++                    after = await VisibleControlSurface.CaptureForegroundAsync(cancellationToken)
++                        .ConfigureAwait(false);
++                }
++                catch (Exception exception) when (exception is IOException or InvalidOperationException)
++                {
++                    after = null;
++                }
++                bool changed = after is { } later
++                    && later.Hwnd == captured.Hwnd
++                    && !string.Equals(later.Sha256, captured.Sha256, StringComparison.Ordinal);
++                VisibleControlSurface.Delete(after?.Path);
++                if (changed)
++                {
++                    JsonObject node = JsonNode.Parse(document.RootElement.GetRawText())!.AsObject();
++                    node["ok"] = true;
++                    node["error"] = "";
++                    node["surfaceChanged"] = true;
++                    node["cascadeStage"] = "uia_surface";
++                    using JsonDocument verified = JsonDocument.Parse(node.ToJsonString());
++                    return ExternalJson.Success(operation, verified.RootElement.Clone(), true);
++                }
++            }
++            return receipt;
+         }
+         catch (OperationCanceledException) when (
+             cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
+@@ -132,6 +175,10 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
+         {
+             return effectBoundary.Failure(operation, "visible_click_receipt_invalid");
+         }
++        finally
++        {
++            VisibleControlSurface.Delete(before?.Path);
++        }
+     }
+ 
+     internal static bool PostreadHolds(JsonElement root)
+commit e9cc9bc3b893583a1d4fdf146bdbdcbe3e8d2460
+
+C03: the visible-click script compiles under Windows PowerShell 5.1 (UI1273 repair)
+
+Its embedded C# used inline out declarations (C# 7) that the Add-Type
+compiler of Windows PowerShell 5.1 rejects, so every input.visible.click
+ended in visible_click_no_receipt.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1 b/src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1
+index 76cd0895..83f2f76f 100644
+--- a/src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1
++++ b/src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1
+@@ -24,11 +24,12 @@ public static class BaxyVisibleClickNative {
+   [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hwnd, out RECT rect);
+   [StructLayout(LayoutKind.Sequential)] public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
+   public static IntPtr LargestVisible(IntPtr hwnd) {
+-    GetWindowThreadProcessId(hwnd, out uint procId);
++    // Windows PowerShell 5.1 compiles Add-Type with C# 5: no inline out declarations (UI1273).
++    uint procId; GetWindowThreadProcessId(hwnd, out procId);
+     IntPtr best=hwnd; long bestArea=0;
+     EnumWindows((top,unused)=>{
+       if(!IsWindowVisible(top)) return true;
+-      GetWindowThreadProcessId(top, out uint owner);
++      uint owner; GetWindowThreadProcessId(top, out owner);
+       if(owner!=procId) return true;
+       RECT r; if(!GetWindowRect(top,out r)) return true;
+       long area=(long)Math.Max(0,r.Right-r.Left)*Math.Max(0,r.Bottom-r.Top);
