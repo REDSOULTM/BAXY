@@ -1,3 +1,13 @@
+# TIME1197 adjudicado — 2026-09-13T13:04:08+00:00
+
+**263/742 cubiertos, 479 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 73d4e3947165a721fca73a671b6d780e4df0a6a78ab233cb72853a35fcafe4fe. Primeras altas 24 h >= 137 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD cc829191 (aclaración determinista «qué avisar»; TIME1195/SOURCE.json|patch) con BUILD1158.
+
+TIME1197 (H0121, H0343, H0371 + 4 pares + 1 límite; sin efectos autorizados): 8 ejecutados, 8 aprobados; +3. Adjudicación 966fe53a19149d4bbc35430ce4526b996aef54cbcb1db11c7b035cc040aaf69f. Los avisos con plazo sin contenido preguntan qué avisar conservando el plazo (antes volvían a pedirlo o creaban un recordatorio inventado); la hora imposible pide una hora válida en ambos idiomas. Defecto de redacción documentado: la pregunta española invierte la persona («me debes avisar»). Agenda queda 32/38: restan «cancelá la alarma», «listá los timers», «crea una tarea para el viernes», «agendá una reunión el viernes a las 3», «contá 10 minutos», «qué tengo agendado para hoy».
+
+Siguiente por masa: cierre de apps propias (20, autorizado; instrumento con turno revisado), proveedor de carpetas conocidas (archivos, 26 sin mecanismo, autorizado), network.ip.list sin PrivacySensitive (build); agenda residual por literal (cancelación/listado necesitan estado previo en el perfil). Reanudación: derivar de build_time1197.py; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 73d4e3947165a721fca73a671b6d780e4df0a6a78ab233cb72853a35fcafe4fe`.
+
+---
+
 # TIME1195 adjudicado — 2026-09-13T12:56:31+00:00
 
 **260/742 cubiertos, 482 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 66dc02551868029017ab0156f6c51f7a5d5df09c5a2936fb388e0523b7d40f03. Primeras altas 24 h >= 134 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 179e23c9 (hora imposible → hora válida; TIME1193/SOURCE.json|patch) con BUILD1158.

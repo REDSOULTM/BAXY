@@ -1,6 +1,6 @@
 {
   "schema": "c03-time1195-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/effect_intent.py (_incomplete_scheduled_request)",
   "patch": "artifacts/comprobaciones/C03/TIME1195/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "TIME1197: H0121, H0343, H0371 con pares; sin efectos autorizados.",
-  "credits": 0
+  "measurement": "TIME1197: 8 de 8 aprobados, +3 (H0121, H0343, H0371); los cuatro avisos sin contenido preguntan qué avisar conservando el plazo y no crean nada.",
+  "credits": 3
 }
