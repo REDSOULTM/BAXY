@@ -1,3 +1,13 @@
+# NETWORK1163 adjudicado — 2026-09-13T06:38:23+00:00
+
+**239/742 cubiertos, 503 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 688c890859e837667aaea5635d15c411603ecad0222ef82da6e7469f9b14bc2c. Primeras altas 24 h >= 113 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 22b249e6 (effect_intent: dominio de wifi.status con prendido/encendido/apagado/activo/onda/on/off/working; NETWORK1161/SOURCE.json|patch) con BUILD1158.
+
+NETWORK1163 (H0127, H0433, H0230, H0221 + 4 pares + 2 límites; wifi.status de sólo lectura): 10 ejecutados, 7 aprobados, 3 fallidos, 0 créditos. Adjudicación 5ef7220e72e06fc651b81006102ac54e850d97fd1abbb03b36f5a638f77eb33d. Aprobados sin crédito: H0127, H0433 (par inglés inventó «It is offline»), H0221 (par «Decime si el wifi está activo.» pidió confirmación). La reparación del dominio se demuestra en H0221; «decime si el wifi está prendido» sigue en confirmación por otra ruta (decisión clarify sin fase final de turn-audit).
+
+Siguiente: NETWORK1165 breve con pares que no inviten a hablar de internet ni usen «decime si…» (p. ej. «¿Qué red wifi tenés conectada?», «Which wifi network is connected?», «¿El wifi está encendido?», «Is the wifi enabled right now?») para acreditar H0127/H0433/H0221; sonda sin GPU de la ruta «decime si…» (buscar en __main__ la aclaración temprana que produce «¿Quieres que te diga si…?»). network.ip.list es PrivacySensitive (confirmación por diseño): decisión del dueño. Reanudación: derivar desde build_network1163.py; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 688c8908…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h.
+
+---
+
 # NETWORK1161 adjudicado — 2026-09-13T06:29:03+00:00
 
 **239/742 cubiertos, 503 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 4897271823f0a36c0323a07ffcc6510358b9b1d211685a94518a8a0e0c785cf7. Primeras altas 24 h >= 113 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4dd2d87e con BUILD1158.

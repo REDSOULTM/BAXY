@@ -1,6 +1,6 @@
 {
   "schema": "c03-network1161-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/effect_intent.py",
   "patch": "artifacts/comprobaciones/C03/NETWORK1161/SOURCE.patch",
@@ -13,6 +13,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "NETWORK1163: H0127, H0433, H0230, H0221 con pares nuevos.",
+  "measurement": "NETWORK1163: H0221 «decime qué onda con el wifi» → wifi.status verificado y «El PC no está conectado al wifi» (aprobado, sin crédito por un solo par); «decime si el wifi está prendido/activo» sigue en confirmación por una ruta de aclaración temprana (decisión clarify sin fase final de turn-audit), no por el veto de dominio.",
   "credits": 0
 }
