@@ -1,0 +1,62 @@
+[
+  {
+    "index": 0,
+    "case_id": "H0095",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Identificó la ventana correcta y pidió confirmación, pero el turno revisado no expuso la propuesta al revisor.",
+    "observation_note": "Fase de petición publicada; una lectura verificada; sin propuesta de revisión ni cierre; la ventana de prueba de raíz siguió abierta; pins intactos.",
+    "final_sha256": "44315ade7bca46a1933c0a7d13a7f67d48c08253ee020325b8bde9c5d5fb3dd7",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1215-instrument-v1\\results\\case-00\\EXIT.json": "754b0c6db17bd4067986f83659c9c0b3d3822ed26cdbcda7a193674523dea594",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1215-instrument-v1\\results\\case-00\\RESOURCES.json": "a13c62e951e221b906bcc5195f220f947e815e79f2006ba1b6843a91b330c191",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1215-instrument-v1\\private\\profile-owner-00.json": "67a20d63974a805b1a290cbf5cec86b4c8e82638f1643c91a1ca51f5075b0fff",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1215-instrument-v1\\results\\case-00\\PREREG.json": "ae6cbe4dc0d7a4c896a5f58822b5cf6bc482ff39771f952d42844120c92e84cd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1215-instrument-v1\\private\\run-00\\capture\\events.jsonl": "fd4cf579694a0a7f273ad78eeec22d9e16d626b37d2a8f149c17096a479339ba",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1215-instrument-v1\\private\\run-00\\turns.jsonl": "7d7634b0187244a9fddf66b32e72605a8c2b458202125d7f9fe14c09970346a3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1215-instrument-v1\\private\\fixture-00.json": "15bf0c51d77cf26f148c3e497eb7f82172d22d6f59e2dbc0f777192c43f2b76f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1215-instrument-v1\\private\\context-00.json": "f03edd0a8cfe0579233a475e100c5821da63cff411a451571b134fd37d8578a3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1215-instrument-v1\\private\\context-prelaunch-00.json": "341fbc52a7b7b4d3336dbfc9b2eebd7e6e8f21b0c8d0f710a1b5b8df64b5231b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1215-instrument-v1\\private\\owned-window-00.json": "0a3dc21c96266a13f83da5dc94c2e1cd6707d60013624ed258bdbde605fb6fd6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1215-instrument-v1\\private\\run-00\\case-observations.json": "eb5b3c422e34254d092f93e7083cefdd6d7a89229be642f0b2f3117339cc9516",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1215-instrument-v1\\private\\run-00\\journal-before.json": "72bd0ccddd37bdd52e94af42d03890145b59226e281df967d8dce4e1862b40df",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1215-instrument-v1\\private\\run-00\\journal-after.json": "56681bb43e0cd8cc9a9f7a712c68a20eae347402f248ac39fdb354a0c1d682e0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1215-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "7733684bc59385e8bfd53662846dab6d33a471b82df5ec799c3d72fe5ed16ba7"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "647c8658-2add-40ff-bb79-b45d62c5e89c",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "99561672-d35d-4773-8b2e-202d6c598964",
+        "operation": "window.resolve",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  }
+]

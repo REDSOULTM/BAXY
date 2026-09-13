@@ -1,3 +1,13 @@
+# CLOSE1215 adjudicado (parcial) — 2026-09-13T15:31:45+00:00
+
+**291/742 cubiertos, 451 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 4b0cdd62fcf68c22873a8ec6929f3fdabcbef1c1c50793354acddfe89333c780. Primeras altas 24 h >= 165 (+0).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 73595548 con BUILD1205; reconocedor de cierre por nombre autenticado en CLOSE1215/SOURCE.json|patch.
+
+CLOSE1215 (cierre de apps: 4 literales + 4 variantes como turnos revisados sobre ventanas propias vacías abiertas por raíz, 2 prohibiciones + 2 variantes ordinarias, 2 límites): 1 ejecutado (índice 0, H0095), 1 fallido, 13 sin ejecutar; +0. Adjudicación d1024b7846882c9a956e4c9107ce94661e945e3511db83c168436f83f556db2b. Demostrado en el producto: «cierra el bloc de notas» autentica Bloc de notas, window.resolve por applicationName devuelve exactamente la ventana propia (1/1) y app.close queda desafiado con ese windowId; el producto pide confirmación. Roto: la captura de la confirmación para el turno revisado (CaptureConductorConfirmation con prefijo de lectura verificada) devuelve null sin nombrar la guarda → review_pending_not_supported, sin proposal.json, sin cierre. Se añadió una traza que nombra la guarda (CLOSE1217/APP_SOURCE.json) y se construye BUILD1217. Instrumento nuevo de esta tanda: turnos revisados en el linaje Fable (fixture owned_empty_window con pid/creación/hwnd, revisión raíz que aprueba sólo si la propuesta apunta a la ventana propia, Notepad/Calculadora/Paint por AUMID, Chrome con perfil temporal); scripts en la sesión (owned_window.py, approve_review.py, close_case.sh). Fuera de la tanda y documentado: Steam ×4 (descargas ajenas), WhatsApp/Discord ×3 (sesiones del dueño), deícticos ×5, globales ×2. Cerrar apps queda 0/20.
+
+Siguiente: CLOSE1217 (mismos 14 objetos, BUILD1217 con la traza) y reparar la guarda que se identifique; después archivos residuales, apps (4 léxicos), H0043. Reanudación: derivar de build_close1215.py con BUILD1217; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 4b0cdd62fcf68c22873a8ec6929f3fdabcbef1c1c50793354acddfe89333c780`.
+
+---
+
 # WINDOWS1213 adjudicado — 2026-09-13T14:52:48+00:00
 
 **291/742 cubiertos, 451 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 9545684bb6cc583024b444c42f5569be3d60f38b0f49c6e3d8c70bc40eecf845. Primeras altas 24 h >= 165 (+6).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 117110ff con BUILD1205; ventanas tituladas nombradas y resto contado, cantidades por línea y veto de idioma sobre la copia enmascarada en WINDOWS1213/SOURCE.json|patch.

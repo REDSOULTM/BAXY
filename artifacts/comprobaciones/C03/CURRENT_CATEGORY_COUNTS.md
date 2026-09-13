@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación WINDOWS1213
+# Categorías actuales — adjudicación CLOSE1215
 
-291/742 cubiertos; 451 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 165 primeras altas (159 anteriores + 6 en WINDOWS1213; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 9545684bb6cc583024b444c42f5569be3d60f38b0f49c6e3d8c70bc40eecf845.
+291/742 cubiertos; 451 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 165 primeras altas (165 anteriores + 0 en CLOSE1215; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 4b0cdd62fcf68c22873a8ec6929f3fdabcbef1c1c50793354acddfe89333c780.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|

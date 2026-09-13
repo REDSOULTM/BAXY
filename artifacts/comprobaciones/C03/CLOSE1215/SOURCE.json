@@ -1,6 +1,6 @@
 {
   "schema": "c03-close1215-source-adoption-v1",
-  "status": "adopted_unmeasured",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/effect_intent.py (_authenticated_application_close_target, _close_target_forms, _authenticated_close_key; cabezas de pedido directo y de deseo; veto hipotético «would you»; cortesía «podés/me podés»)",
   "patch": "artifacts/comprobaciones/C03/CLOSE1215/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": null,
-  "credits": null
+  "measurement": "CLOSE1215/000: «cierra el bloc de notas» autenticó Bloc de notas y el plan llegó a window.resolve(applicationName)=1 ventana propia y al desafío de app.close; el fallo posterior es de la captura del turno revisado (App), no del reconocedor. 0 créditos.",
+  "credits": 0
 }
