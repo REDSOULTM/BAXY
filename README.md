@@ -136,3 +136,9 @@ asistente.
 
 Verde antes y después de cada tanda. Toda compuerta en rojo bloquea la entrega,
 sin excepción y sin nota al pie.
+
+## Licencia
+
+El código y la documentación propios de BAXY se distribuyen bajo la
+[licencia MIT](LICENSE). Los componentes, modelos, datos y materiales de terceros
+conservan sus respectivas licencias y avisos; esta licencia no los sustituye.
