@@ -17,10 +17,15 @@ mide en cuanto la condición se resuelva o el dueño decida.
 | Mensajería | 25 | 7 | Tras 1140 quedan literales con destinatario/canal reales: enviar exige clientes y terceros (prohibido enviar por encuesta). Elegibles: aclaraciones y lecturas sin envío. | Panel de aclaraciones restantes sobre llm1136. |
 | Apps | 25 | 6 | HUECO_LEXICO_APPS: 4 reparables por léxico tras localizar guardia previa; resto destinos ausentes (Photoshop, Steel, Mortal Kombat), erratas de transcripción con nota del dueño (preguntar/contexto), idiomas fuera de alcance (3 sin marca), compuesto con reloj. Respuesta veraz negativa/aclaración es acreditable si es útil. | Sonda settrace de la guardia + tanda de ausentes/erratas. |
 | Audio | 24 | 1 | AUDIO1137: sin parche barato; reconocimiento de dirección/alcance sin cantidad requiere gramática nueva (2 literales). | Diseño acotado en effect_intent. |
-| Agenda | 23 | 14 | TIME1139: el Programador guarda segundos enteros; criterio sellado tolerancia0 insatisfacible. Decisión del dueño pendiente (ESTADO_PARA_DUENO_2026-09-13.md). | Con decisión: instrumento v7 índices11→0/1/2. |
+| Agenda | 21 | 12 | Resuelta el 2026-09-13: el dueño decidió (DECISIONES_DUENO, punto 3) publicar el segundo entero hacia arriba; reparación TIME1139/SOURCE.json medida en TIME1185 (+2, seis tareas con due == NextRun). Resto del material 1134 medible con el mismo criterio. | Derivar de build_time1185.py; índices 3–9 y 14–24 del material 1134. |
 
 Sin condición externa y con mecanismo demostrado: **notas** (12 abiertos, 8 llegan a
 `note.create`/`note.list`, mecanismo demostrado en TASK_NOTE_REPAIR986 con 7/12 y +4),
 **conocimiento/identidad/conversación** (sin efectos), **red sólo lectura** (`wifi.status`,
 `network.ip.list`, `network.status`), **cierre de apps propias** (CLOSE1060 integrado sin
 medir). Se avanza por ahí mientras las condiciones anteriores esperan al dueño.
+
+
+## Actualización 2026-09-13 (tras las decisiones del dueño)
+
+El dueño respondió las siete decisiones (DECISIONES_DUENO_2026-09-13.md): poder total en este PC (instalar, cerrar apps sin autorización por app), proveedor de carpetas conocidas autorizado, TIME1139 resuelto (medido en TIME1185), renombrado de claves de medidas (medido en SYSTEM1183), IP sin confirmación autorizada, y aplazar lo que exija sesiones ausentes (Netflix/Spotify) al otro PC. Las condiciones de Música y Vídeo pasan de «decisión del dueño» a «aplazado por sesión ausente»; Archivos y Cerrar apps quedan sin condición externa.

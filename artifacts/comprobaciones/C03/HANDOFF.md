@@ -1,3 +1,13 @@
+# TIME1185 adjudicado — 2026-09-13T11:44:22+00:00
+
+**248/742 cubiertos, 494 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 520177fae9e9235f20115868f817364a2cf9ed99bdb8de5f28c9e0ffa2ae0fe4. Primeras altas 24 h >= 122 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 8fd4d513 (__main__: due relativo publicado al segundo entero hacia arriba; TIME1139/SOURCE.json|patch, decisión del dueño punto 3) con BUILD1158.
+
+TIME1185 (H0100, H0523, H0385 + 4 variantes relativas del material 1134 + 1 límite; una notification.schedule por caso, postlectura y cancelación exacta de raíz): 8 ejecutados, 7 aprobados, 1 fallido; +2 (H0100 «alarma en dos minutos», H0523 «timer de 10 minutos»). Adjudicación 79967e59cdbe392b2325b20c5781c8394b61482db7986dcbae33b1f0d51ed3c1; postlectura en TIME1185/ROOT_POSTREAD.json. Seis tareas nuevas con dueUtc == NextRun exacto y due − duración dentro de [lower, upper + 1 s]; seis canceladas por identidad exacta (911→910 cada vez), ninguna disparada. Fallo: «contá 10 minutos» negado como fuera de alcance por la ruta del modelo (cabeza «contá» sin lectura determinista de temporizador). Agenda queda 17/38.
+
+Siguiente: resto del material 1134 (alarmas/recordatorios de reloj explícito y relativos, índices 3–9 y 14–24) con el mismo criterio e instrumento (derivar de build_time1185.py); reparación léxica de «contá/cuenta N minutos» como temporizador antes de remedir H0385; después cierre de apps propias (20, autorizado sin pedir por app), network.ip.list sin PrivacySensitive (build), proveedor de carpetas conocidas. Reanudación: `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 520177fae9e9235f20115868f817364a2cf9ed99bdb8de5f28c9e0ffa2ae0fe4`; postlectura `scratchpad/time_postread.py <campaña> <i>` tras cada caso.
+
+---
+
 # SYSTEM1183 adjudicado — 2026-09-13T11:29:43+00:00
 
 **246/742 cubiertos, 496 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 09492539214b67cce0cec175c350d16984bec406e0da8130437814dde9b79ea2. Primeras altas 24 h >= 120 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 432d1a02 (measurement_prose_projection: claves total/free/used; SYSTEM1181/SOURCE.json|patch, autorizado por el dueño) con BUILD1158.

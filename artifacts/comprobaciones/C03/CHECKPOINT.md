@@ -1,3 +1,25 @@
+## TIME1185 — estado vigente 2026-09-13T11:44:22+00:00
+
+Parcial: 7 aprobados, 1 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 248/742 | 494 | 0 | >=122 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 120 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; TIME1185 añade 2 (H0100, H0523). No se cuentan revalidaciones.
+
+Siguiente acción: TIME1185 completa: 8 ejecutados, 7 aprobados, 1 fallido, 2 créditos (H0100, H0523). La decisión del dueño (segundo entero hacia arriba publicado) más la reparación de _canonical_due_utc se demuestran: seis alarmas/temporizadores con dueUtc == NextRun exacto y bracket cumplido; seis tareas canceladas por identidad exacta (911→910 cada vez), ninguna disparada. Fallo: «contá 10 minutos» negado como fuera de alcance (cabeza «contá» no leída como temporizador): causa léxica a reparar antes de remedir H0385. Agenda queda 17/38; siguiente: resto de alarmas/recordatorios relativos y de reloj explícito del material 1134 (índices 3–9 y 14–24) bajo el mismo criterio.
+
+Evidencia: `artifacts/comprobaciones/C03/TIME1185/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 160.97 s acumulados; pico GPU 3497.56 MiB; pico RAM 1826.11 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque TIME1185 precedente. -->
+
 ## SYSTEM1183 — estado vigente 2026-09-13T11:29:43+00:00
 
 Parcial: 7 aprobados, 3 fallidos, 0 sin ejecutar; 1 créditos.

@@ -1,0 +1,344 @@
+{
+  "schema": "time1185-root-postread-facts-v1",
+  "note": "Postlectura y cancelación exacta de raíz por caso (scratchpad/time_postread.py): identidad de tarea, dueUtc del recibo, NextRun observado, bracket con +1 s por redondeo hacia arriba, conteo de tareas BAXY-Alarm antes/después. Sin textos de la encuesta.",
+  "cases": [
+    {
+      "schema": "time1185-root-postread-v1",
+      "case_index": 0,
+      "case_id": "H0100",
+      "kind": "historical_literal",
+      "requested_duration_seconds": 120,
+      "lower_utc": "2026-09-13T11:38:07.524460+00:00",
+      "starts": 1,
+      "completed": 1,
+      "utc": "2026-09-13T11:38:35.095347+00:00",
+      "errors": [],
+      "task_name": "BAXY-Alarm-ffd82fa762f3415d872b239c2d429a28",
+      "receipt_due_utc": "2026-09-13T11:40:27+00:00",
+      "verified": true,
+      "status": "completed",
+      "upper_utc": "2026-09-13T11:38:27.1329825+00:00",
+      "due_is_whole_second": true,
+      "inferred_binding_utc": "2026-09-13T11:38:27+00:00",
+      "within_bracket_plus_1s": true,
+      "bracket": {
+        "lower": "2026-09-13T11:38:07.524460+00:00",
+        "upper_plus_1s": "2026-09-13T11:38:28.132982+00:00"
+      },
+      "task_observed": {
+        "taskName": "BAXY-Alarm-ffd82fa762f3415d872b239c2d429a28",
+        "state": "Ready",
+        "startBoundary": [
+          "2026-09-13T08:40:27-03:00"
+        ],
+        "triggerTypes": [
+          "MSFT_TaskTimeTrigger"
+        ],
+        "repetition": [
+          null
+        ],
+        "actions": [
+          {
+            "execute": "powershell.exe",
+            "arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1185-case00-profile\\scheduled-notifications\\BAXY-Alarm-ffd82fa762f3415d872b239c2d429a28.ps1\""
+          }
+        ],
+        "nextRunUtc": "2026-09-13T11:40:27.0000000Z"
+      },
+      "next_run_utc": "2026-09-13T11:40:27+00:00",
+      "due_equals_next_run": true,
+      "cancel": {
+        "before": 911,
+        "after": 910,
+        "absent": true,
+        "utc": "2026-09-13T11:38:44.720885+00:00"
+      }
+    },
+    {
+      "schema": "time1185-root-postread-v1",
+      "case_index": 1,
+      "case_id": "H0523",
+      "kind": "historical_literal",
+      "requested_duration_seconds": 600,
+      "lower_utc": "2026-09-13T11:38:56.179396+00:00",
+      "starts": 1,
+      "completed": 1,
+      "utc": "2026-09-13T11:39:23.872703+00:00",
+      "errors": [],
+      "task_name": "BAXY-Alarm-efa21db28d0049d69a920d808eb1c8dd",
+      "receipt_due_utc": "2026-09-13T11:49:17+00:00",
+      "verified": true,
+      "status": "completed",
+      "upper_utc": "2026-09-13T11:39:16.2177543+00:00",
+      "due_is_whole_second": true,
+      "inferred_binding_utc": "2026-09-13T11:39:17+00:00",
+      "within_bracket_plus_1s": true,
+      "bracket": {
+        "lower": "2026-09-13T11:38:56.179396+00:00",
+        "upper_plus_1s": "2026-09-13T11:39:17.217754+00:00"
+      },
+      "task_observed": {
+        "taskName": "BAXY-Alarm-efa21db28d0049d69a920d808eb1c8dd",
+        "state": "Ready",
+        "startBoundary": [
+          "2026-09-13T08:49:17-03:00"
+        ],
+        "triggerTypes": [
+          "MSFT_TaskTimeTrigger"
+        ],
+        "repetition": [
+          null
+        ],
+        "actions": [
+          {
+            "execute": "powershell.exe",
+            "arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1185-case01-profile\\scheduled-notifications\\BAXY-Alarm-efa21db28d0049d69a920d808eb1c8dd.ps1\""
+          }
+        ],
+        "nextRunUtc": "2026-09-13T11:49:17.0000000Z"
+      },
+      "next_run_utc": "2026-09-13T11:49:17+00:00",
+      "due_equals_next_run": true,
+      "cancel": {
+        "before": 911,
+        "after": 910,
+        "absent": true,
+        "utc": "2026-09-13T11:39:33.444595+00:00"
+      }
+    },
+    {
+      "schema": "time1185-root-postread-v1",
+      "case_index": 2,
+      "case_id": "H0385",
+      "kind": "historical_literal",
+      "requested_duration_seconds": 600,
+      "lower_utc": "2026-09-13T11:39:34.467333+00:00",
+      "starts": 0,
+      "completed": 0,
+      "utc": "2026-09-13T11:39:59.983121+00:00",
+      "errors": [],
+      "note": "no single notification.schedule pair in the case journal"
+    },
+    {
+      "schema": "time1185-root-postread-v1",
+      "case_index": 3,
+      "case_id": "alarm-panel978-dev-04",
+      "kind": "original_development_variant",
+      "requested_duration_seconds": 480,
+      "lower_utc": "2026-09-13T11:40:00.982996+00:00",
+      "starts": 1,
+      "completed": 1,
+      "utc": "2026-09-13T11:40:27.086463+00:00",
+      "errors": [],
+      "task_name": "BAXY-Alarm-0f1de88645874627a03e1e0f89c18c7b",
+      "receipt_due_utc": "2026-09-13T11:48:20+00:00",
+      "verified": true,
+      "status": "completed",
+      "upper_utc": "2026-09-13T11:40:19.5305102+00:00",
+      "due_is_whole_second": true,
+      "inferred_binding_utc": "2026-09-13T11:40:20+00:00",
+      "within_bracket_plus_1s": true,
+      "bracket": {
+        "lower": "2026-09-13T11:40:00.982996+00:00",
+        "upper_plus_1s": "2026-09-13T11:40:20.530510+00:00"
+      },
+      "task_observed": {
+        "taskName": "BAXY-Alarm-0f1de88645874627a03e1e0f89c18c7b",
+        "state": "Ready",
+        "startBoundary": [
+          "2026-09-13T08:48:20-03:00"
+        ],
+        "triggerTypes": [
+          "MSFT_TaskTimeTrigger"
+        ],
+        "repetition": [
+          null
+        ],
+        "actions": [
+          {
+            "execute": "powershell.exe",
+            "arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1185-case03-profile\\scheduled-notifications\\BAXY-Alarm-0f1de88645874627a03e1e0f89c18c7b.ps1\""
+          }
+        ],
+        "nextRunUtc": "2026-09-13T11:48:20.0000000Z"
+      },
+      "next_run_utc": "2026-09-13T11:48:20+00:00",
+      "due_equals_next_run": true,
+      "cancel": {
+        "before": 911,
+        "after": 910,
+        "absent": true,
+        "utc": "2026-09-13T11:40:36.657459+00:00"
+      }
+    },
+    {
+      "schema": "time1185-root-postread-v1",
+      "case_index": 4,
+      "case_id": "alarm-panel978-dev-05",
+      "kind": "original_development_variant",
+      "requested_duration_seconds": 900,
+      "lower_utc": "2026-09-13T11:40:37.633123+00:00",
+      "starts": 1,
+      "completed": 1,
+      "utc": "2026-09-13T11:41:03.344664+00:00",
+      "errors": [],
+      "task_name": "BAXY-Alarm-3336d3adcf464b4f986eef2e1817148d",
+      "receipt_due_utc": "2026-09-13T11:55:56+00:00",
+      "verified": true,
+      "status": "completed",
+      "upper_utc": "2026-09-13T11:40:55.8164179+00:00",
+      "due_is_whole_second": true,
+      "inferred_binding_utc": "2026-09-13T11:40:56+00:00",
+      "within_bracket_plus_1s": true,
+      "bracket": {
+        "lower": "2026-09-13T11:40:37.633123+00:00",
+        "upper_plus_1s": "2026-09-13T11:40:56.816417+00:00"
+      },
+      "task_observed": {
+        "taskName": "BAXY-Alarm-3336d3adcf464b4f986eef2e1817148d",
+        "state": "Ready",
+        "startBoundary": [
+          "2026-09-13T08:55:56-03:00"
+        ],
+        "triggerTypes": [
+          "MSFT_TaskTimeTrigger"
+        ],
+        "repetition": [
+          null
+        ],
+        "actions": [
+          {
+            "execute": "powershell.exe",
+            "arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1185-case04-profile\\scheduled-notifications\\BAXY-Alarm-3336d3adcf464b4f986eef2e1817148d.ps1\""
+          }
+        ],
+        "nextRunUtc": "2026-09-13T11:55:56.0000000Z"
+      },
+      "next_run_utc": "2026-09-13T11:55:56+00:00",
+      "due_equals_next_run": true,
+      "cancel": {
+        "before": 911,
+        "after": 910,
+        "absent": true,
+        "utc": "2026-09-13T11:41:12.766006+00:00"
+      }
+    },
+    {
+      "schema": "time1185-root-postread-v1",
+      "case_index": 5,
+      "case_id": "alarm-repair983-dev-relative-es",
+      "kind": "original_development_variant",
+      "requested_duration_seconds": 420,
+      "lower_utc": "2026-09-13T11:41:13.743173+00:00",
+      "starts": 1,
+      "completed": 1,
+      "utc": "2026-09-13T11:41:44.164823+00:00",
+      "errors": [],
+      "task_name": "BAXY-Alarm-92187b6cdc574ed499b02efc251c5b0b",
+      "receipt_due_utc": "2026-09-13T11:48:36+00:00",
+      "verified": true,
+      "status": "completed",
+      "upper_utc": "2026-09-13T11:41:36.0206725+00:00",
+      "due_is_whole_second": true,
+      "inferred_binding_utc": "2026-09-13T11:41:36+00:00",
+      "within_bracket_plus_1s": true,
+      "bracket": {
+        "lower": "2026-09-13T11:41:13.743173+00:00",
+        "upper_plus_1s": "2026-09-13T11:41:37.020672+00:00"
+      },
+      "task_observed": {
+        "taskName": "BAXY-Alarm-92187b6cdc574ed499b02efc251c5b0b",
+        "state": "Ready",
+        "startBoundary": [
+          "2026-09-13T08:48:36-03:00"
+        ],
+        "triggerTypes": [
+          "MSFT_TaskTimeTrigger"
+        ],
+        "repetition": [
+          null
+        ],
+        "actions": [
+          {
+            "execute": "powershell.exe",
+            "arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1185-case05-profile\\scheduled-notifications\\BAXY-Alarm-92187b6cdc574ed499b02efc251c5b0b.ps1\""
+          }
+        ],
+        "nextRunUtc": "2026-09-13T11:48:36.0000000Z"
+      },
+      "next_run_utc": "2026-09-13T11:48:36+00:00",
+      "due_equals_next_run": true,
+      "cancel": {
+        "before": 911,
+        "after": 910,
+        "absent": true,
+        "utc": "2026-09-13T11:41:53.826937+00:00"
+      }
+    },
+    {
+      "schema": "time1185-root-postread-v1",
+      "case_index": 6,
+      "case_id": "alarm-repair983-dev-relative-order",
+      "kind": "original_development_variant",
+      "requested_duration_seconds": 660,
+      "lower_utc": "2026-09-13T11:41:54.849949+00:00",
+      "starts": 1,
+      "completed": 1,
+      "utc": "2026-09-13T11:42:23.810833+00:00",
+      "errors": [],
+      "task_name": "BAXY-Alarm-f271a75369244e6ea4f9a0ef902614c0",
+      "receipt_due_utc": "2026-09-13T11:53:16+00:00",
+      "verified": true,
+      "status": "completed",
+      "upper_utc": "2026-09-13T11:42:15.7163573+00:00",
+      "due_is_whole_second": true,
+      "inferred_binding_utc": "2026-09-13T11:42:16+00:00",
+      "within_bracket_plus_1s": true,
+      "bracket": {
+        "lower": "2026-09-13T11:41:54.849949+00:00",
+        "upper_plus_1s": "2026-09-13T11:42:16.716357+00:00"
+      },
+      "task_observed": {
+        "taskName": "BAXY-Alarm-f271a75369244e6ea4f9a0ef902614c0",
+        "state": "Ready",
+        "startBoundary": [
+          "2026-09-13T08:53:16-03:00"
+        ],
+        "triggerTypes": [
+          "MSFT_TaskTimeTrigger"
+        ],
+        "repetition": [
+          null
+        ],
+        "actions": [
+          {
+            "execute": "powershell.exe",
+            "arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1185-case06-profile\\scheduled-notifications\\BAXY-Alarm-f271a75369244e6ea4f9a0ef902614c0.ps1\""
+          }
+        ],
+        "nextRunUtc": "2026-09-13T11:53:16.0000000Z"
+      },
+      "next_run_utc": "2026-09-13T11:53:16+00:00",
+      "due_equals_next_run": true,
+      "cancel": {
+        "before": 911,
+        "after": 910,
+        "absent": true,
+        "utc": "2026-09-13T11:42:33.968897+00:00"
+      }
+    },
+    {
+      "schema": "time1185-root-postread-v1",
+      "case_index": 7,
+      "case_id": "time1185-boundary-01",
+      "kind": "boundary",
+      "requested_duration_seconds": null,
+      "lower_utc": "2026-09-13T11:42:34.970458+00:00",
+      "starts": 0,
+      "completed": 0,
+      "utc": "2026-09-13T11:43:00.492082+00:00",
+      "errors": [],
+      "note": "no single notification.schedule pair in the case journal"
+    }
+  ]
+}

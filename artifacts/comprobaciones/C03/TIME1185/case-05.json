@@ -1,0 +1,24 @@
+{
+  "index": 5,
+  "case_id": "alarm-repair983-dev-relative-es",
+  "terminal_kind": "published_final",
+  "final_sha256": "e6978ba7408a0bb4206a0bdbc115ce6d60616224abad7f8849128d7bfcf00e0c",
+  "clients_absent_before": true,
+  "verdict": "passed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 23.312999999994645,
+    "gpu_peak_mib": 3495.55859375,
+    "ram_peak_mib": 1826.11328125,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1185-instrument-v1\\results\\case-05\\EXIT.json": "9d3d880c339580c43c52d1a84d8f11e8993dd09335c063e97748a9d3bc808dff",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1185-instrument-v1\\results\\case-05\\RESOURCES.json": "59b53ccb5a78cdf56c1effcb6f7cf2993aa1d119a38e7f5e11ba48c87a44c7db",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1185-instrument-v1\\private\\run-05\\case-observations.json": "0899b8515f3fc6a1c1b711cdc486789bf813ec48f3dd0048c4eea8d1e9ad06be"
+  }
+}
