@@ -1,3 +1,15 @@
+# CONVERSATION1150 adjudicado — 2026-09-13T05:15:32+00:00
+
+**232/742 cubiertos, 510 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 5a91ce4ac4fb24d102280c6cc7871d0e0e18cbc51434d127592aa81f6dcd6983. Primeras altas 24 h >= 106 (+4).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 60c61a6f con BUILD1147.
+
+CONVERSATION1150 (26 objetos sin efectos: 10 literales positivos de conversación social, 11 variantes, 5 límites; los 2 límites sin marca de la categoría quedan fuera): 26 ejecutados, 14 aprobados, 12 fallidos; +4 (H0247, H0358, H0615, H0661: acuses). Adjudicación 405cd60d0fa3f17bbd65bf2297899a679f8956a732b58ac99a280605a3106f48. Conversación queda 23/31 (abiertos: H0059, H0069, H0122, H0354, H0410, H0702 y los límites H0176/H0192).
+
+Causas medidas (sin reparación adoptada): (a) generación de conocimiento sólo-pregunta vetada dos veces → decisión clarify → la App publica «No pude entender bien» (H0059 aquí, H0703 en KNOWLEDGE1149); (b) «necesito ayuda con algo» clasificado unsupported por el mind → mismo error; (c) el modelo promete memes que no puede mostrar (H0069 y ambas variantes) y finge comprensión ante ruido (H0410 y ambas variantes): no hay hecho de catálogo «sin imágenes» ni ruta para texto ininteligible; (d) nombre ajeno en el saludo sin aclarar que es BAXY (H0122 y variante); (e) límite «Perfecto, ¿y qué hora es?» no leyó la hora (reconocedor de hora del shell sin el acuse previo).
+
+Siguiente: sonda sin GPU de la ruta veto→clarify→error en __main__ (dónde una PlannerContractError por sólo-pregunta se convierte en clarify y por qué la App la compone como error de comprensión): afecta a tres literales de dos categorías. Después reloj (10 abiertos; TIME parked por decisión del dueño no aplica a hora/fecha simples). Reanudación: derivar material desde build_conversation1150.py (lineage KNOWLEDGE1144, binding BUILD1147); `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 5a91ce4a…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h.
+
+---
+
 # KNOWLEDGE1149 adjudicado — 2026-09-13T04:58:18+00:00
 
 **228/742 cubiertos, 514 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 4642d4ac5cf7fe6f66d99be2be15816e02566422e9f760b69047cb0826fc136d. Primeras altas 24 h >= 102 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 81f1b4ae con BUILD1147.

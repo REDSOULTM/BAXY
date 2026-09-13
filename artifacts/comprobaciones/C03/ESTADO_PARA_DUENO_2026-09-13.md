@@ -1,3 +1,25 @@
+## CONVERSATION1150 — estado vigente 2026-09-13T05:15:32+00:00
+
+Parcial: 14 aprobados, 12 fallidos, 0 sin ejecutar; 4 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 232/742 | 510 | 0 | >=106 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 28 Kiro + 49 retorno + H0584 + H0511 + 10 (NOTES1142) + 2 (KNOWLEDGE1144) + 7 (IDENTITY1146) + 2 (IDENTITY1148) + 2 (KNOWLEDGE1149) = 102 antes de esta tanda, todas dentro de la ventana de 24 h al adjudicar; CONVERSATION1150 añade 4. No se cuentan revalidaciones.
+
+Siguiente acción: CONVERSATION1150 completa: 26 ejecutados, 14 aprobados, 12 fallidos, 4 créditos (H0247, H0358, H0615, H0661: acuses). Conversación queda 23/31. Causas medidas sin reparación adoptada: (a) generación sólo-pregunta vetada → clarify → error de comprensión (H0059; misma familia que H0703 en KNOWLEDGE1149); (b) «necesito ayuda con algo» clasificado unsupported por el mind → error; (c) el modelo promete memes (H0069 y ambas variantes) y finge comprensión ante ruido (H0410 y ambas variantes): sin ruta para texto ininteligible ni hecho de catálogo «sin imágenes»; (d) nombre ajeno en el saludo sin aclaración (H0122, variante). Siguiente: sonda sin GPU de la ruta veto→clarify→error (afecta a tres literales de dos categorías) antes de otra tanda conversacional; luego reloj (10 abiertos).
+
+Evidencia: `artifacts/comprobaciones/C03/CONVERSATION1150/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 455.82 s acumulados; pico GPU 3497.56 MiB; pico RAM 2083.98 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 26; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque CONVERSATION1150 precedente. -->
+
 ## KNOWLEDGE1149 — estado vigente 2026-09-13T04:58:18+00:00
 
 Parcial: 15 aprobados, 7 fallidos, 0 sin ejecutar; 2 créditos.
