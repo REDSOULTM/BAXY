@@ -1,0 +1,18 @@
+diff --git a/src/baxy_mind/request_reading.py b/src/baxy_mind/request_reading.py
+index c02e3c88..a3a91a04 100644
+--- a/src/baxy_mind/request_reading.py
++++ b/src/baxy_mind/request_reading.py
+@@ -199,11 +199,11 @@ _REFUSE_TOKENS = (
+ # —segunda persona— y por lo que hace, o por el borde de lo que hace. Se lee
+ # componiendo tres vocabularios cerrados en vez de enumerando frases.
+ _SECOND_PERSON = re.compile(
+-    r"\b(?:tu|tus|te|ti|contigo|eres|estas|haces|puedes|sabes|sueles|"
++    r"\b(?:tu|tus|te|ti|contigo|eres|sos|vos|estas|haces|puedes|podes|sabes|sueles|"
+     r"you|your|yours|yourself)\b"
+ )
+ _DOING = re.compile(
+-    r"\b(?:hacer|haces|hace|hacen|puedes|podrias|sabes|ofreces|ocupas|"
++    r"\b(?:hacer|haces|hace|hacen|puedes|podes|podrias|sabes|ofreces|ocupas|"
+     r"manejas|gestionas|sirves|ayudas|do|does|doing|can|handle|handles|"
+     r"manage|able|offer|help|capable)\b"
+ )

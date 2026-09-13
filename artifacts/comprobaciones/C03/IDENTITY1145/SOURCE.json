@@ -1,0 +1,29 @@
+{
+  "schema": "c03-identity1145-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/request_reading.py",
+  "before": "5598275ce957f36430063a0f4fb1811b87ec9bc077fb09900c5c69684c139025",
+  "after": "2461c7e0615e434fe84116fa34323829f76e15fe6012f10027a449412e7f476a",
+  "patch": "artifacts/comprobaciones/C03/IDENTITY1145/SOURCE.patch",
+  "patch_sha256": "c9d762b3257fc9aff20aab5136a26dfdcbcaee163fe671d70b5fab3db92817dd",
+  "cause_measured": "IDENTITY1145 índices 0/1 («qué podés hacer», «que podes hacer»): el lector de intenciones no marcó capability porque _SECOND_PERSON y _DOING sólo listan «puedes/sabes» (tuteo); el turno conversacional no recibió el resumen de capacidades del catálogo y respondió como asistente sólo de charla. El índice 2 («Que puedes hacer para mi», tuteo) sí recibió capacidades reales.",
+  "change": "request_reading: _SECOND_PERSON añade sos/vos/podes; _DOING añade podes (formas de voseo plegadas). Sin frases nuevas: la forma compuesta existente (interrogativo + segunda persona + hacer) reconoce ahora el voseo.",
+  "offline_verification": {
+    "instrument": "scratchpad diff_request_reading.py (intents HEAD vs árbol) y c03-recogniser-baseline.py compare",
+    "intent_changes": {
+      "H0153": "[] -> [capability]",
+      "H0474": "[] -> [capability]"
+    },
+    "other_literal_changes": 0,
+    "effect_recognizer_changes": "ninguno nuevo (los 4 de NOTES1142 se conservan)"
+  },
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "requires_dotnet_build": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "IDENTITY1146 (mismo material) cuando la RAM libre permita la preparación.",
+  "credits": 0,
+  "utc": "2026-09-13T03:22:15.536587+00:00"
+}
