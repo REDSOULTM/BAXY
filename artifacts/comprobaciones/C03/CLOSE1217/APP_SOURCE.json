@@ -1,0 +1,17 @@
+{
+  "schema": "c03-close1217-app-source-adoption-v1",
+  "status": "adopted_unmeasured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/MainWindowViewModel.cs (CaptureConductorConfirmation)",
+  "patch": "artifacts/comprobaciones/C03/CLOSE1217/APP_SOURCE.patch",
+  "cause_measured": "CLOSE1215/000: tras window.resolve por nombre (1/1, la ventana propia) y el desafío de app.close, el turno revisado terminó en review_pending_not_supported porque CaptureConductorConfirmation(allowVerifiedReadPrefix) devolvió null; sus dieciséis guardas se evalúan en una sola expresión y ninguna deja rastro, así que la causa no es diagnosticable desde fuera del producto (cola durable con la operación correcta, mensajes compuestos, plan sin replan).",
+  "change": "Las mismas guardas, en el mismo orden y con el mismo resultado, pero cada rechazo registra en la traza del shell un registro conductor.capture.refused con el nombre de la guarda (thread, input_disabled, core_not_ready, pending_model_messages, composition_error, composition_failure, memory_confirmation, memory_pending, audio_pending, note_pending, no_plan, shape, replanned, effect_uncertain, no_confirmation, reconciliation_required, pending_operation_mismatch, outbox_count, outbox_identity, expired). Sin cambio de conducta visible ni de protocolo; sólo diagnóstico.",
+  "offline_verification": "Sin tests (orden del dueño). Build raíz BUILD1217 (build.py de BUILD1205 copiado) con recibo de build y apagado del build-server.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": true,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": null,
+  "credits": null
+}

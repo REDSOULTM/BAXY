@@ -576,25 +576,45 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     internal PendingOperationConfirmation? CaptureConductorConfirmation(bool allowVerifiedReadPrefix = false)
     {
-        if (Environment.CurrentManagedThreadId != _uiThreadId
-            || _isDisposed || !IsInputEnabled || _coreClient?.IsReady != true
-            || PendingModelMessageCount != 0 || HasCompositionError
-            || !string.IsNullOrEmpty(LastMessageCompositionFailure)
-            || _memoryTurns.HasConfirmation || _memoryTurns.HasPendingOperation
-            || _pendingAudioOperation is not null || _pendingNoteInteraction.Current is not null
-            || _mindPlans.Current is not { } execution
-            || !ConductorConfirmationShape(execution, allowVerifiedReadPrefix)
-            || execution.ReplanCount != 0 || execution.PendingEffectMayHaveOccurred
-            || execution.Confirmation is not { ReconciliationRequired: false } confirmation
-            || !ReferenceEquals(execution.PendingOperation, confirmation.Prepared)
-            || _retryableOperations?.SnapshotPendingOperations() is not { Count: 1 } pending
-            || !ReferenceEquals(pending[0], confirmation.Prepared)
-            || confirmation.ExpiresAtUtc <= DateTimeOffset.UtcNow)
+        // The reviewer only learns "review_pending_not_supported"; the trace names
+        // the guard that refused the capture (CLOSE1215/000 was undiagnosable).
+        string? refusal =
+            Environment.CurrentManagedThreadId != _uiThreadId ? "thread"
+            : _isDisposed ? "disposed"
+            : !IsInputEnabled ? "input_disabled"
+            : _coreClient?.IsReady != true ? "core_not_ready"
+            : PendingModelMessageCount != 0 ? "pending_model_messages"
+            : HasCompositionError ? "composition_error"
+            : !string.IsNullOrEmpty(LastMessageCompositionFailure) ? "composition_failure"
+            : _memoryTurns.HasConfirmation ? "memory_confirmation"
+            : _memoryTurns.HasPendingOperation ? "memory_pending"
+            : _pendingAudioOperation is not null ? "audio_pending"
+            : _pendingNoteInteraction.Current is not null ? "note_pending"
+            : _mindPlans.Current is null ? "no_plan"
+            : null;
+        PendingMindPlanExecution? execution = _mindPlans.Current;
+        if (refusal is null && execution is not null)
         {
+            refusal =
+                !ConductorConfirmationShape(execution, allowVerifiedReadPrefix) ? "shape"
+                : execution.ReplanCount != 0 ? "replanned"
+                : execution.PendingEffectMayHaveOccurred ? "effect_uncertain"
+                : execution.Confirmation is null ? "no_confirmation"
+                : execution.Confirmation.ReconciliationRequired ? "reconciliation_required"
+                : !ReferenceEquals(execution.PendingOperation, execution.Confirmation.Prepared) ? "pending_operation_mismatch"
+                : _retryableOperations?.SnapshotPendingOperations() is not { Count: 1 } pending ? "outbox_count"
+                : !ReferenceEquals(pending[0], execution.Confirmation.Prepared) ? "outbox_identity"
+                : execution.Confirmation.ExpiresAtUtc <= DateTimeOffset.UtcNow ? "expired"
+                : null;
+        }
+
+        if (refusal is not null)
+        {
+            ShellTrace.Record("conductor", "capture", "conductor.capture.refused", refusal);
             return null;
         }
 
-        return confirmation;
+        return execution!.Confirmation;
     }
 
     private static bool ConductorConfirmationShape(
