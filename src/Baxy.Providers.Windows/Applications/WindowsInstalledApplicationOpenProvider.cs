@@ -1320,6 +1320,15 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         }
 
         string normalizedProcessName = InstalledApplicationResolver.Normalize(processName);
+        if (string.Equals(entry.AppUserModelId, ShellExplorerAppUserModelId, StringComparison.Ordinal))
+        {
+            // File Explorer windows are titled «<folder> - Explorador de archivos»:
+            // the application name is a suffix, never the prefix the title rule
+            // expects, and the catalog id carries no executable. The process is
+            // the identity (APPS1235/000: verification_failed with the window
+            // on screen).
+            return string.Equals(normalizedProcessName, "explorer", StringComparison.Ordinal);
+        }
         return BuildProcessIdentities(entry).Any(identity =>
                 normalizedProcessName == identity
                 || (identity.Length >= 4
