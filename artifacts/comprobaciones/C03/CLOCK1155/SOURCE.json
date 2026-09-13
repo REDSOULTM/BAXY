@@ -1,0 +1,18 @@
+{
+  "schema": "c03-clock1155-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py",
+  "patch": "artifacts/comprobaciones/C03/CLOCK1155/SOURCE.patch",
+  "cause_measured": "CLOCK1155 índices 0 («qe ora es»), 1 («qué día es hoy»), 6 («¿Qué hora es ya?») y 9 («What's today's date?»): el mind propuso system.time, el veto de dominio (apply_operation_domain_grounding_veto → effect_intent.operation_domain_is_grounded) lo retiró y la etapa domain_confirmation publicó una pregunta de confirmación (a veces con vocabulario del contrato: «la hora UTC y el desfase local»); ninguna lectura del reloj. Sonda sin GPU: effect_intent._direct_current_time_request devolvía False para esos cuatro textos y True para los que sí leyeron el reloj («¿Qué fecha es hoy?», «What time is it right now?»).",
+  "change": "En _direct_current_time_request: la cláusula «que (hora|fecha) es (ahora|hoy)?» acepta también «dia», la errata «ora» con «qe», y la cola «ya»; la cláusula inglesa «what (time|date) is it» acepta «day»; el arranque «what is (the|current|local|today)» acepta la contracción «what's». Sin frases de salida; el resto del reconocedor (lugares, eventos, duraciones) intacto: «qué hora es en Madrid», «que hora es de la reunion», «What is today» siguen sin reconocerse.",
+  "offline_verification": "scratchpad/c03-recogniser-baseline.py compare: 248 → 254 resueltos; 6 cambios, todos ganancias (H0243 y H0630 → system.time; los otros cuatro son las ganancias de notas ya adoptadas en 03f0ef17); 0 regresiones sobre los 742 literales.",
+  "not_changed": "«Tiempo»/«tiempo» a secas siguen sin dominio (polisemia documentada en el veto); cuentas atrás («cuánto falta para las 3») y duraciones («cuánto tiempo tarda…») siguen fuera de catálogo.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "CLOCK1156 con el mismo material sobre este candidato.",
+  "credits": 0
+}

@@ -542,11 +542,11 @@ def _direct_current_time_request(folded: str) -> bool:
     )
     return re.fullmatch(
         rf"(?:{observation}\s+(?:{nominal})|"
-        rf"(?:what\s+is\s+(?=(?:the|current|local|today)\b)|"
+        rf"(?:what(?:\s+is|'s|’s|s)\s+(?=(?:the|current|local|today)\b)|"
         rf"(?:que|cual)\s+es\s+)(?:{nominal})|"
         rf"(?:{observation}\s+)?(?:"
-        r"que\s+(?:hora|fecha)\s+es(?:\s+(?:ahora|hoy))?|"
-        r"what\s+(?:time|date)\s+is\s+it(?:\s+(?:(?:right\s+)?now|today))?)|"
+        r"(?:que|qe)\s+(?:hora|ora|fecha|dia)\s+es(?:\s+(?:ahora|hoy|ya))?|"
+        r"what\s+(?:time|date|day)\s+is\s+it(?:\s+(?:(?:right\s+)?now|today))?)|"
         rf"(?:hora|fecha)\s+{current}|(?:current|local)\s+(?:local\s+)?(?:time|date)|"
         rf"today(?:['’]s)?\s+date|(?:{observation}\s+)?"
         r"(?:the\s+)?time\s+(?:right\s+now|now)"
