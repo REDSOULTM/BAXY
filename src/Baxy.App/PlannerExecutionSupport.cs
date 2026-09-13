@@ -402,6 +402,13 @@ internal static class PlanObservationProjector
                 { "url" },
             ["wifi.profile.list"] = new(StringComparer.Ordinal)
                 { "label", "profiles" },
+            // The reviewed-close shape reads the page scope and the foreground
+            // flag of the window observation; without them the projected
+            // observation could never establish one candidate (CLOSE1217/000).
+            ["window.active"] = new(StringComparer.Ordinal)
+                { "foreground" },
+            ["window.resolve"] = new(StringComparer.Ordinal)
+                { "complete", "foreground", "hasMore", "limit", "nextOffset", "observedCount", "offset" },
         };
 
     internal static JsonObject Create(

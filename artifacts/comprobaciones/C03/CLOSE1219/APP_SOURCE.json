@@ -1,0 +1,17 @@
+{
+  "schema": "c03-close1219-app-source-adoption-v1",
+  "status": "adopted_unmeasured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/PlannerExecutionSupport.cs (PlanObservationProjector.OperationSafeFields)",
+  "patch": "artifacts/comprobaciones/C03/CLOSE1219/APP_SOURCE.patch",
+  "cause_measured": "CLOSE1217/000 (traza conductor.capture.refused=shape): ConductorConfirmationShape, la forma del cierre revisado introducida en CLOSE1060, lee en la observación proyectada de window.resolve los campos complete, offset, observedCount, totalCount, hasMore (y foreground en window.active), pero PlanObservationProjector conserva únicamente su lista segura global (count, totalCount, windows, windowId, processId, state, version…) más campos por operación, y ninguna entrada cubría window.resolve/window.active: complete, offset, observedCount, hasMore y foreground se descartaban y la captura devolvía null en cada intento, de modo que el turno revisado nunca escribía la propuesta.",
+  "change": "Campos seguros por operación: window.resolve conserva complete, foreground, hasMore, limit, nextOffset, observedCount y offset; window.active conserva foreground. Sólo son enteros/booleanos de alcance de página o foco ya publicados por el Core; sin títulos ni nombres de proceso (siguen fuera de la proyección), sin cambio en la forma exigida ni en el protocolo de revisión.",
+  "offline_verification": "Sin tests (orden del dueño). Build raíz BUILD1219 con recibo y apagado del build-server; medición en CLOSE1219.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": true,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": null,
+  "credits": null
+}
