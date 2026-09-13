@@ -4700,7 +4700,9 @@ def compose_visible_defect(
         return "internal_code"
     if cause == "timeout" and "trajo" in folded:
         return "invented"
-    if re.search(r"\b(\w+)(?:\s+\1){1,}\b", folded):
+    # Two observed windows titled «Configuración» on consecutive list lines
+    # are data, not a stutter (WINDOWS1209/000).
+    if re.search(r"\b(\w+)(?:\s+\1){1,}\b", vocabulary_text.casefold()):
         return "invented"
     if re.match(r"^\s*(?:say|di|use|usa)\b", folded):
         return "copied_instruction"
@@ -4734,7 +4736,9 @@ def compose_visible_defect(
         and prompt_echo.group(0) not in (user_text or "").casefold()
     ):
         return "copied_instruction"
-    if re.search(r"(?m)^[a-z]{8,}$", folded):
+    # An observed window title on its own list line («MainWindowView»,
+    # «Configuración») is data, not an invented word (WINDOWS1209/000).
+    if re.search(r"(?m)^[a-z]{8,}$", vocabulary_text.casefold()):
         return "invented"
     for word in re.findall(
         r"\b\w*(?:ventana[a-záéíóúñ]{2,}|window[a-z]{2,})\w*\b", folded

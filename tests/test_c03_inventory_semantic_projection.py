@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from baxy_mind.llm import _compose_situation_payload, _payload_fact_defect, LlmRuntime
+from baxy_mind.llm import _compose_situation_payload, _payload_fact_defect, compose_visible_defect, LlmRuntime
 from baxy_mind.window_prose_facts import window_fact_feedback
 
 
@@ -77,6 +77,14 @@ def test_large_list_requests_name_a_bounded_titled_first_subset(user_text, count
     named = "\n".join("- " + (w["title"] or w["processName"]) for w in (titled + untitled)[:10])
     reply = f"Se observaron {total} ventanas; te nombro 10 de las {total}:\n{named}\nHay {total - 10} ventanas más sin nombrar."
     assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
+    reply = f"Las ventanas son:\n{named}\nSe observaron {total - 10} ventanas que no están incluidas en esta lista."
+    assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
+    reply = f"{named}\n\nSe observaron {total - 10} ventanas no nombradas en esta lista."
+    assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
+    assert not compose_visible_defect(reply, "status", user_text, {"situation": original})
+    reply = f"Se observaron {total} ventanas en total ({total - 10} no nombradas):\n{named}"
+    assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
+    assert _payload_fact_defect(f"Se observaron {total - 9} ventanas que no están incluidas:\n{named}", {"seen": seen, "operation": "window.resolve"}, user_text) == "reversed_result"
     assert _payload_fact_defect(f"Hay {count} de {total} ventanas:\n{named}", {"seen": seen, "operation": "window.resolve"}, user_text) == "reversed_result"
     assert situation == original
 

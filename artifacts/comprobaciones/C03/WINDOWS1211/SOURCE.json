@@ -1,0 +1,17 @@
+{
+  "schema": "c03-windows1211-source-adoption-v1",
+  "status": "adopted_unmeasured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/window_prose_facts.py (_REMAINING_CONTEXT, _inventory_quantity_scope); src/baxy_mind/llm.py (compose_visible_defect: tartamudeo y línea de palabra sola)",
+  "patch": "artifacts/comprobaciones/C03/WINDOWS1211/SOURCE.patch",
+  "cause_measured": "WINDOWS1209/000 («listá las ventanas», 24 ventanas observadas): la proyección acotada compuso; los tres borradores nombraron literalmente las diez ventanas proyectadas. Reproducido offline con la página grabada: (1) «Se observaron 14 ventanas que no están incluidas en esta lista» se ligó al verbo «observaron» (14 ≠ 24 → reversed_result) porque la cláusula relativa «que no están incluidas» no contaba como alcance «restantes»; (2) los reintentos, en líneas sin viñeta, cayeron en el detector de tartamudeo de compose_visible_defect: dos ventanas reales tituladas «Configuración» en líneas consecutivas («configuracion\\nconfiguracion») → invented; el mismo texto en líneas sueltas también tocaba la comprobación de línea de una sola palabra («mainwindowview»).",
+  "change": "Alcance «restantes» ampliado (no están incluidas / no aparecen / no figuran / sin incluir / fuera de la lista / omitidas / excluidas / quedan / faltan; not included / left out / not in this list) y, cuando sigue a la cantidad enlazado por «que/which/that/de las cuales» o directamente, liga con distancia cero (más fuerte que el verbo previo). En compose_visible_defect, el detector de tartamudeo y el de línea de palabra sola se evalúan sobre la copia con los nombres observados enmascarados (without_observed_names), como ya hacían las comprobaciones de vocabulario. Sin frases de salida; ninguna capa nueva.",
+  "offline_verification": "Con la página grabada de WINDOWS1209/000 (20/24 → 10 proyectadas + 14): el primer borrador pasa las comprobaciones factuales; el segundo y el tercero pasan compose_visible_defect. Página de WINDOWS1207 (20/22): todos los controles de la tanda anterior mantienen su resultado (omisión → missing_fact; «20 de 22» → reversed_result; «todas» → extra_claim; sin divulgación → missing_fact; «Explorador de archivos» por «explorer» → missing_fact; conteo intacto; página de 5 intacta). «Se observaron 24 ventanas en total (14 no nombradas)» pasa; «15 ventanas que no están incluidas» → reversed_result. Tests alineados (no ejecutados por orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": null,
+  "credits": null
+}

@@ -1,0 +1,109 @@
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 5a5e957f..304bfb17 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4700,7 +4700,9 @@ def compose_visible_defect(
+         return "internal_code"
+     if cause == "timeout" and "trajo" in folded:
+         return "invented"
+-    if re.search(r"\b(\w+)(?:\s+\1){1,}\b", folded):
++    # Two observed windows titled «Configuración» on consecutive list lines
++    # are data, not a stutter (WINDOWS1209/000).
++    if re.search(r"\b(\w+)(?:\s+\1){1,}\b", vocabulary_text.casefold()):
+         return "invented"
+     if re.match(r"^\s*(?:say|di|use|usa)\b", folded):
+         return "copied_instruction"
+@@ -4734,7 +4736,9 @@ def compose_visible_defect(
+         and prompt_echo.group(0) not in (user_text or "").casefold()
+     ):
+         return "copied_instruction"
+-    if re.search(r"(?m)^[a-z]{8,}$", folded):
++    # An observed window title on its own list line («MainWindowView»,
++    # «Configuración») is data, not an invented word (WINDOWS1209/000).
++    if re.search(r"(?m)^[a-z]{8,}$", vocabulary_text.casefold()):
+         return "invented"
+     for word in re.findall(
+         r"\b\w*(?:ventana[a-záéíóúñ]{2,}|window[a-z]{2,})\w*\b", folded
+diff --git a/src/baxy_mind/window_prose_facts.py b/src/baxy_mind/window_prose_facts.py
+index 3fb96e03..67f50684 100644
+--- a/src/baxy_mind/window_prose_facts.py
++++ b/src/baxy_mind/window_prose_facts.py
+@@ -443,10 +443,15 @@ _TOTAL_CONTEXT = re.compile(r"\b(?:en\s+total|in\s+total|total\s+of|total\s+de)\
+ # named page; it is neither the page nor the total.
+ _REMAINING_CONTEXT = re.compile(
+     r"\b(?:mas|more|other|another|otras?|restantes?|remaining|adicionales|additional|"
+-    r"unnamed|unlisted|sin\s+(?:nombrar|listar|mencionar|enumerar)|"
+-    r"no\s+(?:nombrad[oa]s|listad[oa]s|mencionad[oa]s|enumerad[oa]s|nombro|listo|menciono|enumero)|"
+-    r"not\s+(?:named|listed|mentioned|shown|included))\b"
++    r"unnamed|unlisted|omitid[oa]s|excluid[oa]s|omitted|excluded|quedan|faltan|restan|"
++    r"sin\s+(?:nombrar|listar|mencionar|enumerar|incluir|mostrar)|"
++    r"fuera\s+de\s+(?:esta\s+|la\s+)?lista|(?:outside|beyond|not\s+in)\s+(?:this|the)\s+list|"
++    r"no\s+(?:(?:estan|se|aparecen|figuran)\s+)?"
++    r"(?:nombrad[oa]s|listad[oa]s|mencionad[oa]s|enumerad[oa]s|incluid[oa]s|mostrad[oa]s|"
++    r"nombro|listo|menciono|enumero|incluyo|muestro|nombran|listan|mencionan|enumeran|incluyen|muestran|aparecen|figuran)|"
++    r"not\s+(?:named|listed|mentioned|shown|included|displayed)|left\s+(?:out|unnamed|unlisted))\b"
+ )
++_RELATIVE_LINK = re.compile(r"\s*(?:,\s*)?(?:que|which|that|de\s+las\s+cuales|of\s+which)?\s*$")
+ _INVENTORY_LIMIT = re.compile(r"\b(?:pagina|page|parcial|partial|limite|limited|"
+                              r"al\s+menos|at\s+least|mas\s+ventanas|more\s+windows)\b")
+ _INVENTORY_REFERENCE_COUNT = re.compile(rf"\b(?P<number>{_NUMBER})\s+(?:of\s+them|de\s+ellas)\b")
+@@ -514,16 +519,21 @@ def _inventory_chronology_claim(text: str, seen: dict) -> bool:
+ 
+ 
+ def _inventory_quantity_scope(clause: str, start: int, end: int) -> str:
+-    """Bind a quantity to its nearby noun/modifier, not a remote list heading."""
+-    contexts = [
+-        (max(start - match.end(), match.start() - end, 0),
+-         0 if match.start() >= end else 1, scope)
+-        for scope, pattern in (
+-            ("page", _PAGE_CONTEXT), ("observed", _OBSERVATION_CONTEXT), ("total", _TOTAL_CONTEXT),
+-            ("remaining", _REMAINING_CONTEXT),
+-        )
+-        for match in pattern.finditer(clause)
+-    ]
++    """Bind a quantity to its nearby noun/modifier, not a remote list heading.
++
++    A restrictive clause right after the quantity («14 ventanas que no están
++    incluidas») binds tighter than the verb before it («se observaron»).
++    """
++    contexts = []
++    for scope, pattern in (
++        ("page", _PAGE_CONTEXT), ("observed", _OBSERVATION_CONTEXT), ("total", _TOTAL_CONTEXT),
++        ("remaining", _REMAINING_CONTEXT),
++    ):
++        for match in pattern.finditer(clause):
++            distance = max(start - match.end(), match.start() - end, 0)
++            if scope == "remaining" and match.start() >= end and _RELATIVE_LINK.fullmatch(clause[end:match.start()]):
++                distance = 0
++            contexts.append((distance, 0 if match.start() >= end else 1, scope))
+     return min(contexts)[2] if contexts else ""
+ 
+ 
+diff --git a/tests/test_c03_inventory_semantic_projection.py b/tests/test_c03_inventory_semantic_projection.py
+index d6d18329..5ed22a1a 100644
+--- a/tests/test_c03_inventory_semantic_projection.py
++++ b/tests/test_c03_inventory_semantic_projection.py
+@@ -4,7 +4,7 @@ import json
+ 
+ import pytest
+ 
+-from baxy_mind.llm import _compose_situation_payload, _payload_fact_defect, LlmRuntime
++from baxy_mind.llm import _compose_situation_payload, _payload_fact_defect, compose_visible_defect, LlmRuntime
+ from baxy_mind.window_prose_facts import window_fact_feedback
+ 
+ 
+@@ -77,6 +77,14 @@ def test_large_list_requests_name_a_bounded_titled_first_subset(user_text, count
+     named = "\n".join("- " + (w["title"] or w["processName"]) for w in (titled + untitled)[:10])
+     reply = f"Se observaron {total} ventanas; te nombro 10 de las {total}:\n{named}\nHay {total - 10} ventanas más sin nombrar."
+     assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
++    reply = f"Las ventanas son:\n{named}\nSe observaron {total - 10} ventanas que no están incluidas en esta lista."
++    assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
++    reply = f"{named}\n\nSe observaron {total - 10} ventanas no nombradas en esta lista."
++    assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
++    assert not compose_visible_defect(reply, "status", user_text, {"situation": original})
++    reply = f"Se observaron {total} ventanas en total ({total - 10} no nombradas):\n{named}"
++    assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
++    assert _payload_fact_defect(f"Se observaron {total - 9} ventanas que no están incluidas:\n{named}", {"seen": seen, "operation": "window.resolve"}, user_text) == "reversed_result"
+     assert _payload_fact_defect(f"Hay {count} de {total} ventanas:\n{named}", {"seen": seen, "operation": "window.resolve"}, user_text) == "reversed_result"
+     assert situation == original
+ 

@@ -443,10 +443,15 @@ _TOTAL_CONTEXT = re.compile(r"\b(?:en\s+total|in\s+total|total\s+of|total\s+de)\
 # named page; it is neither the page nor the total.
 _REMAINING_CONTEXT = re.compile(
     r"\b(?:mas|more|other|another|otras?|restantes?|remaining|adicionales|additional|"
-    r"unnamed|unlisted|sin\s+(?:nombrar|listar|mencionar|enumerar)|"
-    r"no\s+(?:nombrad[oa]s|listad[oa]s|mencionad[oa]s|enumerad[oa]s|nombro|listo|menciono|enumero)|"
-    r"not\s+(?:named|listed|mentioned|shown|included))\b"
+    r"unnamed|unlisted|omitid[oa]s|excluid[oa]s|omitted|excluded|quedan|faltan|restan|"
+    r"sin\s+(?:nombrar|listar|mencionar|enumerar|incluir|mostrar)|"
+    r"fuera\s+de\s+(?:esta\s+|la\s+)?lista|(?:outside|beyond|not\s+in)\s+(?:this|the)\s+list|"
+    r"no\s+(?:(?:estan|se|aparecen|figuran)\s+)?"
+    r"(?:nombrad[oa]s|listad[oa]s|mencionad[oa]s|enumerad[oa]s|incluid[oa]s|mostrad[oa]s|"
+    r"nombro|listo|menciono|enumero|incluyo|muestro|nombran|listan|mencionan|enumeran|incluyen|muestran|aparecen|figuran)|"
+    r"not\s+(?:named|listed|mentioned|shown|included|displayed)|left\s+(?:out|unnamed|unlisted))\b"
 )
+_RELATIVE_LINK = re.compile(r"\s*(?:,\s*)?(?:que|which|that|de\s+las\s+cuales|of\s+which)?\s*$")
 _INVENTORY_LIMIT = re.compile(r"\b(?:pagina|page|parcial|partial|limite|limited|"
                              r"al\s+menos|at\s+least|mas\s+ventanas|more\s+windows)\b")
 _INVENTORY_REFERENCE_COUNT = re.compile(rf"\b(?P<number>{_NUMBER})\s+(?:of\s+them|de\s+ellas)\b")
@@ -514,16 +519,21 @@ def _inventory_chronology_claim(text: str, seen: dict) -> bool:
 
 
 def _inventory_quantity_scope(clause: str, start: int, end: int) -> str:
-    """Bind a quantity to its nearby noun/modifier, not a remote list heading."""
-    contexts = [
-        (max(start - match.end(), match.start() - end, 0),
-         0 if match.start() >= end else 1, scope)
-        for scope, pattern in (
-            ("page", _PAGE_CONTEXT), ("observed", _OBSERVATION_CONTEXT), ("total", _TOTAL_CONTEXT),
-            ("remaining", _REMAINING_CONTEXT),
-        )
-        for match in pattern.finditer(clause)
-    ]
+    """Bind a quantity to its nearby noun/modifier, not a remote list heading.
+
+    A restrictive clause right after the quantity («14 ventanas que no están
+    incluidas») binds tighter than the verb before it («se observaron»).
+    """
+    contexts = []
+    for scope, pattern in (
+        ("page", _PAGE_CONTEXT), ("observed", _OBSERVATION_CONTEXT), ("total", _TOTAL_CONTEXT),
+        ("remaining", _REMAINING_CONTEXT),
+    ):
+        for match in pattern.finditer(clause):
+            distance = max(start - match.end(), match.start() - end, 0)
+            if scope == "remaining" and match.start() >= end and _RELATIVE_LINK.fullmatch(clause[end:match.start()]):
+                distance = 0
+            contexts.append((distance, 0 if match.start() >= end else 1, scope))
     return min(contexts)[2] if contexts else ""
 
 
