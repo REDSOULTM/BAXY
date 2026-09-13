@@ -5658,6 +5658,46 @@ _PAST_ACTION_ATTRIBUTED_TO_USER = re.compile(
     re.IGNORECASE,
 )
 
+# «Si hazlo», «dale, hacelo», «do it»: an assent that names no action. The
+# clarification must ask which action, never «¿Qué querés que abra?».
+_ASSENT_WITHOUT_ACTION = re.compile(
+    r"[\s¡!¿?]*(?:(?:si|ok|okay|dale|bueno|vale|ya|yes|yeah|sure)\s*,?\s+)?"
+    r"(?:(?:por favor|please)\s*,?\s+)?"
+    r"(?:haz(?:lo|\s+(?:eso|esto|aquello))|hace(?:lo|\s+(?:eso|esto|aquello))|"
+    r"dale(?:\s+con)?\s+(?:eso|esto)|do\s+(?:it|that|this)|"
+    r"make\s+(?:it|that)\s+happen|go\s+ahead(?:\s+with\s+(?:it|that|this))?)"
+    r"(?:\s*,?\s*(?:por favor|please))?[\s.!?]*",
+    re.IGNORECASE,
+)
+_INVENTED_ACTION_VERB = re.compile(
+    r"\b(?:abra|abrir|cierre|cerrar|mande|mandar|envie|enviar|borre|borrar|"
+    r"elimine|eliminar|guarde|guardar|busque|buscar|reproduzca|reproducir|"
+    r"open|close|send|delete|save|search|play)\b",
+    re.IGNORECASE,
+)
+
+
+# The noise clarification must name what arrived («signos», «cifras», «una
+# letra», «eso que escribiste») or say it sees no request in it.
+_NOISE_ACKNOWLEDGED = re.compile(
+    r"\b(?:signos?|simbolos?|cifras?|digitos?|numeros?|letras?|emojis?|"
+    r"caracter(?:es)?|interrogaci[oó]n|mensaje|escribiste|enviaste|mandaste|"
+    r"llego|recib[ií]|no (?:veo|encuentro|logro|entiendo|reconozco)|"
+    r"con eso|con esto|de eso|de esto|"
+    r"symbols?|digits?|numbers?|letters?|characters?|question marks?|"
+    r"you (?:sent|wrote|typed)|with that|with this)\b",
+    re.IGNORECASE,
+)
+
+
+def _fold_dialogue_text(value: object) -> str:
+    """Lowercase without accents, for closed dialogue-shape matches."""
+
+    decomposed = unicodedata.normalize("NFKD", str(value or "").casefold())
+    return " ".join(
+        "".join(c for c in decomposed if not unicodedata.combining(c)).split()
+    )
+
 
 def _clarification_style_messages(text: str) -> list[dict[str, str]]:
     """Contrato de idioma y trato para cualquier pregunta de aclaración."""
@@ -8817,10 +8857,12 @@ class LlmRuntime:
                         "faltante, sin suponer qué tipo de objeto es. La acción "
                         "ya está solicitada y aún no ocurrió: no preguntes si el "
                         "usuario quiere o puede realizarla, ni qué acción hizo. "
-                        "Un imperativo con voseo («abrí eso», «cerrá eso», "
-                        "«mandá eso») es una orden que el usuario te da ahora, "
-                        "no algo que él ya hizo: pregunta qué debes abrir, no "
-                        "qué abrió. "
+                        "Un imperativo con voseo es una orden que el usuario te "
+                        "da ahora, no algo que él ya hizo: pregunta por el objeto "
+                        "de esa misma orden, con su mismo verbo. Si la orden es "
+                        "sólo «hazlo» o «hacelo» sin ninguna acción nombrada, "
+                        "pregunta qué acción quiere que hagas, sin inventar un "
+                        "verbo. "
                         "No conviertas la orden recibida en una pregunta ni pidas "
                         "confirmarla. No adivines el destino, no uses historial "
                         "y no menciones modelos, herramientas ni reglas. "
@@ -8889,9 +8931,16 @@ class LlmRuntime:
             ):
                 raise ValueError("aclaración de referente inválida")
             # DIALOGUE1277 H0531 «abrí eso» → «¿Qué es lo que abriste?»: the
-            # voseo imperative was read as the user's own past action. One
-            # corrected retry; a second past-tense reading is a failure.
-            if _PAST_ACTION_ATTRIBUTED_TO_USER.search(question) is None:
+            # voseo imperative was read as the user's own past action.
+            # DIALOGUE1279 H0562 «Si hazlo» → «¿Qué querés que abra?»: an
+            # assent naming no action got a verb invented for it. One
+            # corrected retry each; a repeat is a failure.
+            past_action = _PAST_ACTION_ATTRIBUTED_TO_USER.search(question) is not None
+            invented_verb = (
+                _ASSENT_WITHOUT_ACTION.fullmatch(_fold_dialogue_text(current)) is not None
+                and _INVENTED_ACTION_VERB.search(question) is not None
+            )
+            if not past_action and not invented_verb:
                 return question
             if attempt == 0:
                 payload["messages"].insert(
@@ -8901,12 +8950,19 @@ class LlmRuntime:
                         "content": (
                             "Corrección: el usuario no hizo nada todavía; te está "
                             "ordenando la acción ahora mismo. No uses «abriste», "
-                            "«cerraste» ni otro pasado del usuario: pregunta qué "
-                            "debes abrir, cerrar o hacer tú."
+                            "«cerraste» ni otro pasado del usuario."
+                            if past_action
+                            else "Corrección: el usuario no nombró ninguna acción; "
+                            "no digas «abra», «cierre» ni otro verbo concreto. "
+                            "Pregunta qué acción quiere que hagas."
                         ),
                     },
                 )
-        raise ValueError("aclaración de referente atribuye la acción al usuario")
+        raise ValueError(
+            "aclaración de referente atribuye la acción al usuario"
+            if past_action
+            else "aclaración de referente inventa la acción"
+        )
 
     def clarify_unresolved_input(
         self,
@@ -8985,34 +9041,54 @@ class LlmRuntime:
         maximum_timeout = (
             15.0 if os.environ.get("BAXY_MIND_NGL", "").strip() == "0" else 2.5
         )
-        response = self._post(
-            payload,
-            timeout=min(
-                maximum_timeout,
-                self._normalize_request_budget(timeout),
-            ),
-        )
-        try:
-            content = response["choices"][0]["message"].get("content") or ""
-            raw = json.loads(content)
-        except (json.JSONDecodeError, KeyError, IndexError, TypeError) as error:
-            raise ValueError("aclaración de entrada con JSON inválido") from error
-        if not isinstance(raw, dict) or set(raw) != {"question"}:
-            raise ValueError("aclaración de entrada con forma inválida")
-        question = raw.get("question")
-        if (
-            not isinstance(question, str)
-            or question != question.strip()
-            or not 1 <= len(question) <= 512
-            or "\n" in question
-            or "\r" in question
-            or question.count("?") != 1
-            or not question.endswith("?")
-            or _normalized_dialogue_text(question) == _normalized_dialogue_text(current)
-            or visible_text_leaks_internal_vocabulary(question)
-        ):
-            raise ValueError("aclaración de entrada inválida")
-        return question
+        for attempt in range(2):
+            response = self._post(
+                payload,
+                timeout=min(
+                    maximum_timeout,
+                    self._normalize_request_budget(timeout),
+                ),
+            )
+            try:
+                content = response["choices"][0]["message"].get("content") or ""
+                raw = json.loads(content)
+            except (json.JSONDecodeError, KeyError, IndexError, TypeError) as error:
+                raise ValueError("aclaración de entrada con JSON inválido") from error
+            if not isinstance(raw, dict) or set(raw) != {"question"}:
+                raise ValueError("aclaración de entrada con forma inválida")
+            question = raw.get("question")
+            if (
+                not isinstance(question, str)
+                or question != question.strip()
+                or not 1 <= len(question) <= 512
+                or "\n" in question
+                or "\r" in question
+                or question.count("?") != 1
+                or not question.endswith("?")
+                or _normalized_dialogue_text(question) == _normalized_dialogue_text(current)
+                or visible_text_leaks_internal_vocabulary(question)
+            ):
+                raise ValueError("aclaración de entrada inválida")
+            # DIALOGUE1279 H0287 «????» → «¿Qué quieres que haga?»: a question
+            # that never names what arrived is the generic help offer the
+            # owner rejected (CLARIFY1047). One corrected retry.
+            if kind != "noise" or _NOISE_ACKNOWLEDGED.search(
+                _fold_dialogue_text(question)
+            ):
+                return question
+            if attempt == 0:
+                payload["messages"].insert(
+                    -1,
+                    {
+                        "role": "system",
+                        "content": (
+                            "Corrección: la pregunta debe decir qué llegó (sólo "
+                            "signos, cifras, una letra o símbolos) y que ahí no "
+                            "ves un pedido, antes de preguntar qué hacer."
+                        ),
+                    },
+                )
+        raise ValueError("aclaración de entrada no reconoce lo recibido")
 
     def clarify_after_turn_failure(
         self,
