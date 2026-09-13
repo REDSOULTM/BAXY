@@ -1,0 +1,18 @@
+{
+  "schema": "c03-arrange1229-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_DEICTIC_WINDOW_MUTATION, deictic_window_mutation, _window_domain, _is_direct_request)",
+  "patch": "artifacts/comprobaciones/C03/ARRANGE1229/SOURCE.patch",
+  "commit": "a9cdb7217682698c4be8e9309c8115fb88198b72",
+  "cause_measured": "Sonda offline sobre HEAD 657346eb: «maximizá la ventana» (H0291) y «minimizá esta ventana» (H0628) planificaban window.resolve → window.maximize|minimize: un inventario de todas las ventanas del que el planificador elegiría un windowId, sin confirmación (window.maximize/minimize/restore son low_reversible y el kernel las permite directamente), es decir, podía maximizar o minimizar una ventana ajena. Sólo «la ventana actual» (H0681) unía window.active. En inglés «maximize this window» no resolvía nada porque maximize/minimize/restore no figuraban como cabezas de pedido directo (sólo las formas españolas), y «la ventana que está en primer plano» quedaba fuera del dominio de ventana.",
+  "change": "deictic_window_mutation: maximizar/minimizar/restaurar cuyo único referente es «la ventana», «esta ventana», «la ventana actual/activa», «the active/foreground window», «la ventana (que está) en primer plano» añade window.active, y el plan queda window.active → mutación (la ventana en primer plano, verificada, nunca un inventario). Una ventana nombrada («la ventana de Chrome») conserva window.resolve. Verbos ingleses maximize/minimize/restore e infinitivos como cabezas de pedido directo. El dominio de ventana admite «ventana que está/tengo en primer plano».",
+  "offline_verification": "Baseline del reconocedor (scratchpad/c03-recogniser-baseline.py): 248 → 282 resueltos como antes; sólo H0291 y H0628 cambian, ambos a [window.active, window.maximize|minimize]; ningún literal perdido. «minimiza la ventana de chrome» sigue en window.resolve. Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "ARRANGE1229: 9/9 aprobados sobre un Bloc de notas propio en primer plano; los siete casos con efecto ejecutaron window.active (count 1, foreground) y window.maximize|minimize completadas y verificadas sobre ese windowId; raíz comprobó el estado de su ventana después (maximized ×4, minimized ×3). H0291, H0681 y H0628 acreditados con sus dos pares. 3 créditos.",
+  "credits": 3
+}

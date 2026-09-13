@@ -1,3 +1,25 @@
+## ARRANGE1229 — estado vigente 2026-09-13T17:51:14.435188+00:00
+
+Parcial: 9 aprobados, 0 fallidos, 0 sin ejecutar; 3 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 305/742 | 437 | 0 | >=179 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 176 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; ARRANGE1229 añade 3. No se cuentan revalidaciones.
+
+Siguiente acción: ARRANGE1229 completa: 9 ejecutados, 9 aprobados, 3 créditos (H0291 «maximizá la ventana», H0681 «maximiza la ventana actual», H0628 «minimizá esta ventana») con sus dos pares cada uno. Organizar ventanas queda 3/13. Quedan fuera de esta instrumentación y documentados: minimizar todo ×3 (H0238, H0529, H0658: ventanas ajenas del dueño), «traé chrome al frente» (H0525: window.focus desde otro proceso no garantiza el primer plano, efecto incierto), «Minimisa ópera.» (H0697: Opera GX del dueño), «poné chrome a la izquierda» (H0268: window.move sin geometría definida), «cambiá a la otra ventana» y «enfocá la mejor» ×2 (H0263, H0392, H0527: referente indeterminado), «cerrá todas las pestañas de chrome» (H0444: sin browser.control de pestañas). Siguiente por masa: otra categoría.
+
+Evidencia: `artifacts/comprobaciones/C03/ARRANGE1229/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 148.20 s acumulados; pico GPU 3497.56 MiB; pico RAM 1631.00 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque ARRANGE1229 precedente. -->
+
 ## CLOSE1227 — estado vigente 2026-09-13T17:27:36.587834+00:00
 
 Parcial: 9 aprobados, 1 fallidos, 0 sin ejecutar; 4 créditos.

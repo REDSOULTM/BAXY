@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación CLOSE1227
+# Categorías actuales — adjudicación ARRANGE1229
 
-302/742 cubiertos; 440 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 176 primeras altas (172 anteriores + 4 en CLOSE1227; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 7456246b8d2cb31998054e9ae07d75614f9e6965f37387244fa42a4460c44f78.
+305/742 cubiertos; 437 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 179 primeras altas (176 anteriores + 3 en ARRANGE1229; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 931a9ba567ebfd61a8f723ff3e128ffd91e79e580139bcb696bdb415d36f8d42.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -22,7 +22,7 @@
 | Brillo y pantalla | 17 | 0 | 17 |
 | Información web actual | 17 | 0 | 17 |
 | Estado de hardware y sistema | 40 | 29 | 11 |
-| Organizar ventanas y pestañas | 13 | 0 | 13 |
+| Organizar ventanas y pestañas | 13 | 3 | 10 |
 | Conversación social y ayuda general | 31 | 25 | 6 |
 | Estado de ventanas y aplicaciones | 14 | 13 | 1 |
 | Identidad y capacidades del asistente | 19 | 16 | 3 |
