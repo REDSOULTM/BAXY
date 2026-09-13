@@ -214,9 +214,9 @@ def _public_live_lookup_request(folded: str) -> bool:
     # word itself («¿qué significa la palabra clima?»), is not a live lookup.
     if (weather or news) and _has(
         folded,
-        r"(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|"
+        r"\b(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|"
         r"documents?|txt|pdf|docx|significa|significado|definicion|define|"
-        r"definition|meaning|means)",
+        r"definition|meaning|means)\b",
     ):
         weather = False
         news = False
