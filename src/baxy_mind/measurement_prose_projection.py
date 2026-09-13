@@ -2,7 +2,10 @@
 
 The canonical byte observations stay unchanged. Decimal GB prevents a binary
 quantity from being narrated as gigabytes; engine load and VRAM occupancy have
-different names because they measure different things.
+different names because they measure different things. The size keys are
+`total`, `free` and `used`: «total_usable» was narrated as «disponible en total»
+and the whole disk or RAM was published under the free label (SYSTEM1173,
+1177, 1181).
 """
 
 from __future__ import annotations
@@ -34,7 +37,7 @@ def project_system_measurements(seen: dict[str, Any]) -> dict[str, Any]:
             projected = {k: v for k, v in values.items() if k not in {
                 "totalBytes", "availableBytes", "installedBytes",
             }}
-            projected.update(total_usable=_quantity(total), available=_quantity(available),
+            projected.update(total=_quantity(total), free=_quantity(available),
                              used=_quantity(total - available))
             if name == "memory":
                 installed = values.get("installedBytes")

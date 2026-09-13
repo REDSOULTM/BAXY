@@ -9844,11 +9844,12 @@ class LlmRuntime:
         ):
             # The projected keys are a contract; the model read total_usable as
             # «disponible» and published the total under the free label
-            # (SYSTEM1169/002, SYSTEM1171/001). Say what each key means once.
+            # (SYSTEM1169/002, SYSTEM1171/001, SYSTEM1181/001). The keys are now
+            # total/free/used; say what each one means once.
             scope = (
-                " Memory and disk keys: total_usable is the total, available is"
-                " the free amount, used is in use, installed_capacity is the"
-                " installed hardware. Never call a total available or free."
+                " Memory and disk keys: total is the whole size, free is the"
+                " free amount, used is in use, installed_capacity is the"
+                " installed hardware. Never call the total free or available."
             )
             message_prompt += scope
             cpu_prompt += scope

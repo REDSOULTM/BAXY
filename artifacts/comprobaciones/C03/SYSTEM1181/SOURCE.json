@@ -1,0 +1,19 @@
+{
+  "schema": "c03-system1181-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/measurement_prose_projection.py (+ llm.py scope line, tests/test_system_measurement_prose_projection.py)",
+  "patch": "artifacts/comprobaciones/C03/SYSTEM1181/SOURCE.patch",
+  "owner_authorization": "DECISIONES_DUENO_2026-09-13.md punto 5: «autorizo, lo autorizo» (renombrar las claves proyectadas aunque el contrato tenga tests pinneados).",
+  "cause_measured": "SYSTEM1173/1 y /5, SYSTEM1177/0 y /1 (memoria) y SYSTEM1181/1 y /2 (disco): el modelo narra la clave total_usable como «disponible(s) en total» / «available» y publica el total bajo la etiqueta de libre; la cifra de libre sale bien cuando aparece. La línea de prompt que explicaba las claves (SYSTEM1171) no cambió la conducta: la palabra «usable» del nombre de clave pesa más que la explicación.",
+  "change": "Las claves proyectadas de memoria y disco pasan de total_usable/available/used a total/free/used (installed_capacity sin cambio). La línea de alcance del compositor describe las claves nuevas. Los bytes canónicos observados no cambian. El test test_system_measurement_prose_projection.py se alinea con las claves nuevas pero NO se ejecuta (orden del dueño): el contrato queda declarado, no verificado por suite.",
+  "offline_verification": "project_system_measurements sobre la lectura de disco de SYSTEM1181 → total 485.7406, free 107.799, used 377.9416 GB; sobre memoria con installedBytes → total 16.54, free 4.29, used 12.25, installed_capacity 17.18. llm importa. Ningún validador ni código de App referencia las claves antiguas (grep en src/).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "tests_edited_not_run": ["tests/test_system_measurement_prose_projection.py"],
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "SYSTEM1183: H0508, H0532, H0607 con pares por grupo.",
+  "credits": 0
+}

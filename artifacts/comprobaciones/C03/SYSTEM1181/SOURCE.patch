@@ -1,0 +1,70 @@
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index a5885a8f..275e0393 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -9844,11 +9844,12 @@ class LlmRuntime:
+         ):
+             # The projected keys are a contract; the model read total_usable as
+             # «disponible» and published the total under the free label
+-            # (SYSTEM1169/002, SYSTEM1171/001). Say what each key means once.
++            # (SYSTEM1169/002, SYSTEM1171/001, SYSTEM1181/001). The keys are now
++            # total/free/used; say what each one means once.
+             scope = (
+-                " Memory and disk keys: total_usable is the total, available is"
+-                " the free amount, used is in use, installed_capacity is the"
+-                " installed hardware. Never call a total available or free."
++                " Memory and disk keys: total is the whole size, free is the"
++                " free amount, used is in use, installed_capacity is the"
++                " installed hardware. Never call the total free or available."
+             )
+             message_prompt += scope
+             cpu_prompt += scope
+diff --git a/src/baxy_mind/measurement_prose_projection.py b/src/baxy_mind/measurement_prose_projection.py
+index 5e37e1a2..e4e99404 100644
+--- a/src/baxy_mind/measurement_prose_projection.py
++++ b/src/baxy_mind/measurement_prose_projection.py
+@@ -2,7 +2,10 @@
+ 
+ The canonical byte observations stay unchanged. Decimal GB prevents a binary
+ quantity from being narrated as gigabytes; engine load and VRAM occupancy have
+-different names because they measure different things.
++different names because they measure different things. The size keys are
++`total`, `free` and `used`: «total_usable» was narrated as «disponible en total»
++and the whole disk or RAM was published under the free label (SYSTEM1173,
++1177, 1181).
+ """
+ 
+ from __future__ import annotations
+@@ -34,7 +37,7 @@ def project_system_measurements(seen: dict[str, Any]) -> dict[str, Any]:
+             projected = {k: v for k, v in values.items() if k not in {
+                 "totalBytes", "availableBytes", "installedBytes",
+             }}
+-            projected.update(total_usable=_quantity(total), available=_quantity(available),
++            projected.update(total=_quantity(total), free=_quantity(available),
+                              used=_quantity(total - available))
+             if name == "memory":
+                 installed = values.get("installedBytes")
+diff --git a/tests/test_system_measurement_prose_projection.py b/tests/test_system_measurement_prose_projection.py
+index b58a0ec9..daf285a4 100644
+--- a/tests/test_system_measurement_prose_projection.py
++++ b/tests/test_system_measurement_prose_projection.py
+@@ -16,8 +16,8 @@ def test_used_quantity_is_derived_from_the_same_snapshot(name, total, available)
+     original = copy.deepcopy(seen)
+     result = project_system_measurements(seen)[name]
+     assert result["used"] == {"value": round((total - available) / 10**9, 4), "unit": "GB"}
+-    assert result["available"] == {"value": round(available / 10**9, 4), "unit": "GB"}
+-    assert result["total_usable"] == {"value": round(total / 10**9, 4), "unit": "GB"}
++    assert result["free"] == {"value": round(available / 10**9, 4), "unit": "GB"}
++    assert result["total"] == {"value": round(total / 10**9, 4), "unit": "GB"}
+     assert "totalBytes" not in result
+     assert seen == original
+ 
+@@ -28,7 +28,7 @@ def test_installed_ram_is_never_inferred_from_usable_ram(installed):
+         "totalBytes": 15_000_000_000, "availableBytes": 3_000_000_000, "installedBytes": installed,
+     }})["memory"]
+     assert result["used"]["value"] == 12
+-    assert result["total_usable"]["value"] == 15
++    assert result["total"]["value"] == 15
+     assert result["installed_capacity"] == (
+         {"value": installed / 10**9, "unit": "GB"} if installed in (16_000_000_000, 32_000_000_000) else None
+     )

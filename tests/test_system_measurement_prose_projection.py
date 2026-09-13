@@ -16,8 +16,8 @@ def test_used_quantity_is_derived_from_the_same_snapshot(name, total, available)
     original = copy.deepcopy(seen)
     result = project_system_measurements(seen)[name]
     assert result["used"] == {"value": round((total - available) / 10**9, 4), "unit": "GB"}
-    assert result["available"] == {"value": round(available / 10**9, 4), "unit": "GB"}
-    assert result["total_usable"] == {"value": round(total / 10**9, 4), "unit": "GB"}
+    assert result["free"] == {"value": round(available / 10**9, 4), "unit": "GB"}
+    assert result["total"] == {"value": round(total / 10**9, 4), "unit": "GB"}
     assert "totalBytes" not in result
     assert seen == original
 
@@ -28,7 +28,7 @@ def test_installed_ram_is_never_inferred_from_usable_ram(installed):
         "totalBytes": 15_000_000_000, "availableBytes": 3_000_000_000, "installedBytes": installed,
     }})["memory"]
     assert result["used"]["value"] == 12
-    assert result["total_usable"]["value"] == 15
+    assert result["total"]["value"] == 15
     assert result["installed_capacity"] == (
         {"value": installed / 10**9, "unit": "GB"} if installed in (16_000_000_000, 32_000_000_000) else None
     )
