@@ -3979,11 +3979,13 @@ def _truncated_fact_word(text: str, facts: dict) -> bool:
             # Narrator metadata describes observations; it is not literal text
             # whose wording must be preserved like names, titles or capabilities.
             # The operation identifier is metadata too: «I'll remind you» is
-            # not a truncated «reminder.create» (TIME1189/012).
+            # not a truncated «reminder.create» (TIME1189/012), and «address»
+            # is not a cut of the provenance value
+            # «windows_active_unicast_addresses_secondread» (NETWORK1201/002).
             return [
                 text
                 for key, child in value.items()
-                if key not in {"observationScope", "unit", "operation"}
+                if key not in {"observationScope", "unit", "operation", "authority"}
                 for text in values_only(child)
             ]
         if isinstance(value, (list, tuple)):
@@ -9835,6 +9837,22 @@ class LlmRuntime:
                 " This observation reports installation and visible windows only."
                 " It does not report background processes. Preserve installed,"
                 " hasVisibleWindow and visibleWindowCount; do not infer a process state."
+            )
+            message_prompt += scope
+            cpu_prompt += scope
+        if (
+            situation.get("operation") == "network.ip.list"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and isinstance(_merged_observed(situation).get("addresses"), list)
+        ):
+            # NETWORK1201/001 answered one of three observed addresses and
+            # NETWORK1201/000 opened with «No sé tu IP». Every address read is
+            # the machine's own; say all of them.
+            scope = (
+                " Every observed address belongs to this machine: name all of"
+                " them (IPv4 and IPv6) instead of choosing one, and do not say"
+                " that the IP is unknown."
             )
             message_prompt += scope
             cpu_prompt += scope

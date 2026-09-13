@@ -1,0 +1,43 @@
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 1d0596d5..ab21bf86 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3979,11 +3979,13 @@ def _truncated_fact_word(text: str, facts: dict) -> bool:
+             # Narrator metadata describes observations; it is not literal text
+             # whose wording must be preserved like names, titles or capabilities.
+             # The operation identifier is metadata too: «I'll remind you» is
+-            # not a truncated «reminder.create» (TIME1189/012).
++            # not a truncated «reminder.create» (TIME1189/012), and «address»
++            # is not a cut of the provenance value
++            # «windows_active_unicast_addresses_secondread» (NETWORK1201/002).
+             return [
+                 text
+                 for key, child in value.items()
+-                if key not in {"observationScope", "unit", "operation"}
++                if key not in {"observationScope", "unit", "operation", "authority"}
+                 for text in values_only(child)
+             ]
+         if isinstance(value, (list, tuple)):
+@@ -9838,6 +9840,22 @@ class LlmRuntime:
+             )
+             message_prompt += scope
+             cpu_prompt += scope
++        if (
++            situation.get("operation") == "network.ip.list"
++            and situation.get("verified") is True
++            and situation.get("succeeded") is True
++            and isinstance(_merged_observed(situation).get("addresses"), list)
++        ):
++            # NETWORK1201/001 answered one of three observed addresses and
++            # NETWORK1201/000 opened with «No sé tu IP». Every address read is
++            # the machine's own; say all of them.
++            scope = (
++                " Every observed address belongs to this machine: name all of"
++                " them (IPv4 and IPv6) instead of choosing one, and do not say"
++                " that the IP is unknown."
++            )
++            message_prompt += scope
++            cpu_prompt += scope
+         if (
+             situation.get("operation") == "system.status"
+             and situation.get("verified") is True
