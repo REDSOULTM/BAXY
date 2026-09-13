@@ -1,3 +1,25 @@
+## CLOSE1221 — estado vigente 2026-09-13T16:41:19.562318+00:00
+
+Parcial: 6 aprobados, 8 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 291/742 | 451 | 0 | >=165 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 165 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; CLOSE1221 no añade ninguna. No se cuentan revalidaciones.
+
+Siguiente acción: CLOSE1221 completa: 14 ejecutados, 6 aprobados, 8 fallidos, 0 créditos. Progreso: la Calculadora alojada por ApplicationFrameHost ya se resuelve (índice 1 llegó a la propuesta; la revisión raíz la rechazó por un criterio propio corregido en la sesión); Chrome tiene identidad ejecutable pero el inventario fuerte clásico se aborta al leer MainModule de un proceso elevado ajeno (reproducido con la sonda invprobe); la Calculadora EN falló por el mismo aborto en la vía empaquetada; el idioma del final inglés sigue en español porque las respuestas de plan de la mente no llevan responseLanguage. Siguiente: CLOSE1223 (BUILD1223: procesos no candidatos ignorados en el inventario fuerte; mente: idioma en respuestas de plan) con los mismos 14 objetos.
+
+Evidencia: `artifacts/comprobaciones/C03/CLOSE1221/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 379.05 s acumulados; pico GPU 3497.56 MiB; pico RAM 2347.84 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 14; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque CLOSE1221 precedente. -->
+
 ## CLOSE1219 — estado vigente 2026-09-13T16:15:32.374759+00:00
 
 Parcial: 6 aprobados, 8 fallidos, 0 sin ejecutar; 0 créditos.

@@ -1,6 +1,6 @@
 {
   "schema": "c03-close1221-app-source-adoption-v1",
-  "status": "adopted_unmeasured",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs (CatalogScript, Inventory strong path, AddHostedFrameWindows, HostedProcessId, EnumChildWindows); src/Baxy.App/MainWindowViewModel.cs (LastMindResponseLanguage); src/Baxy.App/ProductConductor.cs (ConfirmPendingAsync)",
   "patch": "artifacts/comprobaciones/C03/CLOSE1221/APP_SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": true,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": null,
-  "credits": null
+  "measurement": "CLOSE1221: Calculadora resuelta como marco alojado (propuesta escrita); Chrome con identidad pero inventario abortado por un proceso elevado ajeno; final inglés aún en español (plan sin responseLanguage). 0 créditos.",
+  "credits": 0
 }

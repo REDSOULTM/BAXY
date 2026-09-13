@@ -1,3 +1,13 @@
+# CLOSE1221 adjudicado — 2026-09-13T16:41:19.562318+00:00
+
+**291/742 cubiertos, 451 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 8be741115492ef9d14d2bf389a2fe30fd90440c271b5ad997c45313f713354c5. Primeras altas 24 h >= 165 (+0).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 53a55c58 con BUILD1221 (destino del Shell para entradas clásicas, marcos de ApplicationFrameHost, aprobación en el idioma de la petición; CLOSE1221/APP_SOURCE.json|patch).
+
+CLOSE1221 (mismos 14 objetos): 14 ejecutados, 6 aprobados, 8 fallidos; +0. Adjudicación 77708d029e561a931ea4803c4e0814520a0ffa77c4d90370356a5e6d9f043292. Avances: la Calculadora alojada ya se resuelve como marco de ApplicationFrameHost (1/1) y el producto pidió confirmación (la revisión raíz la rechazó por exigir un título que la proyección no conserva: criterio corregido en la sesión). Fallos con causa reproducida por la sonda raíz invprobe (mismo ensamblado del Core, sin producto ni GPU): el inventario fuerte lee MainModule/AUMID de todo proceso con ventana visible antes de comparar, y un proceso elevado ajeno (Administrador de tareas) lo aborta entero («The visible application inventory was incomplete») → Chrome ×3 y Calculadora EN con inventory_failed. El idioma del final inglés siguió en español porque las respuestas de plan de la mente no llevan responseLanguage. Modelo: prohibición «No cierres Chrome, lo estoy usando.» desviada; límite futuro que niega la capacidad. Reparaciones para CLOSE1223: procesos no candidatos ignorados en el inventario fuerte (CLOSE1223/APP_SOURCE.json, BUILD1223) y responseLanguage en respuestas de plan (CLOSE1223/SOURCE.json). Cerrar apps queda 0/20.
+
+Siguiente: CLOSE1223 (BUILD1223, mismos 14 objetos). Reanudación: derivar de build_close1221.py con BUILD1223; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 8be741115492ef9d14d2bf389a2fe30fd90440c271b5ad997c45313f713354c5`.
+
+---
+
 # CLOSE1219 adjudicado — 2026-09-13T16:15:32.374759+00:00
 
 **291/742 cubiertos, 451 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 85936be9fd0ee3787fd8a2b6542382e9ead35676205e7b882db4b8b2ea7c0810. Primeras altas 24 h >= 165 (+0).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c7dc80d5 con BUILD1219 (campos de página en la proyección de observaciones, CLOSE1219/APP_SOURCE.json|patch).
