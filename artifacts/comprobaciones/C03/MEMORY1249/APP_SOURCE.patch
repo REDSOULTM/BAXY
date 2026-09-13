@@ -1,0 +1,207 @@
+commit cbc19a380bc03b14d5ca2999cd798b7c76a8c230
+
+C03: a completed private-memory save says what it remembered, as local memory, in the request's language (MEMORY1249 repair)
+
+The completion facts of memory.save carried only flags (saved/corrected/
+sensitive/replayed) and the composer read them as prose — «el archivo fue
+guardado… ni acciones de replay» — while the language came from the closed
+reply «confirmar» (MEMORY1247). The projection now adds `remembered` (the
+non-secret value the person just stated) and drops false flags; the session
+publishes the completion against the original request text; the composer is
+told the datum lives in the private local memory, not a file. No tests
+(owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/MainWindowViewModel.cs b/src/Baxy.App/MainWindowViewModel.cs
+index d2b5f8f9..71a239f5 100644
+--- a/src/Baxy.App/MainWindowViewModel.cs
++++ b/src/Baxy.App/MainWindowViewModel.cs
+@@ -105,6 +105,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
+                 Core = () => _coreClient,
+                 Protector = () => _memoryProtector,
+                 Publish = PublishBaxy,
++                PublishForObjective = PublishBaxyForObjective,
+                 SetStatus = text => StatusDescription = text,
+                 HasPendingAudio = () => _pendingAudioOperation is not null,
+                 RecoverNotes = RecoverPendingNoteInteraction,
+@@ -116,6 +117,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
+     private void PublishBaxy(string body, UserMessageEvent? messageEvent) =>
+         AddMessage("BAXY", body, isUser: false, messageEvent: messageEvent);
+ 
++    private void PublishBaxyForObjective(string body, UserMessageEvent? messageEvent, string? objective) =>
++        AddMessage("BAXY", body, isUser: false, messageEvent: messageEvent, composeUserText: objective);
++
+     private void OnModelMessageQueued()
+     {
+         OnPropertyChanged(nameof(PendingModelMessageCount));
+@@ -2857,7 +2861,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
+         bool isUser,
+         bool formulatedByMind = false,
+         UserMessageEvent? messageEvent = null,
+-        string? route = null)
++        string? route = null,
++        string? composeUserText = null)
+     {
+         if (formulatedByMind)
+         {
+@@ -2872,7 +2877,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
+             UserMessageDraft draft = UserMessagePolicy.Create(
+                 body,
+                 messageEvent ?? UserMessageEvent.Status);
+-            string userText = Messages.LastOrDefault(static message => message.IsUser)?.Body
++            // A private continuation answers the request that started it; the
++            // last user message may be only its closed confirmation word.
++            string userText = composeUserText
++                ?? Messages.LastOrDefault(static message => message.IsUser)?.Body
+                 ?? string.Empty;
+             JsonObject facts = ModelMessageComposer.CreateFacts(
+                 draft,
+diff --git a/src/Baxy.App/MemoryOperationResponseProjection.cs b/src/Baxy.App/MemoryOperationResponseProjection.cs
+index 066fb2ca..2db5c118 100644
+--- a/src/Baxy.App/MemoryOperationResponseProjection.cs
++++ b/src/Baxy.App/MemoryOperationResponseProjection.cs
+@@ -26,7 +26,8 @@ internal sealed record MemoryOperationResponseProjection(string Message)
+         string operationName,
+         JsonElement privatePayload,
+         out MemoryOperationResponseProjection? projection,
+-        bool responseReplayed = false)
++        bool responseReplayed = false,
++        JsonElement? privateArguments = null)
+     {
+         projection = null;
+         if (!MemoryOperationProtector.IsMemoryOperation(operationName)
+@@ -55,7 +56,8 @@ internal sealed record MemoryOperationResponseProjection(string Message)
+                     privatePayload,
+                     operationName,
+                     out string mutation,
+-                    responseReplayed)
++                    responseReplayed,
++                    privateArguments)
+                         ? mutation
+                         : null;
+                 break;
+@@ -128,7 +130,8 @@ internal sealed record MemoryOperationResponseProjection(string Message)
+         JsonElement payload,
+         string operationName,
+         out string message,
+-        bool responseReplayed)
++        bool responseReplayed,
++        JsonElement? privateArguments = null)
+     {
+         message = string.Empty;
+         if (!HasExactProperties(
+@@ -148,15 +151,47 @@ internal sealed record MemoryOperationResponseProjection(string Message)
+             return false;
+         }
+ 
+-        message = CompletedFacts(operationName, "memory_updated", new JsonObject
++        // The person just stated the datum; a non-secret save may say it back
++        // («recordaré que te llamás Reta»). Flags that are false carry no fact
++        // and used to be verbalized as «no se realizaron correcciones ni
++        // acciones de replay» (MEMORY1247); a secret stays unspoken.
++        var observed = new JsonObject { ["saved"] = true };
++        if (operationName == "memory.correct")
++        {
++            observed["corrected"] = true;
++        }
++        if (operationName == "memory.sensitive.save")
++        {
++            observed["sensitive"] = true;
++        }
++        if (privateArguments is { ValueKind: JsonValueKind.Object } arguments
++            && operationName != "memory.sensitive.save"
++            && arguments.TryGetProperty("value", out JsonElement valueElement)
++            && valueElement.ValueKind == JsonValueKind.String
++            && valueElement.GetString() is { } value
++            && !string.IsNullOrWhiteSpace(value)
++            && StrictUtf8.GetByteCount(value) <= MaximumSelectorUtf8Bytes
++            && !HasControlCharacter(value))
+         {
+-            ["saved"] = true,
+-            ["corrected"] = operationName == "memory.correct",
+-            ["sensitive"] = operationName == "memory.sensitive.save",
+-        }, responseReplayed || replayed);
++            observed["remembered"] = value.Trim();
++        }
++        message = CompletedFacts(operationName, "memory_updated", observed, responseReplayed || replayed);
+         return true;
+     }
+ 
++    private static bool HasControlCharacter(string value)
++    {
++        foreach (char character in value)
++        {
++            if (char.IsControl(character))
++            {
++                return true;
++            }
++        }
++
++        return false;
++    }
++
+     private static bool TryProjectForget(
+         JsonElement payload,
+         string operationName,
+@@ -491,7 +526,10 @@ internal sealed record MemoryOperationResponseProjection(string Message)
+ 
+     private static string CompletedFacts(string operation, string cause, JsonObject observed, bool replayed)
+     {
+-        observed["replayed"] = replayed;
++        if (replayed)
++        {
++            observed["replayed"] = true;
++        }
+         return TurnVisibleFacts.Status(cause, new JsonObject
+         {
+             ["operation"] = operation,
+diff --git a/src/Baxy.App/MemoryTurnSession.cs b/src/Baxy.App/MemoryTurnSession.cs
+index ba10053b..a4a57bdf 100644
+--- a/src/Baxy.App/MemoryTurnSession.cs
++++ b/src/Baxy.App/MemoryTurnSession.cs
+@@ -19,6 +19,12 @@ internal sealed class MemoryTurnSession
+         internal required Func<MemoryOperationProtector?> Protector { get; init; }
+ 
+         internal required Action<string, UserMessageEvent?> Publish { get; init; }
++        /// <summary>
++        /// Publish with the text whose language and intent the reply answers:
++        /// after «confirmar», the final of a continued save answers the original
++        /// request, not the closed reply word (MEMORY1247).
++        /// </summary>
++        internal Action<string, UserMessageEvent?, string?>? PublishForObjective { get; init; }
+ 
+         internal required Action<string> SetStatus { get; init; }
+ 
+@@ -395,17 +401,28 @@ internal sealed class MemoryTurnSession
+             try
+             {
+                 using OpenedBoundProtectedJson opened = protector.OpenResult(response, prepared);
++                using OpenedBoundProtectedJson arguments = protector.OpenPrivateArguments(prepared);
+                 if (!MemoryOperationResponseProjection.TryCreateCompleted(
+                         prepared.OperationName,
+                         opened.Payload,
+                         out MemoryOperationResponseProjection? projection,
+-                        response.Replayed)
++                        response.Replayed,
++                        arguments.Payload)
+                     || projection is null)
+                 {
+                     throw new InvalidDataException("La respuesta privada no admite una proyección segura.");
+                 }
+ 
+-                _host.Publish(projection.Message, null);
++                string? objective = _continuation?.Objective;
++                if (_host.PublishForObjective is { } publishForObjective
++                    && !string.IsNullOrWhiteSpace(objective))
++                {
++                    publishForObjective(projection.Message, null, objective);
++                }
++                else
++                {
++                    _host.Publish(projection.Message, null);
++                }
+             }
+             catch
+             {

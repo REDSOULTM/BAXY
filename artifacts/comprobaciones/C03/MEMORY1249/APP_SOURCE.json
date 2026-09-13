@@ -1,0 +1,13 @@
+{
+  "schema": "c03-memory1249-app-source-adoption-v1",
+  "status": "adopted_measured_partially",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/MemoryOperationResponseProjection.cs (TryProjectMutation, CompletedFacts); src/Baxy.App/MemoryTurnSession.cs (Host.PublishForObjective, publicación del guardado); src/Baxy.App/MainWindowViewModel.cs (composeUserText)",
+  "patch": "artifacts/comprobaciones/C03/MEMORY1249/APP_SOURCE.patch",
+  "commit": "cbc19a380bc03b14d5ca2999cd798b7c76a8c230",
+  "build": "BUILD1249 (C03-repairs1249-build/BUILD_READY.json)",
+  "cause_measured": "MEMORY1247: los hechos del guardado (saved/corrected/sensitive/replayed) no llevaban el dato y el compositor los verbalizaba («el archivo fue guardado… ni acciones de replay»); el idioma salía del segundo turno «confirmar».",
+  "change": "La proyección del guardado añade «remembered» (el valor no secreto que la persona acaba de decir) y omite banderas falsas; la sesión de memoria publica la finalización contra el texto del pedido original; el modelo de vista compone con ese texto.",
+  "measurement": "MEMORY1249: el guardado compone bien («Confirmado. Voy a recordarlo: Reta.» en la auditoría), pero un texto de estado nuevo para la activación (mente, llm.py) hizo fallar la composición del mensaje de activación hasta agotar reintentos: 0 créditos; revertido en e3580505 y remedido en MEMORY1251.",
+  "credits": 0
+}

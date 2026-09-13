@@ -1,0 +1,13 @@
+{
+  "schema": "c03-memory1249-source-adoption-v1",
+  "status": "adopted_measured_partially",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_CAUSE_FACT memory_updated; indicación de composición para memory.save/memory.sensitive.save/memory.correct)",
+  "patch": "artifacts/comprobaciones/C03/MEMORY1249/SOURCE.patch",
+  "commits": [
+    "cbc19a380bc03b14d5ca2999cd798b7c76a8c230",
+    "e3580505"
+  ],
+  "change": "El compositor confirma lo recordado citando observed.remembered como memoria local privada, sin archivos ni banderas; la entrada de causa para la activación (memory_configuration) se añadió y se revirtió porque hacía rechazar cada borrador del mensaje de activación (reversed_result/forbidden_term).",
+  "credits": 0
+}

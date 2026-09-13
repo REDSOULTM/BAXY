@@ -1,0 +1,75 @@
+commit cbc19a380bc03b14d5ca2999cd798b7c76a8c230
+
+C03: a completed private-memory save says what it remembered, as local memory, in the request's language (MEMORY1249 repair)
+
+The completion facts of memory.save carried only flags (saved/corrected/
+sensitive/replayed) and the composer read them as prose — «el archivo fue
+guardado… ni acciones de replay» — while the language came from the closed
+reply «confirmar» (MEMORY1247). The projection now adds `remembered` (the
+non-secret value the person just stated) and drops false flags; the session
+publishes the completion against the original request text; the composer is
+told the datum lives in the private local memory, not a file. No tests
+(owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 4253c2d7..677c6c97 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -2936,6 +2936,8 @@ _CAUSE_FACT = {
+     "ambiguous_request": "unclear request",
+     "memory_forget_irreversible": "cannot be undone",
+     "memory_none": "no matching memories",
++    "memory_updated": "saved in the private local memory",
++    "memory_configuration": "private local memory setting changed",
+     "note_choice": "choose a note",
+     "memory_records": "listed memories",
+ }
+@@ -3739,6 +3741,20 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
+                 "Briefly confirm what you saved, using its title and relevant "
+                 "content. Address the person naturally in their language."
+             )
++        if (
++            situation.get("operation") in {"memory.save", "memory.sensitive.save", "memory.correct"}
++            and situation.get("verified") is True
++            and situation.get("succeeded") is True
++        ):
++            # MEMORY1247: «el archivo fue guardado… ni acciones de replay» read
++            # the raw flags as facts. The datum is private local memory.
++            bits.append(
++                "Briefly confirm that you will remember it: quote observed.remembered "
++                "when present as the thing remembered, in the private local memory "
++                "of this computer. There is no file and no other action: never "
++                "mention files, corrections, replay or internal field names. "
++                "Address the person naturally in their language."
++            )
+         if situation.get("operation") == "media.status" or (
+             situation.get("operation") == "media.control"
+             and situation.get("verified") is True
+commit e3580505d5067bd0e608523fe9843a7c2a30b287
+
+C03: keep the memory activation message's prior wording; the new cause fact made its composition fail (MEMORY1249)
+
+With «private local memory setting changed» as the state text, every draft of
+the memory.enable completion was rejected (reversed_result / forbidden_term)
+until retries ran out, so the two-phase save ended without a final. The
+save completion itself composed correctly («Confirmado. Voy a recordarlo:
+Reta.»). No tests (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 677c6c97..52eecc07 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -2937,7 +2937,6 @@ _CAUSE_FACT = {
+     "memory_forget_irreversible": "cannot be undone",
+     "memory_none": "no matching memories",
+     "memory_updated": "saved in the private local memory",
+-    "memory_configuration": "private local memory setting changed",
+     "note_choice": "choose a note",
+     "memory_records": "listed memories",
+ }

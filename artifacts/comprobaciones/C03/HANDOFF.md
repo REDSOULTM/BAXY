@@ -1,3 +1,11 @@
+# MEMORY1249 adjudicado — 2026-09-13T20:21:56.282782+00:00
+
+**334/742 cubiertos, 408 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA f9ed7a8c9871799cd0f7a29ff39fed7dc50ad27381ad5be57fdc03dc216039dd. Primeras altas 24 h >= 208 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD cbc19a38 con BUILD1249 (proyección del guardado con «remembered», composición contra el pedido original; MEMORY1249/APP_SOURCE.json|SOURCE.json|*.patch).
+
+MEMORY1249 (mismo panel de dos fases): 10 ejecutados, 1 aprobado, 9 fallidos, 0 créditos. Adjudicación 301d524dff80ab0ff7de1ffb439958db95658a39d6033e1840393c6e377404a7. El guardado ya compone bien («Confirmado. Voy a recordarlo: Reta.»), pero el texto de estado nuevo de la activación hizo rechazar cada borrador del mensaje de activación (reversed_result/forbidden_term) hasta agotar reintentos: turnos sin final. Revertido en e3580505 (sólo mente); remedición en MEMORY1251.
+
+---
+
 # MEMORY1247 adjudicado — 2026-09-13T20:08:37.716426+00:00
 
 **334/742 cubiertos, 408 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 0a07a39a2b4b17beead342ccf2b1cfad576a85283ece16070ee55f9a6e9db909. Primeras altas 24 h >= 208 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d2a7a725 con BUILD1247 (comando del conductor `turn.memory-confirm`; MEMORY1247/APP_SOURCE.json|patch).

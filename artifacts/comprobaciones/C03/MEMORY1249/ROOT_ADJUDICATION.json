@@ -1,0 +1,795 @@
+{
+  "schema": "memory1249-root-adjudication-v2",
+  "decided_at_utc": "2026-09-13T20:21:56.282782+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "cbc19a380bc03b14d5ca2999cd798b7c76a8c230",
+  "decisions_sha256": "c83d53a098dac0d6ce9be23f6e5af8c5291674c86664bd0d400caefcf2b3077a",
+  "registry_before_sha256": "0a07a39a2b4b17beead342ccf2b1cfad576a85283ece16070ee55f9a6e9db909",
+  "registry_before_counts": {
+    "covered": 334,
+    "open": 408,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "ab9573120382a2b1e2db5fa4492bee8877f4e04f0dc923903a51abd32c3c9d3c",
+  "preparation_sha256": "29221ebd11ed76ff6beb8669976eea90b00a2f9418d28663d9bc4a58ddf78286",
+  "passed": 1,
+  "failed": 9,
+  "unexecuted": 0,
+  "executed": 10,
+  "segments_started": 10,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [],
+  "counters": {
+    "covered": 334,
+    "open": 408,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 208,
+    "categories_total": 35,
+    "categories_closed_after": 0,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–13 septiembre: 208 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MEMORY1249 no añade ninguna. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 208
+  },
+  "resources": {
+    "seconds_sum": 256.3269999999611,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 2388.1796875
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0157",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: guardó de verdad, pero el mensaje de activación no pudo componerse y el turno terminó sin respuesta.",
+      "observation_note": "Dos fases: pregunta de activación y luego sin final publicable (no_response;recovery:no_response;retry_exhausted); memory.save (memory_disabled), memory.enable y memory.save completadas y verificadas; una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "e24da89ae72be0b59c4b9d10cd689ae129087eb82a039dc3f29129c9c1877e80",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-00\\EXIT.json": "039cbab8b586a7a7874a61d9d90f7e993172c342bf3b7d29415d6069f479fafd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-00\\RESOURCES.json": "03d877eb7c2c670de1fac68bc2907f221fcd524589368eb305a013f59c26b366",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\profile-owner-00.json": "6016bc2c457930698a62556c70a197fb429afa9a98041d99b8bd1fb3470fe20e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-00\\PREREG.json": "b5f22ef0af22f6be48eeaa1dc3ccf81f652d019d8e9ebae302be088a161989c6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-00\\capture\\events.jsonl": "9aeafaaf331ee48cf1c791ce47e15d45212ba48c1bd26c5d94074963fdf1d288",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-00\\turns.jsonl": "ad6e4c415c79ea0e6a845e8ed9f6a710b2d50003349a4a0ae5e2671888b7860a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\fixture-00.json": "3bd6b7cef4269252a8e04098600344ee3f35bd6e7b069de0d571aca27748b646",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-00.json": "291445840af7efb007bcff6daf1fb523d94cad785792303ed5030740967d948c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-prelaunch-00.json": "159b8b6aed441c14a4a28faa13172b3e5f56a4a695356cf54b58ff4d10db5823",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-00\\case-observations.json": "5b4a76adc67e7b212dc04936c414efde6ee08497cbda6eea7d2715761f852925",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-00\\journal-before.json": "315c31e94fee5c5b2b551101e9e290f0036176bb53b43d8c2495b2d807b5dd6d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-00\\journal-after.json": "10d98ea93387f81b982b061c2e122816bdaab6e0ca58d0129f9b0f7f3a74671e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "207612a5e796deead2dcdcb724eb125aef4bf17ba5464326e2beaf40d088d646"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "4e27d7ee-f919-4358-9390-ec5dbead9c74",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "f9312c90-ee37-4516-a2e5-078119b44626",
+          "operation": "memory.save",
+          "status": "failed",
+          "verified": false,
+          "error_code": "memory_disabled",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "37466ad2-b6a3-4399-a61e-63ee040cbdff",
+          "operation": "memory.enable",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "790569ee-3121-4b04-a2de-525bd7b3ae95",
+          "operation": "memory.save",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0149",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: guardó de verdad, pero el mensaje de activación no pudo componerse y el turno terminó sin respuesta.",
+      "observation_note": "Dos fases: pregunta de activación y luego sin final publicable (no_response;recovery:no_response;retry_exhausted); memory.save (memory_disabled), memory.enable y memory.save completadas y verificadas; una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "93bc4615a356c7c0ce63dc1994c6e7f8e32111a4c649e321184ba9862c1719ce",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-01\\EXIT.json": "955be9798bb38a18a3c645c609bffd0cf777f9864ae66112c76716bf5ae5dcea",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-01\\RESOURCES.json": "1774124307169cf1f22877d92a5631b5ae3bae00ce6095127b4cba7741767b55",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\profile-owner-01.json": "0d6772651df269c03c36ff85815e26491c6586b8d466f82924360e324f36f1bd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-01\\PREREG.json": "98191f7ad283d8f8e2314004d79b47b569aafd9b1301deae8f9ebcd7ec1bf10a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-01\\capture\\events.jsonl": "4f584cbbda8a9c2a95b2daabba606bf5a75cd1d8812bc0569f376cd0b0fcaca3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-01\\turns.jsonl": "10810333dc1627e082a74f80370220887fec7422157e2ef72c676a8789d61e27",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\fixture-01.json": "bb01ff17ed9662cc9b57a05419aebd0c07c507b08b1fe4973f69936a0423f8ea",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-01.json": "dfe28a129a1cb3153d0410eb1e29eaf452783d9e047d255516881844a31142c4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-prelaunch-01.json": "aad807a29b859bcd89fc3672062d517ad0374efcba04ef70103eb7f2a1246969",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-01\\case-observations.json": "6be48a7acdc59ee9aa068ab7139806b93c08741e00bde69ed5582d145464c6e0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-01\\journal-before.json": "b8d198a551e0eb4c26ac90060bd96a00d9258870e364d64a3aafa44e6858af4b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-01\\journal-after.json": "06dfb3926f723a58a62cd77d4a2e33a1251b798b6a0ed5af67f325a3c5abb444",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "c9bffe237049f73e6498fb35a2f9e50685bd37ec60f199d36c2ae0bb220c82e2"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "45ebc9a3-e72e-4749-8287-fff80f8e671e",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "b0dc66e0-a89f-4c7f-979f-7309647b9102",
+          "operation": "memory.save",
+          "status": "failed",
+          "verified": false,
+          "error_code": "memory_disabled",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "ee11460c-27b3-489e-9765-b1f2d109477e",
+          "operation": "memory.enable",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "3145f917-855a-49e6-854c-dbc2deb1bbb6",
+          "operation": "memory.save",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "H0452",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: sin respuesta publicable.",
+      "observation_note": "Sin final; memory.save fallida (memory_disabled) y ninguna confirmación; pins intactos.",
+      "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-02\\EXIT.json": "1ab715a90819d15a32053e910dee715b10f7a2b64e3c95e065d6a080f6147e52",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-02\\RESOURCES.json": "22d62d8105ca42d684e99a7bda17961f002a0414683b89103a676a773f95aaea",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\profile-owner-02.json": "3ec39da6946a58994c3939d5918266eee86bde4dc9b27dbcc5ad46dddb14b733",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-02\\PREREG.json": "3309c82083677377f1005f20330849b89f969be96ee469663c0042dc5df28cc4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-02\\capture\\events.jsonl": "c10bf2e553496a407855e10e853bb07cc8bf50f43b53fec631e01d656dfa2611",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-02\\turns.jsonl": "3fe8ab370ebb4d2896e4617c9f0cfa6c61c3a23f65e8c38730d46095f13e6c51",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\fixture-02.json": "6cb2e7daa5f944c13eda8142ccb4d48cfd0efb27e7a9eee0c7ad574ff6041308",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-02.json": "1206761bbc7992c47e643801d48ce04f76f6dac284e46eb2ad3a8a35edeacce2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-prelaunch-02.json": "50fb2c172612408734ee24444d9653b16dcd1a2ab4ffa20cf0232efba2d95258",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-02\\case-observations.json": "0bc1e6dac50ab1b1b3cf700cf22da13bd8e92e1b1385627784c2157f11bd0736",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-02\\journal-before.json": "7ac6bc9905d18def6e6cd7f02e2d860e7afc538a5f5898f0e40b911d00f98a47",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-02\\journal-after.json": "91bb895fa6d4951bd7fd360fdb771346d57e32b464282cd1781036cf150221be",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "69e1583e281f745116bf49ce77004f3c6f42363b21c17045fe8405f60e97efd1"
+      },
+      "terminal_kind": "composition_failed",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "57dfb783-7a19-4a24-aa68-16b875fefa3e",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "2594a374-3126-4f0b-8ec2-577118db5dab",
+          "operation": "memory.save",
+          "status": "failed",
+          "verified": false,
+          "error_code": "memory_disabled",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "H0506",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: guardó de verdad, pero el mensaje de activación no pudo componerse y el turno terminó sin respuesta.",
+      "observation_note": "Dos fases: pregunta de activación y luego sin final publicable (no_response;recovery:no_response;retry_exhausted); memory.save (memory_disabled), memory.enable y memory.save completadas y verificadas; una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "ae38d123b52ce406f81231a936a2fe1dd94d78c7bca03d32529caed458af4696",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-03\\EXIT.json": "c684a0081f0fbff6aff13abb072a70618ccff1657e2dbb5a575e810c22948661",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-03\\RESOURCES.json": "874fb05a7ccc6415d74c0e03f9f89f475854e8477ec6ab35036ea70659f8817a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\profile-owner-03.json": "d6432209009eef2905c703d1969fc18a5b589831c1e4803abdee6fac7e9b8375",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-03\\PREREG.json": "04088925fe046cb459b033006c3371d14c60d1be43b7f1a5670065ed5ce5e44f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-03\\capture\\events.jsonl": "cbff8c1f72844035cffc63ec0b90e0fbb4ee2ea9a3c51797c0a6f8a7c9a434ff",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-03\\turns.jsonl": "ba6680a0001a49320844969ed32cd519227a1b94ad79e933b58f46bdd9c09eb5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\fixture-03.json": "ff0b4e0000491532d574a36e550716f03d69a9e3444594ed2a1dc8744a865ad9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-03.json": "2fa45a20f00c29eab1a1817d5f3ea231b8144440584b90bb902c94e55b7cec9c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-prelaunch-03.json": "2137acf9398fe00e14ac656161a31a458f9da743c99fd99096dd0d76f444f080",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-03\\case-observations.json": "d8f3e8026b5ba22acb739fe4a14dc260935a7417a96eb7be07c2f0435417e679",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-03\\journal-before.json": "8540f2086ce56cfbdc7c6a9fb5f7406b9c9aae1812612ba1f7f8664efa00b51f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-03\\journal-after.json": "992d4323c1daaf9056f8231ec3d1389851afbef71fda9b3b1e4bfb86bc5af510",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "c1a02dfd23cfbfae9a6ddcff970e28dc8b651914bcc7e2a3e5708c3ef2ba92b7"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "feac8beb-f074-4125-833f-ad05679ef903",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "2678e16e-31c8-49ee-8c01-09f78f903295",
+          "operation": "memory.save",
+          "status": "failed",
+          "verified": false,
+          "error_code": "memory_disabled",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "d64f062f-9466-4978-a93f-f2bd91482d62",
+          "operation": "memory.enable",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "1de29c02-04cf-4e07-a3fd-6422f5c6f9b5",
+          "operation": "memory.save",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "memory1249-dev-01",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: guardó de verdad, pero el mensaje de activación no pudo componerse y el turno terminó sin respuesta.",
+      "observation_note": "Dos fases: pregunta de activación y luego sin final publicable (no_response;recovery:no_response;retry_exhausted); memory.save (memory_disabled), memory.enable y memory.save completadas y verificadas; una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "f252678059bc12e59c4133662b2893c51f346f09681d093c1b373ee681e8693e",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-04\\EXIT.json": "5ebde206b1b2ccba64dd10b269fc88b58ec65a497aa67806bc80bede4e8419af",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-04\\RESOURCES.json": "8932f32e5608063a205c20d8e8816e5ba82dbbd3e419ced2c44c8bfc4106f4e1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\profile-owner-04.json": "6c443083ae7ffaee46e2872328b583c2438b5b48cc467d06744c79a2c49dc0f0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-04\\PREREG.json": "3c1e73943badd9620f6d356c5f438eab3da792684a9a5ba2e2faea6d41dcdb3e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-04\\capture\\events.jsonl": "8f578f13f79cb7c0f431f404feea8fbfa21e2e8b25b116e9aee50143874d0bb0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-04\\turns.jsonl": "38f0737dc4b89f19df42241e0e8a4b65c157ae75604b446b650384125466d70b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\fixture-04.json": "10380be455fa74f6eb3353903c1372dea44fc6ac78f69bb36cb285eee7130774",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-04.json": "7f6a670ef4a8e804afd77fe5e292b17c0b509aa19356467d1ab8618ba7399aba",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-prelaunch-04.json": "25865cfc626c2d031708b5d9ff4a1bb859054ba407a469b23bfd52727e9dd48a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-04\\case-observations.json": "e96c88fe7582fedf5a82865080112cf0abc2291224363a60160012626428d3d3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-04\\journal-before.json": "1f902dde74bc3e59091e9b43cdd0f1232a5c96ad8d002cbddfc3e339acf35d8b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-04\\journal-after.json": "dd861091443dadae643ba116a16a7b915bf761a7cdf3835c9d009227bae527be",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "8ffe283953c915ffbd224f61d30844338d1f624660971b891fa3b6519c63c3d5"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "b0c15fe3-30a7-4c4f-95ea-4cd47924685d",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "d4055521-a6d9-44da-82e1-2cd3eb9d222a",
+          "operation": "memory.save",
+          "status": "failed",
+          "verified": false,
+          "error_code": "memory_disabled",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "eb0873bb-ce8f-40ed-92f5-fcd3045c8189",
+          "operation": "memory.enable",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "59e1dd9f-95e9-4296-8389-46699577527e",
+          "operation": "memory.save",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "memory1249-dev-02",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: guardó de verdad, pero el mensaje de activación no pudo componerse y el turno terminó sin respuesta.",
+      "observation_note": "Dos fases: pregunta de activación y luego sin final publicable (no_response;recovery:no_response;retry_exhausted); memory.save (memory_disabled), memory.enable y memory.save completadas y verificadas; una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "9ae3bc7e93b47c0f60ccb9e1aafeb62e8fd69d976f0ff00e981863b93b2f9031",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-05\\EXIT.json": "d828339e314093e5c611aa35a196fd37c10be50a494ef438549d0484c803c8ba",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-05\\RESOURCES.json": "91d28f7239b687e5068f9197dff56f5fb51c6fbbcd3b19842e1f3e1b06e8ce10",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\profile-owner-05.json": "b7630fb7f5c7b029761b954ae1181e731cc02a7513f22a43523c1edea456cefd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-05\\PREREG.json": "f9338ac598924372aab74d640fb9fbc190cf882d817b4b69c7428f9df3e63f2c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-05\\capture\\events.jsonl": "1c4c1c2e87ae8f66e646afcb039df1ea9fc4d58bfd261a78f617bf5d468796e3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-05\\turns.jsonl": "302e66b4e2e6613a076bde5d14bd6752151e0952f92382f00040ccb88b7393c5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\fixture-05.json": "b408bcde2c85e193943331cef1438b9ed753496ae4461c1d35858710d8fd1e92",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-05.json": "89cf18c7fbc3ff131151238a406364bf105720be87cc6ffb40ba78765c71a7a4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-prelaunch-05.json": "fc3fdf34e4cb469aad0063055623ee2c9a9c02819b3968a7535b26ab29ba4684",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-05\\case-observations.json": "52b67d12c34a92838d1fc223fc1c99dc7446360b5acd5eab7d7573b07c8f3f1b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-05\\journal-before.json": "f59c2d61a72f7a369c6085eb30709a2c61373e34cfd929acf3da27cd51edd1be",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-05\\journal-after.json": "4d8fe75f67ee79fa8d9b16e020c82dcd8eba0d0a5f8c5e49429e0e958a5d483e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "d208cd3e31e12c1ea0f290aaffcdf6eb6b3035bb5ec6699784dc3d81c4b28e9d"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "a23d29b8-ad24-4004-bcf0-32c0936eca7a",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "3b938fcc-13c2-4d71-847e-0646aba01474",
+          "operation": "memory.save",
+          "status": "failed",
+          "verified": false,
+          "error_code": "memory_disabled",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "486e404a-d355-43a1-aa88-dd510dc994b9",
+          "operation": "memory.enable",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "b534a605-224e-4955-a37a-820c4323d657",
+          "operation": "memory.save",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "memory1249-dev-03",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: guardó de verdad, pero el mensaje de activación no pudo componerse y el turno terminó sin respuesta.",
+      "observation_note": "Dos fases: pregunta de activación y luego sin final publicable (no_response;recovery:no_response;retry_exhausted); memory.save (memory_disabled), memory.enable y memory.save completadas y verificadas; una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "d4bdbced9a4e60d80369f37ac236a1ef68c72cb438920140ddadface7e9f9786",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-06\\EXIT.json": "9e2f635a30fcc5af9bca6914ead04a9cd84114e776e90ac8f49651fc62c2feae",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-06\\RESOURCES.json": "a3ebd103ac07598f27c0413bfcc54bdf9f43dfe9f057a00ef28c33b61c0c94e6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\profile-owner-06.json": "331fdd6cc1964e5cfd55ec6184af20306be4c3c6747e1b997c0790074d08286a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-06\\PREREG.json": "c86513645f2ff290886780b60a325bfa389e34b2a4a25bdd198417924861d786",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-06\\capture\\events.jsonl": "257582ecfe1f53a2fa4bfd5ec21fed7accbf83fd14858593034ae6322fcb7faa",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-06\\turns.jsonl": "c0e15c213cea3b05c56fd27ccf6ef4dbc9509d67620f281342a3cbdb730826bd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\fixture-06.json": "fa1fa763ee742ba42b593ffc28102cee47af035c7007467864d4f946b8e1a15a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-06.json": "a2992fc46f65bf573e6ee1c644c99cd82590da260a084a95da628d57bafa19ce",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-prelaunch-06.json": "a7be661d38c9ff079288916cf181006f117f6521179b53bbd85615825f018891",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-06\\case-observations.json": "e6c83dc8bc51fe5233e9078f5616d1f58aa8bbe8c30e0323d10b115cb1ef8820",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-06\\journal-before.json": "2dc6378a86bd3b1ea8d57ba400c9b6cc2a764f9fdf0b77adf0aa222c4d087667",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-06\\journal-after.json": "63d0ca8654f6e46b0add23d4d10b9e3418a3a4035c82e4532afbf6ac661ecd7f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-06\\journal.snapshot.jsonl": "984e0d9dc7e7e1044af7961630863a3d99b9f3f3463d6551ca7f0a92dfd31884"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "93712efb-f799-439e-bdf0-4418257950df",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "18182710-54f5-4393-94ef-d641703805d6",
+          "operation": "memory.save",
+          "status": "failed",
+          "verified": false,
+          "error_code": "memory_disabled",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "40a7373a-4435-4232-88b4-96b49647d4d8",
+          "operation": "memory.enable",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "1b0d7859-462d-498f-9bd5-4d70dcd3f75c",
+          "operation": "memory.save",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "case_id": "memory1249-dev-04",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: guardó de verdad, pero el mensaje de activación no pudo componerse y el turno terminó sin respuesta.",
+      "observation_note": "Dos fases: pregunta de activación y luego sin final publicable (no_response;recovery:no_response;retry_exhausted); memory.save (memory_disabled), memory.enable y memory.save completadas y verificadas; una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "cecfa6eb22e9bf48068b1ad2694107a17718b4cf1d2b73c78f2a67b00884c8b5",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-07\\EXIT.json": "73067deaca910bf13d967b201d8b6f87e1397015a810d15a4295fc1b6f30a00c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-07\\RESOURCES.json": "9828147037120b9090269850416813e170798a1e16583c951a11f9157d4bcd2f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\profile-owner-07.json": "3568642f78fb8ae35d8e674f50ffe16d67a7327b757c0dcaec5c03fdb7ee5202",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-07\\PREREG.json": "6f5d9f4c34b982f2d54ceda2305c7ae0844fbeed5c915aed848d8b6869deb27b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-07\\capture\\events.jsonl": "acf08bb591893ca64a62b76bc23afeee3a9d05fb2af12f017cdd96b12e698833",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-07\\turns.jsonl": "7ab5087cdcdb2684c53f2e2b197c5a1e90cb170f64a9b1fd2599a18d0e55efdf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\fixture-07.json": "22553d46b6c2c58ca3db41acbaa7923b47213c85e57f57d42f251f3527cae11e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-07.json": "65c2baae120ce30ef05f56ef302a35d07db39217bb9e70dac0386c2c720c88ac",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-prelaunch-07.json": "3c6c061a24e5a6dd8ea5f72e0b6473850d24f6a56c37b7901c8770e586ab1741",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-07\\case-observations.json": "0eb6994ddbde07c85459504f23bcfab9799f360a612d27dc87ad886ed81516b7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-07\\journal-before.json": "6410489fa96f0f8607bd4bd4bd9bb289c12ead36d07f7d97b3893b9b8ae81bcf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-07\\journal-after.json": "eae25af8101fbe51f458691cb22de046a2279bdc03c2f8aeb9f954f2d2a25755",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-07\\journal.snapshot.jsonl": "408473944d4e626368fa2b71f670a82a59473324a65005ebf51987b2a0a5e7de"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "75b3ca56-f48a-4539-8c33-482f36b6596e",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "d0bb4bbb-fd49-4c37-aa8a-b68c68a61d65",
+          "operation": "memory.save",
+          "status": "failed",
+          "verified": false,
+          "error_code": "memory_disabled",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "590c7d83-e5cd-4c21-a3f9-6e172ec6a1aa",
+          "operation": "memory.enable",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "13228ff8-0911-4541-bd96-14476292d2fa",
+          "operation": "memory.save",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "case_id": "memory1249-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado: usó el nombre sin guardarlo.",
+      "observation_note": "Final publicado; ninguna operación de memoria; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "8a2bb0a8159817dd139b7c346a16c839ca94e1ea60f8a66c87b90609f3c26c45",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-08\\EXIT.json": "e7a57a4fa3ede4a4c6927f86385f22a9e0ac82cb1b14d8b5e93e406af76e8056",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-08\\RESOURCES.json": "5f630adec14b78c6c6d7a1301a184bd39a0fad3f7190f9232b9a189d1208907a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\profile-owner-08.json": "9843be9a90d487c45790532009fc9fa656968cbf7b9afbae82f6d182c08225c6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-08\\PREREG.json": "983c28ea38d4c0c745c2dbdf4f30f401af3b1ec269e37a8006159176c74e4c83",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-08\\capture\\events.jsonl": "7e08572efec4043c244410fa1986e472df1883240adad1bc9c1749d58d4e1236",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-08\\turns.jsonl": "8be626d8458365251ec3503703717a6dd637d4fd445fed612c3f255fe2538c80",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\fixture-08.json": "c140058211b2516be328379ed733d25568b39e73bf77a0d5c896ca1a7002cb57",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-08.json": "5236c0e20da67a439a1848c54e775fe92ebcd0b88f32eb5a757dd9ecefd2fe82",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-prelaunch-08.json": "8aee3ad64884c2e22feb664768edf0c10298328dcae032129ec7f7f306a0e141",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-08\\case-observations.json": "a55695ecac6b1bde2536515bd57e51d26a2c152460d9a0504768aa09ac92fdb0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-08\\journal-before.json": "64a23e7548c0fc79a1030e53965e6c5168e74f543dcbdfe5ab1857d95de00d83",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-08\\journal-after.json": "434287ce98f5cb84c3b5ef6bdae9074c8f2d2323c82af4fb6601bb285c871477",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-08\\journal.snapshot.jsonl": "ac56d6891ffb8e079f903fda918104ed3bb640c3b4fa767f3e1d2adb6b3e2e55"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "99760412-b73c-42e3-86c5-3338c061b2b8",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "case_id": "memory1249-boundary-02",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite fallido: describió mal qué guarda.",
+      "observation_note": "Final publicado; ninguna operación de memoria; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "fb00bb853a286cd7d3175762daad5c9c3d069e547976e4e6c1271eea6d2e551a",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-09\\EXIT.json": "29dd2be4e907909dc26ba6f5cfca91ab11e725bdf7ab76c8ac4c8c5f50157563",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-09\\RESOURCES.json": "1853598b4b7a175206bca63376e30baab7f52e1e993a89ab0e2737d003b12466",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\profile-owner-09.json": "22131b2aff32d9b0da438b490bf5985dd409ee88bd92dc563bed2bfb55d5e3e7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\results\\case-09\\PREREG.json": "4218b987d93cad80381246a841bcf61ad1b4a2ca5786399c57bd34c8b94d204c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-09\\capture\\events.jsonl": "d5c71b1d279d2ac1dbc4ea96df5b46612a299a9cbdd2416f85cf2a7859f1b4c7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-09\\turns.jsonl": "b4f6d8fedb65e1d2807c1a125d19ee5dcbe68e65ef54cb8945be8598cdc93fcb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\fixture-09.json": "78dc18fe923d8d4f92f611a0468f7abbd8c31b6b322d3d7d53aa269eefc58e18",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-09.json": "285a3065789ac4a733c455810f65f5bfff86fc5cae0ffbe4e702c66922caceab",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\context-prelaunch-09.json": "f22a77b57acb87d16832003502f7034d10d3319d100e3d8549a68349b31a14b7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-09\\case-observations.json": "63396b167786c3f8f957f68b3c77d21e4b1eda19f4a7d6634b032523d55be091",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-09\\journal-before.json": "c136aac84c8242dd38fbbcb75f82dda065ad567c1ec6b12ac2bb4c4ed084ee49",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-09\\journal-after.json": "d945abf62156f801a9eb95ea136dc018be039b202bd21e5b41c2b590b93a4f0d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1249-instrument-v1\\private\\run-09\\journal.snapshot.jsonl": "cf5f4e00c6d766490a9aa802c5834ecdbac5139ace7413b6050e52a2b5578f65"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "24849d25-fe6f-4f49-adeb-164106a855a7",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "MEMORY1249 completa: 10 ejecutados, 1 aprobado (límite), 9 fallidos, 0 créditos. El guardado ya compone bien («Confirmado. Voy a recordarlo: Reta.»), pero el nuevo texto de estado de la activación (memory_configuration) hizo fallar la composición del mensaje de activación hasta agotar reintentos; revertido. Siguiente: MEMORY1251 con el mismo panel sobre el candidato revertido.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

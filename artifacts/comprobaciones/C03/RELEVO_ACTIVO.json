@@ -152,10 +152,10 @@
     "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "MEMORY1247 adjudicado: 1 aprobados, 9 fallidos, 0 sin ejecutar; 0 créditos.",
+  "workStatus": "MEMORY1249 adjudicado: 1 aprobados, 9 fallidos, 0 sin ejecutar; 0 créditos.",
   "executionPausedByOwner": false,
   "branch": "codex/kiro-goal-c03",
-  "checkpoint": "334/742 cubiertos, 408 abiertos, 0 no aplican. MEMORY1247: 0 créditos explícitos de raíz.",
+  "checkpoint": "334/742 cubiertos, 408 abiertos, 0 no aplican. MEMORY1249: 0 créditos explícitos de raíz.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
   "surveyVerificationCounts": {
@@ -164,14 +164,14 @@
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "0a07a39a2b4b17beead342ccf2b1cfad576a85283ece16070ee55f9a6e9db909",
+  "surveyRegistrySha256": "f9ed7a8c9871799cd0f7a29ff39fed7dc50ad27381ad5be57fdc03dc216039dd",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
   "surveyCoverageLast24h": 208,
-  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–13 septiembre: 208 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MEMORY1247 no añade ninguna. No se cuentan revalidaciones.",
+  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–13 septiembre: 208 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MEMORY1249 no añade ninguna. No se cuentan revalidaciones.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-13T20:08:37.716426+00:00",
+  "utcUpdated": "2026-09-13T20:21:56.282782+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -621,7 +621,7 @@
     "freeze_ended_at": "2026-09-12T13:33:18.245252-03:00",
     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
   },
-  "updatedAtUtc": "2026-09-13T20:08:37.716426+00:00",
+  "updatedAtUtc": "2026-09-13T20:21:56.282782+00:00",
   "currentContinuation1065": {
     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
     "quality": {
@@ -2298,7 +2298,7 @@
     "next": "FILES1205 completa: 19 ejecutados, 19 aprobados, 12 créditos (8 archivos en escritorio/Documentos, 3 carpetas en el escritorio, 1 carpeta en el sandbox), cada uno con dos pares aprobados. El proveedor de carpetas conocidas (BUILD1205) y los lectores de creación se demuestran: 18 creaciones verificadas por el producto y comprobadas en disco por raíz (existencia, tipo y hash del contenido literal), ninguna preexistente, todas eliminadas tras la postlectura. Archivos queda 15/32; restan borrados (fixtures en carpetas personales), listados del escritorio, contenido dinámico («que contenga la fecha», procesos), rutas absolutas, comprimir/abrir, resumir PDF y copia a pendrive."
   },
   "currentContinuation1207": {
-    "head": "d2a7a7250a614382ee72e74dbbc4d1b08692354e",
+    "head": "cbc19a380bc03b14d5ca2999cd798b7c76a8c230",
     "quality": {
       "passed": 1,
       "failed": 9,
@@ -2310,14 +2310,14 @@
     },
     "new_credits": 0,
     "credited_ids": [],
-    "registry_sha256": "0a07a39a2b4b17beead342ccf2b1cfad576a85283ece16070ee55f9a6e9db909",
+    "registry_sha256": "f9ed7a8c9871799cd0f7a29ff39fed7dc50ad27381ad5be57fdc03dc216039dd",
     "survey": 334,
-    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\MEMORY1247\\ROOT_ADJUDICATION.json",
+    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\MEMORY1249\\ROOT_ADJUDICATION.json",
     "resources": {
-      "seconds_sum": 189.2510000000184,
+      "seconds_sum": 256.3269999999611,
       "gpu_peak_mib": 3497.55859375,
-      "ram_peak_mib": 2245.24609375
+      "ram_peak_mib": 2388.1796875
     },
-    "next": "MEMORY1247 completa: 10 ejecutados, 1 aprobado (límite), 9 fallidos, 0 créditos. El instrumento de dos fases funciona: siete casos activaron la memoria y guardaron el dato con verificación. Causa medida del fallo: la composición del final de un guardado (hechos memory_updated sin el dato guardado, banderas internas verbalizadas, idioma tomado del segundo turno). Siguiente: MEMORY1249 con la proyección de hechos del guardado enriquecida (qué se guardó, sin banderas internas) y el idioma del pedido original, y remedición de H0157, H0149, H0452, H0506."
+    "next": "MEMORY1249 completa: 10 ejecutados, 1 aprobado (límite), 9 fallidos, 0 créditos. El guardado ya compone bien («Confirmado. Voy a recordarlo: Reta.»), pero el nuevo texto de estado de la activación (memory_configuration) hizo fallar la composición del mensaje de activación hasta agotar reintentos; revertido. Siguiente: MEMORY1251 con el mismo panel sobre el candidato revertido."
   }
 }

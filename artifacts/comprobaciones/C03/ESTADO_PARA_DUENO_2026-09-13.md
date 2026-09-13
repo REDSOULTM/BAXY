@@ -1,3 +1,25 @@
+## MEMORY1249 — estado vigente 2026-09-13T20:21:56.282782+00:00
+
+Parcial: 1 aprobados, 9 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 334/742 | 408 | 0 | >=208 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 208 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MEMORY1249 no añade ninguna. No se cuentan revalidaciones.
+
+Siguiente acción: MEMORY1249 completa: 10 ejecutados, 1 aprobado (límite), 9 fallidos, 0 créditos. El guardado ya compone bien («Confirmado. Voy a recordarlo: Reta.»), pero el nuevo texto de estado de la activación (memory_configuration) hizo fallar la composición del mensaje de activación hasta agotar reintentos; revertido. Siguiente: MEMORY1251 con el mismo panel sobre el candidato revertido.
+
+Evidencia: `artifacts/comprobaciones/C03/MEMORY1249/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 256.33 s acumulados; pico GPU 3497.56 MiB; pico RAM 2388.18 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 10; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MEMORY1249 precedente. -->
+
 ## MEMORY1247 — estado vigente 2026-09-13T20:08:37.716426+00:00
 
 Parcial: 1 aprobados, 9 fallidos, 0 sin ejecutar; 0 créditos.
