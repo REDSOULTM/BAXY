@@ -1,3 +1,25 @@
+## DIALOGUE1277 — estado vigente 2026-09-13T23:28:18.796005+00:00
+
+Parcial: 4 aprobados, 10 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 351/742 | 391 | 0 | >=225 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 225 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); DIALOGUE1277 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: DIALOGUE1277: 14 ejecutados, 4 aprobados, 10 fallidos, 0 créditos (índices []). Siguiente: reparación causal medida (aclaración de entrada sin pedido, asentimiento sin antecedente, imperativo voseante) en DIALOGUE1279.
+
+Evidencia: `artifacts/comprobaciones/C03/DIALOGUE1277/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 246.83 s acumulados; pico GPU 3497.56 MiB; pico RAM 2358.41 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 14; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque DIALOGUE1277 precedente. -->
+
 ## UI1275 — estado vigente 2026-09-13T23:06:42.382748+00:00
 
 Parcial: 8 aprobados, 2 fallidos, 0 sin ejecutar; 3 créditos.

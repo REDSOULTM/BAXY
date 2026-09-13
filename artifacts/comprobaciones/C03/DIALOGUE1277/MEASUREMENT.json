@@ -1,0 +1,19 @@
+{
+  "schema": "c03-dialogue1277-measurement-v1",
+  "status": "measured_no_credit",
+  "measured_by": "root (Claude Fable 5.1)",
+  "candidate": "HEAD 80f5a749 con BUILD1275 (sin fuente nueva)",
+  "panel": "8 literales + 4 variantes + 2 límites, turnos ordinarios sin efectos permitidos",
+  "result": "14 ejecutados, 4 aprobados (H0610, H0570, H0581 y «dale, hacelo»), 10 fallidos, 0 créditos (una sola variante aprobada; la regla exige dos pares).",
+  "causes_measured": [
+    "Entrada sin pedido legible (sólo signos, cifras o una letra): el modelo respondió con una pregunta de ayuda genérica («¿En qué puedo ayudarte hoy?») o declaró la letra fuera del catálogo; no reconoció lo recibido.",
+    "Negación suelta («No.», «no no no…»): la regla de negación inicial la enruta como conocimiento y el modelo declaró que no entendió en vez de aceptar la negativa.",
+    "Imperativo voseante con deíctico («abrí eso»): el aclarador de referente preguntó qué abrió el usuario (pasado) en vez de qué debe abrir.",
+    "Asentimiento sin antecedente («Si hazlo»): no entraba en la lectura deíctica («hazlo» sólo sin prefijo) y el modelo declaró incomprensión.",
+    "«cerrá eso» no es entrada incompleta para el producto: la regla deíctica documentada (tandas de ventanas) lo lee como cierre de la ventana en primer plano; variante mal elegida para este criterio.",
+    "Límites: «Si no entendés algo, preguntame» recibió una petición de aclaración; «¿Qué hacés cuando un pedido está incompleto?» se entendió como pedido de compra."
+  ],
+  "next": "DIALOGUE1279 sobre la reparación causal (aclaración de entrada sin pedido, negación suelta aceptada, retry del aclarador de referente ante pasado del usuario, asentimiento con orden en la lectura deíctica).",
+  "adjudication_sha256": "da7e62a0d13618a68fd1bd3015f19f6ec45a9b31af48bce3910f10c334ef1caf",
+  "credits": 0
+}

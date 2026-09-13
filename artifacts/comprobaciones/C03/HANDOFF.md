@@ -1,3 +1,9 @@
+# DIALOGUE1277 adjudicado — 2026-09-13T23:28:18.796005+00:00
+
+**351/742 cubiertos, 391 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 31e7d6c9b50c3b7f44c9e2ae7a83799a9cf6e18d87e973e294bf3c509992810c. Primeras altas 24 h >= 225 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 80f5a749 con BUILD1275 (sin fuente nueva). Medición honesta de «Entrada incompleta, ruido y control de diálogo» (27 abiertos): 14 ejecutados, 4 aprobados, 10 fallidos, 0 créditos (una sola variante aprobada). Causas medidas en DIALOGUE1277/MEASUREMENT.json: entrada sin pedido legible contestada con ayuda genérica o «fuera del catálogo»; negación suelta enrutada como conocimiento; «abrí eso» leído como pasado del usuario; asentimiento «Si hazlo» fuera de la lectura deíctica; «cerrá eso» es cierre deíctico documentado (variante mal elegida). Adjudicación da7e62a0d13618a68fd1bd3015f19f6ec45a9b31af48bce3910f10c334ef1caf. Siguiente: DIALOGUE1279 con la reparación causal en la mente.
+
+---
+
 # UI1275 adjudicado — 2026-09-13T23:06:42.382748+00:00
 
 **351/742 cubiertos, 391 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA e9df37555305ea2395895d9357e7387730e1c6627d8c4ebb57c5f9940a25d2a4. Primeras altas 24 h >= 225 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e9cc9bc3 con BUILD1275 (mente: verbos de clic en español y contexto de app; proveedor: verificación por superficie, alias de dígitos, script compilable en PowerShell 5.1; App: input.visible.click en el turno revisado; UI1275/SOURCE.json|PROVIDER_SOURCE.json|APP_SOURCE.json|*.patch). Primer sello preservado (ui1273-attempt1-0e62c26b: script sin recibo).
