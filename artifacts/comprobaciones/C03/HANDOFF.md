@@ -1,3 +1,13 @@
+# WINDOWS1211 adjudicado — 2026-09-13T14:43:00.547452+00:00
+
+**285/742 cubiertos, 457 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA d703eaee45dbc71ee4af2b0d0582a2d22adcf0bd7ab10f93964207537e917185. Primeras altas 24 h >= 159 (+0).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 2f1ba9aa con BUILD1205; alcance «restantes» y tartamudeo sobre nombres observados en WINDOWS1211/SOURCE.json|patch.
+
+WINDOWS1211 (6 inventarios, 2 pares, 1 límite; lecturas de sólo lectura): 9 ejecutados, 6 aprobados, 3 fallidos; +0 (los dos pares fallaron, sin crédito posible). Adjudicación 3f70409214da14feab1b87c8c256fee188aa2e6f74a71b62e6b30fd229d7827c. La proyección acotada compone en el escritorio real: H0023, H0103, H0209 y H0663 publicaron listas fieles de diez ventanas (títulos literales) declarando las trece restantes en 17–23 s, y H0053 contó 20/24. H0309 («mostrame qué tengo abierto») reescribió los títulos como «programa: título» y tradujo uno → missing_fact. Los pares fallaron por dos defectos de validación reproducidos offline con las páginas grabadas: el separador de cantidades cruzaba la línea («- Program Manager\n- Dos ventanas…» → «Program Manager: dos ventanas»), y el veto de idioma leía los títulos españoles en líneas propias como respuesta española. Las dos ventanas explorer sin título se parafraseaban en ambos idiomas y nunca contaban como su processName. Corregido para WINDOWS1213: separador sin salto de línea, ventanas sin título contadas y no nombradas (se nombran sólo las tituladas; sin título únicamente cuando no hay ninguna titulada), veto de idioma y regex de idioma sobre la copia sin nombres observados. Estado de ventanas queda 7/14.
+
+Siguiente: WINDOWS1213 con los mismos nueve objetos sobre el candidato corregido; después cierre de apps propias (20), apps (4 léxicos), H0043. Reanudación: derivar de build_windows1211.py (BUILD1205); `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 d703eaee45dbc71ee4af2b0d0582a2d22adcf0bd7ab10f93964207537e917185`. Nota operativa: el runner aborta antes de la admisión si la RAM libre baja de 4000 MiB (Opera GX del dueño en primer plano, no se cierra); esperar, no forzar.
+
+---
+
 # WINDOWS1209 adjudicado (parcial) — 2026-09-13T14:28:21+00:00
 
 **285/742 cubiertos, 457 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 4f12ecf153838e7adee3f144c88438cf24239783a76a017088d80946f9385cd1. Primeras altas 24 h >= 159 (+0).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 622ec0cb con BUILD1205; proyección acotada del inventario de ventanas en WINDOWS1209/SOURCE.json|patch.

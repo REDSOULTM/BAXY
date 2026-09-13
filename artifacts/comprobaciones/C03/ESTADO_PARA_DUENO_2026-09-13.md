@@ -1,3 +1,25 @@
+## WINDOWS1211 — estado vigente 2026-09-13T14:43:00.547452+00:00
+
+Parcial: 6 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 285/742 | 457 | 0 | >=159 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 159 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; WINDOWS1211 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: WINDOWS1211 completa: 9 ejecutados, 6 aprobados (H0023, H0103, H0209, H0663, H0053 y el límite), 3 fallidos (H0309 por títulos reescritos; los dos pares por defectos de validación reproducidos offline), 0 créditos por faltar los pares. La proyección acotada compone en el escritorio real: cinco literales publicaron listas fieles de diez ventanas con el resto declarado. Corregido para WINDOWS1213: separador de cantidades sin salto de línea, ventanas sin título contadas y no nombradas, veto de idioma sobre la copia sin nombres observados. Siguiente: WINDOWS1213 con los mismos nueve objetos.
+
+Evidencia: `artifacts/comprobaciones/C03/WINDOWS1211/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 273.66 s acumulados; pico GPU 3497.56 MiB; pico RAM 2361.41 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WINDOWS1211 precedente. -->
+
 ## WINDOWS1209 — estado vigente 2026-09-13T14:28:21+00:00
 
 Parcial: 0 aprobados, 1 fallidos, 8 sin ejecutar; 0 créditos.

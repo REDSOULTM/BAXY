@@ -1,6 +1,6 @@
 {
   "schema": "c03-windows1211-source-adoption-v1",
-  "status": "adopted_unmeasured",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/window_prose_facts.py (_REMAINING_CONTEXT, _inventory_quantity_scope); src/baxy_mind/llm.py (compose_visible_defect: tartamudeo y línea de palabra sola)",
   "patch": "artifacts/comprobaciones/C03/WINDOWS1211/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": null,
-  "credits": null
+  "measurement": "WINDOWS1211: los cinco literales de lista que antes agotaban reintentos publicaron respuestas fieles (000-002, 004) o contaron (005) con la proyección acotada y el alcance «restantes»; 003 falló por títulos reescritos por el modelo; los pares fallaron por otros dos defectos de validación (separador que cruza línea; veto de idioma sobre títulos), corregidos en WINDOWS1213/SOURCE.json. 0 créditos.",
+  "credits": 0
 }
