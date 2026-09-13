@@ -1,3 +1,13 @@
+# APPS1237 adjudicado — 2026-09-13T18:44:36.087650+00:00
+
+**315/742 cubiertos, 427 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 3d9dbd3c1789ded8c37b04976c460725585977d44da09ba5912f02f0e968a6a6. Primeras altas 24 h >= 189 (+5).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 360ea216 con BUILD1237 (proveedor de apertura reparado en dos commits, 7f51be21 y 360ea216; lectura de presencia para software ausente, 7f51be21; APPS1237/SOURCE.json|APP_SOURCE.json|*.patch).
+
+APPS1237 (5 literales de «Abrir aplicaciones» + 4 variantes, turnos ordinarios; 2 límites): 11 ejecutados, 11 aprobados; +5 (H0151 «abrí el explorador de archivos», H0147 «open the file explorer», H0289 «abrime el photoshop», H0558 «abri photoshop», H0691 «no, mejor abrí firefox») con sus dos pares. Adjudicación 877ea94d425c082e8f22e25908705042afb47b02cc4c8776c0287f3b8f6091ff. Dos intentos previos preservados en BASE: APPS1233 (7 casos sobre BUILD1233: los ausentes ya pasaban; el criterio del Explorador exigía «sin ventana previa» y el dueño mantiene una minimizada) y APPS1235 (2 casos del Explorador sobre BUILD1233: verification_failed por la identidad por prefijo de título, reparada en BUILD1237). Hechos del producto: el Explorador titula «<carpeta> - Explorador de archivos» y su entrada de catálogo no lleva ejecutable; app.open reutiliza una ventana existente (la restaura y la trae al frente, alreadyRunning true) y el compositor exige decirlo; raíz devuelve la ventana del dueño a su estado y nunca la cierra (`launched_cleanup.py`). **Abrir aplicaciones queda 39/54**; los 15 restantes con causa: compuesto H0183 (final omite la apertura; composición), Steam ×3 y erratas ×4 (cliente del dueño / aclaración con contexto), Mortal Kombat ×2, H0249, H0461 (sin marca), idiomas ×3 (sin marca).
+
+Siguiente por masa abierta: Navegación web (29, condicionada a navegador Edge propio), Entrada incompleta/ruido (27), Audio (24), Interacción dentro de apps (22), Pantalla/captura (19), Archivos (17), Brillo (17), Info web actual (17), Conocimiento (15), Apps (15)… Guiones: `derive_apps1237.py` (de 1235 ← 1233 ← 1231), `apps_case.sh`, `launched_cleanup.py`.
+
+---
+
 # APPS1231 adjudicado — 2026-09-13T18:19:05.079095+00:00
 
 **310/742 cubiertos, 432 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA f9cd3682b0ad905ee511cdb049f33ac4a46dca9b11d69467490f6a3565888b39. Primeras altas 24 h >= 184 (+5).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 04645e82 con BUILD1225 (sin rebuild: reparaciones sólo en la mente, commits ccf61b64 y 04645e82; APPS1231/SOURCE.json|patch).

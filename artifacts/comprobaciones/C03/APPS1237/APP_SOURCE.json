@@ -1,0 +1,17 @@
+{
+  "schema": "c03-apps1237-app-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs (Inventory, Choose, VisibleTopLevelWindows, WindowProcessIdentifiesApplication)",
+  "patch": "artifacts/comprobaciones/C03/APPS1237/APP_SOURCE.patch",
+  "commits": [
+    "7f51be219e4d21669b72388838e19adb663c3180",
+    "360ea216b8e60ad768d678d2730b5451e229016f"
+  ],
+  "build": "BUILD1237 (C03-repairs1237-build/BUILD_READY.json); BUILD1233 quedó a mitad de camino (sólo la primera parte) y se preserva como APPS1235",
+  "cause_measured": "APPS1231/005, /006, /013, /014 y APPS1235/000, /001: «abrí el explorador de archivos» lanzaba la ventana (raíz la vio y la cerró) pero app.open terminaba verification_failed. Dos causas: (1) el inventario débil observaba sólo MainWindowHandle y comparaba candidatos por proceso, mientras el Explorador abre ventanas dentro del shell ya existente; (2) la identidad de la entrada «Microsoft.Windows.Explorer» se probaba por prefijo de título («Inicio - Explorador de archivos» lleva el nombre como sufijo) y su id no contiene ejecutable.",
+  "change": "Para la entrada del shell, el inventario observa las ventanas de clase CabinetWClass de cada explorer.exe (GetClassNameW), una ventana ausente de la línea base identifica el lanzamiento aunque su proceso ya existiera, y la identidad es el proceso explorer.exe. El resto de aplicaciones conserva su regla.",
+  "offline_verification": "Sin tests (orden del dueño); build limpia (BUILD1237). La sonda de proveedor no aplica al Core nativo; la medición es la tanda.",
+  "measurement": "APPS1237: con una ventana del Explorador del dueño minimizada, los dos literales y sus dos pares ejecutaron app.open verificada con alreadyRunning true (ventana restaurada y al frente) y lo dijeron; raíz la devolvió a minimizada después. 2 créditos (H0151, H0147).",
+  "credits": 2
+}

@@ -1,0 +1,137 @@
+commit 7f51be219e4d21669b72388838e19adb663c3180
+
+C03: File Explorer launches verify by a new CabinetWClass window of the shell; openings of known software absent from the catalog become a presence read (APPS1233 repair)
+
+Provider: the shell's Explorer entry is observed through its CabinetWClass
+windows (the shell process also owns the desktop and taskbar) and a window
+absent from the pre-launch baseline identifies the launch even when its
+process pre-existed (APPS1231/005, /006: verification_failed while the window
+was on screen). Mind: «abrime el photoshop», «abri photoshop», «no, mejor abrí
+firefox», «Abrime Lightroom.» read as app.installed on the literal name when
+the verified catalog has no such entry, instead of a model guess that denied
+the capability or asked for the exact name (APPS1231/007–009, /015, /016);
+«abrí la puerta» stays outside, and with no catalog nothing changes. Offline
+recogniser baseline unchanged. No tests (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs b/src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs
+index af0c90de..0f991850 100644
+--- a/src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs
++++ b/src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs
+@@ -590,10 +590,15 @@ public sealed class WindowsInstalledApplicationOpenProvider :
+             .Where(static item => item.Visible && Path.IsPathFullyQualified(item.ExecutablePath));
+         if (baseline is not null)
+         {
++            // File Explorer (APPS1231/005) opens its window inside the already
++            // running shell process: the launched thing is a window, so a window
++            // absent from the baseline identifies the launch even when its
++            // process was already observed.
+             InstalledApplicationObservation? created = candidates
+                 .Where(item => !baseline.Any(previous =>
+                     previous.ProcessId == item.ProcessId
+-                    && previous.ProcessCreationTimeUtcTicks == item.ProcessCreationTimeUtcTicks))
++                    && previous.ProcessCreationTimeUtcTicks == item.ProcessCreationTimeUtcTicks
++                    && previous.WindowHandle == item.WindowHandle))
+                 .OrderByDescending(static item => item.Foreground)
+                 .ThenByDescending(static item => item.ProcessCreationTimeUtcTicks)
+                 .FirstOrDefault();
+@@ -1082,6 +1087,11 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
+         CancellationToken cancellationToken)
+     {
+         bool packaged = entry.AppUserModelId.Contains('!');
++        // The shell's own catalog entry: its windows live in explorer.exe, which
++        // also owns the desktop and taskbar. Only file-browsing windows
++        // (CabinetWClass) count as the application being open (APPS1231/005).
++        bool shellExplorer = !packaged && string.Equals(
++            entry.AppUserModelId, ShellExplorerAppUserModelId, StringComparison.Ordinal);
+         string? expectedExecutable = strongIdentityOnly && !packaged
+             ? StrongExecutablePath(entry) : null;
+         if (strongIdentityOnly && !packaged && expectedExecutable is null)
+@@ -1100,7 +1110,10 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
+                     // close, CLOSE1223/009) has no readable rectangle; only the
+                     // candidate's enumeration must be complete.
+                     nint[]? ownedWindows = strongIdentityOnly
+-                        ? VisibleTopLevelWindows(process.Id, requireComplete: false) : null;
++                        ? VisibleTopLevelWindows(process.Id, requireComplete: false)
++                        : shellExplorer
++                            ? VisibleTopLevelWindows(process.Id, requireComplete: false, ExplorerWindowClass)
++                            : null;
+                     nint window = ownedWindows is null
+                         ? process.MainWindowHandle : ownedWindows.FirstOrDefault();
+                     if (window == 0 || !IsWindowVisible(window))
+@@ -1442,7 +1455,11 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
+         return identities;
+     }
+ 
+-    private static nint[] VisibleTopLevelWindows(int processId, bool requireComplete = false)
++    private const string ShellExplorerAppUserModelId = "Microsoft.Windows.Explorer";
++    private const string ExplorerWindowClass = "CabinetWClass";
++
++    private static nint[] VisibleTopLevelWindows(
++        int processId, bool requireComplete = false, string? windowClass = null)
+     {
+         var windows = new List<(nint Handle, long Area)>();
+         bool complete = true;
+@@ -1453,6 +1470,9 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
+             GetWindowThreadProcessId(window, out uint owner);
+             if (owner != unchecked((uint)processId))
+                 return true;
++            if (windowClass is not null
++                && !string.Equals(ReadClassName(window), windowClass, StringComparison.Ordinal))
++                return true;
+             if (!GetWindowRect(window, out Rect rect))
+             {
+                 complete = false;
+@@ -1472,6 +1492,17 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
+             .Select(item => item.Handle).ToArray();
+     }
+ 
++    private static unsafe string ReadClassName(nint window)
++    {
++        const int capacity = 256;
++        char* buffer = stackalloc char[capacity];
++        int length = GetClassName(window, buffer, capacity);
++        return length > 0 ? new string(buffer, 0, length) : string.Empty;
++    }
++
++    [LibraryImport("user32.dll", EntryPoint = "GetClassNameW")]
++    private static unsafe partial int GetClassName(nint window, char* buffer, int capacity);
++
+     [GeneratedRegex(@"(?<name>[A-Za-z0-9_-]+)\.exe", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+     private static partial Regex ExecutableIdentityPattern();
+ 
+commit 360ea216b8e60ad768d678d2730b5451e229016f
+
+C03: the shell's File Explorer entry is identified by its process, not by a title prefix (APPS1237 repair)
+
+Explorer windows are titled «<carpeta> - Explorador de archivos»: the
+application name is a suffix, so the title rule never matched and the catalog
+id carries no executable; the launched window was on screen while app.open
+reported verification_failed (APPS1235/000, /001). explorer.exe is the identity
+for that one entry. No tests (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs b/src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs
+index 0f991850..39cc2b3d 100644
+--- a/src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs
++++ b/src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs
+@@ -1320,6 +1320,15 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
+         }
+ 
+         string normalizedProcessName = InstalledApplicationResolver.Normalize(processName);
++        if (string.Equals(entry.AppUserModelId, ShellExplorerAppUserModelId, StringComparison.Ordinal))
++        {
++            // File Explorer windows are titled «<folder> - Explorador de archivos»:
++            // the application name is a suffix, never the prefix the title rule
++            // expects, and the catalog id carries no executable. The process is
++            // the identity (APPS1235/000: verification_failed with the window
++            // on screen).
++            return string.Equals(normalizedProcessName, "explorer", StringComparison.Ordinal);
++        }
+         return BuildProcessIdentities(entry).Any(identity =>
+                 normalizedProcessName == identity
+                 || (identity.Length >= 4

@@ -1,3 +1,25 @@
+## APPS1237 — estado vigente 2026-09-13T18:44:36.087650+00:00
+
+Parcial: 11 aprobados, 0 fallidos, 0 sin ejecutar; 5 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 315/742 | 427 | 0 | >=189 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 184 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; APPS1237 añade 5. No se cuentan revalidaciones.
+
+Siguiente acción: APPS1237 completa: 11 ejecutados, 11 aprobados, 5 créditos (H0151 «abrí el explorador de archivos», H0147 «open the file explorer», H0289 «abrime el photoshop», H0558 «abri photoshop», H0691 «no, mejor abrí firefox») con sus dos pares. Abrir aplicaciones queda 39/54. Quedan con causa: compuesto H0183 (final omite la apertura; composición), Steam ×3 y erratas ×4 (cliente del dueño / aclaración con contexto), Mortal Kombat ×2 (juego ausente), H0249 (indeterminado), H0461 (límite sin marca), idiomas ×3 (sin marca). Intentos previos preservados: APPS1233 (7 casos, criterio sin ventana previa) y APPS1235 (2 casos del Explorador sobre BUILD1233, identidad por prefijo de título). Siguiente por masa: otra categoría.
+
+Evidencia: `artifacts/comprobaciones/C03/APPS1237/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 171.20 s acumulados; pico GPU 3497.56 MiB; pico RAM 1580.63 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 11; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque APPS1237 precedente. -->
+
 ## APPS1231 — estado vigente 2026-09-13T18:19:05.079095+00:00
 
 Parcial: 9 aprobados, 12 fallidos, 0 sin ejecutar; 5 créditos.

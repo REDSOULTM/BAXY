@@ -1,0 +1,18 @@
+{
+  "schema": "c03-apps1237-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_KNOWN_SOFTWARE, unresolved_application_open_name)",
+  "patch": "artifacts/comprobaciones/C03/APPS1237/SOURCE.patch",
+  "commit": "7f51be219e4d21669b72388838e19adb663c3180",
+  "cause_measured": "APPS1231/007–009, /015, /016: «abrime el photoshop», «abri photoshop», «no, mejor abrí firefox», «Abrime Lightroom.», «Open Photoshop please.» no producían ninguna lectura; el lector determinista sólo pedía app.installed con el envoltorio «la aplicación X» (H0503) y el modelo negaba la capacidad («no forma parte de mis funciones»), respondía una negativa vacía o pedía «el nombre exacto».",
+  "change": "Una apertura cuyo destino es un nombre de software conocido (_KNOWN_SOFTWARE: las aplicaciones conocidas más una lista acotada de programas que la gente abre por nombre) y que no está en el catálogo verificado se lee como app.installed sobre el nombre literal; el envoltorio de rectificación («no, mejor …») se quita antes y el deseo se evalúa sobre el pedido envuelto; sin catálogo no cambia nada y «abrí la puerta» sigue fuera.",
+  "offline_verification": "Sonda con las 322 entradas reales: los cinco textos → app.installed con el nombre; «abrí la calculadora», «abre steam», «abrime el chrome» siguen en app.open; «abre la puerta», «no abras photoshop» sin efecto. Baseline del reconocedor (sin catálogo) sin cambios. Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "APPS1237: los tres literales y sus dos pares ejecutaron una app.installed verificada con installed=false y respondieron que el programa no está en el catálogo de inicio y por eso no se abre, sin negar la capacidad. 3 créditos (H0289, H0558, H0691).",
+  "credits": 3
+}

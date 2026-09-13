@@ -1,0 +1,640 @@
+[
+  {
+    "index": 0,
+    "case_id": "H0151",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      5,
+      6
+    ],
+    "reason": "Trajo al frente el Explorador ya abierto, verificado y dicho; dos pares aprobados.",
+    "observation_note": "Final publicado; app.open completada y verificada (alreadyRunning true: la ventana del Explorador del dueño, minimizada, restaurada y al frente); cero confirmaciones y violaciones; raíz devolvió esa ventana a minimizada, sin cerrarla; pins intactos.",
+    "final_sha256": "98c854141bb7faca257faf366048e32fceb41832b27beda1f770b9778c36c9a5",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-00\\EXIT.json": "0dc6a5925aded09fc54e578c5d64d2127522897f3f11e6f37035f6bf4030077a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-00\\RESOURCES.json": "e0ed81e2f9abdbe53e2d4fdc100994051b954f027c7081f52935e41d33146f28",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\profile-owner-00.json": "a6b69077531af13be9a8cfa6c49e21fab6ab99a8c6ac737d38fcea2eeeba237b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-00\\PREREG.json": "bebe702a1c126b924eb6064ab0a519bde6d4152edf80f5c0d5726de7f05e93d0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-00\\capture\\events.jsonl": "787e1e46245a1e97f1345beddfaab629f64abdd0c4f560ed0807c5509486c11d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-00\\turns.jsonl": "a4cfc84f3962c43cc3e8cfe37b3328ed06203c465966da343ce3c80ff43caf64",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\fixture-00.json": "05792c54676b905ad080220989a6c3b8d760475d3db9bf5cb147490ab522f26a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-00.json": "ca1a62731986e68f9f449cf31fa8bd3926344f7ca11e46ab1da7a8558d68ebb2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-prelaunch-00.json": "17381fd9e843df9d95ebd52656e8b982369dbefbf5f34a42314d888090223c93",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-00\\case-observations.json": "fa0328e102268ed53d8338cae1c20b9d1e1e94bbb9c8c716da46db4b075ac999",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-00\\journal-before.json": "c54d40acea997ec19f8fa02d7e147d189b4b95f4807c7f1860b9eeed430c73e1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-00\\journal-after.json": "4f945339fb287c91e2f2767670d16765d1d19b47907c7a2a0872a097e159aea3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "55814eaee415f51b0d31ade333c2b759564a56ef2c174af0a34ca1f2992a23c4"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "5d627c3e-592d-44c8-bdbe-b3c32d672102",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "b651d022-2703-4b37-ace9-83f8fe7935cf",
+        "operation": "app.open",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "case_id": "H0147",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      5,
+      6
+    ],
+    "reason": "Trajo al frente el Explorador ya abierto, verificado y dicho; dos pares aprobados.",
+    "observation_note": "Final publicado; app.open completada y verificada (alreadyRunning true: la ventana del Explorador del dueño, minimizada, restaurada y al frente); cero confirmaciones y violaciones; raíz devolvió esa ventana a minimizada, sin cerrarla; pins intactos.",
+    "final_sha256": "b3f1220a1396ddd7ba40741bbe817f590e3e3e69b65df67abadf60c20963b212",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-01\\EXIT.json": "0ff835b35b83d5c1bcb5b4d2a9435c09513d6a024437e4365d625f57c35f4da9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-01\\RESOURCES.json": "abf0757ae9df2aef01f37e26541e02515e6ec25f66e87cd97bcc15bf237709da",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\profile-owner-01.json": "ddd6374674f220ca6231590ab9274a55bd1ecbd5f380345c708d909ed561fa04",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-01\\PREREG.json": "a47524aacc2de37eb2ce0029ed4fe23702c200b65d8cebbef107964dc87a8f80",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-01\\capture\\events.jsonl": "7bce6fa342bf8db8d2a91095d98fa8f20154f6f3ab36e0b63545f52d1e8e46b9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-01\\turns.jsonl": "d763303980095d77bdeaae84e79977ce29693c1c09e10796da969ea4dccf294b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\fixture-01.json": "5ad4db740cc32cc17a7024500a8d72336618a408cabc21490dddf24e6899f807",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-01.json": "8bf2313f44212f576f277991bc305f553101d6179bd6d8c4e96e17e011d9e93d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-prelaunch-01.json": "5ad8a7e3a268a4695bb97dc3f5aa10968a9b6726511df143a4eed02dc8aee6af",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-01\\case-observations.json": "742bdb54079f3fd1d1a2bcf631e148b79e3841a4f8536d8b5df5b14d7f190631",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-01\\journal-before.json": "60cb232d91aa4e9f2295b4a344c11fb71182e28525feb379a9ff283406c37657",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-01\\journal-after.json": "9acb488de33526a32fe0875902d8f12f9477bc78849d0b3685f5f9aaee0901f0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "6d0e4a9d01b17ec4f9eae4364cca71a75035e09e62b57e93470ae4f757661a85"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "5134e7f7-8c37-4e69-acdb-58bd9e534108",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "f353c613-c06e-4820-a3b6-9d52d800555d",
+        "operation": "app.open",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "case_id": "H0289",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      7,
+      8
+    ],
+    "reason": "Comprobó el catálogo y dijo que no está instalado; dos pares aprobados.",
+    "observation_note": "Final publicado; una lectura app.installed completada y verificada con installed=false; ninguna apertura; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "bcdbb16f16bbee9c822fa907d260e0b6a756eff88a4338ca018fa6df711a4925",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-02\\EXIT.json": "50b10f81131f8e931c836e22404f28e3f0983f1d0e7fd23f086bbffaeb255c21",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-02\\RESOURCES.json": "d23048e2a1e6f2e28d34375136aaffe4d0ad54517d62ad16c9c21ac17e81b51e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\profile-owner-02.json": "e6abe8e91bcedf8c67326894346b5d3fb6041551d766eb8d6add96143b6ffb45",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-02\\PREREG.json": "9af48a6db688fdc598e3692c070ed1602ce68496e8c297388a1822ad2d0c4f20",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-02\\capture\\events.jsonl": "93c075f8d9cafb3f4f9c84bde0ae2cee7436d6a47d3bd7e0a851ce6d54db2119",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-02\\turns.jsonl": "f7cf318e5cf5247c72e849941b29988b4c809172beb94a81f733d51b0146cc32",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\fixture-02.json": "a7b71d66110356e779a803c054567ae7022f821df1372b2f129fd8abcb09c65f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-02.json": "9bcd202d8df1917c9b159c153a000ebb52e8ab57267106e07d6982dc67dd08d9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-prelaunch-02.json": "4ddfd02802d8d14b5b894dce2ea227f11c7d280346fcd50c247ff96c5e8e4189",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-02\\case-observations.json": "b1e117c5f228161a7251ff153c8ce83841d921810de0e31b9ebd8519435ce829",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-02\\journal-before.json": "2a8b91daa91704916d97a112eba06f81092fc328872899c492e3cfead6512b9c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-02\\journal-after.json": "63f792907c5750438d12f4b723dcef1a64dee23b0bb37dddac1c2f9c8d7335ea",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "299974b664de1724ee950a9dbc0e403f49adbb45ac4308d3af5be272c61fc9a5"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "b5cd65d4-ff10-4582-abec-b458e08a6a6c",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "a44c4e7d-0e93-42ab-b5c9-bb900e49986a",
+        "operation": "app.installed",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "case_id": "H0558",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      7,
+      8
+    ],
+    "reason": "Comprobó el catálogo y dijo que no está instalado; dos pares aprobados.",
+    "observation_note": "Final publicado; una lectura app.installed completada y verificada con installed=false; ninguna apertura; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "995bf78ba131174b98aa2052923cce64a4724cc4561232dc61b970543a017a54",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-03\\EXIT.json": "21498d5a010460dc2c154703ce0eb77da4a45902c153e89c2a033b53d8c1113e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-03\\RESOURCES.json": "26f0f0629cac14cd585c7a290b304ffd7e96d0f81fb659756cb9e0da57cbdb8e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\profile-owner-03.json": "7167b996e089401df2b2efdf9f83cb5c43883ce9f19b24ba4a16cb236169b2c1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-03\\PREREG.json": "c05212efde96d8c3e97f22c0532cb47c674417fc5603f2e1b4970790f5194e15",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-03\\capture\\events.jsonl": "5dc3293e1c14209798d83a5f1eba7071ddd7ae9ee0cb9d67385ed75778df9fce",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-03\\turns.jsonl": "57af6d21c6c9ad8a62bc5b4f16f4d91848537bc55a4705c187b5ec46d79daab4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\fixture-03.json": "82fd217206bf6301e59f827cc249fb091c2eb7cc1873704f9556588fadb35261",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-03.json": "26e77abe7e3c399b1c420da2c2cd6ec6ad525ba20e9a100e4d00c75d2e383d63",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-prelaunch-03.json": "27778138390aa9cbfe9f7b2573c087a903abbb4297db137e0ac5e7b9a561ac1c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-03\\case-observations.json": "3ddbde995c6be174af5ec7062243b79bba20834633075f5891c0ffe4e89f783b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-03\\journal-before.json": "7e4a8b19f118f29c8fd7e815601e2de1b5caec1f09162cf9c0494e2a05261278",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-03\\journal-after.json": "d99016228a5c0193d56787b9144683161ba5ab962950a7f96a634a25bfb0d53e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "0c4f39ecc96c7cf2efbc25f3d436fa8cfa173418dae904f11e804737932e39f5"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "a51be3c3-9062-4ea6-bbcf-c65a6b3ebc13",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "9740510b-ebd5-4757-87af-111d5aacc7e7",
+        "operation": "app.installed",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "case_id": "H0691",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      7,
+      8
+    ],
+    "reason": "Comprobó el catálogo y dijo que no está instalado; dos pares aprobados.",
+    "observation_note": "Final publicado; una lectura app.installed completada y verificada con installed=false; ninguna apertura; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "c686bd77368993bee91e37bc8816bd642d7ec977a34b273b746f352cc3774c01",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-04\\EXIT.json": "05c66afaabbb68b8f8bf84d2bba5208d2da0b58a4519ca5aabcacdfbfadb4ec0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-04\\RESOURCES.json": "02763ca45da866f25c987935ffada373f15b613f07c9861db76cd7a9ac25b2d3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\profile-owner-04.json": "070fecc3d532468a10ed5bcc240a9c684ab493bd5a66165ae048bee0dc47f0f1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-04\\PREREG.json": "93168c3342808ffe2251af87d108f899c5e29c7b39d3abf03a766128f7220141",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-04\\capture\\events.jsonl": "f52383a8a1d484288d1edf88c4035524d6e788f6a65a20b183eba4f77a97b852",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-04\\turns.jsonl": "75b41f9e1c1e7179e4596fb4f44e40e44cf4e5caac9844a9a179b23fceeddc2b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\fixture-04.json": "8838d9d34d38ec0c329602c4ca307d4a3b142a1de9d9777cd1dfdb6d6d5d221b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-04.json": "9a6ee11b2f0ace795ff6f5de784867c0cefbeecaf0b8809b5ee34ea44456089c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-prelaunch-04.json": "4cd6de389ce1e9bee24757707b7bac4ea99bcb7522e54330297d0efa080c13f8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-04\\case-observations.json": "31f1d5d25b1a343c68851bc5b306bf891b55ee5cabc45ba54faeb8d254288320",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-04\\journal-before.json": "b1896ebeebbe4f1e49a027719e5a604fd4ad01b4373eaba953c3c3797843a7d3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-04\\journal-after.json": "2ec8cf6a7621bb25268037f3e8253731578d63a8bc96a35a3d2f26ba104510b7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "09bbb0acde0749772583b205147a51e737afbcf95bcec3aaed766970397273f9"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "5ff5bfcd-d7f5-4d7a-a69f-508d96dc7592",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "5349fd44-8897-42db-a44e-ca1488843f11",
+        "operation": "app.installed",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "case_id": "apps1237-dev-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Variante original aprobada: Explorador ya abierto traído al frente, verificado y dicho.",
+    "observation_note": "Final publicado; app.open completada y verificada (alreadyRunning true: la ventana del Explorador del dueño, minimizada, restaurada y al frente); cero confirmaciones y violaciones; raíz devolvió esa ventana a minimizada, sin cerrarla; pins intactos.",
+    "final_sha256": "98c854141bb7faca257faf366048e32fceb41832b27beda1f770b9778c36c9a5",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-05\\EXIT.json": "6dab8b7d76c9dd8db50827ee6b217be7da8cdd7043d6fe72e563335124dd8ee4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-05\\RESOURCES.json": "6244683b0ae38b4a5c12b68f0f6a6fb85f9805320e1ddc9db4a58199e232e133",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\profile-owner-05.json": "a2966284be98058189a7411ea44fc8f38adb434a392a9e57999fe37829223344",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-05\\PREREG.json": "a49d3f716ee3212dbb65d26652973ac03dd873eae4c50782a976b59bb1a3f039",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-05\\capture\\events.jsonl": "53069ac0054ac4617bc110500f01f1da70641f37c8916a0d4ddb6e835be1b9fd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-05\\turns.jsonl": "b3cc6d02915c2f4d1553dfc54c6565c4404c2e351a8ba83edcb6af7486c65483",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\fixture-05.json": "bb128b782342a5f14954cd6ae6034e123713f664d863769d2a268483099dcd3d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-05.json": "607444f60507d2c442bd2b843e2142b9f617b92228dd15ed736770376a85ce54",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-prelaunch-05.json": "c76279063df899c55b2008151e6d725f747a2858bed3ee98669033d13ae10ac5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-05\\case-observations.json": "a8c947a29ade309b002ff3e249e5b73b6111bb358f901be11ae8afc5ae2620e5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-05\\journal-before.json": "10983384202d6aaec50971fe3644cafa523fbdbc26df8a219e70e1ada483961c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-05\\journal-after.json": "fac653f70a797c16fb108465b8899126765cfbb45acc30fca2918559b7a6d392",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "9f04834b2a4fc1b2c213c9caf802949b8772a44ad7a7738410ed4a6ba224e14e"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "9cbba7a6-0214-42eb-aa74-a22ebc358c4b",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "2374c58b-a62a-45dd-b3c1-655bb62c8aa5",
+        "operation": "app.open",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 6,
+    "case_id": "apps1237-dev-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Variante original aprobada: Explorador ya abierto traído al frente, verificado y dicho.",
+    "observation_note": "Final publicado; app.open completada y verificada (alreadyRunning true: la ventana del Explorador del dueño, minimizada, restaurada y al frente); cero confirmaciones y violaciones; raíz devolvió esa ventana a minimizada, sin cerrarla; pins intactos.",
+    "final_sha256": "02891370f09d81173ea53623c0dc6e6790edbe144d94bfdb8b81a17fc8232d3c",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-06\\EXIT.json": "1c7ae88d43532d5d463716ff248f32fd3ecfab59128d030ca2d51e0637cd1d5d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-06\\RESOURCES.json": "6e8251149ecb568a4bc58e72b644762f4414d51431e3e90712b012558097cc8a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\profile-owner-06.json": "64cbe240b01482665a98dfd15e01ccf2caec9eed64f1a73d0d13bfafea3c9713",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-06\\PREREG.json": "4d04c65d9ae21d6772616a71dabc411625b7b77ceedd9d6938796b70fe3a0f47",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-06\\capture\\events.jsonl": "e7e911ce849c080e9507cc0ee7c4aebe89a2a1b5aea6f05c707cd83ff0bd1edd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-06\\turns.jsonl": "eb901675d9015d1943ddb822e38b8cab1f75a39292fe3e8c8a7963419322595b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\fixture-06.json": "27450f4db592e5fd886ae8375d3e8f3c4984626bbe19d91d086fd4678af8395f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-06.json": "2cc66f3942b862606d5e74458fe83f3cfd64d2a89b2781529adc0ce8e775b4ab",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-prelaunch-06.json": "44f3fe01b3fee584ee7a1c312937222c3012304470b2a62e22c4fcae163dea59",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-06\\case-observations.json": "9bd7a789d11d2af50b3c7d4cc4838d039da311a60ed8ce910b100415b208d310",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-06\\journal-before.json": "6c4e375cc73b1bff190d444806609f10c02b3b7ff6150b5912862752c01d2e3c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-06\\journal-after.json": "09d04e2ab75551ea28ffe5ae86c3559a96b672e3f76614a436e2494704eb9e5a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-06\\journal.snapshot.jsonl": "cc38192e7617c366c458ab70019974751a8739942724cec35b3fd6538617e463"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "cd1173c1-814c-41be-9799-db178151f1ab",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "d4de332d-572f-4cd8-80aa-14ce9df8387a",
+        "operation": "app.open",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 7,
+    "case_id": "apps1237-dev-03",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Variante original aprobada: comprobó el catálogo y dijo que no está instalado.",
+    "observation_note": "Final publicado; una lectura app.installed completada y verificada con installed=false; ninguna apertura; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "f1e4379360bb7b4b2830fc98b3464b720e69a64665d60a8d9b90b0ef51059202",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-07\\EXIT.json": "624a95600bb57651b5865895e6a53726eec837a96defb943b133a67b6b520ecf",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-07\\RESOURCES.json": "ebc23845c0834219ac1d56a164182ec939a44b3c22bd20243b96484dcad0a0f8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\profile-owner-07.json": "3552a0334a57f9ac61cf9178c58ca8367b39414fec9e0f7976f843e4e13c77cd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-07\\PREREG.json": "2b7411001a6d86d9746c294969edc93c14df091ca8a9eb0892d369c80cd4d121",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-07\\capture\\events.jsonl": "b2adfd03af4b9a8333cd9976c8e7d01980008cbb4fe9a514e8acdafc2c8958a6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-07\\turns.jsonl": "ba8e2091f22dbc244b80093b537dcd8fac4724fe394d89f59dc28d0687c9905e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\fixture-07.json": "b9c5962bd22cd11daf0a4c0960290d88d75f3bc09c834566f376fcb8858f59cd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-07.json": "5f5d8eb062231598aca6f84be8ea398fda138d2a725098b007bdc2ba9ed8d553",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-prelaunch-07.json": "b7eb379fb6295b1f240cbeafcc126b25d055d20a2e5dda743f2cfccc942962bb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-07\\case-observations.json": "6c00a4190e071e397cc40ea9b53191a9545cec284331aee736608adf76ee1a6e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-07\\journal-before.json": "a36042002b5d3cb9eb8e683ef6c26595313c0abb762798bf18a63689a127055d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-07\\journal-after.json": "2e44a79e5d2a208f5a4b1c10fa86c122c031961ad8f716da36fe24f11e84263d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-07\\journal.snapshot.jsonl": "1a2e9e69767c8cd83b19137305c9b24b4b6142cefce59586a701c23b208f04a0"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "5b8ed0ca-11e1-4019-92cd-6b121a84cd32",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "4869c74b-84a7-4bb7-8289-bc12cea34dec",
+        "operation": "app.installed",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 8,
+    "case_id": "apps1237-dev-04",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Variante original aprobada: comprobó el catálogo y dijo que no está instalado.",
+    "observation_note": "Final publicado; una lectura app.installed completada y verificada con installed=false; ninguna apertura; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "446a4754bb75877cbadba74aaeb2073ca2d7641e1292a8b64a46d158ed158d05",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-08\\EXIT.json": "7a2cdb784e60d43d22a640e285533375e3405cb218de700fc319432d0e02e21b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-08\\RESOURCES.json": "2f13f7272503b105fac86f333fa89227f8345f3ab04460d97ca626dd05525f05",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\profile-owner-08.json": "324d439c7849b58e0a6b7e89ab63810959cdde5815a16a41200b5ae562b661e5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-08\\PREREG.json": "96093d6e965dd0ca2254db345fec6c09ddfb2b52303e5d4295f584d54cbafda0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-08\\capture\\events.jsonl": "5aa9ef91bee6cbe7919851874c46a43fc91ea1e7f6bc3c8d073d3419280d2724",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-08\\turns.jsonl": "24244f27fcdf98de2c81c37ee2ebe79db8b37e1335b0f7feeb30386f009457e1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\fixture-08.json": "6119b830dd046d9893ba564313c22dcebc675fb54865f50e86fa69336493d39d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-08.json": "c1503643b9458e15fcbf0e97fb900fd5eb4c7373f194173de031a4fb07a3f77e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-prelaunch-08.json": "847c9d1af4fb13e41815af92c6460486cea3ec1aed1b99485306ed8c04684cca",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-08\\case-observations.json": "d6027b0deb3abc7d735d8d433409462cf33460c4ffb839bed334db86f0354ad4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-08\\journal-before.json": "b295162e9036a5597be7fd80401714b58faae7c2cea4d34e41d2a1d556918676",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-08\\journal-after.json": "4d7b5b063cb76150818d3ff4cadb124d6d027ff8bc9fddaf17c5280fd2215f12",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-08\\journal.snapshot.jsonl": "267225e933cf320924fbfe8c09f0e3270b54f2f695ebf8447b9bb33c9f3bcc4d"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "268ceb70-5ae9-42e0-95cc-95cf77215fcb",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "4f596c3f-25c6-4a85-9996-d950753cb640",
+        "operation": "app.installed",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 9,
+    "case_id": "apps1237-boundary-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado: respuesta informativa sin efecto.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "f8ad4092cac238e08455b55697137d60d011e1b4a39238afc446a3f724b25bc9",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-09\\EXIT.json": "c5bd612772dfce9f6b05299716af290a7cde59abaf75b9624b411158f896a984",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-09\\RESOURCES.json": "6eeacd4685fc8ee9b08e498ec79c9160c772a99a2f0cfc1c89de408026bd8f9e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\profile-owner-09.json": "ecf8ed52f9809635074e0803a585317b869d185a4f944a81948aeb1e7f71b152",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-09\\PREREG.json": "d4242673070832da4da8b35eb0002ec71f5944cb506b0c66d28b6040da97cda9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-09\\capture\\events.jsonl": "f8deb142ad3d05b9b9365266e28da979b438078a2645194349782acf1d3ede23",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-09\\turns.jsonl": "10cf483e5c8e7a888fa88fb6708d66c5c5edc0f9bcc9bf9ca0b46efb8b7ec5a6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\fixture-09.json": "7c4b8c2affaaf5a7e2c4e858b1dbe335cf89c0cdb6a422a9ef586c4a0f8b65ca",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-09.json": "f33cf490180727bb5fccf24e81f8c970265f0db31a3fa47aecbe5addbd34041a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-prelaunch-09.json": "40b4b903eef10aebde6a485e2c4c1a900ab28f57e77ca009bf55cb60f16a3d01",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-09\\case-observations.json": "ff35ee72ad8cfa2bb5e14577c03ae8f52660a243d78582361f518c734fea2f15",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-09\\journal-before.json": "74f286486269a286f03704d4aac87c5ce60bec698d5e60e1c5825362bbd3f0c1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-09\\journal-after.json": "d33b7d61b39543681d5a25942cbc0158cafcdaca915f25f80afda2f873d54085",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-09\\journal.snapshot.jsonl": "46720ba11ac921302b52eb84b4d6817a0a6e220746773225334d8e5692c2dcbe"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "8c57ccbf-ffcb-4fcc-837b-676d9cc7208f",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 10,
+    "case_id": "apps1237-boundary-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado: reconoció la prohibición sin efecto.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "57eb80fc570e90fb842a67149f89c2569293f88824bb8b32bd74f923a844a4a6",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-10\\EXIT.json": "4a7c6a9dea8af839ebd3e0793e202cb7ed503467a697a0e0f704abd5ca7c95ad",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-10\\RESOURCES.json": "8de338b7b0521ace78d7bb75651f2165f5a4def1a93439a4a8f6d568211e6511",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\profile-owner-10.json": "528b910d791dbb55b89af891d3bfc75e0d168dac89ecb32302b0897978ab0623",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\results\\case-10\\PREREG.json": "c70ea7dd281855d36cefef7cf7014dd5d28d95ec64003ee31dfdb4ffe187d3a9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-10\\capture\\events.jsonl": "d8d8b2b481e0105bc7949e1e18b727aea17f5b8f260a8d467cf0b88a75cc198a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-10\\turns.jsonl": "6c39a6496fdbc71e09afe944e80ad567aa1fcc9e22d6d0f43b71d179d4be4b38",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\fixture-10.json": "99b688406a33e3caa1378bca8361747ab771cf254b11cc2b68600046d538398c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-10.json": "b743290884a31c32c5f0a016a80edc970100461aff0c882d1ed5c8cbe5f7bd09",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\context-prelaunch-10.json": "cf935be43c004eb2d8fe8833d5e02fe76c472c88bdecd4eb1ab7e00fda2b3b9b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-10\\case-observations.json": "e59ec7bfd1547f5eeea6548cc0bbacf7fa7f2a2390cf639ec437a5389f74bb87",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-10\\journal-before.json": "721b7bce97bb2868f22ca014c2d92b1a212bac5651407fff43afb8e90d30225f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-10\\journal-after.json": "18f87f22235b14803b0fe82f4aaa58ae99e5e04487c370eb6f7d4ece186a8720",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1237-instrument-v1\\private\\run-10\\journal.snapshot.jsonl": "a8e78cd45461ebe6b828de30995b5c8899c928f1a7d95e5f2f968ff2316fd3ef"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "7f2e40c7-8d89-4bd8-b3d8-c1ecbe64723a",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  }
+]

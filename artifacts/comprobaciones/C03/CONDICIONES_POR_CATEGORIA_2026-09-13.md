@@ -37,3 +37,7 @@ Organizar ventanas y pestañas pasa de 0/13 a 3/13. Los tres que llegaban al rec
 ## Actualización 2026-09-13 (APPS1231)
 
 Abrir aplicaciones pasa de 29/54 a 34/54: la guardia léxica localizada con sonda settrace (`_is_direct_request` sin clítico ni «abrís/avrí», cortesía final, marco de hora dicha, alias inglés del Explorador) y la pista portuguesa «abre a» ante un nombre de aplicación se repararon y se midieron sobre la Calculadora real. Quedan 20 con causa: Explorador ×2 (verificación del proveedor por proceso nuevo; ventana en el shell) y destinos ausentes ×3 (sin lectura app.installed para software conocido) son reparables en la próxima tanda; compuesto ×1 (final omite la apertura; composición); Steam ×3 y erratas ×4 lanzarían el cliente del dueño (sesión/descargas) o exigen contexto para aclarar; Mortal Kombat ×2 (juego ausente); H0249 indeterminado; H0461 límite sin marca; idiomas ×3 sin marca.
+
+## Actualización 2026-09-13 (APPS1237)
+
+Abrir aplicaciones pasa de 34/54 a 39/54: las dos causas medidas en APPS1231 se repararon y se remidieron (Explorador: identidad de la entrada del shell por proceso y ventanas CabinetWClass, BUILD1237; destinos ausentes: lectura app.installed sobre el nombre de software conocido). Quedan 15: compuesto H0183 (composición de respuesta a efectos múltiples), Steam ×3 y erratas ×4 (lanzar el cliente del dueño o aclarar con contexto), Mortal Kombat ×2 (juego ausente vía game.launch), H0249 (indeterminado), H0461 (límite sin marca), idiomas ×3 (sin marca).
