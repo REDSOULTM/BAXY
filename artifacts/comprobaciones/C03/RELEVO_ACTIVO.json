@@ -152,26 +152,26 @@
     "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "NETWORK1201 adjudicado: 4 aprobados, 2 fallidos, 0 sin ejecutar; 1 créditos.",
+  "workStatus": "NETWORK1203 adjudicado: 5 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.",
   "executionPausedByOwner": false,
   "branch": "codex/kiro-goal-c03",
-  "checkpoint": "266/742 cubiertos, 476 abiertos, 0 no aplican. NETWORK1201: 1 créditos explícitos de raíz.",
+  "checkpoint": "268/742 cubiertos, 474 abiertos, 0 no aplican. NETWORK1203: 2 créditos explícitos de raíz.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
   "surveyVerificationCounts": {
-    "covered": 266,
-    "open": 476,
+    "covered": 268,
+    "open": 474,
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "4f6268f3e22e15e7d586e100dfdc4b4159f8110661944032a3bd61488889a22d",
+  "surveyRegistrySha256": "391a52958bdbd65bd9676f785d90f0ebdd106d589493d4ae197a097406db5907",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
-  "surveyCoverageLast24h": 140,
-  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–13 septiembre: 139 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; NETWORK1201 añade 1. No se cuentan revalidaciones.",
+  "surveyCoverageLast24h": 142,
+  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–13 septiembre: 140 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; NETWORK1203 añade 2. No se cuentan revalidaciones.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-13T13:26:39+00:00",
+  "utcUpdated": "2026-09-13T13:31:07+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -621,7 +621,7 @@
     "freeze_ended_at": "2026-09-12T13:33:18.245252-03:00",
     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
   },
-  "updatedAtUtc": "2026-09-13T13:26:39+00:00",
+  "updatedAtUtc": "2026-09-13T13:31:07+00:00",
   "currentContinuation1065": {
     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
     "quality": {
@@ -2234,5 +2234,31 @@
       "ram_peak_mib": 2362.39453125
     },
     "next": "NETWORK1201 completa: 6 ejecutados, 4 aprobados, 2 fallidos, 1 crédito (H0455). La lectura de IP sin confirmación (BUILD1201) y el lector/dominio se demuestran en las cinco lecturas. Fallos de composición: H0568 dio una sola dirección; H0481 agotó la composición por el falso positivo de _truncated_fact_word con la clave de procedencia «authority» («address» frente a «…_addresses_…»). Siguiente: excluir «authority» de los hechos comparables (como observationScope, unit y operation), línea de alcance para enumerar todas las direcciones observadas, y remedir H0568/H0481 con pares (NETWORK1203)."
+  },
+  "currentContinuation1203": {
+    "head": "6478ff478036eb93b9548744420a2b23c857cbba",
+    "quality": {
+      "passed": 5,
+      "failed": 0,
+      "executed": 5,
+      "not_executed": 0,
+      "sealed_total": 8,
+      "segments_started": 5,
+      "aborted_before_admission": 0
+    },
+    "new_credits": 2,
+    "credited_ids": [
+      "H0481",
+      "H0568"
+    ],
+    "registry_sha256": "391a52958bdbd65bd9676f785d90f0ebdd106d589493d4ae197a097406db5907",
+    "survey": 268,
+    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\NETWORK1203\\ROOT_ADJUDICATION.json",
+    "resources": {
+      "seconds_sum": 85.46700000001874,
+      "gpu_peak_mib": 3497.55859375,
+      "ram_peak_mib": 1564.83984375
+    },
+    "next": "NETWORK1203 completa: 5 ejecutados, 5 aprobados, 2 créditos (H0568, H0481). Las dos reparaciones de composición se demuestran: la clave de procedencia ya no dispara el validador de palabras recortadas y las cuatro lecturas enumeran las tres direcciones. Red queda 9/21; restan wifi («decime si el wifi está prendido», redes disponibles/guardadas), bluetooth y efectos de red."
   }
 }

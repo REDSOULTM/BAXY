@@ -1,3 +1,13 @@
+# NETWORK1203 adjudicado — 2026-09-13T13:31:07+00:00
+
+**268/742 cubiertos, 474 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 391a52958bdbd65bd9676f785d90f0ebdd106d589493d4ae197a097406db5907. Primeras altas 24 h >= 142 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6478ff47 (llm: procedencia excluida del validador de palabras recortadas; línea de alcance para enumerar todas las direcciones; NETWORK1203/SOURCE.json|patch) con BUILD1201.
+
+NETWORK1203 (H0568, H0481 + 2 pares + 1 límite): 5 ejecutados, 5 aprobados; +2. Adjudicación 2362fee3c748fad88a8fd6e8a3e9f75eb8d42ab199fb3ab43f4b2b8ce722be69. Las cuatro lecturas enumeran las tres direcciones observadas y la respuesta inglesa se publica. Red queda 9/21.
+
+Siguiente por masa: cierre de apps propias (20, autorizado; instrumento con turno revisado y ventanas propias), proveedor de carpetas conocidas (archivos, 26, autorizado); red residual (wifi «decime si…», redes disponibles/guardadas, bluetooth). Reanudación: derivar de build_network1203.py (BUILD1201); `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 391a52958bdbd65bd9676f785d90f0ebdd106d589493d4ae197a097406db5907`.
+
+---
+
 # NETWORK1201 adjudicado — 2026-09-13T13:26:39+00:00
 
 **266/742 cubiertos, 476 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 4f6268f3e22e15e7d586e100dfdc4b4159f8110661944032a3bd61488889a22d. Primeras altas 24 h >= 140 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 956a0156 (network.ip.list ReadOnly por decisión del dueño; lector y dominio de IP; NETWORK1201/SOURCE.json|APP_SOURCE.json) con **BUILD1201** (recibo 8c69417b…; sustituye a BUILD1158 como binding de los instrumentos siguientes).

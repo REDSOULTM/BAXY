@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación NETWORK1201
+# Categorías actuales — adjudicación NETWORK1203
 
-266/742 cubiertos; 476 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 140 primeras altas (139 anteriores + 1 en NETWORK1201; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 4f6268f3e22e15e7d586e100dfdc4b4159f8110661944032a3bd61488889a22d.
+268/742 cubiertos; 474 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 142 primeras altas (140 anteriores + 2 en NETWORK1203; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 391a52958bdbd65bd9676f785d90f0ebdd106d589493d4ae197a097406db5907.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -15,7 +15,7 @@
 | Audio y volumen | 51 | 27 | 24 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 34 | 4 |
 | Interacción dentro de aplicaciones | 22 | 0 | 22 |
-| Red y Bluetooth | 21 | 7 | 14 |
+| Red y Bluetooth | 21 | 9 | 12 |
 | Cerrar aplicaciones y ventanas | 20 | 0 | 20 |
 | Pantalla, captura e interpretación visual | 19 | 0 | 19 |
 | Conocimiento, razonamiento y creatividad verbal | 37 | 22 | 15 |

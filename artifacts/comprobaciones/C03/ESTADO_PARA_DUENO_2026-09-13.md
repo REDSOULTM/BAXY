@@ -1,3 +1,25 @@
+## NETWORK1203 — estado vigente 2026-09-13T13:31:07+00:00
+
+Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 268/742 | 474 | 0 | >=142 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 140 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; NETWORK1203 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: NETWORK1203 completa: 5 ejecutados, 5 aprobados, 2 créditos (H0568, H0481). Las dos reparaciones de composición se demuestran: la clave de procedencia ya no dispara el validador de palabras recortadas y las cuatro lecturas enumeran las tres direcciones. Red queda 9/21; restan wifi («decime si el wifi está prendido», redes disponibles/guardadas), bluetooth y efectos de red.
+
+Evidencia: `artifacts/comprobaciones/C03/NETWORK1203/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 85.47 s acumulados; pico GPU 3497.56 MiB; pico RAM 1564.84 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque NETWORK1203 precedente. -->
+
 ## NETWORK1201 — estado vigente 2026-09-13T13:26:39+00:00
 
 Parcial: 4 aprobados, 2 fallidos, 0 sin ejecutar; 1 créditos.

@@ -1,0 +1,340 @@
+{
+  "schema": "network1203-root-adjudication-v2",
+  "decided_at_utc": "2026-09-13T13:31:07+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "6478ff478036eb93b9548744420a2b23c857cbba",
+  "decisions_sha256": "64adb33c51dbacfd1b6b404a911cd2fc1e0e9177449ef4b1ded39ccafc3f9a8b",
+  "registry_before_sha256": "4f6268f3e22e15e7d586e100dfdc4b4159f8110661944032a3bd61488889a22d",
+  "registry_before_counts": {
+    "covered": 266,
+    "open": 476,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "b8caf8150f88c2cddc06f258c38571077f39999c7706303a1b8aced637486e66",
+  "preparation_sha256": "ff40d83624d305844d0ab53fe2ae53e12beb1f4e3649af6f0fb5f951929417b9",
+  "passed": 5,
+  "failed": 0,
+  "unexecuted": 0,
+  "executed": 5,
+  "segments_started": 5,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [
+    "H0481",
+    "H0568"
+  ],
+  "counters": {
+    "covered": 268,
+    "open": 474,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 140,
+    "categories_total": 35,
+    "categories_closed_after": 0,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–13 septiembre: 140 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; NETWORK1203 añade 2. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 142
+  },
+  "resources": {
+    "seconds_sum": 85.46700000001874,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1564.83984375
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0568",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        2,
+        3
+      ],
+      "reason": "Leyó y enumeró todas las direcciones observadas; dos pares aprobados.",
+      "observation_note": "Final revisado con una admisión; una lectura verificada; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "8ad5e0f00585fb77a5bfd00956882f12369e72654f71a91f781536f6bba3242d",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\results\\case-00\\EXIT.json": "956d877372e7960945e94fd6c15a6ab12cf32a5bfb0fff8440a0cd91f7147a2a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\results\\case-00\\RESOURCES.json": "537ee71960df923ec96dd4c939ddd335d791b4757406cb435203fd1936cdc51d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\profile-owner-00.json": "d0adc02b3410c24f68df7e65de5105734a4f56bd1b277373b5c1a5058d2c507b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\results\\case-00\\PREREG.json": "06c3d227a48fb07094e6f36ad0f51dcdbb28e4dbf3866b05c46d24884bd03dcc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-00\\capture\\events.jsonl": "5455600168708bf77d4e59c51dd67a82e3d164f78b3935964aeed76384c34cfd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-00\\turns.jsonl": "b65b7dc7cfa2e9f04686607ecfebc90a67430954df55715d0ac76269ec26417a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\fixture-00.json": "6a5a4886833602a0a6ce520415bfd3d3688589a451a298394e60b59603c315dd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\context-00.json": "7c19b4cd86e63530d315cae8d40b22d06413ba05e3914aed8e49fd491bde1acd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\context-prelaunch-00.json": "cbf6475a87572359f962ac81f766ae5acb35ddaa9a34f02c1c1bf06c6e85c086",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-00\\case-observations.json": "871d33e15c5a4b7b9b1dc89458c091e7fbd9ff7c62be059691c59c40a91eb9ec",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-00\\journal-before.json": "402110abffcaf922d9a0e625ec7718e4b6316368f1f0e995c7b3dfc4e674414c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-00\\journal-after.json": "f486f7a1690405493a532422716c261cee6c6a4fb83c069e30b4716c5f49645a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "8ca9dbfeeea2ca8b643ed6df27c0e22111db74bff7ed341f9036dc269a49f97d"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "f5bd8c2e-dd54-4a58-8e58-c397b62eb6a9",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "a3784cb3-7d15-457c-a31d-baf10b0882a8",
+          "operation": "network.ip.list",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0481",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        2,
+        3
+      ],
+      "reason": "Leyó y enumeró todas las direcciones observadas en inglés; dos pares aprobados.",
+      "observation_note": "Final revisado con una admisión; una lectura verificada; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "d29c86568ef7591ce46c14b1d35920c6f05c31a084995ea584214f967fb6bd1d",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\results\\case-01\\EXIT.json": "d4f733ae485a1a694eac0ef108ade43effc394760889eb5d0b4ccd03f833e9c6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\results\\case-01\\RESOURCES.json": "0be373ad5091d50d5863a1185e630979e7d9dcb94d58a95dec2eaf0bd04bd802",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\profile-owner-01.json": "700f54d0b9cc621bfa02d22c8452492a3d272eb1ae3cf2442ed4946febfe6fe8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\results\\case-01\\PREREG.json": "5005448d1c862f938463559e42a220dc1d2855fc6c413987213c1c27fa21c8c1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-01\\capture\\events.jsonl": "18b7e8175eafe024a3f5d8bdc593a6e0122dc3736f3a50a0a00d8f042f97ecd3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-01\\turns.jsonl": "d44038e72a90d466d0ceda0ce3da34a3dc0ec10ad74bf542626d113ca0b2a352",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\fixture-01.json": "4cb6952ca15d4a4b0dc487151f6df105d69cc5fb98e4e0ec3b05a6dbd254af41",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\context-01.json": "403195037e032b9113191ee0b43d851126317b08593ec2230c35764405cc40ba",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\context-prelaunch-01.json": "a89c785974b90e1475b7ddd7e2f46ab48d5af80fdf94ab14af572df7e385c480",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-01\\case-observations.json": "b03461efa00cb2593914f97cd708af172ef237fde1be8d26c9c4e0f5b9aa6d0e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-01\\journal-before.json": "92d8b533df91a598210572f31ee1933357f87537d3bd2d229ca2fb3cae2ddc03",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-01\\journal-after.json": "006d1ed879d63d03411ea9cb5ee3ced98cdfff3919672d2a7031d491cc75b0dc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "7e267206bc467deb72244ce823eacbd39ae877abce25703c13ce6d7868f3de40"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "2879e297-b77d-48b3-8d7c-ea19308f8a7c",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "77b8fb59-1b02-4b51-b1f5-9dd13e9a8cf6",
+          "operation": "network.ip.list",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "network1203-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Variante original aprobada.",
+      "observation_note": "Final revisado con una admisión; una lectura verificada; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "68b301fc9884f5728eec941893da70ca18b39b895cba97e4932a1d75a1950fe6",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\results\\case-02\\EXIT.json": "e09619e5cff9dd1560f8efa0036c7577bc3c100c4b78dfb05807e11c8ddb854b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\results\\case-02\\RESOURCES.json": "95b881f958ec1068fe1ddf15b4e5a7c5d182df227440a00eecdc83d3934690d7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\profile-owner-02.json": "c55897e2e9ff27b63532b7d83201750a576f52d0bc05b93e04569ffd71f1539d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\results\\case-02\\PREREG.json": "0a4576eb680e8058630831ddb8af65c33b4e47e21dfd87ec34ac2daa77ec8f96",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-02\\capture\\events.jsonl": "1a8722c268ce86d7adfe2431d499b8d87344db3238341a65bd2c581a033b6bc4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-02\\turns.jsonl": "1858a1a3047313fd25c2067fef709a38c17f8322c12ee0b02fe38c559f3e94ba",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\fixture-02.json": "2605f8e22577d2a072c5bb84fd0b75be8284fb7e11c7272d71986c258d18d4c5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\context-02.json": "13d78fdbbcf6a74c804d877d75a6718d8622f5b52ed332cee58c42ca3a0339a5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\context-prelaunch-02.json": "a6f0fcc4f72396460c9a8349fe3d7c39ee85f9d57af3c9c4826f72b51be882e9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-02\\case-observations.json": "b6317878b52741837d4d334e2ee29af88c485ebd6e3d8355c80de04c849ba70b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-02\\journal-before.json": "5f67cd6891623b82db156c857f1ac184ef4313ec02d92e2e19edc156da290a74",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-02\\journal-after.json": "60eccb1d99259c19f76937599c74d1f5d670f7e44081ab57c1284e37d40b52ed",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "0198189b8e6ffb9fbab54c8dd03948b40c4f526c50aa36162427d867bcad6097"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "bee5ebf0-a008-44b5-8fab-9614975fcb01",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "571f67ad-aee1-442c-9ea0-874816376b74",
+          "operation": "network.ip.list",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "network1203-dev-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Variante original aprobada.",
+      "observation_note": "Final revisado con una admisión; una lectura verificada; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "5dfee65be82e70d9d5b69c06bec498d2f223f661ff1db023618117bf5bb5e6cd",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\results\\case-03\\EXIT.json": "e3619c25ee4c85968fd706cd89a8485008ce9f1ebfacb0fd676c20859867a58f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\results\\case-03\\RESOURCES.json": "a05440bc392eccce5387ab0cedf03bedd573053cc80ee5e0e817fb3a2b1612e7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\profile-owner-03.json": "88fd3f1200b17a73ea8e94a24d0c2fc48a2aa47f5233f4644723254138880f4e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\results\\case-03\\PREREG.json": "72c106a429b5783c9c3256a7ff7fa3c7af9a4974207ca921c476809197bccd63",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-03\\capture\\events.jsonl": "0986e6a5227cfda97b74d68ca0f3b8db5e01ea4fb4b9be1d7fabfeffb2aea24b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-03\\turns.jsonl": "8bfa293e3cf581bcdb91dc3e644f1c44dd50694c6d1e47349d9214e41f23debe",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\fixture-03.json": "2b1fa56b5a0597370c516d9fd84f25bb417cbfadf28e79cc019e85001ffa74a4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\context-03.json": "93947d4b6492f243c7238452179c9d0152e1894bf45f3f99aaa28e33bd3159ac",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\context-prelaunch-03.json": "b7df372b9c2e510d2d0fa49933a7d8ee159b2157f1449842ccaa8a2fd19f8295",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-03\\case-observations.json": "dc1c2bb34b3012448fa05db8bf9960feea078921b6e23fc10634c83545625a88",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-03\\journal-before.json": "7c5df5d3a071f475f427083019e2d86dde10038edc5942b67d6f2d5fe89c256c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-03\\journal-after.json": "088244ca02ebe519eb225092837eed5910195ab7031f4cc25585e5aa8290186c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "d4e06ff3a8e200dc4c05c8d5f38ad78c4376708266be4a06600df1c386cfe0e3"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "6b6aef9e-ab06-497a-a194-cf76f593d0bf",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "104c10a2-2c99-4a08-983d-72fee133b186",
+          "operation": "network.ip.list",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "network1203-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final revisado con una admisión; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "c9ead3f28bd1c1a5fa6a72a91d900efbf44578e4698f92f76ded2811fdbc8916",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\results\\case-04\\EXIT.json": "c375af47077d6bc74b292d9569f09d6594147a0a759a69c70c1b2ddb42ab2e28",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\results\\case-04\\RESOURCES.json": "6cb1a6f73fb6b96d245e38eb775ffff8ac20d49c117368fda771164dcd34a692",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\profile-owner-04.json": "9a414fc7e69e84cb50b378e4ec8c22bb2d1b40ea243e9ac26cc564bb397dd428",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\results\\case-04\\PREREG.json": "c09736ae5060531238626fd82faacfe4f8f2ed15bc2f60787bf23812c9d8b98e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-04\\capture\\events.jsonl": "a61a2cf00dbb4820f16fbf5b9b2d21e09cca811b50e6b020e805e6874c479123",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-04\\turns.jsonl": "739a332d52ea8c41d3191820c56ac95bee19181b117dd9e7b7d604e4ec5d4aaa",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\fixture-04.json": "33ed1ab2d959d823e8499510e29b68573288a5d1e63c6f3463c65212cc96ea38",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\context-04.json": "9a2f5186d226195efa237e52663d1015c33c2386c76246292790abc97b0c3890",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\context-prelaunch-04.json": "e4258616beef3165c79ebdaba15c481071fef0de82c930a15e3497b73b6e5df6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-04\\case-observations.json": "3d5c58ec4ab279fb4caaf02d93c5a8e5d4f78421ea5f7ecf4ed9080de720b335",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-04\\journal-before.json": "6a3d10dd17d9c89d5d4a0323c46384637353e6206fd912cc7408694c49765df2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-04\\journal-after.json": "b940f4b1d2039bbabd923f2d925a4bd7b7f4488b1c5453538d60241228427f5e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1203-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "7ad0efb5673da2c59e7372bdd15b531816018ba816fde6e8f245db1ebe5a2473"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "9651fa1f-7f2d-48cf-829c-7298a0cb7c53",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "NETWORK1203 completa: 5 ejecutados, 5 aprobados, 2 créditos (H0568, H0481). Las dos reparaciones de composición se demuestran: la clave de procedencia ya no dispara el validador de palabras recortadas y las cuatro lecturas enumeran las tres direcciones. Red queda 9/21; restan wifi («decime si el wifi está prendido», redes disponibles/guardadas), bluetooth y efectos de red.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

@@ -1,6 +1,6 @@
 {
   "schema": "c03-network1203-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/llm.py (_truncated_fact_word; compose scope for network.ip.list)",
   "patch": "artifacts/comprobaciones/C03/NETWORK1203/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "NETWORK1203: H0568, H0481 con pares ES/EN.",
-  "credits": 0
+  "measurement": "NETWORK1203: 5 de 5 aprobados, +2 (H0568, H0481); las cuatro lecturas enumeran las tres direcciones observadas y la respuesta inglesa se publica.",
+  "credits": 2
 }
