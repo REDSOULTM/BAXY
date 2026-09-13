@@ -4452,6 +4452,28 @@ def _explicit_arguments_from_evidence(
             return {}
         return None
 
+    if operation == "filesystem.known.trash.named":
+        # «borra el archivo hola.txt del escritorio»: the file name is the
+        # person's literal; the folder is a catalog root, or every known folder
+        # when none is named (the provider refuses an ambiguous name).
+        trash_match = effect_intent._file_trash_request(evidence)
+        if trash_match is None:
+            return None
+        file_name = trash_match.group("name").strip().strip("\"'").rstrip(".!?,").strip()
+        if (
+            not file_name
+            or re.search(r"[\\/:*?\"<>|]", file_name)
+            or any(ord(character) < 32 for character in file_name)
+            or len(file_name.encode("utf-8")) > 512
+        ):
+            return None
+        folder_word = trash_match.group("folder")
+        return {
+            "fileName": file_name,
+            "folder": effect_intent._KNOWN_FOLDER_ENUM[effect_intent._fold(folder_word)]
+            if folder_word else "all_known",
+        }
+
     if operation == "filesystem.create.directory":
         # «crea una carpeta llamada CarterTest en el escritorio»: the name is
         # the person's, the folder is a catalog root (owner decision, point 2).

@@ -2443,6 +2443,40 @@ _DIRECTORY_CREATION_REQUEST = re.compile(
 )
 
 
+# «borra el archivo hola.txt del escritorio», «borrá el archivo viejo.txt»,
+# «delete old.txt from the desktop»: one named file, optionally in one known
+# folder, goes to the product's recoverable private trash
+# (filesystem.known.trash.named). A bare name must look like a file (an
+# extension) unless the request says «archivo/file», so «borra el mensaje»
+# and folders stay outside; a folder deletion has no operation.
+_FILE_TRASH_REQUEST = re.compile(
+    r"^[¿?¡!\s]*(?:borr[aá]|borrar|borr[aá]me|elimin[aá]|eliminar|elimin[aá]me|"
+    r"delete|remove|"
+    r"(?:mand[aá]|manda|envi[aá]|envia|tir[aá]|tira)(?:me)?\s+a\s+la\s+papelera)(?:me)?\s+"
+    r"(?:(?:el|la|the)\s+)?(?P<noun>(?:archivo|fichero|file)\s+)?"
+    r"(?:(?:llamad[oa]|named|called)\s+)?"
+    r"(?P<name>\"[^\"]+\"|'[^']+'|[^\s\"']+)"
+    rf"(?:\s+(?:del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}))?"
+    r"(?:\s*,?\s+(?:por\s+favor|please|porfa))?[\s.!?]*$",
+    re.IGNORECASE,
+)
+
+
+def _file_trash_request(text: str) -> re.Match[str] | None:
+    """Match one literal deletion of a named file in the person's known folders."""
+
+    found = _FILE_TRASH_REQUEST.match(text.strip())
+    if found is None:
+        return None
+    name = found.group("name").strip("\"'").rstrip(".!?,")
+    if not name or name.lower() in {"todo", "todos", "everything", "all", "eso", "esto", "it", "that", "this"}:
+        return None
+    looks_like_file = re.fullmatch(r"[^\\/:*?\"<>|]+\.[a-z0-9]{1,8}", name, re.IGNORECASE) is not None
+    if not looks_like_file and found.group("noun") is None:
+        return None
+    return found
+
+
 def _file_creation_request(text: str) -> re.Match[str] | None:
     """Match one literal file creation with a name and its content."""
 
@@ -14209,6 +14243,15 @@ def resolve_explicit_effects(
     if "filesystem.write.text" in available and _file_creation_request(folded) is not None:
         # A named file with literal content is a write, not a note.
         return EffectIntent(("filesystem.write.text",), (folded,))
+    if (
+        "filesystem.known.trash.named" in available
+        and _file_trash_request(folded) is not None
+        and not _is_negative_effect_clause(folded)
+        and not _is_meta_or_tool_denial(folded)
+        and not _has_contradictory_correction(folded)
+    ):
+        # A named file deletion is the recoverable trash of that one file.
+        return EffectIntent(("filesystem.known.trash.named",), (folded,))
     if (
         "filesystem.create.directory" in available
         and _directory_creation_request(folded) is not None
