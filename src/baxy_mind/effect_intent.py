@@ -1700,7 +1700,8 @@ def _curated_domain_is_grounded(
                 r"\b(?:notificacion(?:es)?|notifications?|avisa(?:me)?|"
                 r"avisame|notify|recuerda(?:me)?|recuerdame|remind|"
                 r"recordatorios?|reminders?|alarmas?|alarms?|timers?|"
-                r"temporizadores?)\b"
+                r"temporizadores?|despiertame|despertame|levantame|"
+                r"wake\s+me(?:\s+up)?)\b"
             ),
         )
     if operation == "reminder.resolve.exact":
@@ -2320,6 +2321,13 @@ _TEMPORAL_NUMBER_PATTERN = (
     r"tres|four|cuatro|five|cinco|six|seis|seven|siete|eight|ocho|nine|"
     r"nueve|ten|diez|eleven|once|twelve|doce)"
 )
+# One relative duration as people type it: «10 minutos», «2min», «2 h»,
+# «media hora», «half an hour». Shared by every temporal reader so a compact
+# form cannot pass one reader and fail the next (TIME1138, TIME1187).
+_RELATIVE_DURATION_UNIT = r"(?:minutos?|minutes?|mins?|min|horas?|hours?|hrs?|h|dias?|days?)"
+_RELATIVE_DURATION_PATTERN = (
+    rf"(?:{_TEMPORAL_NUMBER_PATTERN}\s*{_RELATIVE_DURATION_UNIT}|media\s+hora|half\s+an?\s+hour)"
+)
 
 
 def _reminder_has_actionable_due(folded: str) -> bool:
@@ -2330,8 +2338,7 @@ def _reminder_has_actionable_due(folded: str) -> bool:
         or _has(
             folded,
             r"\b(?:(?:en|in|dentro de|within)\s+)?"
-            rf"{_TEMPORAL_NUMBER_PATTERN}\s+"
-            r"(?:minutos?|minutes?|horas?|hours?|dias?|days?)"
+            rf"{_RELATIVE_DURATION_PATTERN}"
             r"(?:\s+(?:from now|desde ahora))?\b",
         )
         or _has(folded, r"\b\d{4}-\d{2}-\d{2}t\d{2}:\d{2}(?::\d{2})?\S*\b")
@@ -6152,12 +6159,9 @@ def _wake_alarm_request(text: str) -> bool:
     return (
         re.fullmatch(
             r"(?:i\s+need\s+you\s+to\s+)?"
-            r"(?:(?:wake|get)\s+me\s+up|despiertame|levantame)\s+"
+            r"(?:(?:wake|get)\s+me(?:\s+up)?|despiertame|despertame|levantame)\s+"
             r"(?:"
-            r"(?:in|en)\s+(?:half\s+an?|media)\s+(?:hour|hora)|"
-            r"(?:in|en)\s+(?:\d+|one|two|three|four|five|six|seven|eight|nine|"
-            r"ten|una?|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez)\s+"
-            r"(?:minutes?|minutos?|hours?|horas?)|"
+            rf"(?:in|en|dentro\s+de|within)\s+{_RELATIVE_DURATION_PATTERN}|"
             r"(?:at|a\s+las?|para\s+las?)\s+"
             r"(?:[0-2]?\d|one|two|three|four|five|six|seven|eight|nine|ten|"
             r"eleven|twelve|una?|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|"
@@ -7313,13 +7317,13 @@ _SCHEDULING_NOUN = (
 _SCHEDULING_VERB = (
     rf"(?:{_CREATE}|programa|programar|programame|schedule|"
     r"pon|poner|ponme|pone|poneme|pongame|"
-    r"agenda|agendar|agendame|avisa|set)"
+    r"agenda|agendar|agendame|avisa|set|start|inicia|arranca|empeza|empieza)"
 )
 # Un verbo que ya nombra el acto por sí solo, y la apertura nominal sin verbo
 # que R3 aceptó como acto de habla, no necesitan repetir el sustantivo:
 # «recuérdame comprar pan mañana», «alarma para mañana 8am».
 _SCHEDULING_BY_ITSELF = (
-    r"(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|despiertame|remind|"
+    r"(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|despiertame|despertame|wake\s+me(?:\s+up)?|remind|"
     r"recordatorio|recordatorios|reminder|reminders|"
     r"alarma|alarmas|alarm|alarms|temporizador|temporizadores|timer|timers)"
 )
@@ -7744,8 +7748,7 @@ _BOUNDED_TEMPORAL_SELECTOR = (
     r"(?:\d{1,2}(?::\d{2})?|una|dos|tres|cuatro|cinco|seis|siete|ocho|"
     r"nueve|diez|once|doce|one|two|three|four|five|six|seven|eight|nine|"
     r"ten|eleven|twelve)(?:\s*(?:a\.?\s*m\.?|p\.?\s*m\.?))?\b|"
-    rf"\b{_TEMPORAL_NUMBER_PATTERN}\s+"
-    r"(?:minutos?|minutes?|horas?|hours?|dias?|days?)\b"
+    rf"\b{_RELATIVE_DURATION_PATTERN}\b"
 )
 
 

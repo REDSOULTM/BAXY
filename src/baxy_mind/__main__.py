@@ -4023,8 +4023,7 @@ def _explicit_notification_schedule_arguments(
     ):
         return None
     relative_pattern = (
-        rf"\b(?P<duration>{_TEMPORAL_NUMBER_PATTERN}\s+"
-        r"(?:minutes?|minutos?|hours?|horas?))\b"
+        rf"\b(?P<duration>{effect_intent._RELATIVE_DURATION_PATTERN})\b"
     )
     clock_pattern = (
         rf"\b(?P<clock>(?:(?:tomorrow|manana|maniana)\s+)?"
@@ -4080,12 +4079,16 @@ def _explicit_relative_reminder_arguments(
     """Preserve one closed relative reminder's literal time and title."""
 
     duration = (
-        rf"(?:(?:en|in)\s+){_TEMPORAL_NUMBER_PATTERN}\s+"
-        r"(?:minutes?|minutos?|hours?|horas?)"
+        rf"(?:(?:en|in|dentro\s+de|within)\s+){effect_intent._RELATIVE_DURATION_PATTERN}"
     )
     patterns = (
-        rf"^[¿?¡!\s]*(?:avisame|remind\s+me)\s+"
-        rf"(?P<due>{duration})\s+(?:que|to)\s+(?P<title>.+?)[.!?]*$",
+        rf"^[¿?¡!\s]*(?:avisame|recordame|recuerdame|remind\s+me)\s+"
+        rf"(?P<due>{duration})\s+(?:(?:que|to|de)\s+)?(?P<title>.+?)[.!?]*$",
+        rf"^[¿?¡!\s]*(?:avisame|recordame|recuerdame|remind\s+me)\s+"
+        rf"(?:(?:que|to|de)\s+)?(?P<title>.+?)\s+(?P<due>{duration})[.!?]*$",
+        rf"^[¿?¡!\s]*(?P<due>{duration}),?\s+"
+        rf"(?:avisame|recordame|recuerdame|remind\s+me)\s+"
+        rf"(?:(?:que|to|de)\s+)?(?P<title>.+?)[.!?]*$",
         rf"^[¿?¡!\s]*(?:ponme|set)\s+(?:(?:un|a)\s+)?"
         rf"(?:recordatorio|reminder)\s+(?P<due>{duration})\s+"
         rf"(?:para|to)\s+(?P<title>.+?)[.!?]*$",
@@ -5274,22 +5277,26 @@ def _canonical_due_utc(
     folded_value = effect_intent._fold(raw)
     relative = re.fullmatch(
         rf"(?:(?:en|in|dentro de|within)\s+)?"
-        rf"(?P<number>{_TEMPORAL_NUMBER_PATTERN})\s+"
-        r"(?P<unit>minutes?|minutos?|hours?|horas?|days?|dias?)"
+        r"(?:(?P<half>media\s+hora|half\s+an?\s+hour)|"
+        rf"(?P<number>{_TEMPORAL_NUMBER_PATTERN})\s*"
+        rf"(?P<unit>{effect_intent._RELATIVE_DURATION_UNIT}))"
         r"(?:\s+(?:from now|desde ahora))?",
         folded_value,
         re.IGNORECASE,
     )
     if relative is not None:
-        amount = _temporal_number(relative.group("number"))
+        if relative.group("half"):
+            amount, unit = 30, "minutes"
+        else:
+            amount = _temporal_number(relative.group("number"))
+            unit = relative.group("unit")
         if amount is None or not 1 <= amount <= 24 * 60:
             return None
-        unit = relative.group("unit")
         if unit.startswith(("day", "dia")):
             if amount > 365:
                 return None
             delta = timedelta(days=amount)
-        elif unit.startswith(("hour", "hora")):
+        elif unit.startswith(("hour", "hora", "h")):
             delta = timedelta(hours=amount)
         else:
             delta = timedelta(minutes=amount)

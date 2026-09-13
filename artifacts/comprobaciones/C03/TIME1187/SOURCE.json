@@ -1,0 +1,17 @@
+{
+  "schema": "c03-time1187-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_RELATIVE_DURATION_PATTERN, _reminder_has_actionable_due, _BOUNDED_TEMPORAL_SELECTOR, notification.schedule domain, _wake_alarm_request, _SCHEDULING_VERB, _SCHEDULING_BY_ITSELF) + src/baxy_mind/__main__.py (_explicit_notification_schedule_arguments, _explicit_relative_reminder_arguments, _canonical_due_utc)",
+  "patch": "artifacts/comprobaciones/C03/TIME1187/SOURCE.patch",
+  "cause_measured": "TIME1187 (11 ejecutados, 0 aprobados): (a) «Pon/Ponme una alarma en 2min» → aclaración determinista porque los lectores temporales exigen número + espacio + unidad larga (TIME1138/DIAGNOSIS.md: cinco lectores); (b) «despertame en una hora» → veto de dominio (turn-audit domain_grounding → confirmación) y «Please wake me in twenty minutes.» → negación falsa: «despertame» y «wake me» (sin «up») ausentes del dominio y del reconocedor; «media hora» no era duración; (c) «start a timer lasting 4min» → negación falsa: «start» no era verbo de programación; (d) «recordame en 5 minutos tomar agua» → aclaración de campos: el extractor de recordatorio relativo sólo admitía «avisame/remind me … que/to» y no las formas con contenido antes de la duración ni con la duración al inicio.",
+  "change": "Un patrón compartido _RELATIVE_DURATION_PATTERN (número + unidad con o sin espacio, unidades compactas min/h, «media hora», «half an hour») sustituye a las cuatro copias del patrón número+espacio+unidad larga (effect_intent: _reminder_has_actionable_due, _BOUNDED_TEMPORAL_SELECTOR, _wake_alarm_request; __main__: argumentos de alarma, argumentos de recordatorio, _canonical_due_utc, que además convierte «media hora» en 30 minutos y admite h/hrs). El dominio de notification.schedule y _SCHEDULING_BY_ITSELF añaden despiertame/despertame/levantame/wake me (up); _SCHEDULING_VERB añade start/inicia/arranca/empeza/empieza. El extractor de recordatorio relativo admite las cabezas recordame/recuerdame, «que/to/de» opcional, contenido antes de la duración y duración al inicio. Sin frases de salida; ninguna capa nueva. «contá N minutos» no se repara (cabeza ambigua con «cuenta»).",
+  "offline_verification": "_canonical_due_utc: «en 2min»/«2min» → +2 min al segundo entero; «media hora»/«dentro de media hora» → +30 min; «2h» → +2 h; «hoy», «en 2 hoy» → None. Argumentos de alarma: «Pon una alarma en 2min», «despertame en una hora», «Please wake me in twenty minutes.», «Despertame dentro de media hora.», «For the oven, start a timer lasting 4min.» → dueUtc literal y título. Recordatorio: «recordame en 5 minutos tomar agua» → (en 5 minutos, tomar agua); «recordame llamar a mamá en una hora» → (en una hora, llamar a mamá); «avisame en una hora que salgo» → (en una hora, salgo); «Dentro de doce minutos, recordame sacar la ropa del lavarropas.» → (dentro de doce minutos, sacar la ropa del lavarropas). Dominio notification.schedule True para las formas de despertar y False para «abre la cuenta de 2 usuarios». Baseline del reconocedor: 258 frente a 248, diez deltas todos deseados (nuevos: H0381, H0576, H0641 → notification.schedule). Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "TIME1189: mismo material que TIME1187 con reminder.create autorizado para el grupo de recordatorios.",
+  "credits": 0
+}
