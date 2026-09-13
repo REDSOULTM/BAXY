@@ -3940,7 +3940,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         labelled = re.findall(
             r"(\d+(?:[.,]\d+)?)\s*gb\s+(?:de\s+)?(?:ram\s+|memoria\s+|memory\s+)?"
             r"(?:disponibles?|available|libres?|free)\b|"
-            r"(?:disponibles?|available|libres?|free)\b[^.\d]{0,24}(\d+(?:[.,]\d+)?)\s*gb",
+            r"(?:disponibles?|available|libres?|free)\b\s*(?::|de|of)?\s*(?:ram\s+|memoria\s+|memory\s+)?"
+            r"(?:es|son|is|are|hay)?\s*(\d+(?:[.,]\d+)?)\s*gb",
             folded,
         )
         for first, second in labelled:
