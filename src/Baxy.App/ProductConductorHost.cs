@@ -174,6 +174,12 @@ internal static class ProductConductorHost
                 conductor, command, timeout, profileDirectory, capture, cancellationToken)
                 .ConfigureAwait(true);
         }
+        if (cmd == "turn.memory-confirm")
+        {
+            return await ExecuteMemoryConfirmAsync(
+                conductor, command, timeout, capture, cancellationToken)
+                .ConfigureAwait(true);
+        }
         if (cmd == "turn.confirm-if-matches")
         {
             string? caseId = command["caseId"] is JsonValue caseValue
@@ -464,6 +470,69 @@ internal static class ProductConductorHost
         }
 
         return await RejectAsync("review_timed_out").ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// One request turn, then — only when the private memory channel itself
+    /// left a confirmation pending for the expected operation — the closed
+    /// reply «confirmar» as a second turn. On a fresh profile an explicit
+    /// «recuerda que me llamo …» ends in memory_disabled and the channel asks
+    /// to enable the local memory; enabling continues the original save
+    /// (MEMORY1245). Nothing is answered when no memory challenge is pending.
+    /// </summary>
+    private static async Task<bool> ExecuteMemoryConfirmAsync(
+        ProductConductor conductor,
+        JsonObject command,
+        TimeSpan timeout,
+        StreamWriter? capture,
+        CancellationToken cancellationToken)
+    {
+        string? caseId = ReviewString(command, "caseId");
+        string? text = ReviewString(command, "text");
+        string? expectedOperation = ReviewString(command, "expectedOperation");
+        async Task<bool> RejectAsync(string diagnostic)
+        {
+            await EmitTurnAsync(conductor.RejectConfirmation(diagnostic),
+                capture, cancellationToken, caseId, "final").ConfigureAwait(true);
+            return false;
+        }
+
+        if (command.Count != 4 || string.IsNullOrWhiteSpace(caseId)
+            || string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(expectedOperation)
+            || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
+        {
+            return await RejectAsync("memory_confirm_command_not_admitted").ConfigureAwait(true);
+        }
+
+        ProductTurnResult initial = await conductor.TurnAsync(text, timeout, cancellationToken)
+            .ConfigureAwait(true);
+        PendingMemoryConfirmation? observed = conductor.ViewModel.CaptureMemoryConfirmation();
+        if (observed is null)
+        {
+            // No private-memory challenge: one admission, one final, nothing to confirm.
+            await EmitTurnAsync(initial, capture, cancellationToken, caseId, "final")
+                .ConfigureAwait(true);
+            return !initial.TimedOut && !initial.Posterior.HasPendingPlan && !initial.Posterior.IsBusy;
+        }
+
+        await EmitTurnAsync(initial, capture, cancellationToken, caseId, "request")
+            .ConfigureAwait(true);
+        if (initial.TimedOut || initial.Terminal != ProductTurnTerminal.PublishedFinal
+            || initial.Diagnostic is not null
+            || !string.Equals(observed.Prepared.OperationName, expectedOperation, StringComparison.Ordinal))
+        {
+            return await RejectAsync("memory_confirmation_mismatch:" + observed.Prepared.OperationName)
+                .ConfigureAwait(true);
+        }
+
+        // The private channel reads the same closed reply words a person types.
+        ProductTurnResult final = await conductor.TurnAsync("confirmar", timeout, cancellationToken)
+            .ConfigureAwait(true);
+        await EmitTurnAsync(final, capture, cancellationToken, caseId, "final")
+            .ConfigureAwait(true);
+        return !final.TimedOut
+            && final.Terminal == ProductTurnTerminal.PublishedFinal
+            && !final.Posterior.HasPendingPlan && !final.Posterior.HasCompositionError;
     }
 
     private static string? ReviewString(JsonObject value, string key) =>

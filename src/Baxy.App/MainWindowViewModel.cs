@@ -699,6 +699,21 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             && moreValue.TryGetValue(out bool hasMore) && !hasMore;
     }
 
+    /// <summary>
+    /// The private memory channel's pending confirmation, for the conductor's
+    /// two-phase memory case; null unless the UI thread owns a live, enabled
+    /// window with exactly that challenge pending.
+    /// </summary>
+    internal PendingMemoryConfirmation? CaptureMemoryConfirmation()
+    {
+        if (Environment.CurrentManagedThreadId != _uiThreadId || _isDisposed || !IsInputEnabled)
+        {
+            return null;
+        }
+
+        return _memoryTurns.Confirmation;
+    }
+
     internal JsonArray CaptureConductorReadEvidence()
     {
         if (CaptureConductorConfirmation(allowVerifiedReadPrefix: true) is null
