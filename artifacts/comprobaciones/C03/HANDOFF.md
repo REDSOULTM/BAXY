@@ -1,3 +1,11 @@
+# WEB1257 adjudicado — 2026-09-13T21:42:38.711028+00:00
+
+**341/742 cubiertos, 401 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA f306b1acc04b822b70567b94fea44a366ad0cabc12a43f993a8209c146354b6e. Primeras altas 24 h >= 215 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6c562d12 con BUILD1253 (sólo mente: navegación por nombre público cerrado, «andá» como cabeza; WEB1257/SOURCE.json|SOURCE.patch).
+
+WEB1257 (navegación revisada: turn.confirm-reviewed, aprobación de la raíz sólo para el host esperado con approve_navigation.py, Edge propio del producto en el perfil del caso): 12 ejecutados, 5 aprobados, 7 fallidos, 3 créditos (H0185, H0565, H0389 con dev-01/dev-02). Adjudicación b1724bfbb76641539475ce164efad01ac70ddd19c35e7ba11866a7a18263add3. Navegación y búsqueda web 20/46. Primer sello preservado (attempt1-6c562d12): «Abre youtube» abre la app YouTube del catálogo (PWA de Chrome) por app.open: tanda de apps con cierre de Chrome. Causas medidas para WEB1259: los destinos simbólicos («andá a youtube», «llevame a github», «Ve a ChatGPT» y variantes) preguntan la URL porque el constructor de argumentos se abstiene ante el destino simbólico aunque el lector ya navegue directo (mente); el final compone contra «confirmar» («Sí, confirmo que se navegó…») (App).
+
+---
+
 # MEMORY1255 adjudicado — 2026-09-13T20:56:47.905208+00:00
 
 **338/742 cubiertos, 404 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 55d6622c68a0009803d248de7fd7f1f6f32ba52594deb03d30c18981348438b0. Primeras altas 24 h >= 212 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 88f5afdf con BUILD1253 (sólo mente: comprobación del dato recordado por palabras de contenido; MEMORY1255/SOURCE.json|SOURCE.patch).

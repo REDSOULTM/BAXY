@@ -1,3 +1,25 @@
+## WEB1257 — estado vigente 2026-09-13T21:42:38.711028+00:00
+
+Parcial: 5 aprobados, 7 fallidos, 0 sin ejecutar; 3 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 341/742 | 401 | 0 | >=215 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 212 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WEB1257 añade 3 (H0185, H0565, H0389), 215 después. No se cuentan revalidaciones.
+
+Siguiente acción: WEB1257: 12 ejecutados, 5 aprobados, 7 fallidos, 3 créditos (H0185, H0565, H0389 con dev-01/dev-02). Los destinos simbólicos («andá a youtube», «llevame a github», «Ve a ChatGPT» y sus variantes) preguntaron la URL: el lector navega directo porque el catálogo conoce esos nombres, pero el constructor de argumentos se abstiene ante el destino simbólico. Siguiente: WEB1259 con el constructor alineado con la lista pública cerrada (mente) y la composición del final contra el pedido y no contra «confirmar» (App).
+
+Evidencia: `artifacts/comprobaciones/C03/WEB1257/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 211.70 s acumulados; pico GPU 3683.61 MiB; pico RAM 2514.06 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 12; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WEB1257 precedente. -->
+
 ## MEMORY1255 — estado vigente 2026-09-13T20:56:47.905208+00:00
 
 Parcial: 7 aprobados, 1 fallidos, 0 sin ejecutar; 2 créditos.
