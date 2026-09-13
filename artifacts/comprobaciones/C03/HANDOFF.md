@@ -1,3 +1,13 @@
+# WINDOWS1207 adjudicado (parcial) — 2026-09-13T14:09:40+00:00
+
+**285/742 cubiertos, 457 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 8263cf5330c2bab9e39565722f2cf2e978393a70c274e5e37d70907d9fbd8ca1. Primeras altas 24 h >= 159 (+5).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD (ver adjudicación) con BUILD1205; reparación de formas coloquiales de ventanas en WINDOWS1207/SOURCE.json|patch.
+
+WINDOWS1207 (6 inventarios, 5 presencias, 4 pares, 1 límite; lecturas de sólo lectura): 15 ejecutados, 8 aprobados, 7 fallidos, 1 sin ejecutar (índice 11 abortado antes de la admisión); +5 (H0143, H0281, H0314, H0403, H0631: presencia de Chrome, explorador, Spotify, Discord con dos pares). Adjudicación 7bff0cced4612e9a9d1881ddc2ba8861e43eb13c46d5f7d507f1f1f74fa9f636. Los seis literales antes inalcanzables llegan a su lectura, pero el inventario no compone con 22 ventanas en el escritorio real: el validador exige conservar las 20 entradas de la página y el modelo omite títulos (missing_fact → código interno); en inglés, borradores en español (wrong_language → sin final). «y cuántas ventanas?» aprobó (cuenta fiel) sin crédito por sus pares. Estado de ventanas queda 7/14.
+
+Siguiente: proyección acotada del inventario de ventanas (contar y nombrar un subconjunto declarado, validación sobre lo proyectado) y remedir los seis inventarios; después cierre de apps propias (20), apps (4 léxicos), H0043. Reanudación: derivar de build_windows1207.py (BUILD1205); `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 8263cf5330c2bab9e39565722f2cf2e978393a70c274e5e37d70907d9fbd8ca1`.
+
+---
+
 # FILES1205 adjudicado — 2026-09-13T13:51:59+00:00
 
 **280/742 cubiertos, 462 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA e0d34c136d7d35656d91a0b24453c392564516a95078fcadde31aa7630b724a0. Primeras altas 24 h >= 154 (+12).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d95b9f96 (proveedor de carpetas conocidas: catálogo, Core, proveedor; lectores y extractores de creación en el mind; FILES1205/SOURCE.json|APP_SOURCE.json) con **BUILD1205** (recibo 04c0bc88…; binding de los instrumentos siguientes).

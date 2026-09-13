@@ -1,6 +1,6 @@
 {
   "schema": "c03-windows1207-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/effect_intent.py (resolve_application_window_status_name; window_inventory_arguments)",
   "patch": "artifacts/comprobaciones/C03/WINDOWS1207/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "WINDOWS1207: 6 literales de inventario y 5 de presencia con pares ES/EN.",
-  "credits": 0
+  "measurement": "WINDOWS1207: presencia +5 (las formas «está corriendo» y «tengo X abierto» leen y responden); los inventarios llegan a window.resolve pero la composición falla con 22 ventanas (causa de escala documentada).",
+  "credits": 5
 }
