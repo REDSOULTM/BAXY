@@ -427,6 +427,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     internal int PendingModelMessageCount => _modelMessages.Count;
 
+    /// <summary>Language the mind chose for the latest request; the conductor
+    /// confirms a reviewed effect in that language so the final answer keeps it
+    /// (CLOSE1219/007 answered an English request in Spanish after «confirmar»).</summary>
+    internal string? LastMindResponseLanguage { get; private set; }
+
     public async Task InitializeAsync(CancellationToken cancellationToken)
     {
         ObjectDisposedException.ThrowIf(_isDisposed, this);
@@ -2130,6 +2135,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         IReadOnlyList<(string Role, string Content)> decisionHistory = BuildMindHistory();
         MindTurnDecision? turn = preclassifiedTurn ?? await DecideMindTurnAsync(
             mind, route, decisionHistory, cancellationToken);
+        LastMindResponseLanguage = turn?.ResponseLanguage;
         if (turn is null)
         {
             LastMindReplyRejection = "decision_unavailable";

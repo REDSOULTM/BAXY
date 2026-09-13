@@ -119,7 +119,10 @@ internal sealed class ProductConductor : IAsyncDisposable
         // (including mission/invocation) and ordinary POST /turn. Its synchronous
         // submission reaches HandlePendingAsync and captures Confirmation before
         // its first await. The kernel still validates the token and expiry.
-        return TurnAsync("confirmar", timeout, cancellationToken);
+        string confirmation = string.Equals(
+            _viewModel.LastMindResponseLanguage, "en", StringComparison.OrdinalIgnoreCase)
+            ? "confirm" : "confirmar";
+        return TurnAsync(confirmation, timeout, cancellationToken);
     }
 
     internal ProductTurnResult RejectConfirmation(string diagnostic) =>

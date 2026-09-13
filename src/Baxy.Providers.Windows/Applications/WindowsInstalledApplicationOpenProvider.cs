@@ -876,8 +876,14 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
             $targets=@{}
             try {
                 foreach ($app in $apps) {
-                    if ($duplicateIds.ContainsKey($app.AppID)) {
-                        $targets[$app.AppID]=$app.ShellItem.ExtendedProperty('System.Link.TargetParsingPath')
+                    # Classic entries need their Shell target to establish a strong
+                    # executable identity (CLOSE1219: «Chrome» is an AppID, not a path).
+                    if ($duplicateIds.ContainsKey($app.AppID) -or ($app.AppID -notmatch '!')) {
+                        try {
+                            $targets[$app.AppID]=$app.ShellItem.ExtendedProperty('System.Link.TargetParsingPath')
+                        } catch {
+                            # One unreadable target must not erase the others.
+                        }
                     }
                 }
             } catch {
@@ -1148,6 +1154,16 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                         throw new ApplicationInventoryException("The visible application inventory was incomplete.");
                 }
             }
+
+            if (strongIdentityOnly && packaged && observations.Count == 0)
+            {
+                // A UWP app's CoreWindow is not a visible top-level window: the
+                // ApplicationFrameHost frame that hosts it is what the person sees
+                // and what closing acts on (CLOSE1219: Calculadora → window_not_found).
+                // The hosted process is identified by its AUMID through the frame's
+                // child window; the observation carries the frame host's identity.
+                AddHostedFrameWindows(entry, processes, observations, cancellationToken);
+            }
         }
         finally
         {
@@ -1158,6 +1174,68 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         }
 
         return observations;
+    }
+
+    private static void AddHostedFrameWindows(
+        InstalledApplicationEntry entry,
+        Process[] processes,
+        List<InstalledApplicationObservation> observations,
+        CancellationToken cancellationToken)
+    {
+        foreach (Process host in processes)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                if (!string.Equals(host.ProcessName, "ApplicationFrameHost", StringComparison.OrdinalIgnoreCase))
+                    continue;
+                nint[] frames = VisibleTopLevelWindows(host.Id, requireComplete: true);
+                if (frames.Length == 0)
+                    continue;
+                string? hostExecutable = host.MainModule?.FileName;
+                if (string.IsNullOrWhiteSpace(hostExecutable) || !Path.IsPathFullyQualified(hostExecutable))
+                    throw new ApplicationInventoryException("The frame host executable could not be verified.");
+                long hostCreation = host.StartTime.ToUniversalTime().Ticks;
+                foreach (nint frame in frames)
+                {
+                    int? hosted = HostedProcessId(frame, host.Id);
+                    if (hosted is null
+                        || !string.Equals(entry.AppUserModelId, ReadApplicationUserModelId(hosted.Value), StringComparison.Ordinal))
+                        continue;
+                    observations.Add(new InstalledApplicationObservation(
+                        host.Id,
+                        hostCreation,
+                        hostExecutable,
+                        frame.ToInt64(),
+                        Visible: true,
+                        Foreground: GetForegroundWindow() == frame,
+                        ProcessName: host.ProcessName));
+                }
+            }
+            catch (Exception exception) when (exception is InvalidOperationException
+                or System.ComponentModel.Win32Exception
+                or NotSupportedException)
+            {
+                throw new ApplicationInventoryException("The hosted application inventory was incomplete.");
+            }
+        }
+    }
+
+    private static int? HostedProcessId(nint frame, int hostProcessId)
+    {
+        int? hosted = null;
+        EnumWindowsProc callback = (child, _) =>
+        {
+            GetWindowThreadProcessId(child, out uint owner);
+            if (owner != 0 && owner != unchecked((uint)hostProcessId))
+            {
+                hosted = checked((int)owner);
+                return false;
+            }
+            return true;
+        };
+        _ = EnumChildWindows(frame, callback, nint.Zero);
+        return hosted;
     }
 
     internal static string? StrongExecutablePath(InstalledApplicationEntry entry)
@@ -1380,6 +1458,10 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool EnumWindows(EnumWindowsProc callback, nint lParam);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool EnumChildWindows(nint parent, EnumWindowsProc callback, nint lParam);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]

@@ -1,0 +1,17 @@
+{
+  "schema": "c03-close1221-app-source-adoption-v1",
+  "status": "adopted_unmeasured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs (CatalogScript, Inventory strong path, AddHostedFrameWindows, HostedProcessId, EnumChildWindows); src/Baxy.App/MainWindowViewModel.cs (LastMindResponseLanguage); src/Baxy.App/ProductConductor.cs (ConfirmPendingAsync)",
+  "patch": "artifacts/comprobaciones/C03/CLOSE1221/APP_SOURCE.patch",
+  "cause_measured": "CLOSE1219: (1) índices 2, 3 y 8 (Chrome): window.resolve por applicationName falló con application_window_identity_unavailable porque la entrada «Google Chrome» del catálogo Inicio tiene AppID «Chrome» (no una ruta .exe) y el script del catálogo sólo leía System.Link.TargetParsingPath para nombres duplicados, así que StrongExecutablePath no tenía ruta; (2) índices 1 y 9 (Calculadora): window_not_found porque la ventana visible de una app empaquetada pertenece a ApplicationFrameHost y el inventario fuerte sólo enumera ventanas visibles del proceso del paquete (su CoreWindow no es una ventana visible de nivel superior); (3) índice 7 (Notepad EN): efecto correcto pero final en español, porque el conductor envía la aprobación revisada como «confirmar» y el compositor sigue el idioma de ese último texto.",
+  "change": "(1) El catálogo lee la ruta de destino del Shell para toda entrada clásica (AppID sin «!»), cada una en su propio try para que un destino ilegible no borre los demás; sin inferencias por nombre. (2) Si una entrada empaquetada no tiene ventanas visibles propias en la vía fuerte, se enumeran los marcos visibles de ApplicationFrameHost cuya ventana hija pertenece a un proceso con el AUMID exacto del catálogo; la observación lleva la identidad del proceso de marco (pid, creación, ejecutable, nombre) y el hwnd del marco, que es lo que la persona ve y lo que app.close cierra y verifica ausente. (3) El modelo de vista recuerda el idioma que la mente eligió para la última petición y el conductor envía «confirm» cuando es inglés, «confirmar» en otro caso (ambas formas ya aceptadas por el analizador de confirmaciones). Sin frases de salida; sin alias; sin cambio de protocolo.",
+  "offline_verification": "Sin tests (orden del dueño). Comprobado por raíz fuera del producto: el marco de ApplicationFrameHost titulado «Calculadora» tiene una ventana hija del proceso CalculatorApp y cerrarlo (SC_CLOSE) termina la app; el .lnk de Chrome resuelve a chrome.exe. Build raíz BUILD1221 con recibo; medición en CLOSE1221.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": true,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": null,
+  "credits": null
+}
