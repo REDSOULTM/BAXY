@@ -3728,7 +3728,8 @@ def build_application_catalog_index(
 
 
 _APPLICATION_TRAILING_REQUEST = re.compile(
-    r"\s*[,;:]?\s+(?:por favor|please|para mi|for me|ahora|now)$",
+    r"\s*[,;:]?\s+(?:por favor|please|para mi|for me|ahora|now|"
+    r"dale|porfa|porfi|porfis|pls|plz)$",
     re.IGNORECASE,
 )
 
@@ -3789,6 +3790,29 @@ def _application_target_forms(
     return tuple(forms)
 
 
+_CATALOG_NAME_ALIASES: tuple[tuple[frozenset[str], tuple[str, ...]], ...] = (
+    (frozenset({"calc", "calculator", "calculadora"}), ("calculadora", "calculator")),
+    (frozenset({"notepad", "bloc de notas", "app de notas", "coso de notas",
+                "editor de texto"}), ("bloc de notas", "notepad")),
+    (frozenset({"explorador", "explorador de archivos", "explorador de windows",
+                "file explorer", "files explorer", "explorer", "windows explorer"}),
+     ("explorador de archivos", "file explorer")),
+)
+
+
+def _catalog_alias_key(target_key: str, keys: frozenset[str]) -> str | None:
+    """Map a bilingual alias to the one catalog key it names, if installed."""
+
+    if target_key in keys:
+        return target_key
+    for aliases, catalog_names in _CATALOG_NAME_ALIASES:
+        if target_key in aliases:
+            for name in catalog_names:
+                if name in keys:
+                    return name
+    return None
+
+
 def _indexed_authenticated_application_target(
     text: str,
     catalog: ApplicationCatalogIndex,
@@ -3802,7 +3826,8 @@ def _indexed_authenticated_application_target(
         r"(?:puedes|podrias|can you|could you|would you)\s+)?"
     )
     trailing = (
-        r"(?:\s+(?:por favor|please|para mi|for me|ahora|now))?"
+        r"(?:\s*[,;:]?\s+(?:por favor|please|para mi|for me|ahora|now|"
+        r"dale|porfa|porfi|porfis|pls|plz))?"
         r"[\s?!.]*$"
     )
     if installed_query:
@@ -3821,7 +3846,7 @@ def _indexed_authenticated_application_target(
     else:
         patterns = (
             (
-                rf"^[¿?¡!\s]*{polite}{_OPEN}\b\s+"
+                rf"^[¿?¡!\s]*{polite}(?:me\s+)?{_OPEN}\b\s+"
                 r"(?P<target>.+)$"
             ),
         )
@@ -3833,8 +3858,8 @@ def _indexed_authenticated_application_target(
         for target, offset in _application_target_forms(
             request.group("target"),
         ):
-            target_key = _application_name_key(target)
-            if target_key in catalog.keys:
+            target_key = _catalog_alias_key(_application_name_key(target), catalog.keys)
+            if target_key is not None:
                 matches.append((request.start("target") + offset, target_key))
     if not matches:
         return None if installed_query else _repeated_application_target(text, catalog)
@@ -3884,7 +3909,7 @@ def _application_open_request(text: str) -> re.Match[str] | None:
         (
             r"^[¿?¡!\s]*(?:(?:(?:por favor|please)\s*[,;:]?\s*|"
             r"(?:puedes|podrias|can you|could you|would you)\s+)?"
-            rf"{_OPEN}\b|"
+            rf"(?:me\s+)?{_OPEN}\b|"
             r"(?P<desire>(?:(?:i|we)\s+(?:need|want)\s+(?:you\s+)?to|"
             r"(?:i|we)\s+would\s+like\s+(?:you\s+)?to)\s+"
             r"(?:open|start|launch)|"
@@ -3926,7 +3951,7 @@ def resolve_application_catalog_app_id(
             (form, offset)
             for form, offset in forms
             if raw_target[offset + len(form) :].strip(" ¿?¡!,:;.-")
-            in {"", "por favor", "porfa", "please"}
+            in {"", "por favor", "porfa", "please", "dale", "pls"}
         )
     keys = tuple(
         dict.fromkeys(
@@ -3958,6 +3983,11 @@ def resolve_application_catalog_app_id(
             return "windows.notepad"
         if key in calculator_aliases and catalog_keys & {"calculadora", "calculator"}:
             return "windows.calculator"
+        alias_key = _catalog_alias_key(key, frozenset(catalog_keys))
+        if alias_key is not None and alias_key != key:
+            matches = [name for name, candidate_key in catalog.entries if candidate_key == alias_key]
+            if len(matches) == 1:
+                return matches[0]
         if key in settings_aliases:
             matches = [
                 name
@@ -4876,8 +4906,16 @@ _EXPLICIT_NON_ACTION_FRAME = (
 _REQUEST_PREFIX = (
     # A delimited present-time frame leaves the following request intact.
     # Future/past times and quoted content are not request wrappers.
-    r"(?:(?:ahora(?:\s+mismo)?|en\s+este\s+momento|actualmente|"
-    r"(?:right\s+)?now|at\s+(?:this|the)\s+moment|currently)\s*[,;:]\s*)?"
+    r"(?:(?:(?:ahora(?:\s+mismo)?|en\s+este\s+momento|actualmente|"
+    r"(?:right\s+)?now|at\s+(?:this|the)\s+moment|currently)\s*[,;:]\s*|"
+    # «son las tres abrí la calculadora»: a stated clock time frames an
+    # immediate opening (owner review H0724); it never becomes a schedule and
+    # only an opening verb may follow it.
+    r"(?:son|es)\s+las?\s+(?:\d{1,2}(?:[:.]\d{2})?|una|dos|tres|cuatro|cinco|"
+    r"seis|siete|ocho|nueve|diez|once|doce)"
+    r"(?:\s+(?:y|menos)\s+(?:cuarto|media|\d{1,2}))?"
+    r"(?:\s+de\s+la\s+(?:manana|tarde|noche))?\s*[,;:.]?\s+"
+    r"(?=(?:abre|abri|abris|abrime|avri|open)\b)))?"
     # A language directive changes presentation, not the following speech act.
     # Require its separator; quoted content and unclosed clauses stay literal.
     r"(?:(?:(?:responde|contesta)\s+en|(?:answer|reply|respond)\s+in)\s+"
@@ -7580,7 +7618,7 @@ _DEICTIC_DAY = (
     r"\b(?:ese\s+dia|esa\s+fecha|el\s+mismo\s+dia|"
     r"that\s+day|that\s+date|that\s+same\s+day)\b"
 )
-_OPEN = r"(?:abre|abrir|abri|abrime|open|launch|lanza|inicia|start|ejecuta|arranca|arrancame)"
+_OPEN = r"(?:abre|abrir|abri|abris|abrime|avri|open|launch|lanza|inicia|start|ejecuta|arranca|arrancame)"
 _MEDIA_RESUME_VERB = r"(?:reanuda|reanudar|resume|segui|seguir|sigue|continua|continuar|continue)"
 _LIST = r"(?:lista|listar|listame|enumera|enumerar|muestra|muestrame|mostrame|mostra|dime|show|list|enumerate)"
 _READ = r"(?:lee|leer|leeme|leela|leelo|leerla|leerlo|read|dime|muestra)"
@@ -8636,6 +8674,8 @@ def _is_direct_request(text: str) -> bool:
         text,
         rf"^[¿?¡!\s]*{_REQUEST_PREFIX}"
         rf"(?:(?:primero|first)\s*[,;:]?[¿?¡!\s]+)?"
+        # «me abrís la calculadora»: the dative clitic precedes a voseo opening.
+        r"(?:me\s+(?=(?:abris|abres|abre|abri|abrime|avri)\b))?"
         rf"{request_head}\b",
     )
 
