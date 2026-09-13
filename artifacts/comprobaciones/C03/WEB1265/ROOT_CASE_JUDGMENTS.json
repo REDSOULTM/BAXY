@@ -1,0 +1,336 @@
+[
+  {
+    "index": 0,
+    "case_id": "H0051",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      2,
+      3
+    ],
+    "reason": "Abrió la app YouTube instalada y lo dijo; crédito con dos variantes aprobadas.",
+    "observation_note": "Turno ordinario: app.open de la entrada «YouTube» del catálogo de Inicio (PWA de Chrome) completada y verificada; cero confirmaciones y violaciones; pins intactos; la raíz cerró después las ventanas de Chrome nuevas.",
+    "final_sha256": "501c1188fe2a10c2b73a7367940959039bd7fe1cc51ac28dffcf61e8c90c2fb3",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-00\\EXIT.json": "5e0e421f89a7ab78526dce1638ea405eb3da86a8b6b8ce87cfaccb617f3cb669",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-00\\RESOURCES.json": "4e9f391d1cc6dc06a484158100b90324652338a3167525f59bc1a2cd13f56a4b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\profile-owner-00.json": "278494ad5836b16e0a295360ab7ce025c06c47064a5ac208d60a3f7257d0f98a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-00\\PREREG.json": "0f3dd588754e37ce518262572292be8d7c7eb8f69eaae95b675b7c3fbf61d4a2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-00\\capture\\events.jsonl": "ef7a93e9cab67d6905f8a6828a59935a8f710e72077bd8df49bd722c936c4e7b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-00\\turns.jsonl": "5a3339bce286dbc779009d3691afe50df1e4858774014e493da366a1067ff1a3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\fixture-00.json": "91507a50999289034de1203437be66fddbddcaeebf9389cb4127a229dd97d481",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\context-00.json": "2fae1acb949d101c43e218d9a61cf5ffb008a36fbed6e4190da89a197c29a98e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\context-prelaunch-00.json": "4377fc2537846385834eaa7cee79d554df1b9c94904569449f70a2b55e363efd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-00\\case-observations.json": "289afde0e5a97e94a4f80568d9756fc7b030a0791f56e06cbe7fc89268891e0b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-00\\journal-before.json": "a45aa8ab0221af7510a902b68338283041f2ef5c520596337a581700d0ea2409",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-00\\journal-after.json": "7e85a5ea51f833e7455562454bcf8eb6a1485e2b2df475e5697f0a6aed074114",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "ec8a1fd883d725d044ba2f5eb23e80ff2fdd8a5717442f6d636d395f45fc55d4"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "29b425d8-57c8-47c8-9f5c-1c7171d39bd1",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "844f6a19-b6f3-488d-a147-1265f8417a38",
+        "operation": "app.open",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "case_id": "H0741",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      2,
+      3
+    ],
+    "reason": "Abrió la app YouTube instalada y lo dijo; crédito con dos variantes aprobadas.",
+    "observation_note": "Turno ordinario: app.open de la entrada «YouTube» del catálogo de Inicio (PWA de Chrome) completada y verificada; cero confirmaciones y violaciones; pins intactos; la raíz cerró después las ventanas de Chrome nuevas.",
+    "final_sha256": "582f717b87cba60ec8cccdce333e84feee969da6a17cfe84e374b4ffecc2c522",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-01\\EXIT.json": "c0021749bba212b9766dc5da058a0f5407c4b68f184221aa3e512c61bd792f39",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-01\\RESOURCES.json": "ddd0ef9e5ab5131b753d2e75d9f039823f6dc48b8b6d12694516fd92cfa6f1da",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\profile-owner-01.json": "3c5eacacd00157e5188116f614405162603a61bc823954292d84200516b8c8cc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-01\\PREREG.json": "212d1d43aad360be293a5fecabc152fee19894292a81b486130fd77706f8e040",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-01\\capture\\events.jsonl": "b4e373427995bcc2511ae79d6f87a909a2ad96c7692e76236a63434c5d8a9c7f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-01\\turns.jsonl": "a824743f8cb5fe57f5f040f62f3484d547db1dc667038759989313e2c41a56d3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\fixture-01.json": "74a41171208051465c4f0ab6d378d359d60a40691e6a03a13ef855a3ad58047d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\context-01.json": "1b5488944f87d1831f1a7c293eec10c6c9743ad5a17d91f9f4cd812f6036e1fe",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\context-prelaunch-01.json": "60f7b4b3898b878d4a6e3989fc9b53b2237c673241975ebdabfa3274749b8b39",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-01\\case-observations.json": "2e2a0025e3cc60dadc3ea7076a052ee46cb6c2b9e16a1d3631993e5cef7a2fc7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-01\\journal-before.json": "6d32c896a67378e106449b35b42ac13730160bb9c0529d9dd8885c5339c677d6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-01\\journal-after.json": "510a8a07a26bfb981e7ba07c40a9179fc58d7c2e5d57812c3e3d65eb03a764d6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "263c975f22042a0dba74d6266a8068bdbb9910a504a8ae96e51eab655c180420"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "548dd82a-3611-4478-9ef5-ba8ade0f3512",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "233dab82-a188-4958-b99b-071366ecaef7",
+        "operation": "app.open",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "case_id": "web1265-dev-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Abrió la app YouTube instalada y lo dijo.",
+    "observation_note": "Turno ordinario: app.open de la entrada «YouTube» del catálogo de Inicio (PWA de Chrome) completada y verificada; cero confirmaciones y violaciones; pins intactos; la raíz cerró después las ventanas de Chrome nuevas.",
+    "final_sha256": "4795d4a022ccc24932d56898b49d6db9f1beb3bd548a337c9ed657cf78d9a428",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-02\\EXIT.json": "06fa07c4c4edf24b9c830c21b5ef9d435edaf1520778a64397a070c4fc58bce8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-02\\RESOURCES.json": "8c68b2c8a9aa27a06dba44ae0068db537fff7b86a8c7d7d6f7923aa4f9b20406",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\profile-owner-02.json": "223f3960099f637ff505b76e54aa6c7aadd11eb78f33724be48f3d531d732905",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-02\\PREREG.json": "7764edd46326c59b40369361e5d0070d7bc8b9109899d3b14b3d9a1eb12662e7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-02\\capture\\events.jsonl": "90f1b3aa676bef3b39d989bfd6f188b1ebe941c873d834a28136a41b829bf00a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-02\\turns.jsonl": "2a0273fd6c56612d81c9189f4f69484ec99fece5d656325fd1565d2dca18b65b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\fixture-02.json": "635080505aa161c8d3f6ff0ecc15c96a37373b48adb0edd206d2088c646e534c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\context-02.json": "31d9406544d329703d3731ecd0ec470baa4d21691ed1e77029d3a144332b2fb4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\context-prelaunch-02.json": "a2fde1ef78ddfbc64da3909dd7ade152a5ec99fa57678fab5b50928625b3a359",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-02\\case-observations.json": "ecdeb41b544aa6afbd501ee3b6da93a050c967563ec3a6739bd02b45303b6f7e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-02\\journal-before.json": "f8dd65fcdb6cfccf2ed59550b70bfb29749196d4adf7346e015a623b8d74445a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-02\\journal-after.json": "8cb2e6850ee3dac89857ea80e8061a81eda1b924c63a5de023fde3bb98085f1d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "3879ccaf23b05ceae24e3619825697f87a7712be362e059c8c01806980408847"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "5b425e05-4489-4d9c-b541-04a573fe2d05",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "87066ef8-401d-4600-888f-03bf41fd71e4",
+        "operation": "app.open",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "case_id": "web1265-dev-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Abrió la app YouTube instalada y lo dijo.",
+    "observation_note": "Turno ordinario: app.open de la entrada «YouTube» del catálogo de Inicio (PWA de Chrome) completada y verificada; cero confirmaciones y violaciones; pins intactos; la raíz cerró después las ventanas de Chrome nuevas.",
+    "final_sha256": "0b71d3dccd4a83d0dbd74203a7bad704efd5dddc868dfa81ed44e767abfa67d8",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-03\\EXIT.json": "7c98dc8e3b8608e2205d502277cf686e29596792dbc01565b0fb30bad3ccff2f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-03\\RESOURCES.json": "1076796e019c88a2f0199293f1190fdd157104d7858753079b3d30cb93134c70",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\profile-owner-03.json": "5c48e426906646f57239213e527a21520138ad77b2e87d30f994955374dc2d88",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-03\\PREREG.json": "2d420d95e85edecaf9955555f8a943d55ccbad17e646f5634e14391de80ab953",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-03\\capture\\events.jsonl": "1f0bf51a89502b8de64e63794dd2a3b3034c5e9d645157fe7eea7e687a6311f5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-03\\turns.jsonl": "5199d1d37a50896fb5be98f15964adda8a58fc2a7b683693b4aa157bc9cc99c9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\fixture-03.json": "66a7782baf05e8bf99ef318115e4938f714bad8ea30b73a379ba44cdb2b8fc37",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\context-03.json": "e666e5acb0785f6df7985f2e7ff7bfe04c9ddfa49660ecfabd789b14db8b271f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\context-prelaunch-03.json": "21f6b5cc9c8eb2d5928cb757a1cf11048b4871dff5e2e539230211bbd18be2bc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-03\\case-observations.json": "f42b7377785492a09da60236f4550d74af13ee5ac6f9e76e9272ee42a22f5bdb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-03\\journal-before.json": "01bef566bb5e886754329e629f9c76cfc723b7f98019282c8ec8380472b358b6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-03\\journal-after.json": "8e1a4f4bd5d9d62fe10c7803c2c82e356bbc783c3fcb93c92c804edf163208a3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "feebb05a88c4be560a1c264f7c13360b289c662b1e51f1c3928f133e6cd224a1"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "a7564906-d45a-454b-b23a-f9f006c5b74f",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "c653d95b-2dee-4493-837b-021f8517c4f9",
+        "operation": "app.open",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "case_id": "web1265-boundary-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "159a679a9c783f5bf14bc0234b0620d8bab434796ce3b6ffd574aaa7e2edac0a",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-04\\EXIT.json": "b096d93effdfefeffcbcd4d8140560c9df52564c96d4b3b00c1637c27bdde20e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-04\\RESOURCES.json": "5807fdc638c3b640eb7f4ac85bac8c2b9f2c411851d5619e03b18735abd7c210",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\profile-owner-04.json": "79f3b2c07460e43a81266e79c6e6a77bad018294f5a52a6bec6d11c99a249948",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-04\\PREREG.json": "f7283bdddcf74a2ee832bee9966239be158e8f8082d27f97fe81dd3e7111252d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-04\\capture\\events.jsonl": "524d457e5adc97b670419d045ed8900c5a60fd2a0501bbd307312bfdb1c6c284",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-04\\turns.jsonl": "14805f2a36f33e7a89f61590996e3ad9542ef2d432c2cf41519b970dc7fd8684",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\fixture-04.json": "a657026c25b4fbf5f8c5259b72afd7aae66b3101761316965a2e14af956768a7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\context-04.json": "855a290cbc179c762034246da893644e379fb67a1e54d02e6f4de202a4940be7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\context-prelaunch-04.json": "e1ad4768f6aed04e852572411794847c75256b4d89da3d6bf324cf82288b3c98",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-04\\case-observations.json": "88b7b3fb9cbea054086676672b4ca919f3ffd977f6d009f2f932e3c5394a7a1d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-04\\journal-before.json": "d59ce16ac0c5077e9b9e208555dc114f028e713b5644653a806bb81d34430cad",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-04\\journal-after.json": "57985f16b0376b2e6cd08ef9f7f03b6e776b71e5e78c9ac9f2dc6063ddc05396",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "392ca50b2fabb4ec1d95397c5d699908afdd43ac21bd424890dac1b2ccf0dbcd"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "651e810e-a5b9-46fc-80e7-673cdf54c7eb",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "case_id": "web1265-boundary-02",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite fallido: no navegó pero la respuesta no fue fiel o útil.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "c56419080f51d5cd02fa3f2f3f5a55a9007ed3eae5d3a8b2f6c0d8059b151c7c",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-05\\EXIT.json": "d0a0499c2a40790587ece9e316026e3dad6ed6f77bafc5d9e46e949e6f6f2033",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-05\\RESOURCES.json": "03ab9b0b90145f0c5950b96442a4ca05c4c5e0463f327653ddf8f7276d53eb6f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\profile-owner-05.json": "7d8b077695535307b521970edf8ff48dcb45d5257c26c9256eff54ad5c2ecdca",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\results\\case-05\\PREREG.json": "316bded9185730577f4b7d7307f9bf0864f5475ac8605d2d0a661967cdc9f713",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-05\\capture\\events.jsonl": "71be8279d2ff1dbc6041148074e16c3e81336110f3c0777ae2a4944d0aa0eaf6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-05\\turns.jsonl": "c6e8d1618ed854a63a92c2d5994692a7244a06f148e15f68da07e5bca6104bca",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\fixture-05.json": "99194d34c647a6bffb8daf62ba14ca017206bb350706555c221e225307a7fcd2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\context-05.json": "79ab33735763d02f2ab72364db55529bbd7b737ee649a9dbb71a04ebcbaf5d3c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\context-prelaunch-05.json": "9b305f2aa950ef0f4ebb3bb2b050348ce93c7e5d0f9b57e139ac8a4c764a2bd3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-05\\case-observations.json": "7198d0bea093a11885e96a7cdf8ba947b944579ac6ef68294b41557984670927",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-05\\journal-before.json": "95e61fb90613192836dc08e21ca34f7176d448c86b6465da03e020bce930c85c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-05\\journal-after.json": "a1e68b443838a57831dd90619fb4de6a430deb7b61a9295076762983ce2ec0c8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1265-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "b9740d8172d91a22a3e53cde7e45573d562a8ae4fcd24c899852ab5ad2fa7fbd"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "72e1bdd5-54bf-4089-bf2c-3fa45df1c143",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  }
+]

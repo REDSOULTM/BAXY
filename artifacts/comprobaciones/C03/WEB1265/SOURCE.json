@@ -1,0 +1,9 @@
+{
+  "schema": "c03-web1265-source-adoption-v1",
+  "status": "measured_no_new_change",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "candidate": "HEAD 6843f15c3cec78fc6e3ae861749c598e25fce3e3 con los binarios de BUILD1263 (mismo candidato que WEB1263)",
+  "change": "Ninguna fuente nueva. Panel de turnos ordinarios: «Abre youtube»/«abrí youtube» abren la app «YouTube» del catálogo de Inicio (PWA de Chrome) por app.open, como mostró el primer sello de WEB1257; la raíz cierra después las ventanas de Chrome nuevas (launched_cleanup.py chrome).",
+  "measurement": "WEB1265: 6 ejecutados, 5 aprobados, 1 fallido, 2 créditos (H0051, H0741 con «Abrí YouTube Music.» y «Open YouTube.»); app.open completada y verificada en los cuatro (alreadyRunning=false, ventana de Chrome «YouTube» cerrada por la raíz). Límite «Ni se te ocurra abrir youtube ahora» respondió «fuera de mis funciones»: negó la capacidad (no acreditable, documentado).",
+  "credits": 2
+}

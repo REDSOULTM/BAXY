@@ -1,3 +1,11 @@
+# WEB1265 adjudicado — 2026-09-13T22:21:00.207085+00:00
+
+**346/742 cubiertos, 396 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 846af8f55edb649ed8f12ffbb38202eada8a945b168957fcfa50750ddef2473f. Primeras altas 24 h >= 220 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6843f15c con BUILD1263 (sin fuente nueva; WEB1265/SOURCE.json).
+
+WEB1265 (turnos ordinarios: la app YouTube instalada por app.open, cierre de Chrome por la raíz): 6 ejecutados, 5 aprobados, 1 fallido, 2 créditos (H0051, H0741 con dev-01/dev-02). Adjudicación 2dbda8fea129c33acc26c74c49f8d9b4bc14277abc14a06a68705bc215ae0633. Navegación y búsqueda web 25/46. Quedan 21: portal UNIEJ ×4, «Abre la p?gina oficial de OpenAI» (errata), «abre youtube.com en Chrome», búsquedas ×8, compuestos ×3, pestaña nueva, Opera GX ×2, H0084. Siguiente: categoría por masa abierta (Interacción dentro de aplicaciones 22 / Pantalla 19: ambas exigen confirmaciones de kernel en el instrumento).
+
+---
+
 # WEB1263 adjudicado — 2026-09-13T22:11:43.352520+00:00
 
 **344/742 cubiertos, 398 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 7ad006e0f50f6b00b1a6ac4a83c9d1b33d83428ea46b36f38f522c2d056ffdd5. Primeras altas 24 h >= 218 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 90946129 con BUILD1263 (mente: pista de navegación reescrita y rechazo del estado previo inventado; proveedor: Edge privado con --disable-gpu; WEB1263/SOURCE.json|PROVIDER_SOURCE.json|*.patch).
