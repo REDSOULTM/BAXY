@@ -1,0 +1,20 @@
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index f067b940..614529ca 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -4948,8 +4948,14 @@ _MACHINE_STATUS_SCOPES: tuple[tuple[str, str], ...] = (
+     ),
+     (
+         "disk",
++        # «cuánto espacio queda en C» / «cuánto espacio tengo» name the disk
++        # by its free space; without these forms the request had no scope and
++        # no domain (SYSTEM1169 planning probe: H0146, H0219).
+         r"\b(?:disco|disk|hard\s+drive|unidad\s+c|drive\s+c|"
+-        r"almacenamiento|storage)\b",
++        r"almacenamiento|storage)\b|"
++        r"\b(?:cuanto|cuanta|how\s+much)\s+(?:espacio|space)\b|"
++        r"\b(?:espacio|space)\s+(?:libre\s+|free\s+)?"
++        r"(?:queda|quedan|left|disponible|available|en\s+(?:el\s+)?(?:disco|disk|c\b))",
+     ),
+     (
+         "os",

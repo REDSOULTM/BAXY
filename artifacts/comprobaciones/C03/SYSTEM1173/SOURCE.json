@@ -1,0 +1,17 @@
+{
+  "schema": "c03-system1173-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py",
+  "patch": "artifacts/comprobaciones/C03/SYSTEM1173/SOURCE.patch",
+  "cause_measured": "Sonda sin GPU sobre los literales abiertos de estado del sistema (planificación de SYSTEM1169): «cuánto espacio queda en C» (H0146) y «Y espacio? cuanto espacio tengo» (H0219) no tienen scope ni dominio de system.status porque la regla de disco sólo nombra disco/disk/unidad c/drive c/almacenamiento/storage; «espacio» no cuenta. Sin dominio, una propuesta del modelo se veta y acaba en confirmación o negación de alcance (patrón medido en CLOCK1155 y NETWORK1161).",
+  "change": "La regla de scope de disco acepta «cuánto/cuánta espacio», «how much space» y «espacio (libre) queda/disponible/en (el) disco/en C». Puerta unilateral y selector de scope: sólo etiquetan como disco un pedido que ya habla de espacio. «cuánta memoria tengo» ya tenía scope memoria (sin cambio).",
+  "offline_verification": "Sonda: scope disk y dominio True para «cuánto espacio queda en C», «Y espacio? cuanto espacio tengo», «How much free space is left on drive C?»; sin cambio para resolución/monitores (fuera de catálogo). scratchpad/c03-recogniser-baseline.py compare sin regresiones.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "SYSTEM1175: H0146, H0219, H0607 (disco) y H0532 (memoria) con pares.",
+  "credits": 0
+}
