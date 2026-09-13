@@ -1,3 +1,13 @@
+# CLOCK1157 adjudicado — 2026-09-13T06:03:47+00:00
+
+**235/742 cubiertos, 507 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 6c9ea12d050b3637989236e5080b2221fdf566d0fed5ba010c679e64e5994eb8. Primeras altas 24 h >= 109 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6748e863 (llm._requests_calendar_date con día/day; CLOCK1156/SOURCE.json|patch) con BUILD1151.
+
+CLOCK1157 (4 objetos: H0243, 2 pares «día/day», 1 límite): 4 ejecutados, 1 aprobado (límite), 3 fallidos, 0 créditos. Adjudicación 70bedf36d506df9a6673c5c12914ab959d6e9eb356d554958b1f7f8157b40eef. Causa medida: con la fecha proyectada, los seis borradores fueron correctos («Hoy es 13 de septiembre de 2026.») pero el shell (UserMessagePolicy, dateRequested = fecha|date; si no, exige la hora observada) los rechazó hasta agotar reintentos y publicó «missing_literal_fact;recovery:missing_literal_fact;retry_exhausted» (defecto R07 de agotamiento, ya conocido). Las dos lecturas de «día» divergían; alineación del shell adoptada en CLOCK1157/APP_SOURCE.json|patch (dateRequested con día/day) → BUILD1158 → CLOCK1159 con el mismo material.
+
+Siguiente: BUILD1158, CLOCK1159 (H0243 + 2 pares), luego H0354 (ayuda abierta, 2 pares) y H0703. Reanudación: derivar desde build_clock1157.py con binding BUILD1158; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 6c9ea12d…`; `n_case.sh clock1159 i`. Recordatorios de sesión cada 5 h.
+
+---
+
 # CLOCK1156 adjudicado — 2026-09-13T05:56:04+00:00
 
 **235/742 cubiertos, 507 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 5cb823cb1f132d0cf4b63b09cfa7e9da3b44127dfe94d38d1e9e9ac8e0a86039. Primeras altas 24 h >= 109 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD eec0a20d (effect_intent: reconocedor de reloj con día/day, «ya», «what's», «qe ora»; CLOCK1155/SOURCE.json|patch; offline 248→254, 0 regresiones) con BUILD1151.

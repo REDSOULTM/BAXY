@@ -1,0 +1,20 @@
+{
+  "schema": "c03-clock1157-app-source-adoption-v1",
+  "status": "adopted_pending_build_and_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs",
+  "patch": "artifacts/comprobaciones/C03/CLOCK1157/APP_SOURCE.patch",
+  "cause_measured": "CLOCK1157 índices 0–2 («qué día es hoy», «Decime qué día es hoy.», «What day is it today?»): system.time verificado, seis borradores correctos con la fecha observada («Hoy es 13 de septiembre de 2026.» / «Today is September 13, 2026.») rechazados por la App hasta agotar reintentos y final «missing_literal_fact;recovery:missing_literal_fact;retry_exhausted». Lectura de fuente: UserMessagePolicy (bloque status/error) calcula dateRequested con \\b(fecha|date)\\b; si no es fecha, clockRequested exige la hora observada en el borrador (PreservesObservedClock). Tras la reparación del mind (llm._requests_calendar_date con día/day, CLOCK1156/SOURCE.json) el payload trae sólo la fecha para «día», y el shell seguía exigiendo la hora: las dos lecturas divergían.",
+  "change": "dateRequested acepta también «día» (con o sin tilde) y «day», igual que el mind; el resto del bloque (PreservesObservedDate, InventedClock, etc.) no cambia. Ninguna frase de salida; ninguna capa nueva.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build": {
+    "campaign": "BUILD1158",
+    "receipt": "C:/Users/usuario/AppData/Local/BAXY/C03-repairs1158-build/BUILD_READY.json",
+    "note": "Se rellena en el recibo; el cambio se compromete antes de compilar."
+  },
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "CLOCK1159: H0243 con los mismos pares de «día/day» sobre BUILD1158.",
+  "credits": 0
+}
