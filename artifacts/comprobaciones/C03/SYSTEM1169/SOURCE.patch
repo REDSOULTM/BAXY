@@ -20,10 +20,10 @@ index 9278150f..145c5fa0 100644
          if identity and not usage:
              return {"scope": "gpu_identity"}
 diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
-index 2b3ef617..5bbe34ca 100644
+index 2b3ef617..7d4427b6 100644
 --- a/src/baxy_mind/llm.py
 +++ b/src/baxy_mind/llm.py
-@@ -3923,6 +3923,32 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+@@ -3923,6 +3923,33 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
          r"(?<!\w)" + re.escape(account.casefold()) + r"(?!\w)", text.casefold()
      ):
          return "missing_name"
@@ -44,7 +44,8 @@ index 2b3ef617..5bbe34ca 100644
 +        labelled = re.findall(
 +            r"(\d+(?:[.,]\d+)?)\s*gb\s+(?:de\s+)?(?:ram\s+|memoria\s+|memory\s+)?"
 +            r"(?:disponibles?|available|libres?|free)\b|"
-+            r"(?:disponibles?|available|libres?|free)\b[^.\d]{0,24}(\d+(?:[.,]\d+)?)\s*gb",
++            r"(?:disponibles?|available|libres?|free)\b\s*(?::|de|of)?\s*(?:ram\s+|memoria\s+|memory\s+)?"
++            r"(?:es|son|is|are|hay)?\s*(\d+(?:[.,]\d+)?)\s*gb",
 +            folded,
 +        )
 +        for first, second in labelled:
@@ -56,7 +57,7 @@ index 2b3ef617..5bbe34ca 100644
      if isinstance(seen, dict) and "level" in seen:
          level = str(seen["level"]).strip()
          if level and not re.search(rf"(?<!\d){re.escape(level)}(?!\d)", folded):
-@@ -10717,6 +10743,10 @@ class LlmRuntime:
+@@ -10717,6 +10744,10 @@ class LlmRuntime:
                  else "Empieza con mayúscula."
              ),
              "clarification_not_a_question": "Una pregunta.",
