@@ -1,6 +1,6 @@
 {
   "schema": "c03-clock1155-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/effect_intent.py",
   "patch": "artifacts/comprobaciones/C03/CLOCK1155/SOURCE.patch",
@@ -13,6 +13,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "CLOCK1156 con el mismo material sobre este candidato.",
-  "credits": 0
+  "measurement": "CLOCK1156 (mismo material): «qe ora es» → «Son las 02:47» (verificado), «¿Qué hora es ya?» → «Son las 02:50», «What's today's date?» → «September 13, 2026», «qué día es hoy» ya lee el reloj pero la composición inventa la fecha (proyección sin fecha para «día»). Créditos H0630, H0301.",
+  "credits": 2
 }

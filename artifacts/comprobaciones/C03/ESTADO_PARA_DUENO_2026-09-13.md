@@ -1,3 +1,25 @@
+## CLOCK1156 — estado vigente 2026-09-13T05:56:04+00:00
+
+Parcial: 8 aprobados, 9 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 235/742 | 507 | 0 | >=109 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 107 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; CLOCK1156 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: CLOCK1156 completa: 17 ejecutados, 8 aprobados, 9 fallidos, 2 créditos (H0630, H0301). La reparación del reconocedor se demuestra: «qe ora es», «¿Qué hora es ya?», «What's today's date?» y «qué día es hoy» ahora leen el reloj. Causa nueva medida en H0243: la proyección de composición de system.time sólo aporta la hora (clock) cuando el pedido dice «día» y el modelo inventa la fecha («10 de abril de 2025»): reparar la proyección (fecha cuando se pregunta por el día) y remedir H0243 con pares. Abiertos sin reparación: «tiempo» a secas (polisemia por diseño; además la confirmación filtra vocabulario del contrato), cuentas atrás y duraciones fuera de catálogo.
+
+Evidencia: `artifacts/comprobaciones/C03/CLOCK1156/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 283.97 s acumulados; pico GPU 3497.56 MiB; pico RAM 2078.36 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 17; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque CLOCK1156 precedente. -->
+
 ## CLOCK1155 — estado vigente 2026-09-13T05:45:11+00:00
 
 Parcial: 5 aprobados, 12 fallidos, 0 sin ejecutar; 0 créditos.

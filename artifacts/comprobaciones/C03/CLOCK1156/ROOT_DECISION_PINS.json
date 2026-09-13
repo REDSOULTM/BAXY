@@ -1,0 +1,6 @@
+{
+  "decisions_sha256": "cd8ce0178dfb8733dbef4f3a4ece9dc187e993722ee41a5bf30d962110f43ad8",
+  "candidate_manifest_sha256": "ebdfba1be8c8c4e38907fab930fc6e953d0e0efd2ccee7cdb8562c5e5e98f9b6",
+  "preparation_sha256": "1d4597bb81ea0eb5e028ec046882511752773b93345491500d20f8b712b6c020",
+  "head": "eec0a20d29c9d96b12830f1684198d19390fd5ed"
+}

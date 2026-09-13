@@ -1,3 +1,15 @@
+# CLOCK1156 adjudicado — 2026-09-13T05:56:04+00:00
+
+**235/742 cubiertos, 507 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 5cb823cb1f132d0cf4b63b09cfa7e9da3b44127dfe94d38d1e9e9ac8e0a86039. Primeras altas 24 h >= 109 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD eec0a20d (effect_intent: reconocedor de reloj con día/day, «ya», «what's», «qe ora»; CLOCK1155/SOURCE.json|patch; offline 248→254, 0 regresiones) con BUILD1151.
+
+CLOCK1156 (mismo material que 1155: 6 literales, 8 variantes, 3 límites; system.time de sólo lectura por caso): 17 ejecutados, 8 aprobados, 9 fallidos; +2 (H0630 «qe ora es» → 02:47 verificado; H0301 «y la fecha?»). Adjudicación 56986228e790aab27bbe943cc459685cddb5ad9015a5bed81a14c436b25d1552. Reloj queda 15/23 (abiertos H0243, H0399, H0054, H0312 y 4 límites sin marca).
+
+Causa nueva medida (H0243 «qué día es hoy»): system.time verificado (utc 2026-09-13T05:48:22) pero final «Hoy es el día 10 de abril de 2025, 02:48»: el payload de composición sólo trae {clock, operation}; la proyección de system.time (llm.py, clave `clock`) no incluye la fecha cuando el pedido dice «día», y el modelo la inventa. Falsedad con hecho verificado disponible: reparación siguiente (Python, sin build) y remedición de H0243 con pares. Abiertos sin reparación: «tiempo» a secas (polisemia por diseño del veto de dominio; la confirmación filtra «UTC»/«desfase local»), cuentas atrás (H0399: fuera de catálogo) y «¿cuánto tiempo tarda…?» (conocimiento negado).
+
+Siguiente: reparar la proyección de fecha para «día/day» en llm.py, CLOCK1157 breve (H0243 + dos pares de fecha con «día»), luego H0354 (ayuda abierta, dos pares) y H0703. Reanudación: derivar desde build_clock1156.py; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 5cb823cb…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h.
+
+---
+
 # CLOCK1155 adjudicado — 2026-09-13T05:45:11+00:00
 
 **233/742 cubiertos, 509 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 625cc0042a41ae4557ccb38c8192691485a3147a3b33ef0846cd3a6947605c50. Primeras altas 24 h >= 107 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 8e2b3e45 con BUILD1151.

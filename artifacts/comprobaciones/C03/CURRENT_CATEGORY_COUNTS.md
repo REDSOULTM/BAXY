@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación CLOCK1155
+# Categorías actuales — adjudicación CLOCK1156
 
-233/742 cubiertos; 509 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 107 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140 + H0511 en NOTES1141 + 10 en NOTES1142 + 2 en KNOWLEDGE1144 + 7 en IDENTITY1146 + 2 en IDENTITY1148 + 2 en KNOWLEDGE1149 + 4 en CONVERSATION1150 + 1 en CONVERSATION1152), sin revalidaciones. Registro canónico SHA256: 625cc0042a41ae4557ccb38c8192691485a3147a3b33ef0846cd3a6947605c50.
+235/742 cubiertos; 507 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 109 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140 + H0511 en NOTES1141 + 10 en NOTES1142 + 2 en KNOWLEDGE1144 + 7 en IDENTITY1146 + 2 en IDENTITY1148 + 2 en KNOWLEDGE1149 + 4 en CONVERSATION1150 + 1 en CONVERSATION1152 + 2 en CLOCK1156), sin revalidaciones. Registro canónico SHA256: 5cb823cb1f132d0cf4b63b09cfa7e9da3b44127dfe94d38d1e9e9ac8e0a86039.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -26,7 +26,7 @@
 | Conversación social y ayuda general | 31 | 24 | 7 |
 | Estado de ventanas y aplicaciones | 14 | 2 | 12 |
 | Identidad y capacidades del asistente | 19 | 16 | 3 |
-| Hora y fecha | 23 | 13 | 10 |
+| Hora y fecha | 23 | 15 | 8 |
 | Memoria personal | 10 | 0 | 10 |
 | Correo | 6 | 0 | 6 |
 | Bibliotecas y fichas de juegos | 6 | 0 | 6 |
