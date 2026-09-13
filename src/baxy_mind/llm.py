@@ -2898,7 +2898,9 @@ _FAILURE_MARKERS = re.compile(
     r"no la encontré|no lo encontré|no pude encontr|"
     r"no responde|se agotó|"
     r"didn't find|did not find|didn't respond|did not respond|"
-    r"time ran out|not found)",
+    r"time ran out|not found|"
+    r"irrelevant|irrelevantes?|no useful results|nothing useful|"
+    r"sin resultados|no (?:hubo|hay) resultados|no encontr[eé] resultados|no results)",
     re.IGNORECASE,
 )
 _NEGATED_FAILURE = re.compile(

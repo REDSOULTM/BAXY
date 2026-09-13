@@ -136,8 +136,20 @@ def _public_live_lookup_request(folded: str) -> bool:
     head = _request_head(folded)
     weather_heads = {
         "are",
+        "busca",
+        "buscame",
+        "buscar",
         "clima",
         "como",
+        "cual",
+        "decime",
+        "dime",
+        "find",
+        "mostrame",
+        "muestra",
+        "muestrame",
+        "que",
+        "search",
         "do",
         "does",
         "forecast",
@@ -162,7 +174,8 @@ def _public_live_lookup_request(folded: str) -> bool:
             (
                 r"^(?:(?:alexa|olly|bax[yi])\s+)?(?:"
                 r"i\s+(?:want|would\s+like)\s+to\s+(?:hear|know|see)|"
-                r"(?:pon|ponme|muestra|muestrame|show|play)\b"
+                r"(?:pon|ponme|muestra|muestrame|show|play|"
+                r"busca|buscame|buscar|search|find|dame|decime|dime|investiga)\b"
                 r")"
             ),
             folded,
@@ -193,7 +206,7 @@ def _public_live_lookup_request(folded: str) -> bool:
     )
     weather = weather_head and _has(
         folded,
-        r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|"
+        r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|llover|"
         r"umbrella|paraguas|temperature|temperatura|hot|caluroso|calurosa|"
         r"cold|frio|fria)\b",
     )

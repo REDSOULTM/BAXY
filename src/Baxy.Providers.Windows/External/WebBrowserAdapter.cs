@@ -566,7 +566,11 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         "a" or "an" or "and" or "the" or "to" or "for" or "from" or "in" or "of" or "on"
         or "search" or "find"
         or "de" or "del" or "el" or "en" or "la" or "las" or "los" or "para" or "por"
-        or "un" or "una" or "y" or "busca" or "buscar";
+        or "un" or "una" or "y" or "busca" or "buscar"
+        // WEB1267: «hoy»/«today» name the moment of the request, not a word the
+        // result must repeat («noticias de hoy» found nothing; «today's news»
+        // matched the TV show TODAY).
+        or "hoy" or "today" or "ahora" or "now" or "todays";
 
     private static JsonElement NavigationResult(CdpNavigationResult value, string authority) =>
         ExternalJson.Create(writer =>
