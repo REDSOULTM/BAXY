@@ -26,7 +26,8 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         string operationName,
         JsonElement privatePayload,
         out MemoryOperationResponseProjection? projection,
-        bool responseReplayed = false)
+        bool responseReplayed = false,
+        JsonElement? privateArguments = null)
     {
         projection = null;
         if (!MemoryOperationProtector.IsMemoryOperation(operationName)
@@ -55,7 +56,8 @@ internal sealed record MemoryOperationResponseProjection(string Message)
                     privatePayload,
                     operationName,
                     out string mutation,
-                    responseReplayed)
+                    responseReplayed,
+                    privateArguments)
                         ? mutation
                         : null;
                 break;
@@ -128,7 +130,8 @@ internal sealed record MemoryOperationResponseProjection(string Message)
         JsonElement payload,
         string operationName,
         out string message,
-        bool responseReplayed)
+        bool responseReplayed,
+        JsonElement? privateArguments = null)
     {
         message = string.Empty;
         if (!HasExactProperties(
@@ -148,13 +151,45 @@ internal sealed record MemoryOperationResponseProjection(string Message)
             return false;
         }
 
-        message = CompletedFacts(operationName, "memory_updated", new JsonObject
+        // The person just stated the datum; a non-secret save may say it back
+        // («recordaré que te llamás Reta»). Flags that are false carry no fact
+        // and used to be verbalized as «no se realizaron correcciones ni
+        // acciones de replay» (MEMORY1247); a secret stays unspoken.
+        var observed = new JsonObject { ["saved"] = true };
+        if (operationName == "memory.correct")
         {
-            ["saved"] = true,
-            ["corrected"] = operationName == "memory.correct",
-            ["sensitive"] = operationName == "memory.sensitive.save",
-        }, responseReplayed || replayed);
+            observed["corrected"] = true;
+        }
+        if (operationName == "memory.sensitive.save")
+        {
+            observed["sensitive"] = true;
+        }
+        if (privateArguments is { ValueKind: JsonValueKind.Object } arguments
+            && operationName != "memory.sensitive.save"
+            && arguments.TryGetProperty("value", out JsonElement valueElement)
+            && valueElement.ValueKind == JsonValueKind.String
+            && valueElement.GetString() is { } value
+            && !string.IsNullOrWhiteSpace(value)
+            && StrictUtf8.GetByteCount(value) <= MaximumSelectorUtf8Bytes
+            && !HasControlCharacter(value))
+        {
+            observed["remembered"] = value.Trim();
+        }
+        message = CompletedFacts(operationName, "memory_updated", observed, responseReplayed || replayed);
         return true;
+    }
+
+    private static bool HasControlCharacter(string value)
+    {
+        foreach (char character in value)
+        {
+            if (char.IsControl(character))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static bool TryProjectForget(
@@ -491,7 +526,10 @@ internal sealed record MemoryOperationResponseProjection(string Message)
 
     private static string CompletedFacts(string operation, string cause, JsonObject observed, bool replayed)
     {
-        observed["replayed"] = replayed;
+        if (replayed)
+        {
+            observed["replayed"] = true;
+        }
         return TurnVisibleFacts.Status(cause, new JsonObject
         {
             ["operation"] = operation,

@@ -105,6 +105,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 Core = () => _coreClient,
                 Protector = () => _memoryProtector,
                 Publish = PublishBaxy,
+                PublishForObjective = PublishBaxyForObjective,
                 SetStatus = text => StatusDescription = text,
                 HasPendingAudio = () => _pendingAudioOperation is not null,
                 RecoverNotes = RecoverPendingNoteInteraction,
@@ -115,6 +116,9 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
     private void PublishBaxy(string body, UserMessageEvent? messageEvent) =>
         AddMessage("BAXY", body, isUser: false, messageEvent: messageEvent);
+
+    private void PublishBaxyForObjective(string body, UserMessageEvent? messageEvent, string? objective) =>
+        AddMessage("BAXY", body, isUser: false, messageEvent: messageEvent, composeUserText: objective);
 
     private void OnModelMessageQueued()
     {
@@ -2857,7 +2861,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         bool isUser,
         bool formulatedByMind = false,
         UserMessageEvent? messageEvent = null,
-        string? route = null)
+        string? route = null,
+        string? composeUserText = null)
     {
         if (formulatedByMind)
         {
@@ -2872,7 +2877,10 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             UserMessageDraft draft = UserMessagePolicy.Create(
                 body,
                 messageEvent ?? UserMessageEvent.Status);
-            string userText = Messages.LastOrDefault(static message => message.IsUser)?.Body
+            // A private continuation answers the request that started it; the
+            // last user message may be only its closed confirmation word.
+            string userText = composeUserText
+                ?? Messages.LastOrDefault(static message => message.IsUser)?.Body
                 ?? string.Empty;
             JsonObject facts = ModelMessageComposer.CreateFacts(
                 draft,

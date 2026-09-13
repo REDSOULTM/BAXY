@@ -2936,6 +2936,8 @@ _CAUSE_FACT = {
     "ambiguous_request": "unclear request",
     "memory_forget_irreversible": "cannot be undone",
     "memory_none": "no matching memories",
+    "memory_updated": "saved in the private local memory",
+    "memory_configuration": "private local memory setting changed",
     "note_choice": "choose a note",
     "memory_records": "listed memories",
 }
@@ -3738,6 +3740,20 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             bits.append(
                 "Briefly confirm what you saved, using its title and relevant "
                 "content. Address the person naturally in their language."
+            )
+        if (
+            situation.get("operation") in {"memory.save", "memory.sensitive.save", "memory.correct"}
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+        ):
+            # MEMORY1247: «el archivo fue guardado… ni acciones de replay» read
+            # the raw flags as facts. The datum is private local memory.
+            bits.append(
+                "Briefly confirm that you will remember it: quote observed.remembered "
+                "when present as the thing remembered, in the private local memory "
+                "of this computer. There is no file and no other action: never "
+                "mention files, corrections, replay or internal field names. "
+                "Address the person naturally in their language."
             )
         if situation.get("operation") == "media.status" or (
             situation.get("operation") == "media.control"

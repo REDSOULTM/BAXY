@@ -19,6 +19,12 @@ internal sealed class MemoryTurnSession
         internal required Func<MemoryOperationProtector?> Protector { get; init; }
 
         internal required Action<string, UserMessageEvent?> Publish { get; init; }
+        /// <summary>
+        /// Publish with the text whose language and intent the reply answers:
+        /// after «confirmar», the final of a continued save answers the original
+        /// request, not the closed reply word (MEMORY1247).
+        /// </summary>
+        internal Action<string, UserMessageEvent?, string?>? PublishForObjective { get; init; }
 
         internal required Action<string> SetStatus { get; init; }
 
@@ -395,17 +401,28 @@ internal sealed class MemoryTurnSession
             try
             {
                 using OpenedBoundProtectedJson opened = protector.OpenResult(response, prepared);
+                using OpenedBoundProtectedJson arguments = protector.OpenPrivateArguments(prepared);
                 if (!MemoryOperationResponseProjection.TryCreateCompleted(
                         prepared.OperationName,
                         opened.Payload,
                         out MemoryOperationResponseProjection? projection,
-                        response.Replayed)
+                        response.Replayed,
+                        arguments.Payload)
                     || projection is null)
                 {
                     throw new InvalidDataException("La respuesta privada no admite una proyección segura.");
                 }
 
-                _host.Publish(projection.Message, null);
+                string? objective = _continuation?.Objective;
+                if (_host.PublishForObjective is { } publishForObjective
+                    && !string.IsNullOrWhiteSpace(objective))
+                {
+                    publishForObjective(projection.Message, null, objective);
+                }
+                else
+                {
+                    _host.Publish(projection.Message, null);
+                }
             }
             catch
             {
