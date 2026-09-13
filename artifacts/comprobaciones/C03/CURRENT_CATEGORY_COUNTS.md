@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación CLOCK1159
+# Categorías actuales — adjudicación CONVERSATION1160
 
-236/742 cubiertos; 506 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 110 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140 + H0511 en NOTES1141 + 10 en NOTES1142 + 2 en KNOWLEDGE1144 + 7 en IDENTITY1146 + 2 en IDENTITY1148 + 2 en KNOWLEDGE1149 + 4 en CONVERSATION1150 + 1 en CONVERSATION1152 + 2 en CLOCK1156 + 1 en CLOCK1159), sin revalidaciones. Registro canónico SHA256: 3604b94f4443d520e208efe24e1cb52f3fbaca9c39a20ab0d78bc2ac2672b2ad.
+237/742 cubiertos; 505 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 111 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140 + H0511 en NOTES1141 + 10 en NOTES1142 + 2 en KNOWLEDGE1144 + 7 en IDENTITY1146 + 2 en IDENTITY1148 + 2 en KNOWLEDGE1149 + 4 en CONVERSATION1150 + 1 en CONVERSATION1152 + 2 en CLOCK1156 + 1 en CLOCK1159 + 1 en CONVERSATION1160), sin revalidaciones. Registro canónico SHA256: 680465244a700e9a56585bfa656dc0438889292271733deebdaa8535d3503483.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -23,7 +23,7 @@
 | Información web actual | 17 | 0 | 17 |
 | Estado de hardware y sistema | 40 | 25 | 15 |
 | Organizar ventanas y pestañas | 13 | 0 | 13 |
-| Conversación social y ayuda general | 31 | 24 | 7 |
+| Conversación social y ayuda general | 31 | 25 | 6 |
 | Estado de ventanas y aplicaciones | 14 | 2 | 12 |
 | Identidad y capacidades del asistente | 19 | 16 | 3 |
 | Hora y fecha | 23 | 16 | 7 |

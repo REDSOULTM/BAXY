@@ -1,3 +1,15 @@
+# CONVERSATION1160 adjudicado — 2026-09-13T06:13:16+00:00
+
+**237/742 cubiertos, 505 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 680465244a700e9a56585bfa656dc0438889292271733deebdaa8535d3503483. Primeras altas 24 h >= 111 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6a717298 con BUILD1158.
+
+CONVERSATION1160 (H0354 + 2 pares de ayuda abierta + 1 límite): 4 ejecutados, 4 aprobados; +1 (H0354 «necesito ayuda con algo» → «¿En qué puedo ayudarte?»). Adjudicación 4b45e32f8c80fa994a3987281e2c125b1754c16c57aa7250f9c490babe6f62ad. Conversación queda 25/31 (abiertos H0059, H0069, H0122, H0410 y límites H0176/H0192).
+
+Resumen de la sesión Fable (12–13 sep): 203 → 237 cubiertos; reparaciones adoptadas y medidas: notas (léxico), App LooksLikeOutOfWorldRequest por palabra completa, prompt (SIEMPRE/idioma), voseo en lector y shell, pregunta de recuperación publicada en vez de fallo, reconocedor de reloj (día/day, ya, what's, qe ora), proyección de fecha en mind y shell. Abiertos con causa documentada sin reparación: «tiempo» polisémico, cuentas atrás, memes, ruido, nombre ajeno, hechos inventados del modelo, veto de subcadena con negación/citas.
+
+Siguiente por masa (CONDICIONES_POR_CATEGORIA_2026-09-13.md): red sólo lectura (wifi.status/network.status; 20 abiertos, 8 llegan al reconocedor) y cierre de apps propias (20 abiertos); conocimiento residual (H0703, H0211, H0297, H0030, H0582) sólo con causa nueva. Reanudación: derivar material desde build_clock1159.py (efectos de sólo lectura por caso) o build_conversation1160.py (sin efectos), binding BUILD1158; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 68046524…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h.
+
+---
+
 # CLOCK1159 adjudicado — 2026-09-13T06:08:50+00:00
 
 **236/742 cubiertos, 506 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 3604b94f4443d520e208efe24e1cb52f3fbaca9c39a20ab0d78bc2ac2672b2ad. Primeras altas 24 h >= 110 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 82af92dd con BUILD1158 (App: UserMessagePolicy.dateRequested con día/day; recibo aa483fc0…, huella 90e8063e…; CLOCK1157/APP_SOURCE.json|patch) más la proyección de fecha del mind (CLOCK1156/SOURCE.json).
