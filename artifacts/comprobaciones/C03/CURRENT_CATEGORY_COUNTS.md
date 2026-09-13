@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación CLOSE1215
+# Categorías actuales — adjudicación CLOSE1217
 
-291/742 cubiertos; 451 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 165 primeras altas (165 anteriores + 0 en CLOSE1215; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 4b0cdd62fcf68c22873a8ec6929f3fdabcbef1c1c50793354acddfe89333c780.
+291/742 cubiertos; 451 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 165 primeras altas (165 anteriores + 0 en CLOSE1217; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: b2d5642c5ba3fc9e31db71d83805a35cdfbba8cc4c0f2e6905aaa216423bcce3.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|

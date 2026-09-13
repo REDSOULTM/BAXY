@@ -1,3 +1,13 @@
+# CLOSE1217 adjudicado (parcial) — 2026-09-13T15:49:43+00:00
+
+**291/742 cubiertos, 451 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA b2d5642c5ba3fc9e31db71d83805a35cdfbba8cc4c0f2e6905aaa216423bcce3. Primeras altas 24 h >= 165 (+0).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 2aa9a177 con BUILD1217 (traza de la captura de confirmación, CLOSE1217/APP_SOURCE.json|patch).
+
+CLOSE1217 (mismos 14 objetos que CLOSE1215): 1 ejecutado (índice 0, H0095), 1 fallido, 13 sin ejecutar; +0. Adjudicación b858c9c57b912b6d9da8f267a273a754752327f4449d585f571a5041c9aa00d1. La traza nombra la guarda: conductor.capture.refused = shape. ConductorConfirmationShape (CLOSE1060) exige en la observación proyectada de window.resolve los campos complete, offset, observedCount, totalCount y hasMore (y foreground para window.active); PlanObservationProjector sólo conserva los campos de su lista segura y descartaba complete/offset/observedCount/hasMore/foreground, así que el cierre revisado nunca podía capturarse. Reparación: campos seguros por operación para window.resolve y window.active (CLOSE1219/APP_SOURCE.json, BUILD1219). Cerrar apps queda 0/20.
+
+Siguiente: CLOSE1219 (BUILD1219, mismos 14 objetos). Reanudación: derivar de build_close1217.py con BUILD1219; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 b2d5642c5ba3fc9e31db71d83805a35cdfbba8cc4c0f2e6905aaa216423bcce3`.
+
+---
+
 # CLOSE1215 adjudicado (parcial) — 2026-09-13T15:31:45+00:00
 
 **291/742 cubiertos, 451 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 4b0cdd62fcf68c22873a8ec6929f3fdabcbef1c1c50793354acddfe89333c780. Primeras altas 24 h >= 165 (+0).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 73595548 con BUILD1205; reconocedor de cierre por nombre autenticado en CLOSE1215/SOURCE.json|patch.

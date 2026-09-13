@@ -1,6 +1,6 @@
 {
   "schema": "c03-close1217-app-source-adoption-v1",
-  "status": "adopted_unmeasured",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/Baxy.App/MainWindowViewModel.cs (CaptureConductorConfirmation)",
   "patch": "artifacts/comprobaciones/C03/CLOSE1217/APP_SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": true,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": null,
-  "credits": null
+  "measurement": "CLOSE1217/000: la traza registró conductor.capture.refused=shape; causa localizada en la proyección de observaciones (campos de página descartados). 0 créditos.",
+  "credits": 0
 }
