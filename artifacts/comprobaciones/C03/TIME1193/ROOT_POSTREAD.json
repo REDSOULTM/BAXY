@@ -1,0 +1,308 @@
+{
+  "schema": "time1193-root-postread-facts-v1",
+  "note": "Postlectura de raíz por caso (scratchpad/time_postread.py): alarmas (NextRun observado, cancelación exacta) y recordatorios del perfil aislado; hora local de dueUtc comparada con la pedida, próxima ocurrencia futura ≤ 24 h. Sin textos de la encuesta.",
+  "cases": [
+    {
+      "schema": "time1193-root-postread-v1",
+      "case_index": 0,
+      "case_id": "H0273",
+      "kind": "historical_literal",
+      "requested_duration_seconds": null,
+      "lower_utc": "2026-09-13T12:39:07.101354+00:00",
+      "starts": 1,
+      "completed": 1,
+      "utc": "2026-09-13T12:39:37.978641+00:00",
+      "errors": [],
+      "operation": "notification.schedule",
+      "task_name": "BAXY-Alarm-3aede314e54546fd899457da5e7cd94b",
+      "receipt_due_utc": "2026-09-14T12:00:00+00:00",
+      "verified": true,
+      "status": "completed",
+      "upper_utc": "2026-09-13T12:39:26.9015454+00:00",
+      "due_is_whole_second": true,
+      "requested_local_time": "09:00",
+      "due_local": "2026-09-14T09:00:00-03:00",
+      "due_local_matches_request": true,
+      "due_is_future": true,
+      "due_within_24h": true,
+      "task_observed": {
+        "taskName": "BAXY-Alarm-3aede314e54546fd899457da5e7cd94b",
+        "state": "Ready",
+        "startBoundary": [
+          "2026-09-14T09:00:00-03:00"
+        ],
+        "triggerTypes": [
+          "MSFT_TaskTimeTrigger"
+        ],
+        "repetition": [
+          null
+        ],
+        "actions": [
+          {
+            "execute": "powershell.exe",
+            "arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1193-case00-profile\\scheduled-notifications\\BAXY-Alarm-3aede314e54546fd899457da5e7cd94b.ps1\""
+          }
+        ],
+        "nextRunUtc": "2026-09-14T12:00:00.0000000Z"
+      },
+      "next_run_utc": "2026-09-14T12:00:00+00:00",
+      "due_equals_next_run": true,
+      "cancel": {
+        "before": 911,
+        "after": 910,
+        "absent": true,
+        "utc": "2026-09-13T12:39:47.596602+00:00"
+      }
+    },
+    {
+      "schema": "time1193-root-postread-v1",
+      "case_index": 1,
+      "case_id": "H0514",
+      "kind": "historical_literal",
+      "requested_duration_seconds": null,
+      "lower_utc": "2026-09-13T12:39:48.583265+00:00",
+      "starts": 1,
+      "completed": 1,
+      "utc": "2026-09-13T12:40:15.317569+00:00",
+      "errors": [],
+      "operation": "notification.schedule",
+      "task_name": "BAXY-Alarm-eb8da64aa25946a6a869cca4a9009b4b",
+      "receipt_due_utc": "2026-09-14T10:00:00+00:00",
+      "verified": true,
+      "status": "completed",
+      "upper_utc": "2026-09-13T12:40:07.4781709+00:00",
+      "due_is_whole_second": true,
+      "requested_local_time": "07:00",
+      "due_local": "2026-09-14T07:00:00-03:00",
+      "due_local_matches_request": true,
+      "due_is_future": true,
+      "due_within_24h": true,
+      "task_observed": {
+        "taskName": "BAXY-Alarm-eb8da64aa25946a6a869cca4a9009b4b",
+        "state": "Ready",
+        "startBoundary": [
+          "2026-09-14T07:00:00-03:00"
+        ],
+        "triggerTypes": [
+          "MSFT_TaskTimeTrigger"
+        ],
+        "repetition": [
+          null
+        ],
+        "actions": [
+          {
+            "execute": "powershell.exe",
+            "arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1193-case01-profile\\scheduled-notifications\\BAXY-Alarm-eb8da64aa25946a6a869cca4a9009b4b.ps1\""
+          }
+        ],
+        "nextRunUtc": "2026-09-14T10:00:00.0000000Z"
+      },
+      "next_run_utc": "2026-09-14T10:00:00+00:00",
+      "due_equals_next_run": true,
+      "cancel": {
+        "before": 911,
+        "after": 910,
+        "absent": true,
+        "utc": "2026-09-13T12:40:24.770500+00:00"
+      }
+    },
+    {
+      "schema": "time1193-root-postread-v1",
+      "case_index": 2,
+      "case_id": "H0259",
+      "kind": "historical_literal",
+      "requested_duration_seconds": null,
+      "lower_utc": "2026-09-13T12:40:25.739795+00:00",
+      "starts": 1,
+      "completed": 1,
+      "utc": "2026-09-13T12:40:47.712235+00:00",
+      "errors": [],
+      "operation": "reminder.create",
+      "task_name": null,
+      "receipt_due_utc": "2026-09-13T21:00:00+00:00",
+      "verified": true,
+      "status": "completed",
+      "upper_utc": "2026-09-13T12:40:43.5837955+00:00",
+      "reminder_id": "897c0372-06aa-4612-a5ea-178bd512641a",
+      "title": "comprar pan",
+      "due_is_whole_second": true,
+      "requested_local_time": "18:00",
+      "due_local": "2026-09-13T18:00:00-03:00",
+      "due_local_matches_request": true,
+      "due_is_future": true,
+      "due_within_24h": true,
+      "store": "isolated profile reminders-store; nothing registered in the Task Scheduler; no cancel needed"
+    },
+    {
+      "schema": "time1193-root-postread-v1",
+      "case_index": 3,
+      "case_id": "time1193-dev-01",
+      "kind": "original_development_variant",
+      "requested_duration_seconds": null,
+      "lower_utc": "2026-09-13T12:40:48.681935+00:00",
+      "starts": 1,
+      "completed": 1,
+      "utc": "2026-09-13T12:41:14.466693+00:00",
+      "errors": [],
+      "operation": "notification.schedule",
+      "task_name": "BAXY-Alarm-8b71b785b5a943e5920b51dd0cb5db66",
+      "receipt_due_utc": "2026-09-13T21:30:00+00:00",
+      "verified": true,
+      "status": "completed",
+      "upper_utc": "2026-09-13T12:41:06.6403127+00:00",
+      "due_is_whole_second": true,
+      "requested_local_time": "18:30",
+      "due_local": "2026-09-13T18:30:00-03:00",
+      "due_local_matches_request": true,
+      "due_is_future": true,
+      "due_within_24h": true,
+      "task_observed": {
+        "taskName": "BAXY-Alarm-8b71b785b5a943e5920b51dd0cb5db66",
+        "state": "Ready",
+        "startBoundary": [
+          "2026-09-13T18:30:00-03:00"
+        ],
+        "triggerTypes": [
+          "MSFT_TaskTimeTrigger"
+        ],
+        "repetition": [
+          null
+        ],
+        "actions": [
+          {
+            "execute": "powershell.exe",
+            "arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1193-case03-profile\\scheduled-notifications\\BAXY-Alarm-8b71b785b5a943e5920b51dd0cb5db66.ps1\""
+          }
+        ],
+        "nextRunUtc": "2026-09-13T21:30:00.0000000Z"
+      },
+      "next_run_utc": "2026-09-13T21:30:00+00:00",
+      "due_equals_next_run": true,
+      "cancel": {
+        "before": 911,
+        "after": 910,
+        "absent": true,
+        "utc": "2026-09-13T12:41:24.065685+00:00"
+      }
+    },
+    {
+      "schema": "time1193-root-postread-v1",
+      "case_index": 4,
+      "case_id": "time1193-dev-02",
+      "kind": "original_development_variant",
+      "requested_duration_seconds": null,
+      "lower_utc": "2026-09-13T12:41:25.080131+00:00",
+      "starts": 1,
+      "completed": 1,
+      "utc": "2026-09-13T12:41:50.982451+00:00",
+      "errors": [],
+      "operation": "notification.schedule",
+      "task_name": "BAXY-Alarm-aa189c620ed54266912f6e43970e87c7",
+      "receipt_due_utc": "2026-09-13T23:00:00+00:00",
+      "verified": true,
+      "status": "completed",
+      "upper_utc": "2026-09-13T12:41:43.3690469+00:00",
+      "due_is_whole_second": true,
+      "requested_local_time": "20:00",
+      "due_local": "2026-09-13T20:00:00-03:00",
+      "due_local_matches_request": true,
+      "due_is_future": true,
+      "due_within_24h": true,
+      "task_observed": {
+        "taskName": "BAXY-Alarm-aa189c620ed54266912f6e43970e87c7",
+        "state": "Ready",
+        "startBoundary": [
+          "2026-09-13T20:00:00-03:00"
+        ],
+        "triggerTypes": [
+          "MSFT_TaskTimeTrigger"
+        ],
+        "repetition": [
+          null
+        ],
+        "actions": [
+          {
+            "execute": "powershell.exe",
+            "arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1193-case04-profile\\scheduled-notifications\\BAXY-Alarm-aa189c620ed54266912f6e43970e87c7.ps1\""
+          }
+        ],
+        "nextRunUtc": "2026-09-13T23:00:00.0000000Z"
+      },
+      "next_run_utc": "2026-09-13T23:00:00+00:00",
+      "due_equals_next_run": true,
+      "cancel": {
+        "before": 911,
+        "after": 910,
+        "absent": true,
+        "utc": "2026-09-13T12:42:00.571079+00:00"
+      }
+    },
+    {
+      "schema": "time1193-root-postread-v1",
+      "case_index": 5,
+      "case_id": "time1193-dev-03",
+      "kind": "original_development_variant",
+      "requested_duration_seconds": null,
+      "lower_utc": "2026-09-13T12:42:01.560915+00:00",
+      "starts": 1,
+      "completed": 1,
+      "utc": "2026-09-13T12:42:24.402257+00:00",
+      "errors": [],
+      "operation": "reminder.create",
+      "task_name": null,
+      "receipt_due_utc": "2026-09-14T01:00:00+00:00",
+      "verified": true,
+      "status": "completed",
+      "upper_utc": "2026-09-13T12:42:20.0702932+00:00",
+      "reminder_id": "436f3e3d-15f7-4f08-b4dd-dc9de0905d6a",
+      "title": "regar las plantas",
+      "due_is_whole_second": true,
+      "requested_local_time": "22:00",
+      "due_local": "2026-09-13T22:00:00-03:00",
+      "due_local_matches_request": true,
+      "due_is_future": true,
+      "due_within_24h": true,
+      "store": "isolated profile reminders-store; nothing registered in the Task Scheduler; no cancel needed"
+    },
+    {
+      "schema": "time1193-root-postread-v1",
+      "case_index": 6,
+      "case_id": "time1193-dev-04",
+      "kind": "original_development_variant",
+      "requested_duration_seconds": null,
+      "lower_utc": "2026-09-13T12:42:25.443075+00:00",
+      "starts": 1,
+      "completed": 1,
+      "utc": "2026-09-13T12:42:47.785371+00:00",
+      "errors": [],
+      "operation": "reminder.create",
+      "task_name": null,
+      "receipt_due_utc": "2026-09-13T19:00:00+00:00",
+      "verified": true,
+      "status": "completed",
+      "upper_utc": "2026-09-13T12:42:43.7094618+00:00",
+      "reminder_id": "5c816184-aafd-43ef-8fb3-9b167ad10341",
+      "title": "call the bank",
+      "due_is_whole_second": true,
+      "requested_local_time": "16:00",
+      "due_local": "2026-09-13T16:00:00-03:00",
+      "due_local_matches_request": true,
+      "due_is_future": true,
+      "due_within_24h": true,
+      "store": "isolated profile reminders-store; nothing registered in the Task Scheduler; no cancel needed"
+    },
+    {
+      "schema": "time1193-root-postread-v1",
+      "case_index": 7,
+      "case_id": "time1193-boundary-01",
+      "kind": "boundary",
+      "requested_duration_seconds": null,
+      "lower_utc": "2026-09-13T12:42:48.796233+00:00",
+      "starts": 0,
+      "completed": 0,
+      "utc": "2026-09-13T12:43:12.511783+00:00",
+      "errors": [],
+      "note": "no single notification.schedule pair in the case journal"
+    }
+  ]
+}

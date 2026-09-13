@@ -1,6 +1,6 @@
 {
   "schema": "c03-time1191-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/__main__.py (_explicit_notification_schedule_arguments, _explicit_relative_reminder_arguments)",
   "patch": "artifacts/comprobaciones/C03/TIME1191/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "TIME1193: H0273, H0514, H0259 con pares ES/EN de hora explícita.",
-  "credits": 0
+  "measurement": "TIME1193: 8 de 8 aprobados, +3 (H0273, H0514, H0259 con dos pares cada uno); cuatro alarmas y tres recordatorios a la hora local pedida.",
+  "credits": 3
 }

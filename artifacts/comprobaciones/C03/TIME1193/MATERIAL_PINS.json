@@ -1,0 +1,105 @@
+{
+  "schema": "time1193-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1193-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1193-instrument-v1",
+  "seal_sha256": "4950f13254051da7d315572b62d40bfacd79f66836b06a4a99fa361079d81989",
+  "runner_sha256": "1a0cbb53d76f831636a45080e505114986f928bcefb108f30b73c6bc1099e0b8",
+  "transport_seal_sha256": "1011808060676afc301b727de261aa252847898e6a2dc52da5d7943fb48fbb6d",
+  "files": {
+    "panel.json": "62d4eead4231f4be24025df1343423c4807fc82dd8d2f5ff345319e853df74a1",
+    "turns.jsonl": "011b57a3eefa0c7a0583108c9a5e18d76ffde1049f78db3ae3ae82b6702877ad",
+    "case-map.json": "a4ce8e2904ab3054212deefbecc6c6eca88816545da2e249b913a7cb79a9c242",
+    "PLAN.md": "be5c932289c2f654e4074475a378746f8b3cebf958b65e4eda47edcc1b5dc677"
+  },
+  "counts": {
+    "cases": 8,
+    "historical_literals": 3,
+    "original_development_variants": 4,
+    "boundaries": 1,
+    "wire_lines": 16,
+    "session_controls": 8,
+    "ordinary_turns": 8,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 8,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 3,
+    "original_development_variant": 4,
+    "boundary": 1
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0273",
+      "kind": "historical_literal",
+      "group": "alarm_clock",
+      "credit_behavior": "alarm_clock",
+      "text_sha256": "5945d57cf52eb2ee42c215f84bd31b23921cf96350fdc1d546792872776d07a6",
+      "criterion_sha256": "f1599f1af8fcff9f3c8d107d9e213b790194de700fa7bf64775ef25ee1d0785c"
+    },
+    {
+      "index": 1,
+      "case_id": "H0514",
+      "kind": "historical_literal",
+      "group": "alarm_clock",
+      "credit_behavior": "alarm_clock",
+      "text_sha256": "b1d540e79b1a88054a0e41b5b07772367ad64fd19994c28a5d32840794f23269",
+      "criterion_sha256": "f1599f1af8fcff9f3c8d107d9e213b790194de700fa7bf64775ef25ee1d0785c"
+    },
+    {
+      "index": 2,
+      "case_id": "H0259",
+      "kind": "historical_literal",
+      "group": "reminder_clock",
+      "credit_behavior": "reminder_clock",
+      "text_sha256": "52c9b29b8b4b68429486e20ef66ce06f30c5c885551d2c550bccee7791382aa8",
+      "criterion_sha256": "44d13bbb7e61d372c5a42642846474fa05091c9c5d0f04233b9b473aec493211"
+    },
+    {
+      "index": 3,
+      "case_id": "time1193-dev-01",
+      "kind": "original_development_variant",
+      "group": "alarm_clock",
+      "credit_behavior": "alarm_clock",
+      "text_sha256": "7b43a14e8524d244c8ef7b66a72098331c1dc94ca21cc0d4dcb0cd3cbe33441c",
+      "criterion_sha256": "f1599f1af8fcff9f3c8d107d9e213b790194de700fa7bf64775ef25ee1d0785c"
+    },
+    {
+      "index": 4,
+      "case_id": "time1193-dev-02",
+      "kind": "original_development_variant",
+      "group": "alarm_clock",
+      "credit_behavior": "alarm_clock",
+      "text_sha256": "b5a4cf05ce49d61f34040e17a4675fc4a695434d3ce2f38ddc220fc01d412893",
+      "criterion_sha256": "f1599f1af8fcff9f3c8d107d9e213b790194de700fa7bf64775ef25ee1d0785c"
+    },
+    {
+      "index": 5,
+      "case_id": "time1193-dev-03",
+      "kind": "original_development_variant",
+      "group": "reminder_clock",
+      "credit_behavior": "reminder_clock",
+      "text_sha256": "842f01206ee8deceef22482958a587de5dcdaa9f421c7dcc4f46fd9bcd333875",
+      "criterion_sha256": "44d13bbb7e61d372c5a42642846474fa05091c9c5d0f04233b9b473aec493211"
+    },
+    {
+      "index": 6,
+      "case_id": "time1193-dev-04",
+      "kind": "original_development_variant",
+      "group": "reminder_clock",
+      "credit_behavior": "reminder_clock",
+      "text_sha256": "0a5436ccd25edb7bc370ccd878d7cecff317425a125142ffd9da6214332ab417",
+      "criterion_sha256": "44d13bbb7e61d372c5a42642846474fa05091c9c5d0f04233b9b473aec493211"
+    },
+    {
+      "index": 7,
+      "case_id": "time1193-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "d379cf5d75b24f612106c7cc842f5e9387cbc063a4a0e4f001f5ba6c7ecaee6f",
+      "criterion_sha256": "b5c0e366a607e8a9a635206ddfad7e76293c594360bbd8ed5b8c84653e6dc152"
+    }
+  ]
+}

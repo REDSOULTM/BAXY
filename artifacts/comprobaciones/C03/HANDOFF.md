@@ -1,3 +1,13 @@
+# TIME1193 adjudicado — 2026-09-13T12:44:41+00:00
+
+**258/742 cubiertos, 484 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 7200c06118646411a9715298aa3092d7925c58136d835ef9e26ab9764093199d. Primeras altas 24 h >= 132 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6ed05ccf (hora explícita: lectura plegada, periodo sobre 24 h, recordatorios con hora; TIME1191/SOURCE.json|patch) con BUILD1158.
+
+TIME1193 (H0273, H0514, H0259 + 4 pares ES/EN de hora explícita + 1 límite): 8 ejecutados, 8 aprobados; +3. Adjudicación d0553e07b149bcc6a8359c63d11a5bda859a28d00a1dd571d20c7a6aadcdc947; postlectura en TIME1193/ROOT_POSTREAD.json. Cuatro alarmas con dueUtc == NextRun a la hora local pedida (09:00, 07:00, 18:30, 20:00; próxima ocurrencia), canceladas por identidad exacta (911→910); tres recordatorios en el perfil aislado a la hora local pedida (18:00, 22:00, 16:00). Agenda queda 27/38: restan «avisame en 30 minutos / en una hora» (sin contenido), «llamar al dentista a las 5» (hora ambigua → aclaración), «a las 99», «cancelá la alarma», «listá los timers», «crea una tarea para el viernes», «agendá una reunión…», «contá 10 minutos», «recuérdame comprar pilas» (sin hora), «qué tengo agendado para hoy». Preflight de RAM: un intento abortó con < 4000 MiB; se cerró WhatsApp.Root (autorizado) y se preparó con 4531 MiB.
+
+Siguiente por masa: cierre de apps propias (20, autorizado; instrumento con turno revisado y ventanas propias), proveedor de carpetas conocidas (archivos, 26 sin mecanismo, autorizado), network.ip.list sin PrivacySensitive (build); agenda residual con causa nueva por literal. Reanudación: derivar de build_time1193.py; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 7200c06118646411a9715298aa3092d7925c58136d835ef9e26ab9764093199d`.
+
+---
+
 # TIME1191 adjudicado — 2026-09-13T12:31:04+00:00
 
 **255/742 cubiertos, 487 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA c0e5700bd9009675312a3b163dea1a026fea56991c652c9cc726f53ec052a2a6. Primeras altas 24 h >= 129 (+7).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7f1c2397 (alias del enum de alarma, recordatorio con duración al inicio, validador de palabras recortadas; TIME1189/SOURCE.json|patch) con BUILD1158.

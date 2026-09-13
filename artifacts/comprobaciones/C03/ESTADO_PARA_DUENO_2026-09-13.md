@@ -1,3 +1,25 @@
+## TIME1193 — estado vigente 2026-09-13T12:44:41+00:00
+
+Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 3 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 258/742 | 484 | 0 | >=132 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 129 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; TIME1193 añade 3. No se cuentan revalidaciones.
+
+Siguiente acción: TIME1193 completa: 8 ejecutados, 8 aprobados, 0 fallidos, 3 créditos (H0273, H0514, H0259). Las reparaciones de hora explícita (lectura sobre texto plegado, periodo sobre 24 h, extractor de recordatorio con hora) se demuestran: cuatro alarmas con dueUtc == NextRun a la hora local pedida (canceladas por identidad exacta) y tres recordatorios a la hora local pedida. Agenda queda 27/38; restan «avisame en 30 minutos / en una hora» (sin contenido), «a las 5» (hora ambigua), «a las 99», cancelaciones y listados, tarea y reunión, «contá», «recuérdame comprar pilas» (sin hora), «qué tengo agendado».
+
+Evidencia: `artifacts/comprobaciones/C03/TIME1193/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 143.86 s acumulados; pico GPU 3497.56 MiB; pico RAM 1759.67 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque TIME1193 precedente. -->
+
 ## TIME1191 — estado vigente 2026-09-13T12:31:04+00:00
 
 Parcial: 11 aprobados, 4 fallidos, 0 sin ejecutar; 7 créditos.
