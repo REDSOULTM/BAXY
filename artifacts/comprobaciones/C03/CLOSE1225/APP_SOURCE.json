@@ -1,0 +1,17 @@
+{
+  "schema": "c03-close1225-app-source-adoption-v1",
+  "status": "adopted_unmeasured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs (Inventory strong path, AddHostedFrameWindows)",
+  "patch": "artifacts/comprobaciones/C03/CLOSE1225/APP_SOURCE.patch",
+  "cause_measured": "CLOSE1223/009 («Could you close Calculator?», tercera tanda en que este índice falla justo después de un caso de Chrome): window.resolve terminó en inventory_failed mientras el índice 1 (misma Calculadora, misma vía) aprobó. En la vía fuerte la enumeración completa de ventanas (requireComplete) se exigía para todo proceso antes de filtrar candidatos, y una ventana ajena en destrucción (Chrome cerrándose tras el índice 8) sin rectángulo legible abortaba el inventario entero.",
+  "change": "La enumeración completa y estable se exige sólo al candidato ya identificado (nombre de ejecutable o AUMID exacto); los demás procesos se enumeran sin exigir completitud y una ventana sin rectángulo legible simplemente no cuenta. Igual para los marcos de ApplicationFrameHost: un marco ajeno en destrucción no aborta la búsqueda del marco propio. Las comprobaciones del candidato no cambian.",
+  "offline_verification": "Sin tests (orden del dueño). Build raíz BUILD1225 con recibo; medición en CLOSE1225.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": true,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": null,
+  "credits": null
+}

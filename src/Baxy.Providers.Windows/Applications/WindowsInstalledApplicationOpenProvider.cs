@@ -1096,8 +1096,11 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                 try
                 {
                     process.Refresh();
+                    // A foreign window being destroyed (Chrome tearing down after a
+                    // close, CLOSE1223/009) has no readable rectangle; only the
+                    // candidate's enumeration must be complete.
                     nint[]? ownedWindows = strongIdentityOnly
-                        ? VisibleTopLevelWindows(process.Id, requireComplete: true) : null;
+                        ? VisibleTopLevelWindows(process.Id, requireComplete: false) : null;
                     nint window = ownedWindows is null
                         ? process.MainWindowHandle : ownedWindows.FirstOrDefault();
                     if (window == 0 || !IsWindowVisible(window))
@@ -1145,6 +1148,13 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                         if (strongIdentityOnly)
                             throw new ApplicationInventoryException("A visible executable could not be verified.");
                         continue;
+                    }
+                    if (strongIdentityOnly)
+                    {
+                        // The candidate's own window set must be complete and stable.
+                        ownedWindows = VisibleTopLevelWindows(process.Id, requireComplete: true);
+                        if (ownedWindows.Length == 0)
+                            continue;
                     }
                     if (strongIdentityOnly && !packaged
                         && !string.Equals(Path.GetFullPath(executablePath), expectedExecutable,
@@ -1211,7 +1221,7 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
             {
                 if (!string.Equals(host.ProcessName, "ApplicationFrameHost", StringComparison.OrdinalIgnoreCase))
                     continue;
-                nint[] frames = VisibleTopLevelWindows(host.Id, requireComplete: true);
+                nint[] frames = VisibleTopLevelWindows(host.Id, requireComplete: false);
                 if (frames.Length == 0)
                     continue;
                 string? hostExecutable = host.MainModule?.FileName;
