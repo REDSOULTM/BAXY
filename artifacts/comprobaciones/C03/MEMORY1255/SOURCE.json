@@ -1,0 +1,13 @@
+{
+  "schema": "c03-memory1255-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_remembered_content_words, _missing_remembered_words, _payload_fact_defect; pista de reintento missing_remembered)",
+  "patch": "artifacts/comprobaciones/C03/MEMORY1255/SOURCE.patch",
+  "commit": "88f5afdf9b1001261ed26b10ef60e36d0277edc8",
+  "build": "BUILD1253 (binarios sin cambio; sólo mente)",
+  "cause_measured": "MEMORY1253: la comprobación literal del dato recordado exigía la frase entera y rechazó confirmaciones fieles con cambio de persona («mi cumpleaños» → «tu cumpleaños», «my favorite drink» → «your favorite drink»); la pista de reintento nombraba el campo y el modelo lo imprimió (internal_code) hasta agotar reintentos.",
+  "change": "La comprobación exige las palabras de contenido del dato (sin pronombres, posesivos ni cópulas), sin traducir; la pista lista sólo las palabras que faltan.",
+  "measurement": "MEMORY1255: 8 ejecutados, 7 aprobados, 1 fallido (límite de capacidad), 2 créditos (H0452, H0506 con dev-01/dev-02); «tu cumpleaños es el 5 de mayo» y «your favorite drink is tea» aprobados; «my birthday is May 5» y «mi comida favorita es la pizza» aprobados.",
+  "credits": 2
+}

@@ -1,3 +1,11 @@
+# MEMORY1255 adjudicado — 2026-09-13T20:56:47.905208+00:00
+
+**338/742 cubiertos, 404 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 55d6622c68a0009803d248de7fd7f1f6f32ba52594deb03d30c18981348438b0. Primeras altas 24 h >= 212 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 88f5afdf con BUILD1253 (sólo mente: comprobación del dato recordado por palabras de contenido; MEMORY1255/SOURCE.json|SOURCE.patch).
+
+MEMORY1255 (panel reducido a los dos literales de dato, 4 variantes de dato, 2 límites: 8/16): 8 ejecutados, 7 aprobados, 1 fallido, 2 créditos (H0452, H0506 con dev-01/dev-02). Adjudicación 7cc128b9340e26d8af4119b2b9d4aaccfe931f7ecd1ce7790d1799ff9ec1c748. Memoria personal 7/10; quedan los recuerdos H0604 y H0173 (requieren un guardado previo en el mismo perfil: fuera del instrumento de un caso por turno) y H0174 (modelo). Siguiente: categoría por masa abierta (ver CURRENT_CATEGORY_COUNTS y CONDICIONES).
+
+---
+
 # MEMORY1253 adjudicado — 2026-09-13T20:47:46.276515+00:00
 
 **336/742 cubiertos, 406 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA e44ccbcaaaa99a1c3d33a2b277f16fb6e585c2e9818308496c97ea6bb34660a4. Primeras altas 24 h >= 210 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 772a1671 con BUILD1253 (texto del pedido en la continuación de memoria; dato recordado conservado; instrucción de fallo memory_disabled; MEMORY1253/APP_SOURCE.json|SOURCE.json|*.patch).

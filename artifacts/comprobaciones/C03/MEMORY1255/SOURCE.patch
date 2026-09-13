@@ -1,0 +1,77 @@
+commit 88f5afdf9b1001261ed26b10ef60e36d0277edc8
+
+C03: the remembered-value check keeps content words, not the whole sentence (MEMORY1255 repair)
+
+MEMORY1253 rejected faithful confirmations that shifted person («mi
+cumpleaños» → «tu cumpleaños», «my favorite drink» → «your favorite
+drink») and the retry hint made the model print the field name. The
+check now requires the content words of the remembered value, untranslated,
+and the hint lists only the missing words.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 15cc3077..0e69b05c 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3898,6 +3898,33 @@ def _names_the_boundary(folded_reply: str) -> str | bool:
+     )
+ 
+ 
++# Person and copula shift when a stated fact is confirmed back («mi cumpleaños»
++# → «tu cumpleaños»); the content words are what must survive untranslated.
++_REMEMBERED_FUNCTION_WORDS = frozenset(
++    "mi mis tu tus su sus me te se yo vos usted el la lo los las un una unos unas "
++    "es soy eres sos son esta estan estoy de del al en y e o u que como con por "
++    "para my your his her their our its i you we they am is are the a an of in on "
++    "at to and or it this that".split()
++)
++
++
++def _remembered_content_words(value: str) -> list[str]:
++    return [
++        word
++        for word in re.findall(r"[^\W_]+", value or "")
++        if _reading_fold(word) not in _REMEMBERED_FUNCTION_WORDS
++    ]
++
++
++def _missing_remembered_words(text: str, value: str) -> list[str]:
++    folded = _reading_fold(text or "")
++    return [
++        word
++        for word in _remembered_content_words(value)
++        if re.search(rf"(?<![^\W_]){re.escape(_reading_fold(word))}(?![^\W_])", folded) is None
++    ]
++
++
+ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+     """El texto público conserva los hechos que el payload le dio.
+ 
+@@ -3945,9 +3972,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+     # MEMORY1251: «red» was confirmed as «rojo» and «my favorite drink is tea»
+     # as «mi favorito es el té». What the memory keeps is quoted, not translated.
+     remembered = seen.get("remembered") if isinstance(seen, dict) else None
+-    if isinstance(remembered, str) and remembered.strip():
+-        if _reading_fold(remembered.strip()) not in folded:
+-            return "missing_remembered"
++    if isinstance(remembered, str) and _missing_remembered_words(text, remembered):
++        return "missing_remembered"
+     clock = payload.get("clock")
+     if isinstance(clock, str) and clock:
+         clock_defect = _clock_fact_defect(text, clock)
+@@ -10815,8 +10841,11 @@ class LlmRuntime:
+                 else "Include names and numbers from seen."
+             ),
+             "missing_remembered": (
+-                "Quote exactly what you will remember, unchanged and untranslated: "
+-                + str(_merged_observed(situation).get("remembered") or "")
++                ("Keep these words exactly as given, untranslated: "
++                 if response_language == "en"
++                 else "Conserva estas palabras tal cual, sin traducirlas: ")
++                + ", ".join(_missing_remembered_words(
++                    text, str(_merged_observed(situation).get("remembered") or "")))
+             ),
+             "missing_failure": (
+                 "Say the request is outside what you do on this PC. "

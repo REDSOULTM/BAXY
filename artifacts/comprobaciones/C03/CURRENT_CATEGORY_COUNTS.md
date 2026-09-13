@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación MEMORY1253
+# Categorías actuales — adjudicación MEMORY1255
 
-336/742 cubiertos; 406 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 210 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: e44ccbcaaaa99a1c3d33a2b277f16fb6e585c2e9818308496c97ea6bb34660a4.
+338/742 cubiertos; 404 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 212 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 55d6622c68a0009803d248de7fd7f1f6f32ba52594deb03d30c18981348438b0.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -27,7 +27,7 @@
 | Estado de ventanas y aplicaciones | 14 | 13 | 1 |
 | Identidad y capacidades del asistente | 19 | 16 | 3 |
 | Hora y fecha | 23 | 16 | 7 |
-| Memoria personal | 10 | 5 | 5 |
+| Memoria personal | 10 | 7 | 3 |
 | Correo | 6 | 0 | 6 |
 | Bibliotecas y fichas de juegos | 6 | 0 | 6 |
 | Contactos | 5 | 0 | 5 |

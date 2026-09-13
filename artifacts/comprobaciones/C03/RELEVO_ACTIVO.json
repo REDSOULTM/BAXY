@@ -152,26 +152,26 @@
     "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "MEMORY1253 adjudicado: 7 aprobados, 3 fallidos, 0 sin ejecutar; 2 créditos.",
+  "workStatus": "MEMORY1255 adjudicado: 7 aprobados, 1 fallidos, 0 sin ejecutar; 2 créditos.",
   "executionPausedByOwner": false,
   "branch": "codex/kiro-goal-c03",
-  "checkpoint": "336/742 cubiertos, 406 abiertos, 0 no aplican. MEMORY1253: 2 créditos explícitos de raíz.",
+  "checkpoint": "338/742 cubiertos, 404 abiertos, 0 no aplican. MEMORY1255: 2 créditos explícitos de raíz.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
   "surveyVerificationCounts": {
-    "covered": 336,
-    "open": 406,
+    "covered": 338,
+    "open": 404,
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "e44ccbcaaaa99a1c3d33a2b277f16fb6e585c2e9818308496c97ea6bb34660a4",
+  "surveyRegistrySha256": "55d6622c68a0009803d248de7fd7f1f6f32ba52594deb03d30c18981348438b0",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
-  "surveyCoverageLast24h": 210,
-  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–13 septiembre: 208 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MEMORY1253 añade 2 (H0157, H0149), 210 después. No se cuentan revalidaciones.",
+  "surveyCoverageLast24h": 212,
+  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–13 septiembre: 210 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MEMORY1255 añade 2 (H0452, H0506), 212 después. No se cuentan revalidaciones.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-13T20:47:46.276515+00:00",
+  "utcUpdated": "2026-09-13T20:56:47.905208+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -621,7 +621,7 @@
     "freeze_ended_at": "2026-09-12T13:33:18.245252-03:00",
     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
   },
-  "updatedAtUtc": "2026-09-13T20:47:46.276515+00:00",
+  "updatedAtUtc": "2026-09-13T20:56:47.905208+00:00",
   "currentContinuation1065": {
     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
     "quality": {
@@ -2298,29 +2298,29 @@
     "next": "FILES1205 completa: 19 ejecutados, 19 aprobados, 12 créditos (8 archivos en escritorio/Documentos, 3 carpetas en el escritorio, 1 carpeta en el sandbox), cada uno con dos pares aprobados. El proveedor de carpetas conocidas (BUILD1205) y los lectores de creación se demuestran: 18 creaciones verificadas por el producto y comprobadas en disco por raíz (existencia, tipo y hash del contenido literal), ninguna preexistente, todas eliminadas tras la postlectura. Archivos queda 15/32; restan borrados (fixtures en carpetas personales), listados del escritorio, contenido dinámico («que contenga la fecha», procesos), rutas absolutas, comprimir/abrir, resumir PDF y copia a pendrive."
   },
   "currentContinuation1207": {
-    "head": "772a1671972a298d95bc5d05c8d83f70b6718b04",
+    "head": "88f5afdf9b1001261ed26b10ef60e36d0277edc8",
     "quality": {
       "passed": 7,
-      "failed": 3,
-      "executed": 10,
+      "failed": 1,
+      "executed": 8,
       "not_executed": 0,
       "sealed_total": 8,
-      "segments_started": 10,
+      "segments_started": 8,
       "aborted_before_admission": 0
     },
     "new_credits": 2,
     "credited_ids": [
-      "H0149",
-      "H0157"
+      "H0452",
+      "H0506"
     ],
-    "registry_sha256": "e44ccbcaaaa99a1c3d33a2b277f16fb6e585c2e9818308496c97ea6bb34660a4",
-    "survey": 336,
-    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\MEMORY1253\\ROOT_ADJUDICATION.json",
+    "registry_sha256": "55d6622c68a0009803d248de7fd7f1f6f32ba52594deb03d30c18981348438b0",
+    "survey": 338,
+    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\MEMORY1255\\ROOT_ADJUDICATION.json",
     "resources": {
-      "seconds_sum": 197.09500000000116,
+      "seconds_sum": 135.48399999996764,
       "gpu_peak_mib": 3497.55859375,
-      "ram_peak_mib": 2397.53125
+      "ram_peak_mib": 1745.58984375
     },
-    "next": "MEMORY1253: 10 ejecutados, 7 aprobados, 3 fallidos, 2 créditos (H0157, H0149 con las variantes dev-01/dev-02). Las tres causas de MEMORY1251 (idioma, cita traducida, mensaje de fallo memory_disabled) quedaron resueltas; la comprobación literal nueva del dato recordado fue demasiado estricta con el cambio de persona y dejó sin final a H0506 y dev-04. Siguiente: MEMORY1255 con la comprobación por palabras de contenido (mente) para H0452, H0506 y sus variantes."
+    "next": "MEMORY1255: 8 ejecutados, 7 aprobados, 1 fallidos, 2 créditos (H0452, H0506 con dev-01/dev-02). La comprobación por palabras de contenido admite el cambio de persona y sigue rechazando la traducción. Quedan en Memoria personal los recuerdos (H0604, H0173: requieren un guardado previo en el mismo perfil) y H0174 (modelo). Siguiente: otra categoría por masa abierta."
   }
 }
