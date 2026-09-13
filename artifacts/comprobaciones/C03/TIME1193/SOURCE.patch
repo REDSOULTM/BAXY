@@ -1,0 +1,23 @@
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 2768c316..154b8c15 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -2443,6 +2443,18 @@ def _incomplete_scheduled_request(
+         return None
+     if clock is not None:
+         literal_clock = clock.group(0)
++        digits = re.search(r"\b(\d{1,2})\b", literal_clock)
++        hour_value = int(digits.group(1)) if digits else None
++        has_period = _has(
++            literal_clock,
++            r"\b(?:a\.?\s*m\.?|p\.?\s*m\.?)\b|\b(?:de\s+la|in\s+the)\s+\w+\b",
++        )
++        if hour_value is not None and (
++            hour_value > 23 or (has_period and not 1 <= hour_value <= 12)
++        ):
++            # «a las 99», «13 pm»: no part of day can make that hour exist, so
++            # asking morning/afternoon would be unfaithful (TIME1195 probe).
++            return ClarificationIntent((operation,), ("valid_hour_0_to_23",))
+         complete_clock = _has(
+             literal_clock,
+             r"\b\d{1,2}:\d{2}\b|\b(?:a\.?\s*m\.?|p\.?\s*m\.?)\b|"

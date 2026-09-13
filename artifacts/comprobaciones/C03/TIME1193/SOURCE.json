@@ -1,0 +1,17 @@
+{
+  "schema": "c03-time1193-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_incomplete_scheduled_request)",
+  "patch": "artifacts/comprobaciones/C03/TIME1193/SOURCE.patch",
+  "cause_measured": "Sonda sin GPU sobre los abiertos de agenda incompletos: «poné una alarma a las 99» producía la aclaración «am_pm_or_part_of_day_for_supplied_hour» (preguntar mañana o tarde por una hora que no existe: infiel), y «Set an alarm for 13 pm.» pasaba como reloj completo y caía al modelo. Las demás aclaraciones deterministas ya eran correctas: «a las 5» → periodo del día; «recuérdame comprar pilas» → cuándo; «avisame en 30 minutos» → intención de recordatorio sin contenido (el extractor no ancla título → pregunta del modelo).",
+  "change": "En _incomplete_scheduled_request, una hora numérica mayor que 23, o fuera de 1–12 con am/pm o parte del día, produce la aclaración «valid_hour_0_to_23» antes de la comprobación de reloj completo. Sin frases de salida; ninguna capa nueva.",
+  "offline_verification": "resolve_explicit_clarification_intent: «poné una alarma a las 99» y «poné una alarma a las 25» → valid_hour_0_to_23; «Set an alarm for 13 pm.» → valid_hour_0_to_23; «a las 5» y «for 6» → am_pm_or_part_of_day_for_supplied_hour (sin cambio); «a las 9 de la mañana», «a las 17:45», «a las 6 de la tarde» → None (completos, sin cambio); «recuérdame comprar pilas» → due_time. Baseline del reconocedor sin cambios. Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "TIME1195: H0121, H0343, H0222, H0371, H0585 con pares por grupo; sin efectos autorizados.",
+  "credits": 0
+}
