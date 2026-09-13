@@ -1,0 +1,19 @@
+{
+  "schema": "c03-time1139-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_canonical_due_utc, rama relativa)",
+  "patch": "artifacts/comprobaciones/C03/TIME1139/SOURCE.patch",
+  "owner_decision": "DECISIONES_DUENO_2026-09-13.md punto 3: «Elige la mejor opción pero BAXY debe poder hacer esto» → opción a de ESTADO_PARA_DUENO_2026-09-13.md: el producto programa al segundo entero hacia arriba (nunca antes de lo pedido) y publica esa hora exacta; el criterio compara la hora registrada (NextRun/StartBoundary) con la publicada.",
+  "cause_measured": "TIME1130/1134 índice 10 y ALARM_REPAIR983: dueUtc relativo con microsegundos (p. ej. 01:00:44.270822Z) frente a NextRun 01:00:44Z. TIME1139/PROBES.json demuestra que el Programador de tareas de Windows 11 normaliza StartBoundary y NextRunTime a segundos enteros por cmdlet y por XML: el criterio sellado (tolerancia 0 con fracciones) era insatisfacible por cualquier parche del provider.",
+  "change": "En la rama relativa de _canonical_due_utc (en/in N minutos|horas|días) el due se redondea hacia arriba al segundo entero cuando trae microsegundos; sin cambio si ya es entero. La rama de literal ISO y las ramas de reloj explícito no cambian (ya publican segundos enteros o el instante literal). Sin frases de salida; ninguna capa nueva.",
+  "offline_verification": "Con now=12:00:00.123456Z: «en dos minutos» → 12:02:01Z, «in 8 minutes» → 12:08:01Z, «dentro de quince minutos» → 12:15:01Z, «en 2 horas» → 14:00:01Z; con now entero «en dos minutos» → 12:02:00Z; literal ISO con fracciones se conserva. Sin tests (orden del dueño).",
+  "criterion_for_measurement": "TIME1185: (1) notification.schedule completada y verificada con taskName nuevo; (2) dueUtc publicado a segundo entero == NextRun observado en el Programador (postlectura de raíz); (3) dueUtc − duración pedida ∈ [lower, upper + 1 s] donde lower es la lectura de contexto previa al lanzamiento y upper el timestamp del inicio de la operación (redondeo hacia arriba de hasta 1 s); (4) final útil y fiel a la hora programada; (5) sin recurrencia no pedida. Tareas creadas por la tanda se cancelan por identidad exacta tras la postlectura.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "TIME1185: H0100, H0523, H0385 + 4 variantes relativas del panel 1134 + 1 límite.",
+  "credits": 0
+}

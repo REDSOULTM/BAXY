@@ -5294,6 +5294,12 @@ def _canonical_due_utc(
         else:
             delta = timedelta(minutes=amount)
         due = now + delta
+        if due.microsecond:
+            # The Windows Task Scheduler registers whole seconds only (TIME1139
+            # probes: StartBoundary and NextRunTime lose fractions by cmdlet and
+            # by XML). Publish the second the task will actually carry, never
+            # earlier than the requested moment (owner decision 2026-09-13).
+            due = due.replace(microsecond=0) + timedelta(seconds=1)
         return due.isoformat().replace("+00:00", "Z")
 
     folded_context = effect_intent._fold(context)
