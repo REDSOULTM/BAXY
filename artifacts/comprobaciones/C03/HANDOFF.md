@@ -1,3 +1,17 @@
+# Pausa por orden del dueño — relevo a Fable — 2026-09-13T01:07:02.092721+00:00
+
+**Codex detenido. No reanudar esta sesión sin nueva orden del dueño. C03 no está terminado ni bloqueado técnicamente.** Leer `PROMPT_FABLE_C03.md` y `FABLE_PAUSE_STATE.json`: sustituyen el siguiente paso/pipeline del handoff histórico de abajo.
+
+203/742 cubiertos,539 abiertos,0NA;0/35 categorías cerradas;C03 formal3/11. Registro SHA17e4991cf2e6a6d49647d1177ab0fef236563b78699ca2aa8192820ba49f93b2. Sin nuevos créditos desde AGENDA1121.
+
+TIME1134v6 índice10 ya ejecutado: final útil «Alarm scheduled for 01:00 UTC.»; FAIL por due01:00:44.270822Z vsNextRun01:00:44Z contra criterio sellado. 1ejecutado0pass1fail24sin ejecutar0créditos. Tarea propia cancelada exactamente, ausencia comprobada, EXIT0. Faltaba adjudicación habitual al recibir orden de parar; juicio y hashes conservados en FABLE_PAUSE_STATE.json. NO repetir índice10 con candidato actual ni medir11 antes de reparar causa.
+
+MESSAGING1136 entregado y leído por root, pero hashes/aplicabilidad aún no verificados físicamente y parche NO adoptado. Primera acción propuesta para Fable: revisión/aplicación y preparar MESSAGING1140 (aún inexistente) con fuente/pins nuevos. TIME1139 entregado sin parche: falta aislar precisión del trigger antes de registro; no reinterpretar criterio ni afirmar imposibilidad universal. AUDIO1137 y TIME1138 también entregados sin parche. Ambos subagentes terminaron; no producto/build/cancel activo en comprobación de pausa. No pruebas por orden del dueño.
+
+---
+
+## Handoff histórico conservado — siguiente paso superado por la pausa anterior
+
 # Handoff C03 — activo tras MESSAGING1131; siguiente TIME1134v6
 
 Goal completo vigente, encuesta primero. Rama codex/kiro-goal-c03; main intacto, raíz único escritor/GPU, máximo2secundarios. Última orden dueña: NO tests/dueñas/Fast/Full; builds sólo necesarios, sellos y medición real obligatorios. No afirmar verdes ni cierre. Formal3/11, categorías0/35.

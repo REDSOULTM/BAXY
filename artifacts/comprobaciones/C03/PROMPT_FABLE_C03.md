@@ -1,0 +1,65 @@
+# Goal para Fable: completar C03 de BAXY
+
+Continúa y completa íntegramente C03 — respuesta veraz de BAXY — lo más rápido posible sin perder calidad. El dueño detuvo Codex para entregarte este goal. Asume el relevo como único escritor: no esperes otro prompt ni reinicies la investigación o la campaña. Este documento incorpora las últimas órdenes del dueño; prevalecen sobre instrucciones históricas incompatibles.
+
+## Ubicación y arranque
+
+Repositorio actual: `D:/Perfil/Escritorio/ETC/Programacion/BAXY DEFINITIVO`. Rama de continuación: `codex/kiro-goal-c03`; preserva `main`. Remoto: `https://github.com/REDSOULTM/baxy-definitivo.git`. Último commit de producto/evidencia antes del relevo: `9aafd2fdf2c1f575f4f1748047f968c787e7fd22`, publicado. El commit posterior de relevo sólo añade documentación/estado.
+
+Confirma raíz mediante `git rev-parse --show-toplevel` y presencia de `Baxy.slnx`, `main.py`, `AGENTS.md`. No trabajes en el repositorio vecino `BAXY`. Comprueba `git status --short --branch`, el HEAD y ausencia de otro escritor/procesos de campaña antes de ejecutar. Codex detuvo sus ejecuciones y sus dos subagentes terminaron. Registra tu identidad real de sesión en RELEVO_ACTIVO.json conservando el historial; no inventes un threadId.
+
+Si estás en un PC desactualizado, primero `git fetch origin`; examina divergencia y WIP, luego actualiza esta rama por fast-forward si corresponde. No uses reset/clean/stash global ni sustituyas cambios locales. Las rutas privadas y los binarios dependen del PC: Git no los transfiere. El RAR inicial de Kiro ya fue importado y NO contiene el estado más reciente. Si falta evidencia privada, solicita exactamente su traslado y continúa trabajo independiente; no reconstruyas resultados ni rebajes cobertura por desconocimiento.
+
+## Lectura mínima y autoridad
+
+BASE significa `C:/Users/usuario/AppData/Local/BAXY`; C03 significa `artifacts/comprobaciones/C03/` dentro del repositorio.
+
+Lee en este orden: C03/FABLE_PAUSE_STATE.json, C03/HANDOFF.md, C03/RELEVO_ACTIVO.json, cabecera y tres últimos tramos de C03/CHECKPOINT.md, C03/CURRENT_CATEGORY_COUNTS.md, C03/ESTADO_PARA_DUENO_2026-09-08.md. Después lee `documentacion/00_IDENTIDAD.md`, `documentacion/sprints/Sprints comprobación/C03_ASTRA_AUTORIDAD.md`, `documentacion/sprints/Sprints comprobación/C03_RESPUESTA_VERAZ.md` y el contrato de campaña que referencian. Localiza y lee sólo las filas C03 de `03_MATRIZ_DE_CRITERIOS.md`. Consulta `docs/AI_CONTEXT_MAP.md` antes de explorar código. Usa la skill `.agents/skills/evidencia-baxy/SKILL.md` para evidencia histórica; no recorras biblioteca/artifacts a ciegas ni abras ficheros enormes completos.
+
+Los viejos puntos de partida 28/95/126/154 cubiertos, tramo802 y rama Goal-c03 son históricos: NO reiniciar desde ellos. Tampoco repetir el relevo Kiro ya validado.
+
+## Órdenes vigentes del dueño
+
+- **No ejecutar tests, dueñas, Fast ni Full.** Es la última excepción explícita del dueño para acelerar. Sí son necesarias compilaciones cuando cambie la fuente compilada, mediciones reales de producto, paneles sellados y adjudicación honesta. No declarar suites verdes ni criterios formales de validación cumplidos si no se ejecutaron; informa de cualquier requisito de cierre que siga sin demostrar.
+- La encuesta ordena el trabajo: cada tramo debe aumentar cubiertos o preparar directamente el panel/reparación que los aumentará. Ordenar categorías por requisitos abiertos, mayor a menor. No seguir una categoría a medias salvo que falte una sola tanda para cerrarla. Documenta por qué una categoría de mayor masa está condicionada antes de avanzar a otra.
+- Mecanismo demostrado por tanda >=80% o evidencia dueña existente: panel de 30–40 literales, 10–15 variantes y 5 límites. Mecanismo no demostrado: primera tanda corta 10 literales +10 variantes, reparar y pasar enseguida a grande. Población residual menor: justificarla, sin inflar casos ni repetir material para alcanzar una cuota.
+- Un case_id pasa a covered únicamente si su literal se ejecutó en el producto con el candidato actual, fue útil/fiel y al menos dos variantes pertinentes pasaron en esa tanda o una anterior de la categoría. Escribir verification_status al adjudicar, no al terminar la categoría. Los fallidos siguen open con causa; no repetir todo el panel por uno.
+- Sellar SHA de material/criterios antes de ejecutar. No traducir, plantillar ni reetiquetar material. Conservar 3 negativos y 18 sin marca como límites. Generalización real, español prioritario e inglés obligatorio; no exigir frases exactas ajenas a la rúbrica.
+- Aparcar H0675 («qué app usa más memoria»), OCR/capturas/providers nuevos, con reanudación exacta. Infraestructura nueva sólo cuando desbloquee >=10 abiertos simultáneos, declarándolos antes. Las reparaciones pequeñas de mecanismos existentes no son infraestructura nueva.
+- Un escritor canónico y una sola inferencia/GPU. Hasta dos subagentes por el límite de RAM heredado, con entregable y archivos disjuntos externos: preparación del siguiente panel y reparación causal. Sólo raíz integra, adjudica, modifica registro y hace commit/push. Si Fable no tiene subagentes, ejecutar secuencialmente sin fingir delegación. Cambia de estrategia tras dos intentos comparables sin mejora.
+- Simplicidad: sustituir capas defectuosas si hace falta, no acumular reglas/parches a frases. Catálogo tipado único; mente propone, kernel autoriza, provider ejecuta; nada se afirma sin verificación; terminales honestos; confirmación vinculada a invocación exacta; cero respuestas visibles fijas; modelo local y contenido privado.
+- No enviar mensajes reales a terceros por una prueba de encuesta. Permiso previo de cerrar aplicaciones no autoriza perder documentos ni cancelar tareas ajenas. Mantener BAXY cerrado para uso manual; mediciones ocultas autorizadas.
+
+## Estado comprobado al relevo
+
+**203 cubiertos /742, 539 abiertos, 0 no aplican; 0/35 categorías cerradas; C03 formal 3/11.** Última alta H0137 en AGENDA1121. Hasta el relevo, >=77 primeras altas documentadas en las 24h precedentes (28 Kiro +49 retorno); recalcula la ventana al continuar, no arrastres esta cifra indefinidamente.
+
+Registro privado canónico: `BASE/C03-survey-requirements336-private/requirements.jsonl`, 742 filas, SHA256 `17e4991cf2e6a6d49647d1177ab0fef236563b78699ca2aa8192820ba49f93b2`. No publicar textos privados. La tabla de categorías está en CURRENT_CATEGORY_COUNTS.md: principales abiertos música33, instalación31, web29, archivos29, incompletos27, mensajería26, vídeo26, apps25, audio24, agenda23. Las primeras tienen condiciones/fallos previos registrados: no preparar paneles destinados a fallar sin causa nueva.
+
+Modelo decidido: Qwen3-4B-Instruct-2507 Q4_K_M; no abrir otra campaña. Runtime `C:/Users/usuario/AppData/Local/BAXYRuntime/mind-runtime-v1.json`. GGUF `D:/BAXYRuntime/experiments/models/qwen3-4b-instruct-2507-a06e946b/Qwen3-4B-Instruct-2507-Q4_K_M.gguf`, SHA `3605803b982cb64aead44f6c1b2ae36e3acdb41d8e46c8a94c6533bc4c67e597`. Python `C:/Users/usuario/AppData/Local/BAXYRuntime/python/mind-runtime-v1/Scripts/python.exe`. BUILD1125 fue real y terminó EXIT0, App 0 warnings/0 errores y shutdown0; recibo `BASE/C03-repairs1125-build/BUILD_READY.json`. No es un Full. No usar BUILD1079, anterior al cambio App. Inventario1131 conserva fuentes Python anteriores: sellar las actuales, no reutilizar sus hashes como si fueran vigentes.
+
+Guardas: RAM libre inicial4000MiB/mínima768MiB; parada GPU3800MiB y techo4096MiB; tanda900s/turno120000ms. Una sola tanda; apagar build servers antes. Nunca rebajar guardas para forzar un resultado.
+
+## Último resultado y siguiente acción concreta
+
+TIME1134 v6 índice10 ya fue ejecutado: **no repetirlo con el mismo candidato**. Respuesta útil: “Alarm scheduled for 01:00 UTC.” Pero dueUtc `2026-09-13T01:00:44.270822Z` frente a NextRunUtc `2026-09-13T01:00:44Z`; StartBoundary también perdió fracciones. Root decidió FAIL por el criterio estricto sellado, no fallo de composición. 1 ejecutado/0 aprobados/1 fallido/24 sin ejecutar/0 créditos. La única tarea propia fue cancelada exactamente y su ausencia verificada, EXIT0; ninguna limpieza pendiente. Datos y hashes en FABLE_PAUSE_STATE.json. Falta sólo trasladar ese juicio a los artefactos habituales de adjudicación: no ejecutar para completar el papeleo.
+
+**Primera acción de producto recomendada tras completar ese registro: revisar y adoptar si procede MESSAGING1136.** `BASE/C03-messaging1136-diagnosis/`: PROPOSAL.md, DIAGNOSIS.md, REVIEW.md, IDENTITY.json y parche señalado por éste. Root leyó el parche completo, pero NO verificó físicamente sus hashes/aplicabilidad ni lo aplicó. Parche SHA `c9b703d80bf3e9a01a97e955600f9f1c643fabb5e0084062f26eab13e79a4c4e`; llm.py actual `43c62242ab3da7f6935f71afcc4665c89820fab8c7dbb4d64be8aac7ac225f30`; resultado propuesto `5ab7f5984dd1fc7132ac653f982fbe12f49293cb1967ab472b144bc940c05526`. Un único hunk: al generar pregunta sólo sobre canal para message.send, omitir el cuerpo del pedido del contexto generador; preservar objetivo original para continuación. Evita que la pregunta adopte la primera persona del usuario. No usa respuesta fija. Verifica identidad y `git apply --check`; revisa, adopta y publica. No requiere recompilar .NET si sólo cambia Python.
+
+Luego preparar sucesor **MESSAGING1140** desde `BASE/C03-messaging1131-proposal` y `BASE/C03-messaging1131-instrument-v1`, manteniendo byteexactos 8 objetos/16 wire y nuevos pins/candidato/perfiles. Material existente: dos variantes0/1 pasaron y literal H0584 índice2 falló por primera persona; 5 límites restantes sin ejecutar, índice6 conocido fallido sin causa nueva sigue excluido. Ejecutar pertinentes con observación fresca de ausencia de clientes, revisar hechos y acreditar H0584 sólo si cumple. No reutilizar preparación1131 después de cambiar fuente/registro. Nombre1140 propuesto, aún no existe ni está sellado.
+
+En paralelo, TIME1139 ya entregado en `BASE/C03-time1139-precision-repair`: no hay parche. Docs Microsoft no garantizan fracciones; no está demostrado que sea imposible. Falta aislar el trigger ANTES de registrar para saber si pierde precisión en `New-ScheduledTaskTrigger -At` o en el servicio. No redondear/inventar reloj/tolerancia ni reinterpretar criterio para dar pass. Preservar éxito de respuesta separado del fallo de precisión; no dedicar ciclos ilimitados a esto si hay cobertura independiente.
+
+## Pendientes y prohibiciones de repetición
+
+AUDIO1135 tiene joins de evidencia reales; AUDIO1137 es propuesta SIN parche y TIME1138 diagnóstico de unidades compactas SIN parche. MUSIC1127 parche pendiente está basado en llm antiguo y condicionado a metadatos reales, requiere revisión/rebase; no crear reproducción falsa. NEXT1132 sólo borrador 2 literales/4 variantes/5 límites, no sellado. INSTALL1128:10 juegos condicionados por evidencia de pertenencia/licencia, no prueba de que el usuario no tenga licencias. DIALOGUE1126 no propone arreglo justificado. Consulta esas carpetas exactas en BASE sólo al abordar el frente.
+
+No repetir efectos inciertos: WEB1102 índice2 inv49443d6e-1654-4fb8-86c8-b79fb7a6a79b; Spotify962 inv88672a39-9448-4096-accb-10d3f48873f8; MUSIC1077 play632be546-778b-4699-8e58-bebf5ea30ff8; MUSIC1082 stop50b6e70f-33bc-4f62-8ced-9c141f82b44b; Calculator/Settings/Explorer perfiles975/980/986. No cancelar tareas por prefijo: sólo identidad nueva del recibo y postread verificados, con ausencia previa. Conductor1077 mezcla misiones: perfiles separados no demuestran arreglarlo. H0675 sigue aparcado.
+
+Preserva WIP ajeno: .codex/config.toml, AGENTS.md, autoridades C03, .codex-remote-attachments/, AUTORIZACION_ULTRA_2026-09-10.md y artefactos antiguos PROCESS/APP_MEMBERSHIP/STATUS que aparecen modificados. Stage por rutas exactas; nunca `git add .`.
+
+## Ritmo y cierre
+
+Publica cada checkpoint con cubiertos/742, abiertos, NA, primeras altas24h, categorías cerradas/35 y filas C03/11. Si un día baja de20 cubiertos sin Full, explica causa y ajuste en ESTADO_PARA_DUENO. Prioriza crecimiento de cobertura y reparaciones causales; no confundir variantes aprobadas, compilación o documentación con requisitos cubiertos. Commit/push por adopción o tanda y handoff breve actualizado antes de compactar. Mantén actualizada la matriz por ownership y las ocho rutas de respuesta de C03; no cierres filas de C04–C09.
+
+Trabaja autónomamente hasta el cierre demostrado del goal completo. No pares en un plan, una tanda o un resumen. Si falta una condición externa, aparca ese frente con reanudación precisa y continúa los demás. No marques completado ni bloqueado por cansancio, presupuesto o un fallo aislado. Informa al dueño de resultados y límites reales, sin prometer fecha de cierre que no puedas justificar.
