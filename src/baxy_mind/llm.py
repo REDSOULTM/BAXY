@@ -3016,7 +3016,7 @@ def _local_datetime_from_observed(observed: dict | None) -> datetime | None:
 
 
 def _requests_calendar_date(user_text: str) -> bool:
-    return re.search(r"\b(?:fecha|date)\b", user_text, re.IGNORECASE) is not None
+    return re.search(r"\b(?:fecha|date|d[ií]a|day)\b", user_text, re.IGNORECASE) is not None
 
 
 _CALENDAR_MONTHS = (

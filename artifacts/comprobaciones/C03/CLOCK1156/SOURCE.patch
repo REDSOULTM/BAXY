@@ -1,0 +1,13 @@
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 50377339..a2b79902 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3016,7 +3016,7 @@ def _local_datetime_from_observed(observed: dict | None) -> datetime | None:
+ 
+ 
+ def _requests_calendar_date(user_text: str) -> bool:
+-    return re.search(r"\b(?:fecha|date)\b", user_text, re.IGNORECASE) is not None
++    return re.search(r"\b(?:fecha|date|d[ií]a|day)\b", user_text, re.IGNORECASE) is not None
+ 
+ 
+ _CALENDAR_MONTHS = (

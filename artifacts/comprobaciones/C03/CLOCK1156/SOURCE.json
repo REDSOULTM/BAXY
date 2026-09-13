@@ -1,0 +1,16 @@
+{
+  "schema": "c03-clock1156-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py",
+  "patch": "artifacts/comprobaciones/C03/CLOCK1156/SOURCE.patch",
+  "cause_measured": "CLOCK1156 índice 1 («qué día es hoy»): system.time completado y verificado (observed utc 2026-09-13T05:48:22, localUtcOffsetMinutes −180) y final «Hoy es el día 10 de abril de 2025, 02:48». Evidencia de producto: compose-audit con payload {clock: 02:48, operation: system.time} y situation con el instante observado; el borrador se publicó con la fecha inventada porque el validador de fecha sólo actúa cuando el payload trae `date`. Lectura de fuente: llm._compose_situation_payload añade `date` sólo si _requests_calendar_date(user_text) acierta, y ese reconocedor sólo cubre fecha|date.",
+  "change": "_requests_calendar_date acepta también «día» (con o sin tilde) y «day». Sonda sin GPU sobre la situation registrada: «qué día es hoy» y «what day is it today» reciben ahora {clock, date: 2026-09-13}; «qe ora es», «¿Qué hora es ya?» y «que hora es hoy» siguen sólo con clock; «y la fecha?» sólo date. Con `date` en el payload, el validador exige que el borrador conserve la fecha observada.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "CLOCK1157: H0243 con dos pares de «día/day».",
+  "credits": 0
+}
