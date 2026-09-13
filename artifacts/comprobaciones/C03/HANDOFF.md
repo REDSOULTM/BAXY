@@ -1,3 +1,13 @@
+# TIME1191 adjudicado — 2026-09-13T12:31:04+00:00
+
+**255/742 cubiertos, 487 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA c0e5700bd9009675312a3b163dea1a026fea56991c652c9cc726f53ec052a2a6. Primeras altas 24 h >= 129 (+7).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7f1c2397 (alias del enum de alarma, recordatorio con duración al inicio, validador de palabras recortadas; TIME1189/SOURCE.json|patch) con BUILD1158.
+
+TIME1191 (mismo material relativo de 1134): 15 ejecutados, 11 aprobados, 4 fallidos; +7 (H0641 «despertame en una hora», H0381 y H0576 «alarma en 2min», H0102, H0283, H0330, H0715 recordatorios relativos), cada uno con dos pares aprobados. Adjudicación 93762d18879790ddb1abcbcae85009aa9490e7123041e7f5c52a9b2c0f70617f; postlectura en TIME1191/ROOT_POSTREAD.json. Cinco alarmas nuevas con dueUtc == NextRun y bracket cumplido, canceladas por identidad exacta (911→910 cada vez); seis recordatorios en el almacén del perfil aislado con plazo dentro del bracket. Abiertos documentados: «contá N minutos» (cabeza ambigua con «cuenta»), «For the oven, start a timer…» (cabeza «for»), y los dos límites (ofrece cancelar otra alarma; niega alcance con la cláusula «pero»). Agenda queda 24/38.
+
+Siguiente por masa (CONDICIONES actualizadas): resto de agenda (14: reloj explícito, recurrentes, cancelaciones) con el mismo instrumento; cierre de apps propias (20, autorizado); proveedor de carpetas conocidas (archivos, ≥10, autorizado); network.ip.list sin PrivacySensitive (build). Reanudación: derivar de build_time1191.py; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 c0e5700bd9009675312a3b163dea1a026fea56991c652c9cc726f53ec052a2a6`; postlectura `scratchpad/time_postread.py <campaña> <i>`.
+
+---
+
 # TIME1189 adjudicado — 2026-09-13T12:16:42+00:00
 
 **248/742 cubiertos, 494 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 06c3a54d0762189aff75ad326ade2d582c3e65aafbcf238f0ecc83c391802a5c. Primeras altas 24 h >= 122 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a07f0b08 (duración compacta, despertar, start, cabezas de recordatorio; TIME1187/SOURCE.json|patch) con BUILD1158.

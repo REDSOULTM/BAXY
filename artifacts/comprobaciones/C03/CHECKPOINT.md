@@ -1,3 +1,25 @@
+## TIME1191 — estado vigente 2026-09-13T12:31:04+00:00
+
+Parcial: 11 aprobados, 4 fallidos, 0 sin ejecutar; 7 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 255/742 | 487 | 0 | >=129 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 122 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; TIME1191 añade 7. No se cuentan revalidaciones.
+
+Siguiente acción: TIME1191 completa: 15 ejecutados, 11 aprobados, 4 fallidos, 7 créditos (H0641, H0381, H0576, H0102, H0283, H0330, H0715). Las tres reparaciones de TIME1189 se demuestran: el despertar crea la alarma (alias del enum), el recordatorio con duración al inicio se crea con el contenido íntegro, y el recordatorio inglés publica su respuesta. Cinco alarmas nuevas con dueUtc == NextRun y bracket cumplido, cinco tareas canceladas por identidad exacta (911→910 cada vez); seis recordatorios en el almacén del perfil aislado con plazo dentro del bracket. Abiertos documentados: «contá N minutos» (cabeza ambigua), «For the oven, start a timer…» (cabeza «for»), y los dos límites (sustituto de cancelación; negación falsa con cláusula «pero»). Agenda queda 24/38; siguiente: reloj explícito y recurrentes del material de agenda restante.
+
+Evidencia: `artifacts/comprobaciones/C03/TIME1191/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 265.34 s acumulados; pico GPU 3497.56 MiB; pico RAM 1732.40 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 15; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque TIME1191 precedente. -->
+
 ## TIME1189 — estado vigente 2026-09-13T12:16:42+00:00
 
 Parcial: 6 aprobados, 9 fallidos, 0 sin ejecutar; 0 créditos.

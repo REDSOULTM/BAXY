@@ -1,6 +1,6 @@
 {
   "schema": "c03-time1189-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/planner.py (_ENUM_EVIDENCE_ALIASES), src/baxy_mind/effect_intent.py (reminder with leading duration; _incomplete_scheduled_request preface), src/baxy_mind/llm.py (_truncated_fact_word)",
   "patch": "artifacts/comprobaciones/C03/TIME1189/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "TIME1191: mismo material que TIME1189.",
-  "credits": 0
+  "measurement": "TIME1191: 11 de 15 aprobados, +7 (tres alarmas y cuatro recordatorios con dos pares cada uno); las tres reparaciones demostradas (despertar crea la alarma; recordatorio con duración al inicio creado íntegro; recordatorio inglés publicado).",
+  "credits": 7
 }
