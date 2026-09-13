@@ -4104,6 +4104,33 @@ _DEICTIC_CLOSE_REQUEST = re.compile(
 )
 
 
+_DEICTIC_WINDOW_MUTATION = re.compile(
+    r"^[¿?¡!\s]*(?:maximiza|maximizar|maximize|minimiza|minimizar|minimize|"
+    r"restaura|restaurar|restore)(?:me|la|lo)?\s+"
+    r"(?:"
+    r"(?:(?:la|the|esta|this|esa|that)\s+)?(?:ventana|window)"
+    r"(?:\s+(?:activa|active|actual|current))?|"
+    r"(?:the\s+)?(?:active|current|foreground|front)\s+window|"
+    r"(?:la\s+)?ventana\s+(?:que\s+(?:esta|tengo)\s+)?(?:en\s+)?"
+    r"(?:primer\s+plano|adelante|al\s+frente)|"
+    r"(?:the\s+)?window\s+(?:in\s+front|in\s+the\s+foreground|on\s+top)"
+    r")[\s?!.]*$",
+    re.IGNORECASE,
+)
+
+
+def deictic_window_mutation(folded: str) -> bool:
+    """«maximizá esta ventana», «minimize the window»: change the window in front.
+
+    A maximize/minimize/restore whose only referent is «la ventana», «esta
+    ventana» or the foreground window binds window.active, never a window
+    inventory from which some other window could be chosen. A named window
+    («la ventana de Chrome») keeps its named resolution.
+    """
+
+    return _DEICTIC_WINDOW_MUTATION.match(folded) is not None
+
+
 def deictic_close_request(folded: str) -> bool:
     """«cerrá esta ventana», «cerrala», «close the active window»: close what is in front.
 
@@ -6158,7 +6185,8 @@ def _window_domain(text: str) -> bool:
             r"\b(?:ventana|window)\s+(?:activa|active|actual|current)\b"
             r"(?!\s+(?:de|del|of|para|for)\b)|"
             r"\b(?:ventana|window)\s+(?:esta|is)\s+(?:activa|active)\b"
-            r"|\b(?:ventana|window)\s+(?:en\s+)?primer\s+plano\b"
+            r"|\b(?:ventana|window)\s+(?:que\s+(?:esta|tengo)\s+)?(?:en\s+)?"
+            r"primer\s+plano\b"
             r"|\bforeground\s+window\b"
         ),
     ):
@@ -8576,7 +8604,8 @@ def _is_direct_request(text: str) -> bool:
         r"dale(?=\s+(?:enter|intro|return))|"
         r"llevame|"
         r"devuelvele|devuelve|devuelveme|"
-        r"maximiza|minimiza|restaura|escribe|escribi|escribele|escribile|write|type|"
+        r"maximiza|maximizar|maximize|minimiza|minimizar|minimize|"
+        r"restaura|restaurar|restore|escribe|escribi|escribele|escribile|write|type|"
         r"selecciona|select|copia|copiame|copy|edita|edit|convierte|convert|"
         r"elige|elegir|choose|transforma|arrastra|drag|make|"
         r"navega|navegar|navigate|ve|go|clic|click|"
@@ -11640,6 +11669,7 @@ def _review_application_and_window_effects(
             folded,
             r"\b(?:activa|active|actual|current)\b",
         )
+        or deictic_window_mutation(folded)
         or context_window_active
     ):
         matches.append(
