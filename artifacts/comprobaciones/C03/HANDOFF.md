@@ -1,3 +1,13 @@
+# WINDOWS1213 adjudicado — 2026-09-13T14:52:48+00:00
+
+**291/742 cubiertos, 451 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 9545684bb6cc583024b444c42f5569be3d60f38b0f49c6e3d8c70bc40eecf845. Primeras altas 24 h >= 165 (+6).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 117110ff con BUILD1205; ventanas tituladas nombradas y resto contado, cantidades por línea y veto de idioma sobre la copia enmascarada en WINDOWS1213/SOURCE.json|patch.
+
+WINDOWS1213 (6 inventarios, 2 pares, 1 límite; lecturas de sólo lectura): 9 ejecutados, 9 aprobados; +6 (H0023, H0103, H0209, H0309, H0663, H0053) con los dos pares aprobados. Adjudicación 7e4cad59c02c892839459db3e283977a5ffb87f8cf34058a8d91c497320b427f. Con 22 ventanas reales, cada lista nombró las diez tituladas literalmente (incluidas las dos «Configuración») y declaró las doce restantes, en español e inglés, en el primer borrador y en 15–17 s; «y cuántas ventanas?» contó 20/22. Cadena de reparaciones de esta categoría: WINDOWS1209 (proyección acotada) → 1211 (alcance «restantes», tartamudeo sobre nombres) → 1213 (sólo tituladas, cantidades por línea, idioma sobre copia enmascarada). Estado de ventanas queda 13/14 (resta H0043).
+
+Siguiente por masa: cierre de apps propias (20, autorizado; instrumento con turno revisado y ventanas propias), archivos residuales (borrados con fixtures propios, listado, contenido dinámico), apps (4 léxicos), H0043. Reanudación: derivar de build_windows1213.py (BUILD1205); `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 9545684bb6cc583024b444c42f5569be3d60f38b0f49c6e3d8c70bc40eecf845`. Nota operativa: el runner aborta antes de la admisión si la RAM libre baja de 4000 MiB (Opera GX del dueño en primer plano no se cierra); esperar, no forzar.
+
+---
+
 # WINDOWS1211 adjudicado — 2026-09-13T14:43:00.547452+00:00
 
 **285/742 cubiertos, 457 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA d703eaee45dbc71ee4af2b0d0582a2d22adcf0bd7ab10f93964207537e917185. Primeras altas 24 h >= 159 (+0).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 2f1ba9aa con BUILD1205; alcance «restantes» y tartamudeo sobre nombres observados en WINDOWS1211/SOURCE.json|patch.

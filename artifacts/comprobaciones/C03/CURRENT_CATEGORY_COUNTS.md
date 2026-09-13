@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación WINDOWS1211
+# Categorías actuales — adjudicación WINDOWS1213
 
-285/742 cubiertos; 457 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 159 primeras altas (159 anteriores + 0 en WINDOWS1211; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: d703eaee45dbc71ee4af2b0d0582a2d22adcf0bd7ab10f93964207537e917185.
+291/742 cubiertos; 451 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 165 primeras altas (159 anteriores + 6 en WINDOWS1213; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 9545684bb6cc583024b444c42f5569be3d60f38b0f49c6e3d8c70bc40eecf845.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -24,7 +24,7 @@
 | Estado de hardware y sistema | 40 | 29 | 11 |
 | Organizar ventanas y pestañas | 13 | 0 | 13 |
 | Conversación social y ayuda general | 31 | 25 | 6 |
-| Estado de ventanas y aplicaciones | 14 | 7 | 7 |
+| Estado de ventanas y aplicaciones | 14 | 13 | 1 |
 | Identidad y capacidades del asistente | 19 | 16 | 3 |
 | Hora y fecha | 23 | 16 | 7 |
 | Memoria personal | 10 | 0 | 10 |

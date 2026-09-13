@@ -1,6 +1,6 @@
 {
   "schema": "c03-windows1213-source-adoption-v1",
-  "status": "adopted_unmeasured",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/window_prose_facts.py (_named_inventory_subset, project_window_inventory, _inventory_identity_counts, _inventory_fact_defect, _inventory_quantity_scope, window_status_assertions); src/baxy_mind/llm.py (compose_visible_defect: veto de idioma)",
   "patch": "artifacts/comprobaciones/C03/WINDOWS1213/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": null,
-  "credits": null
+  "measurement": "WINDOWS1213: 9/9 aprobados en el primer borrador (15–17 s); seis inventarios acreditados con los dos pares; listas de diez tituladas con las doce restantes declaradas en español e inglés.",
+  "credits": 6
 }

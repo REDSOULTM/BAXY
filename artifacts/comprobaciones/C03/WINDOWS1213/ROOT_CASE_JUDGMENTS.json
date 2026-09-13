@@ -1,0 +1,538 @@
+[
+  {
+    "index": 0,
+    "case_id": "H0023",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      6,
+      7
+    ],
+    "reason": "Nombró las diez ventanas tituladas y declaró las doce restantes; dos pares aprobados.",
+    "observation_note": "Final revisado con una admisión; una lectura verificada; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "72d38191f718cbf63f67eb8b71aa4f03661e867b5479b64d55f342ebd99f9dda",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-00\\EXIT.json": "d864dfd8d54eb97b67bb29a001574932f303e8ca05c1ea54b6121a22643533da",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-00\\RESOURCES.json": "0dfaee7944c0ee8a3e79e8ef14f6193124760f8bfb4de36959c3141f939b2f47",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\profile-owner-00.json": "2e623ad0453af7f96ed115056eed952b0202e2a2f3fd9001b10710cbc6c4bad8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-00\\PREREG.json": "ccde74ffc0e87137b767039bf89f65430f17b20e13bf1740a09da01d5f881ec8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-00\\capture\\events.jsonl": "229834cc9e8acacdbd6fe281d3e1c0ce38a94ac9b43a515f590f9a888f0d41f2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-00\\turns.jsonl": "20f564a6782058489aab03ed27a1fdc8c076574373d27416564e94ca557f1307",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\fixture-00.json": "f9aba128c672c11ea3acf3185b1dac4ad044eb6370795d20afac6db45efdc12d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-00.json": "94b46c60d61d47716c74549f2ecd41dbb4bde1de36699fe42f16849266121079",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-prelaunch-00.json": "5e59f095df2d589ea6b2b601a60c1c6304a5c09353a207b08dfa469037533ea2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-00\\case-observations.json": "6af728f420190f08983767b68abba08d5efe37a4323a53e4ae7d73b9d5cba9b4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-00\\journal-before.json": "03fef1693be6bb19cee0164663ee1072aff49657ef5244b371a83e73e161dc4b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-00\\journal-after.json": "65a8f95e38380418a41522747e84466f1d54a1d9f17aace6b42c11b62de4e392",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "896e54cb241c1c2e82260278ce6a93d31b8fd7a39910ebc9b33bffb6b2e52929"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "e125ae11-1e99-4995-af45-7bc595b4e82c",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "de988c28-a11f-454f-9363-3643dfa7e599",
+        "operation": "window.resolve",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "case_id": "H0103",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      6,
+      7
+    ],
+    "reason": "Nombró las diez ventanas tituladas y declaró las doce restantes; dos pares aprobados.",
+    "observation_note": "Final revisado con una admisión; una lectura verificada; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "5aa7ed8ba97678c4d1fefdfe4567e5d766956f44721454ad33e9aeba5e39509d",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-01\\EXIT.json": "a8ae9c386bb9dc3024e7b6d3943c610366a0d1c638966f08dd63f267c3e70294",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-01\\RESOURCES.json": "0043c7428ad227d99685d860d2609d4c04f02524333adee07f8bac48703a7b56",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\profile-owner-01.json": "255ce8374672d0fcd80abea1c6de190af093a49de91b6760d37ba8052bae07ad",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-01\\PREREG.json": "1d1f39cd310ebc15acc9c09b062235c392f11431445a85aa22f5cde8cac5b342",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-01\\capture\\events.jsonl": "679a0fe4b4d70dff4b1033b20541c236ab85f7099d08f82ac3cf46d497b9f8cb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-01\\turns.jsonl": "a244382a81f70bcb6cba69013cdfbf6776717048434d916cb458033a44c60a76",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\fixture-01.json": "48572a513dc2190200bfe3ce5908d4655cf1bb235f6632060793598a04a0676f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-01.json": "ab34356ab0d26696e92f4c89fc534c1cb493567d03d21092a75bd017b78859ee",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-prelaunch-01.json": "962cd42f50e214ff1c804c6f14bf9df8e9af383786f331f424a1106b117b5f28",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-01\\case-observations.json": "fb6ac6958837c90e8051a78618abafa965b20bf8517138c72cdba43fbb5710d2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-01\\journal-before.json": "c8ae301955809d526596908abed3dd8df74b1fafc804bff8bd87bceb14653b62",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-01\\journal-after.json": "2f3b4c1b6cddb7807178156dbd5ff8a36dd9985aea713ac1e47094cee5158650",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "c599c8c7a36b2b3222c613dd6b1d60f7af618e493325e3d650831e9df71280b9"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "965e10ff-fb65-4e51-8042-30538cc1ca21",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "b4ff6baa-2ca5-45f1-803b-0352551a4679",
+        "operation": "window.resolve",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "case_id": "H0209",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      6,
+      7
+    ],
+    "reason": "Nombró las diez ventanas tituladas y declaró las doce restantes; dos pares aprobados.",
+    "observation_note": "Final revisado con una admisión; una lectura verificada; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "64f23a81a138fb0277dd277ca5c1ccb686798aa81d8db5e862a08f48bce89a84",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-02\\EXIT.json": "a662486f6db9c268cb3d357ee81de1669d3897ebfcd502373c7d48b127308b64",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-02\\RESOURCES.json": "d062ff82a18d068ed82b1e14097cf67a9009c5f5dbf9cf5ab38a7427fa18f96e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\profile-owner-02.json": "bdc0b56f445cf26a935682f10255f0c4c9d8081ee5319fd52abfc3214815be83",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-02\\PREREG.json": "9c7ff7d26b9656e599cea3c8845b4bfeb2b43f94bcb14663dfd081a3da3712f3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-02\\capture\\events.jsonl": "84f8bab9db42d63278df64a1c0e7e5fb8f4767cfe4b8f2bc79bdca9167e5496c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-02\\turns.jsonl": "4cd05d815f6e5da053f0ea15dca1aa577e1472ed3ccde7246aad7311d0146a7e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\fixture-02.json": "a3419ad2c8a4912742f42bb3b94f4dcd4567e072826938b42dc46860ec59e3b2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-02.json": "4fe15454d6c9c974412045b6eb6807f9ea2058d329b2c88fdaa24192d8864d3e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-prelaunch-02.json": "e1a4be8c1541629db7436d8f59878a98c7a5fb39c5cf36d317554c18cadab431",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-02\\case-observations.json": "3f80c41e78671260cab57000a10f7630593c871165583c9dc4d9bd5c5a3eda67",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-02\\journal-before.json": "497207ce7db0d1c0e6b02c956e1e0ad43ba63cddfb760455f2443d38f36e9770",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-02\\journal-after.json": "83fa1d678d090724bde245db08d4a2b0a72083a4449576f2d975659809c4f506",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "95879c559ec656215d74d353c39f6c8fbd3fdf8e2bca2b6ca751ebc1972fe2c5"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "69ff08b2-e87d-47cd-a6e9-f2014a51e54e",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "d3e7c630-8d5d-4554-8c2d-9e964563397c",
+        "operation": "window.resolve",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "case_id": "H0309",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      6,
+      7
+    ],
+    "reason": "Nombró las diez ventanas tituladas en prosa y declaró las doce restantes; dos pares aprobados.",
+    "observation_note": "Final revisado con una admisión; una lectura verificada; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "292943dde5b1a48778f0e1e67236a7cae9eecef96ca0662cc8d65cba131ead53",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-03\\EXIT.json": "a199a8086d8717cc923c16e134b578f4cf46fb24d53d5b65da321084473e92f4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-03\\RESOURCES.json": "444678e7854a49f2f04a03f685e5cfb969a663920f614a98ef9d5a35b95a3380",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\profile-owner-03.json": "5e6302c63a388b5fe5a1344aa23661aab02560c48d16115510042621d0320f78",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-03\\PREREG.json": "d7e28a4f1b4cb05a0cb79eed8c49b18d78c4436faf35d8e0a61c5fe8db6c7293",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-03\\capture\\events.jsonl": "056d20e9c6359e5e155f230fdc8c1f3b9133ffea808247510c91a967b35a2b69",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-03\\turns.jsonl": "3206826795e778026aedefcdd1f76dc0ce68ec965aa8f08a1bf8dc6ba08b4880",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\fixture-03.json": "dd2641c28dc43978dab010036090a10915cc072b343fe32725fafc048af5f20a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-03.json": "104710e94f2716017ff8c865c013893ba2559ee62e1cd75054537a8fc0623d7e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-prelaunch-03.json": "4745a0c1717bf2f416e147f786c276cc8bfc2a3e69dcffc001db75826e7881c8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-03\\case-observations.json": "2a25986aa3c43fb562e81a5fe650710fdb74c8c5c2c735fe639a50f3d2388b7b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-03\\journal-before.json": "0adec9b8d2b1e14fa8b18961c1a56ca616906bec42d1aa4091222de5332fe977",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-03\\journal-after.json": "cfec611b191e08666e2a643d7074d77f16bd04dfbc0ff5a081fa5b0a932820ee",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "4d134b7a97e7c4babbd08a826d85dc37b31d91ba6c0d3330ab3eb55c98171ff7"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "c44f0a52-e854-401e-be6a-56b1248c63e5",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "c6077988-483d-40a3-ba5b-854802d51ddc",
+        "operation": "window.resolve",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "case_id": "H0663",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      6,
+      7
+    ],
+    "reason": "Nombró las diez ventanas tituladas y declaró las doce restantes; dos pares aprobados.",
+    "observation_note": "Final revisado con una admisión; una lectura verificada; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "53460c1d25b57b5a71cdbbed2e092bdc45a2fce348cc3b25959194ecd9e87780",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-04\\EXIT.json": "a70ebfd01f3c12a6aadbb964aef061ef2c399bde59dd24aed75d0afc8125a082",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-04\\RESOURCES.json": "76d48c07ac3f29831b92f6585d4b21a5b346a13a627cae18f773fa7d5227567f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\profile-owner-04.json": "88947fc8d2e40a2b87878c3a39f4ae982499bb07299edcfa8a4a096b61251043",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-04\\PREREG.json": "07690ee7ab50e1d4bddbf4a1e89c4090ffd23d409e50e3e95fa3b3c5a025d257",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-04\\capture\\events.jsonl": "bc16b1f19aa9ddc3982e468c0ff6631755da6e6c65cadc8b7add3db25c61d487",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-04\\turns.jsonl": "2c80627add87f61fb22e017ad42fa3cb711f1b627539209b6173dc29ba0925d8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\fixture-04.json": "9344dd985319bf0e206f116fc13c82a488ade05c9499cefc73f46dd4db54f2a9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-04.json": "452c8704998084dbe9e9be8f77947b698c901b888fc2cc66f291171801f9289a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-prelaunch-04.json": "11d92358fcfffebbd4eb800b8a3ae38a03560815d995708306a4d16f8d34365c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-04\\case-observations.json": "0d90241b4e5481b2faabd600d659ad7fae8522bd4233c3d552bf68192f397545",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-04\\journal-before.json": "987465c7eaa07b58cf7128df4a0cdc17f092722713277440e9bd7af098e9f1ec",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-04\\journal-after.json": "83f13dcc1e82c60216b5a05a6e9d07c54f6b05fee2209b2d781d182b1d9a35d3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "90bf07a143c153131f6c7ae319db1892a21b1754fe8d7f037f9169d5d5ac019f"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "5b417d5b-9f40-41f2-ba79-620db88d1dce",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "7498f598-8192-44ac-8566-3fc5260a231d",
+        "operation": "window.resolve",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "case_id": "H0053",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      6,
+      7
+    ],
+    "reason": "Contó las ventanas observadas y la página; dos pares aprobados.",
+    "observation_note": "Final revisado con una admisión; una lectura verificada; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "ee4bca776dac4cee99ec50a1392555f991540dd371a51d440e9333deead50cb0",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-05\\EXIT.json": "603ed88e40e7c4be2cc08472cc9dd5751d7e55dc6733e891c64b79179081fb93",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-05\\RESOURCES.json": "74127eacc1574a926d4d21c268634f92febb63651cf7e211122d1292e5ed9f4d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\profile-owner-05.json": "c60b0f3d608d52c938403ff8ae310da8f10f925c41ebcf8a944a3ee7dcc2c815",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-05\\PREREG.json": "b26c08991e29e8f798b3eaf0f732f08f183e5a43d80b10b04d81676cdfdfa8eb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-05\\capture\\events.jsonl": "403e266cdac41b355a13fb310cfb691c92fcb3f721d1f55aed7d661838ba7095",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-05\\turns.jsonl": "c1d038d00e6eabe85777c8ed6a75817440136dda6d4c21dda2ed67481fdcaf86",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\fixture-05.json": "643b35c323eb00eb6b0864f941d3c4cd9252bafdfdd928d7407babd3db7bf394",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-05.json": "a52d5af0c05d7abcc3bf8684a8f90f1fa103535ffab91af3cb1fd574ea559bae",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-prelaunch-05.json": "f46fd962e86a89bb4f9f6358ae90b8a7ea534a408fb1188a4e68dd4490712d2a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-05\\case-observations.json": "d0157cfe4ad255aada6c41c8be58374f82993b0fb01d691e956199b38491616d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-05\\journal-before.json": "1c52b81e83e95678cc986e0a0703c9fa74a081d8c7939df2d072e4daef9eb6e7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-05\\journal-after.json": "ad346a4d13a53f339b9fa87ea1d165ada6f4ffe08b8755adcb27f378f509ee7a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "67082a6dc4a50ce0cb6b9b3815c117f18704a768038e8a00c102736db763c7f8"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "53b2c27f-06b8-4a68-b2a9-02c084087452",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "503dc11f-19a1-436a-aee3-7dc4bcd4d763",
+        "operation": "window.resolve",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 6,
+    "case_id": "windows1213-dev-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Variante original aprobada.",
+    "observation_note": "Final revisado con una admisión; una lectura verificada; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "b747b537f974c8714018ab5b2fcd073e265f861d83c2cc12ff21b583756ed812",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-06\\EXIT.json": "909f09680bf573722b6058abcba645ffb1298c932e22975ac833508b138724e5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-06\\RESOURCES.json": "b1408528ce845d3a66390e4809a697c135f0bfe29cc9e463ecb47ea4cfd4b9cb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\profile-owner-06.json": "690688deff6d488a50d0d04c8e391f90631b05a2fb1f184b2e6dc800f320c9f4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-06\\PREREG.json": "d3b76204b920ba8cfa7de6ad2cd6e76bd0dcb49f27f74256a608b4ac70897d24",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-06\\capture\\events.jsonl": "7a8371554b74b57df82fef08d7b42c72ced2081044dd88d4fadf197cc7767319",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-06\\turns.jsonl": "43a9af16b3e5efa953e8984e12a2cd3cd7e56273cf6f558049f13f32f8ef7822",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\fixture-06.json": "94f0b2a51b9422f13f8a5b724eaa20f8d54edb9ce1db516545731935252e65fc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-06.json": "ab63371219b6a8896f1ea5af8f4ae41f78b2e9b34c3c726f5fd94ecbb5848049",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-prelaunch-06.json": "f1903c6c2d694a162a94941645f592a3364f085e13271b051e531f6e914fd619",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-06\\case-observations.json": "1c3a644aca26fa81eb1fc6bdb21e44a0fd1f3013df574a8708fb62eae286bd51",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-06\\journal-before.json": "72f53f2674daf3f69acaf4b943e1437b6d895c8f9190325de725bdff5faee4ba",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-06\\journal-after.json": "bfc38a75f8f99ce9729cfb7750d1f561b6f19111911d3be575b30ef1dcac7053",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-06\\journal.snapshot.jsonl": "2f54118944a57c98c926d30b9f47bc1393c65123336bad7a01f9896cce94416a"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "87c9a94a-9ea1-4638-898c-f4e30289a8c0",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "7bfd1f96-ebd7-4fb9-a711-7634495b4645",
+        "operation": "window.resolve",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 7,
+    "case_id": "windows1213-dev-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Variante original aprobada.",
+    "observation_note": "Final revisado con una admisión; una lectura verificada; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "0ae5b3cc37b9c386b8cafd4660d3586c8f9bdfb4ac9102b76078b38bbb802f94",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-07\\EXIT.json": "82b4b796393c46ac797f8c6267dd2c56f315de2a849fbb2fc2cab3d99da48d29",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-07\\RESOURCES.json": "cfa8bb9c63aa6e255d1d9a4f83f414115ee6eca1134adb879b5fd561b5eca9da",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\profile-owner-07.json": "8915a307ba3e999296252e3add8d85dce1a1d12a4e5b22b8c419ac03b8018f25",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-07\\PREREG.json": "11c98d4038d194d17df2fc0ee87d2e2b14808bfd984d95a3545227067d5c184f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-07\\capture\\events.jsonl": "8e2229d4e7b6f83655b9459791c6dd7537731817f44922932437cf98133fe955",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-07\\turns.jsonl": "407511cbdab29a2dad57a53db232d9dc60f5c1f06ddbc45d79172298bcf61b1f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\fixture-07.json": "26da3591973d197c663635fdf7ac4f63d2010a09ec0c600afd66ee9c6bb43060",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-07.json": "5ee01137ad10f6209789010a760ec53dffaa061f879a409d4892eb9192624b5a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-prelaunch-07.json": "bdea599aa918215ed60726d34191e6fd879076faa80b2093493f1a0300259634",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-07\\case-observations.json": "aae913bc27bf57ba07ebd8a88474dc4167d0f1eac3f121aa03eb6732141d7e3c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-07\\journal-before.json": "0e9ab0774abbb678cb802be6c2fa87909972411d2a1d5efa41e8e970f8d478b4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-07\\journal-after.json": "25edb28d5f0f7862e714228c0ca14c3751fd1e21ffb54e8b9dfcae0e7164934f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-07\\journal.snapshot.jsonl": "bc31528df45f5f7cb6751f2776ba5a6592a5987049568cec008e4fac6319011e"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "f5854a12-4161-4c44-bee3-21d097a28298",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "d948c8a7-8e1c-48ee-b287-9c946d647e58",
+        "operation": "window.resolve",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 8,
+    "case_id": "windows1213-boundary-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final revisado con una admisión; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "4cc65cecc973f850a1fb5e5a113ce6558e464f24dd891f5a8a33b8ab5be0c085",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-08\\EXIT.json": "33fca8c7052539cff3a0feb74b8e278ecb9b2f9b98e77bc6327e87d51d301621",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-08\\RESOURCES.json": "d71c13fe6ac37e8f34c1695e28dd36e65d2bc17e70272276628a0a507178f8ac",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\profile-owner-08.json": "9d24f9810e1e04a3bc6b99d85ac68ce4df6b0a7fcbdb560af4158319fa73fd0e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\results\\case-08\\PREREG.json": "7e1f8458a85b29e3aaff346dc73d0560da4327ba7de1743e4a212b6bb2356623",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-08\\capture\\events.jsonl": "ee2f11c20f7be464a65ee8ce05a2359ee0735f27b673ce53c55b819cccd3e3e4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-08\\turns.jsonl": "65c552afe2bda974d18ff17f289abc2321470c2e694c743d4964297b10cc0780",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\fixture-08.json": "fceb21f98c71e165a2f7ce2574707c5a5f2f7426582c9aadd7a142f8dfda8f36",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-08.json": "62486cc9f63d6d03f8983c1f29df7107e5b458a06f75a5c40a854148ed365920",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\context-prelaunch-08.json": "e2770e3b3c1ffbe98b441176b93fc46fac92670bec9d65e99f691b8068a07dde",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-08\\case-observations.json": "f8b61e85900218788c6e998ff5f77b34e1ec754cb9f1a7ce632d2052d5b4c65f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-08\\journal-before.json": "c52c27fc6267d79da866e3f177c86fe4d0ae2cdb0dcbc25e07d09f15423a176a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-08\\journal-after.json": "441e301ed481a8a276ff2ee3adda7f5c9674055142bb2c2957e90ca837638828",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1213-instrument-v1\\private\\run-08\\journal.snapshot.jsonl": "b038e5e83373c992bf45689344528a78b662bcb0263aea413a87e457a140d7cb"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "642f2b43-8caf-423a-aca2-2ca79132fcd7",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  }
+]
