@@ -1,0 +1,17 @@
+{
+  "schema": "c03-network1165-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py",
+  "patch": "artifacts/comprobaciones/C03/NETWORK1165/SOURCE.patch",
+  "cause_measured": "NETWORK1161 índices 10–11, NETWORK1163 índice 5 y NETWORK1165 índice 4: con wifi.status verificado (observed connected=false, sin campo online) el compositor añadió «El equipo no está en línea» / «The PC is offline» a la lectura correcta; network.status leído en las mismas tandas dio online=true (conexión por cable). Evidencia: compose-audit con payload {seen: {connected: false, authority}, operation: wifi.status} y borrador publicado con «offline». Lectura de fuente: llm._payload_fact_defect no comprueba afirmaciones de conectividad; sólo exige conservar hechos dados (cuenta, nivel, reloj, fecha, ventanas, `can`). Tres literales aprobados (H0127, H0433 y antes H0221) quedaron sin crédito por este par.",
+  "change": "_payload_fact_defect devuelve «invented_connectivity» cuando la operación es wifi.status, `seen` trae `connected` y no `online`, y el borrador menciona offline/online/en línea/internet; el compositor lo reintenta con la pista «Only the wifi connection was read. Say nothing about internet or being online or offline.» (mensaje de sistema, nunca visible). Los borradores que sólo hablan de la conexión wifi no cambian.",
+  "offline_verification": "Sonda sin GPU: _payload_fact_defect marca «invented_connectivity» en los tres finales medidos y devuelve vacío para «Este PC no está conectado a ninguna red wifi.», «No, el wifi no está encendido.» y para un payload de network.status con online.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "NETWORK1167: H0127, H0433 con dos pares de red conectada (ES/EN).",
+  "credits": 0
+}

@@ -3899,6 +3899,22 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         return window_defect
     folded = _reading_fold(text)
     seen = payload.get("seen")
+    # A wifi reading observes the WLAN connection, not internet reachability.
+    # «The PC is offline» / «no está en línea» were appended to connected=false
+    # (NETWORK1161/010-011, 1163/005, 1165/004) while network.status read
+    # online=true. Only a reading that carries `online` may speak about it.
+    if (
+        payload.get("operation") == "wifi.status"
+        and isinstance(seen, dict)
+        and "connected" in seen
+        and "online" not in seen
+        and re.search(
+            r"\b(?:offline|online|en linea|internet)\b",
+            folded,
+        )
+        is not None
+    ):
+        return "invented_connectivity"
     # A verified account read must survive composition. UI264 returned the
     # assistant's identity while omitting the actual Windows userName. Match
     # the observed value, including accents, without accepting a longer name.
@@ -10701,6 +10717,10 @@ class LlmRuntime:
                 else "Empieza con mayúscula."
             ),
             "clarification_not_a_question": "Una pregunta.",
+            "invented_connectivity": (
+                "Only the wifi connection was read. Say nothing about internet "
+                "or being online or offline."
+            ),
             "too_many_sentences": "Una sola frase.",
             "wrong_gender": "Masculine abierto/cerrado. Feminine abierta/cerrada.",
             "missing_name": (
