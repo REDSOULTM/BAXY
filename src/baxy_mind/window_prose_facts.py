@@ -19,6 +19,7 @@ _NUMBER = r"(?:\d+|" + "|".join(
     re.escape(word).replace(r"\ ", r"[\s-]+")
     for word in sorted(_CARDINALS, key=len, reverse=True)
 ) + r")"
+_NUMBER_WORD = re.compile(rf"\b{_NUMBER}\b")
 _COUNT = re.compile(
     r"\b(?:(?P<bound>at least|at most|more than|less than|fewer than|"
     r"al menos|como maximo|mas de|menos de)\s+)?"
@@ -388,11 +389,15 @@ def _inventory_identity_request(user_text: str) -> bool:
 
 
 def _named_inventory_subset(windows: list) -> list:
-    """Titled windows first, in enumeration order; then untitled ones, capped."""
+    """Titled windows in enumeration order, capped; untitled ones only when no title exists.
+
+    Untitled shell windows were paraphrased («Dos ventanas de Explorador de
+    archivos sin título», «Two unnamed explorer windows», WINDOWS1211/006-007)
+    and never matched their processName; they are counted, not named.
+    """
     titled = [window for window in windows
               if isinstance(window, dict) and isinstance(window.get("title"), str) and window["title"].strip()]
-    untitled = [window for window in windows if window not in titled]
-    return (titled + untitled)[:NAMED_WINDOWS_PER_ANSWER]
+    return (titled or windows)[:NAMED_WINDOWS_PER_ANSWER]
 
 
 def project_window_inventory(payload: dict, user_text: str) -> dict:
@@ -417,9 +422,10 @@ def project_window_inventory(payload: dict, user_text: str) -> dict:
             if isinstance(window, dict) else window
             for window in seen["windows"]
         ]
-        if _inventory_identity_request(user_text) and seen["count"] > NAMED_WINDOWS_PER_ANSWER:
-            projected["windows"] = _named_inventory_subset(projected["windows"])
-            projected["count"] = len(projected["windows"])
+        named = _named_inventory_subset(projected["windows"]) if _inventory_identity_request(user_text) else None
+        if named is not None and len(named) < len(projected["windows"]):
+            projected["windows"] = named
+            projected["count"] = len(named)
             projected["hasMore"] = True
             projected.pop("limit", None)
             projected.pop("nextOffset", None)
@@ -531,7 +537,16 @@ def _inventory_quantity_scope(clause: str, start: int, end: int) -> str:
     ):
         for match in pattern.finditer(clause):
             distance = max(start - match.end(), match.start() - end, 0)
-            if scope == "remaining" and match.start() >= end and _RELATIVE_LINK.fullmatch(clause[end:match.start()]):
+            between = clause[end:match.start()]
+            if scope == "remaining" and match.start() >= end and (
+                _RELATIVE_LINK.fullmatch(between)
+                # «18 windows were observed but not named»: a short verb phrase
+                # without another quantity or list/total modifier still binds
+                # the negation to this quantity.
+                or (len(between.split()) <= 4 and not re.search(r"\d", between)
+                    and not _PAGE_CONTEXT.search(between) and not _TOTAL_CONTEXT.search(between)
+                    and not _NUMBER_WORD.search(between))
+            ):
                 distance = 0
             contexts.append((distance, 0 if match.start() >= end else 1, scope))
     return min(contexts)[2] if contexts else ""
@@ -594,14 +609,16 @@ def _inventory_identity_counts(text: str, seen: dict) -> tuple[Counter, Counter,
     number = rf"(?P<number>{_NUMBER})"
     group_names = rf"(?P<names>{quoted_identity}(?:\s*(?:,\s*(?:(?:and|y)\s+)?|\b(?:and|y)\b\s*){quoted_identity})*)"
     single_name = rf"(?P<names>{quoted_identity})"
-    separator = r"\s*(?:[:(—–-]\s*)?"
+    # A quantity binds to a name on the same line; a bullet on the next line
+    # («- Program Manager\n- Dos ventanas…», WINDOWS1211/006) is a new entry.
+    separator = r"[ \t]*(?:[:(—–-][ \t]*)?"
     patterns = [
         # The explicit distributive quantifier applies to every named title.
         group_names + separator + number + rf"\s+{unit}\s+(?:each|cada\s+una|de\s+cada\s+titulo)\b\)?",
         single_name + separator + r"[x×]\s*" + number + r"\b",
         single_name + separator + number + rf"\s+{unit}\b\)?",
         number + rf"\s+{unit}\s+(?:de|of|named|titled|llamadas?)\s+{single_name}",
-        number + rf"\s+{single_name}\s+{unit}\b",
+        number + rf"\s+(?:(?:unnamed|untitled|open|visible|abiertas|visibles)\s+)?{single_name}\s+{unit}\b",
         number + rf"\s*[x×]\s*{single_name}",
     ]
     grouped: Counter = Counter()
@@ -636,7 +653,9 @@ def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
         return ""
     if _inventory_chronology_claim(text, seen):
         return "extra_claim"
-    asserted = fold(window_status_assertions(text, payload))
+    # Keep line breaks: a list entry ends its line, and fold() would otherwise
+    # glue «- Program Manager» to the next bullet's «Dos ventanas».
+    asserted = "\n".join(fold(line) for line in window_status_assertions(text, payload).splitlines())
     identities, _, _, asserted = _inventory_identity_counts(asserted, seen)
     # Quoted observed names are data, including names containing cardinality
     # or punctuation. Keep the original draft and observation untouched.
@@ -656,7 +675,9 @@ def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
     stated_subset = False
     stated_page_count = False
     stated_inventory_count = False
-    for clause in re.split(r"[,;.!?]|\b(?:pero|but|and|y)\b", asserted):
+    # «18 windows were observed but not named» is one quantity with one scope;
+    # a conjunction followed by a negation does not start a new clause.
+    for clause in re.split(r"[,;.!?\n]|\b(?:pero|but|and|y)\b(?!\s+(?:not|no|sin)\b)", asserted):
         if _UNCERTAINTY.search(clause) or re.search(r"^\s*(?:si|if)\b", clause):
             continue
         for fraction in reversed(list(_INVENTORY_FRACTION.finditer(clause))):
@@ -756,7 +777,7 @@ def window_status_assertions(
     """Only for validation: omit process uncertainty, retaining other clauses."""
     if _seen(payload) is None and _inventory_seen(payload) is None:
         return text
-    parts = _SEPARATORS.split(fold(text))
+    parts = _SEPARATORS.split("\n".join(fold(line) for line in text.splitlines()))
     for index in range(0, len(parts), 2):
         clause = parts[index]
         uncertainty = _UNCERTAINTY.search(clause)

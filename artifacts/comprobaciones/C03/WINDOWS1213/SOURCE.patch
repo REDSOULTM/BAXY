@@ -1,0 +1,220 @@
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 304bfb17..4253c2d7 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4763,16 +4763,18 @@ def compose_visible_defect(
+     # y sólo se veta cuando la evidencia del texto es de un solo idioma: «I will
+     # not open any programs.» ante un pedido español pasaba los dos literales de
+     # abajo (panel-opus-2/027), y «Yes.» no debe vetarse por no traer evidencia.
+-    if _reply_uses_opposite_language(stripped, language):
++    # Observed window titles keep their own language: an English list of
++    # Spanish-titled windows is not a Spanish reply (WINDOWS1211/007).
++    if _reply_uses_opposite_language(vocabulary_text, language):
+         return "wrong_language"
+     if language == "en" and re.search(
+         r"\b(?:listo|no pude|eso no lo hago|hola|encontré|agotó|"
+         r"buenos|puedo|días|dias)\b",
+-        folded,
++        vocabulary_text.casefold(),
+     ):
+         return "wrong_language"
+     if language == "es" and re.search(
+-        r"\bstill\b|\bworking\b|\bcouldn't\b|\bcould not\b", folded
++        r"\bstill\b|\bworking\b|\bcouldn't\b|\bcould not\b", vocabulary_text.casefold()
+     ):
+         return "wrong_language"
+     failure_assertions = stripped
+diff --git a/src/baxy_mind/window_prose_facts.py b/src/baxy_mind/window_prose_facts.py
+index 67f50684..515eba36 100644
+--- a/src/baxy_mind/window_prose_facts.py
++++ b/src/baxy_mind/window_prose_facts.py
+@@ -19,6 +19,7 @@ _NUMBER = r"(?:\d+|" + "|".join(
+     re.escape(word).replace(r"\ ", r"[\s-]+")
+     for word in sorted(_CARDINALS, key=len, reverse=True)
+ ) + r")"
++_NUMBER_WORD = re.compile(rf"\b{_NUMBER}\b")
+ _COUNT = re.compile(
+     r"\b(?:(?P<bound>at least|at most|more than|less than|fewer than|"
+     r"al menos|como maximo|mas de|menos de)\s+)?"
+@@ -388,11 +389,15 @@ def _inventory_identity_request(user_text: str) -> bool:
+ 
+ 
+ def _named_inventory_subset(windows: list) -> list:
+-    """Titled windows first, in enumeration order; then untitled ones, capped."""
++    """Titled windows in enumeration order, capped; untitled ones only when no title exists.
++
++    Untitled shell windows were paraphrased («Dos ventanas de Explorador de
++    archivos sin título», «Two unnamed explorer windows», WINDOWS1211/006-007)
++    and never matched their processName; they are counted, not named.
++    """
+     titled = [window for window in windows
+               if isinstance(window, dict) and isinstance(window.get("title"), str) and window["title"].strip()]
+-    untitled = [window for window in windows if window not in titled]
+-    return (titled + untitled)[:NAMED_WINDOWS_PER_ANSWER]
++    return (titled or windows)[:NAMED_WINDOWS_PER_ANSWER]
+ 
+ 
+ def project_window_inventory(payload: dict, user_text: str) -> dict:
+@@ -417,9 +422,10 @@ def project_window_inventory(payload: dict, user_text: str) -> dict:
+             if isinstance(window, dict) else window
+             for window in seen["windows"]
+         ]
+-        if _inventory_identity_request(user_text) and seen["count"] > NAMED_WINDOWS_PER_ANSWER:
+-            projected["windows"] = _named_inventory_subset(projected["windows"])
+-            projected["count"] = len(projected["windows"])
++        named = _named_inventory_subset(projected["windows"]) if _inventory_identity_request(user_text) else None
++        if named is not None and len(named) < len(projected["windows"]):
++            projected["windows"] = named
++            projected["count"] = len(named)
+             projected["hasMore"] = True
+             projected.pop("limit", None)
+             projected.pop("nextOffset", None)
+@@ -531,7 +537,16 @@ def _inventory_quantity_scope(clause: str, start: int, end: int) -> str:
+     ):
+         for match in pattern.finditer(clause):
+             distance = max(start - match.end(), match.start() - end, 0)
+-            if scope == "remaining" and match.start() >= end and _RELATIVE_LINK.fullmatch(clause[end:match.start()]):
++            between = clause[end:match.start()]
++            if scope == "remaining" and match.start() >= end and (
++                _RELATIVE_LINK.fullmatch(between)
++                # «18 windows were observed but not named»: a short verb phrase
++                # without another quantity or list/total modifier still binds
++                # the negation to this quantity.
++                or (len(between.split()) <= 4 and not re.search(r"\d", between)
++                    and not _PAGE_CONTEXT.search(between) and not _TOTAL_CONTEXT.search(between)
++                    and not _NUMBER_WORD.search(between))
++            ):
+                 distance = 0
+             contexts.append((distance, 0 if match.start() >= end else 1, scope))
+     return min(contexts)[2] if contexts else ""
+@@ -594,14 +609,16 @@ def _inventory_identity_counts(text: str, seen: dict) -> tuple[Counter, Counter,
+     number = rf"(?P<number>{_NUMBER})"
+     group_names = rf"(?P<names>{quoted_identity}(?:\s*(?:,\s*(?:(?:and|y)\s+)?|\b(?:and|y)\b\s*){quoted_identity})*)"
+     single_name = rf"(?P<names>{quoted_identity})"
+-    separator = r"\s*(?:[:(—–-]\s*)?"
++    # A quantity binds to a name on the same line; a bullet on the next line
++    # («- Program Manager\n- Dos ventanas…», WINDOWS1211/006) is a new entry.
++    separator = r"[ \t]*(?:[:(—–-][ \t]*)?"
+     patterns = [
+         # The explicit distributive quantifier applies to every named title.
+         group_names + separator + number + rf"\s+{unit}\s+(?:each|cada\s+una|de\s+cada\s+titulo)\b\)?",
+         single_name + separator + r"[x×]\s*" + number + r"\b",
+         single_name + separator + number + rf"\s+{unit}\b\)?",
+         number + rf"\s+{unit}\s+(?:de|of|named|titled|llamadas?)\s+{single_name}",
+-        number + rf"\s+{single_name}\s+{unit}\b",
++        number + rf"\s+(?:(?:unnamed|untitled|open|visible|abiertas|visibles)\s+)?{single_name}\s+{unit}\b",
+         number + rf"\s*[x×]\s*{single_name}",
+     ]
+     grouped: Counter = Counter()
+@@ -636,7 +653,9 @@ def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
+         return ""
+     if _inventory_chronology_claim(text, seen):
+         return "extra_claim"
+-    asserted = fold(window_status_assertions(text, payload))
++    # Keep line breaks: a list entry ends its line, and fold() would otherwise
++    # glue «- Program Manager» to the next bullet's «Dos ventanas».
++    asserted = "\n".join(fold(line) for line in window_status_assertions(text, payload).splitlines())
+     identities, _, _, asserted = _inventory_identity_counts(asserted, seen)
+     # Quoted observed names are data, including names containing cardinality
+     # or punctuation. Keep the original draft and observation untouched.
+@@ -656,7 +675,9 @@ def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
+     stated_subset = False
+     stated_page_count = False
+     stated_inventory_count = False
+-    for clause in re.split(r"[,;.!?]|\b(?:pero|but|and|y)\b", asserted):
++    # «18 windows were observed but not named» is one quantity with one scope;
++    # a conjunction followed by a negation does not start a new clause.
++    for clause in re.split(r"[,;.!?\n]|\b(?:pero|but|and|y)\b(?!\s+(?:not|no|sin)\b)", asserted):
+         if _UNCERTAINTY.search(clause) or re.search(r"^\s*(?:si|if)\b", clause):
+             continue
+         for fraction in reversed(list(_INVENTORY_FRACTION.finditer(clause))):
+@@ -756,7 +777,7 @@ def window_status_assertions(
+     """Only for validation: omit process uncertainty, retaining other clauses."""
+     if _seen(payload) is None and _inventory_seen(payload) is None:
+         return text
+-    parts = _SEPARATORS.split(fold(text))
++    parts = _SEPARATORS.split("\n".join(fold(line) for line in text.splitlines()))
+     for index in range(0, len(parts), 2):
+         clause = parts[index]
+         uncertainty = _UNCERTAINTY.search(clause)
+diff --git a/tests/test_c03_inventory_semantic_projection.py b/tests/test_c03_inventory_semantic_projection.py
+index 5ed22a1a..2975ca52 100644
+--- a/tests/test_c03_inventory_semantic_projection.py
++++ b/tests/test_c03_inventory_semantic_projection.py
+@@ -60,35 +60,62 @@ def test_large_list_requests_name_a_bounded_titled_first_subset(user_text, count
+         situation["observed"]["windows"][index]["title"] = ""
+     original = copy.deepcopy(situation)
+     seen = _compose_situation_payload(situation, "es", user_text)["seen"]
+-    titled = [w for w in original["observed"]["windows"] if w["title"]]
+-    untitled = [w for w in original["observed"]["windows"] if not w["title"]]
+-    assert seen["windows"] == [
+-        {"title": w["title"], "processName": w["processName"]} for w in (titled + untitled)[:10]
+-    ]
+-    assert seen["count"] == 10 and seen["observedCount"] == total and seen["totalCount"] == total
++    titled = [w for w in original["observed"]["windows"] if w["title"]][:10]
++    n = len(titled)
++    assert seen["windows"] == [{"title": w["title"], "processName": w["processName"]} for w in titled]
++    assert seen["count"] == n and seen["observedCount"] == total and seen["totalCount"] == total
+     assert seen["hasMore"] is True and "limit" not in seen and "nextOffset" not in seen
+     assert seen["returnedPageScope"] == {
+-        "windowsListedOnThisPage": 10,
++        "windowsListedOnThisPage": n,
+         "totalWindowsInSelectedInventory": total,
+         "thisListIncludesEveryWindowInSelectedInventory": False,
+         "windowOpeningTimesObserved": False,
+-        "windowsObservedButNotNamedHere": total - 10,
++        "windowsObservedButNotNamedHere": total - n,
+     }
+-    named = "\n".join("- " + (w["title"] or w["processName"]) for w in (titled + untitled)[:10])
+-    reply = f"Se observaron {total} ventanas; te nombro 10 de las {total}:\n{named}\nHay {total - 10} ventanas más sin nombrar."
++    named = "\n".join("- " + w["title"] for w in titled)
++    reply = f"Se observaron {total} ventanas; te nombro {n} de las {total}:\n{named}\nHay {total - n} ventanas más sin nombrar."
+     assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
+-    reply = f"Las ventanas son:\n{named}\nSe observaron {total - 10} ventanas que no están incluidas en esta lista."
++    reply = f"Las ventanas son:\n{named}\nSe observaron {total - n} ventanas que no están incluidas en esta lista."
+     assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
+-    reply = f"{named}\n\nSe observaron {total - 10} ventanas no nombradas en esta lista."
++    reply = f"{named}\n\nSe observaron {total - n} ventanas no nombradas en esta lista."
+     assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
+     assert not compose_visible_defect(reply, "status", user_text, {"situation": original})
+-    reply = f"Se observaron {total} ventanas en total ({total - 10} no nombradas):\n{named}"
++    reply = f"Se observaron {total} ventanas en total ({total - n} no nombradas):\n{named}"
+     assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
+-    assert _payload_fact_defect(f"Se observaron {total - 9} ventanas que no están incluidas:\n{named}", {"seen": seen, "operation": "window.resolve"}, user_text) == "reversed_result"
++    assert _payload_fact_defect(f"Se observaron {total - n + 1} ventanas que no están incluidas:\n{named}", {"seen": seen, "operation": "window.resolve"}, user_text) == "reversed_result"
++    english = f"The following windows are open:\n{named}\n{total - n} windows were observed but are not named here."
++    assert not compose_visible_defect(english, "status", "Which windows are open?", {"situation": original})
+     assert _payload_fact_defect(f"Hay {count} de {total} ventanas:\n{named}", {"seen": seen, "operation": "window.resolve"}, user_text) == "reversed_result"
+     assert situation == original
+ 
+ 
++def test_untitled_windows_are_counted_not_named_even_on_a_small_page():
++    situation = observation(5, 5)
++    situation["observed"]["windows"][1]["title"] = ""
++    situation["observed"]["windows"][3]["title"] = ""
++    seen = _compose_situation_payload(situation, "es", "Lista las ventanas.")["seen"]
++    assert [w["title"] for w in seen["windows"]] == ["Órbita 0", "Órbita 2", "Órbita 1"]
++    assert seen["count"] == 3 and seen["returnedPageScope"]["windowsObservedButNotNamedHere"] == 2
++    reply = "Tres ventanas con título: Órbita 0, Órbita 2 y Órbita 1. Hay 2 ventanas más sin título."
++    assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, "Lista las ventanas.")
++    untitled_only = observation(3, 3)
++    for window in untitled_only["observed"]["windows"]:
++        window["title"] = ""
++    seen = _compose_situation_payload(untitled_only, "es", "Lista las ventanas.")["seen"]
++    assert seen["count"] == 3 and [w["processName"] for w in seen["windows"]] == ["Viewer0", "Viewer1", "Viewer0"]
++    assert not _payload_fact_defect("Hay 3 ventanas: Viewer0 (2 ventanas) y Viewer1.", {"seen": seen, "operation": "window.resolve"}, "Lista las ventanas.")
++    assert not _payload_fact_defect("Hay 3 ventanas: 2 unnamed Viewer0 windows and Viewer1.", {"seen": seen, "operation": "window.resolve"}, "List the windows.")
++
++
++def test_a_bullet_on_the_next_line_is_not_a_quantity_of_the_previous_name():
++    situation = observation(2, 2)
++    situation["observed"]["windows"][0]["title"] = "Program Manager"
++    situation["observed"]["windows"][1]["title"] = "Órbita 1"
++    payload = _compose_situation_payload(situation, "es", "Lista las ventanas.")
++    assert not _payload_fact_defect("Ventanas:\n- Program Manager\n- dos ventanas no hay, solo Órbita 1", payload, "Lista las ventanas.")
++    assert _payload_fact_defect("Program Manager - dos ventanas, y Órbita 1", payload, "Lista las ventanas.") == "reversed_result"
++
++
+ @pytest.mark.parametrize("user_text", ["Cuenta mis ventanas.", "How many windows are visible right now?", "y cuántas ventanas?"])
+ def test_count_requests_keep_the_whole_page(user_text):
+     seen = _compose_situation_payload(observation(20, 22), "es", user_text)["seen"]

@@ -4763,16 +4763,18 @@ def compose_visible_defect(
     # y sólo se veta cuando la evidencia del texto es de un solo idioma: «I will
     # not open any programs.» ante un pedido español pasaba los dos literales de
     # abajo (panel-opus-2/027), y «Yes.» no debe vetarse por no traer evidencia.
-    if _reply_uses_opposite_language(stripped, language):
+    # Observed window titles keep their own language: an English list of
+    # Spanish-titled windows is not a Spanish reply (WINDOWS1211/007).
+    if _reply_uses_opposite_language(vocabulary_text, language):
         return "wrong_language"
     if language == "en" and re.search(
         r"\b(?:listo|no pude|eso no lo hago|hola|encontré|agotó|"
         r"buenos|puedo|días|dias)\b",
-        folded,
+        vocabulary_text.casefold(),
     ):
         return "wrong_language"
     if language == "es" and re.search(
-        r"\bstill\b|\bworking\b|\bcouldn't\b|\bcould not\b", folded
+        r"\bstill\b|\bworking\b|\bcouldn't\b|\bcould not\b", vocabulary_text.casefold()
     ):
         return "wrong_language"
     failure_assertions = stripped

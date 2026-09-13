@@ -1,0 +1,17 @@
+{
+  "schema": "c03-windows1213-source-adoption-v1",
+  "status": "adopted_unmeasured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/window_prose_facts.py (_named_inventory_subset, project_window_inventory, _inventory_identity_counts, _inventory_fact_defect, _inventory_quantity_scope, window_status_assertions); src/baxy_mind/llm.py (compose_visible_defect: veto de idioma)",
+  "patch": "artifacts/comprobaciones/C03/WINDOWS1213/SOURCE.patch",
+  "cause_measured": "WINDOWS1211/006-007 (pares «Mirá qué ventanas hay.» / «Which windows are open right now?», 20 ventanas: 8 tituladas + explorer sin título ×2 dentro de la proyección de 10). Reproducido offline con las páginas grabadas: (1) el modelo describió las dos ventanas sin título como «Dos ventanas de Explorador de archivos sin título» / «Two unnamed explorer windows», formas que nunca contaban como el processName explorer; (2) fold() colapsaba los saltos de línea antes de ligar cantidades, de modo que «- Program Manager\\n- Dos ventanas…» se leía «Program Manager: dos ventanas» → contradicción (reversed_result) en cada intento del par español; (3) el veto de idioma evaluaba cada título español en su propia línea como evidencia de respuesta española → wrong_language en cada intento del par inglés; (4) «Ten windows were observed but not named» se cortaba en «but» y el conteo quedaba ligado a «observed».",
+  "change": "Proyección: se nombran sólo las ventanas con título (hasta 10, orden de enumeración); las sin título se cuentan en windowsObservedButNotNamedHere y sólo se nombran por processName cuando ninguna tiene título; la proyección se aplica en cuanto deja fuera alguna ventana, también en páginas cortas. Cantidades: las comprobaciones de inventario conservan los saltos de línea (fold por línea en _inventory_fact_defect y window_status_assertions), el separador nombre–cantidad no cruza líneas, el salto de línea separa cláusulas, «pero/but/y/and» seguido de negación no abre cláusula, y un alcance «restantes» tras la cantidad con un enlace breve sin otra cantidad ni modificador de página/total liga con distancia cero; se acepta «N unnamed/untitled X windows». Veto de idioma y sus dos regex sobre la copia sin nombres observados. Sin frases de salida; ninguna capa nueva.",
+  "offline_verification": "Páginas grabadas de WINDOWS1211/006, /007, /000 y WINDOWS1207/000: proyecciones 8/20, 8/20, 10/23 y 9/22 sin ventanas sin título; una lista fiel con el resto declarado pasa en español e inglés (compose_visible_defect y comprobaciones factuales sin defecto), omitir la última nombrada → missing_fact. El borrador grabado de /006 ya no liga «Program Manager» a «dos ventanas» (grupo 0, mención 1); el de /007 con títulos españoles en líneas propias no dispara wrong_language. «18 windows were observed but not named in this list» y «Se observaron 18 ventanas pero no están nombradas aquí» pasan; «Ten windows … not named» con 18 restantes → reversed_result; «todas las ventanas» → extra_claim; lista sin divulgación → missing_fact. Tests alineados (no ejecutados por orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": null,
+  "credits": null
+}

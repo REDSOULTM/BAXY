@@ -60,33 +60,60 @@ def test_large_list_requests_name_a_bounded_titled_first_subset(user_text, count
         situation["observed"]["windows"][index]["title"] = ""
     original = copy.deepcopy(situation)
     seen = _compose_situation_payload(situation, "es", user_text)["seen"]
-    titled = [w for w in original["observed"]["windows"] if w["title"]]
-    untitled = [w for w in original["observed"]["windows"] if not w["title"]]
-    assert seen["windows"] == [
-        {"title": w["title"], "processName": w["processName"]} for w in (titled + untitled)[:10]
-    ]
-    assert seen["count"] == 10 and seen["observedCount"] == total and seen["totalCount"] == total
+    titled = [w for w in original["observed"]["windows"] if w["title"]][:10]
+    n = len(titled)
+    assert seen["windows"] == [{"title": w["title"], "processName": w["processName"]} for w in titled]
+    assert seen["count"] == n and seen["observedCount"] == total and seen["totalCount"] == total
     assert seen["hasMore"] is True and "limit" not in seen and "nextOffset" not in seen
     assert seen["returnedPageScope"] == {
-        "windowsListedOnThisPage": 10,
+        "windowsListedOnThisPage": n,
         "totalWindowsInSelectedInventory": total,
         "thisListIncludesEveryWindowInSelectedInventory": False,
         "windowOpeningTimesObserved": False,
-        "windowsObservedButNotNamedHere": total - 10,
+        "windowsObservedButNotNamedHere": total - n,
     }
-    named = "\n".join("- " + (w["title"] or w["processName"]) for w in (titled + untitled)[:10])
-    reply = f"Se observaron {total} ventanas; te nombro 10 de las {total}:\n{named}\nHay {total - 10} ventanas más sin nombrar."
+    named = "\n".join("- " + w["title"] for w in titled)
+    reply = f"Se observaron {total} ventanas; te nombro {n} de las {total}:\n{named}\nHay {total - n} ventanas más sin nombrar."
     assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
-    reply = f"Las ventanas son:\n{named}\nSe observaron {total - 10} ventanas que no están incluidas en esta lista."
+    reply = f"Las ventanas son:\n{named}\nSe observaron {total - n} ventanas que no están incluidas en esta lista."
     assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
-    reply = f"{named}\n\nSe observaron {total - 10} ventanas no nombradas en esta lista."
+    reply = f"{named}\n\nSe observaron {total - n} ventanas no nombradas en esta lista."
     assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
     assert not compose_visible_defect(reply, "status", user_text, {"situation": original})
-    reply = f"Se observaron {total} ventanas en total ({total - 10} no nombradas):\n{named}"
+    reply = f"Se observaron {total} ventanas en total ({total - n} no nombradas):\n{named}"
     assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
-    assert _payload_fact_defect(f"Se observaron {total - 9} ventanas que no están incluidas:\n{named}", {"seen": seen, "operation": "window.resolve"}, user_text) == "reversed_result"
+    assert _payload_fact_defect(f"Se observaron {total - n + 1} ventanas que no están incluidas:\n{named}", {"seen": seen, "operation": "window.resolve"}, user_text) == "reversed_result"
+    english = f"The following windows are open:\n{named}\n{total - n} windows were observed but are not named here."
+    assert not compose_visible_defect(english, "status", "Which windows are open?", {"situation": original})
     assert _payload_fact_defect(f"Hay {count} de {total} ventanas:\n{named}", {"seen": seen, "operation": "window.resolve"}, user_text) == "reversed_result"
     assert situation == original
+
+
+def test_untitled_windows_are_counted_not_named_even_on_a_small_page():
+    situation = observation(5, 5)
+    situation["observed"]["windows"][1]["title"] = ""
+    situation["observed"]["windows"][3]["title"] = ""
+    seen = _compose_situation_payload(situation, "es", "Lista las ventanas.")["seen"]
+    assert [w["title"] for w in seen["windows"]] == ["Órbita 0", "Órbita 2", "Órbita 1"]
+    assert seen["count"] == 3 and seen["returnedPageScope"]["windowsObservedButNotNamedHere"] == 2
+    reply = "Tres ventanas con título: Órbita 0, Órbita 2 y Órbita 1. Hay 2 ventanas más sin título."
+    assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, "Lista las ventanas.")
+    untitled_only = observation(3, 3)
+    for window in untitled_only["observed"]["windows"]:
+        window["title"] = ""
+    seen = _compose_situation_payload(untitled_only, "es", "Lista las ventanas.")["seen"]
+    assert seen["count"] == 3 and [w["processName"] for w in seen["windows"]] == ["Viewer0", "Viewer1", "Viewer0"]
+    assert not _payload_fact_defect("Hay 3 ventanas: Viewer0 (2 ventanas) y Viewer1.", {"seen": seen, "operation": "window.resolve"}, "Lista las ventanas.")
+    assert not _payload_fact_defect("Hay 3 ventanas: 2 unnamed Viewer0 windows and Viewer1.", {"seen": seen, "operation": "window.resolve"}, "List the windows.")
+
+
+def test_a_bullet_on_the_next_line_is_not_a_quantity_of_the_previous_name():
+    situation = observation(2, 2)
+    situation["observed"]["windows"][0]["title"] = "Program Manager"
+    situation["observed"]["windows"][1]["title"] = "Órbita 1"
+    payload = _compose_situation_payload(situation, "es", "Lista las ventanas.")
+    assert not _payload_fact_defect("Ventanas:\n- Program Manager\n- dos ventanas no hay, solo Órbita 1", payload, "Lista las ventanas.")
+    assert _payload_fact_defect("Program Manager - dos ventanas, y Órbita 1", payload, "Lista las ventanas.") == "reversed_result"
 
 
 @pytest.mark.parametrize("user_text", ["Cuenta mis ventanas.", "How many windows are visible right now?", "y cuántas ventanas?"])
