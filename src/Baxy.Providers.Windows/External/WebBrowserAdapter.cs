@@ -1274,6 +1274,10 @@ internal class CdpBrowserSession : IDisposable
         start.ArgumentList.Add("--remote-allow-origins=*");
         start.ArgumentList.Add("--no-first-run");
         start.ArgumentList.Add("--no-default-browser-check");
+        // The private automation session renders for CDP, not for the person:
+        // GPU acceleration only adds a GPU process to the product's tree
+        // (WEB1261: 3874 MiB with the local model, over the 3800 MiB budget).
+        start.ArgumentList.Add("--disable-gpu");
         start.ArgumentList.Add("--user-data-dir=" + _profile);
         start.ArgumentList.Add("about:blank");
         _ownedProcess = Process.Start(start) ?? throw new IOException("CDP browser could not start.");

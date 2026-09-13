@@ -3740,9 +3740,11 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             # WEB1259: «Voy a youtube.» / «Vamos a github.» promised a navigation
             # that had already been verified by its final URL.
             bits.append(
-                "The page is already open in the browser: say so in the past, naming "
-                "the site the person asked for. If finalUrl is a sign-in page, say the "
-                "site asks to sign in. Never promise to go, take them or open it later. "
+                "You have just opened the site in the browser and its final URL was "
+                "verified: report that in the past, naming the site the person asked "
+                "for (for example «Abrí YouTube en el navegador»). If finalUrl is a "
+                "sign-in page, say the site asks to sign in. Never promise to go or "
+                "open it later, and never say it was already open before. "
                 "Address the person naturally in their language."
             )
         if (
@@ -4744,6 +4746,22 @@ def compose_visible_defect(
         # anterior un estado que este turno acaba de crear.
         if not already_running and _claims_the_target_was_open_before(folded):
             return "invented_prior_open_state"
+    # WEB1261: «Ya fui a YouTube. La página ya estaba abierta.» gave a verified
+    # navigation from about:blank a prior state it never had.
+    if (
+        kind == "operation"
+        and operation in {"browser.navigate", "browser.navigate.named", "streaming.navigate"}
+        and polarity == "success"
+        and (
+            _claims_the_target_was_open_before(folded)
+            or re.search(
+                r"\b(?:ya\s+estabas?\s+(?:en|ahi|alli)|ya\s+te\s+encontrabas\s+en|"
+                r"you\s+were\s+already\s+(?:on|at|in)|already\s+(?:on|at)\s+the)\b",
+                folded,
+            ) is not None
+        )
+    ):
+        return "invented_prior_open_state"
     if _clock_only_from_situation(situation) and re.search(
         r"\bbaxy\b|confianza|sigue adelante|t[uú] eres|"
         r"parte de esta|te dice|responsable|cuidar lo que",
