@@ -1,3 +1,25 @@
+## MESSAGING1140 — estado vigente 2026-09-13T01:34:18.539920+00:00
+
+Parcial: 7 aprobados, 0 fallidos, 1 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 204/742 | 538 | 0 | >=78 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12 septiembre: 28 Kiro + 49 retorno hasta AGENDA1121 (todas dentro de la ventana [2026-09-12T01:3xZ, 2026-09-13T01:3xZ]); 92 filas cubiertas con verification_updated_at en 24 h incluyen revalidaciones y no se cuentan. MESSAGING1140 añade H0584.
+
+Siguiente acción: MESSAGING1140 cierra el residual1131: H0584 acreditado con pares0/1; límites3/4/5/7 aprobados sin efectos; índice6 sigue diferido sin hipótesis nueva. Observación abierta: la proyección1136 hace la pregunta de canal idéntica por idioma (sin destinatario); si se quiere especificidad, proyectar sólo destinatario estructurado en un tramo futuro, no volver a inyectar el cuerpo. Siguiente: categorías por masa abierta (música33, instalación31, web29, archivos29, incompletos27) con sus condiciones registradas; TIME aparcado hasta decisión del dueño sobre precisión (TIME1139).
+
+Evidencia: `artifacts/comprobaciones/C03/MESSAGING1140/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 115.70 s acumulados; pico GPU 3497.56 MiB; pico RAM 1653.04 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 7; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MESSAGING1140 precedente. -->
+
 # Relevo Fable activo — 2026-09-13T01:20:15.781361+00:00
 
 **Escritor raíz: Claude Fable 5.1 (sesión Claude Code 250e1a56-9daa-4ae6-a51f-44fe3a271a6d), rama codex/kiro-goal-c03, goal GoalC03.txt. Codex 01a08e22 sigue pausado.** Sin tests/dueñas/Fast/Full por orden del dueño; nada se declara verde.

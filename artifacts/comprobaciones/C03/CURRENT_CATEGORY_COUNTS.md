@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación MESSAGING1131
+# Categorías actuales — adjudicación MESSAGING1140
 
-203/742 cubiertos; 539 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 77 primeras altas (28 Kiro + 49 retorno), sin revalidaciones. Registro canónico SHA256: 17e4991cf2e6a6d49647d1177ab0fef236563b78699ca2aa8192820ba49f93b2.
+204/742 cubiertos; 538 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 78 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140), sin revalidaciones. Registro canónico SHA256: 79e3ee72e433b9750964d233215ee2c4a12edbf2b34a1f7d266a028be4aad948.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -9,8 +9,8 @@
 | Navegación y búsqueda web | 46 | 17 | 29 |
 | Archivos y carpetas | 32 | 3 | 29 |
 | Entrada incompleta, ruido y control de diálogo | 34 | 7 | 27 |
-| Mensajería | 31 | 5 | 26 |
 | Vídeo y series | 26 | 0 | 26 |
+| Mensajería | 31 | 6 | 25 |
 | Abrir aplicaciones | 54 | 29 | 25 |
 | Audio y volumen | 51 | 27 | 24 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 15 | 23 |

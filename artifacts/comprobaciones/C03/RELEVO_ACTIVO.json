@@ -152,26 +152,26 @@
     "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "Fable: TIME1134 índice10 fail registrado; MESSAGING1136 adoptado; preparando MESSAGING1140.",
+  "workStatus": "MESSAGING1140 adjudicado: 7 aprobados, 0 fallidos, 1 sin ejecutar; 1 créditos.",
   "executionPausedByOwner": false,
   "branch": "codex/kiro-goal-c03",
-  "checkpoint": "203/742 cubiertos, 539 abiertos, 0 no aplican. MESSAGING1131: 0 créditos explícitos de raíz.",
+  "checkpoint": "204/742 cubiertos, 538 abiertos, 0 no aplican. MESSAGING1140: 1 créditos explícitos de raíz.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
   "surveyVerificationCounts": {
-    "covered": 203,
-    "open": 539,
+    "covered": 204,
+    "open": 538,
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "17e4991cf2e6a6d49647d1177ab0fef236563b78699ca2aa8192820ba49f93b2",
+  "surveyRegistrySha256": "79e3ee72e433b9750964d233215ee2c4a12edbf2b34a1f7d266a028be4aad948",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
-  "surveyCoverageLast24h": 77,
-  "surveyCoverageLast24hNote": "Primeras altas documentadas12septiembre28Kiro+49retorno hastaAGENDA1121. Sin nuevas altas en1131; no contar variantes ni revalidaciones.",
+  "surveyCoverageLast24h": 78,
+  "surveyCoverageLast24hNote": "Primeras altas documentadas 12 septiembre: 28 Kiro + 49 retorno hasta AGENDA1121 (todas dentro de la ventana [2026-09-12T01:3xZ, 2026-09-13T01:3xZ]); 92 filas cubiertas con verification_updated_at en 24 h incluyen revalidaciones y no se cuentan. MESSAGING1140 añade H0584.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-13T01:19:11.364097+00:00",
+  "utcUpdated": "2026-09-13T01:34:18.539920+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -621,7 +621,7 @@
     "freeze_ended_at": "2026-09-12T13:33:18.245252-03:00",
     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
   },
-  "updatedAtUtc": "2026-09-13T01:19:11.364097+00:00",
+  "updatedAtUtc": "2026-09-13T01:34:18.539920+00:00",
   "currentContinuation1065": {
     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
     "quality": {
@@ -1340,5 +1340,30 @@
       "MESSAGING1140 preparación"
     ],
     "tests_policy": "owner_directed_no_tests"
+  },
+  "currentContinuation1140": {
+    "head": "1a2a0063c3766ac6f532a746488ddb988858bc4a",
+    "quality": {
+      "passed": 7,
+      "failed": 0,
+      "executed": 7,
+      "not_executed": 1,
+      "sealed_total": 8,
+      "segments_started": 7,
+      "aborted_before_admission": 0
+    },
+    "new_credits": 1,
+    "credited_ids": [
+      "H0584"
+    ],
+    "registry_sha256": "79e3ee72e433b9750964d233215ee2c4a12edbf2b34a1f7d266a028be4aad948",
+    "survey": 204,
+    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\MESSAGING1140\\ROOT_ADJUDICATION.json",
+    "resources": {
+      "seconds_sum": 115.7039999999979,
+      "gpu_peak_mib": 3497.55859375,
+      "ram_peak_mib": 1653.04296875
+    },
+    "next": "MESSAGING1140 cierra el residual1131: H0584 acreditado con pares0/1; límites3/4/5/7 aprobados sin efectos; índice6 sigue diferido sin hipótesis nueva. Observación abierta: la proyección1136 hace la pregunta de canal idéntica por idioma (sin destinatario); si se quiere especificidad, proyectar sólo destinatario estructurado en un tramo futuro, no volver a inyectar el cuerpo. Siguiente: categorías por masa abierta (música33, instalación31, web29, archivos29, incompletos27) con sus condiciones registradas; TIME aparcado hasta decisión del dueño sobre precisión (TIME1139)."
   }
 }
