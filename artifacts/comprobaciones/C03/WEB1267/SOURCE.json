@@ -1,0 +1,10 @@
+{
+  "schema": "c03-web1267-source-adoption-v1",
+  "status": "measured_no_new_change",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "candidate": "HEAD b7aa38f2193546730bbc7ff64fc48f5cab9dbbec con los binarios de BUILD1263",
+  "change": "Ninguna fuente nueva: primera medición de «Información web actual» (clima y noticias) como turnos ordinarios con web.search de sólo lectura.",
+  "measurement": "WEB1267: 12 ejecutados, 5 aprobados, 7 fallidos, 0 créditos. Causas medidas: (a) los pedidos de clima («busca el clima en Buenos Aires», «buscá el clima en madrid», «qué clima hace en Buenos Aires») no llegan al lector determinista y el planificador del modelo los declara fuera de catálogo o responde una generalidad; (b) el filtro de relevancia del proveedor exige cada token de la consulta en cada resultado: «noticias de deportes de hoy» falla por «hoy» y «today's news» devuelve el programa de TV «TODAY»; (c) el mensaje de fallo «The web search results were irrelevant…» se rechaza como missing_failure (el validador no reconoce «irrelevant») hasta agotar reintentos. Aprobados: «buscá/busca noticias de hoy» (web.search verificada, final con las fuentes devueltas) y los dos límites; la variante de deportes dijo con verdad que no halló resultados relevantes, pero su búsqueda falló y no aprueba.",
+  "next": "WEB1269: cabezas de búsqueda y pregunta para clima/noticias en el lector (mente), «irrelevant/no results» como afirmación de fallo (mente), hoy/today/ahora/now como palabras vacías del filtro de relevancia (proveedor, BUILD1269).",
+  "credits": 0
+}

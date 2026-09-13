@@ -1,3 +1,11 @@
+# WEB1267 adjudicado — 2026-09-13T22:30:01.387137+00:00
+
+**346/742 cubiertos, 396 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA ee3751dd291490c288aac3651b5c65eaeb42ab670814285333a1a9ca6d63744a. Primeras altas 24 h >= 220 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b7aa38f2 con BUILD1263 (sin fuente nueva; WEB1267/SOURCE.json).
+
+WEB1267 («Información web actual»: clima y noticias, turnos ordinarios con web.search): 12 ejecutados, 5 aprobados, 7 fallidos, 0 créditos. Adjudicación 2c8e80a5db5a6ea4911164f89ab7d640ef7f01929ba3acf77d30b546f049e2b9. Las noticias de hoy se buscan y se responden con las fuentes devueltas; el clima no llega al lector (el modelo lo declara fuera de catálogo); el filtro de relevancia exige «hoy/today» en cada resultado; el mensaje de fallo de búsqueda irrelevante no compone. Siguiente: WEB1269 (lector de clima/noticias y marcadores de fallo en la mente; palabras temporales vacías en el filtro del proveedor, BUILD1269) sobre el mismo panel.
+
+---
+
 # WEB1265 adjudicado — 2026-09-13T22:21:00.207085+00:00
 
 **346/742 cubiertos, 396 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 846af8f55edb649ed8f12ffbb38202eada8a945b168957fcfa50750ddef2473f. Primeras altas 24 h >= 220 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6843f15c con BUILD1263 (sin fuente nueva; WEB1265/SOURCE.json).
