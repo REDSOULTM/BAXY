@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación SYSTEM1173
+# Categorías actuales — adjudicación SYSTEM1175
 
-244/742 cubiertos; 498 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 118 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140 + H0511 en NOTES1141 + 10 en NOTES1142 + 2 en KNOWLEDGE1144 + 7 en IDENTITY1146 + 2 en IDENTITY1148 + 2 en KNOWLEDGE1149 + 4 en CONVERSATION1150 + 1 en CONVERSATION1152 + 2 en CLOCK1156 + 1 en CLOCK1159 + 1 en CONVERSATION1160 + 2 en NETWORK1161 + 1 en NETWORK1165 + 2 en NETWORK1167 + 1 en SYSTEM1169 + 1 en SYSTEM1173), sin revalidaciones. Registro canónico SHA256: 6c5e10bd6334f40b0449c5e2c670878083e3f931443d26a0c34e1dd8028e1c0a.
+245/742 cubiertos; 497 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 119 primeras altas (118 anteriores + 1 en SYSTEM1175; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 0d93e59c88d65d32d597ef8d5fa46d350fafb6467f13791a2e5cc3806551e962.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -21,7 +21,7 @@
 | Conocimiento, razonamiento y creatividad verbal | 37 | 22 | 15 |
 | Brillo y pantalla | 17 | 0 | 17 |
 | Información web actual | 17 | 0 | 17 |
-| Estado de hardware y sistema | 40 | 27 | 13 |
+| Estado de hardware y sistema | 40 | 28 | 12 |
 | Organizar ventanas y pestañas | 13 | 0 | 13 |
 | Conversación social y ayuda general | 31 | 25 | 6 |
 | Estado de ventanas y aplicaciones | 14 | 2 | 12 |

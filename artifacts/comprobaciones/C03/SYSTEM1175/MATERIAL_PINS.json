@@ -1,0 +1,114 @@
+{
+  "schema": "system1175-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-system1175-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-system1175-instrument-v1",
+  "seal_sha256": "3af3a772e939c86d8974a28505400ce0af68d8d63f90e7890c3a2a99e1294f40",
+  "runner_sha256": "e241df1b7f91ef7d43bb4e23ba175afa82121f21e98257916b7870a3b82d7779",
+  "transport_seal_sha256": "a69a98a6c14097f1d680030889a87706c76a62fc6f679f68b8b7fbab40afb314",
+  "files": {
+    "panel.json": "858af5ae51f8c54a897b14c8c96d285214521a68642c20e12ffe4de9a7ec4805",
+    "turns.jsonl": "e49a70ed4ffe66496704d8fcbfb4e9e0db13026054ca9776d1458cc0ad020946",
+    "case-map.json": "a86f09798bdf120e5e03a9528c8285172216d26af4ce72c45d19c3b9585bd5a1",
+    "PLAN.md": "951ae586ff03434f9a252491ebbb8e767cc73a146bdb2e14f917fab507486407"
+  },
+  "counts": {
+    "cases": 9,
+    "historical_literals": 4,
+    "original_development_variants": 4,
+    "boundaries": 1,
+    "wire_lines": 18,
+    "session_controls": 9,
+    "ordinary_turns": 9,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 9,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 4,
+    "original_development_variant": 4,
+    "boundary": 1
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0146",
+      "kind": "historical_literal",
+      "group": "disk",
+      "credit_behavior": "disk",
+      "text_sha256": "2d5a59a8a9935bb08ffbb7039ee1f3b969b12bfa541c365ab7ae9be3942fe119",
+      "criterion_sha256": "3d49ef9e4f472154d2851be4500d8611748d543c0a81b9b2a75c3f3ee2ee9b55"
+    },
+    {
+      "index": 1,
+      "case_id": "H0219",
+      "kind": "historical_literal",
+      "group": "disk",
+      "credit_behavior": "disk",
+      "text_sha256": "45bbd6c0f4c74fbb03d4da16522e08f76a9900eab8f5900c3bccc9bbe16fac6c",
+      "criterion_sha256": "3d49ef9e4f472154d2851be4500d8611748d543c0a81b9b2a75c3f3ee2ee9b55"
+    },
+    {
+      "index": 2,
+      "case_id": "H0607",
+      "kind": "historical_literal",
+      "group": "disk",
+      "credit_behavior": "disk",
+      "text_sha256": "d1cc2dfffaf182b5ec61931ef3a68c509df001400868f75cf5e4cde84d9630cf",
+      "criterion_sha256": "3d49ef9e4f472154d2851be4500d8611748d543c0a81b9b2a75c3f3ee2ee9b55"
+    },
+    {
+      "index": 3,
+      "case_id": "H0532",
+      "kind": "historical_literal",
+      "group": "memory",
+      "credit_behavior": "memory",
+      "text_sha256": "bab4c055d13938bd5f84f9923bb2e8b6cd04a8e09f635b858f29c46efc6da137",
+      "criterion_sha256": "9ed6ffce09686b7a2bd7c741f5a6aebad62493544d6a07ba9bd6b56f6b39a13b"
+    },
+    {
+      "index": 4,
+      "case_id": "system1175-dev-01",
+      "kind": "original_development_variant",
+      "group": "disk",
+      "credit_behavior": "disk",
+      "text_sha256": "027cb7dcf01a7ccf50fd0e40d36ec48f736afd2c7febfa196837ee51fa85ed53",
+      "criterion_sha256": "3d49ef9e4f472154d2851be4500d8611748d543c0a81b9b2a75c3f3ee2ee9b55"
+    },
+    {
+      "index": 5,
+      "case_id": "system1175-dev-02",
+      "kind": "original_development_variant",
+      "group": "disk",
+      "credit_behavior": "disk",
+      "text_sha256": "0776291212c0fee20fe0f8f9f1aa944f6d11c6b86b75eaf81cfe311ab70dffe7",
+      "criterion_sha256": "3d49ef9e4f472154d2851be4500d8611748d543c0a81b9b2a75c3f3ee2ee9b55"
+    },
+    {
+      "index": 6,
+      "case_id": "system1175-dev-03",
+      "kind": "original_development_variant",
+      "group": "memory",
+      "credit_behavior": "memory",
+      "text_sha256": "87e601fb4a7828241d07f0d8b0e5f4abfafab36abb60d47cbbdbc54850fc3869",
+      "criterion_sha256": "9ed6ffce09686b7a2bd7c741f5a6aebad62493544d6a07ba9bd6b56f6b39a13b"
+    },
+    {
+      "index": 7,
+      "case_id": "system1175-dev-04",
+      "kind": "original_development_variant",
+      "group": "memory",
+      "credit_behavior": "memory",
+      "text_sha256": "51f769582f4db6e977a40c56a323fde280c64171525402bdaa0258c7aad51663",
+      "criterion_sha256": "9ed6ffce09686b7a2bd7c741f5a6aebad62493544d6a07ba9bd6b56f6b39a13b"
+    },
+    {
+      "index": 8,
+      "case_id": "system1175-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "da8b4a513ebfbb104fd1b1826724ed39138ca8eb05014b406834cfb0c9c3a6eb",
+      "criterion_sha256": "cef4d244ec6ac242d4be03f6caf8bb472768bb391677ed51ac13a5d9cd725ae4"
+    }
+  ]
+}

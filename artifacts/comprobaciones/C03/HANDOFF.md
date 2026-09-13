@@ -1,3 +1,13 @@
+# SYSTEM1175 adjudicado — 2026-09-13T07:25:42+00:00
+
+**245/742 cubiertos, 497 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 0d93e59c88d65d32d597ef8d5fa46d350fafb6467f13791a2e5cc3806551e962. Primeras altas 24 h >= 119 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 1fa6e2b5 (effect_intent: scope de disco con «espacio»; SYSTEM1173/SOURCE.json|patch) con BUILD1158.
+
+SYSTEM1175 (H0146, H0219, H0607, H0532 + 4 pares + 1 límite; system.status de sólo lectura): 9 ejecutados, 6 aprobados, 3 fallidos; +1 (H0146 «cuánto espacio queda en C» → 108.13 GB libres verificados). Adjudicación f0cb158afa1eacaeccc797d29f4e1735085f810fedfd12c3bcc42384627928fa. Estado de hardware queda 28/40. Fallidos: H0219 «Y espacio?…», H0607 «y disco?», H0532 «tirame cuánta memoria tengo» acaban en pregunta de confirmación de dominio del planificador aunque tengan scope y dominio válidos: misma familia que «decime si el wifi…» (NETWORK1163). Los pares directos de memoria y disco leen bien.
+
+Siguiente: sonda sin GPU en __main__ de por qué una propuesta del modelo con dominio y scope válidos pasa a domain_confirmation cuando la cabeza es coloquial/elíptica («tirame», «Y …?», «decime si»); si es una regla de «cabeza no determinista», medir antes de tocarla. Después cierre de apps propias (20) con autorización del dueño. Reanudación: derivar desde build_system1175.py; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 0d93e59c…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h.
+
+---
+
 # SYSTEM1173 adjudicado — 2026-09-13T07:17:00+00:00
 
 **244/742 cubiertos, 498 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 6c5e10bd6334f40b0449c5e2c670878083e3f931443d26a0c34e1dd8028e1c0a. Primeras altas 24 h >= 118 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e60eef12 (línea de prompt con el significado de las claves de memoria; palabras inglesas de uso en el selector de scope GPU; SYSTEM1171/SOURCE.json|patch) con BUILD1158.

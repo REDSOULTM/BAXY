@@ -1,3 +1,25 @@
+## SYSTEM1175 — estado vigente 2026-09-13T07:25:42+00:00
+
+Parcial: 6 aprobados, 3 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 245/742 | 497 | 0 | >=119 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 118 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; SYSTEM1175 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: SYSTEM1175 completa: 9 ejecutados, 6 aprobados, 3 fallidos, 1 crédito (H0146). La reparación del scope de disco se demuestra en las formas directas; las formas elípticas/coloquiales (H0219 «Y espacio?», H0607 «y disco?», H0532 «tirame…») siguen en pregunta de confirmación de dominio del planificador aunque tengan scope: causa común con «decime si el wifi…» (ruta de confirmación para propuestas del modelo con cabeza no determinista). Estado de hardware queda 28/40. Siguiente: localizar en __main__ por qué una propuesta del modelo con dominio y scope válidos pasa a domain_confirmation en estos textos.
+
+Evidencia: `artifacts/comprobaciones/C03/SYSTEM1175/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 142.28 s acumulados; pico GPU 3497.56 MiB; pico RAM 1637.69 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SYSTEM1175 precedente. -->
+
 ## SYSTEM1173 — estado vigente 2026-09-13T07:17:00+00:00
 
 Parcial: 5 aprobados, 2 fallidos, 0 sin ejecutar; 1 créditos.

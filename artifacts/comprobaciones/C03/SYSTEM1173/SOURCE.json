@@ -1,6 +1,6 @@
 {
   "schema": "c03-system1173-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/effect_intent.py",
   "patch": "artifacts/comprobaciones/C03/SYSTEM1173/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "SYSTEM1175: H0146, H0219, H0607 (disco) y H0532 (memoria) con pares.",
-  "credits": 0
+  "measurement": "SYSTEM1175: «cuánto espacio queda en C» → scope disk, 108.13 GB libres verificados; crédito H0146. Las formas elípticas/coloquiales (Y espacio?, y disco?, tirame cuánta memoria tengo) siguen en confirmación de dominio pese a tener scope.",
+  "credits": 1
 }
