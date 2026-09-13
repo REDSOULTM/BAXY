@@ -1,3 +1,25 @@
+## CLOSE1223 — estado vigente 2026-09-13T16:54:49.709785+00:00
+
+Parcial: 11 aprobados, 3 fallidos, 0 sin ejecutar; 4 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 295/742 | 447 | 0 | >=169 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 165 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; CLOSE1223 añade 4. No se cuentan revalidaciones.
+
+Siguiente acción: CLOSE1223 completa: 14 ejecutados, 11 aprobados, 3 fallidos, 4 créditos (H0095, H0186, H0228, H0346: cierre por nombre de Bloc de notas, Calculadora y Chrome sobre ventanas propias, con los pares Paint y Notepad EN). Siete de los ocho cierres revisados cerraron y verificaron la ausencia en 16–19 s; el final inglés ya sigue el idioma del pedido. Quedan: la enumeración completa de ventanas abortada por una ventana ajena en destrucción (índice 9, reparación CLOSE1225), la prohibición «No cierres Chrome, lo estoy usando.» desviada a conversación y el límite futuro que niega la capacidad (modelo). Cerrar apps queda 4/20; fuera de esta instrumentación siguen Steam ×4, WhatsApp/Discord ×3, deícticos ×5 y globales ×2.
+
+Evidencia: `artifacts/comprobaciones/C03/CLOSE1223/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 243.02 s acumulados; pico GPU 3497.56 MiB; pico RAM 1770.13 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 14; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque CLOSE1223 precedente. -->
+
 ## CLOSE1221 — estado vigente 2026-09-13T16:41:19.562318+00:00
 
 Parcial: 6 aprobados, 8 fallidos, 0 sin ejecutar; 0 créditos.

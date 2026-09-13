@@ -1,6 +1,6 @@
 {
   "schema": "c03-close1223-app-source-adoption-v1",
-  "status": "adopted_unmeasured",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs (Inventory, strong path)",
   "patch": "artifacts/comprobaciones/C03/CLOSE1223/APP_SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": true,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": null,
-  "credits": null
+  "measurement": "CLOSE1223: Chrome ×3 y Calculadora ES cerrados con aprobación raíz (7/8 cierres revisados); el índice 9 falló por una ventana ajena en destrucción durante la enumeración completa. 4 créditos.",
+  "credits": 4
 }

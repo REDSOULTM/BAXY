@@ -1,3 +1,13 @@
+# CLOSE1223 adjudicado — 2026-09-13T16:54:49.709785+00:00
+
+**295/742 cubiertos, 447 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 81ba82b5932e4be392ac841fce1217cbe8a81272557729c447614900a82ae096. Primeras altas 24 h >= 169 (+4).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 50ad70f0 con BUILD1223 (inventario fuerte sólo sobre candidatos, CLOSE1223/APP_SOURCE.json; idioma del pedido en respuestas de plan, CLOSE1223/SOURCE.json).
+
+CLOSE1223 (mismos 14 objetos): 14 ejecutados, 11 aprobados, 3 fallidos; +4 (H0095 Bloc de notas, H0186 Calculadora, H0228 y H0346 Chrome) con los pares Paint y Notepad EN. Adjudicación 4bb0cd5bf276ad4fd98e8bbca7be76ec7f5f692a89e312f9bc46fde6fa64a3e8. **Primeros cierres de aplicación acreditados**: siete de ocho cierres revisados resolvieron exactamente la ventana propia (Notepad por proceso, Calculadora por marco de ApplicationFrameHost, Chrome por ruta de destino del Shell), la raíz aprobó la propuesta tras nueve comprobaciones y app.close cerró y verificó la ausencia en 16–19 s; el final inglés ya sigue el idioma del pedido («I closed the Notepad window.»). Fallos: índice 9 (Calculator EN) por enumeración completa de ventanas abortada por una ventana ajena en destrucción tras el caso de Chrome (reparación CLOSE1225: enumeración completa sólo del candidato); «No cierres Chrome, lo estoy usando.» desviada a conversación y límite futuro que niega la capacidad (modelo, idénticos en tres tandas). Cerrar apps queda 4/20.
+
+Siguiente: CLOSE1225 (BUILD1225) con las dos prohibiciones y el inventario robusto; luego deícticos («cerrá esta ventana», ×5) con ventana propia en primer plano y ampliación a WhatsApp/Discord propios (autorizado) si sus sesiones lo permiten; Steam ×4 aplazado (descargas ajenas). Reanudación: derivar de build_close1223.py con BUILD1225; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 81ba82b5932e4be392ac841fce1217cbe8a81272557729c447614900a82ae096`.
+
+---
+
 # CLOSE1221 adjudicado — 2026-09-13T16:41:19.562318+00:00
 
 **291/742 cubiertos, 451 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 8be741115492ef9d14d2bf389a2fe30fd90440c271b5ad997c45313f713354c5. Primeras altas 24 h >= 165 (+0).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 53a55c58 con BUILD1221 (destino del Shell para entradas clásicas, marcos de ApplicationFrameHost, aprobación en el idioma de la petición; CLOSE1221/APP_SOURCE.json|patch).

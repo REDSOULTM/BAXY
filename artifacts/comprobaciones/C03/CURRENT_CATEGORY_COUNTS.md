@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación CLOSE1221
+# Categorías actuales — adjudicación CLOSE1223
 
-291/742 cubiertos; 451 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 165 primeras altas (165 anteriores + 0 en CLOSE1221; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 8be741115492ef9d14d2bf389a2fe30fd90440c271b5ad997c45313f713354c5.
+295/742 cubiertos; 447 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 169 primeras altas (165 anteriores + 4 en CLOSE1223; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 81ba82b5932e4be392ac841fce1217cbe8a81272557729c447614900a82ae096.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -16,7 +16,7 @@
 | Alarmas, recordatorios, tareas y agenda | 38 | 34 | 4 |
 | Interacción dentro de aplicaciones | 22 | 0 | 22 |
 | Red y Bluetooth | 21 | 9 | 12 |
-| Cerrar aplicaciones y ventanas | 20 | 0 | 20 |
+| Cerrar aplicaciones y ventanas | 20 | 4 | 16 |
 | Pantalla, captura e interpretación visual | 19 | 0 | 19 |
 | Conocimiento, razonamiento y creatividad verbal | 37 | 22 | 15 |
 | Brillo y pantalla | 17 | 0 | 17 |

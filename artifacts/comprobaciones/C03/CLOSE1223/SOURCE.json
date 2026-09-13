@@ -1,6 +1,6 @@
 {
   "schema": "c03-close1223-source-adoption-v1",
-  "status": "adopted_unmeasured",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/__main__.py (turn.decide reply: responseLanguage for action/plan replies)",
   "patch": "artifacts/comprobaciones/C03/CLOSE1223/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": null,
-  "credits": null
+  "measurement": "CLOSE1223/007: petición y final en inglés («I closed the Notepad window.»); el conductor envió «confirm». Par aprobado.",
+  "credits": 0
 }
