@@ -1,0 +1,142 @@
+commit 23f8c73fe29341d4f34c84a80bfa01bb1696b56f
+
+C03: weather and news lookups reach the read-only search; irrelevant results are a failure statement; temporal tokens are search stop words (WEB1269 repair)
+
+WEB1267: «busca el clima en Buenos Aires» and «qué clima hace en Buenos
+Aires» never reached web.search (the live-lookup reader accepted no search
+or question head) and the model planner declared them out of catalog;
+«noticias de deportes de hoy» failed as irrelevant because every result had
+to contain «hoy», and «today's news» matched the TV show TODAY; the failure
+message «the results were irrelevant» was rejected as missing_failure until
+the retries ran out.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+index 17dba32a..79ff1bc9 100644
+--- a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+@@ -566,7 +566,11 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
+         "a" or "an" or "and" or "the" or "to" or "for" or "from" or "in" or "of" or "on"
+         or "search" or "find"
+         or "de" or "del" or "el" or "en" or "la" or "las" or "los" or "para" or "por"
+-        or "un" or "una" or "y" or "busca" or "buscar";
++        or "un" or "una" or "y" or "busca" or "buscar"
++        // WEB1267: «hoy»/«today» name the moment of the request, not a word the
++        // result must repeat («noticias de hoy» found nothing; «today's news»
++        // matched the TV show TODAY).
++        or "hoy" or "today" or "ahora" or "now" or "todays";
+ 
+     private static JsonElement NavigationResult(CdpNavigationResult value, string authority) =>
+         ExternalJson.Create(writer =>
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 5c019758..677070ed 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -136,8 +136,20 @@ def _public_live_lookup_request(folded: str) -> bool:
+     head = _request_head(folded)
+     weather_heads = {
+         "are",
++        "busca",
++        "buscame",
++        "buscar",
+         "clima",
+         "como",
++        "cual",
++        "decime",
++        "dime",
++        "find",
++        "mostrame",
++        "muestra",
++        "muestrame",
++        "que",
++        "search",
+         "do",
+         "does",
+         "forecast",
+@@ -162,7 +174,8 @@ def _public_live_lookup_request(folded: str) -> bool:
+             (
+                 r"^(?:(?:alexa|olly|bax[yi])\s+)?(?:"
+                 r"i\s+(?:want|would\s+like)\s+to\s+(?:hear|know|see)|"
+-                r"(?:pon|ponme|muestra|muestrame|show|play)\b"
++                r"(?:pon|ponme|muestra|muestrame|show|play|"
++                r"busca|buscame|buscar|search|find|dame|decime|dime|investiga)\b"
+                 r")"
+             ),
+             folded,
+@@ -193,7 +206,7 @@ def _public_live_lookup_request(folded: str) -> bool:
+     )
+     weather = weather_head and _has(
+         folded,
+-        r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|"
++        r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|llover|"
+         r"umbrella|paraguas|temperature|temperatura|hot|caluroso|calurosa|"
+         r"cold|frio|fria)\b",
+     )
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index acb7d892..d7f69621 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -2898,7 +2898,9 @@ _FAILURE_MARKERS = re.compile(
+     r"no la encontré|no lo encontré|no pude encontr|"
+     r"no responde|se agotó|"
+     r"didn't find|did not find|didn't respond|did not respond|"
+-    r"time ran out|not found)",
++    r"time ran out|not found|"
++    r"irrelevant|irrelevantes?|no useful results|nothing useful|"
++    r"sin resultados|no (?:hubo|hay) resultados|no encontr[eé] resultados|no results)",
+     re.IGNORECASE,
+ )
+ _NEGATED_FAILURE = re.compile(
+commit f5d585374ba6e8c439d0327178cac2e190a452fd
+
+C03: a file or a definition question is not a weather lookup (WEB1269 repair, guard)
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 677070ed..1284760f 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -210,6 +210,16 @@ def _public_live_lookup_request(folded: str) -> bool:
+         r"umbrella|paraguas|temperature|temperatura|hot|caluroso|calurosa|"
+         r"cold|frio|fria)\b",
+     )
++    # A file, note or document named after the weather, or a question about the
++    # word itself («¿qué significa la palabra clima?»), is not a live lookup.
++    if (weather or news) and _has(
++        folded,
++        r"(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|"
++        r"documents?|txt|pdf|docx|significa|significado|definicion|define|"
++        r"definition|meaning|means)",
++    ):
++        weather = False
++        news = False
+     market_direction = (
+         re.match(
+             (
+commit 0e84ff0d0cc4e4dfacf1680fddfedacc472c553c
+
+C03: fix the word boundaries of the weather-lookup guard (WEB1269)
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 1284760f..a36cc726 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -214,9 +214,9 @@ def _public_live_lookup_request(folded: str) -> bool:
+     # word itself («¿qué significa la palabra clima?»), is not a live lookup.
+     if (weather or news) and _has(
+         folded,
+-        r"(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|"
++        r"\b(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|"
+         r"documents?|txt|pdf|docx|significa|significado|definicion|define|"
+-        r"definition|meaning|means)",
++        r"definition|meaning|means)\b",
+     ):
+         weather = False
+         news = False

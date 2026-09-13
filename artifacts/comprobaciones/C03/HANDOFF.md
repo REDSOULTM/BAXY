@@ -1,3 +1,11 @@
+# WEB1269 adjudicado — 2026-09-13T22:40:03.421123+00:00
+
+**346/742 cubiertos, 396 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 8be50c01ed339dd69995cc324c280e274b93a04a84f50edbddb3e679da023f4c. Primeras altas 24 h >= 220 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b7aa38f2 con BUILD1263 (sin fuente nueva; WEB1269/SOURCE.json).
+
+WEB1269 («Información web actual»: clima y noticias, turnos ordinarios con web.search): 12 ejecutados, ' + MEASURE_N + ' aprobados, ' + MEASURE_F + ' fallidos, 0 créditos. Adjudicación 9f05ccb0b9e8eec637408430a3e2df0c57e983435e0fc5f5000ec2e9efd0d0ca. Clima y noticias ya ejecutan web.search; el clima de otras ciudades queda condicionado por el motor (Bing RSS responde con el tiempo local del equipo) y los finales lo dicen con verdad; las noticias se responden con los títulos devueltos salvo «today’s news» (programa de TV TODAY). Siguiente: WEB1271 (LooksLikeFailure de la App acepta «irrelevant»; variantes de noticias sin «today» para los pares de H0033/H0374).
+
+---
+
 # WEB1267 adjudicado — 2026-09-13T22:30:01.387137+00:00
 
 **346/742 cubiertos, 396 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA ee3751dd291490c288aac3651b5c65eaeb42ab670814285333a1a9ca6d63744a. Primeras altas 24 h >= 220 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b7aa38f2 con BUILD1263 (sin fuente nueva; WEB1267/SOURCE.json).

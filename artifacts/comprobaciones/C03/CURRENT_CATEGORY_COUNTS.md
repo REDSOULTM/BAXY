@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación WEB1267
+# Categorías actuales — adjudicación WEB1269
 
-346/742 cubiertos; 396 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 220 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: ee3751dd291490c288aac3651b5c65eaeb42ab670814285333a1a9ca6d63744a.
+346/742 cubiertos; 396 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 220 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 8be50c01ed339dd69995cc324c280e274b93a04a84f50edbddb3e679da023f4c.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|

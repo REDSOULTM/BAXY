@@ -1,0 +1,18 @@
+{
+  "schema": "c03-web1267-source-adoption-v1",
+  "status": "measured_no_new_change",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "candidate": "HEAD 0e84ff0d0cc4e4dfacf1680fddfedacc472c553c con BUILD1269",
+  "owner": "src/baxy_mind/effect_intent.py (_public_live_lookup_request: cabezas de búsqueda y pregunta para clima/noticias; guarda de archivo/definición); src/baxy_mind/llm.py (_FAILURE_MARKERS: irrelevant/sin resultados); src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs (IsSearchStopWord: hoy/today/ahora/now)",
+  "patch": "artifacts/comprobaciones/C03/WEB1269/SOURCE.patch",
+  "commits": [
+    "23f8c73f",
+    "f5d58537",
+    "0e84ff0d"
+  ],
+  "build": "BUILD1269 (C03-repairs1269-build/BUILD_READY.json)",
+  "change": "Los pedidos de clima y noticias con verbo de búsqueda o cabeza de pregunta resuelven a web.search en el lector; «irrelevant/sin resultados» cuenta como afirmación de fallo en la mente; hoy/today/ahora/now son palabras vacías del filtro de relevancia.",
+  "measurement": "WEB1269: 12 ejecutados, 5 aprobados, 7 fallidos, 0 créditos. Todos los pedidos de clima y noticias ejecutan web.search ahora. Clima: el proveedor Bing RSS responde a cualquier consulta de clima con el tiempo de la ubicación del equipo (no de la ciudad pedida; setmkt/cc lo empeoran) y el filtro lo rechaza con razón: los finales dicen con verdad que no hallaron resultados relevantes; condicionado por el motor externo. Noticias: «buscá/busca noticias de hoy» y «noticias de deportes de hoy» aprobadas (búsqueda verificada, finales fieles a los títulos); «today’s news» sigue devolviendo el programa de TV TODAY (ranking del motor) y el final lo presenta como noticias: no útil. El mensaje de fallo en inglés compone en la mente pero la App lo rechaza (LooksLikeFailure sin «irrelevant»): reversed_result hasta agotar reintentos.",
+  "next": "WEB1271: LooksLikeFailure acepta «irrelevant/no results» (App, compilación nueva); variantes de noticias sin «today» para completar los pares de H0033/H0374; el clima de otras ciudades queda condicionado por el motor.",
+  "credits": 0
+}
