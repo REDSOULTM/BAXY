@@ -1,3 +1,13 @@
+# TIME1187 adjudicado (parcial) — 2026-09-13T11:58:47+00:00
+
+**248/742 cubiertos, 494 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 8e60a9e882d2fa204921d4da3eb7218e23301229c38c222a4487174a7bc09d91. Primeras altas 24 h >= 122 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d1a3a3b8 con BUILD1158.
+
+TIME1187 (resto relativo del material 1134: 7 literales, 6 variantes, 2 límites): 11 ejecutados, 0 aprobados, 11 fallidos, 4 sin ejecutar (recordatorios 5, 6, 11, 12, aparcados al comprobar en el índice 4 que reminder.create queda fuera del transporte sellado heredado de 1134), 0 créditos. Adjudicación 5bb1955e2be3615ca92c1605e6aaf51f8ebcc1c8adeb26ad078597363184d6cb. Causas medidas, todas léxicas o de transporte: duración compacta «2min/3min/4min» no leída por los lectores temporales (TIME1138); «despertame/wake me» ausente del dominio y del reconocedor de alarma; «media hora» no es duración; «contá N minutos» y «start a timer» sin cabeza; extractor de recordatorio relativo limitado a «avisame/remind me … que/to»; reminder.create no autorizado. El recordatorio creado en el índice 4 quedó en el almacén del perfil aislado (sin tarea del Programador; 910 tareas BAXY antes y después). Dos límites fallidos (sustituto de cancelación ofrecido; negación falsa de alcance). Preflight de RAM: un intento de preparación abortó con 3482 MiB libres (guarda 4000 intacta); se cerró WhatsApp.Root (autorizado) y se preparó con 4413 MiB.
+
+Siguiente: reparación léxica compartida adoptada a continuación (patrón de duración relativa con formas compactas y «media hora», vocabulario de despertar, «start» como verbo de programación, cabezas y formas del recordatorio) verificada sin GPU; TIME1189 con el mismo material y reminder.create autorizado para el grupo de recordatorios (derivar de build_time1187.py). «contá N minutos» queda documentado sin reparación.
+
+---
+
 # TIME1185 adjudicado — 2026-09-13T11:44:22+00:00
 
 **248/742 cubiertos, 494 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 520177fae9e9235f20115868f817364a2cf9ed99bdb8de5f28c9e0ffa2ae0fe4. Primeras altas 24 h >= 122 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 8fd4d513 (__main__: due relativo publicado al segundo entero hacia arriba; TIME1139/SOURCE.json|patch, decisión del dueño punto 3) con BUILD1158.

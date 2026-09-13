@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación TIME1185
+# Categorías actuales — adjudicación TIME1187
 
-248/742 cubiertos; 494 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 122 primeras altas (120 anteriores + 2 en TIME1185; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 520177fae9e9235f20115868f817364a2cf9ed99bdb8de5f28c9e0ffa2ae0fe4.
+248/742 cubiertos; 494 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 122 primeras altas (120 anteriores + 2 en TIME1185; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 8e60a9e882d2fa204921d4da3eb7218e23301229c38c222a4487174a7bc09d91.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|

@@ -1,0 +1,24 @@
+{
+  "index": 14,
+  "case_id": "alarm-repair983-boundary-missing",
+  "terminal_kind": "published_final",
+  "final_sha256": "a6d261301363a98002a4eea4b50d4f1c3db8e0d9786bac8522ba3bd985af2182",
+  "clients_absent_before": true,
+  "verdict": "failed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 16.40700000000652,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1556.8203125,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1187-instrument-v1\\results\\case-14\\EXIT.json": "564a29fd0ae6bd4db7507e58ad8c6302fab8d06ba790ea67b14b9ba89b53c747",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1187-instrument-v1\\results\\case-14\\RESOURCES.json": "dca6fb7a1c9428fa419e8f1e38a0e1a4d2e8cb1fbf6360edce8ffe967a5b7cb1",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1187-instrument-v1\\private\\run-14\\case-observations.json": "8ffe6cedf695389944de48aab16a22e84d35f5baf3d3a4841323412c1c4a0a25"
+  }
+}
