@@ -1,3 +1,11 @@
+# MEMORY1251 adjudicado — 2026-09-13T20:32:21.631957+00:00
+
+**334/742 cubiertos, 408 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 98cc59d987b298265083d666fb73378b187cf2513b8f64ce0842201d2cb91263. Primeras altas 24 h >= 208 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 53b1d90b con BUILD1249 y la mente revertida (e3580505); MEMORY1251/SOURCE.json.
+
+MEMORY1251 (mismo panel de dos fases): 10 ejecutados, 5 aprobados, 5 fallidos, 0 créditos. Adjudicación 12aeabc3a8956ad261784eb3ab95d035a913f3a1c085bf4d0fac3cc75654e199. Activación y guardado ya componen; quedan tres causas medidas: final en español ante pedidos en inglés (la continuación de memoria no lleva el texto del pedido), cita traducida del dato («red»→«rojo»), y el mensaje de fallo memory_disabled del color favorito afirma recordar y se rechaza (forbidden_term). Cada grupo (nombre, dato) pierde un par por ello. Siguiente: MEMORY1253 con RequestText en la continuación (App), cita literal y mensaje de fallo corregidos (mente).
+
+---
+
 # MEMORY1249 adjudicado — 2026-09-13T20:21:56.282782+00:00
 
 **334/742 cubiertos, 408 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA f9ed7a8c9871799cd0f7a29ff39fed7dc50ad27381ad5be57fdc03dc216039dd. Primeras altas 24 h >= 208 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD cbc19a38 con BUILD1249 (proyección del guardado con «remembered», composición contra el pedido original; MEMORY1249/APP_SOURCE.json|SOURCE.json|*.patch).

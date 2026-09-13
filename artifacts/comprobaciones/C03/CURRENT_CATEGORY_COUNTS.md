@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación MEMORY1249
+# Categorías actuales — adjudicación MEMORY1251
 
-334/742 cubiertos; 408 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 208 primeras altas (205 anteriores + 3 en MEMORY1245; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: f9ed7a8c9871799cd0f7a29ff39fed7dc50ad27381ad5be57fdc03dc216039dd.
+334/742 cubiertos; 408 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 208 primeras altas (205 anteriores + 3 en MEMORY1245; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 98cc59d987b298265083d666fb73378b187cf2513b8f64ce0842201d2cb91263.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|

@@ -1,0 +1,10 @@
+{
+  "schema": "c03-memory1251-source-adoption-v1",
+  "status": "measured_no_new_change",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "candidate": "HEAD 53b1d90b5e57ae52d376a865becc59084e066b7e con los binarios de BUILD1249 y la mente con la reversión e3580505 (MEMORY1249/SOURCE.patch)",
+  "change": "Ninguna fuente nueva: remedición del panel de MEMORY1249 con el texto de estado de la activación revertido.",
+  "measurement": "MEMORY1251: 10 ejecutados, 5 aprobados, 5 fallidos, 0 créditos. La activación y el guardado vuelven a componerse («Confirmado. Voy a recordarlo: Reta.»), pero (a) los pedidos en inglés reciben el final en español porque la continuación de memoria sólo lleva el objetivo público (nulo en pedidos de memoria puros) y el modelo de vista compone contra la última entrada «confirmar»; (b) el compositor traduce el dato citado («red»→«rojo», «tea»→«té»); (c) el mensaje de fallo memory_disabled para «acordate que mi color favorito es el azul» afirma recordar el dato y el validador lo rechaza (forbidden_term) hasta agotar reintentos.",
+  "next": "MEMORY1253: RequestText en la continuación de memoria (App), cita literal de observed.remembered (mente) y mensaje de fallo memory_disabled sin afirmar recordar (mente).",
+  "credits": 0
+}
