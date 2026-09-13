@@ -1,3 +1,25 @@
+## IDENTITY1146 — estado vigente 2026-09-13T04:29:01+00:00
+
+Parcial: 17 aprobados, 10 fallidos, 0 sin ejecutar; 7 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 224/742 | 518 | 0 | >=98 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 28 Kiro + 49 retorno + H0584 + H0511 + 10 (NOTES1142) + 2 (KNOWLEDGE1144) = 91 antes de esta tanda, todas dentro de la ventana de 24 h al adjudicar; IDENTITY1146 añade 7 primeras altas. No se cuentan revalidaciones.
+
+Siguiente acción: IDENTITY1146 completa: 27 ejecutados, 17 aprobados, 10 fallidos, 7 créditos (H0587, H0731, H0190, H0591, H0202, H0365, H0634). Causa localizada de los fallos de capacidades (0, 1, 12) y del límite 22: UserMessagePhrases.SelfDescriptionAsks del shell no contiene el voseo «que podes hacer» y la coincidencia por subcadena ignora la negación; reparación de App (build) antes de remedir H0153/H0474 con nuevos pares. «cómo funciona» (11, 20, 21) queda abierto: la explicación del producto no recibe hechos del catálogo; H0296/H0012 (referente ausente, coloquialismo) abiertos sin reparación local.
+
+Evidencia: `artifacts/comprobaciones/C03/IDENTITY1146/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 481.80 s acumulados; pico GPU 3497.56 MiB; pico RAM 1880.97 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 27; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque IDENTITY1146 precedente. -->
+
 ## Aviso de recursos (2026-09-13T03:20:51.405273+00:00)
 
 Las tandas necesitan 4 GB de RAM libre al arrancar (guarda heredada, no la bajo). Tu app ChatGPT/Codex se relanza sola y ocupa ~1,3 GB; con ella abierta quedan ~2–3 GB libres y el conductor rechaza el caso. Cerrarla por la fuerza ya no me lo permite el arnés. Si la cierras tú (o me autorizas expresamente a cerrarla cada vez), retomo IDENTITY1146 y las tandas siguientes. Mientras tanto sigo con reparaciones verificables sin producto y documentación. Recordatorios de sesión programados (03:27 y cada 5 h).
