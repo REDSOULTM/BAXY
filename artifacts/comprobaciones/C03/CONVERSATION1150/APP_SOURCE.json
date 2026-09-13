@@ -1,0 +1,21 @@
+{
+  "schema": "c03-conversation1150-app-source-adoption-v1",
+  "status": "adopted_pending_build_and_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/MainWindowViewModel.cs",
+  "patch": "artifacts/comprobaciones/C03/CONVERSATION1150/APP_SOURCE.patch",
+  "cause_measured": "CONVERSATION1150 índices 2 («NO te preocupes si se abrio steam») y 7 («necesito ayuda con algo») y KNOWLEDGE1149 índice 4 («estoy aburrido»): finales «No pude entender bien…». Evidencia de producto: raw-replies con dos borradores sólo-pregunta (o unsupported) vetados por el mind (PlannerContractError «una explicación no puede ser sólo una pregunta»), turn-audit fase recovery kind semantic_clarification con failure_code turn_contract_failure y decisión clarify; shell-trace decision.ready clarify → compose.start error sin clarification.rejected. Lectura de fuente: __main__._recover_failed_turn devuelve kind clarify con una pregunta validada (_recovery_question_is_valid) y failure_code; MindSidecarClient acepta ese código, y MainWindowViewModel (bloque `if (turn.RecoveryFailureCode is { } failureCode)`, WIP 892c506c) publica TurnVisibleFacts.Failure(failureCode) antes de mirar el kind, descartando la pregunta.",
+  "change": "En ese bloque, si la decisión recuperada es kind clarify con pregunta no vacía y sin operaciones (EffectOperations e IntentOperations vacías), se publica como aclaración por AddMindClarification (con la misma política de veto de aclaraciones, preserveObjective=false) en lugar del fallo. Cualquier otra recuperación sigue publicándose como fallo. Ninguna frase fija nueva; ninguna capa nueva; sin autoridad de ejecución (la recuperación no trae operaciones).",
+  "not_changed": "La causa aguas arriba (borradores conversacionales que sólo preguntan ante «estoy aburrido», «no te preocupes si se abrió Steam») sigue en el modelo/política; el mind clasifica «necesito ayuda con algo» como unsupported. La reparación sólo deja pasar la pregunta de recuperación que el mind ya formuló.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build": {
+    "campaign": "BUILD1151",
+    "receipt": "C:/Users/usuario/AppData/Local/BAXY/C03-repairs1151-build/BUILD_READY.json",
+    "note": "Se rellena en el recibo; el cambio se compromete antes de compilar."
+  },
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "Tanda residual de conversación (H0059, H0354 con pares nuevos) sobre BUILD1151; se demuestra cuando el final sea la pregunta del mind y no «No pude entender bien».",
+  "credits": 0
+}

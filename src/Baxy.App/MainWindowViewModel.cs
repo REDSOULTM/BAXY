@@ -2116,6 +2116,26 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         if (turn.RecoveryFailureCode is { } failureCode)
         {
             _pendingMindClarificationObjective = null;
+            // A recovered turn that carries the mind's validated clarification
+            // question is a question, not a failure. Publishing the failure
+            // discarded that question and told the person BAXY had not
+            // understood («No pude entender bien…») after two vetoed
+            // conversational drafts (CONVERSATION1150/002, /007;
+            // KNOWLEDGE1149/004). The recovery carries no operations and no
+            // preserved objective, so it grants no execution authority.
+            if (turn.Kind == "clarify"
+                && turn.Question is { Length: > 0 }
+                && turn.EffectOperations.Count == 0
+                && turn.IntentOperations.Count == 0)
+            {
+                return AddMindClarification(
+                    route.Text,
+                    turn.Question,
+                    turn.ResponseLanguage,
+                    preserveObjective: false,
+                    turn.MissingFields);
+            }
+
             AddMessage(
                 "BAXY",
                 TurnVisibleFacts.Failure(failureCode, new JsonObject
