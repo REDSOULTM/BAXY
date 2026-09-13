@@ -1,0 +1,20 @@
+{
+  "schema": "c03-knowledge1144-prompt-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (SYSTEM_PROMPT)",
+  "before": "5ab7f5984dd1fc7132ac653f982fbe12f49293cb1967ab472b144bc940c05526",
+  "after": "42841cc3eafa95e66c6aee90d1534b1811ee20440a2ec42e85146fd8878028a4",
+  "patch": "artifacts/comprobaciones/C03/KNOWLEDGE1144/PROMPT_SOURCE.patch",
+  "patch_sha256": "7ec93f122c5f9871e3d61f9ca45bf9a67d38455f51951812d4e8a0f102265c9d",
+  "cause_measured": "KNOWLEDGE1144 H0297: la respuesta publicada fue la palabra «SIEMPRE», vocabulario en mayúsculas del SYSTEM_PROMPT (fuga ya observada dos veces en CLOCK1034; el veto genérico de mayúsculas se retiró en REPAIR1036 por falso rechazo, la causa quedó). KNOWLEDGE1144 H0211 y KNOWLEDGE998 H0211: ante «contame un chiste» pregunta «¿Quieres uno en spanglish o en español puro?»: la enumeración «Hablas español, inglés y spanglish» induce ofrecer elegir idioma.",
+  "change": "SYSTEM_PROMPT: «Hablas español, inglés y spanglish; responde SIEMPRE en el idioma del último mensaje del usuario, aunque…» → «Entiendes español, inglés y spanglish; respondes siempre en el idioma del último mensaje del usuario, sin ofrecer elegir idioma, aunque…». Se retira la palabra en mayúsculas (causa de la fuga) en vez de filtrarla; se añade la instrucción negativa mínima contra la pregunta de idioma. Personalidad y demás reglas intactas.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "requires_dotnet_build": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "IDENTITY1145 y siguientes tandas de conversación sobre esta fuente; H0211/H0297 en el residual de conocimiento.",
+  "credits": 0,
+  "utc": "2026-09-13T03:06:26.819880+00:00"
+}
