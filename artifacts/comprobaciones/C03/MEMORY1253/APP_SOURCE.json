@@ -1,0 +1,13 @@
+{
+  "schema": "c03-memory1253-app-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/MemoryTurnSession.cs (MemoryContinuation.RequestText, ExecuteRouteAsync requestText, publicación de la finalización); src/Baxy.App/MainWindowViewModel.cs (route.Text en las dos llamadas)",
+  "patch": "artifacts/comprobaciones/C03/MEMORY1253/APP_SOURCE.patch",
+  "commit": "772a1671972a298d95bc5d05c8d83f70b6718b04",
+  "build": "BUILD1253 (C03-repairs1253-build/BUILD_READY.json)",
+  "cause_measured": "MEMORY1251: los pedidos en inglés recibían el final en español porque la continuación de memoria sólo llevaba el objetivo público (nulo en pedidos de memoria puros) y el modelo de vista componía contra la última entrada «confirmar».",
+  "change": "La continuación de memoria lleva el texto del pedido original; la finalización del guardado (también tras la activación) se compone contra ese texto.",
+  "measurement": "MEMORY1253: «Remember that my name is Fabletest.» → «Got it, Fabletest. … stored in the private local memory.» (inglés); los cuatro guardados de nombre aprobados; créditos H0157 y H0149.",
+  "credits": 2
+}

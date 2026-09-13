@@ -1,3 +1,11 @@
+# MEMORY1253 adjudicado — 2026-09-13T20:47:46.276515+00:00
+
+**336/742 cubiertos, 406 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA e44ccbcaaaa99a1c3d33a2b277f16fb6e585c2e9818308496c97ea6bb34660a4. Primeras altas 24 h >= 210 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 772a1671 con BUILD1253 (texto del pedido en la continuación de memoria; dato recordado conservado; instrucción de fallo memory_disabled; MEMORY1253/APP_SOURCE.json|SOURCE.json|*.patch).
+
+MEMORY1253 (mismo panel de dos fases): 10 ejecutados, 7 aprobados, 3 fallidos, 2 créditos (H0157, H0149 con dev-01/dev-02). Adjudicación ba1403047d6226bc2423c5f7c2c7d3d547977779760a00cc8c4710d04eb231f1. Resueltas las tres causas de MEMORY1251: final en el idioma del pedido, «red» citado tal cual, H0452 publica el mensaje de fallo y completa. Causa nueva del candidato: la comprobación literal del dato exigía la frase entera y rechazó el cambio de persona («tu cumpleaños», «your favorite drink») en H0506 y dev-04 (sin final). Siguiente: MEMORY1255 con la comprobación por palabras de contenido (mente) sobre el mismo panel.
+
+---
+
 # MEMORY1251 adjudicado — 2026-09-13T20:32:21.631957+00:00
 
 **334/742 cubiertos, 408 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 98cc59d987b298265083d666fb73378b187cf2513b8f64ce0842201d2cb91263. Primeras altas 24 h >= 208 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 53b1d90b con BUILD1249 y la mente revertida (e3580505); MEMORY1251/SOURCE.json.

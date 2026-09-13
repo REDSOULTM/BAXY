@@ -1,0 +1,12 @@
+{
+  "schema": "c03-memory1253-source-adoption-v1",
+  "status": "adopted_measured_partially",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_payload_fact_defect: dato recordado; pista de reintento missing_remembered; instrucción de fallo memory_disabled)",
+  "patch": "artifacts/comprobaciones/C03/MEMORY1253/SOURCE.patch",
+  "commit": "772a1671972a298d95bc5d05c8d83f70b6718b04",
+  "cause_measured": "MEMORY1251: el compositor traducía el dato citado («red»→«rojo», «tea»→«té») y el mensaje de fallo memory_disabled afirmaba recordar el dato y llamaba «operación» al guardado (término prohibido) hasta agotar reintentos.",
+  "change": "El texto público debe conservar el dato recordado; la instrucción de fallo memory_disabled dice sólo que no se guardó porque la memoria privada está apagada, sin afirmar recordar.",
+  "measurement": "MEMORY1253: «red» se cita tal cual y H0452 publica el mensaje de fallo y completa el guardado («Recordaré el azul»); pero la comprobación exigía la frase entera y rechazó el cambio de persona («tu cumpleaños», «your favorite drink») en H0506 y dev-04, cuya pista de reintento hizo imprimir el nombre del campo (internal_code): dos turnos sin final. Corregido en MEMORY1255 (palabras de contenido).",
+  "credits": 2
+}

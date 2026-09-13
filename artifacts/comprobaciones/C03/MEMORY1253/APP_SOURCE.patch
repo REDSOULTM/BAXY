@@ -1,0 +1,116 @@
+commit 772a1671972a298d95bc5d05c8d83f70b6718b04
+
+C03: memory completion composes against the request text; quoted remembered value; memory_disabled hint (MEMORY1253 repair)
+
+MEMORY1251 measured three causes: English requests got Spanish finals
+because the memory continuation carried only the public objective (null for
+memory-only requests); the composer translated observed.remembered («red»
+became «rojo»); and the memory_disabled failure message restated the datum
+as remembered and called the save an operation (forbidden term) until the
+retries ran out. The continuation now carries the request text, the payload
+check requires the remembered value verbatim, and the failure hint says only
+that nothing was saved because the private memory is off.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/MainWindowViewModel.cs b/src/Baxy.App/MainWindowViewModel.cs
+index 71a239f5..2748924d 100644
+--- a/src/Baxy.App/MainWindowViewModel.cs
++++ b/src/Baxy.App/MainWindowViewModel.cs
+@@ -958,7 +958,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
+                         durableBeforeSend: true,
+                         cancellationToken,
+                         route.PublicObjective,
+-                        route.Source);
++                        route.Source,
++                        route.Text);
+                     return;
+                 case MemoryParseOutcome.ConfirmSensitiveSave when memory.Operation is not null:
+                     await _memoryTurns.ExecuteRouteAsync(
+@@ -967,7 +968,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
+                         durableBeforeSend: false,
+                         cancellationToken,
+                         route.PublicObjective,
+-                        route.Source);
++                        route.Source,
++                        route.Text);
+                     return;
+                 case MemoryParseOutcome.ConfirmSensitiveSave:
+                     AddMessage(
+diff --git a/src/Baxy.App/MemoryTurnSession.cs b/src/Baxy.App/MemoryTurnSession.cs
+index a4a57bdf..d1a250b3 100644
+--- a/src/Baxy.App/MemoryTurnSession.cs
++++ b/src/Baxy.App/MemoryTurnSession.cs
+@@ -41,7 +41,8 @@ internal sealed class MemoryTurnSession
+         PreparedOperation Predecessor,
+         string? Objective,
+         MissionInputSource Source,
+-        PreparedOperation? SaveAfterEnable = null);
++        PreparedOperation? SaveAfterEnable = null,
++        string? RequestText = null);
+ 
+     private readonly Host _host;
+     private PendingMemoryConfirmation? _confirmation;
+@@ -245,7 +246,8 @@ internal sealed class MemoryTurnSession
+         bool durableBeforeSend,
+         CancellationToken cancellationToken,
+         string? publicObjective = null,
+-        MissionInputSource publicSource = MissionInputSource.Text)
++        MissionInputSource publicSource = MissionInputSource.Text,
++        string? requestText = null)
+     {
+         ArgumentNullException.ThrowIfNull(routed);
+         ArgumentNullException.ThrowIfNull(registry);
+@@ -255,12 +257,16 @@ internal sealed class MemoryTurnSession
+         PreparedOperation prepared = durableBeforeSend
+             ? registry.GetOrAdd(protectedOperation)
+             : protectedOperation.Prepared;
+-        if (!string.IsNullOrWhiteSpace(publicObjective))
++        if (!string.IsNullOrWhiteSpace(publicObjective)
++            || !string.IsNullOrWhiteSpace(requestText))
+         {
++            // A memory-only request has no public objective; its completion
++            // still answers the request text, in the request's language.
+             _continuation = new MemoryContinuation(
+                 prepared,
+                 publicObjective,
+-                publicSource);
++                publicSource,
++                RequestText: requestText);
+         }
+ 
+         await SendPreparedAsync(
+@@ -413,7 +419,7 @@ internal sealed class MemoryTurnSession
+                     throw new InvalidDataException("La respuesta privada no admite una proyección segura.");
+                 }
+ 
+-                string? objective = _continuation?.Objective;
++                string? objective = _continuation?.RequestText ?? _continuation?.Objective;
+                 if (_host.PublishForObjective is { } publishForObjective
+                     && !string.IsNullOrWhiteSpace(objective))
+                 {
+@@ -481,7 +487,8 @@ internal sealed class MemoryTurnSession
+                     ["enabled"] = true,
+                 })));
+             _continuation = new MemoryContinuation(
+-                enable, previous?.Objective, previous?.Source ?? MissionInputSource.Text, prepared);
++                enable, previous?.Objective, previous?.Source ?? MissionInputSource.Text, prepared,
++                previous?.RequestText);
+             await SendPreparedAsync(enable, registry, isDurable: true,
+                 confirmationToken: null, cancellationToken);
+             return;
+@@ -513,9 +520,11 @@ internal sealed class MemoryTurnSession
+                 ?? throw new InvalidDataException("El guardado pendiente perdió sus argumentos privados.");
+             PreparedOperation next = registry.GetOrAdd(protector.Prepare(
+                 new MemoryRoutedOperation("memory.save", arguments)));
+-            if (!string.IsNullOrWhiteSpace(continuation.Objective))
++            if (!string.IsNullOrWhiteSpace(continuation.Objective)
++                || !string.IsNullOrWhiteSpace(continuation.RequestText))
+             {
+-                _continuation = new MemoryContinuation(next, continuation.Objective, continuation.Source);
++                _continuation = new MemoryContinuation(
++                    next, continuation.Objective, continuation.Source, RequestText: continuation.RequestText);
+             }
+ 
+             await SendPreparedAsync(next, registry, isDurable: true,

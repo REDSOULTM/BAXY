@@ -1,0 +1,67 @@
+commit 772a1671972a298d95bc5d05c8d83f70b6718b04
+
+C03: memory completion composes against the request text; quoted remembered value; memory_disabled hint (MEMORY1253 repair)
+
+MEMORY1251 measured three causes: English requests got Spanish finals
+because the memory continuation carried only the public objective (null for
+memory-only requests); the composer translated observed.remembered («red»
+became «rojo»); and the memory_disabled failure message restated the datum
+as remembered and called the save an operation (forbidden term) until the
+retries ran out. The continuation now carries the request text, the payload
+check requires the remembered value verbatim, and the failure hint says only
+that nothing was saved because the private memory is off.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 52eecc07..15cc3077 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3942,6 +3942,12 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+         level = str(seen["level"]).strip()
+         if level and not re.search(rf"(?<!\d){re.escape(level)}(?!\d)", folded):
+             return "missing_name"
++    # MEMORY1251: «red» was confirmed as «rojo» and «my favorite drink is tea»
++    # as «mi favorito es el té». What the memory keeps is quoted, not translated.
++    remembered = seen.get("remembered") if isinstance(seen, dict) else None
++    if isinstance(remembered, str) and remembered.strip():
++        if _reading_fold(remembered.strip()) not in folded:
++            return "missing_remembered"
+     clock = payload.get("clock")
+     if isinstance(clock, str) and clock:
+         clock_defect = _clock_fact_defect(text, clock)
+@@ -10157,6 +10163,22 @@ class LlmRuntime:
+                 instruct("\n" + refuse_line + "Do not say you tried and failed.")
+             elif response_language == "en":
+                 instruct("\nEnglish only. Name the failure cause in prose.")
++            if cause == "memory_disabled":
++                # MEMORY1251 H0452: every draft restated the datum as already
++                # remembered («Sí, recuerdo que tu color favorito es el azul»)
++                # and called the save an operation, a forbidden term, until the
++                # retries ran out. Nothing was saved: the memory is off.
++                instruct(
++                    "\nThe private local memory of this PC is switched off, so "
++                    "nothing was saved. Say only, in one sentence, that you could "
++                    "not save it because that memory is off. Do not say that you "
++                    "remember or recall it."
++                    if response_language == "en"
++                    else "\nLa memoria local privada de este PC está apagada, así que "
++                    "no se guardó nada. Di solo, en una frase, que no pudiste "
++                    "guardarlo porque esa memoria está apagada. No digas que lo "
++                    "recuerdas ni que te acuerdas."
++                )
+             if (
+                 situation.get("operationAttempted") is False
+                 and cause in {
+@@ -10792,6 +10814,10 @@ class LlmRuntime:
+                 )
+                 else "Include names and numbers from seen."
+             ),
++            "missing_remembered": (
++                "Quote exactly what you will remember, unchanged and untranslated: "
++                + str(_merged_observed(situation).get("remembered") or "")
++            ),
+             "missing_failure": (
+                 "Say the request is outside what you do on this PC. "
+                 "Never say you tried."

@@ -53,3 +53,7 @@ Archivos y carpetas pasa de 15/32 a 19/32: los borrados con fixtures propios en 
 ## Actualización 2026-09-13 (MEMORY1245)
 
 Memoria personal pasa de 0/10 a 3/10 (afirmaciones sin pedido de persistencia). Condición nueva demostrada para los guardados (4 literales + variantes): la memoria privada está desactivada en un perfil fresco y su activación exige una confirmación de la App (no del kernel), que el instrumento de un turno no puede dar; reanudación con `turn.memory-confirm` en el host y un runner de dos fases (MEMORY1247). Los recuerdos (H0604, H0173) requieren un guardado previo en el mismo perfil: fuera del instrumento de un caso por turno.
+
+## Actualización 2026-09-13 (MEMORY1253)
+
+Memoria personal pasa de 3/10 a 5/10: los dos guardados de nombre (H0157, H0149) con sus variantes en español e inglés. Condiciones demostradas y resueltas en tres tandas: la activación de la memoria privada exige la confirmación de la App (`turn.memory-confirm`, BUILD1249); la finalización del guardado debe llevar el dato recordado y componerse contra el pedido original, no contra «confirmar» (BUILD1249/BUILD1253); el dato se cita sin traducir y el mensaje de fallo memory_disabled no afirma recordar (mente, 772a1671). Quedan 5: los dos guardados de dato (H0452 aprobado sin par por la comprobación literal demasiado estricta del candidato; H0506 y la variante en inglés sin final por la misma causa, corregida para MEMORY1255), los dos recuerdos (H0604, H0173: requieren un guardado previo en el mismo perfil, fuera del instrumento de un caso por turno) y H0174 (modelo).
