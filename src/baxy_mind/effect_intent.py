@@ -210,6 +210,16 @@ def _public_live_lookup_request(folded: str) -> bool:
         r"umbrella|paraguas|temperature|temperatura|hot|caluroso|calurosa|"
         r"cold|frio|fria)\b",
     )
+    # A file, note or document named after the weather, or a question about the
+    # word itself («¿qué significa la palabra clima?»), is not a live lookup.
+    if (weather or news) and _has(
+        folded,
+        r"(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|"
+        r"documents?|txt|pdf|docx|significa|significado|definicion|define|"
+        r"definition|meaning|means)",
+    ):
+        weather = False
+        news = False
     market_direction = (
         re.match(
             (
