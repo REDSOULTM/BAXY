@@ -377,8 +377,13 @@ internal static class UserMessagePolicy
             {
                 return "missing_literal_fact";
             }
+            // «qué día es hoy» asks for the calendar date, like «fecha»/«date».
+            // The mind projects only the date for it (llm._requests_calendar_date);
+            // reading it as a clock request here demanded the hour in the draft and
+            // rejected six correct dates until the diagnostic code was published
+            // (CLOCK1157/000..002).
             bool dateRequested = Regex.IsMatch(userText ?? string.Empty,
-                @"\b(?:fecha|date)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+                @"\b(?:fecha|date|d[ií]a|day)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             bool clockRequested = !dateRequested || Regex.IsMatch(userText ?? string.Empty,
                 @"\b(?:hora|time)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             if (clockRequested && !PreservesObservedClock(draft.Source, modelText))
