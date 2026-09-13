@@ -1,0 +1,21 @@
+{
+  "schema": "c03-identity1146-app-source-adoption-v1",
+  "status": "adopted_pending_build_and_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePhrases.cs",
+  "patch": "artifacts/comprobaciones/C03/IDENTITY1146/APP_SOURCE.patch",
+  "cause_measured": "IDENTITY1146 índices 0, 1 y 12 («qué podés hacer», «que podes hacer», «¿Qué cosas podés hacer en mi computadora?»): finales de asistente sólo de charla o con capacidades inventadas (terminal, corrección de textos, búsqueda). Evidencia de producto: shell-trace sin `compose.start conversation` y turn-audit con decision_path model / conversation_kind knowledge (índice 0), frente al índice 2 («Que puedes hacer para mi»), que salió por `compose.start conversation` con payload `can` en <1,2 s y sin turn.decide. Lectura de fuente: MainWindowViewModel responde las preguntas de autodescripción con el catálogo sólo si UserMessagePolicy.IsSelfDescriptionQuestion acierta, y UserMessagePhrases.SelfDescriptionAsks contiene «que puedes hacer»/«que sabes hacer» pero ninguna forma con voseo; el pedido cae a turn.decide → llm.chat (knowledge), que no recibe hechos del catálogo. La reparación del voseo en el mind (request_reading, 7ae4cc60) era necesaria (el lector marca capability) pero no suficiente.",
+  "change": "SelfDescriptionAsks añade «que podes hacer», «en que me podes ayudar» y «en que podes ayudar»; KnowledgeAsks añade «que podes hacer» (misma pareja que «que puedes hacer» ya presente, para que IsCapabilityQuestion y la política de veto lean lo mismo que la entrada). Ninguna frase de salida; ninguna capa nueva; las dos lecturas (shell y mind) siguen diciendo lo mismo sobre el voseo.",
+  "not_changed": "La coincidencia por subcadena de IsSelfDescriptionQuestion ignora la negación («No me expliques qué sabés hacer, solo saludá», límite 22 fallido); el lector del mind también marca capability en ese texto, así que una guardia sólo en el shell rompería la conformidad entre lecturas. Queda abierto y documentado; no acreditable (límite).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build": {
+    "campaign": "BUILD1147",
+    "receipt": "C:/Users/usuario/AppData/Local/BAXY/C03-repairs1147-build/BUILD_READY.json",
+    "note": "Se rellena en el recibo; el cambio se compromete antes de compilar para que head_at_build coincida con HEAD."
+  },
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "Tanda de identidad residual (H0153, H0474 con pares nuevos de voseo) sobre BUILD1147; la reparación se demuestra cuando «que podes hacer» termine con el catálogo real.",
+  "credits": 0
+}

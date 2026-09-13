@@ -23,13 +23,14 @@ internal static class UserMessagePhrases
     /// </remarks>
     internal static readonly string[] SelfDescriptionAsks =
     [
-        "que puedes hacer", "que sabes hacer", "what can you do",
+        "que puedes hacer", "que podes hacer", "que sabes hacer", "what can you do",
         "what do you do", "able to do", "te ocupas", "echar una mano",
         "what are you able", "que no haces", "what don't you",
         "what do you not", "what do you handle", "what do you manage",
         "what do you offer", "de que te ocupas", "que haces aqui",
         "que haces en este", "que manejas", "que gestionas",
         "en que me puedes ayudar", "en que puedes ayudar",
+        "en que me podes ayudar", "en que podes ayudar",
         "what can you help", "how can you help",
         "tus limites", "your limits", "tus limitaciones",
         "your limitations", "te niegas", "do you refuse",
@@ -43,7 +44,7 @@ internal static class UserMessagePhrases
         "que es ", "que es un", "explicame", "explica ", "define ",
         "what is ", "what are ", "why ", "por que ", "por que importa",
         "te ocupas", "what do you do", "what can you do",
-        "que puedes hacer", "que sabes hacer", "able to do",
+        "que puedes hacer", "que podes hacer", "que sabes hacer", "able to do",
         "echar una mano", "what will you", "what do you refuse",
         "que rechazas", "never do", "cannot do", "no haces",
     ];
