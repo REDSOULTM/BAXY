@@ -1,0 +1,7 @@
+# TIME1118 v2 — fallo de observación previa, sin producto
+
+La preparación v2 terminó0, candidato6b4d4144423e950eb8012f22ebd41f4414528472a7774388f07c2077a996b2ba, preparación e966e872e32555fbe265cac99fcd23bb4533c265cfd89950e8f589e1c9347ad1, HEAD7aba1f171d26e34e7756a9b81b5eedb3f117bb30. Observe índice10 falló antes de crear contexto/fixture o lanzar runner: WindowsPowerShell5.1 heredó desde Python un PSModulePath de PowerShell7 y no encontró Get-FileHash. GetScheduledTask sí estaba disponible. El mismo WindowsPowerShell lanzado directamente por la shell tenía Get-FileHash disponible; observación de entorno, sin producto ni tareas creadas.
+
+Baseline fallido C:/Users/usuario/AppData/Local/BAXY/C03-time1118-instrument-v2/private/baseline-10.json SHA1d5027bbdc1b44d4fb823d47cfdad40f2c91824fc687c7e1e6f75f20e52a26e4; invocation94484b79abdfca480bfe6293299eb0f64258ff14b5bc621e770bf870b703468c. mutationsPerformedfalse, error conservado. Root verificó inexistencia de perfil10/run10/fixture10/invocationrunner10/EXIT10. No se clasifica como fallo de producto, literal ejecutado o crédito.
+
+Sucesor instrumental v3 en preparación para seleccionar módulo Utility de WindowsPS propio, preservando v2 y todo material1118 intactos. Ningún cambio de contrato o criterio. Fuente1117 sigue1024f9, llmaaa434. Preparar candidato nuevo con HEAD/registro actuales tras revisión v3; no reutilizar contexto o candidato v2. Estado203/742,539abiertos,0NA,>=77primerasaltas24h,0/35categorías cerradas. Goalactivo, sin tests.
