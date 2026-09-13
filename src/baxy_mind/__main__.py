@@ -3967,6 +3967,9 @@ def _explicit_browser_navigation_arguments(
         destinations.append("https://www.youtube.com/")
     if not destinations:
         named_public_sites = (
+            (r"\bgmail\b", "https://mail.google.com/"),
+            (r"\bgithub\b", "https://github.com/"),
+            (r"\bchatgpt\b", "https://chatgpt.com/"),
             (r"\bwashington\s+post\b", "https://www.washingtonpost.com/"),
             (r"\bnew\s+york\s+times\b", "https://www.nytimes.com/"),
             (r"\bbbc\b", "https://www.bbc.com/"),

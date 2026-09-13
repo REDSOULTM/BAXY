@@ -8722,7 +8722,7 @@ def _is_direct_request(text: str) -> bool:
         r"scroll|scrollea|scrollear|"
         r"apuntame|apunta|jot|"
         r"dale(?=\s+(?:enter|intro|return))|"
-        r"llevame|"
+        r"llevame|anda|andar|andate|"
         r"devuelvele|devuelve|devuelveme|"
         r"maximiza|maximizar|maximize|minimiza|minimizar|minimize|"
         r"restaura|restaurar|restore|escribe|escribi|escribele|escribile|write|type|"
@@ -12277,6 +12277,11 @@ def _explicit_google_search_query(text: str) -> str | None:
     return None
 
 
+# Public web services whose canonical destination the argument builder knows
+# (`_explicit_browser_navigation_arguments`). A closed list, never a guess.
+_NAMED_PUBLIC_SITE = r"(?:youtube|gmail|github|chatgpt)"
+
+
 def _review_web_and_browser_effects(
     matches: list[tuple[int, int, str]],
     folded: str,
@@ -12384,7 +12389,7 @@ def _review_web_and_browser_effects(
         r"\b(?:archivo|file|carpeta|folder|escritorio|desktop|"
         r"documentos|documents|descargas|downloads)\b",
     )
-    navigation_verbs = rf"(?:{_OPEN}|navega|navegar|navigate|ve|go|llevame)"
+    navigation_verbs = rf"(?:{_OPEN}|navega|navegar|navigate|ve|go|llevame|anda|andar|entra|entrar|vete)"
     navigate = _head_is(
         head,
         navigation_verbs,
@@ -12462,6 +12467,24 @@ def _review_web_and_browser_effects(
             folded,
             "browser.navigate",
             r"\bwikipedia\b",
+        )
+    elif (
+        navigate
+        and _has(folded, rf"\b{navigation_verbs}\s+(?:a\s+|al\s+|to\s+)?{_NAMED_PUBLIC_SITE}\b")
+        and not _has(
+            folded,
+            r"\b(?:archivo|file|carpeta|folder|nota|note|app|aplicacion|application|"
+            r"programa|program|video|videos|cancion|song|musica|music)\b",
+        )
+    ):
+        # WEB1257: «Abre youtube», «abrí gmail», «andá a github.com» name a public
+        # web service, not an installed application; the argument builder owns
+        # the closed canonical destination for each name.
+        _append(
+            matches,
+            folded,
+            "browser.navigate",
+            rf"\b{navigation_verbs}\b",
         )
     browser_page_context = context_browser is not None or _has(
         folded,
