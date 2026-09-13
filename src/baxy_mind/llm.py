@@ -2937,7 +2937,6 @@ _CAUSE_FACT = {
     "memory_forget_irreversible": "cannot be undone",
     "memory_none": "no matching memories",
     "memory_updated": "saved in the private local memory",
-    "memory_configuration": "private local memory setting changed",
     "note_choice": "choose a note",
     "memory_records": "listed memories",
 }
