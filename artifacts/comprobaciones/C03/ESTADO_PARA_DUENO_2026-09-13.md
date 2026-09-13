@@ -1,3 +1,25 @@
+## KNOWLEDGE1149 — estado vigente 2026-09-13T04:58:18+00:00
+
+Parcial: 15 aprobados, 7 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 228/742 | 514 | 0 | >=102 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 28 Kiro + 49 retorno + H0584 + H0511 + 10 (NOTES1142) + 2 (KNOWLEDGE1144) + 7 (IDENTITY1146) + 2 (IDENTITY1148) = 100 antes de esta tanda, todas dentro de la ventana de 24 h al adjudicar; KNOWLEDGE1149 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: KNOWLEDGE1149 completa: 22 ejecutados, 15 aprobados, 7 fallidos, 2 créditos (H0236, H0239). Las dos causas de prompt de 1144 (idioma, «SIEMPRE») no reaparecen. Nuevas causas medidas: respuestas sólo-pregunta vetadas que acaban en error de comprensión (H0703; dev-10 con el borrador útil descartado por la forma error), pedido deíctico de conversión clasificado unsupported (límite), y hechos inventados del modelo (BvS, moneda-satélite). Conocimiento queda 22/37. Siguiente: conversación social (12) y reloj (10); las causas de veto→error merecen sonda sin GPU antes de otra tanda de conocimiento.
+
+Evidencia: `artifacts/comprobaciones/C03/KNOWLEDGE1149/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 419.39 s acumulados; pico GPU 3497.56 MiB; pico RAM 2353.72 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 22; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque KNOWLEDGE1149 precedente. -->
+
 ## IDENTITY1148 — estado vigente 2026-09-13T04:41:33+00:00
 
 Parcial: 5 aprobados, 3 fallidos, 0 sin ejecutar; 2 créditos.

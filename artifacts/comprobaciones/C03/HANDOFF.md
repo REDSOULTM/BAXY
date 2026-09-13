@@ -1,3 +1,15 @@
+# KNOWLEDGE1149 adjudicado — 2026-09-13T04:58:18+00:00
+
+**228/742 cubiertos, 514 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 4642d4ac5cf7fe6f66d99be2be15816e02566422e9f760b69047cb0826fc136d. Primeras altas 24 h >= 102 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 81f1b4ae con BUILD1147.
+
+KNOWLEDGE1149 (22 objetos sin efectos: 7 literales residuales de 1144, 10 variantes nuevas, 5 límites): 22 ejecutados, 15 aprobados, 7 fallidos; +2 (H0236 juego, H0239 comparación). Adjudicación 5a1078dd816e57f20044cbd80833d5504824e52be44e03208377920dbe852354. Conocimiento queda 22/37. Las dos causas de prompt de 1144 (pregunta de idioma, «SIEMPRE») no reaparecen.
+
+Causas nuevas medidas (sin reparación adoptada): (a) respuesta de conocimiento sólo-pregunta vetada dos veces → decisión clarify → la App publica «No pude entender bien» (H0703 «estoy aburrido»); (b) en dev-10 el borrador útil («preparar un té…») se descartó por la forma error (missing_failure, luego internal_code) y se publicó la incomprensión; (c) pedido deíctico «Convertí eso a Fahrenheit» clasificado unsupported por el mind → out_of_catalog en la App (falsa negación de alcance; H0253 conversión sí está acreditada); (d) hechos inventados del modelo (BvS «Superman gana al final», moneda-satélite) y oferta de elegir tipo de chiste (H0211). H0297 aprobado sin crédito (un solo par de contenido libre aprobado); H0030 fallido (deflexión sin contenido).
+
+Siguiente: conversación social (12 abiertos, sin efectos) y reloj (10). Antes de otra tanda de conocimiento, sonda sin GPU de (a)/(b): dónde cae la decisión a clarify tras el veto de sólo-pregunta y por qué el compositor de error descarta un borrador con propuesta. Reanudación: derivar material desde build_knowledge1149.py (lineage KNOWLEDGE1144, binding BUILD1147); `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 4642d4ac…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h.
+
+---
+
 # IDENTITY1148 adjudicado — 2026-09-13T04:41:33+00:00
 
 **226/742 cubiertos, 516 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 79f481525bcf8ee607f9531b901aa65731c350c9ce093ded5d275f263db5e2d8. Primeras altas 24 h >= 100 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f83ac1eb con BUILD1147 (App: UserMessagePhrases.SelfDescriptionAsks/KnowledgeAsks con «que podes hacer» y «en que (me) podes ayudar»; recibo 09cdc234…, huella e580faeb…, 9 binarios nuevos). Registro de adopción: IDENTITY1146/APP_SOURCE.json|.patch.

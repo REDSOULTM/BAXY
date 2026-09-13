@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación IDENTITY1148
+# Categorías actuales — adjudicación KNOWLEDGE1149
 
-226/742 cubiertos; 516 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 100 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140 + H0511 en NOTES1141 + 10 en NOTES1142 + 2 en KNOWLEDGE1144 + 7 en IDENTITY1146 + 2 en IDENTITY1148), sin revalidaciones. Registro canónico SHA256: 79f481525bcf8ee607f9531b901aa65731c350c9ce093ded5d275f263db5e2d8.
+228/742 cubiertos; 514 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 102 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140 + H0511 en NOTES1141 + 10 en NOTES1142 + 2 en KNOWLEDGE1144 + 7 en IDENTITY1146 + 2 en IDENTITY1148 + 2 en KNOWLEDGE1149), sin revalidaciones. Registro canónico SHA256: 4642d4ac5cf7fe6f66d99be2be15816e02566422e9f760b69047cb0826fc136d.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -18,7 +18,7 @@
 | Red y Bluetooth | 21 | 1 | 20 |
 | Cerrar aplicaciones y ventanas | 20 | 0 | 20 |
 | Pantalla, captura e interpretación visual | 19 | 0 | 19 |
-| Conocimiento, razonamiento y creatividad verbal | 37 | 20 | 17 |
+| Conocimiento, razonamiento y creatividad verbal | 37 | 22 | 15 |
 | Brillo y pantalla | 17 | 0 | 17 |
 | Información web actual | 17 | 0 | 17 |
 | Estado de hardware y sistema | 40 | 25 | 15 |
