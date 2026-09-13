@@ -1,6 +1,6 @@
 {
   "schema": "c03-clock1156-source-adoption-v1",
-  "status": "adopted_measured_shell_alignment_required",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/llm.py",
   "patch": "artifacts/comprobaciones/C03/CLOCK1156/SOURCE.patch",
@@ -11,6 +11,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "CLOCK1157: la proyección aporta la fecha y los borradores son correctos («Hoy es 13 de septiembre de 2026.»), pero el shell (UserMessagePolicy.dateRequested sólo fecha|date) exige la hora y los rechaza hasta publicar el código interno. Alineación del shell en CLOCK1157/APP_SOURCE.json (BUILD1158).",
-  "credits": 0
+  "measurement": "CLOCK1157: la proyección aporta la fecha y los borradores son correctos («Hoy es 13 de septiembre de 2026.»), pero el shell (UserMessagePolicy.dateRequested sólo fecha|date) exige la hora y los rechaza hasta publicar el código interno. Alineación del shell en CLOCK1157/APP_SOURCE.json (BUILD1158). CLOCK1159 (BUILD1158): H0243 y sus dos pares publican la fecha real; crédito H0243.",
+  "credits": 1
 }

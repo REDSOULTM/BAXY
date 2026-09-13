@@ -1,3 +1,15 @@
+# CLOCK1159 adjudicado — 2026-09-13T06:08:50+00:00
+
+**236/742 cubiertos, 506 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 3604b94f4443d520e208efe24e1cb52f3fbaca9c39a20ab0d78bc2ac2672b2ad. Primeras altas 24 h >= 110 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 82af92dd con BUILD1158 (App: UserMessagePolicy.dateRequested con día/day; recibo aa483fc0…, huella 90e8063e…; CLOCK1157/APP_SOURCE.json|patch) más la proyección de fecha del mind (CLOCK1156/SOURCE.json).
+
+CLOCK1159 (mismo material que 1157: H0243, 2 pares «día/day», 1 límite): 4 ejecutados, 4 aprobados; +1 (H0243 «qué día es hoy» → «Hoy es 13 de septiembre de 2026.» con system.time verificado). Adjudicación b86ebd42246b6b5827a3f3379e79f1adc1a73f12ef1465fc90d798415b4adba5. Reloj queda 16/23 (abiertos H0399 cuenta atrás, H0054/H0312 «tiempo», 4 límites sin marca).
+
+Lección registrada: una reparación del mind que cambia lo que proyecta (fecha en vez de hora) exige la misma lectura en el shell (UserMessagePolicy); si divergen, los borradores correctos se rechazan hasta publicar el código interno (CLOCK1157). Las dos listas (mind y shell) deben tocarse juntas.
+
+Siguiente: CONVERSATION1160 (H0354 + 2 pares de ayuda abierta), KNOWLEDGE residual (H0703), después categorías por masa según CONDICIONES_POR_CATEGORIA_2026-09-13.md. Reanudación: derivar desde build_conversation1152.py con binding BUILD1158; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 3604b94f…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h.
+
+---
+
 # CLOCK1157 adjudicado — 2026-09-13T06:03:47+00:00
 
 **235/742 cubiertos, 507 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 6c9ea12d050b3637989236e5080b2221fdf566d0fed5ba010c679e64e5994eb8. Primeras altas 24 h >= 109 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6748e863 (llm._requests_calendar_date con día/day; CLOCK1156/SOURCE.json|patch) con BUILD1151.
