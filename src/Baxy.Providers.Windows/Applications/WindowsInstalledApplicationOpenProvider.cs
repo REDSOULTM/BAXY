@@ -590,10 +590,15 @@ public sealed class WindowsInstalledApplicationOpenProvider :
             .Where(static item => item.Visible && Path.IsPathFullyQualified(item.ExecutablePath));
         if (baseline is not null)
         {
+            // File Explorer (APPS1231/005) opens its window inside the already
+            // running shell process: the launched thing is a window, so a window
+            // absent from the baseline identifies the launch even when its
+            // process was already observed.
             InstalledApplicationObservation? created = candidates
                 .Where(item => !baseline.Any(previous =>
                     previous.ProcessId == item.ProcessId
-                    && previous.ProcessCreationTimeUtcTicks == item.ProcessCreationTimeUtcTicks))
+                    && previous.ProcessCreationTimeUtcTicks == item.ProcessCreationTimeUtcTicks
+                    && previous.WindowHandle == item.WindowHandle))
                 .OrderByDescending(static item => item.Foreground)
                 .ThenByDescending(static item => item.ProcessCreationTimeUtcTicks)
                 .FirstOrDefault();
@@ -1082,6 +1087,11 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         CancellationToken cancellationToken)
     {
         bool packaged = entry.AppUserModelId.Contains('!');
+        // The shell's own catalog entry: its windows live in explorer.exe, which
+        // also owns the desktop and taskbar. Only file-browsing windows
+        // (CabinetWClass) count as the application being open (APPS1231/005).
+        bool shellExplorer = !packaged && string.Equals(
+            entry.AppUserModelId, ShellExplorerAppUserModelId, StringComparison.Ordinal);
         string? expectedExecutable = strongIdentityOnly && !packaged
             ? StrongExecutablePath(entry) : null;
         if (strongIdentityOnly && !packaged && expectedExecutable is null)
@@ -1100,7 +1110,10 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                     // close, CLOSE1223/009) has no readable rectangle; only the
                     // candidate's enumeration must be complete.
                     nint[]? ownedWindows = strongIdentityOnly
-                        ? VisibleTopLevelWindows(process.Id, requireComplete: false) : null;
+                        ? VisibleTopLevelWindows(process.Id, requireComplete: false)
+                        : shellExplorer
+                            ? VisibleTopLevelWindows(process.Id, requireComplete: false, ExplorerWindowClass)
+                            : null;
                     nint window = ownedWindows is null
                         ? process.MainWindowHandle : ownedWindows.FirstOrDefault();
                     if (window == 0 || !IsWindowVisible(window))
@@ -1442,7 +1455,11 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         return identities;
     }
 
-    private static nint[] VisibleTopLevelWindows(int processId, bool requireComplete = false)
+    private const string ShellExplorerAppUserModelId = "Microsoft.Windows.Explorer";
+    private const string ExplorerWindowClass = "CabinetWClass";
+
+    private static nint[] VisibleTopLevelWindows(
+        int processId, bool requireComplete = false, string? windowClass = null)
     {
         var windows = new List<(nint Handle, long Area)>();
         bool complete = true;
@@ -1452,6 +1469,9 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                 return true;
             GetWindowThreadProcessId(window, out uint owner);
             if (owner != unchecked((uint)processId))
+                return true;
+            if (windowClass is not null
+                && !string.Equals(ReadClassName(window), windowClass, StringComparison.Ordinal))
                 return true;
             if (!GetWindowRect(window, out Rect rect))
             {
@@ -1471,6 +1491,17 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         return windows.OrderByDescending(item => item.Area)
             .Select(item => item.Handle).ToArray();
     }
+
+    private static unsafe string ReadClassName(nint window)
+    {
+        const int capacity = 256;
+        char* buffer = stackalloc char[capacity];
+        int length = GetClassName(window, buffer, capacity);
+        return length > 0 ? new string(buffer, 0, length) : string.Empty;
+    }
+
+    [LibraryImport("user32.dll", EntryPoint = "GetClassNameW")]
+    private static unsafe partial int GetClassName(nint window, char* buffer, int capacity);
 
     [GeneratedRegex(@"(?<name>[A-Za-z0-9_-]+)\.exe", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
     private static partial Regex ExecutableIdentityPattern();

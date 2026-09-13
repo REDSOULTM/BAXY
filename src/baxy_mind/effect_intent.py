@@ -4343,14 +4343,22 @@ def unresolved_application_open_name(
     """Bind a literal app name for a presence read, never an opening fallback."""
 
     folded = _fold(text)
-    if (
-        not folded
-        or len(folded) > 16_384
-        or not _application_desire_is_positive(folded)
-    ):
+    if not folded or len(folded) > 16_384:
         return None
-    request = _application_open_request(folded)
-    if request is None or _is_negated_match(folded, request):
+    source = folded
+    request = (
+        _application_open_request(folded)
+        if _application_desire_is_positive(folded) else None
+    )
+    if request is None:
+        # «no, mejor abrí firefox»: a rectification or courtesy envelope precedes
+        # the opening; the envelope grammar is the shared one, and the desire is
+        # read on the request it wraps.
+        stripped = _strip_request_envelope(folded)
+        if stripped != folded and _application_desire_is_positive(stripped):
+            source = stripped
+            request = _application_open_request(stripped)
+    if request is None or _is_negated_match(source, request):
         return None
     # An explicit application noun establishes the domain without guessing
     # whether an unfamiliar bare name denotes an app, file, site or game.
@@ -4359,6 +4367,16 @@ def unresolved_application_open_name(
         r"^(?:(?:el|la|un|una|the|a|an)\s+)?"
         r"(?:aplicacion|application|app|programa|program)\s+",
     )
+    if wrapper is None and build_application_catalog_index(application_names).entries:
+        # A bare name is enough when it is software people open by name and a
+        # verified catalog is present to prove it absent; «abrí la puerta»
+        # stays outside because ``puerta`` is not.
+        wrapper = _match(
+            request.group("target"),
+            rf"^(?:(?:el|la|the)\s+)?(?={_KNOWN_SOFTWARE}"
+            r"(?:\s*[,;:]?\s+(?:por favor|please|para mi|for me|ahora|now|"
+            r"dale|porfa|porfi|porfis|pls|plz))?[\s?!.]*$)",
+        )
     if (
         wrapper is None
         or resolve_application_catalog_app_id(text, application_names) is not None
@@ -7612,6 +7630,24 @@ _KNOWN_APPLICATION = (
     r"steam|discord|chrome|google chrome|word|microsoft word|edge|"
     r"microsoft edge|firefox|whatsapp|excel|powerpoint|vlc|"
     r"configuracion(?:es)?(?: de windows)?|windows settings)"
+)
+# Software people ask to open by name. Membership here never opens anything:
+# it only lets an opening whose target is absent from the verified catalog be
+# answered by a presence read («abrime el photoshop» → app.installed), instead
+# of a model guess that denied the capability (APPS1231/007, /015) or asked for
+# «the exact name» (/016).
+_KNOWN_SOFTWARE = (
+    rf"(?:{_KNOWN_APPLICATION}|photoshop|lightroom|illustrator|premiere(?:\s+pro)?|"
+    r"after\s+effects|acrobat|brave|outlook|onenote|teams|zoom|skype|slack|telegram|"
+    r"signal|notion|obsidian|obs(?:\s+studio)?|audacity|blender|gimp|inkscape|figma|"
+    r"unity|unreal(?:\s+engine)?|godot|visual\s+studio(?:\s+code)?|vs\s*code|pycharm|"
+    r"intellij|eclipse|android\s+studio|docker(?:\s+desktop)?|postman|github\s+desktop|"
+    r"epic\s+games(?:\s+launcher)?|minecraft|roblox|fortnite|valorant|league\s+of\s+legends|"
+    r"itunes|netflix|twitch|messenger|notepad\+\+|sublime(?:\s+text)?|winrar|7-?zip|"
+    r"teamviewer|anydesk|virtualbox|vmware|wireshark|filezilla|putty|wordpad|paint|"
+    r"camtasia|davinci\s+resolve|canva|dropbox|google\s+drive|onedrive|autocad|matlab|"
+    r"rstudio|anaconda|jupyter|kodi|plex|handbrake|thunderbird|evernote|trello|origin|"
+    r"battle\.net|ubisoft\s+connect|gog\s+galaxy)"
 )
 _NOTEPAD_OBJECT = r"\b(?:(?:bloc|app|coso)\s+de\s+notas|notepad)\b"
 _DUPLICATE_FILES = r"\b(?:duplicad[oa]s?|repetid[oa]s?|duplicates?)\b"
