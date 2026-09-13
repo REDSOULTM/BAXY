@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación DIALOGUE1279
+# Categorías actuales — adjudicación DIALOGUE1281
 
-357/742 cubiertos; 385 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 231 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 53a39cf7363489fdde3c1efaa7b515ba3e58e7ea794161fe9f608b62d8843532.
+362/742 cubiertos; 380 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 236 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 5783cda473b7c05a2c1731dbe83eb3ea226792e3359cc7748473e2187a2496d9.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -8,7 +8,7 @@
 | Instalar y desinstalar software | 31 | 0 | 31 |
 | Navegación y búsqueda web | 46 | 25 | 21 |
 | Archivos y carpetas | 32 | 19 | 13 |
-| Entrada incompleta, ruido y control de diálogo | 34 | 13 | 21 |
+| Entrada incompleta, ruido y control de diálogo | 34 | 18 | 16 |
 | Vídeo y series | 26 | 0 | 26 |
 | Mensajería | 31 | 6 | 25 |
 | Abrir aplicaciones | 54 | 39 | 15 |

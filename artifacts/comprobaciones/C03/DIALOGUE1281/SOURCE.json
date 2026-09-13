@@ -1,0 +1,16 @@
+{
+  "schema": "c03-dialogue1281-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (clarify_missing_referent: guía de voseo sin ejemplo de verbo y reintento corregido cuando un asentimiento sin acción recibe un verbo inventado; clarify_unresolved_input: la aclaración ante signos debe nombrar lo recibido, con reintento corregido)",
+  "patch": "artifacts/comprobaciones/C03/DIALOGUE1281/SOURCE.patch",
+  "commits": [
+    "7ccf9cb35756e338baf56113e940b7a06c02d758"
+  ],
+  "build": "BUILD1281 (C03-repairs1281-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "DIALOGUE1279: ante sólo signos la aclaración compuesta omitía lo recibido («¿Qué quieres que haga?», indistinguible de la oferta genérica); ante un asentimiento sin acción el aclarador de referente inventaba «abrir» por el ejemplo «abrí eso» de su guía.",
+  "change": "Guía de voseo sin ejemplo de verbo; un reintento corregido cuando la pregunta trae un verbo concreto ante un asentimiento sin acción; la aclaración de signos debe nombrar lo recibido o decir que no ve un pedido (un reintento corregido). Sin respuestas fijas.",
+  "measurement": "DIALOGUE1281: 14 ejecutados, 10 aprobados, 4 fallidos; 5 créditos. Cinco literales acreditados (signos, símbolos, emojis, deíctico coloquial, fragmento nominal) con pares «???» y «$%&/»; las cuatro variantes aprobadas; fallan H0562 («¿Qué haces?»), H0735 (reconstruye el fragmento y se atribuye la firma), H0205 (saludo) y el límite «si no entendés, preguntame».",
+  "residual": "H0562 recibe «¿Qué haces?» (sin verbo inventado, pero no pregunta la acción aceptada); H0735 reconstruye el fragmento degradado y se atribuye la firma; H0205 contesta con un saludo; el límite «si no entendés, preguntame» sigue pidiendo aclaración. Los tres literales dependen del modelo (fragmentos con palabras).",
+  "credits": 5
+}

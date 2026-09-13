@@ -1,3 +1,11 @@
+# DIALOGUE1281 adjudicado — 2026-09-13T23:50:46.730853+00:00
+
+**362/742 cubiertos, 380 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 5783cda473b7c05a2c1731dbe83eb3ea226792e3359cc7748473e2187a2496d9. Primeras altas 24 h >= 236 (+5).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7ccf9cb3 con BUILD1281 (mente: aclarador de referente sin verbo inventado ante un asentimiento; la aclaración de signos nombra lo recibido; DIALOGUE1281/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+DIALOGUE1281 («Entrada incompleta, ruido y control de diálogo», turnos ordinarios sin efectos): 14 ejecutados, 10 aprobados, 4 fallidos, 5 créditos. Adjudicación 9b51a0ac531e5bad73b3ad4a9c946ae168131ffe2f12ba3633c9a58f90442533. Cinco literales acreditados (signos, símbolos, emojis, deíctico coloquial, fragmento nominal) con pares «???» y «$%&/»; las cuatro variantes aprobadas; fallan H0562 («¿Qué haces?»), H0735 (reconstruye el fragmento y se atribuye la firma), H0205 (saludo) y el límite «si no entendés, preguntame».
+
+---
+
 # DIALOGUE1279 adjudicado — 2026-09-13T23:38:51.980107+00:00
 
 **357/742 cubiertos, 385 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 53a39cf7363489fdde3c1efaa7b515ba3e58e7ea794161fe9f608b62d8843532. Primeras altas 24 h >= 231 (+6).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 346016c4 con BUILD1279 (mente: aclaración compuesta para entrada sin pedido y negación suelta, asentimiento con orden en la lectura deíctica, guía de voseo y reintento del aclarador de referente; DIALOGUE1279/SOURCE.json|SOURCE.patch; .NET sin cambios).
