@@ -1,3 +1,15 @@
+# SYSTEM1169 adjudicado — 2026-09-13T06:59:51+00:00
+
+**243/742 cubiertos, 499 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 836112fc5600a2cffe8f03847d8914ee7caebb614e5514291012bfc3d75342ea. Primeras altas 24 h >= 117 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7d9c1e78 con BUILD1158.
+
+SYSTEM1169 (11 objetos: H0037 batería, H0114 GPU, H0508 Windows+RAM; 6 pares; 2 límites; system.status de sólo lectura por caso): 11 ejecutados, 9 aprobados, 2 fallidos; +1 (H0037 «está cargando la batería»: isCharging=false, 97 %, AC online). Adjudicación b68811812a812809b80eb915514424151552075e07223c1ef177794bd3909d29. Estado de hardware queda 26/40.
+
+Causas medidas: H0508 publicó «16,54 GB de RAM disponible» etiquetando el total utilizable como disponible (disponible observado 4,54 GB): el validador de memoria sólo exige conservar el número, no la etiqueta; «¿Cuánto uso tiene la GPU ahora?» leyó el scope summary (sin GPU) y no pudo dar el uso (H0114 aprobado con lectura correcta de VRAM 79,7 %, sin crédito por un solo par). Ambas son reparaciones candidatas en el mind (etiqueta total/disponible en llm._payload_fact_defect; selección de scope gpu_usage para «uso… GPU»).
+
+Siguiente: esas dos reparaciones y remedición de H0508/H0114 con pares; luego cierre de apps propias (20 abiertos; requiere autorización explícita por app). Reanudación: derivar desde build_system1169.py (lecturas de sólo lectura) o build_conversation1160.py (sin efectos), binding BUILD1158; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 836112fc…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h (06:13/11:13/16:13/21:13/01:13).
+
+---
+
 # NETWORK1167 adjudicado — 2026-09-13T06:50:31+00:00
 
 **242/742 cubiertos, 500 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA c6ef9a5e10b15c97101ccb479d0d9bc542a7e2780287a5a8c4b3946f52dd52cf. Primeras altas 24 h >= 116 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c2b4bdba (llm._payload_fact_defect: «invented_connectivity» para borradores de wifi.status que hablan de internet/online/offline; NETWORK1165/SOURCE.json|patch) con BUILD1158.

@@ -1,3 +1,25 @@
+## SYSTEM1169 — estado vigente 2026-09-13T06:59:51+00:00
+
+Parcial: 9 aprobados, 2 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 243/742 | 499 | 0 | >=117 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 116 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; SYSTEM1169 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: SYSTEM1169 completa: 11 ejecutados, 9 aprobados, 2 fallidos, 1 crédito (H0037). Causas medidas: H0508 etiqueta la RAM total como «disponible» (compositor; validador de RAM sólo exige conservar el número); «¿Cuánto uso tiene la GPU ahora?» eligió el scope summary sin GPU. H0114 aprobado sin crédito (un solo par de GPU). Estado de hardware queda 26/40. Siguiente: validador de etiqueta de memoria (total/disponible) en llm._payload_fact_defect y selección de scope GPU para «uso… GPU»; después remedir H0508/H0114 con pares.
+
+Evidencia: `artifacts/comprobaciones/C03/SYSTEM1169/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 179.72 s acumulados; pico GPU 3497.56 MiB; pico RAM 1641.50 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 11; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SYSTEM1169 precedente. -->
+
 ## NETWORK1167 — estado vigente 2026-09-13T06:50:31+00:00
 
 Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.
