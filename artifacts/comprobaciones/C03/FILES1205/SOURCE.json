@@ -1,6 +1,6 @@
 {
   "schema": "c03-files1205-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/effect_intent.py (_file_creation_request, _directory_creation_request, resolve_explicit_effects, domain rules de filesystem.write.text y filesystem.create.directory) + src/baxy_mind/__main__.py (extractores de argumentos de filesystem.write.text y filesystem.create.directory)",
   "patch": "artifacts/comprobaciones/C03/FILES1205/SOURCE.patch",
@@ -14,6 +14,6 @@
   "build_required": true,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "FILES1205: 8 archivos y 4 carpetas del registro con pares ES/EN; postlectura de raíz en disco y limpieza de lo creado.",
-  "credits": 0
+  "measurement": "FILES1205: 19 de 19 aprobados, +12 (8 archivos, 3 carpetas conocidas, 1 carpeta de sandbox), 18 creaciones verificadas en disco por raíz y eliminadas después.",
+  "credits": 12
 }

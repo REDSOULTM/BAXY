@@ -1,0 +1,360 @@
+{
+  "schema": "files1205-root-postread-facts-v1",
+  "note": "Comprobación previa (ausencia), postlectura en disco (existencia, tipo, tamaño, hash del contenido pedido) y limpieza de lo creado por cada caso (scratchpad/files_postread.py). Sin textos de la encuesta; nombres de archivo y carpeta del pedido.",
+  "cases": [
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 0,
+      "case_id": "H0047",
+      "kind": "historical_literal",
+      "folder": "desktop",
+      "name": "stack2_test.txt",
+      "existed_before": false,
+      "utc": "2026-09-13T13:42:32.572854+00:00",
+      "errors": [],
+      "on_disk": true,
+      "disk_kind": "file",
+      "disk_size": 20,
+      "disk_sha256": "aa23d8f8a7ed4a32e1fa8b5378bf0dd25574b0537cf244e6c0fea83affce9b24",
+      "text_matches_request": true,
+      "receipt_matches_disk": true,
+      "cleanup": {
+        "removed": true,
+        "utc": "2026-09-13T13:42:32.572854+00:00"
+      }
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 1,
+      "case_id": "H0203",
+      "kind": "historical_literal",
+      "folder": "desktop",
+      "name": "anti_repeat_demo.txt",
+      "existed_before": false,
+      "utc": "2026-09-13T13:42:56.634734+00:00",
+      "errors": [],
+      "on_disk": true,
+      "disk_kind": "file",
+      "disk_size": 10,
+      "disk_sha256": "0b894166d3336435c800bea36ff21b29eaa801a52f584c006c49289a0dcf6e2f",
+      "text_matches_request": true,
+      "receipt_matches_disk": true,
+      "cleanup": {
+        "removed": true,
+        "utc": "2026-09-13T13:42:56.634734+00:00"
+      }
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 2,
+      "case_id": "H0204",
+      "kind": "historical_literal",
+      "folder": "desktop",
+      "name": "hola.txt",
+      "existed_before": false,
+      "utc": "2026-09-13T13:43:21.422435+00:00",
+      "errors": [],
+      "on_disk": true,
+      "disk_kind": "file",
+      "disk_size": 10,
+      "disk_sha256": "c3a4a2e49d91f2177113a9adfcb9ef9af9679dc4557a0a3a4602e1bd39a6f481",
+      "text_matches_request": true,
+      "receipt_matches_disk": true,
+      "cleanup": {
+        "removed": true,
+        "utc": "2026-09-13T13:43:21.422435+00:00"
+      }
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 3,
+      "case_id": "H0304",
+      "kind": "historical_literal",
+      "folder": "desktop",
+      "name": "anti_repeat_phase6.txt",
+      "existed_before": false,
+      "utc": "2026-09-13T13:43:44.937674+00:00",
+      "errors": [],
+      "on_disk": true,
+      "disk_kind": "file",
+      "disk_size": 10,
+      "disk_sha256": "0b894166d3336435c800bea36ff21b29eaa801a52f584c006c49289a0dcf6e2f",
+      "text_matches_request": true,
+      "receipt_matches_disk": true,
+      "cleanup": {
+        "removed": true,
+        "utc": "2026-09-13T13:43:44.938174+00:00"
+      }
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 4,
+      "case_id": "H0428",
+      "kind": "historical_literal",
+      "folder": "documents",
+      "name": "notas.txt",
+      "existed_before": false,
+      "utc": "2026-09-13T13:44:08.588830+00:00",
+      "errors": [],
+      "on_disk": true,
+      "disk_kind": "file",
+      "disk_size": 15,
+      "disk_sha256": "d4017008a71a78a604d9556ffc3fd6737f9e307a7aa17bce096b29f87d865d01",
+      "text_matches_request": true,
+      "receipt_matches_disk": true,
+      "cleanup": {
+        "removed": true,
+        "utc": "2026-09-13T13:44:08.589336+00:00"
+      }
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 5,
+      "case_id": "H0547",
+      "kind": "historical_literal",
+      "folder": "documents",
+      "name": "carter_notas_factual.txt",
+      "existed_before": false,
+      "utc": "2026-09-13T13:44:32.709193+00:00",
+      "errors": [],
+      "on_disk": true,
+      "disk_kind": "file",
+      "disk_size": 24,
+      "disk_sha256": "11e993060fb8b7619db7b38e67960b004fe3495706a0e58da1e48498fb6bad5a",
+      "text_matches_request": true,
+      "receipt_matches_disk": true,
+      "cleanup": {
+        "removed": true,
+        "utc": "2026-09-13T13:44:32.709691+00:00"
+      }
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 6,
+      "case_id": "H0676",
+      "kind": "historical_literal",
+      "folder": "desktop",
+      "name": "hola.txt",
+      "existed_before": false,
+      "utc": "2026-09-13T13:44:56.378780+00:00",
+      "errors": [],
+      "on_disk": true,
+      "disk_kind": "file",
+      "disk_size": 10,
+      "disk_sha256": "0b894166d3336435c800bea36ff21b29eaa801a52f584c006c49289a0dcf6e2f",
+      "text_matches_request": true,
+      "receipt_matches_disk": true,
+      "cleanup": {
+        "removed": true,
+        "utc": "2026-09-13T13:44:56.378780+00:00"
+      }
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 7,
+      "case_id": "H0722",
+      "kind": "historical_literal",
+      "folder": "desktop",
+      "name": "carter_test.txt",
+      "existed_before": false,
+      "utc": "2026-09-13T13:45:29.639899+00:00",
+      "errors": [],
+      "on_disk": true,
+      "disk_kind": "file",
+      "disk_size": 17,
+      "disk_sha256": "a76caafad85d1d950a8532c9776851b7edbd76c4541f0747c0bdee01aee80b40",
+      "text_matches_request": true,
+      "receipt_matches_disk": true,
+      "cleanup": {
+        "removed": true,
+        "utc": "2026-09-13T13:45:29.640400+00:00"
+      }
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 8,
+      "case_id": "H0256",
+      "kind": "historical_literal",
+      "folder": "desktop",
+      "name": "TestCarterFactual",
+      "existed_before": false,
+      "utc": "2026-09-13T13:45:52.738979+00:00",
+      "errors": [],
+      "on_disk": true,
+      "disk_kind": "directory",
+      "receipt_matches_disk": true,
+      "cleanup": {
+        "removed": true,
+        "utc": "2026-09-13T13:45:52.739483+00:00"
+      }
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 9,
+      "case_id": "H0261",
+      "kind": "historical_literal",
+      "folder": "desktop",
+      "name": "CarterTest",
+      "existed_before": false,
+      "utc": "2026-09-13T13:46:15.976960+00:00",
+      "errors": [],
+      "on_disk": true,
+      "disk_kind": "directory",
+      "receipt_matches_disk": true,
+      "cleanup": {
+        "removed": true,
+        "utc": "2026-09-13T13:46:15.976960+00:00"
+      }
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 10,
+      "case_id": "H0288",
+      "kind": "historical_literal",
+      "folder": "desktop",
+      "name": "TestCarter",
+      "existed_before": false,
+      "utc": "2026-09-13T13:46:39.166008+00:00",
+      "errors": [],
+      "on_disk": true,
+      "disk_kind": "directory",
+      "receipt_matches_disk": true,
+      "cleanup": {
+        "removed": true,
+        "utc": "2026-09-13T13:46:39.166508+00:00"
+      }
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 11,
+      "case_id": "H0629",
+      "kind": "historical_literal",
+      "folder": null,
+      "name": "proyectos",
+      "existed_before": false,
+      "utc": "2026-09-13T13:47:02.811821+00:00",
+      "errors": [],
+      "note": "sandbox case: artefact lives in the isolated profile filesystem-sandbox",
+      "on_disk": true,
+      "disk_kind": "directory"
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 12,
+      "case_id": "files1205-dev-01",
+      "kind": "original_development_variant",
+      "folder": "desktop",
+      "name": "prueba_fable.txt",
+      "existed_before": false,
+      "utc": "2026-09-13T13:47:28.296193+00:00",
+      "errors": [],
+      "on_disk": true,
+      "disk_kind": "file",
+      "disk_size": 16,
+      "disk_sha256": "e62d8a065d2ea023a373adaed82be51085712eefa23c162be30ec2293a88eb4c",
+      "text_matches_request": true,
+      "receipt_matches_disk": true,
+      "cleanup": {
+        "removed": true,
+        "utc": "2026-09-13T13:47:28.296698+00:00"
+      }
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 13,
+      "case_id": "files1205-dev-02",
+      "kind": "original_development_variant",
+      "folder": "documents",
+      "name": "fable_check.txt",
+      "existed_before": false,
+      "utc": "2026-09-13T13:47:54.886701+00:00",
+      "errors": [],
+      "on_disk": true,
+      "disk_kind": "file",
+      "disk_size": 15,
+      "disk_sha256": "9601ac699b2e8eb8186a1056377d47a23fb3cc4f21eb268f31cc2c01bdda5eb0",
+      "text_matches_request": true,
+      "receipt_matches_disk": true,
+      "cleanup": {
+        "removed": true,
+        "utc": "2026-09-13T13:47:54.887705+00:00"
+      }
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 14,
+      "case_id": "files1205-dev-03",
+      "kind": "original_development_variant",
+      "folder": "desktop",
+      "name": "FablePrueba",
+      "existed_before": false,
+      "utc": "2026-09-13T13:48:20.223517+00:00",
+      "errors": [],
+      "on_disk": true,
+      "disk_kind": "directory",
+      "receipt_matches_disk": true,
+      "cleanup": {
+        "removed": true,
+        "utc": "2026-09-13T13:48:20.223517+00:00"
+      }
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 15,
+      "case_id": "files1205-dev-04",
+      "kind": "original_development_variant",
+      "folder": "documents",
+      "name": "FableCheck",
+      "existed_before": false,
+      "utc": "2026-09-13T13:48:47.465498+00:00",
+      "errors": [],
+      "on_disk": true,
+      "disk_kind": "directory",
+      "receipt_matches_disk": true,
+      "cleanup": {
+        "removed": true,
+        "utc": "2026-09-13T13:48:47.465998+00:00"
+      }
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 16,
+      "case_id": "files1205-dev-05",
+      "kind": "original_development_variant",
+      "folder": null,
+      "name": "borrador",
+      "existed_before": false,
+      "utc": "2026-09-13T13:49:10.695101+00:00",
+      "errors": [],
+      "note": "sandbox case: artefact lives in the isolated profile filesystem-sandbox",
+      "on_disk": true,
+      "disk_kind": "directory"
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 17,
+      "case_id": "files1205-dev-06",
+      "kind": "original_development_variant",
+      "folder": null,
+      "name": "drafts",
+      "existed_before": false,
+      "utc": "2026-09-13T13:49:33.731043+00:00",
+      "errors": [],
+      "note": "sandbox case: artefact lives in the isolated profile filesystem-sandbox",
+      "on_disk": true,
+      "disk_kind": "directory"
+    },
+    {
+      "schema": "files1205-root-files-postread-v1",
+      "case_index": 18,
+      "case_id": "files1205-boundary-01",
+      "kind": "boundary",
+      "folder": null,
+      "name": null,
+      "existed_before": false,
+      "utc": "2026-09-13T13:49:59.022210+00:00",
+      "errors": [],
+      "note": "sandbox case: artefact lives in the isolated profile filesystem-sandbox"
+    }
+  ]
+}

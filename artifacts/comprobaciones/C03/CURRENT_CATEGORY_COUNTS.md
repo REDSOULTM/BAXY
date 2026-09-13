@@ -1,13 +1,13 @@
-# Categorías actuales — adjudicación NETWORK1203
+# Categorías actuales — adjudicación FILES1205
 
-268/742 cubiertos; 474 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 142 primeras altas (140 anteriores + 2 en NETWORK1203; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 391a52958bdbd65bd9676f785d90f0ebdd106d589493d4ae197a097406db5907.
+280/742 cubiertos; 462 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 154 primeras altas (142 anteriores + 12 en FILES1205; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: e0d34c136d7d35656d91a0b24453c392564516a95078fcadde31aa7630b724a0.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
 | Música | 39 | 6 | 33 |
 | Instalar y desinstalar software | 31 | 0 | 31 |
 | Navegación y búsqueda web | 46 | 17 | 29 |
-| Archivos y carpetas | 32 | 3 | 29 |
+| Archivos y carpetas | 32 | 15 | 17 |
 | Entrada incompleta, ruido y control de diálogo | 34 | 7 | 27 |
 | Vídeo y series | 26 | 0 | 26 |
 | Mensajería | 31 | 6 | 25 |

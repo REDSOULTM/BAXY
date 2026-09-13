@@ -1,3 +1,13 @@
+# FILES1205 adjudicado — 2026-09-13T13:51:59+00:00
+
+**280/742 cubiertos, 462 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA e0d34c136d7d35656d91a0b24453c392564516a95078fcadde31aa7630b724a0. Primeras altas 24 h >= 154 (+12).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d95b9f96 (proveedor de carpetas conocidas: catálogo, Core, proveedor; lectores y extractores de creación en el mind; FILES1205/SOURCE.json|APP_SOURCE.json) con **BUILD1205** (recibo 04c0bc88…; binding de los instrumentos siguientes).
+
+FILES1205 (8 archivos y 3 carpetas en escritorio/Documentos, 1 carpeta en sandbox, 6 pares, 1 límite; una creación por caso con comprobación previa de ausencia, postlectura en disco y limpieza): 19 ejecutados, 19 aprobados; +12 (H0047, H0203, H0204, H0304, H0428, H0547, H0676, H0722, H0256, H0261, H0288, H0629). Adjudicación ad2cad61ad19fb01231f789bf43c59ef8e738aa533d8b25a8296d6e40ed17f17; postlectura en FILES1205/ROOT_POSTREAD.json. Las 18 creaciones se verificaron en disco (escritorio real D:\Perfil\Escritorio y Documentos D:\Perfil\Documentos; contenido con el hash del texto pedido); ninguna preexistía y todas se eliminaron después. Infraestructura nueva declarada y autorizada (≥10 abiertos): argumento folder en filesystem.write.text y filesystem.create.directory, raíz en carpeta conocida con las mismas guardas, sin sobrescribir archivos existentes. Archivos queda 15/32.
+
+Siguiente por masa: cierre de apps propias (20, autorizado; instrumento con turno revisado y ventanas propias); archivos residuales (borrados con fixtures propios, listado del escritorio, contenido dinámico); apps (4 léxicos); H0043 (título de tarea). Reanudación: derivar de build_files1205.py (BUILD1205); `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 e0d34c136d7d35656d91a0b24453c392564516a95078fcadde31aa7630b724a0`; `scratchpad/files_postread.py <campaña> <i> pre|post`.
+
+---
+
 # NETWORK1203 adjudicado — 2026-09-13T13:31:07+00:00
 
 **268/742 cubiertos, 474 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 391a52958bdbd65bd9676f785d90f0ebdd106d589493d4ae197a097406db5907. Primeras altas 24 h >= 142 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6478ff47 (llm: procedencia excluida del validador de palabras recortadas; línea de alcance para enumerar todas las direcciones; NETWORK1203/SOURCE.json|patch) con BUILD1201.
