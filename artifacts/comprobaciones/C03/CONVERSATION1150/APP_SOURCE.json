@@ -1,6 +1,6 @@
 {
   "schema": "c03-conversation1150-app-source-adoption-v1",
-  "status": "adopted_pending_build_and_product_measurement",
+  "status": "adopted_built_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/Baxy.App/MainWindowViewModel.cs",
   "patch": "artifacts/comprobaciones/C03/CONVERSATION1150/APP_SOURCE.patch",
@@ -12,10 +12,15 @@
   "build": {
     "campaign": "BUILD1151",
     "receipt": "C:/Users/usuario/AppData/Local/BAXY/C03-repairs1151-build/BUILD_READY.json",
-    "note": "Se rellena en el recibo; el cambio se compromete antes de compilar."
+    "receipt_sha256": "f40c98986e7525cdbc68f6fa5868d12150f3595c842f3b9e1d0dbde9ff28c61a",
+    "build_exit": 0,
+    "shutdown_exit": 0,
+    "head_at_build": "c12927f27433838195b39a03915b034fc4e4952d (committed before compiling)",
+    "source_fingerprint": "bb51e00e4caf5b3b45fc063a8210c9f62691ccddd07111d711d92306d1c2d85a",
+    "method": "main.compile_if_needed(force=False); copy published Core to effective; SDK build-server shutdown"
   },
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "Tanda residual de conversación (H0059, H0354 con pares nuevos) sobre BUILD1151; se demuestra cuando el final sea la pregunta del mind y no «No pude entender bien».",
+  "measurement": "CONVERSATION1152 sobre BUILD1151: H0354 «necesito ayuda con algo» → «¿En qué puedo ayudarte?» (aprobado); H0059 y el límite «Perfecto, ¿y qué hora es?» publican la pregunta de recuperación del mind en vez de la incomprensión (siguen fallando su criterio: acuse y hora). dev-06 en inglés terminó en fallo porque la recuperación no aportó una pregunta válida. Ninguna incomprensión falsa con pregunta válida disponible.",
   "credits": 0
 }

@@ -1,3 +1,15 @@
+# CONVERSATION1152 adjudicado — 2026-09-13T05:30:02+00:00
+
+**233/742 cubiertos, 509 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 54824a461dd20f54e51135149c2f4477a2ad482eef75087d18128496e4364e3d. Primeras altas 24 h >= 107 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c12927f2 con BUILD1151 (App: MainWindowViewModel publica la pregunta de recuperación del mind —kind clarify, pregunta validada, sin operaciones— en vez de TurnVisibleFacts.Failure; recibo f40c9898…, huella bb51e00e…). Registro de adopción: CONVERSATION1150/APP_SOURCE.json|.patch.
+
+CONVERSATION1152 (13 objetos sin efectos: H0122, H0702, H0059, H0354; 6 variantes; 3 límites): 13 ejecutados, 8 aprobados, 5 fallidos; +1 (H0702). Adjudicación 42a46ded712b89ce4015dcaff07000780259712b4fd88313e461d5179672ce10. Reparación demostrada: los finales «No pude entender bien» de H0059/H0354/límite hora ahora son la pregunta del mind; H0354 aprobado («¿En qué puedo ayudarte?») pero sin crédito porque el instrumento exige dos pares aprobados en la misma tanda y el inglés («Could you help me out with something?») terminó en fallo sin pregunta válida. Conversación queda 24/31 (abiertos H0059, H0069, H0122, H0354, H0410 y límites H0176/H0192).
+
+Causas restantes: borradores conversacionales que sólo preguntan ante acuses («no te preocupes si se abrió Steam») → veto → pregunta de recuperación (ya no fallo); nombre ajeno en el saludo sin aclaración (H0122); memes prometidos y ruido con comprensión fingida (modelo). Reloj: «Perfecto, ¿y qué hora es?» sigue sin leer la hora (reconocedor del shell sin acuse previo).
+
+Siguiente: tanda breve para acreditar H0354 (dos pares nuevos de ayuda abierta) junto con el residual de conocimiento H0703 («estoy aburrido», misma ruta reparada) —categorías distintas: material separado o dos tandas—; después reloj (10 abiertos). Reanudación: derivar desde build_conversation1152.py (lineage KNOWLEDGE1144, binding BUILD1151); `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 54824a46…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h.
+
+---
+
 # CONVERSATION1150 adjudicado — 2026-09-13T05:15:32+00:00
 
 **232/742 cubiertos, 510 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 5a91ce4ac4fb24d102280c6cc7871d0e0e18cbc51434d127592aa81f6dcd6983. Primeras altas 24 h >= 106 (+4).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 60c61a6f con BUILD1147.
