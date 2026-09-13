@@ -1,3 +1,13 @@
+# CLOSE1227 adjudicado — 2026-09-13T17:27:36.587834+00:00
+
+**302/742 cubiertos, 440 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 7456246b8d2cb31998054e9ae07d75614f9e6965f37387244fa42a4460c44f78. Primeras altas 24 h >= 176 (+4).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 657346eb con BUILD1225; reconocimiento de prohibición con justificación para la forma «constraint_ack» (CLOSE1227/SOURCE.json|patch).
+
+CLOSE1227 (2 deícticos pendientes + 2 variantes revisadas sobre un Bloc de notas propio en primer plano; 2 prohibiciones + 2 variantes; 2 límites): 10 ejecutados, 9 aprobados, 1 fallido; +4 (H0148, H0335 deícticos; H0407, H0427 prohibiciones) con sus dos pares. Adjudicación 1a641594c2fbe17b9dc0ffd7cd7ab02b85a91c85cf4d246988531ffc08f81f0b. «No cierres Chrome, lo estoy usando.» → «Entendido, no cierro Chrome, está bien.» (primera vez). Único fallo: el límite futuro condicional sigue con el modelo negando la capacidad (documentado, nunca acreditable). **Cerrar apps queda 11/20**; los 9 restantes están fuera de esta instrumentación con causa: Steam ×4 (descargas ajenas), WhatsApp/Discord ×3 (el instrumento exige clientes ausentes; sesiones del dueño), globales ×2 (cierre múltiple de ventanas ajenas).
+
+Siguiente por masa abierta: Navegación web (29), Entrada incompleta/ruido (27), Apps (25), Audio (24), Interacción dentro de apps (22), Pantalla/captura (19), Archivos (17), Brillo (17), Info web actual (17)… Ver CONDICIONES_POR_CATEGORIA para las condicionadas (Música 33 y Vídeo 26 aplazadas por sesiones ausentes; Instalar 31 requiere proveedor nuevo). Reanudación: los guiones de la sesión (close_case.sh, owned_window.py, approve_review.py, build_close1227.py) están descritos en la memoria de sesión y en CLOSE1215–1227.
+
+---
+
 # CLOSE1225 adjudicado — 2026-09-13T17:19:57.817066+00:00
 
 **298/742 cubiertos, 444 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA af9ebd8b1c9745d338a1a776c78281546f1f68727d6ba40f3f5ac820eacb8f74. Primeras altas 24 h >= 172 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f4933c4a con BUILD1225 (enumeración completa sólo del candidato, CLOSE1225/APP_SOURCE.json; prohibición con justificación y anuncio de pedido futuro, CLOSE1225/SOURCE.json; cierres deícticos de la ventana en primer plano, CLOSE1225/SOURCE_DEICTIC.json).

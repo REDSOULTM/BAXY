@@ -1,6 +1,6 @@
 {
   "schema": "c03-close1227-source-adoption-v1",
-  "status": "adopted_unmeasured",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/effect_intent.py (explicit_negative_constraint)",
   "patch": "artifacts/comprobaciones/C03/CLOSE1227/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": null,
-  "credits": null
+  "measurement": "CLOSE1227/006: «No cierres Chrome, lo estoy usando.» → «Entendido, no cierro Chrome, está bien.»; par aprobado; H0407/H0427 acreditados. 4 créditos en la tanda (2 por deícticos remedidos).",
+  "credits": 4
 }
