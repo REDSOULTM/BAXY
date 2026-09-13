@@ -1,3 +1,25 @@
+## WEB1259 — estado vigente 2026-09-13T21:57:08.997690+00:00
+
+Parcial: 2 aprobados, 7 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 341/742 | 401 | 0 | >=215 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 215 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WEB1259 no añade ninguna. No se cuentan revalidaciones.
+
+Siguiente acción: WEB1259: 9 ejecutados, 2 aprobados, 7 fallidos, 0 créditos. Las dos causas de WEB1257 quedaron resueltas (los destinos simbólicos navegan; el final compone contra el pedido), pero el final de una navegación verificada promete («Voy a youtube.») porque la carga del compositor no marca outcome=completed para browser.navigate y nada rechaza la promesa. Siguiente: WEB1261 (mente: outcome completed, pista de estado y rechazo promised_effect) sobre el mismo panel.
+
+Evidencia: `artifacts/comprobaciones/C03/WEB1259/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 181.61 s acumulados; pico GPU 3683.61 MiB; pico RAM 2460.25 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WEB1259 precedente. -->
+
 ## WEB1257 — estado vigente 2026-09-13T21:42:38.711028+00:00
 
 Parcial: 5 aprobados, 7 fallidos, 0 sin ejecutar; 3 créditos.

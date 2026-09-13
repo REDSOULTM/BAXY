@@ -1,0 +1,13 @@
+{
+  "schema": "c03-web1259-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_explicit_browser_navigation_arguments: lista pública cerrada ante un destino simbólico)",
+  "patch": "artifacts/comprobaciones/C03/WEB1259/SOURCE.patch",
+  "commit": "2c986930b352f2f2b66f12768f6c428818ad9ac1",
+  "build": "BUILD1259 (C03-repairs1259-build/BUILD_READY.json)",
+  "cause_measured": "WEB1257: «andá a youtube», «llevame a github», «Ve a ChatGPT» y sus variantes planificaban un solo browser.navigate (el catálogo de Inicio conoce YouTube/ChatGPT/GitHub Desktop, así que el lector no buscaba) pero el constructor de argumentos se abstenía ante el destino simbólico y la App preguntaba la URL.",
+  "change": "El constructor acepta la misma lista pública cerrada (youtube/gmail/github/chatgpt) que el lector; cualquier otro destino simbólico sigue exigiendo la búsqueda verificada.",
+  "measurement": "WEB1259: 9 ejecutados, 2 aprobados, 7 fallidos; los siete pedidos navegaron y verificaron la URL final (0 preguntas de URL). 0 créditos: seis finales prometen («Voy a youtube.», «Vamos a github.») en vez de reportar; sólo «Fui a ChatGPT.» e «I went to YouTube.» reportan. Causa: la carga del compositor no marca outcome=completed para browser.navigate (sólo app.open) y nada rechaza una promesa; corregido para WEB1261.",
+  "credits": 0
+}

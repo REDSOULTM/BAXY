@@ -1,3 +1,11 @@
+# WEB1259 adjudicado — 2026-09-13T21:57:08.997690+00:00
+
+**341/742 cubiertos, 401 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 6e18ce50e9b2df6e16f8d6e9e56be943612098ab1367cfc19c35364ddb163f85. Primeras altas 24 h >= 215 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 2c986930 con BUILD1259 (constructor de argumentos alineado con la lista pública cerrada; ComposeRequestText en la App; WEB1259/SOURCE.json|APP_SOURCE.json|*.patch). Rama saneada por el dueño (SANEAMIENTO_2026-09-13_SHAS.md): BASELINE_HEAD del runner rebasado al equivalente 824cd808.
+
+WEB1259 (3 literales simbólicos, 4 variantes, 2 límites; navegación revisada): 9 ejecutados, 2 aprobados, 7 fallidos, 0 créditos. Adjudicación d4c8adc1df2f17e91a5e4ab70ae2ef92c371048d66d353728066a1a161fca519. Los siete pedidos navegaron y verificaron (ninguna pregunta de URL; ningún «confirmo»), pero seis finales prometen («Voy a youtube.», «Vamos a github.») en vez de reportar la navegación hecha: la carga del compositor sólo marca outcome=completed para app.open y nada rechaza la promesa. Siguiente: WEB1261 (mente: outcome completed para navegación, pista de estado y rechazo promised_effect) sobre el mismo panel.
+
+---
+
 # WEB1257 adjudicado — 2026-09-13T21:42:38.711028+00:00
 
 **341/742 cubiertos, 401 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA f306b1acc04b822b70567b94fea44a366ad0cabc12a43f993a8209c146354b6e. Primeras altas 24 h >= 215 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6c562d12 con BUILD1253 (sólo mente: navegación por nombre público cerrado, «andá» como cabeza; WEB1257/SOURCE.json|SOURCE.patch).

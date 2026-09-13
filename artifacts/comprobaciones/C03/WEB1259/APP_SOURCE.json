@@ -1,0 +1,13 @@
+{
+  "schema": "c03-web1259-app-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/MainWindowViewModel.cs (ComposeRequestText: la respuesta publicada tras una palabra de confirmación compone contra el último pedido que no es una confirmación)",
+  "patch": "artifacts/comprobaciones/C03/WEB1259/APP_SOURCE.patch",
+  "commit": "2c986930b352f2f2b66f12768f6c428818ad9ac1",
+  "build": "BUILD1259",
+  "cause_measured": "WEB1257: los finales de los turnos revisados componían contra «confirmar» («Sí, confirmo que se navegó a…»).",
+  "change": "ComposeRequestText recorre los mensajes hacia atrás y toma el primero del usuario que ConfirmationReplyParser no clasifica como confirmar/cancelar.",
+  "measurement": "WEB1259: ningún final repite «confirmo»; los finales hablan del pedido («Fui a ChatGPT.», «I went to YouTube.», y las promesas «Voy a youtube.» que corrige WEB1261).",
+  "credits": 0
+}

@@ -1,0 +1,35 @@
+commit 2c986930b352f2f2b66f12768f6c428818ad9ac1
+
+C03: symbolic public names get their canonical destination; confirmed replies compose against the request (WEB1259 repair)
+
+WEB1257 measured two causes: «andá a youtube», «llevame a github» and
+«Ve a ChatGPT» planned a single browser.navigate (the Start catalog knows
+those names, so no search) but the argument builder abstained before the
+symbolic destination and the App asked for a URL; and a reply published
+after the closed word «confirmar» composed against it («Sí, confirmo que
+se navegó…»). The builder now accepts the closed public list the reader
+already relies on, and the view model composes such replies against the
+last user message that is not a confirmation reply.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index a7a49eb6..b53bcc45 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -3919,8 +3919,13 @@ def _explicit_browser_navigation_arguments(
+ ) -> dict[str, object] | None:
+     """Canonicalize literal destinations and searches under public policy."""
+ 
+-    if effect_intent._symbolic_web_destination(evidence) is not None:
++    destination = effect_intent._symbolic_web_destination(evidence)
++    if destination is not None and re.fullmatch(
++        effect_intent._NAMED_PUBLIC_SITE, effect_intent._fold(destination)
++    ) is None:
+         # Its identity must come from the verified search, never a site-name map.
++        # The closed public names below (youtube, gmail, github, chatgpt) are the
++        # one exception the effect reader already relies on (WEB1257/1259).
+         return None
+     named_search = effect_intent._named_browser_search(evidence)
+     if named_search is not None:
