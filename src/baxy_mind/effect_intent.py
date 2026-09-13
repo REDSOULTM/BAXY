@@ -3989,28 +3989,85 @@ def _authenticated_application_close_target(
         or _other_device_effect_scope(_fold(text))
     ):
         return None
+    # «necesito que cierres whatsapp», «podés cerrar la calculadora?»,
+    # «cerrame el paint»: the desire/ability preface and the clitic still
+    # ask for one close. The envelope already removes «puedes/could you».
     request = _match(
         _strip_request_envelope(_fold(text)),
-        r"^[¿?¡!\s]*(?:cierra|cerra|cerrar|close)\s+(?P<target>.+)$",
+        r"^[¿?¡!\s]*(?:(?:necesito|quiero|queria|quisiera|podes|podrias|podria|me\s+(?:podes|podrias|podria))\s+(?:que\s+)?)?"
+        r"(?:cierra|cierres|cerra|cerrar|cerrame|close)\s+(?P<target>.+)$",
     )
     if request is None:
         return None
     catalog = build_application_catalog_index(application_names)
     raw_target = request.group("target")
     matches: list[tuple[int, str]] = []
-    for target, offset in _application_target_forms(raw_target):
+    for target, offset in _close_target_forms(raw_target):
         # Do not inherit open's execution-count hints for a work-loss effect.
-        # Only punctuation or the existing bounded courtesy is removable.
+        # Only punctuation, the window wrapper's own tail («… window», «… app»)
+        # and the existing bounded courtesy are removable.
         suffix = raw_target[offset + len(target):].strip(" ,;:.!?")
-        if suffix and _APPLICATION_TRAILING_REQUEST.fullmatch(" " + suffix) is None:
+        suffix = re.sub(r"^(?:window|app|application)\b", "", suffix).strip(" ,;:.!?")
+        if suffix and _APPLICATION_TRAILING_REQUEST.fullmatch(" " + suffix) is None \
+                and _CLOSE_TRAILING_COURTESY.fullmatch(" " + suffix) is None:
             continue
-        key = _application_name_key(target)
-        if key in catalog.keys:
+        key = _authenticated_close_key(target, catalog)
+        if key is not None:
             matches.append((request.start("target") + offset, key))
     identities = {key for _, key in matches}
     if len(identities) != 1:
         return None
     return min(matches, key=lambda item: item[0])
+
+
+_CLOSE_WINDOW_WRAPPER = re.compile(
+    r"^(?:(?:la|el|the)\s+)?(?:ventana|window|app|aplicacion|programa|application|program)\s+(?:de|del|of)\s+(?P<name>.+)$"
+    r"|^(?:the\s+)?(?P<name_before>.+?)\s+(?:window|app|application)$",
+    re.IGNORECASE,
+)
+_CLOSE_TRAILING_COURTESY = re.compile(r"\s*[,;:]?\s+(?:pls|plis|porfa|porfis|for me|para mi)$", re.IGNORECASE)
+
+
+def _close_target_forms(raw_target: str) -> tuple[tuple[str, int], ...]:
+    """Bounded close-target forms: the open forms plus «la ventana de X» / «the X window».
+
+    Offsets index the original target so trailing-courtesy checks stay exact.
+    """
+    forms = list(_application_target_forms(raw_target))
+    stripped = raw_target.rstrip(" ?!.")
+    courtesy = _CLOSE_TRAILING_COURTESY.search(stripped)
+    if courtesy is not None:
+        core = stripped[:courtesy.start()]
+        forms.extend((form, offset) for form, offset in _application_target_forms(core))
+    for form, offset in list(forms):
+        wrapped = _CLOSE_WINDOW_WRAPPER.fullmatch(form)
+        if wrapped is None:
+            continue
+        name = wrapped.group("name") or wrapped.group("name_before")
+        start = wrapped.start("name") if wrapped.group("name") else wrapped.start("name_before")
+        forms.extend((inner, offset + start + inner_offset) for inner, inner_offset in _application_target_forms(name))
+    return tuple(dict.fromkeys(forms))
+
+
+def _authenticated_close_key(target: str, catalog: ApplicationCatalogIndex) -> str | None:
+    """Resolve one target form to an exact catalog key, through the shared alias resolver.
+
+    «chrome» → Google Chrome and «notepad» → Bloc de notas reuse the same
+    identity resolver the presence reader trusts; anything ambiguous or
+    outside the authenticated snapshot stays None.
+    """
+    key = _application_name_key(target)
+    if key in catalog.keys:
+        return key
+    resolved = resolve_application_catalog_app_id(target, catalog)
+    if resolved is None:
+        return None
+    builtin = {"windows.notepad": ("bloc de notas", "notepad"),
+               "windows.calculator": ("calculadora", "calculator")}
+    candidates = [name for name, candidate in catalog.entries
+                  if candidate == _application_name_key(resolved) or candidate in builtin.get(resolved, ())]
+    keys = {_application_name_key(name) for name in candidates}
+    return next(iter(keys)) if len(keys) == 1 else None
 
 
 def resolve_application_close_name(
@@ -4771,7 +4828,7 @@ _REQUEST_PREFIX = (
     # request for the trailing words.
     rf"(?:hazme\s+un\s+favor|one\s+thing|una\s+cosa(?:\s+please)?)"
     rf"\s*[,;:.!?\-\u2013\u2014]+{_PREFIX_GAP}|"
-    r"(?:puedes|podrias|can you|could you|would you)\s+|"
+    r"(?:puedes|podes|podrias|podria|me\s+(?:puedes|podes|podrias|podria)|can you|could you|would you)\s+|"
     # Speech discourse markers require punctuation so literal content stays intact.
     rf"(?:a ver|antes que nada|che|oye|oiga|listen|dale)\s*[,;:.!?\-\u2013\u2014]{_PREFIX_GAP}|"
     rf"(?:por curiosidad|una duda|just curious|a question)"
@@ -5246,7 +5303,7 @@ def _is_past_or_hypothetical_state(text: str) -> bool:
             r"era|eran|fue|fueron|quedaba|quedaban|had|was|were|"
             r"used\s+to)\b|"
             r"\b(?:tendria|tendrias|seria|serian|tuviera|tuvieras|tuviese|"
-            r"abriria|abririas|quedaria(?:s|mos|n)?|would|hipoteticamente|"
+            r"abriria|abririas|quedaria(?:s|mos|n)?|would(?!\s+you\b)|hipoteticamente|"
             r"hypothetically|supongamos|suponiendo|imagina|imagine)\b|"
             r"\bif\b.{0,64}\b(?:another|other)\s+(?:computer|device)\b|"
             r"\b(?:si|if)\b.{0,64}\b(?:otro|otra|another|other)\s+"
@@ -7497,7 +7554,7 @@ _COVERAGE_ACTION_HEAD = (
     r"dile|decile|tell|send|"
     r"elimina|eliminar|borra|borrar|delete|"
     r"remove|apaga|apagar|shutdown|reinicia|reiniciar|restart|suspende|"
-    r"suspender|sleep|cierra|cerra|cerrar|close|instala|instalar|install|"
+    r"suspender|sleep|cierra|cerra|cerrar|cerrame|cierrame|cierres|close|instala|instalar|install|"
     r"desinstala|desinstalar|uninstall|imprime|imprimir|print|escanea|"
     r"escanear|scan|conecta|conectar|connect|desconecta|disconnect|"
     r"empareja|emparejar|pair|renombra|renombrar|rename|mueve|mover|move|"
@@ -8470,7 +8527,7 @@ def _is_direct_request(text: str) -> bool:
         r"consulta|consultar|comprueba|comprobar|checkea|chequea|averigua|averiguar|"
         r"(?:fijate|fijese)(?=\s+si\b)|"
         r"find\s+out|inspect|inspecciona|give|prepara|prepare|resolve|"
-        r"cierra|cerra|cerrar|close|envia|enviar|enviale|enviales|"
+        r"cierra|cerra|cerrar|cerrame|cierrame|cierres|close|envia|enviar|enviale|enviales|"
         r"manda|mandar|mandale|mandales|"
         r"arma|armar|marca|marcar|graba|grabar|record|stage|"
         r"borra|borrar|elimina|eliminar|delete|"
@@ -11398,7 +11455,7 @@ def _review_application_and_window_effects(
             matches.append((continued_application.start("app"), 0, "app.open"))
 
     if (
-        _head_is(head, r"(?:cierra|cerra|cerrar|close|cierralo|cierrala)")
+        _head_is(head, r"(?:cierra|cerra|cerrar|cerrame|cierrame|cierres|close|cierralo|cierrala)")
         and (
             has_named_window_target(folded)
             or _authenticated_application_close_target(folded, application_names) is not None
@@ -11440,7 +11497,7 @@ def _review_application_and_window_effects(
             matches,
             folded,
             "app.close",
-            r"\b(?:cierra|cerra|cerrar|close|cierralo|cierrala)\b",
+            r"\b(?:cierra|cerra|cerrar|cerrame|cierrame|cierres|close|cierralo|cierrala)\b",
         )
 
     for pattern, operation in (

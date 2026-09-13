@@ -1,0 +1,17 @@
+{
+  "schema": "c03-close1215-source-adoption-v1",
+  "status": "adopted_unmeasured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_authenticated_application_close_target, _close_target_forms, _authenticated_close_key; cabezas de pedido directo y de deseo; veto hipotético «would you»; cortesía «podés/me podés»)",
+  "patch": "artifacts/comprobaciones/C03/CLOSE1215/SOURCE.patch",
+  "cause_measured": "Sonda sin GPU sobre los 20 abiertos de «Cerrar aplicaciones y ventanas» con el catálogo Inicio real (Bloc de notas, Calculadora, Google Chrome, Paint, Spotify, Discord, WhatsApp, Steam, Navegador Opera GX): el destino autenticado de cierre exigía la clave exacta del catálogo, por lo que «cerrá el chrome», «cerrá chrome», «Necesito cerrar la ventana de Chrome.», «Close Chrome, please.» no autenticaban (la clave es «google chrome»); «Would you close the Notepad window for me?» caía en el veto hipotético por «would» y en el envoltorio «the X window … for me»; «Podés cerrar la calculadora?», «Me podés cerrar …», «Cerrame el Paint.», «Necesito que cierres whatsapp», «Puedes cerrar steam pls?» no eran pedidos directos (cabezas podés/cerrame/cierres y cola «pls» ausentes). CLOSE1056/1060 ya habían dejado el reconocimiento por nombre exacto y el selector applicationName de window.resolve (BUILD1064, dentro de BUILD1205).",
+  "change": "El destino de cierre reutiliza el resolvedor de identidad del catálogo que ya usa el lector de presencia (resolve_application_catalog_app_id): «chrome» → Google Chrome, «notepad/calculator» → Bloc de notas/Calculadora sólo cuando la identidad resultante es única en el catálogo autenticado. Formas de destino acotadas: «la ventana de X», «the X window/app», cola de cortesía pls/plis/porfa/for me. Cabezas de pedido: cerrame/cierrame/cierres en pedido directo, marco de deseo («necesito que cierres») y reconocimiento del efecto; «podés/podrías/me podés» se unen a «puedes/could you» en la cortesía de prefijo; «would you …» no es estado hipotético. Sin nombres de aplicación fijos, sin alias por literal, sin cambios en window.resolve/app.close ni en la confirmación exacta revisada.",
+  "offline_verification": "18 positivos autentican su nombre y resuelven ('app.close',) (los 10 literales alcanzables de la categoría con nombre, más 8 variantes en ambos idiomas); 22 controles negativos sin nombre ni app.close: deícticos («cerrá esto», «cerrala»), globales («cerrame todo», «cerrá todas las ventanas»), prohibiciones («nunca/no cierres spotify», «Never close Notepad on your own.»), condicional futuro, cita, objetos físicos («cierra la puerta», «la ventana del cuarto»), pasado, hipotético, otro dispositivo, diferido («mañana»), «cierra sesión en chrome», «Would you close the door for me?», y la negación con segundo objeto («no cierres chrome, cerrá paint»). «cierra el chrome y abrí spotify» conserva ('app.close','app.open'). Baseline del reconocedor 278 sin cambios. Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": null,
+  "credits": null
+}
