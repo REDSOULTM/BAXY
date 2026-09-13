@@ -1,0 +1,13 @@
+{
+  "schema": "c03-web1263-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (pista de estado de navegación reescrita; invented_prior_open_state también para navegación)",
+  "patch": "artifacts/comprobaciones/C03/WEB1263/SOURCE.patch",
+  "commit": "90946129360b82951780d3cfe725896da0bc784d",
+  "build": "BUILD1263 (C03-repairs1263-build/BUILD_READY.json)",
+  "cause_measured": "WEB1261: la pista «the page is already open in the browser: say so in the past» hizo afirmar un estado previo falso en los siete finales («La página ya estaba abierta», «Ya estabas en YouTube»).",
+  "change": "La pista pide reportar la navegación recién hecha («Abrí YouTube en el navegador») y prohíbe decir que ya estaba abierta; un final de navegación verificada que afirma un estado previo se rechaza (invented_prior_open_state) y se reintenta con la pista existente.",
+  "measurement": "WEB1263: 9 ejecutados, 7 aprobados, 2 fallidos; 3 créditos. Los siete pedidos navegaron, verificaron la URL final y lo reportaron en pasado («Abrí YouTube en el navegador.», «I opened YouTube in the browser…»); pico de GPU del árbol 3498 MiB en todos (el del modelo: el Edge privado ya no suma). Créditos H0480, H0320, H0161 con las variantes «Llevame a youtube.», «Ve a github.», «Llevame a chatgpt.», «Go to youtube.». Navegación y búsqueda web 23/46. Los dos límites siguen fallando por composición (paráfrasis sin responder; «Usa Chrome» inventa el navegador): nunca acreditables, documentados.",
+  "credits": 3
+}

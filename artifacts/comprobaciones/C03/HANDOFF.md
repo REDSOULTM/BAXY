@@ -1,3 +1,11 @@
+# WEB1263 adjudicado — 2026-09-13T22:11:43.352520+00:00
+
+**344/742 cubiertos, 398 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 7ad006e0f50f6b00b1a6ac4a83c9d1b33d83428ea46b36f38f522c2d056ffdd5. Primeras altas 24 h >= 218 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 90946129 con BUILD1263 (mente: pista de navegación reescrita y rechazo del estado previo inventado; proveedor: Edge privado con --disable-gpu; WEB1263/SOURCE.json|PROVIDER_SOURCE.json|*.patch).
+
+WEB1263 (mismo panel que WEB1259/1261): 9 ejecutados, 7 aprobados, 2 fallidos, 3 créditos. Adjudicación 1a78fb83a085b15d6d003dc930ac30b1c92a51b3e1d9570ccb76513f094a68df. Los siete pedidos navegaron, verificaron la URL final y lo reportaron en pasado («Abrí YouTube en el navegador.», «I opened YouTube in the browser…»); pico de GPU del árbol 3498 MiB en todos (el del modelo: el Edge privado ya no suma). Créditos H0480, H0320, H0161 con las variantes «Llevame a youtube.», «Ve a github.», «Llevame a chatgpt.», «Go to youtube.». Navegación y búsqueda web 23/46. Los dos límites siguen fallando por composición (paráfrasis sin responder; «Usa Chrome» inventa el navegador): nunca acreditables, documentados.
+
+---
+
 # WEB1261 adjudicado — 2026-09-13T22:03:32.607079+00:00
 
 **341/742 cubiertos, 401 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 2a8be95250dab0d57016f60d58f55b09ffdd234d9f0db899ce0e912cf2dbfd35. Primeras altas 24 h >= 215.** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 293b5786 con BUILD1259 (sólo mente: navegación reportada como hecha; WEB1261/SOURCE.json|SOURCE.patch).

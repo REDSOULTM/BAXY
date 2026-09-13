@@ -1,12 +1,12 @@
-# Categorías actuales — adjudicación WEB1261
+# Categorías actuales — adjudicación WEB1263
 
-341/742 cubiertos; 401 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 215 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 2a8be95250dab0d57016f60d58f55b09ffdd234d9f0db899ce0e912cf2dbfd35.
+344/742 cubiertos; 398 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 218 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 7ad006e0f50f6b00b1a6ac4a83c9d1b33d83428ea46b36f38f522c2d056ffdd5.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
 | Música | 39 | 6 | 33 |
 | Instalar y desinstalar software | 31 | 0 | 31 |
-| Navegación y búsqueda web | 46 | 20 | 26 |
+| Navegación y búsqueda web | 46 | 23 | 23 |
 | Archivos y carpetas | 32 | 19 | 13 |
 | Entrada incompleta, ruido y control de diálogo | 34 | 7 | 27 |
 | Vídeo y series | 26 | 0 | 26 |

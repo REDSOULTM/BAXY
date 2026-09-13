@@ -1,0 +1,31 @@
+commit 90946129360b82951780d3cfe725896da0bc784d
+
+C03: navigation reported as just done, never as a prior state; private CDP Edge without GPU acceleration (WEB1263 repair)
+
+WEB1261: the navigation status hint («the page is already open… say so
+in the past») made every final invent a prior state («La página ya estaba
+abierta», «Ya estabas en YouTube»), and the GPU process of the product's
+own Edge session pushed the process tree to 3874 MiB, over the 3800 MiB
+budget, on one case. The hint now asks to report the navigation it just
+made, invented_prior_open_state also rejects navigation replies that claim
+the page was already open, and the private automation browser starts with
+--disable-gpu.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+index a4d6f17d..17dba32a 100644
+--- a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+@@ -1274,6 +1274,10 @@ internal class CdpBrowserSession : IDisposable
+         start.ArgumentList.Add("--remote-allow-origins=*");
+         start.ArgumentList.Add("--no-first-run");
+         start.ArgumentList.Add("--no-default-browser-check");
++        // The private automation session renders for CDP, not for the person:
++        // GPU acceleration only adds a GPU process to the product's tree
++        // (WEB1261: 3874 MiB with the local model, over the 3800 MiB budget).
++        start.ArgumentList.Add("--disable-gpu");
+         start.ArgumentList.Add("--user-data-dir=" + _profile);
+         start.ArgumentList.Add("about:blank");
+         _ownedProcess = Process.Start(start) ?? throw new IOException("CDP browser could not start.");
