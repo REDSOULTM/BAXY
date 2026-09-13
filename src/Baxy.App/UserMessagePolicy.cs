@@ -1277,17 +1277,36 @@ internal static class UserMessagePolicy
         return false;
     }
 
+    // Whole words only: «martes» contains «marte», and a note about next
+    // Tuesday is not a trip to Mars. NOTES1142 measured that substring
+    // match sending a verified note result through the conversation veto.
     private static bool LooksLikeOutOfWorldRequest(string user) =>
         AsksForAWorldAction(user)
-        || ContainsAny(
+        || ContainsAnyWholeWord(
             user,
             ["marte", "mars", "jupiter", "saturn", "neptun", "pluton",
                 "europa", "ganymede", "ganimedes", "calisto", "callisto",
                 "triton", "ceres", "phobos", "deimos", "oberon", "rocket",
                 "bitcoin", "titan",
-                "postcard", "to io", " a io", "to the moon", "a la luna",
+                "postcard", "to io", "a io", "to the moon", "a la luna",
                 "fabrica una hora", "invent a clock", "inventa una hora",
                 "fabricate a clock", "fabricate a"]);
+
+    private static bool ContainsAnyWholeWord(string text, IReadOnlyList<string> tokens)
+    {
+        foreach (string token in tokens)
+        {
+            if (Regex.IsMatch(
+                text,
+                @"(?<![\p{L}\p{N}])" + Regex.Escape(token) + @"(?![\p{L}\p{N}])",
+                RegexOptions.CultureInvariant))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private static bool AsksToInventClock(string folded) =>
         folded.Contains("te gustaria que fuera", StringComparison.Ordinal)

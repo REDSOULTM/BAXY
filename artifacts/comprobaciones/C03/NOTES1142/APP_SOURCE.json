@@ -1,0 +1,28 @@
+{
+  "schema": "c03-notes1142-app-source-adoption-v1",
+  "status": "adopted_built_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs",
+  "patch": "artifacts/comprobaciones/C03/NOTES1142/APP_SOURCE.patch",
+  "cause_measured": "NOTES1142 índice 14 («Guardame una nota: la reunión del club se pasó al martes.»): note.create verificada y seis borradores correctos «Listo, te guardé la nota: …» rechazados por la App hasta agotar reintentos; final publicado «model_response_rejected;recovery:model_response_rejected;retry_exhausted». Lectura de fuente: UserMessagePolicy.LooksLikeOutOfWorldRequest usa ContainsAny (subcadena) y «martes» contiene «marte», por lo que ConversationFallbackIntent devuelve out_of_catalog y ModelMessageComposer.AcceptPublishedConversation aplica la verificación de conversación (IsSafeConversationReply) a un resultado verificado, que la rechaza sin motivo registrado (ModelResponseRejectionReason es null → «model_response_rejected»).",
+  "change": "LooksLikeOutOfWorldRequest compara sus tokens como palabras completas (nuevo ContainsAnyWholeWord con límites de letra/dígito); lista de tokens intacta salvo « a io» → «a io» (el límite de palabra sustituye el espacio inicial). AsksForAWorldAction y el resto de la política no cambian.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build": {
+    "campaign": "BUILD1143",
+    "receipt": "C:/Users/usuario/AppData/Local/BAXY/C03-repairs1143-build/BUILD_READY.json",
+    "build_exit": 0,
+    "shutdown_exit": 0,
+    "head_at_build": "9e58fc0fa4ea47d56746e5e3b4dab6012a058e78 (working tree with the uncommitted App change; committed right after as the next HEAD)",
+    "source_fingerprint": "982aa3008ee358dfb8f3f5748e360d57bc77ee0813c7ee97249b647b58d403f9",
+    "app_sha256": "f60bd26e92e13748b9ca0bcad4385e4fee8670e91c5cd7574036cba457f607fe",
+    "published_core_sha256": "e5a93a5e04a7d36bcb4b5cb5b261d825d17216c559d470e8b1e8eaaae8e403c0",
+    "effective_core_sha256": "e5a93a5e04a7d36bcb4b5cb5b261d825d17216c559d470e8b1e8eaaae8e403c0",
+    "method": "main.compile_if_needed(force=False); copy published Core to effective; SDK build-server shutdown"
+  },
+  "open_related": "NOTES1142 índice 19 («¿Tengo alguna nota guardada?»): note.list verificada y borrador «No, no tienes ninguna nota guardada.» rechazado tres veces con «internal_code»; la subcomprobación no queda registrada en la evidencia de producto. Sin parche: falta capturar la subcausa antes de retirar una heurística.",
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "KNOWLEDGE1144 y tandas siguientes corren sobre BUILD1143; la reparación se demuestra cuando un pedido con «martes» u otro token contenido termine con final útil.",
+  "credits": 0
+}
