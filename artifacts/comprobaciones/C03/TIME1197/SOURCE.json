@@ -1,6 +1,6 @@
 {
   "schema": "c03-time1197-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/effect_intent.py (_count_down_request; notification.schedule domain; scheduling reviewer) + src/baxy_mind/__main__.py (_explicit_notification_schedule_arguments)",
   "patch": "artifacts/comprobaciones/C03/TIME1197/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "TIME1199: H0385 con pares «Contá 3min a partir de ahora.» y «Count down 4 minutes.».",
-  "credits": 0
+  "measurement": "TIME1199: «contá 10 minutos», «Contá 3min a partir de ahora.» y «Count down 4 minutes.» crean el temporizador con dueUtc == NextRun; +1 (H0385).",
+  "credits": 1
 }

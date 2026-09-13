@@ -1,0 +1,256 @@
+{
+  "schema": "time1199-root-postread-facts-v1",
+  "note": "Postlectura de raíz por caso (scratchpad/time_postread.py): temporizadores (NextRun observado, bracket, cancelación exacta). Sin textos de la encuesta.",
+  "cases": [
+    {
+      "schema": "time1199-root-postread-v1",
+      "case_index": 0,
+      "case_id": "H0385",
+      "kind": "historical_literal",
+      "requested_duration_seconds": 600,
+      "lower_utc": "2026-09-13T13:09:32.558675+00:00",
+      "starts": 1,
+      "completed": 1,
+      "utc": "2026-09-13T13:10:00.477485+00:00",
+      "errors": [],
+      "operation": "notification.schedule",
+      "task_name": "BAXY-Alarm-49f7c606e5f14793b446887f2c4555df",
+      "receipt_due_utc": "2026-09-13T13:19:53+00:00",
+      "verified": true,
+      "status": "completed",
+      "upper_utc": "2026-09-13T13:09:52.57052+00:00",
+      "due_is_whole_second": true,
+      "inferred_binding_utc": "2026-09-13T13:09:53+00:00",
+      "within_bracket_plus_1s": true,
+      "bracket": {
+        "lower": "2026-09-13T13:09:32.558675+00:00",
+        "upper_plus_1s": "2026-09-13T13:09:53.570520+00:00"
+      },
+      "task_observed": {
+        "taskName": "BAXY-Alarm-49f7c606e5f14793b446887f2c4555df",
+        "state": "Ready",
+        "startBoundary": [
+          "2026-09-13T10:19:53-03:00"
+        ],
+        "triggerTypes": [
+          "MSFT_TaskTimeTrigger"
+        ],
+        "repetition": [
+          null
+        ],
+        "actions": [
+          {
+            "execute": "powershell.exe",
+            "arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1199-case00-profile\\scheduled-notifications\\BAXY-Alarm-49f7c606e5f14793b446887f2c4555df.ps1\""
+          }
+        ],
+        "nextRunUtc": "2026-09-13T13:19:53.0000000Z"
+      },
+      "next_run_utc": "2026-09-13T13:19:53+00:00",
+      "due_equals_next_run": true,
+      "cancel": {
+        "before": 911,
+        "after": 910,
+        "absent": true,
+        "utc": "2026-09-13T13:10:10.113391+00:00"
+      }
+    },
+    {
+      "schema": "time1199-root-postread-v1",
+      "case_index": 1,
+      "case_id": "H0119",
+      "kind": "historical_literal",
+      "requested_duration_seconds": null,
+      "lower_utc": "2026-09-13T13:10:11.096919+00:00",
+      "starts": 0,
+      "completed": 0,
+      "utc": "2026-09-13T13:10:33.297670+00:00",
+      "errors": [],
+      "note": "no single notification.schedule pair in the case journal"
+    },
+    {
+      "schema": "time1199-root-postread-v1",
+      "case_index": 2,
+      "case_id": "H0043",
+      "kind": "historical_literal",
+      "requested_duration_seconds": null,
+      "lower_utc": "2026-09-13T13:10:34.282528+00:00",
+      "starts": 0,
+      "completed": 0,
+      "utc": "2026-09-13T13:10:55.847174+00:00",
+      "errors": [],
+      "note": "no single notification.schedule pair in the case journal"
+    },
+    {
+      "schema": "time1199-root-postread-v1",
+      "case_index": 3,
+      "case_id": "time1199-dev-01",
+      "kind": "original_development_variant",
+      "requested_duration_seconds": 180,
+      "lower_utc": "2026-09-13T13:10:56.866628+00:00",
+      "starts": 1,
+      "completed": 1,
+      "utc": "2026-09-13T13:11:22.544969+00:00",
+      "errors": [],
+      "operation": "notification.schedule",
+      "task_name": "BAXY-Alarm-062592a1c6f542cd9f59e424b1a2d52f",
+      "receipt_due_utc": "2026-09-13T13:14:15+00:00",
+      "verified": true,
+      "status": "completed",
+      "upper_utc": "2026-09-13T13:11:14.9342696+00:00",
+      "due_is_whole_second": true,
+      "inferred_binding_utc": "2026-09-13T13:11:15+00:00",
+      "within_bracket_plus_1s": true,
+      "bracket": {
+        "lower": "2026-09-13T13:10:56.866628+00:00",
+        "upper_plus_1s": "2026-09-13T13:11:15.934269+00:00"
+      },
+      "task_observed": {
+        "taskName": "BAXY-Alarm-062592a1c6f542cd9f59e424b1a2d52f",
+        "state": "Ready",
+        "startBoundary": [
+          "2026-09-13T10:14:15-03:00"
+        ],
+        "triggerTypes": [
+          "MSFT_TaskTimeTrigger"
+        ],
+        "repetition": [
+          null
+        ],
+        "actions": [
+          {
+            "execute": "powershell.exe",
+            "arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1199-case03-profile\\scheduled-notifications\\BAXY-Alarm-062592a1c6f542cd9f59e424b1a2d52f.ps1\""
+          }
+        ],
+        "nextRunUtc": "2026-09-13T13:14:15.0000000Z"
+      },
+      "next_run_utc": "2026-09-13T13:14:15+00:00",
+      "due_equals_next_run": true,
+      "cancel": {
+        "before": 911,
+        "after": 910,
+        "absent": true,
+        "utc": "2026-09-13T13:11:32.067144+00:00"
+      }
+    },
+    {
+      "schema": "time1199-root-postread-v1",
+      "case_index": 4,
+      "case_id": "time1199-dev-02",
+      "kind": "original_development_variant",
+      "requested_duration_seconds": 240,
+      "lower_utc": "2026-09-13T13:11:33.043837+00:00",
+      "starts": 1,
+      "completed": 1,
+      "utc": "2026-09-13T13:11:58.740433+00:00",
+      "errors": [],
+      "operation": "notification.schedule",
+      "task_name": "BAXY-Alarm-e83afd7b9f594d1d86894bec4184d421",
+      "receipt_due_utc": "2026-09-13T13:15:51+00:00",
+      "verified": true,
+      "status": "completed",
+      "upper_utc": "2026-09-13T13:11:51.0803607+00:00",
+      "due_is_whole_second": true,
+      "inferred_binding_utc": "2026-09-13T13:11:51+00:00",
+      "within_bracket_plus_1s": true,
+      "bracket": {
+        "lower": "2026-09-13T13:11:33.043837+00:00",
+        "upper_plus_1s": "2026-09-13T13:11:52.080360+00:00"
+      },
+      "task_observed": {
+        "taskName": "BAXY-Alarm-e83afd7b9f594d1d86894bec4184d421",
+        "state": "Ready",
+        "startBoundary": [
+          "2026-09-13T10:15:51-03:00"
+        ],
+        "triggerTypes": [
+          "MSFT_TaskTimeTrigger"
+        ],
+        "repetition": [
+          null
+        ],
+        "actions": [
+          {
+            "execute": "powershell.exe",
+            "arguments": "-NoProfile -NonInteractive -ExecutionPolicy Bypass -WindowStyle Hidden -File \"C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1199-case04-profile\\scheduled-notifications\\BAXY-Alarm-e83afd7b9f594d1d86894bec4184d421.ps1\""
+          }
+        ],
+        "nextRunUtc": "2026-09-13T13:15:51.0000000Z"
+      },
+      "next_run_utc": "2026-09-13T13:15:51+00:00",
+      "due_equals_next_run": true,
+      "cancel": {
+        "before": 911,
+        "after": 910,
+        "absent": true,
+        "utc": "2026-09-13T13:12:08.317420+00:00"
+      }
+    },
+    {
+      "schema": "time1199-root-postread-v1",
+      "case_index": 5,
+      "case_id": "time1199-dev-03",
+      "kind": "original_development_variant",
+      "requested_duration_seconds": null,
+      "lower_utc": "2026-09-13T13:12:09.303403+00:00",
+      "starts": 0,
+      "completed": 0,
+      "utc": "2026-09-13T13:12:31.746316+00:00",
+      "errors": [],
+      "note": "no single notification.schedule pair in the case journal"
+    },
+    {
+      "schema": "time1199-root-postread-v1",
+      "case_index": 6,
+      "case_id": "time1199-dev-04",
+      "kind": "original_development_variant",
+      "requested_duration_seconds": null,
+      "lower_utc": "2026-09-13T13:12:32.757269+00:00",
+      "starts": 0,
+      "completed": 0,
+      "utc": "2026-09-13T13:12:54.335411+00:00",
+      "errors": [],
+      "note": "no single notification.schedule pair in the case journal"
+    },
+    {
+      "schema": "time1199-root-postread-v1",
+      "case_index": 7,
+      "case_id": "time1199-dev-05",
+      "kind": "original_development_variant",
+      "requested_duration_seconds": null,
+      "lower_utc": "2026-09-13T13:12:55.313390+00:00",
+      "starts": 0,
+      "completed": 0,
+      "utc": "2026-09-13T13:13:17.497127+00:00",
+      "errors": [],
+      "note": "no single notification.schedule pair in the case journal"
+    },
+    {
+      "schema": "time1199-root-postread-v1",
+      "case_index": 8,
+      "case_id": "time1199-dev-06",
+      "kind": "original_development_variant",
+      "requested_duration_seconds": null,
+      "lower_utc": "2026-09-13T13:13:18.462016+00:00",
+      "starts": 0,
+      "completed": 0,
+      "utc": "2026-09-13T13:13:40.562840+00:00",
+      "errors": [],
+      "note": "no single notification.schedule pair in the case journal"
+    },
+    {
+      "schema": "time1199-root-postread-v1",
+      "case_index": 9,
+      "case_id": "time1199-boundary-01",
+      "kind": "boundary",
+      "requested_duration_seconds": null,
+      "lower_utc": "2026-09-13T13:13:41.545980+00:00",
+      "starts": 0,
+      "completed": 0,
+      "utc": "2026-09-13T13:14:06.019539+00:00",
+      "errors": [],
+      "note": "no single notification.schedule pair in the case journal"
+    }
+  ]
+}

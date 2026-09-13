@@ -1,3 +1,13 @@
+# TIME1199 adjudicado — 2026-09-13T13:15:39+00:00
+
+**265/742 cubiertos, 477 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA c613ad28a68dfd5382b67894715af325bd8ce9741a9a3a8ad25d4db067159a68. Primeras altas 24 h >= 139 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 628475af (cabeza de cuenta como temporizador; TIME1197/SOURCE.json|patch) con BUILD1158.
+
+TIME1199 (H0385, H0119, H0043 + 6 pares + 1 límite): 10 ejecutados, 9 aprobados, 1 fallido; +2 (H0385 «contá 10 minutos» con dos temporizadores pares verificados; H0119 reunión sin fin con dos pares de aclaración). Adjudicación 462918556bbae36bcac6359adffe697822cb1f0742bc780354c088f8416d34a0; postlectura en TIME1199/ROOT_POSTREAD.json. Tres temporizadores con dueUtc == NextRun y bracket cumplido, cancelados por identidad exacta. Fallo: H0043 «crea una tarea para el viernes»: el modelo inventó un título y el producto intentó task.create (fallida) en vez de preguntar cuál es la tarea; sus dos pares sí preguntaron. Agenda queda 34/38: restan H0043, «cancelá la alarma», «listá los timers», «qué tengo agendado para hoy».
+
+Siguiente por masa: cierre de apps propias (20, autorizado; instrumento con turno revisado), proveedor de carpetas conocidas (archivos, 26, autorizado), network.ip.list sin PrivacySensitive (build); H0043 con aclaración determinista de título si se repite la causa. Reanudación: derivar de build_time1199.py; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 c613ad28a68dfd5382b67894715af325bd8ce9741a9a3a8ad25d4db067159a68`.
+
+---
+
 # TIME1197 adjudicado — 2026-09-13T13:04:08+00:00
 
 **263/742 cubiertos, 479 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 73d4e3947165a721fca73a671b6d780e4df0a6a78ab233cb72853a35fcafe4fe. Primeras altas 24 h >= 137 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD cc829191 (aclaración determinista «qué avisar»; TIME1195/SOURCE.json|patch) con BUILD1158.
