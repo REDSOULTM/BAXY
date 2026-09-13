@@ -310,11 +310,18 @@ public static class ProductCatalog
             "Copia un archivo identificado dentro del sandbox y verifica su hash en destino."),
         Descriptor(
             "filesystem.create.directory",
-            Schema([String("relativePath", maximumUtf8Bytes: 1_024, nonWhitespace: true)], ["relativePath"]),
+            Schema(
+                [
+                    // Owner decision 2026-09-13 (DECISIONES_DUENO, point 2): a known
+                    // folder may be the root instead of the sandbox.
+                    String("folder", values: ["desktop", "documents", "downloads"]),
+                    String("relativePath", maximumUtf8Bytes: 1_024, nonWhitespace: true),
+                ],
+                ["relativePath"]),
             OperationRisks.LowReversible,
             "filesystem.create.directory.sandbox.postread.v1",
             ToolExposure.Public,
-            "Crea un directorio relativo confinado y verifica su identidad sin aceptar rutas absolutas."),
+            "Crea un directorio relativo confinado al sandbox o a una carpeta conocida (escritorio, documentos, descargas) y verifica su identidad sin aceptar rutas absolutas."),
         Descriptor(
             "filesystem.file.open.latest",
             Schema([String("folder", values: ["desktop", "documents", "downloads", "pictures"])], ["folder"]),
@@ -491,6 +498,10 @@ public static class ProductCatalog
             Schema(
                 [
                     String("expectedSha256", types: NullableString, maximumLength: 64),
+                    // Owner decision 2026-09-13 (DECISIONES_DUENO, point 2): a known
+                    // folder may be the root instead of the sandbox; an existing file
+                    // there is never overwritten without its current hash.
+                    String("folder", values: ["desktop", "documents", "downloads"]),
                     String("relativePath", maximumUtf8Bytes: 1_024, nonWhitespace: true),
                     String("text", maximumUtf8Bytes: 1_048_576),
                 ],

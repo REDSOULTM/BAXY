@@ -1300,12 +1300,13 @@ def _curated_domain_is_grounded(
             )
         )
     if operation == "filesystem.create.directory":
+        # Desktop, Documents and Downloads are catalog roots since the owner's
+        # decision of 2026-09-13 (point 2); pictures and drive letters are not.
         return _has(
             folded, r"\b(?:carpeta|folder|directorio|directory)\b"
         ) and not _has(
             folded,
-            r"\b(?:escritorio|desktop|documentos|documents|descargas|downloads|"
-            r"imagenes|pictures|fotos|photos)\b|(?:^|\s)[a-z]:[\\/]",
+            r"\b(?:imagenes|pictures|fotos|photos)\b|(?:^|\s)[a-z]:[\\/]",
         )
     if operation == "filesystem.path.ensure.absent":
         return (
@@ -1332,13 +1333,14 @@ def _curated_domain_is_grounded(
             r"contenido|contents?)\b",
         )
     if operation == "filesystem.write.text":
+        # Known folders are catalog roots since 2026-09-13 (owner decision,
+        # point 2); pictures and drive letters remain outside.
         return (
             _has(folded, r"\b(?:archivo|file|texto|text)\b")
             and _has(folded, r"\b(?:escribe|write|guarda|save|crea|create)\b")
             and not _has(
                 folded,
-                r"\b(?:escritorio|desktop|documentos|documents|descargas|downloads|"
-                r"imagenes|pictures|fotos|photos)\b|(?:^|\s)[a-z]:[\\/]",
+                r"\b(?:imagenes|pictures|fotos|photos)\b|(?:^|\s)[a-z]:[\\/]",
             )
         )
     if operation == "game.catalog.list":
@@ -2382,6 +2384,49 @@ def _ip_list_request(folded: str) -> bool:
     """Recognize a request for this machine's own IP address."""
 
     return _IP_LIST_REQUEST.match(_strip_request_envelope(folded)) is not None
+
+
+# «crea un archivo llamado hola.txt en el escritorio con el texto Hola Mundo»,
+# «Crea una carpeta en el escritorio llamada CarterTest»: literal file and
+# folder creation, in the sandbox or in a known folder (owner decision
+# 2026-09-13, point 2). The name and the content stay the person's words.
+_KNOWN_FOLDER_WORDS = r"escritorio|desktop|documentos|documents|descargas|downloads"
+_KNOWN_FOLDER_ENUM = {
+    "escritorio": "desktop", "desktop": "desktop",
+    "documentos": "documents", "documents": "documents",
+    "descargas": "downloads", "downloads": "downloads",
+}
+_FILE_CREATION_REQUEST = re.compile(
+    r"^[¿?¡!\s]*(?:cre[aá]|crear|cre[aá]me|create|guard[aá]|guardar|escrib[eí]|escribir|write|save)(?:me)?\s+"
+    r"(?:(?:un|una|a|the|el)\s+)?(?:archivo|fichero|file)(?:\s+(?:de\s+texto|txt|text))?"
+    rf"(?:\s+(?:en|on|in|dentro\s+de|inside)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder_a>{_KNOWN_FOLDER_WORDS}))?"
+    r"\s+(?:llamad[oa]|named|called|con\s+(?:el\s+)?nombre)\s+(?P<name>\"[^\"]+\"|'[^']+'|\S+)"
+    rf"(?:\s+(?:en|on|in|dentro\s+de|inside)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder_b>{_KNOWN_FOLDER_WORDS}))?"
+    r"\s+(?:que\s+diga|que\s+contenga|con\s+(?:el\s+)?(?:texto|contenido)|with\s+(?:the\s+)?(?:text|content)|containing|that\s+says|saying)\s+"
+    r"(?P<content>.+?)\s*$",
+    re.IGNORECASE,
+)
+_DIRECTORY_CREATION_REQUEST = re.compile(
+    r"^[¿?¡!\s]*(?:cre[aá]|crear|cre[aá]me|create|haz|hac[eé]|hazme|make)(?:me)?\s+"
+    r"(?:(?:una|un|a|the)\s+)?(?:carpeta|directorio|folder|directory)"
+    rf"(?:\s+(?:en|on|in|dentro\s+de|inside)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder_a>{_KNOWN_FOLDER_WORDS}))?"
+    r"\s+(?:llamad[oa]|named|called|con\s+(?:el\s+)?nombre)\s+(?P<name>\"[^\"]+\"|'[^']+'|\S+?)"
+    rf"(?:\s+(?:en|on|in|dentro\s+de|inside)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder_b>{_KNOWN_FOLDER_WORDS}))?"
+    r"[\s.!?]*$",
+    re.IGNORECASE,
+)
+
+
+def _file_creation_request(text: str) -> re.Match[str] | None:
+    """Match one literal file creation with a name and its content."""
+
+    return _FILE_CREATION_REQUEST.match(text.strip())
+
+
+def _directory_creation_request(text: str) -> re.Match[str] | None:
+    """Match one literal folder creation with a name."""
+
+    return _DIRECTORY_CREATION_REQUEST.match(text.strip())
 
 
 def _reminder_has_actionable_due(folded: str) -> bool:
@@ -13896,6 +13941,14 @@ def resolve_explicit_effects(
     alias_plan = exact_catalog_operation_plan(folded)
     if alias_plan is not None and set(alias_plan) <= available:
         return EffectIntent(alias_plan, tuple(folded for _ in alias_plan))
+    if "filesystem.write.text" in available and _file_creation_request(folded) is not None:
+        # A named file with literal content is a write, not a note.
+        return EffectIntent(("filesystem.write.text",), (folded,))
+    if (
+        "filesystem.create.directory" in available
+        and _directory_creation_request(folded) is not None
+    ):
+        return EffectIntent(("filesystem.create.directory",), (folded,))
     clauses = _request_clauses(folded)
     explicit_cardinality = _unresolved_explicit_cardinality(folded)
     if not folded or len(folded) > 16_384:

@@ -1,0 +1,16 @@
+{
+  "schema": "c03-files1205-app-source-adoption-v1",
+  "status": "adopted_built_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (filesystem.write.text, filesystem.create.directory), src/Baxy.Core/Operations/FilesystemHandlers.cs, src/Baxy.Providers.Windows/Filesystem/FilesystemContracts.cs, src/Baxy.Providers.Windows/Filesystem/LocalFilesystemProvider.cs",
+  "patch": "artifacts/comprobaciones/C03/FILES1205/APP_SOURCE.patch",
+  "owner_decision": "DECISIONES_DUENO_2026-09-13.md punto 2 («Si, baxy debera poder hacer eso»): proveedor de escritura y creación en carpetas conocidas; infraestructura nueva autorizada por desbloquear ≥10 abiertos (FILES1005/PLAN.md, CONDICIONES_POR_CATEGORIA_2026-09-13.md).",
+  "cause_measured": "FILES1005 / CONDICIONES: filesystem.write.text y filesystem.create.directory sólo aceptaban rutas relativas al sandbox del perfil (ProductCatalog.cs:312–317, 490–501; LocalFilesystemProvider.Resolve confinado a _root): «en el escritorio/Documentos» no tenía mecanismo (26 abiertos sin alcance).",
+  "change": "Catálogo: argumento opcional folder ∈ {desktop, documents, downloads} en ambas operaciones. Core: el manejador pasa folder al proveedor. Contrato: sobrecargas con folder e implementaciones por defecto (los proveedores antiguos siguen compilando). Proveedor: RootFor(folder) resuelve la carpeta conocida real (Environment.GetFolderPath para escritorio y documentos, perfil\\Downloads, igual que WindowsKnownFileAdapter), ResolveIn/EnsureSafePathIn aplican a esa raíz las mismas comprobaciones de traversal y puntos de reanálisis; los identificadores opacos recuerdan su raíz; un archivo existente no se sobrescribe sin su hash actual (version_conflict) y una carpeta existente se reporta como estado alcanzado. Sin cambios de riesgo (LowReversible).",
+  "build": {"campaign": "BUILD1205", "path": "C:/Users/usuario/AppData/Local/BAXY/C03-repairs1205-build", "receipt_sha256": "04c0bc88e762e92e5947a5d5d9508ae875e85534d49a7900cc4263c094909785", "source_fingerprint": "44502d1b895a2336e1af5081989f390199f02e6ddf76fee015c2e7f923744c32", "build_exit": 0, "shutdown_exit": 0, "note": "Primer intento abortado por el analizador CA1822 (EnsureSafePathIn marcado static); segundo intento limpio. main.compile_if_needed(force=False); copia del Core publicado al efectivo; build-server shutdown."},
+  "tests_run": false,
+  "tests_note": "tests/Baxy.Integration.Tests/Goal05LyingStoreMutationTests.cs implementa IFilesystemProvider con un doble; las sobrecargas nuevas tienen implementación por defecto en la interfaz, así que sigue compilando. No ejecutado (orden del dueño).",
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "FILES1205.",
+  "credits": 0
+}

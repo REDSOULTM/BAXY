@@ -1,0 +1,19 @@
+{
+  "schema": "c03-files1205-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_file_creation_request, _directory_creation_request, resolve_explicit_effects, domain rules de filesystem.write.text y filesystem.create.directory) + src/baxy_mind/__main__.py (extractores de argumentos de filesystem.write.text y filesystem.create.directory)",
+  "patch": "artifacts/comprobaciones/C03/FILES1205/SOURCE.patch",
+  "owner_decision": "DECISIONES_DUENO_2026-09-13.md punto 2 («Si, baxy debera poder hacer eso»): proveedor de escritura/creación en carpetas conocidas (infraestructura autorizada porque desbloquea ≥10 abiertos); ver APP_SOURCE.json (catálogo, Core y proveedor, BUILD1205).",
+  "cause_measured": "CONDICIONES_POR_CATEGORIA / FILES1005: «crea un archivo … en el escritorio/Documentos» y «crea una carpeta … en el escritorio» no tenían mecanismo (sandbox confinado) ni lector: 26 abiertos sin alcance; sonda sin GPU: ningún literal de creación resolvía (uno, H0428, caía en note.create por la gramática de notas).",
+  "change": "Lectores deterministas de creación literal de archivo (nombre + contenido, carpeta conocida opcional antes o después del nombre; cabezas crea/creá/guarda/escribe/create/write/save) y de carpeta (cabezas crea/creá/haz/create/make), colocados antes de la gramática de notas; extractores de argumentos que devuelven relativePath, text y folder (escritorio→desktop, documentos→documents, descargas→downloads); las reglas de dominio de ambas operaciones dejan de excluir las carpetas conocidas (siguen excluyendo imágenes y letras de unidad). Sin frases de salida; ninguna capa nueva.",
+  "offline_verification": "resolve_explicit_effects + _ground_explicit_arguments: 8 literales de archivo y 4 de carpeta del registro resuelven con nombre, contenido y carpeta correctos (p. ej. «crea un archivo llamado hola.txt en el escritorio con el texto Hola Mundo» → hola.txt / Hola Mundo / desktop; «Crea una carpeta en el escritorio llamada CarterTest» → CarterTest / desktop; «creá una carpeta llamada proyectos» → proyectos sin carpeta = sandbox); «crea un archivo en el escritorio» (sin nombre) y «borra el archivo hola.txt del escritorio» → None; «crea una nota que diga comprar pan» sigue en note.create. Baseline del reconocedor: 274 (12 altas de filesystem; H0428 pasa de note.create a filesystem.write.text; sin otras variaciones). Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": false,
+  "new_infrastructure": "Proveedor de carpetas conocidas (≥10 abiertos): ver APP_SOURCE.json.",
+  "build_required": true,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "FILES1205: 8 archivos y 4 carpetas del registro con pares ES/EN; postlectura de raíz en disco y limpieza de lo creado.",
+  "credits": 0
+}

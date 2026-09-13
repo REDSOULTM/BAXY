@@ -58,6 +58,21 @@ public interface IFilesystemProvider
         string relativePath,
         string text,
         string? expectedSha256);
+
+    /// <summary>
+    /// Same contract rooted at a known folder ("desktop", "documents",
+    /// "downloads") instead of the sandbox; null keeps the sandbox root.
+    /// Default implementations keep older providers compiling.
+    /// </summary>
+    FilesystemMutationResult CreateDirectory(string relativePath, string? folder) =>
+        folder is null ? CreateDirectory(relativePath) : throw new FilesystemProviderException("known_folder_unsupported");
+
+    FilesystemMutationResult WriteText(
+        string relativePath,
+        string text,
+        string? expectedSha256,
+        string? folder) =>
+        folder is null ? WriteText(relativePath, text, expectedSha256) : throw new FilesystemProviderException("known_folder_unsupported");
     FilesystemMutationResult Transfer(
         string resourceId,
         string destinationRelativePath,

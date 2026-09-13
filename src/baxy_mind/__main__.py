@@ -4440,24 +4440,58 @@ def _explicit_arguments_from_evidence(
             return {}
         return None
 
+    if operation == "filesystem.create.directory":
+        # «crea una carpeta llamada CarterTest en el escritorio»: the name is
+        # the person's, the folder is a catalog root (owner decision, point 2).
+        directory_match = effect_intent._directory_creation_request(evidence)
+        if directory_match is None:
+            return None
+        relative_path = directory_match.group("name").strip()
+        if (
+            len(relative_path) >= 2
+            and relative_path[0] == relative_path[-1]
+            and relative_path[0] in {'"', "'"}
+        ):
+            relative_path = relative_path[1:-1].strip()
+        path_segments = re.split(r"[\\/]", relative_path)
+        if not (
+            relative_path
+            and not re.match(r"^(?:[A-Za-z]:|[\\/]{1,2})", relative_path)
+            and all(segment not in {"", ".", ".."} for segment in path_segments)
+            and not any(ord(character) < 32 for character in relative_path)
+            and len(relative_path.encode("utf-8")) <= 1_024
+        ):
+            return None
+        folder_word = directory_match.group("folder_a") or directory_match.group("folder_b")
+        arguments: dict[str, object] = {"relativePath": relative_path}
+        if folder_word:
+            arguments["folder"] = effect_intent._KNOWN_FOLDER_ENUM[
+                effect_intent._fold(folder_word)
+            ]
+        return arguments
+
     if operation == "filesystem.write.text":
-        write_match = re.fullmatch(
+        write_match = effect_intent._file_creation_request(evidence) or re.fullmatch(
             r"[¿?¡!\s]*(?:"
             r"(?:crea|crear|guarda|guardar|escribe|escribir)\s+"
             r"(?:(?:un|el)\s+)?archivo|"
             r"(?:create|save|write)\s+(?:(?:a|the)\s+)?file"
             r")\s+"
             r"(?:(?:llamad[oa]|named|called)\s+)?"
-            r"(?P<path>\"[^\"]+\"|'[^']+'|\S+?)\s+"
+            r"(?P<name>\"[^\"]+\"|'[^']+'|\S+?)\s+"
             r"(?:con(?:\s+(?:el\s+)?(?:contenido|texto))?|que\s+diga|"
             r"with(?:\s+(?:the\s+)?(?:content|text))?|containing|saying)\s+"
-            r"(?P<text>.+?)[\s]*",
+            r"(?P<content>.+?)[\s]*",
             evidence,
             re.IGNORECASE,
         )
         if write_match is not None:
-            relative_path = write_match.group("path").strip()
-            text = clause_literal(write_match.group("text"))
+            relative_path = write_match.group("name").strip()
+            text = clause_literal(write_match.group("content"))
+            folder_word = (
+                write_match.groupdict().get("folder_a")
+                or write_match.groupdict().get("folder_b")
+            )
             if (
                 len(relative_path) >= 2
                 and relative_path[0] == relative_path[-1]
@@ -4475,7 +4509,12 @@ def _explicit_arguments_from_evidence(
                 and len(relative_path.encode("utf-8")) <= 1_024
             )
             if safe_path and len(text.encode("utf-8")) <= 1_048_576:
-                return {"relativePath": relative_path, "text": text}
+                arguments = {"relativePath": relative_path, "text": text}
+                if folder_word:
+                    arguments["folder"] = effect_intent._KNOWN_FOLDER_ENUM[
+                        effect_intent._fold(folder_word)
+                    ]
+                return arguments
         return None
 
     if operation == "wifi.connect.named":

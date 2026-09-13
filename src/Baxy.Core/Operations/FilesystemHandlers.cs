@@ -66,11 +66,14 @@ internal sealed class FilesystemHandler(string operation, IFilesystemProvider pr
                 "filesystem.hash" => FilesystemResultJson.Entry(_provider.Hash(
                     RequiredString(arguments, "resourceId"))),
                 "filesystem.create.directory" => VerifiedMutation(
-                    _provider.CreateDirectory(RequiredString(arguments, "relativePath"))),
+                    _provider.CreateDirectory(
+                        RequiredString(arguments, "relativePath"),
+                        OptionalString(arguments, "folder"))),
                 "filesystem.write.text" => VerifiedMutation(_provider.WriteText(
                     RequiredString(arguments, "relativePath"),
                     arguments.GetProperty("text").GetString()!,
-                    OptionalString(arguments, "expectedSha256"))),
+                    OptionalString(arguments, "expectedSha256"),
+                    OptionalString(arguments, "folder"))),
                 "filesystem.copy" => VerifiedMutation(TransferResult(arguments, move: false)),
                 "filesystem.move" => VerifiedMutation(TransferResult(arguments, move: true)),
                 "filesystem.trash.prepare" => FilesystemResultJson.TrashPreparation(

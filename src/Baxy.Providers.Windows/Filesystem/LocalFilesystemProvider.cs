@@ -107,32 +107,44 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         }
     }
 
-    public FilesystemMutationResult CreateDirectory(string relativePath)
+    public FilesystemMutationResult CreateDirectory(string relativePath) =>
+        CreateDirectory(relativePath, folder: null);
+
+    public FilesystemMutationResult CreateDirectory(string relativePath, string? folder)
     {
+        string root = RootFor(folder);
         lock (_gate)
         {
-            string path = Resolve(relativePath, allowMissingLeaf: true);
+            string path = ResolveIn(root, relativePath, allowMissingLeaf: true);
             if (File.Exists(path)) throw Error("destination_exists");
             bool reached = Directory.Exists(path);
             if (!reached) Directory.CreateDirectory(path);
-            EnsureSafePath(path, allowMissingLeaf: false);
-            return Mutation(Issue(path), path, reached);
+            EnsureSafePathIn(root, path, allowMissingLeaf: false);
+            return Mutation(Issue(path, root), path, reached);
         }
     }
 
     public FilesystemMutationResult WriteText(
         string relativePath,
         string text,
-        string? expectedSha256)
+        string? expectedSha256) =>
+        WriteText(relativePath, text, expectedSha256, folder: null);
+
+    public FilesystemMutationResult WriteText(
+        string relativePath,
+        string text,
+        string? expectedSha256,
+        string? folder)
     {
+        string root = RootFor(folder);
         string normalizedText = NormalizeText(text, MaximumTextBytes, allowEmpty: true);
         byte[] bytes = StrictUtf8.GetBytes(normalizedText);
         string desiredHash = Hex(SHA256.HashData(bytes));
         lock (_gate)
         {
-            string path = Resolve(relativePath, allowMissingLeaf: true);
+            string path = ResolveIn(root, relativePath, allowMissingLeaf: true);
             Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-            EnsureSafePath(Path.GetDirectoryName(path)!, allowMissingLeaf: false);
+            EnsureSafePathIn(root, Path.GetDirectoryName(path)!, allowMissingLeaf: false);
             bool exists = File.Exists(path);
             if (exists)
             {
@@ -167,8 +179,29 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             }
             if (!string.Equals(HashFile(path), desiredHash, StringComparison.Ordinal))
                 throw Error("verification_failed");
-            return Mutation(Issue(path), path, reachedState: false);
+            return Mutation(Issue(path, root), path, reachedState: false);
         }
+    }
+
+    /// <summary>
+    /// The sandbox root, or one of the person's known folders when the
+    /// catalog argument names it. Known folders never use the sandbox's
+    /// trash or backups; the same reparse-point and traversal checks apply.
+    /// </summary>
+    private string RootFor(string? folder)
+    {
+        if (folder is null) return _root;
+        string path = folder switch
+        {
+            "desktop" => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory),
+            "documents" => Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+            "downloads" => Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads"),
+            _ => throw Error("invalid_folder"),
+        };
+        if (string.IsNullOrWhiteSpace(path) || !Path.IsPathFullyQualified(path) || !Directory.Exists(path))
+            throw Error("known_folder_unavailable");
+        return Path.GetFullPath(path);
     }
 
     public FilesystemMutationResult Transfer(
@@ -331,14 +364,16 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
             entry.ResourceId, entry.Name, entry.Kind, entry.Size, entry.Sha256, reachedState);
     }
 
-    private string Issue(string path)
+    private string Issue(string path) => Issue(path, _root);
+
+    private string Issue(string path, string root)
     {
-        EnsureSafePath(path, allowMissingLeaf: false);
+        EnsureSafePathIn(root, path, allowMissingLeaf: false);
         Prune();
         if (_handles.Count >= MaximumHandles) throw Error("handle_capacity_reached");
         string id = "fs_" + Guid.NewGuid().ToString("N");
         FileSystemInfo info = File.Exists(path) ? new FileInfo(path) : new DirectoryInfo(path);
-        _handles[id] = new Handle(path, info.LastWriteTimeUtc, File.Exists(path) ? ((FileInfo)info).Length : 0,
+        _handles[id] = new Handle(path, root, info.LastWriteTimeUtc, File.Exists(path) ? ((FileInfo)info).Length : 0,
             _time.GetUtcNow());
         return id;
     }
@@ -347,7 +382,7 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     {
         Prune();
         if (!_handles.TryGetValue(id, out Handle? handle)) throw Error("invalid_resource_id");
-        EnsureSafePath(handle.Path, allowMissingLeaf: false);
+        EnsureSafePathIn(handle.Root, handle.Path, allowMissingLeaf: false);
         FileSystemInfo info = File.Exists(handle.Path)
             ? new FileInfo(handle.Path)
             : Directory.Exists(handle.Path) ? new DirectoryInfo(handle.Path) : throw Error("resource_changed");
@@ -357,22 +392,28 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
         return handle.Path;
     }
 
-    private string Resolve(string relative, bool allowMissingLeaf)
+    private string Resolve(string relative, bool allowMissingLeaf) =>
+        ResolveIn(_root, relative, allowMissingLeaf);
+
+    private string ResolveIn(string root, string relative, bool allowMissingLeaf)
     {
         relative ??= string.Empty;
         if (Path.IsPathRooted(relative) || relative.Contains('\0')) throw Error("invalid_path");
-        string full = Path.GetFullPath(Path.Combine(_root, relative.Replace('/', Path.DirectorySeparatorChar)));
-        if (!full.StartsWith(_root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(full, _root, StringComparison.OrdinalIgnoreCase)) throw Error("path_outside_sandbox");
-        if (IsReserved(full)) throw Error("path_reserved");
-        EnsureSafePath(full, allowMissingLeaf);
+        string full = Path.GetFullPath(Path.Combine(root, relative.Replace('/', Path.DirectorySeparatorChar)));
+        if (!full.StartsWith(root + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(full, root, StringComparison.OrdinalIgnoreCase)) throw Error("path_outside_sandbox");
+        if (string.Equals(root, _root, StringComparison.OrdinalIgnoreCase) && IsReserved(full)) throw Error("path_reserved");
+        EnsureSafePathIn(root, full, allowMissingLeaf);
         return full;
     }
 
-    private void EnsureSafePath(string path, bool allowMissingLeaf)
+    private void EnsureSafePath(string path, bool allowMissingLeaf) =>
+        EnsureSafePathIn(_root, path, allowMissingLeaf);
+
+    private static void EnsureSafePathIn(string root, string path, bool allowMissingLeaf)
     {
-        string current = _root;
-        string relative = Path.GetRelativePath(_root, path);
+        string current = root;
+        string relative = Path.GetRelativePath(root, path);
         if (relative == ".") return;
         string[] parts = relative.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
         for (int index = 0; index < parts.Length; index++)
@@ -440,6 +481,6 @@ public sealed class LocalFilesystemProvider : IFilesystemProvider
     private static string Hex(byte[] value) => Convert.ToHexStringLower(value);
     private static FilesystemProviderException Error(string code) => new(code);
 
-    private sealed record Handle(string Path, DateTime LastWriteUtc, long Size, DateTimeOffset IssuedAt);
+    private sealed record Handle(string Path, string Root, DateTime LastWriteUtc, long Size, DateTimeOffset IssuedAt);
     private sealed record TrashHandle(string Path, string ReviewLabel, DateTimeOffset IssuedAt);
 }
