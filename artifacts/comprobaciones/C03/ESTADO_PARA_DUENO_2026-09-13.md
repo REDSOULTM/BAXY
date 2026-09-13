@@ -1,3 +1,25 @@
+## NETWORK1161 — estado vigente 2026-09-13T06:29:03+00:00
+
+Parcial: 11 aprobados, 12 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 239/742 | 503 | 0 | >=113 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 111 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; NETWORK1161 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: NETWORK1161 completa: 23 ejecutados, 11 aprobados, 12 fallidos, 2 créditos (H0647 wifi encendido, H0732 internet). Causas medidas: (a) dominio de wifi.status no reconocido para «decime si el wifi está prendido»/«qué onda con el wifi» y sin regla de dominio para network.ip.list (IP) → veto → confirmación (a veces con vocabulario del contrato) o negación de alcance; (b) el compositor añade «no está en línea» a una lectura wifi connected=false (hecho no observado y falso), lo que impidió acreditar H0127/H0433; (c) «redes guardadas» resuelve a wifi.status y el texto afirma que no hay guardadas sin listarlas; (d) confirmación compuesta para network.ip.list (lectura) detiene el caso. Red queda 3/21. Siguiente: reglas de dominio para wifi.status (decime si…/qué onda) y network.ip.list (ip/dirección ip) en effect_intent, verificables sin GPU; después remedir con pares nuevos.
+
+Evidencia: `artifacts/comprobaciones/C03/NETWORK1161/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 376.92 s acumulados; pico GPU 3497.56 MiB; pico RAM 1664.48 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 23; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque NETWORK1161 precedente. -->
+
 ## CONVERSATION1160 — estado vigente 2026-09-13T06:13:16+00:00
 
 Parcial: 4 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

@@ -1,0 +1,240 @@
+{
+  "schema": "network1161-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1161-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1161-instrument-v1",
+  "seal_sha256": "f8fa3bd0763707457551c0eecc97e1458198d7d30997cff583a583d14970be1c",
+  "runner_sha256": "effe1e5e4c44a5acd1472d4266ffc5e7643b2e173e584620cc37dd770d1eb00f",
+  "transport_seal_sha256": "3863b846c8efa3cc0be86a96a4f108f580284b18242aee0e01228ae228ab987e",
+  "files": {
+    "panel.json": "3a12810efea75341173ec4d4d2e8ce705139ec7c976777c63e2eac8a0af27633",
+    "turns.jsonl": "a6376ad870faf891f665bb0ec437adf0838c8d5569f0b6f293f12a106b857793",
+    "case-map.json": "9480b976da7ba6d2c00187ad56ea42ed142d401e9cd58eebecb258afb18ee3bc",
+    "PLAN.md": "76bf110baa63d20f61ddc8dd8277b1a721552047cfa2ed4059e310560afd9cfa"
+  },
+  "counts": {
+    "cases": 23,
+    "historical_literals": 10,
+    "original_development_variants": 10,
+    "boundaries": 3,
+    "wire_lines": 46,
+    "session_controls": 23,
+    "ordinary_turns": 23,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 23,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 10,
+    "original_development_variant": 10,
+    "boundary": 3
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0127",
+      "kind": "historical_literal",
+      "group": "wifi_connected",
+      "credit_behavior": "wifi_connected",
+      "text_sha256": "28e275d5f1ebe098f35268e790cb728f63a570ead4fcfcdec6130de11fe3b222",
+      "criterion_sha256": "7acf305d7197399337325101405eead89f3ab496c0dc9d4ad35116c1269fc7dc"
+    },
+    {
+      "index": 1,
+      "case_id": "H0433",
+      "kind": "historical_literal",
+      "group": "wifi_connected",
+      "credit_behavior": "wifi_connected",
+      "text_sha256": "933d12e5e1236324a3cfca20b1550e1444ce768131477d4eaae7c141feac218b",
+      "criterion_sha256": "7acf305d7197399337325101405eead89f3ab496c0dc9d4ad35116c1269fc7dc"
+    },
+    {
+      "index": 2,
+      "case_id": "H0647",
+      "kind": "historical_literal",
+      "group": "wifi_on",
+      "credit_behavior": "wifi_on",
+      "text_sha256": "de1451c28afa505215bb303b847e257c103254f6ee7fa597625d461b6eeb77d7",
+      "criterion_sha256": "802236a599da9083b3c3e811635b1a358eb2eea0d6671db898798010f71fd78e"
+    },
+    {
+      "index": 3,
+      "case_id": "H0230",
+      "kind": "historical_literal",
+      "group": "wifi_on",
+      "credit_behavior": "wifi_on",
+      "text_sha256": "49c84b4eca668cb35d199ee34bd5ae01652ae85a266ff7e29d4641457ca12a69",
+      "criterion_sha256": "802236a599da9083b3c3e811635b1a358eb2eea0d6671db898798010f71fd78e"
+    },
+    {
+      "index": 4,
+      "case_id": "H0221",
+      "kind": "historical_literal",
+      "group": "wifi_on",
+      "credit_behavior": "wifi_on",
+      "text_sha256": "468829fdc8e59a7a3dad05e36e8f0ad8788740c6c786438f5bf5320d28e1b365",
+      "criterion_sha256": "802236a599da9083b3c3e811635b1a358eb2eea0d6671db898798010f71fd78e"
+    },
+    {
+      "index": 5,
+      "case_id": "H0302",
+      "kind": "historical_literal",
+      "group": "wifi_list",
+      "credit_behavior": "wifi_list",
+      "text_sha256": "62fdad3226c71acb5763089b841807d6d6702175ee65d4aec476f65949dc58ea",
+      "criterion_sha256": "71a8e161ed9adb4425dc243bb34ad40498cbf6739428b7bc0a691dadf5609e7e"
+    },
+    {
+      "index": 6,
+      "case_id": "H0455",
+      "kind": "historical_literal",
+      "group": "ip",
+      "credit_behavior": "ip",
+      "text_sha256": "9a3aa7f6e2cf2e7843f68f22821e59bc0684c9053bd5fe3e5da83a1f37bac9e5",
+      "criterion_sha256": "b9b299152d0756d17c3f6c7be35ae236f0ebe7a5579c0f3cad5d62d859da2c34"
+    },
+    {
+      "index": 7,
+      "case_id": "H0568",
+      "kind": "historical_literal",
+      "group": "ip",
+      "credit_behavior": "ip",
+      "text_sha256": "c70397c19ba4b4fc2854b8381b76106983c92dc5969c6da6946064b15601a88d",
+      "criterion_sha256": "b9b299152d0756d17c3f6c7be35ae236f0ebe7a5579c0f3cad5d62d859da2c34"
+    },
+    {
+      "index": 8,
+      "case_id": "H0481",
+      "kind": "historical_literal",
+      "group": "ip",
+      "credit_behavior": "ip",
+      "text_sha256": "a11ebb8ac23d0ddc1efdc540a35c8591264b0dfb5a90d4f89b6338eb91813086",
+      "criterion_sha256": "b9b299152d0756d17c3f6c7be35ae236f0ebe7a5579c0f3cad5d62d859da2c34"
+    },
+    {
+      "index": 9,
+      "case_id": "H0732",
+      "kind": "historical_literal",
+      "group": "internet",
+      "credit_behavior": "internet",
+      "text_sha256": "fc91a13d376e52db9eabc4063114dff48c6ab0f6fff3be5e128afe1d50f9c0c2",
+      "criterion_sha256": "7a37fee4e47481122dde74fd2a393acf999428b1a648f79ea843e1494b01f115"
+    },
+    {
+      "index": 10,
+      "case_id": "network1161-dev-01",
+      "kind": "original_development_variant",
+      "group": "wifi_connected",
+      "credit_behavior": "wifi_connected",
+      "text_sha256": "f99451ce604827c7a0e3645c557a15c6de03c6f3829364f700dfd041a76b5ec2",
+      "criterion_sha256": "7acf305d7197399337325101405eead89f3ab496c0dc9d4ad35116c1269fc7dc"
+    },
+    {
+      "index": 11,
+      "case_id": "network1161-dev-02",
+      "kind": "original_development_variant",
+      "group": "wifi_connected",
+      "credit_behavior": "wifi_connected",
+      "text_sha256": "3fe563cf8ffe64ce5e83ab9daaaad824855a37d4c666e0cd0b4ee513eedf32fa",
+      "criterion_sha256": "7acf305d7197399337325101405eead89f3ab496c0dc9d4ad35116c1269fc7dc"
+    },
+    {
+      "index": 12,
+      "case_id": "network1161-dev-03",
+      "kind": "original_development_variant",
+      "group": "wifi_on",
+      "credit_behavior": "wifi_on",
+      "text_sha256": "0a34de8e3744aa2c60978498bdc9f285de38fda2367a08990e2e15c4444ffc5d",
+      "criterion_sha256": "802236a599da9083b3c3e811635b1a358eb2eea0d6671db898798010f71fd78e"
+    },
+    {
+      "index": 13,
+      "case_id": "network1161-dev-04",
+      "kind": "original_development_variant",
+      "group": "wifi_on",
+      "credit_behavior": "wifi_on",
+      "text_sha256": "e7f19fb6cb4833b4ffa23239fc254bb9ee2a042fe40560ace30e5822a7911a3e",
+      "criterion_sha256": "802236a599da9083b3c3e811635b1a358eb2eea0d6671db898798010f71fd78e"
+    },
+    {
+      "index": 14,
+      "case_id": "network1161-dev-05",
+      "kind": "original_development_variant",
+      "group": "wifi_list",
+      "credit_behavior": "wifi_list",
+      "text_sha256": "f2346cffac7f35351d2df51b6f0c8c6bc03e1cbec20bb8d6858c0bdffd9de8bf",
+      "criterion_sha256": "71a8e161ed9adb4425dc243bb34ad40498cbf6739428b7bc0a691dadf5609e7e"
+    },
+    {
+      "index": 15,
+      "case_id": "network1161-dev-06",
+      "kind": "original_development_variant",
+      "group": "wifi_list",
+      "credit_behavior": "wifi_list",
+      "text_sha256": "8424c57468725856e1e9a53d558124f3d612913c20fb04ca8ecf22e82690736b",
+      "criterion_sha256": "71a8e161ed9adb4425dc243bb34ad40498cbf6739428b7bc0a691dadf5609e7e"
+    },
+    {
+      "index": 16,
+      "case_id": "network1161-dev-07",
+      "kind": "original_development_variant",
+      "group": "ip",
+      "credit_behavior": "ip",
+      "text_sha256": "7c162b98322cd23086031ddff640de30748541fce4997035fe4bf1b6249c0a31",
+      "criterion_sha256": "b9b299152d0756d17c3f6c7be35ae236f0ebe7a5579c0f3cad5d62d859da2c34"
+    },
+    {
+      "index": 17,
+      "case_id": "network1161-dev-08",
+      "kind": "original_development_variant",
+      "group": "ip",
+      "credit_behavior": "ip",
+      "text_sha256": "b3c7abbefa5cdcc04def306f55d71ab6fc279a47567b2499eda5e32a98748033",
+      "criterion_sha256": "b9b299152d0756d17c3f6c7be35ae236f0ebe7a5579c0f3cad5d62d859da2c34"
+    },
+    {
+      "index": 18,
+      "case_id": "network1161-dev-09",
+      "kind": "original_development_variant",
+      "group": "internet",
+      "credit_behavior": "internet",
+      "text_sha256": "79bdceab9792bc6abd8c84683da98a75b0169514fab8fd2e1a83a375929f91ba",
+      "criterion_sha256": "7a37fee4e47481122dde74fd2a393acf999428b1a648f79ea843e1494b01f115"
+    },
+    {
+      "index": 19,
+      "case_id": "network1161-dev-10",
+      "kind": "original_development_variant",
+      "group": "internet",
+      "credit_behavior": "internet",
+      "text_sha256": "40df14495e352d56982c0a1d923d8774d539a889c53ee1d3eb4cde29510f1a1c",
+      "criterion_sha256": "7a37fee4e47481122dde74fd2a393acf999428b1a648f79ea843e1494b01f115"
+    },
+    {
+      "index": 20,
+      "case_id": "network1161-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "aaf1240722c39ec84ffa6575c49cb56126813bd643840843e68da11201482c68",
+      "criterion_sha256": "5afc34b54a1615905e070a472c113889e36c668f69f988938348c1c922d712d0"
+    },
+    {
+      "index": 21,
+      "case_id": "network1161-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "47debeafb28ed6ff1cc3b173011e925a39771d6d9e8ca84f7aa4e9476bc1686d",
+      "criterion_sha256": "31cab9450e0688a27f04352fc4f5d82d1a391f18564310c5e7d5a703ac8f0a72"
+    },
+    {
+      "index": 22,
+      "case_id": "network1161-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "943b90fdf80cf23a4570e602dfeb500fe5d0912ab09acfdeb10c94786a1acfb4",
+      "criterion_sha256": "2ff0e5a9b845fce5957085d29f734a9f5f7ee510fd76de1c9d43e88715334109"
+    }
+  ]
+}

@@ -1,3 +1,15 @@
+# NETWORK1161 adjudicado — 2026-09-13T06:29:03+00:00
+
+**239/742 cubiertos, 503 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 4897271823f0a36c0323a07ffcc6510358b9b1d211685a94518a8a0e0c785cf7. Primeras altas 24 h >= 113 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4dd2d87e con BUILD1158.
+
+NETWORK1161 (23 objetos: 10 literales de red de sólo lectura, 10 variantes, 3 límites; lecturas permitidas por grupo: wifi.status, wifi.status/wifi.profile.list, network.ip.list, network.status; límites sin efecto): 23 ejecutados, 11 aprobados, 12 fallidos; +2 (H0647 «is the wifi on», H0732 «tengo internet»), ambos con lectura verificada (wifi.status connected=false; network.status online=true). Adjudicación cb97f2760d98f8c2c1d16525044424bb2f56e4376becb50cac8a2ba1fff7cdea. Red queda 3/21.
+
+Causas medidas: (a) sin dominio para wifi.status en «decime si el wifi está prendido»/«qué onda con el wifi» y sin regla de dominio para network.ip.list («cuál es mi ip», «what's my ip address») → veto de dominio → confirmación (con vocabulario del contrato: «IPs… que se repiten en dos observaciones consecutivas») o negación de alcance; dos pares de IP llegaron a componer una confirmación de efecto (runner detuvo, exit 15); (b) el compositor añade «no está en línea» a una lectura wifi connected=false (hecho no observado y falso: online=true), lo que dejó a H0127/H0433 aprobados sin crédito; (c) «redes guardadas» resuelve a wifi.status y el texto afirma «no tengo redes guardadas» sin listarlas. Sonda sin GPU (effect_intent.operation_domain_is_grounded) reproduce (a).
+
+Siguiente: reglas de dominio léxicas en effect_intent para wifi.status («decime si…/qué onda con el wifi») y network.ip.list («mi ip», «dirección ip», «ip address»), verificadas sobre los 742; luego remedir H0127/H0433/H0230/H0221/H0455/H0568/H0481 con pares nuevos. Reanudación: derivar desde build_network1161.py; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 48972718…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h.
+
+---
+
 # CONVERSATION1160 adjudicado — 2026-09-13T06:13:16+00:00
 
 **237/742 cubiertos, 505 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 680465244a700e9a56585bfa656dc0438889292271733deebdaa8535d3503483. Primeras altas 24 h >= 111 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6a717298 con BUILD1158.
