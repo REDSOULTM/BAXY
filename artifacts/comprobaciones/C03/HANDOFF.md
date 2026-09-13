@@ -1,3 +1,13 @@
+# NETWORK1167 adjudicado — 2026-09-13T06:50:31+00:00
+
+**242/742 cubiertos, 500 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA c6ef9a5e10b15c97101ccb479d0d9bc542a7e2780287a5a8c4b3946f52dd52cf. Primeras altas 24 h >= 116 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c2b4bdba (llm._payload_fact_defect: «invented_connectivity» para borradores de wifi.status que hablan de internet/online/offline; NETWORK1165/SOURCE.json|patch) con BUILD1158.
+
+NETWORK1167 (H0127, H0433 + 2 pares + 1 límite; wifi.status de sólo lectura): 5 ejecutados, 5 aprobados; +2 (H0127 «a qué wifi estoy conectado», H0433 «en que wifi estoy conectado?»). Adjudicación 6b47778facd7a36420cc74676ae65f543cc18eb24d2a26d4cc669baa49f34eb3. Validador demostrado: el par inglés dejó de añadir «offline». Red queda 6/21 (abiertos H0230 «decime si…» —ruta de aclaración temprana—, H0302 redes disponibles, H0455/H0568/H0481 IP PrivacySensitive con confirmación por diseño, efectos de bluetooth/wifi y elipsis).
+
+Sesión Fable 12–13 sep: 203 → 242 cubiertos, 12 reparaciones causales adoptadas y medidas (SOURCE/APP_SOURCE por campaña). Siguiente por masa (CONDICIONES): cierre de apps propias (20 abiertos; efecto real sobre ventanas del dueño: exige autorización explícita por app y una ventana propia abierta durante la tanda) y conocimiento residual sólo con causa nueva; TIME sigue parked por decisión del dueño. Reanudación: derivar desde build_network1167.py (lecturas) o build_conversation1160.py (sin efectos), binding BUILD1158; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 c6ef9a5e…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h (06:13/11:13/16:13/21:13/01:13).
+
+---
+
 # NETWORK1165 adjudicado — 2026-09-13T06:44:18+00:00
 
 **240/742 cubiertos, 502 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA c56ab86b7ac04a5677b3e47db654f08952235ab424e25195a29af50f57e6f1fe. Primeras altas 24 h >= 114 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4ae782fc con BUILD1158.

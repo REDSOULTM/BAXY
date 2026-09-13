@@ -1,6 +1,6 @@
 {
   "schema": "c03-network1165-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/llm.py",
   "patch": "artifacts/comprobaciones/C03/NETWORK1165/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "NETWORK1167: H0127, H0433 con dos pares de red conectada (ES/EN).",
-  "credits": 0
+  "measurement": "NETWORK1167: «Which wifi network is this computer connected to?» → «This computer is not connected to any wifi network.» (sin «offline»); créditos H0127, H0433.",
+  "credits": 2
 }
