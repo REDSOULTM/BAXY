@@ -1,0 +1,21 @@
+{
+  "schema": "c03-apps1231-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_OPEN, _APPLICATION_TRAILING_REQUEST, _indexed_authenticated_application_target, _application_open_request, _is_direct_request, _REQUEST_PREFIX, _CATALOG_NAME_ALIASES/_catalog_alias_key, resolve_application_catalog_app_id, confident_non_target_language)",
+  "patch": "artifacts/comprobaciones/C03/APPS1231/SOURCE.patch",
+  "commits": [
+    "ccf61b64241fc8810e9ac5f7bf9a1fb4b2648972",
+    "04645e826c2e0afb997faaabbd8dd4e19f03f89a"
+  ],
+  "cause_measured": "Sonda settrace sobre HEAD 317d5d9e: «me abrís la calculadora» (H0730), «avrí la calculadora» (H0165) y «son las tres abrí la calculadora» (H0724) no pasaban _is_direct_request (sin clítico «me», sin «abrís/avrí», sin marco de hora dicha); «abrime la calculadora dale» (H0348) y «Abre steam pls» perdían el destino por la cortesía final; «open the file explorer» (H0147) no tenía alias inglés en el índice del reconocedor aunque el resolutor de appId sí conocía «calculator». En la primera ejecución de la tanda (candidato ccf61b64, casos 0–1 preservados en *-attempt1-ccf61b64) «abre a calculadora» (H0497) volvió a rechazarse como portugués («repite el pedido en español o inglés»), igual que en APPS1029: la pista «abre a» del detector de idioma no distinguía el artículo portugués de una «l» perdida ante un nombre de aplicación conocido (revisión del dueño H0497).",
+  "change": "_OPEN admite abrís/avrí; el clítico «me» precede al verbo de apertura en las gramáticas ancladas y en la cabeza de pedido directo; cortesía final dale/porfa/porfi(s)/pls/plz; una hora dicha («son las tres») es marco de un pedido de apertura inmediata, nunca programación; alias bilingües de catálogo (calculator, file explorer/explorador) compartidos por el reconocedor y el resolutor de appId; la pista portuguesa «abre/minimiza + o/a» se abstiene cuando sigue un nombre de aplicación conocido («abre o bloco de notas» sigue siendo portugués).",
+  "offline_verification": "Baseline del reconocedor: sólo H0165 y H0724 ganan lectura (el baseline no lleva catálogo, así que los literales de catálogo se sondearon aparte con las 322 entradas reales de Get-StartApps); ningún literal perdido; «me abre la puerta», «avrí la puerta», «son las tres» solos siguen sin efecto. Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "APPS1231 (candidato 04645e82): los cinco literales de Calculadora y sus dos pares abrieron la Calculadora con app.open verificada (proceso nuevo) y final fiel; raíz cerró cada ventana lanzada. Fallos medidos con causa: Explorador ×4 (app.open verification_failed aunque la ventana apareció: la verificación busca un proceso nuevo y el Explorador abre la ventana en el proceso del shell), destinos ausentes ×5 (sin lectura app.installed: negación de capacidad o pregunta), compuesto ×3 (ambos efectos verificados, final sólo con la hora). 5 créditos.",
+  "credits": 5
+}

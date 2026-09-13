@@ -1,0 +1,194 @@
+commit ccf61b64241fc8810e9ac5f7bf9a1fb4b2648972
+
+C03: application openings accept the voseo clitic, «avrí», trailing «dale/porfa/pls», a stated clock time and bilingual catalog aliases (APPS1231 repair)
+
+«me abrís la calculadora», «abrime la calculadora dale», «avrí la calculadora»,
+«son las tres abrí la calculadora» and «open the file explorer» now resolve to
+app.open on the installed catalog entry; the calculator/notepad/file-explorer
+aliases are shared by the effect recogniser and the app-id resolver so the
+English form names the same installed application. Owner reviews H0724 (a
+clock time is context, never a schedule) and H0497 respected. Offline
+recogniser baseline: only H0165 and H0724 gain a reading; no literal lost.
+No tests (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index b678a915..ea82ca84 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -3728,7 +3728,8 @@ def build_application_catalog_index(
+ 
+ 
+ _APPLICATION_TRAILING_REQUEST = re.compile(
+-    r"\s*[,;:]?\s+(?:por favor|please|para mi|for me|ahora|now)$",
++    r"\s*[,;:]?\s+(?:por favor|please|para mi|for me|ahora|now|"
++    r"dale|porfa|porfi|porfis|pls|plz)$",
+     re.IGNORECASE,
+ )
+ 
+@@ -3789,6 +3790,29 @@ def _application_target_forms(
+     return tuple(forms)
+ 
+ 
++_CATALOG_NAME_ALIASES: tuple[tuple[frozenset[str], tuple[str, ...]], ...] = (
++    (frozenset({"calc", "calculator", "calculadora"}), ("calculadora", "calculator")),
++    (frozenset({"notepad", "bloc de notas", "app de notas", "coso de notas",
++                "editor de texto"}), ("bloc de notas", "notepad")),
++    (frozenset({"explorador", "explorador de archivos", "explorador de windows",
++                "file explorer", "files explorer", "explorer", "windows explorer"}),
++     ("explorador de archivos", "file explorer")),
++)
++
++
++def _catalog_alias_key(target_key: str, keys: frozenset[str]) -> str | None:
++    """Map a bilingual alias to the one catalog key it names, if installed."""
++
++    if target_key in keys:
++        return target_key
++    for aliases, catalog_names in _CATALOG_NAME_ALIASES:
++        if target_key in aliases:
++            for name in catalog_names:
++                if name in keys:
++                    return name
++    return None
++
++
+ def _indexed_authenticated_application_target(
+     text: str,
+     catalog: ApplicationCatalogIndex,
+@@ -3802,7 +3826,8 @@ def _indexed_authenticated_application_target(
+         r"(?:puedes|podrias|can you|could you|would you)\s+)?"
+     )
+     trailing = (
+-        r"(?:\s+(?:por favor|please|para mi|for me|ahora|now))?"
++        r"(?:\s*[,;:]?\s+(?:por favor|please|para mi|for me|ahora|now|"
++        r"dale|porfa|porfi|porfis|pls|plz))?"
+         r"[\s?!.]*$"
+     )
+     if installed_query:
+@@ -3821,7 +3846,7 @@ def _indexed_authenticated_application_target(
+     else:
+         patterns = (
+             (
+-                rf"^[¿?¡!\s]*{polite}{_OPEN}\b\s+"
++                rf"^[¿?¡!\s]*{polite}(?:me\s+)?{_OPEN}\b\s+"
+                 r"(?P<target>.+)$"
+             ),
+         )
+@@ -3833,8 +3858,8 @@ def _indexed_authenticated_application_target(
+         for target, offset in _application_target_forms(
+             request.group("target"),
+         ):
+-            target_key = _application_name_key(target)
+-            if target_key in catalog.keys:
++            target_key = _catalog_alias_key(_application_name_key(target), catalog.keys)
++            if target_key is not None:
+                 matches.append((request.start("target") + offset, target_key))
+     if not matches:
+         return None if installed_query else _repeated_application_target(text, catalog)
+@@ -3884,7 +3909,7 @@ def _application_open_request(text: str) -> re.Match[str] | None:
+         (
+             r"^[¿?¡!\s]*(?:(?:(?:por favor|please)\s*[,;:]?\s*|"
+             r"(?:puedes|podrias|can you|could you|would you)\s+)?"
+-            rf"{_OPEN}\b|"
++            rf"(?:me\s+)?{_OPEN}\b|"
+             r"(?P<desire>(?:(?:i|we)\s+(?:need|want)\s+(?:you\s+)?to|"
+             r"(?:i|we)\s+would\s+like\s+(?:you\s+)?to)\s+"
+             r"(?:open|start|launch)|"
+@@ -3926,7 +3951,7 @@ def resolve_application_catalog_app_id(
+             (form, offset)
+             for form, offset in forms
+             if raw_target[offset + len(form) :].strip(" ¿?¡!,:;.-")
+-            in {"", "por favor", "porfa", "please"}
++            in {"", "por favor", "porfa", "please", "dale", "pls"}
+         )
+     keys = tuple(
+         dict.fromkeys(
+@@ -3958,6 +3983,11 @@ def resolve_application_catalog_app_id(
+             return "windows.notepad"
+         if key in calculator_aliases and catalog_keys & {"calculadora", "calculator"}:
+             return "windows.calculator"
++        alias_key = _catalog_alias_key(key, frozenset(catalog_keys))
++        if alias_key is not None and alias_key != key:
++            matches = [name for name, candidate_key in catalog.entries if candidate_key == alias_key]
++            if len(matches) == 1:
++                return matches[0]
+         if key in settings_aliases:
+             matches = [
+                 name
+@@ -4876,8 +4906,16 @@ _EXPLICIT_NON_ACTION_FRAME = (
+ _REQUEST_PREFIX = (
+     # A delimited present-time frame leaves the following request intact.
+     # Future/past times and quoted content are not request wrappers.
+-    r"(?:(?:ahora(?:\s+mismo)?|en\s+este\s+momento|actualmente|"
+-    r"(?:right\s+)?now|at\s+(?:this|the)\s+moment|currently)\s*[,;:]\s*)?"
++    r"(?:(?:(?:ahora(?:\s+mismo)?|en\s+este\s+momento|actualmente|"
++    r"(?:right\s+)?now|at\s+(?:this|the)\s+moment|currently)\s*[,;:]\s*|"
++    # «son las tres abrí la calculadora»: a stated clock time frames an
++    # immediate opening (owner review H0724); it never becomes a schedule and
++    # only an opening verb may follow it.
++    r"(?:son|es)\s+las?\s+(?:\d{1,2}(?:[:.]\d{2})?|una|dos|tres|cuatro|cinco|"
++    r"seis|siete|ocho|nueve|diez|once|doce)"
++    r"(?:\s+(?:y|menos)\s+(?:cuarto|media|\d{1,2}))?"
++    r"(?:\s+de\s+la\s+(?:manana|tarde|noche))?\s*[,;:.]?\s+"
++    r"(?=(?:abre|abri|abris|abrime|avri|open)\b)))?"
+     # A language directive changes presentation, not the following speech act.
+     # Require its separator; quoted content and unclosed clauses stay literal.
+     r"(?:(?:(?:responde|contesta)\s+en|(?:answer|reply|respond)\s+in)\s+"
+@@ -7580,7 +7618,7 @@ _DEICTIC_DAY = (
+     r"\b(?:ese\s+dia|esa\s+fecha|el\s+mismo\s+dia|"
+     r"that\s+day|that\s+date|that\s+same\s+day)\b"
+ )
+-_OPEN = r"(?:abre|abrir|abri|abrime|open|launch|lanza|inicia|start|ejecuta|arranca|arrancame)"
++_OPEN = r"(?:abre|abrir|abri|abris|abrime|avri|open|launch|lanza|inicia|start|ejecuta|arranca|arrancame)"
+ _MEDIA_RESUME_VERB = r"(?:reanuda|reanudar|resume|segui|seguir|sigue|continua|continuar|continue)"
+ _LIST = r"(?:lista|listar|listame|enumera|enumerar|muestra|muestrame|mostrame|mostra|dime|show|list|enumerate)"
+ _READ = r"(?:lee|leer|leeme|leela|leelo|leerla|leerlo|read|dime|muestra)"
+@@ -8636,6 +8674,8 @@ def _is_direct_request(text: str) -> bool:
+         text,
+         rf"^[¿?¡!\s]*{_REQUEST_PREFIX}"
+         rf"(?:(?:primero|first)\s*[,;:]?[¿?¡!\s]+)?"
++        # «me abrís la calculadora»: the dative clitic precedes a voseo opening.
++        r"(?:me\s+(?=(?:abris|abres|abre|abri|abrime|avri)\b))?"
+         rf"{request_head}\b",
+     )
+ 
+commit 04645e826c2e0afb997faaabbd8dd4e19f03f89a
+
+C03: «abre a calculadora» is a Spanish opening, not Portuguese, when a known application follows the article (APPS1231 repair b)
+
+The confident Portuguese cue «abre/minimiza + o/a» abstains when the article is
+followed by an application name shared by both surfaces (owner review H0497:
+intent preserved, «a» for «la»). «abre o bloco de notas» still reads as
+Portuguese. Offline recogniser baseline unchanged. No tests (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index ea82ca84..c2b7181c 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -1981,10 +1981,19 @@ def confident_non_target_language(text: str) -> str | None:
+         # al recycling" is spanglish, not Portuguese -- so it only counts with a
+         # Portuguese article behind it. A shared Romance word never suffices.
+         r"\b(?:pra|cento|tela|loja|faz|mexer|tudo|aberto|regista|fiz|hoje)\b|"
+-        r"\bbota\s+[oa]\b|\b(?:abre|minimiza)\s+[oa]\b|\bconecta\s+no\b|"
++        r"\bbota\s+[oa]\b|\bconecta\s+no\b|"
+         r"\bfecha\s+tudo\b|\bde\s+novo\b|\barea\s+de\s+trabalho\b",
+     ):
+         return "pt"
++    # «abre a calculadora» (owner review H0497): a Spanish request with a
++    # dropped «l», not Portuguese, when the article is followed by a known
++    # application name shared by both surfaces. «abre o bloco de notas» still
++    # reads as Portuguese because ``bloco`` is not in that vocabulary.
++    if _has(folded, r"\b(?:abre|minimiza)\s+[oa]\b") and not _has(
++        folded,
++        rf"\b(?:abre|minimiza)\s+[oa]\s+{_KNOWN_APPLICATION}\b",
++    ):
++        return "pt"
+     if _has(
+         folded,
+         r"\b(?:augmente|fenetre|affiche|autres)\b|\bpour\s+cent\b|"

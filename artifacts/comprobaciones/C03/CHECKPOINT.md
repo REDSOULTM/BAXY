@@ -1,3 +1,25 @@
+## APPS1231 — estado vigente 2026-09-13T18:19:05.079095+00:00
+
+Parcial: 9 aprobados, 12 fallidos, 0 sin ejecutar; 5 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 310/742 | 432 | 0 | >=184 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 179 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; APPS1231 añade 5. No se cuentan revalidaciones.
+
+Siguiente acción: APPS1231 completa: 21 ejecutados, 9 aprobados, 12 fallidos, 5 créditos (H0497 «abre a calculadora», H0730 «me abrís la calculadora», H0348 «abrime la calculadora dale», H0165 «avrí la calculadora», H0724 «son las tres abrí la calculadora») con sus dos pares. Abrir aplicaciones queda 34/54. Fallos con causa medida para la próxima tanda: Explorador ×4 (verificación de app.open en el proceso del shell: proveedor), destinos ausentes ×5 (sin lectura app.installed para un nombre de software ausente: lector), compuesto ×3 (final omite la apertura: composición). Fuera y documentado: H0461 (límite sin marca), Steam ×3 y erratas de Steam ×4, Mortal Kombat ×2, H0249, idiomas ×3.
+
+Evidencia: `artifacts/comprobaciones/C03/APPS1231/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 367.77 s acumulados; pico GPU 3497.56 MiB; pico RAM 2330.26 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 21; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque APPS1231 precedente. -->
+
 ## ARRANGE1229 — estado vigente 2026-09-13T17:51:14.435188+00:00
 
 Parcial: 9 aprobados, 0 fallidos, 0 sin ejecutar; 3 créditos.
