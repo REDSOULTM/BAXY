@@ -1706,12 +1706,15 @@ internal static partial class NaturalMemoryRequestParser
     private static partial Regex FilesystemOrDocumentPattern();
 
     [GeneratedRegex(
-        "^(?:(?:recuerda|acordate|guarda|remember)(?:[ ]+que|[ ]+that)?)[ ]+(?:mi|my)[ ]+(?:color[ ]+favorito|favorite[ ]+color)[ ]+(?:es|is)[ ]+(?:el[ ]+)?(?<value>[\\p{L}][\\p{L} -]{0,39})$",
+        "^(?:(?:recuerda|record[aá]|acordate|acuérdate|guarda|guard[aá]|remember)(?:[ ]+que|[ ]+that)?)[ ]+(?:mi|my)[ ]+(?:color[ ]+favorito|favorite[ ]+color)[ ]+(?:es|is)[ ]+(?:el[ ]+)?(?<value>[\\p{L}][\\p{L} -]{0,39})$",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex FavoriteColorSavePattern();
 
     [GeneratedRegex(
-        "^(?:recuerda(?:[ ]+que)?[ ]+me[ ]+llamo|remember[ ]+(?:that[ ]+)?my[ ]+name[ ]+is|remember[ ]+me[ ]+as)[ ]+(?<value>[\\p{L}][\\p{L}'’-]{0,79})$",
+        // «recordá que me llamo …» (voseo), «acordate que me llamo …» and «quiero que
+        // me recuerdes como …» ask to persist the name as plainly as «recuerda que
+        // me llamo …» (MEMORY1245: H0149 read as a reminder without a time).
+        "^(?:(?:recuerda|record[aá]|acordate|acuérdate)(?:[ ]+que)?[ ]+me[ ]+llamo|remember[ ]+(?:that[ ]+)?my[ ]+name[ ]+is|remember[ ]+me[ ]+as|(?:quiero[ ]+que[ ]+)?me[ ]+recuerdes[ ]+como)[ ]+(?<value>[\\p{L}][\\p{L}'’-]{0,79})$",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex NameSavePattern();
 
