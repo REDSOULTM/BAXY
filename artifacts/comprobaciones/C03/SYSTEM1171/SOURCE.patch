@@ -1,0 +1,40 @@
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 145c5fa0..35ec4f4f 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -3605,7 +3605,7 @@ def _explicit_system_status_scope(evidence: str) -> dict[str, object] | None:
+         usage = effect_intent._has(
+             folded,
+             r"\b(?:uso|usa|usan|usando|usage|ocupad[oa]|llen[oa]|busy|"
+-            r"tan\s+\w+)\b",
++            r"in\s+use|utili[sz]ation|load|tan\s+\w+)\b",
+         )
+         identity = effect_intent._has(
+             folded,
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 2b3ef617..a5885a8f 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -9836,6 +9836,22 @@ class LlmRuntime:
+             )
+             message_prompt += scope
+             cpu_prompt += scope
++        if (
++            situation.get("operation") == "system.status"
++            and situation.get("verified") is True
++            and situation.get("succeeded") is True
++            and isinstance(_merged_observed(situation).get("memory"), dict)
++        ):
++            # The projected keys are a contract; the model read total_usable as
++            # «disponible» and published the total under the free label
++            # (SYSTEM1169/002, SYSTEM1171/001). Say what each key means once.
++            scope = (
++                " Memory and disk keys: total_usable is the total, available is"
++                " the free amount, used is in use, installed_capacity is the"
++                " installed hardware. Never call a total available or free."
++            )
++            message_prompt += scope
++            cpu_prompt += scope
+         if (
+             situation.get("operation") == "window.resolve"
+             and situation.get("verified") is True

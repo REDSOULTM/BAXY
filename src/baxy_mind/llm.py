@@ -9837,6 +9837,22 @@ class LlmRuntime:
             message_prompt += scope
             cpu_prompt += scope
         if (
+            situation.get("operation") == "system.status"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and isinstance(_merged_observed(situation).get("memory"), dict)
+        ):
+            # The projected keys are a contract; the model read total_usable as
+            # «disponible» and published the total under the free label
+            # (SYSTEM1169/002, SYSTEM1171/001). Say what each key means once.
+            scope = (
+                " Memory and disk keys: total_usable is the total, available is"
+                " the free amount, used is in use, installed_capacity is the"
+                " installed hardware. Never call a total available or free."
+            )
+            message_prompt += scope
+            cpu_prompt += scope
+        if (
             situation.get("operation") == "window.resolve"
             and situation.get("verified") is True
             and situation.get("succeeded") is True

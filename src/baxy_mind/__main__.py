@@ -3605,7 +3605,7 @@ def _explicit_system_status_scope(evidence: str) -> dict[str, object] | None:
         usage = effect_intent._has(
             folded,
             r"\b(?:uso|usa|usan|usando|usage|ocupad[oa]|llen[oa]|busy|"
-            r"tan\s+\w+)\b",
+            r"in\s+use|utili[sz]ation|load|tan\s+\w+)\b",
         )
         identity = effect_intent._has(
             folded,
