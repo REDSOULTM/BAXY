@@ -3942,6 +3942,12 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         level = str(seen["level"]).strip()
         if level and not re.search(rf"(?<!\d){re.escape(level)}(?!\d)", folded):
             return "missing_name"
+    # MEMORY1251: «red» was confirmed as «rojo» and «my favorite drink is tea»
+    # as «mi favorito es el té». What the memory keeps is quoted, not translated.
+    remembered = seen.get("remembered") if isinstance(seen, dict) else None
+    if isinstance(remembered, str) and remembered.strip():
+        if _reading_fold(remembered.strip()) not in folded:
+            return "missing_remembered"
     clock = payload.get("clock")
     if isinstance(clock, str) and clock:
         clock_defect = _clock_fact_defect(text, clock)
@@ -10157,6 +10163,22 @@ class LlmRuntime:
                 instruct("\n" + refuse_line + "Do not say you tried and failed.")
             elif response_language == "en":
                 instruct("\nEnglish only. Name the failure cause in prose.")
+            if cause == "memory_disabled":
+                # MEMORY1251 H0452: every draft restated the datum as already
+                # remembered («Sí, recuerdo que tu color favorito es el azul»)
+                # and called the save an operation, a forbidden term, until the
+                # retries ran out. Nothing was saved: the memory is off.
+                instruct(
+                    "\nThe private local memory of this PC is switched off, so "
+                    "nothing was saved. Say only, in one sentence, that you could "
+                    "not save it because that memory is off. Do not say that you "
+                    "remember or recall it."
+                    if response_language == "en"
+                    else "\nLa memoria local privada de este PC está apagada, así que "
+                    "no se guardó nada. Di solo, en una frase, que no pudiste "
+                    "guardarlo porque esa memoria está apagada. No digas que lo "
+                    "recuerdas ni que te acuerdas."
+                )
             if (
                 situation.get("operationAttempted") is False
                 and cause in {
@@ -10791,6 +10813,10 @@ class LlmRuntime:
                     or "level" in _merged_observed(situation)
                 )
                 else "Include names and numbers from seen."
+            ),
+            "missing_remembered": (
+                "Quote exactly what you will remember, unchanged and untranslated: "
+                + str(_merged_observed(situation).get("remembered") or "")
             ),
             "missing_failure": (
                 "Say the request is outside what you do on this PC. "

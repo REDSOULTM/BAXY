@@ -958,7 +958,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         durableBeforeSend: true,
                         cancellationToken,
                         route.PublicObjective,
-                        route.Source);
+                        route.Source,
+                        route.Text);
                     return;
                 case MemoryParseOutcome.ConfirmSensitiveSave when memory.Operation is not null:
                     await _memoryTurns.ExecuteRouteAsync(
@@ -967,7 +968,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                         durableBeforeSend: false,
                         cancellationToken,
                         route.PublicObjective,
-                        route.Source);
+                        route.Source,
+                        route.Text);
                     return;
                 case MemoryParseOutcome.ConfirmSensitiveSave:
                     AddMessage(
