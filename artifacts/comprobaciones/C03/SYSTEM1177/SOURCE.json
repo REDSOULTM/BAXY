@@ -1,0 +1,17 @@
+{
+  "schema": "c03-system1177-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py",
+  "patch": "artifacts/comprobaciones/C03/SYSTEM1177/SOURCE.patch",
+  "cause_measured": "SYSTEM1175 índices 1 («Y espacio? cuanto espacio tengo») y 2 («y disco?»): el mind propuso system.status con scope válido (disk) y el veto de dominio lo retiró porque la regla curada de system.status exige _is_direct_request, que no reconoce una elipsis nominal; domain_confirmation publicó «¿Quieres que mida el estado del disco?». El reloj ya acepta la misma forma («y la fecha?», _nominal_datetime_query; H0301 acreditado en CLOCK1156).",
+  "change": "La regla de dominio de system.status acepta también una elipsis nominal: opcional «y/and», opcional artículo, una palabra de alcance (disco/disk/espacio/space/batería/battery/ram/memoria/memory/cpu/gpu) y, opcionalmente, la pregunta «cuánto espacio/ram tengo/queda/hay» sobre el mismo alcance. Puerta unilateral: sigue exigiendo _system_status_domain. Sin frases de salida; ninguna capa nueva.",
+  "offline_verification": "Sonda: dominio True para «y disco?», «Y espacio? cuanto espacio tengo», «¿Y el disco?», «And the disk?», «y la batería?»; False para «y el bluetooth?» (no es alcance de system.status) y para frases con otros verbos. scratchpad/c03-recogniser-baseline.py compare sin regresiones.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "SYSTEM1181: H0219, H0607 con dos pares elípticos.",
+  "credits": 0
+}

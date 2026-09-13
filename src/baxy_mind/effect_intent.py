@@ -1607,7 +1607,19 @@ def _curated_domain_is_grounded(
         )
     if operation == "system.status":
         request = _strip_request_envelope(folded)
-        return _is_direct_request(request) and _system_status_domain(request)
+        # «y disco?», «Y espacio? cuánto espacio tengo»: a nominal machine
+        # scope with no other verb is the same speech act as «y la fecha?»
+        # for the clock (SYSTEM1175/001, /002). Only a scope word, optionally
+        # preceded by y/and and an article, and optionally followed by the
+        # how-much question on the same scope.
+        nominal_scope = re.fullmatch(
+            r"(?:(?:y|and)\s+)?(?:(?:el|la|mi|the|my)\s+)?"
+            r"(?:disco|disk|espacio|space|bateria|battery|ram|memoria|memory|cpu|gpu)"
+            r"[\s?!.]*(?:(?:cuanto|cuanta|how\s+much)\s+(?:espacio|space|ram|memoria|memory)"
+            r"\s+(?:tengo|queda|hay|libre|do\s+i\s+have|is\s+left)[\s?!.]*)?",
+            request,
+        ) is not None
+        return (nominal_scope or _is_direct_request(request)) and _system_status_domain(request)
     if operation in {"system.settings.adjust", "system.settings.status"}:
         return _has(
             folded,
