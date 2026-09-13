@@ -1,3 +1,25 @@
+## CLOSE1219 — estado vigente 2026-09-13T16:15:32.374759+00:00
+
+Parcial: 6 aprobados, 8 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 291/742 | 451 | 0 | >=165 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 165 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; CLOSE1219 no añade ninguna. No se cuentan revalidaciones.
+
+Siguiente acción: CLOSE1219 completa: 14 ejecutados, 6 aprobados (H0095, H0407, H0427, Paint, Notepad EN prohibición, límite de cita), 8 fallidos, 0 créditos (ningún literal reunió dos pares). Demostrado en el producto: el turno revisado cierra la ventana propia correcta con aprobación raíz (Bloc de notas, Paint). Causas de los fallos, reproducidas y reparadas para CLOSE1221 (BUILD1221): Chrome sin identidad ejecutable (AppID sin ruta; el catálogo ahora lee el destino del Shell de toda entrada clásica); Calculadora alojada por ApplicationFrameHost (el inventario fuerte añade los marcos cuyo proceso alojado tiene el AUMID exacto); final en español tras un pedido inglés (la aprobación se envía en el idioma de la petición). Quedan del modelo: la variante «No cierres Chrome, lo estoy usando.» desviada a conversación y el límite futuro que negó la capacidad de cerrar. Siguiente: CLOSE1221 con los mismos 14 objetos.
+
+Evidencia: `artifacts/comprobaciones/C03/CLOSE1219/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 266.83 s acumulados; pico GPU 3497.56 MiB; pico RAM 2009.06 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 14; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque CLOSE1219 precedente. -->
+
 ## CLOSE1217 — estado vigente 2026-09-13T15:49:43+00:00
 
 Parcial: 0 aprobados, 1 fallidos, 13 sin ejecutar; 0 créditos.

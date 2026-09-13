@@ -1,6 +1,6 @@
 {
   "schema": "c03-close1219-app-source-adoption-v1",
-  "status": "adopted_unmeasured",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/Baxy.App/PlannerExecutionSupport.cs (PlanObservationProjector.OperationSafeFields)",
   "patch": "artifacts/comprobaciones/C03/CLOSE1219/APP_SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": true,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": null,
-  "credits": null
+  "measurement": "CLOSE1219: con los campos de página proyectados, la captura del turno revisado funciona: Bloc de notas (000) y Paint (006) cerrados con aprobación raíz y verificación de ausencia; Notepad EN (007) cerrado con final en idioma equivocado. 0 créditos por pares.",
+  "credits": 0
 }

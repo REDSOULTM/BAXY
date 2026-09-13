@@ -1,3 +1,13 @@
+# CLOSE1219 adjudicado — 2026-09-13T16:15:32.374759+00:00
+
+**291/742 cubiertos, 451 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 85936be9fd0ee3787fd8a2b6542382e9ead35676205e7b882db4b8b2ea7c0810. Primeras altas 24 h >= 165 (+0).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c7dc80d5 con BUILD1219 (campos de página en la proyección de observaciones, CLOSE1219/APP_SOURCE.json|patch).
+
+CLOSE1219 (14 objetos: 4 literales + 4 variantes de cierre revisado sobre ventanas propias, 2 prohibiciones + 2 variantes, 2 límites): 14 ejecutados, 6 aprobados, 8 fallidos; +0 (ningún literal reunió dos pares). Adjudicación d20860d0970ffb3bbabf770777c655950dfa9819b247f1f50c81a2516c21d4b3. **Primer cierre de aplicación completo del producto**: «cierra el bloc de notas» y «Cerrá Paint, por favor.» resolvieron la ventana propia (1/1), el turno revisado expuso la propuesta, raíz la aprobó tras nueve comprobaciones sobre la ventana propia y app.close cerró y verificó la ausencia (18–19 s). Fallos con causa: Chrome ×3 (AppID «Chrome» sin ruta de destino en el catálogo → application_window_identity_unavailable), Calculadora ×2 (app empaquetada alojada por ApplicationFrameHost → window_not_found), Notepad EN (efecto correcto, final en español porque la aprobación se envía como «confirmar»), «No cierres Chrome, lo estoy usando.» (desviación conversacional sin reconocer la prohibición), límite futuro (negó la capacidad de cerrar). Reparaciones de App/proveedor para CLOSE1221 en CLOSE1221/APP_SOURCE.json (BUILD1221): destino del Shell para toda entrada clásica, marcos de ApplicationFrameHost con AUMID exacto, aprobación en el idioma de la petición. Cerrar apps queda 0/20.
+
+Siguiente: CLOSE1221 (mismos 14 objetos, BUILD1221). Reanudación: derivar de build_close1219.py con BUILD1221; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 85936be9fd0ee3787fd8a2b6542382e9ead35676205e7b882db4b8b2ea7c0810`. Guion raíz por caso: close_case.sh <campaña> <índice> <notepad|calc|paint|chrome|none> (ventana propia por AUMID/perfil temporal, revisión raíz approve_review.py, postcomprobación y limpieza propia).
+
+---
+
 # CLOSE1217 adjudicado (parcial) — 2026-09-13T15:49:43+00:00
 
 **291/742 cubiertos, 451 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA b2d5642c5ba3fc9e31db71d83805a35cdfbba8cc4c0f2e6905aaa216423bcce3. Primeras altas 24 h >= 165 (+0).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 2aa9a177 con BUILD1217 (traza de la captura de confirmación, CLOSE1217/APP_SOURCE.json|patch).
