@@ -1,0 +1,13 @@
+{
+  "schema": "c03-web1271-app-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (LooksLikeFailure: irrelevant/no useful results/sin resultados)",
+  "patch": "artifacts/comprobaciones/C03/WEB1271/APP_SOURCE.patch",
+  "commit": "f5c1241d79fff88e48b0d0a6dbde3b36f026e6ed",
+  "build": "BUILD1271 (C03-repairs1271-build/BUILD_READY.json)",
+  "cause_measured": "WEB1269: la mente publicó «The web search results were irrelevant…» pero la App lo rechazó como reversed_result hasta agotar reintentos.",
+  "change": "Una búsqueda que no halló nada útil cuenta como afirmación de fallo en el shell.",
+  "measurement": "WEB1271: 8 ejecutados, 8 aprobados, 0 fallidos; 2 créditos. Los seis pedidos de noticias ejecutaron web.search verificada y respondieron con los títulos o fragmentos devueltos, en el idioma del pedido; los dos límites no buscaron. Créditos H0033 y H0374 con las variantes «noticias de deportes de hoy», «últimas noticias», «breaking news» y «noticias de Chile». Información web actual 2/17: el clima de otras ciudades (×10) queda condicionado por el motor (Bing RSS responde con el tiempo de la ubicación del equipo) y el resto (Spider-Man, «qué pasó hoy en el mundo», «va a llover mañana», «mostrame el clima», «buscá el clima en google») por consulta o relevancia.",
+  "credits": 2
+}

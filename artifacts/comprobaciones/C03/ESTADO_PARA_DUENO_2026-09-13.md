@@ -1,3 +1,25 @@
+## WEB1271 — estado vigente 2026-09-13T22:46:31.726630+00:00
+
+Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 348/742 | 394 | 0 | >=222 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 220 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WEB1271 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: WEB1271: 8 ejecutados, 8 aprobados, 0 fallidos, 2 créditos (índices [0, 1]). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/WEB1271/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 138.34 s acumulados; pico GPU 3497.56 MiB; pico RAM 1640.08 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WEB1271 precedente. -->
+
 ## WEB1269 — estado vigente 2026-09-13T22:40:03.421123+00:00
 
 Parcial: 5 aprobados, 7 fallidos, 0 sin ejecutar; 0 créditos.

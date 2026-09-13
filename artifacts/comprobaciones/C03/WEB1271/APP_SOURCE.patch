@@ -1,0 +1,30 @@
+commit f5c1241d79fff88e48b0d0a6dbde3b36f026e6ed
+
+C03: a search that found nothing useful is a failure statement in the shell (WEB1271 repair)
+
+WEB1269: the mind published «The web search results were irrelevant to the
+weather in Santiago.» but UserMessagePolicy.LooksLikeFailure did not
+recognise it and the reply was rejected as reversed_result until the
+retries ran out.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/UserMessagePolicy.cs b/src/Baxy.App/UserMessagePolicy.cs
+index 5563b906..fc32ad5d 100644
+--- a/src/Baxy.App/UserMessagePolicy.cs
++++ b/src/Baxy.App/UserMessagePolicy.cs
+@@ -1692,7 +1692,12 @@ internal static class UserMessagePolicy
+         || Regex.IsMatch(normalized, @"\b(?:cannot|can't|could\s+not|couldn't)\b",
+             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
+         || normalized.Contains("wasn't able", StringComparison.Ordinal)
+-        || normalized.Contains("was not able", StringComparison.Ordinal);
++        || normalized.Contains("was not able", StringComparison.Ordinal)
++        // WEB1269: a search that found nothing useful is a failure the person
++        // must hear as such («the results were irrelevant», «sin resultados»).
++        || Regex.IsMatch(normalized,
++            @"\b(?:irrelevant|irrelevantes?|no\s+useful\s+results|nothing\s+useful|no\s+results|sin\s+resultados|no\s+(?:hubo|hay)\s+resultados)\b",
++            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+     }
+ 
+     private static bool AttributesBaxyActionToUser(string source, string result)

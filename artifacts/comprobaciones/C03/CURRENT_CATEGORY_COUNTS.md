@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación WEB1269
+# Categorías actuales — adjudicación WEB1271
 
-346/742 cubiertos; 396 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 220 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 8be50c01ed339dd69995cc324c280e274b93a04a84f50edbddb3e679da023f4c.
+348/742 cubiertos; 394 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 222 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 1e3347ded275e2b6ccbf25b7130d751e0c05d4972478ac414f1fd0fc453861bc.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -20,7 +20,7 @@
 | Pantalla, captura e interpretación visual | 19 | 0 | 19 |
 | Conocimiento, razonamiento y creatividad verbal | 37 | 22 | 15 |
 | Brillo y pantalla | 17 | 0 | 17 |
-| Información web actual | 17 | 0 | 17 |
+| Información web actual | 17 | 2 | 15 |
 | Estado de hardware y sistema | 40 | 29 | 11 |
 | Organizar ventanas y pestañas | 13 | 3 | 10 |
 | Conversación social y ayuda general | 31 | 25 | 6 |

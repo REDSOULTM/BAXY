@@ -1,3 +1,11 @@
+# WEB1271 adjudicado — 2026-09-13T22:46:31.726630+00:00
+
+**348/742 cubiertos, 394 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 1e3347ded275e2b6ccbf25b7130d751e0c05d4972478ac414f1fd0fc453861bc. Primeras altas 24 h >= 222 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f5c1241d con BUILD1271 (App: «irrelevant/no results» como afirmación de fallo; WEB1271/APP_SOURCE.json|APP_SOURCE.patch).
+
+WEB1271 («Información web actual», noticias: 2 literales, 4 variantes, 2 límites; turnos ordinarios con web.search): 8 ejecutados, 8 aprobados, 0 fallidos, 2 créditos. Adjudicación 44b147f7714f76cc907e72d19d4fd4c3c683ca210136e2b0af4f1277f17be9e8. Los seis pedidos de noticias ejecutaron web.search verificada y respondieron con los títulos o fragmentos devueltos, en el idioma del pedido; los dos límites no buscaron. Créditos H0033 y H0374 con las variantes «noticias de deportes de hoy», «últimas noticias», «breaking news» y «noticias de Chile». Información web actual 2/17: el clima de otras ciudades (×10) queda condicionado por el motor (Bing RSS responde con el tiempo de la ubicación del equipo) y el resto (Spider-Man, «qué pasó hoy en el mundo», «va a llover mañana», «mostrame el clima», «buscá el clima en google») por consulta o relevancia.
+
+---
+
 # WEB1269 adjudicado — 2026-09-13T22:40:03.421123+00:00
 
 **346/742 cubiertos, 396 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 8be50c01ed339dd69995cc324c280e274b93a04a84f50edbddb3e679da023f4c. Primeras altas 24 h >= 220 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b7aa38f2 con BUILD1263 (sin fuente nueva; WEB1269/SOURCE.json).
