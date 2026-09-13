@@ -1,3 +1,13 @@
+# KNOWLEDGE1179 adjudicado — 2026-09-13T09:49:10+00:00
+
+**245/742 cubiertos, 497 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA c3a5b1f475f771af51ec000912aea270e60934ae89093f5d07bf022a6b6617dd. Primeras altas 24 h >= 119 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e42f10ac con BUILD1158.
+
+KNOWLEDGE1179 (H0703, H0297 + 3 pares de contenido libre + 1 límite; sin efectos): 6 ejecutados, 2 aprobados, 4 fallidos, 0 créditos. Adjudicación e2ebe6f0ff742feffd9259241c6a6470232b0ae877c386a985d64c84ddb124fc. «estoy aburrido» ya no termina en incomprensión (pregunta de recuperación publicada) pero sigue sin propuesta; dos de tres pares inventaron hechos («preguntarte por qué el cielo es azul agudiza el cerebro», «comunicación por contacto de los pulpos»). Conducta del modelo con la política de conocimiento actual: no hay causa léxica; no remedir contenido libre sin causa nueva.
+
+Frentes restantes sin condición del dueño se agotan: identidad (3 abiertos, modelo), conversación (6: memes/ruido/nombre ajeno/acuse→pregunta), conocimiento (15: hechos inventados, cuentas atrás), reloj («tiempo» polisémico, cuentas atrás), red (IP PrivacySensitive, «decime si…», redes guardadas), estado (elipsis, etiqueta de memoria). Las categorías de mayor masa esperan al dueño (CONDICIONES_POR_CATEGORIA_2026-09-13.md): cierre de apps propias (autorización por app), agenda (TIME1139), mensajería/música/web/archivos/instalación/vídeo (condiciones registradas). Reanudación: derivar desde build_knowledge1179.py (sin efectos) o build_system1177.py (lecturas); `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 c3a5b1f4…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h.
+
+---
+
 # SYSTEM1177 adjudicado — 2026-09-13T07:30:51+00:00
 
 **245/742 cubiertos, 497 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 4ebaca73125594dd358374ad997097df42f9388c2901543c28b0f42a6ed86437. Primeras altas 24 h >= 119 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 46447de6 (effect_intent: «tirame» como cabeza de pedido; SYSTEM1175/SOURCE.json|patch) con BUILD1158.
