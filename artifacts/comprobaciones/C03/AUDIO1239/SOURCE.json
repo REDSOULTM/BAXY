@@ -1,0 +1,18 @@
+{
+  "schema": "c03-audio1239-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_VOLUME_UP_VERB, _SET_VOLUME_VERB, _review_audio_effects, _REQUEST_PREFIX, _is_direct_request); src/baxy_mind/__main__.py (audio.mute argument surface)",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1239/SOURCE.patch",
+  "commit": "c021ef45e7f3b724ed38a9203add940cf775ca4f",
+  "cause_measured": "Sonda offline sobre HEAD 1d9fbfc9 con el catálogo real: de 24 abiertos de Audio sólo «subí el volumen a la mitad» llegaba al reconocedor de efectos. Los pedidos relativos sin cantidad («subí el volumen», «baja el volumen», «subí un poco/un toque el volumen», «turn up the volume», la repetición ×4 de H0357) ya tenían lectura determinista de aclaración (preguntar la cantidad, regla del dueño en la revisión de H0027, medida en AUDIO1020 para «sube el volumen») pero nunca se remidieron; «suvi el volumen» y «es tarde bajá el volumen» no alcanzaban esa lectura (verbo y marco); «baja el volumen a 30» y «poné el volumen al 30» caían fuera (la rama absoluta exigía verbo de ajuste, sin «poné»); «ponelo en mute» no era cabeza de pedido ni dominio de silencio. Un primer diseño de esta tanda (paso por convención para el relativo sin cantidad) se descartó antes de sellar porque contradecía la regla del dueño.",
+  "change": "«suví» como verbo de subida; «poné/ponelo/ponlo» como verbos de ajuste; un verbo de dirección seguido de «a/al N» fija el nivel absoluto; «ponelo/dejalo en mute» es el silencio global (dominio y cabeza; superficie de argumentos en __main__); «(ya) es tarde/temprano/de noche» enmarca un pedido de volumen; ponelo/ponlo/dejalo/dejala son cabezas de pedido directo. La aclaración de cantidad no cambia.",
+  "offline_verification": "Baseline del reconocedor: siete literales ganan lectura (H0086, H0189, H0254, H0338, H0465, H0690, H0725), ninguno perdido; «ponelo en la mesa», «dejalo ahí», «es tarde» solos, «pone el libro ahí» sin efecto; los ocho relativos siguen en ClarificationIntent(audio.volume.adjust, amount). Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "AUDIO1239: 25/25 ejecutados con el volumen maestro fijado en 40 por raíz y devuelto al del dueño (100) tras cada caso; 23 aprobados. Ocho relativos y sus pares preguntaron la cantidad conservando la dirección; «baja el volumen a 30» → nivel 30 medido; «ponelo en mute» → silencio medido; prohibiciones reconocidas. Fallos: «poné el volumen al 30» (nivel 30 medido, final que repite el imperativo: eco del compositor) y un límite con atajo inventado. 12 créditos.",
+  "credits": 12
+}

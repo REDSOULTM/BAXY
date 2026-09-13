@@ -1,3 +1,25 @@
+## AUDIO1239 — estado vigente 2026-09-13T19:10:57.722208+00:00
+
+Parcial: 23 aprobados, 2 fallidos, 0 sin ejecutar; 12 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 327/742 | 415 | 0 | >=201 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 189 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; AUDIO1239 añade 12. No se cuentan revalidaciones.
+
+Siguiente acción: AUDIO1239 completa: 25 ejecutados, 23 aprobados, 2 fallidos (H0465 eco del imperativo con efecto verificado; límite con atajo inventado), 12 créditos (H0436, H0308, H0028, H0488, H0695, H0357, H0294, H0058 preguntan la cantidad conservando la dirección —regla del dueño H0027—; H0254 nivel absoluto; H0189 mute con pronombre; H0507, H0519 prohibiciones) con sus dos pares. Audio queda 39/51. Quedan con causa: H0465 (eco del compositor, efecto verificado), H0067/H0530 compuestos (fecha/brillo), H0652 volumen por aplicación (no soportado), H0075 «bajá la música» (ambiguo con descargar), H0439/H0713 pronombre sin contexto (revisión del dueño), idiomas ×4 (sin marca). Siguiente por masa: otra categoría.
+
+Evidencia: `artifacts/comprobaciones/C03/AUDIO1239/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 383.12 s acumulados; pico GPU 3497.56 MiB; pico RAM 1650.71 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 25; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque AUDIO1239 precedente. -->
+
 ## APPS1237 — estado vigente 2026-09-13T18:44:36.087650+00:00
 
 Parcial: 11 aprobados, 0 fallidos, 0 sin ejecutar; 5 créditos.

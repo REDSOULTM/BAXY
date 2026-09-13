@@ -41,3 +41,7 @@ Abrir aplicaciones pasa de 29/54 a 34/54: la guardia léxica localizada con sond
 ## Actualización 2026-09-13 (APPS1237)
 
 Abrir aplicaciones pasa de 34/54 a 39/54: las dos causas medidas en APPS1231 se repararon y se remidieron (Explorador: identidad de la entrada del shell por proceso y ventanas CabinetWClass, BUILD1237; destinos ausentes: lectura app.installed sobre el nombre de software conocido). Quedan 15: compuesto H0183 (composición de respuesta a efectos múltiples), Steam ×3 y erratas ×4 (lanzar el cliente del dueño o aclarar con contexto), Mortal Kombat ×2 (juego ausente vía game.launch), H0249 (indeterminado), H0461 (límite sin marca), idiomas ×3 (sin marca).
+
+## Actualización 2026-09-13 (AUDIO1239)
+
+Audio y volumen pasa de 27/51 a 39/51. La condición «reconocimiento de dirección/alcance sin cantidad requiere gramática nueva» (AUDIO1137) no aplicaba a los ocho relativos abiertos: la lectura determinista de aclaración ya existía y la regla del dueño (H0027) es preguntar la cantidad, así que sólo faltaba remedirlos y cubrir «suví», «es tarde …», «poné», el nivel absoluto con verbo de dirección y «ponelo en mute». Quedan 12: H0465 (eco del compositor con efecto verificado), compuestos ×2 (H0067 fecha, H0530 brillo sin proveedor), H0652 volumen por aplicación, H0075 «bajá la música» (ambiguo con descargar), H0439/H0713 pronombre sin contexto, idiomas ×4 sin marca.

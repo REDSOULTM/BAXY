@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación APPS1237
+# Categorías actuales — adjudicación AUDIO1239
 
-315/742 cubiertos; 427 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 189 primeras altas (184 anteriores + 5 en APPS1237; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 3d9dbd3c1789ded8c37b04976c460725585977d44da09ba5912f02f0e968a6a6.
+327/742 cubiertos; 415 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 201 primeras altas (189 anteriores + 12 en AUDIO1239; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 28e9fd35df0e88b25b8d156050a11b886fdcd549fa22377b98405475a8be2920.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -12,7 +12,7 @@
 | Vídeo y series | 26 | 0 | 26 |
 | Mensajería | 31 | 6 | 25 |
 | Abrir aplicaciones | 54 | 39 | 15 |
-| Audio y volumen | 51 | 27 | 24 |
+| Audio y volumen | 51 | 39 | 12 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 34 | 4 |
 | Interacción dentro de aplicaciones | 22 | 0 | 22 |
 | Red y Bluetooth | 21 | 9 | 12 |

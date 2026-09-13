@@ -152,26 +152,26 @@
     "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "APPS1237 adjudicado: 11 aprobados, 0 fallidos, 0 sin ejecutar; 5 créditos.",
+  "workStatus": "AUDIO1239 adjudicado: 23 aprobados, 2 fallidos, 0 sin ejecutar; 12 créditos.",
   "executionPausedByOwner": false,
   "branch": "codex/kiro-goal-c03",
-  "checkpoint": "315/742 cubiertos, 427 abiertos, 0 no aplican. APPS1237: 5 créditos explícitos de raíz.",
+  "checkpoint": "327/742 cubiertos, 415 abiertos, 0 no aplican. AUDIO1239: 12 créditos explícitos de raíz.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
   "surveyVerificationCounts": {
-    "covered": 315,
-    "open": 427,
+    "covered": 327,
+    "open": 415,
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "3d9dbd3c1789ded8c37b04976c460725585977d44da09ba5912f02f0e968a6a6",
+  "surveyRegistrySha256": "28e9fd35df0e88b25b8d156050a11b886fdcd549fa22377b98405475a8be2920",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
-  "surveyCoverageLast24h": 189,
-  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–13 septiembre: 184 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; APPS1237 añade 5. No se cuentan revalidaciones.",
+  "surveyCoverageLast24h": 201,
+  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–13 septiembre: 189 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; AUDIO1239 añade 12. No se cuentan revalidaciones.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-13T18:44:36.087650+00:00",
+  "utcUpdated": "2026-09-13T19:10:57.722208+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -621,7 +621,7 @@
     "freeze_ended_at": "2026-09-12T13:33:18.245252-03:00",
     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
   },
-  "updatedAtUtc": "2026-09-13T18:44:36.087650+00:00",
+  "updatedAtUtc": "2026-09-13T19:10:57.722208+00:00",
   "currentContinuation1065": {
     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
     "quality": {
@@ -2298,32 +2298,39 @@
     "next": "FILES1205 completa: 19 ejecutados, 19 aprobados, 12 créditos (8 archivos en escritorio/Documentos, 3 carpetas en el escritorio, 1 carpeta en el sandbox), cada uno con dos pares aprobados. El proveedor de carpetas conocidas (BUILD1205) y los lectores de creación se demuestran: 18 creaciones verificadas por el producto y comprobadas en disco por raíz (existencia, tipo y hash del contenido literal), ninguna preexistente, todas eliminadas tras la postlectura. Archivos queda 15/32; restan borrados (fixtures en carpetas personales), listados del escritorio, contenido dinámico («que contenga la fecha», procesos), rutas absolutas, comprimir/abrir, resumir PDF y copia a pendrive."
   },
   "currentContinuation1207": {
-    "head": "360ea216b8e60ad768d678d2730b5451e229016f",
+    "head": "c021ef45e7f3b724ed38a9203add940cf775ca4f",
     "quality": {
-      "passed": 11,
-      "failed": 0,
-      "executed": 11,
+      "passed": 23,
+      "failed": 2,
+      "executed": 25,
       "not_executed": 0,
       "sealed_total": 8,
-      "segments_started": 11,
+      "segments_started": 25,
       "aborted_before_admission": 0
     },
-    "new_credits": 5,
+    "new_credits": 12,
     "credited_ids": [
-      "H0147",
-      "H0151",
-      "H0289",
-      "H0558",
-      "H0691"
+      "H0028",
+      "H0058",
+      "H0189",
+      "H0254",
+      "H0294",
+      "H0308",
+      "H0357",
+      "H0436",
+      "H0488",
+      "H0507",
+      "H0519",
+      "H0695"
     ],
-    "registry_sha256": "3d9dbd3c1789ded8c37b04976c460725585977d44da09ba5912f02f0e968a6a6",
-    "survey": 315,
-    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\APPS1237\\ROOT_ADJUDICATION.json",
+    "registry_sha256": "28e9fd35df0e88b25b8d156050a11b886fdcd549fa22377b98405475a8be2920",
+    "survey": 327,
+    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\AUDIO1239\\ROOT_ADJUDICATION.json",
     "resources": {
-      "seconds_sum": 171.2029999999504,
+      "seconds_sum": 383.1239999999816,
       "gpu_peak_mib": 3497.55859375,
-      "ram_peak_mib": 1580.62890625
+      "ram_peak_mib": 1650.71484375
     },
-    "next": "APPS1237 completa: 11 ejecutados, 11 aprobados, 5 créditos (H0151 «abrí el explorador de archivos», H0147 «open the file explorer», H0289 «abrime el photoshop», H0558 «abri photoshop», H0691 «no, mejor abrí firefox») con sus dos pares. Abrir aplicaciones queda 39/54. Quedan con causa: compuesto H0183 (final omite la apertura; composición), Steam ×3 y erratas ×4 (cliente del dueño / aclaración con contexto), Mortal Kombat ×2 (juego ausente), H0249 (indeterminado), H0461 (límite sin marca), idiomas ×3 (sin marca). Intentos previos preservados: APPS1233 (7 casos, criterio sin ventana previa) y APPS1235 (2 casos del Explorador sobre BUILD1233, identidad por prefijo de título). Siguiente por masa: otra categoría."
+    "next": "AUDIO1239 completa: 25 ejecutados, 23 aprobados, 2 fallidos (H0465 eco del imperativo con efecto verificado; límite con atajo inventado), 12 créditos (H0436, H0308, H0028, H0488, H0695, H0357, H0294, H0058 preguntan la cantidad conservando la dirección —regla del dueño H0027—; H0254 nivel absoluto; H0189 mute con pronombre; H0507, H0519 prohibiciones) con sus dos pares. Audio queda 39/51. Quedan con causa: H0465 (eco del compositor, efecto verificado), H0067/H0530 compuestos (fecha/brillo), H0652 volumen por aplicación (no soportado), H0075 «bajá la música» (ambiguo con descargar), H0439/H0713 pronombre sin contexto (revisión del dueño), idiomas ×4 (sin marca). Siguiente por masa: otra categoría."
   }
 }

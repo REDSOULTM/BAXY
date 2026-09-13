@@ -1,3 +1,13 @@
+# AUDIO1239 adjudicado — 2026-09-13T19:10:57.722208+00:00
+
+**327/742 cubiertos, 415 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 28e9fd35df0e88b25b8d156050a11b886fdcd549fa22377b98405475a8be2920. Primeras altas 24 h >= 201 (+12).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c021ef45 con BUILD1237 (sin rebuild: reparación léxica en la mente, AUDIO1239/SOURCE.json|patch).
+
+AUDIO1239 (13 literales de «Audio y volumen» —segunda prioridad del dueño— + 10 variantes, turnos ordinarios con el volumen maestro fijado en 40 por raíz y devuelto al del dueño tras cada caso; 2 límites): 25 ejecutados, 23 aprobados, 2 fallidos; +12 (H0436, H0308, H0028, H0488, H0695, H0357, H0294, H0058: pedido relativo sin cantidad → pregunta la cantidad conservando la dirección, regla del dueño H0027; H0254 nivel absoluto con verbo de dirección; H0189 «ponelo en mute»; H0507, H0519 prohibiciones) con sus dos pares. Adjudicación 9c548067e01be4aa084373f843ff3b84998b20234a311d85ea49dc8ccb3ba3d0. Regla del producto confirmada: un pedido relativo sin cantidad no se ejecuta con un paso inventado; se pregunta (AUDIO1016/1020 lo acreditaron para «sube el volumen»); un primer diseño con paso por convención se descartó antes de sellar. **Audio queda 39/51**; los 12 restantes con causa: H0465 «poné el volumen al 30» (efecto verificado, final que repite el imperativo: eco del compositor), H0067/H0530 compuestos (fecha/brillo), H0652 volumen por aplicación (no soportado), H0075 «bajá la música» (ambiguo con descargar), H0439/H0713 pronombre sin contexto (revisión del dueño), idiomas ×4 (sin marca).
+
+Siguiente por masa abierta: Navegación web (29, condicionada a navegador Edge propio), Entrada incompleta/ruido (27), Interacción dentro de apps (22), Pantalla/captura (19), Archivos (17), Brillo (17), Info web actual (17), Conocimiento (15), Apps (15), Audio (12)… Guiones: `derive_audio1239.py` (de 1237), `audio_case.sh <campaña> <idx> [nivel]`, `master_volume.ps1 get|set N|mute 0/1`.
+
+---
+
 # APPS1237 adjudicado — 2026-09-13T18:44:36.087650+00:00
 
 **315/742 cubiertos, 427 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 3d9dbd3c1789ded8c37b04976c460725585977d44da09ba5912f02f0e968a6a6. Primeras altas 24 h >= 189 (+5).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 360ea216 con BUILD1237 (proveedor de apertura reparado en dos commits, 7f51be21 y 360ea216; lectura de presencia para software ausente, 7f51be21; APPS1237/SOURCE.json|APP_SOURCE.json|*.patch).
