@@ -1,3 +1,11 @@
+# DIALOGUE1279 adjudicado — 2026-09-13T23:38:51.980107+00:00
+
+**357/742 cubiertos, 385 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 53a39cf7363489fdde3c1efaa7b515ba3e58e7ea794161fe9f608b62d8843532. Primeras altas 24 h >= 231 (+6).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 346016c4 con BUILD1279 (mente: aclaración compuesta para entrada sin pedido y negación suelta, asentimiento con orden en la lectura deíctica, guía de voseo y reintento del aclarador de referente; DIALOGUE1279/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+DIALOGUE1279 («Entrada incompleta, ruido y control de diálogo», turnos ordinarios sin efectos): 14 ejecutados, 9 aprobados, 5 fallidos, 6 créditos. Adjudicación 6830dc0cdefdda2a4e422926faa1532fd0d9534d029833d4c4d13f1d60bd1b4b. Seis literales acreditados (negación suelta y repetida, transcripción degradada, cifras, letra suelta, imperativo deíctico) con pares «b» y «Nope.»; fallan H0287 y «???» (pregunta sin nombrar los signos), H0562 y «Sí, hacelo.» (el aclarador inventa «abrir») y el límite «si no entendés, preguntame».
+
+---
+
 # DIALOGUE1277 adjudicado — 2026-09-13T23:28:18.796005+00:00
 
 **351/742 cubiertos, 391 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 31e7d6c9b50c3b7f44c9e2ae7a83799a9cf6e18d87e973e294bf3c509992810c. Primeras altas 24 h >= 225 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 80f5a749 con BUILD1275 (sin fuente nueva). Medición honesta de «Entrada incompleta, ruido y control de diálogo» (27 abiertos): 14 ejecutados, 4 aprobados, 10 fallidos, 0 créditos (una sola variante aprobada). Causas medidas en DIALOGUE1277/MEASUREMENT.json: entrada sin pedido legible contestada con ayuda genérica o «fuera del catálogo»; negación suelta enrutada como conocimiento; «abrí eso» leído como pasado del usuario; asentimiento «Si hazlo» fuera de la lectura deíctica; «cerrá eso» es cierre deíctico documentado (variante mal elegida). Adjudicación da7e62a0d13618a68fd1bd3015f19f6ec45a9b31af48bce3910f10c334ef1caf. Siguiente: DIALOGUE1279 con la reparación causal en la mente.

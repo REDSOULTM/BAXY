@@ -1,3 +1,25 @@
+## DIALOGUE1279 — estado vigente 2026-09-13T23:38:51.980107+00:00
+
+Parcial: 9 aprobados, 5 fallidos, 0 sin ejecutar; 6 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 357/742 | 385 | 0 | >=231 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 225 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); DIALOGUE1279 añade 6. No se cuentan revalidaciones.
+
+Siguiente acción: DIALOGUE1279: 14 ejecutados, 9 aprobados, 5 fallidos, 6 créditos (índices [0, 2, 3, 4, 5, 6]). Siguiente: corregir el sesgo «abrir» del aclarador de referente ante un asentimiento sin acción y exigir que la aclaración de signos nombre lo recibido; luego categoría por masa abierta.
+
+Evidencia: `artifacts/comprobaciones/C03/DIALOGUE1279/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 208.33 s acumulados; pico GPU 3497.56 MiB; pico RAM 1632.01 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 14; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque DIALOGUE1279 precedente. -->
+
 ## DIALOGUE1277 — estado vigente 2026-09-13T23:28:18.796005+00:00
 
 Parcial: 4 aprobados, 10 fallidos, 0 sin ejecutar; 0 créditos.

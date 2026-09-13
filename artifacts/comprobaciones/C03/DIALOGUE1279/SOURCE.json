@@ -1,0 +1,16 @@
+{
+  "schema": "c03-dialogue1279-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_unresolved_input_kind: entrada sin palabra legible o negación suelta → aclaración compuesta antes de planificar; lectura deíctica con «si hazlo», «dale, hacelo», «hacelo»); src/baxy_mind/llm.py (clarify_unresolved_input; guía de imperativo voseante y reintento corregido en clarify_missing_referent)",
+  "patch": "artifacts/comprobaciones/C03/DIALOGUE1279/SOURCE.patch",
+  "commits": [
+    "346016c48c26575ecbdaa5c03abed8ad73d35c60"
+  ],
+  "build": "BUILD1279 (C03-repairs1279-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "DIALOGUE1277: una entrada sin pedido legible llegaba al modelo sin guía (oferta genérica de ayuda o negativa de catálogo); una negación suelta se enrutaba como conocimiento y el modelo declaraba incomprensión; «abrí eso» se leía como pasado del usuario; «Si hazlo» quedaba fuera de la lectura deíctica.",
+  "change": "Aclaración compuesta por el modelo para entrada sin pedido y negación suelta (sin respuestas fijas); asentimiento con orden en la lectura deíctica; guía de voseo y un reintento cuando la pregunta atribuye la acción al pasado del usuario.",
+  "measurement": "DIALOGUE1279: 14 ejecutados, 9 aprobados, 5 fallidos; 6 créditos. Seis literales acreditados (negación suelta y repetida, transcripción degradada, cifras, letra suelta, imperativo deíctico) con pares «b» y «Nope.»; fallan H0287 y «???» (pregunta sin nombrar los signos), H0562 y «Sí, hacelo.» (el aclarador inventa «abrir») y el límite «si no entendés, preguntame».",
+  "residual": "La aclaración ante sólo signos no nombra lo recibido («¿Qué quieres que haga?», H0287 y «???»); ante un asentimiento sin acción el aclarador inventa «abrir» por el ejemplo de la guía (H0562, «Sí, hacelo.»); el límite «si no entendés, preguntame» sigue pidiendo aclaración.",
+  "credits": 6
+}

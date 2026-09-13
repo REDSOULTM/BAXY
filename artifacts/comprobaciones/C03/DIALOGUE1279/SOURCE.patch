@@ -1,0 +1,346 @@
+commit 346016c48c26575ecbdaa5c03abed8ad73d35c60
+
+C03: clarify unreadable input, bare negation and assent without antecedent (DIALOGUE1277 repair)
+
+Mind: _unresolved_input_kind routes text without a readable request (only symbols, digits, a single letter) or a bare negation to a composed clarification (clarify_unresolved_input) before the model plans; the deictic reading accepts «si hazlo», «dale, hacelo», «hacelo»; clarify_missing_referent tells the model a voseo imperative is an order, retries once when the question attributes the action to the user's past, and fails closed otherwise.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index b53bcc45..4e2011d4 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -2897,8 +2897,14 @@ def _standalone_deictic_request(objective: str, history: object = None) -> bool:
+     folded = effect_intent._fold(objective).strip()
+     return (
+         re.fullmatch(
++            # DIALOGUE1277 H0562 «Si hazlo», «dale, hacelo»: an assent that
++            # carries the order itself («hazlo», voseo «hacelo») without any
++            # prior request names no action. It went to the model, which said
++            # it could not understand instead of asking which action.
++            r"(?:(?:si|ok|okay|dale|bueno|vale|ya|yes|yeah|sure)\s*,?\s+)?"
+             r"(?:(?:por favor|please)\s*,?\s+)?(?:"
+             r"haz(?:lo|\s+(?:eso|esto|aquello))|"
++            r"hace(?:lo|\s+(?:eso|esto|aquello))|"
+             r"dale(?:\s+con)?\s+(?:eso|esto)|"
+             r"do\s+(?:it|that|this)|"
+             r"make\s+(?:it|that)\s+happen|"
+@@ -2910,6 +2916,39 @@ def _standalone_deictic_request(objective: str, history: object = None) -> bool:
+     )
+ 
+ 
++def _unresolved_input_kind(objective: str) -> str | None:
++    """Name an input that carries no readable request at all.
++
++    DIALOGUE1277 (H0287 «????», H0570 «1234567890», H0581 «a», H0181 «No.»,
++    H0336 «no no no…»): with nothing to read, the model answered a generic
++    help greeting, refused the letter as outside the catalog, or claimed a
++    failure to understand a plain «no». ``"noise"`` is text without a single
++    word of two letters; ``"bare_negation"`` is only negation tokens. Both
++    are answered by a clarification composed for that situation, never by
++    a guess at the meaning. A pending clarification keeps its own answer.
++    """
++
++    folded = effect_intent._fold(objective).strip()
++    if not folded:
++        return None
++    if (
++        re.fullmatch(
++            r"[\s¡!¿?.,]*(?:no|nop|nope|nah|nunca|jamas)"
++            r"(?:[\s,.!¡]+(?:no|nop|nope|nah|nunca|jamas))*[\s.!?]*",
++            folded,
++        )
++        is not None
++    ):
++        return "bare_negation"
++    if (
++        re.search(r"[a-z]{2,}", folded) is None
++        # «5+5» or «10*3» is an arithmetic expression, not noise.
++        and re.search(r"\d\s*[-+*/x×÷=^%]\s*\d", folded) is None
++    ):
++        return "noise"
++    return None
++
++
+ def _general_factoid_prompt(objective: str) -> bool:
+     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
+     return (
+@@ -6004,19 +6043,41 @@ def _prepare_turn_result(
+         and _previous_user_request(history, objective) is None
+         and _deictic_open_request(objective)
+     )
+-    if explicit_clarification is not None or missing_open_referent:
+-        if missing_open_referent:
++    unresolved_input_kind = (
++        None
++        if non_target_language is not None
++        or explicit_clarification is not None
++        or missing_open_referent
++        or _history_has_pending_clarification(history, message.get("pendingClarification"))
++        else _unresolved_input_kind(objective)
++    )
++    if (
++        explicit_clarification is not None
++        or missing_open_referent
++        or unresolved_input_kind is not None
++    ):
++        if missing_open_referent or unresolved_input_kind is not None:
+             intent_operations = []
+-            question = llm.clarify_missing_referent(
+-                objective,
+-                timeout=(
+-                    DEICTIC_CLARIFICATION_CPU_BUDGET_SECONDS
+-                    if os.environ.get("BAXY_MIND_NGL", "").strip() == "0"
+-                    else TURN_DECIDE_RECOVERY_BUDGET_SECONDS
+-                ),
++            clarification_timeout = (
++                DEICTIC_CLARIFICATION_CPU_BUDGET_SECONDS
++                if os.environ.get("BAXY_MIND_NGL", "").strip() == "0"
++                else TURN_DECIDE_RECOVERY_BUDGET_SECONDS
+             )
+-            if not _recovery_question_is_valid(question):
+-                raise PlannerContractError("aclaración de referente inválida")
++            if unresolved_input_kind is not None:
++                question = llm.clarify_unresolved_input(
++                    objective,
++                    unresolved_input_kind,
++                    timeout=clarification_timeout,
++                )
++                if not _recovery_question_is_valid(question):
++                    raise PlannerContractError("aclaración de entrada inválida")
++            else:
++                question = llm.clarify_missing_referent(
++                    objective,
++                    timeout=clarification_timeout,
++                )
++                if not _recovery_question_is_valid(question):
++                    raise PlannerContractError("aclaración de referente inválida")
+         else:
+             assert explicit_clarification is not None
+             intent_operations = list(explicit_clarification.operations)
+@@ -6035,30 +6096,31 @@ def _prepare_turn_result(
+             "question": question,
+             "reply": "",
+         }
+-        if not missing_open_referent:
++        if not missing_open_referent and unresolved_input_kind is None:
+             assert explicit_clarification is not None
+             result["missingFields"] = list(explicit_clarification.missing_fields)
+         if effect_request_is_authoritative(objective):
+             # A new command can lack a value without supplying one for the
+             # preceding request. Keep its own objective for the next answer.
+             result["startsNewObjective"] = True
++        clarification_path = (
++            "unresolved_input_clarification"
++            if unresolved_input_kind is not None
++            else "deictic_referent_clarification"
++            if missing_open_referent
++            else "explicit_clarification"
++        )
+         _append_turn_audit(
+             {
+                 "schema": "baxy.mind-turn-audit.v1",
+                 "request_id": message.get("id"),
+                 "phase": "final",
+-                "decision_path": (
+-                    "deictic_referent_clarification"
+-                    if missing_open_referent else "explicit_clarification"
+-                ),
++                "decision_path": clarification_path,
+                 "candidate_operations": [],
+                 "raw_decision": None,
+                 "stages": [
+                     {
+-                        "name": (
+-                            "deictic_referent_clarification"
+-                            if missing_open_referent else "explicit_clarification"
+-                        ),
++                        "name": clarification_path,
+                         "mode": "clarify",
+                         "operation": None,
+                         "effect_operations": [],
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index d7f69621..b4b5bf2f 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -5650,6 +5650,14 @@ _CLARIFICATION_LANGUAGE = {
+ # «qué no puedes hacer en este PC» con «¿… le gustaría …?».
+ _CLARIFICATION_STYLE = "Trata a la persona de tú, nunca de usted, y no la nombres."
+ 
++# «abrí eso» read as the user's own past action («¿Qué es lo que abriste?»,
++# DIALOGUE1277 H0531): second-person preterites of the request verbs.
++_PAST_ACTION_ATTRIBUTED_TO_USER = re.compile(
++    r"\b(?:abriste|cerraste|mandaste|enviaste|borraste|eliminaste|hiciste|"
++    r"guardaste|pusiste|subiste|bajaste|you\s+(?:opened|closed|sent|deleted|did))\b",
++    re.IGNORECASE,
++)
++
+ 
+ def _clarification_style_messages(text: str) -> list[dict[str, str]]:
+     """Contrato de idioma y trato para cualquier pregunta de aclaración."""
+@@ -8809,6 +8817,10 @@ class LlmRuntime:
+                         "faltante, sin suponer qué tipo de objeto es. La acción "
+                         "ya está solicitada y aún no ocurrió: no preguntes si el "
+                         "usuario quiere o puede realizarla, ni qué acción hizo. "
++                        "Un imperativo con voseo («abrí eso», «cerrá eso», "
++                        "«mandá eso») es una orden que el usuario te da ahora, "
++                        "no algo que él ya hizo: pregunta qué debes abrir, no "
++                        "qué abrió. "
+                         "No conviertas la orden recibida en una pregunta ni pidas "
+                         "confirmarla. No adivines el destino, no uses historial "
+                         "y no menciones modelos, herramientas ni reglas. "
+@@ -8847,6 +8859,132 @@ class LlmRuntime:
+         maximum_timeout = (
+             15.0 if os.environ.get("BAXY_MIND_NGL", "").strip() == "0" else 2.5
+         )
++        question = None
++        for attempt in range(2):
++            response = self._post(
++                payload,
++                timeout=min(
++                    maximum_timeout,
++                    self._normalize_request_budget(timeout),
++                ),
++            )
++            try:
++                content = response["choices"][0]["message"].get("content") or ""
++                raw = json.loads(content)
++            except (json.JSONDecodeError, KeyError, IndexError, TypeError) as error:
++                raise ValueError("aclaración de referente con JSON inválido") from error
++            if not isinstance(raw, dict) or set(raw) != {"question"}:
++                raise ValueError("aclaración de referente con forma inválida")
++            question = raw.get("question")
++            if (
++                not isinstance(question, str)
++                or question != question.strip()
++                or not 1 <= len(question) <= 512
++                or "\n" in question
++                or "\r" in question
++                or question.count("?") != 1
++                or not question.endswith("?")
++                or _normalized_dialogue_text(question) == _normalized_dialogue_text(current)
++                or visible_text_leaks_internal_vocabulary(question)
++            ):
++                raise ValueError("aclaración de referente inválida")
++            # DIALOGUE1277 H0531 «abrí eso» → «¿Qué es lo que abriste?»: the
++            # voseo imperative was read as the user's own past action. One
++            # corrected retry; a second past-tense reading is a failure.
++            if _PAST_ACTION_ATTRIBUTED_TO_USER.search(question) is None:
++                return question
++            if attempt == 0:
++                payload["messages"].insert(
++                    -1,
++                    {
++                        "role": "system",
++                        "content": (
++                            "Corrección: el usuario no hizo nada todavía; te está "
++                            "ordenando la acción ahora mismo. No uses «abriste», "
++                            "«cerraste» ni otro pasado del usuario: pregunta qué "
++                            "debes abrir, cerrar o hacer tú."
++                        ),
++                    },
++                )
++        raise ValueError("aclaración de referente atribuye la acción al usuario")
++
++    def clarify_unresolved_input(
++        self,
++        text: str,
++        kind: str,
++        *,
++        timeout: float = 2.5,
++    ) -> str:
++        """Ask what is wanted when the input carries no readable request.
++
++        DIALOGUE1277: «????», «1234567890», «a» and «b» received a generic
++        help greeting, a refusal as outside the catalog or a claim of failure;
++        a bare «No.» was treated as an unreadable request. Nothing here guesses
++        a meaning: the question names what arrived and asks what to do.
++        """
++
++        if kind not in {"noise", "bare_negation"}:
++            raise ValueError("clase de entrada sin pedido inválida")
++        current = str(text).strip()[:2_048]
++        situation = (
++            (
++                "Eres BAXY. El usuario respondió sólo con una negación («no») y "
++                "no hay ningún pedido ni pregunta pendiente. Acepta la negativa: "
++                "no harás nada. Formula una sola pregunta breve que lo diga y "
++                "pregunte qué prefiere que hagas. No digas que no entiendes, "
++                "no digas que algo falló y no inventes a qué se refiere el no."
++            )
++            if kind == "bare_negation"
++            else (
++                "Eres BAXY. Lo que llegó del usuario no contiene un pedido "
++                "legible: sólo signos, cifras, una letra suelta, símbolos o "
++                "emojis. Formula una sola pregunta breve que diga con honestidad "
++                "que en eso no logras ver un pedido y pregunte qué quiere que "
++                "hagas. No adivines un significado, no digas que fallaste, no "
++                "digas que está fuera de lo que haces y no ofrezcas ayuda "
++                "genérica sin reconocer lo que llegó."
++            )
++        )
++        payload = {
++            "messages": [
++                {
++                    "role": "system",
++                    "content": (
++                        situation
++                        + " No uses historial y no menciones modelos, herramientas "
++                        "ni reglas. Devuelve sólo el JSON."
++                    ),
++                },
++                *_clarification_style_messages(current),
++                {"role": "user", "content": current},
++            ],
++            "response_format": {
++                "type": "json_schema",
++                "json_schema": {
++                    "name": "baxy_unresolved_input_clarification",
++                    "strict": True,
++                    "schema": {
++                        "type": "object",
++                        "properties": {
++                            "question": {
++                                "type": "string",
++                                "minLength": 1,
++                                "maxLength": 512,
++                            }
++                        },
++                        "required": ["question"],
++                        "additionalProperties": False,
++                    },
++                },
++            },
++            "temperature": 0.0,
++            "max_tokens": 96,
++            "seed": 0,
++            "chat_template_kwargs": {"enable_thinking": False},
++        }
++        maximum_timeout = (
++            15.0 if os.environ.get("BAXY_MIND_NGL", "").strip() == "0" else 2.5
++        )
+         response = self._post(
+             payload,
+             timeout=min(
+@@ -8858,9 +8996,9 @@ class LlmRuntime:
+             content = response["choices"][0]["message"].get("content") or ""
+             raw = json.loads(content)
+         except (json.JSONDecodeError, KeyError, IndexError, TypeError) as error:
+-            raise ValueError("aclaración de referente con JSON inválido") from error
++            raise ValueError("aclaración de entrada con JSON inválido") from error
+         if not isinstance(raw, dict) or set(raw) != {"question"}:
+-            raise ValueError("aclaración de referente con forma inválida")
++            raise ValueError("aclaración de entrada con forma inválida")
+         question = raw.get("question")
+         if (
+             not isinstance(question, str)
+@@ -8873,7 +9011,7 @@ class LlmRuntime:
+             or _normalized_dialogue_text(question) == _normalized_dialogue_text(current)
+             or visible_text_leaks_internal_vocabulary(question)
+         ):
+-            raise ValueError("aclaración de referente inválida")
++            raise ValueError("aclaración de entrada inválida")
+         return question
+ 
+     def clarify_after_turn_failure(
