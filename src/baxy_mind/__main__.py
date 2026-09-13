@@ -4018,7 +4018,8 @@ def _explicit_notification_schedule_arguments(
 
     folded = effect_intent._fold(evidence)
     wake_request = effect_intent._wake_alarm_request(folded)
-    if not wake_request and not re.search(
+    count_request = effect_intent._count_down_request(folded)
+    if not wake_request and not count_request and not re.search(
         r"\b(?:alarm|alarma|timer|temporizador)\b", folded
     ):
         return None
@@ -4061,7 +4062,7 @@ def _explicit_notification_schedule_arguments(
     noun = re.search(
         r"\b(?:alarm|alarma|timer|temporizador)\b", evidence, re.IGNORECASE
     )
-    if noun is None and not wake_request:
+    if noun is None and not wake_request and not count_request:
         return None
     title_start = noun.start() if noun is not None else 0
     if noun is None:

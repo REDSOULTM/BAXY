@@ -1703,7 +1703,7 @@ def _curated_domain_is_grounded(
                 r"temporizadores?|despiertame|despertame|levantame|"
                 r"wake\s+me(?:\s+up)?)\b"
             ),
-        )
+        ) or _count_down_request(folded)
     if operation == "reminder.resolve.exact":
         return _nominal_reminder_lookup_title(folded) is not None
     if operation in {"message.recipient.resolve", "message.send"}:
@@ -2343,6 +2343,19 @@ def _without_leading_duration_preface(folded: str) -> str:
     """Read a scheduling request after its leading duration preface."""
 
     return _LEADING_DURATION_PREFACE.sub("", folded, count=1)
+
+
+# «contá 10 minutos», «count down 4 minutes»: the count head names a timer only
+# when a duration follows it at once, so «cuenta» (account) never qualifies.
+_COUNT_DOWN_REQUEST = re.compile(
+    rf"^[¿?¡!\s]*(?:conta|cuenta|contame|cuentame|count(?:\s+down)?)\s+{_RELATIVE_DURATION_PATTERN}\b"
+)
+
+
+def _count_down_request(folded: str) -> bool:
+    """Recognize a bare countdown request that names its duration first."""
+
+    return _COUNT_DOWN_REQUEST.match(_strip_request_envelope(folded)) is not None
 
 
 def _reminder_has_actionable_due(folded: str) -> bool:
@@ -8032,6 +8045,18 @@ def _review_calendar_message_and_direct_reminder_effects(
 
     if (
         temporal
+        and _count_down_request(folded)
+        and not any(entry[2] == "notification.schedule" for entry in matches)
+    ):
+        _append(
+            matches,
+            folded,
+            "notification.schedule",
+            r"\b(?:conta|cuenta|contame|cuentame|count)\b",
+        )
+
+    if (
+        temporal
         and _head_is(
             head,
             r"(?:programa|programar|programame|schedule|pon|poner|ponme|pone|"
@@ -12426,6 +12451,7 @@ def _resolve_explicit_effects_single(
         )
         or not (
             _is_direct_request(_without_leading_duration_preface(folded))
+            or _count_down_request(folded)
             or _bounded_calendar_list_query(folded)
             or _location_recommendation_request(folded)
             or (
@@ -14400,6 +14426,7 @@ def resolve_explicit_effects(
         )
         or (
             not _is_direct_request(_without_leading_duration_preface(folded))
+            and not _count_down_request(folded)
             # A conjunction does not make independently explicit questions
             # implicit. The clause resolver below must still account for all
             # of them; this never grants a recognized subset authority.

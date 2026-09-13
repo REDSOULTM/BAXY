@@ -60,6 +60,8 @@ _ENUM_EVIDENCE_ALIASES = {
     "alarm": (
         "alarm", "alarma", "timer", "temporizador",
         "despertame", "despiertame", "levantame", "wake me", "despertador",
+        # A countdown names the timer by counting («contá 10 minutos»).
+        "conta", "contame", "cuentame", "cuenta", "count",
     ),
     "reminder": ("reminder", "recordatorio"),
     "whatsapp": ("whatsapp", "wsp"),

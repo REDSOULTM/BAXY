@@ -1,0 +1,17 @@
+{
+  "schema": "c03-time1197-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_count_down_request; notification.schedule domain; scheduling reviewer) + src/baxy_mind/__main__.py (_explicit_notification_schedule_arguments)",
+  "patch": "artifacts/comprobaciones/C03/TIME1197/SOURCE.patch",
+  "cause_measured": "H0385 «contá 10 minutos» falló en TIME1185, 1189 y 1191 por la ruta del modelo (negación de alcance): sin cabeza de temporizador en el dominio de notification.schedule, en el reconocedor ni en el extractor de argumentos; «contá/cuenta» no se añadió antes por la ambigüedad con «cuenta» (account).",
+  "change": "Una cabeza de cuenta (contá/conta/contame/cuentame/cuenta/count [down]) vale como temporizador sólo cuando la sigue inmediatamente una duración (_COUNT_DOWN_REQUEST sobre _RELATIVE_DURATION_PATTERN): el dominio de notification.schedule la acepta, el revisor de efectos de programación produce notification.schedule y el extractor de argumentos la trata como pedido de temporizador (kind alarm, título con las palabras de la persona), las dos puertas de «pedido directo» la admiten y el alias del enum «alarm» reconoce la cabeza de cuenta (planner). «abre la cuenta de 2 usuarios», «cuenta las ventanas abiertas» y «cuenta hasta 10» no cambian. Sin frases de salida; ninguna capa nueva.",
+  "offline_verification": "resolve_explicit_effects y _ground_explicit_arguments: «contá 10 minutos», «Contá 3min a partir de ahora.», «Count down 4 minutes.», «cuenta 5 minutos», «contame 2 minutos» → notification.schedule con dueUtc relativo al segundo entero, kind alarm y título; «abre la cuenta de 2 usuarios», «cuenta hasta 10», «¿cuántos minutos faltan?», «mi cuenta de spotify» → sin temporizador (dominio False); «cuenta las ventanas abiertas» sigue en window.resolve. Baseline del reconocedor sin cambios. Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "TIME1199: H0385 con pares «Contá 3min a partir de ahora.» y «Count down 4 minutes.».",
+  "credits": 0
+}
