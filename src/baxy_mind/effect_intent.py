@@ -1981,8 +1981,17 @@ def confident_non_target_language(text: str) -> str | None:
         # al recycling" is spanglish, not Portuguese -- so it only counts with a
         # Portuguese article behind it. A shared Romance word never suffices.
         r"\b(?:pra|cento|tela|loja|faz|mexer|tudo|aberto|regista|fiz|hoje)\b|"
-        r"\bbota\s+[oa]\b|\b(?:abre|minimiza)\s+[oa]\b|\bconecta\s+no\b|"
+        r"\bbota\s+[oa]\b|\bconecta\s+no\b|"
         r"\bfecha\s+tudo\b|\bde\s+novo\b|\barea\s+de\s+trabalho\b",
+    ):
+        return "pt"
+    # «abre a calculadora» (owner review H0497): a Spanish request with a
+    # dropped «l», not Portuguese, when the article is followed by a known
+    # application name shared by both surfaces. «abre o bloco de notas» still
+    # reads as Portuguese because ``bloco`` is not in that vocabulary.
+    if _has(folded, r"\b(?:abre|minimiza)\s+[oa]\b") and not _has(
+        folded,
+        rf"\b(?:abre|minimiza)\s+[oa]\s+{_KNOWN_APPLICATION}\b",
     ):
         return "pt"
     if _has(
