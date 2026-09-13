@@ -610,7 +610,11 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
 
         if (refusal is not null)
         {
-            ShellTrace.Record("conductor", "capture", "conductor.capture.refused", refusal);
+            ShellTraceSink.Record(
+                ShellTraceScopes.Turn,
+                ShellTraceSink.TurnId ?? "capture",
+                "conductor.capture.refused",
+                refusal);
             return null;
         }
 

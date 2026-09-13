@@ -1,8 +1,8 @@
 diff --git a/src/Baxy.App/MainWindowViewModel.cs b/src/Baxy.App/MainWindowViewModel.cs
-index 008d29c4..f2e8c89d 100644
+index 008d29c4..c5d936b1 100644
 --- a/src/Baxy.App/MainWindowViewModel.cs
 +++ b/src/Baxy.App/MainWindowViewModel.cs
-@@ -576,25 +576,45 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
+@@ -576,25 +576,49 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
  
      internal PendingOperationConfirmation? CaptureConductorConfirmation(bool allowVerifiedReadPrefix = false)
      {
@@ -54,7 +54,11 @@ index 008d29c4..f2e8c89d 100644
 +
 +        if (refusal is not null)
          {
-+            ShellTrace.Record("conductor", "capture", "conductor.capture.refused", refusal);
++            ShellTraceSink.Record(
++                ShellTraceScopes.Turn,
++                ShellTraceSink.TurnId ?? "capture",
++                "conductor.capture.refused",
++                refusal);
              return null;
          }
  
