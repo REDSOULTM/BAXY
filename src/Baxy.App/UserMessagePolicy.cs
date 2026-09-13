@@ -1692,7 +1692,12 @@ internal static class UserMessagePolicy
         || Regex.IsMatch(normalized, @"\b(?:cannot|can't|could\s+not|couldn't)\b",
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
         || normalized.Contains("wasn't able", StringComparison.Ordinal)
-        || normalized.Contains("was not able", StringComparison.Ordinal);
+        || normalized.Contains("was not able", StringComparison.Ordinal)
+        // WEB1269: a search that found nothing useful is a failure the person
+        // must hear as such («the results were irrelevant», «sin resultados»).
+        || Regex.IsMatch(normalized,
+            @"\b(?:irrelevant|irrelevantes?|no\s+useful\s+results|nothing\s+useful|no\s+results|sin\s+resultados|no\s+(?:hubo|hay)\s+resultados)\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
     }
 
     private static bool AttributesBaxyActionToUser(string source, string result)
