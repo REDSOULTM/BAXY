@@ -5650,6 +5650,14 @@ _CLARIFICATION_LANGUAGE = {
 # «qué no puedes hacer en este PC» con «¿… le gustaría …?».
 _CLARIFICATION_STYLE = "Trata a la persona de tú, nunca de usted, y no la nombres."
 
+# «abrí eso» read as the user's own past action («¿Qué es lo que abriste?»,
+# DIALOGUE1277 H0531): second-person preterites of the request verbs.
+_PAST_ACTION_ATTRIBUTED_TO_USER = re.compile(
+    r"\b(?:abriste|cerraste|mandaste|enviaste|borraste|eliminaste|hiciste|"
+    r"guardaste|pusiste|subiste|bajaste|you\s+(?:opened|closed|sent|deleted|did))\b",
+    re.IGNORECASE,
+)
+
 
 def _clarification_style_messages(text: str) -> list[dict[str, str]]:
     """Contrato de idioma y trato para cualquier pregunta de aclaración."""
@@ -8809,6 +8817,10 @@ class LlmRuntime:
                         "faltante, sin suponer qué tipo de objeto es. La acción "
                         "ya está solicitada y aún no ocurrió: no preguntes si el "
                         "usuario quiere o puede realizarla, ni qué acción hizo. "
+                        "Un imperativo con voseo («abrí eso», «cerrá eso», "
+                        "«mandá eso») es una orden que el usuario te da ahora, "
+                        "no algo que él ya hizo: pregunta qué debes abrir, no "
+                        "qué abrió. "
                         "No conviertas la orden recibida en una pregunta ni pidas "
                         "confirmarla. No adivines el destino, no uses historial "
                         "y no menciones modelos, herramientas ni reglas. "
@@ -8847,6 +8859,132 @@ class LlmRuntime:
         maximum_timeout = (
             15.0 if os.environ.get("BAXY_MIND_NGL", "").strip() == "0" else 2.5
         )
+        question = None
+        for attempt in range(2):
+            response = self._post(
+                payload,
+                timeout=min(
+                    maximum_timeout,
+                    self._normalize_request_budget(timeout),
+                ),
+            )
+            try:
+                content = response["choices"][0]["message"].get("content") or ""
+                raw = json.loads(content)
+            except (json.JSONDecodeError, KeyError, IndexError, TypeError) as error:
+                raise ValueError("aclaración de referente con JSON inválido") from error
+            if not isinstance(raw, dict) or set(raw) != {"question"}:
+                raise ValueError("aclaración de referente con forma inválida")
+            question = raw.get("question")
+            if (
+                not isinstance(question, str)
+                or question != question.strip()
+                or not 1 <= len(question) <= 512
+                or "\n" in question
+                or "\r" in question
+                or question.count("?") != 1
+                or not question.endswith("?")
+                or _normalized_dialogue_text(question) == _normalized_dialogue_text(current)
+                or visible_text_leaks_internal_vocabulary(question)
+            ):
+                raise ValueError("aclaración de referente inválida")
+            # DIALOGUE1277 H0531 «abrí eso» → «¿Qué es lo que abriste?»: the
+            # voseo imperative was read as the user's own past action. One
+            # corrected retry; a second past-tense reading is a failure.
+            if _PAST_ACTION_ATTRIBUTED_TO_USER.search(question) is None:
+                return question
+            if attempt == 0:
+                payload["messages"].insert(
+                    -1,
+                    {
+                        "role": "system",
+                        "content": (
+                            "Corrección: el usuario no hizo nada todavía; te está "
+                            "ordenando la acción ahora mismo. No uses «abriste», "
+                            "«cerraste» ni otro pasado del usuario: pregunta qué "
+                            "debes abrir, cerrar o hacer tú."
+                        ),
+                    },
+                )
+        raise ValueError("aclaración de referente atribuye la acción al usuario")
+
+    def clarify_unresolved_input(
+        self,
+        text: str,
+        kind: str,
+        *,
+        timeout: float = 2.5,
+    ) -> str:
+        """Ask what is wanted when the input carries no readable request.
+
+        DIALOGUE1277: «????», «1234567890», «a» and «b» received a generic
+        help greeting, a refusal as outside the catalog or a claim of failure;
+        a bare «No.» was treated as an unreadable request. Nothing here guesses
+        a meaning: the question names what arrived and asks what to do.
+        """
+
+        if kind not in {"noise", "bare_negation"}:
+            raise ValueError("clase de entrada sin pedido inválida")
+        current = str(text).strip()[:2_048]
+        situation = (
+            (
+                "Eres BAXY. El usuario respondió sólo con una negación («no») y "
+                "no hay ningún pedido ni pregunta pendiente. Acepta la negativa: "
+                "no harás nada. Formula una sola pregunta breve que lo diga y "
+                "pregunte qué prefiere que hagas. No digas que no entiendes, "
+                "no digas que algo falló y no inventes a qué se refiere el no."
+            )
+            if kind == "bare_negation"
+            else (
+                "Eres BAXY. Lo que llegó del usuario no contiene un pedido "
+                "legible: sólo signos, cifras, una letra suelta, símbolos o "
+                "emojis. Formula una sola pregunta breve que diga con honestidad "
+                "que en eso no logras ver un pedido y pregunte qué quiere que "
+                "hagas. No adivines un significado, no digas que fallaste, no "
+                "digas que está fuera de lo que haces y no ofrezcas ayuda "
+                "genérica sin reconocer lo que llegó."
+            )
+        )
+        payload = {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        situation
+                        + " No uses historial y no menciones modelos, herramientas "
+                        "ni reglas. Devuelve sólo el JSON."
+                    ),
+                },
+                *_clarification_style_messages(current),
+                {"role": "user", "content": current},
+            ],
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "baxy_unresolved_input_clarification",
+                    "strict": True,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "question": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 512,
+                            }
+                        },
+                        "required": ["question"],
+                        "additionalProperties": False,
+                    },
+                },
+            },
+            "temperature": 0.0,
+            "max_tokens": 96,
+            "seed": 0,
+            "chat_template_kwargs": {"enable_thinking": False},
+        }
+        maximum_timeout = (
+            15.0 if os.environ.get("BAXY_MIND_NGL", "").strip() == "0" else 2.5
+        )
         response = self._post(
             payload,
             timeout=min(
@@ -8858,9 +8996,9 @@ class LlmRuntime:
             content = response["choices"][0]["message"].get("content") or ""
             raw = json.loads(content)
         except (json.JSONDecodeError, KeyError, IndexError, TypeError) as error:
-            raise ValueError("aclaración de referente con JSON inválido") from error
+            raise ValueError("aclaración de entrada con JSON inválido") from error
         if not isinstance(raw, dict) or set(raw) != {"question"}:
-            raise ValueError("aclaración de referente con forma inválida")
+            raise ValueError("aclaración de entrada con forma inválida")
         question = raw.get("question")
         if (
             not isinstance(question, str)
@@ -8873,7 +9011,7 @@ class LlmRuntime:
             or _normalized_dialogue_text(question) == _normalized_dialogue_text(current)
             or visible_text_leaks_internal_vocabulary(question)
         ):
-            raise ValueError("aclaración de referente inválida")
+            raise ValueError("aclaración de entrada inválida")
         return question
 
     def clarify_after_turn_failure(

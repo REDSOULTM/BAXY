@@ -2897,8 +2897,14 @@ def _standalone_deictic_request(objective: str, history: object = None) -> bool:
     folded = effect_intent._fold(objective).strip()
     return (
         re.fullmatch(
+            # DIALOGUE1277 H0562 «Si hazlo», «dale, hacelo»: an assent that
+            # carries the order itself («hazlo», voseo «hacelo») without any
+            # prior request names no action. It went to the model, which said
+            # it could not understand instead of asking which action.
+            r"(?:(?:si|ok|okay|dale|bueno|vale|ya|yes|yeah|sure)\s*,?\s+)?"
             r"(?:(?:por favor|please)\s*,?\s+)?(?:"
             r"haz(?:lo|\s+(?:eso|esto|aquello))|"
+            r"hace(?:lo|\s+(?:eso|esto|aquello))|"
             r"dale(?:\s+con)?\s+(?:eso|esto)|"
             r"do\s+(?:it|that|this)|"
             r"make\s+(?:it|that)\s+happen|"
@@ -2908,6 +2914,39 @@ def _standalone_deictic_request(objective: str, history: object = None) -> bool:
         )
         is not None
     )
+
+
+def _unresolved_input_kind(objective: str) -> str | None:
+    """Name an input that carries no readable request at all.
+
+    DIALOGUE1277 (H0287 «????», H0570 «1234567890», H0581 «a», H0181 «No.»,
+    H0336 «no no no…»): with nothing to read, the model answered a generic
+    help greeting, refused the letter as outside the catalog, or claimed a
+    failure to understand a plain «no». ``"noise"`` is text without a single
+    word of two letters; ``"bare_negation"`` is only negation tokens. Both
+    are answered by a clarification composed for that situation, never by
+    a guess at the meaning. A pending clarification keeps its own answer.
+    """
+
+    folded = effect_intent._fold(objective).strip()
+    if not folded:
+        return None
+    if (
+        re.fullmatch(
+            r"[\s¡!¿?.,]*(?:no|nop|nope|nah|nunca|jamas)"
+            r"(?:[\s,.!¡]+(?:no|nop|nope|nah|nunca|jamas))*[\s.!?]*",
+            folded,
+        )
+        is not None
+    ):
+        return "bare_negation"
+    if (
+        re.search(r"[a-z]{2,}", folded) is None
+        # «5+5» or «10*3» is an arithmetic expression, not noise.
+        and re.search(r"\d\s*[-+*/x×÷=^%]\s*\d", folded) is None
+    ):
+        return "noise"
+    return None
 
 
 def _general_factoid_prompt(objective: str) -> bool:
@@ -6004,19 +6043,41 @@ def _prepare_turn_result(
         and _previous_user_request(history, objective) is None
         and _deictic_open_request(objective)
     )
-    if explicit_clarification is not None or missing_open_referent:
-        if missing_open_referent:
+    unresolved_input_kind = (
+        None
+        if non_target_language is not None
+        or explicit_clarification is not None
+        or missing_open_referent
+        or _history_has_pending_clarification(history, message.get("pendingClarification"))
+        else _unresolved_input_kind(objective)
+    )
+    if (
+        explicit_clarification is not None
+        or missing_open_referent
+        or unresolved_input_kind is not None
+    ):
+        if missing_open_referent or unresolved_input_kind is not None:
             intent_operations = []
-            question = llm.clarify_missing_referent(
-                objective,
-                timeout=(
-                    DEICTIC_CLARIFICATION_CPU_BUDGET_SECONDS
-                    if os.environ.get("BAXY_MIND_NGL", "").strip() == "0"
-                    else TURN_DECIDE_RECOVERY_BUDGET_SECONDS
-                ),
+            clarification_timeout = (
+                DEICTIC_CLARIFICATION_CPU_BUDGET_SECONDS
+                if os.environ.get("BAXY_MIND_NGL", "").strip() == "0"
+                else TURN_DECIDE_RECOVERY_BUDGET_SECONDS
             )
-            if not _recovery_question_is_valid(question):
-                raise PlannerContractError("aclaración de referente inválida")
+            if unresolved_input_kind is not None:
+                question = llm.clarify_unresolved_input(
+                    objective,
+                    unresolved_input_kind,
+                    timeout=clarification_timeout,
+                )
+                if not _recovery_question_is_valid(question):
+                    raise PlannerContractError("aclaración de entrada inválida")
+            else:
+                question = llm.clarify_missing_referent(
+                    objective,
+                    timeout=clarification_timeout,
+                )
+                if not _recovery_question_is_valid(question):
+                    raise PlannerContractError("aclaración de referente inválida")
         else:
             assert explicit_clarification is not None
             intent_operations = list(explicit_clarification.operations)
@@ -6035,30 +6096,31 @@ def _prepare_turn_result(
             "question": question,
             "reply": "",
         }
-        if not missing_open_referent:
+        if not missing_open_referent and unresolved_input_kind is None:
             assert explicit_clarification is not None
             result["missingFields"] = list(explicit_clarification.missing_fields)
         if effect_request_is_authoritative(objective):
             # A new command can lack a value without supplying one for the
             # preceding request. Keep its own objective for the next answer.
             result["startsNewObjective"] = True
+        clarification_path = (
+            "unresolved_input_clarification"
+            if unresolved_input_kind is not None
+            else "deictic_referent_clarification"
+            if missing_open_referent
+            else "explicit_clarification"
+        )
         _append_turn_audit(
             {
                 "schema": "baxy.mind-turn-audit.v1",
                 "request_id": message.get("id"),
                 "phase": "final",
-                "decision_path": (
-                    "deictic_referent_clarification"
-                    if missing_open_referent else "explicit_clarification"
-                ),
+                "decision_path": clarification_path,
                 "candidate_operations": [],
                 "raw_decision": None,
                 "stages": [
                     {
-                        "name": (
-                            "deictic_referent_clarification"
-                            if missing_open_referent else "explicit_clarification"
-                        ),
+                        "name": clarification_path,
                         "mode": "clarify",
                         "operation": None,
                         "effect_operations": [],
