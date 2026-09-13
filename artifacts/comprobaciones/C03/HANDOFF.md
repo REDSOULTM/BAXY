@@ -1,3 +1,11 @@
+# MEMORY1247 adjudicado — 2026-09-13T20:08:37.716426+00:00
+
+**334/742 cubiertos, 408 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 0a07a39a2b4b17beead342ccf2b1cfad576a85283ece16070ee55f9a6e9db909. Primeras altas 24 h >= 208 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d2a7a725 con BUILD1247 (comando del conductor `turn.memory-confirm`; MEMORY1247/APP_SOURCE.json|patch).
+
+MEMORY1247 (4 literales de guardado en memoria + 4 variantes como casos de dos fases; 2 límites): 10 ejecutados, 1 aprobado, 9 fallidos, 0 créditos. Adjudicación 169cdf9537c94e979b8ce3eb1ac6203e70a4d287d7e232f53c9385cfa0a1a3d5. La instrumentación funciona: siete guardados completaron memory.save (memory_disabled) → activación confirmada por el conductor → memory.enable → memory.save, todo verificado. Causa medida del fallo: la composición del final de un guardado («La memoria se actualizó y el archivo fue guardado correctamente. No se realizaron correcciones ni acciones de replay.») inventa un archivo, verbaliza banderas internas (corrected/replayed), no dice qué se recordó y toma el idioma del segundo turno («confirmar»). Un caso (H0452) terminó sin respuesta publicable. Siguiente: MEMORY1249 con la proyección de hechos del guardado enriquecida (qué se recordó, sin banderas falsas) y el idioma del pedido original; remedición de H0157, H0149, H0452, H0506.
+
+---
+
 # MEMORY1245 adjudicado — 2026-09-13T19:56:32.461937+00:00
 
 **334/742 cubiertos, 408 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 6ca0dcf988d65edd2046001f1b00c11bb30e911984c1429e3ebbd3a1f8ecc514. Primeras altas 24 h >= 208 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 385bfb56 con BUILD1245 (analizador privado de memoria ampliado: recordá/acordate/«me recuerdes como»; MEMORY1245/APP_SOURCE.json|patch).

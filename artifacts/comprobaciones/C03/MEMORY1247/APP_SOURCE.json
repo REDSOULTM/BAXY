@@ -1,0 +1,13 @@
+{
+  "schema": "c03-memory1247-app-source-adoption-v1",
+  "status": "adopted_instrumentation_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/ProductConductorHost.cs (turn.memory-confirm); src/Baxy.App/MainWindowViewModel.cs (CaptureMemoryConfirmation)",
+  "patch": "artifacts/comprobaciones/C03/MEMORY1247/APP_SOURCE.patch",
+  "commit": "d2a7a7250a614382ee72e74dbbc4d1b08692354e",
+  "build": "BUILD1247 (C03-repairs1247-build/BUILD_READY.json)",
+  "cause_measured": "MEMORY1245: en un perfil fresco la memoria privada está desactivada; un guardado explícito termina memory_disabled y la App pide confirmar la activación (confirmación del canal privado, no del kernel), que el instrumento de un turno no podía dar.",
+  "change": "Comando del conductor turn.memory-confirm: ejecuta el turno del pedido y, sólo si el canal privado dejó pendiente exactamente la confirmación esperada, envía la respuesta cerrada «confirmar» como segundo turno; la activación continúa el guardado original. El modelo de vista expone la confirmación pendiente al conductor sólo en el hilo de UI. Nada se aprueba sin desafío pendiente.",
+  "measurement": "MEMORY1247: siete de ocho guardados completaron la secuencia memory.save (memory_disabled) → memory.enable → memory.save, verificadas; la instrumentación funciona. Cero créditos: el final de cada guardado («La memoria se actualizó y el archivo fue guardado correctamente. No se realizaron correcciones ni acciones de replay.») inventa un archivo, verbaliza banderas internas, no dice qué se recordó y responde en español a pedidos en inglés. Causa de composición documentada para MEMORY1249 (hechos memory_updated enriquecidos con lo guardado, sin banderas, idioma del pedido).",
+  "credits": 0
+}
