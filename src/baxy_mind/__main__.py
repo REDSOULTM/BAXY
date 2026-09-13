@@ -5644,10 +5644,15 @@ def _expand_effect_plan(
             prerequisite = (
                 "window.active"
                 if operation == "app.close"
-                and re.search(
-                    r"\b(?:activa|active|actual|current|cierralo|cierrala|"
-                    r"close it|cerrala|cerralo)\b",
-                    effect_intent._fold(literal_evidence),
+                and (
+                    re.search(
+                        r"\b(?:activa|active|actual|current|cierralo|cierrala|"
+                        r"close it|cerrala|cerralo)\b",
+                        effect_intent._fold(literal_evidence),
+                    )
+                    or effect_intent.deictic_close_request(
+                        effect_intent._strip_request_envelope(effect_intent._fold(literal_evidence))
+                    )
                 )
                 else prerequisites[0]
             )

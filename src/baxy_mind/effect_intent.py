@@ -1119,7 +1119,7 @@ def _curated_domain_is_grounded(
             folded, applications
         ) is not None or _authenticated_application_close_target(
             folded, applications
-        ) is not None or _has(
+        ) is not None or deictic_close_request(folded) or _has(
             folded,
             r"\b(?:aplicacion|aplicaciones|application|applications|app|apps|"
             r"programa|programas|program|programs|ventana|ventanas|"
@@ -1956,7 +1956,7 @@ def _curated_domain_is_grounded(
         "window.resize",
         "window.restore",
     }:
-        return _window_domain(folded)
+        return _window_domain(folded) or (operation == "window.active" and deictic_close_request(folded))
     if operation == "window.resolve":
         return (
             _authenticated_application_close_target(folded, application_names) is not None
@@ -4085,6 +4085,34 @@ def _authenticated_close_key(target: str, catalog: ApplicationCatalogIndex) -> s
                   if candidate == _application_name_key(resolved) or candidate in builtin.get(resolved, ())]
     keys = {_application_name_key(name) for name in candidates}
     return next(iter(keys)) if len(keys) == 1 else None
+
+
+_DEICTIC_CLOSE_REQUEST = re.compile(
+    r"^[¿?¡!\s]*(?:"
+    r"(?:cierra|cerra|cerrar|cerrame|cierrame|close)\s+"
+    r"(?:"
+    r"(?:(?:la|the|esta|this|esa|that)\s+)?(?:ventana|window)\s+(?:activa|active|actual|current)|"
+    r"(?:the\s+)?(?:active|current|foreground|front)\s+window|"
+    r"(?:esta|this|esa|that)\s+(?:ventana|window)|"
+    r"(?:la\s+)?ventana\s+(?:que\s+(?:esta|tengo)\s+)?(?:en\s+)?(?:primer\s+plano|adelante|al\s+frente)|"
+    r"(?:the\s+)?window\s+(?:in\s+front|in\s+the\s+foreground|on\s+top)|"
+    r"esto|eso|this|that|it"
+    r")|"
+    r"cierrala|cierralo|cerrala|cerralo|close\s+it"
+    r")[\s?!.]*$",
+    re.IGNORECASE,
+)
+
+
+def deictic_close_request(folded: str) -> bool:
+    """«cerrá esta ventana», «cerrala», «close the active window»: close what is in front.
+
+    The referent is the foreground window, which window.active observes and
+    the reviewed confirmation names before anything closes. A referent from
+    earlier dialogue («la que te mencioné antes») is not deictic here.
+    """
+
+    return _DEICTIC_CLOSE_REQUEST.match(folded) is not None
 
 
 def resolve_application_close_name(
@@ -8548,7 +8576,7 @@ def _is_direct_request(text: str) -> bool:
         r"manda|mandar|mandale|mandales|"
         r"arma|armar|marca|marcar|graba|grabar|record|stage|"
         r"borra|borrar|elimina|eliminar|delete|"
-        r"cierralo|cierrala|close it|dile|decile|tell|send|message|"
+        r"cierralo|cierrala|cerrala|cerralo|close it|dile|decile|tell|send|message|"
         r"programa|programar|programame|schedule|agenda|agendar|agendame|"
         r"ponme|pone|poneme|pongame|"
         r"activa|activar|desactiva|desactivar|enciende|encender|prende|prender|"
@@ -11472,7 +11500,7 @@ def _review_application_and_window_effects(
             matches.append((continued_application.start("app"), 0, "app.open"))
 
     if (
-        _head_is(head, r"(?:cierra|cerra|cerrar|cerrame|cierrame|cierres|close|cierralo|cierrala)")
+        _head_is(head, r"(?:cierra|cerra|cerrar|cerrame|cierrame|cierres|close|cierralo|cierrala|cerrala|cerralo)")
         and (
             has_named_window_target(folded)
             or _authenticated_application_close_target(folded, application_names) is not None
@@ -11498,6 +11526,7 @@ def _review_application_and_window_effects(
                 r"(?:active|current)\s+window"
                 r")[\s?!.]*$",
             )
+            or deictic_close_request(folded)
             or (
                 context_open_application
                 and _has(
@@ -11514,7 +11543,7 @@ def _review_application_and_window_effects(
             matches,
             folded,
             "app.close",
-            r"\b(?:cierra|cerra|cerrar|cerrame|cierrame|cierres|close|cierralo|cierrala)\b",
+            r"\b(?:cierra|cerra|cerrar|cerrame|cierrame|cierres|close|cierralo|cierrala|cerrala|cerralo)\b",
         )
 
     for pattern, operation in (

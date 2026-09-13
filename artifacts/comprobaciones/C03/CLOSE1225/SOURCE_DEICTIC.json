@@ -1,0 +1,17 @@
+{
+  "schema": "c03-close1225-source-adoption-deictic-v1",
+  "status": "adopted_unmeasured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_DEICTIC_CLOSE_REQUEST, deictic_close_request; dominios app.close/window.active; reconocimiento del cierre; cabezas cerrala/cerralo); src/baxy_mind/__main__.py (_expand_effect_plan: prerrequisito window.active para cierres deícticos)",
+  "patch": "artifacts/comprobaciones/C03/CLOSE1225/SOURCE_DEICTIC.patch",
+  "cause_measured": "Sonda sin GPU sobre los cinco deícticos abiertos de «Cerrar aplicaciones y ventanas»: «cerrá la ventana actual» ya llegaba a app.close con prerrequisito window.active, pero «cerrá esta ventana», «cierra esta ventana», «cerrá esto» y «cerrala» no: el reconocimiento del cierre sólo admitía «ventana activa/actual» o el clítico con una aplicación abierta en contexto, y los dominios de app.close y window.active exigían vocabulario de ventana o un nombre autenticado.",
+  "change": "Lector deíctico compartido: «cerrá esta/esa ventana», «close this window», «la ventana que está en primer plano / de adelante / al frente», «the window in front / on top», «cerrá esto/eso/this/that/it» y los clíticos «cerrala/cerralo/cierrala/cierralo/close it» como frase completa (nada después). Con él: el cierre se reconoce, app.close y window.active pasan su dominio, y el plan antepone window.active (la ventana en primer plano, que la confirmación revisada nombra antes de cerrar). «Cerrá la que te mencioné antes.» (referente de diálogo), objetos físicos, «todas las ventanas», «cerrame todo», diferidos y pasado siguen fuera.",
+  "offline_verification": "Los cinco literales y las dos variantes resuelven ('app.close',) con plan [window.active, app.close]; siete controles negativos sin efectos. Baseline del reconocedor 278 → 281 (+3 deícticos), sin pérdidas. Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": null,
+  "credits": null
+}
