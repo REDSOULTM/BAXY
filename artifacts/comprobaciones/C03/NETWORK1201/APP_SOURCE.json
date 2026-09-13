@@ -1,15 +1,23 @@
 {
   "schema": "c03-network1201-app-source-adoption-v1",
-  "status": "adopted_built_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (network.ip.list)",
   "patch": "artifacts/comprobaciones/C03/NETWORK1201/APP_SOURCE.patch",
   "owner_decision": "DECISIONES_DUENO_2026-09-13.md punto 6 («lo autorizo»): listar la IP propia sin confirmación.",
   "cause_measured": "NETWORK1161 índices 16–17: network.ip.list estaba marcada OperationRisks.PrivacySensitive, por lo que una lectura verificable exigía confirmación (unexpected_confirmation_composition, caso detenido).",
   "change": "network.ip.list pasa de PrivacySensitive a ReadOnly. Ningún otro cambio de catálogo.",
-  "build": {"campaign": "BUILD1201", "path": "C:/Users/usuario/AppData/Local/BAXY/C03-repairs1201-build", "receipt_sha256": "8c69417b215902e005929e8fdf906390a041e9deaa145769386d7cc42e81de7b", "source_fingerprint": "0b602691d1f3c6ec95adf1e2300963f37c6f3aed8df05bcfa7ed3fa2720d61ee", "build_exit": 0, "shutdown_exit": 0, "method": "main.compile_if_needed(force=False); copy published Core to effective; SDK build-server shutdown; MSBuild helpers terminated"},
+  "build": {
+    "campaign": "BUILD1201",
+    "path": "C:/Users/usuario/AppData/Local/BAXY/C03-repairs1201-build",
+    "receipt_sha256": "8c69417b215902e005929e8fdf906390a041e9deaa145769386d7cc42e81de7b",
+    "source_fingerprint": "0b602691d1f3c6ec95adf1e2300963f37c6f3aed8df05bcfa7ed3fa2720d61ee",
+    "build_exit": 0,
+    "shutdown_exit": 0,
+    "method": "main.compile_if_needed(force=False); copy published Core to effective; SDK build-server shutdown; MSBuild helpers terminated"
+  },
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "NETWORK1201.",
-  "credits": 0
+  "measurement": "NETWORK1201: cinco lecturas network.ip.list verificadas sin confirmación; +1 (H0455 con dos pares); H0568 eligió una sola dirección y H0481 agotó la composición (causas de composición, no de lectura).",
+  "credits": 1
 }

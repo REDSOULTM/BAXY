@@ -1,3 +1,13 @@
+# NETWORK1201 adjudicado — 2026-09-13T13:26:39+00:00
+
+**266/742 cubiertos, 476 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 4f6268f3e22e15e7d586e100dfdc4b4159f8110661944032a3bd61488889a22d. Primeras altas 24 h >= 140 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 956a0156 (network.ip.list ReadOnly por decisión del dueño; lector y dominio de IP; NETWORK1201/SOURCE.json|APP_SOURCE.json) con **BUILD1201** (recibo 8c69417b…; sustituye a BUILD1158 como binding de los instrumentos siguientes).
+
+NETWORK1201 (H0455, H0568, H0481 + 2 pares + 1 límite; una network.ip.list por caso): 6 ejecutados, 4 aprobados, 2 fallidos; +1 (H0455 «cuál es mi ip» → las tres direcciones observadas, con dos pares). Adjudicación 5e7d27b999cfaa70e4d32dce5a79b1f13bd884ae17d893ed08b0ed32e7009a8e. La lectura ya no exige confirmación y las cinco lecturas se verifican. Fallos: H0568 respondió una sola dirección (100.64.0.11) omitiendo la de la LAN (192.168.1.110) y la IPv6 observadas; H0481 («what's my ip address») agotó la composición y publicó un código interno. Red queda 7/21.
+
+Siguiente por masa: cierre de apps propias (20, autorizado), proveedor de carpetas conocidas (archivos, 26, autorizado); en red, la composición de la lista de direcciones (elegir una sola / agotamiento en inglés) antes de remedir H0568/H0481. Reanudación: derivar de build_network1201.py (BUILD1201); `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 4f6268f3e22e15e7d586e100dfdc4b4159f8110661944032a3bd61488889a22d`.
+
+---
+
 # TIME1199 adjudicado — 2026-09-13T13:15:39+00:00
 
 **265/742 cubiertos, 477 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA c613ad28a68dfd5382b67894715af325bd8ce9741a9a3a8ad25d4db067159a68. Primeras altas 24 h >= 139 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 628475af (cabeza de cuenta como temporizador; TIME1197/SOURCE.json|patch) con BUILD1158.

@@ -1,6 +1,6 @@
 {
   "schema": "c03-network1201-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/effect_intent.py (_ip_list_request; network.ip.list domain rule; resolve_explicit_effects)",
   "patch": "artifacts/comprobaciones/C03/NETWORK1201/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "NETWORK1201: H0455, H0568, H0481 con pares ES/EN; BUILD1201 (catálogo).",
-  "credits": 0
+  "measurement": "NETWORK1201: cinco lecturas network.ip.list verificadas sin confirmación; +1 (H0455 con dos pares); H0568 eligió una sola dirección y H0481 agotó la composición (causas de composición, no de lectura).",
+  "credits": 1
 }
