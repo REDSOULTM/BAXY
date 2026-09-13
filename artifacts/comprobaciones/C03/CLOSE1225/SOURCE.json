@@ -1,0 +1,17 @@
+{
+  "schema": "c03-close1225-source-adoption-v1",
+  "status": "adopted_unmeasured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_explicit_stable_no_effect_turn_decision: leading_negation); src/baxy_mind/effect_intent.py (effect_request_is_authoritative, _future_request_announcement)",
+  "patch": "artifacts/comprobaciones/C03/CLOSE1225/SOURCE.patch",
+  "cause_measured": "CLOSE1219–1223, tres tandas idénticas: (1) índice 10 «No cierres Chrome, lo estoy usando.» iba al modelo (decision_path model, conversación knowledge desviada: «¡Claro! ¿Qué necesitas hacer en Chrome ahora?») mientras «no cierres spotify» y «Never close Notepad on your own.» cerraban como conversación estable: la prohibición con apertura negativa exigía que el texto no tuviera coma ni punto y coma, y la coma de la justificación la excluía; (2) índice 12 «Si mañana necesito despejar la pantalla, te pediré que cierres alguna ventana.» se clasificaba como pedido autorizado con efecto diferido no soportado y el producto respondía «No puedo cerrar ventanas… Eso no forma parte de mis funciones» (falso).",
+  "change": "(1) La apertura negativa admite un separador cuando la cláusula que sigue es una justificación o estado en primera persona (lo estoy usando / porque… / I'm…), no otra petición; un segundo verbo de acción sigue dejando el turno al selector normal. (2) Un anuncio condicional de petición futura («si/cuando … te pediré que…», «if … I will ask you to…») no es un pedido autorizado ahora: deja de caer en la conversación «no soportado» y vuelve al modelo como conversación. Sin frases de salida.",
+  "offline_verification": "«No cierres Chrome, lo estoy usando.», «; lo estoy usando.», «, porque lo necesito.» → conversación estable (knowledge) sin efectos; «No cierres Chrome, abrí Paint.» y «no cierres chrome, cerrá paint» siguen sin cerrarse como prohibición (compuestos). Anuncios: la frase límite y su equivalente inglés y «cuando termine te pediré que abras Spotify» → no autorizados, sin efectos; «cierra chrome» sigue autorizado (app.close); «Si no puedes cerrar Chrome, avísame.», «cerrá chrome mañana» y «si mañana necesito, cierra chrome» conservan su lectura previa. Baseline del reconocedor 278 sin cambios. Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": null,
+  "credits": null
+}

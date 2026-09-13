@@ -2011,6 +2011,23 @@ def effect_request_is_authoritative(text: str) -> bool:
         and not _is_past_or_hypothetical_state(folded)
         and not _is_meta_or_tool_denial(folded)
         and not _has_contradictory_correction(folded)
+        and not _future_request_announcement(folded)
+    )
+
+
+def _future_request_announcement(folded: str) -> bool:
+    """«Si mañana necesito X, te pediré que cierres…» announces a request to come.
+
+    Nothing is asked now: a conditional opening followed by a first-person
+    promise to ask later is conversation, not an effect and not an unsupported
+    deferral (CLOSE1219-1223 boundary answered «no puedo cerrar ventanas»).
+    """
+
+    return _has(
+        folded,
+        r"^[¿?¡!\s]*(?:si|if|cuando|when|en\s+caso\s+de\s+que)\b.{0,160}"
+        r"\b(?:te\s+(?:lo\s+)?(?:pedire|pediria|voy\s+a\s+pedir|dire|diria|avisare|avisaria)|"
+        r"i(?:'ll|\s+will|\s+would|\s+might)\s+(?:ask|tell|let)\s+you)\b",
     )
 
 

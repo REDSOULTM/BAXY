@@ -3412,8 +3412,20 @@ def _explicit_stable_no_effect_turn_decision(
         is not None
         # A negative opening cannot cancel a later positive request. Leave
         # compound turns to the normal selector instead of forcing zero effects.
+        # A justification after the separator («No cierres Chrome, lo estoy
+        # usando», CLOSE1219-1223/010) is still the same prohibition.
         and len(effect_intent._request_clauses(folded)) == 1
-        and not any(separator in folded for separator in (",", ";"))
+        and (
+            not any(separator in folded for separator in (",", ";"))
+            or re.match(
+                r"^\s*(?:(?:que\s+)?(?:lo|la|los|las|me|te)\s+)?"
+                r"(?:estoy|estamos|esta|estan|sigo|seguimos|necesito|necesitamos|"
+                r"i'?m|i\s+am|it'?s|we'?re|they'?re|porque|because|ya\s+que)\b",
+                re.split(r"[,;]", folded, 1)[1],
+                re.IGNORECASE,
+            )
+            is not None
+        )
     )
     other_device = effect_intent._has(
         folded,
