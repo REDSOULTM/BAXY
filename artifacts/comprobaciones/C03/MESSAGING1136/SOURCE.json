@@ -1,0 +1,31 @@
+{
+  "schema": "c03-messaging1136-source-adoption-v1",
+  "status": "adopted_in_working_tree_pending_measurement",
+  "adopted_at_utc": "2026-09-13T01:15:16.346374+00:00",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py",
+  "base_llm_sha256": "43c62242ab3da7f6935f71afcc4665c89820fab8c7dbb4d64be8aac7ac225f30",
+  "result_llm_sha256": "5ab7f5984dd1fc7132ac653f982fbe12f49293cb1967ab472b144bc940c05526",
+  "result_llm_sha256_observed_after_apply": "5ab7f5984dd1fc7132ac653f982fbe12f49293cb1967ab472b144bc940c05526",
+  "patch_sha256": "c9b703d80bf3e9a01a97e955600f9f1c643fabb5e0084062f26eab13e79a4c4e",
+  "patch_sha256_observed": "c9b703d80bf3e9a01a97e955600f9f1c643fabb5e0084062f26eab13e79a4c4e",
+  "git_apply_check": "ok",
+  "byte_identical_to_proposed": true,
+  "ast_parse": "ok (mind runtime python)",
+  "change": "formulate_explicit_clarification_question: cuando operations==('message.send',) y missing_fields==('channel',), el contexto del generador omite user_request; objetivo original intacto para la continuación. Sin respuesta fija, sin regex ni capa nueva.",
+  "requires_dotnet_build": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "MESSAGING1140 (por preparar) sobre material1131 byteidéntico: H0584 índice2 y pares0/1; límites pertinentes.",
+  "diagnosis_files": {
+    "DIAGNOSIS.md": "279e4ec16334254ee49fa57c1a95828fb8cedcf3f5d4bf1428c6e583f8a6a68a",
+    "PROPOSAL.md": "580540387e8d6eaefc61826c34c2e22b528389ccb0258ae8e879e43ce8181415",
+    "REVIEW.md": "929b91005218aa7805133b4cf3f30141a3f62bc247695ad3a96a05ef4e1e0508",
+    "IDENTITY.json": "006962c3266567afdd485a4b0935085f1db23dc679418656535223877ed5e7db",
+    "source.patch": "c9b703d80bf3e9a01a97e955600f9f1c643fabb5e0084062f26eab13e79a4c4e",
+    "base.llm.py": "43c62242ab3da7f6935f71afcc4665c89820fab8c7dbb4d64be8aac7ac225f30",
+    "proposed.llm.py": "5ab7f5984dd1fc7132ac653f982fbe12f49293cb1967ab472b144bc940c05526"
+  },
+  "diagnosis_identity_sha256": "006962c3266567afdd485a4b0935085f1db23dc679418656535223877ed5e7db",
+  "credits": 0
+}

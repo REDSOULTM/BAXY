@@ -9253,13 +9253,18 @@ class LlmRuntime:
             raise ValueError("contrato explícito de aclaración no canónico")
 
         response_language = _message_response_language(objective)
+        context = {
+            "user_request": str(objective)[:16_384],
+            "recognized_operations": list(operations),
+            "missing_information": list(missing_fields),
+            "response_language": response_language,
+        }
+        if operations == ("message.send",) and missing_fields == ("channel",):
+            # The pending objective retains the message and its participants.
+            # Asking only for its channel does not require paraphrasing them.
+            del context["user_request"]
         context_json = json.dumps(
-            {
-                "user_request": str(objective)[:16_384],
-                "recognized_operations": list(operations),
-                "missing_information": list(missing_fields),
-                "response_language": response_language,
-            },
+            context,
             ensure_ascii=False,
             separators=(",", ":"),
         )

@@ -1,0 +1,43 @@
+{
+  "schema": "time1139-precision-probes-v1",
+  "utc": "2026-09-13T01:19:49.115318+00:00",
+  "executed_by": "root (Claude Fable 5.1)",
+  "purpose": "Aislar dónde se pierden las fracciones de segundo entre dueUtc y NextRunTime (TIME1130/TIME1134) antes de cualquier parche o nueva medición.",
+  "product_run": false,
+  "gpu": false,
+  "baxy_alarm_tasks_touched": 0,
+  "baxy_alarm_baseline_count_before_after": 910,
+  "probe_a_no_registration": {
+    "input_due_utc": "2026-09-13T01:00:44.270822Z",
+    "due_local_ticks": 639248472442708220,
+    "new_scheduledtasktrigger_at_startboundary": "2026-09-13T01:00:44Z",
+    "startboundary_after_direct_assignment": "2026-09-12T22:00:44.270822-03:00",
+    "conclusion": "New-ScheduledTaskTrigger -At descarta las fracciones (y formatea en UTC); la propiedad StartBoundary del objeto CIM acepta fracciones en memoria."
+  },
+  "probe_b_registered_via_cmdlet": {
+    "task_name": "BAXY-PrecisionProbe1139-962954109c45458faec960a548451663",
+    "absent_before": true,
+    "trigger_startboundary_before_register": "2027-01-15T09:34:56.789012-03:00",
+    "registered_startboundary": "2027-01-15T09:34:56-03:00",
+    "next_run_time_local": "2027-01-15T09:34:56.0000000-03:00",
+    "export_xml_startboundary": "2027-01-15T09:34:56-03:00",
+    "unregistered_exact": true,
+    "absent_after": true
+  },
+  "probe_c_registered_via_xml": {
+    "task_name": "BAXY-PrecisionProbe1139x-d240ab6015ca46c2a3a4fb3e0b58b1cf",
+    "absent_before": true,
+    "xml_startboundary_submitted": "2027-01-15T09:34:56.789012-03:00",
+    "registered_startboundary": "2027-01-15T09:34:56-03:00",
+    "next_run_time_local": "2027-01-15T09:34:56.0000000-03:00",
+    "export_xml_startboundary": "2027-01-15T09:34:56-03:00",
+    "unregistered_exact": true,
+    "absent_after": true
+  },
+  "demonstrated": "El servicio Programador de tareas de Windows 11 (10.0.26200) normaliza StartBoundary y NextRunTime a segundos enteros por las dos vías disponibles (cmdlet y XML/COM). La pérdida no es del provider ps1 ni de New-ScheduledTaskTrigger únicamente: aunque el trigger conserve fracciones, el registro las descarta.",
+  "not_demonstrated": "No se probó la interfaz COM ITaskService directamente sin XML; MS-TSCH y put_StartBoundary documentan formato a segundos, coherente con lo observado.",
+  "consequence_for_sealed_criterion": "dueUtc fraccional == NextRunUtc con tolerancia0 es insatisfacible en esta plataforma. Ningún parche del provider lo cumple sin que el producto programe en segundos enteros; ese redondeo/ajuste de criterio es decisión del dueño (prohibido hacerlo unilateralmente para dar pass).",
+  "product_patch_proposed": false,
+  "tests_run": false,
+  "resumption": "Con decisión del dueño: (a) producto calcula due al segundo entero (ceil) en effect/main y lo publica tal cual; (b) criterio: due==NextRun exacto y due dentro de [lower+dur, upper+dur+1s] o equivalente. Entonces medir TIME1134 índices11→0/1/2 con instrumento v7 (sin repetir10 con el candidato actual)."
+}

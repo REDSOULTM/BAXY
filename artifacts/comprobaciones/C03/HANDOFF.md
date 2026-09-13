@@ -1,3 +1,15 @@
+# Relevo Fable activo — 2026-09-13T01:20:15.781361+00:00
+
+**Escritor raíz: Claude Fable 5.1 (sesión Claude Code 250e1a56-9daa-4ae6-a51f-44fe3a271a6d), rama codex/kiro-goal-c03, goal GoalC03.txt. Codex 01a08e22 sigue pausado.** Sin tests/dueñas/Fast/Full por orden del dueño; nada se declara verde.
+
+203/742 cubiertos,539 abiertos,0NA;0/35 categorías cerradas;C03 formal3/11. Registro SHA17e4991cf2e6a6d49647d1177ab0fef236563b78699ca2aa8192820ba49f93b2. Primeras altas24h: última H0137 AGENDA1121 (2026-09-13T00:1xZ); la cifra>=77 caduca a medida que avanza la ventana, recalcular al acreditar.
+
+Hecho en este relevo: TIME1134 índice10 adjudicado FAIL sin reejecutar (TIME1134/ROOT_ADJUDICATION.json; final útil, precisión fallida). MESSAGING1136 verificado físicamente y adoptado: llm.py5ab7f5984dd1fc7132ac653f982fbe12f49293cb1967ab472b144bc940c05526 (sólo Python, BUILD1125 vigente). TIME1139: tres sondas demuestran que el Programador de tareas normaliza a segundos por cmdlet y por XML (TIME1139/PROBES.md); criterio sellado insatisfacible, decisión del dueño pendiente, sin parche ni reinterpretación. RAM liberada cerrando ChatGPT/Codex app y build servers (autorizado).
+
+Siguiente inmediato: MESSAGING1140 (material1131 byteidéntico, instrumento nuevo con pins actuales): orden2→0→1, luego límites3/4/5/7; índice6 excluido. Observación fresca de WhatsApp.Root/Discord obligatoria (WhatsApp.Root pid15036 en segundo plano al llegar).
+
+---
+
 # Pausa por orden del dueño — relevo a Fable — 2026-09-13T01:07:02.092721+00:00
 
 **Codex detenido. No reanudar esta sesión sin nueva orden del dueño. C03 no está terminado ni bloqueado técnicamente.** Leer `PROMPT_FABLE_C03.md` y `FABLE_PAUSE_STATE.json`: sustituyen el siguiente paso/pipeline del handoff histórico de abajo.
