@@ -3919,8 +3919,13 @@ def _explicit_browser_navigation_arguments(
 ) -> dict[str, object] | None:
     """Canonicalize literal destinations and searches under public policy."""
 
-    if effect_intent._symbolic_web_destination(evidence) is not None:
+    destination = effect_intent._symbolic_web_destination(evidence)
+    if destination is not None and re.fullmatch(
+        effect_intent._NAMED_PUBLIC_SITE, effect_intent._fold(destination)
+    ) is None:
         # Its identity must come from the verified search, never a site-name map.
+        # The closed public names below (youtube, gmail, github, chatgpt) are the
+        # one exception the effect reader already relies on (WEB1257/1259).
         return None
     named_search = effect_intent._named_browser_search(evidence)
     if named_search is not None:

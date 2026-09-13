@@ -2857,6 +2857,31 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
     }
 
+    private string ComposeRequestText()
+    {
+        // The closed confirmation word («confirmar», «confirm», «cancelar»)
+        // answers a challenge; the reply still describes the request that
+        // raised it. WEB1257 composed «Sí, confirmo que se navegó a…» against
+        // «confirmar» after a reviewed navigation.
+        string? fallback = null;
+        for (int index = Messages.Count - 1; index >= 0; index--)
+        {
+            ConversationMessage message = Messages[index];
+            if (!message.IsUser)
+            {
+                continue;
+            }
+
+            fallback ??= message.Body;
+            if (ConfirmationReplyParser.Parse(message.Body) == ConfirmationReplyKind.Invalid)
+            {
+                return message.Body;
+            }
+        }
+
+        return fallback ?? string.Empty;
+    }
+
     private void AddMessage(
         string speaker,
         string body,
@@ -2881,9 +2906,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 messageEvent ?? UserMessageEvent.Status);
             // A private continuation answers the request that started it; the
             // last user message may be only its closed confirmation word.
-            string userText = composeUserText
-                ?? Messages.LastOrDefault(static message => message.IsUser)?.Body
-                ?? string.Empty;
+            string userText = composeUserText ?? ComposeRequestText();
             JsonObject facts = ModelMessageComposer.CreateFacts(
                 draft,
                 _currentTurnTraceId,
