@@ -24,11 +24,12 @@ public static class BaxyVisibleClickNative {
   [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hwnd, out RECT rect);
   [StructLayout(LayoutKind.Sequential)] public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
   public static IntPtr LargestVisible(IntPtr hwnd) {
-    GetWindowThreadProcessId(hwnd, out uint procId);
+    // Windows PowerShell 5.1 compiles Add-Type with C# 5: no inline out declarations (UI1273).
+    uint procId; GetWindowThreadProcessId(hwnd, out procId);
     IntPtr best=hwnd; long bestArea=0;
     EnumWindows((top,unused)=>{
       if(!IsWindowVisible(top)) return true;
-      GetWindowThreadProcessId(top, out uint owner);
+      uint owner; GetWindowThreadProcessId(top, out owner);
       if(owner!=procId) return true;
       RECT r; if(!GetWindowRect(top,out r)) return true;
       long area=(long)Math.Max(0,r.Right-r.Left)*Math.Max(0,r.Bottom-r.Top);
