@@ -8239,7 +8239,7 @@ def _is_direct_request(text: str) -> bool:
         r"recorre|reveal|revela|read\s+(?:out|back)|name|"
         r"senala|point\s+out|indaga|hunt\s+through|"
         r"senalame|echale\s+un\s+vistazo|have\s+a\s+look|look\s+at|"
-        r"pull\s+up|pasame|sacame|take\s+stock|inventory|"
+        r"pull\s+up|pasame|sacame|tirame|take\s+stock|inventory|"
         r"quisiera|i\s+would\s+like|reune|gather|repasa|"
         r"pon\s+a\s+la\s+vista|bring\b.{0,48}\binto\s+view|"
         r"bring\s+me\s+up\s+to\s+date|dejame|armame|track\s+down|"

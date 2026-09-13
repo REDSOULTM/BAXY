@@ -1,0 +1,17 @@
+{
+  "schema": "c03-system1175-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py",
+  "patch": "artifacts/comprobaciones/C03/SYSTEM1175/SOURCE.patch",
+  "cause_measured": "SYSTEM1175 índice 3 («tirame cuánta memoria tengo»): el mind propuso system.status; turn-audit muestra domain_grounding → conversation/unsupported y domain_confirmation → clarify («¿Quieres que te diga cuánta memoria tienes?»); ninguna lectura. Sonda sin GPU: _system_status_domain es True, pero la regla curada de system.status exige además _is_direct_request, y la cabeza «tirame» (rioplatense: dame/decime) no está en la lista de cabezas de pedido (sí «pasame», «sacame»); «cuánta memoria tengo» y «decime cuánta memoria tengo» sí son directas.",
+  "change": "«tirame» se añade a las cabezas de pedido de _is_direct_request, junto a «pasame» y «sacame». Sin frases de salida; ninguna capa nueva. Las elipsis sin antecedente («y disco?», «Y espacio?») no cambian: no son actos de pedido y quedan como causa documentada.",
+  "offline_verification": "Sonda: operation_domain_is_grounded True para «tirame cuánta memoria tengo» y «tirame el estado del disco»; False sigue para «y disco?». scratchpad/c03-recogniser-baseline.py compare sin regresiones.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "SYSTEM1177: H0532 con dos pares de memoria.",
+  "credits": 0
+}
