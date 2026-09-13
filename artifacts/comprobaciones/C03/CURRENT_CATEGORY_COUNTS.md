@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación NOTES1142
+# Categorías actuales — adjudicación KNOWLEDGE1144
 
-215/742 cubiertos; 527 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 89 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140 + H0511 en NOTES1141 + 10 en NOTES1142), sin revalidaciones. Registro canónico SHA256: 882f9bf821bd00d34baf492ddc6a5090a96a18e95977274f555dfb4c9d848203.
+217/742 cubiertos; 525 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 91 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140 + H0511 en NOTES1141 + 10 en NOTES1142 + 2 en KNOWLEDGE1144), sin revalidaciones. Registro canónico SHA256: 53c9974cf2e4b718971670a4870d9441b65eb33f8e091c6303eafd2ffa6b4f70.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -17,8 +17,8 @@
 | Interacción dentro de aplicaciones | 22 | 0 | 22 |
 | Red y Bluetooth | 21 | 1 | 20 |
 | Cerrar aplicaciones y ventanas | 20 | 0 | 20 |
-| Conocimiento, razonamiento y creatividad verbal | 37 | 18 | 19 |
 | Pantalla, captura e interpretación visual | 19 | 0 | 19 |
+| Conocimiento, razonamiento y creatividad verbal | 37 | 20 | 17 |
 | Brillo y pantalla | 17 | 0 | 17 |
 | Información web actual | 17 | 0 | 17 |
 | Estado de hardware y sistema | 40 | 25 | 15 |

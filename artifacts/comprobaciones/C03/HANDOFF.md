@@ -1,3 +1,11 @@
+# KNOWLEDGE1144 adjudicado — 2026-09-13T03:05:38.190385+00:00
+
+**217/742 cubiertos,525 abiertos,0NA;0/35 categorías cerradas;C03 formal3/11. Registro SHA53c9974cf2e4b718971670a4870d9441b65eb33f8e091c6303eafd2ffa6b4f70. Primeras altas24h>=91 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD1abb667a con BUILD1143 (App: comparación por palabra completa en LooksLikeOutOfWorldRequest).
+
+KNOWLEDGE1144 (24 objetos sin efectos: 9 literales, 10 variantes, 5 límites): 24 ejecutados,17 aprobados,7 fallidos;+2 (H0142 chiste, H0253 conversión). Adjudicacióna4d1af785ea4af098b9e81dfda49563548d687c441d9f6cbf121fda4cf322a7c. Cuatro literales aprobados sin crédito por un solo par aprobado (juego: Tetris con creador inventado; comparación: Hulk/Thor ganador universal; contenido libre: pez espada inventado). Causas de fuente demostradas: «SIEMPRE» del SYSTEM_PROMPT publicado como respuesta (H0297; fuga ya vista en CLOCK1034, veto genérico retirado en 1036) y pregunta de elección de idioma inducida por la enumeración de idiomas (H0211, igual que KNOWLEDGE998). Siguiente: corregir el prompt (minúscula y «sin ofrecer elegir idioma»), medir con IDENTITY/CONVERSATION (12+12 abiertos, sin efectos) y residual de conocimiento con pares nuevos.
+
+---
+
 # NOTES1142 adjudicado — 2026-09-13T02:42:18.511647+00:00
 
 **215/742 cubiertos,527 abiertos,0NA;0/35 categorías cerradas;C03 formal3/11. Registro SHA882f9bf821bd00d34baf492ddc6a5090a96a18e95977274f555dfb4c9d848203. Primeras altas24h>=89 (+10).** Escritor raíz Fable. Sin tests por orden del dueño.

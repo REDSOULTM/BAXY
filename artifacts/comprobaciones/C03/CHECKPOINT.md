@@ -1,3 +1,25 @@
+## KNOWLEDGE1144 — estado vigente 2026-09-13T03:05:00+00:00
+
+Parcial: 17 aprobados, 7 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 217/742 | 525 | 0 | >=91 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 28 Kiro + 49 retorno + H0584 (MESSAGING1140) + H0511 (NOTES1141) + 10 (NOTES1142), todas dentro de la ventana de 24 h al adjudicar; KNOWLEDGE1144 añade dos. No se cuentan revalidaciones ni verification_updated_at.
+
+Siguiente acción: KNOWLEDGE1144: 24 ejecutados, 17 aprobados, 7 fallidos; +2 (H0142 chiste, H0253 conversión). Cuatro literales aprobados siguen sin crédito por un solo par aprobado en su conducta (H0236 juego; H0239/H0582 comparación; H0703/H0030 contenido libre): los pares que fallaron lo hicieron por hechos inventados del modelo (Tetris, pez espada) o por afirmar un ganador universal. Causas de fuente demostradas: «SIEMPRE» del SYSTEM_PROMPT publicado como respuesta (H0297) y pregunta de elección de idioma inducida por la enumeración de idiomas (H0211). Siguiente: corregir el prompt (minúscula, «sin ofrecer elegir idioma»), medir en la tanda de identidad/conversación con H0211/H0297 y pares nuevos de juego/comparación/contenido libre.
+
+Evidencia: `artifacts/comprobaciones/C03/KNOWLEDGE1144/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 434.78 s acumulados; pico GPU 3497.56 MiB; pico RAM 2084.21 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 24; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque KNOWLEDGE1144 precedente. -->
+
 ## NOTES1142 — estado vigente 2026-09-13T02:41:00+00:00
 
 Parcial: 20 aprobados, 5 fallidos, 0 sin ejecutar; 10 créditos.

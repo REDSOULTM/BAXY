@@ -1,0 +1,249 @@
+{
+  "schema": "knowledge1144-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-knowledge1144-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-knowledge1144-instrument-v1",
+  "seal_sha256": "0b7b5b48713a3fbe3cace54b975c6c71cf26be2435528d949bcfbfe02a72deac",
+  "runner_sha256": "0fa21d944e68cea109df751e03ec58896c6a35efdc2853c547cb2415bd3c80a1",
+  "transport_seal_sha256": "5d71a39bd329ae12e5e86af72ad62d96e6436718c5c1e7444175eb901f647036",
+  "files": {
+    "panel.json": "9dc7ff0057f4976525f5ad6440e106eed0b5f86ee9e5e38ec54f8f4f34547877",
+    "turns.jsonl": "07828b4c09aefb265d18e735b000162f3007ed4d67661e2a424ab61ab6825e08",
+    "case-map.json": "392333576c43302c57f57d4c3206c08170b4666ce938fa932140b7559a49e8f9",
+    "PLAN.md": "43f6b25232aa469ce42c0b931ce465e3b85c5f1090135e2fecfe6b0fda497fcc"
+  },
+  "counts": {
+    "cases": 24,
+    "historical_literals": 9,
+    "original_development_variants": 10,
+    "boundaries": 5,
+    "wire_lines": 48,
+    "session_controls": 24,
+    "ordinary_turns": 24,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 24,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 9,
+    "original_development_variant": 10,
+    "boundary": 5
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0142",
+      "kind": "historical_literal",
+      "group": "joke",
+      "credit_behavior": "joke",
+      "text_sha256": "2c47ee83232d5047517245881a5cc9f37546859e30923aef52748d678e2b3cad",
+      "criterion_sha256": "fe2b67718e59b7314560b655674cac4508c02a124925525e5b6c5c8512320c19"
+    },
+    {
+      "index": 1,
+      "case_id": "H0211",
+      "kind": "historical_literal",
+      "group": "joke",
+      "credit_behavior": "joke",
+      "text_sha256": "42e2b7df448c7044f6aea5c9078f3627ba2c640d87e2ea6389e1f7a64ff38eec",
+      "criterion_sha256": "fe2b67718e59b7314560b655674cac4508c02a124925525e5b6c5c8512320c19"
+    },
+    {
+      "index": 2,
+      "case_id": "H0236",
+      "kind": "historical_literal",
+      "group": "game_fact",
+      "credit_behavior": "game_fact",
+      "text_sha256": "4a9e67bcca4d8491c79519d7935a4911fe634b3fa6c2ebc54b7daa2575f85608",
+      "criterion_sha256": "1eae6ee5c63316300cbfb70735e66591f7180fc09e50740483369cf2c16976e5"
+    },
+    {
+      "index": 3,
+      "case_id": "H0239",
+      "kind": "historical_literal",
+      "group": "comparison",
+      "credit_behavior": "comparison",
+      "text_sha256": "4c8bfcb37ef1b6e4a077754d463725b180ed974fee6c017f705bb53196b8ddbe",
+      "criterion_sha256": "485454f4ffb44baf01d6a60b9b1aaa3029bbace4164a4d2fcc08ddc1d3f42caf"
+    },
+    {
+      "index": 4,
+      "case_id": "H0582",
+      "kind": "historical_literal",
+      "group": "comparison",
+      "credit_behavior": "comparison",
+      "text_sha256": "caa36a9dddc2ee9ed8ce1f1533ad36075e12bd49b46e5f0be70c733b921dabbb",
+      "criterion_sha256": "485454f4ffb44baf01d6a60b9b1aaa3029bbace4164a4d2fcc08ddc1d3f42caf"
+    },
+    {
+      "index": 5,
+      "case_id": "H0253",
+      "kind": "historical_literal",
+      "group": "unit_conversion",
+      "credit_behavior": "unit_conversion",
+      "text_sha256": "51746271bfce13b932cb0d89a4237fcac530c8a340aea5e99b4919b9a8ed2f6c",
+      "criterion_sha256": "1d7fd68b3e7bba68ff4823119884524817381157daf0a5cfb253bb46e96d2eb3"
+    },
+    {
+      "index": 6,
+      "case_id": "H0703",
+      "kind": "historical_literal",
+      "group": "free_content",
+      "credit_behavior": "free_content",
+      "text_sha256": "f40ceda226d499045ec79b95bbbfb9a70fa342a2dc0653739a5fe8f9ae588069",
+      "criterion_sha256": "17c45b2b32c3d5477370176d6d865e4166a5ab3b53798541a69407b68f1700fd"
+    },
+    {
+      "index": 7,
+      "case_id": "H0297",
+      "kind": "historical_literal",
+      "group": "free_content",
+      "credit_behavior": "free_content",
+      "text_sha256": "60f44dd1f54dd2ec2c59a5d2617cd3f69cb093c1396d6177675e5ca996f1dbac",
+      "criterion_sha256": "17c45b2b32c3d5477370176d6d865e4166a5ab3b53798541a69407b68f1700fd"
+    },
+    {
+      "index": 8,
+      "case_id": "H0030",
+      "kind": "historical_literal",
+      "group": "free_content",
+      "credit_behavior": "free_content",
+      "text_sha256": "09966b857883b83f531fe54b2c0c2e310a10cbb3f7b630338d35f1d168984847",
+      "criterion_sha256": "17c45b2b32c3d5477370176d6d865e4166a5ab3b53798541a69407b68f1700fd"
+    },
+    {
+      "index": 9,
+      "case_id": "knowledge1144-dev-01",
+      "kind": "original_development_variant",
+      "group": "joke",
+      "credit_behavior": "joke",
+      "text_sha256": "18668ab423782124850547b4ab01b8f34652eb55f0b0889ad56d4786e00c38f4",
+      "criterion_sha256": "fe2b67718e59b7314560b655674cac4508c02a124925525e5b6c5c8512320c19"
+    },
+    {
+      "index": 10,
+      "case_id": "knowledge1144-dev-02",
+      "kind": "original_development_variant",
+      "group": "joke",
+      "credit_behavior": "joke",
+      "text_sha256": "be9f838b652ebfe5c9673d6cf6777b06396f5e1dc9dd2182bdcad76a18795801",
+      "criterion_sha256": "fe2b67718e59b7314560b655674cac4508c02a124925525e5b6c5c8512320c19"
+    },
+    {
+      "index": 11,
+      "case_id": "knowledge1144-dev-03",
+      "kind": "original_development_variant",
+      "group": "game_fact",
+      "credit_behavior": "game_fact",
+      "text_sha256": "0b2051feb0735ef2006f3b921a2060552e18bfcf9fff74d2ac414582910a91e2",
+      "criterion_sha256": "1eae6ee5c63316300cbfb70735e66591f7180fc09e50740483369cf2c16976e5"
+    },
+    {
+      "index": 12,
+      "case_id": "knowledge1144-dev-04",
+      "kind": "original_development_variant",
+      "group": "game_fact",
+      "credit_behavior": "game_fact",
+      "text_sha256": "d55fe06b07aa812d0f266d58d804d54a681deb69dd3bfc9ec4bea307f4740acc",
+      "criterion_sha256": "1eae6ee5c63316300cbfb70735e66591f7180fc09e50740483369cf2c16976e5"
+    },
+    {
+      "index": 13,
+      "case_id": "knowledge1144-dev-05",
+      "kind": "original_development_variant",
+      "group": "comparison",
+      "credit_behavior": "comparison",
+      "text_sha256": "e405474b887cd7348dd000b7146605fab92fb5af02f9a866c20f969d25634c31",
+      "criterion_sha256": "485454f4ffb44baf01d6a60b9b1aaa3029bbace4164a4d2fcc08ddc1d3f42caf"
+    },
+    {
+      "index": 14,
+      "case_id": "knowledge1144-dev-06",
+      "kind": "original_development_variant",
+      "group": "comparison",
+      "credit_behavior": "comparison",
+      "text_sha256": "e44d65220e9d0e3ca35a3199115a01a5cc142978674ce1203247724b6fb4250e",
+      "criterion_sha256": "485454f4ffb44baf01d6a60b9b1aaa3029bbace4164a4d2fcc08ddc1d3f42caf"
+    },
+    {
+      "index": 15,
+      "case_id": "knowledge1144-dev-07",
+      "kind": "original_development_variant",
+      "group": "unit_conversion",
+      "credit_behavior": "unit_conversion",
+      "text_sha256": "433e24449f7f81250deb79d0e09d324beff4042314e4ac75ee0408eeac1f2941",
+      "criterion_sha256": "1d7fd68b3e7bba68ff4823119884524817381157daf0a5cfb253bb46e96d2eb3"
+    },
+    {
+      "index": 16,
+      "case_id": "knowledge1144-dev-08",
+      "kind": "original_development_variant",
+      "group": "unit_conversion",
+      "credit_behavior": "unit_conversion",
+      "text_sha256": "846aee7ee39b956997164ca839719f1f96c193e287d1b2d48952bdcce936e3e2",
+      "criterion_sha256": "1d7fd68b3e7bba68ff4823119884524817381157daf0a5cfb253bb46e96d2eb3"
+    },
+    {
+      "index": 17,
+      "case_id": "knowledge1144-dev-09",
+      "kind": "original_development_variant",
+      "group": "free_content",
+      "credit_behavior": "free_content",
+      "text_sha256": "9d370804da8e5fa3002f1eee6b64cf57e4bdc6d8f265a55d4219412a7d31377f",
+      "criterion_sha256": "17c45b2b32c3d5477370176d6d865e4166a5ab3b53798541a69407b68f1700fd"
+    },
+    {
+      "index": 18,
+      "case_id": "knowledge1144-dev-10",
+      "kind": "original_development_variant",
+      "group": "free_content",
+      "credit_behavior": "free_content",
+      "text_sha256": "d5f89ea097581d9314da384324200cbb9692b61324a23f21cd94c068d380146e",
+      "criterion_sha256": "17c45b2b32c3d5477370176d6d865e4166a5ab3b53798541a69407b68f1700fd"
+    },
+    {
+      "index": 19,
+      "case_id": "knowledge1144-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "a82612e196b2a573a421ee2ab367a524f6d1b17a7f3c140f9dda0b1c33c3ff25",
+      "criterion_sha256": "2c852cf00790a88a804bb78ab41ad0381b789ff8a38acf8d3892db7573a5012e"
+    },
+    {
+      "index": 20,
+      "case_id": "knowledge1144-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "be6059874ed1945f085ea3d97e98beeb5e05f5c85ce798cb71e80f12ff1ba342",
+      "criterion_sha256": "39d5741d29f6edf61a784441ca2d79f93524e31513099c947ebe9925204e9153"
+    },
+    {
+      "index": 21,
+      "case_id": "knowledge1144-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "23a28192fde501d81517f6d2c60d44c21e4ade295bf2d5c50db48f286ab04f17",
+      "criterion_sha256": "68ec96ee6dc600ff52966e0034e25bc5d6f856e2cf2ca3562df0f90a4d2a09aa"
+    },
+    {
+      "index": 22,
+      "case_id": "knowledge1144-boundary-04",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "51171c7929c4be0a8bd099bd8f85165f6706978ac54fdfd25eb9c7fa8f2e80cb",
+      "criterion_sha256": "75d35b1aa8b90c3c5741fe6391474f831ac5bfb37e3e5947ada295741f879c8a"
+    },
+    {
+      "index": 23,
+      "case_id": "knowledge1144-boundary-05",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "904b81fbbf53feac3709a38b8f2f618e7dc6bb430d4d3a1924a6e3a608dad071",
+      "criterion_sha256": "fa2ccdbc43ab69caf85dda18a1b1343c85b39a28ab8731ad6e6caa42e9f77734"
+    }
+  ]
+}
