@@ -1223,5 +1223,23 @@
     "llm_sha256": "aaa43426f64b892fea731cfab71fcb489bd3a7b5441524fabedb5c8069dd85b5",
     "next": "TIME1118 indices10/11 variants then0/1/2 literals, exact own cleanup",
     "tests_run": false
+  },
+  "currentContinuation": {
+    "campaign": "TIME1118-v3",
+    "utc": "2026-09-13T00:22:26.450289+00:00",
+    "covered": 203,
+    "open": 539,
+    "notApplicable": 0,
+    "adjudication": "TIME1118/ROOT_ADJUDICATION.json",
+    "next": "TIME1129 integration; TIME1130 indices10/11 before literals0/1/2",
+    "goalStatus": "active"
+  },
+  "currentSourceCandidate": {
+    "campaign": "TIME1129",
+    "effect_intent_sha256": "7a9ab53fb4087504452579ab579b39e9989bfd10a90fb165a4449a54f12ffa38",
+    "main_sha256": "d80c95dff4309df45d95774910bc44700e2660e63656b8e5fb2f30b33950a2d7",
+    "llm_sha256": "aaa43426f64b892fea731cfab71fcb489bd3a7b5441524fabedb5c8069dd85b5",
+    "testsRun": false,
+    "status": "integrating_for_product_measurement"
   }
 }

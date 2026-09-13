@@ -3882,50 +3882,8 @@ def _explicit_location_search_arguments(evidence: str) -> dict[str, object] | No
     return {"query": query}
 
 
-_TEMPORAL_NUMBER_WORDS = {
-    "one": 1,
-    "un": 1,
-    "una": 1,
-    "uno": 1,
-    "two": 2,
-    "dos": 2,
-    "three": 3,
-    "tres": 3,
-    "four": 4,
-    "cuatro": 4,
-    "five": 5,
-    "cinco": 5,
-    "six": 6,
-    "seis": 6,
-    "seven": 7,
-    "siete": 7,
-    "eight": 8,
-    "ocho": 8,
-    "nine": 9,
-    "nueve": 9,
-    "ten": 10,
-    "diez": 10,
-    "eleven": 11,
-    "once": 11,
-    "twelve": 12,
-    "doce": 12,
-    "fifteen": 15,
-    "quince": 15,
-    "twenty": 20,
-    "veinte": 20,
-    "thirty": 30,
-    "treinta": 30,
-    "forty five": 45,
-    "cuarenta y cinco": 45,
-    "sixty": 60,
-    "sesenta": 60,
-}
-_TEMPORAL_NUMBER_PATTERN = (
-    r"(?:[0-9]{1,3}|forty five|cuarenta y cinco|fifteen|quince|twenty|"
-    r"veinte|thirty|treinta|sixty|sesenta|one|un|una|uno|two|dos|three|"
-    r"tres|four|cuatro|five|cinco|six|seis|seven|siete|eight|ocho|nine|"
-    r"nueve|ten|diez|eleven|once|twelve|doce)"
-)
+_TEMPORAL_NUMBER_WORDS = effect_intent._TEMPORAL_NUMBER_WORDS
+_TEMPORAL_NUMBER_PATTERN = effect_intent._TEMPORAL_NUMBER_PATTERN
 
 
 def _temporal_number(token: str) -> int | None:

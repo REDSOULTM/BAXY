@@ -1,0 +1,1 @@
+Fuente1129 integrada por raíz tras revisión completa del parche, diagnóstico y consumidores; hashes físicos verificados. Traslada constantes existentes sin añadir números; unifica reconocimiento de alarma directa. Sin tests/build por orden del dueño y cambio sólo Python. Resultado funcional pendiente TIME1130. Fallos10/11 de1118 preservados,0créditos.

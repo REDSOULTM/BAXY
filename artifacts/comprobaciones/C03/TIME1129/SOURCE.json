@@ -1,0 +1,35 @@
+{
+  "schema": "time1129-temporal-recognition-repair-v1",
+  "owners": {
+    "src/baxy_mind/effect_intent.py": {
+      "base_sha256": "efe84e4ce53672c7e171eeee84be79c76e436836dff316a9c44421644d4846ce",
+      "result_sha256": "7a9ab53fb4087504452579ab579b39e9989bfd10a90fb165a4449a54f12ffa38"
+    },
+    "src/baxy_mind/__main__.py": {
+      "base_sha256": "1024f9a43d5b21430994aed3df0aec459af0bb8295c9f26e234c65d63838636b",
+      "result_sha256": "d80c95dff4309df45d95774910bc44700e2660e63656b8e5fb2f30b33950a2d7"
+    }
+  },
+  "files": {
+    "source.patch": "9d836240000f95c3d390a7e4f96a66dd04834a7eee9281c2a690da6d3b67e5d7",
+    "DIAGNOSIS.md": "9420b02a188cb8c22c90d1976ebab42530b38706856c1de1621743aece0f3d96",
+    "PROPOSAL.md": "42d8ec12a7732bcb3e10480832b2a871b1c98ff3576cd80ea326f24452e0cbda",
+    "REVIEW.md": "f7af259fe004bf6949ae2e07bb05674fc8e4f12db99609168865f31d3a46512c"
+  },
+  "evidence_pins": {
+    "C:/Users/usuario/AppData/Local/BAXY/C03-time1118-instrument-v3/private/run-10/turn-audit.jsonl": "163dc7277cbd53bf9ff530b241a900c1230bbc9074b20558b1a6f789aa5c09a7",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-time1118-instrument-v3/private/run-10/raw-replies.jsonl": "f1a6d05cbc3301c303b345363db35d2a371b18f46c32daced0e4731f41599b72",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-time1118-instrument-v3/private/run-10/shell-trace.jsonl": "5ff5c71f7ffbfba9359ef86ade8ee02c3d32834f597be9165640297ce328bbfa",
+    "C:/Users/usuario/AppData/Local/BAXY/C03-time1118-instrument-v3/private/run-11/turn-audit.jsonl": "a69e5fa04cb5f18391a76253bf409ec14554de71c1d86c0359582a05faee2ea3",
+    "D:/Perfil/Escritorio/ETC/Programacion/BAXY DEFINITIVO/artifacts/comprobaciones/C03/ALARM_PANEL978/ROOT_ADJUDICATION.json": "1fc61f353e0be34a42fe8049cc0df1f425aa4692dafb94654966a09279c1344e",
+    "D:/Perfil/Escritorio/ETC/Programacion/BAXY DEFINITIVO/artifacts/comprobaciones/C03/ALARM_REPAIR983/ROOT_ADJUDICATION.json": "849a1f5bed5bf5d67a09ff3c310c86a6bbc875747474c54c0a852323044097b6"
+  },
+  "combined_main_with_contract_preservation_sha256": "b8b840df0c935fa44aee8bf19972ddb8cb8d388b6f0c5a5489becca1cbe19f6f",
+  "combined_main_not_written": true,
+  "contract_preservation_patch_sha256": "7be459efeef102d2a94705fac81abd67bc5ac76f35119eaf35c0d091765876f1",
+  "llm_unchanged_sha256": "aaa43426f64b892fea731cfab71fcb489bd3a7b5441524fabedb5c8069dd85b5",
+  "canonical_modified": false,
+  "product_executed": false,
+  "tests_run": false,
+  "credit": 0
+}

@@ -2259,6 +2259,52 @@ def _time_only_reminder_request(folded: str) -> bool:
     return direct_clock or dated_clock
 
 
+_TEMPORAL_NUMBER_WORDS = {
+    "one": 1,
+    "un": 1,
+    "una": 1,
+    "uno": 1,
+    "two": 2,
+    "dos": 2,
+    "three": 3,
+    "tres": 3,
+    "four": 4,
+    "cuatro": 4,
+    "five": 5,
+    "cinco": 5,
+    "six": 6,
+    "seis": 6,
+    "seven": 7,
+    "siete": 7,
+    "eight": 8,
+    "ocho": 8,
+    "nine": 9,
+    "nueve": 9,
+    "ten": 10,
+    "diez": 10,
+    "eleven": 11,
+    "once": 11,
+    "twelve": 12,
+    "doce": 12,
+    "fifteen": 15,
+    "quince": 15,
+    "twenty": 20,
+    "veinte": 20,
+    "thirty": 30,
+    "treinta": 30,
+    "forty five": 45,
+    "cuarenta y cinco": 45,
+    "sixty": 60,
+    "sesenta": 60,
+}
+_TEMPORAL_NUMBER_PATTERN = (
+    r"(?:[0-9]{1,3}|forty five|cuarenta y cinco|fifteen|quince|twenty|"
+    r"veinte|thirty|treinta|sixty|sesenta|one|un|una|uno|two|dos|three|"
+    r"tres|four|cuatro|five|cinco|six|seis|seven|siete|eight|ocho|nine|"
+    r"nueve|ten|diez|eleven|once|twelve|doce)"
+)
+
+
 def _reminder_has_actionable_due(folded: str) -> bool:
     """Require a literal instant or duration, not merely a calendar day."""
 
@@ -2267,9 +2313,7 @@ def _reminder_has_actionable_due(folded: str) -> bool:
         or _has(
             folded,
             r"\b(?:(?:en|in|dentro de|within)\s+)?"
-            r"(?:\d+|una?|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|"
-            r"diez|once|doce|one|two|three|four|five|six|seven|eight|nine|"
-            r"ten|eleven|twelve)\s+"
+            rf"{_TEMPORAL_NUMBER_PATTERN}\s+"
             r"(?:minutos?|minutes?|horas?|hours?|dias?|days?)"
             r"(?:\s+(?:from now|desde ahora))?\b",
         )
@@ -6093,6 +6137,40 @@ def _wake_alarm_request(text: str) -> bool:
     )
 
 
+def _direct_alarm_schedule_request(text: str) -> bool:
+    """Read an alarm speech act, allowing its bounded time before the verb."""
+
+    folded = _strip_request_envelope(_fold(text))
+    if _wake_alarm_request(folded):
+        return True
+    if (
+        _is_negative_effect_clause(folded)
+        or _is_meta_or_tool_denial(folded)
+        or _is_past_or_hypothetical_state(folded)
+        or _has_contradictory_correction(folded)
+        or _other_device_effect_scope(folded)
+        or _has(folded, r'["“”«»;]|\b(?:if|si)\b')
+    ):
+        return False
+    temporal = re.match(
+        rf"^(?:(?:in|en|dentro de|within)\s+)?"
+        rf"(?:{_CLOCK_TIME_SELECTOR}|{_BOUNDED_TEMPORAL_SELECTOR})\s*[, :]\s*",
+        folded,
+    )
+    body = _strip_request_envelope(folded[temporal.end():]) if temporal else folded
+    return (
+        len(_request_clauses(body)) == 1
+        and _has(body, r"\b(?:alarm|alarma)\b")
+        and _has(
+            body,
+            rf"^(?:(?:please|por\s+favor)\s+)?"
+            rf"(?:{_SCHEDULING_VERB}|new|nueva|ring|sound)\b|\bwake\s+up\s+alarm\b",
+        )
+        and _reminder_has_actionable_due(folded)
+        and not _has(body, r"\b(?:check|comprueba|revisa|is\s+there|hay)\b")
+    )
+
+
 def _literal_memo_payload(text: str) -> str | None:
     """Return the payload of a compact ``create a memo to ...`` request."""
 
@@ -7214,7 +7292,7 @@ _SEARCH = r"(?:busc[aá]|buscar|encuentra|search|find|look\s+up)"
 # recognized prefix and silently dropping the rest of the request.
 _COVERAGE_ACTION_HEAD = (
     rf"(?:{_OPEN}|{_LIST}|{_READ}|{_CLOCK_READ_HEAD}|{_CREATE}|{_SEARCH}|{_SET_VOLUME_VERB}|"
-    r"haz|toma|captura|take|capture|dejar|put|"
+    r"haz|toma|captura|take|capture|dejar|put|ring|sound|"
     rf"{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB}|bajalo|subelo|"
     r"pone|arranca|cambiar|get rid|"
     rf"reduce|increment|decrease|silencia|silenciame|mute|{_UNMUTE_VERB}|mutea|mutear|"
@@ -7618,9 +7696,7 @@ _BOUNDED_TEMPORAL_SELECTOR = (
     r"(?:\d{1,2}(?::\d{2})?|una|dos|tres|cuatro|cinco|seis|siete|ocho|"
     r"nueve|diez|once|doce|one|two|three|four|five|six|seven|eight|nine|"
     r"ten|eleven|twelve)(?:\s*(?:a\.?\s*m\.?|p\.?\s*m\.?))?\b|"
-    r"\b(?:una|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|"
-    r"once|doce|one|two|three|four|five|six|seven|eight|nine|ten|"
-    r"eleven|twelve|\d+)\s+"
+    rf"\b{_TEMPORAL_NUMBER_PATTERN}\s+"
     r"(?:minutos?|minutes?|horas?|hours?|dias?|days?)\b"
 )
 
@@ -8107,6 +8183,7 @@ def _is_direct_request(text: str) -> bool:
         or _explicit_google_search_query(text) is not None
         or _resume_existing_media(text)
         or _media_transport_action(text)
+        or _direct_alarm_schedule_request(text)
     ):
         return True
     request_head = (
@@ -13669,17 +13746,7 @@ def resolve_explicit_effects(
     )
     if "notification.diagnose" in available and alarm_status_request:
         return EffectIntent(("notification.diagnose",), (folded,))
-    direct_alarm_schedule = _wake_alarm_request(folded) or (
-        _has(folded, r"\b(?:alarm|alarma)\b")
-        and _has(
-            folded,
-            r"^(?:(?:please|por\s+favor)\s+)?(?:new|nueva|set|pon|"
-            r"programa|create|crea|ring)\b|\bwake\s+up\s+alarm\b",
-        )
-        and _has(folded, rf"(?:{_CLOCK_TIME_SELECTOR}|{_BOUNDED_TEMPORAL_SELECTOR})")
-        and not _has(folded, r"\b(?:check|comprueba|revisa|is\s+there|hay)\b")
-    )
-    if "notification.schedule" in available and direct_alarm_schedule:
+    if "notification.schedule" in available and _direct_alarm_schedule_request(folded):
         return EffectIntent(("notification.schedule",), (folded,))
     direct_named_website = (
         re.fullmatch(

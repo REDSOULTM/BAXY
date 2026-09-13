@@ -1,3 +1,17 @@
+## TIME1118 v3 — dos fallos temporales; reparación1129
+
+203/742 cubiertos,539 abiertos,0 no aplican;>=77 primeras altas en24h (28Kiro+49retorno),0/35 categorías cerradas; C03 formal3/11. Dos variantes ejecutadas:0pass2fail,23casos sin ejecutar,0créditos.
+
+“In eight minutes, sound an alarm for me.” recibió “I cannot sound an alarm for you in eight minutes as requested.”; “Poneme una alarma dentro de quince minutos.” recibió “¿A qué hora exacta quieres que suene la alarma?”. Ambas EXIT0,una admisión y un terminal; ninguna creó tareas o ejecutó operaciones ajenas a memory.status. No se canceló nada. Los literales permanecen abiertos. Fallo previo de observación v2 separado, sin producto.
+
+Tiempo46,39s; pico GPU3497,56MiB frente a4096MiB; pico RAM del árbol1562,73MiB, no consumo exclusivo del modelo. Sin tests por instrucción del dueño. Adjudicación raíz: TIME1118/ROOT_ADJUDICATION.json.
+
+TIME1129 reutiliza las constantes temporales del binder en reconocimiento/incompletitud, y unifica la identificación de alarma directa con la selección existente. Conserva microsegundos1117 y todas las expectativas. Integración pendiente de medición, sin declarar validación verde. Siguiente: TIME1130,material25casos/50líneas idéntico1118,sello e327e6b64fa12bb22dfc416fdd5df7d72bd167f7b2215953c227bcafd793f28f; medir10/11 antes de0/1/2. Goal activo.
+
+---
+
+Rige este relevo sobre el siguiente historial. Fuente1129 effect7a9ab53fb4087504452579ab579b39e9989bfd10a90fb165a4449a54f12ffa38 y main d80c95dff4309df45d95774910bc44700e2660e63656b8e5fb2f30b33950a2d7, llmaaa434 intacto. Instrumento C03-time1130-instrument-v4 revisado por delta completo desdev3; BUILD1079 sigue vigente. Después: contrato MESSAGING con main combinado b8b840df0c935fa44aee8bf19972ddb8cb8d388b6f0c5a5489becca1cbe19f6f, BUILD1125 pendiente y material1131. INSTALL1128 diez condicionados a pertenencia local Steam no verificable, sin panel. MUSIC1127 parche generativo pendiente; DIALOGUE1126 sin causa suficiente para nuevo parche.
+
 # Handoff C03 — continuación activa tras DIALOGUE1123 y fuenteTIME1117
 
 Objetivo: completar C03 y acreditar encuesta mediante literales útiles y fieles en producto real, más dos variantes pertinentes. Rama codex/kiro-goal-c03; main intacto. Goal activo, formal3/11. Raíz único escritor canónico y dueño GPU; máximo2 secundarios por RAM. Orden posterior del dueño: NO tests, dueñas, Fast o Full; no afirmar verdes. Builds sólo si necesarios, sellos SHA y medición real obligatorios.
