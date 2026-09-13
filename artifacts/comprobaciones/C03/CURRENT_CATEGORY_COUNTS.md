@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación TIME1193
+# Categorías actuales — adjudicación TIME1195
 
-258/742 cubiertos; 484 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 132 primeras altas (129 anteriores + 3 en TIME1193; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 7200c06118646411a9715298aa3092d7925c58136d835ef9e26ab9764093199d.
+260/742 cubiertos; 482 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 134 primeras altas (132 anteriores + 2 en TIME1195; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 66dc02551868029017ab0156f6c51f7a5d5df09c5a2936fb388e0523b7d40f03.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -13,7 +13,7 @@
 | Mensajería | 31 | 6 | 25 |
 | Abrir aplicaciones | 54 | 29 | 25 |
 | Audio y volumen | 51 | 27 | 24 |
-| Alarmas, recordatorios, tareas y agenda | 38 | 27 | 11 |
+| Alarmas, recordatorios, tareas y agenda | 38 | 29 | 9 |
 | Interacción dentro de aplicaciones | 22 | 0 | 22 |
 | Red y Bluetooth | 21 | 6 | 15 |
 | Cerrar aplicaciones y ventanas | 20 | 0 | 20 |

@@ -1,0 +1,159 @@
+{
+  "schema": "time1195-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1195-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-time1195-instrument-v1",
+  "seal_sha256": "354c1a014cf976dc30e89113693fe5c17337c939df57f947a20adb3f3970a81e",
+  "runner_sha256": "0f03d24267b1f2ae70628b876c73b89040c91a8248ef9ea142b018a08a2dd001",
+  "transport_seal_sha256": "ed735ec5e45f40e9a406aeaa0e2ff2570f926d466d00d4297d767219048a7ac4",
+  "files": {
+    "panel.json": "2f7b2cedee6f3089752ec0c34bf105576160ab7d1fa4a043dd3f4554cb1e0d21",
+    "turns.jsonl": "8f72c0b9f1877639186b92235175c9e78341e006aa2f779f91b2291ebd7eec78",
+    "case-map.json": "65bc3ad9098500060a22e3861865f75f824c0cc1a272817f5d9a100ac48c40a9",
+    "PLAN.md": "4c27a4dd82b6ed425b3baaf80af52c2561b553cc5219b83fc06f54f564bf2570"
+  },
+  "counts": {
+    "cases": 14,
+    "historical_literals": 5,
+    "original_development_variants": 8,
+    "boundaries": 1,
+    "wire_lines": 28,
+    "session_controls": 14,
+    "ordinary_turns": 14,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 14,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 5,
+    "original_development_variant": 8,
+    "boundary": 1
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0121",
+      "kind": "historical_literal",
+      "group": "time_only_reminder",
+      "credit_behavior": "time_only_reminder",
+      "text_sha256": "2676f7f23faf65b8d70db0cdc4344ed9f85b9bcd1001d72830e0613f61ed731c",
+      "criterion_sha256": "3e637e0d96368a97f3e71218074dc109cf5b31cbfaf37c8034162e5c93ce76fc"
+    },
+    {
+      "index": 1,
+      "case_id": "H0343",
+      "kind": "historical_literal",
+      "group": "time_only_reminder",
+      "credit_behavior": "time_only_reminder",
+      "text_sha256": "70841d0dfc55ee9d788f286030db80ea436b68a0410065506c314069c5bf4ed6",
+      "criterion_sha256": "3e637e0d96368a97f3e71218074dc109cf5b31cbfaf37c8034162e5c93ce76fc"
+    },
+    {
+      "index": 2,
+      "case_id": "H0222",
+      "kind": "historical_literal",
+      "group": "ambiguous_hour",
+      "credit_behavior": "ambiguous_hour",
+      "text_sha256": "47b8fafc4bfbbdc72e966273c6497b40cc6d8e9946dcfe22fca28340e6b248d5",
+      "criterion_sha256": "eb00c006c60b1618a3ad0123120588d652921adc1ec06ffe787a201f73c08075"
+    },
+    {
+      "index": 3,
+      "case_id": "H0371",
+      "kind": "historical_literal",
+      "group": "invalid_hour",
+      "credit_behavior": "invalid_hour",
+      "text_sha256": "7bd6d30baf65bc4c49aadabc062e3a62957eaa7feacdcf831c13a610ef30a83c",
+      "criterion_sha256": "a686edac254c83402ea3133fadf5002e3560a21c45bfc6cc947fe8c51952882e"
+    },
+    {
+      "index": 4,
+      "case_id": "H0585",
+      "kind": "historical_literal",
+      "group": "reminder_without_time",
+      "credit_behavior": "reminder_without_time",
+      "text_sha256": "cb4f1acabd2f4956b794dea1b285166b1bfcd29bf62e9ff5f5887c4c11002729",
+      "criterion_sha256": "d0a96e209042e7a247a2b8a4ae5a83abeafd0901974232616b387979e5511607"
+    },
+    {
+      "index": 5,
+      "case_id": "time1195-dev-01",
+      "kind": "original_development_variant",
+      "group": "time_only_reminder",
+      "credit_behavior": "time_only_reminder",
+      "text_sha256": "627bff515411692e7f49264dfcbe60b91680ddeaaaf5983b1a8f1544118a5fe8",
+      "criterion_sha256": "3e637e0d96368a97f3e71218074dc109cf5b31cbfaf37c8034162e5c93ce76fc"
+    },
+    {
+      "index": 6,
+      "case_id": "time1195-dev-02",
+      "kind": "original_development_variant",
+      "group": "time_only_reminder",
+      "credit_behavior": "time_only_reminder",
+      "text_sha256": "cc0397a42815c1c1b9f4a0f8199b6f0a3b8d57ff9f8cf3322ba02f8efa9228e9",
+      "criterion_sha256": "3e637e0d96368a97f3e71218074dc109cf5b31cbfaf37c8034162e5c93ce76fc"
+    },
+    {
+      "index": 7,
+      "case_id": "time1195-dev-03",
+      "kind": "original_development_variant",
+      "group": "ambiguous_hour",
+      "credit_behavior": "ambiguous_hour",
+      "text_sha256": "a1955cdbb060178082eb7afbdde0aea3de8d0c22f87b0d860cf5205cbaed6f6f",
+      "criterion_sha256": "eb00c006c60b1618a3ad0123120588d652921adc1ec06ffe787a201f73c08075"
+    },
+    {
+      "index": 8,
+      "case_id": "time1195-dev-04",
+      "kind": "original_development_variant",
+      "group": "ambiguous_hour",
+      "credit_behavior": "ambiguous_hour",
+      "text_sha256": "3409e84cca445019bf29b0a79796e58b29d9cf67cc603bd43d034eb4847c280b",
+      "criterion_sha256": "eb00c006c60b1618a3ad0123120588d652921adc1ec06ffe787a201f73c08075"
+    },
+    {
+      "index": 9,
+      "case_id": "time1195-dev-05",
+      "kind": "original_development_variant",
+      "group": "invalid_hour",
+      "credit_behavior": "invalid_hour",
+      "text_sha256": "6ff9f70387643cb69dc4adcc64732eb6902564823533f85c58e434b27599e714",
+      "criterion_sha256": "a686edac254c83402ea3133fadf5002e3560a21c45bfc6cc947fe8c51952882e"
+    },
+    {
+      "index": 10,
+      "case_id": "time1195-dev-06",
+      "kind": "original_development_variant",
+      "group": "invalid_hour",
+      "credit_behavior": "invalid_hour",
+      "text_sha256": "0c3167f1f516b13240841511cdd28a21f36982a4270de94260522dca0a1583e6",
+      "criterion_sha256": "a686edac254c83402ea3133fadf5002e3560a21c45bfc6cc947fe8c51952882e"
+    },
+    {
+      "index": 11,
+      "case_id": "time1195-dev-07",
+      "kind": "original_development_variant",
+      "group": "reminder_without_time",
+      "credit_behavior": "reminder_without_time",
+      "text_sha256": "daed01d567a923a1005f78ed29bed330f5bcae72ff509ad627b2bfb9804a7972",
+      "criterion_sha256": "d0a96e209042e7a247a2b8a4ae5a83abeafd0901974232616b387979e5511607"
+    },
+    {
+      "index": 12,
+      "case_id": "time1195-dev-08",
+      "kind": "original_development_variant",
+      "group": "reminder_without_time",
+      "credit_behavior": "reminder_without_time",
+      "text_sha256": "4764495b6d00b808d78e37dd9f5131ed183f69f68ab2069a354880707da037d7",
+      "criterion_sha256": "d0a96e209042e7a247a2b8a4ae5a83abeafd0901974232616b387979e5511607"
+    },
+    {
+      "index": 13,
+      "case_id": "time1195-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "9d312b55b1f9f3fd033f3380a60f01103b5ce559836975e9c858280b069125b4",
+      "criterion_sha256": "4d03768b45f830844a54f4996d8797dd9b911a5ed57ed62f541bc950d88d4179"
+    }
+  ]
+}

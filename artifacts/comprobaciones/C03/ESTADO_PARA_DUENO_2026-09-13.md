@@ -1,3 +1,25 @@
+## TIME1195 — estado vigente 2026-09-13T12:56:31+00:00
+
+Parcial: 9 aprobados, 5 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 260/742 | 482 | 0 | >=134 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 132 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; TIME1195 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: TIME1195 completa: 14 ejecutados, 9 aprobados, 5 fallidos, 2 créditos (H0222 hora ambigua, H0585 recordatorio sin cuándo). Demostrado: la hora imposible pide una hora válida (H0371 y su par español) y las aclaraciones deterministas de periodo y de cuándo son precisas. Fallos: los avisos con plazo pero sin contenido (H0121, H0343 y sus dos pares) no tienen aclaración determinista: el modelo vuelve a pedir el plazo o inventa el contenido y crea el recordatorio; el par inglés de hora imposible agotó la composición (código interno). Siguiente: aclaración determinista «qué avisar» para aviso con plazo sin contenido; causa del rechazo de composición en inglés; remedir H0121/H0343/H0371 con pares.
+
+Evidencia: `artifacts/comprobaciones/C03/TIME1195/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 222.97 s acumulados; pico GPU 3497.56 MiB; pico RAM 1724.02 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 14; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque TIME1195 precedente. -->
+
 ## TIME1193 — estado vigente 2026-09-13T12:44:41+00:00
 
 Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 3 créditos.

@@ -17,7 +17,7 @@ mide en cuanto la condición se resuelva o el dueño decida.
 | Mensajería | 25 | 7 | Tras 1140 quedan literales con destinatario/canal reales: enviar exige clientes y terceros (prohibido enviar por encuesta). Elegibles: aclaraciones y lecturas sin envío. | Panel de aclaraciones restantes sobre llm1136. |
 | Apps | 25 | 6 | HUECO_LEXICO_APPS: 4 reparables por léxico tras localizar guardia previa; resto destinos ausentes (Photoshop, Steel, Mortal Kombat), erratas de transcripción con nota del dueño (preguntar/contexto), idiomas fuera de alcance (3 sin marca), compuesto con reloj. Respuesta veraz negativa/aclaración es acreditable si es útil. | Sonda settrace de la guardia + tanda de ausentes/erratas. |
 | Audio | 24 | 1 | AUDIO1137: sin parche barato; reconocimiento de dirección/alcance sin cantidad requiere gramática nueva (2 literales). | Diseño acotado en effect_intent. |
-| Agenda | 11 | 2 | Resuelta el 2026-09-13: el dueño decidió (DECISIONES_DUENO, punto 3) publicar el segundo entero hacia arriba; reparación TIME1139/SOURCE.json medida en TIME1185 (+2, seis tareas con due == NextRun). Resto del material 1134 medible con el mismo criterio. | Derivar de build_time1185.py; índices 3–9 y 14–24 del material 1134. |
+| Agenda | 9 | 0 | Resuelta el 2026-09-13: el dueño decidió (DECISIONES_DUENO, punto 3) publicar el segundo entero hacia arriba; reparación TIME1139/SOURCE.json medida en TIME1185 (+2, seis tareas con due == NextRun). Resto del material 1134 medible con el mismo criterio. | Derivar de build_time1185.py; índices 3–9 y 14–24 del material 1134. |
 
 Sin condición externa y con mecanismo demostrado: **notas** (12 abiertos, 8 llegan a
 `note.create`/`note.list`, mecanismo demostrado en TASK_NOTE_REPAIR986 con 7/12 y +4),

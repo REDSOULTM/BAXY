@@ -1,3 +1,13 @@
+# TIME1195 adjudicado — 2026-09-13T12:56:31+00:00
+
+**260/742 cubiertos, 482 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 66dc02551868029017ab0156f6c51f7a5d5df09c5a2936fb388e0523b7d40f03. Primeras altas 24 h >= 134 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 179e23c9 (hora imposible → hora válida; TIME1193/SOURCE.json|patch) con BUILD1158.
+
+TIME1195 (agenda incompleta: H0121, H0343, H0222, H0371, H0585 + 8 pares + 1 límite; sin efectos autorizados): 14 ejecutados, 9 aprobados, 5 fallidos; +2 (H0222 «a las 5» → pregunta mañana/tarde; H0585 «comprar pilas» → pregunta cuándo). Adjudicación 6ef192e84845ef57b21157b493d9be6fffb2c2c292c9b03d720c5ea4d79c30cc. La hora imposible ya pide una hora válida (H0371 aprobado; sin crédito porque su par inglés «13 pm» agotó la composición y publicó un código interno). Fallos: los avisos con plazo sin contenido (H0121, H0343, «Avisame en 45 minutos.») vuelven a pedir el plazo dado (el lector determinista da intención de recordatorio sin aclaración y el modelo formula los campos del esquema), y «Remind me in ten minutes.» creó un recordatorio con el texto del pedido como contenido (efecto no autorizado, confinado al perfil aislado; caso detenido). Agenda queda 29/38.
+
+Siguiente: aclaración determinista «qué avisar» para aviso con plazo sin contenido (effect_intent._incomplete_scheduled_request) y causa del rechazo de composición del par inglés de hora imposible; remedir H0121/H0343/H0371 con pares (TIME1197). Después: cierre de apps propias (20), proveedor de carpetas conocidas (26), network.ip.list (build). Reanudación: derivar de build_time1195.py; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 66dc02551868029017ab0156f6c51f7a5d5df09c5a2936fb388e0523b7d40f03`.
+
+---
+
 # TIME1193 adjudicado — 2026-09-13T12:44:41+00:00
 
 **258/742 cubiertos, 484 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 7200c06118646411a9715298aa3092d7925c58136d835ef9e26ab9764093199d. Primeras altas 24 h >= 132 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6ed05ccf (hora explícita: lectura plegada, periodo sobre 24 h, recordatorios con hora; TIME1191/SOURCE.json|patch) con BUILD1158.
