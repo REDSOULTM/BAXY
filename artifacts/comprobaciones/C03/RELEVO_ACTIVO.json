@@ -152,26 +152,26 @@
     "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "SYSTEM1181 adjudicado: 3 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.",
+  "workStatus": "SYSTEM1183 adjudicado: 7 aprobados, 3 fallidos, 0 sin ejecutar; 1 créditos.",
   "executionPausedByOwner": false,
   "branch": "codex/kiro-goal-c03",
-  "checkpoint": "245/742 cubiertos, 497 abiertos, 0 no aplican. SYSTEM1181: 0 créditos explícitos de raíz.",
+  "checkpoint": "246/742 cubiertos, 496 abiertos, 0 no aplican. SYSTEM1183: 1 créditos explícitos de raíz.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
   "surveyVerificationCounts": {
-    "covered": 245,
-    "open": 497,
+    "covered": 246,
+    "open": 496,
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "ac4f3eb9b5a30810e23bb64b90e9758cbc553f45812a07de4e17b3b57cd0eaf6",
+  "surveyRegistrySha256": "09492539214b67cce0cec175c350d16984bec406e0da8130437814dde9b79ea2",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
-  "surveyCoverageLast24h": 119,
-  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–13 septiembre: 119 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; SYSTEM1181 no añade. No se cuentan revalidaciones.",
+  "surveyCoverageLast24h": 120,
+  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–13 septiembre: 119 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; SYSTEM1183 añade 1 (H0607). No se cuentan revalidaciones.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-13T11:15:05+00:00",
+  "utcUpdated": "2026-09-13T11:29:43+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -621,7 +621,7 @@
     "freeze_ended_at": "2026-09-12T13:33:18.245252-03:00",
     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
   },
-  "updatedAtUtc": "2026-09-13T11:15:05+00:00",
+  "updatedAtUtc": "2026-09-13T11:29:43+00:00",
   "currentContinuation1065": {
     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
     "quality": {
@@ -1975,5 +1975,30 @@
       "ram_peak_mib": 1639.5625
     },
     "next": "SYSTEM1181 completa: 5 ejecutados, 3 aprobados, 2 fallidos, 0 créditos. La reparación de la elipsis nominal se demuestra: «Y espacio?», «y disco?», «¿Y el disco?» y «And the disk?» leen el disco en vez de pedir confirmación (en SYSTEM1175 los dos literales confirmaban). Lo que impide acreditar es la etiqueta «disponibles en total» sobre total_usable en español (2 de 3 lecturas en español), el mismo defecto medido en memoria (SYSTEM1173/1177): sólo se resuelve renombrando las claves de la proyección de medidas (contrato con tests no ejecutables por orden del dueño). Estado de hardware queda 28/40; no remedir disco ni memoria sin ese cambio."
+  },
+  "currentContinuation1183": {
+    "head": "432d1a02c972a9e4373429aa56ff98134ab96fc7",
+    "quality": {
+      "passed": 7,
+      "failed": 3,
+      "executed": 10,
+      "not_executed": 0,
+      "sealed_total": 8,
+      "segments_started": 10,
+      "aborted_before_admission": 0
+    },
+    "new_credits": 1,
+    "credited_ids": [
+      "H0607"
+    ],
+    "registry_sha256": "09492539214b67cce0cec175c350d16984bec406e0da8130437814dde9b79ea2",
+    "survey": 246,
+    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\SYSTEM1183\\ROOT_ADJUDICATION.json",
+    "resources": {
+      "seconds_sum": 166.17199999999139,
+      "gpu_peak_mib": 3497.55859375,
+      "ram_peak_mib": 1606.94140625
+    },
+    "next": "SYSTEM1183 completa: 10 ejecutados, 7 aprobados, 3 fallidos, 1 crédito (H0607). El renombrado de claves (total/free/used) se demuestra: ninguna de las seis lecturas llama «disponible» al total (antes 2 de 3). Fallos restantes: H0508 llama «instalados» al total (la instalada es 17,18 GB): confusión total/instalada del modelo, distinta de la anterior; los dos pares de memoria con pedido doble (total + libre) terminan en aclaración porque la recuperación léxica de candidatos no propone system.status (candidate_operations vacío → explicit_conversation → unsupported → recuperación): reparar la recuperación de candidatos para «cuánta RAM… y cuánta queda libre» antes de remedir H0532. Estado de hardware queda 29/40."
   }
 }

@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación SYSTEM1181
+# Categorías actuales — adjudicación SYSTEM1183
 
-245/742 cubiertos; 497 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 119 primeras altas (118 anteriores + 1 en SYSTEM1175; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: ac4f3eb9b5a30810e23bb64b90e9758cbc553f45812a07de4e17b3b57cd0eaf6.
+246/742 cubiertos; 496 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 120 primeras altas (119 anteriores + 1 en SYSTEM1183; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 09492539214b67cce0cec175c350d16984bec406e0da8130437814dde9b79ea2.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -21,7 +21,7 @@
 | Conocimiento, razonamiento y creatividad verbal | 37 | 22 | 15 |
 | Brillo y pantalla | 17 | 0 | 17 |
 | Información web actual | 17 | 0 | 17 |
-| Estado de hardware y sistema | 40 | 28 | 12 |
+| Estado de hardware y sistema | 40 | 29 | 11 |
 | Organizar ventanas y pestañas | 13 | 0 | 13 |
 | Conversación social y ayuda general | 31 | 25 | 6 |
 | Estado de ventanas y aplicaciones | 14 | 2 | 12 |

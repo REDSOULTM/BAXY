@@ -1,3 +1,13 @@
+# SYSTEM1183 adjudicado — 2026-09-13T11:29:43+00:00
+
+**246/742 cubiertos, 496 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 09492539214b67cce0cec175c350d16984bec406e0da8130437814dde9b79ea2. Primeras altas 24 h >= 120 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 432d1a02 (measurement_prose_projection: claves total/free/used; SYSTEM1181/SOURCE.json|patch, autorizado por el dueño) con BUILD1158.
+
+SYSTEM1183 (H0508, H0532, H0607 + 6 pares por grupo + 1 límite; system.status de sólo lectura): 10 ejecutados, 7 aprobados, 3 fallidos; +1 (H0607 «y disco?» → 485,74 GB total, 107,98 GB libres, 377,76 GB utilizados, con dos pares). Adjudicación 7a73c00541ee8b34c12649e4fe712aff8ab09962905a667900ce17911f7a5f56. El renombrado de claves se demuestra: ninguna de las seis lecturas llama «disponible» al total. Fallos: H0508 llama «instalados» al total (la instalada observada es 17,18 GB: confusión total/instalada del modelo, nueva); los dos pares de memoria con pedido doble («cuánta RAM tengo y cuánta queda libre») terminan en aclaración porque la recuperación léxica de candidatos no propone system.status (turn-audit: candidate_operations vacío → explicit_conversation → unsupported → recuperación); H0532 aprobado sin crédito por ello. Estado de hardware queda 29/40.
+
+Siguiente: (1) recuperación léxica de candidatos para el pedido doble de memoria (sonda sin GPU en __main__/retrieval) y remedir H0532 con pares simples + dobles; (2) TIME1139 opción a (segundo entero hacia arriba, publicado; instrumento v7) — 23 abiertos; (3) cierre de apps propias (20) sin autorización por app (DECISIONES_DUENO punto 4); (4) network.ip.list sin PrivacySensitive (App, build); (5) proveedor de carpetas conocidas (archivos, ≥10). Reanudación: derivar desde build_system1183.py; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 09492539214b67cce0cec175c350d16984bec406e0da8130437814dde9b79ea2`.
+
+---
+
 # SYSTEM1181 adjudicado — 2026-09-13T11:15:05+00:00
 
 **245/742 cubiertos, 497 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA ac4f3eb9b5a30810e23bb64b90e9758cbc553f45812a07de4e17b3b57cd0eaf6. Primeras altas 24 h >= 119 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 2e075c93 (effect_intent: el dominio de system.status acepta la elipsis nominal de alcance; SYSTEM1177/SOURCE.json|patch) con BUILD1158.

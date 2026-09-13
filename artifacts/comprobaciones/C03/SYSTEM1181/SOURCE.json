@@ -1,6 +1,6 @@
 {
   "schema": "c03-system1181-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/measurement_prose_projection.py (+ llm.py scope line, tests/test_system_measurement_prose_projection.py)",
   "patch": "artifacts/comprobaciones/C03/SYSTEM1181/SOURCE.patch",
@@ -12,8 +12,10 @@
   "no_new_layer": true,
   "build_required": false,
   "tests_run": false,
-  "tests_edited_not_run": ["tests/test_system_measurement_prose_projection.py"],
+  "tests_edited_not_run": [
+    "tests/test_system_measurement_prose_projection.py"
+  ],
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "SYSTEM1183: H0508, H0532, H0607 con pares por grupo.",
-  "credits": 0
+  "measurement": "SYSTEM1183: seis lecturas verificadas de memoria/disco, ninguna llama «disponible» al total (antes 2 de 3); +1 H0607 con dos pares de disco. Nuevo residual: H0508 llama «instalados» al total (installed_capacity 17,18 GB distinto); pares dobles de memoria sin candidato (recuperación léxica).",
+  "credits": 1
 }
