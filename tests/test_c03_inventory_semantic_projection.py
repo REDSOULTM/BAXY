@@ -36,7 +36,7 @@ def observation(count=2, total=7, offset=0, complete=True):
     "Lista mis windows.", "Which ventanas tengo abiertas?",
     "Cuenta mis ventanas, please.", "How many windows are visible right now?",
 ])
-@pytest.mark.parametrize("count", [1, 20, 50])
+@pytest.mark.parametrize("count", [1, 7, 10])
 def test_identity_requests_keep_every_entry_and_its_multiplicity(user_text, count):
     situation = observation(count, count + 4)
     original = copy.deepcopy(situation)
@@ -48,6 +48,44 @@ def test_identity_requests_keep_every_entry_and_its_multiplicity(user_text, coun
     assert payload["seen"]["count"] == count
     assert payload["seen"]["totalCount"] == count + 4
     assert situation == original
+
+
+@pytest.mark.parametrize("user_text", [
+    "Lista las ventanas.", "Which windows are open?", "Mostrame qué tengo abierto.",
+])
+@pytest.mark.parametrize("count,total", [(11, 11), (20, 22), (50, 50)])
+def test_large_list_requests_name_a_bounded_titled_first_subset(user_text, count, total):
+    situation = observation(count, total)
+    for index in (0, 2, 4):
+        situation["observed"]["windows"][index]["title"] = ""
+    original = copy.deepcopy(situation)
+    seen = _compose_situation_payload(situation, "es", user_text)["seen"]
+    titled = [w for w in original["observed"]["windows"] if w["title"]]
+    untitled = [w for w in original["observed"]["windows"] if not w["title"]]
+    assert seen["windows"] == [
+        {"title": w["title"], "processName": w["processName"]} for w in (titled + untitled)[:10]
+    ]
+    assert seen["count"] == 10 and seen["observedCount"] == total and seen["totalCount"] == total
+    assert seen["hasMore"] is True and "limit" not in seen and "nextOffset" not in seen
+    assert seen["returnedPageScope"] == {
+        "windowsListedOnThisPage": 10,
+        "totalWindowsInSelectedInventory": total,
+        "thisListIncludesEveryWindowInSelectedInventory": False,
+        "windowOpeningTimesObserved": False,
+        "windowsObservedButNotNamedHere": total - 10,
+    }
+    named = "\n".join("- " + (w["title"] or w["processName"]) for w in (titled + untitled)[:10])
+    reply = f"Se observaron {total} ventanas; te nombro 10 de las {total}:\n{named}\nHay {total - 10} ventanas más sin nombrar."
+    assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
+    assert _payload_fact_defect(f"Hay {count} de {total} ventanas:\n{named}", {"seen": seen, "operation": "window.resolve"}, user_text) == "reversed_result"
+    assert situation == original
+
+
+@pytest.mark.parametrize("user_text", ["Cuenta mis ventanas.", "How many windows are visible right now?", "y cuántas ventanas?"])
+def test_count_requests_keep_the_whole_page(user_text):
+    seen = _compose_situation_payload(observation(20, 22), "es", user_text)["seen"]
+    assert seen["count"] == 20 and len(seen["windows"]) == 20 and seen["limit"] == 50
+    assert "windowsObservedButNotNamedHere" not in seen["returnedPageScope"]
 
 
 @pytest.mark.parametrize("user_text", [
@@ -191,7 +229,7 @@ def test_compositor_applies_the_same_factual_rule_to_both_model_families(model):
 
 @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
 @pytest.mark.parametrize("language", ["es", "en"])
-@pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
+@pytest.mark.parametrize("count,total", [(2, 7), (10, 25), (3, 3)])
 @pytest.mark.parametrize("attempts", [2, 3])
 def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
     situation = observation(count, total)

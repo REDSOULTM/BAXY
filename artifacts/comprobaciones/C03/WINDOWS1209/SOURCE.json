@@ -1,0 +1,17 @@
+{
+  "schema": "c03-windows1209-source-adoption-v1",
+  "status": "adopted_unmeasured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/window_prose_facts.py (project_window_inventory, _named_inventory_subset, _inventory_fact_defect); src/baxy_mind/llm.py (línea de alcance del inventario)",
+  "patch": "artifacts/comprobaciones/C03/WINDOWS1209/SOURCE.patch",
+  "cause_measured": "WINDOWS1207/000-004: window.resolve verificada (página de 20 sobre 22 ventanas del escritorio real) pero la composición agotó los tres intentos. Reproducido offline con la página grabada en run-00: el validador de identidades exigía nombrar las 20 entradas, incluidas ocho ventanas sin título del proceso explorer (expected explorer=8, identified 0); el modelo las resumía como «Explorador de archivos (varias instancias)» y cada reintento repetía la omisión → missing_fact → código interno. Además, «hay 12 ventanas más» se leía como un total (reversed_result), lo que impedía declarar el resto.",
+  "change": "Proyección acotada del inventario para pedidos de lista (no de conteo): la copia del narrador pasa a ser una página de como máximo 10 ventanas (NAMED_WINDOWS_PER_ANSWER), tituladas primero y en orden de enumeración, dentro del mismo inventario observado (observedCount/totalCount intactos, hasMore verdadero, limit/nextOffset fuera de la copia); returnedPageScope declara windowsObservedButNotNamedHere. Las comprobaciones factuales corren sobre esa página proyectada: lo nombrado se verifica entrada por entrada y las fracciones/conteos se contrastan con 10 y con el total. Nuevo alcance de cantidad «restantes» («N ventanas más / sin nombrar / not named»), que se valida contra observadas−offset−página y cuenta como divulgación del subconjunto. Línea de alcance del compositor: nombrar cada ventana por su título o processName exactos y decir cuántas observadas quedan sin nombrar. Sin frases de salida; ninguna capa nueva; página del App y cursor intactos; los pedidos de conteo conservan la página completa.",
+  "offline_verification": "Con la página real grabada (20/22): siete pedidos de lista (incluidos los seis literales y los dos pares) proyectan 10 nombradas + 12 sin nombrar; «te nombro 10 de las 22 … Hay 12 ventanas más» → sin defecto; «10 de las 22 ventanas observadas» → sin defecto; en inglés «here are 10 of the 22 … 12 more windows are not named» → sin defecto; omitir una nombrada → missing_fact con la identidad faltante; «20 ventanas de 22» → reversed_result; «todas las ventanas» → extra_claim; lista sin divulgación → missing_fact; «Explorador de archivos» por «explorer» → missing_fact. «y cuántas ventanas?» conserva 20/22 y su respuesta aprobada en 1207 sigue sin defecto; página de 5 ventanas sin cambios. Tests alineados en tests/test_c03_inventory_semantic_projection.py (no ejecutados por orden del dueño). El reconocedor no cambia (effect_intent intacto).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": null,
+  "credits": null
+}

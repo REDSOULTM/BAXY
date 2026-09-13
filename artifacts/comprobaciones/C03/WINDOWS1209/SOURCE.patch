@@ -1,0 +1,225 @@
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index ab21bf86..5a5e957f 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -9885,7 +9885,9 @@ class LlmRuntime:
+                 " when complete is true. Distinguish a page from the selected inventory total;"
+                 " preserve any process or title filter in the request;"
+                 " disclose a partial or paginated list. Name the returned windows"
+-                " when a list is requested. Pages are fresh observations, not a stable"
++                " when a list is requested, each by its exact title or processName,"
++                " and when windowsObservedButNotNamedHere is present say that many"
++                " observed windows are not named. Pages are fresh observations, not a stable"
+                 " snapshot. Visible window style does not prove an unobscured window"
+                 " or background process state."
+             )
+diff --git a/src/baxy_mind/window_prose_facts.py b/src/baxy_mind/window_prose_facts.py
+index defe3557..3fb96e03 100644
+--- a/src/baxy_mind/window_prose_facts.py
++++ b/src/baxy_mind/window_prose_facts.py
+@@ -46,6 +46,13 @@ _PROCESS_STATE = re.compile(
+     r"\b(?:process(?:es)?|procesos?)\s+(?:no\s+)?(?:is|are|esta|estan)\s+(?:not\s+)?"
+     r"(?:active|inactive|stopped|activ[oa]s?|inactiv[oa]s?|detenid[oa]s?)\b"
+ )
++_COUNT_QUESTION = re.compile(r"\b(?:cuantas|how\s+many|cuenta|count)\b")
++# A 22-window desktop exhausted composition (WINDOWS1207/000-004): the
++# narrator omitted the eight untitled explorer entries, and every retry was
++# rejected for the same omission. The answer names a bounded subset, titled
++# windows first, and states how many observed windows it does not name.
++# Factual checks run on that projected page, so what is named is verified.
++NAMED_WINDOWS_PER_ANSWER = 10
+ _UNCERTAINTY = re.compile(
+     r"\b(?:(?:i\s+)?(?:cannot|can['’]t|can not)\s+(?:tell|confirm|determine|know)|"
+     r"(?:i\s+)?(?:do not|don['’]t)\s+know|no\s+(?:se|comprobe|he comprobado)|"
+@@ -132,9 +139,7 @@ def window_fact_feedback(text: str, payload: dict, user_text: str = "") -> dict
+         if excessive:
+             return {"contradiction": {"predicate": "window_inventory_identity_counts", "identities": excessive},
+                     "rejected_draft": text}
+-        identity_request = window_inventory_arguments(user_text) is not None and not re.search(
+-            r"\b(?:cuantas|how\s+many|cuenta|count)\b", fold(user_text),
+-        )
++        identity_request = _inventory_identity_request(user_text)
+         missing = {name: {"observed": count, "identified_in_draft": mentioned[name]}
+                    for name, count in expected.items() if identity_request and mentioned[name] < count}
+         if missing:
+@@ -377,30 +382,55 @@ def _inventory_is_entire(seen: dict) -> bool | None:
+     )
+ 
+ 
++def _inventory_identity_request(user_text: str) -> bool:
++    """A list request names windows; a count request only counts them."""
++    return window_inventory_arguments(user_text) is not None and not _COUNT_QUESTION.search(fold(user_text))
++
++
++def _named_inventory_subset(windows: list) -> list:
++    """Titled windows first, in enumeration order; then untitled ones, capped."""
++    titled = [window for window in windows
++              if isinstance(window, dict) and isinstance(window.get("title"), str) and window["title"].strip()]
++    untitled = [window for window in windows if window not in titled]
++    return (titled + untitled)[:NAMED_WINDOWS_PER_ANSWER]
++
++
+ def project_window_inventory(payload: dict, user_text: str) -> dict:
+     """Describe page scope without confusing enumeration completion with a full list.
+ 
+     Keep the typed fields for factual checks. Only an identity/count request
+     permits omitting unrequested per-window details from the narrator's copy.
+-    The provider records no opening time, so enumeration order is not recency.
++    A list request names at most NAMED_WINDOWS_PER_ANSWER windows: the copy
++    becomes that shorter page, still inside the same observed inventory, and
++    declares how many observed windows it leaves unnamed. The App's page and
++    its cursor are untouched. The provider records no opening time, so
++    enumeration order is not recency.
+     """
+     seen = _inventory_seen(payload)
+     if seen is None:
+         return payload
+     total = seen["totalCount"] if seen["complete"] else None
+     projected = dict(seen)
+-    projected["returnedPageScope"] = {
+-        "windowsListedOnThisPage": seen["count"],
+-        "totalWindowsInSelectedInventory": total,
+-        "thisListIncludesEveryWindowInSelectedInventory": _inventory_is_entire(seen),
+-        "windowOpeningTimesObserved": False,
+-    }
+     if window_inventory_arguments(user_text) is not None:
+         projected["windows"] = [
+             {key: value for key, value in window.items() if key in {"title", "processName"}}
+             if isinstance(window, dict) else window
+             for window in seen["windows"]
+         ]
++        if _inventory_identity_request(user_text) and seen["count"] > NAMED_WINDOWS_PER_ANSWER:
++            projected["windows"] = _named_inventory_subset(projected["windows"])
++            projected["count"] = len(projected["windows"])
++            projected["hasMore"] = True
++            projected.pop("limit", None)
++            projected.pop("nextOffset", None)
++    projected["returnedPageScope"] = {
++        "windowsListedOnThisPage": projected["count"],
++        "totalWindowsInSelectedInventory": total,
++        "thisListIncludesEveryWindowInSelectedInventory": _inventory_is_entire(projected),
++        "windowOpeningTimesObserved": False,
++    }
++    if projected["count"] < seen["count"]:
++        projected["returnedPageScope"]["windowsObservedButNotNamedHere"] = seen["observedCount"] - projected["count"]
+     return {**payload, "seen": projected}
+ 
+ 
+@@ -409,6 +439,14 @@ _PAGE_CONTEXT = re.compile(r"\b(?:pagina|page|lista|list|listad[oa]|listed|mostr
+ _OBSERVATION_CONTEXT = re.compile(r"\b(?:observ(?:ad[oa]s?|a(?:n|mos|ron)?|o|e)|observed|encontrad[oa]s?|found|"
+                                   r"detectad[oa]s?|detected|identificad[oa]s?|identified)\b")
+ _TOTAL_CONTEXT = re.compile(r"\b(?:en\s+total|in\s+total|total\s+of|total\s+de)\b")
++# «Hay 12 ventanas más que no nombro» counts the observed windows outside the
++# named page; it is neither the page nor the total.
++_REMAINING_CONTEXT = re.compile(
++    r"\b(?:mas|more|other|another|otras?|restantes?|remaining|adicionales|additional|"
++    r"unnamed|unlisted|sin\s+(?:nombrar|listar|mencionar|enumerar)|"
++    r"no\s+(?:nombrad[oa]s|listad[oa]s|mencionad[oa]s|enumerad[oa]s|nombro|listo|menciono|enumero)|"
++    r"not\s+(?:named|listed|mentioned|shown|included))\b"
++)
+ _INVENTORY_LIMIT = re.compile(r"\b(?:pagina|page|parcial|partial|limite|limited|"
+                              r"al\s+menos|at\s+least|mas\s+ventanas|more\s+windows)\b")
+ _INVENTORY_REFERENCE_COUNT = re.compile(rf"\b(?P<number>{_NUMBER})\s+(?:of\s+them|de\s+ellas)\b")
+@@ -481,7 +519,8 @@ def _inventory_quantity_scope(clause: str, start: int, end: int) -> str:
+         (max(start - match.end(), match.start() - end, 0),
+          0 if match.start() >= end else 1, scope)
+         for scope, pattern in (
+-            ("page", _PAGE_CONTEXT), ("observed", _OBSERVATION_CONTEXT), ("total", _TOTAL_CONTEXT)
++            ("page", _PAGE_CONTEXT), ("observed", _OBSERVATION_CONTEXT), ("total", _TOTAL_CONTEXT),
++            ("remaining", _REMAINING_CONTEXT),
+         )
+         for match in pattern.finditer(clause)
+     ]
+@@ -603,7 +642,7 @@ def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
+     total = seen["totalCount"] if seen["complete"] else None
+     entire_inventory = _inventory_is_entire(seen)
+     partial_page = entire_inventory is not True
+-    count_question = re.search(r"\b(?:cuantas|how\s+many|cuenta|count)\b", fold(user_text))
++    count_question = _COUNT_QUESTION.search(fold(user_text))
+     stated_subset = False
+     stated_page_count = False
+     stated_inventory_count = False
+@@ -650,6 +689,7 @@ def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
+                 quantity_scope = "page" if named_entry else "total"
+             quantity_value = {
+                 "page": seen["count"], "observed": seen["observedCount"], "total": total,
++                "remaining": seen["observedCount"] - seen["offset"] - seen["count"],
+             }[quantity_scope]
+             raw = re.sub(r"[\s-]+", " ", match["number"])
+             number = int(raw) if raw.isdecimal() else _CARDINALS[raw]
+@@ -672,6 +712,8 @@ def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
+             if bound is None:
+                 stated_page_count |= quantity_scope == "page"
+                 stated_inventory_count |= quantity_scope in {"observed", "total"}
++                # Counting the windows left outside the list discloses the subset.
++                stated_subset |= quantity_scope == "remaining" and number > 0
+         if _NO_WINDOWS.search(clause) and value != 0:
+             return "extra_claim" if value is None else "reversed_result"
+         if _HAS_WINDOWS.search(_NO_WINDOWS.sub("", clause)) and value == 0:
+diff --git a/tests/test_c03_inventory_semantic_projection.py b/tests/test_c03_inventory_semantic_projection.py
+index fd84d19e..d6d18329 100644
+--- a/tests/test_c03_inventory_semantic_projection.py
++++ b/tests/test_c03_inventory_semantic_projection.py
+@@ -36,7 +36,7 @@ def observation(count=2, total=7, offset=0, complete=True):
+     "Lista mis windows.", "Which ventanas tengo abiertas?",
+     "Cuenta mis ventanas, please.", "How many windows are visible right now?",
+ ])
+-@pytest.mark.parametrize("count", [1, 20, 50])
++@pytest.mark.parametrize("count", [1, 7, 10])
+ def test_identity_requests_keep_every_entry_and_its_multiplicity(user_text, count):
+     situation = observation(count, count + 4)
+     original = copy.deepcopy(situation)
+@@ -50,6 +50,44 @@ def test_identity_requests_keep_every_entry_and_its_multiplicity(user_text, coun
+     assert situation == original
+ 
+ 
++@pytest.mark.parametrize("user_text", [
++    "Lista las ventanas.", "Which windows are open?", "Mostrame qué tengo abierto.",
++])
++@pytest.mark.parametrize("count,total", [(11, 11), (20, 22), (50, 50)])
++def test_large_list_requests_name_a_bounded_titled_first_subset(user_text, count, total):
++    situation = observation(count, total)
++    for index in (0, 2, 4):
++        situation["observed"]["windows"][index]["title"] = ""
++    original = copy.deepcopy(situation)
++    seen = _compose_situation_payload(situation, "es", user_text)["seen"]
++    titled = [w for w in original["observed"]["windows"] if w["title"]]
++    untitled = [w for w in original["observed"]["windows"] if not w["title"]]
++    assert seen["windows"] == [
++        {"title": w["title"], "processName": w["processName"]} for w in (titled + untitled)[:10]
++    ]
++    assert seen["count"] == 10 and seen["observedCount"] == total and seen["totalCount"] == total
++    assert seen["hasMore"] is True and "limit" not in seen and "nextOffset" not in seen
++    assert seen["returnedPageScope"] == {
++        "windowsListedOnThisPage": 10,
++        "totalWindowsInSelectedInventory": total,
++        "thisListIncludesEveryWindowInSelectedInventory": False,
++        "windowOpeningTimesObserved": False,
++        "windowsObservedButNotNamedHere": total - 10,
++    }
++    named = "\n".join("- " + (w["title"] or w["processName"]) for w in (titled + untitled)[:10])
++    reply = f"Se observaron {total} ventanas; te nombro 10 de las {total}:\n{named}\nHay {total - 10} ventanas más sin nombrar."
++    assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
++    assert _payload_fact_defect(f"Hay {count} de {total} ventanas:\n{named}", {"seen": seen, "operation": "window.resolve"}, user_text) == "reversed_result"
++    assert situation == original
++
++
++@pytest.mark.parametrize("user_text", ["Cuenta mis ventanas.", "How many windows are visible right now?", "y cuántas ventanas?"])
++def test_count_requests_keep_the_whole_page(user_text):
++    seen = _compose_situation_payload(observation(20, 22), "es", user_text)["seen"]
++    assert seen["count"] == 20 and len(seen["windows"]) == 20 and seen["limit"] == 50
++    assert "windowsObservedButNotNamedHere" not in seen["returnedPageScope"]
++
++
+ @pytest.mark.parametrize("user_text", [
+     "¿Dónde están las ventanas?", "Dime las coordenadas de las ventanas.",
+     "Lista las ventanas con sus tamaños.", "Which windows are maximized?",
+@@ -191,7 +229,7 @@ def test_compositor_applies_the_same_factual_rule_to_both_model_families(model):
+ 
+ @pytest.mark.parametrize("model", ["Qwen3-4B-Instruct-2507-Q4_K_M.gguf", "K2-Horizon-3.7B-Q4_K_M.gguf"])
+ @pytest.mark.parametrize("language", ["es", "en"])
+-@pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 3)])
++@pytest.mark.parametrize("count,total", [(2, 7), (10, 25), (3, 3)])
+ @pytest.mark.parametrize("attempts", [2, 3])
+ def test_inventory_repair_preserves_every_entry_and_corrects_the_current_draft(model, language, count, total, attempts):
+     situation = observation(count, total)

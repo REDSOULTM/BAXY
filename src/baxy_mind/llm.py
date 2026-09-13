@@ -9885,7 +9885,9 @@ class LlmRuntime:
                 " when complete is true. Distinguish a page from the selected inventory total;"
                 " preserve any process or title filter in the request;"
                 " disclose a partial or paginated list. Name the returned windows"
-                " when a list is requested. Pages are fresh observations, not a stable"
+                " when a list is requested, each by its exact title or processName,"
+                " and when windowsObservedButNotNamedHere is present say that many"
+                " observed windows are not named. Pages are fresh observations, not a stable"
                 " snapshot. Visible window style does not prove an unobscured window"
                 " or background process state."
             )
