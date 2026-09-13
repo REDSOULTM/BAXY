@@ -56,7 +56,11 @@ _UNSAFE_FORMAT_CODEPOINTS = {
     0xFEFF,
 }
 _ENUM_EVIDENCE_ALIASES = {
-    "alarm": ("alarm", "alarma", "timer", "temporizador"),
+    # A wake-up request names the alarm by its purpose (TIME1189/000, /007, /008).
+    "alarm": (
+        "alarm", "alarma", "timer", "temporizador",
+        "despertame", "despiertame", "levantame", "wake me", "despertador",
+    ),
     "reminder": ("reminder", "recordatorio"),
     "whatsapp": ("whatsapp", "wsp"),
     "am": ("am", "a.m.", "a. m.", "de la manana", "in the morning"),

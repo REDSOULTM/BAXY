@@ -1,0 +1,130 @@
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 407ad32d..2768c316 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -2328,6 +2328,21 @@ _RELATIVE_DURATION_UNIT = r"(?:minutos?|minutes?|mins?|min|horas?|hours?|hrs?|h|
+ _RELATIVE_DURATION_PATTERN = (
+     rf"(?:{_TEMPORAL_NUMBER_PATTERN}\s*{_RELATIVE_DURATION_UNIT}|media\s+hora|half\s+an?\s+hour)"
+ )
++# «Dentro de doce minutos, recordame …» / «En 10 minutos avisame …»: the
++# duration leads and the scheduling head follows. The preface is part of the
++# same request, not a clause of its own (TIME1189/011).
++_LEADING_DURATION_PREFACE = re.compile(
++    rf"^[¿?¡!\s]*(?:en|in|dentro\s+de|within)\s+{_RELATIVE_DURATION_PATTERN},?\s+"
++    r"(?=(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind\s+me|"
++    r"pon|poner|ponme|pone|poneme|pongame|programa|programame|schedule|set|"
++    r"despiertame|despertame|levantame|wake\s+me)\b)"
++)
++
++
++def _without_leading_duration_preface(folded: str) -> str:
++    """Read a scheduling request after its leading duration preface."""
++
++    return _LEADING_DURATION_PREFACE.sub("", folded, count=1)
+ 
+ 
+ def _reminder_has_actionable_due(folded: str) -> bool:
+@@ -2372,7 +2387,12 @@ def _incomplete_scheduled_request(
+             rf"\b(?:for|para)\s+(?:las?\s+)?{number}\b"
+             r"(?!\s+(?:minutes?|minutos?|hours?|horas?|days?|dias?)\b)", folded,
+         )
+-    temporal = re.match(rf"^(?:{_CLOCK_TIME_SELECTOR}|{_BOUNDED_TEMPORAL_SELECTOR})", folded)
++    # «Dentro de doce minutos, recordame …»: the preface may carry its own
++    # preposition before the bounded selector (TIME1189/011).
++    temporal = re.match(
++        rf"^(?:(?:en|in|dentro\s+de|within)\s+)?(?:{_CLOCK_TIME_SELECTOR}|{_BOUNDED_TEMPORAL_SELECTOR})",
++        folded,
++    )
+     body = folded
+     if temporal is not None and temporal.end() < len(folded):
+         body = _strip_request_envelope(folded[temporal.end():].lstrip(" ,:"))
+@@ -7963,6 +7983,24 @@ def _review_calendar_message_and_direct_reminder_effects(
+             r"\b(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind)\b",
+         )
+ 
++    if (
++        temporal
++        and not any(entry[2] == "reminder.create" for entry in matches)
++        and re.match(
++            # «Dentro de doce minutos, recordame …»: the duration leads and the
++            # reminder head follows it (TIME1189/011).
++            rf"^[¿?¡!\s]*(?:en|in|dentro\s+de|within)\s+{_RELATIVE_DURATION_PATTERN},?\s+"
++            r"(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind\s+me)\b.+",
++            folded,
++        )
++    ):
++        _append(
++            matches,
++            folded,
++            "reminder.create",
++            r"\b(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind)\b",
++        )
++
+     if (
+         temporal
+         and _head_is(
+@@ -12358,7 +12396,7 @@ def _resolve_explicit_effects_single(
+             and not _location_recommendation_request(folded)
+         )
+         or not (
+-            _is_direct_request(folded)
++            _is_direct_request(_without_leading_duration_preface(folded))
+             or _bounded_calendar_list_query(folded)
+             or _location_recommendation_request(folded)
+             or (
+@@ -12498,6 +12536,11 @@ def _request_clauses(text: str) -> tuple[str, ...]:
+         # A complete inventory topic plus "list them" is one request. The
+         # closed reader rejects extra actions before preserving this span.
+         return (text.strip(),)
++    if _LEADING_DURATION_PREFACE.match(_fold(text)) is not None and len(
++        _request_clauses(_without_leading_duration_preface(_fold(text)))
++    ) == 1:
++        # A leading duration belongs to the scheduling request that follows it.
++        return (text.strip(),)
+     action_after_clause = _COVERAGE_ACTION_HEAD
+     # Ordinal discourse markers describe the order of the first real action;
+     # they are not standalone clauses.  Only strip them when a known effect
+@@ -14327,7 +14370,7 @@ def resolve_explicit_effects(
+             )
+         )
+         or (
+-            not _is_direct_request(folded)
++            not _is_direct_request(_without_leading_duration_preface(folded))
+             # A conjunction does not make independently explicit questions
+             # implicit. The clause resolver below must still account for all
+             # of them; this never grants a recognized subset authority.
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 275e0393..1d0596d5 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3978,10 +3978,12 @@ def _truncated_fact_word(text: str, facts: dict) -> bool:
+         if isinstance(value, dict):
+             # Narrator metadata describes observations; it is not literal text
+             # whose wording must be preserved like names, titles or capabilities.
++            # The operation identifier is metadata too: «I'll remind you» is
++            # not a truncated «reminder.create» (TIME1189/012).
+             return [
+                 text
+                 for key, child in value.items()
+-                if key not in {"observationScope", "unit"}
++                if key not in {"observationScope", "unit", "operation"}
+                 for text in values_only(child)
+             ]
+         if isinstance(value, (list, tuple)):
+diff --git a/src/baxy_mind/planner.py b/src/baxy_mind/planner.py
+index 99f3cd23..dafd5c8c 100644
+--- a/src/baxy_mind/planner.py
++++ b/src/baxy_mind/planner.py
+@@ -56,7 +56,11 @@ _UNSAFE_FORMAT_CODEPOINTS = {
+     0xFEFF,
+ }
+ _ENUM_EVIDENCE_ALIASES = {
+-    "alarm": ("alarm", "alarma", "timer", "temporizador"),
++    # A wake-up request names the alarm by its purpose (TIME1189/000, /007, /008).
++    "alarm": (
++        "alarm", "alarma", "timer", "temporizador",
++        "despertame", "despiertame", "levantame", "wake me", "despertador",
++    ),
+     "reminder": ("reminder", "recordatorio"),
+     "whatsapp": ("whatsapp", "wsp"),
+     "am": ("am", "a.m.", "a. m.", "de la manana", "in the morning"),

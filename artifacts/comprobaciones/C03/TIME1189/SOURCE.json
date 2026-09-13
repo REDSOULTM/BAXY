@@ -1,0 +1,17 @@
+{
+  "schema": "c03-time1189-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/planner.py (_ENUM_EVIDENCE_ALIASES), src/baxy_mind/effect_intent.py (reminder with leading duration; _incomplete_scheduled_request preface), src/baxy_mind/llm.py (_truncated_fact_word)",
+  "patch": "artifacts/comprobaciones/C03/TIME1189/SOURCE.patch",
+  "cause_measured": "TIME1189: (a) índices 0, 7, 8 («despertame en una hora», «Please wake me in twenty minutes.», «Despertame dentro de media hora.»): el reconocedor produce notification.schedule y el extractor entrega dueUtc/kind/título, pero la puesta a tierra exige que el enum «alarm» aparezca en el texto (alias sólo alarm/alarma/timer/temporizador) → la petición de argumentos cae al modelo → aclaración de campos; reproducido sin GPU con _ground_explicit_arguments. (b) índice 11 («Dentro de doce minutos, recordame …»): el reconocedor de recordatorios exige la cabeza al inicio; con la duración delante no hay intención, la recuperación léxica no propone reminder.create y el modelo falla → confirmación. (c) índice 12 («Remind me in two hours to return the borrowed umbrella.»): reminder.create verificada, pero _truncated_fact_word toma «remind» como recorte de «reminder.create» (el nombre de la operación entra como hecho) y rechaza tres borradores correctos → código interno de agotamiento.",
+  "change": "(a) _ENUM_EVIDENCE_ALIASES['alarm'] añade despertame/despiertame/levantame/wake me/despertador. (b) Un prefacio de duración al inicio (_LEADING_DURATION_PREFACE) se lee como parte del pedido que lo sigue: la partición en cláusulas lo conserva en la misma cláusula, las dos puertas de «pedido directo» lo descuentan y el revisor de efectos de programación produce reminder.create para un recordatorio con la duración al inicio (en/in/dentro de/within + duración, coma opcional, cabeza recuerdame/recordame/avisame/remind me) produce reminder.create; _incomplete_scheduled_request admite la misma preposición delante del selector temporal. (c) _truncated_fact_word excluye la clave «operation» de los hechos comparables (como observationScope y unit). Sin frases de salida; ninguna capa nueva.",
+  "offline_verification": "_ground_explicit_arguments('notification.schedule', «despertame en una hora» / «Please wake me in twenty minutes.» / «Despertame dentro de media hora.») → dueUtc al segundo entero, kind alarm, título (antes: None por el enum). resolve_explicit_effects: «Dentro de doce minutos, recordame sacar la ropa del lavarropas.» y «En 10 minutos avisame que apague el horno» → reminder.create; «Dentro de 5 minutos poné una alarma» → notification.schedule; «en 10 minutos, y después cerrá chrome», «En diez minutos voy a salir», «dentro de 5 minutos abrí el bloc de notas» → None (sin cabeza de programación tras el prefacio). _ground_explicit_arguments('reminder.create', «Dentro de doce minutos, recordame…») → dueUtc y título «sacar la ropa del lavarropas». _truncated_fact_word(«I'll remind you in two hours to return the borrowed umbrella.», {operation: reminder.create}) → False; el recorte real «mover y enfoc ventanas» sigue detectado. Baseline del reconocedor sin cambios (258, los mismos diez deltas). Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "TIME1191: mismo material que TIME1189.",
+  "credits": 0
+}

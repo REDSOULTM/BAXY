@@ -2328,6 +2328,21 @@ _RELATIVE_DURATION_UNIT = r"(?:minutos?|minutes?|mins?|min|horas?|hours?|hrs?|h|
 _RELATIVE_DURATION_PATTERN = (
     rf"(?:{_TEMPORAL_NUMBER_PATTERN}\s*{_RELATIVE_DURATION_UNIT}|media\s+hora|half\s+an?\s+hour)"
 )
+# «Dentro de doce minutos, recordame …» / «En 10 minutos avisame …»: the
+# duration leads and the scheduling head follows. The preface is part of the
+# same request, not a clause of its own (TIME1189/011).
+_LEADING_DURATION_PREFACE = re.compile(
+    rf"^[¿?¡!\s]*(?:en|in|dentro\s+de|within)\s+{_RELATIVE_DURATION_PATTERN},?\s+"
+    r"(?=(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind\s+me|"
+    r"pon|poner|ponme|pone|poneme|pongame|programa|programame|schedule|set|"
+    r"despiertame|despertame|levantame|wake\s+me)\b)"
+)
+
+
+def _without_leading_duration_preface(folded: str) -> str:
+    """Read a scheduling request after its leading duration preface."""
+
+    return _LEADING_DURATION_PREFACE.sub("", folded, count=1)
 
 
 def _reminder_has_actionable_due(folded: str) -> bool:
@@ -2372,7 +2387,12 @@ def _incomplete_scheduled_request(
             rf"\b(?:for|para)\s+(?:las?\s+)?{number}\b"
             r"(?!\s+(?:minutes?|minutos?|hours?|horas?|days?|dias?)\b)", folded,
         )
-    temporal = re.match(rf"^(?:{_CLOCK_TIME_SELECTOR}|{_BOUNDED_TEMPORAL_SELECTOR})", folded)
+    # «Dentro de doce minutos, recordame …»: the preface may carry its own
+    # preposition before the bounded selector (TIME1189/011).
+    temporal = re.match(
+        rf"^(?:(?:en|in|dentro\s+de|within)\s+)?(?:{_CLOCK_TIME_SELECTOR}|{_BOUNDED_TEMPORAL_SELECTOR})",
+        folded,
+    )
     body = folded
     if temporal is not None and temporal.end() < len(folded):
         body = _strip_request_envelope(folded[temporal.end():].lstrip(" ,:"))
@@ -7965,6 +7985,24 @@ def _review_calendar_message_and_direct_reminder_effects(
 
     if (
         temporal
+        and not any(entry[2] == "reminder.create" for entry in matches)
+        and re.match(
+            # «Dentro de doce minutos, recordame …»: the duration leads and the
+            # reminder head follows it (TIME1189/011).
+            rf"^[¿?¡!\s]*(?:en|in|dentro\s+de|within)\s+{_RELATIVE_DURATION_PATTERN},?\s+"
+            r"(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind\s+me)\b.+",
+            folded,
+        )
+    ):
+        _append(
+            matches,
+            folded,
+            "reminder.create",
+            r"\b(?:recuerdame|recuerdamelo|recordame|recordamelo|avisame|remind)\b",
+        )
+
+    if (
+        temporal
         and _head_is(
             head,
             r"(?:programa|programar|programame|schedule|pon|poner|ponme|pone|"
@@ -12358,7 +12396,7 @@ def _resolve_explicit_effects_single(
             and not _location_recommendation_request(folded)
         )
         or not (
-            _is_direct_request(folded)
+            _is_direct_request(_without_leading_duration_preface(folded))
             or _bounded_calendar_list_query(folded)
             or _location_recommendation_request(folded)
             or (
@@ -12497,6 +12535,11 @@ def _request_clauses(text: str) -> tuple[str, ...]:
     if window_inventory_arguments(text) is not None:
         # A complete inventory topic plus "list them" is one request. The
         # closed reader rejects extra actions before preserving this span.
+        return (text.strip(),)
+    if _LEADING_DURATION_PREFACE.match(_fold(text)) is not None and len(
+        _request_clauses(_without_leading_duration_preface(_fold(text)))
+    ) == 1:
+        # A leading duration belongs to the scheduling request that follows it.
         return (text.strip(),)
     action_after_clause = _COVERAGE_ACTION_HEAD
     # Ordinal discourse markers describe the order of the first real action;
@@ -14327,7 +14370,7 @@ def resolve_explicit_effects(
             )
         )
         or (
-            not _is_direct_request(folded)
+            not _is_direct_request(_without_leading_duration_preface(folded))
             # A conjunction does not make independently explicit questions
             # implicit. The clause resolver below must still account for all
             # of them; this never grants a recognized subset authority.

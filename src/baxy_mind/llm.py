@@ -3978,10 +3978,12 @@ def _truncated_fact_word(text: str, facts: dict) -> bool:
         if isinstance(value, dict):
             # Narrator metadata describes observations; it is not literal text
             # whose wording must be preserved like names, titles or capabilities.
+            # The operation identifier is metadata too: «I'll remind you» is
+            # not a truncated «reminder.create» (TIME1189/012).
             return [
                 text
                 for key, child in value.items()
-                if key not in {"observationScope", "unit"}
+                if key not in {"observationScope", "unit", "operation"}
                 for text in values_only(child)
             ]
         if isinstance(value, (list, tuple)):
