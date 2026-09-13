@@ -27,6 +27,9 @@ internal sealed record MindTurnDecision(
     /// </summary>
     public IReadOnlyList<string> IntentOperations { get; init; } = [];
 
+    /// <summary>Recognized missing fields for clarification, never execution arguments.</summary>
+    public IReadOnlyList<string> MissingFields { get; init; } = [];
+
     /// <summary>
     /// Whether a clarification supplies a missing slot for the current
     /// objective. Recovery clarifications set this to false so a failed
@@ -507,6 +510,34 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         {
             return null;
         }
+        string[] missingFields = [];
+        if (reply["missingFields"] is JsonNode missingFieldsNode)
+        {
+            if (kind != "clarify"
+                || missingFieldsNode is not JsonArray fields
+                || fields.Count is < 1 or > 64)
+            {
+                return null;
+            }
+
+            var parsedFields = new List<string>(fields.Count);
+            foreach (JsonNode? node in fields)
+            {
+                if (node is not JsonValue fieldValue
+                    || !fieldValue.TryGetValue(out string? fieldName)
+                    || string.IsNullOrEmpty(fieldName)
+                    || fieldName.Length > 128
+                    || !char.IsAsciiLetter(fieldName[0])
+                    || fieldName.Any(static character =>
+                        !char.IsAsciiLetterOrDigit(character) && character != '_')
+                    || parsedFields.Contains(fieldName, StringComparer.Ordinal))
+                {
+                    return null;
+                }
+                parsedFields.Add(fieldName);
+            }
+            missingFields = parsedFields.ToArray();
+        }
         string question = (string?)reply["question"] ?? string.Empty;
         string response = (string?)reply["reply"] ?? string.Empty;
         string? conversationKind = null;
@@ -572,6 +603,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 response)
             {
                 IntentOperations = intentOperations,
+                MissingFields = missingFields,
                 PreserveObjective = preserveObjective,
                 StartsNewObjective = startsNewObjective,
                 ResponseLanguage = responseLanguage,

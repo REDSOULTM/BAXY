@@ -2196,7 +2196,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 route.Text,
                 turn.Question,
                 turn.ResponseLanguage,
-                turn.PreserveObjective);
+                turn.PreserveObjective,
+                turn.MissingFields);
         }
 
         if (turn.Kind == "action"
@@ -2349,13 +2350,16 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         string request,
         string question,
         string? responseLanguage = null,
-        bool preserveObjective = true)
+        bool preserveObjective = true,
+        IReadOnlyList<string>? missingFields = null)
     {
         // Turn classification, planning and argument extraction share the same
         // pending state. Rewording a rejected question must not turn it into
         // conversation or discard the objective required by the next fragment.
         _pendingMindClarificationObjective = preserveObjective ? request : null;
-        if (UserMessagePolicy.IsSafeConversationReply(request, question, responseLanguage, clarification: true))
+        LastMindReplyRejection = UserMessagePolicy.ConversationReplyRejectionReason(
+            request, question, responseLanguage, clarification: true);
+        if (LastMindReplyRejection is null)
         {
             AddMessage(
                 "BAXY", question, isUser: false, formulatedByMind: true,
@@ -2363,8 +2367,14 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         }
         else
         {
+            ShellTraceSink.Record(
+                ShellTraceScopes.Turn, _currentTurnTraceId,
+                "clarification.rejected", LastMindReplyRejection);
+            JsonObject? requiredInput = missingFields is { Count: > 0 }
+                ? new JsonObject { ["missingValue"] = string.Join(", ", missingFields) }
+                : null;
             AddMessage(
-                "BAXY", TurnVisibleFacts.Clarification("ambiguous_request"),
+                "BAXY", TurnVisibleFacts.Clarification("ambiguous_request", requiredInput),
                 isUser: false, messageEvent: UserMessageEvent.Clarification);
         }
         return true;

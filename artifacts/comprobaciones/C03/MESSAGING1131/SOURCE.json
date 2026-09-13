@@ -1,0 +1,11 @@
+{
+  "patch_sha256": "7be459efeef102d2a94705fac81abd67bc5ac76f35119eaf35c0d091765876f1",
+  "source_sha256": {
+    "src/baxy_mind/__main__.py": "b8b840df0c935fa44aee8bf19972ddb8cb8d388b6f0c5a5489becca1cbe19f6f",
+    "src/Baxy.App/MindSidecarClient.cs": "1bbfaccdd21dc5ce6e30aa31a149bce446f5428a9db58fdb82beb0b94440b882",
+    "src/Baxy.App/MainWindowViewModel.cs": "83bf86f649da81bb9df2aaa4db8a56a1f1b85b1295f5675477e45bcab2a42221"
+  },
+  "tests_run": false,
+  "build_pending": "BUILD1125",
+  "measurement_pending": true
+}

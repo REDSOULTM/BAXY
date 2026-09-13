@@ -1225,21 +1225,23 @@
     "tests_run": false
   },
   "currentContinuation": {
-    "campaign": "TIME1118-v3",
-    "utc": "2026-09-13T00:22:26.450289+00:00",
+    "campaign": "TIME1130",
+    "utc": "2026-09-13T00:27:51.244742+00:00",
     "covered": 203,
     "open": 539,
     "notApplicable": 0,
-    "adjudication": "TIME1118/ROOT_ADJUDICATION.json",
-    "next": "TIME1129 integration; TIME1130 indices10/11 before literals0/1/2",
-    "goalStatus": "active"
+    "adjudication": "TIME1130/ROOT_ADJUDICATION.json",
+    "goalStatus": "active",
+    "next": "BUILD1125 for MESSAGING1131; TIME1133 diagnosis"
   },
   "currentSourceCandidate": {
-    "campaign": "TIME1129",
-    "effect_intent_sha256": "7a9ab53fb4087504452579ab579b39e9989bfd10a90fb165a4449a54f12ffa38",
-    "main_sha256": "d80c95dff4309df45d95774910bc44700e2660e63656b8e5fb2f30b33950a2d7",
-    "llm_sha256": "aaa43426f64b892fea731cfab71fcb489bd3a7b5441524fabedb5c8069dd85b5",
+    "campaign": "MESSAGING1131",
+    "source_sha256": {
+      "src/baxy_mind/__main__.py": "b8b840df0c935fa44aee8bf19972ddb8cb8d388b6f0c5a5489becca1cbe19f6f",
+      "src/Baxy.App/MindSidecarClient.cs": "1bbfaccdd21dc5ce6e30aa31a149bce446f5428a9db58fdb82beb0b94440b882",
+      "src/Baxy.App/MainWindowViewModel.cs": "83bf86f649da81bb9df2aaa4db8a56a1f1b85b1295f5675477e45bcab2a42221"
+    },
     "testsRun": false,
-    "status": "integrating_for_product_measurement"
+    "status": "integrated_build_pending"
   }
 }

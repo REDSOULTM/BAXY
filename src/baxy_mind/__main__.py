@@ -5902,6 +5902,9 @@ def _prepare_turn_result(
             "question": question,
             "reply": "",
         }
+        if not missing_open_referent:
+            assert explicit_clarification is not None
+            result["missingFields"] = list(explicit_clarification.missing_fields)
         if effect_request_is_authoritative(objective):
             # A new command can lack a value without supplying one for the
             # preceding request. Keep its own objective for the next answer.
@@ -5933,6 +5936,8 @@ def _prepare_turn_result(
                     "kind": result["kind"],
                     "intent_operations": result["intentOperations"],
                     "effect_operations": result["effectOperations"],
+                    "question": question,
+                    "missing_fields": result.get("missingFields", []),
                 },
             }
         )
