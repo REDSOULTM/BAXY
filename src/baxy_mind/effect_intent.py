@@ -1704,6 +1704,12 @@ def _curated_domain_is_grounded(
                 r"wake\s+me(?:\s+up)?)\b"
             ),
         ) or _count_down_request(folded)
+    if operation == "network.ip.list":
+        # Without a rule the proposal was vetoed into a confirmation
+        # (NETWORK1161/006-008). An IP is named as such.
+        return _ip_list_request(folded) or _has(
+            folded, r"\b(?:ip|ips|direccion(?:es)?\s+ip|ip\s+address(?:es)?)\b"
+        )
     if operation == "reminder.resolve.exact":
         return _nominal_reminder_lookup_title(folded) is not None
     if operation in {"message.recipient.resolve", "message.send"}:
@@ -2356,6 +2362,26 @@ def _count_down_request(folded: str) -> bool:
     """Recognize a bare countdown request that names its duration first."""
 
     return _COUNT_DOWN_REQUEST.match(_strip_request_envelope(folded)) is not None
+
+
+# «cuál es mi ip», «what's my ip address», «decime qué dirección IP tiene esta
+# compu»: the machine's own address, read from the catalog (NETWORK1161/1201).
+_IP_LIST_REQUEST = re.compile(
+    r"^[¿?¡!\s]*(?:(?:decime|dime|mostrame|muestrame|show\s+me|tell\s+me)\s+)?"
+    r"(?:(?:cual|which|what)(?:\s+es|'s|s|\s+is)?\s+)?"
+    r"(?:mi|my|la|the|tu|your)\s+(?:direccion\s+)?ip(?:\s+address)?"
+    r"(?:\s+(?:actual|current|local|de\s+(?:esta|este)\s+(?:compu|computadora|equipo|pc|maquina)|of\s+this\s+(?:pc|computer|machine)))?"
+    r"[\s?!.]*$"
+    r"|^[¿?¡!\s]*(?:(?:decime|dime|show\s+me|tell\s+me)\s+)?(?:que|what)\s+(?:direccion\s+)?ip(?:\s+address)?\s+"
+    r"(?:tengo|tiene\s+(?:esta|este|la|el)\s+(?:compu|computadora|equipo|pc|maquina)|do\s+i\s+have|does\s+this\s+(?:pc|computer|machine)\s+have)"
+    r"[\s?!.]*$"
+)
+
+
+def _ip_list_request(folded: str) -> bool:
+    """Recognize a request for this machine's own IP address."""
+
+    return _IP_LIST_REQUEST.match(_strip_request_envelope(folded)) is not None
 
 
 def _reminder_has_actionable_due(folded: str) -> bool:
@@ -14337,6 +14363,8 @@ def resolve_explicit_effects(
         return None
     if "notification.schedule" in available and _wake_alarm_request(folded):
         return EffectIntent(("notification.schedule",), (folded,))
+    if "network.ip.list" in available and _ip_list_request(folded):
+        return EffectIntent(("network.ip.list",), (folded,))
     steam_cancel = _steam_install_cancel_active_intent(folded, available)
     if steam_cancel is not None:
         return steam_cancel

@@ -869,7 +869,9 @@ public static class ProductCatalog
         Descriptor(
             "network.ip.list",
             EmptySchema(),
-            OperationRisks.PrivacySensitive,
+            // Owner decision 2026-09-13 (DECISIONES_DUENO, point 6): listing the
+            // machine's own addresses no longer asks for confirmation.
+            OperationRisks.ReadOnly,
             "network.ip.list.windows.unicast.secondread.v1",
             ToolExposure.Public,
             "Enumera direcciones IP unicast activas del equipo y solo devuelve valores presentes en dos observaciones consecutivas, sin exponer nombres de interfaz."),

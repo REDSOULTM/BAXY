@@ -1,0 +1,17 @@
+{
+  "schema": "c03-network1201-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_ip_list_request; network.ip.list domain rule; resolve_explicit_effects)",
+  "patch": "artifacts/comprobaciones/C03/NETWORK1201/SOURCE.patch",
+  "cause_measured": "NETWORK1161/1163: «cuál es mi ip», «cuál es mi IP» terminaban en confirmación (a veces con vocabulario del contrato) y «what's my ip address» en negación falsa de alcance: sin regla de dominio para network.ip.list la propuesta del modelo se vetaba, y no había lector determinista; además la operación era PrivacySensitive y exigía confirmación (decisión del dueño 2026-09-13, punto 6: autorizada sin confirmación; ver APP_SOURCE.json).",
+  "change": "Lector determinista _ip_list_request para «cuál es mi ip», «what's my ip address», «qué ip tengo», «decime qué dirección IP tiene esta compu», «show me my IP address», «mi ip» → network.ip.list; regla de dominio de network.ip.list (ip / dirección ip / ip address). Sin frases de salida; ninguna capa nueva.",
+  "offline_verification": "resolve_explicit_effects: «cuál es mi ip», «cuál es mi IP», «what's my ip address», «Decime qué dirección IP tiene esta compu.», «Show me my IP address.», «qué ip tengo», «What is my IP?», «mi ip» → network.ip.list; «cuál es la ip de google» → None; «abrí la página de mi ip pública» sigue en web.search/browser.navigate. Dominio True para todas. Baseline del reconocedor: 262 (H0455, H0568, H0481 nuevos; sin regresiones). Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "NETWORK1201: H0455, H0568, H0481 con pares ES/EN; BUILD1201 (catálogo).",
+  "credits": 0
+}
