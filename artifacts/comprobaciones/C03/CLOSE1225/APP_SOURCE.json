@@ -1,6 +1,6 @@
 {
   "schema": "c03-close1225-app-source-adoption-v1",
-  "status": "adopted_unmeasured",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs (Inventory strong path, AddHostedFrameWindows)",
   "patch": "artifacts/comprobaciones/C03/CLOSE1225/APP_SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": true,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": null,
-  "credits": null
+  "measurement": "CLOSE1225: siete window.active/app.close revisados sin abortos de inventario; los cinco cierres aprobados por raíz se completaron y verificaron. Créditos por los deícticos: 3.",
+  "credits": 3
 }

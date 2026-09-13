@@ -1,3 +1,13 @@
+# CLOSE1225 adjudicado — 2026-09-13T17:19:57.817066+00:00
+
+**298/742 cubiertos, 444 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA af9ebd8b1c9745d338a1a776c78281546f1f68727d6ba40f3f5ac820eacb8f74. Primeras altas 24 h >= 172 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f4933c4a con BUILD1225 (enumeración completa sólo del candidato, CLOSE1225/APP_SOURCE.json; prohibición con justificación y anuncio de pedido futuro, CLOSE1225/SOURCE.json; cierres deícticos de la ventana en primer plano, CLOSE1225/SOURCE_DEICTIC.json).
+
+CLOSE1225 (5 deícticos + 2 variantes como turnos revisados sobre un Bloc de notas propio en primer plano; 2 prohibiciones + 2 variantes; 2 límites): 13 ejecutados, 9 aprobados, 4 fallidos; +3 (H0400 «cierra esta ventana», H0316 «cerrá esto», H0495 «cerrala») con los pares «Cerrá la ventana que está en primer plano.» y «Close the active window.». Adjudicación 3265d6c636e833af943a8b55b5c102e13bcd99e0423f05abc35c753c6aae5c49. window.active resolvió la ventana propia en primer plano en los siete casos y el producto pidió confirmación en todos; H0148 y H0335 fallaron sólo porque la revisión raíz (approve_review.py) aún exigía una lectura window.resolve —corregida antes del índice 2— y se remiden. Prohibición con justificación: ya cerrada como conversación estable, pero el compositor no reconoce la prohibición («constraint_ack» sólo cubre aperturas). Límite futuro: ya no es «no soportado» pero el modelo sigue negando la capacidad. Cerrar apps queda 7/20.
+
+Siguiente: CLOSE1227 con H0148/H0335 (deícticos pendientes) y las dos prohibiciones con «constraint_ack» ampliado a cierres; después WhatsApp/Discord propios (el instrumento exige clientes ausentes: requiere decisión de diseño), Steam ×4 aplazado, globales ×2. Reanudación: derivar de build_close1225.py; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 af9ebd8b1c9745d338a1a776c78281546f1f68727d6ba40f3f5ac820eacb8f74`.
+
+---
+
 # CLOSE1223 adjudicado — 2026-09-13T16:54:49.709785+00:00
 
 **295/742 cubiertos, 447 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 81ba82b5932e4be392ac841fce1217cbe8a81272557729c447614900a82ae096. Primeras altas 24 h >= 169 (+4).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 50ad70f0 con BUILD1223 (inventario fuerte sólo sobre candidatos, CLOSE1223/APP_SOURCE.json; idioma del pedido en respuestas de plan, CLOSE1223/SOURCE.json).

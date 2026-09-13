@@ -1,6 +1,6 @@
 {
   "schema": "c03-close1225-source-adoption-deictic-v1",
-  "status": "adopted_unmeasured",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/effect_intent.py (_DEICTIC_CLOSE_REQUEST, deictic_close_request; dominios app.close/window.active; reconocimiento del cierre; cabezas cerrala/cerralo); src/baxy_mind/__main__.py (_expand_effect_plan: prerrequisito window.active para cierres deícticos)",
   "patch": "artifacts/comprobaciones/C03/CLOSE1225/SOURCE_DEICTIC.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": null,
-  "credits": null
+  "measurement": "CLOSE1225: los siete deícticos llegaron a window.active → app.close con confirmación; cinco cerrados y verificados (dos rechazados por la revisión raíz, criterio corregido). 3 créditos (H0400, H0316, H0495).",
+  "credits": 3
 }

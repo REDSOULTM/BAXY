@@ -1,6 +1,6 @@
 {
   "schema": "c03-close1225-source-adoption-v1",
-  "status": "adopted_unmeasured",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/__main__.py (_explicit_stable_no_effect_turn_decision: leading_negation); src/baxy_mind/effect_intent.py (effect_request_is_authoritative, _future_request_announcement)",
   "patch": "artifacts/comprobaciones/C03/CLOSE1225/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": null,
-  "credits": null
+  "measurement": "CLOSE1225: «No cierres Chrome, lo estoy usando.» ya se cierra como conversación estable (sin efectos) pero el compositor no reconoce la prohibición; el límite futuro ya no cae en «no soportado» pero el modelo niega la capacidad. 0 créditos.",
+  "credits": 0
 }

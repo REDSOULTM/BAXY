@@ -1,3 +1,25 @@
+## CLOSE1225 — estado vigente 2026-09-13T17:19:57.817066+00:00
+
+Parcial: 9 aprobados, 4 fallidos, 0 sin ejecutar; 3 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 298/742 | 444 | 0 | >=172 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 169 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; CLOSE1225 añade 3. No se cuentan revalidaciones.
+
+Siguiente acción: CLOSE1225 completa: 13 ejecutados, 9 aprobados, 4 fallidos, 3 créditos (H0400 «cierra esta ventana», H0316 «cerrá esto», H0495 «cerrala»: cierre deíctico de la ventana en primer plano con los dos pares). H0148 y H0335 llegaron a la propuesta y la revisión raíz las rechazó por un criterio propio (sólo aceptaba window.resolve), corregido antes del índice 2: se remiden en la siguiente tanda. Prohibición con justificación: ya cerrada como conversación pero el compositor no reconoce la prohibición (constraint_ack sólo cubre aperturas). Límite futuro: el modelo sigue negando la capacidad. Cerrar apps queda 7/20.
+
+Evidencia: `artifacts/comprobaciones/C03/CLOSE1225/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 447.64 s acumulados; pico GPU 3497.56 MiB; pico RAM 2359.96 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 13; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque CLOSE1225 precedente. -->
+
 ## CLOSE1223 — estado vigente 2026-09-13T16:54:49.709785+00:00
 
 Parcial: 11 aprobados, 3 fallidos, 0 sin ejecutar; 4 créditos.
