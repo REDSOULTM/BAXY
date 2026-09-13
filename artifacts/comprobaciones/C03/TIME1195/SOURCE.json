@@ -1,0 +1,17 @@
+{
+  "schema": "c03-time1195-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_incomplete_scheduled_request)",
+  "patch": "artifacts/comprobaciones/C03/TIME1195/SOURCE.patch",
+  "cause_measured": "TIME1195 índices 0, 1, 5, 6 («avisame en 30 minutos», «avisame en una hora», «Avisame en 45 minutos.», «Remind me in ten minutes.»): el lector determinista producía una intención reminder.create sin aclaración (turn-audit: explicit_effects); el extractor no ancla título, la petición de argumentos cae al modelo y éste vuelve a pedir el plazo ya dado («cuándo y qué…», «¿A qué hora exacta y qué título…?») o inventa el contenido con el texto del pedido y crea el recordatorio.",
+  "change": "En _incomplete_scheduled_request, un aviso/recordatorio con cabeza (avisame/recordame/recuérdame/remind me), plazo accionable y sin contenido produce la aclaración determinista «what_to_remind_or_notify_about» (sin efecto), antes de que el pedido llegue a la ruta de efectos. Sin frases de salida; ninguna capa nueva.",
+  "offline_verification": "resolve_explicit_clarification_intent: «avisame en 30 minutos», «avisame en una hora», «Avisame en 45 minutos.», «Remind me in ten minutes.» → what_to_remind_or_notify_about; con contenido («avisame en 20 minutos que saque la comida», «recordame en 5 minutos tomar agua») → None (siguen como efectos); «recuérdame comprar pilas» → due_time; «Set an alarm for 99.», «poné una alarma a las 25» → valid_hour_0_to_23; «despertame en una hora», «pon una alarma en 2min» → None (alarmas completas). Baseline del reconocedor sin cambios. Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "TIME1197: H0121, H0343, H0371 con pares; sin efectos autorizados.",
+  "credits": 0
+}

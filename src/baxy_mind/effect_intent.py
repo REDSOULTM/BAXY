@@ -2431,11 +2431,28 @@ def _incomplete_scheduled_request(
         title = payload.group("title") if payload is not None else ""
     if title:
         content = re.sub(rf"(?:{_CLOCK_TIME_SELECTOR}|{_BOUNDED_TEMPORAL_SELECTOR})", " ", title)
-        content = re.sub(r"\b(?:at|for|para|a|las?|on|next|el|la|proximo|proxima)\b", " ", content)
+        # The duration's own preposition («en 30 minutos», «in ten minutes»)
+        # is not content either (TIME1195).
+        content = re.sub(
+            r"\b(?:at|for|para|a|las?|on|next|el|la|proximo|proxima|en|in|dentro|de|within)\b",
+            " ",
+            content,
+        )
         if not re.search(r"[a-z]", content):
             title = ""
     # Only explicitly retained content uses this branch. Time-only reminders
     # retain the existing title clarification below; no AGENDA1024 WIP is merged.
+    if (
+        not alarm
+        and not title
+        and reminder is not None
+        and "reminder.create" in available
+        and _reminder_has_actionable_due(folded)
+    ):
+        # «avisame en 30 minutos»: the moment is given, the content is not.
+        # Without this the effect path asked the model for arguments, which
+        # re-asked the delay or invented the content (TIME1195/000, /006).
+        return ClarificationIntent(("reminder.create",), ("what_to_remind_or_notify_about",))
     if not alarm and not title:
         return None
     operation = "notification.schedule" if alarm else "reminder.create"
