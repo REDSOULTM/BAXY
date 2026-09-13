@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación TIME1130
+# Categorías actuales — adjudicación MESSAGING1131
 
-203/742 cubiertos; 539 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 77 primeras altas (28 Kiro + 49 retorno), sin revalidaciones. Registro canónico SHA256: 13ed0c500d2ccd94a75af0ca3196d038154c24e7d56b950d644cc0076fadcf3a.
+203/742 cubiertos; 539 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 77 primeras altas (28 Kiro + 49 retorno), sin revalidaciones. Registro canónico SHA256: 17e4991cf2e6a6d49647d1177ab0fef236563b78699ca2aa8192820ba49f93b2.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|

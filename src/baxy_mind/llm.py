@@ -3129,7 +3129,7 @@ def _local_clock_from_situation(situation: dict) -> str | None:
 
 
 def _verified_notification_due(situation: dict) -> datetime | None:
-    """Keep a verified scheduled instant distinct from the current clock."""
+    """Use the verified next run, distinct from the requested due and current clock."""
     if (
         situation.get("operation") != "notification.schedule"
         or situation.get("verified") is not True
@@ -3142,7 +3142,7 @@ def _verified_notification_due(situation: dict) -> datetime | None:
     if not isinstance(due, str) or not isinstance(next_run, str):
         return None
     parsed = _parse_core_utc(due)
-    return parsed if parsed is not None and parsed == _parse_core_utc(next_run) else None
+    return _parse_core_utc(next_run) if parsed is not None else None
 
 
 def _clock_only_from_situation(situation: dict) -> bool:
@@ -3724,7 +3724,9 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             bits.append(
                 "Briefly confirm the alarm or timer was scheduled and give its "
                 "scheduled time as HH:MM in UTC, explicitly naming UTC. This is "
-                "not the current time or a new relative countdown. "
+                "not the current time or a new relative countdown. Use nextRunUtc, "
+                "the observed next run, rather than dueUtc, the requested time; "
+                "do not expose these internal field names. "
                 "Preserve any explicitly named title; a descriptive alarm label "
                 "may be paraphrased. Address the person naturally in their language."
             )
