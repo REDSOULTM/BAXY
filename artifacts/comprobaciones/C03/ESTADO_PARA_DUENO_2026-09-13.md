@@ -1,3 +1,31 @@
+## Aviso de recursos (2026-09-13T03:20:51.405273+00:00)
+
+Las tandas necesitan 4 GB de RAM libre al arrancar (guarda heredada, no la bajo). Tu app ChatGPT/Codex se relanza sola y ocupa ~1,3 GB; con ella abierta quedan ~2–3 GB libres y el conductor rechaza el caso. Cerrarla por la fuerza ya no me lo permite el arnés. Si la cierras tú (o me autorizas expresamente a cerrarla cada vez), retomo IDENTITY1146 y las tandas siguientes. Mientras tanto sigo con reparaciones verificables sin producto y documentación. Recordatorios de sesión programados (03:27 y cada 5 h).
+
+Avance de esta sesión: 203 → 217 cubiertos (MESSAGING1140 +1, NOTES1141 +1, NOTES1142 +10, KNOWLEDGE1144 +2); reparaciones adoptadas: pregunta de canal (llm), gramática de notas (effect_intent/__main__), tokens de «fuera de este mundo» por palabra completa (App, BUILD1143), prompt sin «SIEMPRE». Pendiente tu decisión sobre precisión de alarmas (TIME1139).
+
+## IDENTITY1145 — estado vigente 2026-09-13T03:20:00+00:00
+
+Parcial: 1 aprobados, 2 fallidos, 24 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 217/742 | 525 | 0 | >=91 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 28 Kiro + 49 retorno + H0584 + H0511 + 10 (NOTES1142) + 2 (KNOWLEDGE1144), todas dentro de la ventana de 24 h al adjudicar; IDENTITY1145 no añade. No se cuentan revalidaciones.
+
+Siguiente acción: IDENTITY1145 detenida tras 3 casos por RAM libre < 4000 MiB (guarda heredada, no rebajada): la App ChatGPT/Codex del dueño se relanza y ocupa ~1.3 GB; el arnés no autoriza cerrarla por la fuerza de nuevo. 2 fallidos (capacidades sólo de charla por «podés» no reconocido en el lector de capacidades), 1 aprobado, 24 sin ejecutar, 0 créditos. Siguiente: reparar el voseo en request_reading (podes/sabes/sos/vos), verificar sin GPU sobre los 742, y medir IDENTITY1146 completa en cuanto la RAM libre supere 4000 MiB.
+
+Evidencia: `artifacts/comprobaciones/C03/IDENTITY1145/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 68.95 s acumulados; pico GPU 3497.56 MiB; pico RAM 1588.11 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 3; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque IDENTITY1145 precedente. -->
+
 ## KNOWLEDGE1144 — estado vigente 2026-09-13T03:05:00+00:00
 
 Parcial: 17 aprobados, 7 fallidos, 0 sin ejecutar; 2 créditos.

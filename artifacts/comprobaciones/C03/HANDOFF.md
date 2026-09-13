@@ -1,3 +1,11 @@
+# IDENTITY1145 parcial (RAM) — 2026-09-13T03:20:51.405273+00:00
+
+**217/742 cubiertos,525 abiertos,0NA;0/35;C03 formal3/11. Registro SHA512eaae7a30fec6c191c25c877a8f83f9b4f49f1f9551e19bad65813aacf628a.** Prompt corregido en593dbde0 (sin «SIEMPRE», sin oferta de idioma). IDENTITY1145 (27 objetos sin efectos) detenida tras 3 casos: el runner rechazó el caso3 por RAM libre3134MiB<4000 (guarda heredada, no rebajada). ChatGPT/Codex del dueño se relanza (~1.3GB) y WhatsApp.Root reaparece; el arnés denegó cerrar ChatGPT otra vez por la fuerza; el cierre suave no lo termina. 2 fallidos (capacidades sólo de charla: «podés» no reconocido por request_reading), 1 aprobado (H0587 capacidades reales), 24 sin ejecutar, 0 créditos. Adjudicación parcial publicada en IDENTITY1145/.
+
+Reparación siguiente (Python, verificable sin GPU): voseo en request_reading._SECOND_PERSON/_DOING (sos/vos/podes). Reanudación: IDENTITY1146 con el mismo material cuando RAM libre>=4000MiB (comprobar con `psutil.virtual_memory().available`); si el dueño cierra o autoriza cerrar la App ChatGPT/Codex, hay ~5.4GB libres y la tanda entera cabe. Recordatorios de sesión programados (03:27 y cada5h) para retomar si se agota el uso.
+
+---
+
 # KNOWLEDGE1144 adjudicado — 2026-09-13T03:05:38.190385+00:00
 
 **217/742 cubiertos,525 abiertos,0NA;0/35 categorías cerradas;C03 formal3/11. Registro SHA53c9974cf2e4b718971670a4870d9441b65eb33f8e091c6303eafd2ffa6b4f70. Primeras altas24h>=91 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD1abb667a con BUILD1143 (App: comparación por palabra completa en LooksLikeOutOfWorldRequest).

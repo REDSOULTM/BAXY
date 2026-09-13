@@ -152,10 +152,10 @@
     "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "KNOWLEDGE1144 adjudicado: 17 aprobados, 7 fallidos, 0 sin ejecutar; 2 créditos.",
+  "workStatus": "IDENTITY1145 adjudicado: 1 aprobados, 2 fallidos, 24 sin ejecutar; 0 créditos.",
   "executionPausedByOwner": false,
   "branch": "codex/kiro-goal-c03",
-  "checkpoint": "217/742 cubiertos, 525 abiertos, 0 no aplican. KNOWLEDGE1144: 2 créditos explícitos de raíz.",
+  "checkpoint": "217/742 cubiertos, 525 abiertos, 0 no aplican. IDENTITY1145: 0 créditos explícitos de raíz.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
   "surveyVerificationCounts": {
@@ -164,14 +164,14 @@
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "53c9974cf2e4b718971670a4870d9441b65eb33f8e091c6303eafd2ffa6b4f70",
+  "surveyRegistrySha256": "512eaae7a30fec6c191c25c877a8f83f9b4f49f1f9551e19bad65813aacf628a",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
   "surveyCoverageLast24h": 91,
-  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–13 septiembre: 28 Kiro + 49 retorno + H0584 (MESSAGING1140) + H0511 (NOTES1141) + 10 (NOTES1142), todas dentro de la ventana de 24 h al adjudicar; KNOWLEDGE1144 añade dos. No se cuentan revalidaciones ni verification_updated_at.",
+  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–13 septiembre: 28 Kiro + 49 retorno + H0584 + H0511 + 10 (NOTES1142) + 2 (KNOWLEDGE1144), todas dentro de la ventana de 24 h al adjudicar; IDENTITY1145 no añade. No se cuentan revalidaciones.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-13T03:05:00+00:00",
+  "utcUpdated": "2026-09-13T03:20:00+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -621,7 +621,7 @@
     "freeze_ended_at": "2026-09-12T13:33:18.245252-03:00",
     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
   },
-  "updatedAtUtc": "2026-09-13T03:05:00+00:00",
+  "updatedAtUtc": "2026-09-13T03:20:00+00:00",
   "currentContinuation1065": {
     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
     "quality": {
@@ -1450,5 +1450,28 @@
       "ram_peak_mib": 2084.2109375
     },
     "next": "KNOWLEDGE1144: 24 ejecutados, 17 aprobados, 7 fallidos; +2 (H0142 chiste, H0253 conversión). Cuatro literales aprobados siguen sin crédito por un solo par aprobado en su conducta (H0236 juego; H0239/H0582 comparación; H0703/H0030 contenido libre): los pares que fallaron lo hicieron por hechos inventados del modelo (Tetris, pez espada) o por afirmar un ganador universal. Causas de fuente demostradas: «SIEMPRE» del SYSTEM_PROMPT publicado como respuesta (H0297) y pregunta de elección de idioma inducida por la enumeración de idiomas (H0211). Siguiente: corregir el prompt (minúscula, «sin ofrecer elegir idioma»), medir en la tanda de identidad/conversación con H0211/H0297 y pares nuevos de juego/comparación/contenido libre."
+  },
+  "currentContinuation1145": {
+    "head": "593dbde0b5611f96d0ba6938effe7300727e314c",
+    "quality": {
+      "passed": 1,
+      "failed": 2,
+      "executed": 3,
+      "not_executed": 24,
+      "sealed_total": 8,
+      "segments_started": 3,
+      "aborted_before_admission": 0
+    },
+    "new_credits": 0,
+    "credited_ids": [],
+    "registry_sha256": "512eaae7a30fec6c191c25c877a8f83f9b4f49f1f9551e19bad65813aacf628a",
+    "survey": 217,
+    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\IDENTITY1145\\ROOT_ADJUDICATION.json",
+    "resources": {
+      "seconds_sum": 68.95100000000093,
+      "gpu_peak_mib": 3497.55859375,
+      "ram_peak_mib": 1588.109375
+    },
+    "next": "IDENTITY1145 detenida tras 3 casos por RAM libre < 4000 MiB (guarda heredada, no rebajada): la App ChatGPT/Codex del dueño se relanza y ocupa ~1.3 GB; el arnés no autoriza cerrarla por la fuerza de nuevo. 2 fallidos (capacidades sólo de charla por «podés» no reconocido en el lector de capacidades), 1 aprobado, 24 sin ejecutar, 0 créditos. Siguiente: reparar el voseo en request_reading (podes/sabes/sos/vos), verificar sin GPU sobre los 742, y medir IDENTITY1146 completa en cuanto la RAM libre supere 4000 MiB."
   }
 }
