@@ -1,0 +1,50 @@
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index be34b0b0..43e93f35 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -4039,9 +4039,16 @@ def _explicit_notification_schedule_arguments(
+         r"(?:[01]?[0-9]|2[0-3]):[0-5][0-9]"
+         r"(?:\s+(?:tomorrow|manana|maniana))?)\b"
+     )
+-    relative = list(re.finditer(relative_pattern, evidence, re.IGNORECASE))
+-    clocks = list(re.finditer(clock_pattern, evidence, re.IGNORECASE))
+-    military_clocks = list(re.finditer(military_clock_pattern, evidence, re.IGNORECASE))
++    # Time literals are read on the folded text: «9 de la mañana» carries an
++    # ñ that the accent-free patterns never matched on the raw evidence
++    # (TIME1193 probe). The title below still keeps the person's own words.
++    relative = list(re.finditer(relative_pattern, folded, re.IGNORECASE))
++    clocks = list(re.finditer(clock_pattern, folded, re.IGNORECASE))
++    # «a las 6:30 de la tarde» is one clock with its period, not also a
++    # 24-hour clock: the period reading owns the literal when both match.
++    military_clocks = (
++        [] if clocks else list(re.finditer(military_clock_pattern, folded, re.IGNORECASE))
++    )
+     if len(relative) + len(clocks) + len(military_clocks) != 1:
+         return None
+     due_literal = (
+@@ -4078,8 +4085,13 @@ def _explicit_relative_reminder_arguments(
+ ) -> dict[str, object] | None:
+     """Preserve one closed relative reminder's literal time and title."""
+ 
++    clock = (
++        rf"(?:(?:a\s+las?|para\s+las?|at)\s+{_TEMPORAL_NUMBER_PATTERN}(?::[0-5][0-9])?"
++        r"(?:\s*(?:a\.?\s*m\.?|p\.?\s*m\.?|de\s+la\s+ma[nñ]ana|de\s+la\s+tarde|"
++        r"de\s+la\s+noche|in\s+the\s+morning|in\s+the\s+afternoon|in\s+the\s+evening))?)"
++    )
+     duration = (
+-        rf"(?:(?:en|in|dentro\s+de|within)\s+){effect_intent._RELATIVE_DURATION_PATTERN}"
++        rf"(?:(?:(?:en|in|dentro\s+de|within)\s+){effect_intent._RELATIVE_DURATION_PATTERN}|{clock})"
+     )
+     patterns = (
+         rf"^[¿?¡!\s]*(?:avisame|recordame|recuerdame|remind\s+me)\s+"
+@@ -5314,7 +5326,9 @@ def _canonical_due_utc(
+     military_clock = re.search(
+         r"\b(?:at|a|para)\s+(?:las?\s+)?"
+         r"(?P<hour24>[01]?[0-9]|2[0-3]):(?P<minute24>[0-5][0-9])\b"
+-        r"(?!\s*(?:a\.?\s*m\.?|p\.?\s*m\.?))",
++        # «6:30 de la tarde» is a 12-hour clock with its period, not 06:30.
++        r"(?!\s*(?:a\.?\s*m\.?|p\.?\s*m\.?|de\s+la\s+(?:manana|maniana|tarde|noche)|"
++        r"in\s+the\s+(?:morning|afternoon|evening)))",
+         clock_source,
+         re.IGNORECASE,
+     )

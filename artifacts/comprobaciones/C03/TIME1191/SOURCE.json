@@ -1,0 +1,17 @@
+{
+  "schema": "c03-time1191-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_explicit_notification_schedule_arguments, _explicit_relative_reminder_arguments)",
+  "patch": "artifacts/comprobaciones/C03/TIME1191/SOURCE.patch",
+  "cause_measured": "Sonda sin GPU sobre los abiertos de agenda con hora explícita (H0273 «pon una alarma a las 9 de la mañana», H0514, H0259 «recordame comprar pan a las 6 de la tarde»): (a) el extractor de alarma buscaba la hora en el texto crudo, cuya «ñ» de «mañana» no coincide con los patrones sin acento (de la manana) → sin argumentos → aclaración; (b) «a las 6:30 de la tarde» coincidía dos veces (reloj con periodo y reloj de 24 h) → cardinalidad 2 → sin argumentos; (c) los recordatorios con hora («recordame comprar pan a las 6 de la tarde», «Remind me to call the bank at 4 pm.») no tenían extractor: sólo duraciones relativas.",
+  "change": "(a) Los literales de tiempo de la alarma se buscan sobre el texto plegado (folded) y el título sigue tomándose de las palabras originales. (b) Si un reloj con periodo coincide, el reloj de 24 h no se cuenta además, ni en el extractor ni en _canonical_due_utc (cuya exclusión de 24 h sólo conocía am/pm: «6:30 de la tarde» se convertía en 06:30). (c) El extractor de recordatorios admite una hora explícita («a las / para las / at» + hora[:minutos] + periodo opcional) antes o después del contenido; la conversión a dueUtc sigue en _canonical_due_utc (próxima ocurrencia en la zona local; una hora sin periodo ni formato 24 h sigue sin convertirse y produce aclaración). Sin frases de salida; ninguna capa nueva.",
+  "offline_verification": "_ground_explicit_arguments: «pon una alarma a las 9 de la mañana» → 2026-09-14T12:00:00Z (09:00 local, próxima ocurrencia), «poné una alarma a las 7 de la mañana» → 07:00 local, «Ponme una alarma a las 6:30 de la tarde.» → 18:30 local (antes 06:30), «pon una alarma a las 17:45» → 17:45, «Set an alarm for 8 pm.» → 20:00 local, «poné una alarma a las 99» → None (aclaración). Recordatorios: «recordame comprar pan a las 6 de la tarde» → (18:00 local, «comprar pan»), «Recordame regar las plantas a las 10 de la noche.» → (22:00, «regar las plantas»), «Remind me to call the bank at 4 pm.» → (16:00, «call the bank»), «Remind me at 7:15 am to take the pills.» → (07:15, «take the pills»), «recordame tomar la pastilla a las 21:30» → (21:30); «recuérdame llamar al dentista a las 5» → None (hora ambigua: aclaración). Los relativos anteriores no cambian. Baseline del reconocedor sin cambios. Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "TIME1193: H0273, H0514, H0259 con pares ES/EN de hora explícita.",
+  "credits": 0
+}
