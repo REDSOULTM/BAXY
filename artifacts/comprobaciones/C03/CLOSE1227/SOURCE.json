@@ -1,0 +1,17 @@
+{
+  "schema": "c03-close1227-source-adoption-v1",
+  "status": "adopted_unmeasured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (explicit_negative_constraint)",
+  "patch": "artifacts/comprobaciones/C03/CLOSE1227/SOURCE.patch",
+  "cause_measured": "CLOSE1225/009 «No cierres Chrome, lo estoy usando.»: la lectura ya cierra el turno como conversación estable sin efectos (reparación CLOSE1225), pero el compositor respondió «¡Claro! ¿Qué necesitas hacer con Chrome ahora?» porque la forma de presentación «constraint_ack» (reconocimiento de una restricción del usuario) sólo se activa cuando explicit_negative_constraint reconoce la frase, y esa lectura descartaba cualquier texto con coma o punto y coma; la justificación tras la coma la excluía.",
+  "change": "explicit_negative_constraint admite un separador cuando la cláusula que sigue es una justificación o estado en primera persona (la misma gramática que la lectura estable de CLOSE1225) y evalúa la prohibición sobre la cabeza; cualquier otra cola sigue siendo un turno compuesto para el lector normal. La forma «constraint_ack» ya existente redacta el reconocimiento («no cerraré Chrome»…) con la restricción como dato, sin frase fija.",
+  "offline_verification": "«No cierres Chrome, lo estoy usando.» → constraint_ack; «no cierres spotify», «Never close Notepad on your own.» sin cambios; «No cierres Chrome, abrí Paint.» sigue fuera. Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": null,
+  "credits": null
+}

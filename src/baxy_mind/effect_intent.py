@@ -5072,8 +5072,21 @@ def explicit_negative_constraint(text: str) -> bool:
     """
 
     folded = _strip_request_envelope(_fold(text))
-    if any(mark in folded for mark in ("?", "¿", ";", ",")):
+    if any(mark in folded for mark in ("?", "¿")):
         return False
+    if any(mark in folded for mark in (";", ",")):
+        # «No cierres Chrome, lo estoy usando»: a justification or state after
+        # the separator keeps the single prohibition (CLOSE1219-1225/010); any
+        # other tail is a compound turn for the normal reader.
+        head, tail = re.split(r"[,;]", folded, 1)
+        if re.match(
+            r"^\s*(?:(?:que\s+)?(?:lo|la|los|las|me|te)\s+)?"
+            r"(?:estoy|estamos|esta|estan|sigo|seguimos|necesito|necesitamos|"
+            r"i'?m|i\s+am|it'?s|we'?re|they'?re|porque|because|ya\s+que)\b",
+            tail,
+        ) is None:
+            return False
+        folded = head.strip()
     if re.search(r"\b(?:y|and|pero|but|sino)\b", folded):
         return False
     if len(_request_clauses(folded)) != 1:
