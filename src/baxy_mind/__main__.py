@@ -4612,11 +4612,13 @@ def _explicit_arguments_from_evidence(
         shorthand = re.match(
             r"^[¿?¡!\s]*(?:"
             r"(?:anot[aá]|anotar|anotame|note down|write down|"
-            r"deja(?:r)?\s+anotad[oa])\s+"
-            r"(?:(?:que|that)\b|:|(?=[^\W\d_]+(?:ar|er|ir)\b))"
-            r"|(?:crea|crear|create|make|haz|hacer)\s+"
-            r"(?:(?:una?|a)\s+)?(?:nota|note)\s+"
-            r"(?:que\s+diga|that\s+says?|saying|:)"
+            r"deja(?:r)?\s+anotad[oa])\s*"
+            r"(?:(?:que|that)\b|:|\s(?=[^\W\d_]+(?:ar|er|ir)\b))"
+            r"|(?:cre[aá]|crear|create|make|haz|hacer|guard[aá](?:me)?|guardar|"
+            r"save|tom[aá](?:me)?|take)\s+"
+            r"(?:(?:una?|a)\s+)?(?:nota|note)\s*"
+            r"(?:(?:que\s+diga|that\s+says?|saying)\s*:?|:)"
+            r"|(?:nota\s+nueva|nueva\s+nota|new\s+note)\s*:"
             r")\s*(?P<content>.+?)[\s.!?]*$",
             note_request,
             re.IGNORECASE,

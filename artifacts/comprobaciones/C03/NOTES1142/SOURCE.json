@@ -1,0 +1,45 @@
+{
+  "schema": "c03-notes1142-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owners": ["src/baxy_mind/effect_intent.py", "src/baxy_mind/__main__.py"],
+  "before": {
+    "src/baxy_mind/effect_intent.py": "7a9ab53fb4087504452579ab579b39e9989bfd10a90fb165a4449a54f12ffa38",
+    "src/baxy_mind/__main__.py": "b8b840df0c935fa44aee8bf19972ddb8cb8d388b6f0c5a5489becca1cbe19f6f"
+  },
+  "after": {
+    "src/baxy_mind/effect_intent.py": "4c72afe49fde63055918fd9c4aae19f40cd8744baee467c8fe9de3a6d59aae9b",
+    "src/baxy_mind/__main__.py": "056cf3972d2078ee183341550a4423fb2e2603fe8d01569c466ecc92a0a9855a"
+  },
+  "patch": "artifacts/comprobaciones/C03/NOTES1142/SOURCE.patch",
+  "patch_sha256": "ea86d2c40e09f074b5383e67737e12cc4491a37e762b2328d6492bd9ca9d67ec",
+  "cause_measured": "NOTES1141 (26 casos): todos los casos resueltos por el reconocedor determinista pasaron; los 11 fallos cayeron a la ruta del modelo (aclaración/confirmación innecesaria, negativa falsa, agotamiento) por huecos de la gramática cerrada de notas. Sonda sin GPU sobre los 26 textos: dos puntos sin espacio (create a note: X; crea una nota: X en el extractor de argumentos), «que diga:», «creá/anotá/tomá» sin plegar en __main__, cabezas guardame/tomá/take, forma nominal «nota nueva:», listados sin verbo de lista (mis notas, mostrame/listame, ¿tengo alguna nota guardada?).",
+  "change": [
+    "effect_intent._LIST: añade listame, mostrame, mostra (vocabulario compartido de listado).",
+    "effect_intent._literal_note_payload_request: dos puntos con o sin espacio, «que diga:», cabezas guarda(me)/guardar/save/toma(me)/take, forma nominal nota nueva/nueva nota/new note:.",
+    "effect_intent._CREATE: añade guardame, toma, tomame, take.",
+    "effect_intent._review_local_data_effects: cabeza nominal «nota nueva:» → note.create.",
+    "effect_intent._bare_note_inventory_request (nuevo lector cerrado): mis notas / my notes [guardadas|saved] y tengo/do I have [alguna|any] notas → note.list; usado en el lector estricto y como excepción de las dos puertas de petición directa.",
+    "__main__ shorthand de argumentos de nota: acentos (cre[aá], anot[aá], guard[aá], tom[aá]), dos puntos sin espacio, «que diga:», mismas cabezas y forma nominal."
+  ],
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "offline_verification": {
+    "instrument": "scratchpad/c03-recogniser-baseline.py compare (742 literales, función pura, sin GPU)",
+    "baseline_resolved": 248,
+    "current_resolved": 252,
+    "changed_literals": {
+      "H0284": "None -> note.create (abierto, notas)",
+      "H0485": "None -> note.list (abierto, notas)",
+      "H0734": "None -> note.list (abierto, notas)",
+      "H0363": "None -> task.list (ya cubierto en AGENDA1021; resolución determinista consistente)"
+    },
+    "regressions": 0,
+    "panel_probe": "26/26 casos de NOTES1141 resuelven como corresponde (creación con título/contenido íntegros, listado, límites sin operación salvo «Creá una nota.» que sigue pidiendo contenido)"
+  },
+  "requires_dotnet_build": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "NOTES1142 (10 literales, 10 variantes, 5 límites) sobre el candidato con esta fuente.",
+  "credits": 0
+}

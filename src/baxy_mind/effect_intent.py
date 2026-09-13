@@ -5209,6 +5209,19 @@ def _is_machine_knowledge_or_diagnosis(text: str) -> bool:
     ) or _has(text, rf"\b{_KNOWN_APPLICATION}\b")
 
 
+def _bare_note_inventory_request(text: str) -> bool:
+    """Recognize a complete, verbless request for the person's own notes."""
+
+    folded = _strip_request_envelope(_fold(text))
+    return _note_inventory_object(folded) and re.fullmatch(
+        r"[¿?¡!\s]*(?:(?:mis|my)\s+(?:notas|notes)(?:\s+(?:guardadas|saved))?|"
+        r"(?:tengo|do\s+i\s+have)\s+(?:alguna|algunas|any)?\s*(?:notas?|notes?)"
+        r"(?:\s+(?:guardadas?|saved))?)[\s.!?]*",
+        folded,
+        re.IGNORECASE,
+    ) is not None
+
+
 def _note_inventory_object(text: str) -> bool:
     """True when the person is listing notes, not asking for Notepad."""
 
@@ -6540,10 +6553,12 @@ def _literal_note_payload_request(text: str) -> bool:
         text,
         r"^[¿?¡!\s]*(?:"
         r"(?:anota|anotar|anotame|note\s+down|write\s+down|"
-        r"deja(?:r)?\s+anotad[oa])\s+(?:que\b|that\b|:)"
-        r"|(?:crea|crear|create|make|haz|hacer)\s+"
-        r"(?:(?:una?|a)\s+)?(?:nota|note)\s+"
-        r"(?:que\s+diga|that\s+says?|saying|:)"
+        r"deja(?:r)?\s+anotad[oa])\s*(?:que\b|that\b|:)"
+        r"|(?:crea|crear|create|make|haz|hacer|guarda(?:me)?|guardar|save|"
+        r"toma(?:me)?|take)\s+"
+        r"(?:(?:una?|a)\s+)?(?:nota|note)\s*"
+        r"(?:(?:que\s+diga|that\s+says?|saying)\s*:?|:)"
+        r"|(?:nota\s+nueva|nueva\s+nota|new\s+note)\s*:"
         r")\s*\S.+$",
     )
 
@@ -7251,11 +7266,12 @@ _DEICTIC_DAY = (
 )
 _OPEN = r"(?:abre|abrir|abri|abrime|open|launch|lanza|inicia|start|ejecuta|arranca|arrancame)"
 _MEDIA_RESUME_VERB = r"(?:reanuda|reanudar|resume|segui|seguir|sigue|continua|continuar|continue)"
-_LIST = r"(?:lista|listar|enumera|enumerar|muestra|muestrame|dime|show|list|enumerate)"
+_LIST = r"(?:lista|listar|listame|enumera|enumerar|muestra|muestrame|mostrame|mostra|dime|show|list|enumerate)"
 _READ = r"(?:lee|leer|leeme|leela|leelo|leerla|leerlo|read|dime|muestra)"
 _CREATE = (
     r"(?:crea|crear|anota|anotar|añade|añadir|anade|anadir|"
-    r"agrega|agregar|agregame|guarda|guardar|haz|hacer|create|make|add)"
+    r"agrega|agregar|agregame|guarda|guardame|guardar|haz|hacer|create|make|add|"
+    r"toma|tomame|take)"
 )
 # Diferir un efecto no es lo mismo que no poder diferirlo. El catálogo tiene
 # `notification.schedule`, `reminder.create` y `calendar.event.create`: para
@@ -7561,6 +7577,15 @@ def _review_local_data_effects(
             folded,
             "note.create",
             r"\b(?:anota|anotar|anotame|apunta|apuntame|jot)\b",
+        )
+    if _head_is(head, r"(?:nota|nueva|new)") and _has(
+        folded, r"^[¿?¡!\s]*(?:nota\s+nueva|nueva\s+nota|new\s+note)\s*:\s*\S"
+    ):
+        _append(
+            matches,
+            folded,
+            "note.create",
+            r"\b(?:nota\s+nueva|nueva\s+nota|new\s+note)\b",
         )
     if _head_is(head, r"(?:write|escribe|escribir)") and _has(
         folded, r"\b(?:nota|note)\b"
@@ -8374,6 +8399,8 @@ def _strict_catalog_request(
             and not bounded_status_question
             and not explicit_catalog_composition
             and named_window_query is None
+            and not _literal_note_payload_request(text)
+            and not _bare_note_inventory_request(text)
         )
         or _is_negative_effect_clause(text)
         or (_is_meta_or_tool_denial(text) and not bounded_routine_catalog_question)
@@ -9768,6 +9795,11 @@ def _strict_catalog_request(
         )
     ):
         resolved = intent("peripheral.list")
+        if resolved is not None:
+            return resolved
+
+    if _bare_note_inventory_request(text):
+        resolved = intent("note.list")
         if resolved is not None:
             return resolved
 
@@ -14281,6 +14313,8 @@ def resolve_explicit_effects(
             and not _location_recommendation_request(folded)
             and _nominal_reminder_lookup_title(folded) is None
             and _exact_local_reminder_title(folded) is None
+            and not _literal_note_payload_request(folded)
+            and not _bare_note_inventory_request(folded)
             and not (
                 _has(folded, r"^can i (?:see|view)\b")
                 and _has(folded, r"\b(?:reminder|recordatorio)\b")
