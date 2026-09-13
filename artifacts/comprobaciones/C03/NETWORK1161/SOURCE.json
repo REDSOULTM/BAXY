@@ -1,0 +1,18 @@
+{
+  "schema": "c03-network1161-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py",
+  "patch": "artifacts/comprobaciones/C03/NETWORK1161/SOURCE.patch",
+  "cause_measured": "NETWORK1161 índices 3 («decime si el wifi está prendido») y 4 («decime qué onda con el wifi»): el mind propuso wifi.status, la puerta de dominio curada (effect_intent._curated_domain_is_grounded, rama wifi.status: estado|status|conectad|connected|como|how|which|cual|pegad|a que) devolvió False, el veto de dominio retiró la lectura y domain_confirmation publicó una pregunta de confirmación; ninguna lectura. Sonda sin GPU: operation_domain_is_grounded(texto, 'wifi.status') False para ambos y True para los que sí leyeron («a qué wifi estoy conectado», «¿Está prendido el wifi?» por vía determinista).",
+  "change": "La rama wifi.status de la puerta de dominio acepta además prendid[oa]|encendid[oa]|apagad[oa]|activ[oa]|onda|on|off|working. Puerta unilateral: sólo deja en pie una propuesta del modelo que ya nombra el wifi y su estado; «conectate al wifi de casa» y «apagá el wifi» siguen sin dominio de wifi.status. Sin frases de salida; ninguna capa nueva.",
+  "not_changed": "network.ip.list es PrivacySensitive en el catálogo y el shell pide confirmación antes de leerla (NETWORK1161/016, /017): no acreditable bajo un instrumento sin confirmaciones; decisión del dueño si procede. El compositor añade «no está en línea» a una lectura wifi connected=false (NETWORK1161/010, /011): sin parche; queda medido. «redes guardadas» resuelve a wifi.status en vez de wifi.profile.list (014/015): sin parche.",
+  "offline_verification": "Sonda: los cuatro textos de wifi encendido/conectado del panel 1163 quedan con dominio True; «conectate al wifi de casa», «apagá el wifi» False. scratchpad/c03-recogniser-baseline.py compare sin regresiones (la puerta de dominio no forma parte del resolutor determinista).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "NETWORK1163: H0127, H0433, H0230, H0221 con pares nuevos.",
+  "credits": 0
+}

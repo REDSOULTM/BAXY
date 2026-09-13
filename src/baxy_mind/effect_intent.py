@@ -1648,10 +1648,15 @@ def _curated_domain_is_grounded(
                 rf"\b(?:{_LIST}|guardad[oa]s?|saved)\b",
             )
         if operation == "wifi.status":
+            # «decime si el wifi está prendido» and «qué onda con el wifi» ask
+            # for the same reading as «estado del wifi»; without these words the
+            # gate withdrew wifi.status and the person got a confirmation
+            # question instead of the observation (NETWORK1161/003, /004).
             return _has(
                 folded,
                 r"\b(?:estado|status|conectad[oa]|connected|como|how|which|cual|"
-                r"pegad[oa]|a\s+que)\b",
+                r"pegad[oa]|a\s+que|prendid[oa]|encendid[oa]|apagad[oa]|activ[oa]|"
+                r"onda|on|off|working)\b",
             )
         return _has(
             folded,
