@@ -1,3 +1,25 @@
+## MEMORY1251 — estado vigente 2026-09-13T20:32:21.631957+00:00
+
+Parcial: 5 aprobados, 5 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 334/742 | 408 | 0 | >=208 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 208 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MEMORY1251 no añade ninguna. No se cuentan revalidaciones.
+
+Siguiente acción: MEMORY1251 completa: 10 ejecutados, 5 aprobados, 5 fallidos, 0 créditos (los grupos nombre y dato pierden un par cada uno: idioma español ante pedidos en inglés y cita traducida; «acordate que mi color favorito…» sin respuesta por el mensaje de fallo que afirma recordar). Siguiente: MEMORY1253 con el texto del pedido original en la continuación de memoria (App), cita literal del dato recordado y mensaje de fallo memory_disabled sin afirmar recordar (mente).
+
+Evidencia: `artifacts/comprobaciones/C03/MEMORY1251/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 183.30 s acumulados; pico GPU 3497.56 MiB; pico RAM 2240.12 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 10; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MEMORY1251 precedente. -->
+
 ## MEMORY1249 — estado vigente 2026-09-13T20:21:56.282782+00:00
 
 Parcial: 1 aprobados, 9 fallidos, 0 sin ejecutar; 0 créditos.
