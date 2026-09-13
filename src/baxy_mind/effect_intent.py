@@ -4083,7 +4083,9 @@ def resolve_application_window_status_name(
     if _other_device_effect_scope(folded):
         return None
     folded = re.sub(r"\s+(?:por favor|please|ahora|now)$", "", folded)
-    state = r"(?:abiert[oa]|cerrad[oa]|open|closed)"
+    # «está corriendo spotify», «tengo discord abierto» (WINDOWS1207): running
+    # and «tengo … abierto» are presence questions about one application.
+    state = r"(?:abiert[oa]|cerrad[oa]|open|closed|corriendo|running|ejecutandose|activ[oa])"
     inquiry = (
         r"(?:(?:comprueba|revisa|verifica|confirma|averigua|dime)\s+si|"
         r"(?:check|verify|confirm|see|find out|tell me)\s+(?:if|whether))\s+"
@@ -4091,6 +4093,8 @@ def resolve_application_window_status_name(
     patterns = (
         rf"(?:esta|is)\s+(?P<target>.+?)\s+{state}",
         rf"esta\s+{state}\s+(?P<target>.+?)",
+        rf"tengo\s+(?:(?:el|la|a)\s+)?(?P<target>.+?)\s+{state}",
+        rf"do\s+i\s+have\s+(?P<target>.+?)\s+{state}",
         rf"{inquiry}(?P<target>.+?)\s+(?:esta|is)\s+{state}",
         rf"{inquiry}esta\s+{state}\s+(?P<target>.+?)",
         r"hay\s+(?:(?:alguna|una)\s+)?ventana\s+de\s+"
@@ -5961,7 +5965,13 @@ def window_inventory_arguments(text: str) -> dict[str, object] | None:
     """
 
     text = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.")
-    if not _has(text, r"\b(?:ventanas|windows)\b"):
+    # «mostrame qué tengo abierto» asks for the same inventory without the
+    # noun (WINDOWS1207).
+    open_things = (
+        r"(?:(?:lo\s+)?que\s+tengo\s+abierto|what\s+i\s+have\s+open|"
+        r"what(?:'s|\s+is)\s+open|what\s+do\s+i\s+have\s+open)"
+    )
+    if not _has(text, rf"\b(?:ventanas|windows)\b|\b{open_things}\b"):
         return None
     number = r"(?:\d+|" + "|".join(
         re.escape(word) for word in sorted(_PERCENTAGE_WORD_VALUES, key=len, reverse=True)
@@ -5986,15 +5996,18 @@ def window_inventory_arguments(text: str) -> dict[str, object] | None:
     read_head = (
         rf"(?:{_LIST}|{_MACHINE_STATUS_OBSERVATION_HEAD}|enumera|enumerate|"
         r"ensename|cuenta|count|tell\s+me|give\s+me|necesito|"
-        r"quiero\s+ver|i\s+want\s+to\s+see|i\s+need\s+to\s+see)"
+        r"quiero\s+ver|i\s+want\s+to\s+see|i\s+need\s+to\s+see|"
+        r"fijate(?:\s+en)?|mira|mirame|chequea|checkea|revisa)"
     )
+    # «ke ventanas tengo abiertas» (typo), «y cuántas ventanas?» (ellipsis),
+    # «fijate qué ventanas tengo abiertas» (head + question): WINDOWS1207.
     question_head = (
-        r"(?:(?:dime|tell\s+me)\s+)?(?:que|cuales|which|what|cuantas|how\s+many)"
+        r"(?:(?:y|and)\s+)?(?:(?:dime|tell\s+me)\s+)?(?:que|ke|cuales|which|what|cuantas|how\s+many)"
         r"(?:\s+(?:son|are))?"
     )
     ending = r"(?:\s+(?:ahora|ahora\s+mismo|now|right\s+now))?(?:\s*[,;]?\s*(?:please|por\s+favor|porfa))?"
     if not re.fullmatch(
-        rf"(?:(?:{read_head}|{question_head})\s+{object_phrase}|"
+        rf"(?:(?:{read_head}\s+(?:{question_head}\s+)?|{question_head}\s+)(?:{object_phrase}|{open_things})|"
         rf"{object_phrase}\s*[,;]\s*(?:muestramelas|enumeralas|list\s+them|show\s+them))"
         rf"{ending}", text, re.IGNORECASE,
     ):

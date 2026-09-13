@@ -1,0 +1,17 @@
+{
+  "schema": "c03-windows1207-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (resolve_application_window_status_name; window_inventory_arguments)",
+  "patch": "artifacts/comprobaciones/C03/WINDOWS1207/SOURCE.patch",
+  "cause_measured": "Sonda sin GPU sobre los 12 abiertos de «Estado de ventanas y aplicaciones»: «está corriendo spotify» y «tengo discord abierto» no llegaban al lector de presencia (estado sólo abierto/cerrado; sin forma «tengo X abierto»); «fijate qué ventanas tengo abiertas», «mostrame qué tengo abierto», «ke ventanas tengo abiertas» y «y cuántas ventanas?» no llegaban al inventario de ventanas (cabezas fijate/mirá ausentes, sustantivo «ventanas» obligatorio, errata «ke», elipsis con «y»).",
+  "change": "Lector de presencia: estados corriendo/running/ejecutándose/activo y formas «tengo X abierto» / «do I have X open». Inventario de ventanas: cabezas fijate/mirá/chequea/revisa (opcionalmente seguidas de la pregunta), «que/ke/cuáles/cuántas» con «y/and» delante, y el objeto «qué tengo abierto / what's open» sin el sustantivo. Sin frases de salida; ninguna capa nueva.",
+  "offline_verification": "resolve_explicit_effects con nombres de aplicación: «está corriendo spotify», «tengo discord abierto», «Do I have Chrome open?» → window.application.status (Spotify, Discord, Google Chrome); «fijate qué ventanas tengo abiertas», «mostrame qué tengo abierto», «ke ventanas tengo abiertas», «y cuántas ventanas?», «mirá qué ventanas hay», «Which windows are open right now?» → window.resolve (inventario). Controles: «cerrá las ventanas», «abrí las ventanas de la casa», «cuántas ventanas tiene el edificio» → None. Baseline del reconocedor: 278 (+4: H0053, H0209, H0309, H0663; los de presencia dependen del catálogo de aplicaciones y no entran en la baseline). Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "WINDOWS1207: 6 literales de inventario y 5 de presencia con pares ES/EN.",
+  "credits": 0
+}
