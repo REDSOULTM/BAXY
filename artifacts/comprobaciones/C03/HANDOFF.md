@@ -1,3 +1,9 @@
+# IDENTITY1146 lista, a la espera de RAM — 2026-09-13T03:26:09.401279+00:00
+
+Voseo de capacidades adoptado en7ae4cc60 (request_reading: sos/vos/podes; diff offline: sólo H0153/H0474 ganan capability, reconocedor de efectos sin cambio). IDENTITY1146 construida (BASE/C03-identity1146-proposal e -instrument-v1; datos aced8e38…, transporte cd2a6f0b…, runner 6f395c63…, root_case 7b06258b…), mismo material que 1145 (27/54), sin preparar: root_prepare exige RAM libre>=4000MiB y hay ~1,7GB con ChatGPT/Codex del dueño relanzado. Reanudación exacta: `root_prepare.py --expected-head 7ae4cc60e1a96d0f317836fff71e6c4b6df87c5f --expected-registry-sha256 512eaae7a30fec6c191c25c877a8f83f9b4f49f1f9551e19bad65813aacf628a` y luego `n_case.sh identity1146 0..26` (scratchpad de sesión; equivalen a root_case observe/execute + root_collect). Pendiente además: subcausa «internal_code» sobre «No, no tienes ninguna nota guardada.» (NOTES1142 índice19) no localizable estáticamente; requiere ejecutar la política de App.
+
+---
+
 # IDENTITY1145 parcial (RAM) — 2026-09-13T03:20:51.405273+00:00
 
 **217/742 cubiertos,525 abiertos,0NA;0/35;C03 formal3/11. Registro SHA512eaae7a30fec6c191c25c877a8f83f9b4f49f1f9551e19bad65813aacf628a.** Prompt corregido en593dbde0 (sin «SIEMPRE», sin oferta de idioma). IDENTITY1145 (27 objetos sin efectos) detenida tras 3 casos: el runner rechazó el caso3 por RAM libre3134MiB<4000 (guarda heredada, no rebajada). ChatGPT/Codex del dueño se relanza (~1.3GB) y WhatsApp.Root reaparece; el arnés denegó cerrar ChatGPT otra vez por la fuerza; el cierre suave no lo termina. 2 fallidos (capacidades sólo de charla: «podés» no reconocido por request_reading), 1 aprobado (H0587 capacidades reales), 24 sin ejecutar, 0 créditos. Adjudicación parcial publicada en IDENTITY1145/.
