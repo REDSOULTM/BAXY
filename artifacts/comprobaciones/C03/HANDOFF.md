@@ -1,3 +1,13 @@
+# SYSTEM1173 adjudicado — 2026-09-13T07:17:00+00:00
+
+**244/742 cubiertos, 498 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 6c5e10bd6334f40b0449c5e2c670878083e3f931443d26a0c34e1dd8028e1c0a. Primeras altas 24 h >= 118 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e60eef12 (línea de prompt con el significado de las claves de memoria; palabras inglesas de uso en el selector de scope GPU; SYSTEM1171/SOURCE.json|patch) con BUILD1158.
+
+SYSTEM1173 (H0114, H0508 + 4 pares + 1 límite): 7 ejecutados, 5 aprobados, 2 fallidos; +1 (H0114 «qué tan llena está la GPU», VRAM 79,7 % verificado). Adjudicación b2a74ecbe31a4419d6ad6034fcc6e3bc6b51a9901425e71394f1159b7949a1dc. Estado de hardware queda 27/40. H0508 sigue abierto: el modelo llama «disponible/available» a total_usable aunque el prompt explique las claves (2 de 3 finales); la reparación real es renombrar las claves proyectadas en measurement_prose_projection (total/free), un contrato con tests pinneados (no ejecutables por orden del dueño): declararlo al dueño antes de tocarlo.
+
+Siguiente por masa (CONDICIONES): cierre de apps propias (20 abiertos) con autorización explícita por app; conocimiento residual sólo con causa nueva; decisiones del dueño pendientes: TIME1139, network.ip.list PrivacySensitive, renombrado de claves de memoria. Reanudación: derivar desde build_system1173.py; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 6c5e10bd…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h (06:13/11:13/16:13/21:13/01:13).
+
+---
+
 # SYSTEM1171 adjudicado — 2026-09-13T07:08:46+00:00
 
 **243/742 cubiertos, 499 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 2ba84579f5c55a7cb472babc2a74b115940ee6d292f24096d6d5e0498e64da60. Primeras altas 24 h >= 117 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato vigente: HEAD 0e8edfec (scope gpu_usage con «tiene»; validador mislabeled_memory retirado) con BUILD1158.

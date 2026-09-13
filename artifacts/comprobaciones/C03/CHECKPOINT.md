@@ -1,3 +1,25 @@
+## SYSTEM1173 — estado vigente 2026-09-13T07:17:00+00:00
+
+Parcial: 5 aprobados, 2 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 244/742 | 498 | 0 | >=118 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 117 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; SYSTEM1173 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: SYSTEM1173 completa: 7 ejecutados, 5 aprobados, 2 fallidos, 1 crédito (H0114). Las palabras inglesas de uso de GPU se demuestran («in use» → gpu_usage). La línea de prompt sobre claves de memoria no cambia la conducta: el modelo sigue llamando «disponible/available» a total_usable (2 de 3). Reparación siguiente: renombrar las claves proyectadas de memoria/disco (measurement_prose_projection: p. ej. total y free) — cambia un contrato con tests pinneados (tests no ejecutables por orden del dueño): declararlo antes. Estado de hardware queda 27/40.
+
+Evidencia: `artifacts/comprobaciones/C03/SYSTEM1173/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 117.16 s acumulados; pico GPU 3497.56 MiB; pico RAM 1626.41 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 7; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SYSTEM1173 precedente. -->
+
 ## SYSTEM1171 — estado vigente 2026-09-13T07:08:46+00:00
 
 Parcial: 5 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.

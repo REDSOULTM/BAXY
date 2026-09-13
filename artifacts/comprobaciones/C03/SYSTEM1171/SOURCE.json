@@ -1,8 +1,11 @@
 {
   "schema": "c03-system1171-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
-  "owners": ["src/baxy_mind/llm.py", "src/baxy_mind/__main__.py"],
+  "owners": [
+    "src/baxy_mind/llm.py",
+    "src/baxy_mind/__main__.py"
+  ],
   "patch": "artifacts/comprobaciones/C03/SYSTEM1171/SOURCE.patch",
   "cause_measured": "(1) SYSTEM1169/002 y SYSTEM1171/001: el compositor llama «disponible» al valor de total_usable; un validador posterior (mislabeled_memory) sólo produjo agotamiento y un código interno (retirado en 0e8edfec). El modelo no cambia el borrador si nadie le dice qué significan las claves proyectadas. (2) SYSTEM1171/003 («How much of the GPU is in use right now?»): el selector de scope no cuenta «in use» como uso, se abstiene y el modelo lee summary sin GPU; final con negación de capacidad falsa.",
   "change": "(1) En compose_user_message, cuando la situación es system.status verificada con memoria observada, se añade al mensaje de sistema (nunca visible) una frase con el significado de las claves: total_usable = total, available = libre, used = en uso, installed_capacity = instalada; nunca llamar disponible a un total. Misma técnica que las frases de alcance ya existentes para window.resolve y system.process.list. (2) El selector de scope acepta «in use», «utilization/utilisation» y «load» como palabras de uso de GPU.",
@@ -12,6 +15,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "SYSTEM1173: H0508, H0114 con pares nuevos.",
-  "credits": 0
+  "measurement": "SYSTEM1173: «How much of the GPU is in use at the moment?» → gpu_usage y 79,75 % de VRAM (demostrado); crédito H0114. La línea de prompt de memoria no cambió la conducta: H0508 y el par inglés siguen llamando «disponible/available» al total (2 de 3). Siguiente: renombrar claves proyectadas (contrato con tests pinneados; declararlo antes).",
+  "credits": 1
 }
