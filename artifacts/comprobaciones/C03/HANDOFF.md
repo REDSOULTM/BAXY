@@ -1,3 +1,15 @@
+# SYSTEM1181 adjudicado — 2026-09-13T11:15:05+00:00
+
+**245/742 cubiertos, 497 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA ac4f3eb9b5a30810e23bb64b90e9758cbc553f45812a07de4e17b3b57cd0eaf6. Primeras altas 24 h >= 119 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 2e075c93 (effect_intent: el dominio de system.status acepta la elipsis nominal de alcance; SYSTEM1177/SOURCE.json|patch) con BUILD1158.
+
+SYSTEM1181 (H0219, H0607 + 2 pares de disco + 1 límite; system.status de sólo lectura): 5 ejecutados, 3 aprobados, 2 fallidos, 0 créditos. Adjudicación c0fe250ed79d2dbc7e2a7a08e6f4e51bea9dd72bfece18d08d2ea5e636feed6f. La reparación de la elipsis se demuestra: «Y espacio?», «y disco?», «¿Y el disco?» y «And the disk?» leen el disco (485,74 GB total, 107,80 GB libres observados) en vez de pedir confirmación como en SYSTEM1175. Fallan H0607 y el par español por la etiqueta «disponibles en total» sobre total_usable (mismo defecto que memoria en SYSTEM1173/1177; H0219 aprobado sin segundo par). Estado de hardware queda 28/40.
+
+**Decisiones del dueño recibidas 2026-09-13 (DECISIONES_DUENO_2026-09-13.md):** poder total en este PC (instalar, cerrar apps sin autorización por app, proveedor de carpetas conocidas, renombrado de claves de la proyección de medidas, IP sin confirmación), TIME1139 a elección de raíz con la obligación de que BAXY lo haga, y saltar (no medir) lo que exija sesiones ausentes (Netflix) hasta el otro PC. Siguen vigentes las órdenes del goal que el dueño no revocó: sin tests, sin mensajes reales a terceros, sin perder documentos ni cancelar tareas ajenas, guardas intactas.
+
+Siguiente: renombrar las claves proyectadas de memoria/disco (measurement_prose_projection; autorizado) y remedir H0508/H0532/H0607 con pares (SYSTEM1183); después TIME1139 opción a (segundo entero hacia arriba publicado), cierre de apps propias (20), network.ip.list sin PrivacySensitive (build), proveedor de carpetas conocidas (archivos, ≥10). Reanudación: derivar desde build_system1181.py; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 ac4f3eb9b5a30810e23bb64b90e9758cbc553f45812a07de4e17b3b57cd0eaf6`.
+
+---
+
 # KNOWLEDGE1179 adjudicado — 2026-09-13T09:49:10+00:00
 
 **245/742 cubiertos, 497 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA c3a5b1f475f771af51ec000912aea270e60934ae89093f5d07bf022a6b6617dd. Primeras altas 24 h >= 119 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e42f10ac con BUILD1158.

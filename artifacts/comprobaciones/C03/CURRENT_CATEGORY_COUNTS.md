@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación KNOWLEDGE1179
+# Categorías actuales — adjudicación SYSTEM1181
 
-245/742 cubiertos; 497 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 119 primeras altas (118 anteriores + 1 en SYSTEM1175; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: c3a5b1f475f771af51ec000912aea270e60934ae89093f5d07bf022a6b6617dd.
+245/742 cubiertos; 497 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 119 primeras altas (118 anteriores + 1 en SYSTEM1175; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: ac4f3eb9b5a30810e23bb64b90e9758cbc553f45812a07de4e17b3b57cd0eaf6.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|

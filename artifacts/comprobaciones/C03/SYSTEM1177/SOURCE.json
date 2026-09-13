@@ -1,6 +1,6 @@
 {
   "schema": "c03-system1177-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/effect_intent.py",
   "patch": "artifacts/comprobaciones/C03/SYSTEM1177/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "SYSTEM1181: H0219, H0607 con dos pares elípticos.",
+  "measurement": "SYSTEM1181: los dos literales y los dos pares leen el disco en vez de confirmar (4 lecturas verificadas); sin crédito porque dos lecturas en español llaman «disponibles en total» al total (etiqueta total_usable, misma causa que memoria). Reparación de la elipsis demostrada.",
   "credits": 0
 }

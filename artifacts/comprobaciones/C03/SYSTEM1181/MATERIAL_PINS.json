@@ -1,0 +1,78 @@
+{
+  "schema": "system1181-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-system1181-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-system1181-instrument-v1",
+  "seal_sha256": "60398a7dc0ffb9a22f71dcdcf53052372bca90767dd2cf0f7ca0cd2f0ef11e71",
+  "runner_sha256": "9b2d621dc4b4ea7632a55445a37d04ec07cd63f29a525040d7339ce5444bf1eb",
+  "transport_seal_sha256": "11aedfbc5fb3957ca7663ed0f6f46937407fa1f737c7c5d27c6d8a7f8bc36feb",
+  "files": {
+    "panel.json": "971711b01e8cce23e8de8cb25d64a801cd5cf7ee13b0cc540be5431b70028d75",
+    "turns.jsonl": "8d6f25116ad4b2e09835bef0b4a1e349ae1f2a9edbb8c06ac1fffc0f55e4e736",
+    "case-map.json": "449c43960b42e28c9a4e2134401113dd05ebc562c5241a829061020f55c07480",
+    "PLAN.md": "85468a4ac7a060437cbb865c203896395e072dccf10f92fe7946ed7ad9b8d7d6"
+  },
+  "counts": {
+    "cases": 5,
+    "historical_literals": 2,
+    "original_development_variants": 2,
+    "boundaries": 1,
+    "wire_lines": 10,
+    "session_controls": 5,
+    "ordinary_turns": 5,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 5,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 2,
+    "original_development_variant": 2,
+    "boundary": 1
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0219",
+      "kind": "historical_literal",
+      "group": "disk",
+      "credit_behavior": "disk",
+      "text_sha256": "45bbd6c0f4c74fbb03d4da16522e08f76a9900eab8f5900c3bccc9bbe16fac6c",
+      "criterion_sha256": "3d49ef9e4f472154d2851be4500d8611748d543c0a81b9b2a75c3f3ee2ee9b55"
+    },
+    {
+      "index": 1,
+      "case_id": "H0607",
+      "kind": "historical_literal",
+      "group": "disk",
+      "credit_behavior": "disk",
+      "text_sha256": "d1cc2dfffaf182b5ec61931ef3a68c509df001400868f75cf5e4cde84d9630cf",
+      "criterion_sha256": "3d49ef9e4f472154d2851be4500d8611748d543c0a81b9b2a75c3f3ee2ee9b55"
+    },
+    {
+      "index": 2,
+      "case_id": "system1181-dev-01",
+      "kind": "original_development_variant",
+      "group": "disk",
+      "credit_behavior": "disk",
+      "text_sha256": "40ab9e10ebb714ca30525ad48113765148e63ae1adf6c8d3e7c79951d24d771e",
+      "criterion_sha256": "3d49ef9e4f472154d2851be4500d8611748d543c0a81b9b2a75c3f3ee2ee9b55"
+    },
+    {
+      "index": 3,
+      "case_id": "system1181-dev-02",
+      "kind": "original_development_variant",
+      "group": "disk",
+      "credit_behavior": "disk",
+      "text_sha256": "b3888f456a0e246d0d45c4cc36fa1231d5799605bfb1b5fda75cddbb81b5b47b",
+      "criterion_sha256": "3d49ef9e4f472154d2851be4500d8611748d543c0a81b9b2a75c3f3ee2ee9b55"
+    },
+    {
+      "index": 4,
+      "case_id": "system1181-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "da8b4a513ebfbb104fd1b1826724ed39138ca8eb05014b406834cfb0c9c3a6eb",
+      "criterion_sha256": "cef4d244ec6ac242d4be03f6caf8bb472768bb391677ed51ac13a5d9cd725ae4"
+    }
+  ]
+}
