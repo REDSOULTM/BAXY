@@ -1,3 +1,11 @@
+# WEB1261 adjudicado — 2026-09-13T22:03:32.607079+00:00
+
+**341/742 cubiertos, 401 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 2a8be95250dab0d57016f60d58f55b09ffdd234d9f0db899ce0e912cf2dbfd35. Primeras altas 24 h >= 215.** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 293b5786 con BUILD1259 (sólo mente: navegación reportada como hecha; WEB1261/SOURCE.json|SOURCE.patch).
+
+WEB1261 (mismo panel que WEB1259): 9 ejecutados, 0 aprobados, 9 fallidos, 0 créditos. Adjudicación c433bbb952f46e282765789d225806695d972ffada87b5c7c3b6dbc7f6bf04a9. Nadie promete ya, pero la pista nueva hizo afirmar un estado previo falso («La página ya estaba abierta») y «llevame a github» disparó la guarda de GPU (3874 MiB: el proceso GPU del Edge propio cuenta en el árbol del producto; la guarda no se toca). Siguiente: WEB1263 con la pista reescrita y el rechazo invented_prior_open_state para navegación (mente) y el Edge privado con --disable-gpu (proveedor, BUILD1263).
+
+---
+
 # WEB1259 adjudicado — 2026-09-13T21:57:08.997690+00:00
 
 **341/742 cubiertos, 401 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 6e18ce50e9b2df6e16f8d6e9e56be943612098ab1367cfc19c35364ddb163f85. Primeras altas 24 h >= 215 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 2c986930 con BUILD1259 (constructor de argumentos alineado con la lista pública cerrada; ComposeRequestText en la App; WEB1259/SOURCE.json|APP_SOURCE.json|*.patch). Rama saneada por el dueño (SANEAMIENTO_2026-09-13_SHAS.md): BASELINE_HEAD del runner rebasado al equivalente 824cd808.

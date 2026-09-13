@@ -1,0 +1,13 @@
+{
+  "schema": "c03-web1261-source-adoption-v1",
+  "status": "adopted_measured_partially",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (outcome=completed para navegación; pista de estado de navegación; rechazo promised_effect)",
+  "patch": "artifacts/comprobaciones/C03/WEB1261/SOURCE.patch",
+  "commit": "293b57868cbe3764e6277e173a29711040e4a911",
+  "build": "BUILD1259 (binarios sin cambio; sólo mente)",
+  "cause_measured": "WEB1259: seis finales prometieron («Voy a youtube.») tras una navegación verificada.",
+  "change": "La carga del compositor marca outcome=completed para browser.navigate; una pista pide reportar en pasado; promised_effect rechaza los borradores que prometen ir.",
+  "measurement": "WEB1261: 9 ejecutados, 0 aprobados, 9 fallidos; 0 créditos. Ya nadie promete, pero la pista («The page is already open in the browser: say so in the past») hizo afirmar un estado previo falso: «Ya fui a YouTube. La página ya estaba abierta.», «…ChatGPT, ya estaba cargado.»; además «llevame a github» disparó la guarda de GPU (3874 MiB: el proceso GPU del Edge propio del producto cuenta en el árbol). Corregido para WEB1263: pista reescrita y rechazo invented_prior_open_state para navegación (mente); el Edge privado del producto arranca con --disable-gpu (proveedor).",
+  "credits": 0
+}
