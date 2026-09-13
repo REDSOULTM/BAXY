@@ -3612,7 +3612,15 @@ def _explicit_system_status_scope(evidence: str) -> dict[str, object] | None:
             r"\b(?:que\s+gpu|cual|which|what\s+gpu|modelo|model|tarjeta|"
             r"placa|tengo|tiene|instalad[oa]|have)\b",
         )
-        if usage and not identity:
+        # «cuánto uso tiene la GPU» names usage; its «tiene» is the verb of
+        # the usage question, not an identity cue. Abstaining here sent the
+        # model to the summary scope, which carries no GPU (SYSTEM1169/005).
+        identity_named = effect_intent._has(
+            folded,
+            r"\b(?:que\s+gpu|cual|which|what\s+gpu|modelo|model|tarjeta|"
+            r"placa|instalad[oa])\b",
+        )
+        if usage and not identity_named:
             return {"scope": "gpu_usage"}
         if identity and not usage:
             return {"scope": "gpu_identity"}

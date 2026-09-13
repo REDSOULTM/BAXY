@@ -3923,6 +3923,32 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         r"(?<!\w)" + re.escape(account.casefold()) + r"(?!\w)", text.casefold()
     ):
         return "missing_name"
+    memory = seen.get("memory") if isinstance(seen, dict) else None
+    if isinstance(memory, dict) and isinstance(memory.get("available"), dict):
+        # «16,54 GB de RAM disponible» attached the total to the word
+        # «disponible» while 4,54 GB were available (SYSTEM1169/002). A number
+        # next to a free/available label must be the available value.
+        def _gb(entry: object) -> float | None:
+            value = entry.get("value") if isinstance(entry, dict) else None
+            return float(value) if isinstance(value, (int, float)) else None
+
+        available_gb = _gb(memory.get("available"))
+        others = [
+            _gb(memory.get(key))
+            for key in ("total_usable", "installed_capacity", "used")
+        ]
+        labelled = re.findall(
+            r"(\d+(?:[.,]\d+)?)\s*gb\s+(?:de\s+)?(?:ram\s+|memoria\s+|memory\s+)?"
+            r"(?:disponibles?|available|libres?|free)\b|"
+            r"(?:disponibles?|available|libres?|free)\b[^.\d]{0,24}(\d+(?:[.,]\d+)?)\s*gb",
+            folded,
+        )
+        for first, second in labelled:
+            number = float((first or second).replace(",", "."))
+            if available_gb is not None and abs(number - available_gb) < 0.06:
+                continue
+            if any(other is not None and abs(number - other) < 0.06 for other in others):
+                return "mislabeled_memory"
     if isinstance(seen, dict) and "level" in seen:
         level = str(seen["level"]).strip()
         if level and not re.search(rf"(?<!\d){re.escape(level)}(?!\d)", folded):
@@ -10717,6 +10743,10 @@ class LlmRuntime:
                 else "Empieza con mayúscula."
             ),
             "clarification_not_a_question": "Una pregunta.",
+            "mislabeled_memory": (
+                "Label memory exactly as seen: available is the free amount; "
+                "total_usable and installed_capacity are totals."
+            ),
             "invented_connectivity": (
                 "Only the wifi connection was read. Say nothing about internet "
                 "or being online or offline."

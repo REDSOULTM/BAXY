@@ -1,0 +1,17 @@
+{
+  "schema": "c03-system1169-source-adoption-v1",
+  "status": "adopted_pending_product_measurement",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owners": ["src/baxy_mind/__main__.py", "src/baxy_mind/llm.py"],
+  "patch": "artifacts/comprobaciones/C03/SYSTEM1169/SOURCE.patch",
+  "cause_measured": "(1) SYSTEM1169 índice 5 («¿Cuánto uso tiene la GPU ahora?»): system.status se ejecutó con scope summary (cpu, memoria, disco, sin GPU) y el final dijo que no se indica el uso de la GPU. Lectura de fuente: la selección determinista de scope en __main__ marca uso («uso») e identidad («tiene» está en la lista de identidad) a la vez y se abstiene, dejando al modelo elegir summary. (2) SYSTEM1169 índice 2 (H0508): con payload memory {total_usable 16,54, available 4,54, used 12,0, installed_capacity 17,18} el final publicó «16,54 GB de RAM disponible»: el número del total con la etiqueta de disponible; llm._payload_fact_defect no comprobaba etiquetas de memoria.",
+  "change": "(1) Si el pedido nombra uso de GPU y la única señal de identidad es tengo/tiene/have (no «qué GPU», «cuál», «modelo», «tarjeta», «placa», «instalada»), el scope es gpu_usage. (2) _payload_fact_defect devuelve «mislabeled_memory» cuando un número en GB junto a disponible/available/libre/free coincide con total_usable, installed_capacity o used y no con available; el compositor reintenta con una pista de sistema (nunca visible). Los borradores bien etiquetados no cambian.",
+  "offline_verification": "Sondas sin GPU: scope gpu_usage para «¿Cuánto uso tiene la GPU ahora?» y «qué tan llena está la GPU», gpu_identity para «qué GPU tengo»; «mislabeled_memory» en el final de H0508 y vacío en los finales correctos de los índices 7 y 8.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "SYSTEM1171: H0508, H0114 con pares nuevos.",
+  "credits": 0
+}
