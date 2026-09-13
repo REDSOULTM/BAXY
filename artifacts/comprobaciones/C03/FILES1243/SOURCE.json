@@ -1,0 +1,21 @@
+{
+  "schema": "c03-files1243-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_FILE_TRASH_REQUEST, _file_trash_request, resolve_explicit_effects); src/baxy_mind/__main__.py (argumentos de filesystem.known.trash.named; _ground_explicit_arguments)",
+  "patch": "artifacts/comprobaciones/C03/FILES1243/SOURCE.patch",
+  "commits": [
+    "cd6ec99064b5c1f810f861ce5f51d7b05eafbd30",
+    "4873c48b29c6840e117b06862f4cab6bc8ba161f"
+  ],
+  "cause_measured": "Sonda offline con el catálogo real: los borrados abiertos («borra el archivo hola.txt del escritorio», «borrá el archivo viejo.txt», «borra el archivo inexistente123456.txt») no tenían lector aunque el mecanismo existe desde BUILD1205 (filesystem.known.trash.named: papelera privada recuperable del perfil, recoverable_delete sin confirmación). En FILES1241 (candidato cd6ec990, preservado) los siete casos con carpeta dicha o con archivo presente pasaron, pero los tres sin carpeta terminaron «la solicitud no está clara»: el normalizador de argumentos literales exige que cada valor tenga una palabra en el texto y «all_known» no la tiene.",
+  "change": "Lector determinista de borrado literal de un archivo nombrado (cabezas borrá/borra/eliminá/delete/remove/mandá·tirá·enviá a la papelera; sustantivo archivo/file opcional si el nombre tiene extensión; carpeta conocida opcional; cortesía final) que resuelve filesystem.known.trash.named con fileName y folder (escritorio→desktop…, sin carpeta → all_known); el lector posee el enum durante la fundamentación, como el de búsqueda en carpetas conocidas. «borra el mensaje», «borra todo», prohibiciones, compuestos y carpetas quedan fuera.",
+  "offline_verification": "Baseline del reconocedor: cuatro literales ganan lectura (H0064, H0072, H0248, H0632), ninguno perdido; «borra el mensaje», «borra todo», «borrá la nota de ayer», «no borres hola.txt», «Borra la carpeta CarterTest del escritorio» sin efecto. Sin tests (orden del dueño).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": "FILES1243: 10/10 ejecutados con fixtures creados por raíz en el escritorio real (rechazo si ya existe un archivo con ese nombre en las carpetas conocidas; ninguno existía), 9 aprobados; cinco borrados verificados en disco (el archivo dejó la carpeta y está en la papelera privada del perfil con el mismo hash; raíz eliminó la copia) y tres ausencias verdaderas (known_file_not_found). 4 créditos.",
+  "credits": 4
+}

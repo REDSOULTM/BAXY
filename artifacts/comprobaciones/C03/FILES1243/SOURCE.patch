@@ -1,0 +1,143 @@
+commit cd6ec99064b5c1f810f861ce5f51d7b05eafbd30
+
+C03: a literal request to delete a named file in a known folder is the recoverable known-file trash (FILES1241 repair)
+
+«borra el archivo hola.txt del escritorio», «borrá el archivo viejo.txt»,
+«delete old.txt from the desktop», «mandá a la papelera …» read as
+filesystem.known.trash.named with fileName and folder (desktop/documents/
+downloads, or all_known when none is named; the provider refuses ambiguous
+names). A bare name must look like a file or the request must say
+«archivo/file»; «borra el mensaje», «borra todo», prohibitions and compounds
+stay outside. Offline recogniser baseline: four literals gain a reading, none
+lost. No tests (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index e308bfab..fa4b9a23 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -4452,6 +4452,28 @@ def _explicit_arguments_from_evidence(
+             return {}
+         return None
+ 
++    if operation == "filesystem.known.trash.named":
++        # «borra el archivo hola.txt del escritorio»: the file name is the
++        # person's literal; the folder is a catalog root, or every known folder
++        # when none is named (the provider refuses an ambiguous name).
++        trash_match = effect_intent._file_trash_request(evidence)
++        if trash_match is None:
++            return None
++        file_name = trash_match.group("name").strip().strip("\"'").rstrip(".!?,").strip()
++        if (
++            not file_name
++            or re.search(r"[\\/:*?\"<>|]", file_name)
++            or any(ord(character) < 32 for character in file_name)
++            or len(file_name.encode("utf-8")) > 512
++        ):
++            return None
++        folder_word = trash_match.group("folder")
++        return {
++            "fileName": file_name,
++            "folder": effect_intent._KNOWN_FOLDER_ENUM[effect_intent._fold(folder_word)]
++            if folder_word else "all_known",
++        }
++
+     if operation == "filesystem.create.directory":
+         # «crea una carpeta llamada CarterTest en el escritorio»: the name is
+         # the person's, the folder is a catalog root (owner decision, point 2).
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index f3360e90..02304333 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -2443,6 +2443,40 @@ _DIRECTORY_CREATION_REQUEST = re.compile(
+ )
+ 
+ 
++# «borra el archivo hola.txt del escritorio», «borrá el archivo viejo.txt»,
++# «delete old.txt from the desktop»: one named file, optionally in one known
++# folder, goes to the product's recoverable private trash
++# (filesystem.known.trash.named). A bare name must look like a file (an
++# extension) unless the request says «archivo/file», so «borra el mensaje»
++# and folders stay outside; a folder deletion has no operation.
++_FILE_TRASH_REQUEST = re.compile(
++    r"^[¿?¡!\s]*(?:borr[aá]|borrar|borr[aá]me|elimin[aá]|eliminar|elimin[aá]me|"
++    r"delete|remove|"
++    r"(?:mand[aá]|manda|envi[aá]|envia|tir[aá]|tira)(?:me)?\s+a\s+la\s+papelera)(?:me)?\s+"
++    r"(?:(?:el|la|the)\s+)?(?P<noun>(?:archivo|fichero|file)\s+)?"
++    r"(?:(?:llamad[oa]|named|called)\s+)?"
++    r"(?P<name>\"[^\"]+\"|'[^']+'|[^\s\"']+)"
++    rf"(?:\s+(?:del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}))?"
++    r"(?:\s*,?\s+(?:por\s+favor|please|porfa))?[\s.!?]*$",
++    re.IGNORECASE,
++)
++
++
++def _file_trash_request(text: str) -> re.Match[str] | None:
++    """Match one literal deletion of a named file in the person's known folders."""
++
++    found = _FILE_TRASH_REQUEST.match(text.strip())
++    if found is None:
++        return None
++    name = found.group("name").strip("\"'").rstrip(".!?,")
++    if not name or name.lower() in {"todo", "todos", "everything", "all", "eso", "esto", "it", "that", "this"}:
++        return None
++    looks_like_file = re.fullmatch(r"[^\\/:*?\"<>|]+\.[a-z0-9]{1,8}", name, re.IGNORECASE) is not None
++    if not looks_like_file and found.group("noun") is None:
++        return None
++    return found
++
++
+ def _file_creation_request(text: str) -> re.Match[str] | None:
+     """Match one literal file creation with a name and its content."""
+ 
+@@ -14209,6 +14243,15 @@ def resolve_explicit_effects(
+     if "filesystem.write.text" in available and _file_creation_request(folded) is not None:
+         # A named file with literal content is a write, not a note.
+         return EffectIntent(("filesystem.write.text",), (folded,))
++    if (
++        "filesystem.known.trash.named" in available
++        and _file_trash_request(folded) is not None
++        and not _is_negative_effect_clause(folded)
++        and not _is_meta_or_tool_denial(folded)
++        and not _has_contradictory_correction(folded)
++    ):
++        # A named file deletion is the recoverable trash of that one file.
++        return EffectIntent(("filesystem.known.trash.named",), (folded,))
+     if (
+         "filesystem.create.directory" in available
+         and _directory_creation_request(folded) is not None
+commit 4873c48b29c6840e117b06862f4cab6bc8ba161f
+
+C03: the deletion reader owns the known-folder enum during argument grounding (FILES1243 repair)
+
+«borrá el archivo viejo.txt» and «Delete old_note_fable.txt.» ground to
+fileName + folder all_known: the literal-argument normalizer rejected
+«all_known» because no word of the request names it (FILES1241/002, /003,
+/005 ended as «solicitud no clara»). The same exemption the known-folder search
+already has. No tests (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index fa4b9a23..aea2227c 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -5148,6 +5148,15 @@ def _ground_explicit_arguments(
+         # The shared positive request grammar owns the known-folder enum;
+         # the filename remains literal. Keep the authenticated schema boundary.
+         return explicit if validate_json_schema_instance(explicit, schema) else None
++    if (
++        operation == "filesystem.known.trash.named"
++        and effect_intent._file_trash_request(evidence) is not None
++    ):
++        # The deletion reader owns the known-folder enum, including all_known
++        # when no folder is named («borrá el archivo viejo.txt»: FILES1241/002
++        # failed as ambiguous because «all_known» has no literal in the text);
++        # the file name remains the person's literal.
++        return explicit if validate_json_schema_instance(explicit, schema) else None
+     if operation == "window.resolve" and not validate_json_schema_instance(
+         explicit, schema
+     ):

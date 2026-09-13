@@ -45,3 +45,7 @@ Abrir aplicaciones pasa de 34/54 a 39/54: las dos causas medidas en APPS1231 se 
 ## Actualización 2026-09-13 (AUDIO1239)
 
 Audio y volumen pasa de 27/51 a 39/51. La condición «reconocimiento de dirección/alcance sin cantidad requiere gramática nueva» (AUDIO1137) no aplicaba a los ocho relativos abiertos: la lectura determinista de aclaración ya existía y la regla del dueño (H0027) es preguntar la cantidad, así que sólo faltaba remedirlos y cubrir «suví», «es tarde …», «poné», el nivel absoluto con verbo de dirección y «ponelo en mute». Quedan 12: H0465 (eco del compositor con efecto verificado), compuestos ×2 (H0067 fecha, H0530 brillo sin proveedor), H0652 volumen por aplicación, H0075 «bajá la música» (ambiguo con descargar), H0439/H0713 pronombre sin contexto, idiomas ×4 sin marca.
+
+## Actualización 2026-09-13 (FILES1243)
+
+Archivos y carpetas pasa de 15/32 a 19/32: los borrados con fixtures propios en carpetas personales quedaron autorizados por la decisión del dueño (punto 2, FILES1205) y sólo faltaba el lector de borrado literal (papelera privada recuperable). Quedan 13: listados ×4 (revelarían nombres de archivos del dueño en artefactos públicos; medibles sólo con publicación sin nombres), carpeta ×1 (sin operación de borrado de carpetas), contenido dinámico ×2, comprimir/backup/resumir ×3 (sin operación), ruta suelta, «directorio actual» y recuento compuesto.

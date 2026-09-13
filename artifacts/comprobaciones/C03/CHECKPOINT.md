@@ -1,3 +1,25 @@
+## FILES1243 — estado vigente 2026-09-13T19:38:17.213429+00:00
+
+Parcial: 9 aprobados, 1 fallidos, 0 sin ejecutar; 4 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 331/742 | 411 | 0 | >=205 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 201 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; FILES1243 añade 4. No se cuentan revalidaciones.
+
+Siguiente acción: FILES1243 completa: 10 ejecutados, 9 aprobados, 1 fallido (límite con explicación contradictoria), 4 créditos (H0064, H0072, H0248 borrados verificados; H0632 ausencia veraz) con sus dos pares. Archivos queda 19/32. Intento previo FILES1241 preservado (10 casos: los tres sin carpeta fallaban en la fundamentación de all_known). Quedan con causa: H0327 carpeta (sin operación de borrado de carpetas), listados ×2 (revelarían nombres de archivos del dueño en artefactos públicos), contenido dinámico ×2 (H0334 procesos, H0426 fecha), comprimir/backup/resumir PDF ×3 (sin operación), H0299 ruta suelta, H0701 «directorio actual», H0453 recuento compuesto, H0329/H0698 listados de Descargas (privacidad). Siguiente por masa: otra categoría.
+
+Evidencia: `artifacts/comprobaciones/C03/FILES1243/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 220.92 s acumulados; pico GPU 3497.56 MiB; pico RAM 2219.08 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 10; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque FILES1243 precedente. -->
+
 ## AUDIO1239 — estado vigente 2026-09-13T19:10:57.722208+00:00
 
 Parcial: 23 aprobados, 2 fallidos, 0 sin ejecutar; 12 créditos.

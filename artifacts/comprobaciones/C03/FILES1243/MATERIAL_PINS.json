@@ -1,0 +1,123 @@
+{
+  "schema": "files1243-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1243-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1243-instrument-v1",
+  "seal_sha256": "639112449eb081830cb2db6604662b97e3930966927b706c6017351b5e4d753d",
+  "runner_sha256": "8fab0ccd3642c47c43f582fff8f1d3e21a5705d1d0457e7af8bc4fc2f51a0507",
+  "transport_seal_sha256": "773f84ba3f7fd6f5443f8ae80899e07cc7bf0e74d9e8db96bbb347865d15d3df",
+  "files": {
+    "panel.json": "312ed3830022a866ec15befa036e3d2b6ca60868e33e484ddaab732b6e46caf4",
+    "turns.jsonl": "4c068042842323139c65ee49d2d1f03f7ed1d086e8fba101094a9c84dfd25ef6",
+    "case-map.json": "6916d1165eb44965eff86b2f54cbd9d9e4d5860a3db6634cd500f73471f0b314",
+    "PLAN.md": "187abdff93e1be0b228f8a4d3b1358cef4936a72a8fb0f336d71fd9d0893ed38"
+  },
+  "counts": {
+    "cases": 10,
+    "historical_literals": 4,
+    "original_development_variants": 4,
+    "boundaries": 2,
+    "wire_lines": 20,
+    "session_controls": 10,
+    "ordinary_turns": 10,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 10,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 4,
+    "original_development_variant": 4,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0064",
+      "kind": "historical_literal",
+      "group": "trash_known_file",
+      "credit_behavior": "trash_known_file",
+      "text_sha256": "14adb6c0b1ac89023c21421f99493d60cff7496e6073b48cce8223cf785597d3",
+      "criterion_sha256": "3469500e051c11fed0d5cfdb336a8ac8a277c5053861972fdce9aa1699fc819f"
+    },
+    {
+      "index": 1,
+      "case_id": "H0072",
+      "kind": "historical_literal",
+      "group": "trash_known_file",
+      "credit_behavior": "trash_known_file",
+      "text_sha256": "15fbd76688ad368b7d59069abc16581359adcb673957ce2d0556885a46c1e34f",
+      "criterion_sha256": "3469500e051c11fed0d5cfdb336a8ac8a277c5053861972fdce9aa1699fc819f"
+    },
+    {
+      "index": 2,
+      "case_id": "H0248",
+      "kind": "historical_literal",
+      "group": "trash_known_file",
+      "credit_behavior": "trash_known_file",
+      "text_sha256": "4fe056b1375f0d479a62a4ed360ee43d5f119d6531e66595801edc3c93d5cb16",
+      "criterion_sha256": "3469500e051c11fed0d5cfdb336a8ac8a277c5053861972fdce9aa1699fc819f"
+    },
+    {
+      "index": 3,
+      "case_id": "H0632",
+      "kind": "historical_literal",
+      "group": "trash_absent_file",
+      "credit_behavior": "trash_absent_file",
+      "text_sha256": "d9e6116cb30efc12746137abf02b58c3fd55a6c84552424776c9543e2276e7c4",
+      "criterion_sha256": "b9eb87118aac2ded06cb15541ef559d7baa649bca0b4ad5be827b38a748db659"
+    },
+    {
+      "index": 4,
+      "case_id": "files1243-dev-01",
+      "kind": "original_development_variant",
+      "group": "trash_known_file",
+      "credit_behavior": "trash_known_file",
+      "text_sha256": "b32d9398fa8548c2f75792dfd3aa40eaa6eef1429951cb9381448f902693e4c0",
+      "criterion_sha256": "3469500e051c11fed0d5cfdb336a8ac8a277c5053861972fdce9aa1699fc819f"
+    },
+    {
+      "index": 5,
+      "case_id": "files1243-dev-02",
+      "kind": "original_development_variant",
+      "group": "trash_known_file",
+      "credit_behavior": "trash_known_file",
+      "text_sha256": "2c2bd16ad9eeabbe60e55238233f3ae2e87d2b01b965f731b6efc622e6ab3d5c",
+      "criterion_sha256": "3469500e051c11fed0d5cfdb336a8ac8a277c5053861972fdce9aa1699fc819f"
+    },
+    {
+      "index": 6,
+      "case_id": "files1243-dev-03",
+      "kind": "original_development_variant",
+      "group": "trash_absent_file",
+      "credit_behavior": "trash_absent_file",
+      "text_sha256": "0cec3eb1982158771ab48e315af06e62855204df09d5f441336e7f4dca3da722",
+      "criterion_sha256": "b9eb87118aac2ded06cb15541ef559d7baa649bca0b4ad5be827b38a748db659"
+    },
+    {
+      "index": 7,
+      "case_id": "files1243-dev-04",
+      "kind": "original_development_variant",
+      "group": "trash_absent_file",
+      "credit_behavior": "trash_absent_file",
+      "text_sha256": "a8763ddfffd6cda6001d9ec88fabb89dc842aa2f32e5890d967c9d59137fdae6",
+      "criterion_sha256": "b9eb87118aac2ded06cb15541ef559d7baa649bca0b4ad5be827b38a748db659"
+    },
+    {
+      "index": 8,
+      "case_id": "files1243-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "31c5c7c5a71ecbb6f068af3ecbaf41e826e7475296c14e2475ca03cfda3e9161",
+      "criterion_sha256": "571ab3d9883af6260cbc297731069e2664918503444b29bd2bec7063d2ed1393"
+    },
+    {
+      "index": 9,
+      "case_id": "files1243-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "3ef96cd85f4b43c03b3538e800bfb6f8323f9336c1d4294a6dbfa784b9563c3b",
+      "criterion_sha256": "5177bcc2626af5b9fead3d0bd3f81e46356dc2b8c4d1d5e319e02988d50c29ef"
+    }
+  ]
+}

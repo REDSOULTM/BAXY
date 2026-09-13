@@ -1,13 +1,13 @@
-# Categorías actuales — adjudicación AUDIO1239
+# Categorías actuales — adjudicación FILES1243
 
-327/742 cubiertos; 415 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 201 primeras altas (189 anteriores + 12 en AUDIO1239; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 28e9fd35df0e88b25b8d156050a11b886fdcd549fa22377b98405475a8be2920.
+331/742 cubiertos; 411 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 205 primeras altas (201 anteriores + 4 en FILES1243; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 505ba73f38f3d2d42c00d050a563cd11aae0849247e3219f37c00875531d5c63.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
 | Música | 39 | 6 | 33 |
 | Instalar y desinstalar software | 31 | 0 | 31 |
 | Navegación y búsqueda web | 46 | 17 | 29 |
-| Archivos y carpetas | 32 | 15 | 17 |
+| Archivos y carpetas | 32 | 19 | 13 |
 | Entrada incompleta, ruido y control de diálogo | 34 | 7 | 27 |
 | Vídeo y series | 26 | 0 | 26 |
 | Mensajería | 31 | 6 | 25 |
