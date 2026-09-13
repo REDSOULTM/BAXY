@@ -1,3 +1,15 @@
+# IDENTITY1148 adjudicado — 2026-09-13T04:41:33+00:00
+
+**226/742 cubiertos, 516 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 79f481525bcf8ee607f9531b901aa65731c350c9ce093ded5d275f263db5e2d8. Primeras altas 24 h >= 100 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f83ac1eb con BUILD1147 (App: UserMessagePhrases.SelfDescriptionAsks/KnowledgeAsks con «que podes hacer» y «en que (me) podes ayudar»; recibo 09cdc234…, huella e580faeb…, 9 binarios nuevos). Registro de adopción: IDENTITY1146/APP_SOURCE.json|.patch.
+
+IDENTITY1148 (8 objetos sin efectos: H0153, H0474, 3 variantes con voseo, 3 límites): 8 ejecutados, 5 aprobados, 3 fallidos; +2 (H0153, H0474). Adjudicación 7a43dc773156212bde53aacb0a86a584898ca71fb3fc1844df544b9e01e8e174. Identidad queda 16/19 (abiertos H0296 «Tú eres como eso», H0012 «to quien chuta eres», H0373 «cómo funciona esto»: sin reparación local; ver IDENTITY1146).
+
+Límites fallidos (nunca acreditables, abiertos): negación y cita con «qué podés hacer» reciben la lista por la coincidencia de subcadena del shell (comportamiento preexistente con «puedes»; el lector del mind también marca capability, así que una guardia sólo en el shell rompería la conformidad entre lecturas); «¿Podés hacer que se apague la compu?» recibió el catálogo por la ruta turn.decide → veto → fallback `conversation` con `can` (lector del mind: interrogativo + podés + hacer), sin ejecutar nada.
+
+Siguiente por masa con condiciones (CONDICIONES_POR_CATEGORIA_2026-09-13.md): conversación social (12 abiertos, sin efectos) y reloj (10). Reanudación: derivar el material desde build_identity1148.py (scratchpad de sesión) con lineage KNOWLEDGE1144 y binding BUILD1147; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 79f48152…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h (01:13/06:13/11:13/16:13/21:13).
+
+---
+
 # IDENTITY1146 adjudicado — 2026-09-13T04:29:01+00:00
 
 **224/742 cubiertos, 518 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 9903f61164f030db69b6314163fc1d46c7c152aa1c98bc3cd5287465ad61ddfc. Primeras altas 24 h >= 98 (+7).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 99a63959 (fuente idéntica a 7ae4cc60: el delta es sólo documentación; root_prepare se invocó con el HEAD vigente) con BUILD1143, prompt corregido y voseo en request_reading. Preparación dafd95b5…; WhatsApp.Root cerrado por PID antes del preflight (registrado en ROOT_BACKGROUND_CLIENT_CLOSES.jsonl); RAM libre 6.7 GB al preparar.

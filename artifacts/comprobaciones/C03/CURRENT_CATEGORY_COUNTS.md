@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación IDENTITY1146
+# Categorías actuales — adjudicación IDENTITY1148
 
-224/742 cubiertos; 518 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 98 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140 + H0511 en NOTES1141 + 10 en NOTES1142 + 2 en KNOWLEDGE1144 + 7 en IDENTITY1146), sin revalidaciones. Registro canónico SHA256: 9903f61164f030db69b6314163fc1d46c7c152aa1c98bc3cd5287465ad61ddfc.
+226/742 cubiertos; 516 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 100 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140 + H0511 en NOTES1141 + 10 en NOTES1142 + 2 en KNOWLEDGE1144 + 7 en IDENTITY1146 + 2 en IDENTITY1148), sin revalidaciones. Registro canónico SHA256: 79f481525bcf8ee607f9531b901aa65731c350c9ce093ded5d275f263db5e2d8.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -25,7 +25,7 @@
 | Organizar ventanas y pestañas | 13 | 0 | 13 |
 | Conversación social y ayuda general | 31 | 19 | 12 |
 | Estado de ventanas y aplicaciones | 14 | 2 | 12 |
-| Identidad y capacidades del asistente | 19 | 14 | 5 |
+| Identidad y capacidades del asistente | 19 | 16 | 3 |
 | Hora y fecha | 23 | 13 | 10 |
 | Memoria personal | 10 | 0 | 10 |
 | Correo | 6 | 0 | 6 |

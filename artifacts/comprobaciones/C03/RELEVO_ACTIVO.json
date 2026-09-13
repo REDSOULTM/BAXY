@@ -152,26 +152,26 @@
     "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "IDENTITY1146 adjudicado: 17 aprobados, 10 fallidos, 0 sin ejecutar; 7 créditos.",
+  "workStatus": "IDENTITY1148 adjudicado: 5 aprobados, 3 fallidos, 0 sin ejecutar; 2 créditos.",
   "executionPausedByOwner": false,
   "branch": "codex/kiro-goal-c03",
-  "checkpoint": "224/742 cubiertos, 518 abiertos, 0 no aplican. IDENTITY1146: 7 créditos explícitos de raíz.",
+  "checkpoint": "226/742 cubiertos, 516 abiertos, 0 no aplican. IDENTITY1148: 2 créditos explícitos de raíz.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
   "surveyVerificationCounts": {
-    "covered": 224,
-    "open": 518,
+    "covered": 226,
+    "open": 516,
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "9903f61164f030db69b6314163fc1d46c7c152aa1c98bc3cd5287465ad61ddfc",
+  "surveyRegistrySha256": "79f481525bcf8ee607f9531b901aa65731c350c9ce093ded5d275f263db5e2d8",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
-  "surveyCoverageLast24h": 98,
-  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–13 septiembre: 28 Kiro + 49 retorno + H0584 + H0511 + 10 (NOTES1142) + 2 (KNOWLEDGE1144) = 91 antes de esta tanda, todas dentro de la ventana de 24 h al adjudicar; IDENTITY1146 añade 7 primeras altas. No se cuentan revalidaciones.",
+  "surveyCoverageLast24h": 100,
+  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–13 septiembre: 28 Kiro + 49 retorno + H0584 + H0511 + 10 (NOTES1142) + 2 (KNOWLEDGE1144) + 7 (IDENTITY1146) = 98 antes de esta tanda, todas dentro de la ventana de 24 h al adjudicar; IDENTITY1148 añade 2. No se cuentan revalidaciones.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-13T04:29:01+00:00",
+  "utcUpdated": "2026-09-13T04:41:33+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -621,7 +621,7 @@
     "freeze_ended_at": "2026-09-12T13:33:18.245252-03:00",
     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
   },
-  "updatedAtUtc": "2026-09-13T04:29:01+00:00",
+  "updatedAtUtc": "2026-09-13T04:41:33+00:00",
   "currentContinuation1065": {
     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
     "quality": {
@@ -1504,5 +1504,31 @@
       "ram_peak_mib": 1880.97265625
     },
     "next": "IDENTITY1146 completa: 27 ejecutados, 17 aprobados, 10 fallidos, 7 créditos (H0587, H0731, H0190, H0591, H0202, H0365, H0634). Causa localizada de los fallos de capacidades (0, 1, 12) y del límite 22: UserMessagePhrases.SelfDescriptionAsks del shell no contiene el voseo «que podes hacer» y la coincidencia por subcadena ignora la negación; reparación de App (build) antes de remedir H0153/H0474 con nuevos pares. «cómo funciona» (11, 20, 21) queda abierto: la explicación del producto no recibe hechos del catálogo; H0296/H0012 (referente ausente, coloquialismo) abiertos sin reparación local."
+  },
+  "currentContinuation1148": {
+    "head": "f83ac1ebe6792ed55c890353cc75dc43e9e98327",
+    "quality": {
+      "passed": 5,
+      "failed": 3,
+      "executed": 8,
+      "not_executed": 0,
+      "sealed_total": 8,
+      "segments_started": 8,
+      "aborted_before_admission": 0
+    },
+    "new_credits": 2,
+    "credited_ids": [
+      "H0153",
+      "H0474"
+    ],
+    "registry_sha256": "79f481525bcf8ee607f9531b901aa65731c350c9ce093ded5d275f263db5e2d8",
+    "survey": 226,
+    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\IDENTITY1148\\ROOT_ADJUDICATION.json",
+    "resources": {
+      "seconds_sum": 121.22000000000116,
+      "gpu_peak_mib": 3497.55859375,
+      "ram_peak_mib": 1737.03125
+    },
+    "next": "IDENTITY1148 completa: 8 ejecutados, 5 aprobados, 3 fallidos (los tres límites), 2 créditos (H0153, H0474). La reparación del shell (BUILD1147) se demuestra: las cinco preguntas de capacidades con voseo salen por el catálogo real. Abiertos documentados: negación y citas ignoradas por la coincidencia de subcadena del shell (también con «puedes»); pedido de acción con «podés hacer que…» leído como pregunta de capacidades por el mind. Identidad queda 16/19 (H0296, H0012, H0373 abiertos). Siguiente: conversación (12 abiertos) y reloj (10) según CONDICIONES_POR_CATEGORIA."
   }
 }

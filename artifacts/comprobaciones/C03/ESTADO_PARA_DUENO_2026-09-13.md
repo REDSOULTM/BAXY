@@ -1,3 +1,25 @@
+## IDENTITY1148 — estado vigente 2026-09-13T04:41:33+00:00
+
+Parcial: 5 aprobados, 3 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 226/742 | 516 | 0 | >=100 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 28 Kiro + 49 retorno + H0584 + H0511 + 10 (NOTES1142) + 2 (KNOWLEDGE1144) + 7 (IDENTITY1146) = 98 antes de esta tanda, todas dentro de la ventana de 24 h al adjudicar; IDENTITY1148 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: IDENTITY1148 completa: 8 ejecutados, 5 aprobados, 3 fallidos (los tres límites), 2 créditos (H0153, H0474). La reparación del shell (BUILD1147) se demuestra: las cinco preguntas de capacidades con voseo salen por el catálogo real. Abiertos documentados: negación y citas ignoradas por la coincidencia de subcadena del shell (también con «puedes»); pedido de acción con «podés hacer que…» leído como pregunta de capacidades por el mind. Identidad queda 16/19 (H0296, H0012, H0373 abiertos). Siguiente: conversación (12 abiertos) y reloj (10) según CONDICIONES_POR_CATEGORIA.
+
+Evidencia: `artifacts/comprobaciones/C03/IDENTITY1148/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 121.22 s acumulados; pico GPU 3497.56 MiB; pico RAM 1737.03 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque IDENTITY1148 precedente. -->
+
 ## IDENTITY1146 — estado vigente 2026-09-13T04:29:01+00:00
 
 Parcial: 17 aprobados, 10 fallidos, 0 sin ejecutar; 7 créditos.

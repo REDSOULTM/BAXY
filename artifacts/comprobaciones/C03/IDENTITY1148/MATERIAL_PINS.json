@@ -1,0 +1,105 @@
+{
+  "schema": "identity1148-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-identity1148-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-identity1148-instrument-v1",
+  "seal_sha256": "3643ee9c3dd6e544cc802154d1f04fe9ba249f58d751ec27ba36de3667936a78",
+  "runner_sha256": "cd54f72a28eb57bc7fd44389014493fe424f4d88337cbcaba12f71da19f47cfe",
+  "transport_seal_sha256": "0ac36415d33bcced5fcfed0285126391e1b42abc88f4e8d4f2c247e372c5ba36",
+  "files": {
+    "panel.json": "7af613e379eda362d23318d3c820a1a7f63931b992270e887e40ddfd192d7066",
+    "turns.jsonl": "099cefabc6acf6a504353a2c8746fb4e5f0c0c810b0504a08fda4c90fbb5fbb5",
+    "case-map.json": "8fda0ae0adce55a604bbf68b12efb71286270d6e277e665ba5c72312b41d7342",
+    "PLAN.md": "b95b3e092e92e8c3028f09c8ed32c8b7676fe682754a26b9f3595384baaf97ec"
+  },
+  "counts": {
+    "cases": 8,
+    "historical_literals": 2,
+    "original_development_variants": 3,
+    "boundaries": 3,
+    "wire_lines": 16,
+    "session_controls": 8,
+    "ordinary_turns": 8,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 8,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 2,
+    "original_development_variant": 3,
+    "boundary": 3
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0153",
+      "kind": "historical_literal",
+      "group": "capabilities",
+      "credit_behavior": "capabilities",
+      "text_sha256": "30d6f510d28eb7839afc1844a76a2d6b829e8c6c30a832199718db899e7bf1a6",
+      "criterion_sha256": "c1d29cdf3345d4c20d29652754bc25c62736ad55f010312a1ce82bbc6cff100d"
+    },
+    {
+      "index": 1,
+      "case_id": "H0474",
+      "kind": "historical_literal",
+      "group": "capabilities",
+      "credit_behavior": "capabilities",
+      "text_sha256": "9f81e26ac58fd8e376955abb517ef95f9d5353878bfadc29f3fed59bf707bb11",
+      "criterion_sha256": "c1d29cdf3345d4c20d29652754bc25c62736ad55f010312a1ce82bbc6cff100d"
+    },
+    {
+      "index": 2,
+      "case_id": "identity1148-dev-01",
+      "kind": "original_development_variant",
+      "group": "capabilities",
+      "credit_behavior": "capabilities",
+      "text_sha256": "dd04bad0791e615267865ab72b5a34cafd891a18a79c69c24b61951e692f9ef8",
+      "criterion_sha256": "c1d29cdf3345d4c20d29652754bc25c62736ad55f010312a1ce82bbc6cff100d"
+    },
+    {
+      "index": 3,
+      "case_id": "identity1148-dev-02",
+      "kind": "original_development_variant",
+      "group": "capabilities",
+      "credit_behavior": "capabilities",
+      "text_sha256": "54f8853b39cc9d36700a472042c992f301504997fd9f5dec28a49860506e44ea",
+      "criterion_sha256": "c1d29cdf3345d4c20d29652754bc25c62736ad55f010312a1ce82bbc6cff100d"
+    },
+    {
+      "index": 4,
+      "case_id": "identity1148-dev-03",
+      "kind": "original_development_variant",
+      "group": "capabilities",
+      "credit_behavior": "capabilities",
+      "text_sha256": "cf12269bb1130244ab75ef3b69c0388c7284a0004599becb18b1ca1df2c4b703",
+      "criterion_sha256": "c1d29cdf3345d4c20d29652754bc25c62736ad55f010312a1ce82bbc6cff100d"
+    },
+    {
+      "index": 5,
+      "case_id": "identity1148-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "a3d4508984b0813ee1b00c5a5617c3905e604534a79e26e36511da5ca61f6e20",
+      "criterion_sha256": "67f14ce069036aebf2f2e3861ae7119af5a4af4388324a9813a0bc864bf1551c"
+    },
+    {
+      "index": 6,
+      "case_id": "identity1148-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "b4cc982c251b7786527bb3ac0977645bcb9a8c96df12369b3827230fd596ebde",
+      "criterion_sha256": "bf9a860470f91bf61ea735607b65a74a95769fe07c3842c9a01469ef22208bdb"
+    },
+    {
+      "index": 7,
+      "case_id": "identity1148-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "2f47d98a4c345b1f86c9604c4dabe7eaa4e75c4711f7c8169e2304fbf6247345",
+      "criterion_sha256": "e32518d2c266ac5db0b7343dd14dde05f751da63b7b026444ada01550608384b"
+    }
+  ]
+}
