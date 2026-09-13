@@ -1,3 +1,25 @@
+## NOTES1141 — estado vigente 2026-09-13T02:15:30+00:00
+
+Parcial: 14 aprobados, 12 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 205/742 | 537 | 0 | >=79 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 28 Kiro + 49 retorno + H0584 (MESSAGING1140), todas dentro de la ventana de 24 h al adjudicar; NOTES1141 añade H0511. No se cuentan revalidaciones ni verification_updated_at.
+
+Siguiente acción: NOTES1141: 26 ejecutados, 15 aprobados, 11 fallidos; +1 H0511. Siete literales de creación aprobados sin crédito por falta de dos variantes de creación aprobadas (sólo índice 13). Causa común de los fallos demostrada sin GPU: huecos de la gramática cerrada de notas (dos puntos sin espacio, «que diga:», «creá» sin plegar en argumentos, cabezas guardame/tomá/take, formas nominales y de listado sin verbo); el reconocedor determinista pasó 100 % de sus casos y la ruta del modelo aclaró/confirmó/negó. Siguiente: adoptar la reparación léxica (effect_intent.py + __main__.py) verificada offline contra los 742 literales (3 cambios, todos deseados) y medir NOTES1142 con los fallidos y sus pares.
+
+Evidencia: `artifacts/comprobaciones/C03/NOTES1141/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 432.72 s acumulados; pico GPU 3497.56 MiB; pico RAM 2388.08 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 26; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque NOTES1141 precedente. -->
+
 ## MESSAGING1140 — estado vigente 2026-09-13T01:34:18.539920+00:00
 
 Parcial: 7 aprobados, 0 fallidos, 1 sin ejecutar; 1 créditos.

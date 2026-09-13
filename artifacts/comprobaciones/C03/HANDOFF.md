@@ -1,3 +1,13 @@
+# NOTES1141 adjudicado — 2026-09-13T02:17:05.167661+00:00
+
+**205/742 cubiertos,537 abiertos,0NA;0/35 categorías cerradas;C03 formal3/11. Registro SHA9396ee722b2342b8b96aac2d59bcd70314f5d09a071f61d6ce7268705d5c7858. Primeras altas24h>=79 (+H0511).** Escritor raíz Fable. Sin tests por orden del dueño.
+
+NOTES1141 (26 objetos: 11 literales de notas, 10 variantes, 5 límites; efectos note.create/note.list en perfil aislado): 26 ejecutados,15 aprobados,11 fallidos;+1 H0511. Adjudicación1fb8fab0c5524a91ca95a947b1f9a7d5664fcf2ce161b0fd4c38291a16e4961c. Siete literales de creación aprobados (H0092/H0229/H0286/H0416/H0321/H0284/H0673) sin crédito: sólo una variante de creación aprobada. Causa común demostrada sin GPU (scratch probe): huecos de la gramática cerrada de notas —dos puntos sin espacio, «que diga:», «creá» sin plegar en el extractor de argumentos, cabezas guardame/tomá/take, forma nominal «nota nueva:», listados sin verbo (mis notas, listame, mostrame, ¿tengo notas?)—; la ruta del modelo aclara/confirma/niega en su lugar. Reparación léxica candidata en scratch (patch_notes.py) verificada contra los 742 literales: 3 cambios, todos deseados (H0284, H0734, H0363 ya cubierto); faltan «mis notas» y «Nota nueva:» (gate por resolver). Siguiente: terminar y adoptar la reparación (effect_intent.py + __main__.py, sólo Python), NOTES1142 con los fallidos y sus pares.
+
+WhatsApp.Root reaparece ~30 s tras cerrarlo (BG task server): para casos sin efecto de mensajería, observar+ejecutar en la misma invocación tras cierre exacto; cierres registrados en ROOT_BACKGROUND_CLIENT_CLOSES.jsonl del instrumento. CONDICIONES_POR_CATEGORIA_2026-09-13.md documenta por qué las categorías de mayor masa esperan al dueño o a causa nueva.
+
+---
+
 # MESSAGING1140 adjudicado — 2026-09-13T01:35:41.150486+00:00
 
 **204/742 cubiertos,538 abiertos,0NA;0/35 categorías cerradas;C03 formal3/11. Registro SHA79e3ee72e433b9750964d233215ee2c4a12edbf2b34a1f7d266a028be4aad948. Primeras altas24h>=78 (+H0584).** Escritor raíz Fable (sesión Claude Code250e1a56-9daa-4ae6-a51f-44fe3a271a6d). Sin tests por orden del dueño.

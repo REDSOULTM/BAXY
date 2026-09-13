@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación MESSAGING1140
+# Categorías actuales — adjudicación NOTES1141
 
-204/742 cubiertos; 538 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 78 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140), sin revalidaciones. Registro canónico SHA256: 79e3ee72e433b9750964d233215ee2c4a12edbf2b34a1f7d266a028be4aad948.
+205/742 cubiertos; 537 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 79 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140 + H0511 en NOTES1141), sin revalidaciones. Registro canónico SHA256: 9396ee722b2342b8b96aac2d59bcd70314f5d09a071f61d6ce7268705d5c7858.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -26,7 +26,7 @@
 | Conversación social y ayuda general | 31 | 19 | 12 |
 | Estado de ventanas y aplicaciones | 14 | 2 | 12 |
 | Identidad y capacidades del asistente | 19 | 7 | 12 |
-| Notas | 12 | 0 | 12 |
+| Notas | 12 | 1 | 11 |
 | Hora y fecha | 23 | 13 | 10 |
 | Memoria personal | 10 | 0 | 10 |
 | Correo | 6 | 0 | 6 |
