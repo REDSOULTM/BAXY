@@ -1,0 +1,17 @@
+{
+  "schema": "c03-close1223-app-source-adoption-v1",
+  "status": "adopted_unmeasured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs (Inventory, strong path)",
+  "patch": "artifacts/comprobaciones/C03/CLOSE1223/APP_SOURCE.patch",
+  "cause_measured": "CLOSE1221 índices 2, 3, 8 (Chrome) y 9 (Calculator EN): window.resolve por applicationName falló con inventory_failed. Reproducido con la sonda raíz invprobe sobre el mismo Baxy.Providers.Windows.dll de BUILD1221, con una ventana propia abierta y sin producto: «The visible application inventory was incomplete». En la vía fuerte, para una entrada clásica el inventario leía MainModule de todo proceso con ventana visible antes de comparar el ejecutable, y para una empaquetada leía el AUMID de todo proceso con ventana visible antes de compararlo; un proceso ajeno no legible (el Administrador de tareas elevado del dueño) lanzaba y abortaba el inventario entero.",
+  "change": "Sólo los candidatos necesitan identidad fuerte: para una entrada clásica, un proceso con ventana visible cuyo nombre de proceso no es el del ejecutable esperado se salta antes de tocar MainModule; para una empaquetada, si el AUMID de un proceso no puede leerse se salta ese proceso en vez de abortar. Los candidatos conservan exactamente las mismas comprobaciones (ruta absoluta del ejecutable igual a la del Shell, AUMID exacto, reobservación tras enumerar). Sin inferencias por nombre para identificar la app: el nombre sólo descarta.",
+  "offline_verification": "Sin tests (orden del dueño). Sonda raíz invprobe tras el cambio (mismo ensamblado reconstruido en BUILD1223): Google Chrome y Calculadora devuelven exactamente la ventana propia; Bloc de notas igual que antes.",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": true,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": null,
+  "credits": null
+}

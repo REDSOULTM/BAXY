@@ -1105,9 +1105,31 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                         continue;
                     }
 
-                    string? applicationId = packaged
-                        ? ReadApplicationUserModelId(process.Id)
-                        : null;
+                    if (strongIdentityOnly && !packaged && !string.Equals(
+                            process.ProcessName,
+                            Path.GetFileNameWithoutExtension(expectedExecutable),
+                            StringComparison.OrdinalIgnoreCase))
+                    {
+                        // A windowed process of another executable cannot be this
+                        // classic application; reading its main module (elevated
+                        // Task Manager, CLOSE1221) must not abort the inventory.
+                        continue;
+                    }
+
+                    string? applicationId = null;
+                    if (packaged)
+                    {
+                        try
+                        {
+                            applicationId = ReadApplicationUserModelId(process.Id);
+                        }
+                        catch (ApplicationInventoryException) when (strongIdentityOnly)
+                        {
+                            // An unreadable foreign process is not a candidate for
+                            // this package; only candidates need a strong identity.
+                            continue;
+                        }
+                    }
                     if (strongIdentityOnly
                         ? packaged && !string.Equals(entry.AppUserModelId, applicationId, StringComparison.Ordinal)
                         : !WindowProcessIdentifiesApplication(
