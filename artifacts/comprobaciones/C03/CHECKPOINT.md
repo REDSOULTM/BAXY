@@ -1,3 +1,25 @@
+## NOTES1142 — estado vigente 2026-09-13T02:41:00+00:00
+
+Parcial: 20 aprobados, 5 fallidos, 0 sin ejecutar; 10 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 215/742 | 527 | 0 | >=89 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 28 Kiro + 49 retorno + H0584 (MESSAGING1140) + H0511 (NOTES1141), todas dentro de la ventana de 24 h al adjudicar; NOTES1142 añade diez. No se cuentan revalidaciones ni verification_updated_at.
+
+Siguiente acción: NOTES1142 sobre la gramática reparada: 25 ejecutados, 20 aprobados, 5 fallidos; +10 (ocho creaciones y dos listados). Fallos restantes: dos vetos falsos de la App sobre borradores correctos tras efecto verificado (14: «martes» contiene «marte» en LooksLikeOutOfWorldRequest → out_of_catalog; 19: internal_code sin subcausa capturada) que terminan publicando un código de diagnóstico al agotar reintentos; un compromiso inventado en prosa (13); dos límites de conversación (21 hecho gramatical falso, 22 respuesta inconexa). Siguiente: reparar en App la comparación por palabra completa de LooksLikeOutOfWorldRequest (C#, requiere build) y capturar la subcausa de internal_code; categoría Notas queda con 1 abierto (H0319, límite sin marca).
+
+Evidencia: `artifacts/comprobaciones/C03/NOTES1142/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 398.28 s acumulados; pico GPU 3497.56 MiB; pico RAM 2050.58 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 25; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque NOTES1142 precedente. -->
+
 ## NOTES1141 — estado vigente 2026-09-13T02:15:30+00:00
 
 Parcial: 14 aprobados, 12 fallidos, 0 sin ejecutar; 1 créditos.

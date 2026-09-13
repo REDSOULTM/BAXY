@@ -1,3 +1,13 @@
+# NOTES1142 adjudicado — 2026-09-13T02:42:18.511647+00:00
+
+**215/742 cubiertos,527 abiertos,0NA;0/35 categorías cerradas;C03 formal3/11. Registro SHA882f9bf821bd00d34baf492ddc6a5090a96a18e95977274f555dfb4c9d848203. Primeras altas24h>=89 (+10).** Escritor raíz Fable. Sin tests por orden del dueño.
+
+Reparación léxica de notas adoptada en 03f0ef17 (effect_intent.py 4c72afe4…, __main__.py 056cf397…; comparación offline 742 literales: +4 resueltos, 0 regresiones). NOTES1142 (25 objetos, mismo material que 1141 menos H0511): 25 ejecutados,20 aprobados,5 fallidos;+10 (H0092/H0229/H0286/H0416/H0321/H0284/H0437/H0673 creación; H0485/H0734 listado). Adjudicación9a9a67d7549bd3e2d973a217c26c078b0e6d176e599956036f75aa94048ce2bc. Notas queda 11/12 (abierto H0319, límite sin marca).
+
+Causa nueva demostrada en App (C#): `UserMessagePolicy.LooksLikeOutOfWorldRequest` compara subcadenas (`ContainsAny`) y «martes» contiene «marte» → el pedido se clasifica out_of_catalog → la verificación de conversación veta un resultado verificado («Listo, te guardé la nota…») tres veces y el producto publica el código «model_response_rejected;…;retry_exhausted» (NOTES1142 índice14). Segundo veto falso «internal_code» sobre «No, no tienes ninguna nota guardada.» (índice19) con subcausa no capturada. Siguiente: comparación por palabra completa en ese lector (App, requiere build) y capturar la subcausa de internal_code; después categorías por masa con condiciones (CONDICIONES_POR_CATEGORIA_2026-09-13.md).
+
+---
+
 # NOTES1141 adjudicado — 2026-09-13T02:17:05.167661+00:00
 
 **205/742 cubiertos,537 abiertos,0NA;0/35 categorías cerradas;C03 formal3/11. Registro SHA9396ee722b2342b8b96aac2d59bcd70314f5d09a071f61d6ce7268705d5c7858. Primeras altas24h>=79 (+H0511).** Escritor raíz Fable. Sin tests por orden del dueño.

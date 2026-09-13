@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación NOTES1141
+# Categorías actuales — adjudicación NOTES1142
 
-205/742 cubiertos; 537 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 79 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140 + H0511 en NOTES1141), sin revalidaciones. Registro canónico SHA256: 9396ee722b2342b8b96aac2d59bcd70314f5d09a071f61d6ce7268705d5c7858.
+215/742 cubiertos; 527 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 89 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140 + H0511 en NOTES1141 + 10 en NOTES1142), sin revalidaciones. Registro canónico SHA256: 882f9bf821bd00d34baf492ddc6a5090a96a18e95977274f555dfb4c9d848203.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -26,7 +26,6 @@
 | Conversación social y ayuda general | 31 | 19 | 12 |
 | Estado de ventanas y aplicaciones | 14 | 2 | 12 |
 | Identidad y capacidades del asistente | 19 | 7 | 12 |
-| Notas | 12 | 1 | 11 |
 | Hora y fecha | 23 | 13 | 10 |
 | Memoria personal | 10 | 0 | 10 |
 | Correo | 6 | 0 | 6 |
@@ -38,4 +37,5 @@
 | Energía del sistema | 3 | 0 | 3 |
 | Crear documentos y editar imágenes | 2 | 0 | 2 |
 | Leer y resumir páginas web | 2 | 0 | 2 |
+| Notas | 12 | 11 | 1 |
 | Procesos | 9 | 8 | 1 |
