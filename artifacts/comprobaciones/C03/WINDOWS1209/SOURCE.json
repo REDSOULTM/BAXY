@@ -1,6 +1,6 @@
 {
   "schema": "c03-windows1209-source-adoption-v1",
-  "status": "adopted_unmeasured",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/window_prose_facts.py (project_window_inventory, _named_inventory_subset, _inventory_fact_defect); src/baxy_mind/llm.py (línea de alcance del inventario)",
   "patch": "artifacts/comprobaciones/C03/WINDOWS1209/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": null,
-  "credits": null
+  "measurement": "WINDOWS1209/000: la proyección acotada compone (10 ventanas nombradas literalmente de 24 observadas) pero dos validadores de prosa rechazaron los borradores (cláusula «que no están incluidas» leída como observadas; tartamudeo sobre dos títulos «Configuración» reales). Corregidos en WINDOWS1211/SOURCE.json.",
+  "credits": 0
 }

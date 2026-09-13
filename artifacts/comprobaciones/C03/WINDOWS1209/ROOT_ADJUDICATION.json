@@ -1,0 +1,117 @@
+{
+  "schema": "windows1209-root-adjudication-v2",
+  "decided_at_utc": "2026-09-13T14:28:21+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "622ec0cb966cf9c5ee79f06fa43790de1cfba29b",
+  "decisions_sha256": "607b6b9ff1c725152a90386be9cc1d3eb4c8579fb7653f700a608cdc97774031",
+  "registry_before_sha256": "8263cf5330c2bab9e39565722f2cf2e978393a70c274e5e37d70907d9fbd8ca1",
+  "registry_before_counts": {
+    "covered": 285,
+    "open": 457,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "0f6a126602df183dacbb04ca436ad08ceee3ca203045f4de62c3e07739d11764",
+  "preparation_sha256": "7f9b8d662d215a1dfddab95d140810008fa70ff498bafd25bdf782afe8dabca6",
+  "passed": 0,
+  "failed": 1,
+  "unexecuted": 8,
+  "executed": 1,
+  "segments_started": 1,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [],
+  "counters": {
+    "covered": 285,
+    "open": 457,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 159,
+    "categories_total": 35,
+    "categories_closed_after": 0,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–13 septiembre: 159 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; WINDOWS1209 no añade ninguna. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 159
+  },
+  "resources": {
+    "seconds_sum": 66.70299999999406,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 2349.25390625
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0023",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Nombró las diez ventanas proyectadas pero dos comprobaciones de prosa rechazaron la divulgación del resto y los títulos repetidos.",
+      "observation_note": "Final revisado con una admisión; una lectura verificada; el texto final fue un código de diagnóstico; pins intactos.",
+      "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1209-instrument-v1\\results\\case-00\\EXIT.json": "7ce979e3b45bc7968df6ff40080e825ba3f0468b15e5529d88a826c251dcf81a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1209-instrument-v1\\results\\case-00\\RESOURCES.json": "e369f98d7009b5baf0f88228697d4f71446c4d0bd5c1834889c2275bd5d0a425",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1209-instrument-v1\\private\\profile-owner-00.json": "23be400136980621b0eb6338449444397ca7707f4259ca42bfd9bdd9ec1cdbb4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1209-instrument-v1\\results\\case-00\\PREREG.json": "70e72c370c0592a800a82ec0c1b44b4048f470e405601ebdf10e6ad60b429bcb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1209-instrument-v1\\private\\run-00\\capture\\events.jsonl": "ec5956aa5f8dc40a3f13093a6dc9392d948e5d6603abc52631fdcb45d2f20d37",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1209-instrument-v1\\private\\run-00\\turns.jsonl": "20f564a6782058489aab03ed27a1fdc8c076574373d27416564e94ca557f1307",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1209-instrument-v1\\private\\fixture-00.json": "6c46e3f36bf122653c5f0d10ac2abde1793cd00f59b1fc22c3b7e2c5e6b59095",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1209-instrument-v1\\private\\context-00.json": "c68d704f9471ce6e78f27b54e474cdad62ae7b915fe7fabc22c39cf70518dcfa",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1209-instrument-v1\\private\\context-prelaunch-00.json": "3b4b3b75b4964b61cb113f10fe615e58e9bd664ad4fbcf8ee284d816a2d09770",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1209-instrument-v1\\private\\run-00\\case-observations.json": "066f8b1ebaad6514bfcac8b5a23d4a343a7951dcd7ac72f4310a857719d41b63",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1209-instrument-v1\\private\\run-00\\journal-before.json": "9d204a4d085348e9d8be3af62a00ff4e8eb310c214619e5aa0c04c62d2a7b98f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1209-instrument-v1\\private\\run-00\\journal-after.json": "604773da4f010eb1dce45a77187b548a3006fdae3718cc92962cd9ac7cb87209",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1209-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "56618e1b85103925ca78ac39b3a79735beb3175a74cf4f35bfa2579a6cbe58a4"
+      },
+      "terminal_kind": "composition_failed",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "25e2c65d-b262-4349-8455-22c7aabc5852",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "01d3119e-0c94-4868-9f6b-3ded45aad2bf",
+          "operation": "window.resolve",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "next_action": "WINDOWS1209 parcial: 1 ejecutado, 0 aprobados, 1 fallido, 8 sin ejecutar (índices 1–8), 0 créditos. La proyección acotada resolvió la causa de escala (las diez ventanas proyectadas se nombran literalmente); quedaron dos rechazos de validación reproducidos offline: la cláusula «N ventanas que no están incluidas» leída como observadas y el detector de tartamudeo sobre dos títulos «Configuración» reales. Corregidos en fuente (alcance «restantes» con cláusula relativa; tartamudeo y línea de palabra sola sobre la copia sin nombres observados). Siguiente: WINDOWS1211 con los mismos nueve objetos sobre el candidato corregido.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

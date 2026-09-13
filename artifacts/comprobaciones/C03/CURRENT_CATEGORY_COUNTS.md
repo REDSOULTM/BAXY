@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación WINDOWS1207
+# Categorías actuales — adjudicación WINDOWS1209
 
-285/742 cubiertos; 457 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 159 primeras altas (154 anteriores + 5 en WINDOWS1207; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 8263cf5330c2bab9e39565722f2cf2e978393a70c274e5e37d70907d9fbd8ca1.
+285/742 cubiertos; 457 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 159 primeras altas (159 anteriores + 0 en WINDOWS1209; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 4f12ecf153838e7adee3f144c88438cf24239783a76a017088d80946f9385cd1.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|

@@ -1,3 +1,13 @@
+# WINDOWS1209 adjudicado (parcial) — 2026-09-13T14:28:21+00:00
+
+**285/742 cubiertos, 457 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 4f12ecf153838e7adee3f144c88438cf24239783a76a017088d80946f9385cd1. Primeras altas 24 h >= 159 (+0).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 622ec0cb con BUILD1205; proyección acotada del inventario de ventanas en WINDOWS1209/SOURCE.json|patch.
+
+WINDOWS1209 (6 inventarios, 2 pares, 1 límite; lecturas de sólo lectura): 1 ejecutado (índice 0, H0023), 1 fallido, 8 sin ejecutar; +0. Adjudicación 4db6d312aa59677db20fef9468be38d4b75f0b98348d5e3c8e966f871e2d0862. La proyección acotada resolvió la causa de escala: los tres borradores nombraron literalmente las 10 ventanas proyectadas (de 24 observadas). Quedaron dos rechazos de validación, reproducidos offline con la página grabada: «Se observaron 14 ventanas que no están incluidas en esta lista» leído como cantidad observada (reversed_result) y el detector de tartamudeo sobre dos ventanas reales tituladas «Configuración» en líneas consecutivas (invented). Corregidos en fuente antes de seguir (WINDOWS1211/SOURCE.json: cláusula relativa «que no están incluidas» como alcance «restantes»; tartamudeo y línea de palabra sola comprobados sobre la copia sin nombres observados). Estado de ventanas queda 7/14.
+
+Siguiente: WINDOWS1211 con los mismos nueve objetos sobre el candidato corregido; después cierre de apps propias (20), apps (4 léxicos), H0043. Reanudación: derivar de build_windows1209.py (BUILD1205); `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 4f12ecf153838e7adee3f144c88438cf24239783a76a017088d80946f9385cd1`.
+
+---
+
 # WINDOWS1207 adjudicado (parcial) — 2026-09-13T14:09:40+00:00
 
 **285/742 cubiertos, 457 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 8263cf5330c2bab9e39565722f2cf2e978393a70c274e5e37d70907d9fbd8ca1. Primeras altas 24 h >= 159 (+5).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD (ver adjudicación) con BUILD1205; reparación de formas coloquiales de ventanas en WINDOWS1207/SOURCE.json|patch.
