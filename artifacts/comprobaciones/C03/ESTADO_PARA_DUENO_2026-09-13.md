@@ -1,3 +1,25 @@
+## MEMORY1245 — estado vigente 2026-09-13T19:56:32.461937+00:00
+
+Parcial: 6 aprobados, 10 fallidos, 0 sin ejecutar; 3 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 334/742 | 408 | 0 | >=208 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 205 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; MEMORY1245 añade 3. No se cuentan revalidaciones.
+
+Siguiente acción: MEMORY1245 completa: 16 ejecutados, 7 aprobados, 9 fallidos, 3 créditos (H0226, H0337, H0667: afirmaciones personales acusadas sin persistir) con sus dos pares. Memoria personal queda 3/10. Causa medida de los 8 fallos de guardado: la memoria privada está desactivada en un perfil fresco (memory_disabled) y la App pide confirmar la activación; esa confirmación es de la App, no del kernel, y el instrumento de un turno no la responde. Siguiente: MEMORY1247 con un comando de host `turn.memory-confirm` (host y runner de dos fases) para H0157, H0149, H0452, H0506; recuerdos (H0604, H0173) siguen fuera (perfil fresco sin nada que recordar); H0174 falló en el modelo.
+
+Evidencia: `artifacts/comprobaciones/C03/MEMORY1245/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 257.34 s acumulados; pico GPU 3497.56 MiB; pico RAM 1923.91 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 16; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MEMORY1245 precedente. -->
+
 ## FILES1243 — estado vigente 2026-09-13T19:38:17.213429+00:00
 
 Parcial: 9 aprobados, 1 fallidos, 0 sin ejecutar; 4 créditos.

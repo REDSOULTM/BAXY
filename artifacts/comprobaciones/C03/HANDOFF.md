@@ -1,3 +1,13 @@
+# MEMORY1245 adjudicado — 2026-09-13T19:56:32.461937+00:00
+
+**334/742 cubiertos, 408 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 6ca0dcf988d65edd2046001f1b00c11bb30e911984c1429e3ebbd3a1f8ecc514. Primeras altas 24 h >= 208 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 385bfb56 con BUILD1245 (analizador privado de memoria ampliado: recordá/acordate/«me recuerdes como»; MEMORY1245/APP_SOURCE.json|patch).
+
+MEMORY1245 (8 literales de «Memoria personal» —nunca ejecutados— + 6 variantes, turnos ordinarios; 2 límites): 16 ejecutados, 7 aprobados, 9 fallidos; +3 (H0226 «Yo me llamo red», H0337, H0667 «Mi nombre es Albeda Kegis.»: afirmaciones acusadas usando el nombre, sin persistir ni prometer memoria) con sus dos pares. Adjudicación 9576ebe7d7ee33ea63539c55b71d1ef9496c00eb9bb03794a14181368d136bb8. Causa medida de los 8 guardados fallidos (H0157, H0149, H0452, H0506 y variantes): el analizador privado enruta memory.save con el dato correcto, pero en un perfil fresco la memoria privada está desactivada (memory_disabled) y la App pide confirmar la activación; esa confirmación es de la App (MemoryTurnSession), no del kernel, y el instrumento de un turno no la da (el runner se detiene al ver la composición de confirmación). H0174 «Me gusta tomar café.» falló en el modelo (lo tomó como pedido). **Memoria personal queda 3/10.** Siguiente: MEMORY1247 con un comando de host `turn.memory-confirm` (segunda fase que responde «confirmar» a la activación; la continuación SaveAfterEnable completa el guardado) y runner de dos fases; recuerdos (H0604, H0173) siguen fuera: un perfil fresco no tiene nada que recordar.
+
+Guiones: `derive_memory1245.py` (de files1243), sonda `scratchpad/memprobe` (reflexión sobre Baxy.dll: `NaturalMemoryRequestParser.Classify`).
+
+---
+
 # FILES1243 adjudicado — 2026-09-13T19:38:17.213429+00:00
 
 **331/742 cubiertos, 411 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 505ba73f38f3d2d42c00d050a563cd11aae0849247e3219f37c00875531d5c63. Primeras altas 24 h >= 205 (+4).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4873c48b con BUILD1237 (sin rebuild: lector y fundamentación en la mente, commits cd6ec990 y 4873c48b; FILES1243/SOURCE.json|patch).

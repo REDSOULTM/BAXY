@@ -49,3 +49,7 @@ Audio y volumen pasa de 27/51 a 39/51. La condición «reconocimiento de direcci
 ## Actualización 2026-09-13 (FILES1243)
 
 Archivos y carpetas pasa de 15/32 a 19/32: los borrados con fixtures propios en carpetas personales quedaron autorizados por la decisión del dueño (punto 2, FILES1205) y sólo faltaba el lector de borrado literal (papelera privada recuperable). Quedan 13: listados ×4 (revelarían nombres de archivos del dueño en artefactos públicos; medibles sólo con publicación sin nombres), carpeta ×1 (sin operación de borrado de carpetas), contenido dinámico ×2, comprimir/backup/resumir ×3 (sin operación), ruta suelta, «directorio actual» y recuento compuesto.
+
+## Actualización 2026-09-13 (MEMORY1245)
+
+Memoria personal pasa de 0/10 a 3/10 (afirmaciones sin pedido de persistencia). Condición nueva demostrada para los guardados (4 literales + variantes): la memoria privada está desactivada en un perfil fresco y su activación exige una confirmación de la App (no del kernel), que el instrumento de un turno no puede dar; reanudación con `turn.memory-confirm` en el host y un runner de dos fases (MEMORY1247). Los recuerdos (H0604, H0173) requieren un guardado previo en el mismo perfil: fuera del instrumento de un caso por turno.

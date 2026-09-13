@@ -1,0 +1,35 @@
+commit 385bfb56110cf5dfc993b2ee9b40a5a229532370
+
+C03: the private memory parser accepts «recordá/acordate que me llamo …», «quiero que me recuerdes como …» and «recordá … color favorito» (MEMORY1245 repair)
+
+«Quiero que me recuerdes como red» (H0149) had no memory route and the mind
+read it as a reminder without a time; the voseo «recordá que me llamo …» and
+«recordá que mi color favorito es …» had none either. The name and favourite
+colour save patterns now admit those heads; nothing else in the private
+channel changes. No tests (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/NaturalMemoryRequestParser.cs b/src/Baxy.App/NaturalMemoryRequestParser.cs
+index 625ecddf..f9fbab2b 100644
+--- a/src/Baxy.App/NaturalMemoryRequestParser.cs
++++ b/src/Baxy.App/NaturalMemoryRequestParser.cs
+@@ -1706,12 +1706,15 @@ internal static partial class NaturalMemoryRequestParser
+     private static partial Regex FilesystemOrDocumentPattern();
+ 
+     [GeneratedRegex(
+-        "^(?:(?:recuerda|acordate|guarda|remember)(?:[ ]+que|[ ]+that)?)[ ]+(?:mi|my)[ ]+(?:color[ ]+favorito|favorite[ ]+color)[ ]+(?:es|is)[ ]+(?:el[ ]+)?(?<value>[\\p{L}][\\p{L} -]{0,39})$",
++        "^(?:(?:recuerda|record[aá]|acordate|acuérdate|guarda|guard[aá]|remember)(?:[ ]+que|[ ]+that)?)[ ]+(?:mi|my)[ ]+(?:color[ ]+favorito|favorite[ ]+color)[ ]+(?:es|is)[ ]+(?:el[ ]+)?(?<value>[\\p{L}][\\p{L} -]{0,39})$",
+         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+     private static partial Regex FavoriteColorSavePattern();
+ 
+     [GeneratedRegex(
+-        "^(?:recuerda(?:[ ]+que)?[ ]+me[ ]+llamo|remember[ ]+(?:that[ ]+)?my[ ]+name[ ]+is|remember[ ]+me[ ]+as)[ ]+(?<value>[\\p{L}][\\p{L}'’-]{0,79})$",
++        // «recordá que me llamo …» (voseo), «acordate que me llamo …» and «quiero que
++        // me recuerdes como …» ask to persist the name as plainly as «recuerda que
++        // me llamo …» (MEMORY1245: H0149 read as a reminder without a time).
++        "^(?:(?:recuerda|record[aá]|acordate|acuérdate)(?:[ ]+que)?[ ]+me[ ]+llamo|remember[ ]+(?:that[ ]+)?my[ ]+name[ ]+is|remember[ ]+me[ ]+as|(?:quiero[ ]+que[ ]+)?me[ ]+recuerdes[ ]+como)[ ]+(?<value>[\\p{L}][\\p{L}'’-]{0,79})$",
+         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+     private static partial Regex NameSavePattern();
+ 

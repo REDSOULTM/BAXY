@@ -1,0 +1,14 @@
+{
+  "schema": "c03-memory1245-app-source-adoption-v1",
+  "status": "adopted_measured_partially",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/NaturalMemoryRequestParser.cs (NameSavePattern, FavoriteColorSavePattern)",
+  "patch": "artifacts/comprobaciones/C03/MEMORY1245/APP_SOURCE.patch",
+  "commit": "385bfb56110cf5dfc993b2ee9b40a5a229532370",
+  "build": "BUILD1245 (C03-repairs1245-build/BUILD_READY.json)",
+  "cause_measured": "Sonda por reflexión del analizador privado (scratchpad/memprobe): «Quiero que me recuerdes como red» (H0149) no enrutaba y la mente lo leía como recordatorio sin hora; «recordá que me llamo …» y «recordá que mi color favorito es …» (voseo) tampoco enrutaban; «Recuerda que me llamo Reta.», «acordate que mi color favorito es el azul» y «guardá que mi cumpleaños es el 5 de mayo» ya enrutaban memory.save.",
+  "change": "El patrón de guardado del nombre admite recordá/acordate/acuérdate y «(quiero que) me recuerdes como»; el de color favorito admite recordá/guardá. Nada más cambia en el canal privado.",
+  "offline_verification": "Sonda tras BUILD1245: los cinco textos enrutan memory.save con el valor correcto; «Yo me llamo …», «Mi nombre es …», «Me gusta tomar café.» siguen como afirmaciones (AskToSave, sin persistencia). Sin tests (orden del dueño).",
+  "measurement": "MEMORY1245: los ocho guardados enrutaron memory.save con el dato correcto pero terminaron memory_disabled: la memoria privada está desactivada en un perfil fresco y la App pide confirmar la activación, una confirmación de la App que el instrumento de un turno no responde (runner detenido con unexpected_confirmation_composition). Reparación léxica correcta y no acreditada aún; medición pendiente con turn.memory-confirm (MEMORY1247). Las afirmaciones personales se acreditaron (+3).",
+  "credits": 0
+}

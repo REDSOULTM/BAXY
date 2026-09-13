@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación FILES1243
+# Categorías actuales — adjudicación MEMORY1245
 
-331/742 cubiertos; 411 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 205 primeras altas (201 anteriores + 4 en FILES1243; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 505ba73f38f3d2d42c00d050a563cd11aae0849247e3219f37c00875531d5c63.
+334/742 cubiertos; 408 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 208 primeras altas (205 anteriores + 3 en MEMORY1245; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 6ca0dcf988d65edd2046001f1b00c11bb30e911984c1429e3ebbd3a1f8ecc514.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -27,7 +27,7 @@
 | Estado de ventanas y aplicaciones | 14 | 13 | 1 |
 | Identidad y capacidades del asistente | 19 | 16 | 3 |
 | Hora y fecha | 23 | 16 | 7 |
-| Memoria personal | 10 | 0 | 10 |
+| Memoria personal | 10 | 3 | 7 |
 | Correo | 6 | 0 | 6 |
 | Bibliotecas y fichas de juegos | 6 | 0 | 6 |
 | Contactos | 5 | 0 | 5 |
