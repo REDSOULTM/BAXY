@@ -1,3 +1,25 @@
+## CLOCK1155 — estado vigente 2026-09-13T05:45:11+00:00
+
+Parcial: 5 aprobados, 12 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 233/742 | 509 | 0 | >=107 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 107 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; CLOCK1155 no añade. No se cuentan revalidaciones.
+
+Siguiente acción: CLOCK1155 completa: 17 ejecutados, 5 aprobados, 12 fallidos, 0 créditos. Causa dominante medida sin GPU: effect_intent._direct_current_time_request (dominio de system.time) no reconoce «qué día es hoy» (día/day), la cola «ya», la contracción «what's» ni la errata «qe ora es»; el veto de dominio retira system.time y domain_confirmation publica una confirmación (a veces con vocabulario del contrato: UTC, desfase local). «tiempo» a secas es polisémico por diseño (veto documentado). Cuentas atrás (H0399 y pares) y «cuánto tiempo tarda» se declaran fuera de catálogo. Siguiente: reparación léxica del reconocedor de reloj (Python, verificable sin GPU sobre los 742) y CLOCK1156 con el mismo material.
+
+Evidencia: `artifacts/comprobaciones/C03/CLOCK1155/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 293.05 s acumulados; pico GPU 3497.56 MiB; pico RAM 2043.75 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 17; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque CLOCK1155 precedente. -->
+
 ## CONVERSATION1152 — estado vigente 2026-09-13T05:30:02+00:00
 
 Parcial: 8 aprobados, 5 fallidos, 0 sin ejecutar; 1 créditos.

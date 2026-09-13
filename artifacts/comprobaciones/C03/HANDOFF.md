@@ -1,3 +1,15 @@
+# CLOCK1155 adjudicado — 2026-09-13T05:45:11+00:00
+
+**233/742 cubiertos, 509 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 625cc0042a41ae4557ccb38c8192691485a3147a3b33ef0846cd3a6947605c50. Primeras altas 24 h >= 107 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 8e2b3e45 con BUILD1151.
+
+CLOCK1155 (17 objetos: 6 literales de reloj, 8 variantes, 3 límites; efecto de sólo lectura system.time permitido por caso, límites sin efecto): 17 ejecutados, 5 aprobados, 12 fallidos, 0 créditos. Adjudicación cf9f2f761bfff8e85ffc48d46ae2bd5fc0cf0c8f417321afa6cac2be3bebb749. Aprobados con lectura verificada: H0301 «y la fecha?», «¿Qué fecha es hoy?», «What time is it right now?» (02:38 correcto). Reloj sigue 13/23.
+
+Causa dominante medida (sin GPU, sonda sobre effect_intent): `_direct_current_time_request` (dominio de system.time) no reconoce «qué día es hoy» (ni día/day), «¿Qué hora es ya?» (cola «ya»), «What's today's date?» (contracción) ni la errata «qe ora es»; el veto de dominio retira system.time y `domain_confirmation` publica una pregunta de confirmación, a veces con vocabulario del contrato («la hora UTC y el desfase local»). «Tiempo»/«tiempo» a secas son polisémicos por diseño del veto (confirmación prevista; criterio sellado pedía la lectura: fallidos). Cuentas atrás (H0399 y pares) y «¿cuánto tiempo tarda…?» se declaran fuera de catálogo (falsa negación de alcance).
+
+Siguiente: reparación léxica del reconocedor de reloj (Python, verificable sin GPU sobre los 742), registro en CLOCK1155/SOURCE.json|patch, y CLOCK1156 con el mismo material. Reanudación: derivar desde build_clock1155.py; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 625cc004…`; `n_case.sh clock1156 i`. Recordatorios de sesión cada 5 h.
+
+---
+
 # CONVERSATION1152 adjudicado — 2026-09-13T05:30:02+00:00
 
 **233/742 cubiertos, 509 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 54824a461dd20f54e51135149c2f4477a2ad482eef75087d18128496e4364e3d. Primeras altas 24 h >= 107 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c12927f2 con BUILD1151 (App: MainWindowViewModel publica la pregunta de recuperación del mind —kind clarify, pregunta validada, sin operaciones— en vez de TurnVisibleFacts.Failure; recibo f40c9898…, huella bb51e00e…). Registro de adopción: CONVERSATION1150/APP_SOURCE.json|.patch.
