@@ -1,3 +1,15 @@
+# SYSTEM1171 adjudicado — 2026-09-13T07:08:46+00:00
+
+**243/742 cubiertos, 499 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 2ba84579f5c55a7cb472babc2a74b115940ee6d292f24096d6d5e0498e64da60. Primeras altas 24 h >= 117 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato vigente: HEAD 0e8edfec (scope gpu_usage con «tiene»; validador mislabeled_memory retirado) con BUILD1158.
+
+SYSTEM1171 (H0114, H0508 + 4 pares + 1 límite): 7 ejecutados, 5 aprobados, 2 fallidos, 0 créditos. Adjudicación 07e372c3e6ebb1b5843544170885ea6113e52060e59e75552de68195d7784f8a. Reparación de scope GPU demostrada en español (5.01 GB dedicados) pero no en inglés («in use»). Regresión medida y revertida: el validador mislabeled_memory rechazó todos los borradores de H0508 y la App publicó «no_response;…;retry_exhausted» (defecto R07 de agotamiento); retirado en 0e8edfec. Queda abierta la etiqueta falsa («RAM disponible» para total_usable): candidato de reparación en la proyección de memoria (claves total/libre en vez de total_usable/available), no en validadores.
+
+Lección: un validador nuevo sobre un borrador que el modelo repite igual en cada reintento termina en el código de diagnóstico del shell; antes de añadir validadores de composición, cambiar lo que el modelo ve (proyección/pista) y medir.
+
+Estado al cierre del segmento (04:10 local): 203 → 243 cubiertos en la sesión; todo comprometido y empujado en codex/kiro-goal-c03; `main` intacto. Siguiente: proyección de memoria + scope GPU «in use», remedir H0508/H0114; cierre de apps propias (20 abiertos) con autorización explícita del dueño; decisiones del dueño pendientes: TIME1139 (tolerancia 0 insatisfacible) y network.ip.list (PrivacySensitive, confirmación por diseño). Reanudación: derivar desde build_system1171.py; `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 2ba84579…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h (06:13/11:13/16:13/21:13/01:13).
+
+---
+
 # SYSTEM1169 adjudicado — 2026-09-13T06:59:51+00:00
 
 **243/742 cubiertos, 499 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 836112fc5600a2cffe8f03847d8914ee7caebb614e5514291012bfc3d75342ea. Primeras altas 24 h >= 117 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7d9c1e78 con BUILD1158.

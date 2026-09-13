@@ -1,8 +1,11 @@
 {
   "schema": "c03-system1169-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "scope_repair_adopted_measured; memory_validator_retired",
   "adopted_by": "root (Claude Fable 5.1)",
-  "owners": ["src/baxy_mind/__main__.py", "src/baxy_mind/llm.py"],
+  "owners": [
+    "src/baxy_mind/__main__.py",
+    "src/baxy_mind/llm.py"
+  ],
   "patch": "artifacts/comprobaciones/C03/SYSTEM1169/SOURCE.patch",
   "cause_measured": "(1) SYSTEM1169 índice 5 («¿Cuánto uso tiene la GPU ahora?»): system.status se ejecutó con scope summary (cpu, memoria, disco, sin GPU) y el final dijo que no se indica el uso de la GPU. Lectura de fuente: la selección determinista de scope en __main__ marca uso («uso») e identidad («tiene» está en la lista de identidad) a la vez y se abstiene, dejando al modelo elegir summary. (2) SYSTEM1169 índice 2 (H0508): con payload memory {total_usable 16,54, available 4,54, used 12,0, installed_capacity 17,18} el final publicó «16,54 GB de RAM disponible»: el número del total con la etiqueta de disponible; llm._payload_fact_defect no comprobaba etiquetas de memoria.",
   "change": "(1) Si el pedido nombra uso de GPU y la única señal de identidad es tengo/tiene/have (no «qué GPU», «cuál», «modelo», «tarjeta», «placa», «instalada»), el scope es gpu_usage. (2) _payload_fact_defect devuelve «mislabeled_memory» cuando un número en GB junto a disponible/available/libre/free coincide con total_usable, installed_capacity o used y no con available; el compositor reintenta con una pista de sistema (nunca visible). Los borradores bien etiquetados no cambian.",
@@ -12,6 +15,11 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "SYSTEM1171: H0508, H0114 con pares nuevos.",
-  "credits": 0
+  "measurement": "SYSTEM1171: (1) «¿Cuánto uso tiene la GPU ahora?» → scope gpu_usage y «5.01 GB de la memoria dedicada» (demostrado); «How much of the GPU is in use right now?» sigue en summary («in use» no es palabra de uso del selector). (2) El validador mislabeled_memory rechazó 3×3 borradores de H0508 (el modelo mantuvo «RAM disponible» para total_usable e inventó «22H2» al reintentar) y la App publicó «no_response;recovery:no_response;retry_exhausted»: retirado en 0e8edfec. Causa abierta: la proyección presenta total_usable y el modelo lo traduce como «disponible»; candidato: renombrar claves (total/libre) en la proyección de memoria.",
+  "credits": 0,
+  "retired": {
+    "validator": "mislabeled_memory",
+    "commit": "0e8edfec",
+    "reason": "retry exhaustion published a diagnostic code (SYSTEM1171/001)"
+  }
 }

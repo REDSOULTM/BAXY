@@ -152,10 +152,10 @@
     "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "SYSTEM1169 adjudicado: 9 aprobados, 2 fallidos, 0 sin ejecutar; 1 créditos.",
+  "workStatus": "SYSTEM1171 adjudicado: 5 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.",
   "executionPausedByOwner": false,
   "branch": "codex/kiro-goal-c03",
-  "checkpoint": "243/742 cubiertos, 499 abiertos, 0 no aplican. SYSTEM1169: 1 créditos explícitos de raíz.",
+  "checkpoint": "243/742 cubiertos, 499 abiertos, 0 no aplican. SYSTEM1171: 0 créditos explícitos de raíz.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
   "surveyVerificationCounts": {
@@ -164,14 +164,14 @@
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "836112fc5600a2cffe8f03847d8914ee7caebb614e5514291012bfc3d75342ea",
+  "surveyRegistrySha256": "2ba84579f5c55a7cb472babc2a74b115940ee6d292f24096d6d5e0498e64da60",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 0,
     "total": 35
   },
   "surveyCoverageLast24h": 117,
-  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–13 septiembre: 116 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; SYSTEM1169 añade 1. No se cuentan revalidaciones.",
+  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–13 septiembre: 117 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; SYSTEM1171 no añade. No se cuentan revalidaciones.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-13T06:59:51+00:00",
+  "utcUpdated": "2026-09-13T07:08:46+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -621,7 +621,7 @@
     "freeze_ended_at": "2026-09-12T13:33:18.245252-03:00",
     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
   },
-  "updatedAtUtc": "2026-09-13T06:59:51+00:00",
+  "updatedAtUtc": "2026-09-13T07:08:46+00:00",
   "currentContinuation1065": {
     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
     "quality": {
@@ -1833,5 +1833,28 @@
       "ram_peak_mib": 1641.49609375
     },
     "next": "SYSTEM1169 completa: 11 ejecutados, 9 aprobados, 2 fallidos, 1 crédito (H0037). Causas medidas: H0508 etiqueta la RAM total como «disponible» (compositor; validador de RAM sólo exige conservar el número); «¿Cuánto uso tiene la GPU ahora?» eligió el scope summary sin GPU. H0114 aprobado sin crédito (un solo par de GPU). Estado de hardware queda 26/40. Siguiente: validador de etiqueta de memoria (total/disponible) en llm._payload_fact_defect y selección de scope GPU para «uso… GPU»; después remedir H0508/H0114 con pares."
+  },
+  "currentContinuation1171": {
+    "head": "689c76d6a36e201ac71678dec29f14f9d7be234e",
+    "quality": {
+      "passed": 5,
+      "failed": 2,
+      "executed": 7,
+      "not_executed": 0,
+      "sealed_total": 8,
+      "segments_started": 7,
+      "aborted_before_admission": 0
+    },
+    "new_credits": 0,
+    "credited_ids": [],
+    "registry_sha256": "2ba84579f5c55a7cb472babc2a74b115940ee6d292f24096d6d5e0498e64da60",
+    "survey": 243,
+    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\SYSTEM1171\\ROOT_ADJUDICATION.json",
+    "resources": {
+      "seconds_sum": 129.17099999998754,
+      "gpu_peak_mib": 3497.55859375,
+      "ram_peak_mib": 2334.59765625
+    },
+    "next": "SYSTEM1171 completa: 7 ejecutados, 5 aprobados, 2 fallidos, 0 créditos. La reparación del scope GPU se demuestra en español («¿Cuánto uso tiene la GPU ahora?» → 5.01 GB dedicados) pero no cubre «in use» en inglés; el validador mislabeled_memory produjo agotamiento de reintentos y un código interno en H0508: retirado (queda la etiqueta falsa como causa abierta: el modelo traduce total_usable como «disponible»; candidato: renombrar claves de la proyección de memoria). H0114 sigue aprobado sin crédito. Estado de hardware 26/40."
   }
 }
