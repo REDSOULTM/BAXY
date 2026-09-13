@@ -1,6 +1,6 @@
 {
   "schema": "c03-time1187-source-adoption-v1",
-  "status": "adopted_pending_product_measurement",
+  "status": "adopted_measured",
   "adopted_by": "root (Claude Fable 5.1)",
   "owner": "src/baxy_mind/effect_intent.py (_RELATIVE_DURATION_PATTERN, _reminder_has_actionable_due, _BOUNDED_TEMPORAL_SELECTOR, notification.schedule domain, _wake_alarm_request, _SCHEDULING_VERB, _SCHEDULING_BY_ITSELF) + src/baxy_mind/__main__.py (_explicit_notification_schedule_arguments, _explicit_relative_reminder_arguments, _canonical_due_utc)",
   "patch": "artifacts/comprobaciones/C03/TIME1187/SOURCE.patch",
@@ -12,6 +12,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "TIME1189: mismo material que TIME1187 con reminder.create autorizado para el grupo de recordatorios.",
+  "measurement": "TIME1189: la duración compacta se demuestra (H0381, H0576 crean la alarma con due == NextRun); las formas de recordatorio se demuestran (cuatro literales crean el recordatorio con el contenido pedido); el despertar llega al reconocedor pero pierde el anclaje del enum «alarm» (causa nueva, TIME1189/SOURCE.json). Sin crédito por los pares.",
   "credits": 0
 }

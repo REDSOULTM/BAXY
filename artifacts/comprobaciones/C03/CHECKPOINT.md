@@ -1,3 +1,25 @@
+## TIME1189 — estado vigente 2026-09-13T12:16:42+00:00
+
+Parcial: 6 aprobados, 9 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 248/742 | 494 | 0 | >=122 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 122 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS), todas dentro de la ventana de 24 h al adjudicar; TIME1189 no añade. No se cuentan revalidaciones.
+
+Siguiente acción: TIME1189 completa: 15 ejecutados, 6 aprobados, 9 fallidos, 0 créditos. Se demuestran la duración compacta (H0381, H0576 crean y verifican la alarma con due == NextRun) y las formas de recordatorio (H0102, H0283, H0330, H0715 crean el recordatorio con el contenido pedido y plazo dentro del bracket), pero ningún literal acredita porque sus pares fallaron: el despertar pierde el anclaje del enum «alarm» (alias), la duración al inicio no entra al reconocedor, y el recordatorio inglés cae en un falso positivo del validador de palabras recortadas (remind/reminder.create). Tres reparaciones puntuales verificadas sin GPU y remedición con el mismo material (TIME1191). «contá» y «For the oven, start…» quedan documentados.
+
+Evidencia: `artifacts/comprobaciones/C03/TIME1189/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 260.30 s acumulados; pico GPU 3497.56 MiB; pico RAM 2037.07 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 15; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque TIME1189 precedente. -->
+
 ## TIME1187 — estado vigente 2026-09-13T11:58:47+00:00
 
 Parcial: 0 aprobados, 11 fallidos, 4 sin ejecutar; 0 créditos.

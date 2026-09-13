@@ -1,3 +1,13 @@
+# TIME1189 adjudicado — 2026-09-13T12:16:42+00:00
+
+**248/742 cubiertos, 494 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 06c3a54d0762189aff75ad326ade2d582c3e65aafbcf238f0ecc83c391802a5c. Primeras altas 24 h >= 122 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a07f0b08 (duración compacta, despertar, start, cabezas de recordatorio; TIME1187/SOURCE.json|patch) con BUILD1158.
+
+TIME1189 (mismo material relativo de 1134, reminder.create autorizado para recordatorios): 15 ejecutados, 6 aprobados, 9 fallidos, 0 créditos. Adjudicación 696548e39c105c44dac0aee30222e9f1c41f920f73f2fea7f8c94b7ba9f115a4; postlectura en TIME1189/ROOT_POSTREAD.json. Demostrado: «Pon/Ponme una alarma en 2min» crean y verifican la alarma con due == NextRun y bracket cumplido (dos tareas canceladas por identidad exacta); los cuatro recordatorios relativos (H0102, H0283, H0330, H0715) se crean en el almacén del perfil aislado con el contenido pedido y plazo dentro del bracket. Ningún crédito porque los pares fallaron por tres causas nuevas medidas: el enum «alarm» no se ancla en «despertame/wake me» (planner._ENUM_EVIDENCE_ALIASES) → aclaración de campos (0, 7, 8); la duración al inicio («Dentro de doce minutos, recordame…») no entra al reconocedor → ruta del modelo → confirmación (11); el validador de palabras recortadas toma «remind» como recorte de «reminder.create» y agota los reintentos → código interno (12). «contá», «For the oven, start…» y los dos límites siguen fallando por causas documentadas.
+
+Siguiente: tres reparaciones puntuales adoptadas a continuación (alias de enum para despertar; recordatorio con duración al inicio en el reconocedor; el nombre de operación deja de contar como hecho en _truncated_fact_word), verificadas sin GPU, y TIME1191 con el mismo material (derivar de build_time1189.py).
+
+---
+
 # TIME1187 adjudicado (parcial) — 2026-09-13T11:58:47+00:00
 
 **248/742 cubiertos, 494 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 8e60a9e882d2fa204921d4da3eb7218e23301229c38c222a4487174a7bc09d91. Primeras altas 24 h >= 122 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d1a3a3b8 con BUILD1158.
