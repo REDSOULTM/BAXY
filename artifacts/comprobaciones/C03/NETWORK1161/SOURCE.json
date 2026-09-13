@@ -13,6 +13,6 @@
   "build_required": false,
   "tests_run": false,
   "validation_policy": "owner_directed_no_tests",
-  "measurement": "NETWORK1163: H0221 «decime qué onda con el wifi» → wifi.status verificado y «El PC no está conectado al wifi» (aprobado, sin crédito por un solo par); «decime si el wifi está prendido/activo» sigue en confirmación por una ruta de aclaración temprana (decisión clarify sin fase final de turn-audit), no por el veto de dominio.",
-  "credits": 0
+  "measurement": "NETWORK1163: H0221 «decime qué onda con el wifi» → wifi.status verificado y «El PC no está conectado al wifi» (aprobado, sin crédito por un solo par); «decime si el wifi está prendido/activo» sigue en confirmación por una ruta de aclaración temprana (decisión clarify sin fase final de turn-audit), no por el veto de dominio. NETWORK1165: H0221 acreditado con «¿El wifi está encendido?» e «Is the wifi enabled right now?».",
+  "credits": 1
 }

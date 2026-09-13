@@ -1,0 +1,105 @@
+{
+  "schema": "network1165-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1165-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1165-instrument-v1",
+  "seal_sha256": "84782e144bd50f2904fc9f7f210c6c9348edc7694fda21a9149b765c71acf86a",
+  "runner_sha256": "f94e9c816c5e6ea24badf58eaad8eae5c5a42a1c9f32adb93df6e562110d6b9b",
+  "transport_seal_sha256": "a79d0ce03be409bf9207ddaf43ce3a5839a9a7fb77675c88a62c5350af0ca3c5",
+  "files": {
+    "panel.json": "b3d147d0174a52d534b0f09b34192b504d4cbc5f6a8ff159a184c4d9e4a1d038",
+    "turns.jsonl": "2562e7347c2e25db2552ada6acb754387cebff025b50a29fad395f35cf475797",
+    "case-map.json": "5d2f08f3fa59311616d3e273fdd6a43fb45dad5507a5fef2eead644c71844891",
+    "PLAN.md": "09feab040c92e63960836132bbf8bea87dbe41fbef386c7f99e800e8858d6318"
+  },
+  "counts": {
+    "cases": 8,
+    "historical_literals": 3,
+    "original_development_variants": 4,
+    "boundaries": 1,
+    "wire_lines": 16,
+    "session_controls": 8,
+    "ordinary_turns": 8,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 8,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 3,
+    "original_development_variant": 4,
+    "boundary": 1
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0127",
+      "kind": "historical_literal",
+      "group": "wifi_connected",
+      "credit_behavior": "wifi_connected",
+      "text_sha256": "28e275d5f1ebe098f35268e790cb728f63a570ead4fcfcdec6130de11fe3b222",
+      "criterion_sha256": "7acf305d7197399337325101405eead89f3ab496c0dc9d4ad35116c1269fc7dc"
+    },
+    {
+      "index": 1,
+      "case_id": "H0433",
+      "kind": "historical_literal",
+      "group": "wifi_connected",
+      "credit_behavior": "wifi_connected",
+      "text_sha256": "933d12e5e1236324a3cfca20b1550e1444ce768131477d4eaae7c141feac218b",
+      "criterion_sha256": "7acf305d7197399337325101405eead89f3ab496c0dc9d4ad35116c1269fc7dc"
+    },
+    {
+      "index": 2,
+      "case_id": "H0221",
+      "kind": "historical_literal",
+      "group": "wifi_on",
+      "credit_behavior": "wifi_on",
+      "text_sha256": "468829fdc8e59a7a3dad05e36e8f0ad8788740c6c786438f5bf5320d28e1b365",
+      "criterion_sha256": "802236a599da9083b3c3e811635b1a358eb2eea0d6671db898798010f71fd78e"
+    },
+    {
+      "index": 3,
+      "case_id": "network1165-dev-01",
+      "kind": "original_development_variant",
+      "group": "wifi_connected",
+      "credit_behavior": "wifi_connected",
+      "text_sha256": "b0c49be933525a4137ec5c0615b8e4c07d748417d3be25389dc54d6470253aab",
+      "criterion_sha256": "7acf305d7197399337325101405eead89f3ab496c0dc9d4ad35116c1269fc7dc"
+    },
+    {
+      "index": 4,
+      "case_id": "network1165-dev-02",
+      "kind": "original_development_variant",
+      "group": "wifi_connected",
+      "credit_behavior": "wifi_connected",
+      "text_sha256": "216c3bea20554d9865762257cae98cf83419f43ca4e757e1916bfd97f681f06f",
+      "criterion_sha256": "7acf305d7197399337325101405eead89f3ab496c0dc9d4ad35116c1269fc7dc"
+    },
+    {
+      "index": 5,
+      "case_id": "network1165-dev-03",
+      "kind": "original_development_variant",
+      "group": "wifi_on",
+      "credit_behavior": "wifi_on",
+      "text_sha256": "f02f6f954dffdec1ba9c61a577226e1070d40a7ba10e2b1fe2c7b8d5b09d0e72",
+      "criterion_sha256": "802236a599da9083b3c3e811635b1a358eb2eea0d6671db898798010f71fd78e"
+    },
+    {
+      "index": 6,
+      "case_id": "network1165-dev-04",
+      "kind": "original_development_variant",
+      "group": "wifi_on",
+      "credit_behavior": "wifi_on",
+      "text_sha256": "5ac7bbe0bd033d532a80e7407789e94380e712a1fda5d822fc7f7b90254f477e",
+      "criterion_sha256": "802236a599da9083b3c3e811635b1a358eb2eea0d6671db898798010f71fd78e"
+    },
+    {
+      "index": 7,
+      "case_id": "network1165-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "f1cb362aad0b1205fecb304a7b38d99342e254284a740e0a0be6b4c1dff52807",
+      "criterion_sha256": "5afc34b54a1615905e070a472c113889e36c668f69f988938348c1c922d712d0"
+    }
+  ]
+}

@@ -1,3 +1,15 @@
+# NETWORK1165 adjudicado — 2026-09-13T06:44:18+00:00
+
+**240/742 cubiertos, 502 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA c56ab86b7ac04a5677b3e47db654f08952235ab424e25195a29af50f57e6f1fe. Primeras altas 24 h >= 114 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4ae782fc con BUILD1158.
+
+NETWORK1165 (H0127, H0433, H0221 + 4 pares + 1 límite; wifi.status de sólo lectura): 8 ejecutados, 7 aprobados, 1 fallido; +1 (H0221 «decime qué onda con el wifi»). Adjudicación 5f71d784e7436b6a0232a21054b1744ba901197ac02ae47b125b7ebffaf562f1. Red queda 4/21. H0127/H0433 aprobados con lectura verificada por tercera tanda consecutiva y sin crédito: el par inglés de «red conectada» añade siempre «The PC is offline» (hecho no observado por wifi.status y falso: online por cable). Causa a reparar antes de otra remedición (compositor/validador de wifi.status en inglés: no afirmar internet cuando sólo se observó wifi); no repetir la tanda sin ella.
+
+Resumen de sesión Fable (12–13 sep, 203 → 240): reparaciones adoptadas y medidas en notas, App (palabra completa; pregunta de recuperación; día/day), prompt, voseo (lector y shell), reloj (reconocedor y proyección de fecha), wifi (dominio). Abiertos con causa documentada: «tiempo» polisémico, cuentas atrás, memes, ruido, nombre ajeno, hechos inventados del modelo, subcadena con negación/citas, «decime si el wifi…» (ruta de aclaración temprana), network.ip.list PrivacySensitive (confirmación por diseño; decisión del dueño), «offline» inventado en inglés.
+
+Siguiente por masa (CONDICIONES): cierre de apps propias (20 abiertos, 8 llegan a app.close; efecto real sobre ventanas propias del dueño: requiere autorización explícita para cada app y contexto de ventana abierta); mientras tanto, conocimiento residual sólo con causa nueva. Reanudación: derivar desde build_network1165.py (lecturas de sólo lectura) o build_conversation1160.py (sin efectos); `root_prepare.py --expected-head <HEAD> --expected-registry-sha256 c56ab86b…`; `n_case.sh <campaña> i`. Recordatorios de sesión cada 5 h (06:13/11:13/16:13/21:13/01:13).
+
+---
+
 # NETWORK1163 adjudicado — 2026-09-13T06:38:23+00:00
 
 **239/742 cubiertos, 503 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 688c890859e837667aaea5635d15c411603ecad0222ef82da6e7469f9b14bc2c. Primeras altas 24 h >= 113 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 22b249e6 (effect_intent: dominio de wifi.status con prendido/encendido/apagado/activo/onda/on/off/working; NETWORK1161/SOURCE.json|patch) con BUILD1158.

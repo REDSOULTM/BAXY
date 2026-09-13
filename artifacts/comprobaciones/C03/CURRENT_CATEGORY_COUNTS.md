@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación NETWORK1163
+# Categorías actuales — adjudicación NETWORK1165
 
-239/742 cubiertos; 503 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 113 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140 + H0511 en NOTES1141 + 10 en NOTES1142 + 2 en KNOWLEDGE1144 + 7 en IDENTITY1146 + 2 en IDENTITY1148 + 2 en KNOWLEDGE1149 + 4 en CONVERSATION1150 + 1 en CONVERSATION1152 + 2 en CLOCK1156 + 1 en CLOCK1159 + 1 en CONVERSATION1160 + 2 en NETWORK1161), sin revalidaciones. Registro canónico SHA256: 688c890859e837667aaea5635d15c411603ecad0222ef82da6e7469f9b14bc2c.
+240/742 cubiertos; 502 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 114 primeras altas (28 Kiro + 49 retorno + H0584 en MESSAGING1140 + H0511 en NOTES1141 + 10 en NOTES1142 + 2 en KNOWLEDGE1144 + 7 en IDENTITY1146 + 2 en IDENTITY1148 + 2 en KNOWLEDGE1149 + 4 en CONVERSATION1150 + 1 en CONVERSATION1152 + 2 en CLOCK1156 + 1 en CLOCK1159 + 1 en CONVERSATION1160 + 2 en NETWORK1161 + 1 en NETWORK1165), sin revalidaciones. Registro canónico SHA256: c56ab86b7ac04a5677b3e47db654f08952235ab424e25195a29af50f57e6f1fe.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -15,7 +15,7 @@
 | Audio y volumen | 51 | 27 | 24 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 15 | 23 |
 | Interacción dentro de aplicaciones | 22 | 0 | 22 |
-| Red y Bluetooth | 21 | 3 | 18 |
+| Red y Bluetooth | 21 | 4 | 17 |
 | Cerrar aplicaciones y ventanas | 20 | 0 | 20 |
 | Pantalla, captura e interpretación visual | 19 | 0 | 19 |
 | Conocimiento, razonamiento y creatividad verbal | 37 | 22 | 15 |
