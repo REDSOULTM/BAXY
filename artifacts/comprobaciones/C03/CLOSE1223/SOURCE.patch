@@ -1,0 +1,18 @@
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index fa305dad..5483e5a4 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -6885,6 +6885,13 @@ def _prepare_turn_result(
+             # request, not a value for an earlier clarification. Reuse the
+             # existing protocol flag; elliptical fragments retain its default.
+             result["preserveObjective"] = False
++    if response_language is None and decision["mode"] != "conversation":
++        # An action or plan reply also travels with the language the reading
++        # decided: the shell confirms a reviewed effect in that language, so
++        # the final answer keeps it (CLOSE1219/007, CLOSE1221/007 answered an
++        # English close in Spanish after «confirmar»). Deterministic reading
++        # only; an undecided language stays absent.
++        response_language = _decisive_request_language(objective)
+     if response_language in {"es", "en", "mixed"}:
+         result["responseLanguage"] = response_language
+     turn_audit["final"] = {

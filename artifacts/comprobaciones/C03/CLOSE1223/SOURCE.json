@@ -1,0 +1,17 @@
+{
+  "schema": "c03-close1223-source-adoption-v1",
+  "status": "adopted_unmeasured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (turn.decide reply: responseLanguage for action/plan replies)",
+  "patch": "artifacts/comprobaciones/C03/CLOSE1223/SOURCE.patch",
+  "cause_measured": "CLOSE1221/007 («Would you close the Notepad window for me?»): con la aprobación en el idioma de la petición ya en el conductor (CLOSE1221/APP_SOURCE.json), el final siguió en español porque el conductor no conocía el idioma: la respuesta turn.decide de la mente sólo lleva responseLanguage en modo conversación; para acciones y planes el campo falta aunque la lectura ya decidió «en» (turn-audit raw_decision.response_language = en), así que LastMindResponseLanguage quedó nulo y se envió «confirmar»; la composición del final (intent status) se redactó en español.",
+  "change": "Las respuestas de acción y plan también llevan responseLanguage cuando la lectura determinista del pedido lo decide (_decisive_request_language); si la lectura no decide, el campo sigue ausente. Sin detector del modelo, sin cambio en conversación.",
+  "offline_verification": "Sin tests (orden del dueño). read_request decide «en» para la variante inglesa y «es» para las españolas; el conductor ya elige «confirm»/«confirmar» según ese campo (aceptados ambos por el analizador de confirmaciones).",
+  "no_fixed_visible_text": true,
+  "no_new_layer": true,
+  "build_required": false,
+  "tests_run": false,
+  "validation_policy": "owner_directed_no_tests",
+  "measurement": null,
+  "credits": null
+}
