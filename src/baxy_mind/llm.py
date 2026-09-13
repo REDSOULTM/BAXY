@@ -3451,7 +3451,7 @@ def _compose_situation_payload(
     seen = situation.get("observed")
     operation = str(situation.get("operation") or "").strip()
     if (
-        operation == "app.open"
+        operation in {"app.open", "browser.navigate", "browser.navigate.named", "streaming.navigate"}
         and kind == "operation"
         and polarity == "success"
         and situation.get("verified") is True
@@ -3459,6 +3459,7 @@ def _compose_situation_payload(
         and situation.get("effectUncertain") is not True
     ):
         # Opening was verified already; this is not a promise to launch later.
+        # WEB1259: a verified navigation composed as «Voy a youtube.» without it.
         payload["outcome"] = "completed"
     completed_steps: list[dict] = []
     if _reason_depth < 8:
@@ -3732,6 +3733,19 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
                 "may be paraphrased. Address the person naturally in their language."
             )
         if (
+            situation.get("operation") in {"browser.navigate", "browser.navigate.named", "streaming.navigate"}
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+        ):
+            # WEB1259: «Voy a youtube.» / «Vamos a github.» promised a navigation
+            # that had already been verified by its final URL.
+            bits.append(
+                "The page is already open in the browser: say so in the past, naming "
+                "the site the person asked for. If finalUrl is a sign-in page, say the "
+                "site asks to sign in. Never promise to go, take them or open it later. "
+                "Address the person naturally in their language."
+            )
+        if (
             situation.get("operation") in {"note.create", "task.create"}
             and situation.get("verified") is True
             and situation.get("succeeded") is True
@@ -3923,6 +3937,15 @@ def _missing_remembered_words(text: str, value: str) -> list[str]:
         for word in _remembered_content_words(value)
         if re.search(rf"(?<![^\W_]){re.escape(_reading_fold(word))}(?![^\W_])", folded) is None
     ]
+
+
+# A verified navigation reported as a promise (WEB1259: «Voy a youtube.»).
+_PROMISED_NAVIGATION = re.compile(
+    r"^\W*(?:(?:s[ií]|claro|ok|okay|dale|listo|perfecto|bueno|bien)[,.!\s]+)?"
+    r"(?:voy|vamos|ir[eé]|iremos|te\s+llevo|te\s+llevar[eé]|te\s+voy|"
+    r"i(?:'ll| will| am going to|'m going to)|let'?s\s+go|going\s+to|we(?:'ll| will))\b",
+    re.IGNORECASE,
+)
 
 
 def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
@@ -10617,6 +10640,14 @@ class LlmRuntime:
                 return payload_defect
             if intent == "status" and _starts_with_request_imperative(candidate):
                 return "imperative_echo"
+            if (
+                intent == "status"
+                and situation.get("operation") in {"browser.navigate", "browser.navigate.named", "streaming.navigate"}
+                and situation.get("verified") is True
+                and situation.get("succeeded") is True
+                and _PROMISED_NAVIGATION.match(candidate) is not None
+            ):
+                return "promised_effect"
             folded_candidate = candidate.casefold()
             vocabulary = without_observed_names(candidate, situation).casefold()
             if any(term.casefold() in vocabulary for term in forbidden_terms):
@@ -10839,6 +10870,11 @@ class LlmRuntime:
                     or "level" in _merged_observed(situation)
                 )
                 else "Include names and numbers from seen."
+            ),
+            "promised_effect": (
+                "It already happened: say you opened the site, in the past."
+                if response_language == "en"
+                else "Ya ocurrió: di que abriste el sitio, en pasado."
             ),
             "missing_remembered": (
                 ("Keep these words exactly as given, untranslated: "
