@@ -7796,6 +7796,7 @@ _COVERAGE_ACTION_HEAD = (
     r"completa|completar|complete|reabre|reabrir|reopen|actualiza|"
     r"actualizar|update|describe|describir|redimensiona|redimensionar|"
     r"resize|enfoca|enfocar|focus|presiona|presionar|press|clic|click|vacia|vaciar|"
+    r"apreta|apretale|apretalo|apretala|apretar|aprieta|pulsa|pulsale|hace(?=\s+clic)|"
     r"empty|termina|terminar|terminate|verifica|verificar|verify|"
     r"recuerdame|recuerdamelo|recordame|recordamelo|remind|"
     r"activa|activar|enciende|encender|prende|prender|conectame|deactivate|"
@@ -8752,6 +8753,9 @@ def _is_direct_request(text: str) -> bool:
         r"selecciona|select|copia|copiame|copy|edita|edit|convierte|convert|"
         r"elige|elegir|choose|transforma|arrastra|drag|make|"
         r"navega|navegar|navigate|ve|go|clic|click|"
+        # UI1273: «apretá el 5», «pulsá el 7», «presioná el nueve», «hacé clic en…».
+        r"apreta|apretale|apretalo|apretala|apretar|aprieta|pulsa|pulsale|pulsalo|pulsala|"
+        r"presiona|presionale|presionalo|presionala|press|hace(?=\s+clic)|"
         r"recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|play|tune|"
         r"reanuda|reanudar|resume|pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
         r"consulta|consultar|comprueba|comprobar|checkea|chequea|averigua|averiguar|"
@@ -8781,6 +8785,8 @@ def _is_direct_request(text: str) -> bool:
         rf"(?:(?:primero|first)\s*[,;:]?[¿?¡!\s]+)?"
         # «me abrís la calculadora»: the dative clitic precedes a voseo opening.
         r"(?:me\s+(?=(?:abris|abres|abre|abri|abrime|avri)\b))?"
+        # «en la calculadora apretá el 5»: the app context frames the request (UI1273).
+        rf"(?:{_VISIBLE_CLICK_APP_CONTEXT}\s+)?"
         rf"{request_head}\b",
     )
 
@@ -13484,8 +13490,16 @@ def _dependent_web_navigation_intent(
 
 
 _VISIBLE_CLICK_POINTING = (
-    r"(?:haz\s+clic(?:\s+en)?|click(?:ea|ear)?(?:\s+(?:on|it))?"
-    r"|pulsa(?:lo|la)?|presiona(?:lo|la)?|press(?:\s+it)?)"
+    r"(?:haz\s+clic(?:\s+en)?|hace\s+clic(?:k)?(?:\s+en)?|clic(?:k)?\s+en"
+    r"|click(?:ea|ear)?(?:\s+(?:on|it))?"
+    r"|apreta(?:le|lo|la)?(?:\s+en)?|apretar|aprieta(?:\s+en)?"
+    r"|pulsa(?:lo|la|le)?|presiona(?:lo|la|le)?|press(?:\s+it)?)"
+)
+# «en la calculadora apretá el 5» / «apretá el 5 en la calculadora»: the app
+# names where the control lives; the label is the control alone (UI1273).
+_VISIBLE_CLICK_APP_CONTEXT = (
+    r"(?:en|in|on)\s+(?:la|el|the)\s+(?:calculadora|calc|calculator|app|"
+    r"aplicacion|application|ventana|window|pantalla|screen)"
 )
 _VISIBLE_CLICK_NAVIGATE = (
     r"(?:ve\s+a|vete\s+a|go\s+to|navega\s+(?:a|hacia)|navigate\s+to)"
@@ -13513,6 +13527,10 @@ def _visible_click_label(
     head = _VISIBLE_CLICK_POINTING
     if allow_navigate:
         head = rf"(?:{head}|{_VISIBLE_CLICK_NAVIGATE})"
+    text = re.sub(
+        rf"^([¿?¡!\s]*){_VISIBLE_CLICK_APP_CONTEXT}\s+", r"\1", _fold(text), count=1,
+    )
+    text = re.sub(rf"\s+{_VISIBLE_CLICK_APP_CONTEXT}(?=[\s?!.]*$)", "", text, count=1)
     request = _match(
         text,
         (
@@ -13537,6 +13555,15 @@ def _visible_click_label(
         not label
         or len(label.split()) > 6
         or _VISIBLE_CLICK_WEB_DESTINATION.search(label) is not None
+        # «pulsá la tecla enter» / «presioná enter» are key presses, not
+        # visible controls (UI1273).
+        or re.search(r"\b(?:tecla|teclas|key|keys|teclado|keyboard)\b", label, re.IGNORECASE) is not None
+        or re.fullmatch(
+            r"(?:enter|intro|return|escape|esc|tab|espacio|space|supr|delete|backspace|retroceso|"
+            r"ctrl|control|alt|shift|win|windows|inicio|home|fin|end)",
+            label,
+            re.IGNORECASE,
+        ) is not None
     ):
         return None
     return label[:80]

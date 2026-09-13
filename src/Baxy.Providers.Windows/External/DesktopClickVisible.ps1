@@ -116,6 +116,13 @@ try {
   elseif($label -match '^(?i:validate|valider)$'){$aliases=@('Validate','Valider')}
   elseif($label -match '^(?i:biblioteca|library)$'){$aliases=@('Biblioteca','Library')}
   elseif($label -match '^(?i:configuracion|settings)$'){$aliases=@('Configuracion','Settings')}
+  else {
+    # A digit is announced by its name in UI Automation («Cinco», «Five»); the
+    # person says either (UI1273: «apretá el 5», «hacé clic en el botón nueve»).
+    $digits=@(@('0','Cero','Zero'),@('1','Uno','One'),@('2','Dos','Two'),@('3','Tres','Three'),@('4','Cuatro','Four'),
+              @('5','Cinco','Five'),@('6','Seis','Six'),@('7','Siete','Seven'),@('8','Ocho','Eight'),@('9','Nueve','Nine'))
+    foreach($d in $digits){ foreach($form in $d){ if([string]::Equals($form,$label,[StringComparison]::OrdinalIgnoreCase)){ $aliases=$d } } }
+  }
   $hwnd=[BaxyVisibleClickNative]::GetForegroundWindow()
   if($hwnd -eq [IntPtr]::Zero){Emit $false $false 'active_window_not_found' '' '' $false $false 'uia';exit 2}
   $hwnd=[BaxyVisibleClickNative]::LargestVisible($hwnd)

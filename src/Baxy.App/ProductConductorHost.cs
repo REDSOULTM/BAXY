@@ -350,7 +350,8 @@ internal static class ProductConductorHost
         if (observed is null || initial.TimedOut
             || initial.Terminal != ProductTurnTerminal.PublishedFinal
             || initial.Diagnostic is not null
-            || observed.Prepared.OperationName is not ("browser.navigate" or "browser.navigate.named" or "app.close"))
+            || observed.Prepared.OperationName is not (
+                "browser.navigate" or "browser.navigate.named" or "app.close" or "input.visible.click"))
         {
             return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
         }

@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -109,6 +110,19 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
     {
         string encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(label));
         var effectBoundary = new ExternalEffectBoundary();
+        // The descriptor admits «surface changed» as post-read. A Calculator
+        // digit stays enabled and unselected after Invoke, so the surface is
+        // the only evidence (UI1273); it is compared before/after the script.
+        VisibleControlSurface.CapturedWindow? before = null;
+        try
+        {
+            before = await VisibleControlSurface.CaptureForegroundAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+        catch (Exception exception) when (exception is IOException or InvalidOperationException)
+        {
+            before = null;
+        }
         try
         {
             effectBoundary.Cross(cancellationToken);
@@ -121,7 +135,36 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
             if (line is null)
                 return effectBoundary.Failure(operation, "visible_click_no_receipt");
             using JsonDocument document = JsonDocument.Parse(line);
-            return ReceiptFromScript(operation, document.RootElement, effectBoundary);
+            ExternalCapabilityReceipt receipt = ReceiptFromScript(
+                operation, document.RootElement, effectBoundary);
+            if (receipt.ErrorCode == "visible_button_postread_unchanged" && before is { } captured)
+            {
+                VisibleControlSurface.CapturedWindow? after = null;
+                try
+                {
+                    after = await VisibleControlSurface.CaptureForegroundAsync(cancellationToken)
+                        .ConfigureAwait(false);
+                }
+                catch (Exception exception) when (exception is IOException or InvalidOperationException)
+                {
+                    after = null;
+                }
+                bool changed = after is { } later
+                    && later.Hwnd == captured.Hwnd
+                    && !string.Equals(later.Sha256, captured.Sha256, StringComparison.Ordinal);
+                VisibleControlSurface.Delete(after?.Path);
+                if (changed)
+                {
+                    JsonObject node = JsonNode.Parse(document.RootElement.GetRawText())!.AsObject();
+                    node["ok"] = true;
+                    node["error"] = "";
+                    node["surfaceChanged"] = true;
+                    node["cascadeStage"] = "uia_surface";
+                    using JsonDocument verified = JsonDocument.Parse(node.ToJsonString());
+                    return ExternalJson.Success(operation, verified.RootElement.Clone(), true);
+                }
+            }
+            return receipt;
         }
         catch (OperationCanceledException) when (
             cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
@@ -131,6 +174,10 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
         catch (Exception exception) when (exception is IOException or JsonException or TimeoutException)
         {
             return effectBoundary.Failure(operation, "visible_click_receipt_invalid");
+        }
+        finally
+        {
+            VisibleControlSurface.Delete(before?.Path);
         }
     }
 
