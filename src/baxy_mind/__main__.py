@@ -5148,6 +5148,15 @@ def _ground_explicit_arguments(
         # The shared positive request grammar owns the known-folder enum;
         # the filename remains literal. Keep the authenticated schema boundary.
         return explicit if validate_json_schema_instance(explicit, schema) else None
+    if (
+        operation == "filesystem.known.trash.named"
+        and effect_intent._file_trash_request(evidence) is not None
+    ):
+        # The deletion reader owns the known-folder enum, including all_known
+        # when no folder is named («borrá el archivo viejo.txt»: FILES1241/002
+        # failed as ambiguous because «all_known» has no literal in the text);
+        # the file name remains the person's literal.
+        return explicit if validate_json_schema_instance(explicit, schema) else None
     if operation == "window.resolve" and not validate_json_schema_instance(
         explicit, schema
     ):
