@@ -599,3 +599,5 @@ ninguna; no se ha fingido reproducción ni se ha creado un proveedor nuevo.
 
 Este tramo de recuperación no necesitó GPU. Última tanda medida1036:
 VRAM3497.56MiB frente al techo4096; RAM2476.55MiB, por separado.
+
+Actualización BUILD1125: compilación y cierre de servidores EXIT0; App0advertencias0errores, sin tests. Contrato1131 integrado, fuentes mainb8b840/efe7a9ab/llmaaa434/App83bf86+1bbfac. Prepararinstrumento1131 con18bins actuales, no usar1079 tras este cambio App. TIME1130tarea propia cancelada y ausente; no más temporales hasta1133.
