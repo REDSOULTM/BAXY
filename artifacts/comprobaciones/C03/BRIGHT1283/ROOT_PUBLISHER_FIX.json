@@ -1,0 +1,9 @@
+{
+  "schema": "c03-bright1283-publisher-fix-v1",
+  "utc": "2026-09-14T00:15:04.641092+00:00",
+  "file": "root_publish_from_adjudication.py",
+  "before_sha256": "3a367fc6d730b3fb24553666431583e7c53227f06d32a2d04aef3ee08bee5299",
+  "after_sha256": "8d94ab7f8ce56878147c9c6054e1aa52a8c21b373bfee67b4541f7346d40c495",
+  "change": "kind_counts expectation 'original_development_variant':4 -> 6 (derivation bug: derive_bright1283.py rewrote only the spaced token; the panel was sealed with 6 variants and the adjudicator accepted it)",
+  "scope": "publisher check only; no panel, seal, adjudication or registry change"
+}

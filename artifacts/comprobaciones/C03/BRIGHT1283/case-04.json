@@ -1,0 +1,24 @@
+{
+  "index": 4,
+  "case_id": "H0446",
+  "terminal_kind": "published_final",
+  "final_sha256": "b861a666b567e7bca0c7dab87652eaa7140ed900a1ee9e0da8056d5a3fe24bea",
+  "clients_absent_before": true,
+  "verdict": "failed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 17.03100000001723,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1557.98828125,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1283-instrument-v1\\results\\case-04\\EXIT.json": "7f737775baaa88ad8bca228aff5941aab0d68808e3abb2299ffe07efde75d44d",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1283-instrument-v1\\results\\case-04\\RESOURCES.json": "35ee47a04aca486eccb720cfb240c3b2d17e0510bc301a1717c0e3550d505325",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1283-instrument-v1\\private\\run-04\\case-observations.json": "e5ef5c813f8ce725c87e4ef097b5031971df54786ca3f8792d1e76e6093dce46"
+  }
+}
