@@ -3952,6 +3952,45 @@ _PROMISED_NAVIGATION = re.compile(
 )
 
 
+def _memory_value_forms(value: object) -> list[str]:
+    """Decimal spellings a draft may use for an observed GB value (16.5395 → 16.54, 16,54, 16.5, 16,5, 17)."""
+
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return []
+    forms = set()
+    for digits in (2, 1, 0):
+        rounded = f"{number:.{digits}f}"
+        forms.add(rounded)
+        forms.add(rounded.replace(".", ","))
+    return sorted(forms, key=len, reverse=True)
+
+
+def _mislabelled_installed_memory(text: str, memory: dict) -> bool:
+    """A total or usable figure called «instalada»/«installed» when the observed installed value differs."""
+
+    total = memory.get("total") or {}
+    installed = memory.get("installed_capacity") or {}
+    if not isinstance(total, dict) or not isinstance(installed, dict):
+        return False
+    total_value, installed_value = total.get("value"), installed.get("value")
+    if not isinstance(total_value, (int, float)) or not isinstance(installed_value, (int, float)):
+        return False
+    if abs(float(total_value) - float(installed_value)) < 0.05:
+        return False
+    folded = text.casefold()
+    installed_forms = set(_memory_value_forms(installed_value))
+    for form in _memory_value_forms(total_value):
+        if form in installed_forms:
+            continue
+        for match in re.finditer(re.escape(form), folded):
+            window = folded[match.end():match.end() + 40]
+            if re.search(r"\b(?:instalad[oa]s?|installed)\b", window):
+                return True
+    return False
+
+
 def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     """El texto público conserva los hechos que el payload le dio.
 
@@ -3988,6 +4027,15 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         # predicate that gates acceptance (blocked → payload defect), not
         # only the audit label in rejection_reason.
         return "action_attributed_to_user"
+    if (
+        payload.get("operation") == "system.status"
+        and isinstance(seen, dict)
+        and isinstance(seen.get("memory"), dict)
+        and _mislabelled_installed_memory(text, seen["memory"])
+    ):
+        # SYSTEM1183/1303 H0508: «16,54 GB de RAM instalados» labels the observed
+        # total (16,54 GB) as installed when installed_capacity is 17,18 GB.
+        return "mislabelled_installed"
     if (
         payload.get("operation") == "wifi.status"
         and isinstance(seen, dict)
@@ -11175,6 +11223,15 @@ class LlmRuntime:
                 "You did it, not the person: say what you did, in the first person."
                 if response_language == "en"
                 else "Lo hiciste tú, no la persona: di lo que hiciste, en primera persona."
+            ),
+            "mislabelled_installed": (
+                "The figure you called installed is the total; the installed "
+                "capacity is a different observed value. Say total, or use the "
+                "installed_capacity figure for installed."
+                if response_language == "en"
+                else "La cifra que llamaste instalada es el total; la capacidad "
+                "instalada es otro valor observado. Di total, o usa la cifra de "
+                "installed_capacity para instalada."
             ),
             "missing_scan_limit": (
                 "Only the wifi connection state was read; you cannot scan or list "
