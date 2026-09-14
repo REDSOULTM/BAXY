@@ -3175,6 +3175,14 @@ _CAUSE_FACT = {
     "out_of_catalog": "outside what I do",
     "model_invalid": "unusable answer",
     "app_not_found": "not found",
+    # CLOSE1369 «cierra steam» with Steam not running: «No pude cerrar Steam
+    # porque no encontré la ventana» framed a state as an inability, and the
+    # English draft leaked «the operation to resolve it failed». The fact is
+    # the state: no window of that application is open, nothing was closed.
+    "window_not_found": (
+        "that application has no open window right now, so it is not open; "
+        "nothing was closed"
+    ),
     "mission_failed": "mission unfinished",
     "acting": "still working",
     "ambiguous_request": "unclear request",
