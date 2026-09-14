@@ -41,6 +41,12 @@ public sealed class WindowsScreenshotProvider : IScreenshotProvider
         return ValueTask.FromResult(CaptureAndStore(_platform.CaptureActiveWindow()));
     }
 
+    public ValueTask<CaptureResult> CaptureWindowAsync(nint window, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return ValueTask.FromResult(CaptureAndStore(_platform.CaptureWindow(window)));
+    }
+
     private CaptureResult CaptureAndStore(ScreenshotFrame frame)
     {
         if (frame.Width is < 1 or > 32_768 || frame.Height is < 1 or > 32_768
@@ -121,6 +127,49 @@ internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
         () => _captureRegion(_readDesktopBounds()));
 
     public ScreenshotFrame CaptureActiveWindow() => CaptureInPhysicalPixels(CaptureActiveWindowCore);
+
+    public ScreenshotFrame CaptureWindow(nint window) =>
+        CaptureInPhysicalPixels(() => CaptureWindowCore(window));
+
+    private ScreenshotFrame CaptureWindowCore(nint window)
+    {
+        // UI1395: a freshly launched UWP Calculator is fronted by its CoreWindow
+        // (calculatorapp.exe) and, once a control is invoked, by its
+        // ApplicationFrameHost frame. The click adapter names the root window
+        // it compares, so both captures cover the same bounds.
+        DateTimeOffset started = _time.GetUtcNow();
+        if (window == 0) throw new IOException("Window unavailable.");
+        if (GetWindowThreadProcessId(window, out uint processId) == 0 || processId == 0)
+            throw new IOException("Window process unavailable.");
+        using SafeProcessHandle process = OpenProcess(0x1000, false, processId);
+        if (process.IsInvalid || !GetProcessTimes(process, out long created, out _, out _, out _)
+            || created <= 0)
+            throw new IOException("Window process creation identity unavailable.");
+        Rectangle rectangle;
+        if (DwmGetWindowAttribute(window, 9, out rectangle,
+                Marshal.SizeOf<Rectangle>()) != 0
+            && !GetWindowRect(window, out rectangle))
+            throw new IOException("Window bounds unavailable.");
+        var bounds = new CaptureBounds(rectangle.Left, rectangle.Top,
+            checked(rectangle.Right - rectangle.Left), checked(rectangle.Bottom - rectangle.Top));
+        CaptureBounds screen = _readDesktopBounds();
+        int left = Math.Max(bounds.Left, screen.Left);
+        int top = Math.Max(bounds.Top, screen.Top);
+        int right = Math.Min(checked(bounds.Left + bounds.Width), checked(screen.Left + screen.Width));
+        int bottom = Math.Min(checked(bounds.Top + bounds.Height), checked(screen.Top + screen.Height));
+        if (right <= left || bottom <= top)
+            throw new IOException("Window is outside the visible desktop.");
+        var crop = new CaptureBounds(left, top, right - left, bottom - top);
+        ScreenshotFrame frame = _captureRegion(crop);
+        if (frame.Width != crop.Width || frame.Height != crop.Height)
+            throw new IOException("Window capture dimensions do not match its bounds.");
+        return frame with
+        {
+            ActiveWindow = new ActiveWindowCaptureProvenance(
+                (long)window, processId, DateTimeOffset.FromFileTime(created),
+                bounds, crop, started, _time.GetUtcNow()),
+        };
+    }
 
     private ScreenshotFrame CaptureInPhysicalPixels(Func<ScreenshotFrame> capture)
     {

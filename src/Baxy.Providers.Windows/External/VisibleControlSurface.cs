@@ -12,15 +12,28 @@ internal static partial class VisibleControlSurface
         nint hwnd = GetForegroundWindow();
         if (hwnd == 0)
             return null;
-        _ = GetWindowThreadProcessId(hwnd, out uint processId);
-        nint largest = LargestTopLevelWindow(unchecked((int)processId));
-        if (largest != 0)
-            hwnd = largest;
+        // UI1395: a freshly launched UWP app is fronted by its CoreWindow
+        // (calculatorapp.exe, no top-level window of its own) and, once a
+        // control is invoked, by its ApplicationFrameHost frame. The frame is
+        // the root ancestor of both moments, so that one window is compared;
+        // a classic top-level window keeps the largest-window rule.
+        nint root = GetAncestor(hwnd, 2);
+        if (root != 0 && root != hwnd)
+        {
+            hwnd = root;
+        }
+        else
+        {
+            _ = GetWindowThreadProcessId(hwnd, out uint processId);
+            nint largest = LargestTopLevelWindow(unchecked((int)processId));
+            if (largest != 0)
+                hwnd = largest;
+        }
         if (!TryBounds(hwnd, out int left, out int top, out _, out _))
             return null;
         string directory = Path.Combine(Path.GetTempPath(), "baxy-visible-control");
         var provider = new WindowsScreenshotProvider(directory);
-        CaptureResult capture = await provider.CaptureActiveWindowAsync(cancellationToken)
+        CaptureResult capture = await provider.CaptureWindowAsync(hwnd, cancellationToken)
             .ConfigureAwait(false);
         string path = Path.Combine(directory, capture.CaptureId + ".bmp");
         if (!File.Exists(path))
@@ -110,6 +123,9 @@ internal static partial class VisibleControlSurface
 
     [LibraryImport("user32.dll")]
     private static partial nint GetForegroundWindow();
+
+    [LibraryImport("user32.dll")]
+    private static partial nint GetAncestor(nint hwnd, uint flags);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]

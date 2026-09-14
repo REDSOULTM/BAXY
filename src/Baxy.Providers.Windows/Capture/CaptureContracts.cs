@@ -41,4 +41,9 @@ internal interface IScreenshotPlatform
 {
     ScreenshotFrame CaptureVirtualScreen();
     ScreenshotFrame CaptureActiveWindow();
+
+    // UI1395: the visible-click adapter compares one named window's surface
+    // before and after the click; the foreground can change hands meanwhile.
+    ScreenshotFrame CaptureWindow(nint window) =>
+        throw new NotSupportedException("Window capture is not available on this platform.");
 }
