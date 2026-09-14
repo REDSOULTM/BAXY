@@ -1,3 +1,25 @@
+## AUDIO1375 — estado vigente 2026-09-14T08:04:21.991475+00:00
+
+Parcial: 3 aprobados, 7 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 417/742 | 325 | 0 | >=291 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 291 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1375 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: AUDIO1375: 10 ejecutados, 3 aprobados, 7 fallidos, 0 créditos (índices []); Audio y volumen 41/51. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/AUDIO1375/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 177.36 s acumulados; pico GPU 3497.56 MiB; pico RAM 1659.15 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 10; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque AUDIO1375 precedente. -->
+
 ## UI1377 — estado vigente 2026-09-14T07:55:25.192099+00:00
 
 Parcial: 8 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.

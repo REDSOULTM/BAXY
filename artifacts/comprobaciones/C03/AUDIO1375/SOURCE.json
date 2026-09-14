@@ -1,0 +1,15 @@
+{
+  "schema": "c03-audio1375-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_unresolved_input_kind: clase deictic_level) y src/baxy_mind/llm.py (clarify_unresolved_input: pregunta qué poner a ese nivel)",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1375/SOURCE.patch",
+  "commits": [
+    "79cc32873a18341a6628198a9781b95978dde991"
+  ],
+  "build": "BUILD1375 (C03-repairs1375-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "Audio y volumen 41/51: «Ponlo a 100 ahora» y «devuelvelo a 100» piden un nivel para «lo» sin que nada anterior lo nombre; no llegaban a ningún lector y quedaban para el modelo, que adivinaba o negaba.",
+  "change": "Clase de entrada deictic_level (verbo de poner/dejar/devolver/subir/bajar + «lo/la» + nivel numérico sin nada nombrado) y su aclaración: una sola pregunta que pregunte qué quiere poner a ese nivel sin dar por hecho cuál. Sin efecto ni respuestas fijas.",
+  "measurement": "AUDIO1375: 10/10 ejecutados, 3 aprobados, 7 fallidos, 2 detenciones por violación en límites; 0 créditos. «Ponlo a 100 ahora» y «devuelvelo a 100» llegaron a la nueva aclaración con cero operaciones, pero la pregunta pidió el nivel ya dicho («¿A qué nivel quieres ponerlo a 100?») o dio por hecho el ajuste («¿A qué nivel quieres poner el volumen?»); «¿A qué ajuste quieres subirlo a 80?» y «What would you like to set to 100?» aprobaron. Dos límites con sustantivos de volumen («¿Qué es el volumen maestro?», «¿Cómo se sube el volumen en Windows?») hicieron que el producto leyera audio.status fuera de la lista permitida del límite y el runner los detuvo. Siguiente: la pregunta del nivel deíctico debe preguntar qué y nunca el nivel (AUDIO1379).",
+  "credits": 0
+}

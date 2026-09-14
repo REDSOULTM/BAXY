@@ -1,0 +1,68 @@
+commit 79cc32873a18341a6628198a9781b95978dde991
+
+C03: a level for «lo» with nothing named before it asks what to set (AUDIO1375)
+
+«Ponlo a 100 ahora» and «devuelvelo a 100» name a level for something never mentioned; no reader took them and the model guessed or declined.
+
+__main__._unresolved_input_kind: a put/leave/return/raise/lower verb with the «lo/la» clitic (or «set it», «put it») and a numeric level, with nothing else in the sentence, is the deictic_level input class.
+llm.clarify_unresolved_input: for that class the question asks what the person wants set to that level (volume, brightness…) without assuming which, without claiming a failure or misunderstanding.
+
+No .NET change. Offline probe only; tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 31275e3f..dbb482ae 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -2945,6 +2945,21 @@ def _unresolved_input_kind(objective: str) -> str | None:
+     folded = effect_intent._fold(objective).strip()
+     if not folded:
+         return None
++    if (
++        re.fullmatch(
++            # AUDIO1375 H0439 «Ponlo a 100 ahora», H0713 «devuelvelo a 100»: a
++            # level for «lo» with nothing named before it; the only honest
++            # answer asks what to set (volume, brightness…).
++            r"[\s¡!¿?]*(?:pon[eé]?lo|ponla|pon[eé]?melo|pon[eé]?mela|dejalo|dejala|dejamelo|"
++            r"devolvelo|devuelvelo|devolvela|devuelvela|subilo|subila|subimelo|bajalo|bajala|"
++            r"bajamelo|llevalo|llevala|set\s+it|put\s+it|turn\s+it|leave\s+it|bring\s+it)\s+"
++            r"(?:a|al|en|to|at|on|back\s+to)\s+(?:el\s+|the\s+)?\d{1,3}\s*(?:%|por\s+ciento|percent)?"
++            r"(?:\s+(?:ahora|ya|now|de\s+nuevo|otra\s+vez|again|please|por\s+favor|porfa))*[\s.!?]*",
++            folded,
++        )
++        is not None
++    ):
++        return "deictic_level"
+     if (
+         re.fullmatch(
+             r"[\s¡!¿?.,]*(?:no|nop|nope|nah|nunca|jamas)"
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 343e0e31..5b138d68 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -9525,11 +9525,22 @@ class LlmRuntime:
+         a meaning: the question names what arrived and asks what to do.
+         """
+ 
+-        if kind not in {"noise", "bare_negation", "dangling_comparison"}:
++        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level"}:
+             raise ValueError("clase de entrada sin pedido inválida")
+         current = str(text).strip()[:2_048]
+         situation = (
+             (
++                # AUDIO1375 H0439 «Ponlo a 100 ahora»: a level for «lo» with
++                # nothing named before it; ask what to set, never guess it.
++                "Eres BAXY. El usuario pidió poner «lo» a un nivel (un número) sin "
++                "decir qué: no hay ningún volumen, brillo ni otro ajuste nombrado "
++                "antes. Formula una sola pregunta breve, en el idioma del usuario, "
++                "que pregunte qué quiere poner a ese nivel (por ejemplo el volumen o "
++                "el brillo) sin dar por hecho cuál. No digas que no entiendes ni que "
++                "algo falló y no ofrezcas ayuda genérica."
++            )
++            if kind == "deictic_level"
++            else (
+                 # IDENTITY1323 H0296 «Tú eres como eso»: the referent was never
+                 # named and nothing precedes it; asking is the only honest move.
+                 "Eres BAXY. El usuario te comparó con algo que no nombró («eso», "

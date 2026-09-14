@@ -1,3 +1,11 @@
+# AUDIO1375 adjudicado — 2026-09-14T08:04:21.991475+00:00
+
+**417/742 cubiertos, 325 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA bf5dbaaf64e8ac6476c00aaf79c997951556dc5d84006380cb18c048684d0580. Primeras altas 24 h >= 291 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 79cc3287 con BUILD1375 (mente: clase deictic_level y su aclaración; AUDIO1375/SOURCE.json|SOURCE.patch; .NET sin cambios). Turnos ordinarios con sólo memory.status permitido; volumen y brillo verificados intactos por la raíz.
+
+AUDIO1375 («Audio y volumen», H0439 y H0713 nivel para «lo» sin referente, ordinarios): 10/10 ejecutados, 3 aprobados, 7 fallidos, 2 detenciones por violación en límites, 0 créditos. Adjudicación 6d033c1236ded9a1cec15c0ba19fc3ac69a12eb55e397331b134ea9494b71ac2. «Ponlo a 100 ahora» y «devuelvelo a 100» llegaron a la nueva aclaración con cero operaciones, pero la pregunta pidió el nivel ya dicho («¿A qué nivel quieres ponerlo a 100?») o dio por hecho el ajuste («¿A qué nivel quieres poner el volumen?»); «¿A qué ajuste quieres subirlo a 80?» y «What would you like to set to 100?» aprobaron. Dos límites con sustantivos de volumen («¿Qué es el volumen maestro?», «¿Cómo se sube el volumen en Windows?») hicieron que el producto leyera audio.status fuera de la lista permitida del límite y el runner los detuvo. Siguiente: la pregunta del nivel deíctico debe preguntar qué y nunca el nivel (AUDIO1379).
+
+---
+
 # UI1377 adjudicado — 2026-09-14T07:55:25.192099+00:00
 
 **417/742 cubiertos, 325 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 525d9e22535ee7ae7c1252f0972c1e7b54d1d942c3cf86a14573d06e878dba29. Primeras altas 24 h >= 291 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD ff0bfcb9 con BUILD1377 (mente: pista de reintento del clic orientada; UI1377/SOURCE.json|SOURCE.patch; .NET sin cambios). La raíz abre su propia Calculadora, aprueba sólo la etiqueta esperada sobre su ventana en primer plano (approve_click.py) y la cierra después de cada caso.
