@@ -1,0 +1,15 @@
+{
+  "schema": "c03-knowledge1353-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (forma free_content: cue, prompt, anclas, contrato, presupuesto)",
+  "patch": "artifacts/comprobaciones/C03/KNOWLEDGE1353/SOURCE.patch",
+  "commits": [
+    "6d75afa4a3e623623fef70bd1df84defb5469581"
+  ],
+  "build": "BUILD1353 (C03-repairs1353-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "KNOWLEDGE998/1144/1149/1179: «contame un chiste» preguntó el idioma o el tipo; «estoy aburrido» preguntó en vez de proponer; las preguntas de quién es (1025) inventaron fechas y atribuciones.",
+  "change": "Compositor: forma de presentación free_content (entrega el contenido de inmediato; contrato sin pregunta ni menú de tipo, tema o idioma). Las preguntas de quién es siguen por el camino de conocimiento y se adjudican por exactitud esencial. Sin respuestas fijas.",
+  "measurement": "KNOWLEDGE1353: 15 ejecutados, 6 aprobados, 9 fallidos, 0 violaciones; H0182 acreditado con dos pares; 1 créditos. Medición: la forma free_content produce chistes reales pero su contrato veta el signo de pregunta y el salto de línea del chiste y el turno acaba preguntando el tipo; dos curiosidades y las respuestas sobre Daredevil, Doom Eternal y Marvel vs. Capcom inventan hechos (creador, estudio, año, protagonista): conocimiento del modelo, sin fuente de hechos en el producto. Reparación para KNOWLEDGE1355: el contrato admite una pregunta dentro del contenido y un salto de línea; las de quién es con hechos inventados quedan como condición del modelo.",
+  "credits": 1
+}

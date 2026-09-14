@@ -1,3 +1,11 @@
+# KNOWLEDGE1353 adjudicado — 2026-09-14T05:41:01.761584+00:00
+
+**404/742 cubiertos, 338 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 3ca345e6b32565ad21556d6d08b4f839f679fe64589ae5427f44fdd459815552. Primeras altas 24 h >= 278 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6d75afa4 con BUILD1353 (mente: forma free_content; KNOWLEDGE1353/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+KNOWLEDGE1353 («Conocimiento, razonamiento y creatividad verbal», contenido libre y preguntas de quién es): 15 ejecutados, 6 aprobados, 9 fallidos, 0 violaciones; H0182 acreditado con dos pares, 1 créditos. Adjudicación 225e8b899e4b097c6e0aaf45d23a8da5926bb55676f8333590486ff976cb071d. Medición: la forma free_content produce chistes reales pero su contrato veta el signo de pregunta y el salto de línea del chiste y el turno acaba preguntando el tipo; dos curiosidades y las respuestas sobre Daredevil, Doom Eternal y Marvel vs. Capcom inventan hechos (creador, estudio, año, protagonista): conocimiento del modelo, sin fuente de hechos en el producto. Reparación para KNOWLEDGE1355: el contrato admite una pregunta dentro del contenido y un salto de línea; las de quién es con hechos inventados quedan como condición del modelo.
+
+---
+
 # AUDIO1351 adjudicado — 2026-09-14T05:28:51.135049+00:00
 
 **403/742 cubiertos, 339 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA c553a3ab33c576685b69ea6e4b52db0388ab265c06e07e88774c46fd29268f7c. Primeras altas 24 h >= 277 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a82301b7 con BUILD1351 (mente: «poné» como eco imperativo; AUDIO1351/SOURCE.json|SOURCE.patch; .NET sin cambios).
