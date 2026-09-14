@@ -1376,6 +1376,15 @@
       "reason": null
     },
     {
+      "operation": "notification.list",
+      "verifierContractId": "notification.list.windows.task.postread.v1",
+      "risk": "read_only",
+      "observation": "notification.list.windows.task.postread.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Lee las tareas programadas BAXY-* del Programador de tareas de Windows; sin efecto."
+    },
+    {
       "operation": "notification.list.due",
       "verifierContractId": "notification.list.due.clock.postread.v1",
       "risk": "read_only",

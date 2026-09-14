@@ -1,5 +1,6 @@
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -33,7 +34,7 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
 
     public bool CanHandle(string operation) => operation is
         "notification.cancel.at" or "notification.cancel.latest"
-        or "notification.diagnose" or "notification.schedule";
+        or "notification.diagnose" or "notification.list" or "notification.schedule";
 
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
@@ -52,6 +53,20 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
                 or UnauthorizedAccessException or TimeoutException)
             {
                 return ExternalJson.Failure(operation, "notification_diagnostics_failed");
+            }
+        }
+        if (operation == "notification.list")
+        {
+            if (!File.Exists(_schedulerScript))
+                return ExternalJson.Failure(operation, "notification_scheduler_script_missing");
+            try
+            {
+                return await ListAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception exception) when (exception is IOException or JsonException
+                or UnauthorizedAccessException or TimeoutException)
+            {
+                return ExternalJson.Failure(operation, "notification_list_failed");
             }
         }
         string kind;
@@ -258,6 +273,102 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, false);
+    }
+
+    private async ValueTask<ExternalCapabilityReceipt> ListAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        // AGENDA1435 «listá los timers»: the scheduled BAXY tasks (alarms and
+        // reminders) with the title kept in each ring script and the next run.
+        int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 20), 1, 50);
+        ExternalProcessResult process = await _runner.RunAsync(
+            "powershell.exe",
+            ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
+                _schedulerScript, "-Mode", "diagnose", "-Kind", "reminder",
+                "-AlarmRoot", _alarmRoot],
+            TimeSpan.FromSeconds(30), cancellationToken).ConfigureAwait(false);
+        string? line = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+            .LastOrDefault();
+        if (process.ExitCode != 0 || line is null)
+            return ExternalJson.Failure(operation, "notification_list_process_failed");
+        using JsonDocument document = JsonDocument.Parse(line);
+        JsonElement source = document.RootElement;
+        if (!source.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True)
+            return ExternalJson.Failure(operation, "notification_list_postread_failed");
+        List<(string Kind, string? Title, string? NextRunUtc, string State)> items = [];
+        int staleTasks = 0;
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        if (source.TryGetProperty("tasks", out JsonElement tasks) && tasks.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement task in tasks.EnumerateArray())
+            {
+                string taskName = task.TryGetProperty("taskName", out JsonElement nameElement)
+                    && nameElement.ValueKind == JsonValueKind.String ? nameElement.GetString() ?? "" : "";
+                Match identity = Regex.Match(taskName, "^BAXY-(Alarm|Reminder)-[0-9a-f]{32}$",
+                    RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100));
+                if (!identity.Success) continue;
+                string? nextRun = task.TryGetProperty("nextRunUtc", out JsonElement nextElement)
+                    && nextElement.ValueKind == JsonValueKind.String ? nextElement.GetString() : null;
+                string state = task.TryGetProperty("state", out JsonElement stateElement)
+                    && stateElement.ValueKind == JsonValueKind.String ? stateElement.GetString() ?? "" : "";
+                // A one-shot task that already fired keeps its registration without a
+                // next run: it is not scheduled any more and is not listed.
+                if (nextRun is null
+                    || !DateTimeOffset.TryParse(nextRun, System.Globalization.CultureInfo.InvariantCulture,
+                        System.Globalization.DateTimeStyles.RoundtripKind, out DateTimeOffset nextRunAt)
+                    || nextRunAt <= now)
+                {
+                    staleTasks++;
+                    continue;
+                }
+                items.Add((
+                    identity.Groups[1].Value == "Alarm" ? "alarm" : "reminder",
+                    ReadRingTitle(Path.Combine(_alarmRoot, taskName + ".ps1")),
+                    nextRun,
+                    state));
+            }
+        }
+        var shown = items.OrderBy(item => item.NextRunUtc ?? "~", StringComparer.Ordinal).Take(limit).ToArray();
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteNumber("count", items.Count);
+            writer.WriteStartArray("notifications");
+            foreach (var item in shown)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("kind", item.Kind);
+                if (item.Title is not null) writer.WriteString("title", item.Title);
+                if (item.NextRunUtc is not null) writer.WriteString("nextRunUtc", item.NextRunUtc);
+                writer.WriteString("state", item.State);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteNumber("staleTaskCount", staleTasks);
+            writer.WriteNumber("resultLimit", limit);
+            writer.WriteBoolean("resultsMayBeTruncated", items.Count > shown.Length);
+            writer.WriteString("authority", "windows_task_scheduler_notification_list_postread");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    private static string? ReadRingTitle(string path)
+    {
+        if (!File.Exists(path)) return null;
+        Match encoded = Regex.Match(File.ReadAllText(path), @"FromBase64String\('([A-Za-z0-9+/=]+)'\)",
+            RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100));
+        if (!encoded.Success) return null;
+        try
+        {
+            return Encoding.UTF8.GetString(Convert.FromBase64String(encoded.Groups[1].Value));
+        }
+        catch (FormatException)
+        {
+            return null;
+        }
     }
 
     private async ValueTask<ExternalCapabilityReceipt> ScheduleAsync(

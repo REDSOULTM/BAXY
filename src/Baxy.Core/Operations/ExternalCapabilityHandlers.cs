@@ -56,6 +56,7 @@ internal static class ExternalCapabilityHandlers
         "notification.cancel.at",
         "notification.cancel.latest",
         "notification.diagnose",
+        "notification.list",
         "notification.schedule",
         "office.document.create",
         "office.document.read",

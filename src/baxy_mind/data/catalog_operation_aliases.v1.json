@@ -1,5 +1,5 @@
 {
-  "alias_count": 157,
+  "alias_count": 158,
   "aliases": [
     {
       "normalized_text": "cierra la ventana de bloc de notas.",
@@ -774,6 +774,14 @@
       ],
       "target_operation": "notification.dismiss",
       "text": "Dismiss el recordatorio vencido que acabo de seleccionar."
+    },
+    {
+      "normalized_text": "lista los timers y alarmas programados.",
+      "operations": [
+        "notification.list"
+      ],
+      "target_operation": "notification.list",
+      "text": "Lista los timers y alarmas programados."
     },
     {
       "normalized_text": "lista los recordatorios vencidos que aun no descarte.",

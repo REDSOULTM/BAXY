@@ -1032,6 +1032,13 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Descarta una notificación vencida seleccionada mediante identidad y versión exactas."),
         Descriptor(
+            "notification.list",
+            Schema([Integer("limit", 1, 50)], []),
+            OperationRisks.ReadOnly,
+            "notification.list.windows.task.postread.v1",
+            ToolExposure.Public,
+            "Enumera las alarmas y recordatorios programados por BAXY (tipo, título y próxima ejecución) sin modificar el sistema."),
+        Descriptor(
             "notification.list.due",
             Schema([Integer("limit", 1, 50)], []),
             OperationRisks.ReadOnly,

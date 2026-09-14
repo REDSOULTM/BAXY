@@ -3809,6 +3809,8 @@ def _compose_situation_payload(
                 visible_seen["writtenText"] = written
         elif operation == "filesystem.known.list":
             visible_seen = _project_known_listing(visible_seen, language)
+        elif operation == "notification.list":
+            visible_seen = _project_notification_listing(visible_seen, language)
         elif operation == "ocr.read":
             # SCREEN1407 «leéme lo que dice la pantalla»: the receipt carries the
             # layout boxes, hashes and timestamps (about 30 KB) and the composer
@@ -4495,6 +4497,44 @@ def _project_known_listing(observed: dict, language: str) -> dict:
         # FILES1433: the person asked for the newest entries; say so.
         projected["newestFirst"] = True
     return projected
+
+
+def _project_notification_listing(observed: dict, language: str) -> dict:
+    """AGENDA1435 «listá los timers»: kind, title and next run of each scheduled
+    alarm or reminder, plus the count; the task identities stay out."""
+
+    entries = observed.get("notifications")
+    scheduled = []
+    for entry in (entries if isinstance(entries, list) else []):
+        if not isinstance(entry, dict):
+            continue
+        kind = entry.get("kind")
+        label = {
+            "alarm": ("alarma", "alarm"),
+            "reminder": ("recordatorio", "reminder"),
+        }.get(str(kind), (str(kind), str(kind)))[1 if language == "en" else 0]
+        item: dict = {"kind": label}
+        if isinstance(entry.get("title"), str) and entry["title"].strip():
+            item["title"] = entry["title"].strip()
+        next_run = entry.get("nextRunUtc")
+        if isinstance(next_run, str) and next_run:
+            local = _local_clock_text(next_run)
+            item["nextRun"] = local or next_run
+        scheduled.append(item)
+    count = observed.get("count") if type(observed.get("count")) is int else len(scheduled)
+    return {"count": count, "scheduled": scheduled}
+
+
+def _local_clock_text(iso_utc: str) -> str | None:
+    """A UTC ISO instant as local «YYYY-MM-DD HH:MM»; None when unparsable."""
+
+    try:
+        instant = datetime.fromisoformat(iso_utc.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if instant.tzinfo is None:
+        instant = instant.replace(tzinfo=timezone.utc)
+    return instant.astimezone().strftime("%Y-%m-%d %H:%M")
 
 
 def _known_listing_in_payload(payload: dict) -> dict | None:
@@ -11612,6 +11652,28 @@ class LlmRuntime:
         # the dense output allowance, keeping their existing prompt unchanged.
         if dense_fact_contract or dense_inventory:
             payload["max_tokens"] = 512
+        if (
+            visible_situation.get("operation") == "notification.list"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("scheduled"), list)
+        ):
+            # AGENDA1435 «listá los timers»: the report is the count and, for
+            # each scheduled alarm or reminder, its kind, title and next run.
+            instruct(
+                "\nseen.scheduled holds the alarms and reminders BAXY has scheduled "
+                "(kind, title, nextRun in local time) and seen.count their number. "
+                "If seen.count is 0, say that there are no alarms or reminders "
+                "scheduled, nothing else. Otherwise say how many there are and name "
+                "each one with its kind, its title verbatim in quotation marks and "
+                "its next run. No purpose, no interpretation, no other items."
+                if response_language == "en"
+                else "\nseen.scheduled trae las alarmas y recordatorios que BAXY tiene "
+                "programados (tipo, título, nextRun en hora local) y seen.count su "
+                "número. Si seen.count es 0, di que no hay alarmas ni recordatorios "
+                "programados, nada más. Si no, di cuántos hay y nombra cada uno con "
+                "su tipo, su título tal cual entre comillas y su próxima ejecución. "
+                "Sin propósito, sin interpretación, sin otros elementos."
+            )
         if _known_listing_in_payload(visible_situation) is not None:
             # FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
             # the report is the count and a few names exactly as listed.

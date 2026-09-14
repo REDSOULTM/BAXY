@@ -9162,6 +9162,32 @@ def _known_folder_recent_listing(text: str) -> tuple[str, int] | None:
     return (enum, int(match.group("n"))) if enum else None
 
 
+_NOTIFICATION_LISTING = (
+    r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
+    r"(?:(?:lista|listame|list|enumera|enumerame|mostrame|muestrame|muestra|show me|show|decime|dime|"
+    r"contame|cuentame|tell me)\s+(?:me\s+)?(?:cuales\s+son\s+|which\s+are\s+|what\s+are\s+)?"
+    r"(?:los|las|mis|my|the|todos los|todas las|all my|all the|all)?\s*|"
+    r"(?:cuales|which|what)\s+(?:son\s+)?(?:los|las|mis|my|the)?\s*|"
+    r"(?:que|what)\s+)"
+    r"(?:(?:programad[oa]s?|activ[oa]s?|scheduled|active)\s+)?"
+    r"(?:timers?|temporizadores?|alarmas?|alarms?|cuentas?\s+(?:atras|regresivas?)|countdowns?)"
+    r"(?:\s+(?:y|and)\s+(?:timers?|temporizadores?|alarmas?|alarms?|recordatorios?|reminders?))?"
+    r"(?:\s+(?:programad[oa]s?|activ[oa]s?|pendientes|scheduled|active|set))?"
+    r"(?:\s+(?:que\s+)?(?:tengo|hay|do i have|are (?:there|set)|i have))?"
+    r"(?:\s+(?:programad[oa]s?|activ[oa]s?|pendientes|scheduled|active|set))?[\s?!.]*$"
+)
+
+
+def _notification_listing_request(text: str) -> bool:
+    """AGENDA1435 «listá los timers», «qué alarmas tengo»: the scheduled
+    alarms and reminders, never the due ones (those keep notification.list.due)."""
+
+    folded = _fold(text)
+    if _has(folded, r"\b(?:vencid[oa]s?|due|overdue|expired|pendientes\s+de\s+descartar)\b"):
+        return False
+    return re.match(_NOTIFICATION_LISTING, folded) is not None
+
+
 def _known_folder_listing_request(text: str) -> str | None:
     """FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
     the known-folder enum of a whole-folder listing request, else None."""
@@ -9195,6 +9221,8 @@ def _strict_catalog_request(
         or _known_folder_recent_listing(text) is not None
     ):
         return EffectIntent(("filesystem.known.list",), (text,))
+    if "notification.list" in available_operations and _notification_listing_request(text):
+        return EffectIntent(("notification.list",), (text,))
     if window_inventory_arguments(text) is not None:
         return (
             EffectIntent(("window.resolve",), (text,))

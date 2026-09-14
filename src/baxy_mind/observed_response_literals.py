@@ -43,6 +43,16 @@ def without_observed_names(text: str, situation: object) -> str:
                         names.update(value for key in fields
                                      if isinstance(value := entry.get(key), str)
                                      and value.strip() and len(value) <= 4096)
+        if (node.get("kind") == "operation" and operation == "notification.list"
+                and node.get("verified") is True and node.get("succeeded") is True
+                and node.get("polarity") == "success"):
+            # AGENDA1435 «listá los timers»: a scheduled title is observed data.
+            observed = node.get("observed")
+            scheduled = observed.get("notifications") if isinstance(observed, dict) else None
+            if isinstance(scheduled, list):
+                names.update(title.strip() for entry in scheduled if isinstance(entry, dict)
+                             and isinstance(title := entry.get("title"), str)
+                             and 0 < len(title.strip()) <= 4096)
         if (node.get("kind") == "operation" and operation == "filesystem.known.list"
                 and node.get("verified") is True and node.get("succeeded") is True
                 and node.get("polarity") == "success"):

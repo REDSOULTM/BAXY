@@ -190,7 +190,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                 ProcessExists("WhatsApp") || ProcessExists("Discord")
                     ? "messaging_session_adapter_required" : "messaging_client_not_running",
             "notification.cancel.at" or "notification.cancel.latest" or "notification.diagnose"
-                or "notification.schedule" =>
+                or "notification.list" or "notification.schedule" =>
                 "windows_task_scheduler_required",
             "game.installed.named" => "steam_epic_game_manifest_inventory_required",
             "bluetooth.device.list" or "bluetooth.device.pair" or "bluetooth.radio.set" =>
