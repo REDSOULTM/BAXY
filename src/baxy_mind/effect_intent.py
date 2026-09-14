@@ -2772,6 +2772,24 @@ def _multiple_alarm_schedule_intent(
     )
 
 
+_TASK_DATE_ONLY = re.compile(
+    r"^(?:crea|creame|crear|agrega|agregame|anade|anadime|add|create|make|haz|hazme|pon|ponme|poneme|nueva|new)\s+"
+    r"(?:(?:una|la|a|the)\s+)?(?:tarea|task|to-do|todo|pendiente)(?:\s+(?:nueva|new))?"
+    r"(?:\s+(?:para|for|el|la|on|por|by|due|hasta|until)\s+(?:(?:el|la|este|esta|next|this|el\s+proximo|la\s+proxima)\s+)?"
+    r"(?:lunes|martes|miercoles|jueves|viernes|sabado|domingo|monday|tuesday|wednesday|thursday|friday|saturday|sunday|"
+    r"manana|tomorrow|hoy|today|pasado\s+manana|semana|week|mes|month|fin\s+de\s+semana|weekend)"
+    r"(?:\s+(?:que\s+viene|proxim[oa]))?"
+    r"(?:\s+(?:a\s+las?|at)\s+\d{1,2}(?::\d{2})?\s*(?:am|pm|h|hs)?)?)?"
+    r"[\s.!?]*$"
+)
+
+
+def _task_without_title(folded: str) -> bool:
+    """«crea una tarea para el viernes»: a creation with at most a date, no content."""
+
+    return _TASK_DATE_ONLY.match(_strip_request_envelope(folded).strip(" ¿?¡!.,")) is not None
+
+
 def resolve_explicit_clarification_intent(
     text: str,
     available_operations: Iterable[str],
@@ -3633,13 +3651,21 @@ def resolve_explicit_clarification_intent(
             return ClarificationIntent(("reminder.create",), ("due_time",))
         if _time_only_reminder_request(folded):
             return ClarificationIntent(("reminder.create",), ("title",))
+    if "task.create" in available and _task_without_title(folded):
+        # AGENDA1021/TIME1199 H0043 «crea una tarea para el viernes»: only a
+        # date was given; the title is asked, never invented.
+        return ClarificationIntent(("task.create",), ("title",))
     alarm_turn_off = _alarm_turn_off_request(folded)
     unnamed_cancellation = (
         (
             _head_is(
                 _request_head(folded),
                 r"(?:delete|remove|cancel|erase|elimina|eliminar|borra|borrar|"
-                r"quita|quitar|cancela|cancelar)",
+                r"quita|quitar|cancela|cancelar|"
+                # AGENDA1337 «cancelame la alarma»: the clitic forms are the
+                # same unnamed cancellation.
+                r"cancelame|cancelamela|cancelala|borrame|borrala|quitame|quitala|"
+                r"eliminame|eliminala)",
             )
             or alarm_turn_off
         )
@@ -3660,7 +3686,10 @@ def resolve_explicit_clarification_intent(
         and _has(folded, r"\b(?:alarm|alarma)\b")
         and not _has(folded, r"\b(?:alarms|alarmas)\b")
     ):
-        return ClarificationIntent(("notification.cancel.at",), ("alarm_time",))
+        # AGENDA1021 H0011 «cancelá la alarma»: the owner rules that the
+        # product asks which alarm (unless it already knows a single one);
+        # naming the missing field as a time made it ask when to cancel.
+        return ClarificationIntent(("notification.cancel.at",), ("which_alarm",))
     if (
         "window.move" in available
         and _head_is(
