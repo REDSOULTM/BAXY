@@ -4018,6 +4018,14 @@ def _explicit_browser_navigation_arguments(
         # person's browser preferences. Confirm this complete URL and browser.
         return {"browser": browser, "url": "https://www.bing.com/search?" + urlencode({"q": query})}
 
+    installed_query = effect_intent._installed_browser_search_query(evidence)
+    if installed_query is not None:
+        # WEB1455 «abre un navegador que tengas instalado y busca …»: the
+        # product's public search page (Bing) with the person's literal query,
+        # confirmed as a complete URL like the named-browser search.
+        if operation != "browser.navigate":
+            return None
+        return {"url": "https://www.bing.com/search?" + urlencode({"q": installed_query})}
     google_query = effect_intent._explicit_google_search_query(evidence)
     if google_query is not None:
         # Named-browser clauses need their own authenticated browser evidence;

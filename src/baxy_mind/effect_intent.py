@@ -162,7 +162,9 @@ def _weather_lookup_query(text: str) -> str | None:
     # «is it going to rain tomorrow» / «will it rain tomorrow»: the auxiliaries
     # never appear in a forecast page; the engine answers «rain tomorrow».
     query = re.sub(r"^(?:is\s+it\s+going\s+to|will\s+it|is\s+it|does\s+it)\s+", "", query, count=1, flags=re.IGNORECASE)
-    query = re.sub(r"\s+(?:en|in|on)\s+(?:google|internet|la\s+web|the\s+web)\b", "", query, flags=re.IGNORECASE)
+    # WEB1455 «busca en internet el clima»: the medium may precede the noun.
+    query = re.sub(r"(?:^|\s+)(?:en|in|on)\s+(?:google|internet|la\s+web|the\s+web)\b\s*", " ", query, flags=re.IGNORECASE)
+    query = re.sub(r"^\s*(?:el|la|los|las|the)\s+", "", query, count=1, flags=re.IGNORECASE)
     query = re.sub(r"\s+", " ", query).strip(" ?!.,;:")
     return query if query and _has(_fold(query), _WEATHER_WORDS) else None
 
@@ -292,6 +294,22 @@ def _public_live_lookup_request(folded: str) -> bool:
     # WEB1451 «Investiga Spider-Man»: a research order about a named topic
     # is a public lookup of that topic.
     topic_research = _topic_research_query(folded) is not None
+    # WEB1453 «¿Qué es un pronóstico del tiempo?»: a question about what a
+    # forecast, a news item or the weather is (indefinite article) asks for a
+    # definition; «what is the weather» keeps its article and stays a lookup.
+    definition_question = (
+        re.match(
+            r"^[¿?¡!\s]*(?:que|what)\s+(?:es|son|is|are)\s+(?:un|una|unos|unas|a|an)\s+",
+            folded,
+            re.IGNORECASE,
+        )
+        is not None
+    )
+    if definition_question:
+        weather = False
+        news = False
+        todays_events = False
+        topic_research = False
     # A file, note or document named after the weather, or a question about the
     # word itself («¿qué significa la palabra clima?»), is not a live lookup.
     if (weather or news or todays_events or topic_research) and _has(
@@ -13057,6 +13075,34 @@ def _named_browser_search(text: str) -> tuple[str, str] | None:
     return browser, query
 
 
+_INSTALLED_BROWSER_SEARCH = re.compile(
+    r"^[¿?¡!\s]*(?:abre|abrí|abri|abrir|open)\s+(?:un|el|a|the|any)\s+(?:navegador|browser)"
+    r"(?:\s+(?:que\s+tengas(?:\s+instalado)?|que\s+tengas\s+a\s+mano|instalado|cualquiera|"
+    r"(?:that\s+)?(?:you\s+have\s+)?installed|you\s+have))?"
+    r"\s*(?:,\s*|\s+(?:y|and)\s+)(?:busca|buscá|buscar|search(?:\s+for)?)\s+(?P<query>.+?)\s*[.!?]*$",
+    re.IGNORECASE,
+)
+
+
+def _installed_browser_search_query(text: str) -> str | None:
+    """WEB1455 «Abre un navegador que tengas instalado y busca Windows 11 settings»:
+    the person asks for any installed browser and a search in it; the query keeps
+    its own spelling (quotation marks removed). None for any other shape."""
+
+    match = _INSTALLED_BROWSER_SEARCH.match(text.strip())
+    if match is None:
+        return None
+    query = match.group("query").strip().strip("\"'“”«»").strip()
+    if (
+        not query
+        or len(query.encode("utf-8")) > 512
+        or any(ord(character) < 32 for character in query)
+        or _has(_fold(query), r"\b(?:en|on)\s+(?:google|opera|chrome|edge|firefox|brave)\b")
+    ):
+        return None
+    return query
+
+
 def _explicit_google_search_query(text: str) -> str | None:
     """Read an explicit Google search without folding its literal query."""
 
@@ -13096,6 +13142,13 @@ def _review_web_and_browser_effects(
 ) -> None:
     """Append explicit web-search, navigation, page, and tab effects."""
 
+    if _installed_browser_search_query(folded) is not None and context_browser is None:
+        # WEB1455: any installed browser and a search in it is one reviewed
+        # navigation to the product's public search page with that query.
+        if _append(matches, folded, "browser.navigate", r"\b(?:abre|abri|abrir|open)\b"):
+            _, priority, operation = matches[-1]
+            matches[-1] = (0, priority, operation)
+        return
     if _explicit_google_search_query(folded) is not None:
         browser = _named_browser(folded) or context_browser
         if browser is None or browser in {"opera", "opera_gx"}:
@@ -14585,6 +14638,10 @@ def _resolve_clause_local_special_effects(
 ) -> EffectIntent | None:
     """Resolve bounded handlers that normally own one complete request."""
 
+    if "browser.navigate" in available and _installed_browser_search_query(clause) is not None:
+        # WEB1455 «Abre un navegador que tengas instalado y busca …»: the two
+        # clauses are one reviewed navigation to the public search page.
+        return EffectIntent(("browser.navigate",), (clause.strip(),))
     multiple_alarms = _multiple_alarm_schedule_intent(clause, available)
     if multiple_alarms is not None:
         return multiple_alarms

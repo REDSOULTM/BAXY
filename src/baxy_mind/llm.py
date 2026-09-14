@@ -8624,6 +8624,19 @@ class LlmRuntime:
         else:
             final_messages = payload["messages"]
         final_content = str(message.get("content") or "").strip()
+        if presentation_shape == "constraint_ack" and final_content:
+            # WEB1453 «No investigues nada en internet.»: the model acknowledged
+            # in one sentence and appended an offer («Solo estaré aquí para
+            # ayudarte»); the acknowledgement is its first sentence when that
+            # sentence alone meets the one-sentence contract.
+            head = re.split(r"(?<=[.!…])\s+", final_content, maxsplit=1)[0].strip()
+            if head != final_content and not _shaped_conversation_answer_violates_contract(
+                head,
+                text,
+                presentation_shape,
+                authenticated_operations=authenticated_operations,
+            ):
+                final_content = head
         if (
             not final_content
             or _reply_uses_opposite_language(final_content, response_language)
