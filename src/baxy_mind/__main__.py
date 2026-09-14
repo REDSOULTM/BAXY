@@ -4748,6 +4748,11 @@ def _explicit_arguments_from_evidence(
         location = _explicit_location_search_arguments(search_evidence)
         if location is not None:
             return location
+        entity = effect_intent._entity_lookup_query(search_evidence)
+        if entity is not None:
+            # KNOWLEDGE1473 «¿Quién es Daredevil?»: the engine answers the bare
+            # name; the question words around it return unrelated pages.
+            return {"query": entity}
         topic = effect_intent._topic_research_query(search_evidence)
         if topic is not None:
             # WEB1451 «Investiga Spider-Man»: the engine answers the topic, not

@@ -200,6 +200,66 @@ def _topic_research_query(text: str) -> str | None:
     return topic
 
 
+_ENTITY_LOOKUP = re.compile(
+    r"^[¿?¡!\s]*(?:"
+    r"(?:quien|quién|quienes|quiénes|who)\s+(?:es|fue|era|son|fueron|eran|is|was|are|were)|"
+    r"(?:que|qué|what)\s+(?:es|fue|era|is|was)|"
+    r"(?:hablame|háblame|hablarme|contame|cuentame|cuéntame|explicame|explícame|tell\s+me)\s+"
+    r"(?:(?:un\s+poco|algo|mas|más|a\s+bit|a\s+little|more)\s+)?(?:de|sobre|acerca\s+de|about)"
+    r")\s+(?P<entity>[^?¿!¡]+?)\s*[.!?¿¡=\s]*$",
+    re.IGNORECASE,
+)
+
+
+def _entity_lookup_query(text: str) -> str | None:
+    """KNOWLEDGE1473 «¿Quién es Daredevil?», «Que es doom eternal=», «Hablame
+    un poco de Marvel vs. Capcom.»: the named thing the person asks about, with
+    its own spelling, when who or what it is can be looked up in public pages;
+    None for a definition with an article («qué es una GPU»), the assistant or
+    the person («quién eres», «quién es de verdad»), a possessed or pointed
+    thing («quién es mi mamá», «qué es este archivo»), a word's meaning, a
+    local thing, or a question folded into the name («…, quien gana?»)."""
+
+    match = _ENTITY_LOOKUP.match(text.strip())
+    if match is None:
+        return None
+    entity = match.group("entity").strip(" \t\r\n.,;:")
+    folded_entity = _fold(entity)
+    if not folded_entity or not re.search(r"[a-z]", folded_entity):
+        return None
+    if len(entity.encode("utf-8")) > 80 or len(folded_entity.split()) > 8:
+        return None
+    if _has(folded_entity, r"^(?:un|una|unos|unas|a|an|el|la|los|las|the|lo)\b"):
+        return None
+    if _has(
+        folded_entity,
+        r"^(?:tu|vos|usted|ustedes|ti|yo|el|ella|ellos|ellas|nosotros|nosotras|you|me|i|he|she|"
+        r"they|it|esto|eso|esta|este|ese|esa|aquel|aquello|aquella|this|that|these|those|"
+        r"mi|mis|tus|su|sus|nuestro|nuestra|nuestros|nuestras|my|your|his|her|their|our|"
+        r"de\s+verdad|realmente|really|en\s+realidad)\b",
+    ):
+        return None
+    if _has(
+        folded_entity,
+        r"\b(?:que|quien|quienes|como|cual|cuales|donde|cuando|por\s+que|porque|"
+        r"what|who|how|which|where|when|why)\b",
+    ):
+        return None
+    if _has(
+        folded_entity,
+        r"\b(?:bax[yi]|olly|alexa|siri|asistente|assistant|palabra|word|significa|"
+        r"significado|definicion|define|definition|meaning|means|archivos?|files?|"
+        r"carpetas?|folders?|notas?|notes?|documentos?|documents?|mi\s+pc|my\s+pc|"
+        r"este\s+equipo|ventanas?|windows?|pantalla|screen|volumen|volume|brillo|"
+        r"brightness|bluetooth|wifi|red|bateria|battery|procesos?|process(?:es)?|"
+        r"programas?|apps?|aplicaci(?:on|ones)|calculadora|portapapeles|clipboard|"
+        r"alarmas?|alarms?|timers?|temporizador|recordatorios?|reminders?|hora|fecha|"
+        r"clima|tiempo|weather|noticias?|news)\b",
+    ):
+        return None
+    return entity
+
+
 def _public_live_lookup_request(folded: str) -> bool:
     """Recognize live feeds that require a public lookup to answer."""
 
@@ -294,6 +354,9 @@ def _public_live_lookup_request(folded: str) -> bool:
     # WEB1451 «Investiga Spider-Man»: a research order about a named topic
     # is a public lookup of that topic.
     topic_research = _topic_research_query(folded) is not None
+    # KNOWLEDGE1473 «¿Quién es Daredevil?»: who or what a named thing is gets
+    # looked up in public pages instead of recited from the model's memory.
+    entity_lookup = _entity_lookup_query(folded) is not None
     # WEB1453 «¿Qué es un pronóstico del tiempo?»: a question about what a
     # forecast, a news item or the weather is (indefinite article) asks for a
     # definition; «what is the weather» keeps its article and stays a lookup.
@@ -310,9 +373,10 @@ def _public_live_lookup_request(folded: str) -> bool:
         news = False
         todays_events = False
         topic_research = False
+        entity_lookup = False
     # A file, note or document named after the weather, or a question about the
     # word itself («¿qué significa la palabra clima?»), is not a live lookup.
-    if (weather or news or todays_events or topic_research) and _has(
+    if (weather or news or todays_events or topic_research or entity_lookup) and _has(
         folded,
         r"\b(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|"
         r"documents?|txt|pdf|docx|significa|significado|definicion|define|"
@@ -322,6 +386,7 @@ def _public_live_lookup_request(folded: str) -> bool:
         news = False
         todays_events = False
         topic_research = False
+        entity_lookup = False
     market_direction = (
         re.match(
             (
@@ -607,6 +672,7 @@ def _public_live_lookup_request(folded: str) -> bool:
             weather,
             todays_events,
             topic_research,
+            entity_lookup,
             market_direction,
             market_price,
             local_events,

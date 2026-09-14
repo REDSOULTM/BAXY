@@ -39,6 +39,7 @@ from urllib.parse import urlparse
 
 from .effect_intent import (
     _PERCENTAGE_WORD_VALUES,
+    _entity_lookup_query,
     _strip_request_envelope,
     conversation_only_content_request,
     countdown_target,
@@ -11939,7 +11940,34 @@ class LlmRuntime:
                 "como ancho x alto, la cantidad, o la frecuencia en Hz. Una o dos "
                 "oraciones cortas; sin otros números; no se cambió nada."
             )
-        if _search_results_text(visible_situation) is not None:
+        entity_asked = (
+            _entity_lookup_query(user_text or "")
+            if _search_results_text(visible_situation) is not None
+            else None
+        )
+        if entity_asked is not None:
+            # KNOWLEDGE1473 «¿Quién es Daredevil?»: the person asked who or what
+            # a named thing is; the answer is what a result snippet states about
+            # it, with its words and its page, never the model's own memory.
+            instruct(
+                f"\nThe person asked who or what «{entity_asked}» is. seen.results "
+                "are the pages the public search returned (title, url, snippet). "
+                "Answer in one or two sentences with what a snippet states about "
+                f"«{entity_asked}», in its words, naming the page or site it comes "
+                "from (for example Wikipedia). Never add a creator, studio, date, "
+                "number or any fact that no snippet contains; if no snippet says "
+                "what it is, name the pages found instead. No question at the end."
+                if response_language == "en"
+                else f"\nLa persona preguntó quién o qué es «{entity_asked}». "
+                "seen.results son las páginas que devolvió la búsqueda pública "
+                "(título, url, fragmento). Responde en una o dos oraciones con lo "
+                f"que un fragmento afirma sobre «{entity_asked}», con sus palabras, "
+                "nombrando la página o el sitio de donde sale (por ejemplo "
+                "Wikipedia). Nunca añadas un creador, estudio, fecha, cifra ni "
+                "ningún dato que ningún fragmento contenga; si ningún fragmento "
+                "dice qué es, nombra las páginas encontradas. Sin pregunta al final."
+            )
+        elif _search_results_text(visible_situation) is not None:
             # WEB1445: the person asked a live question; the results are pages,
             # not the answer itself. Say what was found, never what it might say.
             instruct(
