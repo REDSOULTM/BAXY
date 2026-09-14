@@ -1,0 +1,150 @@
+{
+  "schema": "system1459-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-system1459-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-system1459-instrument-v1",
+  "seal_sha256": "e9048c4a1dd0344e7b29e4baa6feced983e18ff31e0bbd575421648f8466be10",
+  "runner_sha256": "eb8bc4eb2fc7c85921cf3f387fdec4404c9799b0391c2601e96b6c118f168dc1",
+  "transport_seal_sha256": "995f1f31e037773f8f9574e5ce05180c84598a719992fd047ad0dd6ef6edb3a7",
+  "files": {
+    "panel.json": "466f70c01c6eacace5f6f309fe668f3b5e3e726e44503c3bede27b1806a3e9c1",
+    "turns.jsonl": "0f7affff6601af041f1e17e476219e4163ca4bcf53639c25fdcb951608530d8c",
+    "case-map.json": "a8060c11dacd37c017e58b6c4422d063599528f90c6dd66e21b89c4907303e27",
+    "PLAN.md": "fb442e0d6138e41283778675754eb46414aac7d60e05d49eced1b209a4f9576c"
+  },
+  "counts": {
+    "cases": 13,
+    "historical_literals": 4,
+    "original_development_variants": 6,
+    "boundaries": 3,
+    "wire_lines": 26,
+    "session_controls": 13,
+    "ordinary_turns": 13,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 13,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 4,
+    "original_development_variant": 6,
+    "boundary": 3
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0195",
+      "kind": "historical_literal",
+      "group": "resolution",
+      "credit_behavior": "resolution",
+      "text_sha256": "3e51124101bf15bc2ec3589a76c3e15f6d6d789ea7533fb25509169e1b772d21",
+      "criterion_sha256": "d2149a57d2fab299b93b7d38949efad249aba4215a255099039319051f6c8514"
+    },
+    {
+      "index": 1,
+      "case_id": "H0464",
+      "kind": "historical_literal",
+      "group": "resolution",
+      "credit_behavior": "resolution",
+      "text_sha256": "9bc36387846692a078bf6e3dd715bcf882befbb55d194896953aade21f7349db",
+      "criterion_sha256": "d2149a57d2fab299b93b7d38949efad249aba4215a255099039319051f6c8514"
+    },
+    {
+      "index": 2,
+      "case_id": "H0707",
+      "kind": "historical_literal",
+      "group": "monitor_count",
+      "credit_behavior": "monitor_count",
+      "text_sha256": "f5728fbed445731b4c76ef5a217b6a7988cf3a3c7bc6519bebec109dfbdd183d",
+      "criterion_sha256": "f08cd2ee7584af27e708dac53ac12d9558e106a73f1775878d0a722291fbc4b3"
+    },
+    {
+      "index": 3,
+      "case_id": "H0125",
+      "kind": "historical_literal",
+      "group": "refresh_rate",
+      "credit_behavior": "refresh_rate",
+      "text_sha256": "28234749db2e97393221a58adac634dd5dca3269c47030feaeeff78e06519050",
+      "criterion_sha256": "23c7bd00344da689f079dc22f7083168e8d4c5c4c1f1d4fe610a1e7edbcef93b"
+    },
+    {
+      "index": 4,
+      "case_id": "system1459-dev-01",
+      "kind": "original_development_variant",
+      "group": "resolution",
+      "credit_behavior": "resolution",
+      "text_sha256": "d43e46c74e50cc347408b247d4994cf48dacb369d680a3ac1213afb36ec70888",
+      "criterion_sha256": "d2149a57d2fab299b93b7d38949efad249aba4215a255099039319051f6c8514"
+    },
+    {
+      "index": 5,
+      "case_id": "system1459-dev-02",
+      "kind": "original_development_variant",
+      "group": "resolution",
+      "credit_behavior": "resolution",
+      "text_sha256": "1406584da0f35f52eeaec29ef55dacf5539f058618b5391a9f4bc0672ce02dca",
+      "criterion_sha256": "d2149a57d2fab299b93b7d38949efad249aba4215a255099039319051f6c8514"
+    },
+    {
+      "index": 6,
+      "case_id": "system1459-dev-03",
+      "kind": "original_development_variant",
+      "group": "monitor_count",
+      "credit_behavior": "monitor_count",
+      "text_sha256": "b8dd7f942053b219449a4cecaad6b7441133a521472e22e56a8ba67604687152",
+      "criterion_sha256": "f08cd2ee7584af27e708dac53ac12d9558e106a73f1775878d0a722291fbc4b3"
+    },
+    {
+      "index": 7,
+      "case_id": "system1459-dev-04",
+      "kind": "original_development_variant",
+      "group": "monitor_count",
+      "credit_behavior": "monitor_count",
+      "text_sha256": "d63ec84fd623cd51112176c94adcb3431c6a90fea43f1a48566674cbd8181048",
+      "criterion_sha256": "f08cd2ee7584af27e708dac53ac12d9558e106a73f1775878d0a722291fbc4b3"
+    },
+    {
+      "index": 8,
+      "case_id": "system1459-dev-05",
+      "kind": "original_development_variant",
+      "group": "refresh_rate",
+      "credit_behavior": "refresh_rate",
+      "text_sha256": "db4a23677a4ecd4e03e6d1d488f6d69e0187b0552e816daadb062decbf899ee9",
+      "criterion_sha256": "23c7bd00344da689f079dc22f7083168e8d4c5c4c1f1d4fe610a1e7edbcef93b"
+    },
+    {
+      "index": 9,
+      "case_id": "system1459-dev-06",
+      "kind": "original_development_variant",
+      "group": "refresh_rate",
+      "credit_behavior": "refresh_rate",
+      "text_sha256": "81a733bcef6b50df4482d9bd39f84a5f8f158e7e87bd03cd866bd67dc8added2",
+      "criterion_sha256": "23c7bd00344da689f079dc22f7083168e8d4c5c4c1f1d4fe610a1e7edbcef93b"
+    },
+    {
+      "index": 10,
+      "case_id": "system1459-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "1699176a563cf9096a2125f849b704f9ba0c2f90ba438815e98c76e57df3e34d",
+      "criterion_sha256": "cfd5ebad5c60787eb499aa5b414e83ebe70136f1afc6ae0815353c1fc6e2bff4"
+    },
+    {
+      "index": 11,
+      "case_id": "system1459-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "919793d40fbfc8eda43b95cd88e6d7c9dbc1c7fb37c4659095cbcbeb885b142d",
+      "criterion_sha256": "36bbbae5cf4a8c12a31a46c897374e5b7dc1b5f2845f02477427c997d6fa099b"
+    },
+    {
+      "index": 12,
+      "case_id": "system1459-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "c54a03eec5b49ca7f8b91737e61397d2b11896124af56927fa5a711f772eb346",
+      "criterion_sha256": "f4ef045227e475a0fa6c0574b5896c034e1bb5f5f488115d5f36973226f2fc82"
+    }
+  ]
+}

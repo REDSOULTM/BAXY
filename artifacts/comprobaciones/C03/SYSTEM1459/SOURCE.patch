@@ -1,0 +1,414 @@
+commit c40ba5f8a9b0eac9311f3c7c81ce64e440b66b45
+
+C03: display.status reads the attached monitors (resolution, count, refresh rate) (SYSTEM1459)
+
+SYSTEM1301 documented that «qué resolución tengo» (H0195), «qué resolución de pantalla tengo» (H0464), «cuántos monitores tengo» (H0707) and «Que Hz tiene el monitor?» (H0125) had no display scope in system.status: new infrastructure was needed.
+
+Baxy.Kernel ProductCatalog: descriptor display.status (no arguments, ReadOnly, verifier display.status.windows.display.devices.read.v1), in ordinal order between clipboard.write.text and email.latest.read.
+Baxy.Core ExternalCapabilityHandlers: the operation is handled.
+Baxy.Providers.Windows WindowsDeviceControlAdapter: DisplayStatus enumerates the display devices attached to the desktop through the Win32 display API (EnumDisplayDevicesW, EnumDisplaySettingsW with the current mode) and reports seen.monitorCount and seen.monitors[] with name, primary, width, height and refreshHz — a read, nothing changed; WindowsExternalCapabilityProvider maps its unavailability reason.
+baxy_mind effect_intent: _display_status_question reads the resolution question («qué resolución (de pantalla) tengo», «cuál es la resolución de mi pantalla»), the count question («cuántos monitores/pantallas tengo/hay») and the refresh-rate question («qué Hz tiene el monitor», «a cuántos Hz va la pantalla», «qué frecuencia de refresco tiene el monitor») as a display.status read — never a change (brightness or set/change words excluded), accepted as a direct request and grounded by the display nouns.
+baxy_mind __main__: the read takes no arguments.
+baxy_mind llm: an instruction names seen.monitors and seen.monitorCount and asks for only the requested number; the reply may carry no number that is not observed (invented_number, with a hint) and must carry the asked one — width and height for a resolution question, refreshHz for a Hz question, the count (digit or word) for a how-many question (missing_state).
+Catalog aliases: one row (alias_count 160); documentación/base/05_MATRIZ_EJECUCION.json: the read is registered as read-only without effect.
+
+Offline probes: a ctypes probe of the same Win32 structures reports this laptop's single 1920x1080 display at 144 Hz with the struct sizes 840 and 220 the adapter assumes; the four literals and six variants resolve to one display.status; the boundaries resolve to nothing and «No cambies la resolución.» is a prohibition; over that observation, «Tienes una resolución de 2560 x 1440» and «El monitor tiene 60 Hz» are vetoed as invented numbers, «Tienes dos monitores» misses the state, and the faithful replies pass. Providers project compiled clean before sealing (build servers shut down). Kernel, Core, Providers and App recompiled (BUILD1459). Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/documentacion/base/05_MATRIZ_EJECUCION.json b/documentacion/base/05_MATRIZ_EJECUCION.json
+index 1cf27425..c533d4a9 100644
+--- a/documentacion/base/05_MATRIZ_EJECUCION.json
++++ b/documentacion/base/05_MATRIZ_EJECUCION.json
+@@ -691,6 +691,15 @@
+       "surface": "isolated_store",
+       "reason": null
+     },
++    {
++      "operation": "display.status",
++      "verifierContractId": "display.status.windows.display.devices.read.v1",
++      "risk": "read_only",
++      "observation": "display.status.windows.display.devices.read.v1",
++      "verdict": "unverifiable",
++      "surface": "none",
++      "reason": "Lee los monitores conectados (cantidad, resolución, frecuencia) por la API de pantalla de Windows; sin efecto."
++    },
+     {
+       "operation": "email.latest.read",
+       "verifierContractId": "email.latest.read.outlook.mapi.snapshot.v1",
+diff --git a/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs b/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
+index ec3250c2..d10f8686 100644
+--- a/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
++++ b/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
+@@ -25,6 +25,7 @@ internal static class ExternalCapabilityHandlers
+         "calendar.event.list",
+         "clipboard.copy",
+         "clipboard.paste",
++        "display.status",
+         "email.latest.read",
+         "email.latest.reply",
+         "game.catalog.list",
+diff --git a/src/Baxy.Kernel/Operations/ProductCatalog.cs b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+index 6b1f5e08..2d61070d 100644
+--- a/src/Baxy.Kernel/Operations/ProductCatalog.cs
++++ b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+@@ -294,6 +294,13 @@ public static class ProductCatalog
+             "clipboard.write.text.sequence.postread.v1",
+             ToolExposure.Public,
+             "Reemplaza texto del portapapeles y verifica contenido y secuencia mediante postlectura."),
++        Descriptor(
++            "display.status",
++            EmptySchema(),
++            OperationRisks.ReadOnly,
++            "display.status.windows.display.devices.read.v1",
++            ToolExposure.Public,
++            "Lee los monitores conectados (cantidad, resolución y frecuencia de refresco) mediante la API de pantalla de Windows; sin efecto."),
+         Descriptor(
+             "email.latest.read",
+             EmptySchema(),
+diff --git a/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs b/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
+index b96e4989..414d714a 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
+@@ -1,4 +1,5 @@
+ using System.Collections.Concurrent;
++using System.Runtime.InteropServices;
+ using System.Security.Cryptography;
+ using System.Text;
+ using System.Text.Json;
+@@ -268,6 +269,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+     public bool CanHandle(string operation) => operation is
+         "bluetooth.device.list" or "bluetooth.device.pair"
+         or "bluetooth.radio.set" or "bluetooth.radio.status"
++        or "display.status"
+         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
+         or "wifi.profile.list" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
+         or "wifi.ensure.connected" or "wifi.status"
+@@ -289,6 +291,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+                 "bluetooth.radio.set" => await BluetoothRadioSetAsync(
+                     operation, arguments, effectBoundary, cancellationToken),
+                 "bluetooth.radio.status" => await BluetoothRadioStatusAsync(operation),
++                "display.status" => DisplayStatus(operation),
+                 "peripheral.list" => await PeripheralListAsync(operation, arguments, cancellationToken),
+                 "peripheral.print" => await PrintAsync(
+                     operation, arguments, effectBoundary, cancellationToken),
+@@ -496,6 +499,121 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+         return ExternalJson.Success(operation, result, effectObserved: false);
+     }
+ 
++    // SYSTEM1459 «qué resolución tengo», «cuántos monitores tengo», «qué Hz tiene el
++    // monitor»: the desktop's attached display devices and their current mode,
++    // read through the Win32 display API without changing anything.
++    private static ExternalCapabilityReceipt DisplayStatus(string operation)
++    {
++        var monitors = new List<(string Name, bool Primary, uint Width, uint Height, uint Hertz)>();
++        for (uint index = 0; index < 32; index++)
++        {
++            DisplayDevice device = default;
++            device.Size = (uint)Marshal.SizeOf<DisplayDevice>();
++            if (!EnumDisplayDevicesW(null, index, ref device, 0))
++            {
++                break;
++            }
++            const uint attachedToDesktop = 0x1;
++            const uint primaryDevice = 0x4;
++            if ((device.StateFlags & attachedToDesktop) == 0)
++            {
++                continue;
++            }
++            string name;
++            unsafe
++            {
++                name = new string(device.DeviceName).TrimEnd('\0');
++            }
++            DeviceMode mode = default;
++            mode.Size = (ushort)Marshal.SizeOf<DeviceMode>();
++            const int currentSettings = -1;
++            if (!EnumDisplaySettingsW(name, currentSettings, ref mode))
++            {
++                continue;
++            }
++            monitors.Add((name, (device.StateFlags & primaryDevice) != 0, mode.PelsWidth, mode.PelsHeight, mode.DisplayFrequency));
++        }
++        if (monitors.Count == 0)
++        {
++            return ExternalJson.Failure(operation, "display_devices_not_found");
++        }
++        JsonElement result = ExternalJson.Create(writer =>
++        {
++            writer.WriteStartObject();
++            writer.WriteNumber("version", 1);
++            writer.WriteNumber("monitorCount", monitors.Count);
++            writer.WriteStartArray("monitors");
++            foreach ((string name, bool primary, uint width, uint height, uint hertz) in monitors)
++            {
++                writer.WriteStartObject();
++                writer.WriteString("name", name);
++                writer.WriteBoolean("primary", primary);
++                writer.WriteNumber("width", width);
++                writer.WriteNumber("height", height);
++                writer.WriteNumber("refreshHz", hertz);
++                writer.WriteEndObject();
++            }
++            writer.WriteEndArray();
++            writer.WriteString("authority", "windows_display_devices_api_read");
++            writer.WriteEndObject();
++        });
++        return ExternalJson.Success(operation, result, effectObserved: false);
++    }
++
++    [StructLayout(LayoutKind.Sequential, Pack = 1)]
++    private unsafe struct DisplayDevice
++    {
++        public uint Size;
++        public fixed char DeviceName[32];
++        public fixed char DeviceString[128];
++        public uint StateFlags;
++        public fixed char DeviceId[128];
++        public fixed char DeviceKey[128];
++    }
++
++    [StructLayout(LayoutKind.Sequential, Pack = 1)]
++    private unsafe struct DeviceMode
++    {
++        public fixed char DeviceName[32];
++        public ushort SpecVersion;
++        public ushort DriverVersion;
++        public ushort Size;
++        public ushort DriverExtra;
++        public uint Fields;
++        public int PositionX;
++        public int PositionY;
++        public uint DisplayOrientation;
++        public uint DisplayFixedOutput;
++        public short Color;
++        public short Duplex;
++        public short YResolution;
++        public short TtOption;
++        public short Collate;
++        public fixed char FormName[32];
++        public ushort LogPixels;
++        public uint BitsPerPel;
++        public uint PelsWidth;
++        public uint PelsHeight;
++        public uint DisplayFlags;
++        public uint DisplayFrequency;
++        public uint IcmMethod;
++        public uint IcmIntent;
++        public uint MediaType;
++        public uint DitherType;
++        public uint Reserved1;
++        public uint Reserved2;
++        public uint PanningWidth;
++        public uint PanningHeight;
++    }
++
++    [LibraryImport("user32.dll", StringMarshalling = StringMarshalling.Utf16)]
++    [return: MarshalAs(UnmanagedType.Bool)]
++    private static partial bool EnumDisplayDevicesW(string? device, uint deviceIndex, ref DisplayDevice displayDevice, uint flags);
++
++    [LibraryImport("user32.dll", StringMarshalling = StringMarshalling.Utf16)]
++    [return: MarshalAs(UnmanagedType.Bool)]
++    private static partial bool EnumDisplaySettingsW(string deviceName, int modeIndex, ref DeviceMode deviceMode);
++
+     private async ValueTask<ExternalCapabilityReceipt> PeripheralListAsync(
+         string operation,
+         JsonElement arguments,
+diff --git a/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs b/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
+index 526d845f..832684d6 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
+@@ -206,6 +206,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
+                     ? "vision_provider_not_configured" : "vision_session_adapter_required",
+             "peripheral.list" or "peripheral.print" or "peripheral.scan" =>
+                 "peripheral_hardware_gate_required",
++            "display.status" => "windows_display_api_required",
+             "ocr.read" => "windows_ocr_language_pack_gate_required",
+             "package.install.prepare" or "package.install.commit" => "winget_adapter_gate_required",
+             "system.settings.adjust" or "system.settings.set" or "system.settings.status" =>
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 45ea6abf..4e4822ef 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -5191,6 +5191,10 @@ def _explicit_arguments_from_evidence(
+         if effect_intent._bluetooth_state_question(evidence):
+             return {}
+ 
++    if operation == "display.status":
++        if effect_intent._display_status_question(evidence):
++            return {}
++
+     if operation == "filesystem.known.list":
+         recent_listing = effect_intent._known_folder_recent_listing(evidence)
+         if recent_listing is not None:
+diff --git a/src/baxy_mind/data/catalog_operation_aliases.v1.json b/src/baxy_mind/data/catalog_operation_aliases.v1.json
+index 27af8412..51d571b3 100644
+--- a/src/baxy_mind/data/catalog_operation_aliases.v1.json
++++ b/src/baxy_mind/data/catalog_operation_aliases.v1.json
+@@ -1,5 +1,5 @@
+ {
+-  "alias_count": 159,
++  "alias_count": 160,
+   "aliases": [
+     {
+       "normalized_text": "cierra la ventana de bloc de notas.",
+@@ -775,6 +775,14 @@
+       "target_operation": "notification.dismiss",
+       "text": "Dismiss el recordatorio vencido que acabo de seleccionar."
+     },
++    {
++      "normalized_text": "decime que resolucion de pantalla tengo.",
++      "operations": [
++        "display.status"
++      ],
++      "target_operation": "display.status",
++      "text": "Decime qué resolución de pantalla tengo."
++    },
+     {
+       "normalized_text": "decime si tengo el bluetooth encendido.",
+       "operations": [
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 7058c1b1..f7a3ba51 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -1353,6 +1353,8 @@ def _curated_domain_is_grounded(
+         ):
+             return False
+         return True
++    if operation == "display.status":
++        return _has(folded, r"\b(?:resolucion|monitor(?:es)?|pantallas?|screens?|displays?|hz|hertz|hercios|frecuencia|refresh)\b")
+     if operation == "bluetooth.radio.status":
+         return _has(folded, r"\bbluetooth\b") and not _has(
+             folded, r"\b(?:configuracion|settings|entra|enter|abre|open)\b"
+@@ -9121,6 +9123,30 @@ _BLUETOOTH_STATE_QUESTION = re.compile(
+ )
+ 
+ 
++_DISPLAY_STATUS_QUESTION = re.compile(
++    r"^[¿?¡!\s]*(?:"
++    # «qué resolución tengo», «qué resolución de pantalla tengo», «cuál es la resolución de mi pantalla»
++    r"(?:que|cual\s+es\s+la|what|what's|whats|dime\s+(?:que|la|cual)|decime\s+(?:que|la|cual))\s+resolucion(?:\s+(?:de|del)\s+(?:la\s+|mi\s+|el\s+|the\s+|my\s+)?(?:pantalla|monitor|screen|display))?(?:\s+(?:tengo|tiene|uso|estoy\s+usando|do\s+i\s+have|is|am\s+i\s+using))?|"
++    # «cuántos monitores tengo», «how many monitors do i have»
++    r"(?:cuantos|cuantas|how\s+many)\s+(?:monitores|pantallas|monitors|screens|displays)(?:\s+(?:tengo|hay|tiene|do\s+i\s+have|are\s+there|are\s+connected))?|"
++    # «qué Hz tiene el monitor», «a cuántos Hz va la pantalla», «qué frecuencia de refresco tiene el monitor»
++    r"(?:que|cuantos|a\s+cuantos|what|how\s+many)\s+(?:hz|hertz|hercios|frecuencia(?:\s+de\s+(?:refresco|actualizacion))?|refresh\s+rate)\s+(?:tiene|va|corre|tengo|has|is|does)?\s*(?:el\s+|la\s+|mi\s+|the\s+|my\s+)?(?:monitor|pantalla|screen|display)?(?:\s+(?:have|run\s+at|running\s+at))?"
++    r")\b[\s?!.,]*$",
++    re.IGNORECASE,
++)
++
++
++def _display_status_question(text: str) -> bool:
++    """SYSTEM1459 «qué resolución tengo», «cuántos monitores tengo», «qué Hz tiene el
++    monitor»: a display.status read of the attached monitors — never a change."""
++
++    folded = _strip_request_envelope(_fold(text)).strip()
++    return (
++        _DISPLAY_STATUS_QUESTION.match(folded) is not None
++        and not _has(folded, r"\b(?:cambia|cambiar|pone|poner|ajusta|ajustar|sube|baja|set|change|brillo|brightness)\b")
++    )
++
++
+ def _bluetooth_state_question(text: str) -> bool:
+     """NETWORK1457 «tengo el bluetooth encendido», «y el bluetooth?»: a
+     bluetooth.radio.status read — the radio's state, never a device list."""
+@@ -9165,6 +9191,7 @@ def _is_direct_request(text: str) -> bool:
+         # verb head; the state question itself is the speech act.
+         or _wifi_state_question(text)
+         or _bluetooth_state_question(text)
++        or _display_status_question(text)
+     ):
+         return True
+     request_head = (
+@@ -9383,6 +9410,8 @@ def _strict_catalog_request(
+         return EffectIntent(("notification.list",), (text,))
+     if "bluetooth.radio.status" in available_operations and _bluetooth_state_question(text):
+         return EffectIntent(("bluetooth.radio.status",), (text,))
++    if "display.status" in available_operations and _display_status_question(text):
++        return EffectIntent(("display.status",), (text,))
+     if window_inventory_arguments(text) is not None:
+         return (
+             EffectIntent(("window.resolve",), (text,))
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index ea6e1241..2231e28e 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4843,6 +4843,39 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+             folded,
+         ) is None:
+             return "echo_without_report"
++    if (
++        payload.get("operation") == "display.status"
++        and isinstance(seen, dict)
++        and isinstance(seen.get("monitors"), list)
++    ):
++        # SYSTEM1459: every number in the reply must be an observed one
++        # (width, height, refresh rate, count), and the asked number must appear.
++        observed_numbers: set[str] = set()
++        for monitor in seen["monitors"]:
++            if isinstance(monitor, dict):
++                for key in ("width", "height", "refreshHz"):
++                    if isinstance(monitor.get(key), int):
++                        observed_numbers.add(str(monitor[key]))
++        count = seen.get("monitorCount")
++        if isinstance(count, int):
++            observed_numbers.add(str(count))
++        numbers_in_text = re.findall(r"(?<![\d.,])\d{2,}(?![\d.,])", text)
++        if any(number not in observed_numbers for number in numbers_in_text):
++            return "invented_number"
++        asks = _reading_fold(user_text)
++        if re.search(r"\bresoluci", asks) and not all(
++            any(str(monitor.get(key)) in text for monitor in seen["monitors"] if isinstance(monitor, dict))
++            for key in ("width", "height")
++        ):
++            return "missing_state"
++        if re.search(r"\b(?:hz|hertz|hercios|frecuencia|refresh)\b", asks) and not any(
++            str(monitor.get("refreshHz")) in text for monitor in seen["monitors"] if isinstance(monitor, dict)
++        ):
++            return "missing_state"
++        if re.search(r"\b(?:cuantos|cuantas|how\s+many)\b", asks) and isinstance(count, int):
++            words = {1: r"\b(?:un|uno|una|one|solo\s+un|1)\b", 2: r"\b(?:dos|two|2)\b", 3: r"\b(?:tres|three|3)\b", 4: r"\b(?:cuatro|four|4)\b"}
++            if not re.search(words.get(count, rf"\b{count}\b"), folded):
++                return "missing_state"
+     if (
+         payload.get("operation") == "bluetooth.radio.status"
+         and isinstance(seen, dict)
+@@ -11863,6 +11896,26 @@ class LlmRuntime:
+                 else "\nseen.radioOn es la radio Bluetooth: true significa encendida, false "
+                 "significa apagada. Di cuál, en una oración corta; no se cambió nada."
+             )
++        if (
++            visible_situation.get("operation") == "display.status"
++            and isinstance(visible_situation.get("seen"), dict)
++            and isinstance(visible_situation["seen"].get("monitors"), list)
++        ):
++            # SYSTEM1459: the read lists the attached monitors; answer only
++            # what was asked with the observed numbers.
++            instruct(
++                "\nseen.monitors are the attached monitors (name, primary, width, height "
++                "in pixels, refreshHz) and seen.monitorCount their number. Answer only "
++                "what the person asked with those exact numbers: the resolution as "
++                "width x height, the count, or the refresh rate in Hz. One or two short "
++                "sentences; no other numbers, nothing was changed."
++                if response_language == "en"
++                else "\nseen.monitors son los monitores conectados (name, primary, width, "
++                "height en píxeles, refreshHz) y seen.monitorCount su cantidad. Contesta "
++                "sólo lo que preguntó la persona con esos números exactos: la resolución "
++                "como ancho x alto, la cantidad, o la frecuencia en Hz. Una o dos "
++                "oraciones cortas; sin otros números; no se cambió nada."
++            )
+         if _search_results_text(visible_situation) is not None:
+             # WEB1445: the person asked a live question; the results are pages,
+             # not the answer itself. Say what was found, never what it might say.
+@@ -12565,6 +12618,11 @@ class LlmRuntime:
+                 if response_language == "en"
+                 else "No afirmes un estado del tiempo, temperatura ni pronóstico que los resultados no contengan; nombra en su lugar las páginas encontradas (sus títulos y sitios)."
+             ),
++            "invented_number": (
++                "Use only the observed numbers from seen.monitors (width, height, refreshHz) and seen.monitorCount; no other number."
++                if response_language == "en"
++                else "Usa sólo los números observados de seen.monitors (width, height, refreshHz) y seen.monitorCount; ningún otro número."
++            ),
+             "reversed_state": (
+                 "State the observed Bluetooth radio state exactly: seen.radioOn true is on, false is off."
+                 if response_language == "en"

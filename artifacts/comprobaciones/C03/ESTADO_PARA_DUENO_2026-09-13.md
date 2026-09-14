@@ -1,3 +1,25 @@
+## SYSTEM1459 — estado vigente 2026-09-14T20:34:43.687454+00:00
+
+Parcial: 13 aprobados, 0 fallidos, 0 sin ejecutar; 4 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 462/742 | 280 | 0 | >=336 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 332 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SYSTEM1459 añade 4. No se cuentan revalidaciones.
+
+Siguiente acción: SYSTEM1459: 13 ejecutados, 13 aprobados, 0 fallidos, 4 créditos (índices [0, 1, 2, 3]); Estado de hardware y sistema 38/40. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/SYSTEM1459/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 203.52 s acumulados; pico GPU 3497.56 MiB; pico RAM 1651.77 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 13; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SYSTEM1459 precedente. -->
+
 ## NETWORK1457 — estado vigente 2026-09-14T20:04:06.687409+00:00
 
 Parcial: 7 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.

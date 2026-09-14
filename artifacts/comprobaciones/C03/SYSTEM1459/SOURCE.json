@@ -1,0 +1,15 @@
+{
+  "schema": "c03-system1459-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (descriptor display.status, sólo lectura, sin argumentos), src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs (registro), src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs (lectura de los monitores conectados por EnumDisplayDevices/EnumDisplaySettings: seen.monitorCount, seen.monitors[].width/height/refreshHz/primary; sin cambio) y WindowsExternalCapabilityProvider.cs (razón), src/baxy_mind/effect_intent.py (_display_status_question), src/baxy_mind/__main__.py (argumentos vacíos), src/baxy_mind/llm.py (instrucción y vetos invented_number/missing_state), alias y matriz",
+  "patch": "artifacts/comprobaciones/C03/SYSTEM1459/SOURCE.patch",
+  "commits": [
+    "c40ba5f8a9b0eac9311f3c7c81ce64e440b66b45"
+  ],
+  "build": "BUILD1459 (C03-repairs1459-build/BUILD_READY.json; Kernel, Core, Providers y App recompilados)",
+  "cause_measured": "SYSTEM1301 documentó que H0125/H0195/H0464/H0707 (Hz, resolución, monitores) no tenían scope de pantalla en system.status: infraestructura nueva.",
+  "change": "Nueva operación de sólo lectura display.status (Kernel, Core, adaptador de Windows por la API de pantalla), lector determinista de las preguntas de resolución, cantidad y frecuencia, instrucción y vetos numéricos en el compositor. Sin respuestas fijas.",
+  "measurement": "SYSTEM1459: 13/13 ejecutados, 0 violaciones; las diez preguntas de pantalla (cuatro literales y seis variantes) leyeron los monitores con la nueva display.status, completada y verificada (un monitor de 1920 x 1080 a 144 Hz), y contestaron sólo con números observados (varias añadieron los otros datos observados y tres ecoaron el «tengo» del pedido en primera persona; nada inventado); los tres límites respondieron con cero lecturas; 4 créditos. Filas abiertas restantes de la categoría, condicionadas: «Dime que version de Windows tengo y cuanta RAM tiene este PC. Usa Python.» (el dueño no quiere Python como capacidad) y «dime la version de Python instalada» (sin mecanismo).",
+  "credits": 4
+}

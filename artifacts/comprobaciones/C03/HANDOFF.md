@@ -1,3 +1,11 @@
+# SYSTEM1459 adjudicado — 2026-09-14T20:34:43.687454+00:00
+
+**462/742 cubiertos, 280 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA ac0d35a7d48a9acec18ba3d5dc30d7f2e5a73326c01d75d0a3e5cf41ebd0f8aa. Primeras altas 24 h >= 336 (+4).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c40ba5f8 con BUILD1459 (lectura display.status; SYSTEM1459/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación.
+
+SYSTEM1459 («Estado de hardware y sistema», H0195/H0464 «qué resolución (de pantalla) tengo», H0707 «cuántos monitores tengo», H0125 «Que Hz tiene el monitor?», lectura de los monitores): 13/13 ejecutados, 0 violaciones; las diez preguntas de pantalla (cuatro literales y seis variantes) leyeron los monitores con la nueva display.status, completada y verificada (un monitor de 1920 x 1080 a 144 Hz), y contestaron sólo con números observados (varias añadieron los otros datos observados y tres ecoaron el «tengo» del pedido en primera persona; nada inventado); los tres límites respondieron con cero lecturas, 4 créditos. Adjudicación 22e34d66e88cd9179c44fe97f90378c303c4e40331ea7d600c22f4904087eb2f. Filas abiertas restantes de la categoría, condicionadas: «Dime que version de Windows tengo y cuanta RAM tiene este PC. Usa Python.» (el dueño no quiere Python como capacidad) y «dime la version de Python instalada» (sin mecanismo).
+
+---
+
 # NETWORK1457 adjudicado — 2026-09-14T20:04:06.687409+00:00
 
 **458/742 cubiertos, 284 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA fbee059ec016b13745d57c4f663773bd2d8c88873221de93d4b5e3d60418eeb3. Primeras altas 24 h >= 332 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6a860215 con BUILD1457 (lectura bluetooth.radio.status; NETWORK1457/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación.
