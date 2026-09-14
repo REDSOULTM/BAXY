@@ -193,3 +193,7 @@ Hora y fecha pasa de 18/23 a 18/23 con la comprobación del reloj relajada para 
 ## Actualización 2026-09-14 (CLOCK1333)
 
 Hora y fecha pasa de 18/23 a 18/23 con la exención de cuenta atrás en las dos comprobaciones del reloj (commit 7d36ba07, BUILD1333): 5 ejecutados, 2 aprobados (los dos límites), 3 fallidos (cuenta atrás: literal y dos pares), 0 violaciones, 0 créditos. Medición: la mente ya compone y publica la cuenta atrás («Faltan 13 horas y 43 minutos para las 3 de la tarde.»), pero la App la rechaza con missing_literal_fact porque su política de system.time exige la hora observada literal en el final. Reparación para CLOCK1335: política de la App consciente de la cuenta atrás (o final con hora y resto).
+
+## Actualización 2026-09-14 (CLOCK1335)
+
+Hora y fecha pasa de 18/23 a 19/23 con la política de la App consciente de la cuenta atrás (commit ef2a5f25, BUILD1335): 5 ejecutados, 5 aprobados, 0 fallidos, 0 violaciones; H0399 acreditado con dos pares, 1 créditos. Medición: con la política de la App consciente de la cuenta atrás el final publica el resto calculado por la mente sobre el reloj observado (13 h 37 min hasta las 15:00) sin repetir la hora. Hora y fecha queda en 19/23: los cuatro restantes están en portugués, alemán, francés e italiano (fuera de aceptación por idioma).

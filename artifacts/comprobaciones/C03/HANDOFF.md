@@ -1,3 +1,11 @@
+# CLOCK1335 adjudicado — 2026-09-14T04:26:08.222780+00:00
+
+**396/742 cubiertos, 346 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA cc4f4fd90237d8b4e6c7f416e3bdc76627c3d7e10d98e448e193932e9db3f114. Primeras altas 24 h >= 270 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD ef2a5f25 con BUILD1335 (App: política de cuenta atrás en UserMessagePolicy; CLOCK1335/SOURCE.json|SOURCE.patch; App recompilada).
+
+CLOCK1335 («Hora y fecha», la cuenta atrás con la política de la App consciente): 5 ejecutados, 5 aprobados, 0 fallidos, 0 violaciones; H0399 acreditado con dos pares, 1 créditos. Adjudicación 00347541c7e5d7a3825e4cfdf3abe53ec3c73f898663ffcf72f4cb5432eb71ed. Medición: con la política de la App consciente de la cuenta atrás el final publica el resto calculado por la mente sobre el reloj observado (13 h 37 min hasta las 15:00) sin repetir la hora. Hora y fecha queda en 19/23: los cuatro restantes están en portugués, alemán, francés e italiano (fuera de aceptación por idioma).
+
+---
+
 # CLOCK1333 adjudicado — 2026-09-14T04:20:28.173785+00:00
 
 **395/742 cubiertos, 347 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA c3cac3c801a6e4f9caf376af0b561375a72f92aba146f7496d4227d6661229fc. Primeras altas 24 h >= 269 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7d36ba07 con BUILD1333 (mente: exención de cuenta atrás en compose_visible_defect; CLOCK1333/SOURCE.json|SOURCE.patch; .NET sin cambios).

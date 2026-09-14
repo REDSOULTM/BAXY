@@ -1,0 +1,15 @@
+{
+  "schema": "c03-clock1335-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (IsCountdownRequest; ModelResponseRejectionReason: hora literal opcional y sin InventedExtraClock en cuenta atrás)",
+  "patch": "artifacts/comprobaciones/C03/CLOCK1335/SOURCE.patch",
+  "commits": [
+    "ef2a5f25287b255dac75635db41692a5b4d5ed11"
+  ],
+  "build": "BUILD1335 (C03-repairs1335-build/BUILD_READY.json; App recompilada)",
+  "cause_measured": "CLOCK1333: la mente publicó la cuenta atrás correcta y la App la rechazó tres veces con missing_literal_fact (su política exige la hora observada literal en todo final de system.time).",
+  "change": "App (UserMessagePolicy): en una cuenta atrás («cuánto falta para…», «how long until…») el final no tiene que repetir la hora observada y la hora pedida no cuenta como reloj inventado; el resto de la política sigue igual. Sin respuestas fijas.",
+  "measurement": "CLOCK1335: 5 ejecutados, 5 aprobados, 0 fallidos, 0 violaciones; H0399 acreditado con dos pares; 1 créditos. Medición: con la política de la App consciente de la cuenta atrás el final publica el resto calculado por la mente sobre el reloj observado (13 h 37 min hasta las 15:00) sin repetir la hora. Hora y fecha queda en 19/23: los cuatro restantes están en portugués, alemán, francés e italiano (fuera de aceptación por idioma).",
+  "credits": 1
+}
