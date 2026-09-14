@@ -180,6 +180,9 @@ internal static class UserMessagePolicy
         "datos verificables",
         "pasos verificables",
         "identificador interno",
+        // BRIGHT1287/1289 H0430: «…según la lectura de WMI» leaked the
+        // provider's mechanism into the confirmed final.
+        "wmi",
     ];
 
     internal static IReadOnlyList<string> ForbiddenResponseTerms => ForbiddenTerms;
