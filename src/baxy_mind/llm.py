@@ -3987,6 +3987,26 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         is not None
     ):
         return "invented_connectivity"
+    if (
+        payload.get("operation") == "wifi.status"
+        and isinstance(seen, dict)
+        and "connected" in seen
+        and re.search(r"\b(?:redes|networks?)\b", _fold_dialogue_text(user_text)) is not None
+        and re.search(
+            r"\b(?:hay|disponibles?|available|ves|see|cerca|nearby|alrededor|"
+            r"mostrame|muestrame|show|lista|listame|list|cuales|which|que)\b",
+            _fold_dialogue_text(user_text),
+        ) is not None
+        and re.search(
+            r"\bno (?:puedo|logro|se puede|es posible) (?:ver|escanear|listar|mostrar|buscar|detectar|enumerar)|"
+            r"\b(?:can't|cannot|can not|unable to) (?:see|scan|list|show|detect)|"
+            r"\bsin (?:poder )?escanear\b|\bno escane",
+            folded,
+        ) is None
+    ):
+        # NETWORK1295 H0302 «qué redes wifi hay»: the read only says whether
+        # wifi is connected; a list of available networks is not observable.
+        return "missing_scan_limit"
     # A verified account read must survive composition. UI264 returned the
     # assistant's identity while omitting the actual Windows userName. Match
     # the observed value, including accents, without accepting a longer name.
@@ -5659,6 +5679,15 @@ _PAST_ACTION_ATTRIBUTED_TO_USER = re.compile(
     r"\b(?:abriste|cerraste|mandaste|enviaste|borraste|eliminaste|hiciste|"
     r"guardaste|pusiste|subiste|bajaste|aumentaste|redujiste|disminuiste|"
     r"you\s+(?:opened|closed|sent|deleted|did|raised|lowered|turned))\b",
+    re.IGNORECASE,
+)
+
+# A completed effect reported as the person's own act («Ya apagaste el
+# bluetooth», NETWORK1295): second-person preterites of the effect verbs.
+_ACTION_ATTRIBUTED_TO_USER = re.compile(
+    r"\b(?:apagaste|encendiste|prendiste|activaste|desactivaste|abriste|cerraste|"
+    r"pusiste|subiste|bajaste|mandaste|enviaste|borraste|guardaste|silenciaste|"
+    r"you (?:turned|opened|closed|set|sent|saved|muted))\b",
     re.IGNORECASE,
 )
 
@@ -10905,6 +10934,15 @@ class LlmRuntime:
                 and _PROMISED_NAVIGATION.match(candidate) is not None
             ):
                 return "promised_effect"
+            if (
+                intent == "status"
+                and situation.get("verified") is True
+                and situation.get("succeeded") is True
+                and _ACTION_ATTRIBUTED_TO_USER.search(candidate) is not None
+            ):
+                # NETWORK1295 «Apagame el bluetooth.» → «Ya apagaste el
+                # bluetooth»: the assistant did it, not the person.
+                return "action_attributed_to_user"
             folded_candidate = candidate.casefold()
             vocabulary = without_observed_names(candidate, situation).casefold()
             if any(term.casefold() in vocabulary for term in forbidden_terms):
@@ -11132,6 +11170,18 @@ class LlmRuntime:
                 "It already happened: say you opened the site, in the past."
                 if response_language == "en"
                 else "Ya ocurrió: di que abriste el sitio, en pasado."
+            ),
+            "action_attributed_to_user": (
+                "You did it, not the person: say what you did, in the first person."
+                if response_language == "en"
+                else "Lo hiciste tú, no la persona: di lo que hiciste, en primera persona."
+            ),
+            "missing_scan_limit": (
+                "Only the wifi connection state was read; you cannot scan or list "
+                "available networks. Say so plainly."
+                if response_language == "en"
+                else "Sólo se leyó si el wifi está conectado; no puedes escanear ni "
+                "listar las redes disponibles. Dilo claramente."
             ),
             "missing_remembered": (
                 ("Keep these words exactly as given, untranslated: "
