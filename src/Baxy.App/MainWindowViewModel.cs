@@ -663,6 +663,23 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return execution.CurrentStep.Operation is "browser.navigate" or "browser.navigate.named";
         }
 
+        if (execution.Steps[0].Operation == "app.open")
+        {
+            // UI1393 «abrí la calculadora y apretá el 5»: a completed, verified
+            // opening (a real process) precedes the reviewed click on the window
+            // it produced; the reviewer still sees the single label argument.
+            return execution.CurrentStep.Operation == "input.visible.click"
+                && execution.PendingOperation is { } click
+                && click.Arguments.ValueKind == JsonValueKind.Object
+                && click.Arguments.EnumerateObject().Count() == 1
+                && click.Arguments.TryGetProperty("label", out JsonElement label)
+                && label.ValueKind == JsonValueKind.String
+                && !string.IsNullOrWhiteSpace(label.GetString())
+                && result["processId"] is JsonValue openedProcessValue
+                && openedProcessValue.TryGetValue(out int openedProcessId)
+                && openedProcessId > 0;
+        }
+
         if (execution.Steps[0].Operation is not ("window.resolve" or "window.active")
             || execution.CurrentStep.Operation != "app.close"
             || execution.PendingOperation is not { } prepared
