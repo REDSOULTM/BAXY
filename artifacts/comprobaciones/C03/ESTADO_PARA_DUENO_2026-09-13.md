@@ -1,3 +1,25 @@
+## UI1389 — estado vigente 2026-09-14T09:32:27.007786+00:00
+
+Parcial: 9 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 421/742 | 321 | 0 | >=295 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 294 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); UI1389 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: UI1389: 10 ejecutados, 9 aprobados, 1 fallidos, 1 créditos (índices [0]); Interacción dentro de aplicaciones 4/22. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/UI1389/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 227.66 s acumulados; pico GPU 3497.56 MiB; pico RAM 2377.17 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 10; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque UI1389 precedente. -->
+
 ## APPS1391 — estado vigente 2026-09-14T09:17:41.204507+00:00
 
 Parcial: 10 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

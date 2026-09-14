@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1389-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "sin cambio de fuente en esta tanda (BUILD1391 conserva la pista de reintento de BUILD1387, elegida por la razón de rechazo completa)",
+  "patch": "artifacts/comprobaciones/C03/UI1389/SOURCE.patch",
+  "commits": [
+    "e5bad13ad3e4b9e902ab2f13d8ca4e90280484ec"
+  ],
+  "build": "BUILD1391 (C03-repairs1391-build/BUILD_READY.json; binarios del HEAD actual, sin cambio de fuente en esta tanda)",
+  "cause_measured": "UI1377: la pista orientada nunca llegó al modelo; el compositor elegía la pista de reintento sólo por el defecto visible y missing_click_verb caía a la pista genérica (medido en APPS1383, reparado en BUILD1387).",
+  "change": "Sin cambio de fuente: se remide H0555 sobre BUILD1391, donde la pista de reintento del defecto missing_click_verb llega al modelo.",
+  "measurement": "UI1389: 10/10 ejecutados, 7 clics revisados pasados, 2 límites pasados, 1 límite sin respuesta publicada, 0 violaciones; 1 créditos. UI1389 sobre BUILD1391 sin cambio de fuente: H0555 «apretá el 5» acreditado con dos pares (input.visible.click verificado por cambio de superficie sobre la Calculadora propia de la raíz; finales «Hice clic en el 5.» y «Pulsé el 7.»); las seis variantes usaron verbo de clic («Presioné el nueve.», «Apreté el botón siete.», «I clicked the 3 button.») donde UI1373/1377 conjugaban el pedido porque la pista missing_click_verb nunca llegaba al reintento (reparado en BUILD1387). Condición nueva: «¿Qué botones tiene la calculadora?» no publicó nada; la respuesta fiel «Tiene botones para números, operaciones, igual, borrado y punto.» cayó tres veces por el término prohibido «operacion» de la App (UserMessagePolicy.ForbiddenTerms), comparado por subcadena en la mente y en la App, así que «operaciones» en sentido aritmético queda vetado; sin final publicado.",
+  "credits": 1
+}
