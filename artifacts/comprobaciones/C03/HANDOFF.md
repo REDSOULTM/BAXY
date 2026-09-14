@@ -1,3 +1,11 @@
+# APPS1391 adjudicado — 2026-09-14T09:17:41.204507+00:00
+
+**420/742 cubiertos, 322 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA c9624fb04353909fafccf1359beebd5d0b4df9b38f488303760f6ff41b7a6f35. Primeras altas 24 h >= 294 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5c6955c4 con BUILD1391 (App: apertura real admitida en un final de reloj; APPS1391/SOURCE.json|SOURCE.patch). Turnos ordinarios con app.open y system.time permitidos; la raíz cierra la Calculadora lanzada tras cada caso.
+
+APPS1391 («Abrir aplicaciones», H0183 abrir la calculadora y decir la hora, ordinario): 10/10 ejecutados, 6 pasados en el literal y sus variantes, 4 límites pasados, 0 violaciones; el límite 3 abortó una vez en el preflight de RAM del runner antes de la admisión y se reejecutó solo, 1 créditos. Adjudicación d5cd8415e80ff8b6133d9a31e9a9b98fdd7bf37282adbcc7f3c27a1bfffc906d. APPS1391 sobre BUILD1391 (App: InventedAppEffectOnClock omitida cuando la misión lleva un paso app.open completado): H0183 «abrí la calculadora y decime qué hora es» acreditado con dos pares (app.open de la Calculadora y system.time verificadas; finales «Abrí la calculadora y son las 06:00.» y «Abrí la calculadora y la hora es 06:01.»; la raíz cerró cada Calculadora lanzada). Tres reparaciones causales encadenadas en APPS1383/1387/1391: comprobación missing_prior_open del compositor, pista de reintento elegida por la razón completa, y exención de la App para misiones con app.open completado.
+
+---
+
 # APPS1387 adjudicado — 2026-09-14T08:52:04.412976+00:00
 
 **419/742 cubiertos, 323 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 22d15a121f8d9d59ad5ef942432d04450f5aa2a2861454b86fc02755f51665fb. Primeras altas 24 h >= 293 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD bcdba1fe con BUILD1387 (mente: la pista de reintento por la razón completa; APPS1387/SOURCE.json|SOURCE.patch; .NET sin cambios). Turnos ordinarios con app.open y system.time permitidos; la raíz cierra la Calculadora lanzada tras cada caso.

@@ -1,0 +1,123 @@
+{
+  "schema": "apps1391-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1391-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1391-instrument-v1",
+  "seal_sha256": "9b45035ebd815ba616614483860e5b19555e6d3fdb839e46f4ac23a2cd6803b4",
+  "runner_sha256": "0fef1f1dff5412b9e753d49de5e0a408a23643df352060c0827cd1963e26ecee",
+  "transport_seal_sha256": "9d5db4036e234d891819cae433e93ea3018a5898e2b53ea095b49b4f54c5b766",
+  "files": {
+    "panel.json": "63027f78c76b402c3255b6f8a681575e3ecbaf76b48a08407b069b30c22a2b8b",
+    "turns.jsonl": "2373b708cbb80f3e6e96efd5e59ba0b77e0b92be8ec23dc32972b63e7b73bfaa",
+    "case-map.json": "3546ab28213cf5474bdc76057a978953b4659a2faafb578d9d99679077ffa97f",
+    "PLAN.md": "4c4943403b44969dec9a119ff672de49f7c378a05e59caee5292ef4e274ef1e4"
+  },
+  "counts": {
+    "cases": 10,
+    "historical_literals": 1,
+    "original_development_variants": 5,
+    "boundaries": 4,
+    "wire_lines": 20,
+    "session_controls": 10,
+    "ordinary_turns": 10,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 10,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 5,
+    "boundary": 4
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0183",
+      "kind": "historical_literal",
+      "group": "compound_open_time",
+      "credit_behavior": "compound_open_time",
+      "text_sha256": "387b0a7647565661d444f71c056158baf4595330027fa6833a51d87ecbf59ce2",
+      "criterion_sha256": "b811dbf45af5160fcd219b20c8bee60410c6522ac73df88ece9322139e569deb"
+    },
+    {
+      "index": 1,
+      "case_id": "apps1391-dev-01",
+      "kind": "original_development_variant",
+      "group": "compound_open_time",
+      "credit_behavior": "compound_open_time",
+      "text_sha256": "1e7156cdd08c4377d51b7a056457af43e2f850865882d9638c369338f60947aa",
+      "criterion_sha256": "b811dbf45af5160fcd219b20c8bee60410c6522ac73df88ece9322139e569deb"
+    },
+    {
+      "index": 2,
+      "case_id": "apps1391-dev-02",
+      "kind": "original_development_variant",
+      "group": "compound_open_time",
+      "credit_behavior": "compound_open_time",
+      "text_sha256": "3bef698964d29a77b4d866cb411f062715876bc9a0b4f2c0ff58438ec9f54086",
+      "criterion_sha256": "b811dbf45af5160fcd219b20c8bee60410c6522ac73df88ece9322139e569deb"
+    },
+    {
+      "index": 3,
+      "case_id": "apps1391-dev-03",
+      "kind": "original_development_variant",
+      "group": "compound_open_time",
+      "credit_behavior": "compound_open_time",
+      "text_sha256": "ca44236c80870483d334a5ad1a715ab78d60c6b4be0bc76498ab89a51c468035",
+      "criterion_sha256": "b811dbf45af5160fcd219b20c8bee60410c6522ac73df88ece9322139e569deb"
+    },
+    {
+      "index": 4,
+      "case_id": "apps1391-dev-04",
+      "kind": "original_development_variant",
+      "group": "compound_open_time",
+      "credit_behavior": "compound_open_time",
+      "text_sha256": "1bdda19230f36cff7d799f69c678cd2db48efdbff349532c836d6d1612b91d0b",
+      "criterion_sha256": "b811dbf45af5160fcd219b20c8bee60410c6522ac73df88ece9322139e569deb"
+    },
+    {
+      "index": 5,
+      "case_id": "apps1391-dev-05",
+      "kind": "original_development_variant",
+      "group": "compound_open_time",
+      "credit_behavior": "compound_open_time",
+      "text_sha256": "5a8ed92c26fee54170dfc1b1a1e6621113ebe8069248cc204b939d9c76089932",
+      "criterion_sha256": "b811dbf45af5160fcd219b20c8bee60410c6522ac73df88ece9322139e569deb"
+    },
+    {
+      "index": 6,
+      "case_id": "apps1391-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "e8d7a593f636c597a31f590bc1f0ad35896b2c5d431456b30732a66e1d0f2d49",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 7,
+      "case_id": "apps1391-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "a9e5431c4ba97d4dc828b4b38847de30509ce64e69444f88d4ae5460671ba442",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    },
+    {
+      "index": 8,
+      "case_id": "apps1391-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "6bf7bc2eac631da63a583a7d0b901c2206a8f25f226d44ef6bf04876ba77830b",
+      "criterion_sha256": "63254e50babccd725db7cbdcfa1601d6663ea2a66fd81b4211de988d8972274d"
+    },
+    {
+      "index": 9,
+      "case_id": "apps1391-boundary-04",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "c6571045888de422d18eda937aa814c95741add8bdd27480ef36716afd6cfda7",
+      "criterion_sha256": "63254e50babccd725db7cbdcfa1601d6663ea2a66fd81b4211de988d8972274d"
+    }
+  ]
+}

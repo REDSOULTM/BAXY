@@ -1,0 +1,15 @@
+{
+  "schema": "c03-apps1391-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (InventedAppEffectOnClock omitida cuando la misión lleva un paso app.open completado: MissionOpenedAnApplication)",
+  "patch": "artifacts/comprobaciones/C03/APPS1391/SOURCE.patch",
+  "commits": [
+    "5c6955c493a0c338a90f00c56119f4383b3e7e3e"
+  ],
+  "build": "BUILD1391 (C03-repairs1391-build/BUILD_READY.json; App recompilada)",
+  "cause_measured": "APPS1387: la mente compuso «Abrí la calculadora y son las 05:46.» y la App lo rechazó tres veces como missing_literal_fact (InventedAppEffectOnClock trata cualquier «abrí » en un final de reloj como efecto inventado); la variante inglesa aprobó.",
+  "change": "La regla InventedAppEffectOnClock de la App se omite cuando la fuente estructurada de la misión lleva un paso app.open completado o verificado; los pedidos de hora puros conservan la guardia. Sin respuestas fijas.",
+  "measurement": "APPS1391: 10/10 ejecutados, 6 pasados en el literal y sus variantes, 4 límites pasados, 0 violaciones; el límite 3 abortó una vez en el preflight de RAM del runner antes de la admisión y se reejecutó solo; 1 créditos. APPS1391 sobre BUILD1391 (App: InventedAppEffectOnClock omitida cuando la misión lleva un paso app.open completado): H0183 «abrí la calculadora y decime qué hora es» acreditado con dos pares (app.open de la Calculadora y system.time verificadas; finales «Abrí la calculadora y son las 06:00.» y «Abrí la calculadora y la hora es 06:01.»; la raíz cerró cada Calculadora lanzada). Tres reparaciones causales encadenadas en APPS1383/1387/1391: comprobación missing_prior_open del compositor, pista de reintento elegida por la razón completa, y exención de la App para misiones con app.open completado.",
+  "credits": 1
+}

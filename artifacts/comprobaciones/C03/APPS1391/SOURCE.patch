@@ -1,0 +1,67 @@
+commit 5c6955c493a0c338a90f00c56119f4383b3e7e3e
+
+C03: a clock final may say the application was opened when the mission really opened it (APPS1391)
+
+APPS1387 measured «abrí la calculadora y decime qué hora es»: the mind now composed «Abrí la calculadora y son las 05:46.», and the App rejected it three times as missing_literal_fact because InventedAppEffectOnClock treats any «abrí » in a clock final as an invented app effect; the English «I opened the calculator. The time is 05:48.» passed because its markers differ.
+
+Baxy.App UserMessagePolicy: InventedAppEffectOnClock is skipped when the structured mission source carries a step with operation app.open that succeeded or was verified (MissionOpenedAnApplication). Pure clock requests keep the guard.
+
+Mind unchanged. Tests not run (owner order). App recompiled in BUILD1391.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/UserMessagePolicy.cs b/src/Baxy.App/UserMessagePolicy.cs
+index 9f34b93e..3cb63b68 100644
+--- a/src/Baxy.App/UserMessagePolicy.cs
++++ b/src/Baxy.App/UserMessagePolicy.cs
+@@ -2339,7 +2339,10 @@ internal static class UserMessagePolicy
+ 
+     private static bool InventedAppEffectOnClock(string source, string result)
+     {
+-        if (!TryDerivedLocalClock(source, out _))
++        // APPS1387 «abrí la calculadora y decime qué hora es»: the mission did
++        // open the application before reading the clock, so «Abrí la calculadora
++        // y son las 05:46» states a verified effect, not an invented one.
++        if (!TryDerivedLocalClock(source, out _) || MissionOpenedAnApplication(source))
+         {
+             return false;
+         }
+@@ -2356,6 +2359,37 @@ internal static class UserMessagePolicy
+                 "im at the pc"]);
+     }
+ 
++    private static bool MissionOpenedAnApplication(string source)
++    {
++        if (!IsStructuredFacts(source)
++            || !TryReadJson(source, out JsonElement root)
++            || !root.TryGetProperty("steps", out JsonElement steps)
++            || steps.ValueKind != JsonValueKind.Array)
++        {
++            return false;
++        }
++
++        foreach (JsonElement step in steps.EnumerateArray())
++        {
++            if (step.ValueKind == JsonValueKind.String
++                && step.GetString() is { Length: > 0 } text
++                && IsStructuredFacts(text)
++                && TryReadJson(text, out JsonElement nested)
++                && nested.TryGetProperty("operation", out JsonElement operation)
++                && operation.ValueKind == JsonValueKind.String
++                && operation.GetString() == "app.open"
++                && ((nested.TryGetProperty("succeeded", out JsonElement succeeded)
++                        && succeeded.ValueKind == JsonValueKind.True)
++                    || (nested.TryGetProperty("verified", out JsonElement verified)
++                        && verified.ValueKind == JsonValueKind.True)))
++            {
++                return true;
++            }
++        }
++
++        return false;
++    }
++
+     private static bool IsBareSuccessOpener(string modelText)
+     {
+         string folded = FoldForPolicy(modelText).Trim().Trim('.', '!', ' ');
