@@ -1,3 +1,11 @@
+# CLOCK1331 adjudicado — 2026-09-14T04:15:35.070804+00:00
+
+**395/742 cubiertos, 347 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 09325bc01812e860ce49f66a37acdbae6eeed5230142addec7c5258247014758. Primeras altas 24 h >= 269 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD cb98a428 con BUILD1331 (mente: hora observada opcional en la cuenta atrás; CLOCK1331/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+CLOCK1331 («Hora y fecha», la cuenta atrás sobre la comprobación del reloj relajada): 5 ejecutados, 2 aprobados (los dos límites), 3 fallidos (cuenta atrás: literal y dos pares), 0 violaciones, 0 créditos. Adjudicación 8a05f37eafdf5f2a0539df13f02adf95460a0aab6ceaa9f619c799d57de15dff. Medición: la lectura y el cálculo del resto (13 h 48 min para las 15:00) son correctos, pero compose_visible_defect conserva una segunda comprobación del reloj (clock_required) que veta el borrador correcto como missing_name. Reparación para CLOCK1333: misma exención de cuenta atrás en esa comprobación.
+
+---
+
 # CLOCK1329 adjudicado — 2026-09-14T03:58:16.508697+00:00
 
 **395/742 cubiertos, 347 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA ce1bb8ca71278ef9cadc9d98713d201d6493dfbb33f619844db8897221a881a9. Primeras altas 24 h >= 269 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 95688821 con BUILD1329 (mente: cuenta atrás calculada sobre el reloj observado; «tiempo» como lectura; CLOCK1329/SOURCE.json|SOURCE.patch; .NET sin cambios).

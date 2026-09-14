@@ -1,0 +1,42 @@
+commit cb98a42817095c3097c63493ba2830ba8cb8a8a2
+
+C03: a countdown answer need not restate the observed clock (CLOCK1331)
+
+CLOCK1329 measured: «Faltan 14 horas y 7 minutos para las 3 de la tarde.» was the correct countdown answer, but the clock fact check demanded the observed time in the text and vetoed it eighteen times (missing_name). With countdown facts in the payload the observed clock is optional in the final; a contrary clock claim is still a defect, and the instruction asks for the remaining time until the target, with the clock as an option.
+
+No .NET change. Offline probe only; tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index c65efb85..14edb8fe 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4278,7 +4278,12 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+                 allowed.append((int(countdown.get("remaining_hours", 0)), int(countdown.get("remaining_minutes", 0))))
+             except (TypeError, ValueError):
+                 pass
+-        clock_defect = _clock_fact_defect(text, clock, allowed=tuple(allowed))
++        # CLOCK1329 H0399: «Faltan 14 horas y 7 minutos para las 3 de la tarde»
++        # answers the countdown without restating the clock; the observed time
++        # is optional there and only a contrary clock claim is a defect.
++        clock_defect = _clock_fact_defect(
++            text, clock, required=not isinstance(countdown, dict), allowed=tuple(allowed),
++        )
+         if clock_defect:
+             return clock_defect
+     calendar_date = payload.get("date")
+@@ -10851,10 +10856,10 @@ class LlmRuntime:
+         if clock and isinstance(payload.get("countdown"), dict):
+             countdown = payload["countdown"]
+             instruct(
+-                "\nState the time in clock, then say that countdown.remaining remains "
+-                "until countdown.target"
++                "\nSay that countdown.remaining remains until countdown.target"
+                 + (" (it already passed today, so this is until tomorrow)" if countdown.get("already_passed_today") else "")
+                 + ". Copy those figures exactly; never compute them yourself. "
++                "You may also state the time in clock. "
+                 "Do not set the clock. Do not introduce yourself."
+             )
+         elif clock and _requests_calendar_date(user_text):

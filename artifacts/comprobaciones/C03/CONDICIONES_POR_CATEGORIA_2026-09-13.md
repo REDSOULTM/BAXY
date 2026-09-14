@@ -185,3 +185,7 @@ Identidad y capacidades del asistente pasa de 17/19 a 19/19 con la forma de pres
 ## Actualización 2026-09-14 (CLOCK1329)
 
 Hora y fecha pasa de 16/23 a 18/23 con la cuenta atrás y la palabra suelta «tiempo» como lecturas del reloj (commit 95688821, BUILD1329): 9 ejecutados, 6 aprobados, 3 fallidos (cuenta atrás: literal y dos pares), 0 violaciones; H0054 y H0312 acreditados con dos pares, 2 créditos. Medición: la palabra suelta «tiempo» se lee como hora y el final da el reloj observado; la cuenta atrás lee el reloj y la mente calcula el resto (14 h 7 min para las 15:00), pero la comprobación del reloj exige la hora observada en el texto y veta el borrador correcto (missing_name). Reparación para CLOCK1331: en una cuenta atrás la hora observada no es obligatoria en el final.
+
+## Actualización 2026-09-14 (CLOCK1331)
+
+Hora y fecha pasa de 18/23 a 18/23 con la comprobación del reloj relajada para la cuenta atrás (commit cb98a428, BUILD1331): 5 ejecutados, 2 aprobados (los dos límites), 3 fallidos (cuenta atrás: literal y dos pares), 0 violaciones, 0 créditos. Medición: la lectura y el cálculo del resto (13 h 48 min para las 15:00) son correctos, pero compose_visible_defect conserva una segunda comprobación del reloj (clock_required) que veta el borrador correcto como missing_name. Reparación para CLOCK1333: misma exención de cuenta atrás en esa comprobación.

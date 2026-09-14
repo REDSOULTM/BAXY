@@ -1,0 +1,15 @@
+{
+  "schema": "c03-clock1331-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_payload_fact_defect: required=False con countdown; instrucción de cuenta atrás)",
+  "patch": "artifacts/comprobaciones/C03/CLOCK1331/SOURCE.patch",
+  "commits": [
+    "cb98a42817095c3097c63493ba2830ba8cb8a8a2"
+  ],
+  "build": "BUILD1331 (C03-repairs1331-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "CLOCK1329: el borrador correcto de la cuenta atrás («Faltan 14 horas y 7 minutos para las 3 de la tarde.») fue vetado 18 veces como missing_name por exigir la hora observada en el texto.",
+  "change": "Compositor: con countdown en el payload la hora observada es opcional en el final (sólo un reloj contrario es defecto); la instrucción pide el resto hasta la hora pedida y admite la hora como opción. Sin respuestas fijas.",
+  "measurement": "CLOCK1331: 5 ejecutados, 2 aprobados (los dos límites), 3 fallidos (cuenta atrás: literal y dos pares), 0 violaciones; 0 créditos. Medición: la lectura y el cálculo del resto (13 h 48 min para las 15:00) son correctos, pero compose_visible_defect conserva una segunda comprobación del reloj (clock_required) que veta el borrador correcto como missing_name. Reparación para CLOCK1333: misma exención de cuenta atrás en esa comprobación.",
+  "credits": 0
+}
