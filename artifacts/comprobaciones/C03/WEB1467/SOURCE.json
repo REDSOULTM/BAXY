@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1467-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "Sin cambio de fuente. Instrumento: allowed_failure_codes por grupo (web_search_results_irrelevant) y adjudicador con regla de prefijo: la secuencia permitida puede terminar en la operación que falló con el código sellado (rebinding en build_web1467.py, diff en root_adjudicate_from_decisions_DIFF.patch).",
+  "patch": "artifacts/comprobaciones/C03/WEB1467/SOURCE.patch",
+  "commits": [
+    "2adb59eff93b38ecfea8ec8ab755039fc19a5750"
+  ],
+  "build": "BUILD1463 (C03-repairs1463-build/BUILD_READY.json; reutilizado, sin cambio de fuente)",
+  "cause_measured": "WEB1291 y sondas de esta sesión: el motor público devuelve páginas ajenas para «Transformers», «recetas de …», «que es el h2o» y para los juegos en Steam; el filtro de pertinencia las rechaza y la búsqueda termina fallida; WEB1291 midió finales honestos sin crédito porque la regla sellada exigía la operación completada y verificada.",
+  "change": "Instrumento: códigos de fallo honesto sellados por grupo con regla de prefijo; el final debe nombrar el tema o el juego y no inventar contenido ni direcciones. Sin respuestas fijas, sin cambio de producto.",
+  "measurement": "WEB1467: 12/12 ejecutados, una parada del runner; las búsquedas por tema terminaron fallidas por resultados no pertinentes con finales veraces que nombran el tema (pizza, lasaña, Transformers), salvo «Busca Transformers», que esta vez sí encontró cinco páginas pertinentes y las informó con fidelidad; «que es el h2o» dijo la verdad sin nombrar el tema (fallido); las páginas de Steam por búsqueda dijeron la verdad para Marvel Rivals y Stardew Valley, pero la variante de Terraria encontró la tienda y pidió confirmar la navegación, que el transporte ordinario no admite (sin par); los tres límites respondieron con cero búsquedas; 2 créditos. Instrumento de fallo honesto con regla de prefijo (la secuencia permitida puede terminar en la operación fallida con código sellado). Filas abiertas restantes de la categoría: H0618 (nombrar el tema en el final), H0360/H0723 (transporte revisado para la navegación cuando el motor encuentra la página), Portal UNIEJ, Opera GX, «abre youtube.com en Chrome», «abrí una pestaña nueva», compuestos.",
+  "credits": 2
+}
