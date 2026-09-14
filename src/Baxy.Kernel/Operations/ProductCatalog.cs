@@ -356,6 +356,18 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Busca grupos de archivos duplicados en Descargas mediante tamaño y SHA-256 sin modificarlos."),
         Descriptor(
+            "filesystem.known.list",
+            Schema(
+                [
+                    String("folder", values: ["desktop", "documents", "downloads"]),
+                    Integer("limit", 1, 100),
+                ],
+                ["folder"]),
+            OperationRisks.ReadOnly,
+            "filesystem.known.list.windows.toplevel.identities.v1",
+            ToolExposure.Public,
+            "Lista las entradas de primer nivel (archivos y carpetas) de una carpeta conocida de Windows sin revelar rutas."),
+        Descriptor(
             "filesystem.known.search",
             Schema(
                 [
@@ -369,18 +381,6 @@ public static class ProductCatalog
             "filesystem.known.search.windows.identities.v1",
             ToolExposure.Public,
             "Busca archivos por nombre en carpetas conocidas de Windows sin seguir puntos de reanálisis ni revelar rutas."),
-        Descriptor(
-            "filesystem.known.list",
-            Schema(
-                [
-                    String("folder", values: ["desktop", "documents", "downloads"]),
-                    Integer("limit", 1, 100),
-                ],
-                ["folder"]),
-            OperationRisks.ReadOnly,
-            "filesystem.known.list.windows.toplevel.identities.v1",
-            ToolExposure.Public,
-            "Lista las entradas de primer nivel (archivos y carpetas) de una carpeta conocida de Windows sin revelar rutas."),
         Descriptor(
             "filesystem.known.trash.named",
             Schema(
