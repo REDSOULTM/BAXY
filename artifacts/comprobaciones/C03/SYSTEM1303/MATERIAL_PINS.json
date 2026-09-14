@@ -1,0 +1,132 @@
+{
+  "schema": "system1303-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-system1303-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-system1303-instrument-v1",
+  "seal_sha256": "fc9daa8ebdd4688f60d42d1141ce5f1a2405f5061912240e8d63b83b550f13fb",
+  "runner_sha256": "861b7ff19297aa6da7e7be3718f5c8001d0db0ccfe332551c4404a935b1757e6",
+  "transport_seal_sha256": "934d12e5aee48fda65c5f2ad9dc72559011557753f5cc013ad26de2c97da23a0",
+  "files": {
+    "panel.json": "2f21963ca1f2e6deeb0ff30f83a21555526629591a5ab714b660b05cc7322d94",
+    "turns.jsonl": "128f56f80168569a3547750cb85162d99d8e5cdeec0fd7eb568af328d36c6cd3",
+    "case-map.json": "818f5c3e320779b0817f8658e43b2d74171a053c1002f833c045b402ad86bb62",
+    "PLAN.md": "a5e64245fe97b14b160cc8d66a37776656f78d987e239c570a251789428fb888"
+  },
+  "counts": {
+    "cases": 11,
+    "historical_literals": 3,
+    "original_development_variants": 6,
+    "boundaries": 2,
+    "wire_lines": 22,
+    "session_controls": 11,
+    "ordinary_turns": 11,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 11,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 3,
+    "original_development_variant": 6,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0219",
+      "kind": "historical_literal",
+      "group": "disk",
+      "credit_behavior": "disk",
+      "text_sha256": "45bbd6c0f4c74fbb03d4da16522e08f76a9900eab8f5900c3bccc9bbe16fac6c",
+      "criterion_sha256": "f31cee0401d8bae676f1278d1fae9017b3596e9768be887bb7cd7dd00c6d6989"
+    },
+    {
+      "index": 1,
+      "case_id": "H0532",
+      "kind": "historical_literal",
+      "group": "memory",
+      "credit_behavior": "memory",
+      "text_sha256": "bab4c055d13938bd5f84f9923bb2e8b6cd04a8e09f635b858f29c46efc6da137",
+      "criterion_sha256": "621fde0b36d79e496b44f9a164bec692658eb0f51b8fbbb81ba21e83b6fee535"
+    },
+    {
+      "index": 2,
+      "case_id": "H0508",
+      "kind": "historical_literal",
+      "group": "os_memory",
+      "credit_behavior": "os_memory",
+      "text_sha256": "ae3ac9f58c9e2f88805f9fe51112510b9c7dfb2d98b1d8bf86449671d1a12b1c",
+      "criterion_sha256": "8e58e884ed5a7757e0c139b37599438e724f06ae687ed2bbe8642578e9d63ffd"
+    },
+    {
+      "index": 3,
+      "case_id": "system1303-dev-01",
+      "kind": "original_development_variant",
+      "group": "disk",
+      "credit_behavior": "disk",
+      "text_sha256": "4699d978dd39fa069dc6e3990a26c59a5d4e0cfb17e80bb3edb60f5b413a5efb",
+      "criterion_sha256": "f31cee0401d8bae676f1278d1fae9017b3596e9768be887bb7cd7dd00c6d6989"
+    },
+    {
+      "index": 4,
+      "case_id": "system1303-dev-02",
+      "kind": "original_development_variant",
+      "group": "disk",
+      "credit_behavior": "disk",
+      "text_sha256": "f80ba33c8e7e7f2951c0529013350639c094a947bb1693d5d1d70b73ec3db482",
+      "criterion_sha256": "f31cee0401d8bae676f1278d1fae9017b3596e9768be887bb7cd7dd00c6d6989"
+    },
+    {
+      "index": 5,
+      "case_id": "system1303-dev-03",
+      "kind": "original_development_variant",
+      "group": "memory",
+      "credit_behavior": "memory",
+      "text_sha256": "227329c2aff41f34bdc3c4a3decc36a235ebd236767233dcbe978c618aea520a",
+      "criterion_sha256": "621fde0b36d79e496b44f9a164bec692658eb0f51b8fbbb81ba21e83b6fee535"
+    },
+    {
+      "index": 6,
+      "case_id": "system1303-dev-04",
+      "kind": "original_development_variant",
+      "group": "memory",
+      "credit_behavior": "memory",
+      "text_sha256": "57938a0eb3cf4cc87df6c47d44deefe55b1b9aff7a7115ace55bef5e2ab135ab",
+      "criterion_sha256": "621fde0b36d79e496b44f9a164bec692658eb0f51b8fbbb81ba21e83b6fee535"
+    },
+    {
+      "index": 7,
+      "case_id": "system1303-dev-05",
+      "kind": "original_development_variant",
+      "group": "os_memory",
+      "credit_behavior": "os_memory",
+      "text_sha256": "78efe542987acdae803e862b5c8a7426c7dcaa9325b3be52f0dcaabad4ea5767",
+      "criterion_sha256": "8e58e884ed5a7757e0c139b37599438e724f06ae687ed2bbe8642578e9d63ffd"
+    },
+    {
+      "index": 8,
+      "case_id": "system1303-dev-06",
+      "kind": "original_development_variant",
+      "group": "os_memory",
+      "credit_behavior": "os_memory",
+      "text_sha256": "bc37e0fddf627189b0a3d1298a3c0d1b4a74d19d88d0a35087bd4ab2fac31cb8",
+      "criterion_sha256": "8e58e884ed5a7757e0c139b37599438e724f06ae687ed2bbe8642578e9d63ffd"
+    },
+    {
+      "index": 9,
+      "case_id": "system1303-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "d2d59b58393de7226b07748446ef4b45f3d890a8e51c444a6be973c62dbe615d",
+      "criterion_sha256": "f648e9003d688ffc9f53ad40156bc02c924a0962996f9a15ca9d0e58bc6fa9b0"
+    },
+    {
+      "index": 10,
+      "case_id": "system1303-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "24e019a4bbbebb1dd5225076b9f0f8d457553a9b3b613ce04b8b60b4a489764f",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    }
+  ]
+}

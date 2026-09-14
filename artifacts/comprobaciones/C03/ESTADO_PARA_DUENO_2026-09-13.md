@@ -1,3 +1,25 @@
+## SYSTEM1303 — estado vigente 2026-09-14T02:03:53.862692+00:00
+
+Parcial: 9 aprobados, 2 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 381/742 | 361 | 0 | >=255 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 253 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SYSTEM1303 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: SYSTEM1303: 11 ejecutados, 9 aprobados, 2 fallidos, 2 créditos (índices [0, 1]). Siguiente: etiqueta «instalada» sobre el total (compositor) y categoría por masa abierta.
+
+Evidencia: `artifacts/comprobaciones/C03/SYSTEM1303/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 177.00 s acumulados; pico GPU 3497.56 MiB; pico RAM 1633.38 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 11; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SYSTEM1303 precedente. -->
+
 ## NETWORK1301 — estado vigente 2026-09-14T01:54:05.868783+00:00
 
 Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.

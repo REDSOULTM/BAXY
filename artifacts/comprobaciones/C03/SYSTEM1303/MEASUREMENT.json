@@ -1,0 +1,11 @@
+{
+  "schema": "c03-system1303-measurement-v1",
+  "status": "measured",
+  "measured_by": "root (Claude Fable 5.1)",
+  "candidate": "HEAD 10f0ae30 con BUILD1301 (sin fuente nueva)",
+  "panel": "disk, memory, os_memory con pares simples; 2 límites",
+  "result": "11 ejecutados, 9 aprobados, 2 fallidos; 2 créditos. H0219 «cuánto espacio tengo» acreditado con pares «¿Cuánto espacio libre me queda?» y «Cuánto espacio tengo en el disco» (system.status disk verificada, 103,19 GB libres); H0532 «tirame cuánta memoria tengo» acreditado con pares «cuánta RAM tengo» y «decime cuánta memoria tiene el PC» (memory verificada, 16,54 GB total sin etiqueta falsa). H0508 y un par de os_memory fallaron por llamar «instalados» al total (instalada observada 17,18 GB); el otro par de os_memory pasó. Límites aprobados.",
+  "residual": "H0508 y su par «Decime qué Windows tengo y cuánta RAM tiene esta compu.»: la lectura os_memory se verifica pero el modelo llama «instalados» al total (16,54 GB) cuando la instalada observada es 17,18 GB; falta un defecto de compositor para la etiqueta «instalada» sobre el total.",
+  "adjudication_sha256": "4fe85fe982fd9560f202e387db7966d858f2f7359eba5d0a3b648c3299f3cf46",
+  "credits": 2
+}

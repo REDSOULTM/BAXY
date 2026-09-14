@@ -1,3 +1,11 @@
+# SYSTEM1303 adjudicado — 2026-09-14T02:03:53.862692+00:00
+
+**381/742 cubiertos, 361 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 2743e496b5a29d28af1b62ba605db5986dc193a2a444749a041527ade06e4322. Primeras altas 24 h >= 255 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 10f0ae30 con BUILD1301 (sin fuente nueva).
+
+SYSTEM1303 («Estado de hardware y sistema», lecturas system.status de disco, memoria y Windows+RAM con pares simples): 11 ejecutados, 9 aprobados, 2 fallidos, 2 créditos. Adjudicación 4fe85fe982fd9560f202e387db7966d858f2f7359eba5d0a3b648c3299f3cf46. H0219 «cuánto espacio tengo» acreditado con pares «¿Cuánto espacio libre me queda?» y «Cuánto espacio tengo en el disco» (system.status disk verificada, 103,19 GB libres); H0532 «tirame cuánta memoria tengo» acreditado con pares «cuánta RAM tengo» y «decime cuánta memoria tiene el PC» (memory verificada, 16,54 GB total sin etiqueta falsa). H0508 y un par de os_memory fallaron por llamar «instalados» al total (instalada observada 17,18 GB); el otro par de os_memory pasó. Límites aprobados.
+
+---
+
 # NETWORK1301 adjudicado — 2026-09-14T01:54:05.868783+00:00
 
 **379/742 cubiertos, 363 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 512d94216e89d2a8e9d01d6dcf1fee2005db157a262ffc28383fb79149e552ed. Primeras altas 24 h >= 253 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD ca34b99d con BUILD1301 (mente: defecto de actor sobre operation + seen; NETWORK1301/SOURCE.json|SOURCE.patch; .NET sin cambios). Radio Bluetooth propia del PC fijada por la raíz antes de cada caso y restaurada (apagada) después (net_case.sh, bt_radio.ps1).
