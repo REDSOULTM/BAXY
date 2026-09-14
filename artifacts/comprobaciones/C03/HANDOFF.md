@@ -1,3 +1,11 @@
+# CONVERSATION1347 adjudicado — 2026-09-14T05:16:57.304519+00:00
+
+**400/742 cubiertos, 342 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 3d5bea13869199ab5f93956ada64b6e2b93351b0955fb588bb957bed2266761f. Primeras altas 24 h >= 274 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f35a46bf con BUILD1347 (mente: presupuesto 128 para las formas; App: contenido visual fuera de catálogo; CONVERSATION1347/SOURCE.json|SOURCE.patch; App recompilada).
+
+CONVERSATION1347 («Conversación social y ayuda general», tranquilización y pedido de meme con presupuesto y regla de la App): 8 ejecutados, 5 aprobados, 3 fallidos, 0 violaciones; H0069 acreditado con dos pares, 1 créditos. Adjudicación 7eb1f5c1547067403777e9856452aeece84c166edc80099af011fbb57442a7aa. Medición: con el contenido visual fuera de catálogo en la App, el límite llano de la mente se publica («No puedo mostrar contenido visual como un meme…»). La tranquilización produjo «Gracias, entiendo. No hay problema.» pero el contrato de la forma exige una sola oración y el reintento estructurado volvió vacío. Reparación para CONVERSATION1349: el acuse admite dos oraciones breves.
+
+---
+
 # CONVERSATION1345 adjudicado — 2026-09-14T05:09:24.561370+00:00
 
 **399/742 cubiertos, 343 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 3e1e8c7b966e8ca7749170fe93b173fd5bd3d67ab5c87eb127d845137391b67f. Primeras altas 24 h >= 273 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e0189729 con BUILD1345 (mente: tranquilización y contenido visual sin aclaración; forma visual_content_boundary; CONVERSATION1345/SOURCE.json|SOURCE.patch; .NET sin cambios).

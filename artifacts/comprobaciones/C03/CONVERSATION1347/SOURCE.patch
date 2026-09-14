@@ -1,0 +1,72 @@
+commit f35a46bf23d1d5e5df5035dfb70ff171ff3fbdf6
+
+C03: the new conversation shapes get a 128-token budget; visual content requests are out of catalog for the App policy (CONVERSATION1347)
+
+CONVERSATION1345 measured: the reassurance acknowledgement truncated twice at 64 tokens (truncated_structured_reply) and the turn fell to a recovery clarification; the App rejected the mind's «No puedo mostrar contenido visual como un meme en este entorno.» as looks_like_failure and published its own out-of-catalog wording with the subject inverted.
+
+Mind: reassurance_ack, misnamed_greeting, identity and visual_content_boundary share the 128-token budget of constraint_ack (first attempt and retry). App (UserMessagePolicy): a request to have, send or show memes, images, photos, gifs or stickers is an out-of-world request, so the failure-looking check no longer rejects the honest boundary reply.
+
+App recompiled (BUILD1347). Tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/UserMessagePolicy.cs b/src/Baxy.App/UserMessagePolicy.cs
+index 17ab626d..9f34b93e 100644
+--- a/src/Baxy.App/UserMessagePolicy.cs
++++ b/src/Baxy.App/UserMessagePolicy.cs
+@@ -1304,8 +1304,24 @@ internal static class UserMessagePolicy
+     // Whole words only: «martes» contains «marte», and a note about next
+     // Tuesday is not a trip to Mars. NOTES1142 measured that substring
+     // match sending a verified note result through the conversation veto.
++    /// <summary>
++    /// CONVERSATION1345 «Tienes algun meme?»: memes, images, photos, gifs and
++    /// stickers cannot be shown here; the mind's plain boundary reply («no
++    /// puedo mostrar memes…») must not be rejected as a failure report.
++    /// </summary>
++    private static bool AsksForVisualContent(string user) =>
++        Regex.IsMatch(
++            user,
++            @"\b(?:tienes|tenes|tendras|tendrias|hay|manda|mandas|mandame|envia|envias|enviame|pasa|pasas|pasame|"
++            + @"muestra|muestras|muestrame|mostra|mostrame|da|das|dame|tira|tirame|"
++            + @"do you have|have you got|got|send|show|give)\b"
++            + @"[^.!?]{0,40}\b(?:meme|memes|imagen|imagenes|foto|fotos|gif|gifs|sticker|stickers|dibujo|dibujos|"
++            + @"picture|pictures|image|images|photo|photos)\b",
++            RegexOptions.CultureInvariant);
++
+     private static bool LooksLikeOutOfWorldRequest(string user) =>
+         AsksForAWorldAction(user)
++        || AsksForVisualContent(user)
+         || ContainsAnyWholeWord(
+             user,
+             ["marte", "mars", "jupiter", "saturn", "neptun", "pluton",
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 629abb64..5497a106 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -7668,7 +7668,12 @@ class LlmRuntime:
+             # NEGATIVE1309: the constraint acknowledgement's structured reply hit
+             # the 64-token ceiling twice («truncated_structured_reply») and the
+             # turn fell back to a clarification.
+-            (160 if presentation_shape == "how_it_works" else 128 if presentation_shape in {"content_draft", "roleplay_draft", "constraint_ack"} else 64)
++            # CONVERSATION1345: the reassurance acknowledgement truncated twice
++            # at 64 tokens (truncated_structured_reply) like constraint_ack did.
++            (160 if presentation_shape == "how_it_works" else 128 if presentation_shape in {
++                "content_draft", "roleplay_draft", "constraint_ack", "reassurance_ack",
++                "misnamed_greeting", "identity", "visual_content_boundary",
++            } else 64)
+             if presentation_shape is not None
+             else {
+                 "social": 64,
+@@ -7990,7 +7995,10 @@ class LlmRuntime:
+             retry_payload["max_tokens"] = (
+                 160 if presentation_shape == "how_it_works" else
+                 128
+-                if presentation_shape in {"content_draft", "roleplay_draft", "constraint_ack"}
++                if presentation_shape in {
++                    "content_draft", "roleplay_draft", "constraint_ack", "reassurance_ack",
++                    "misnamed_greeting", "identity", "visual_content_boundary",
++                }
+                 else 64
+                 if presentation_shape is not None
+                 else 96

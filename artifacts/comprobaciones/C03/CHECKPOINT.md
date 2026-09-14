@@ -1,3 +1,25 @@
+## CONVERSATION1347 — estado vigente 2026-09-14T05:16:57.304519+00:00
+
+Parcial: 6 aprobados, 2 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 400/742 | 342 | 0 | >=274 | 3/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 273 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); CONVERSATION1347 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: CONVERSATION1347: 8 ejecutados, 6 aprobados, 2 fallidos, 1 créditos (índices [1]); Conversación social y ayuda general 27/31. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/CONVERSATION1347/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 147.12 s acumulados; pico GPU 3497.56 MiB; pico RAM 2063.27 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque CONVERSATION1347 precedente. -->
+
 ## CONVERSATION1345 — estado vigente 2026-09-14T05:09:24.561370+00:00
 
 Parcial: 3 aprobados, 5 fallidos, 0 sin ejecutar; 0 créditos.

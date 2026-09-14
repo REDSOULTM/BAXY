@@ -1,0 +1,15 @@
+{
+  "schema": "c03-conversation1347-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (presupuestos de las formas); src/Baxy.App/UserMessagePolicy.cs (LooksLikeOutOfWorldRequest: contenido visual)",
+  "patch": "artifacts/comprobaciones/C03/CONVERSATION1347/SOURCE.patch",
+  "commits": [
+    "f35a46bf23d1d5e5df5035dfb70ff171ff3fbdf6"
+  ],
+  "build": "BUILD1347 (C03-repairs1347-build/BUILD_READY.json; App recompilada)",
+  "cause_measured": "CONVERSATION1345: el acuse de tranquilización se truncó a 64 tokens y el turno cayó en aclaración; la App rechazó (looks_like_failure) la respuesta de límite visual de la mente y publicó su mensaje de fuera de catálogo con sujeto invertido.",
+  "change": "Mente: presupuesto de 128 tokens para reassurance_ack, misnamed_greeting, identity y visual_content_boundary. App (UserMessagePolicy): los pedidos de memes, imágenes, fotos, gifs o stickers son fuera de catálogo, así que la respuesta de límite no se rechaza como fallo. Sin respuestas fijas.",
+  "measurement": "CONVERSATION1347: 8 ejecutados, 5 aprobados, 3 fallidos, 0 violaciones; H0069 acreditado con dos pares; 1 créditos. Medición: con el contenido visual fuera de catálogo en la App, el límite llano de la mente se publica («No puedo mostrar contenido visual como un meme…»). La tranquilización produjo «Gracias, entiendo. No hay problema.» pero el contrato de la forma exige una sola oración y el reintento estructurado volvió vacío. Reparación para CONVERSATION1349: el acuse admite dos oraciones breves.",
+  "credits": 1
+}
