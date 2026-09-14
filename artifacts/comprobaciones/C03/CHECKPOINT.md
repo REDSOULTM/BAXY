@@ -1,3 +1,25 @@
+## FILES1427 — estado vigente 2026-09-14T15:35:56.629315+00:00
+
+Parcial: 11 aprobados, 0 fallidos, 0 sin ejecutar; 4 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 441/742 | 301 | 0 | >=315 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 311 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); FILES1427 añade 4. No se cuentan revalidaciones.
+
+Siguiente acción: FILES1427: 11 ejecutados, 11 aprobados, 0 fallidos, 4 créditos (índices [0, 1, 2, 3]); Archivos y carpetas 23/32. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/FILES1427/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 181.01 s acumulados; pico GPU 3497.56 MiB; pico RAM 1589.98 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 11; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque FILES1427 precedente. -->
+
 ## SCREEN1423 — estado vigente 2026-09-14T15:06:14.438635+00:00
 
 Parcial: 9 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.

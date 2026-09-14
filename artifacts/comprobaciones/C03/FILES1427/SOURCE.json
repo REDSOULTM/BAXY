@@ -1,0 +1,16 @@
+{
+  "schema": "c03-files1427-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (descriptor filesystem.known.list de sólo lectura), src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs (handler), src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs y WindowsExternalCapabilityProvider.cs (entradas de primer nivel sin rutas, ocultos y de sistema omitidos), src/Baxy.App/ObservedResponseLiterals.cs y MindSidecarClient.cs (nombres listados como datos observados; presupuesto denso), src/baxy_mind/effect_intent.py, __main__.py, llm.py y observed_response_literals.py (lector del listado, fundamento del enum de carpeta, proyección a total y seis nombres, defectos listing_unlisted_name/listing_wrong_count, enmascarado de nombres)",
+  "patch": "artifacts/comprobaciones/C03/FILES1427/SOURCE.patch",
+  "commits": [
+    "76e6ecdd4aaafc3e70a00cad6e63617b2a611111",
+    "ed16761804e7d015e359d9997a2835e11517db65"
+  ],
+  "build": "BUILD1427 (C03-repairs1427-build/BUILD_READY.json; Kernel, Core, Providers.Windows y App recompilados; BUILD1425 abortó por el orden del catálogo)",
+  "cause_measured": "Los listados de carpetas del dueño no tenían operación: filesystem.list está confinada al sandbox y filesystem.known.search exige un nombre a buscar (CONDICIONES: «Listados (4) sin operación de listado de carpetas conocidas»); el dueño autorizó el proveedor de carpetas conocidas el 2026-09-13.",
+  "change": "Nueva operación filesystem.known.list (carpeta ∈ desktop/documents/downloads, límite ≤ 100) que devuelve las entradas de primer nivel con nombre, tipo, tamaño y fecha, sin rutas; lector determinista de las formas de listado; el compositor informa el total y nombra hasta seis entradas tal cual. Sin respuestas fijas.",
+  "measurement": "FILES1427: 11/11 ejecutados, 11 aprobados (8 listados con total verificado y seis nombres citados tal cual, 3 límites), 0 fallidos, cero violaciones; 4 créditos. Los finales dicen el total real de entradas de la carpeta, citan seis nombres listados tal cual y avisan de que hay más; los nombres quedan privados. Quedan condicionados en la categoría: contar y listar recientes (H0453), .py del directorio actual (H0701), contenido dinámico (H0334/H0426), zip (H0542), backup a pendrive (H0733), resumen de PDF (H0666), borrado de carpeta (H0327) y la ruta literal (H0299).",
+  "credits": 4
+}

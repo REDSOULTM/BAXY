@@ -1,3 +1,11 @@
+# FILES1427 adjudicado — 2026-09-14T15:35:56.629315+00:00
+
+**441/742 cubiertos, 301 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA e58fc58d9f00c4478a61473c744f01c99287dbd0292cf63fbdcc2115c1954fcf. Primeras altas 24 h >= 315 (+4).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 76e6ecdd con BUILD1427 (filesystem.known.list construida en Kernel, Core, proveedor Windows, App y mente; FILES1427/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación; los nombres listados quedan en los recibos privados y nunca se publican.
+
+FILES1427 («Archivos y carpetas», H0201/H0264 «lista los archivos del escritorio», H0329/H0698 «qué hay en Descargas», listado de primer nivel de una carpeta conocida): 11/11 ejecutados, 11 aprobados (8 listados con total verificado y seis nombres citados tal cual, 3 límites), 0 fallidos, cero violaciones, 4 créditos. Adjudicación 7349e780e1efb8e87ac21c80339cf17193007b0521ab630f2dc01a138748db1d. Los finales dicen el total real de entradas de la carpeta, citan seis nombres listados tal cual y avisan de que hay más; los nombres quedan privados. Quedan condicionados en la categoría: contar y listar recientes (H0453), .py del directorio actual (H0701), contenido dinámico (H0334/H0426), zip (H0542), backup a pendrive (H0733), resumen de PDF (H0666), borrado de carpeta (H0327) y la ruta literal (H0299).
+
+---
+
 # SCREEN1423 adjudicado — 2026-09-14T15:06:14.438635+00:00
 
 **437/742 cubiertos, 305 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 22f95ee88907a2c89975208c1a0e917282905706eaffa9c278cd9c7292b233ed. Primeras altas 24 h >= 311 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a5ff01d4 con BUILD1423 (mente: escapes copiados deshechos, formas de código sobre la copia enmascarada, líneas de layout enmascaradas; SCREEN1423/SOURCE.json|SOURCE.patch). La raíz aprueba sólo una capture.screenshot sin argumentos (approve_capture.py); la captura queda en el directorio privado del perfil y nunca se publica.

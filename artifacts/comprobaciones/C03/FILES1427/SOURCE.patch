@@ -1,0 +1,531 @@
+commit 76e6ecdd4aaafc3e70a00cad6e63617b2a611111
+
+C03: the known-folder listing descriptor sits in the catalog's ordinal order (FILES1427)
+
+FILES1425 measured nothing: baxy-core stopped in the static initializer of ProductCatalog («stable unique operation and verifier identities») because filesystem.known.list was inserted after filesystem.known.search, and every case ended blocked_environment/runtime_not_ready.
+
+Baxy.Kernel ProductCatalog: the descriptor moves before filesystem.known.search (catalog names verified sorted, 171 descriptors). Product recompiled (BUILD1427); the core answers the hello with filesystem.known.list advertised. Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Kernel/Operations/ProductCatalog.cs b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+index 46d19ed5..dc55d49d 100644
+--- a/src/Baxy.Kernel/Operations/ProductCatalog.cs
++++ b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+@@ -356,31 +356,31 @@ public static class ProductCatalog
+             ToolExposure.Public,
+             "Busca grupos de archivos duplicados en Descargas mediante tamaño y SHA-256 sin modificarlos."),
+         Descriptor(
+-            "filesystem.known.search",
++            "filesystem.known.list",
+             Schema(
+                 [
+-                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
++                    String("folder", values: ["desktop", "documents", "downloads"]),
+                     Integer("limit", 1, 100),
+-                    String("query", maximumUtf8Bytes: 512, nonWhitespace: true),
+-                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
+                 ],
+-                ["folder", "query"]),
++                ["folder"]),
+             OperationRisks.ReadOnly,
+-            "filesystem.known.search.windows.identities.v1",
++            "filesystem.known.list.windows.toplevel.identities.v1",
+             ToolExposure.Public,
+-            "Busca archivos por nombre en carpetas conocidas de Windows sin seguir puntos de reanálisis ni revelar rutas."),
++            "Lista las entradas de primer nivel (archivos y carpetas) de una carpeta conocida de Windows sin revelar rutas."),
+         Descriptor(
+-            "filesystem.known.list",
++            "filesystem.known.search",
+             Schema(
+                 [
+-                    String("folder", values: ["desktop", "documents", "downloads"]),
++                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
+                     Integer("limit", 1, 100),
++                    String("query", maximumUtf8Bytes: 512, nonWhitespace: true),
++                    String("subdirectory", maximumUtf8Bytes: 512, nonWhitespace: true),
+                 ],
+-                ["folder"]),
++                ["folder", "query"]),
+             OperationRisks.ReadOnly,
+-            "filesystem.known.list.windows.toplevel.identities.v1",
++            "filesystem.known.search.windows.identities.v1",
+             ToolExposure.Public,
+-            "Lista las entradas de primer nivel (archivos y carpetas) de una carpeta conocida de Windows sin revelar rutas."),
++            "Busca archivos por nombre en carpetas conocidas de Windows sin seguir puntos de reanálisis ni revelar rutas."),
+         Descriptor(
+             "filesystem.known.trash.named",
+             Schema(
+commit ed16761804e7d015e359d9997a2835e11517db65
+
+C03: known folders can be listed on request, names only (FILES1425 infrastructure, BUILD1425)
+
+The owner's folder listings (H0201/H0264 «lista los archivos del escritorio», H0329/H0698 «qué hay en Descargas») had no operation: filesystem.list is confined to the sandbox and filesystem.known.search needs a name to look for. The owner authorized the known-folder provider on 2026-09-13.
+
+Baxy.Kernel ProductCatalog: filesystem.known.list (folder ∈ desktop/documents/downloads, limit 1..100), read-only, public, "windows.toplevel.identities.v1".
+Baxy.Core ExternalCapabilityHandlers: the operation is routed to the external provider.
+Baxy.Providers.Windows WindowsKnownFileAdapter.List: top-level entries of the named known folder (name, kind, size, modifiedUtc; folders first, then names), hidden and system entries skipped, no paths, count/fileCount/folderCount, bounded by the limit, authority windows_known_folder_toplevel_postread; WindowsExternalCapabilityProvider names the required adapter.
+Baxy.App ObservedResponseLiterals: listed names are observed data (dots, hyphens and underscores included); MindSidecarClient: a listing is a dense output (ten-second budget).
+baxy_mind effect_intent: _known_folder_listing_request reads the whole-folder listing forms (list/show/tell the files of…, what is in…) and owns the folder enum; __main__ grounds folder and limit 100 without literal words; llm projects the receipt to folder label, counts and six names, instructs one quotation per name, and vetoes listing_unlisted_name/listing_wrong_count; observed_response_literals masks the listed names.
+
+Offline probe: the four literals and five variants resolve to filesystem.known.list with the right folder; definitions, a prohibition, a name search and the screen question do not; a faithful listing passes the vetoes, an invented name or count does not. Product compiled (BUILD1425). Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/MindSidecarClient.cs b/src/Baxy.App/MindSidecarClient.cs
+index 065d82f3..378b8334 100644
+--- a/src/Baxy.App/MindSidecarClient.cs
++++ b/src/Baxy.App/MindSidecarClient.cs
+@@ -251,6 +251,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
+             {
+                 "window.resolve" => "windows",
+                 "system.process.list" => "processes",
++                "filesystem.known.list" => "entries",
+                 _ => null,
+             };
+             return collection is not null && observed[collection] is JsonArray rows
+diff --git a/src/Baxy.App/ObservedResponseLiterals.cs b/src/Baxy.App/ObservedResponseLiterals.cs
+index b0823828..478fc6f2 100644
+--- a/src/Baxy.App/ObservedResponseLiterals.cs
++++ b/src/Baxy.App/ObservedResponseLiterals.cs
+@@ -86,6 +86,26 @@ internal static class ObservedResponseLiterals
+                 }
+             }
+         }
++        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
++            && IsString(node, "operation", "filesystem.known.list")
++            && node.TryGetProperty("verified", out JsonElement listVerified) && listVerified.ValueKind == JsonValueKind.True
++            && node.TryGetProperty("succeeded", out JsonElement listSucceeded) && listSucceeded.ValueKind == JsonValueKind.True
++            && node.TryGetProperty("observed", out JsonElement listing) && listing.ValueKind == JsonValueKind.Object
++            && listing.TryGetProperty("entries", out JsonElement listed) && listed.ValueKind == JsonValueKind.Array)
++        {
++            // FILES1425 «lista los archivos del escritorio»: the person asked for
++            // the folder's names; a listed name (dots, hyphens, underscores
++            // included) is observed data, not vocabulary about BAXY.
++            foreach (JsonElement entry in listed.EnumerateArray())
++            {
++                if (entry.ValueKind == JsonValueKind.Object
++                    && entry.TryGetProperty("name", out JsonElement listedName) && listedName.ValueKind == JsonValueKind.String
++                    && listedName.GetString() is { Length: > 0 and <= 4096 } entryName && !string.IsNullOrWhiteSpace(entryName))
++                {
++                    names.Add(entryName);
++                }
++            }
++        }
+         if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+             && IsString(node, "operation", "ocr.read")
+             && node.TryGetProperty("verified", out JsonElement readVerified) && readVerified.ValueKind == JsonValueKind.True
+diff --git a/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs b/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
+index 35c92db1..b48fdf35 100644
+--- a/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
++++ b/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
+@@ -79,6 +79,7 @@ internal static class ExternalCapabilityHandlers
+         "filesystem.file.open.latest",
+         "filesystem.folder.open",
+         "filesystem.known.duplicates",
++        "filesystem.known.list",
+         "filesystem.known.search",
+         "filesystem.known.trash.named",
+         "filesystem.path.ensure.absent",
+diff --git a/src/Baxy.Kernel/Operations/ProductCatalog.cs b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+index 43c0e157..46d19ed5 100644
+--- a/src/Baxy.Kernel/Operations/ProductCatalog.cs
++++ b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+@@ -369,6 +369,18 @@ public static class ProductCatalog
+             "filesystem.known.search.windows.identities.v1",
+             ToolExposure.Public,
+             "Busca archivos por nombre en carpetas conocidas de Windows sin seguir puntos de reanálisis ni revelar rutas."),
++        Descriptor(
++            "filesystem.known.list",
++            Schema(
++                [
++                    String("folder", values: ["desktop", "documents", "downloads"]),
++                    Integer("limit", 1, 100),
++                ],
++                ["folder"]),
++            OperationRisks.ReadOnly,
++            "filesystem.known.list.windows.toplevel.identities.v1",
++            ToolExposure.Public,
++            "Lista las entradas de primer nivel (archivos y carpetas) de una carpeta conocida de Windows sin revelar rutas."),
+         Descriptor(
+             "filesystem.known.trash.named",
+             Schema(
+diff --git a/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs b/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
+index 4f62dc6f..8d12f090 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
+@@ -160,7 +160,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
+                 "cdp_browser_session_required",
+             "filesystem.folder.open" => "windows_shell_folder_adapter_required",
+             "filesystem.file.open.latest" => "windows_shell_file_adapter_required",
+-            "filesystem.known.duplicates" or "filesystem.known.search" or "filesystem.known.trash.named" =>
++            "filesystem.known.duplicates" or "filesystem.known.list" or "filesystem.known.search"
++                or "filesystem.known.trash.named" =>
+                 "windows_known_folder_authority_required",
+             "filesystem.path.ensure.absent" => "windows_absolute_path_absence_authority_required",
+             "filesystem.sandbox.append.named" or "filesystem.sandbox.diff.named"
+diff --git a/src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs b/src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs
+index 35cb0423..89daa3d2 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs
+@@ -22,7 +22,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
+     }
+ 
+     public bool CanHandle(string operation) => operation is
+-        "filesystem.known.duplicates" or "filesystem.known.search"
++        "filesystem.known.duplicates" or "filesystem.known.list" or "filesystem.known.search"
+         or "filesystem.known.trash.named" or "filesystem.path.ensure.absent";
+ 
+     public ValueTask<ExternalCapabilityReceipt> InvokeAsync(
+@@ -48,6 +48,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
+             {
+                 "filesystem.known.duplicates" => Duplicates(
+                     operation, roots, arguments, cancellationToken),
++                "filesystem.known.list" => List(operation, roots, arguments),
+                 "filesystem.known.search" => Search(operation, roots, arguments),
+                 "filesystem.known.trash.named" => Trash(
+                     operation, roots, arguments, effectBoundary),
+@@ -241,6 +242,74 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
+         return ExternalJson.Success(operation, result, effectObserved: false);
+     }
+ 
++    private static ExternalCapabilityReceipt List(
++        string operation,
++        (string Label, string Root)[] roots,
++        JsonElement arguments)
++    {
++        // FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
++        // the top-level entries of one known folder, names and kinds only.
++        // Hidden and system entries (desktop.ini) are not what the person sees.
++        int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 50), 1, 100);
++        var options = new EnumerationOptions
++        {
++            RecurseSubdirectories = false,
++            IgnoreInaccessible = true,
++            AttributesToSkip = FileAttributes.Hidden | FileAttributes.System,
++        };
++        List<(string Name, bool IsFolder, long Size, DateTime ModifiedUtc)> entries = [];
++        bool anyRoot = false;
++        string folderLabel = roots.Length > 0 ? roots[0].Label : "";
++        foreach ((string label, string root) in roots)
++        {
++            if (!Directory.Exists(root)) continue;
++            anyRoot = true;
++            folderLabel = label;
++            foreach (string path in Directory.EnumerateFileSystemEntries(root, "*", options))
++            {
++                bool isFolder = Directory.Exists(path);
++                entries.Add((
++                    Path.GetFileName(path),
++                    isFolder,
++                    isFolder ? 0 : new FileInfo(path).Length,
++                    isFolder ? Directory.GetLastWriteTimeUtc(path) : File.GetLastWriteTimeUtc(path)));
++            }
++        }
++        if (!anyRoot) return ExternalJson.Failure(operation, "known_folder_unavailable");
++        var shown = entries
++            .OrderBy(item => item.IsFolder ? 0 : 1)
++            .ThenBy(item => item.Name, StringComparer.OrdinalIgnoreCase)
++            .Take(limit)
++            .ToArray();
++        int folderCount = entries.Count(item => item.IsFolder);
++        JsonElement result = ExternalJson.Create(writer =>
++        {
++            writer.WriteStartObject(); writer.WriteNumber("version", 1);
++            writer.WriteString("folder", folderLabel);
++            writer.WriteNumber("count", entries.Count);
++            writer.WriteNumber("fileCount", entries.Count - folderCount);
++            writer.WriteNumber("folderCount", folderCount);
++            writer.WriteStartArray("entries");
++            foreach (var entry in shown)
++            {
++                writer.WriteStartObject();
++                writer.WriteString("name", entry.Name);
++                writer.WriteString("kind", entry.IsFolder ? "folder" : "file");
++                if (!entry.IsFolder) writer.WriteNumber("size", entry.Size);
++                writer.WriteString("modifiedUtc", entry.ModifiedUtc);
++                writer.WriteEndObject();
++            }
++            writer.WriteEndArray();
++            writer.WriteNumber("shownCount", shown.Length);
++            writer.WriteNumber("resultLimit", limit);
++            writer.WriteBoolean("resultsMayBeTruncated", entries.Count > shown.Length);
++            writer.WriteBoolean("hiddenAndSystemSkipped", true);
++            writer.WriteString("authority", "windows_known_folder_toplevel_postread");
++            writer.WriteEndObject();
++        });
++        return ExternalJson.Success(operation, result, effectObserved: false);
++    }
++
+     private ExternalCapabilityReceipt Trash(
+         string operation,
+         IReadOnlyList<(string Label, string Root)> roots,
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 3bcfde2c..f03ea9ff 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -5139,6 +5139,11 @@ def _explicit_arguments_from_evidence(
+         if len(folders) == 1:
+             return {"folder": next(iter(folders))}
+ 
++    if operation == "filesystem.known.list":
++        listed_folder = effect_intent._known_folder_listing_request(evidence)
++        if listed_folder is not None:
++            return {"folder": listed_folder, "limit": 100}
++
+     if operation == "filesystem.known.search":
+         literal_search = effect_intent._literal_known_file_search(evidence)
+         if literal_search is not None:
+@@ -5255,6 +5260,13 @@ def _ground_explicit_arguments(
+             explicit = {"name": name}
+     if explicit is None:
+         return None
++    if (
++        operation == "filesystem.known.list"
++        and effect_intent._known_folder_listing_request(evidence) == explicit.get("folder")
++    ):
++        # The listing reader owns the known-folder enum and the bounded limit;
++        # neither is a word the person must spell literally.
++        return explicit if validate_json_schema_instance(explicit, schema) else None
+     if (
+         operation == "filesystem.known.search"
+         and effect_intent._literal_known_file_search(evidence) == explicit
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 20882209..a5948a5c 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -9115,6 +9115,36 @@ def _is_direct_request(text: str) -> bool:
+     )
+ 
+ 
++_KNOWN_FOLDER_LISTING = (
++    r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
++    r"(?:(?:lista|listame|list|enumera|enumerame|mostrame|muestrame|muestra|show me|show|"
++    r"decime|dime|contame|cuentame|tell me)\s+(?:me\s+)?(?:que\s+|what\s+)?(?:los|las|the|mis|my|todos los|all the|all)?\s*"
++    r"(?:archivos|ficheros|files|documentos|cosas|things)\s+(?:(?:que\s+)?(?:hay|tengo|are|is)\s+)?"
++    r"(?:de|del|en|in|on|of|from)\s+|"
++    r"(?:que|what)\s+(?:(?:archivos?|ficheros?|files?|cosas?|things?)\s+)?"
++    r"(?:hay|tengo|is|is there|are|are there|do i have|i have)\s+(?:en|in|on)\s+)"
++    r"(?:mi|el|la|my|the)?\s*(?:carpeta\s+(?:de\s+)?|folder\s+)?"
++    r"(?P<folder>escritorio|desktop|descargas|downloads|documentos|documents)"
++    r"(?:\s+(?:folder|carpeta))?[\s?!.]*$"
++)
++_KNOWN_FOLDER_ENUM = {
++    "escritorio": "desktop", "desktop": "desktop",
++    "descargas": "downloads", "downloads": "downloads",
++    "documentos": "documents", "documents": "documents",
++}
++
++
++def _known_folder_listing_request(text: str) -> str | None:
++    """FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
++    the known-folder enum of a whole-folder listing request, else None."""
++
++    folded = _fold(text)
++    match = re.match(_KNOWN_FOLDER_LISTING, folded)
++    if match is None:
++        return None
++    return _KNOWN_FOLDER_ENUM.get(match.group("folder"))
++
++
+ def _strict_catalog_request(
+     text: str,
+     available_operations: frozenset[str],
+@@ -9132,6 +9162,11 @@ def _strict_catalog_request(
+     # (``Baxy, por favor: ...``).  The outer resolver removes one layer; peel
+     # at most one remaining non-semantic layer for surface invariance.
+     text = _strip_request_envelope(text).strip().rstrip(".!?").rstrip()
++    if (
++        "filesystem.known.list" in available_operations
++        and _known_folder_listing_request(text) is not None
++    ):
++        return EffectIntent(("filesystem.known.list",), (text,))
+     if window_inventory_arguments(text) is not None:
+         return (
+             EffectIntent(("window.resolve",), (text,))
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index a93b14e9..2d760373 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3807,6 +3807,8 @@ def _compose_situation_payload(
+                 and situation.get("succeeded") is True
+             ):
+                 visible_seen["writtenText"] = written
++        elif operation == "filesystem.known.list":
++            visible_seen = _project_known_listing(visible_seen, language)
+         elif operation == "ocr.read":
+             # SCREEN1407 «leéme lo que dice la pantalla»: the receipt carries the
+             # layout boxes, hashes and timestamps (about 30 KB) and the composer
+@@ -4456,6 +4458,72 @@ def _recognized_screen_text(payload: dict) -> str | None:
+     return None
+ 
+ 
++_LISTING_SHOWN_NAMES = 6
++_KNOWN_FOLDER_LABELS = {
++    "desktop": ("el escritorio", "the desktop"),
++    "downloads": ("Descargas", "Downloads"),
++    "documents": ("Documentos", "Documents"),
++}
++
++
++def _project_known_listing(observed: dict, language: str) -> dict:
++    """FILES1425 «lista los archivos del escritorio»: the receipt carries up to a
++    hundred entries with sizes and dates; the person needs the count and some
++    names, exactly as listed. Folders come first, as the provider ordered them."""
++
++    entries = observed.get("entries")
++    names = [
++        str(entry.get("name")).strip()
++        for entry in (entries if isinstance(entries, list) else [])
++        if isinstance(entry, dict) and isinstance(entry.get("name"), str) and entry.get("name").strip()
++    ]
++    shown = names[:_LISTING_SHOWN_NAMES]
++    folder = observed.get("folder")
++    labels = _KNOWN_FOLDER_LABELS.get(str(folder), (str(folder), str(folder)))
++    count = observed.get("count") if type(observed.get("count")) is int else len(names)
++    projected: dict = {
++        "folder": labels[1 if language == "en" else 0],
++        "count": count,
++        "names": shown,
++        "shownNames": len(shown),
++        "moreNotShown": max(count - len(shown), 0),
++    }
++    for key in ("fileCount", "folderCount"):
++        if type(observed.get(key)) is int:
++            projected[key] = observed[key]
++    return projected
++
++
++def _known_listing_in_payload(payload: dict) -> dict | None:
++    """The projected listing («seen» with names) of a verified known-folder listing."""
++
++    if payload.get("operation") != "filesystem.known.list":
++        return None
++    seen = payload.get("seen")
++    if isinstance(seen, dict) and isinstance(seen.get("names"), list):
++        return seen
++    return None
++
++
++def _listing_fact_defect(text: str, seen: dict) -> str:
++    """A quoted name must be a listed name; a number must be one of the counts."""
++
++    listed = {_reading_fold(str(name)) for name in seen.get("names") or []}
++    for quoted in re.findall(r'[«"“]([^»"”]{1,4096})[»"”]', text):
++        candidate = _reading_fold(quoted.strip().rstrip(".,;:"))
++        if candidate and candidate not in listed:
++            return "listing_unlisted_name"
++    counts = {
++        str(seen.get(key)) for key in ("count", "fileCount", "folderCount", "shownNames", "moreNotShown")
++        if type(seen.get(key)) is int
++    }
++    prose = re.sub(r'[«"“][^»"”]{1,4096}[»"”]', " ", text)
++    for number in re.findall(r"(?<![\w.-])\d+(?![\w.-])", prose):
++        if number not in counts:
++            return "listing_wrong_count"
++    return ""
++
++
+ def _recognized_screen_text_in_situation(situation: dict) -> str | None:
+     """The verified OCR text in a situation, single-step or mission-shaped."""
+ 
+@@ -4632,6 +4700,13 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+         # about reading a screen are the only allowance.
+         if _ocr_unsupported_terms(text, recognized, user_text):
+             return "ocr_unsupported_terms"
++    listing = _known_listing_in_payload(payload)
++    if listing is not None:
++        # FILES1425: the person asked what the folder holds; a name that is not
++        # in the listing or a count that is not the observed one is invented.
++        listing_defect = _listing_fact_defect(text, listing)
++        if listing_defect:
++            return listing_defect
+     written = seen.get("writtenText") if isinstance(seen, dict) else None
+     if payload.get("operation") == "clipboard.write.text" and isinstance(written, str) and written:
+         # CLIPBOARD1359: «Hola» / «Buen día.» were published after a verified
+@@ -11494,11 +11569,15 @@ class LlmRuntime:
+         )
+         inventory_seen = visible_situation.get("seen")
+         inventory_entries = (
+-            inventory_seen.get("windows" if situation.get("operation") == "window.resolve" else "processes")
++            inventory_seen.get(
++                "windows" if situation.get("operation") == "window.resolve"
++                else "names" if situation.get("operation") == "filesystem.known.list"
++                else "processes"
++            )
+             if isinstance(inventory_seen, dict) else None
+         )
+         dense_inventory = (
+-            situation.get("operation") in {"window.resolve", "system.process.list"}
++            situation.get("operation") in {"window.resolve", "system.process.list", "filesystem.known.list"}
+             and situation.get("verified") is True
+             and situation.get("succeeded") is True
+             and isinstance(inventory_entries, list)
+@@ -11516,6 +11595,26 @@ class LlmRuntime:
+         # the dense output allowance, keeping their existing prompt unchanged.
+         if dense_fact_contract or dense_inventory:
+             payload["max_tokens"] = 512
++        if _known_listing_in_payload(visible_situation) is not None:
++            # FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
++            # the report is the count and a few names exactly as listed.
++            instruct(
++                "\nseen.names holds some entries of the folder seen.folder, exactly "
++                "as they are named, and seen.count the total number of entries "
++                "(seen.fileCount files and seen.folderCount folders). Say how many "
++                "entries the folder has and name the entries in seen.names verbatim, "
++                "each in its own quotation marks; if seen.moreNotShown is greater "
++                "than zero, say that there are more. Nothing else: no purpose, no "
++                "interpretation, no other numbers, no names that are not in seen.names."
++                if response_language == "en"
++                else "\nseen.names trae algunas entradas de la carpeta seen.folder, tal "
++                "cual se llaman, y seen.count el total de entradas (seen.fileCount "
++                "archivos y seen.folderCount carpetas). Di cuántas entradas tiene la "
++                "carpeta y nombra las entradas de seen.names tal cual, cada una entre "
++                "sus propias comillas; si seen.moreNotShown es mayor que cero, di que "
++                "hay más. Nada más: sin propósito, sin interpretación, sin otros "
++                "números, sin nombres que no estén en seen.names."
++            )
+         if screen_reading:
+             instruct(
+                 "\nseen.lines holds a few lines read from the screen, exactly as "
+@@ -12153,6 +12252,16 @@ class LlmRuntime:
+                 if response_language == "en"
+                 else "Usa sólo palabras que estén en el texto reconocido: cita dos o tres de sus líneas tal cual, di cuántas líneas se reconocieron y no añadas interpretación, propósito ni avisos."
+             ),
++            "listing_unlisted_name": (
++                "Quote only names that appear in seen.names, exactly as written, each in its own quotation marks; do not invent or alter any name."
++                if response_language == "en"
++                else "Cita sólo nombres que estén en seen.names, tal cual están escritos, cada uno entre sus propias comillas; no inventes ni cambies ningún nombre."
++            ),
++            "listing_wrong_count": (
++                "The only numbers you may state are seen.count (total entries), seen.fileCount, seen.folderCount and seen.moreNotShown; do not invent other figures."
++                if response_language == "en"
++                else "Los únicos números que puedes decir son seen.count (entradas en total), seen.fileCount, seen.folderCount y seen.moreNotShown; no inventes otras cifras."
++            ),
+             "capture_not_reported": (
+                 "You took the screenshot: say so in the first person past tense, without repeating the request, without identifiers, and without inventing where it was saved."
+                 if response_language == "en"
+diff --git a/src/baxy_mind/observed_response_literals.py b/src/baxy_mind/observed_response_literals.py
+index 94accf24..2f132fa5 100644
+--- a/src/baxy_mind/observed_response_literals.py
++++ b/src/baxy_mind/observed_response_literals.py
+@@ -43,6 +43,17 @@ def without_observed_names(text: str, situation: object) -> str:
+                         names.update(value for key in fields
+                                      if isinstance(value := entry.get(key), str)
+                                      and value.strip() and len(value) <= 4096)
++        if (node.get("kind") == "operation" and operation == "filesystem.known.list"
++                and node.get("verified") is True and node.get("succeeded") is True
++                and node.get("polarity") == "success"):
++            # FILES1425 «lista los archivos del escritorio»: a listed name is
++            # observed data (dots, hyphens and underscores included).
++            observed = node.get("observed")
++            listed = observed.get("entries") if isinstance(observed, dict) else None
++            if isinstance(listed, list):
++                names.update(name.strip() for entry in listed if isinstance(entry, dict)
++                             and isinstance(name := entry.get("name"), str)
++                             and 0 < len(name.strip()) <= 4096)
+         if (node.get("kind") == "operation" and operation == "ocr.read"
+                 and node.get("verified") is True and node.get("succeeded") is True
+                 and node.get("polarity") == "success"):
