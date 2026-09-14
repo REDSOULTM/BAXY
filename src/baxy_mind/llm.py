@@ -9637,6 +9637,35 @@ class LlmRuntime:
                 or visible_text_leaks_internal_vocabulary(question)
             ):
                 raise ValueError("aclaración de entrada inválida")
+            # AUDIO1375 H0439 «Ponlo a 100 ahora» → «¿A qué nivel quieres
+            # ponerlo a 100?» / «¿A qué nivel quieres poner el volumen?»: the
+            # level is already given and the setting was guessed. The question
+            # must ask what to set. One corrected retry.
+            if kind == "deictic_level":
+                folded_question = _fold_dialogue_text(question)
+                asks_level = re.search(
+                    r"\b(?:a\s+que\s+nivel|que\s+nivel|a\s+cuanto|cuanto|to\s+what\s+level|what\s+level|how\s+much)\b",
+                    folded_question,
+                ) is not None
+                asks_what = re.search(
+                    r"\b(?:que|cual|what|which)\b", folded_question,
+                ) is not None
+                if asks_level or not asks_what:
+                    if attempt == 0:
+                        payload["messages"].insert(
+                            -1,
+                            {
+                                "role": "system",
+                                "content": (
+                                    "Corrección: el nivel ya lo dijo la persona; lo que falta es "
+                                    "QUÉ quiere poner a ese nivel. Pregunta qué cosa (por ejemplo "
+                                    "el volumen o el brillo), sin preguntar el nivel ni dar por "
+                                    "hecho cuál es."
+                                ),
+                            },
+                        )
+                        continue
+                    raise ValueError("aclaración de nivel deíctico no pregunta qué")
             # DIALOGUE1279 H0287 «????» → «¿Qué quieres que haga?»: a question
             # that never names what arrived is the generic help offer the
             # owner rejected (CLARIFY1047). One corrected retry.
