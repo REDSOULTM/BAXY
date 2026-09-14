@@ -5588,8 +5588,25 @@ def compose_visible_defect(
         clock_required = not date_requested or re.search(
             r"\b(?:hora|time)\b", user_text, re.IGNORECASE
         )
+        allowed_clock_values: tuple[tuple[int, int], ...] = ()
+        countdown_asked = countdown_target(user_text) if clock else None
+        if countdown_asked is not None:
+            # CLOCK1331 H0399: «Faltan 13 horas y 48 minutos para las 3 de la
+            # tarde» answers the countdown; the observed clock is optional and
+            # the target and remaining figures are not contrary clock claims.
+            clock_required = False
+            local = _local_datetime_from_observed(_merged_observed(situation))
+            if local is not None:
+                facts = _countdown_facts(local, countdown_asked, "es")
+                target_hour, target_minute = (int(part) for part in countdown_asked.split(":", 1))
+                allowed_clock_values = (
+                    (target_hour, target_minute),
+                    (int(facts["remaining_hours"]), int(facts["remaining_minutes"])),
+                )
         if clock:
-            clock_defect = _clock_fact_defect(stripped, clock, required=bool(clock_required))
+            clock_defect = _clock_fact_defect(
+                stripped, clock, required=bool(clock_required), allowed=allowed_clock_values,
+            )
             if clock_defect:
                 return clock_defect
         if clock and re.search(
