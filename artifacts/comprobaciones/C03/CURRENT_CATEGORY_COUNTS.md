@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación CLIPBOARD1361
+# Categorías actuales — adjudicación MESSAGING1363
 
-408/742 cubiertos; 334 abiertos; 0 no aplican; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3). Últimas 24 h: al menos 282 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337 + 1 en AGENDA1341 + 1 en CONVERSATION1343 + 1 en CONVERSATION1347 + 1 en CONVERSATION1349 + 2 en AUDIO1351 + 1 en KNOWLEDGE1353 + 1 en KNOWLEDGE1357 + 1 en CLIPBOARD1359 + 2 en CLIPBOARD1361; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: eb3d9f42ba96b65f01062ebb9f3a78527995857a7c4f5e9adb5519c8e1488326.
+409/742 cubiertos; 333 abiertos; 0 no aplican; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3). Últimas 24 h: al menos 283 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337 + 1 en AGENDA1341 + 1 en CONVERSATION1343 + 1 en CONVERSATION1347 + 1 en CONVERSATION1349 + 2 en AUDIO1351 + 1 en KNOWLEDGE1353 + 1 en KNOWLEDGE1357 + 1 en CLIPBOARD1359 + 2 en CLIPBOARD1361 + 1 en MESSAGING1363; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: cadab1098a06b9ee30d52178998ac82a337c02e11ced403773e5d984cf2a676a.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -10,7 +10,7 @@
 | Archivos y carpetas | 32 | 19 | 13 |
 | Entrada incompleta, ruido y control de diálogo | 34 | 18 | 16 |
 | Vídeo y series | 26 | 0 | 26 |
-| Mensajería | 31 | 6 | 25 |
+| Mensajería | 31 | 7 | 24 |
 | Abrir aplicaciones | 54 | 39 | 15 |
 | Audio y volumen | 51 | 41 | 10 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 36 | 2 |

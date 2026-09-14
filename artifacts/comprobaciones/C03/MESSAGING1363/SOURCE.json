@@ -1,0 +1,15 @@
+{
+  "schema": "c03-messaging1363-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (resolve_explicit_clarification_intent: respuesta sin destinatario → message.send recipient ausente; destinatario y canal sin texto → message.send message_text ausente)",
+  "patch": "artifacts/comprobaciones/C03/MESSAGING1363/SOURCE.patch",
+  "commits": [
+    "3af76065946156ccd2a78d49076d68a546fb3d37"
+  ],
+  "build": "BUILD1363 (C03-repairs1363-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "Mensajería 6/31: «contestale que sí», «contestale que llego en 10» (respuesta con contenido sin destinatario ni antecedente) y «escribile por whatsapp a Pedro» (destinatario y canal sin texto) no llegaban a ningún lector de aclaración; la gramática cerrada sólo conocía formas con «mensaje/texto» o transmisión sin canal.",
+  "change": "Cabeza de respuesta (contestale/respondele/contesta/responde/reply/answer) + «que/that» + contenido sin «a alguien» → contrato de aclaración message.send con recipient ausente; cabeza de escritura con canal (whatsapp/wsp/discord) y destinatario sin «que/that», dos puntos ni comillas → contrato message.send con message_text ausente. Sin efecto ni envío; la pregunta la redacta el modelo bajo el contrato existente. Sin respuestas fijas.",
+  "measurement": "MESSAGING1363: 10/10 ejecutados, 7 aprobados, 3 fallidos, 0 violaciones; 1 créditos. H0718 acreditado con dos pares de texto ausente: el producto pregunta qué decir conservando destinatario y canal («¿Cuál es el mensaje que quieres enviar por WhatsApp a Pedro?»), sin envío ni operaciones. H0045 y H0074 («contestale que llego en 10», «contestale que sí») llegaron al contrato de destinatario ausente pero la pregunta asignó la contestación a la persona («A quién le vas a contestar que…», una vez cambiando «llego» por «llegó»); una de las dos variantes de destinatario aprobó («¿A quién le quieres responder?»). Los tres límites aprobados. Siguiente: contrato de redacción de la pregunta de destinatario (quien contesta por encargo es BAXY), MESSAGING1365.",
+  "credits": 1
+}

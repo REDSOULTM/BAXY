@@ -1,0 +1,55 @@
+commit 3af76065946156ccd2a78d49076d68a546fb3d37
+
+C03: a reply with nobody to answer asks the recipient; an addressee with nothing to say asks the text (MESSAGING1363)
+
+Three open messaging literals reached no reader: «contestale que sí» and «contestale que llego en 10» (a reply with content but no addressee and no antecedent) and «escribile por whatsapp a Pedro» (recipient and channel, nothing to say). The closed incomplete-message grammar only knew forms that name a «mensaje/texto» or a channel-free conveyance.
+
+effect_intent.resolve_explicit_clarification_intent: a reply head (contestale/respondele/contesta/responde/reply/answer) followed by «que/that» and content, without «a/to <someone>», is message.send missing the recipient; a write/send head with a channel (whatsapp/wsp/discord) and an addressee but no «que/that», colon or quoted content is message.send missing the message text. Nothing is sent: both are clarification contracts with no effect.
+
+No .NET change. Offline probe only; tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 2a10b0bf..3873fb01 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -3237,6 +3237,37 @@ def resolve_explicit_clarification_intent(
+         and not _has(folded, r"\b(?:whatsapp|wsp|discord)\b")
+     ):
+         return ClarificationIntent(("message.send",), ("channel",))
++    # MESSAGING1363: a reply with content but no addressee and no antecedent
++    # («contestale que sí», «respondele que llego en 10») names nobody to
++    # answer; the recipient is what is missing, not the channel.
++    reply_head = (
++        r"(?:contestale|contestales|respondele|respondeles|contesta|responde|"
++        r"reply|answer)"
++    )
++    reply_without_addressee = _has(
++        folded, rf"^[^\w]*{reply_head}\s+(?:que|that)\s+\S"
++    ) and not _has(folded, rf"^[^\w]*{reply_head}\s+(?:a|to)\s+")
++    if "message.send" in available and reply_without_addressee:
++        return ClarificationIntent(("message.send",), ("recipient",))
++    # MESSAGING1363: an addressee and a channel with nothing to say
++    # («escribile por whatsapp a Pedro», «mandale un whatsapp a Ana»).
++    addressed_without_content = _has(
++        folded,
++        (
++            r"^[^\w]*(?:escrib[ei]le|escrib[ei]les|mandale|mandales|enviale|"
++            r"enviales|hablale|escrib[ei]|manda|envia|write|send|message|text)\s+"
++            # The addressee is one or two bare tokens: «mandale hola a Lucas
++            # por whatsapp» carries its content and is not this shape.
++            r"(?:(?:por|en|via|on)\s+(?:whatsapp|wsp|discord)\s+(?:a|to)\s+"
++            r"[a-z0-9][a-z0-9._-]{0,40}(?:\s+[a-z0-9][a-z0-9._-]{0,40})?|"
++            r"(?:(?:a|to)\s+)?[a-z0-9][a-z0-9._-]{0,40}\s+(?:por|en|via|on)\s+"
++            r"(?:whatsapp|wsp|discord)|"
++            r"(?:un|una|a)\s+(?:whatsapp|wsp|discord)\s+(?:a|to)\s+"
++            r"[a-z0-9][a-z0-9._-]{0,40}(?:\s+[a-z0-9][a-z0-9._-]{0,40})?)[\s.!?]*$"
++        ),
++    ) and not _has(folded, r"\b(?:que|that|diciendo|saying)\b|[:\"«»“”]")
++    if "message.send" in available and addressed_without_content:
++        return ClarificationIntent(("message.send",), ("message_text",))
+     corrected_browser = (
+         "browser.navigate.named" in available
+         and _has(folded, r"\b(?:youtube|video)\b")
