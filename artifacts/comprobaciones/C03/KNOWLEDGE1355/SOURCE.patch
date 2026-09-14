@@ -1,0 +1,31 @@
+commit df041d2d04eafc114ef7269bf652d179a967df13
+
+C03: a joke may carry its question; the free-content contract only rejects a reply that ends by asking (KNOWLEDGE1355)
+
+KNOWLEDGE1353 measured: the free_content shape produced real jokes («¿Por qué el lechón nunca se enoja? Porque…», «Why don't skeletons fight each other? They don't have the guts!») and the contract vetoed the question mark and the line break inside them, so the turns fell back to asking which kind. The contract now accepts a question inside the content and one line break; a reply that ends by asking the person (even before a trailing emoji) still misses it.
+
+No .NET change. Offline probe only; tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 679d20bb..38d46450 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -2288,11 +2288,13 @@ def _shaped_conversation_answer_violates_contract(
+         )
+     if shape == "free_content":
+         folded_content = _policy_guard_text(content)
++        # A joke is often a question with its answer («¿Por qué…? Porque…»);
++        # only a reply that ends by asking the person misses the contract.
+         return (
+             not content
+             or len(content) < 20
+-            or "\n" in content
+-            or any(marker in content for marker in ("?", "¿", "？"))
++            or content.count("\n") > 1
++            or content.rstrip().rstrip("😄😎🙂😂🤣!. ").endswith(("?", "？"))
+             or re.search(
+                 r"\b(?:que\s+tipo|what\s+kind|which\s+kind|prefieres|preferis|te\s+gustaria|would\s+you\s+like|"
+                 r"idioma|language|en\s+espanol\s+o|in\s+spanish\s+or|elige|elegi|choose)\b",

@@ -1,3 +1,11 @@
+# KNOWLEDGE1355 adjudicado — 2026-09-14T05:58:06.558346+00:00
+
+**404/742 cubiertos, 338 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 5b0336820149f45928271cff77616b9cf745bfe100ed173ce0c7a36a10b087ba. Primeras altas 24 h >= 278 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD df041d2d con BUILD1355 (mente: contrato free_content relajado; KNOWLEDGE1355/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+KNOWLEDGE1355 («Conocimiento, razonamiento y creatividad verbal», contenido libre con el chiste admitido): 9 ejecutados, 3 aprobados, 6 fallidos, 0 violaciones; sin crédito (un solo par de chiste aprobado), 0 créditos. Adjudicación 53d61cb685fed85b89bc0321a206d39afede099da2abb87b426b98ee60a0baec. Medición: los chistes se entregan de inmediato con el contrato relajado («¿Por qué el lechón nunca se enoja? Porque…», «Why don't skeletons fight each other? They don't have the guts!»), pero las «curiosidades» inventan hechos (hielo, sangre, pez espada) y «explicame algo interesante» pregunta qué explicar; el par español de dato curioso también preguntó. Siguiente: el literal del chiste solo con dos pares de chiste (KNOWLEDGE1357); las curiosidades inventadas quedan como condición del conocimiento del modelo.
+
+---
+
 # KNOWLEDGE1353 adjudicado — 2026-09-14T05:41:01.761584+00:00
 
 **404/742 cubiertos, 338 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 3ca345e6b32565ad21556d6d08b4f839f679fe64589ae5427f44fdd459815552. Primeras altas 24 h >= 278 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6d75afa4 con BUILD1353 (mente: forma free_content; KNOWLEDGE1353/SOURCE.json|SOURCE.patch; .NET sin cambios).

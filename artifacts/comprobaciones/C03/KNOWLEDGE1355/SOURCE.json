@@ -1,0 +1,15 @@
+{
+  "schema": "c03-knowledge1355-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (contrato de free_content)",
+  "patch": "artifacts/comprobaciones/C03/KNOWLEDGE1355/SOURCE.patch",
+  "commits": [
+    "df041d2d04eafc114ef7269bf652d179a967df13"
+  ],
+  "build": "BUILD1355 (C03-repairs1355-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "KNOWLEDGE1353: la forma free_content produjo chistes reales pero el contrato vetó el signo de pregunta y el salto de línea; los turnos acabaron preguntando el tipo.",
+  "change": "Compositor: el contrato de free_content admite una pregunta dentro del contenido y un salto de línea; sólo una respuesta que termina preguntando (aunque cierre con emoji) queda fuera. Sin respuestas fijas.",
+  "measurement": "KNOWLEDGE1355: 9 ejecutados, 3 aprobados, 6 fallidos, 0 violaciones; sin crédito (un solo par de chiste aprobado); 0 créditos. Medición: los chistes se entregan de inmediato con el contrato relajado («¿Por qué el lechón nunca se enoja? Porque…», «Why don't skeletons fight each other? They don't have the guts!»), pero las «curiosidades» inventan hechos (hielo, sangre, pez espada) y «explicame algo interesante» pregunta qué explicar; el par español de dato curioso también preguntó. Siguiente: el literal del chiste solo con dos pares de chiste (KNOWLEDGE1357); las curiosidades inventadas quedan como condición del conocimiento del modelo.",
+  "credits": 0
+}

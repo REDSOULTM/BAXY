@@ -1,3 +1,25 @@
+## KNOWLEDGE1355 — estado vigente 2026-09-14T05:58:06.558346+00:00
+
+Parcial: 3 aprobados, 6 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 404/742 | 338 | 0 | >=278 | 3/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 278 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); KNOWLEDGE1355 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: KNOWLEDGE1355: 9 ejecutados, 3 aprobados, 6 fallidos, 0 créditos (índices []); Conocimiento, razonamiento y creatividad verbal 23/37. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/KNOWLEDGE1355/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 168.95 s acumulados; pico GPU 3497.56 MiB; pico RAM 1777.36 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque KNOWLEDGE1355 precedente. -->
+
 ## KNOWLEDGE1353 — estado vigente 2026-09-14T05:41:01.761584+00:00
 
 Parcial: 5 aprobados, 10 fallidos, 0 sin ejecutar; 1 créditos.
