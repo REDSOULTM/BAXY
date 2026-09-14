@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación PROCESS1313
+# Categorías actuales — adjudicación WINDOWS1315
 
-386/742 cubiertos; 356 abiertos; 0 no aplican; 1/35 categorías cerradas (Procesos 9/9). Últimas 24 h: al menos 260 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: aef5c2c9833ecf0fb2a68c68a2f7a1a4d39ccdcb1c54d2c1f914d447fbc81134.
+386/742 cubiertos; 356 abiertos; 0 no aplican; 1/35 categorías cerradas (Procesos 9/9). Últimas 24 h: al menos 260 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: d0d8d612aa2d43d9d9e42939a939c00318f40266dc4af16fe73be8ff1841adf4.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|

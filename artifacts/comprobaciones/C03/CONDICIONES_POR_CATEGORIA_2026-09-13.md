@@ -153,3 +153,7 @@ Restricciones negativas de apertura pasa de 1/4 a 4/4 con el acuse de restricci�
 ## Actualización 2026-09-14 (PROCESS1313)
 
 Procesos pasa de 8/9 a 9/9 sin cambio de fuente (BUILD1311): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. H0675 «qué app usa más memoria» acreditado con pares «¿Qué programa consume más RAM?» y «cuál es el proceso que más memoria usa»: system.process.list (sort memory) completada y verificada en los tres, finales que nombran el proceso observado con más memoria (Code, 821,7 MB) sin inventar. Límites aprobados. Procesos queda 9/9: primera categoría cerrada del registro. Primera categoría cerrada del registro (9/9).
+
+## Actualización 2026-09-14 (WINDOWS1315)
+
+Estado de ventanas y aplicaciones pasa de 13/14 a 13/14 con BUILD1315 (lector «cuál es la ventana más grande» → window.resolve de inventario; largestWindow calculado sobre ancho×alto observados en la proyección): 5 ejecutados, 2 aprobados (los dos límites), 3 fallidos (literal y dos pares: lectura window.resolve verificada sobre 20 de 22 ventanas, borradores de la ventana más grande vetados como missing_fact), 0 créditos. Medición: la proyección de una sola ventana choca con la guardia de página parcial; reparación para WINDOWS1317: página de 50 para la pregunta de tamaño y campo sizeComparisonScope que la guardia acepta.

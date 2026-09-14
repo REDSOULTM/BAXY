@@ -1,0 +1,11 @@
+{
+  "schema": "c03-windows1315-measurement-v1",
+  "status": "measured",
+  "measured_by": "root (Claude Fable 5.1)",
+  "candidate": "HEAD 3e0bbd3f con BUILD1315 (lector de ventana más grande + proyección de geometría; sin cambio .NET)",
+  "panel": "1 literal de ventana más grande, 2 variantes, 2 límites; window.resolve de inventario de sólo lectura",
+  "result": "5 ejecutados, 2 aprobados (los dos límites), 3 fallidos (literal y dos pares: lectura window.resolve verificada sobre 20 de 22 ventanas, borradores de la ventana más grande vetados como missing_fact); 0 créditos. Medición: la proyección de una sola ventana choca con la guardia de página parcial; reparación para WINDOWS1317: página de 50 para la pregunta de tamaño y campo sizeComparisonScope que la guardia acepta.",
+  "category_closed": false,
+  "adjudication_sha256": "2fb2a809199a5ac7521623ca0fc6c2a2af0fbc4fb4a7b51a2e04ecffab74a976",
+  "credits": 0
+}
