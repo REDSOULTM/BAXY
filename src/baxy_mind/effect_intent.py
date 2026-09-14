@@ -11529,8 +11529,14 @@ def brightness_status_request(text: str) -> bool:
         rf"show(?:\s+me)?|tell\s+me|check|revisa|chequea|fijate)\s+"
         rf"(?:el\s+|mi\s+|the\s+|my\s+)?(?:nivel\s+(?:actual\s+)?de\s+)?{obj}|"
         rf"what(?:'s|\s+is)\s+(?:the\s+|my\s+)?(?:current\s+)?{obj}(?:\s+(?:level|at|now|set\s+to))*|"
-        rf"how\s+bright\s+is\s+(?:the\s+|my\s+)?(?:screen|display|monitor)"
-        rf")(?:\s*,?\s*(?:por\s+favor|please))?",
+        rf"how\s+bright\s+is\s+(?:the\s+|my\s+)?(?:screen|display|monitor)|"
+        # BRIGHT1319 H0674 «tengo el brillo al máximo»: a claim about the
+        # present level is answered by reading it, never by agreeing.
+        rf"(?:tengo|esta|tiene|is)\s+(?:el\s+|mi\s+|the\s+|my\s+)?{obj}\s+"
+        rf"(?:(?:al|a|en\s+el|at|on)\s+(?:maximo|minimo|max|min|tope|full|maximum|minimum)|a\s+tope|alto|bajo|high|low)"
+        rf"(?:\s+(?:ahora|now))?|"
+        rf"(?:el\s+|mi\s+)?{obj}\s+(?:esta|lo\s+tengo)\s+(?:al|a|en\s+el)\s+(?:maximo|minimo|max|min|tope)"
+        rf")(?:\s*,?\s*(?:por\s+favor|please|no|verdad|cierto|right))?",
         folded,
     ) is not None
 
