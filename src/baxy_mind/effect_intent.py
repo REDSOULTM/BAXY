@@ -13082,7 +13082,9 @@ def _symbolic_web_destination(text: str) -> str | None:
         r"[¿?¡!\s]*(?:(?:ve|and[aá]|entra|entr[aá]|entrar|ir|navega|navegar|"
         r"llevame|llévame)\s+a(?:l)?\s+|(?:go|navigate)\s+to\s+|"
         r"take\s+me\s+to\s+|(?:abre|abr[ií]|abrir|open)\s+"
-        r"(?=(?:(?:la|el|the|a)\s+)?(?:p[aá]gina|page|sitio|site|website|portal)\b))"
+        # WEB1477 H0082 «Abre la p?gina oficial de OpenAI»: a corrupted
+        # character inside «página» is a transcription glitch, not another word.
+        r"(?=(?:(?:la|el|the|a)\s+)?(?:p[aá?]gina|page|sitio|site|website|portal)\b))"
         r"(?P<target>\S.+?)[\s.!?]*",
         request, re.IGNORECASE,
     )
@@ -13111,7 +13113,7 @@ def _symbolic_web_destination(text: str) -> str | None:
         count=1, flags=re.IGNORECASE,
     ).strip()
     target = re.sub(
-        r"^(?:(?:la|el|the|a)\s+)?(?:(?:p[aá]gina|page|sitio|site)"
+        r"^(?:(?:la|el|the|a)\s+)?(?:(?:p[aá?]gina|page|sitio|site)"
         r"(?:\s+web)?|website)"
         r"(?:\s+(?:oficial|official|principal|main|home))?\s+(?:(?:de|of)\s+)?",
         "", operand, count=1, flags=re.IGNORECASE,

@@ -6351,6 +6351,15 @@ def compose_visible_defect(
                 value for key in ("requestedUrl", "finalUrl")
                 if isinstance(value := observed_dict.get(key), str) and value
             }
+            # WEB1477 «Abre la página oficial de Wikipedia»: the navigation
+            # ended at www.wikipedia.org and the final cited another search
+            # result as «la URL visitada». Only the navigated address may be
+            # reported.
+            navigated = {value.rstrip("/").casefold() for value in observed_urls}
+            for found in re.finditer(r"""(?<![\w:/])https?://[^\s<>"'“”‘’]+""", stripped, flags=re.IGNORECASE):
+                cited = found[0].rstrip(".,;:!)]}»").rstrip("/").casefold()
+                if navigated and cited not in navigated:
+                    return "wrong_address"
             question_text = re.sub(
                 r"""(?<![\w:/])https?://[^\s<>"'“”‘’]+""",
                 lambda found: found[0].replace("?", "") if (
@@ -12685,6 +12694,11 @@ class LlmRuntime:
                 "State the observed Bluetooth radio state exactly: seen.radioOn true is on, false is off."
                 if response_language == "en"
                 else "Di el estado observado de la radio Bluetooth tal cual: seen.radioOn true es encendida, false es apagada."
+            ),
+            "wrong_address": (
+                "Cite only the navigated address (seen.finalUrl); do not mention any other address."
+                if response_language == "en"
+                else "Cita sólo la dirección navegada (seen.finalUrl); no menciones ninguna otra dirección."
             ),
             "search_result_denied": (
                 "The search did return results: do not say you have no information; name the pages found."
