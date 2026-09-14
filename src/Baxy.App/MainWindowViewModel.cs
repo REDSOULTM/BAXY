@@ -2457,7 +2457,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         // conversation or discard the objective required by the next fragment.
         _pendingMindClarificationObjective = preserveObjective ? request : null;
         LastMindReplyRejection = UserMessagePolicy.ConversationReplyRejectionReason(
-            request, question, responseLanguage, clarification: true);
+            request, question, responseLanguage, clarification: true, missingFields: missingFields);
         if (LastMindReplyRejection is null)
         {
             AddMessage(

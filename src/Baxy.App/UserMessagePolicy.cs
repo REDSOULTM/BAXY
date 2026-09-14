@@ -520,7 +520,8 @@ internal static class UserMessagePolicy
         string? mindLanguage = null,
         string? priorUserText = null,
         bool clarification = false,
-        bool hasRequiredInput = false)
+        bool hasRequiredInput = false,
+        IReadOnlyList<string>? missingFields = null)
     {
         if (LeakedInternalTerm(reply, userText, priorUserText) is { } leaked)
         {
@@ -543,7 +544,10 @@ internal static class UserMessagePolicy
             ("unsolicited_catalog",
                 !IsSelfDescriptionQuestion(userText)
                 && ProposesUnsolicitedCatalogAction(userText, reply, clarification)),
-            ("machine_slot_ask", LooksLikeMachineSlotAsk(said)),
+            // FILES1439 «How many files are in the current directory?»: the mind
+            // declared the folder as the missing field; asking which folder is
+            // the clarification itself, not a machine slot ask.
+            ("machine_slot_ask", LooksLikeMachineSlotAsk(said) && !AsksForDeclaredFolder(said, missingFields)),
             ("punctuation_only", IsPunctuationOnly(reply)),
             ("too_thin", IsTooThin(reply)),
             ("asks_to_invent_clock", AsksToInventClock(said)),
@@ -1009,6 +1013,12 @@ internal static class UserMessagePolicy
     // A noun in an explanation is not a request for a parameter. C03's
     // encryption answer mentioned a recipient and was needlessly rewritten.
     // Preserve the slot guard only for an actual question or direct request.
+    private static bool AsksForDeclaredFolder(string folded, IReadOnlyList<string>? missingFields) =>
+        missingFields is not null
+        && missingFields.Contains("folder")
+        && Regex.IsMatch(folded, @"(?:carpeta|directorio|folder|directory)",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+
     private static bool LooksLikeMachineSlotAsk(string folded) =>
         (folded.Contains('?', StringComparison.Ordinal)
             || folded.Contains('¿', StringComparison.Ordinal)
