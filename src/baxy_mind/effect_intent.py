@@ -9134,6 +9134,34 @@ _KNOWN_FOLDER_ENUM = {
 }
 
 
+_KNOWN_FOLDER_WORDS = r"(?:escritorio|desktop|descargas|downloads|documentos|documents)"
+_KNOWN_FOLDER_RECENT = (
+    r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
+    r"(?:(?:cuenta|conta|count)\s+(?:los\s+|the\s+)?(?:archivos|ficheros|files)\s+(?:de|del|en|in|on|of)\s+"
+    r"(?:mi|el|la|my|the)?\s*(?P<folder_a>" + _KNOWN_FOLDER_WORDS + r")\s+(?:y|and)\s+)?"
+    r"(?:lista|listame|list|mostrame|muestrame|muestra|show me|show|dame|give me|decime|dime|tell me)\s+(?:me\s+)?"
+    r"(?:los|las|the)?\s*(?P<n>[1-9]|1[0-9]|20)\s+(?:(?:archivos|ficheros|files|entradas|entries)\s+)?"
+    r"(?:mas|most)\s+(?:recientes?|nuevos?|recent|newest)(?:\s+(?:archivos|ficheros|files|entradas|entries))?"
+    r"(?:\s+(?:de|del|en|in|on|of)\s+(?:mi|el|la|my|the)?\s*(?P<folder_b>" + _KNOWN_FOLDER_WORDS + r"))?[\s?!.]*$"
+)
+
+
+def _known_folder_recent_listing(text: str) -> tuple[str, int] | None:
+    """FILES1433 «cuenta los archivos en el escritorio y lista los 5 mas recientes»,
+    «listá los 5 archivos más recientes del escritorio»: (folder enum, count)."""
+
+    folded = _fold(text)
+    match = re.match(_KNOWN_FOLDER_RECENT, folded)
+    if match is None:
+        return None
+    folder = match.group("folder_a") or match.group("folder_b")
+    if folder is None or (match.group("folder_a") and match.group("folder_b")
+                          and match.group("folder_a") != match.group("folder_b")):
+        return None
+    enum = _KNOWN_FOLDER_ENUM.get(folder)
+    return (enum, int(match.group("n"))) if enum else None
+
+
 def _known_folder_listing_request(text: str) -> str | None:
     """FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
     the known-folder enum of a whole-folder listing request, else None."""
@@ -9162,9 +9190,9 @@ def _strict_catalog_request(
     # (``Baxy, por favor: ...``).  The outer resolver removes one layer; peel
     # at most one remaining non-semantic layer for surface invariance.
     text = _strip_request_envelope(text).strip().rstrip(".!?").rstrip()
-    if (
-        "filesystem.known.list" in available_operations
-        and _known_folder_listing_request(text) is not None
+    if "filesystem.known.list" in available_operations and (
+        _known_folder_listing_request(text) is not None
+        or _known_folder_recent_listing(text) is not None
     ):
         return EffectIntent(("filesystem.known.list",), (text,))
     if window_inventory_arguments(text) is not None:
@@ -14906,6 +14934,14 @@ def resolve_explicit_effects(
         return None
     folded = _strip_request_envelope(_fold(re.sub(r"[\r\n]+", " . ", text)))
     available = frozenset(available_operations)
+    if (
+        "filesystem.known.list" in available
+        and _known_folder_recent_listing(folded.strip().rstrip(".!?")) is not None
+    ):
+        # FILES1433 «cuenta los archivos en el escritorio y lista los 5 mas
+        # recientes»: the literal count bounds the listing; it is not a note
+        # cardinality and the conjunction is one read, not two effects.
+        return EffectIntent(("filesystem.known.list",), (folded,))
     completed_level_request = _completed_missing_volume_level_request(
         text, previous_user_text, available,
     )

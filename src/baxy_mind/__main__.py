@@ -5140,6 +5140,9 @@ def _explicit_arguments_from_evidence(
             return {"folder": next(iter(folders))}
 
     if operation == "filesystem.known.list":
+        recent_listing = effect_intent._known_folder_recent_listing(evidence)
+        if recent_listing is not None:
+            return {"folder": recent_listing[0], "limit": recent_listing[1], "order": "recent"}
         listed_folder = effect_intent._known_folder_listing_request(evidence)
         if listed_folder is not None:
             return {"folder": listed_folder, "limit": 100}
@@ -5260,9 +5263,9 @@ def _ground_explicit_arguments(
             explicit = {"name": name}
     if explicit is None:
         return None
-    if (
-        operation == "filesystem.known.list"
-        and effect_intent._known_folder_listing_request(evidence) == explicit.get("folder")
+    if operation == "filesystem.known.list" and explicit.get("folder") in (
+        effect_intent._known_folder_listing_request(evidence),
+        (effect_intent._known_folder_recent_listing(evidence) or (None, None))[0],
     ):
         # The listing reader owns the known-folder enum and the bounded limit;
         # neither is a word the person must spell literally.

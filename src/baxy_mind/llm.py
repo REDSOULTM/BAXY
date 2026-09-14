@@ -4491,6 +4491,9 @@ def _project_known_listing(observed: dict, language: str) -> dict:
     for key in ("fileCount", "folderCount"):
         if type(observed.get(key)) is int:
             projected[key] = observed[key]
+    if observed.get("order") == "recent":
+        # FILES1433: the person asked for the newest entries; say so.
+        projected["newestFirst"] = True
     return projected
 
 
@@ -11620,6 +11623,7 @@ class LlmRuntime:
                 "each in its own quotation marks; if seen.moreNotShown is greater "
                 "than zero, say that there are more. Nothing else: no purpose, no "
                 "interpretation, no other numbers, no names that are not in seen.names."
+                + (" seen.names are the most recent entries, newest first: say so." if visible_situation.get("seen", {}).get("newestFirst") else "")
                 if response_language == "en"
                 else "\nseen.names trae algunas entradas de la carpeta seen.folder, tal "
                 "cual se llaman, y seen.count el total de entradas (seen.fileCount "
@@ -11628,6 +11632,7 @@ class LlmRuntime:
                 "sus propias comillas; si seen.moreNotShown es mayor que cero, di que "
                 "hay más. Nada más: sin propósito, sin interpretación, sin otros "
                 "números, sin nombres que no estén en seen.names."
+                + (" seen.names son las entradas más recientes, de la más nueva a la más antigua: dilo." if visible_situation.get("seen", {}).get("newestFirst") else "")
             )
         if screen_reading:
             instruct(

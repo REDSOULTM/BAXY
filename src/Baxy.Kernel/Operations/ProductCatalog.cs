@@ -361,6 +361,7 @@ public static class ProductCatalog
                 [
                     String("folder", values: ["desktop", "documents", "downloads"]),
                     Integer("limit", 1, 100),
+                    String("order", values: ["name", "recent"]),
                 ],
                 ["folder"]),
             OperationRisks.ReadOnly,

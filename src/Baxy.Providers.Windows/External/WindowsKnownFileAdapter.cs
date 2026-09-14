@@ -251,6 +251,9 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         // the top-level entries of one known folder, names and kinds only.
         // Hidden and system entries (desktop.ini) are not what the person sees.
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 50), 1, 100);
+        string order = arguments.TryGetProperty("order", out JsonElement orderElement)
+            && orderElement.ValueKind == JsonValueKind.String
+            && orderElement.GetString() == "recent" ? "recent" : "name";
         var options = new EnumerationOptions
         {
             RecurseSubdirectories = false,
@@ -276,9 +279,13 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             }
         }
         if (!anyRoot) return ExternalJson.Failure(operation, "known_folder_unavailable");
-        var shown = entries
-            .OrderBy(item => item.IsFolder ? 0 : 1)
-            .ThenBy(item => item.Name, StringComparer.OrdinalIgnoreCase)
+        // FILES1433 «lista los 5 más recientes»: newest first when asked; otherwise
+        // folders first, then names.
+        var shown = (order == "recent"
+                ? entries.OrderByDescending(item => item.ModifiedUtc)
+                    .ThenBy(item => item.Name, StringComparer.OrdinalIgnoreCase)
+                : entries.OrderBy(item => item.IsFolder ? 0 : 1)
+                    .ThenBy(item => item.Name, StringComparer.OrdinalIgnoreCase))
             .Take(limit)
             .ToArray();
         int folderCount = entries.Count(item => item.IsFolder);
@@ -301,6 +308,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             }
             writer.WriteEndArray();
             writer.WriteNumber("shownCount", shown.Length);
+            writer.WriteString("order", order);
             writer.WriteNumber("resultLimit", limit);
             writer.WriteBoolean("resultsMayBeTruncated", entries.Count > shown.Length);
             writer.WriteBoolean("hiddenAndSystemSkipped", true);
