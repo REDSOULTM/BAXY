@@ -3811,6 +3811,7 @@ def resolve_explicit_clarification_intent(
             )
             and _has(folded, r"\b(?:volumen|volume)\b")
             or relative_spoken_volume
+            or _bare_music_volume_request(folded)
         )
         and not _has(folded, r"\b(?:100|[0-9]{1,2})\b")
         and _literal_percentage_word_value(folded) is None
@@ -6239,6 +6240,17 @@ _VOLUME_OBJECT = (
 )
 
 
+def _bare_music_volume_request(folded: str) -> bool:
+    """AUDIO1461 «bajá la música», «subí la música»: a volume verb whose only
+    object is the music, with no amount, player or level."""
+
+    return _has(
+        folded,
+        rf"^[¿?¡!\s]*(?:{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB})\s+"
+        r"(?:un\s+poco\s+|un\s+poquito\s+|a\s+)?(?:la\s+|el\s+|the\s+)?(?:musica|music)\s*[.!?]*$",
+    )
+
+
 def _volume_domain(text: str) -> bool:
     if _has_app_scoped_audio(text):
         return False
@@ -6257,6 +6269,11 @@ def _volume_domain(text: str) -> bool:
     ) and not _has(text, r"\b(?:brillo|brightness|luz\s+de\s+la\s+pantalla)\b"):
         return True
     if _has(text, r"\b(?:musica|music)\b"):
+        # AUDIO1461 «bajá la música»: a bare volume verb with the music as its
+        # only object is the everyday way of asking for less (or more) volume;
+        # without an amount it takes the relative-volume clarification (H0027).
+        if _bare_music_volume_request(text):
+            return True
         # Music is primarily a media object. It denotes the global audio
         # level only when a local numeric level/adjustment construction says
         # so; decades, track numbers and genre names carry no volume authority.
