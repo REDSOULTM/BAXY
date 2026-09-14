@@ -1,0 +1,15 @@
+{
+  "schema": "c03-screen1407-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Mission/MissionEngine.cs (una captura completada y verificada bajo confirmación concedida registra su captureId con una ventana de diez minutos; una ocr.read/vision.describe sobre ese captureId dentro de la ventana se permite sin nuevo desafío, sea cual sea su misión)",
+  "patch": "artifacts/comprobaciones/C03/SCREEN1407/SOURCE.patch",
+  "commits": [
+    "db7b9810562482054cc9d3afbc8ba8d8071df0cc"
+  ],
+  "build": "BUILD1407 (C03-repairs1407-build/BUILD_READY.json; Kernel recompilado)",
+  "cause_measured": "SCREEN1405: con el consentimiento atado a la misión, ocr.read volvió a pedir confirmación tras la captura aprobada; cada paso del plan lleva su propio id de misión (PreparedOperation.Create), así que ese consentimiento nunca coincide con la lectura.",
+  "change": "MissionEngine ata el consentimiento al captureId con una ventana de diez minutos (id inadivinable, existente sólo porque la persona confirmó esa captura) y descarta las entradas vencidas; cualquier otra captura u operación conserva la confirmación. Sin respuestas fijas.",
+  "measurement": "SCREEN1407: 10/10 ejecutados, 3 límites aprobados, 7 casos de lectura sin final publicado, 0 violaciones; 0 créditos. SCREEN1407 sobre BUILD1407 (Kernel: el consentimiento de lectura atado al captureId con ventana de diez minutos): el consentimiento se sostiene; en cada caso de lectura la captura se aprobó, completó y verificó y ocr.read se completó y verificó sin segunda confirmación. Sin final: el compositor envía la situación completa de ocr.read (~32 KB de cajas de layout, hashes y metadatos) en su prompt, 31.5 K caracteres contra un techo de contexto de 4096 tokens, así que cada intento falló antes del modelo (reproducido fuera de línea); el texto reconocido ocupa ~2 KB. Siguiente: la mente proyecta el resultado OCR a su texto, número de líneas e idioma (SCREEN1409).",
+  "credits": 0
+}
