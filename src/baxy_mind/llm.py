@@ -2279,11 +2279,13 @@ def _shaped_conversation_answer_violates_contract(
         )
     if shape == "reassurance_ack":
         folded_content = _policy_guard_text(content)
+        # CONVERSATION1347: «Gracias, entiendo. No hay problema.» is a fine
+        # acknowledgement; up to two short sentences are accepted.
         return (
             not content
             or "\n" in content
             or any(marker in content for marker in ("?", "¿", "？"))
-            or re.search(r"[.!…]\s+\S", content) is not None
+            or len(re.findall(r"[.!…]\s+\S", content)) > 1
             or re.search(
                 r"\b(?:abri|abrio|cerre|cerro|esta\s+abiert[oa]|esta\s+cerrad[oa]|is\s+open|is\s+closed|"
                 r"i\s+opened|i\s+closed|opened\s+it|closed\s+it|lo\s+abri|lo\s+cerre|la\s+abri|la\s+cerre)\b",
