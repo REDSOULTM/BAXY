@@ -10106,11 +10106,27 @@ class LlmRuntime:
         a meaning: the question names what arrived and asks what to do.
         """
 
-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level"}:
+        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look"}:
             raise ValueError("clase de entrada sin pedido inválida")
         current = str(text).strip()[:2_048]
         situation = (
             (
+                # DIALOGUE1489 H0528 «Quiero que lo veas y de que se trata?»:
+                # the person orders BAXY to look at something unnamed and say
+                # what it is; the only missing datum is what to look at.
+                "Eres BAXY. El usuario te ordena mirar «lo», «esto» o «eso» y "
+                "decirle qué es o de qué se trata, pero no nombró qué cosa debes "
+                "mirar y no hay nada anterior a lo que pueda referirse. Decir de qué "
+                "se trata te corresponde a ti después de mirarlo; al usuario sólo le "
+                "corresponde decir QUÉ debes mirar. Formula una sola pregunta breve, "
+                "en el idioma del usuario, que pregunte qué cosa quiere que mires o "
+                "veas (por ejemplo: «¿Qué querés que mire?»). No preguntes de qué se "
+                "trata ni qué es, no digas que él ya lo miró, no adivines si es una "
+                "pantalla, un archivo o una imagen, no digas que no entiendes ni que "
+                "algo falló y no ofrezcas ayuda genérica."
+            )
+            if kind == "deictic_look"
+            else (
                 # AUDIO1375 H0439 «Ponlo a 100 ahora»: a level for «lo» with
                 # nothing named before it; ask what to set, never guess it.
                 # AUDIO1379: with «nivel» in this text the model asked «¿A qué
@@ -10250,6 +10266,39 @@ class LlmRuntime:
                         )
                         continue
                     raise ValueError("aclaración de nivel deíctico no pregunta qué")
+            # DIALOGUE1487 «Miralo y decime de qué se trata» → «¿De qué se trata
+            # exactamente?» / «¿Qué es eso que miraste?»: the question asked
+            # back what the person asked BAXY, or attributed the looking to the
+            # person. It must ask what BAXY should look at. One corrected retry.
+            if kind == "deictic_look":
+                folded_question = _fold_dialogue_text(question)
+                inverted = re.search(
+                    r"\b(?:se\s+trata|de\s+que\s+trata|que\s+es\s+eso|que\s+es\s+esto|miraste|viste|"
+                    r"leiste|revisaste|what\s+is\s+it|what\s+it\s+is|about|you\s+(?:saw|looked))\b",
+                    folded_question,
+                ) is not None
+                asks_target = re.search(
+                    r"\b(?:que|cual|what|which)\b.{0,60}\b(?:mire|mires|vea|veas|ver|mirar|revise|revisar|lea|leer|"
+                    r"fije|chequee|look|see|check|read)\b|"
+                    r"\b(?:mire|vea|ver|mirar|revise|lea|look|see|check|read)\b.{0,40}\b(?:que|cual|what|which)\b",
+                    folded_question,
+                ) is not None
+                if inverted or not asks_target:
+                    if attempt == 0:
+                        payload["messages"].insert(
+                            -1,
+                            {
+                                "role": "system",
+                                "content": (
+                                    "Corrección: la persona te pide a ti que mires algo y le digas "
+                                    "qué es; no le preguntes de qué se trata ni qué es, ni digas que "
+                                    "ella lo miró. Pregunta sólo QUÉ COSA quieres que mire, con "
+                                    "«qué» y el verbo mirar/ver, por ejemplo: «¿Qué querés que mire?»."
+                                ),
+                            },
+                        )
+                        continue
+                    raise ValueError("aclaración de mirar deíctico no pregunta qué mirar")
             # DIALOGUE1279 H0287 «????» → «¿Qué quieres que haga?»: a question
             # that never names what arrived is the generic help offer the
             # owner rejected (CLARIFY1047). One corrected retry.
