@@ -4453,6 +4453,10 @@ def _explicit_arguments_from_evidence(
         adjustment = effect_intent._literal_brightness_adjustment(evidence)
         return {**adjustment, "setting": "brightness"} if adjustment is not None else None
 
+    if operation == "system.settings.set":
+        level = effect_intent._literal_brightness_level(evidence)
+        return {"setting": "brightness", "value": level} if level is not None else None
+
     if operation == "window.resolve":
         application_name = effect_intent.resolve_application_close_name(
             evidence, application_names,
@@ -5241,6 +5245,7 @@ def _ground_explicit_arguments(
         "media.play.query",
         "system.process.list",
         "system.settings.adjust",
+        "system.settings.set",
         "system.settings.status",
         "system.status",
         "window.application.status",

@@ -11533,6 +11533,51 @@ def brightness_relative_without_amount(text: str) -> bool:
     )
 
 
+_BRIGHTNESS_SET_VERB = (
+    r"(?:pon(?:me|le|e|elo|ele|lo)?|poner|fija(?:me|lo)?|ajusta(?:me|lo)?|adjust|"
+    r"establece|set|cambia(?:me|lo)?|change|deja(?:me|lo)?|leave|"
+    rf"{_BRIGHTNESS_UP_VERB}|{_BRIGHTNESS_DOWN_VERB}|turn)"
+)
+_BRIGHTNESS_EXTREME_VALUES = {
+    "maximo": 100, "max": 100, "tope": 100, "full": 100, "maximum": 100, "the max": 100,
+    "minimo": 0, "min": 0, "minimum": 0,
+}
+
+
+def _literal_brightness_level(text: str) -> int | None:
+    """«poné el brillo al 80», «pon el brillo al 80%», «subí el brillo al máximo»: an absolute level."""
+
+    folded = _strip_request_envelope(_fold(text))
+    if (
+        _is_negative_effect_clause(folded)
+        or _is_meta_or_tool_denial(folded)
+        or _has_contradictory_correction(folded)
+        or _is_past_or_hypothetical_state(folded)
+        or _has(folded, r"\b(?:o|or)\b")
+        or len(_request_clauses(folded)) != 1
+    ):
+        return None
+    obj = _BRIGHTNESS_OBJECT
+    numeric = re.search(
+        rf"\b{_BRIGHTNESS_SET_VERB}\s+(?:(?:el|la|the|my|mi)\s+)?{obj}\s+"
+        r"(?:a|al|en|to|at|hasta)\s*(?:el\s+|the\s+)?(?P<level>100|[0-9]{1,2})"
+        r"(?![0-9])(?:\s*(?:%|por\s+ciento|percent))?",
+        folded,
+    )
+    extreme = re.search(
+        rf"\b{_BRIGHTNESS_SET_VERB}\s+(?:(?:el|la|the|my|mi)\s+)?{obj}\s+"
+        r"(?:a|al|to|at|hasta)\s+(?:el\s+|the\s+)?(?P<word>maximo|max|tope|full|maximum|minimo|min|minimum)\b",
+        folded,
+    )
+    digits = re.findall(r"\d+", folded)
+    if numeric is not None and extreme is None:
+        raw = numeric.group("level")
+        return int(raw) if digits == [raw] else None
+    if extreme is not None and numeric is None and not digits:
+        return _BRIGHTNESS_EXTREME_VALUES.get(extreme.group("word"))
+    return None
+
+
 def _bare_spoken_number_media_query(text: str) -> str | None:
     """Preserve a word-valued media title without inventing volume context."""
 
@@ -14474,6 +14519,12 @@ def resolve_explicit_effects(
         and not _has_contradictory_correction(folded)
     ):
         return EffectIntent(("system.settings.adjust",), (folded,))
+    if (
+        "system.settings.set" in available
+        and _literal_brightness_level(folded) is not None
+    ):
+        # BRIGHT1287: an absolute brightness level is the sensitive set (confirmation).
+        return EffectIntent(("system.settings.set",), (folded,))
     if (
         "filesystem.create.directory" in available
         and _directory_creation_request(folded) is not None
