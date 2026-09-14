@@ -43,6 +43,25 @@ def without_observed_names(text: str, situation: object) -> str:
                         names.update(value for key in fields
                                      if isinstance(value := entry.get(key), str)
                                      and value.strip() and len(value) <= 4096)
+        if (node.get("kind") == "operation" and operation == "web.search"
+                and node.get("verified") is True and node.get("succeeded") is True
+                and node.get("polarity") == "success"):
+            # WEB1447 «qué clima hace hoy»: a result's title and host («tiempo.cl»,
+            # «eltiempoen.com») are observed data, not dotted operation names.
+            observed = node.get("observed")
+            found = observed.get("results") if isinstance(observed, dict) else None
+            if isinstance(found, list):
+                for entry in found:
+                    if not isinstance(entry, dict):
+                        continue
+                    title = entry.get("title")
+                    if isinstance(title, str) and 0 < len(title.strip()) <= 4096:
+                        names.add(title.strip())
+                    url = entry.get("url")
+                    if isinstance(url, str):
+                        host = re.match(r"^(?:https?://)?(?:www\.)?([^/?#]+)", url)
+                        if host and 0 < len(host.group(1)) <= 253:
+                            names.add(host.group(1))
         if (node.get("kind") == "operation" and operation == "notification.list"
                 and node.get("verified") is True and node.get("succeeded") is True
                 and node.get("polarity") == "success"):

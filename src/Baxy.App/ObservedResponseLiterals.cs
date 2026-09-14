@@ -87,6 +87,30 @@ internal static class ObservedResponseLiterals
             }
         }
         if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+            && IsString(node, "operation", "web.search")
+            && node.TryGetProperty("verified", out JsonElement searchVerified) && searchVerified.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("succeeded", out JsonElement searchSucceeded) && searchSucceeded.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("observed", out JsonElement searchObserved) && searchObserved.ValueKind == JsonValueKind.Object
+            && searchObserved.TryGetProperty("results", out JsonElement searchResults) && searchResults.ValueKind == JsonValueKind.Array)
+        {
+            // WEB1447 «qué clima hace hoy»: a result's title and host are observed data.
+            foreach (JsonElement entry in searchResults.EnumerateArray())
+            {
+                if (entry.ValueKind != JsonValueKind.Object) continue;
+                if (entry.TryGetProperty("title", out JsonElement resultTitle) && resultTitle.ValueKind == JsonValueKind.String
+                    && resultTitle.GetString() is { Length: > 0 and <= 4096 } titleText && !string.IsNullOrWhiteSpace(titleText))
+                {
+                    names.Add(titleText.Trim());
+                }
+                if (entry.TryGetProperty("url", out JsonElement resultUrl) && resultUrl.ValueKind == JsonValueKind.String
+                    && Uri.TryCreate(resultUrl.GetString(), UriKind.Absolute, out Uri? resultUri)
+                    && resultUri.Host is { Length: > 0 } hostName)
+                {
+                    names.Add(hostName.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ? hostName[4..] : hostName);
+                }
+            }
+        }
+        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
             && IsString(node, "operation", "notification.list")
             && node.TryGetProperty("verified", out JsonElement notifVerified) && notifVerified.ValueKind == JsonValueKind.True
             && node.TryGetProperty("succeeded", out JsonElement notifSucceeded) && notifSucceeded.ValueKind == JsonValueKind.True
