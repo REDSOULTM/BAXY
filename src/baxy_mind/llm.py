@@ -42,6 +42,7 @@ from .effect_intent import (
     _strip_request_envelope,
     conversation_only_content_request,
     countdown_target,
+    literal_clipboard_write_text,
     reassurance_statement,
     visual_content_noun,
     visual_content_request,
@@ -3785,6 +3786,19 @@ def _compose_situation_payload(
             # The receipt records whether it was running BEFORE this invocation.
             # False must not tell the narrator that the app is still closed.
             visible_seen["was_running_before_open"] = visible_seen.pop("alreadyRunning")
+        elif operation == "clipboard.write.text":
+            # CLIPBOARD1359 H0199/H0356: the receipt carries only the sequence
+            # number and the character count, so the narrator echoed the text
+            # («Hola») instead of reporting the copy. The written literal is
+            # the one the reader grounded from this same request; the receipt
+            # verified it by post-read.
+            written = literal_clipboard_write_text(user_text) if user_text else None
+            if (
+                isinstance(written, str)
+                and situation.get("verified") is True
+                and situation.get("succeeded") is True
+            ):
+                visible_seen["writtenText"] = written
         elif isinstance(operation, str) and operation.startswith("system.settings."):
             # BRIGHT1319 H0430: «según la lectura de WMI» was copied from the
             # provenance token; the monitor instance path is internal too. The
@@ -4392,6 +4406,17 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         and _contradicted_brightness_extreme(text, seen)
     ):
         return _contradicted_brightness_extreme(text, seen)
+    written = seen.get("writtenText") if isinstance(seen, dict) else None
+    if payload.get("operation") == "clipboard.write.text" and isinstance(written, str) and written:
+        # CLIPBOARD1359: «Hola» / «Buen día.» were published after a verified
+        # write. The final must carry the written text and say it was copied.
+        if _reading_fold(written) not in folded:
+            return "missing_written_text"
+        if re.search(
+            r"\b(?:copi\w*|pegu\w*|portapapeles|clipboard|pasted?|paste)\b",
+            folded,
+        ) is None:
+            return "echo_without_report"
     if (
         payload.get("operation") == "wifi.status"
         and isinstance(seen, dict)
@@ -11736,6 +11761,16 @@ class LlmRuntime:
                 if response_language == "en"
                 else "El brillo observado no está al mínimo: di el valor observado y "
                 "que no está al mínimo."
+            ),
+            "missing_written_text": (
+                "Quote the exact text from writtenText and say you copied it to the clipboard."
+                if response_language == "en"
+                else "Cita el texto exacto de writtenText y di que lo copiaste al portapapeles."
+            ),
+            "echo_without_report": (
+                "Do not just repeat the text: say that you copied it to the clipboard."
+                if response_language == "en"
+                else "No repitas sólo el texto: di que lo copiaste al portapapeles."
             ),
             "mislabelled_installed": (
                 "The figure you called installed is the total; the installed "
