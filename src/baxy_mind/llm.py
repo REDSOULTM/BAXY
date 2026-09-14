@@ -2238,7 +2238,7 @@ def _unsupported_answer_has_inability(value: object) -> bool:
 # which is the catalogue's own wording leaking onto the screen. Operation ids
 # are matched structurally because they are open-ended.
 _VISIBLE_INTERNAL_VOCABULARY = re.compile(
-    r"\b(?:smtc|json|schema|esquema|endpoint|sidecar|router|shortlist|payload|"
+    r"\b(?:smtc|wmi|json|schema|esquema|endpoint|sidecar|router|shortlist|payload|"
     r"manifest|manifiesto|sha256|kernel|provider|proveedor|"
     r"catalogo\s+(?:activo|tipado)|catalog\s+(?:entry|operation)|"
     r"knn|embedding|token|prompt|runtime|deserializ\w*|serializ\w*|"
@@ -5654,7 +5654,8 @@ _CLARIFICATION_STYLE = "Trata a la persona de tú, nunca de usted, y no la nombr
 # DIALOGUE1277 H0531): second-person preterites of the request verbs.
 _PAST_ACTION_ATTRIBUTED_TO_USER = re.compile(
     r"\b(?:abriste|cerraste|mandaste|enviaste|borraste|eliminaste|hiciste|"
-    r"guardaste|pusiste|subiste|bajaste|you\s+(?:opened|closed|sent|deleted|did))\b",
+    r"guardaste|pusiste|subiste|bajaste|aumentaste|redujiste|disminuiste|"
+    r"you\s+(?:opened|closed|sent|deleted|did|raised|lowered|turned))\b",
     re.IGNORECASE,
 )
 
@@ -9677,8 +9678,27 @@ class LlmRuntime:
             "max_tokens": 64,
             "chat_template_kwargs": {"enable_thinking": False},
         }
-        raw = self._post_schema_object(payload, "la aclaración explícita")
-        return validate_missing_argument_clarification(raw, missing_fields)
+        for attempt in range(2):
+            raw = self._post_schema_object(payload, "la aclaración explícita")
+            question = validate_missing_argument_clarification(raw, missing_fields)
+            # BRIGHT1287 «Subí bastante el brillo.» → «¿Cuánto subiste el
+            # brillo?»: the amount question attributed the action to the
+            # user's past. One corrected retry; a repeat is a failure.
+            if _PAST_ACTION_ATTRIBUTED_TO_USER.search(str(question)) is None:
+                return question
+            if attempt == 0:
+                payload["messages"].insert(
+                    -1,
+                    {
+                        "role": "system",
+                        "content": (
+                            "Corrección: el usuario no hizo nada todavía; te pide "
+                            "la acción ahora. No uses «subiste», «bajaste» ni otro "
+                            "pasado del usuario: pregunta cuánto debes hacerlo tú."
+                        ),
+                    },
+                )
+        raise ValueError("aclaración explícita atribuye la acción al usuario")
 
     def ground_plan_arguments(
         self,
