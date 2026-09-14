@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Globalization;
+using System.Linq;
 using System.Text.Json;
 using Baxy.Contracts;
 using Baxy.Kernel.Journal;
@@ -19,11 +20,14 @@ public sealed class MissionEngine : IDisposable
     private readonly IOperationResponseNarrator _narrator;
     private readonly Func<ConfirmationMode> _confirmationMode;
     private readonly SemaphoreSlim _executionGate = new(1, 1);
-    // SCREEN1403 «leéme lo que dice la pantalla»: captures produced under a
-    // confirmed capture operation, keyed by captureId → missionId. Reading that
-    // capture within the same mission is the consented purpose, not a second
-    // privacy decision; the engine's execution gate serializes access.
-    private readonly Dictionary<string, string> _consentedCaptures = new(StringComparer.Ordinal);
+    // SCREEN1403/1405 «leéme lo que dice la pantalla»: captures produced under
+    // a confirmed capture operation, keyed by captureId → consent expiry. The
+    // capture id is unguessable and exists only because the person confirmed
+    // that capture; reading it shortly afterwards is the consented purpose, not
+    // a second privacy decision. Plan steps carry their own mission ids, so the
+    // consent cannot be bound to a mission. The execution gate serializes access.
+    private static readonly TimeSpan ConsentedCaptureWindow = TimeSpan.FromMinutes(10);
+    private readonly Dictionary<string, DateTimeOffset> _consentedCaptures = new(StringComparer.Ordinal);
 
     /// <summary>
     /// Última autocorrección de este motor: afirmación, verificación que la
@@ -113,9 +117,9 @@ public sealed class MissionEngine : IDisposable
                 : null;
             if (policy == PolicyDecision.RequireConfirmation && IsReadOfConsentedCapture(request))
             {
-                // SCREEN1403 «leéme lo que dice la pantalla»: the person confirmed
-                // the capture; reading that same capture in the same mission is
-                // the consented purpose, not a second privacy decision.
+                // SCREEN1403/1405 «leéme lo que dice la pantalla»: the person
+                // confirmed the capture; reading that same capture shortly after
+                // is the consented purpose, not a second privacy decision.
                 policy = PolicyDecision.Allow;
             }
 
@@ -200,7 +204,7 @@ public sealed class MissionEngine : IDisposable
                 && consentedCapture.ValueKind == JsonValueKind.String
                 && consentedCapture.GetString() is { Length: > 0 } consentedCaptureId)
             {
-                _consentedCaptures[consentedCaptureId] = request.MissionId;
+                _consentedCaptures[consentedCaptureId] = DateTimeOffset.UtcNow + ConsentedCaptureWindow;
             }
 
             if (outcome.Retryable
@@ -361,8 +365,13 @@ public sealed class MissionEngine : IDisposable
             return false;
         }
 
-        return _consentedCaptures.TryGetValue(id, out string? missionId)
-            && string.Equals(missionId, request.MissionId, StringComparison.Ordinal);
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        foreach (string expired in _consentedCaptures.Where(entry => entry.Value <= now).Select(entry => entry.Key).ToArray())
+        {
+            _consentedCaptures.Remove(expired);
+        }
+
+        return _consentedCaptures.TryGetValue(id, out DateTimeOffset expiry) && expiry > now;
     }
 
     private static JsonElement BuildConfirmationResult(
