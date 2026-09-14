@@ -1,3 +1,25 @@
+## AGENDA1337 — estado vigente 2026-09-14T04:31:59.255347+00:00
+
+Parcial: 7 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 397/742 | 345 | 0 | >=271 | 3/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 270 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AGENDA1337 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: AGENDA1337: 8 ejecutados, 7 aprobados, 1 fallidos, 1 créditos (índices [0]); Alarmas, recordatorios, tareas y agenda 35/38 (quedan «listá los timers» sin listado completo y «qué tengo agendado para hoy» con cuenta Microsoft). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/AGENDA1337/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 124.89 s acumulados; pico GPU 3497.56 MiB; pico RAM 1607.50 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque AGENDA1337 precedente. -->
+
 ## CLOCK1335 — estado vigente 2026-09-14T04:26:08.222780+00:00
 
 Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

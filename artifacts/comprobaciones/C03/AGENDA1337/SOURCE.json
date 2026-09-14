@@ -1,0 +1,15 @@
+{
+  "schema": "c03-agenda1337-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_task_without_title → aclaración explícita del título de task.create; la cancelación de alarma sin identificar pide which_alarm)",
+  "patch": "artifacts/comprobaciones/C03/AGENDA1337/SOURCE.patch",
+  "commits": [
+    "8a590711ce1eaeb8d4680a7cba2817bb8e50925b"
+  ],
+  "build": "BUILD1337 (C03-repairs1337-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "TIME1199: «crea una tarea para el viernes» creó la tarea con un título inventado; AGENDA1021: «cancelá la alarma» preguntó cuándo cancelar (campo alarm_time) cuando el dueño pide que pregunte cuál alarma.",
+  "change": "Lector cerrado: una creación de tarea con sólo fecha es aclaración del título; la cancelación de alarma sin identificar nombra el campo que falta como which_alarm. Sin respuestas fijas.",
+  "measurement": "AGENDA1337: 8 ejecutados, 7 aprobados, 1 fallido, 0 violaciones; H0043 acreditado con dos pares; 1 créditos. Medición: la tarea con sólo fecha recibe la pregunta por el título conservando la fecha; la alarma sin identificar recibe «cuál alarma» en el literal y en un par, pero «cancelame la alarma» produjo «¿Quieres que cancele la alarma más reciente?» (candidato inventado). Reparación para AGENDA1339: la pregunta de which_alarm debe preguntar cuál y no proponer una.",
+  "credits": 1
+}

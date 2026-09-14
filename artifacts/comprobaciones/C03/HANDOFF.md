@@ -1,3 +1,11 @@
+# AGENDA1337 adjudicado — 2026-09-14T04:31:59.255347+00:00
+
+**397/742 cubiertos, 345 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 762842cac15e2f9556fde1f48ae2b03a66cdc58d50f42014ab40d456e88884d6. Primeras altas 24 h >= 271 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 8a590711 con BUILD1337 (mente: tarea con sólo fecha → aclaración del título; alarma sin identificar → cuál alarma; AGENDA1337/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+AGENDA1337 («Alarmas, recordatorios, tareas y agenda», dos aclaraciones deterministas: tarea sin contenido, alarma sin identificar): 8 ejecutados, 7 aprobados, 1 fallido, 0 violaciones; H0043 acreditado con dos pares, 1 créditos. Adjudicación 0efe7c0dc9ef5cb4f747b625a2373f530bff4e8de4bebe3b44d1bfd3df8808aa. Medición: la tarea con sólo fecha recibe la pregunta por el título conservando la fecha; la alarma sin identificar recibe «cuál alarma» en el literal y en un par, pero «cancelame la alarma» produjo «¿Quieres que cancele la alarma más reciente?» (candidato inventado). Reparación para AGENDA1339: la pregunta de which_alarm debe preguntar cuál y no proponer una.
+
+---
+
 # CLOCK1335 adjudicado — 2026-09-14T04:26:08.222780+00:00
 
 **396/742 cubiertos, 346 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA cc4f4fd90237d8b4e6c7f416e3bdc76627c3d7e10d98e448e193932e9db3f114. Primeras altas 24 h >= 270 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD ef2a5f25 con BUILD1335 (App: política de cuenta atrás en UserMessagePolicy; CLOCK1335/SOURCE.json|SOURCE.patch; App recompilada).

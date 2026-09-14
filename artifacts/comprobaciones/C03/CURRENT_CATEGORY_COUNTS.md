@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación CLOCK1335
+# Categorías actuales — adjudicación AGENDA1337
 
-396/742 cubiertos; 346 abiertos; 0 no aplican; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19). Últimas 24 h: al menos 270 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: cc4f4fd90237d8b4e6c7f416e3bdc76627c3d7e10d98e448e193932e9db3f114.
+397/742 cubiertos; 345 abiertos; 0 no aplican; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19). Últimas 24 h: al menos 271 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 762842cac15e2f9556fde1f48ae2b03a66cdc58d50f42014ab40d456e88884d6.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -13,7 +13,7 @@
 | Mensajería | 31 | 6 | 25 |
 | Abrir aplicaciones | 54 | 39 | 15 |
 | Audio y volumen | 51 | 39 | 12 |
-| Alarmas, recordatorios, tareas y agenda | 38 | 34 | 4 |
+| Alarmas, recordatorios, tareas y agenda | 38 | 35 | 3 |
 | Interacción dentro de aplicaciones | 22 | 3 | 19 |
 | Red y Bluetooth | 21 | 13 | 8 |
 | Cerrar aplicaciones y ventanas | 20 | 11 | 9 |

@@ -197,3 +197,7 @@ Hora y fecha pasa de 18/23 a 18/23 con la exención de cuenta atrás en las dos 
 ## Actualización 2026-09-14 (CLOCK1335)
 
 Hora y fecha pasa de 18/23 a 19/23 con la política de la App consciente de la cuenta atrás (commit ef2a5f25, BUILD1335): 5 ejecutados, 5 aprobados, 0 fallidos, 0 violaciones; H0399 acreditado con dos pares, 1 créditos. Medición: con la política de la App consciente de la cuenta atrás el final publica el resto calculado por la mente sobre el reloj observado (13 h 37 min hasta las 15:00) sin repetir la hora. Hora y fecha queda en 19/23: los cuatro restantes están en portugués, alemán, francés e italiano (fuera de aceptación por idioma).
+
+## Actualización 2026-09-14 (AGENDA1337)
+
+Alarmas, recordatorios, tareas y agenda pasa de 34/38 a 35/38 con las dos aclaraciones deterministas (commit 8a590711, BUILD1337): 8 ejecutados, 7 aprobados, 1 fallido, 0 violaciones; H0043 acreditado con dos pares, 1 créditos. Medición: la tarea con sólo fecha recibe la pregunta por el título conservando la fecha; la alarma sin identificar recibe «cuál alarma» en el literal y en un par, pero «cancelame la alarma» produjo «¿Quieres que cancele la alarma más reciente?» (candidato inventado). Reparación para AGENDA1339: la pregunta de which_alarm debe preguntar cuál y no proponer una. Quedan «listá los timers» (no hay listado completo de notificaciones programadas; sólo notification.list.due) y «qué tengo agendado para hoy» (calendar.event.list exige una cuenta Microsoft en el producto).
