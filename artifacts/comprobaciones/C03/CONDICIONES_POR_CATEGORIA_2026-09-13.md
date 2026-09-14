@@ -381,3 +381,7 @@ Archivos y carpetas sigue en 19/32: BUILD1425 construyó `filesystem.known.list`
 ## Actualización 2026-09-14 (FILES1427)
 
 Archivos y carpetas pasa de 19/32 a 23/32 con el listado de carpetas conocidas construido (commits ed167618 y 76e6ecdd, BUILD1427) (HEAD 76e6ecdd): 11/11 ejecutados, 11 aprobados (8 listados con total verificado y seis nombres citados tal cual, 3 límites), 0 fallidos, cero violaciones, 4 créditos. Los finales dicen el total real de entradas de la carpeta, citan seis nombres listados tal cual y avisan de que hay más; los nombres quedan privados. Quedan condicionados en la categoría: contar y listar recientes (H0453), .py del directorio actual (H0701), contenido dinámico (H0334/H0426), zip (H0542), backup a pendrive (H0733), resumen de PDF (H0666), borrado de carpeta (H0327) y la ruta literal (H0299).
+
+## Actualización 2026-09-14 (NEGATIVE1429)
+
+Música pasa de 6/39 a 7/39 y Energía del sistema de 0/3 a 0/3 sin cambio de fuente sobre BUILD1427 (HEAD 81492ce3): 9/9 ejecutados, 7 aprobados (4 acuses de prohibición, 3 límites), 2 fallidos (H0603 y «No apagues la PC.»: el acuse «nunca apagaré la PC» fue rechazado por el contrato de forma y el turno cayó en una aclaración), cero violaciones, 1 créditos. Causa medida: _unsupported_answer_mentions_request descarta «pc» (dos letras) y compara tokens exactos (apagues ≠ apagaré); reparación en NEGATIVE1431. Energía del sistema sigue en 0/3 (apagar y reiniciar no se ejecutan en el PC del dueño; la prohibición se remide).

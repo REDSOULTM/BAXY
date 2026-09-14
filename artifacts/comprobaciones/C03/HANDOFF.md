@@ -1,3 +1,11 @@
+# NEGATIVE1429 adjudicado — 2026-09-14T15:48:37.942297+00:00
+
+**442/742 cubiertos, 300 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA bfa3d94167072616c4b67e3da29739e54f496571fb4097fe913d37142adac93a. Primeras altas 24 h >= 316 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 81492ce3 con BUILD1427 sin cambio de fuente (NEGATIVE1429/SOURCE.json|SOURCE.patch). Turnos ordinarios sin operaciones: acuse de la prohibición en primera persona.
+
+NEGATIVE1429 («Música» H0333 «no pongas música»; «Energía del sistema» H0603 «jamás apagues la pc»; prohibiciones sueltas sin efecto): 9/9 ejecutados, 7 aprobados (4 acuses de prohibición, 3 límites), 2 fallidos (H0603 y «No apagues la PC.»: el acuse «nunca apagaré la PC» fue rechazado por el contrato de forma y el turno cayó en una aclaración), cero violaciones, 1 créditos. Adjudicación 82d1dbf4f35a89b021d67a8d8b96ee58a08047db76ac6bf68537f7fb7ef24909. Causa medida: _unsupported_answer_mentions_request descarta «pc» (dos letras) y compara tokens exactos (apagues ≠ apagaré); reparación en NEGATIVE1431. Energía del sistema sigue en 0/3 (apagar y reiniciar no se ejecutan en el PC del dueño; la prohibición se remide).
+
+---
+
 # FILES1427 adjudicado — 2026-09-14T15:35:56.629315+00:00
 
 **441/742 cubiertos, 301 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA e58fc58d9f00c4478a61473c744f01c99287dbd0292cf63fbdcc2115c1954fcf. Primeras altas 24 h >= 315 (+4).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 76e6ecdd con BUILD1427 (filesystem.known.list construida en Kernel, Core, proveedor Windows, App y mente; FILES1427/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación; los nombres listados quedan en los recibos privados y nunca se publican.

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-negative1429-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "sin cambio de fuente en esta tanda (BUILD1427; explicit_negative_constraint y el acuse de restricción de NEGATIVE1311 ya cubren estas prohibiciones)",
+  "patch": "artifacts/comprobaciones/C03/NEGATIVE1429/SOURCE.patch",
+  "commits": [
+    "81492ce391570e247787826f1b0806ad67130517"
+  ],
+  "build": "BUILD1427 (C03-repairs1427-build/BUILD_READY.json; binarios del HEAD de NEGATIVE1429, sin cambio de fuente en esta tanda)",
+  "cause_measured": "Dos prohibiciones sueltas abiertas en categorías condicionadas (Música: Spotify exige sesión real; Energía: no se apaga el PC del dueño): sin causa de producto, medibles como acuse sin efecto.",
+  "change": "Sin cambio de fuente: se miden H0333 y H0603 con dos pares por grupo sobre BUILD1427.",
+  "measurement": "NEGATIVE1429: 9/9 ejecutados, 7 aprobados (4 acuses de prohibición, 3 límites), 2 fallidos (H0603 y «No apagues la PC.»: el acuse «nunca apagaré la PC» fue rechazado por el contrato de forma y el turno cayó en una aclaración), cero violaciones; 1 créditos. Causa medida: _unsupported_answer_mentions_request descarta «pc» (dos letras) y compara tokens exactos (apagues ≠ apagaré); reparación en NEGATIVE1431. Energía del sistema sigue en 0/3 (apagar y reiniciar no se ejecutan en el PC del dueño; la prohibición se remide).",
+  "credits": 1
+}
