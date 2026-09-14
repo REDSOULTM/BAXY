@@ -2288,11 +2288,13 @@ def _shaped_conversation_answer_violates_contract(
         )
     if shape == "free_content":
         folded_content = _policy_guard_text(content)
+        # A joke is often a question with its answer («¿Por qué…? Porque…»);
+        # only a reply that ends by asking the person misses the contract.
         return (
             not content
             or len(content) < 20
-            or "\n" in content
-            or any(marker in content for marker in ("?", "¿", "？"))
+            or content.count("\n") > 1
+            or content.rstrip().rstrip("😄😎🙂😂🤣!. ").endswith(("?", "？"))
             or re.search(
                 r"\b(?:que\s+tipo|what\s+kind|which\s+kind|prefieres|preferis|te\s+gustaria|would\s+you\s+like|"
                 r"idioma|language|en\s+espanol\s+o|in\s+spanish\s+or|elige|elegi|choose)\b",
