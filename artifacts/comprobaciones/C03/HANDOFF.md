@@ -1,3 +1,11 @@
+# NEGATIVE1311 adjudicado — 2026-09-14T02:25:33.105105+00:00
+
+**385/742 cubiertos, 357 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA c8bcfabfd9dbd21d51c0bedd5c3439cd3102dd4f43105fd15e65eada719d65fc. Primeras altas 24 h >= 259 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b28dc6d9 con BUILD1311 (mente: presupuesto del acuse de restricción y lector «mejor no»; NEGATIVE1311/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+NEGATIVE1311 («Restricciones negativas de apertura», prohibiciones de abrir sobre el acuse reparado): 7 ejecutados, 6 aprobados, 1 fallido, 3 créditos. Adjudicación ce89aa7f982c105b346edd8ffaece0e4311d4530ef7a8cc919ca10509e894938. H0447 «no abras el navegador», H0550 «no abras chrome» y H0685 «mejor no abras la calculadora» acreditados con pares «No abras Paint.» y «Mejor no abras Spotify.»: cero operaciones y acuse de la restricción en primera persona («Entendido, no abriré…») en los cinco casos. El límite «¿Podés abrir programas en este PC?» sigue negando una capacidad real (respuesta del modelo a una pregunta de capacidad); la definición de navegador aprobó.
+
+---
+
 # NEGATIVE1309 adjudicado — 2026-09-14T02:19:58.560445+00:00
 
 **382/742 cubiertos, 360 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA b4d7b41398685924efd1dcc4a60adb0ede4b8e54c29458fc1951f5a9dec320a7. Primeras altas 24 h >= 256 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 287b1c1c con BUILD1307 (sin fuente nueva).

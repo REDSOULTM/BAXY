@@ -1,3 +1,25 @@
+## NEGATIVE1311 — estado vigente 2026-09-14T02:25:33.105105+00:00
+
+Parcial: 6 aprobados, 1 fallidos, 0 sin ejecutar; 3 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 385/742 | 357 | 0 | >=259 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 256 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); NEGATIVE1311 añade 3. No se cuentan revalidaciones.
+
+Siguiente acción: NEGATIVE1311: 7 ejecutados, 6 aprobados, 1 fallidos, 3 créditos (índices [0, 1, 2]). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/NEGATIVE1311/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 121.31 s acumulados; pico GPU 3497.56 MiB; pico RAM 1706.54 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 7; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque NEGATIVE1311 precedente. -->
+
 ## NEGATIVE1309 — estado vigente 2026-09-14T02:19:58.560445+00:00
 
 Parcial: 3 aprobados, 4 fallidos, 0 sin ejecutar; 0 créditos.

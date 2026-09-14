@@ -1,0 +1,14 @@
+{
+  "schema": "c03-negative1311-source-adoption-v1",
+  "status": "adopted_measured",
+  "owner": "src/baxy_mind/llm.py (presupuesto de 128 tokens para el acuse de restriccion constraint_ack, intento y reintento); src/baxy_mind/effect_intent.py (explicit_negative_constraint ignora mejor/por ahora/ahora/hoy iniciales)",
+  "patch": "artifacts/comprobaciones/C03/NEGATIVE1311/SOURCE.patch",
+  "build": "BUILD1311 (C03-repairs1311-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "NEGATIVE1309: el acuse estructurado se trunco dos veces a 64 tokens (truncated_structured_reply) y el turno cayo en recuperacion; mejor no abras no entraba en el lector de restriccion negativa",
+  "measured_by": "root (Claude Fable 5.1)",
+  "candidate": "HEAD b28dc6d9 con BUILD1311",
+  "panel": "3 prohibiciones de abrir, 2 variantes, 2 límites; turnos ordinarios sin efectos",
+  "result": "7 ejecutados, 6 aprobados, 1 fallido; 3 créditos. H0447 «no abras el navegador», H0550 «no abras chrome» y H0685 «mejor no abras la calculadora» acreditados con pares «No abras Paint.» y «Mejor no abras Spotify.»: cero operaciones y acuse de la restricción en primera persona («Entendido, no abriré…») en los cinco casos. El límite «¿Podés abrir programas en este PC?» sigue negando una capacidad real (respuesta del modelo a una pregunta de capacidad); la definición de navegador aprobó.",
+  "adjudication_sha256": "ce89aa7f982c105b346edd8ffaece0e4311d4530ef7a8cc919ca10509e894938",
+  "credits": 3
+}

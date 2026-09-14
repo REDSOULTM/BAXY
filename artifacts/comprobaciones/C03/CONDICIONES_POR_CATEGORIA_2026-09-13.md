@@ -145,3 +145,7 @@ Estado de hardware y sistema pasa de 31/40 a 32/40 con los defectos de etiqueta 
 ## Actualización 2026-09-14 (NEGATIVE1309)
 
 Restricciones negativas de apertura pasa de 1/4 a 1/4 sin cambio de fuente (BUILD1307): 7 ejecutados, 3 aprobados, 4 fallidos, 0 créditos. Sin crédito: H0685 «mejor no abras la calculadora» y «No abras Paint.» reconocieron la restricción sin abrir nada, pero H0447 «no abras el navegador» contestó que no entendió, H0550 «no abras chrome» y «Mejor no abras Spotify.» pidieron aclaración, y el límite «¿Podés abrir programas en este PC?» negó una capacidad real. Causa por reparar: la prohibición se reconoce como restricción negativa (explicit_negative_constraint) pero la ruta de reconocimiento no produce el acuse; «mejor no abras» no entra en el lector.
+
+## Actualización 2026-09-14 (NEGATIVE1311)
+
+Restricciones negativas de apertura pasa de 1/4 a 4/4 con el acuse de restricción reparado (commit b28dc6d9, BUILD1311): 7 ejecutados, 6 aprobados, 1 fallido, 3 créditos. H0447 «no abras el navegador», H0550 «no abras chrome» y H0685 «mejor no abras la calculadora» acreditados con pares «No abras Paint.» y «Mejor no abras Spotify.»: cero operaciones y acuse de la restricción en primera persona («Entendido, no abriré…») en los cinco casos. El límite «¿Podés abrir programas en este PC?» sigue negando una capacidad real (respuesta del modelo a una pregunta de capacidad); la definición de navegador aprobó.

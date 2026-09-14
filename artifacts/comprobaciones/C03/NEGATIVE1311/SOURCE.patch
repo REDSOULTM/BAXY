@@ -1,0 +1,48 @@
+commit b28dc6d9e631bda878c70396e24bcbdd8b332bbd
+
+C03: constraint acknowledgement gets a 128-token budget; «mejor no abras» is a prohibition (NEGATIVE1309)
+
+llm: the structured constraint_ack reply hit the 64-token ceiling on both attempts (truncated_structured_reply) and the turn fell back to a clarification; effect_intent: explicit_negative_constraint ignores a leading «mejor/por ahora/ahora/hoy».
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 7e981cb9..3d80c3bb 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -5235,6 +5235,9 @@ def explicit_negative_constraint(text: str) -> bool:
+     """
+ 
+     folded = _strip_request_envelope(_fold(text))
++    # NEGATIVE1309 «mejor no abras la calculadora»: a softening adverb before
++    # the prohibition does not change it.
++    folded = re.sub(r"^(?:mejor|por ahora|ahora|hoy|por favor)\s+", "", folded, count=1)
+     if any(mark in folded for mark in ("?", "¿")):
+         return False
+     if any(mark in folded for mark in (";", ",")):
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index e7adf5b0..3a1d406a 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -7339,7 +7339,10 @@ class LlmRuntime:
+         logical_attempt = max(0, int(getattr(self, "_request_attempt", 0)))
+         presentation_seed = logical_attempt * 1_009
+         presentation_max_tokens = (
+-            (128 if presentation_shape in {"content_draft", "roleplay_draft"} else 64)
++            # NEGATIVE1309: the constraint acknowledgement's structured reply hit
++            # the 64-token ceiling twice («truncated_structured_reply») and the
++            # turn fell back to a clarification.
++            (128 if presentation_shape in {"content_draft", "roleplay_draft", "constraint_ack"} else 64)
+             if presentation_shape is not None
+             else {
+                 "social": 64,
+@@ -7660,7 +7663,7 @@ class LlmRuntime:
+             retry_payload["seed"] = presentation_seed + 1
+             retry_payload["max_tokens"] = (
+                 128
+-                if presentation_shape in {"content_draft", "roleplay_draft"}
++                if presentation_shape in {"content_draft", "roleplay_draft", "constraint_ack"}
+                 else 64
+                 if presentation_shape is not None
+                 else 96
