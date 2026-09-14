@@ -1,3 +1,11 @@
+# WEB1445 adjudicado — 2026-09-14T17:09:43.340982+00:00
+
+**446/742 cubiertos, 296 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA e0461cb7ca5622762bc8f7934951d73d7f5cdda2e4053d5513c7f65957163795. Primeras altas 24 h >= 320 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 677c7efb con BUILD1445 (consulta de clima con las palabras de la persona y sinónimos en el filtro de pertinencia; WEB1445/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación.
+
+WEB1445 («Información web actual», H0339 «qué clima hace hoy», H0689 «mostrame el clima», H0617 «va a llover mañana», búsqueda pública del clima local): 10/10 ejecutados, 4 aprobados (1 informe fiel de las páginas encontradas, 3 límites), 6 fallidos (3 pronósticos inventados sobre páginas de pronóstico sin valores, 1 negación del resultado verificado, 2 búsquedas rechazadas por resultados ajenos del motor, una con un dato inventado y otra dicha con verdad), cero violaciones, 0 créditos. Adjudicación 97a459a5343c48e54a4e35e2db214928b1eff8421b0a5f727c5d475d635658c1. Causa medida: los resultados son páginas de pronóstico sin valores y el compositor inventa el pronóstico; el motor devuelve a ratos páginas ajenas (financiación, sitios para adultos) para «clima» y «va a llover mañana» y el producto lo rechaza como irrelevante. Reparación en WEB1447: el informe de búsqueda sólo con palabras de los resultados o del pedido, con pista, e instrucción de nombrar las páginas sin afirmar el pronóstico.
+
+---
+
 # FILES1443 adjudicado — 2026-09-14T16:51:42.711003+00:00
 
 **446/742 cubiertos, 296 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 14fecb5a69f2607eb348d11209d4382491cfc5b193885e2099bb4695863325e9. Primeras altas 24 h >= 320 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD ce6257eb con BUILD1443 (App: la exención de la pregunta de carpeta reparada y verificada en el ensamblado; FILES1443/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación; los nombres listados quedan en los recibos privados y nunca se publican.

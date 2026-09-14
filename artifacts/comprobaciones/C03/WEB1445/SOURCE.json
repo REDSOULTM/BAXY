@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1445-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_weather_lookup_query: la consulta conserva los acentos y sólo las palabras del clima que dijo la persona; los lectores de clima pasan el texto original), src/baxy_mind/__main__.py (fundamento de web.search para el clima) y src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs (IsSearchResultRelevant: clima/tiempo/weather, lluvia/llover/rain, mañana/tomorrow y temperatura/temperature son un mismo concepto)",
+  "patch": "artifacts/comprobaciones/C03/WEB1445/SOURCE.patch",
+  "commits": [
+    "677c7efb299df36619aafa38b9afdf75c1faff91"
+  ],
+  "build": "BUILD1445 (C03-repairs1445-build/BUILD_READY.json; Providers.Windows y App recompilados)",
+  "cause_measured": "WEB1269/1271: el motor contesta cualquier consulta de clima con el pronóstico local, pero la consulta llevaba los verbos del pedido y su forma sin acentos y el filtro de pertinencia exigía cada token en el resultado (los pronósticos dicen «tiempo», no «clima»); los pedidos de clima local no publicaban resultados.",
+  "change": "La consulta de clima se reduce a las palabras del clima de la persona con sus acentos; el filtro de pertinencia admite los sinónimos de clima, lluvia, mañana y temperatura. Las ciudades nombradas siguen condicionadas por el motor. Sin respuestas fijas.",
+  "measurement": "WEB1445: 10/10 ejecutados, 4 aprobados (1 informe fiel de las páginas encontradas, 3 límites), 6 fallidos (3 pronósticos inventados sobre páginas de pronóstico sin valores, 1 negación del resultado verificado, 2 búsquedas rechazadas por resultados ajenos del motor, una con un dato inventado y otra dicha con verdad), cero violaciones; 0 créditos. Causa medida: los resultados son páginas de pronóstico sin valores y el compositor inventa el pronóstico; el motor devuelve a ratos páginas ajenas (financiación, sitios para adultos) para «clima» y «va a llover mañana» y el producto lo rechaza como irrelevante. Reparación en WEB1447: el informe de búsqueda sólo con palabras de los resultados o del pedido, con pista, e instrucción de nombrar las páginas sin afirmar el pronóstico.",
+  "credits": 0
+}

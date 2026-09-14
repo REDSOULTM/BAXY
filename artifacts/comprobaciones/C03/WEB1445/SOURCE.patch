@@ -1,0 +1,129 @@
+commit 677c7efb299df36619aafa38b9afdf75c1faff91
+
+C03: a weather question searches with the person's own weather words and matches the forecast's synonyms (WEB1445)
+
+Local weather requests («qué clima hace hoy», «mostrame el clima», «va a llover mañana») have been conditioned since WEB1269/1271: the engine answers any weather query with the local forecast, but the query carried the request verbs («mostrame», «hace») and its accent-folded form, and the relevance filter demanded every token in the result while forecasts say «tiempo», not «clima».
+
+baxy_mind effect_intent: the live weather lookups pass the person's text with its accents as evidence; _weather_lookup_query strips courtesy, request verbs, the interrogative scaffold («qué clima hace», «cómo está el», «is it going to», «will it») and «en google/internet», keeping the weather words in the person's order («clima hoy», «clima», «va a llover mañana», «weather today»); a definition («qué es el clima») is left to the previous path. __main__ grounds web.search with that query.
+Baxy.Providers.Windows WebBrowserAdapter.IsSearchResultRelevant: a query token is also satisfied by a member of its weather family (clima/tiempo/weather/pronóstico/forecast, lluvia/llover/rain, mañana/tomorrow, temperatura/temperature).
+
+Live probe against the engine from this PC: «clima hoy», «clima», «va a llover mañana» and «weather today» return local forecasts that now pass the filter; a named city («clima en Buenos Aires») still returns the local forecast and stays rejected as irrelevant, which is the truthful outcome. Providers.Windows and App recompiled (BUILD1445). Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+index 79ff1bc9..cdd364b8 100644
+--- a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+@@ -547,9 +547,20 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
+         }
+ 
+         var observed = new HashSet<string>(resultTokens, StringComparer.Ordinal);
+-        return queryTokens.All(observed.Contains);
++        return queryTokens.All(token => observed.Contains(token)
++            || WeatherSynonyms.Any(family => family.Contains(token) && family.Any(observed.Contains)));
+     }
+ 
++    // WEB1445 «qué clima hace hoy»: the engine's local forecast says «tiempo» or
++    // «weather» where the person said «clima»; the words name one concept.
++    private static readonly string[][] WeatherSynonyms =
++    [
++        ["clima", "tiempo", "weather", "meteo", "meteorologico", "meteorologica", "pronostico", "forecast"],
++        ["lluvia", "lluvias", "llueve", "llover", "llovera", "rain", "raining"],
++        ["manana", "tomorrow"],
++        ["temperatura", "temperature", "temperaturas", "temperatures"],
++    ];
++
+     private static string SafeUnescapedPath(Uri uri)
+     {
+         try
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index d215fa16..5b651d10 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -4723,6 +4723,14 @@ def _explicit_arguments_from_evidence(
+         location = _explicit_location_search_arguments(search_evidence)
+         if location is not None:
+             return location
++        weather_query = effect_intent._weather_lookup_query(search_evidence)
++        if weather_query is not None:
++            # WEB1445 «qué clima hace hoy», «mostrame el clima», «va a llover
++            # mañana»: the engine answers a weather query with the local forecast,
++            # but the request verbs («mostrame», «hace») never appear in a result
++            # and the relevance filter rejected every item. The query keeps only
++            # the weather words the person said, in their order.
++            return {"query": weather_query}
+         search = list(
+             re.finditer(
+                 (
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index c8fa8bcb..2b23f307 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -130,6 +130,43 @@ def _public_calendar_fact_lookup_request(folded: str) -> bool:
+     )
+ 
+ 
++_WEATHER_WORDS = (
++    r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|llover|"
++    r"llovera|temperature|temperatura)\b"
++)
++
++
++def _weather_lookup_query(text: str) -> str | None:
++    """WEB1445: the person's weather request without its request verbs, accents
++    kept (the engine answers «va a llover mañana» and «clima hoy», not the folded
++    or verb-laden forms); None when the request is not a live weather lookup."""
++
++    folded = _fold(text)
++    if not _public_live_lookup_request(folded) or not _has(folded, _WEATHER_WORDS):
++        return None
++    if _has(folded, r"^[¿?¡!\s]*(?:que|what)\s+(?:es|son|is|are|significa|means)\b"):
++        return None
++    query = text.strip(" \t\r\n¿?¡!.,;:")
++    query = re.sub(r"^(?:por favor|please)\s*[,:]?\s*", "", query, flags=re.IGNORECASE)
++    query = re.sub(
++        r"^(?:mostrame|muéstrame|muestrame|muestra|decime|dime|contame|cuéntame|cuentame|"
++        r"busca|buscá|buscame|buscar|search|find|show\s+me|tell\s+me|dame|give\s+me|"
++        r"necesito|need|quiero|i\s+want)\s+(?:saber\s+|to\s+know\s+)?(?:el|la|the|los|las)?\s*",
++        "", query, count=1, flags=re.IGNORECASE)
++    query = re.sub(
++        r"^(?:qué|que|what|cuál|cual|what's|cómo|como|how)\s+(?:es\s+|is\s+|está\s+|esta\s+|estará\s+|estara\s+|va\s+a\s+estar\s+)?"
++        r"(?:el\s+|la\s+|the\s+)?"
++        r"(?P<noun>clima|tiempo|weather|forecast|pronóstico|pronostico)\s*"
++        r"(?:hace|hay|is\s+it\s+like|is\s+it|is|like)?\s*",
++        lambda m: m.group("noun") + " ", query, count=1, flags=re.IGNORECASE)
++    # «is it going to rain tomorrow» / «will it rain tomorrow»: the auxiliaries
++    # never appear in a forecast page; the engine answers «rain tomorrow».
++    query = re.sub(r"^(?:is\s+it\s+going\s+to|will\s+it|is\s+it|does\s+it)\s+", "", query, count=1, flags=re.IGNORECASE)
++    query = re.sub(r"\s+(?:en|in|on)\s+(?:google|internet|la\s+web|the\s+web)\b", "", query, flags=re.IGNORECASE)
++    query = re.sub(r"\s+", " ", query).strip(" ?!.,;:")
++    return query if query and _has(_fold(query), _WEATHER_WORDS) else None
++
++
+ def _public_live_lookup_request(folded: str) -> bool:
+     """Recognize live feeds that require a public lookup to answer."""
+ 
+@@ -15183,7 +15220,9 @@ def resolve_explicit_effects(
+         evidence = text if _explicit_named_music_query(text) is not None else folded
+         return EffectIntent(("media.play.query",), (evidence,))
+     if "web.search" in available and _public_live_lookup_request(folded):
+-        return EffectIntent(("web.search",), (folded,))
++        # WEB1445: the evidence keeps the person's accents («mañana»); the
++        # engine answers the literal phrase and not its folded form.
++        return EffectIntent(("web.search",), (text.strip(),))
+     if {
+         "message.recipient.resolve",
+         "message.send",
+@@ -15642,7 +15681,9 @@ def resolve_explicit_effects(
+         # Weather and news are live feeds, not stable model knowledge. Their
+         # literal domain closes the read request without relying on a semantic
+         # family guess; Core still validates and verifies the public lookup.
+-        return EffectIntent(("web.search",), (folded,))
++        # WEB1445: the evidence keeps the person's accents («mañana»); the
++        # engine answers the literal phrase and not its folded form.
++        return EffectIntent(("web.search",), (text.strip(),))
+     if "web.search" in available and _public_product_correction_lookup_request(folded):
+         # The correction replaces the nominal query; it is not a second
+         # physical effect. Keep this read-only and let Core verify the lookup.
