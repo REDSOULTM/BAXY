@@ -1,3 +1,25 @@
+## SCREEN1423 — estado vigente 2026-09-14T15:06:14.438635+00:00
+
+Parcial: 9 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 437/742 | 305 | 0 | >=311 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 309 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SCREEN1423 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: SCREEN1423: 9 ejecutados, 9 aprobados, 0 fallidos, 2 créditos (índices [0, 1]); Pantalla, captura e interpretación visual 14/19. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/SCREEN1423/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 149.88 s acumulados; pico GPU 3497.56 MiB; pico RAM 1698.09 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SCREEN1423 precedente. -->
+
 ## SCREEN1421 — estado vigente 2026-09-14T14:55:09.743569+00:00
 
 Parcial: 12 aprobados, 2 fallidos, 0 sin ejecutar; 5 créditos.

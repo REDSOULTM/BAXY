@@ -1,3 +1,11 @@
+# SCREEN1423 adjudicado — 2026-09-14T15:06:14.438635+00:00
+
+**437/742 cubiertos, 305 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 22f95ee88907a2c89975208c1a0e917282905706eaffa9c278cd9c7292b233ed. Primeras altas 24 h >= 311 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a5ff01d4 con BUILD1423 (mente: escapes copiados deshechos, formas de código sobre la copia enmascarada, líneas de layout enmascaradas; SCREEN1423/SOURCE.json|SOURCE.patch). La raíz aprueba sólo una capture.screenshot sin argumentos (approve_capture.py); la captura queda en el directorio privado del perfil y nunca se publica.
+
+SCREEN1423 («Pantalla, captura e interpretación visual», H0458/H0593 «que ves en mi pantalla», captura revisada seguida de lectura OCR): 9/9 ejecutados, 9 aprobados (6 lecturas con advertencia honesta y tres citas textuales verificadas, 3 límites), 0 fallidos, cero violaciones, 2 créditos. Adjudicación 6f27ca5f509325efe5df46c4d97372b1a6e0e270a06906a15e42ccfa9056a89b. Los finales no muestran escapes residuales ni formas de código. Quedan condicionados en la categoría: Steam/Doom Eternal (cliente ausente), «Quiero que lo veas y de que se trata?» (referente sin resolver) y H0594 (captura + describir: el lector resuelve sólo la captura). Sin proveedor de visión: describir imágenes sigue condicionado.
+
+---
+
 # SCREEN1421 adjudicado — 2026-09-14T14:55:09.743569+00:00
 
 **435/742 cubiertos, 307 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 6b8417844d823e07e6c0166af610e5c1ea1258c82f8cbe9cc168553eedf45fe0. Primeras altas 24 h >= 309 (+5).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b680d263 con BUILD1421 (mente: el extracto como seen.lines y el fundamento tolerante a escapes; SCREEN1421/SOURCE.json|SOURCE.patch). La raíz aprueba sólo una capture.screenshot sin argumentos (approve_capture.py); la captura queda en el directorio privado del perfil y nunca se publica.

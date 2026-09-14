@@ -1,0 +1,15 @@
+{
+  "schema": "c03-screen1423-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (compose_user_message.screen_clip: deshace los escapes JSON copiados en un borrador de lectura de pantalla verificada; compose_visible_defect: las formas de código «: true/false» y localTime/stepCount se juzgan sobre la copia enmascarada) y src/baxy_mind/observed_response_literals.py (without_observed_names: las líneas de layout de ocr.read entran en los nombres enmascarados)",
+  "patch": "artifacts/comprobaciones/C03/SCREEN1423/SOURCE.patch",
+  "commits": [
+    "a5ff01d4883d1dd51efa73e97f65e8cce8acb9dc"
+  ],
+  "build": "BUILD1423 (C03-repairs1423-build/BUILD_READY.json; sólo mente, sin recompilar la App)",
+  "cause_measured": "SCREEN1421: «que ves en mi pantalla» citó fielmente una línea de la pantalla que terminaba en «\"clave\": false,» copiando los escapes del JSON; compose_visible_defect vetó cada borrador como internal_code porque la comprobación «: true/false» corría sobre el texto sin enmascarar, el enmascarado por líneas partía observed.text (unido con espacios) en vez de layout.lines y la cita con escapes no coincidía con la línea reconocida.",
+  "change": "screen_clip deshace los escapes JSON copiados en un borrador de lectura de pantalla verificada antes de las comprobaciones y de publicar; las formas de código «: true/false» y localTime/stepCount se juzgan sobre la copia enmascarada; las líneas de layout entran en el enmascarado. Sin respuestas fijas.",
+  "measurement": "SCREEN1423: 9/9 ejecutados, 9 aprobados (6 lecturas con advertencia honesta y tres citas textuales verificadas, 3 límites), 0 fallidos, cero violaciones; 2 créditos. Los finales no muestran escapes residuales ni formas de código. Quedan condicionados en la categoría: Steam/Doom Eternal (cliente ausente), «Quiero que lo veas y de que se trata?» (referente sin resolver) y H0594 (captura + describir: el lector resuelve sólo la captura). Sin proveedor de visión: describir imágenes sigue condicionado.",
+  "credits": 2
+}

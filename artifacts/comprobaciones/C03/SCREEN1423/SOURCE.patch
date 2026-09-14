@@ -1,0 +1,95 @@
+commit a5ff01d4883d1dd51efa73e97f65e8cce8acb9dc
+
+C03: screen-reading drafts unescape copied JSON and the code-shape checks run on the masked copy (SCREEN1423)
+
+SCREEN1421 measured «que ves en mi pantalla» (H0458/H0593): capture and read completed and verified, and every draft quoted three recognized lines faithfully, but a screen line ended in «"key": false,» (a terminal window of the root was on screen) and compose_visible_defect vetoed each draft as internal_code. Three causes: the «: true/false» and localTime/stepCount checks ran on the unmasked text; the line masking in observed_response_literals split observed.text on newlines while the provider joins it with spaces (the lines live in observed.layout.lines[].text), so no quoted line was ever masked; and the model copied the JSON escapes of the prompt («\"», «\n») into the quotation, so the quoted line differed from the recognized one anyway.
+
+llm.compose_user_message: screen_clip unescapes copied JSON escapes («\"» → «"», «\» → «\», «\n»/«\r»/«\t» → space) in a draft of a verified screen reading before the checks and before publication.
+llm.compose_visible_defect: the «: true/false» and localTime/stepCount code shapes are judged on the masked copy (vocabulary_text), like the snake and dotted shapes.
+observed_response_literals.without_observed_names: the recognized layout lines join the masked names.
+
+Offline probe on the SCREEN1421 private audit: the 36 vetoed drafts of cases 1 and 2 pass every veto after the unescape; drafts that leak «readOnly: false», «localTime» or «mission_completed» are still vetoed as internal_code. Mind only, no App recompilation. Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index bc9c3bda..a93b14e9 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -5532,9 +5532,11 @@ def compose_visible_defect(
+         and "provider" not in (user_text or "").casefold()
+     ):
+         return "internal_code"
+-    if re.search(r":\s*(?:true|false)\b", folded) is not None:
++    # SCREEN1421: a screen line quoted verbatim may itself read «"key": false»;
++    # observed text is data, so these code shapes are judged on the masked copy.
++    if re.search(r":\s*(?:true|false)\b", vocabulary_text.casefold()) is not None:
+         return "internal_code"
+-    if re.search(r"localTime|stepCount", stripped):
++    if re.search(r"localTime|stepCount", vocabulary_text):
+         return "internal_code"
+     if _glued_proper_name(stripped, situation, user_text):
+         return "invented"
+@@ -11919,6 +11921,15 @@ class LlmRuntime:
+                 rest = rest[0].upper() + rest[1:]
+             return rest if publishable(rest) else candidate
+ 
++        def screen_clip(candidate: str) -> str:
++            # SCREEN1421: quoting seen.lines, the model copied the JSON escapes
++            # of the prompt («\"key\": false,», «\n»); the person's screen has
++            # the plain characters. Unescape only for a verified screen reading.
++            if not screen_reading or "\\" not in (candidate or ""):
++                return candidate
++            unescaped = re.sub(r"\\[nrt]", " ", candidate)
++            return re.sub(r"\\([\"\\])", r"\1", unescaped)
++
+         acting_facts = _compose_user_content(user_text, prompt_facts, language_contract, include_request=False)
+         if cause == "acting":
+             message_prompt = cpu_prompt
+@@ -11930,7 +11941,7 @@ class LlmRuntime:
+         response = post(payload)
+         first_raw = (response["choices"][0]["message"].get("content") or "").strip()
+         text = _strip_prompt_labels(first_raw)
+-        text = title_clip(acting_clip(text))
++        text = title_clip(acting_clip(screen_clip(text)))
+         if publishable(text):
+             record_stage("first", first_raw, text, response, "", True)
+             return text
+@@ -12269,7 +12280,7 @@ class LlmRuntime:
+         retry = post(retry_payload)
+         retry_raw = (retry["choices"][0]["message"].get("content") or "").strip()
+         retry_text = _strip_prompt_labels(retry_raw)
+-        retry_text = title_clip(acting_clip(retry_text))
++        retry_text = title_clip(acting_clip(screen_clip(retry_text)))
+         if publishable(retry_text):
+             record_stage("retry", retry_raw, retry_text, retry, "", True)
+             return retry_text
+@@ -12310,7 +12321,7 @@ class LlmRuntime:
+         third = post(third_payload)
+         third_raw = (third["choices"][0]["message"].get("content") or "").strip()
+         third_text = _strip_prompt_labels(third_raw)
+-        third_text = title_clip(acting_clip(third_text))
++        third_text = title_clip(acting_clip(screen_clip(third_text)))
+         if publishable(third_text):
+             record_stage("third", third_raw, third_text, third, "", True)
+             return third_text
+diff --git a/src/baxy_mind/observed_response_literals.py b/src/baxy_mind/observed_response_literals.py
+index 5484a771..94accf24 100644
+--- a/src/baxy_mind/observed_response_literals.py
++++ b/src/baxy_mind/observed_response_literals.py
+@@ -55,6 +55,14 @@ def without_observed_names(text: str, situation: object) -> str:
+                 names.update(line.strip() for line in recognized.split("\n")
+                              if 1 < len(line.strip()) <= 4096)
+                 names.update(re.findall(r"[\w-]+(?:[._][\w-]+)+", recognized))
++            # SCREEN1421: the provider joins `text` with spaces; the recognized
++            # lines (what the composer quotes) live in layout.lines[].text.
++            layout = observed.get("layout") if isinstance(observed, dict) else None
++            layout_lines = layout.get("lines") if isinstance(layout, dict) else None
++            if isinstance(layout_lines, list):
++                names.update(line_text.strip() for line in layout_lines if isinstance(line, dict)
++                             and isinstance(line_text := line.get("text"), str)
++                             and 1 < len(line_text.strip()) <= 4096)
+         steps = node.get("steps")
+         if isinstance(steps, list):
+             for step in steps:
