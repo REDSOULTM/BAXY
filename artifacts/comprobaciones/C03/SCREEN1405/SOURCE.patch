@@ -1,0 +1,85 @@
+commit 5482eddcea0221b00b04a22e66897a23cab0b896
+
+C03: reading a capture confirmed in the same mission is covered by that consent (SCREEN1405)
+
+SCREEN1403 measured «leéme lo que dice la pantalla»: the root approved the capture, it completed and verified, and the mission then asked a second confirmation for ocr.read, which is privacy-sensitive as well; the reviewed turn hosts one confirmation, so no read ran. The person asked to read the screen and confirmed the capture; asking again to read that same capture is not a new privacy decision.
+
+MissionEngine: a capture.screenshot or capture.active.window that completed and verified under a granted confirmation records its captureId for its mission; an ocr.read or vision.describe whose captureId is that capture, in that same mission, is allowed without a new challenge. Any other capture, mission or operation keeps the confirmation.
+
+Kernel recompiled (BUILD1405). Tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Kernel/Mission/MissionEngine.cs b/src/Baxy.Kernel/Mission/MissionEngine.cs
+index 7d7222ff..e22ea84e 100644
+--- a/src/Baxy.Kernel/Mission/MissionEngine.cs
++++ b/src/Baxy.Kernel/Mission/MissionEngine.cs
+@@ -19,6 +19,11 @@ public sealed class MissionEngine : IDisposable
+     private readonly IOperationResponseNarrator _narrator;
+     private readonly Func<ConfirmationMode> _confirmationMode;
+     private readonly SemaphoreSlim _executionGate = new(1, 1);
++    // SCREEN1403 «leéme lo que dice la pantalla»: captures produced under a
++    // confirmed capture operation, keyed by captureId → missionId. Reading that
++    // capture within the same mission is the consented purpose, not a second
++    // privacy decision; the engine's execution gate serializes access.
++    private readonly Dictionary<string, string> _consentedCaptures = new(StringComparer.Ordinal);
+ 
+     /// <summary>
+     /// Última autocorrección de este motor: afirmación, verificación que la
+@@ -106,6 +111,14 @@ public sealed class MissionEngine : IDisposable
+                     _confirmationMode(),
+                     handler.Definition.Name)
+                 : null;
++            if (policy == PolicyDecision.RequireConfirmation && IsReadOfConsentedCapture(request))
++            {
++                // SCREEN1403 «leéme lo que dice la pantalla»: the person confirmed
++                // the capture; reading that same capture in the same mission is
++                // the consented purpose, not a second privacy decision.
++                policy = PolicyDecision.Allow;
++            }
++
+             ConfirmationBinding? grantedBinding = null;
+             if (policy == PolicyDecision.RequireConfirmation)
+             {
+@@ -178,6 +191,18 @@ public sealed class MissionEngine : IDisposable
+                 request,
+                 outcome,
+                 _privateEnvelopeAuthenticator);
++            if (grantedBinding is not null
++                && request.Operation is "capture.screenshot" or "capture.active.window"
++                && outcome.Succeeded
++                && outcome.Verified
++                && outcome.Result is { ValueKind: JsonValueKind.Object } captureResult
++                && captureResult.TryGetProperty("captureId", out JsonElement consentedCapture)
++                && consentedCapture.ValueKind == JsonValueKind.String
++                && consentedCapture.GetString() is { Length: > 0 } consentedCaptureId)
++            {
++                _consentedCaptures[consentedCaptureId] = request.MissionId;
++            }
++
+             if (outcome.Retryable
+                 && (outcome.Succeeded
+                     || outcome.Verified
+@@ -325,6 +350,21 @@ public sealed class MissionEngine : IDisposable
+         }
+     }
+ 
++    private bool IsReadOfConsentedCapture(OperationRequest request)
++    {
++        if (request.Operation is not ("ocr.read" or "vision.describe")
++            || request.Arguments.ValueKind != JsonValueKind.Object
++            || !request.Arguments.TryGetProperty("captureId", out JsonElement captureId)
++            || captureId.ValueKind != JsonValueKind.String
++            || captureId.GetString() is not { Length: > 0 } id)
++        {
++            return false;
++        }
++
++        return _consentedCaptures.TryGetValue(id, out string? missionId)
++            && string.Equals(missionId, request.MissionId, StringComparison.Ordinal);
++    }
++
+     private static JsonElement BuildConfirmationResult(
+         ConfirmationChallenge challenge,
+         bool reconciliationRequired)

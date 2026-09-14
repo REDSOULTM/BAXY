@@ -1,3 +1,11 @@
+# SCREEN1405 adjudicado — 2026-09-14T13:06:30.034230+00:00
+
+**424/742 cubiertos, 318 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 5b5a86578984ebb361c76ddd7f0eb41a2713de20b9fe019c64eb588be8dc7184. Primeras altas 24 h >= 298 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5482eddc con BUILD1405 (Kernel: la lectura de la captura confirmada queda cubierta por ese consentimiento; SCREEN1405/SOURCE.json|SOURCE.patch). La raíz aprueba sólo una capture.screenshot sin argumentos (approve_capture.py); la captura queda en el directorio privado del perfil y nunca se publica.
+
+SCREEN1405 («Pantalla, captura e interpretación visual», H0038/H0709/H0616 «leéme lo que dice la pantalla», captura revisada seguida de lectura OCR): 10/10 ejecutados, 3 límites aprobados, 7 casos de lectura fallidos por la segunda confirmación de ocr.read, 0 violaciones, 0 créditos. Adjudicación 7c29f2d7f88e86e0c98acddbf5a75acede148a96bbd98ae2611dc3b2ef394702. SCREEN1405 sobre BUILD1405 (Kernel: la lectura de una captura confirmada en la misma misión cubierta por ese consentimiento): cada captura se aprobó, completó y verificó y ocr.read volvió a pedir confirmación; cada paso del plan lleva su propio id de misión por construcción (PreparedOperation.Create emite uno nuevo por operación), así que un consentimiento atado a la misión de la captura nunca coincide con la lectura que la sigue. Siguiente: el consentimiento se ata al captureId con una ventana de diez minutos (SCREEN1407).
+
+---
+
 # SCREEN1403 adjudicado — 2026-09-14T12:59:32.111909+00:00
 
 **424/742 cubiertos, 318 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA ec53b742a66ef0347fb840e68c985c30543db90f276d15225bbef13b3c0d8064. Primeras altas 24 h >= 298 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD eb8ea283 con BUILD1403 (App: captura pendiente seguida de su lectura en el turno revisado; SCREEN1403/SOURCE.json|SOURCE.patch). La raíz aprueba sólo una capture.screenshot sin argumentos (approve_capture.py); la captura queda en el directorio privado del perfil y nunca se publica.
