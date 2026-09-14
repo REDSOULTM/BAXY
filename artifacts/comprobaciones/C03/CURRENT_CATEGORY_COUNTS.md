@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación NETWORK1299
+# Categorías actuales — adjudicación NETWORK1301
 
-377/742 cubiertos; 365 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 251 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: fe51c6c71b0a80be65a4adf64158b327817fd668bdefe97754387d6c8c9f17e9.
+379/742 cubiertos; 363 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 253 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 512d94216e89d2a8e9d01d6dcf1fee2005db157a262ffc28383fb79149e552ed.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -15,7 +15,7 @@
 | Audio y volumen | 51 | 39 | 12 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 34 | 4 |
 | Interacción dentro de aplicaciones | 22 | 3 | 19 |
-| Red y Bluetooth | 21 | 11 | 10 |
+| Red y Bluetooth | 21 | 13 | 8 |
 | Cerrar aplicaciones y ventanas | 20 | 11 | 9 |
 | Pantalla, captura e interpretación visual | 19 | 0 | 19 |
 | Conocimiento, razonamiento y creatividad verbal | 37 | 22 | 15 |

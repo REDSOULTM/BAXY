@@ -1,0 +1,15 @@
+{
+  "schema": "c03-network1301-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (action_attributed_to_user evaluado sobre la carga visible real del compositor: operation + seen, sin causa)",
+  "patch": "artifacts/comprobaciones/C03/NETWORK1301/SOURCE.patch",
+  "commits": [
+    "ca34b99d61366b4be6047f440bb7238dd78a3220"
+  ],
+  "build": "BUILD1301 (C03-repairs1301-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "NETWORK1299: el defecto exigía kind/verified/succeeded pero la carga visible del compositor sólo trae operation y seen (compose-audit payload_keys), así que no se aplicó.",
+  "change": "Condición del defecto: operation + seen (éxito verificado sin causa). Sin respuestas fijas.",
+  "measurement": "NETWORK1301: 6 ejecutados, 6 aprobados, 0 fallidos; 2 créditos. H0071 «apagá el bluetooth» y H0179 «desactivá el bluetooth» acreditados con pares «Apagame el bluetooth.» y «Desactivame el bluetooth.»: bluetooth.radio.set {state: false} verificada (On→Off) en los cuatro casos y finales en primera persona («Apagado el Bluetooth.», «Listo, el bluetooth está desactivado.»); el defecto de actor rechazó el borrador «apagaste». Límites aprobados.",
+  "credits": 2
+}

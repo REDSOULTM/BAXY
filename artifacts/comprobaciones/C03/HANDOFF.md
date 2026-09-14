@@ -1,3 +1,11 @@
+# NETWORK1301 adjudicado — 2026-09-14T01:54:05.868783+00:00
+
+**379/742 cubiertos, 363 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 512d94216e89d2a8e9d01d6dcf1fee2005db157a262ffc28383fb79149e552ed. Primeras altas 24 h >= 253 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD ca34b99d con BUILD1301 (mente: defecto de actor sobre operation + seen; NETWORK1301/SOURCE.json|SOURCE.patch; .NET sin cambios). Radio Bluetooth propia del PC fijada por la raíz antes de cada caso y restaurada (apagada) después (net_case.sh, bt_radio.ps1).
+
+NETWORK1301 («Red y Bluetooth», apagado del bluetooth con pares clíticos; turnos ordinarios): 6 ejecutados, 6 aprobados, 0 fallidos, 2 créditos. Adjudicación 49e7c53d1f2806dd22792e0dae5c1d497c89e07657549e00b9520e4954911d9a. H0071 «apagá el bluetooth» y H0179 «desactivá el bluetooth» acreditados con pares «Apagame el bluetooth.» y «Desactivame el bluetooth.»: bluetooth.radio.set {state: false} verificada (On→Off) en los cuatro casos y finales en primera persona («Apagado el Bluetooth.», «Listo, el bluetooth está desactivado.»); el defecto de actor rechazó el borrador «apagaste». Límites aprobados.
+
+---
+
 # NETWORK1299 adjudicado — 2026-09-14T01:48:51.776930+00:00
 
 **377/742 cubiertos, 365 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA fe51c6c71b0a80be65a4adf64158b327817fd668bdefe97754387d6c8c9f17e9. Primeras altas 24 h >= 251 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e59ca712 con BUILD1299 (mente: defecto de actor en la puerta de aceptación del compositor; NETWORK1299/SOURCE.json|SOURCE.patch; .NET sin cambios). Radio Bluetooth propia del PC fijada por la raíz antes de cada caso y restaurada (apagada) después (net_case.sh, bt_radio.ps1).
