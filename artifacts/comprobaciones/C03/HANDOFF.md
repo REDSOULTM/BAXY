@@ -1,3 +1,11 @@
+# FILES1441 adjudicado — 2026-09-14T16:45:48.068377+00:00
+
+**445/742 cubiertos, 297 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA fc07f4028a2411beca718e4a344581a8576a386de860599274b01dcee8b09b37. Primeras altas 24 h >= 319 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 402a42bc con BUILD1441 (App: el campo folder declarado exime la pregunta de carpeta del veto machine_slot_ask; FILES1441/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación; los nombres listados quedan en los recibos privados y nunca se publican.
+
+FILES1441 («Archivos y carpetas», H0701 «Dime cuantos archivos .py hay en el directorio actual», aclaración de la carpeta): 6/6 ejecutados, 4 aprobados (2 aclaraciones de carpeta, 2 límites), 2 fallidos (la exención de la App se compiló con bytes de retroceso en lugar de \b y el veto machine_slot_ask siguió; el límite de prohibición repitió el acuse mal conjugado), cero violaciones, 0 créditos. Adjudicación 72e1d2389c892a6c4504899a538935a4ae39a99f90ee10c9605d1b4e7f62ebb2. Causa medida: el patrón de AsksForDeclaredFolder llegó al fuente con caracteres 0x08 (heredoc de la raíz) y nunca coincide; reparación en FILES1443 con el patrón escrito por el editor y verificado en el ensamblado.
+
+---
+
 # FILES1439 adjudicado — 2026-09-14T16:37:13.159482+00:00
 
 **445/742 cubiertos, 297 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 7e9ce546f312acf3b4da25693177da079e7ce65fa5798d2012e01c001cbcc688. Primeras altas 24 h >= 319 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD efea3093 con BUILD1439 (mente: la pregunta de carpeta debe preguntar cuál carpeta; FILES1439/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación; los nombres listados quedan en los recibos privados y nunca se publican.

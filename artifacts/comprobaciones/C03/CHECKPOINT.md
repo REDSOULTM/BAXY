@@ -1,3 +1,25 @@
+## FILES1441 — estado vigente 2026-09-14T16:45:48.068377+00:00
+
+Parcial: 4 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 445/742 | 297 | 0 | >=319 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 319 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); FILES1441 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: FILES1441: 6 ejecutados, 4 aprobados, 2 fallidos, 0 créditos (índices []); Archivos y carpetas 24/32. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/FILES1441/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 95.31 s acumulados; pico GPU 3497.56 MiB; pico RAM 1561.16 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque FILES1441 precedente. -->
+
 ## FILES1439 — estado vigente 2026-09-14T16:37:13.159482+00:00
 
 Parcial: 4 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-files1441-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (ConversationReplyRejectionReason recibe los campos ausentes; AsksForDeclaredFolder exime la pregunta de carpeta del veto machine_slot_ask) y src/Baxy.App/MainWindowViewModel.cs (AddMindClarification pasa missingFields)",
+  "patch": "artifacts/comprobaciones/C03/FILES1441/SOURCE.patch",
+  "commits": [
+    "402a42bc3877ea90095a89ecc123f98b29d9510e"
+  ],
+  "build": "BUILD1441 (C03-repairs1441-build/BUILD_READY.json; App recompilada)",
+  "cause_measured": "FILES1441: la mente formuló la pregunta correcta por la carpeta y UserMessagePolicy.LooksLikeMachineSlotAsk la vetó («which folder» está en su lista) aunque la mente había declarado folder como campo ausente; la App compuso una pregunta que no pide la carpeta.",
+  "change": "La aclaración de la mente llega a la política con sus campos ausentes; cuando folder está declarado, una pregunta que nombra la carpeta/directorio no es un slot ask de máquina. Todo lo demás del veto se conserva. Sin respuestas fijas.",
+  "measurement": "FILES1441: 6/6 ejecutados, 4 aprobados (2 aclaraciones de carpeta, 2 límites), 2 fallidos (la exención de la App se compiló con bytes de retroceso en lugar de \\b y el veto machine_slot_ask siguió; el límite de prohibición repitió el acuse mal conjugado), cero violaciones; 0 créditos. Causa medida: el patrón de AsksForDeclaredFolder llegó al fuente con caracteres 0x08 (heredoc de la raíz) y nunca coincide; reparación en FILES1443 con el patrón escrito por el editor y verificado en el ensamblado.",
+  "credits": 0
+}

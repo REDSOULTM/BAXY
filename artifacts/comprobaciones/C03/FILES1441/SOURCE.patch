@@ -1,0 +1,63 @@
+commit 402a42bc3877ea90095a89ecc123f98b29d9510e
+
+C03: a declared folder field exempts the folder question from the machine-slot veto (FILES1441)
+
+FILES1439 measured the current-directory count again: for the English variant the mind formulated «In which folder (Desktop, Documents, Downloads, or another) should the files be counted?», and the App's LooksLikeMachineSlotAsk rejected it («which folder» sits on its slot-ask list), then composed a question that never asks the folder.
+
+Baxy.App UserMessagePolicy.ConversationReplyRejectionReason takes the mind's missing fields; AsksForDeclaredFolder exempts a question that names the folder or directory from the machine_slot_ask veto only when the mind declared folder as the missing field. MainWindowViewModel.AddMindClarification passes those fields. Every other veto stays. App recompiled (BUILD1441). Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/MainWindowViewModel.cs b/src/Baxy.App/MainWindowViewModel.cs
+index 1e6845b2..751b2e73 100644
+--- a/src/Baxy.App/MainWindowViewModel.cs
++++ b/src/Baxy.App/MainWindowViewModel.cs
+@@ -2457,7 +2457,7 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
+         // conversation or discard the objective required by the next fragment.
+         _pendingMindClarificationObjective = preserveObjective ? request : null;
+         LastMindReplyRejection = UserMessagePolicy.ConversationReplyRejectionReason(
+-            request, question, responseLanguage, clarification: true);
++            request, question, responseLanguage, clarification: true, missingFields: missingFields);
+         if (LastMindReplyRejection is null)
+         {
+             AddMessage(
+diff --git a/src/Baxy.App/UserMessagePolicy.cs b/src/Baxy.App/UserMessagePolicy.cs
+index eab6560c..5756ad31 100644
+--- a/src/Baxy.App/UserMessagePolicy.cs
++++ b/src/Baxy.App/UserMessagePolicy.cs
+@@ -520,7 +520,8 @@ internal static class UserMessagePolicy
+         string? mindLanguage = null,
+         string? priorUserText = null,
+         bool clarification = false,
+-        bool hasRequiredInput = false)
++        bool hasRequiredInput = false,
++        IReadOnlyList<string>? missingFields = null)
+     {
+         if (LeakedInternalTerm(reply, userText, priorUserText) is { } leaked)
+         {
+@@ -543,7 +544,10 @@ internal static class UserMessagePolicy
+             ("unsolicited_catalog",
+                 !IsSelfDescriptionQuestion(userText)
+                 && ProposesUnsolicitedCatalogAction(userText, reply, clarification)),
+-            ("machine_slot_ask", LooksLikeMachineSlotAsk(said)),
++            // FILES1439 «How many files are in the current directory?»: the mind
++            // declared the folder as the missing field; asking which folder is
++            // the clarification itself, not a machine slot ask.
++            ("machine_slot_ask", LooksLikeMachineSlotAsk(said) && !AsksForDeclaredFolder(said, missingFields)),
+             ("punctuation_only", IsPunctuationOnly(reply)),
+             ("too_thin", IsTooThin(reply)),
+             ("asks_to_invent_clock", AsksToInventClock(said)),
+@@ -1009,6 +1013,12 @@ internal static class UserMessagePolicy
+     // A noun in an explanation is not a request for a parameter. C03's
+     // encryption answer mentioned a recipient and was needlessly rewritten.
+     // Preserve the slot guard only for an actual question or direct request.
++    private static bool AsksForDeclaredFolder(string folded, IReadOnlyList<string>? missingFields) =>
++        missingFields is not null
++        && missingFields.Contains("folder")
++        && Regex.IsMatch(folded, @"(?:carpeta|directorio|folder|directory)",
++            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
++
+     private static bool LooksLikeMachineSlotAsk(string folded) =>
+         (folded.Contains('?', StringComparison.Ordinal)
+             || folded.Contains('¿', StringComparison.Ordinal)
