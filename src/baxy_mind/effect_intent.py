@@ -2287,6 +2287,27 @@ def conversation_only_content_request(text: str) -> bool:
     )
 
 
+_VISUAL_CONTENT_REQUEST = re.compile(
+    r"^[\s¿?¡!]*(?:(?:oye|che|baxy)\s*,?\s+)?"
+    r"(?:(?:tienes|tenes|tendras|tendrias|hay|tenis|do\s+you\s+have|got|have\s+you\s+got|"
+    r"(?:me\s+)?(?:mandas|manda|mandame|mandame|envias|envia|enviame|pasas|pasa|pasame|muestras|muestra|muestrame|mostras|mostrame|das|da|dame|tiras|tirame)|"
+    r"(?:can|could)\s+you\s+(?:send|show|give)(?:\s+me)?|send(?:\s+me)?|show(?:\s+me)?|give(?:\s+me)?)\s+"
+    r"(?:(?:un|una|unos|unas|algun|alguna|algunos|algunas|el|la|los|las|a|an|any|some|the|me)\s+)*"
+    r"(?:\w+\s+){0,2}?(?:meme|memes|imagen|imagenes|foto|fotos|gif|gifs|sticker|stickers|dibujo|dibujos|picture|pictures|image|images|photo|photos)\b"
+    r".{0,40}$)"
+)
+
+
+def visual_content_request(text: str) -> bool:
+    """CONVERSATION1150 H0069 «Tienes algun meme?»: memes and images cannot be shown here.
+
+    A request to have, send or show visual content is answered as an honest
+    boundary of this PC, never with a promised meme.
+    """
+
+    return _VISUAL_CONTENT_REQUEST.match(_strip_request_envelope(_fold(text)).strip()) is not None
+
+
 def unsupported_live_machine_query(text: str) -> bool:
     """Recognize a live-machine question outside the observed status schema."""
 

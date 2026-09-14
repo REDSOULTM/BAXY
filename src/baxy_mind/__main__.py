@@ -65,6 +65,7 @@ from .effect_intent import (
     unresolved_compound_contract,
     unsupported_effect_demonstration_request,
     unsupported_live_machine_query,
+    visual_content_request,
 )
 from .llm import (
     LlmRuntime,
@@ -1414,6 +1415,8 @@ def apply_non_effect_conversation_classification(
         and (
             unsupported_live_machine_query(objective)
             or unsupported_effect_demonstration_request(objective)
+            # CONVERSATION1343 H0069: memes and images cannot be shown here.
+            or visual_content_request(objective)
         )
     ):
         unsupported = dict(decision)
