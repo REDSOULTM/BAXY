@@ -1,0 +1,143 @@
+commit 983e2c071d46f3deea68b911bb5e1f728783ba60
+
+C03: the visible-click surface is captured on the named root window before and after the click (UI1397)
+
+UI1395 measured «abrí la calculadora y apretá el 5» after the App admitted the click confirmation behind a verified app.open: the root approved every click on the launched Calculator, yet each ended failed as visible_button_postread_unchanged. A root probe with the provider's own launch (calc.exe, then RequestForeground on Process.MainWindowHandle) and DesktopClickVisible.ps1 showed why: before the click the foreground is the Calculator's CoreWindow (calculatorapp.exe, which owns no top-level window), and after the UIA invoke it is the ApplicationFrameHost frame. WindowsVisibleControlAdapter compares the before/after captures only when both bind the same hwnd, and the captures followed the foreground, so the surface comparison never ran.
+
+VisibleControlSurface.CaptureForegroundAsync: the foreground window is normalized to its root ancestor (GetAncestor GA_ROOT), the frame that fronts both moments; a classic top-level window keeps the largest-window rule. The capture names that window instead of reading the active window again.
+IScreenshotPlatform / GdiScreenshotPlatform / WindowsScreenshotProvider: CaptureWindow(nint) captures the named window's DWM bounds (clipped to the desktop, physical pixels) with the same provenance as the active-window capture; the interface member has a default so other platforms keep compiling.
+
+Providers.Windows recompiled (BUILD1397). Tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/Capture/CaptureContracts.cs b/src/Baxy.Providers.Windows/Capture/CaptureContracts.cs
+index 5ff490de..df54b5ec 100644
+--- a/src/Baxy.Providers.Windows/Capture/CaptureContracts.cs
++++ b/src/Baxy.Providers.Windows/Capture/CaptureContracts.cs
+@@ -41,4 +41,9 @@ internal interface IScreenshotPlatform
+ {
+     ScreenshotFrame CaptureVirtualScreen();
+     ScreenshotFrame CaptureActiveWindow();
++
++    // UI1395: the visible-click adapter compares one named window's surface
++    // before and after the click; the foreground can change hands meanwhile.
++    ScreenshotFrame CaptureWindow(nint window) =>
++        throw new NotSupportedException("Window capture is not available on this platform.");
+ }
+diff --git a/src/Baxy.Providers.Windows/Capture/WindowsScreenshotProvider.cs b/src/Baxy.Providers.Windows/Capture/WindowsScreenshotProvider.cs
+index 7fc8bd4c..c58f7a4e 100644
+--- a/src/Baxy.Providers.Windows/Capture/WindowsScreenshotProvider.cs
++++ b/src/Baxy.Providers.Windows/Capture/WindowsScreenshotProvider.cs
+@@ -41,6 +41,12 @@ public sealed class WindowsScreenshotProvider : IScreenshotProvider
+         return ValueTask.FromResult(CaptureAndStore(_platform.CaptureActiveWindow()));
+     }
+ 
++    public ValueTask<CaptureResult> CaptureWindowAsync(nint window, CancellationToken cancellationToken)
++    {
++        cancellationToken.ThrowIfCancellationRequested();
++        return ValueTask.FromResult(CaptureAndStore(_platform.CaptureWindow(window)));
++    }
++
+     private CaptureResult CaptureAndStore(ScreenshotFrame frame)
+     {
+         if (frame.Width is < 1 or > 32_768 || frame.Height is < 1 or > 32_768
+@@ -122,6 +128,49 @@ internal sealed partial class GdiScreenshotPlatform : IScreenshotPlatform
+ 
+     public ScreenshotFrame CaptureActiveWindow() => CaptureInPhysicalPixels(CaptureActiveWindowCore);
+ 
++    public ScreenshotFrame CaptureWindow(nint window) =>
++        CaptureInPhysicalPixels(() => CaptureWindowCore(window));
++
++    private ScreenshotFrame CaptureWindowCore(nint window)
++    {
++        // UI1395: a freshly launched UWP Calculator is fronted by its CoreWindow
++        // (calculatorapp.exe) and, once a control is invoked, by its
++        // ApplicationFrameHost frame. The click adapter names the root window
++        // it compares, so both captures cover the same bounds.
++        DateTimeOffset started = _time.GetUtcNow();
++        if (window == 0) throw new IOException("Window unavailable.");
++        if (GetWindowThreadProcessId(window, out uint processId) == 0 || processId == 0)
++            throw new IOException("Window process unavailable.");
++        using SafeProcessHandle process = OpenProcess(0x1000, false, processId);
++        if (process.IsInvalid || !GetProcessTimes(process, out long created, out _, out _, out _)
++            || created <= 0)
++            throw new IOException("Window process creation identity unavailable.");
++        Rectangle rectangle;
++        if (DwmGetWindowAttribute(window, 9, out rectangle,
++                Marshal.SizeOf<Rectangle>()) != 0
++            && !GetWindowRect(window, out rectangle))
++            throw new IOException("Window bounds unavailable.");
++        var bounds = new CaptureBounds(rectangle.Left, rectangle.Top,
++            checked(rectangle.Right - rectangle.Left), checked(rectangle.Bottom - rectangle.Top));
++        CaptureBounds screen = _readDesktopBounds();
++        int left = Math.Max(bounds.Left, screen.Left);
++        int top = Math.Max(bounds.Top, screen.Top);
++        int right = Math.Min(checked(bounds.Left + bounds.Width), checked(screen.Left + screen.Width));
++        int bottom = Math.Min(checked(bounds.Top + bounds.Height), checked(screen.Top + screen.Height));
++        if (right <= left || bottom <= top)
++            throw new IOException("Window is outside the visible desktop.");
++        var crop = new CaptureBounds(left, top, right - left, bottom - top);
++        ScreenshotFrame frame = _captureRegion(crop);
++        if (frame.Width != crop.Width || frame.Height != crop.Height)
++            throw new IOException("Window capture dimensions do not match its bounds.");
++        return frame with
++        {
++            ActiveWindow = new ActiveWindowCaptureProvenance(
++                (long)window, processId, DateTimeOffset.FromFileTime(created),
++                bounds, crop, started, _time.GetUtcNow()),
++        };
++    }
++
+     private ScreenshotFrame CaptureInPhysicalPixels(Func<ScreenshotFrame> capture)
+     {
+         // DWM bounds are physical pixels. Keep metrics, fallback bounds and GDI in
+diff --git a/src/Baxy.Providers.Windows/External/VisibleControlSurface.cs b/src/Baxy.Providers.Windows/External/VisibleControlSurface.cs
+index 6ff8286f..84f8f975 100644
+--- a/src/Baxy.Providers.Windows/External/VisibleControlSurface.cs
++++ b/src/Baxy.Providers.Windows/External/VisibleControlSurface.cs
+@@ -12,15 +12,28 @@ internal static partial class VisibleControlSurface
+         nint hwnd = GetForegroundWindow();
+         if (hwnd == 0)
+             return null;
+-        _ = GetWindowThreadProcessId(hwnd, out uint processId);
+-        nint largest = LargestTopLevelWindow(unchecked((int)processId));
+-        if (largest != 0)
+-            hwnd = largest;
++        // UI1395: a freshly launched UWP app is fronted by its CoreWindow
++        // (calculatorapp.exe, no top-level window of its own) and, once a
++        // control is invoked, by its ApplicationFrameHost frame. The frame is
++        // the root ancestor of both moments, so that one window is compared;
++        // a classic top-level window keeps the largest-window rule.
++        nint root = GetAncestor(hwnd, 2);
++        if (root != 0 && root != hwnd)
++        {
++            hwnd = root;
++        }
++        else
++        {
++            _ = GetWindowThreadProcessId(hwnd, out uint processId);
++            nint largest = LargestTopLevelWindow(unchecked((int)processId));
++            if (largest != 0)
++                hwnd = largest;
++        }
+         if (!TryBounds(hwnd, out int left, out int top, out _, out _))
+             return null;
+         string directory = Path.Combine(Path.GetTempPath(), "baxy-visible-control");
+         var provider = new WindowsScreenshotProvider(directory);
+-        CaptureResult capture = await provider.CaptureActiveWindowAsync(cancellationToken)
++        CaptureResult capture = await provider.CaptureWindowAsync(hwnd, cancellationToken)
+             .ConfigureAwait(false);
+         string path = Path.Combine(directory, capture.CaptureId + ".bmp");
+         if (!File.Exists(path))
+@@ -111,6 +124,9 @@ internal static partial class VisibleControlSurface
+     [LibraryImport("user32.dll")]
+     private static partial nint GetForegroundWindow();
+ 
++    [LibraryImport("user32.dll")]
++    private static partial nint GetAncestor(nint hwnd, uint flags);
++
+     [LibraryImport("user32.dll")]
+     [return: MarshalAs(UnmanagedType.Bool)]
+     private static partial bool GetWindowRect(nint hwnd, out Rect rect);

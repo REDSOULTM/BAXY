@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1397-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows (VisibleControlSurface.CaptureForegroundAsync: primer plano normalizado a su ancestro raíz y capturado por nombre; WindowsScreenshotProvider.CaptureWindowAsync / GdiScreenshotPlatform.CaptureWindow: captura de la ventana nombrada por sus límites DWM)",
+  "patch": "artifacts/comprobaciones/C03/UI1397/SOURCE.patch",
+  "commits": [
+    "983e2c071d46f3deea68b911bb5e1f728783ba60"
+  ],
+  "build": "BUILD1397 (C03-repairs1397-build/BUILD_READY.json; Providers.Windows recompilado)",
+  "cause_measured": "UI1395: cada clic aprobado sobre la Calculadora lanzada terminó failed visible_button_postread_unchanged; sonda de la raíz con el lanzamiento del proveedor: antes del clic el primer plano es la CoreWindow (calculatorapp.exe) y tras el Invoke de UIA el marco ApplicationFrameHost, y el adaptador sólo compara superficies cuando ambas capturas atan el mismo hwnd.",
+  "change": "La captura del clic se normaliza al ancestro raíz (GetAncestor GA_ROOT) y captura esa ventana por nombre antes y después (CaptureWindow con límites DWM recortados al escritorio); una ventana clásica conserva la regla de la ventana mayor. Sin respuestas fijas.",
+  "measurement": "UI1397: 10/10 ejecutados, 7 casos compuestos aprobados, 3 límites aprobados, 0 violaciones; 1 créditos. UI1397 sobre BUILD1397 (Providers.Windows: la superficie del clic se captura sobre la ventana raíz nombrada antes y después): H0472 «abrí la calculadora y apretá el 5» acreditado con dos pares; en cada caso compuesto la app.open de la Calculadora se completó y verificó, la App propuso el clic y la raíz lo aprobó sólo sobre la Calculadora lanzada durante el caso, y el input.visible.click se completó y verificó por el cambio de superficie del marco (finales «Abrí la calculadora y presioné el botón con el número 5.», «Abrí la calculadora y pulsé el 7…»); la raíz cerró cada Calculadora lanzada. Tres reparaciones encadenadas en UI1393/1395/1397: la forma de confirmación de la App tras una app.open verificada, el revisor de la raíz ante el marco ApplicationFrameHost, y la captura por nombre de la ventana raíz en el proveedor (un lanzamiento UWP reciente queda al frente por su CoreWindow y luego por su marco). Residual: algunas variantes añaden una segunda frase verbosa sobre el botón activado.",
+  "credits": 1
+}
