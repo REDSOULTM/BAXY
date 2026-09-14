@@ -1,3 +1,25 @@
+## SCREEN1411 — estado vigente 2026-09-14T13:50:33.675162+00:00
+
+Parcial: 4 aprobados, 6 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 424/742 | 318 | 0 | >=298 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 298 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SCREEN1411 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: SCREEN1411: 10 ejecutados, 4 aprobados, 6 fallidos, 0 créditos (índices []); Pantalla, captura e interpretación visual 1/19. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/SCREEN1411/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 221.36 s acumulados; pico GPU 3497.56 MiB; pico RAM 2390.58 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 10; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SCREEN1411 precedente. -->
+
 ## SCREEN1409 — estado vigente 2026-09-14T13:34:59.527210+00:00
 
 Parcial: 3 aprobados, 7 fallidos, 0 sin ejecutar; 0 créditos.

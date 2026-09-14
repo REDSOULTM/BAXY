@@ -1,0 +1,15 @@
+{
+  "schema": "c03-screen1411-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_ocr_unsupported_terms y _payload_fact_defect: fundamento de cada palabra de contenido en el texto reconocido; compose_user_message: instrucción de citar dos o tres líneas tal cual con presupuesto por defecto)",
+  "patch": "artifacts/comprobaciones/C03/SCREEN1411/SOURCE.patch",
+  "commits": [
+    "c6999ac3d5f91b438937f2bacfd9a8d224e208c9"
+  ],
+  "build": "BUILD1411 (C03-repairs1411-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "SCREEN1409: cuatro casos agotaron el presupuesto de composición transcribiendo el texto completo y tres publicaron resúmenes que el texto reconocido no sostenía; el compositor no exigía fundamento en el texto.",
+  "change": "Cada palabra de contenido del final de una ocr.read verificada debe aparecer en el texto reconocido o en el pedido (salvo el encuadre sobre leer una pantalla), con pista de reintento; el compositor pide citar dos o tres líneas tal cual y el número de líneas; presupuesto de salida por defecto. Sin respuestas fijas.",
+  "measurement": "SCREEN1411: 10/10 ejecutados, 3 límites aprobados, 1 variante de lectura aprobada, 6 casos de lectura fallidos (2 sin final, 4 con resumen infiel), 0 violaciones; 0 créditos. SCREEN1411 sobre BUILD1411 (mente: la lectura cita el texto reconocido y no usa palabras que éste no tenga): captura y ocr.read completadas y verificadas en los siete casos de lectura; una variante publicó una lectura fiel (ocho citas textuales, número de líneas correcto). El resto mostró tres huecos: el final de una misión de dos pasos compone desde la situación mission_completed (steps, completedStepsInOrder), así que la instrucción de citar y la comprobación de fundamento atadas a una ocr.read de nivel superior nunca se aplicaron y pasaron resúmenes sin fundamento; cuando un borrador citó líneas de una pantalla con código, la App y la mente lo vetaron como jerga interna; y el techo de composición de 5 s cortó los intentos que citaban más de una línea. El primer intento del caso 2 fue detenido por el runner por una edición de la raíz en disco (sin turno admitido) y se reejecutó solo. Siguiente: ambas formas reconocidas, líneas reconocidas exentas como datos observados y presupuesto denso para una lectura de pantalla (SCREEN1413).",
+  "credits": 0
+}
