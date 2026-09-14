@@ -40,6 +40,7 @@ from urllib.parse import urlparse
 from .effect_intent import (
     _PERCENTAGE_WORD_VALUES,
     _entity_lookup_query,
+    _research_question_subject,
     _strip_request_envelope,
     conversation_only_content_request,
     countdown_target,
@@ -11957,7 +11958,7 @@ class LlmRuntime:
                 "oraciones cortas; sin otros números; no se cambió nada."
             )
         entity_asked = (
-            _entity_lookup_query(user_text or "")
+            _entity_lookup_query(user_text or "") or _research_question_subject(user_text or "")
             if _search_results_text(visible_situation) is not None
             else None
         )

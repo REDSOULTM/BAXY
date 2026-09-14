@@ -193,6 +193,11 @@ def _topic_research_query(text: str) -> str | None:
     folded_topic = _fold(topic)
     if not folded_topic or len(topic.encode("utf-8")) > 200:
         return None
+    subject = _research_question_subject(text)
+    if subject is not None:
+        # WEB1481 «Investiga en internet que es el h2o»: the topic is the
+        # subject of the question, not the question's words.
+        return subject
     if _has(folded_topic, r"^(?:que|quien|quienes|como|cual|cuales|donde|cuando|por\s+que|porque|what|who|how|which|where|when|why)\b"):
         return None
     if _has(folded_topic, r"\b(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|documents?|mi\s+pc|my\s+pc|este\s+equipo)\b"):
@@ -258,6 +263,62 @@ def _entity_lookup_query(text: str) -> str | None:
     ):
         return None
     return entity
+
+
+_RESEARCH_QUESTION_SUBJECT = re.compile(
+    r"^[¿?¡!\s]*(?:que|qué|quien|quién|what|who)\s+(?:es|son|fue|era|is|are|was)\s+"
+    r"(?:(?:el|la|los|las|the|un|una|unos|unas|a|an)\s+)?(?P<subject>[^?¿!¡]+?)\s*[.!?¿¡=\s]*$",
+    re.IGNORECASE,
+)
+
+
+def _research_question_subject(text: str) -> str | None:
+    """WEB1481 «Investiga en internet que es el h2o»: the subject of the
+    who/what question that a research order carries («h2o»), with its own
+    spelling; None when the order carries no such question, or the subject is
+    the assistant, a pointed or possessed thing, a word's meaning or a local
+    thing (the same exclusions as _entity_lookup_query)."""
+
+    order = _TOPIC_RESEARCH.match(text.strip())
+    if order is None:
+        return None
+    question = _RESEARCH_QUESTION_SUBJECT.match(order.group("topic").strip(" \t\r\n.,;:"))
+    if question is None:
+        return None
+    subject = question.group("subject").strip(" \t\r\n.,;:")
+    if not subject or len(subject.encode("utf-8")) > 80 or len(subject.split()) > 8:
+        return None
+    if _entity_lookup_query("quién es " + subject) is None:
+        return None
+    return subject
+
+
+_YOUTUBE_SEARCH = re.compile(
+    r"^[¿?¡!\s]*(?:busca|buscá|buscar|buscame|buscáme|búscame|search(?:\s+for)?|find)\s+"
+    r"(?:(?P<query>.+?)\s+(?:en|on)\s+youtube|(?:en|on)\s+youtube\s+(?P<query_after>.+?))\s*[.!?]*$",
+    re.IGNORECASE,
+)
+
+
+def _youtube_search_query(text: str) -> str | None:
+    """WEB1481 «buscá videos de gatos en youtube»: a search on YouTube is one
+    reviewed navigation to YouTube's results page with the person's query,
+    kept with its own spelling; None for any other shape, a playback request
+    («reproduce … en youtube») or a query that names a local thing."""
+
+    match = _YOUTUBE_SEARCH.match(text.strip())
+    if match is None:
+        return None
+    query = (match.group("query") or match.group("query_after") or "").strip().strip("\"'“”«»").strip()
+    folded_query = _fold(query)
+    if (
+        not query
+        or len(query.encode("utf-8")) > 512
+        or any(ord(character) < 32 for character in query)
+        or _has(folded_query, r"\b(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|documents?|mi\s+pc|my\s+pc|este\s+equipo)\b")
+    ):
+        return None
+    return query
 
 
 def _public_live_lookup_request(folded: str) -> bool:
@@ -13310,6 +13371,13 @@ def _review_web_and_browser_effects(
             _, priority, operation = matches[-1]
             matches[-1] = (0, priority, operation)
         return
+    if _youtube_search_query(folded) is not None and context_browser is None:
+        # WEB1481 «buscá videos de gatos en youtube»: one reviewed navigation
+        # to YouTube's results page with that query.
+        if _append(matches, folded, "browser.navigate", r"\b(?:busca|buscar|buscame|search|find)\b"):
+            _, priority, operation = matches[-1]
+            matches[-1] = (0, priority, operation)
+        return
     if _explicit_google_search_query(folded) is not None:
         browser = _named_browser(folded) or context_browser
         if browser is None or browser in {"opera", "opera_gx"}:
@@ -14802,6 +14870,10 @@ def _resolve_clause_local_special_effects(
     if "browser.navigate" in available and _installed_browser_search_query(clause) is not None:
         # WEB1455 «Abre un navegador que tengas instalado y busca …»: the two
         # clauses are one reviewed navigation to the public search page.
+        return EffectIntent(("browser.navigate",), (clause.strip(),))
+    if "browser.navigate" in available and _youtube_search_query(clause) is not None:
+        # WEB1481 «buscá videos de gatos en youtube»: one reviewed navigation
+        # to YouTube's results page with the person's query.
         return EffectIntent(("browser.navigate",), (clause.strip(),))
     multiple_alarms = _multiple_alarm_schedule_intent(clause, available)
     if multiple_alarms is not None:

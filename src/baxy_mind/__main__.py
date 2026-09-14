@@ -4018,6 +4018,13 @@ def _explicit_browser_navigation_arguments(
         # person's browser preferences. Confirm this complete URL and browser.
         return {"browser": browser, "url": "https://www.bing.com/search?" + urlencode({"q": query})}
 
+    youtube_query = effect_intent._youtube_search_query(evidence)
+    if youtube_query is not None:
+        # WEB1481 «buscá videos de gatos en youtube»: YouTube's own results
+        # page with the person's literal query, confirmed as a complete URL.
+        if operation != "browser.navigate":
+            return None
+        return {"url": "https://www.youtube.com/results?" + urlencode({"search_query": youtube_query})}
     installed_query = effect_intent._installed_browser_search_query(evidence)
     if installed_query is not None:
         # WEB1455 «abre un navegador que tengas instalado y busca …»: the
