@@ -1,0 +1,15 @@
+{
+  "schema": "c03-knowledge1473-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_entity_lookup_query: quién o qué es una cosa con nombre —sin artículo, sin ser el asistente ni la persona, sin cosa poseída ni señalada, sin significado de palabra, sin pregunta plegada— es una consulta pública), src/baxy_mind/__main__.py (la consulta de web.search es el nombre desnudo), src/baxy_mind/llm.py (instrucción: el final repite lo que un fragmento afirma sobre el nombre, con sus palabras, nombrando la página; sin creadores, estudios, fechas ni cifras ajenos; sin pregunta final).",
+  "patch": "artifacts/comprobaciones/C03/KNOWLEDGE1473/SOURCE.patch",
+  "commits": [
+    "63c28785599e86c2cab4aacf9e030d0253ebbc0c"
+  ],
+  "build": "BUILD1473 (C03-repairs1473-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "KNOWLEDGE1353/1355: las preguntas de quién es (Daredevil, Doom Eternal, Marvel vs. Capcom) inventaban creadores, estudios, años y protagonistas: conocimiento del modelo local sin fuente de hechos; las sondas de esta sesión muestran que el motor público devuelve las páginas (Wikipedia, Steam, IMDb) para el nombre desnudo y páginas ajenas para la pregunta entera.",
+  "change": "La pregunta de quién o qué es una cosa con nombre se busca de sólo lectura con el nombre desnudo y se contesta con lo que un fragmento afirma, nombrando la página; las definiciones con artículo, la identidad, lo poseído o señalado y el significado de palabras siguen contestándose sin buscar. Sin respuestas fijas.",
+  "measurement": "KNOWLEDGE1473: KNOWLEDGE1473: quién o qué es una cosa con nombre se contesta desde páginas públicas nombrando la fuente; H0257 y H0278 cubiertos; H0366 sin final por el veto de metadiscurso («en primera persona» citado del fragmento) y H0582 con un desenlace inventado; 2 créditos. 11/11 ejecutados, 9 aprobados, 2 fallidos, 2 créditos; Daredevil, Marvel vs. Capcom, Spider-Man y Mortal Kombat contestados desde Wikipedia/IMDb/Fandom/Minijuegos; Doom Eternal encontrado pero sin final (reparación KNOWLEDGE1475)",
+  "credits": 2
+}

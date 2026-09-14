@@ -1,3 +1,11 @@
+# KNOWLEDGE1473 adjudicado — 2026-09-14T22:01:09.460425+00:00
+
+**478/742 cubiertos, 264 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA cc12b87ea902a048ab0127a12c97e80df4acf8584bd8836ffae0db6a9d98f253. Primeras altas 24 h >= 352 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 63c28785 con BUILD1473 (quién o qué es una cosa con nombre buscado en páginas públicas; KNOWLEDGE1473/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+KNOWLEDGE1473 («Conocimiento, razonamiento y creatividad verbal», H0257 «¿Quién es Daredevil?», H0278 «Hablame un poco de Marvel vs. Capcom.», H0366 «Que es doom eternal=», H0582 «Quien gana en batman vs superman»): KNOWLEDGE1473: quién o qué es una cosa con nombre se contesta desde páginas públicas nombrando la fuente; H0257 y H0278 cubiertos; H0366 sin final por el veto de metadiscurso («en primera persona» citado del fragmento) y H0582 con un desenlace inventado, 2 créditos. Adjudicación 35023ca977bb164c2fb67f84d526a9723d06da0a790d540b4c3b8a80c9d17bd2. 11/11 ejecutados, 9 aprobados, 2 fallidos, 2 créditos; Daredevil, Marvel vs. Capcom, Spider-Man y Mortal Kombat contestados desde Wikipedia/IMDb/Fandom/Minijuegos; Doom Eternal encontrado pero sin final (reparación KNOWLEDGE1475)
+
+---
+
 # WEB1471 adjudicado — 2026-09-14T21:38:44.816566+00:00
 
 **476/742 cubiertos, 266 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 63a5833cc2e412fddd725fd26d8f0d1d1deea44f761c1271f9626920d5220d5d. Primeras altas 24 h >= 350 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4eac0d2e con los binarios de BUILD1463 sin cambio de fuente (turnos revisados con fallo honesto sin propuesta; WEB1471/SOURCE.json). Turnos ordinarios de sólo lectura sin confirmación.

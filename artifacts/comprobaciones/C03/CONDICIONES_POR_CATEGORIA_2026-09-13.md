@@ -489,3 +489,7 @@ Navegación y búsqueda web pasa de 29/46 a 31/46 con las búsquedas por tema y 
 ## Actualización 2026-09-14 (WEB1471)
 
 Navegación y búsqueda web pasa de 31/46 a 33/46 con la página de Steam por búsqueda revisada o su fallo honesto (HEAD 4eac0d2e, binarios BUILD1463) (HEAD 4eac0d2e): WEB1471: la página de Steam por búsqueda abre bajo revisión o falla con verdad; H0360 y H0723 cubiertos (WEB1469 ejecutó el mismo panel sin poder adjudicarse por su regla sellada de admisiones), 2 créditos. 7/7 ejecutados, 7 aprobados, 2 créditos; Terraria navegada bajo revisión; Marvel Rivals y Stardew Valley con fallo honesto
+
+## Actualización 2026-09-14 (KNOWLEDGE1473)
+
+Conocimiento, razonamiento y creatividad verbal pasa de 24/37 a 26/37 con las preguntas de quién o qué es contestadas desde páginas públicas (commit 63c28785, BUILD1473) (HEAD 63c28785): KNOWLEDGE1473: quién o qué es una cosa con nombre se contesta desde páginas públicas nombrando la fuente; H0257 y H0278 cubiertos; H0366 sin final por el veto de metadiscurso («en primera persona» citado del fragmento) y H0582 con un desenlace inventado, 2 créditos. 11/11 ejecutados, 9 aprobados, 2 fallidos, 2 créditos; Daredevil, Marvel vs. Capcom, Spider-Man y Mortal Kombat contestados desde Wikipedia/IMDb/Fandom/Minijuegos; Doom Eternal encontrado pero sin final (reparación KNOWLEDGE1475)
