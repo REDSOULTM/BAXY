@@ -1,3 +1,25 @@
+## WEB1291 — estado vigente 2026-09-14T01:09:49.606442+00:00
+
+Parcial: 2 aprobados, 9 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 375/742 | 367 | 0 | >=249 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 249 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WEB1291 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: WEB1291: 11 ejecutados, 2 aprobados, 9 fallidos, 0 créditos (índices []). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/WEB1291/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 220.48 s acumulados; pico GPU 3497.56 MiB; pico RAM 2452.72 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 11; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WEB1291 precedente. -->
+
 ## BRIGHT1289 — estado vigente 2026-09-14T00:48:36.759962+00:00
 
 Parcial: 9 aprobados, 1 fallidos, 0 sin ejecutar; 3 créditos.

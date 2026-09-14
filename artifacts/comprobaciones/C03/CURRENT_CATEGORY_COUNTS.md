@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación BRIGHT1289
+# Categorías actuales — adjudicación WEB1291
 
-375/742 cubiertos; 367 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 249 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: a636395436fddd5f304f70d9b4d8d81c5609c1f371c49bc2f141ad627d7b3a6b.
+375/742 cubiertos; 367 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 249 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: cfdd10ce317f89ae49394d4f772cbb99f8dbbd99758ecf412115a756c5ca6346.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|

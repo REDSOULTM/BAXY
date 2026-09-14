@@ -1,3 +1,9 @@
+# WEB1291 adjudicado — 2026-09-14T01:09:49.606442+00:00
+
+**375/742 cubiertos, 367 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA cfdd10ce317f89ae49394d4f772cbb99f8dbbd99758ecf412115a756c5ca6346. Primeras altas 24 h >= 249 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e9620ca7 con BUILD1291 (App: «wmi» vetado en UserMessagePolicy; sin cambio en búsqueda). Medición de «Navegación y búsqueda web» (búsquedas por tema y páginas de Steam por búsqueda): 11 ejecutados, 2 aprobados, 9 fallidos, 0 créditos. Causa medida: el motor (RSS de Bing) devuelve ítems ajenos para consultas genéricas desde este PC y el filtro de pertinencia los rechaza; DuckDuckGo bloquea; la cadena revisada sí llegó a Steam para Elden Ring (WEB1291/ENGINE_PROBE.md, MEASUREMENT.json). Adjudicación 1c41884c894e1833c26912566ade1749f527260adbaed15dc5c2109819dede64. Siguiente: categoría condicionada por el motor; seguir por masa abierta.
+
+---
+
 # BRIGHT1289 adjudicado — 2026-09-14T00:48:36.759962+00:00
 
 **375/742 cubiertos, 367 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA a636395436fddd5f304f70d9b4d8d81c5609c1f371c49bc2f141ad627d7b3a6b. Primeras altas 24 h >= 249 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 11467c9c con BUILD1289 (mente: «wmi» vetado en aclaraciones y reintento de la pregunta de cantidad ante pasado del usuario; BRIGHT1289/SOURCE.json|SOURCE.patch; .NET sin cambios). Brillo fijado en 60 por la raíz y restaurado al del dueño tras cada caso; aprobación de la raíz sólo para el valor pedido (approve_setting.py).

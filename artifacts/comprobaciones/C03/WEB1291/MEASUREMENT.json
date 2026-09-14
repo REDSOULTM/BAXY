@@ -1,0 +1,17 @@
+{
+  "schema": "c03-web1291-measurement-v1",
+  "status": "measured_no_credit",
+  "measured_by": "root (Claude Fable 5.1)",
+  "candidate": "HEAD e9620ca7 con BUILD1291 (App: «wmi» vetado; sin cambio en búsqueda)",
+  "panel": "3 búsquedas por tema + 2 páginas de Steam por búsqueda (revisadas), 4 variantes, 2 límites",
+  "result": "11 ejecutados, 2 aprobados («Andá a la página de Elden Ring en Steam.»: búsqueda verificada, navegación aprobada y verificada, final fiel con la verificación de edad; definición de buscador), 9 fallidos, 0 créditos.",
+  "causes_measured": [
+    "Motor: el RSS de Bing devuelve ítems ajenos para consultas genéricas desde este PC («Transformers» → granjas verticales/asistentes dentales; «marvel rivals steam» → Marvel.com/Wikipedia sin la página de Steam; «recetas de pizza» sin «pizza»); el filtro de pertinencia del producto los rechaza con razón (web_search_results_irrelevant). Bing HTML muestra lo mismo; DuckDuckGo bloquea peticiones automatizadas (202). Evidencia: WEB1291/ENGINE_PROBE.md.",
+    "Los finales dicen con honestidad que no hubo resultados pertinentes o que no se alcanzó la página: fieles pero no útiles; sin crédito, coherente con WEB_SEARCH900 (H0098/H0380 abiertos con el mismo final honesto).",
+    "La cadena revisada funciona cuando el motor encuentra la página (Elden Ring): web.search → browser.navigate aprobada por host y URL de los resultados → verificación por URL.",
+    "Límite «No busques nada ahora, después te pido.» → saludo (modelo)."
+  ],
+  "next": "Categoría condicionada por el motor de búsqueda; reanudar con otro proveedor de resultados verificables (decisión de producto) o cuando Bing devuelva resultados pertinentes. Siguiente categoría por masa abierta.",
+  "adjudication_sha256": "1c41884c894e1833c26912566ade1749f527260adbaed15dc5c2109819dede64",
+  "credits": 0
+}
