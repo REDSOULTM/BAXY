@@ -1,0 +1,17 @@
+{
+  "schema": "c03-system1305-source-adoption-v1",
+  "status": "adopted_measured",
+  "commits": [
+    "c94e71e8b2ed11cb73b0633236aa559f7478f31c"
+  ],
+  "owner": "src/baxy_mind/llm.py (mislabelled_installed en _payload_fact_defect: una cifra del total seguida de instalada/installed cuando installed_capacity difiere; pista de reintento)",
+  "patch": "artifacts/comprobaciones/C03/SYSTEM1305/SOURCE.patch",
+  "build": "BUILD1305 (C03-repairs1305-build/BUILD_READY.json; .NET sin cambios)",
+  "measured_by": "root (Claude Fable 5.1)",
+  "candidate": "HEAD c94e71e8 con BUILD1305",
+  "panel": "os_memory con dos pares; 2 límites",
+  "result": "5 ejecutados, 4 aprobados, 1 fallido; 0 créditos. Sin crédito: el defecto mislabelled_installed funcionó (ningún borrador llamó instalados al total) y los dos pares «Qué Windows tengo y cuánta RAM tiene el PC» / «Decime qué Windows tengo y cuánta RAM tiene esta compu.» aprobaron con lectura verificada, pero H0508 inventó «versión 22H2» (observado: build 26200, Windows 11 Home Single Language). Límites aprobados.",
+  "cause_measured": "SYSTEM1303: H0508 y un par llamaron «instalados» al total observado (16,54 GB) cuando installed_capacity es 17,18 GB.",
+  "adjudication_sha256": "33143176fba22646f617da7bc3f115b5440c390ce382f4dc610b171f6da8094e",
+  "credits": 0
+}

@@ -1,3 +1,11 @@
+# SYSTEM1305 adjudicado — 2026-09-14T02:08:05.113860+00:00
+
+**381/742 cubiertos, 361 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 33e5c468560fbe557e8edec5460ff53a4f533fd1e9f486c73101290c74d0d24b. Primeras altas 24 h >= 255 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c94e71e8 con BUILD1305 (mente: defecto mislabelled_installed; SYSTEM1305/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+SYSTEM1305 («Estado de hardware y sistema», Windows+RAM sobre el defecto de etiqueta instalada): 5 ejecutados, 4 aprobados, 1 fallido, 0 créditos. Adjudicación 33143176fba22646f617da7bc3f115b5440c390ce382f4dc610b171f6da8094e. Sin crédito: el defecto mislabelled_installed funcionó (ningún borrador llamó instalados al total) y los dos pares «Qué Windows tengo y cuánta RAM tiene el PC» / «Decime qué Windows tengo y cuánta RAM tiene esta compu.» aprobaron con lectura verificada, pero H0508 inventó «versión 22H2» (observado: build 26200, Windows 11 Home Single Language). Límites aprobados.
+
+---
+
 # SYSTEM1303 adjudicado — 2026-09-14T02:03:53.862692+00:00
 
 **381/742 cubiertos, 361 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 2743e496b5a29d28af1b62ba605db5986dc193a2a444749a041527ade06e4322. Primeras altas 24 h >= 255 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 10f0ae30 con BUILD1301 (sin fuente nueva).
