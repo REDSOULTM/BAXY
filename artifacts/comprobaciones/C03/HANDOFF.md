@@ -1,3 +1,11 @@
+# WEB1481 adjudicado — 2026-09-14T22:43:19.542082+00:00
+
+**482/742 cubiertos, 260 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA fd96e11575a630d5107e39af9fd8655f4e5e31668f1baee7ec93e5a6e77cf926. Primeras altas 24 h >= 356 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c21a630d con BUILD1481 (búsqueda en YouTube como navegación revisada; investigar qué es algo busca ese algo; WEB1481/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+WEB1481 («Navegación y búsqueda web», H0728 «buscá videos de gatos en youtube», H0618 «Investiga en internet que es el h2o»): WEB1481: la búsqueda en YouTube abre su página de resultados bajo revisión pero el final calla la búsqueda; H0618 encontró Wikipedia y la App rechazó el título citado; sin crédito, 0 créditos. Adjudicación 31e63ba13a421fd0aeb240abafe0676282f634e15152346d68eefcc942d1e4c1. 9/9 ejecutados, 5 aprobados, 4 fallidos, 0 créditos; dos defectos del compositor y de la App medidos (WEB1483)
+
+---
+
 # WEB1479 adjudicado — 2026-09-14T22:28:17.276091+00:00
 
 **482/742 cubiertos, 260 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 15f34fe6909c1fc97eec7d9a10c7b6928b82f2693b8c4d0f91576733428ca872. Primeras altas 24 h >= 356 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 03c60ac9 con BUILD1479 (carácter corrupto tolerado y sólo la dirección navegada citada; WEB1479/SOURCE.json|SOURCE.patch). Turnos revisados hacia el dominio esperado. Turnos ordinarios de aclaración sin operaciones.

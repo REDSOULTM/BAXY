@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1481-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_youtube_search_query: «busca X en youtube» / «busca en youtube X» es una navegación revisada a la página de resultados de YouTube; _research_question_subject: «investiga (en internet) qué es (el) X» investiga el sujeto X, con las exclusiones del lector de quién-es), src/baxy_mind/__main__.py (URL youtube.com/results?search_query=…), src/baxy_mind/llm.py (la pregunta investigada recibe la instrucción de respuesta desde un fragmento nombrando la página).",
+  "patch": "artifacts/comprobaciones/C03/WEB1481/SOURCE.patch",
+  "commits": [
+    "c21a630dcd28b2473a7fa9ee964ded59a4df213d"
+  ],
+  "build": "BUILD1481 (C03-repairs1481-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "«buscá videos de gatos en youtube» no llegaba a ningún lector (ninguna operación); «Investiga en internet que es el h2o» buscaba la pregunta entera, el motor no devolvía páginas pertinentes y el final decía «sobre el tema» sin nombrarlo (WEB1467); el motor sí devuelve Wikipedia para «h2o».",
+  "change": "Dos lectores nuevos con sus exclusiones; sin respuestas fijas.",
+  "measurement": "WEB1481: WEB1481: la búsqueda en YouTube abre su página de resultados bajo revisión pero el final calla la búsqueda; H0618 encontró Wikipedia y la App rechazó el título citado; sin crédito; 0 créditos. 9/9 ejecutados, 5 aprobados, 4 fallidos, 0 créditos; dos defectos del compositor y de la App medidos (WEB1483)",
+  "credits": 0
+}

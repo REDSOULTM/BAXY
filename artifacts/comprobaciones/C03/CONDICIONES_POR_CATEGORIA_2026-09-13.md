@@ -505,3 +505,7 @@ Navegación y búsqueda web pasa de 33/46 a 35/46 con el portal de la universida
 ## Actualización 2026-09-14 (WEB1479)
 
 Navegación y búsqueda web pasa de 35/46 a 36/46 con la página oficial pedida con un carácter corrupto y la dirección navegada citada (commit 03c60ac9, BUILD1479) (HEAD 03c60ac9): WEB1479: la página oficial abre pese al carácter corrupto del pedido y el final cita sólo la dirección navegada; H0082 cubierto, 1 créditos. 6/6 ejecutados, 6 aprobados, 1 crédito; openai.com, python.org y github.com navegados bajo revisión
+
+## Actualización 2026-09-14 (WEB1481)
+
+Navegación y búsqueda web pasa de 36/46 a 36/46 con la búsqueda en YouTube abierta bajo revisión y la pregunta investigada contestada desde una página (commit c21a630d, BUILD1481) (HEAD c21a630d): WEB1481: la búsqueda en YouTube abre su página de resultados bajo revisión pero el final calla la búsqueda; H0618 encontró Wikipedia y la App rechazó el título citado; sin crédito, 0 créditos. 9/9 ejecutados, 5 aprobados, 4 fallidos, 0 créditos; dos defectos del compositor y de la App medidos (WEB1483)
