@@ -1,0 +1,15 @@
+{
+  "schema": "c03-screen1401-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_compose_situation_payload: proyección de la captura a dimensiones, alcance y privacidad; _payload_fact_defect: capture_not_reported con su pista)",
+  "patch": "artifacts/comprobaciones/C03/SCREEN1401/SOURCE.patch",
+  "commits": [
+    "aa77a3dc9cebe31f1b2d8cbfea873cee3cb31603"
+  ],
+  "build": "BUILD1401 (C03-repairs1401-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "SCREEN1399: el literal publicó un eco imperativo de la orden tras la captura verificada y tres variantes no publicaron nada porque los borradores narraron el identificador interno de la captura (captureId y sha256 expuestos por el payload) y el veto de códigos internos los bloqueó sin pista.",
+  "change": "El payload de una captura proyecta sólo dimensiones, qué se capturó y que quedó privada; el compositor exige el informe en primera persona de la captura verificada (capture_not_reported) y su pista pide decirlo en pasado sin identificadores ni destino inventado. Sin respuestas fijas.",
+  "measurement": "SCREEN1401: 10/10 ejecutados, 7 capturas revisadas aprobadas, 3 límites aprobados, 0 violaciones; 1 créditos. SCREEN1401 sobre BUILD1401 (mente: el payload de la captura proyecta sólo dimensiones, alcance y privacidad, y la captura verificada debe informarse en primera persona): H0093 «sacá un screenshot» acreditado con dos pares; cada captura se propuso sin argumentos, la raíz la aprobó y se completó y verificó en la pantalla virtual (finales «Saqué una captura de pantalla de toda la pantalla.», «Tomé una captura de pantalla de toda la pantalla.», «I took a screenshot of the whole screen.»); las capturas quedan en los perfiles privados de los casos y nunca se publicaron. Dos reparaciones encadenadas en SCREEN1399/1401: el turno revisado admite la captura sensible (App) y el compositor informa la captura (mente). Primer crédito de la categoría.",
+  "credits": 1
+}
