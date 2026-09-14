@@ -1,3 +1,11 @@
+# NETWORK1297 adjudicado — 2026-09-14T01:42:22.112433+00:00
+
+**377/742 cubiertos, 365 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA bf221a777e03779cc15e70aa33a188b06e5e0a4bbeb99cc6f748f4f7fb44098d. Primeras altas 24 h >= 251 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 93af506c con BUILD1297 (mente: veto de acción atribuida al usuario y límite de escaneo en wifi.status; NETWORK1297/SOURCE.json|SOURCE.patch; .NET sin cambios). Radio Bluetooth propia del PC fijada por la raíz antes de cada caso y restaurada (apagada) después (net_case.sh, bt_radio.ps1).
+
+NETWORK1297 («Red y Bluetooth», apagado del bluetooth con pares clíticos y redes wifi; turnos ordinarios): 9 ejecutados, 5 aprobados, 4 fallidos, 0 créditos. Adjudicación 75c0cdc352f4313b3adbfc60c46f42231d72fe2a46b7238d5c45d54c6c9a7bc4. Sin crédito: «Apagame el bluetooth.» volvió a componer «Ya apagaste el bluetooth» (radio verificada, actor equivocado; el veto action_attributed_to_user no alcanzó esta ruta de composición) y los tres casos de redes wifi quedaron sin final porque el nuevo defecto missing_scan_limit agotó los reintentos del compositor (regresión revertida en el commit siguiente); H0071/H0179 y «Desactivame» aprobados.
+
+---
+
 # NETWORK1295 adjudicado — 2026-09-14T01:33:24.760391+00:00
 
 **377/742 cubiertos, 365 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA b4571c2d11c67ef8dc589f484205aa1153f7433773278c0f5ba30e34b88ffdb9. Primeras altas 24 h >= 251 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD dd1fae93 con BUILD1295 (mente: claves booleanas con clíticos/voseo; validador de conectividad ampliado; NETWORK1295/SOURCE.json|SOURCE.patch; .NET sin cambios). Radio Bluetooth propia del PC fijada por la raíz antes de cada caso y restaurada (apagada) después (net_case.sh, bt_radio.ps1).

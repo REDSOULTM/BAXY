@@ -1,0 +1,15 @@
+{
+  "schema": "c03-network1297-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (action_attributed_to_user: veto de segunda persona del pretérito en finales de efecto verificado; missing_scan_limit: el final de wifi.status debe decir que no puede escanear ni listar redes disponibles cuando se piden)",
+  "patch": "artifacts/comprobaciones/C03/NETWORK1297/SOURCE.patch",
+  "commits": [
+    "93af506c0477811059885141718f10d92d8c1420"
+  ],
+  "build": "BUILD1297 (C03-repairs1297-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "NETWORK1295: «Apagame el bluetooth.» ejecutó y verificó la radio pero el final dijo «Ya apagaste el bluetooth» (acción atribuida al usuario); «qué redes wifi hay» y sus pares no dijeron que no pueden escanear redes disponibles.",
+  "change": "Dos defectos nuevos del compositor con su pista de reintento. Sin respuestas fijas.",
+  "measurement": "NETWORK1297: 9 ejecutados, 5 aprobados, 4 fallidos; 0 créditos. Sin crédito: «Apagame el bluetooth.» volvió a componer «Ya apagaste el bluetooth» (radio verificada, actor equivocado; el veto action_attributed_to_user no alcanzó esta ruta de composición) y los tres casos de redes wifi quedaron sin final porque el nuevo defecto missing_scan_limit agotó los reintentos del compositor (regresión revertida en el commit siguiente); H0071/H0179 y «Desactivame» aprobados.",
+  "credits": 0
+}

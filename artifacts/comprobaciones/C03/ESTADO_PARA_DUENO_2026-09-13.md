@@ -1,3 +1,25 @@
+## NETWORK1297 — estado vigente 2026-09-14T01:42:22.112433+00:00
+
+Parcial: 5 aprobados, 4 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 377/742 | 365 | 0 | >=251 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 251 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); NETWORK1297 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: NETWORK1297: 9 ejecutados, 5 aprobados, 4 fallidos, 0 créditos (índices []). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/NETWORK1297/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 172.34 s acumulados; pico GPU 3497.56 MiB; pico RAM 2062.00 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque NETWORK1297 precedente. -->
+
 ## NETWORK1295 — estado vigente 2026-09-14T01:33:24.760391+00:00
 
 Parcial: 8 aprobados, 4 fallidos, 0 sin ejecutar; 1 créditos.
