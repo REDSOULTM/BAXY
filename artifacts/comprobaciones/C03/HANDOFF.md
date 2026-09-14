@@ -1,3 +1,11 @@
+# CLIPBOARD1359 adjudicado — 2026-09-14T06:28:59.920367+00:00
+
+**406/742 cubiertos, 336 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 103ea8c6b7d66839f5d82150a55c9150ac2f3cf9973a076feb647372529e0631. Primeras altas 24 h >= 280 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e3e91ede con BUILD1359 (mente: lector literal del portapapeles y fundación de argumentos; App: admisión de las operaciones del portapapeles en el turno revisado; CLIPBOARD1359/SOURCE.json|SOURCE.patch). Portapapeles fijado por la raíz con un texto de prueba propio y restaurado al estado del dueño tras cada caso; aprobación de la raíz sólo para el texto exacto o la lectura sin argumentos ajenos (approve_clipboard.py).
+
+CLIPBOARD1359 («Portapapeles», H0199 y H0356 escritura literal, H0518 lectura, todos revisados): 10/10 ejecutados, 7 aprobados, 3 fallidos, 0 violaciones, 1 créditos. Adjudicación 44124fd220d7832adeaa3b6fd6bfdf14e7f296741784835bda242c58cf031936. H0518 acreditado con dos pares de lectura (clipboard.read.text sin argumentos, aprobada por la raíz, verificada por doble lectura, finales con el texto fijado por la raíz). H0199 y H0356 fallaron aunque la escritura se propuso con el literal exacto, se aprobó, completó y verificó (portapapeles cambiado): el final en español tras la confirmación es un eco del texto («Hola», «Hola mundo», «Buen día.») que no informa la copia; la variante inglesa sí la informó. Causa: el payload visible de clipboard.write.text sólo lleva sequenceNumber/characterCount/changed. Los tres límites aprobados. Siguiente: el texto escrito en el payload visible y veto del eco (CLIPBOARD1361).
+
+---
+
 # KNOWLEDGE1357 adjudicado — 2026-09-14T06:01:50.436939+00:00
 
 **405/742 cubiertos, 337 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 044b92ea3842052c5f245646155ccb19f5b1a03551f264f38bc8e63522f2ce32. Primeras altas 24 h >= 279 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD cfb44e51 con BUILD1355 (sin cambio de fuente; KNOWLEDGE1357/SOURCE.json|SOURCE.patch; .NET sin cambios).

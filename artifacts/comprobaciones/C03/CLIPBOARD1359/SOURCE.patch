@@ -1,0 +1,129 @@
+commit e3e91ede09f908184c4fcb6f07a77f42b52af1f6
+
+C03: quoted or dictated clipboard literals reach clipboard.write.text; clipboard reads and writes are reviewed turns (CLIPBOARD1359)
+
+The three clipboard literals of the registry never reached an operation: «Copia a mi portapapeles "Hola"» and «copiá esto al portapapeles: hola mundo» resolved to nothing (the write reader only vetoed vocabulary and had no literal grounding), and «qué hay en el portapapeles» resolved to clipboard.read.text without grounded arguments. Both operations are PrivacySensitive, so the product asks for confirmation and the conductor's reviewed turn had no admission for them.
+
+effect_intent.literal_clipboard_write_text: a copy/put head, the clipboard named and a literal that is either quoted («"Hola"», «“…”», ««…»») or introduced by a colon after the clipboard noun; case and accents preserved; no literal or a prohibition → None (the «este texto» clarification stays). resolve_explicit_effects proposes clipboard.write.text with the raw text as evidence.
+__main__._explicit_arguments_from_evidence: clipboard.write.text → {"text": literal}; clipboard.read.text → {} when the clipboard is named.
+Baxy.App ProductConductorHost: turn.confirm-reviewed also admits clipboard.write.text and clipboard.read.text proposals (root approves only the exact literal / an argument-free read).
+
+Offline probe only; tests not run (owner order). App recompiled in BUILD1359.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/ProductConductorHost.cs b/src/Baxy.App/ProductConductorHost.cs
+index 90090286..f26a7ae7 100644
+--- a/src/Baxy.App/ProductConductorHost.cs
++++ b/src/Baxy.App/ProductConductorHost.cs
+@@ -352,7 +352,7 @@ internal static class ProductConductorHost
+             || initial.Diagnostic is not null
+             || observed.Prepared.OperationName is not (
+                 "browser.navigate" or "browser.navigate.named" or "app.close" or "input.visible.click"
+-                or "system.settings.set"))
++                or "system.settings.set" or "clipboard.write.text" or "clipboard.read.text"))
+         {
+             return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
+         }
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index fc696138..31275e3f 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -4473,6 +4473,16 @@ def _explicit_arguments_from_evidence(
+     if operation == "system.status":
+         return _explicit_system_status_scope(evidence)
+ 
++    if operation == "clipboard.write.text":
++        # CLIPBOARD1359: the quoted or colon-introduced fragment is the
++        # person's literal, case and accents preserved by the reader.
++        literal = effect_intent.literal_clipboard_write_text(evidence)
++        return {"text": literal} if literal is not None else None
++
++    if operation == "clipboard.read.text":
++        # The read takes no literal; naming the clipboard is the whole request.
++        return {} if re.search(r"\b(?:portapapeles|clipboard)\b", folded) else None
++
+     if operation == "system.settings.status":
+         # BRIGHT1283: the reader owns the setting enum; «brillo» is the literal.
+         return {"setting": "brightness"} if effect_intent.brightness_status_request(evidence) else None
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 5fe4ff16..2a10b0bf 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -11762,6 +11762,58 @@ _BRIGHTNESS_EXTREME_VALUES = {
+ }
+ 
+ 
++_CLIPBOARD_WRITE_HEAD = (
++    r"(?:copia|copiar|copiame|copy|pon|pone|poneme|ponme|ponelo|ponlo|put|"
++    r"escribe|escribi|escribime|write|guarda|guardame|save|deja|dejame|leave|"
++    r"mete|meteme|carga|cargame|load)"
++)
++_CLIPBOARD_QUOTED = re.compile(r'"([^"\n]+)"|“([^”\n]+)”|«([^»\n]+)»|‘([^’\n]+)’')
++
++
++def literal_clipboard_write_text(text: str) -> str | None:
++    """Return the literal a person asked to put on the OS clipboard, or None.
++
++    «Copia a mi portapapeles "Hola"», «copiá esto al portapapeles: hola mundo»,
++    «Copy "hello" to my clipboard»: the head is a copy/put verb, the clipboard
++    is named and the literal is either quoted or introduced by a colon after
++    the clipboard noun. The literal keeps its case and accents. Nothing is
++    inferred when no literal is given («copiá este texto al portapapeles» stays
++    a clarification) or when the clause is a prohibition.
++    """
++
++    collapsed = " ".join(text.split())
++    folded = _strip_request_envelope(_fold(collapsed))
++    if not _has(folded, r"\b(?:portapapeles|clipboard)\b"):
++        return None
++    if not _head_is(_request_head(folded), _CLIPBOARD_WRITE_HEAD):
++        return None
++    if _is_negative_effect_clause(folded):
++        return None
++    quoted = [
++        group
++        for found in _CLIPBOARD_QUOTED.finditer(collapsed)
++        for group in found.groups()
++        if group
++    ]
++    if len(quoted) > 1:
++        return None
++    if quoted:
++        literal = quoted[0].strip()
++        return literal or None
++    colon = re.search(
++        r"\b(?:portapapeles|clipboard)\b[^:]*:\s*(?P<literal>.+)$",
++        collapsed,
++        re.IGNORECASE,
++    )
++    if colon is None:
++        return None
++    literal = colon.group("literal").strip()
++    if literal.endswith(".") and literal.count(".") == 1:
++        # The sentence's own full stop is not part of a dictated fragment.
++        literal = literal[:-1].rstrip()
++    return literal or None
++
++
+ def _literal_brightness_level(text: str) -> int | None:
+     """«poné el brillo al 80», «pon el brillo al 80%», «subí el brillo al máximo»: an absolute level."""
+ 
+@@ -14743,6 +14795,16 @@ def resolve_explicit_effects(
+     ):
+         # BRIGHT1287: an absolute brightness level is the sensitive set (confirmation).
+         return EffectIntent(("system.settings.set",), (folded,))
++    if (
++        "clipboard.write.text" in available
++        and literal_clipboard_write_text(text) is not None
++        and not _is_meta_or_tool_denial(folded)
++        and not _has_contradictory_correction(folded)
++    ):
++        # CLIPBOARD1359: a quoted or colon-introduced literal for the clipboard
++        # is the sensitive write (confirmation). The raw text is the evidence so
++        # the literal keeps its case and accents.
++        return EffectIntent(("clipboard.write.text",), (text,))
+     if (
+         "filesystem.create.directory" in available
+         and _directory_creation_request(folded) is not None
