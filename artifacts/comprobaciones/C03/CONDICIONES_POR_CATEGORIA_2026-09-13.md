@@ -482,6 +482,32 @@ Lo que queda abierto, por masa, y por qué no se avanza sin el dueño o sin un c
 | Juegos/Correo/Contactos/Desarrollo | 6+6+5+5 | Steam, Outlook, contactos y ejecución de comandos: sesiones o capacidades ausentes (contactos: el dueño duda de que BAXY deba hacerlo). |
 | Resto (cierre 5, pantalla 5, reloj 4, memoria 3, conversación 3, resumen web 2, energía 2, hardware 2, documentos 2, agenda 1, notas 1, brillo 1, web actual 1) | 32 | Ventanas del dueño (cerrar todo), diálogos de Steam en pantalla, relojes en otros idiomas (límites sin marca), recuerdos sin guardado previo por diseño del instrumento, apagar/reiniciar el PC del dueño, Python, PowerPoint/Photoshop, fondo de pantalla, agenda de Outlook, nota en alemán, WhatsApp. |
 
+## Estado consolidado 2026-09-14 (cierre de jornada): 484/742 cubiertos, 258 abiertos, 4/35 categorías cerradas
+
+Siete tandas más desde el estado de la noche (WEB1471, KNOWLEDGE1473–1475, WEB1477–1483): 472 → 484. Instrumentos y reparaciones adoptadas: la navegación por búsqueda revisada con fallo honesto sin propuesta (Steam, portal UNIEJ, páginas oficiales de OpenAI/Python/GitHub/Mozilla), quién o qué es una cosa con nombre buscado en páginas públicas y contestado desde un fragmento nombrando la página (Daredevil, Marvel vs. Capcom, Doom Eternal, Spider-Man, Mortal Kombat), «investiga qué es X» buscando X (h2o, ADN, agujero negro), la búsqueda en YouTube como navegación revisada a su página de resultados nombrada en el final, «p?gina» tolerado, sólo la dirección navegada citada, el género citado de un fragmento no es metadiscurso y el título citado no es una re-pregunta (App). WEB1469 se ejecutó y no pudo adjudicarse (regla sellada de admisiones); WEB1481 midió dos defectos sin crédito.
+
+Lo que queda abierto, por masa, y por qué no se avanza sin el dueño o sin un cambio de diseño:
+
+| Categoría | Abiertos | Condición |
+|---|---:|---|
+| Música | 32 | Spotify/YouTube exigen sesión real del dueño (decisión: omitir); «qué está sonando» y «pará la música» exigen reproducción real. |
+| Instalar/desinstalar | 31 | Steam del dueño nunca se lanza; desinstalar Discord/Spotify es destructivo; Photoshop sin instalador; Teams incompatible; el dueño no quiere Python como capacidad. |
+| Vídeo y series | 26 | Netflix/Disney+/Prime exigen sesión autenticada del dueño (decisión: omitir). |
+| Mensajería | 22 | Enviar exige clientes y terceros reales (prohibido por encuesta); las lecturas exigen sesión. |
+| Interacción dentro de aplicaciones | 17 | Discord/WhatsApp son clientes del dueño; clics sin ventana propia tocarían ventanas del dueño; aritmética en la Calculadora exige confirmaciones múltiples. |
+| Entrada incompleta | 16 | Fragmentos largos de transcripción decididos por el modelo (DIALOGUE1281); sin lector determinista justificado. |
+| Abrir aplicaciones | 14 | Steam del dueño (incluidas las transcripciones «Steel»/«Ste»/«stea»); Mortal Kombat en Steam; idiomas extranjeros (límites sin marca); «abrime el chrome» abriría el navegador del dueño. |
+| Conocimiento | 10 | Quién gana (H0582 afirmó un desenlace inventado); curiosidades y «algo interesante» (el motor no sirve curiosidades: páginas ajenas); sarcasmo; referentes ausentes en sesión fresca (H0030/H0424/H0645); H0297. |
+| Organizar ventanas | 9 | Minimizar/cambiar/enfocar tocan ventanas del dueño; «la mejor» sin criterio. |
+| Navegación y búsqueda web | 8 | Descarga de imagen (sin operación); pivigames y «Busca operagx en opera» (Opera GX del dueño); «abre youtube.com en Chrome» (Chrome del dueño); pestaña nueva (browser.control sin new_tab); «Ve a portal una.» / «Ve Portal 2 UN» (mensajes cortados: el motor no devuelve nada y el dueño pide preguntar); compuesto H0516. |
+| Archivos | 7 | Contenido dinámico (H0334/H0426), zip (H0542), backup a pendrive (H0733), resumen de PDF (H0666), borrado de carpeta (H0327), ruta literal (H0299). |
+| Red y Bluetooth | 6 | Escaneo de redes no listable; wifi sensible con radios del dueño; modo avión sin mecanismo. |
+| Audio y volumen | 6 | Idiomas extranjeros (límites sin marca); Spotify ausente; compuesto aclaración+lectura (H0067). |
+| Juegos/Correo/Contactos/Desarrollo | 6+6+5+5 | Steam, Outlook, contactos y ejecución de comandos: sesiones o capacidades ausentes. |
+| Resto (cierre 5, pantalla 5, reloj 4, memoria 3, conversación 3, resumen web 2, energía 2, hardware 2, documentos 2, agenda 1, notas 1, brillo 1, web actual 1) | 32 | Ventanas del dueño (cerrar todo, WhatsApp/Discord), diálogos de Steam en pantalla, «describeme lo que ves» (el lector resuelve sólo la captura; sin visión), relojes en otros idiomas, y mecanismos ausentes. |
+
+Condición transversal medida hoy: el motor público (Bing RSS) devuelve a veces las páginas de una consulta anterior o páginas ajenas (fotosíntesis → Excel; grafeno → foros); el filtro las rechaza y el producto lo dice con verdad. Las tandas con búsqueda se adjudican con el fallo honesto sellado.
+
 ## Actualización 2026-09-14 (WEB1467)
 
 Navegación y búsqueda web pasa de 29/46 a 31/46 con las búsquedas por tema y de páginas de Steam fallidas contadas cuando el final dice la verdad (HEAD 2adb59ef, binarios BUILD1463) (HEAD 2adb59ef): 12/12 ejecutados, una parada del runner; las búsquedas por tema terminaron fallidas por resultados no pertinentes con finales veraces que nombran el tema (pizza, lasaña, Transformers), salvo «Busca Transformers», que esta vez sí encontró cinco páginas pertinentes y las informó con fidelidad; «que es el h2o» dijo la verdad sin nombrar el tema (fallido); las páginas de Steam por búsqueda dijeron la verdad para Marvel Rivals y Stardew Valley, pero la variante de Terraria encontró la tienda y pidió confirmar la navegación, que el transporte ordinario no admite (sin par); los tres límites respondieron con cero búsquedas, 2 créditos. Instrumento de fallo honesto con regla de prefijo (la secuencia permitida puede terminar en la operación fallida con código sellado). Filas abiertas restantes de la categoría: H0618 (nombrar el tema en el final), H0360/H0723 (transporte revisado para la navegación cuando el motor encuentra la página), Portal UNIEJ, Opera GX, «abre youtube.com en Chrome», «abrí una pestaña nueva», compuestos.
