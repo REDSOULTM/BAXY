@@ -3973,9 +3973,14 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     # (NETWORK1161/010-011, 1163/005, 1165/004) while network.status read
     # online=true. Only a reading that carries `online` may speak about it.
     if (
-        payload.get("kind") == "operation"
-        and payload.get("verified") is True
-        and payload.get("succeeded") is True
+        # The visible payload of a verified success carries only the
+        # operation and its observed facts («seen»); failures carry a cause
+        # (NETWORK1299: compose-audit payload_keys ['operation', 'seen']).
+        isinstance(payload.get("operation"), str)
+        and isinstance(seen, dict)
+        and seen
+        and not payload.get("cause")
+        and not payload.get("error")
         and _ACTION_ATTRIBUTED_TO_USER.search(text) is not None
     ):
         # NETWORK1295/1297 «Apagame el bluetooth.» → «Ya apagaste el
