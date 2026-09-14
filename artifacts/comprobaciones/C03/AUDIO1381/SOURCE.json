@@ -1,0 +1,15 @@
+{
+  "schema": "c03-audio1381-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (clarify_unresolved_input: situación y corrección de deictic_level sin la palabra «nivel», con la forma pedida como ejemplo)",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1381/SOURCE.patch",
+  "commits": [
+    "e8b38813182986b07a65f2fc688288e2a64a1585"
+  ],
+  "build": "BUILD1381 (C03-repairs1381-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "AUDIO1379: con la comprobación, «Ponlo a 100 ahora» preguntó bien, pero «devuelvelo a 100» y varias variantes agotaron las dos redacciones con «¿A qué nivel…?» y cayeron a la recuperación genérica; el texto de la situación decía «a un nivel» y el modelo lo repetía.",
+  "change": "Situación y corrección de deictic_level sin la palabra «nivel»: el número ya está dicho, falta qué cosa; la forma pedida se da como ejemplo («¿Qué querés poner en 100: el volumen o el brillo?»). El modelo sigue redactando. Sin respuestas fijas.",
+  "measurement": "AUDIO1381: 10/10 ejecutados, 9 aprobados, 1 fallido, 0 violaciones; 1 créditos. H0713 «devuelvelo a 100» acreditado con dos pares: todos los casos deícticos preguntan ahora qué cosa poner conservando el número («¿Qué querés poner en 100: el volumen, el brillo o otra cosa?», «What would you like to set to 100: volume, brightness, or something else?»), cero operaciones. El caso 1 abortó antes de admisión por la guardia de RAM de 4000 MiB del runner (guardia intacta; recibo preservado) y la raíz lo reejecutó solo. «No cambies nada.» sigue recibiendo una oferta de ayuda genérica (condición documentada).",
+  "credits": 1
+}

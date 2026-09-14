@@ -1,3 +1,25 @@
+## AUDIO1381 — estado vigente 2026-09-14T08:23:52.015517+00:00
+
+Parcial: 9 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 419/742 | 323 | 0 | >=293 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 292 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1381 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: AUDIO1381: 10 ejecutados, 9 aprobados, 1 fallidos, 1 créditos (índices [0]); Audio y volumen 43/51. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/AUDIO1381/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 168.38 s acumulados; pico GPU 3497.56 MiB; pico RAM 1622.91 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 10; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque AUDIO1381 precedente. -->
+
 ## AUDIO1379 — estado vigente 2026-09-14T08:09:46.139762+00:00
 
 Parcial: 6 aprobados, 4 fallidos, 0 sin ejecutar; 1 créditos.

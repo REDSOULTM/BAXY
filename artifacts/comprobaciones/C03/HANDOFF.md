@@ -1,3 +1,11 @@
+# AUDIO1381 adjudicado — 2026-09-14T08:23:52.015517+00:00
+
+**419/742 cubiertos, 323 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA a09e110bfaa7a0c64087e0ccf53c6b918ca47e669ca2d1dec8c9a3f1c876390b. Primeras altas 24 h >= 293 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e8b38813 con BUILD1381 (mente: contrato del nivel deíctico sin «nivel»; AUDIO1381/SOURCE.json|SOURCE.patch; .NET sin cambios). Turnos ordinarios con sólo memory.status permitido; volumen y brillo verificados intactos por la raíz.
+
+AUDIO1381 («Audio y volumen», H0439 y H0713 nivel para «lo» sin referente, ordinarios): 10/10 ejecutados, 9 aprobados, 1 fallido, 0 violaciones, 1 créditos. Adjudicación 0c9b20d90a38f7508a9b605b1c35723b3b05c923eefb98807c6b92a21f057ce7. H0713 «devuelvelo a 100» acreditado con dos pares: todos los casos deícticos preguntan ahora qué cosa poner conservando el número («¿Qué querés poner en 100: el volumen, el brillo o otra cosa?», «What would you like to set to 100: volume, brightness, or something else?»), cero operaciones. El caso 1 abortó antes de admisión por la guardia de RAM de 4000 MiB del runner (guardia intacta; recibo preservado) y la raíz lo reejecutó solo. «No cambies nada.» sigue recibiendo una oferta de ayuda genérica (condición documentada).
+
+---
+
 # AUDIO1379 adjudicado — 2026-09-14T08:09:46.139762+00:00
 
 **418/742 cubiertos, 324 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA de5f3ebee7c0567d2382a78dee5d88d50845c7a00a12b58bef8d4477d73f74ae. Primeras altas 24 h >= 292 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4138c23a con BUILD1379 (mente: la pregunta del nivel deíctico debe preguntar qué; AUDIO1379/SOURCE.json|SOURCE.patch; .NET sin cambios). Turnos ordinarios con sólo memory.status permitido; volumen y brillo verificados intactos por la raíz.
