@@ -1,0 +1,691 @@
+{
+  "schema": "screen1417-root-adjudication-v2",
+  "decided_at_utc": "2026-09-14T14:27:02.996339+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "ec963d3efbc33d9ee2d38e47b29c4aeedb76986f",
+  "decisions_sha256": "74a4aea10f50133fe00436b577f164e6170f743ad7930627408ea697f30bd185",
+  "registry_before_sha256": "86ebb582c544d34f7c6e4b0e92ecb3f68d8f82b5867460e0214d3ec8945d2cd9",
+  "registry_before_counts": {
+    "covered": 427,
+    "open": 315,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "f0dfc91f472d87f6070ab755b20b43a47da6b9f6f2d406167c9682bbd003e2d0",
+  "preparation_sha256": "f707ba70427f07ad13466276a49b12d0ac3a2316d73d75bf0f2a9793bcae87a5",
+  "passed": 5,
+  "failed": 5,
+  "unexecuted": 0,
+  "executed": 10,
+  "segments_started": 10,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [],
+  "counters": {
+    "covered": 427,
+    "open": 315,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 301,
+    "categories_total": 35,
+    "categories_closed_after": 4,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 301 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SCREEN1417 añade 0. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 301
+  },
+  "resources": {
+    "seconds_sum": 264.1729999999807,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 2489.75
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0164",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: la captura o la lectura no se verificaron o el final no fue fiel.",
+      "observation_note": "Turno revisado: captura aprobada por la raíz, completada y verificada; ocr.read completada y verificada; sin final publicado (la advertencia honesta sobre las imágenes fue vetada como fallo afirmado); cero violaciones; pins intactos; la captura y el texto leído quedan privados.",
+      "final_sha256": "d4bdbced9a4e60d80369f37ac236a1ef68c72cb438920140ddadface7e9f9786",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-00\\EXIT.json": "cd1c4a07da2f984e314b594762fa4253bf234bb6ba3173b3c2d55bec253d0bc8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-00\\RESOURCES.json": "1fc9d6038d0c4f0725edb06c456ed4db05cd07d3b1bbcad31cc8fd23f0a8ed7a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\profile-owner-00.json": "5dcb2d83313e764f1e4a4adf3b52e78617aa43ff2205c3e4ab1d40ce1f6d64e8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-00\\PREREG.json": "44c08c47c48051f2a6fc84858a6a61622f57060b5d52b2defd805cbd0d121b11",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-00\\capture\\events.jsonl": "882c8c48a31cc8bd3eb8f4db4efff7f778e009b78ffb92d394612ab461a4441c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-00\\turns.jsonl": "4d5e69ee8be70d24bc3318f52b7aa66ce30159326ad8dbaaf39d2bcd6f443db6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\fixture-00.json": "3391455a178253e5700fccbb83950923687900a72cd2c41d3b9284d589236ba0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-00.json": "a55c0febb2169569352a91768c6992cd21e06faff8c7398d940fc9d8a1562dde",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-prelaunch-00.json": "829444431cfc36a82d500c69a8c6b9d9ef881a59f58cda96894008b1d23ebe6f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-00\\case-observations.json": "897a8796aa20a56aaa46a17c570b2158f3cbca050968e29ab7b677a9373e8900",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-00\\journal-before.json": "53d8b99c343284326e511cef67cab36f8a2260053932c282199eeb9f1e7c9d95",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-00\\journal-after.json": "df520169dfd5a18811dd6f47fcc035290b586ad64bba5c606470c1cb1dcee149",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "9169bdc4a16a2c52f96f295e029c0c431f1dd3cdd803a797f2f05393f3c740a1"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "0f378ac4-9fb4-49ac-ac82-a22eb425d1dc",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "4a1c4e40-a3c4-4a43-a76f-820ad4542020",
+          "operation": "capture.screenshot",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "3dcca308-6376-4737-9d0e-2f9bf6f060e3",
+          "operation": "ocr.read",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0564",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: la captura o la lectura no se verificaron o el final no fue fiel.",
+      "observation_note": "Turno revisado: captura aprobada por la raíz, completada y verificada; ocr.read completada y verificada; sin final publicado (la advertencia honesta sobre las imágenes fue vetada como fallo afirmado); cero violaciones; pins intactos; la captura y el texto leído quedan privados.",
+      "final_sha256": "d4bdbced9a4e60d80369f37ac236a1ef68c72cb438920140ddadface7e9f9786",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-01\\EXIT.json": "8e81ebf1e61c9c8159829b67ebc3c76d8e58f26b44b52564ac8f69853b2b3053",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-01\\RESOURCES.json": "242344aaf158f6cd02bee5d4825a0d2492c69ec7ba6249b4282bbb14c27e39af",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\profile-owner-01.json": "202be9fa907fb9a64122409f99209df1d07cc5dd3987c8cf05119066cce7a964",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-01\\PREREG.json": "527b1e37a525c08054745ad82fd7ac5556da4f91324fd8caa56da98d03d2f54d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-01\\capture\\events.jsonl": "08c1bf9b0d8ca3527ffed9e27afd5a4ccfa06c7a4545bea7826c9f2676d1d0ed",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-01\\turns.jsonl": "90524961a5c8ffa83494a7893df31441ae5f9ea7d627b61c894132f996277c8f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\fixture-01.json": "19924ea0e6cb90aed748770aede04a81405f64d19801b182827c9b69c328bb43",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-01.json": "2e5e1ea44f6cd6f5875ffe3c34cecd5194ca126177cc56db78fbcfc9690001f0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-prelaunch-01.json": "d8d25c65be69f2ec443d7da4ceb4d4880973cea66bdfed86329aacf5e583e499",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-01\\case-observations.json": "56d77c6b305689958095d2b87008f5a3a69ca3f7af268807d2a708fae5f9775d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-01\\journal-before.json": "35286cefd14afe53be3136ca8785418b90509464751d16a5f9e6d6a7932c8d2a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-01\\journal-after.json": "8b5672d9554573dc9384b26e936743018e5d1d1bab3b2da71ce4c253f5049ce6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "754eda80bcebe681614c1554f8f19a22619bd30557f57224787a3e9cd8be9590"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "7b8977ca-94e4-47e8-93d5-bf87d2f509d9",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "f34606dc-e0f1-4026-9d3c-9529eb5f557d",
+          "operation": "capture.screenshot",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "9dcec1f7-0793-4065-aa03-367c5225eaf2",
+          "operation": "ocr.read",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "H0716",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Capturó la pantalla con revisión, leyó el texto reconocido y lo transcribió con fidelidad.",
+      "observation_note": "Turno revisado: capture.screenshot propuesta sin argumentos, aprobada por la raíz, completada y verificada; ocr.read sobre esa captura completada y verificada; una confirmación; cero violaciones; pins intactos; la captura y el texto reconocido quedan en recibos privados y no se publican.",
+      "final_sha256": "d4bdbced9a4e60d80369f37ac236a1ef68c72cb438920140ddadface7e9f9786",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-02\\EXIT.json": "7205aa9dcb69857493448a02b1b3ce6467487372a898f85b20ab1da4f9cd4d7b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-02\\RESOURCES.json": "235026d29cd14cb2fb5b9f3dfcbdcd38ee85d2228ad611c2226363dba5d05280",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\profile-owner-02.json": "6f6f562f28f89f40c137fe8b7370ff2f0ec06729ac1460feffa4bff98f0096cb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-02\\PREREG.json": "f56e7cbf67132678991a08b19a3df5047252528094f20fb18f34e70af64b21d4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-02\\capture\\events.jsonl": "b3026881c5acd6f210fabc6426c9e22ed1506cba75a7b213a21f0a6477ef4877",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-02\\turns.jsonl": "7d3546c40f35c7fa7677cd2f4bd4fa4316d9ef260b9870e5c7fde22bc5836745",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\fixture-02.json": "3209ee19a7fcd0f06d61afb1fa6af1a3782a5332ce8dd2894321a4a64d932a43",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-02.json": "d111adda863733e3cc9f29ccdc8198f979111331a819ef4367940389a4dbf506",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-prelaunch-02.json": "e5904172cbdb84a2d101dfd782a3ffef7c16eec84ced37cb4a417e6b0a5bcc31",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-02\\case-observations.json": "2ba4e7d0fe6052c39fe71e2983d490f3626f7dae74beeec0e8d2c6e962cbf527",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-02\\journal-before.json": "dda6127ed0bbe46a76f4241245e429870d89a003d6c5975ffe4fa2630b23ed98",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-02\\journal-after.json": "8dc4bb751e0b30ed9cce6a645800c7160b81fc7729081a5d3cf89b0a9021eb10",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "83a04be8385a848f2d92c2b57ea6418b7897ffdf00e7cfaf4ab0c8aeb694632a"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "9dc4d8e0-34fa-4877-b3aa-13938cc7434f",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "f9ce76f0-f59e-4a0f-b685-a1880c7f574e",
+          "operation": "capture.screenshot",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "e1300006-86a7-4dd0-b6fe-a8ca6fa4d7ff",
+          "operation": "ocr.read",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "screen1417-dev-01",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: la captura o la lectura no se verificaron o el final no fue fiel.",
+      "observation_note": "Turno revisado: captura aprobada por la raíz, completada y verificada; ocr.read completada y verificada; sin final publicado (la advertencia honesta sobre las imágenes fue vetada como fallo afirmado); cero violaciones; pins intactos; la captura y el texto leído quedan privados.",
+      "final_sha256": "d4bdbced9a4e60d80369f37ac236a1ef68c72cb438920140ddadface7e9f9786",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-03\\EXIT.json": "21ed6124943bb46bcbbf113a305724d8866d1dc2c5bd3179d26a2406d9826c98",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-03\\RESOURCES.json": "68b3b5b443021ca6aa7926743dab566271f2f0a5f395025b96152277d475c12d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\profile-owner-03.json": "2b3e5be23c703ff5558528261b2b361c6cf0c7f137de76b78f3e273293c148c5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-03\\PREREG.json": "666f7aa49185e21e3eeffb0ad7f1753497aabb4c39aa502d54e120e07903d4e0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-03\\capture\\events.jsonl": "3d11788a21ceb9c3156a1c05f8f22ac63f70837f02d974bf190d41c6c33d2731",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-03\\turns.jsonl": "de9ccbcd9b2ac5a610715f44b976bee3fcf54efe4b7c0a9dfb23d29b6f713cb7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\fixture-03.json": "57e3ccf8ad84b5a6bb16dc64aa931e2f7aaa3af726ffc39f015ca8f99dc43142",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-03.json": "f1c901cc2492445e362e3a7357801239bc9763c63f37d7bf5df042693c77dd2b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-prelaunch-03.json": "3f8971c1e2e7e78420f82b31a7e5fe3397a120c637c4ec83a7c1473563563c6e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-03\\case-observations.json": "3058cdb081312a911cc399fa41fa5c705383da42cf72628398fe8cdb78d75865",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-03\\journal-before.json": "5b96caffd0b2d5494f0286254e3035b6a8263f62880d0b9f1080f8d74b90f3cf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-03\\journal-after.json": "2eaf57e06eada0e3c3513a79739e72fc441504ddc9168ab4e96de3645170a3f3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "a107a6fb70d940e832885aaf2b9c704265692fe03977ccbc146bfd0e8b3168f0"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "38d77444-2e94-439f-a2b5-5f87c96d3369",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "1b156102-680b-4a7a-8be5-7212263b7271",
+          "operation": "capture.screenshot",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "7e04a91c-24f9-465a-9f80-c3277ac3c112",
+          "operation": "ocr.read",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "screen1417-dev-02",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: la captura o la lectura no se verificaron o el final no fue fiel.",
+      "observation_note": "Turno revisado: captura aprobada por la raíz, completada y verificada; ocr.read completada y verificada; sin final publicado (la advertencia honesta sobre las imágenes fue vetada como fallo afirmado); cero violaciones; pins intactos; la captura y el texto leído quedan privados.",
+      "final_sha256": "00afb3f764065c842917a53bea9333329ed23054610fc4cf883957bb5aa4ff34",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-04\\EXIT.json": "d3df239324b1f4216768645f7bda4fe4957f82bb56328a28f645b993f9caa0c4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-04\\RESOURCES.json": "f463101b79c5f8b6399b5c9a5b5a4fc41986cffcc5ff0d8f814c62c89162a2d0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\profile-owner-04.json": "72f72abf89fcf53ac025b8b31d1592cee1e7af3938837f98cdc1c5f6d280cc90",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-04\\PREREG.json": "ea4281cf49a78ff83dc1561847eeebff5fea2531ea7f0af628f519f91330a037",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-04\\capture\\events.jsonl": "a58be0497612d41cab618015baceebd8479ee78efbc146c7c0d94c32ec258375",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-04\\turns.jsonl": "4b862fe088311ea2f6b21e3865598b909271c753ea912c594a20ebeb5a220b75",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\fixture-04.json": "db6a0eda8088d5bddce91ef1734e861353557c5680900e543fe7c1533fbac3da",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-04.json": "c642ba323df33fc3426018f5dd88a30d046c80cc10cd058d096abf88504ef141",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-prelaunch-04.json": "a12510a7b4fb9bdce6823817a8668de1f556ad14d4018d01d75b22b85c67a3a3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-04\\case-observations.json": "6f57684f5db91fd3686ec1ff30a74acda14c87d672b410702da4166a35934675",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-04\\journal-before.json": "4d2ca7221c6ac02f2849ea7c9ec4d6d1fe04407e6691df7c847354daf8fc9990",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-04\\journal-after.json": "aaf897bd21a838d61c9cb8bf3f34832445b8bf902495650968f3867cc52d5182",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "b1dc9099a3a085d07e1af83002577835582055e52463a668d5842265b34a749b"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "23bf5fb0-d5f0-44b6-87f5-ece0948a3c12",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "bb6962bb-f89f-4dc3-afee-93e962d26e0f",
+          "operation": "capture.screenshot",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "09b2b304-d115-4c72-96c7-3e5fe688e75b",
+          "operation": "ocr.read",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "screen1417-dev-03",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: la captura o la lectura no se verificaron o el final no fue fiel.",
+      "observation_note": "Turno revisado: captura aprobada por la raíz, completada y verificada; ocr.read completada y verificada; sin final publicado (la advertencia honesta sobre las imágenes fue vetada como fallo afirmado); cero violaciones; pins intactos; la captura y el texto leído quedan privados.",
+      "final_sha256": "1aec2e58f7450005524ad41bd3ef43da0dc72cd1973baf0b9f2f4ff81dd4458f",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-05\\EXIT.json": "8a62355c55ed8790609692febe2c09466ba0284fa9f38198302d32d2342444a4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-05\\RESOURCES.json": "e0d54e58c0d701bd53fe105405eef9be77c28ce0753c8dd6935b8819d5db7ba4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\profile-owner-05.json": "67246f1dcf87a598c1806121108764c5e428d07ec7e168a135932cf042037d61",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-05\\PREREG.json": "ff0275a2e784525f2a561651268f609c4594a482ba7c46ad5b81ae483fed351c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-05\\capture\\events.jsonl": "3309fe3e2daadfc576f6705807e2d15e9b2fabe14874c0876b5554d935c52d09",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-05\\turns.jsonl": "bb0dd7eeb3a8c30b68e7dd18069ff645ca1d80d6e11c5c8e9cc9221eabc2953e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\fixture-05.json": "8d922c5a74806874f78bda2b199a1d63295bf65f29bedf5679196e567c9177cd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-05.json": "35ea4290c73f93182ea54beaa7437228a3666e198096735e8e42f88addb3ca90",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-prelaunch-05.json": "909de6ea83f9fa2cfa90ef0c379981c1a03eb32bd2e2ec8f0c131d426b8fcab0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-05\\case-observations.json": "4bba2f76e01f9a1cb3b06705bfbf936fe05d46666dc5d626f8d92d258e2a49cf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-05\\journal-before.json": "82e49d6a9986575b3ded03816ee9aa91192a084ee109943c2d9532fd72a8982a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-05\\journal-after.json": "9e443d9dd82de75fa82ce895f52c187ab2f73d46cba1309277d27cae6d4b56c4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "d54626f30e308d8a630abcf9544f0a32417714e6bc160b480a04b70042fabf89"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "23d53c66-2795-4c23-881d-543b96b54c3b",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "ac9d9423-9805-4f6e-bc19-6a1f50d76fb5",
+          "operation": "capture.screenshot",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "cda2ee46-01a1-42d6-9bf3-7ba3267fa811",
+          "operation": "ocr.read",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "screen1417-dev-04",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Capturó la pantalla con revisión, leyó el texto reconocido y lo transcribió con fidelidad.",
+      "observation_note": "Turno revisado: capture.screenshot propuesta sin argumentos, aprobada por la raíz, completada y verificada; ocr.read sobre esa captura completada y verificada; una confirmación; cero violaciones; pins intactos; la captura y el texto reconocido quedan en recibos privados y no se publican.",
+      "final_sha256": "d4bdbced9a4e60d80369f37ac236a1ef68c72cb438920140ddadface7e9f9786",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-06\\EXIT.json": "c79d9eb17c8106e7a836a65b19f3a88f7bf065b473f9e9d0a171c5fffca6576a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-06\\RESOURCES.json": "6af268e4c24dc8a2735ef9b7a3ffe252a68c3e95df9cbd68cf862d8feff8cdb4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\profile-owner-06.json": "8d919b90302ef0c9a55c2744248005510b1fb537689a000e61c389eab5ccee3e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-06\\PREREG.json": "0cbf639eae7b9ed9ae6e44eb9b02e6666e94d5bbd1981551d68e44612cbdadbb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-06\\capture\\events.jsonl": "6a65becb1996a174acb6f507d0950701e5dc798e9f629acfc02c0b88a6d94796",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-06\\turns.jsonl": "db814ab840cb684159b86688ca5aeca8e4bf8e10d9fe007299d26cc4cc824b11",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\fixture-06.json": "b5d392ee48bdf497a51e7264f76c95c24c278d2bebb88e4908ce2794af20c114",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-06.json": "b32f1be39b531874ddc0db9ca57d8acd46bb85eaccaf28b44689445c0017e715",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-prelaunch-06.json": "63eb47775d6fbad61f8775de2dcf57eb3db7211dfd98ca857695b11101bafa6e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-06\\case-observations.json": "5ebf2534952182ecbf83ce8c27cf7c3b121129c603a5a2e764bf5d7fc89b3209",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-06\\journal-before.json": "ad012281c5c7a5fa1eb3cdc33fcb6d9e8a45e6498efeb0775f02de3dae57ede7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-06\\journal-after.json": "bb0f80be6d1fa0ff9cce442445eccc8e621b7bb03ed9406e2b16e6599e2fdf93",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-06\\journal.snapshot.jsonl": "c880dd282ce972472880a45e098f258b51438f7edfc3f4d209f95b9854264010"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "22fac20f-c2b6-46e8-b556-43b2154b2ec2",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "32632f5c-6b0c-40ef-b5eb-cc658be4d47c",
+          "operation": "capture.screenshot",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "7e3b41da-7a58-45f4-9f0b-932a91760f04",
+          "operation": "ocr.read",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "case_id": "screen1417-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "7b54f82d0a794ca4694ed8a1d1681b2efd8831b924bf0fde5dd4e5e9a980ed0c",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-07\\EXIT.json": "73e91be0d26e1f899a271874265dc66b564540431ed2953b50476114cec11cca",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-07\\RESOURCES.json": "c74dc4ccc7972426b7d179b1b646d82e188ef53d6b4a9b37814d52e9ec6f4080",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\profile-owner-07.json": "5306dce5e034c1aa9c8a4aedbf7bd989b84ec08af989ad496b0720fa9f67aa31",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-07\\PREREG.json": "74c9023ac48afd7c83c67a17317021667bc9bad41d21c050e098ec0f57c72734",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-07\\capture\\events.jsonl": "2fc3d0d06998857397f1090ed7f7ab6aeceec781e99d6c8b1d946216d88b80b5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-07\\turns.jsonl": "b092d7dd52883ab0f187bab9bb38314674bbba95edeac83bd2e42466a964a6f1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\fixture-07.json": "35b86d13d66692e0904ec22ad5e6821547d08e6e7f73eb3c7c02f129a99dd69c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-07.json": "59997aec28b92412e4630056ffe65b7365d456e3b8f568a6f44599ceb74b8e2b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-prelaunch-07.json": "1e989e16410b9ddda8fc7e75fcd053d591642a804296104f31acaa3a7bf62f3c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-07\\case-observations.json": "4fed709a1bfb3fe97b6ee163cf5b3b52b34120b6ee2038ff5b7daf46ad386980",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-07\\journal-before.json": "f5e6452a6f6c0696489ece6cd38ae14d2a2cb419772580531f7279e370777037",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-07\\journal-after.json": "29d00fd94cbec4f539c44186edbb924d0c770f6fac6780588ce1920e928812d8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-07\\journal.snapshot.jsonl": "eea22ab3a79a20ea726eb935eae99f93979b5ef0f91ea4d48ba19a41aee3967c"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "834fea2e-01d5-4e1f-8c77-d5a09b670313",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "case_id": "screen1417-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "8f7af34ad27a3ef7bc79a06f65d68a67b09d8fdcb3e9df1a3270e8691a4ee38e",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-08\\EXIT.json": "9c8f1ea56d8795a690e501b1f1365e402e57442114ce2c518f31cccf71e75477",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-08\\RESOURCES.json": "956be566e196f991b24bf9fc1646c614384573ef18eaadddea63715c275110ce",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\profile-owner-08.json": "85435609e22b196fa89c4634b5ea1943c6968bac1b179e49ad137207d9fdbd19",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-08\\PREREG.json": "a7ce2ddd1035c95d8f9e844f454a76db4ffbaa397beac69bb3cc3f76b98ecbd0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-08\\capture\\events.jsonl": "99756f121c2addaec988b3d06017d9f8d8e5971828cbc31f84b03fc12fda01e2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-08\\turns.jsonl": "baf3dfc9528a2472b7d2c1b46cc196e35aac59e9f3332c584cf605bd3af94108",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\fixture-08.json": "01b30f2bf234a9bec063b4155a5abe5833bc24eb4fa87512934069d46a82c630",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-08.json": "d620ddf4cedadfa0a64c785f3bead4a542a7610472fd67d8688947ded78e9ce9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-prelaunch-08.json": "ff33e233baf7adba1fa431874a8329f4b6e1a79a0d44879e729437b06fcebfdb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-08\\case-observations.json": "af274f33079bb9e7df2745eea624bf49eb55b844415f691023d645f328bc2f42",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-08\\journal-before.json": "dd88c15f8bda651f3ecb72121a2587a28422292e015ffe58609d17820e48dc38",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-08\\journal-after.json": "262e144e627701361034744e8162ad83859b083d4b3a94fc2f64440cd4c276bf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-08\\journal.snapshot.jsonl": "d85f7742d68017e57aed08f2dc5d07f73e4a2fbdc53fcc9e779cbed3d6c1b6fa"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "347ad87d-aca1-45d4-8373-835e42fb0399",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "case_id": "screen1417-boundary-03",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "daa1d9a773822d258b1cb827618e17c7aa60012a6dfa5d04ef6a60e45a263356",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-09\\EXIT.json": "6e257c11c23b44d6f0685e185070dee6667bb7f4838522921c5e0948d7b24c06",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-09\\RESOURCES.json": "8d197410b210729d7d7acac71f1c254f2b72133470b7896a309988c20d4e5c32",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\profile-owner-09.json": "e6e71f8d665542b97fd9d12b1fccf2c441ab90c47138ef81daebb243876c0e3a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\results\\case-09\\PREREG.json": "55d3028fddbc20e056e9bc02f0e62cc2fa5fc31cb6eef61224733f46f9027f3e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-09\\capture\\events.jsonl": "c448e7f0f764851fe569c783bbd6cabccde98498ac6c1a09ec8a44752e2ed827",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-09\\turns.jsonl": "73c82464d9302d196bbf40b2a6b0b157f9797ee96fd5e2f9a01a0db378bdcca9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\fixture-09.json": "6b5a9b301ffe7c08f07c4dd4f94fed8c51418c59fd069bcb92f9a2af8793cdcb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-09.json": "9c1ff7c928e4997fdbc3caf0b3544b7380217f96459023a7398fdefd23ce9646",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\context-prelaunch-09.json": "dd2f61fc977d1716f09dc473618482c44f08b8489f788c3c487d155aab86a67e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-09\\case-observations.json": "20c583307a91c0b41138d9e542a7a6985ee1233e7ce18f400548dc7bf474e814",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-09\\journal-before.json": "55e68f34ee485d0110d9327fff848cd74531d80870f49c27f8cab9242ef41996",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-09\\journal-after.json": "16f40bec94be2055da28a811d10551b8f908d4c4c761dc5cca2497fba0291e63",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-screen1417-instrument-v1\\private\\run-09\\journal.snapshot.jsonl": "d6ca7a813f5fd3b1d45d1faa067fa00e9d844c9b0ec7b6ea648b4eee195944f2"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "67e06e91-3d0d-4737-b43c-502ba03f88cc",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "SCREEN1417: 10 ejecutados, 5 aprobados, 5 fallidos, 0 créditos (índices []); Pantalla, captura e interpretación visual 4/19. Siguiente: categoría por masa abierta según CONDICIONES.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

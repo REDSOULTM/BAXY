@@ -1,0 +1,156 @@
+commit ec963d3efbc33d9ee2d38e47b29c4aeedb76986f
+
+C03: asking what is on the screen or to describe it reads its text and says images are out of reach (SCREEN1417)
+
+«qué hay en la pantalla» (H0164), «describime la pantalla» (H0564), «leé la pantalla» (H0716) and the forms «qué ves en mi pantalla», «describe lo que ves», «leeme la pantalla» reached no reader: the implicit screen reading required a read verb plus an object noun, and the describe forms pointed at vision.describe, which needs a vision provider (HTTPS endpoint and model) that this PC does not have.
+
+effect_intent: a bare «leé/leeme/read (la|mi|the|my) pantalla|screen» and the screen-content questions and describe forms («qué hay/se ve/aparece/ves/estás viendo en (mi|la) pantalla», «describime/describe/describí la pantalla | lo que ves», «what do you see on my screen», «describe what you see») resolve to capture.screenshot + ocr.read; the phone/car and «cómo puedo» exclusions keep applying; the speech-act gate accepts describime/describeme/describí/describila.
+llm.compose_user_message: when the request asked what is on the screen or to describe it, the reading instruction says first that images cannot be described, only the screen text read, then reports the lines; the grounding stoplist is reduced to reading, position and connective words so invented interface descriptions («una ventana de configuración del sistema») are vetoed.
+
+No .NET change. Offline probe: fourteen forms resolve, nine boundaries stay inert, grounded drafts pass, three invented descriptions are vetoed. Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index cde90cbc..20882209 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -9079,6 +9079,8 @@ def _is_direct_request(text: str) -> bool:
+         # to the front»: focus heads are request speech acts too.
+         r"trae|traeme|traer|lleva|llevar|bring|enfoca|enfocame|enfocar|focus|"
+         r"switch(?=\s+to\b)|"
++        # SCREEN1417 «describime la pantalla», «describí lo que ves».
++        r"describime|describeme|describi|describila|describilo|"
+         r"cierra|cerra|cerrar|cerrame|cierrame|cierres|close|envia|enviar|enviale|enviales|"
+         r"manda|mandar|mandale|mandales|"
+         r"arma|armar|marca|marcar|graba|grabar|record|stage|"
+@@ -12577,14 +12579,36 @@ def _review_input_and_capture_effects(
+                 r"describe(?:me)?|describe it|que hay en la imagen)\b",
+                 priority=1,
+             )
+-    implicit_screen_read = (
++    # SCREEN1417 «leé la pantalla», «qué hay en la pantalla», «describime la
++    # pantalla», «qué ves en mi pantalla»: without a vision provider the truthful
++    # reading of a screen is its recognized text, which the composer frames as
++    # what it can read. The phone/car exclusion below still applies.
++    bare_screen_read = (
+         _head_is(head, _READ)
+-        and _has(folded, r"\b(?:pantalla|screen)\b")
+-        and _has(
+-            folded,
+-            r"\b(?:mensaje|message|error|texto|text|lo que|what)\b",
++        and _has(folded, r"^[¿?¡!\s]*(?:por favor\s*[,:]?\s*)?(?:lee|leer|leeme|read)\s+(?:me\s+)?(?:la|mi|the|my)\s+(?:pantalla|screen)[\s?!.]*$")
++    )
++    screen_content_question = _has(
++        folded,
++        r"^[¿?¡!\s]*(?:(?:decime|dime|contame|cuentame|tell me)\s+)?"
++        r"(?:que|what)\s+(?:hay|se ve|aparece|ves|estas viendo|is|is there|do you see|are you seeing|can you see)"
++        r"(?:\s+(?:ahora|now))?\s+(?:en|on)\s+(?:mi|la|tu|my|the)\s+(?:pantalla|screen)[\s?!.]*$|"
++        r"^[¿?¡!\s]*(?:describe|describi|describime|describeme|describi?la|describila)\s+"
++        r"(?:(?:mi|la|my|the)\s+(?:pantalla|screen)|lo que ves(?:\s+(?:en|on)\s+(?:mi|la|my|the)\s+(?:pantalla|screen))?|"
++        r"what you see(?:\s+on\s+(?:my|the)\s+screen)?)[\s?!.]*$",
++    )
++    implicit_screen_read = (
++        (
++            _head_is(head, _READ)
++            and _has(folded, r"\b(?:pantalla|screen)\b")
++            and _has(
++                folded,
++                r"\b(?:mensaje|message|error|texto|text|lo que|what)\b",
++            )
+         )
+-        and not _has(
++        or bare_screen_read
++        or screen_content_question
++    ) and (
++        not _has(
+             folded,
+             r"\b(?:como|how)\s+(?:puedo|podria|can i|could i|to)\b",
+         )
+@@ -12599,13 +12623,13 @@ def _review_input_and_capture_effects(
+             matches,
+             folded,
+             "capture.screenshot",
+-            rf"\b{_READ}\b",
++            rf"\b{_READ}\b|\b(?:que|what|describ\w*)\b",
+         )
+         _append(
+             matches,
+             folded,
+             "ocr.read",
+-            r"\b(?:pantalla|screen)\b",
++            r"\b(?:pantalla|screen)\b|\blo que ves\b|\bwhat you see\b",
+             priority=1,
+         )
+     if context_capture and _has(
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index bb584c51..47fa235c 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4398,24 +4398,23 @@ def _contradicted_brightness_extreme(text: str, seen: dict) -> str:
+ # the recognized text (folded 4-letter stems): the act of reading, the screen,
+ # lines and text, and the ordinary connectives around a quotation.
+ _OCR_FRAMING_STEMS = frozenset({
+-    "pant", "text", "lect", "leid", "leyo", "leer", "lei", "reco", "line", "cont",
+-    "mues", "most", "apar", "dice", "dijo", "vist", "visi", "escr", "pala", "cita",
+-    "capt", "imag", "vent", "sigu", "incl", "tien", "encu", "esta", "ests", "hay",
+-    "prin", "arri", "abaj", "izqu", "dere", "part", "zona", "area", "resu", "titu",
+-    "boto", "menu", "barr", "pest", "docu", "pagi", "codi", "edit", "prog",
+-    "scre", "read", "show", "disp", "cont", "line", "says", "said", "reco", "visi",
+-    "quot", "word", "foll", "incl", "appe", "wind", "capt", "imag", "titl", "butt",
+-    "tabs", "bars", "docu", "page", "code", "edit", "prog", "here", "what", "with",
+-    "this", "that", "from", "have", "there", "these", "those", "also", "like",
+-    "entr", "sobr", "desd", "hast", "tamb", "como", "pero", "para", "porq", "cuan",
+-    "dond", "algu", "otro", "otra", "todo", "toda", "cada", "much", "poco", "vari",
+-    "nume", "cifr", "fech", "hora", "nomb", "ruta", "arch", "carp", "coma", "come",
+-    "mens", "avis", "erro", "adve", "list", "tabl", "colu", "fila", "form", "camp",
+-    "opci", "ajus", "conf", "sist", "apli", "prim", "segu", "terc", "ulti", "final",
+-    "veo", "puedo", "pued", "logr", "lleg", "reci", "term", "ento", "lueg", "desp",
+-    "ante", "junt", "cerc", "lado", "medi", "cent", "lado", "mism", "prop", "solo",
+-    "unic", "clar", "legi", "borr", "peque", "gran", "corto", "larg", "brev",
+-    "ella", "ello", "entre", "amon", "such", "them", "they", "some", "seve", "abou",
++    # reading, the screen, lines, quoting
++    "pant", "scre", "text", "lect", "leid", "leyo", "leer", "lei", "reco", "line",
++    "mues", "most", "show", "disp", "apar", "appe", "dice", "dijo", "says", "said",
++    "vist", "visi", "escr", "pala", "word", "cita", "quot", "capt", "imag", "foto",
++    "pict", "desc", "cann", "uniej", "pued", "puedo", "veo", "cont", "incl", "tien",
++    "encu", "esta", "hay", "ests", "sigu", "foll", "here",
++    # position words about the screen
++    "prin", "arri", "abaj", "izqu", "dere", "part", "zona", "area", "medi", "cent",
++    "lado", "junt", "cerc",
++    # connectives and quantifiers
++    "what", "with", "this", "that", "from", "have", "there", "these", "those", "also",
++    "like", "such", "them", "they", "some", "seve", "abou", "amon", "entr", "entre",
++    "ella", "ello", "sobr", "desd", "hast", "tamb", "como", "pero", "para", "porq",
++    "cuan", "dond", "algu", "otro", "otra", "todo", "toda", "cada", "much", "poco",
++    "vari", "solo", "unic", "mism", "prop", "prim", "segu", "terc", "ulti", "final",
++    "lueg", "desp", "ante", "ento", "term", "logr", "lleg", "reci", "clar", "legi",
++    "borr", "peque", "gran", "corto", "larg", "brev", "resu",
+ })
+ 
+ 
+@@ -11513,6 +11512,23 @@ class LlmRuntime:
+                 "interpretación, sin avisos, sin palabras que no estén en seen.text "
+                 "o en el pedido."
+             )
++            if re.search(
++                r"\b(?:describ\w*|ves|viendo|see|seeing|hay en|is on|what'?s on)\b",
++                _reading_fold(user_text),
++            ):
++                # SCREEN1417 «qué hay en la pantalla», «describime la pantalla»:
++                # no vision provider is configured, so the honest scope is the
++                # text this reading recognized, said before the lines.
++                instruct(
++                    "\nThe person asked what is on the screen or to describe it. "
++                    "Say first that you cannot describe images, only read the text "
++                    "on the screen, and then report the lines as above."
++                    if response_language == "en"
++                    else "\nLa persona preguntó qué hay en la pantalla o pidió "
++                    "describirla. Di primero que no puedes describir imágenes, sólo "
++                    "leer el texto de la pantalla, y después informa las líneas como "
++                    "arriba."
++                )
+         if dense_fact_contract:
+             instruct(
+                 "\nEste resultado contiene muchos hechos obligatorios. Usa una "

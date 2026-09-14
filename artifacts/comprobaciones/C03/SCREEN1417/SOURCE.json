@@ -1,0 +1,15 @@
+{
+  "schema": "c03-screen1417-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (lectura implícita de pantalla ampliada a «leé la pantalla», «qué hay/ves en mi pantalla», «describime la pantalla», «describe lo que ves»; cabezas describime/describí en la compuerta de acto de habla) y src/baxy_mind/llm.py (advertencia honesta sobre imágenes en la instrucción de lectura; lista de encuadre del fundamento reducida)",
+  "patch": "artifacts/comprobaciones/C03/SCREEN1417/SOURCE.patch",
+  "commits": [
+    "ec963d3efbc33d9ee2d38e47b29c4aeedb76986f"
+  ],
+  "build": "BUILD1417 (C03-repairs1417-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "Las preguntas por lo que hay en la pantalla y los pedidos de describirla o leerla sin objeto no llegaban a ningún lector; las formas de describir apuntaban a vision.describe, que exige un proveedor de visión (endpoint HTTPS y modelo) ausente en este PC.",
+  "change": "Esas formas resuelven a capture.screenshot + ocr.read; cuando el pedido pregunta qué hay o pide describir, el final dice primero que no puede describir imágenes sino leer el texto y luego informa las líneas; la lista de encuadre del fundamento se reduce a palabras de lectura, posición y conectivas. Sin respuestas fijas.",
+  "measurement": "SCREEN1417: 10/10 ejecutados, 2 lecturas simples aprobadas, 5 formas de pregunta o descripción sin final, 3 límites aprobados, 0 violaciones; 0 créditos. SCREEN1417 sobre BUILD1417 (mente: lector para las preguntas por el contenido de la pantalla y las formas de describir, con advertencia honesta sobre las imágenes): todas las formas planifican ya la captura revisada y la lectura; captura y ocr.read completadas y verificadas en los siete casos. Las dos formas de lectura simple («leé la pantalla», «leeme la pantalla») publicaron lecturas fieles (tres líneas tal cual, número de líneas correcto). Las formas de pregunta y descripción no publicaron nada: la lente de fallos del compositor vetó cada borrador como asserted_failure porque la advertencia honesta («no puedo describir imágenes, sólo leer el texto») se lee como un fallo afirmado sobre una misión exitosa, y ReversesSuccessfulResult de la App habría hecho lo mismo. Siguiente: esa cláusula de alcance queda enmascarada en ambas lentes de fallos para una lectura de pantalla verificada (SCREEN1419).",
+  "credits": 0
+}
