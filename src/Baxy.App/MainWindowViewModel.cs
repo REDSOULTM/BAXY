@@ -641,6 +641,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return !allowVerifiedReadPrefix || execution.CurrentStep.Operation != "app.close";
         }
 
+        if (execution.Steps.Count == 2 && execution.NextIndex == 0
+            && execution.Observations.Count == 0 && execution.CompletedMessages.Count == 0
+            && execution.CurrentStep.Operation is "capture.screenshot" or "capture.active.window"
+            && execution.Steps[1].Operation is "ocr.read" or "vision.describe")
+        {
+            // SCREEN1403 «leéme lo que dice la pantalla»: the reviewed capture is
+            // the first step; the read that follows it needs no confirmation
+            // and binds the capture the reviewer approved.
+            return true;
+        }
+
         // CompleteStep records completed, verified responses. Failed/uncertain
         // steps retain a boundary or replan; Capture rejects replans separately.
         if (!allowVerifiedReadPrefix
