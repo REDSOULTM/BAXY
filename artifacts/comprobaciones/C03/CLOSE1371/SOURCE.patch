@@ -1,0 +1,33 @@
+commit 381e30ad49e244cb8958eefe6d1b5e52b1563265
+
+C03: a failure final that says the application has no open window is not a reversed polarity (CLOSE1371)
+
+With the window_not_found cause fact, the narrator wrote «No se pudo cerrar Steam porque no tiene ninguna ventana abierta» and the failure-polarity veto rejected every draft as reversed_polarity because it matched «abiert…» regardless of negation; the turn ended in no_response.
+
+llm.compose_visible_defect: «abiert…» / «is open» counts as a success claim only when it is not negated in its clause («no tiene ninguna ventana abierta», «no está abierto», «is not open» state the absence).
+
+No .NET change. Offline probe only; tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 00d20c32..9d683c74 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -5421,7 +5421,14 @@ def compose_visible_defect(
+     if is_failure:
+         if _SUCCESS_OPENERS.match(stripped) is not None:
+             return "reversed_polarity"
+-        if re.search(r"abiert|\bis open\b", folded):
++        if re.search(r"abiert|\bis open\b", folded) and not re.search(
++            # CLOSE1371 «cierra steam» with no Steam window: «no tiene ninguna
++            # ventana abierta» / «no está abierto» state the absence, they do
++            # not claim the application is open.
++            r"\b(?:no|ni|ninguna?|nada|not|isn'?t|no\s+hay|sin)\b[^.;,]{0,40}\babiert|"
++            r"\b(?:is\s+not|isn'?t|not)\s+open\b",
++            folded,
++        ):
+             return "reversed_polarity"
+         if cause == "mission_failed" and re.search(
+             r"\bopened\b|\babrí\b|\babri\b", folded

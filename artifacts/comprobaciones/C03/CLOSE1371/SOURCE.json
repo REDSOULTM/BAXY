@@ -1,0 +1,15 @@
+{
+  "schema": "c03-close1371-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_CAUSE_FACT window_not_found: la aplicación no tiene ventana abierta ahora y nada se cerró)",
+  "patch": "artifacts/comprobaciones/C03/CLOSE1371/SOURCE.patch",
+  "commits": [
+    "381e30ad49e244cb8958eefe6d1b5e52b1563265"
+  ],
+  "build": "BUILD1371 (C03-repairs1371-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "CLOSE1369: con Steam sin ejecutar, window.resolve terminó window_not_found (failed, sin verificación) y los finales fueron veraces («No pude cerrar Steam porque no encontré la ventana»), pero la regla sellada exigía una lectura completada y verificada.",
+  "change": "Regla del grupo close_absent_app definida antes de sellar: exactamente una window.resolve terminada window_not_found es la observación de ausencia. Compositor: el hecho de la causa window_not_found dice que la aplicación no tiene ventana abierta ahora y que nada se cerró. Sin respuestas fijas.",
+  "measurement": "CLOSE1371: 10/10 ejecutados, 8 aprobados, 2 fallidos, 0 violaciones; 4 créditos. H0117, H0556, H0677 y H0679 acreditados con los dos pares («Cerrá Steam.», «Close Steam.»): con Steam sin ejecutar, el producto leyó las ventanas (window.resolve terminó window_not_found, la observación de ausencia declarada en la regla sellada), no propuso app.close, Steam siguió ausente y el final dijo el estado («No se pudo cerrar Steam porque no tiene ninguna ventana abierta. La aplicación no está activa.», «The application has no open window, so it cannot be closed.»). El intento 1 de esta tanda se apartó antes de adjudicar: sólo con el hecho de la causa, cada borrador decía «no tiene ninguna ventana abierta» y el veto de polaridad rechazaba «abiert…» sin mirar la negación (no_response); el veto ahora exime la apertura negada. Los dos límites de procedimiento y conocimiento fallaron por contenido como en CLOSE1369.",
+  "credits": 4
+}

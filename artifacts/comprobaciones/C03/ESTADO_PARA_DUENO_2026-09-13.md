@@ -1,3 +1,25 @@
+## CLOSE1371 — estado vigente 2026-09-14T07:34:07.290239+00:00
+
+Parcial: 8 aprobados, 2 fallidos, 0 sin ejecutar; 4 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 417/742 | 325 | 0 | >=291 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 287 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); CLOSE1371 añade 4. No se cuentan revalidaciones.
+
+Siguiente acción: CLOSE1371: 10 ejecutados, 8 aprobados, 2 fallidos, 4 créditos (índices [0, 1, 2, 3]); Cerrar aplicaciones y ventanas 15/20. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/CLOSE1371/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 208.74 s acumulados; pico GPU 3497.56 MiB; pico RAM 1867.22 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 10; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque CLOSE1371 precedente. -->
+
 ## CLOSE1369 — estado vigente 2026-09-14T07:15:11.035190+00:00
 
 Parcial: 2 aprobados, 8 fallidos, 0 sin ejecutar; 0 créditos.
