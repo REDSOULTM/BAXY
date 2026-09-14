@@ -1,3 +1,9 @@
+# BRIGHT1283 adjudicado — 2026-09-14T00:14:16.505660+00:00
+
+**362/742 cubiertos, 380 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 2b3ebefd500474ed142e4015af0943988cc94a39f14b7ddf636157ac58a79d5b. Primeras altas 24 h >= 236 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 38042a62 con BUILD1281 (sin fuente nueva). Primera medición de «Brillo y pantalla» (17 abiertos, 0 cubiertos; este portátil expone el brillo por WMI): 16 ejecutados, 4 aprobados, 12 fallidos, 0 créditos. Causa medida (BRIGHT1283/MEASUREMENT.json): sin lector determinista, el modelo aclara de más, devuelve el pedido como pregunta, pregunta la dirección ya dicha, lee el estado sin pedirlo o niega la capacidad. Adjudicación 6bd62c9cb49052153343a229a288d7304cfb736f3510db453bf96b14338ce1bd. Siguiente: BRIGHT1285 con lectores de brillo en la mente (gramática del volumen).
+
+---
+
 # DIALOGUE1281 adjudicado — 2026-09-13T23:50:46.730853+00:00
 
 **362/742 cubiertos, 380 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 5783cda473b7c05a2c1731dbe83eb3ea226792e3359cc7748473e2187a2496d9. Primeras altas 24 h >= 236 (+5).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7ccf9cb3 con BUILD1281 (mente: aclarador de referente sin verbo inventado ante un asentimiento; la aclaración de signos nombra lo recibido; DIALOGUE1281/SOURCE.json|SOURCE.patch; .NET sin cambios).

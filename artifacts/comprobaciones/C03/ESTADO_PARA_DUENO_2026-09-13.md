@@ -1,3 +1,25 @@
+## BRIGHT1283 — estado vigente 2026-09-14T00:14:16.505660+00:00
+
+Parcial: 4 aprobados, 12 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 362/742 | 380 | 0 | >=236 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–13 septiembre: 236 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); BRIGHT1283 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: BRIGHT1283: 16 ejecutados, 4 aprobados, 12 fallidos, 0 créditos (índices []). Siguiente: reparación causal medida (lectores deterministas de brillo que reflejan la gramática del volumen) en la tanda siguiente.
+
+Evidencia: `artifacts/comprobaciones/C03/BRIGHT1283/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 276.20 s acumulados; pico GPU 3497.56 MiB; pico RAM 1668.87 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 16; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque BRIGHT1283 precedente. -->
+
 ## DIALOGUE1281 — estado vigente 2026-09-13T23:50:46.730853+00:00
 
 Parcial: 10 aprobados, 4 fallidos, 0 sin ejecutar; 5 créditos.

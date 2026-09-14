@@ -1,0 +1,19 @@
+{
+  "schema": "c03-bright1283-measurement-v1",
+  "status": "measured_no_credit",
+  "measured_by": "root (Claude Fable 5.1)",
+  "candidate": "HEAD 38042a62 con BUILD1281 (sin fuente nueva)",
+  "panel": "2 lecturas + 5 ajustes relativos sin cantidad + 1 prohibición (literales), 6 variantes por grupo, 2 límites; turnos ordinarios; brillo fijado en 60 por la raíz y restaurado al del dueño (100) tras cada caso",
+  "environment": "Portátil (PCSystemType 2) con brillo por WMI (WmiMonitorBrightness, 101 niveles); system.settings.status/adjust/set en el catálogo; ningún literal de la categoría había sido ejecutado antes.",
+  "result": "16 ejecutados, 4 aprobados (H0496 «no bajes», «¿Cuánto brillo tengo?» con lectura verificada 60, «Dejá el brillo como está.», definición), 12 fallidos, 0 créditos.",
+  "causes_measured": [
+    "Sin lector determinista de brillo (resolve_explicit_effects y resolve_explicit_clarification_intent devuelven None): decide el modelo.",
+    "Lecturas: «qué brillo tengo» → aclaración de más («¿hablas de brillo de pantalla, de luz…?»); «mostrame el brillo» y «decime el brillo actual» → el pedido devuelto como pregunta.",
+    "Relativos sin cantidad: el planificador propone system.settings.adjust sin fundamentar la dirección dicha y la aclaración pregunta «cuánto y en qué dirección»; «está oscuro subí el brillo» → lectura de estado no pedida (violación); «subime el brillo» → pregunta que filtra «WMI»; «turn the brightness down» → niega la capacidad.",
+    "Prohibición: «no toques el brillo» → aclaración de más; «no bajes el brillo» y «dejá el brillo como está» correctos.",
+    "Límite de capacidad «¿podés cambiar el brillo?» → pregunta PC/móvil."
+  ],
+  "next": "BRIGHT1285 sobre lectores deterministas de brillo que reflejan la gramática del volumen (lectura → system.settings.status; cantidad dicha → system.settings.adjust; sin cantidad → preguntar cuánto conservando la dirección, regla del dueño H0027).",
+  "adjudication_sha256": "6bd62c9cb49052153343a229a288d7304cfb736f3510db453bf96b14338ce1bd",
+  "credits": 0
+}
