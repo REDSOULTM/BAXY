@@ -19,6 +19,11 @@ public sealed class MissionEngine : IDisposable
     private readonly IOperationResponseNarrator _narrator;
     private readonly Func<ConfirmationMode> _confirmationMode;
     private readonly SemaphoreSlim _executionGate = new(1, 1);
+    // SCREEN1403 «leéme lo que dice la pantalla»: captures produced under a
+    // confirmed capture operation, keyed by captureId → missionId. Reading that
+    // capture within the same mission is the consented purpose, not a second
+    // privacy decision; the engine's execution gate serializes access.
+    private readonly Dictionary<string, string> _consentedCaptures = new(StringComparer.Ordinal);
 
     /// <summary>
     /// Última autocorrección de este motor: afirmación, verificación que la
@@ -106,6 +111,14 @@ public sealed class MissionEngine : IDisposable
                     _confirmationMode(),
                     handler.Definition.Name)
                 : null;
+            if (policy == PolicyDecision.RequireConfirmation && IsReadOfConsentedCapture(request))
+            {
+                // SCREEN1403 «leéme lo que dice la pantalla»: the person confirmed
+                // the capture; reading that same capture in the same mission is
+                // the consented purpose, not a second privacy decision.
+                policy = PolicyDecision.Allow;
+            }
+
             ConfirmationBinding? grantedBinding = null;
             if (policy == PolicyDecision.RequireConfirmation)
             {
@@ -178,6 +191,18 @@ public sealed class MissionEngine : IDisposable
                 request,
                 outcome,
                 _privateEnvelopeAuthenticator);
+            if (grantedBinding is not null
+                && request.Operation is "capture.screenshot" or "capture.active.window"
+                && outcome.Succeeded
+                && outcome.Verified
+                && outcome.Result is { ValueKind: JsonValueKind.Object } captureResult
+                && captureResult.TryGetProperty("captureId", out JsonElement consentedCapture)
+                && consentedCapture.ValueKind == JsonValueKind.String
+                && consentedCapture.GetString() is { Length: > 0 } consentedCaptureId)
+            {
+                _consentedCaptures[consentedCaptureId] = request.MissionId;
+            }
+
             if (outcome.Retryable
                 && (outcome.Succeeded
                     || outcome.Verified
@@ -323,6 +348,21 @@ public sealed class MissionEngine : IDisposable
         {
             return false;
         }
+    }
+
+    private bool IsReadOfConsentedCapture(OperationRequest request)
+    {
+        if (request.Operation is not ("ocr.read" or "vision.describe")
+            || request.Arguments.ValueKind != JsonValueKind.Object
+            || !request.Arguments.TryGetProperty("captureId", out JsonElement captureId)
+            || captureId.ValueKind != JsonValueKind.String
+            || captureId.GetString() is not { Length: > 0 } id)
+        {
+            return false;
+        }
+
+        return _consentedCaptures.TryGetValue(id, out string? missionId)
+            && string.Equals(missionId, request.MissionId, StringComparison.Ordinal);
     }
 
     private static JsonElement BuildConfirmationResult(
