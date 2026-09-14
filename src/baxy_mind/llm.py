@@ -4616,20 +4616,6 @@ def _ocr_unsupported_terms(text: str, recognized: str, user_text: str) -> list[s
     return unsupported
 
 
-_SEARCH_FRAMING_STEMS = frozenset({
-    "enco", "resu", "busq", "busc", "fuen", "sour", "foun", "sear", "pagi", "page", "siti", "site",
-    "segu", "acco", "aqui", "here", "tien", "esto", "thes", "algu", "some", "pued", "cons", "chec",
-    "deta", "info", "mues", "show", "ofre", "offe", "enla", "link", "disp", "avai", "esta", "ther",
-    "sobr", "abou", "para", "with", "from", "that", "this", "como", "tamb", "also", "otro", "othe",
-    "vari", "seve", "prop", "prov", "list", "trae", "carr", "valo", "valu", "cifr", "figu", "exac",
-    "pron", "fore", "clim", "weat", "tiem", "toda", "mana", "tomo", "loca", "actu", "curr", "ciud",
-    "city", "regi", "zona", "area", "ubic", "reco", "sugi", "sugg", "remi", "refe", "encu", "hall",
-    "apar", "publ", "posi", "mult", "dato", "data", "dice", "dijo", "says", "said", "indi", "seña",
-    "sena", "menc", "ment", "nomb", "name", "titu", "titl", "resp", "answ", "cont", "incl", "trat",
-    "enco", "veri", "comp", "podr", "podi", "coul", "quie", "want", "mira", "look", "revi", "abri",
-    "open", "visi", "entr", "acce", "web", "inte", "onli", "mome", "ahor", "ya", "solo", "unic",
-    "teng", "teni", "have", "has", "sabe", "know", "segu", "sure",
-})
 _SEARCH_WEATHER_CLAIM = re.compile(
     r"(?:hace\s+(?:buen|mal|mucho|poco)\s+(?:tiempo|frio|calor)|"
     r"temperaturas?\s+(?:agradables?|moderadas?|altas?|bajas?|frescas?|calidas?|elevadas?|templadas?)|"
@@ -4664,18 +4650,18 @@ def _search_results_text(payload: dict) -> str | None:
     return "\n".join(parts) if parts else None
 
 
-def _search_unsupported_terms(text: str, results_text: str, user_text: str) -> list[str]:
-    """Content words of a search report that neither the results nor the request carry."""
+def _verified_search_results(situation: dict) -> bool:
+    """A completed, verified web.search whose observation carries results."""
 
-    def stems(value: str) -> set[str]:
-        return {word[:4] for word in re.findall(r"[a-z0-9]{4,}", _reading_fold(value))}
-
-    allowed = stems(results_text) | stems(user_text) | _SEARCH_FRAMING_STEMS | _OCR_FRAMING_STEMS
-    unsupported: list[str] = []
-    for word in re.findall(r"[a-z0-9]{5,}", _reading_fold(text)):
-        if word[:4] not in allowed and word not in unsupported:
-            unsupported.append(word)
-    return unsupported
+    if (
+        situation.get("kind") != "operation"
+        or situation.get("operation") != "web.search"
+        or situation.get("verified") is not True
+        or situation.get("succeeded") is not True
+    ):
+        return False
+    results = _merged_observed(situation).get("results")
+    return isinstance(results, list) and bool(results)
 
 
 def _search_unsupported_claim(text: str, results_text: str) -> str | None:
@@ -4828,16 +4814,11 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         # WEB1445 «qué clima hace hoy»: the results were forecast index pages and
         # the finals invented «buen tiempo, temperaturas agradables, poco viento»
         # or denied having any information. A weather claim must be quoted from
-        # a result and every content word must come from the results or the request.
+        # a result. WEB1447 showed that grounding every content word rejected
+        # honest prose («existen», «diferentes», «específica»), so the words are
+        # free and only the claims and the denials are checked.
         if _search_unsupported_claim(text, results_text) is not None:
             return "search_unsupported_claim"
-        if re.search(
-            r"\b(?:clima|tiempo|weather|forecast|pronostico|lluvia|llueve|llover|llovera|rain|temperatura|temperature)\b",
-            _reading_fold(user_text),
-        ) and _search_unsupported_terms(text, results_text, user_text):
-            # Word grounding only for weather lookups: a news report may summarize
-            # («destacan», «temas») and the WEB1271 finals stay valid.
-            return "search_unsupported_terms"
         if re.search(
             r"\bno\s+(?:tengo|dispongo\s+de|encontre|hay|pude\s+(?:obtener|encontrar))\b.{0,40}"
             r"\b(?:informacion|datos|resultados|clima|pronostico|tiempo)\b"
@@ -4961,10 +4942,12 @@ def _truncated_fact_word(text: str, facts: dict) -> bool:
             # not a truncated «reminder.create» (TIME1189/012), and «address»
             # is not a cut of the provenance value
             # «windows_active_unicast_addresses_secondread» (NETWORK1201/002).
+            # A search result snippet is prose, not a name: «clima actual» is
+            # not a cut of the snippet word «actualizada» (WEB1447/001).
             return [
                 text
                 for key, child in value.items()
-                if key not in {"observationScope", "unit", "operation", "authority"}
+                if key not in {"observationScope", "unit", "operation", "authority", "snippet"}
                 for text in values_only(child)
             ]
         if isinstance(value, (list, tuple)):
@@ -5794,6 +5777,19 @@ def compose_visible_defect(
         failure_assertions = re.sub(
             finding_predicate, "", _accent_folded_with_punctuation(stripped),
         )
+    if _verified_search_results(situation):
+        # WEB1447 «va a llover mañana»: the search verified forecast pages that
+        # carry no values, and «No puedo confirmar si va a llover mañana porque
+        # los resultados solo proporcionan pronósticos» states that scope
+        # truthfully. Mask only that predicate in the failure lens; an invented
+        # forecast or a denial of the results is still vetoed on the payload.
+        failure_assertions = re.sub(
+            r"\b(?:no\s+(?:puedo|podria|se\s+puede|es\s+posible)|(?:i\s+)?(?:can't|cannot|can\s+not|am\s+unable\s+to|it\s+is\s+not\s+possible\s+to))"
+            r"\s+(?:confirmar|confirmarte|asegurar|asegurarte|determinar|precisar|saber|decir|decirte|confirm|determine|tell|say|know)"
+            r"[^.;]{0,120}",
+            "",
+            _accent_folded_with_punctuation(failure_assertions),
+        )
     if _recognized_screen_text_in_situation(situation) is not None:
         # SCREEN1417 «qué hay en la pantalla»: no vision provider exists, so the
         # reading says it cannot describe images and reads the text. That is
@@ -6292,6 +6288,15 @@ def compose_visible_defect(
                 stripped,
                 flags=re.IGNORECASE,
             )
+        if (
+            operation == "web.search"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+        ):
+            # WEB1447 «va a llover mañana»: a quoted result title such as
+            # «Tiempo en Santiago mañana — ¿Va a llover? | tiempo.cl» is an
+            # observed name, not a question the assistant asks.
+            question_text = without_observed_names(question_text, situation)
         if "?" in question_text or "¿" in question_text:
             return "extra_claim"
         closed_request = re.search(r"\bcierr|\bclose\b", (user_text or "").casefold())
@@ -12478,11 +12483,6 @@ class LlmRuntime:
                 "Do not state a weather condition, temperature or forecast the results do not contain; name the pages found (their titles and sites) instead."
                 if response_language == "en"
                 else "No afirmes un estado del tiempo, temperatura ni pronóstico que los resultados no contengan; nombra en su lugar las páginas encontradas (sus títulos y sitios)."
-            ),
-            "search_unsupported_terms": (
-                "Report only what the results say: name the pages found (their titles and sites) and use no words that are not in the results or in the request."
-                if response_language == "en"
-                else "Informa sólo lo que dicen los resultados: nombra las páginas encontradas (sus títulos y sitios) y no uses palabras que no estén en los resultados o en el pedido."
             ),
             "search_result_denied": (
                 "The search did return results: do not say you have no information; name the pages found."
