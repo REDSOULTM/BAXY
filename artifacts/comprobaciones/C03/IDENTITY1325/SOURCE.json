@@ -1,0 +1,15 @@
+{
+  "schema": "c03-identity1325-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (apply_conversation_effect_presentation: identidad/capacidad excluidas; served_operations al chat); src/baxy_mind/llm.py (how_it_works: cue, prompt, anclas con el catálogo, contrato; _REFLEXIVE_COMPARISON en clarify_unresolved_input)",
+  "patch": "artifacts/comprobaciones/C03/IDENTITY1325/SOURCE.patch",
+  "commits": [
+    "5aa7b9f50e9ba8665fab42bc52f5a416c48d5011"
+  ],
+  "build": "BUILD1325 (C03-repairs1325-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "IDENTITY1323: la comprobación de forma semántica del efecto convirtió «to quien chuta eres.» en aclaración de fútbol; «Tú eres como eso» recibió «¿con qué te comparas?» (sujeto invertido); «cómo funciona esto» se describió como chat genérico.",
+  "change": "Mente: las preguntas de identidad o capacidad conservan su decisión de conversación (sin aclaración ni unsupported); forma de presentación how_it_works con el catálogo servido; la pregunta de comparación rechaza el reflexivo y reintenta. Sin respuestas fijas.",
+  "measurement": "IDENTITY1325: 11 ejecutados, 7 aprobados, 4 fallidos, 0 violaciones; H0296 acreditado con dos pares; 1 créditos. Medición: la exclusión de identidad/capacidad evita la aclaración de fútbol, pero la conversación de conocimiento sin forma de identidad no se identifica ante «chuta»; la forma how_it_works nombra el catálogo servido pero cierra con un compromiso universal («siempre preguntando antes de cambiar algo») y el par inglés inventa «always watching and listening». Reparación para IDENTITY1327: forma de presentación identity y contrato how_it_works sin conductas universales.",
+  "credits": 1
+}

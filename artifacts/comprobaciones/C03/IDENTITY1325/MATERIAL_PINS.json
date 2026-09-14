@@ -1,0 +1,132 @@
+{
+  "schema": "identity1325-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-identity1325-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-identity1325-instrument-v1",
+  "seal_sha256": "952af6783f8df8147b1282aa0b4c061f05e1688cb03db8395e5ce0e00a3fe7c2",
+  "runner_sha256": "6ebd934953514fd9a6d1fa9521017b07c0246da1773102040a5da6ab47e203be",
+  "transport_seal_sha256": "2bc1ae03f1f1b413682c8344eecd300bf8f56e85da26fbce1c84448d4b7d1b4a",
+  "files": {
+    "panel.json": "127822a6379d06fd1a59bb3566f5ccfcb112a906928f73927e8d13b7f67020c9",
+    "turns.jsonl": "53b2a65f272efe9f8a21c2c6f71b61f7465db20870d5dfb5969972105b7b627e",
+    "case-map.json": "5f6bbe04dbe65c22d7ea904967b38c16880688920da0d8f847d3c8b97f16ba5e",
+    "PLAN.md": "668cd698b31f91dd8cee46e0be7cf886e05ebaac7e7f105e9160277d49c73426"
+  },
+  "counts": {
+    "cases": 11,
+    "historical_literals": 3,
+    "original_development_variants": 6,
+    "boundaries": 2,
+    "wire_lines": 22,
+    "session_controls": 11,
+    "ordinary_turns": 11,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 11,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 3,
+    "original_development_variant": 6,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0012",
+      "kind": "historical_literal",
+      "group": "identity_question",
+      "credit_behavior": "identity_question",
+      "text_sha256": "03a74d82c12c3d442d726ca26e984529c9e5d5e9b634877df3f3f5c71cf57d39",
+      "criterion_sha256": "c50d80412a0b6ffda4f29c5f2d329fc543607a8eb6784c019382226d27e73bdd"
+    },
+    {
+      "index": 1,
+      "case_id": "H0296",
+      "kind": "historical_literal",
+      "group": "dangling_comparison",
+      "credit_behavior": "dangling_comparison",
+      "text_sha256": "6085d75f73a6f4c31f49c10a0c97bfd9056cc7af044c87aa42d617fc51f9584c",
+      "criterion_sha256": "6c72036c79e94c13eac997fb6a23c158fbd4ab52d4cffab5c28d5623ab3e8b2b"
+    },
+    {
+      "index": 2,
+      "case_id": "H0373",
+      "kind": "historical_literal",
+      "group": "how_it_works",
+      "credit_behavior": "how_it_works",
+      "text_sha256": "7c37619b0cbcc2b3085ced809a82ac3a452cb1a4ce0a6f6530f926988d2744ce",
+      "criterion_sha256": "9e755d5f67f8c71355cc48f2402403130c1bbf9f83a61b380ae4bce54837b261"
+    },
+    {
+      "index": 3,
+      "case_id": "identity1325-dev-01",
+      "kind": "original_development_variant",
+      "group": "identity_question",
+      "credit_behavior": "identity_question",
+      "text_sha256": "3ee306054bbfff0ed930c3024bca4dc6c22e8ce65a944b0b620f28cf47837d62",
+      "criterion_sha256": "c50d80412a0b6ffda4f29c5f2d329fc543607a8eb6784c019382226d27e73bdd"
+    },
+    {
+      "index": 4,
+      "case_id": "identity1325-dev-02",
+      "kind": "original_development_variant",
+      "group": "identity_question",
+      "credit_behavior": "identity_question",
+      "text_sha256": "26711ed6953a7b889cb0a9696b17c3b206ba07ec8eaf75e245f7be58f78a4683",
+      "criterion_sha256": "c50d80412a0b6ffda4f29c5f2d329fc543607a8eb6784c019382226d27e73bdd"
+    },
+    {
+      "index": 5,
+      "case_id": "identity1325-dev-03",
+      "kind": "original_development_variant",
+      "group": "dangling_comparison",
+      "credit_behavior": "dangling_comparison",
+      "text_sha256": "8cac5f6a57d52aef412adabb646bed2d858272538c5d60a15a3efb394554ca01",
+      "criterion_sha256": "6c72036c79e94c13eac997fb6a23c158fbd4ab52d4cffab5c28d5623ab3e8b2b"
+    },
+    {
+      "index": 6,
+      "case_id": "identity1325-dev-04",
+      "kind": "original_development_variant",
+      "group": "dangling_comparison",
+      "credit_behavior": "dangling_comparison",
+      "text_sha256": "694806a170e27dfc7521c33a4e4344176b9cd365a50a06a3c7eef517319863cd",
+      "criterion_sha256": "6c72036c79e94c13eac997fb6a23c158fbd4ab52d4cffab5c28d5623ab3e8b2b"
+    },
+    {
+      "index": 7,
+      "case_id": "identity1325-dev-05",
+      "kind": "original_development_variant",
+      "group": "how_it_works",
+      "credit_behavior": "how_it_works",
+      "text_sha256": "eb284217b78339dd81baa2f7e2c3f27deff0c9fc30a4c4c3dc69665d1a3f516f",
+      "criterion_sha256": "9e755d5f67f8c71355cc48f2402403130c1bbf9f83a61b380ae4bce54837b261"
+    },
+    {
+      "index": 8,
+      "case_id": "identity1325-dev-06",
+      "kind": "original_development_variant",
+      "group": "how_it_works",
+      "credit_behavior": "how_it_works",
+      "text_sha256": "6cae34c8db7eb9ee17c164e407511e1a69112883fbf55b5bfa7bdd2e94d46729",
+      "criterion_sha256": "9e755d5f67f8c71355cc48f2402403130c1bbf9f83a61b380ae4bce54837b261"
+    },
+    {
+      "index": 9,
+      "case_id": "identity1325-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "4b1e65ef0db3779b44db74f70acc9c30132d63288f4ad47e0549984b1cad6d80",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 10,
+      "case_id": "identity1325-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "dc9f27455b9103025c525e107810e28c2f2e675dcd30e6612c8f96b6d9fd0d92",
+      "criterion_sha256": "efdcfbc46a21084fcc9f9caa750b5d8549c51c041873a00d7f079df872c51c6a"
+    }
+  ]
+}

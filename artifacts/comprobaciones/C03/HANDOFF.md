@@ -1,3 +1,11 @@
+# IDENTITY1325 adjudicado — 2026-09-14T03:33:10.678130+00:00
+
+**391/742 cubiertos, 351 abiertos, 0 NA; 2/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14); C03 formal 3/11. Registro SHA eea54ab6a358b9f66a70ee3b3962062e12f4366d0baaa036a12a3b190bedebf4. Primeras altas 24 h >= 265 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5aa7b9f5 con BUILD1325 (mente: identidad/capacidad sin aclaración, forma how_it_works con catálogo, sujeto de la comparación; IDENTITY1325/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+IDENTITY1325 («Identidad y capacidades del asistente», los tres literales abiertos: identidad coloquial, comparación sin referente, cómo funciona esto): 11 ejecutados, 7 aprobados, 4 fallidos, 0 violaciones; H0296 acreditado con dos pares, 1 créditos. Adjudicación 45862cf1345e294817169cf0628d7830da5ad79fba7febadd2f03a3fc0c38ce1. Medición: la exclusión de identidad/capacidad evita la aclaración de fútbol, pero la conversación de conocimiento sin forma de identidad no se identifica ante «chuta»; la forma how_it_works nombra el catálogo servido pero cierra con un compromiso universal («siempre preguntando antes de cambiar algo») y el par inglés inventa «always watching and listening». Reparación para IDENTITY1327: forma de presentación identity y contrato how_it_works sin conductas universales.
+
+---
+
 # IDENTITY1323 adjudicado — 2026-09-14T03:22:50.664028+00:00
 
 **390/742 cubiertos, 352 abiertos, 0 NA; 2/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14); C03 formal 3/11. Registro SHA c1dc7dda34a67d242aefe81c8108da93f0323ae1c35b9854efc72c48dc6ab3cb. Primeras altas 24 h >= 264 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 35df6425 con BUILD1323 (mente: identidad coloquial, «cómo funciona esto» como capacidad, comparación sin referente → pregunta; IDENTITY1323/SOURCE.json|SOURCE.patch; .NET sin cambios).

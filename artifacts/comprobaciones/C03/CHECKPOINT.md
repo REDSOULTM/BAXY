@@ -1,3 +1,25 @@
+## IDENTITY1325 — estado vigente 2026-09-14T03:33:10.678130+00:00
+
+Parcial: 7 aprobados, 4 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 391/742 | 351 | 0 | >=265 | 2/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 264 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); IDENTITY1325 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: IDENTITY1325: 11 ejecutados, 7 aprobados, 4 fallidos, 1 créditos (índices [1]); Identidad y capacidades 17/19. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/IDENTITY1325/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 197.94 s acumulados; pico GPU 3497.56 MiB; pico RAM 1676.67 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 11; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque IDENTITY1325 precedente. -->
+
 ## IDENTITY1323 — estado vigente 2026-09-14T03:22:50.664028+00:00
 
 Parcial: 5 aprobados, 6 fallidos, 0 sin ejecutar; 0 créditos.
