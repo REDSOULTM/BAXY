@@ -1,0 +1,15 @@
+{
+  "schema": "c03-files1439-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (formulate_explicit_clarification_question: la pregunta de carpeta de filesystem.known.search debe preguntar cuál carpeta; un reintento corregido)",
+  "patch": "artifacts/comprobaciones/C03/FILES1439/SOURCE.patch",
+  "commits": [
+    "efea3093454ff4e467af5fbae0d602a7837ee74f"
+  ],
+  "build": "BUILD1439 (C03-repairs1439-build/BUILD_READY.json; sólo mente, sin recompilar la App)",
+  "cause_measured": "FILES1439: la variante inglesa produjo «How many files are in the folder?», una repetición del pedido que no pregunta la carpeta; el contrato de la aclaración explícita no lo exigía.",
+  "change": "La pregunta explícita de carpeta debe preguntar cuál carpeta (cuál/qué/which/what junto a carpeta/directorio/folder/directory), con un reintento corregido; si no, el turno no publica esa pregunta. Sin respuestas fijas.",
+  "measurement": "FILES1439: 6/6 ejecutados, 4 aprobados (2 aclaraciones de carpeta, 2 límites), 2 fallidos (la App vetó como machine_slot_ask la pregunta correcta de la mente para la variante inglesa y compuso una que no pide la carpeta; el límite de prohibición repitió el acuse mal conjugado), cero violaciones; el caso 5 se ejecutó tres veces por una edición de fuente de la raíz con la tanda en marcha y una reejecución accidental, recibos conservados; 0 créditos. Causa medida: UserMessagePolicy.LooksLikeMachineSlotAsk veta «which folder»/«la carpeta» aunque la mente haya declarado folder como campo ausente; reparación en FILES1441 (campo declarado exime la pregunta de carpeta).",
+  "credits": 0
+}

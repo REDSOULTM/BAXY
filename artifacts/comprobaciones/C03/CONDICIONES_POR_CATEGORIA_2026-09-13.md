@@ -401,3 +401,7 @@ Alarmas, recordatorios, tareas y agenda pasa de 36/38 a 37/38 con el listado de 
 ## Actualización 2026-09-14 (FILES1437)
 
 Archivos y carpetas pasa de 24/32 a 24/32 con la aclaración determinista de la carpeta (commit fb5984b6, BUILD1437) (HEAD fb5984b6): 6/6 ejecutados, 4 aprobados (2 aclaraciones de carpeta, 2 límites), 2 fallidos (la variante inglesa repitió el pedido sin preguntar la carpeta; el límite de prohibición contestó con un acuse mal conjugado), cero violaciones, 0 créditos. Causa medida: el contrato de la aclaración explícita no exige que la pregunta pida la carpeta; reparación en FILES1439 (pregunta que pida cuál carpeta, con un reintento corregido).
+
+## Actualización 2026-09-14 (FILES1439)
+
+Archivos y carpetas pasa de 24/32 a 24/32 con la pregunta de carpeta que pregunta cuál carpeta (commit efea3093, BUILD1439) (HEAD efea3093): 6/6 ejecutados, 4 aprobados (2 aclaraciones de carpeta, 2 límites), 2 fallidos (la App vetó como machine_slot_ask la pregunta correcta de la mente para la variante inglesa y compuso una que no pide la carpeta; el límite de prohibición repitió el acuse mal conjugado), cero violaciones; el caso 5 se ejecutó tres veces por una edición de fuente de la raíz con la tanda en marcha y una reejecución accidental, recibos conservados, 0 créditos. Causa medida: UserMessagePolicy.LooksLikeMachineSlotAsk veta «which folder»/«la carpeta» aunque la mente haya declarado folder como campo ausente; reparación en FILES1441 (campo declarado exime la pregunta de carpeta).

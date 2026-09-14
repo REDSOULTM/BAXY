@@ -1,3 +1,11 @@
+# FILES1439 adjudicado — 2026-09-14T16:37:13.159482+00:00
+
+**445/742 cubiertos, 297 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 7e9ce546f312acf3b4da25693177da079e7ce65fa5798d2012e01c001cbcc688. Primeras altas 24 h >= 319 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD efea3093 con BUILD1439 (mente: la pregunta de carpeta debe preguntar cuál carpeta; FILES1439/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación; los nombres listados quedan en los recibos privados y nunca se publican.
+
+FILES1439 («Archivos y carpetas», H0701 «Dime cuantos archivos .py hay en el directorio actual», aclaración de la carpeta): 6/6 ejecutados, 4 aprobados (2 aclaraciones de carpeta, 2 límites), 2 fallidos (la App vetó como machine_slot_ask la pregunta correcta de la mente para la variante inglesa y compuso una que no pide la carpeta; el límite de prohibición repitió el acuse mal conjugado), cero violaciones; el caso 5 se ejecutó tres veces por una edición de fuente de la raíz con la tanda en marcha y una reejecución accidental, recibos conservados, 0 créditos. Adjudicación 0497050968c57281455ac0d2be759e805d94fc280cde15510c1a7629994af1da. Causa medida: UserMessagePolicy.LooksLikeMachineSlotAsk veta «which folder»/«la carpeta» aunque la mente haya declarado folder como campo ausente; reparación en FILES1441 (campo declarado exime la pregunta de carpeta).
+
+---
+
 # FILES1437 adjudicado — 2026-09-14T16:29:14.550033+00:00
 
 **445/742 cubiertos, 297 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA c796a2e69aa9e0f764085191db9c300ed096cd3bee953600369db14e26a48fca. Primeras altas 24 h >= 319 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD fb5984b6 con BUILD1437 (mente: aclaración determinista de la carpeta; FILES1437/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación; los nombres listados quedan en los recibos privados y nunca se publican.
