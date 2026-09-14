@@ -501,3 +501,7 @@ Conocimiento, razonamiento y creatividad verbal pasa de 26/37 a 27/37 con el fra
 ## Actualización 2026-09-14 (WEB1477)
 
 Navegación y búsqueda web pasa de 33/46 a 35/46 con el portal de la universidad y la página oficial de una organización por búsqueda y navegación revisada (HEAD 73c92e22, binarios BUILD1475) (HEAD 73c92e22): WEB1477: el portal de la universidad abre por búsqueda bajo revisión; H0004 y H0573 cubiertos; H0082 con carácter corrupto sin operación, Wikipedia con dirección mal citada, un límite que preguntó, 2 créditos. 10/10 ejecutados, 7 aprobados, 3 fallidos, 2 créditos; uniej.cl, mozilla.org navegados y verificados
+
+## Actualización 2026-09-14 (WEB1479)
+
+Navegación y búsqueda web pasa de 35/46 a 36/46 con la página oficial pedida con un carácter corrupto y la dirección navegada citada (commit 03c60ac9, BUILD1479) (HEAD 03c60ac9): WEB1479: la página oficial abre pese al carácter corrupto del pedido y el final cita sólo la dirección navegada; H0082 cubierto, 1 créditos. 6/6 ejecutados, 6 aprobados, 1 crédito; openai.com, python.org y github.com navegados bajo revisión

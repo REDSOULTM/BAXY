@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1479-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_symbolic_web_destination: «p?gina», carácter corrupto de la transcripción, se lee como «página»), src/baxy_mind/llm.py (compose_visible_defect: en una navegación verificada, toda dirección citada que no sea requestedUrl/finalUrl es wrong_address, con pista de reintento).",
+  "patch": "artifacts/comprobaciones/C03/WEB1479/SOURCE.patch",
+  "commits": [
+    "03c60ac900801c1e3d40d8a46f2d9a81f9a5f734"
+  ],
+  "build": "BUILD1479 (C03-repairs1479-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "WEB1477: «Abre la p?gina oficial de OpenAI» no llegó al lector de destino público por el carácter corrupto y el final negó la capacidad; la variante de Wikipedia navegó a www.wikipedia.org y el final citó otro resultado de la búsqueda como dirección visitada.",
+  "change": "El lector tolera el carácter corrupto en «página»; el compositor veta la dirección que no es la navegada. Sin respuestas fijas.",
+  "measurement": "WEB1479: WEB1479: la página oficial abre pese al carácter corrupto del pedido y el final cita sólo la dirección navegada; H0082 cubierto; 1 créditos. 6/6 ejecutados, 6 aprobados, 1 crédito; openai.com, python.org y github.com navegados bajo revisión",
+  "credits": 1
+}

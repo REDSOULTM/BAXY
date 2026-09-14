@@ -1,0 +1,65 @@
+commit 03c60ac900801c1e3d40d8a46f2d9a81f9a5f734
+
+C03: a corrupted character in «p?gina» still names a public destination, and a navigation final cites only the navigated address (WEB1479)
+
+WEB1477 measured two defects. «Abre la p?gina oficial de OpenAI» (a corrupted character from the transcription) never reached `_symbolic_web_destination`, so the product ran nothing and said it could not open the page: the site-role noun now reads `p[aá?]gina`. The Wikipedia variant navigated to www.wikipedia.org and the final cited another search result («es.wikipedia.org/wiki/Wikipedia») as the visited address: `compose_visible_defect` now vetoes (`wrong_address`) any URL in a verified-navigation final that is not requestedUrl/finalUrl, with a retry hint to cite only seen.finalUrl.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index f3ed3ce9..5eca7fc0 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -13082,7 +13082,9 @@ def _symbolic_web_destination(text: str) -> str | None:
+         r"[¿?¡!\s]*(?:(?:ve|and[aá]|entra|entr[aá]|entrar|ir|navega|navegar|"
+         r"llevame|llévame)\s+a(?:l)?\s+|(?:go|navigate)\s+to\s+|"
+         r"take\s+me\s+to\s+|(?:abre|abr[ií]|abrir|open)\s+"
+-        r"(?=(?:(?:la|el|the|a)\s+)?(?:p[aá]gina|page|sitio|site|website|portal)\b))"
++        # WEB1477 H0082 «Abre la p?gina oficial de OpenAI»: a corrupted
++        # character inside «página» is a transcription glitch, not another word.
++        r"(?=(?:(?:la|el|the|a)\s+)?(?:p[aá?]gina|page|sitio|site|website|portal)\b))"
+         r"(?P<target>\S.+?)[\s.!?]*",
+         request, re.IGNORECASE,
+     )
+@@ -13111,7 +13113,7 @@ def _symbolic_web_destination(text: str) -> str | None:
+         count=1, flags=re.IGNORECASE,
+     ).strip()
+     target = re.sub(
+-        r"^(?:(?:la|el|the|a)\s+)?(?:(?:p[aá]gina|page|sitio|site)"
++        r"^(?:(?:la|el|the|a)\s+)?(?:(?:p[aá?]gina|page|sitio|site)"
+         r"(?:\s+web)?|website)"
+         r"(?:\s+(?:oficial|official|principal|main|home))?\s+(?:(?:de|of)\s+)?",
+         "", operand, count=1, flags=re.IGNORECASE,
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index c5df99d8..95e8a62e 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -6351,6 +6351,15 @@ def compose_visible_defect(
+                 value for key in ("requestedUrl", "finalUrl")
+                 if isinstance(value := observed_dict.get(key), str) and value
+             }
++            # WEB1477 «Abre la página oficial de Wikipedia»: the navigation
++            # ended at www.wikipedia.org and the final cited another search
++            # result as «la URL visitada». Only the navigated address may be
++            # reported.
++            navigated = {value.rstrip("/").casefold() for value in observed_urls}
++            for found in re.finditer(r"""(?<![\w:/])https?://[^\s<>"'“”‘’]+""", stripped, flags=re.IGNORECASE):
++                cited = found[0].rstrip(".,;:!)]}»").rstrip("/").casefold()
++                if navigated and cited not in navigated:
++                    return "wrong_address"
+             question_text = re.sub(
+                 r"""(?<![\w:/])https?://[^\s<>"'“”‘’]+""",
+                 lambda found: found[0].replace("?", "") if (
+@@ -12686,6 +12695,11 @@ class LlmRuntime:
+                 if response_language == "en"
+                 else "Di el estado observado de la radio Bluetooth tal cual: seen.radioOn true es encendida, false es apagada."
+             ),
++            "wrong_address": (
++                "Cite only the navigated address (seen.finalUrl); do not mention any other address."
++                if response_language == "en"
++                else "Cita sólo la dirección navegada (seen.finalUrl); no menciones ninguna otra dirección."
++            ),
+             "search_result_denied": (
+                 "The search did return results: do not say you have no information; name the pages found."
+                 if response_language == "en"

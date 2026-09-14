@@ -1,3 +1,11 @@
+# WEB1479 adjudicado — 2026-09-14T22:28:17.276091+00:00
+
+**482/742 cubiertos, 260 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 15f34fe6909c1fc97eec7d9a10c7b6928b82f2693b8c4d0f91576733428ca872. Primeras altas 24 h >= 356 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 03c60ac9 con BUILD1479 (carácter corrupto tolerado y sólo la dirección navegada citada; WEB1479/SOURCE.json|SOURCE.patch). Turnos revisados hacia el dominio esperado. Turnos ordinarios de aclaración sin operaciones.
+
+WEB1479 («Navegación y búsqueda web», H0082 «Abre la p?gina oficial de OpenAI»): WEB1479: la página oficial abre pese al carácter corrupto del pedido y el final cita sólo la dirección navegada; H0082 cubierto, 1 créditos. Adjudicación def5307e0cf527474a7574ce19900fa1f5b48dbf90ec57579e525f56b95da1b6. 6/6 ejecutados, 6 aprobados, 1 crédito; openai.com, python.org y github.com navegados bajo revisión
+
+---
+
 # WEB1477 adjudicado — 2026-09-14T22:19:19.803367+00:00
 
 **481/742 cubiertos, 261 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 179557d4808aa4690bdd9e4b08451a7c85a5eeee19f0998a9658414f038b569e. Primeras altas 24 h >= 355 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 73c92e22 con los binarios de BUILD1475 sin cambio de fuente (turnos revisados hacia el dominio esperado; WEB1477/SOURCE.json). Turnos ordinarios de sólo lectura sin confirmación.
