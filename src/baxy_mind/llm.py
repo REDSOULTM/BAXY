@@ -5421,7 +5421,14 @@ def compose_visible_defect(
     if is_failure:
         if _SUCCESS_OPENERS.match(stripped) is not None:
             return "reversed_polarity"
-        if re.search(r"abiert|\bis open\b", folded):
+        if re.search(r"abiert|\bis open\b", folded) and not re.search(
+            # CLOSE1371 «cierra steam» with no Steam window: «no tiene ninguna
+            # ventana abierta» / «no está abierto» state the absence, they do
+            # not claim the application is open.
+            r"\b(?:no|ni|ninguna?|nada|not|isn'?t|no\s+hay|sin)\b[^.;,]{0,40}\babiert|"
+            r"\b(?:is\s+not|isn'?t|not)\s+open\b",
+            folded,
+        ):
             return "reversed_polarity"
         if cause == "mission_failed" and re.search(
             r"\bopened\b|\babrí\b|\babri\b", folded
