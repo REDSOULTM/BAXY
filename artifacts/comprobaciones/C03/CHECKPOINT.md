@@ -1,3 +1,25 @@
+## CLOSE1369 — estado vigente 2026-09-14T07:15:11.035190+00:00
+
+Parcial: 2 aprobados, 8 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 413/742 | 329 | 0 | >=287 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 287 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); CLOSE1369 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: CLOSE1369: 10 ejecutados, 2 aprobados, 8 fallidos, 0 créditos (índices []); Cerrar aplicaciones y ventanas 11/20. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/CLOSE1369/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 201.50 s acumulados; pico GPU 3497.56 MiB; pico RAM 1947.93 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 10; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque CLOSE1369 precedente. -->
+
 ## SYSTEM1367 — estado vigente 2026-09-14T07:09:10.966439+00:00
 
 Parcial: 8 aprobados, 2 fallidos, 0 sin ejecutar; 2 créditos.

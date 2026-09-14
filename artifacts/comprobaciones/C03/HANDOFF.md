@@ -1,3 +1,11 @@
+# CLOSE1369 adjudicado — 2026-09-14T07:15:11.035190+00:00
+
+**413/742 cubiertos, 329 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA b2ab366a3194a414736e0914dca279a80e7c2c312798baa3f4f1d665e514fed6. Primeras altas 24 h >= 287 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a9e12402 con BUILD1367 (sin cambio de fuente; CLOSE1369/SOURCE.json|SOURCE.patch). Steam sin ejecutar antes y después de cada caso (verificado por la raíz); permitidos memory.status y window.resolve, app.close no permitida porque no hay ventana.
+
+CLOSE1369 («Cerrar aplicaciones y ventanas», H0117, H0556, H0677 y H0679 cerrar Steam con Steam sin ejecutar, turnos ordinarios): 10/10 ejecutados, 2 aprobados, 8 fallidos, 0 violaciones, 0 créditos. Adjudicación bcb0b461e325cc3312d3da228f0273104cc9da905e17ac4b1886dd3750f91cc2. Los cuatro literales «cierra steam» y las dos variantes corrieron con Steam sin ejecutar: el producto leyó las ventanas, window.resolve terminó window_not_found (failed, sin verificación), no propuso app.close y Steam siguió sin ejecutar; los finales fueron veraces («No pude cerrar Steam porque no encontré la ventana») pero en marco de incapacidad, el inglés filtró vocabulario del planificador y la regla sellada exigía una lectura completada y verificada, así que ningún caso pudo aprobarse. Dos límites fallaron por contenido (procedimiento inexacto para salir de Steam; desvío a medir la RAM). Siguiente: la lectura sin ventana declarada como observación esperada antes de sellar y el hecho de la causa window_not_found en el compositor (CLOSE1371).
+
+---
+
 # SYSTEM1367 adjudicado — 2026-09-14T07:09:10.966439+00:00
 
 **413/742 cubiertos, 329 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA ba2abe497fff2e1e63bfd6309b16430cb283fc8fa95d2e0f7721fdcfdab72bb3. Primeras altas 24 h >= 287 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 346e930f con BUILD1367 (mente: lector compuesto reloj + estado; SYSTEM1367/SOURCE.json|SOURCE.patch; .NET sin cambios). Sólo lecturas: memory.status, system.time y system.status permitidos, sin confirmación.

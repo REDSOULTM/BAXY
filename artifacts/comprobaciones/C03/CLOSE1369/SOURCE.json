@@ -1,0 +1,15 @@
+{
+  "schema": "c03-close1369-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "sin cambio de fuente (BUILD1367)",
+  "patch": "artifacts/comprobaciones/C03/CLOSE1369/SOURCE.patch",
+  "commits": [
+    "a9e1240276fe8a9169d2267fd59276361dfcc59c"
+  ],
+  "build": "BUILD1367 (C03-repairs1367-build/BUILD_READY.json; sin cambio de fuente)",
+  "cause_measured": "Cerrar aplicaciones y ventanas 11/20: cuatro literales piden cerrar Steam y el cliente Steam del dueño no está en ejecución en este PC; nunca se midieron en el linaje Fable.",
+  "change": "Sin cambio de fuente: se mide la conducta veraz ante una aplicación del catálogo sin ventana (window.resolve sin ventanas, final que dice que Steam no está abierto), sin abrirla ni cerrar nada.",
+  "measurement": "CLOSE1369: 10/10 ejecutados, 2 aprobados, 8 fallidos, 0 violaciones; 0 créditos. Los cuatro literales «cierra steam» y las dos variantes corrieron con Steam sin ejecutar: el producto leyó las ventanas, window.resolve terminó window_not_found (failed, sin verificación), no propuso app.close y Steam siguió sin ejecutar; los finales fueron veraces («No pude cerrar Steam porque no encontré la ventana») pero en marco de incapacidad, el inglés filtró vocabulario del planificador y la regla sellada exigía una lectura completada y verificada, así que ningún caso pudo aprobarse. Dos límites fallaron por contenido (procedimiento inexacto para salir de Steam; desvío a medir la RAM). Siguiente: la lectura sin ventana declarada como observación esperada antes de sellar y el hecho de la causa window_not_found en el compositor (CLOSE1371).",
+  "credits": 0
+}
