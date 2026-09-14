@@ -1,0 +1,15 @@
+{
+  "schema": "c03-knowledge1357-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "sin cambio de fuente (BUILD1355)",
+  "patch": "artifacts/comprobaciones/C03/KNOWLEDGE1357/SOURCE.patch",
+  "commits": [
+    "cfb44e51a53a25b0a7cc838f0223e35ad1c4628f"
+  ],
+  "build": "BUILD1355 (C03-repairs1355-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "KNOWLEDGE1355: los dos chistes se entregaron pero el par español de dato curioso preguntó, así que «contame un chiste» quedó sin segundo par.",
+  "change": "Sin cambio de fuente: mismo BUILD1355; panel del chiste con dos pares de chiste.",
+  "measurement": "KNOWLEDGE1357: 5 ejecutados, 4 aprobados, 1 límite fallido, 0 violaciones; H0211 acreditado con dos pares; 1 créditos. Medición: con el contrato de contenido libre que admite el chiste, los tres chistes se entregan de inmediato. Conocimiento queda en 24/37: las curiosidades y «explicame algo interesante» inventan hechos o preguntan, y las preguntas de quién es (Daredevil, Doom Eternal, Marvel vs. Capcom) inventan creadores, estudios y años: condición del conocimiento del modelo, sin fuente de hechos en el producto.",
+  "credits": 1
+}

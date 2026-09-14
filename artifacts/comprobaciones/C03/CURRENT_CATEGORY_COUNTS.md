@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación KNOWLEDGE1355
+# Categorías actuales — adjudicación KNOWLEDGE1357
 
-404/742 cubiertos; 338 abiertos; 0 no aplican; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19). Últimas 24 h: al menos 278 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337 + 1 en AGENDA1341 + 1 en CONVERSATION1343 + 1 en CONVERSATION1347 + 1 en CONVERSATION1349 + 2 en AUDIO1351 + 1 en KNOWLEDGE1353; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 5b0336820149f45928271cff77616b9cf745bfe100ed173ce0c7a36a10b087ba.
+405/742 cubiertos; 337 abiertos; 0 no aplican; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19). Últimas 24 h: al menos 279 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337 + 1 en AGENDA1341 + 1 en CONVERSATION1343 + 1 en CONVERSATION1347 + 1 en CONVERSATION1349 + 2 en AUDIO1351 + 1 en KNOWLEDGE1353 + 1 en KNOWLEDGE1357; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 044b92ea3842052c5f245646155ccb19f5b1a03551f264f38bc8e63522f2ce32.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -18,7 +18,7 @@
 | Red y Bluetooth | 21 | 13 | 8 |
 | Cerrar aplicaciones y ventanas | 20 | 11 | 9 |
 | Pantalla, captura e interpretación visual | 19 | 0 | 19 |
-| Conocimiento, razonamiento y creatividad verbal | 37 | 23 | 14 |
+| Conocimiento, razonamiento y creatividad verbal | 37 | 24 | 13 |
 | Brillo y pantalla | 17 | 16 | 1 |
 | Información web actual | 17 | 2 | 15 |
 | Estado de hardware y sistema | 40 | 32 | 8 |

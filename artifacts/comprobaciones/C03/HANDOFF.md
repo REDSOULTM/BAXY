@@ -1,3 +1,11 @@
+# KNOWLEDGE1357 adjudicado — 2026-09-14T06:01:50.436939+00:00
+
+**405/742 cubiertos, 337 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 044b92ea3842052c5f245646155ccb19f5b1a03551f264f38bc8e63522f2ce32. Primeras altas 24 h >= 279 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD cfb44e51 con BUILD1355 (sin cambio de fuente; KNOWLEDGE1357/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+KNOWLEDGE1357 («Conocimiento, razonamiento y creatividad verbal», el chiste con dos pares de chiste): 5 ejecutados, 4 aprobados, 1 límite fallido, 0 violaciones; H0211 acreditado con dos pares, 1 créditos. Adjudicación 05a09e5a79f3077627795f91c47b874aaaedd573e3ec706ed872d2e89ed7dfa2. Medición: con el contrato de contenido libre que admite el chiste, los tres chistes se entregan de inmediato. Conocimiento queda en 24/37: las curiosidades y «explicame algo interesante» inventan hechos o preguntan, y las preguntas de quién es (Daredevil, Doom Eternal, Marvel vs. Capcom) inventan creadores, estudios y años: condición del conocimiento del modelo, sin fuente de hechos en el producto.
+
+---
+
 # KNOWLEDGE1355 adjudicado — 2026-09-14T05:58:06.558346+00:00
 
 **404/742 cubiertos, 338 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 5b0336820149f45928271cff77616b9cf745bfe100ed173ce0c7a36a10b087ba. Primeras altas 24 h >= 278 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD df041d2d con BUILD1355 (mente: contrato free_content relajado; KNOWLEDGE1355/SOURCE.json|SOURCE.patch; .NET sin cambios).
