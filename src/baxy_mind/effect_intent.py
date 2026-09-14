@@ -130,6 +130,43 @@ def _public_calendar_fact_lookup_request(folded: str) -> bool:
     )
 
 
+_WEATHER_WORDS = (
+    r"\b(?:weather|forecast|rain|raining|clima|pronostico|lluvia|llueve|llover|"
+    r"llovera|temperature|temperatura)\b"
+)
+
+
+def _weather_lookup_query(text: str) -> str | None:
+    """WEB1445: the person's weather request without its request verbs, accents
+    kept (the engine answers «va a llover mañana» and «clima hoy», not the folded
+    or verb-laden forms); None when the request is not a live weather lookup."""
+
+    folded = _fold(text)
+    if not _public_live_lookup_request(folded) or not _has(folded, _WEATHER_WORDS):
+        return None
+    if _has(folded, r"^[¿?¡!\s]*(?:que|what)\s+(?:es|son|is|are|significa|means)\b"):
+        return None
+    query = text.strip(" \t\r\n¿?¡!.,;:")
+    query = re.sub(r"^(?:por favor|please)\s*[,:]?\s*", "", query, flags=re.IGNORECASE)
+    query = re.sub(
+        r"^(?:mostrame|muéstrame|muestrame|muestra|decime|dime|contame|cuéntame|cuentame|"
+        r"busca|buscá|buscame|buscar|search|find|show\s+me|tell\s+me|dame|give\s+me|"
+        r"necesito|need|quiero|i\s+want)\s+(?:saber\s+|to\s+know\s+)?(?:el|la|the|los|las)?\s*",
+        "", query, count=1, flags=re.IGNORECASE)
+    query = re.sub(
+        r"^(?:qué|que|what|cuál|cual|what's|cómo|como|how)\s+(?:es\s+|is\s+|está\s+|esta\s+|estará\s+|estara\s+|va\s+a\s+estar\s+)?"
+        r"(?:el\s+|la\s+|the\s+)?"
+        r"(?P<noun>clima|tiempo|weather|forecast|pronóstico|pronostico)\s*"
+        r"(?:hace|hay|is\s+it\s+like|is\s+it|is|like)?\s*",
+        lambda m: m.group("noun") + " ", query, count=1, flags=re.IGNORECASE)
+    # «is it going to rain tomorrow» / «will it rain tomorrow»: the auxiliaries
+    # never appear in a forecast page; the engine answers «rain tomorrow».
+    query = re.sub(r"^(?:is\s+it\s+going\s+to|will\s+it|is\s+it|does\s+it)\s+", "", query, count=1, flags=re.IGNORECASE)
+    query = re.sub(r"\s+(?:en|in|on)\s+(?:google|internet|la\s+web|the\s+web)\b", "", query, flags=re.IGNORECASE)
+    query = re.sub(r"\s+", " ", query).strip(" ?!.,;:")
+    return query if query and _has(_fold(query), _WEATHER_WORDS) else None
+
+
 def _public_live_lookup_request(folded: str) -> bool:
     """Recognize live feeds that require a public lookup to answer."""
 
@@ -15183,7 +15220,9 @@ def resolve_explicit_effects(
         evidence = text if _explicit_named_music_query(text) is not None else folded
         return EffectIntent(("media.play.query",), (evidence,))
     if "web.search" in available and _public_live_lookup_request(folded):
-        return EffectIntent(("web.search",), (folded,))
+        # WEB1445: the evidence keeps the person's accents («mañana»); the
+        # engine answers the literal phrase and not its folded form.
+        return EffectIntent(("web.search",), (text.strip(),))
     if {
         "message.recipient.resolve",
         "message.send",
@@ -15642,7 +15681,9 @@ def resolve_explicit_effects(
         # Weather and news are live feeds, not stable model knowledge. Their
         # literal domain closes the read request without relying on a semantic
         # family guess; Core still validates and verifies the public lookup.
-        return EffectIntent(("web.search",), (folded,))
+        # WEB1445: the evidence keeps the person's accents («mañana»); the
+        # engine answers the literal phrase and not its folded form.
+        return EffectIntent(("web.search",), (text.strip(),))
     if "web.search" in available and _public_product_correction_lookup_request(folded):
         # The correction replaces the nominal query; it is not a second
         # physical effect. Keep this read-only and let Core verify the lookup.

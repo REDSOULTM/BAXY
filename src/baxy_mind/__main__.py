@@ -4723,6 +4723,14 @@ def _explicit_arguments_from_evidence(
         location = _explicit_location_search_arguments(search_evidence)
         if location is not None:
             return location
+        weather_query = effect_intent._weather_lookup_query(search_evidence)
+        if weather_query is not None:
+            # WEB1445 «qué clima hace hoy», «mostrame el clima», «va a llover
+            # mañana»: the engine answers a weather query with the local forecast,
+            # but the request verbs («mostrame», «hace») never appear in a result
+            # and the relevance filter rejected every item. The query keeps only
+            # the weather words the person said, in their order.
+            return {"query": weather_query}
         search = list(
             re.finditer(
                 (

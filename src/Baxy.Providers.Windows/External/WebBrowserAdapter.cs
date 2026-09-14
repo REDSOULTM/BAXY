@@ -547,8 +547,19 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         }
 
         var observed = new HashSet<string>(resultTokens, StringComparer.Ordinal);
-        return queryTokens.All(observed.Contains);
+        return queryTokens.All(token => observed.Contains(token)
+            || WeatherSynonyms.Any(family => family.Contains(token) && family.Any(observed.Contains)));
     }
+
+    // WEB1445 «qué clima hace hoy»: the engine's local forecast says «tiempo» or
+    // «weather» where the person said «clima»; the words name one concept.
+    private static readonly string[][] WeatherSynonyms =
+    [
+        ["clima", "tiempo", "weather", "meteo", "meteorologico", "meteorologica", "pronostico", "forecast"],
+        ["lluvia", "lluvias", "llueve", "llover", "llovera", "rain", "raining"],
+        ["manana", "tomorrow"],
+        ["temperatura", "temperature", "temperaturas", "temperatures"],
+    ];
 
     private static string SafeUnescapedPath(Uri uri)
     {
