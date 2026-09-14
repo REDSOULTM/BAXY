@@ -1,3 +1,25 @@
+## FILES1433 — estado vigente 2026-09-14T16:07:30.289934+00:00
+
+Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 444/742 | 298 | 0 | >=318 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 317 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); FILES1433 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: FILES1433: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]); Archivos y carpetas 24/32. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/FILES1433/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 98.64 s acumulados; pico GPU 3497.56 MiB; pico RAM 1693.60 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque FILES1433 precedente. -->
+
 ## NEGATIVE1431 — estado vigente 2026-09-14T15:56:02.824246+00:00
 
 Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

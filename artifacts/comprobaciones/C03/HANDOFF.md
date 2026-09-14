@@ -1,3 +1,11 @@
+# FILES1433 adjudicado — 2026-09-14T16:07:30.289934+00:00
+
+**444/742 cubiertos, 298 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA e6248a29d6709c9b29d2f941ec2995d359d1a2e477109f73cec4711c742d7d60. Primeras altas 24 h >= 318 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 71bf9a21 con BUILD1433 (filesystem.known.list con orden por fecha; FILES1433/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación; los nombres listados quedan en los recibos privados y nunca se publican.
+
+FILES1433 («Archivos y carpetas», H0453 «Cuenta los archivos en el escritorio y lista los 5 mas recientes», listado ordenado por fecha): 6/6 ejecutados, 6 aprobados (3 listados ordenados por fecha con total verificado y los N nombres más recientes citados tal cual, 3 límites), 0 fallidos, cero violaciones, 1 créditos. Adjudicación 9e4953a10113bb333de8bae3c292b09341292c2539aa5d3bea68ac5fdf36fd09. Los finales dan el total real y exactamente las N entradas más nuevas en orden; no pronuncian «recientes». Quedan condicionados en la categoría: .py del directorio actual (H0701), contenido dinámico (H0334/H0426), zip (H0542), backup a pendrive (H0733), resumen de PDF (H0666), borrado de carpeta (H0327) y la ruta literal (H0299).
+
+---
+
 # NEGATIVE1431 adjudicado — 2026-09-14T15:56:02.824246+00:00
 
 **443/742 cubiertos, 299 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 69d86a225f712f10d0830cfdef4bc663e5ef67990587c5d28ddb31b89891dca7. Primeras altas 24 h >= 317 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d4ba9808 con BUILD1431 (mente: el validador de mención del pedido admite el acrónimo «pc» y el tallo del verbo; NEGATIVE1431/SOURCE.json|SOURCE.patch). Turnos ordinarios sin operaciones: acuse de la prohibición en primera persona.

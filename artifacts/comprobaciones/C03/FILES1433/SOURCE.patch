@@ -1,0 +1,190 @@
+commit 71bf9a219f390f89cc624f5df30d1d1ae614d949
+
+C03: known-folder listings can be ordered by date and bounded by a requested count (FILES1433, BUILD1433)
+
+H0453 «Cuenta los archivos en el escritorio y lista los 5 mas recientes» had no reader: the known-folder listing (FILES1427) accepted neither an order nor a requested count, and the resolver took «5» as a note cardinality and returned nothing.
+
+Baxy.Kernel ProductCatalog: filesystem.known.list takes an optional order ∈ name/recent.
+Baxy.Providers.Windows WindowsKnownFileAdapter.List: order=recent sorts by modification date, newest first, before the limit; the receipt records the order.
+baxy_mind effect_intent: _known_folder_recent_listing reads «cuenta los archivos de <carpeta> y lista los N más recientes» and «listá los N archivos más recientes de <carpeta>» (folder, N ≤ 20) and resolve_explicit_effects resolves it before the note-cardinality gate; __main__ grounds folder, order=recent and limit=N; llm projects newestFirst and instructs that the names go from newest to oldest.
+
+Offline probe: the literal and four variants resolve with the right folder and count; a prohibition, a mismatched folder pair and a note request do not; the product compiles and the core advertises the new schema. Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Kernel/Operations/ProductCatalog.cs b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+index dc55d49d..15919eb0 100644
+--- a/src/Baxy.Kernel/Operations/ProductCatalog.cs
++++ b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+@@ -361,6 +361,7 @@ public static class ProductCatalog
+                 [
+                     String("folder", values: ["desktop", "documents", "downloads"]),
+                     Integer("limit", 1, 100),
++                    String("order", values: ["name", "recent"]),
+                 ],
+                 ["folder"]),
+             OperationRisks.ReadOnly,
+diff --git a/src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs b/src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs
+index 89daa3d2..ed701b00 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs
+@@ -251,6 +251,9 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
+         // the top-level entries of one known folder, names and kinds only.
+         // Hidden and system entries (desktop.ini) are not what the person sees.
+         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 50), 1, 100);
++        string order = arguments.TryGetProperty("order", out JsonElement orderElement)
++            && orderElement.ValueKind == JsonValueKind.String
++            && orderElement.GetString() == "recent" ? "recent" : "name";
+         var options = new EnumerationOptions
+         {
+             RecurseSubdirectories = false,
+@@ -276,9 +279,13 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
+             }
+         }
+         if (!anyRoot) return ExternalJson.Failure(operation, "known_folder_unavailable");
+-        var shown = entries
+-            .OrderBy(item => item.IsFolder ? 0 : 1)
+-            .ThenBy(item => item.Name, StringComparer.OrdinalIgnoreCase)
++        // FILES1433 «lista los 5 más recientes»: newest first when asked; otherwise
++        // folders first, then names.
++        var shown = (order == "recent"
++                ? entries.OrderByDescending(item => item.ModifiedUtc)
++                    .ThenBy(item => item.Name, StringComparer.OrdinalIgnoreCase)
++                : entries.OrderBy(item => item.IsFolder ? 0 : 1)
++                    .ThenBy(item => item.Name, StringComparer.OrdinalIgnoreCase))
+             .Take(limit)
+             .ToArray();
+         int folderCount = entries.Count(item => item.IsFolder);
+@@ -301,6 +308,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
+             }
+             writer.WriteEndArray();
+             writer.WriteNumber("shownCount", shown.Length);
++            writer.WriteString("order", order);
+             writer.WriteNumber("resultLimit", limit);
+             writer.WriteBoolean("resultsMayBeTruncated", entries.Count > shown.Length);
+             writer.WriteBoolean("hiddenAndSystemSkipped", true);
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index f03ea9ff..8d9e0956 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -5140,6 +5140,9 @@ def _explicit_arguments_from_evidence(
+             return {"folder": next(iter(folders))}
+ 
+     if operation == "filesystem.known.list":
++        recent_listing = effect_intent._known_folder_recent_listing(evidence)
++        if recent_listing is not None:
++            return {"folder": recent_listing[0], "limit": recent_listing[1], "order": "recent"}
+         listed_folder = effect_intent._known_folder_listing_request(evidence)
+         if listed_folder is not None:
+             return {"folder": listed_folder, "limit": 100}
+@@ -5260,9 +5263,9 @@ def _ground_explicit_arguments(
+             explicit = {"name": name}
+     if explicit is None:
+         return None
+-    if (
+-        operation == "filesystem.known.list"
+-        and effect_intent._known_folder_listing_request(evidence) == explicit.get("folder")
++    if operation == "filesystem.known.list" and explicit.get("folder") in (
++        effect_intent._known_folder_listing_request(evidence),
++        (effect_intent._known_folder_recent_listing(evidence) or (None, None))[0],
+     ):
+         # The listing reader owns the known-folder enum and the bounded limit;
+         # neither is a word the person must spell literally.
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index a5948a5c..fedb08ca 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -9134,6 +9134,34 @@ _KNOWN_FOLDER_ENUM = {
+ }
+ 
+ 
++_KNOWN_FOLDER_WORDS = r"(?:escritorio|desktop|descargas|downloads|documentos|documents)"
++_KNOWN_FOLDER_RECENT = (
++    r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
++    r"(?:(?:cuenta|conta|count)\s+(?:los\s+|the\s+)?(?:archivos|ficheros|files)\s+(?:de|del|en|in|on|of)\s+"
++    r"(?:mi|el|la|my|the)?\s*(?P<folder_a>" + _KNOWN_FOLDER_WORDS + r")\s+(?:y|and)\s+)?"
++    r"(?:lista|listame|list|mostrame|muestrame|muestra|show me|show|dame|give me|decime|dime|tell me)\s+(?:me\s+)?"
++    r"(?:los|las|the)?\s*(?P<n>[1-9]|1[0-9]|20)\s+(?:(?:archivos|ficheros|files|entradas|entries)\s+)?"
++    r"(?:mas|most)\s+(?:recientes?|nuevos?|recent|newest)(?:\s+(?:archivos|ficheros|files|entradas|entries))?"
++    r"(?:\s+(?:de|del|en|in|on|of)\s+(?:mi|el|la|my|the)?\s*(?P<folder_b>" + _KNOWN_FOLDER_WORDS + r"))?[\s?!.]*$"
++)
++
++
++def _known_folder_recent_listing(text: str) -> tuple[str, int] | None:
++    """FILES1433 «cuenta los archivos en el escritorio y lista los 5 mas recientes»,
++    «listá los 5 archivos más recientes del escritorio»: (folder enum, count)."""
++
++    folded = _fold(text)
++    match = re.match(_KNOWN_FOLDER_RECENT, folded)
++    if match is None:
++        return None
++    folder = match.group("folder_a") or match.group("folder_b")
++    if folder is None or (match.group("folder_a") and match.group("folder_b")
++                          and match.group("folder_a") != match.group("folder_b")):
++        return None
++    enum = _KNOWN_FOLDER_ENUM.get(folder)
++    return (enum, int(match.group("n"))) if enum else None
++
++
+ def _known_folder_listing_request(text: str) -> str | None:
+     """FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
+     the known-folder enum of a whole-folder listing request, else None."""
+@@ -9162,9 +9190,9 @@ def _strict_catalog_request(
+     # (``Baxy, por favor: ...``).  The outer resolver removes one layer; peel
+     # at most one remaining non-semantic layer for surface invariance.
+     text = _strip_request_envelope(text).strip().rstrip(".!?").rstrip()
+-    if (
+-        "filesystem.known.list" in available_operations
+-        and _known_folder_listing_request(text) is not None
++    if "filesystem.known.list" in available_operations and (
++        _known_folder_listing_request(text) is not None
++        or _known_folder_recent_listing(text) is not None
+     ):
+         return EffectIntent(("filesystem.known.list",), (text,))
+     if window_inventory_arguments(text) is not None:
+@@ -14906,6 +14934,14 @@ def resolve_explicit_effects(
+         return None
+     folded = _strip_request_envelope(_fold(re.sub(r"[\r\n]+", " . ", text)))
+     available = frozenset(available_operations)
++    if (
++        "filesystem.known.list" in available
++        and _known_folder_recent_listing(folded.strip().rstrip(".!?")) is not None
++    ):
++        # FILES1433 «cuenta los archivos en el escritorio y lista los 5 mas
++        # recientes»: the literal count bounds the listing; it is not a note
++        # cardinality and the conjunction is one read, not two effects.
++        return EffectIntent(("filesystem.known.list",), (folded,))
+     completed_level_request = _completed_missing_volume_level_request(
+         text, previous_user_text, available,
+     )
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 31bf0e77..723ac0bc 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4491,6 +4491,9 @@ def _project_known_listing(observed: dict, language: str) -> dict:
+     for key in ("fileCount", "folderCount"):
+         if type(observed.get(key)) is int:
+             projected[key] = observed[key]
++    if observed.get("order") == "recent":
++        # FILES1433: the person asked for the newest entries; say so.
++        projected["newestFirst"] = True
+     return projected
+ 
+ 
+@@ -11620,6 +11623,7 @@ class LlmRuntime:
+                 "each in its own quotation marks; if seen.moreNotShown is greater "
+                 "than zero, say that there are more. Nothing else: no purpose, no "
+                 "interpretation, no other numbers, no names that are not in seen.names."
++                + (" seen.names are the most recent entries, newest first: say so." if visible_situation.get("seen", {}).get("newestFirst") else "")
+                 if response_language == "en"
+                 else "\nseen.names trae algunas entradas de la carpeta seen.folder, tal "
+                 "cual se llaman, y seen.count el total de entradas (seen.fileCount "
+@@ -11628,6 +11632,7 @@ class LlmRuntime:
+                 "sus propias comillas; si seen.moreNotShown es mayor que cero, di que "
+                 "hay más. Nada más: sin propósito, sin interpretación, sin otros "
+                 "números, sin nombres que no estén en seen.names."
++                + (" seen.names son las entradas más recientes, de la más nueva a la más antigua: dilo." if visible_situation.get("seen", {}).get("newestFirst") else "")
+             )
+         if screen_reading:
+             instruct(

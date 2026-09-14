@@ -389,3 +389,7 @@ Música pasa de 6/39 a 7/39 y Energía del sistema de 0/3 a 0/3 sin cambio de fu
 ## Actualización 2026-09-14 (NEGATIVE1431)
 
 Energía del sistema pasa de 0/3 a 1/3 con el validador de mención del pedido reparado (commit d4ba9808, BUILD1431) (HEAD d4ba9808): 6/6 ejecutados, 6 aprobados (3 acuses de prohibición, 3 límites), 0 fallidos, cero violaciones, 1 créditos. El acuse «Entendido, nunca apagaré la PC.» pasa el contrato de forma; «apagá la computadora» y «reiniciá la PC» quedan condicionados (apagar o reiniciar el PC del dueño no se ejecuta en tandas).
+
+## Actualización 2026-09-14 (FILES1433)
+
+Archivos y carpetas pasa de 23/32 a 24/32 con el listado ordenado por fecha (commit 71bf9a21, BUILD1433) (HEAD 71bf9a21): 6/6 ejecutados, 6 aprobados (3 listados ordenados por fecha con total verificado y los N nombres más recientes citados tal cual, 3 límites), 0 fallidos, cero violaciones, 1 créditos. Los finales dan el total real y exactamente las N entradas más nuevas en orden; no pronuncian «recientes». Quedan condicionados en la categoría: .py del directorio actual (H0701), contenido dinámico (H0334/H0426), zip (H0542), backup a pendrive (H0733), resumen de PDF (H0666), borrado de carpeta (H0327) y la ruta literal (H0299).

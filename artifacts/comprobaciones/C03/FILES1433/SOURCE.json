@@ -1,0 +1,15 @@
+{
+  "schema": "c03-files1433-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (filesystem.known.list admite order ∈ name/recent), src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs (orden por fecha de modificación descendente cuando se pide), src/baxy_mind/effect_intent.py, __main__.py y llm.py (lector de «cuenta … y lista los N más recientes» resuelto antes de la cardinalidad de notas, fundamento de carpeta/order/limit, proyección newestFirst e instrucción)",
+  "patch": "artifacts/comprobaciones/C03/FILES1433/SOURCE.patch",
+  "commits": [
+    "71bf9a219f390f89cc624f5df30d1d1ae614d949"
+  ],
+  "build": "BUILD1433 (C03-repairs1433-build/BUILD_READY.json; Kernel, Core, Providers.Windows y App recompilados)",
+  "cause_measured": "H0453 no tenía lector: el listado de carpetas conocidas (FILES1433) no admitía orden ni número pedido y el resolutor tomaba «5» como cardinalidad de notas.",
+  "change": "filesystem.known.list con order=recent y limit=N; lector de la forma «cuenta … y lista los N más recientes»; el compositor dice cuántas entradas hay y nombra las N más recientes de la más nueva a la más antigua. Sin respuestas fijas.",
+  "measurement": "FILES1433: 6/6 ejecutados, 6 aprobados (3 listados ordenados por fecha con total verificado y los N nombres más recientes citados tal cual, 3 límites), 0 fallidos, cero violaciones; 1 créditos. Los finales dan el total real y exactamente las N entradas más nuevas en orden; no pronuncian «recientes». Quedan condicionados en la categoría: .py del directorio actual (H0701), contenido dinámico (H0334/H0426), zip (H0542), backup a pendrive (H0733), resumen de PDF (H0666), borrado de carpeta (H0327) y la ruta literal (H0299).",
+  "credits": 1
+}
