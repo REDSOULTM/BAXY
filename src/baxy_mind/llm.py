@@ -6212,6 +6212,9 @@ def _spanish_modal_is_malformed(value: object) -> bool:
     )
 
 
+_SHORT_DEVICE_TOKENS = frozenset({"pc", "tv", "ip"})
+
+
 def _unsupported_answer_mentions_request(value: object, request: object) -> bool:
     """Require one concrete request concept in bounded limitation prose.
 
@@ -6231,12 +6234,23 @@ def _unsupported_answer_mentions_request(value: object, request: object) -> bool
     request_tokens = {
         token
         for token in _policy_guard_text(request).split()
-        if len(token) >= 3 and token not in _UNSUPPORTED_ANCHOR_STOPWORDS
+        # NEGATIVE1429 «jamás apagues la pc»: the device acronym is the concept.
+        if (len(token) >= 3 or token in _SHORT_DEVICE_TOKENS)
+        and token not in _UNSUPPORTED_ANCHOR_STOPWORDS
     }
     if not request_tokens:
         return True
     answer_tokens = set(_policy_guard_text(value).split())
     if request_tokens & answer_tokens:
+        return True
+    # NEGATIVE1429: the acknowledgement conjugates the prohibited verb
+    # («apagues» → «apagaré»); a shared five-letter stem is the same concept.
+    if any(
+        len(request_token) >= 5 and len(answer_token) >= 5
+        and request_token[:5] == answer_token[:5]
+        for request_token in request_tokens
+        for answer_token in answer_tokens
+    ):
         return True
     equivalent_concepts = (
         {"computer", "computador", "computadora", "equipo", "machine", "maquina"},
