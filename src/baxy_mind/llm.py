@@ -4387,6 +4387,48 @@ def _contradicted_brightness_extreme(text: str, seen: dict) -> str:
     return ""
 
 
+# Framing vocabulary a screen-reading report may use without it appearing in
+# the recognized text (folded 4-letter stems): the act of reading, the screen,
+# lines and text, and the ordinary connectives around a quotation.
+_OCR_FRAMING_STEMS = frozenset({
+    "pant", "text", "lect", "leid", "leyo", "leer", "lei", "reco", "line", "cont",
+    "mues", "most", "apar", "dice", "dijo", "vist", "visi", "escr", "pala", "cita",
+    "capt", "imag", "vent", "sigu", "incl", "tien", "encu", "esta", "ests", "hay",
+    "prin", "arri", "abaj", "izqu", "dere", "part", "zona", "area", "resu", "titu",
+    "boto", "menu", "barr", "pest", "docu", "pagi", "codi", "edit", "prog",
+    "scre", "read", "show", "disp", "cont", "line", "says", "said", "reco", "visi",
+    "quot", "word", "foll", "incl", "appe", "wind", "capt", "imag", "titl", "butt",
+    "tabs", "bars", "docu", "page", "code", "edit", "prog", "here", "what", "with",
+    "this", "that", "from", "have", "there", "these", "those", "also", "like",
+    "entr", "sobr", "desd", "hast", "tamb", "como", "pero", "para", "porq", "cuan",
+    "dond", "algu", "otro", "otra", "todo", "toda", "cada", "much", "poco", "vari",
+    "nume", "cifr", "fech", "hora", "nomb", "ruta", "arch", "carp", "coma", "come",
+    "mens", "avis", "erro", "adve", "list", "tabl", "colu", "fila", "form", "camp",
+    "opci", "ajus", "conf", "sist", "apli", "prim", "segu", "terc", "ulti", "final",
+    "veo", "puedo", "pued", "logr", "lleg", "reci", "term", "ento", "lueg", "desp",
+    "ante", "junt", "cerc", "lado", "medi", "cent", "lado", "mism", "prop", "solo",
+    "unic", "clar", "legi", "borr", "peque", "gran", "corto", "larg", "brev",
+    "ella", "ello", "entre", "amon", "such", "them", "they", "some", "seve", "abou",
+})
+
+
+def _ocr_unsupported_terms(text: str, recognized: str, user_text: str) -> list[str]:
+    """Content words of a screen-reading report that the recognized text lacks."""
+
+    def stems(value: str) -> set[str]:
+        return {
+            word[:4]
+            for word in re.findall(r"[a-z0-9]{4,}", _reading_fold(value))
+        }
+
+    allowed = stems(recognized) | stems(user_text) | _OCR_FRAMING_STEMS
+    unsupported: list[str] = []
+    for word in re.findall(r"[a-z0-9]{5,}", _reading_fold(text)):
+        if word[:4] not in allowed and word not in unsupported:
+            unsupported.append(word)
+    return unsupported
+
+
 def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     """El texto público conserva los hechos que el payload le dio.
 
@@ -4505,6 +4547,15 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         # virtual.»: the verified capture was echoed as an order. Report it as
         # done, in the first person.
         return "capture_not_reported"
+    recognized = seen.get("text") if isinstance(seen, dict) else None
+    if payload.get("operation") == "ocr.read" and isinstance(recognized, str) and recognized.strip():
+        # SCREEN1409 «leéme lo que dice la pantalla»: the finals summarized a
+        # «Fable limit warning», generated scripts and an execution flow that
+        # the recognized text never contained. Every content word of the
+        # report must come from that text (or the request); framing words
+        # about reading a screen are the only allowance.
+        if _ocr_unsupported_terms(text, recognized, user_text):
+            return "ocr_unsupported_terms"
     written = seen.get("writtenText") if isinstance(seen, dict) else None
     if payload.get("operation") == "clipboard.write.text" and isinstance(written, str) and written:
         # CLIPBOARD1359: «Hola» / «Buen día.» were published after a verified
@@ -11366,17 +11417,35 @@ class LlmRuntime:
                 or len(json.dumps(inventory_entries, ensure_ascii=False, separators=(",", ":"))) >= 512
             )
         )
-        # SCREEN1407: a screen reading transcribes up to 2000 characters of
-        # recognized text; the default budget would cut it mid-sentence.
-        dense_reading = (
+        # SCREEN1407/1409: a full transcription of the recognized text (about
+        # 500 tokens) cannot finish inside the composition budget, and free
+        # summaries invented a warning and scripts the screen never showed. The
+        # report quotes a few lines verbatim and stays within the default budget.
+        screen_reading = (
             situation.get("operation") == "ocr.read"
             and situation.get("verified") is True
             and situation.get("succeeded") is True
         )
         # Inventory facts travel in situation, outside requiredFacts. Reuse
         # the dense output allowance, keeping their existing prompt unchanged.
-        if dense_fact_contract or dense_inventory or dense_reading:
+        if dense_fact_contract or dense_inventory:
             payload["max_tokens"] = 512
+        if screen_reading:
+            instruct(
+                "\nThe screen text recognized is in seen.text, exactly as read. "
+                "Say what the screen shows by quoting two or three of its lines "
+                "verbatim (untranslated, in quotation marks) and say how many "
+                "lines were recognized. Use no word that is not in that text or "
+                "in the request: no purpose, no interpretation, no warnings, no "
+                "full transcription."
+                if response_language == "en"
+                else "\nEl texto reconocido en la pantalla está en seen.text, tal "
+                "cual se leyó. Di qué muestra la pantalla citando dos o tres de sus "
+                "líneas tal cual (sin traducir, entre comillas) y di cuántas líneas "
+                "se reconocieron. No uses ninguna palabra que no esté en ese texto "
+                "o en el pedido: sin propósito, sin interpretación, sin avisos, sin "
+                "transcripción completa."
+            )
         if dense_fact_contract:
             instruct(
                 "\nEste resultado contiene muchos hechos obligatorios. Usa una "
@@ -11966,6 +12035,11 @@ class LlmRuntime:
                 # UI1373 H0555: corrected drafts read «Aprié el botón 5», a
                 # conjugation the model cannot get right; steer to verbs it can.
                 else "Apretaste el botón: dilo con «Hice clic en el …» o «Pulsé el …» y la etiqueta que pidió la persona; no conjugues «apretar»."
+            ),
+            "ocr_unsupported_terms": (
+                "Use only words that appear in the recognized text: quote two or three of its lines exactly as they are, say how many lines were recognized, and add no interpretation, purpose or warning."
+                if response_language == "en"
+                else "Usa sólo palabras que estén en el texto reconocido: cita dos o tres de sus líneas tal cual, di cuántas líneas se reconocieron y no añadas interpretación, propósito ni avisos."
             ),
             "capture_not_reported": (
                 "You took the screenshot: say so in the first person past tense, without repeating the request, without identifiers, and without inventing where it was saved."
