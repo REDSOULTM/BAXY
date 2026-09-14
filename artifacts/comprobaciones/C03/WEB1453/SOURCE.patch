@@ -1,0 +1,87 @@
+commit 86b2ceb9a5df71eee18bdad0a3f13033d09bf19c
+
+C03: a search report gets the dense budget and three pages at most; no weather claim over a failed search; «investiga» is an action head (WEB1453)
+
+WEB1451 measured that «Investiga Spider-Man» and both variants ended no_response for one cause: the search verified five pages about the topic, the first draft listed all of them with their snippets and was cut by the 256-token budget (rejected as cut_by_length, correctly), but the App grants an ordinary composition five seconds and one long generation consumes them, so the shortened retry never ran. The prohibition «No investigues nada en internet.» was answered as chat with a greeting because «investiga» was not in the prohibition reader's action-head vocabulary. WEB1445 had also shown «Sí, va a llover mañana» composed over a search that returned nothing relevant.
+
+Baxy.App MindSidecarClient: a verified web.search whose results JSON is dense counts as a dense observed inventory, so the composition gets the ten-second budget that listings already receive.
+baxy_mind llm: the search instruction asks for at most three pages in at most three sentences; over a web.search without results, a weather assertion is vetoed (search_unsupported_claim) the same way as over results that do not state it.
+baxy_mind effect_intent: «investiga», «investigar» and «research» join the coverage action heads, so «no investigues …» is read as a standalone prohibition.
+
+Offline probes: «No investigues nada en internet.» is a prohibition; «Sí, va a llover mañana. Pero no pude confirmarlo…» over a failed search is vetoed while the honest «No encontré resultados pertinentes…» passes; the readers of the next panel are unchanged. App recompiled (BUILD1453). Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/MindSidecarClient.cs b/src/Baxy.App/MindSidecarClient.cs
+index 378b8334..2d49be67 100644
+--- a/src/Baxy.App/MindSidecarClient.cs
++++ b/src/Baxy.App/MindSidecarClient.cs
+@@ -252,6 +252,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
+                 "window.resolve" => "windows",
+                 "system.process.list" => "processes",
+                 "filesystem.known.list" => "entries",
++                // WEB1451 «Investiga Spider-Man»: five results with snippets make
++                // a report the five-second ceiling cut before its shortened retry.
++                "web.search" => "results",
+                 _ => null,
+             };
+             return collection is not null && observed[collection] is JsonArray rows
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 15936715..db4499c1 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -8165,6 +8165,7 @@ _COVERAGE_ACTION_HEAD = (
+     r"navigate|ve|go|ir|anda|entra|entrar|recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|"
+     rf"play|{_MEDIA_RESUME_VERB}|pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
+     r"consulta|consultar|comprueba|comprobar|checkea|averigua|averiguar|"
++    r"investiga|investigar|research|"
+     r"find\s+out|inspect|inspecciona|give|prepara|prepare|resolve|"
+     r"envia|enviar|enviale|enviales|manda|mandar|mandale|mandales|"
+     r"dile|decile|tell|send|"
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index bc4e7798..a4cb6306 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4810,6 +4810,12 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+         if listing_defect:
+             return listing_defect
+     results_text = _search_results_text(payload)
++    if payload.get("operation") == "web.search" and results_text is None:
++        # WEB1445/002 «va a llover mañana» over a search that returned nothing
++        # relevant: «Sí, va a llover mañana. Pero no pude confirmarlo…» asserts
++        # a forecast no result gave. A failed search supports no weather claim.
++        if _SEARCH_WEATHER_CLAIM.search(_reading_fold(text)) is not None:
++            return "search_unsupported_claim"
+     if results_text is not None:
+         # WEB1445 «qué clima hace hoy»: the results were forecast index pages and
+         # the finals invented «buen tiempo, temperaturas agradables, poco viento»
+@@ -11808,17 +11814,19 @@ class LlmRuntime:
+             # not the answer itself. Say what was found, never what it might say.
+             instruct(
+                 "\nseen.results are the pages the public search returned (title, url, "
+-                "snippet). Report what was found: name the pages by title and site and, "
+-                "if a snippet states a fact, you may repeat it with its words. Never "
+-                "state a temperature, forecast, condition or any fact that no result "
+-                "contains; if the results only point to forecast pages, say that."
++                "snippet). Report what was found in at most three sentences: name at "
++                "most three pages by title and site and, if a snippet states a fact, "
++                "you may repeat it with its words. Never state a temperature, forecast, "
++                "condition or any fact that no result contains; if the results only "
++                "point to forecast pages, say that."
+                 if response_language == "en"
+                 else "\nseen.results son las páginas que devolvió la búsqueda pública "
+-                "(título, url, fragmento). Informa lo encontrado: nombra las páginas por "
+-                "título y sitio y, si un fragmento afirma un dato, puedes repetirlo con "
+-                "sus palabras. Nunca afirmes una temperatura, un pronóstico, un estado "
+-                "del tiempo ni ningún dato que ningún resultado contenga; si los "
+-                "resultados sólo remiten a páginas de pronóstico, dilo."
++                "(título, url, fragmento). Informa lo encontrado en tres oraciones como "
++                "máximo: nombra como máximo tres páginas por título y sitio y, si un "
++                "fragmento afirma un dato, puedes repetirlo con sus palabras. Nunca "
++                "afirmes una temperatura, un pronóstico, un estado del tiempo ni ningún "
++                "dato que ningún resultado contenga; si los resultados sólo remiten a "
++                "páginas de pronóstico, dilo."
+             )
+         if _known_listing_in_payload(visible_situation) is not None:
+             # FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:

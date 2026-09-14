@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1453-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/MindSidecarClient.cs (una web.search verificada con resultados es composición densa, 10 s), src/baxy_mind/llm.py (instrucción de búsqueda: como máximo tres páginas en tres oraciones; veto de afirmación de tiempo sobre una búsqueda fallida), src/baxy_mind/effect_intent.py (investiga/investigar/research como cabezas de acción de cobertura)",
+  "patch": "artifacts/comprobaciones/C03/WEB1453/SOURCE.patch",
+  "commits": [
+    "86b2ceb9a5df71eee18bdad0a3f13033d09bf19c"
+  ],
+  "build": "BUILD1453 (C03-repairs1453-build/BUILD_READY.json; App recompilada)",
+  "cause_measured": "WEB1453: el grupo de investigar un tema falló porque el primer borrador se cortó por el presupuesto de tokens (rechazado como cut_by_length) y la App concede 5 s a una composición ordinaria, así que el reintento acortado nunca corrió; «No investigues nada en internet.» se contestó con un saludo porque «investiga» no era cabeza de acción del lector de prohibiciones; WEB1445 mostró «Sí, va a llover mañana» sobre una búsqueda fallida.",
+  "change": "Una web.search verificada con resultados es composición densa en la App; la instrucción pide como máximo tres páginas; una afirmación de tiempo sobre una búsqueda fallida se veta; «investiga» entra en las cabezas de acción. Sin respuestas fijas.",
+  "measurement": "WEB1453: 9/9 ejecutados, una parada del runner; el grupo de investigar un tema (literal y dos variantes) publicó en una sola pasada resúmenes fieles de tres oraciones con lo que dicen los fragmentos, sin hechos ajenos a los resultados; el grupo del clima de un nombre que no es un lugar (literal y dos variantes) buscó, no obtuvo páginas pertinentes y lo dijo con verdad (una variante añadiendo la razón de que el nombre es una persona), pero la regla sellada de caso aprobado exige la búsqueda permitida completada y verificada y la búsqueda falló por resultados no pertinentes, así que esos tres quedan fallidos y no acreditables en este transporte; dos límites fallaron: la pregunta de definición «¿Qué es un pronóstico del tiempo?» se leyó como consulta de clima (búsqueda no permitida, parada) y la prohibición con «investigues» ya se reconoce pero las respuestas añadieron una segunda oración y el contrato de una oración las rechazó (pregunta de aclaración publicada); el límite de conocimiento respondió sin buscar; 1 créditos. Causas residuales: «qué es un/una <sustantivo del clima>» debe leerse como definición; un acuse de prohibición debe conservar su primera oración cuando el resto es una oferta; el clima de un nombre que no es un lugar necesita un instrumento que admita una búsqueda fallida con final veraz o un lector que pregunte por el lugar sin buscar; las demás filas abiertas son el clima de ciudades nombradas (el motor devuelve el clima local) y el pedido compuesto sobre WhatsApp.",
+  "credits": 1
+}

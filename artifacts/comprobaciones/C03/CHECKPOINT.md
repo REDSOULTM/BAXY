@@ -1,3 +1,25 @@
+## WEB1453 — estado vigente 2026-09-14T19:13:03.411425+00:00
+
+Parcial: 4 aprobados, 5 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 452/742 | 290 | 0 | >=326 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 325 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WEB1453 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: WEB1453: 9 ejecutados, 4 aprobados, 5 fallidos, 1 créditos (índices [0]); Información web actual 8/17. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/WEB1453/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 160.03 s acumulados; pico GPU 3497.56 MiB; pico RAM 1718.83 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WEB1453 precedente. -->
+
 ## WEB1451 — estado vigente 2026-09-14T18:43:14.861462+00:00
 
 Parcial: 8 aprobados, 4 fallidos, 0 sin ejecutar; 2 créditos.
