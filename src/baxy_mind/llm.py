@@ -4278,7 +4278,12 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
                 allowed.append((int(countdown.get("remaining_hours", 0)), int(countdown.get("remaining_minutes", 0))))
             except (TypeError, ValueError):
                 pass
-        clock_defect = _clock_fact_defect(text, clock, allowed=tuple(allowed))
+        # CLOCK1329 H0399: «Faltan 14 horas y 7 minutos para las 3 de la tarde»
+        # answers the countdown without restating the clock; the observed time
+        # is optional there and only a contrary clock claim is a defect.
+        clock_defect = _clock_fact_defect(
+            text, clock, required=not isinstance(countdown, dict), allowed=tuple(allowed),
+        )
         if clock_defect:
             return clock_defect
     calendar_date = payload.get("date")
@@ -10851,10 +10856,10 @@ class LlmRuntime:
         if clock and isinstance(payload.get("countdown"), dict):
             countdown = payload["countdown"]
             instruct(
-                "\nState the time in clock, then say that countdown.remaining remains "
-                "until countdown.target"
+                "\nSay that countdown.remaining remains until countdown.target"
                 + (" (it already passed today, so this is until tomorrow)" if countdown.get("already_passed_today") else "")
                 + ". Copy those figures exactly; never compute them yourself. "
+                "You may also state the time in clock. "
                 "Do not set the clock. Do not introduce yourself."
             )
         elif clock and _requests_calendar_date(user_text):
