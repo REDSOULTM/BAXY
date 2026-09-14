@@ -6252,7 +6252,7 @@ def window_inventory_arguments(text: str) -> dict[str, object] | None:
         r"(?:(?:lo\s+)?que\s+tengo\s+abierto|what\s+i\s+have\s+open|"
         r"what(?:'s|\s+is)\s+open|what\s+do\s+i\s+have\s+open)"
     )
-    if not _has(text, rf"\b(?:ventanas|windows)\b|\b{open_things}\b"):
+    if not _has(text, rf"\b(?:ventanas?|windows?)\b|\b{open_things}\b"):
         return None
     number = r"(?:\d+|" + "|".join(
         re.escape(word) for word in sorted(_PERCENTAGE_WORD_VALUES, key=len, reverse=True)
@@ -6287,9 +6287,21 @@ def window_inventory_arguments(text: str) -> dict[str, object] | None:
         r"(?:\s+(?:son|are))?"
     )
     ending = r"(?:\s+(?:ahora|ahora\s+mismo|now|right\s+now))?(?:\s*[,;]?\s*(?:please|por\s+favor|porfa))?"
+    # WINDOWS1315 H0419 «cuál es la ventana más grande»: a superlative over the
+    # open windows is the same inventory read; the size comparison is made on
+    # the observed geometry, never guessed.
+    size_question = (
+        r"(?:(?:dime|decime|tell\s+me)\s+)?(?:cual|que|which|what)\s+(?:es\s+|is\s+)?"
+        r"(?:(?:de|of)\s+(?:(?:las|mis|the|my)\s+)?(?:ventanas|windows)(?:\s+(?:abiertas|open))?\s+(?:es\s+|is\s+)?)?"
+        r"(?:(?:la|the)\s+)?(?:(?:ventana|window)\s+(?:es\s+|is\s+)?(?:(?:la|the)\s+)?)?"
+        r"(?:mas\s+(?:grande|chica|pequena|ancha|alta)|"
+        r"largest|biggest|smallest|widest|tallest)(?:\s+(?:ventana|window))?"
+        r"(?:\s+(?:que\s+tengo\s+abierta|abierta|open|que\s+tengo|i\s+have\s+open))?"
+    )
     if not re.fullmatch(
         rf"(?:(?:{read_head}\s+(?:{question_head}\s+)?|{question_head}\s+)(?:{object_phrase}|{open_things})|"
-        rf"{object_phrase}\s*[,;]\s*(?:muestramelas|enumeralas|list\s+them|show\s+them))"
+        rf"{object_phrase}\s*[,;]\s*(?:muestramelas|enumeralas|list\s+them|show\s+them)|"
+        rf"{size_question})"
         rf"{ending}", text, re.IGNORECASE,
     ):
         return None

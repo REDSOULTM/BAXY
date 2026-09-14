@@ -383,9 +383,22 @@ def _inventory_is_entire(seen: dict) -> bool | None:
     )
 
 
+# WINDOWS1315 H0419 «cuál es la ventana más grande»: a superlative over the
+# open windows asks for one window, not the list.
+_WINDOW_SIZE_QUESTION = re.compile(
+    r"\b(?:ventanas?|windows?)\b.*\b(?:mas\s+(?:grande|chica|pequena|ancha|alta)|largest|biggest|smallest|widest|tallest)\b|"
+    r"\b(?:mas\s+(?:grande|chica|pequena)|largest|biggest|smallest)\s+(?:ventana|window)\b"
+)
+
+
 def _inventory_identity_request(user_text: str) -> bool:
     """A list request names windows; a count request only counts them."""
-    return window_inventory_arguments(user_text) is not None and not _COUNT_QUESTION.search(fold(user_text))
+    folded = fold(user_text)
+    return (
+        window_inventory_arguments(user_text) is not None
+        and not _COUNT_QUESTION.search(folded)
+        and not _WINDOW_SIZE_QUESTION.search(folded)
+    )
 
 
 def _named_inventory_subset(windows: list) -> list:
@@ -427,6 +440,28 @@ def project_window_inventory(payload: dict, user_text: str) -> dict:
             projected["windows"] = named
             projected["count"] = len(named)
             projected["hasMore"] = True
+            projected.pop("limit", None)
+            projected.pop("nextOffset", None)
+    if _WINDOW_SIZE_QUESTION.search(fold(user_text)):
+        # WINDOWS1315 H0419 «cuál es la ventana más grande»: the answer is a
+        # comparison of the observed geometry, computed here, never guessed.
+        # The narrator's copy keeps only the selected window; the others are
+        # counted as observed but not named.
+        sized = [
+            window for window in seen["windows"]
+            if isinstance(window, dict)
+            and isinstance(window.get("width"), (int, float)) and isinstance(window.get("height"), (int, float))
+        ]
+        if sized:
+            smallest = re.search(r"\b(?:mas\s+(?:chica|pequena)|smallest)\b", fold(user_text)) is not None
+            pick = (min if smallest else max)(sized, key=lambda w: float(w["width"]) * float(w["height"]))
+            selected = {
+                key: pick.get(key) for key in ("title", "processName", "width", "height") if pick.get(key) is not None
+            }
+            projected["smallestWindow" if smallest else "largestWindow"] = dict(selected)
+            projected["windows"] = [selected]
+            projected["count"] = 1
+            projected["hasMore"] = seen["observedCount"] > 1
             projected.pop("limit", None)
             projected.pop("nextOffset", None)
     projected["returnedPageScope"] = {

@@ -10327,6 +10327,15 @@ class LlmRuntime:
                 " snapshot. Visible window style does not prove an unobscured window"
                 " or background process state."
             )
+            if any(key in _merged_observed(situation) for key in ("largestWindow", "smallestWindow")):
+                # WINDOWS1315: the size comparison is already made on the
+                # observed width and height; the narrator names that window.
+                scope += (
+                    " largestWindow or smallestWindow is the window selected by comparing the"
+                    " observed width and height of every observed window; answer the size question"
+                    " with that window's exact title or processName and, if useful, its width and"
+                    " height in pixels. Do not list the other windows."
+                )
             message_prompt += scope
             cpu_prompt += scope
         if (
