@@ -9079,6 +9079,8 @@ def _is_direct_request(text: str) -> bool:
         # to the front»: focus heads are request speech acts too.
         r"trae|traeme|traer|lleva|llevar|bring|enfoca|enfocame|enfocar|focus|"
         r"switch(?=\s+to\b)|"
+        # SCREEN1417 «describime la pantalla», «describí lo que ves».
+        r"describime|describeme|describi|describila|describilo|"
         r"cierra|cerra|cerrar|cerrame|cierrame|cierres|close|envia|enviar|enviale|enviales|"
         r"manda|mandar|mandale|mandales|"
         r"arma|armar|marca|marcar|graba|grabar|record|stage|"
@@ -12577,14 +12579,36 @@ def _review_input_and_capture_effects(
                 r"describe(?:me)?|describe it|que hay en la imagen)\b",
                 priority=1,
             )
-    implicit_screen_read = (
+    # SCREEN1417 «leé la pantalla», «qué hay en la pantalla», «describime la
+    # pantalla», «qué ves en mi pantalla»: without a vision provider the truthful
+    # reading of a screen is its recognized text, which the composer frames as
+    # what it can read. The phone/car exclusion below still applies.
+    bare_screen_read = (
         _head_is(head, _READ)
-        and _has(folded, r"\b(?:pantalla|screen)\b")
-        and _has(
-            folded,
-            r"\b(?:mensaje|message|error|texto|text|lo que|what)\b",
+        and _has(folded, r"^[¿?¡!\s]*(?:por favor\s*[,:]?\s*)?(?:lee|leer|leeme|read)\s+(?:me\s+)?(?:la|mi|the|my)\s+(?:pantalla|screen)[\s?!.]*$")
+    )
+    screen_content_question = _has(
+        folded,
+        r"^[¿?¡!\s]*(?:(?:decime|dime|contame|cuentame|tell me)\s+)?"
+        r"(?:que|what)\s+(?:hay|se ve|aparece|ves|estas viendo|is|is there|do you see|are you seeing|can you see)"
+        r"(?:\s+(?:ahora|now))?\s+(?:en|on)\s+(?:mi|la|tu|my|the)\s+(?:pantalla|screen)[\s?!.]*$|"
+        r"^[¿?¡!\s]*(?:describe|describi|describime|describeme|describi?la|describila)\s+"
+        r"(?:(?:mi|la|my|the)\s+(?:pantalla|screen)|lo que ves(?:\s+(?:en|on)\s+(?:mi|la|my|the)\s+(?:pantalla|screen))?|"
+        r"what you see(?:\s+on\s+(?:my|the)\s+screen)?)[\s?!.]*$",
+    )
+    implicit_screen_read = (
+        (
+            _head_is(head, _READ)
+            and _has(folded, r"\b(?:pantalla|screen)\b")
+            and _has(
+                folded,
+                r"\b(?:mensaje|message|error|texto|text|lo que|what)\b",
+            )
         )
-        and not _has(
+        or bare_screen_read
+        or screen_content_question
+    ) and (
+        not _has(
             folded,
             r"\b(?:como|how)\s+(?:puedo|podria|can i|could i|to)\b",
         )
@@ -12599,13 +12623,13 @@ def _review_input_and_capture_effects(
             matches,
             folded,
             "capture.screenshot",
-            rf"\b{_READ}\b",
+            rf"\b{_READ}\b|\b(?:que|what|describ\w*)\b",
         )
         _append(
             matches,
             folded,
             "ocr.read",
-            r"\b(?:pantalla|screen)\b",
+            r"\b(?:pantalla|screen)\b|\blo que ves\b|\bwhat you see\b",
             priority=1,
         )
     if context_capture and _has(

@@ -4398,24 +4398,23 @@ def _contradicted_brightness_extreme(text: str, seen: dict) -> str:
 # the recognized text (folded 4-letter stems): the act of reading, the screen,
 # lines and text, and the ordinary connectives around a quotation.
 _OCR_FRAMING_STEMS = frozenset({
-    "pant", "text", "lect", "leid", "leyo", "leer", "lei", "reco", "line", "cont",
-    "mues", "most", "apar", "dice", "dijo", "vist", "visi", "escr", "pala", "cita",
-    "capt", "imag", "vent", "sigu", "incl", "tien", "encu", "esta", "ests", "hay",
-    "prin", "arri", "abaj", "izqu", "dere", "part", "zona", "area", "resu", "titu",
-    "boto", "menu", "barr", "pest", "docu", "pagi", "codi", "edit", "prog",
-    "scre", "read", "show", "disp", "cont", "line", "says", "said", "reco", "visi",
-    "quot", "word", "foll", "incl", "appe", "wind", "capt", "imag", "titl", "butt",
-    "tabs", "bars", "docu", "page", "code", "edit", "prog", "here", "what", "with",
-    "this", "that", "from", "have", "there", "these", "those", "also", "like",
-    "entr", "sobr", "desd", "hast", "tamb", "como", "pero", "para", "porq", "cuan",
-    "dond", "algu", "otro", "otra", "todo", "toda", "cada", "much", "poco", "vari",
-    "nume", "cifr", "fech", "hora", "nomb", "ruta", "arch", "carp", "coma", "come",
-    "mens", "avis", "erro", "adve", "list", "tabl", "colu", "fila", "form", "camp",
-    "opci", "ajus", "conf", "sist", "apli", "prim", "segu", "terc", "ulti", "final",
-    "veo", "puedo", "pued", "logr", "lleg", "reci", "term", "ento", "lueg", "desp",
-    "ante", "junt", "cerc", "lado", "medi", "cent", "lado", "mism", "prop", "solo",
-    "unic", "clar", "legi", "borr", "peque", "gran", "corto", "larg", "brev",
-    "ella", "ello", "entre", "amon", "such", "them", "they", "some", "seve", "abou",
+    # reading, the screen, lines, quoting
+    "pant", "scre", "text", "lect", "leid", "leyo", "leer", "lei", "reco", "line",
+    "mues", "most", "show", "disp", "apar", "appe", "dice", "dijo", "says", "said",
+    "vist", "visi", "escr", "pala", "word", "cita", "quot", "capt", "imag", "foto",
+    "pict", "desc", "cann", "uniej", "pued", "puedo", "veo", "cont", "incl", "tien",
+    "encu", "esta", "hay", "ests", "sigu", "foll", "here",
+    # position words about the screen
+    "prin", "arri", "abaj", "izqu", "dere", "part", "zona", "area", "medi", "cent",
+    "lado", "junt", "cerc",
+    # connectives and quantifiers
+    "what", "with", "this", "that", "from", "have", "there", "these", "those", "also",
+    "like", "such", "them", "they", "some", "seve", "abou", "amon", "entr", "entre",
+    "ella", "ello", "sobr", "desd", "hast", "tamb", "como", "pero", "para", "porq",
+    "cuan", "dond", "algu", "otro", "otra", "todo", "toda", "cada", "much", "poco",
+    "vari", "solo", "unic", "mism", "prop", "prim", "segu", "terc", "ulti", "final",
+    "lueg", "desp", "ante", "ento", "term", "logr", "lleg", "reci", "clar", "legi",
+    "borr", "peque", "gran", "corto", "larg", "brev", "resu",
 })
 
 
@@ -11513,6 +11512,23 @@ class LlmRuntime:
                 "interpretación, sin avisos, sin palabras que no estén en seen.text "
                 "o en el pedido."
             )
+            if re.search(
+                r"\b(?:describ\w*|ves|viendo|see|seeing|hay en|is on|what'?s on)\b",
+                _reading_fold(user_text),
+            ):
+                # SCREEN1417 «qué hay en la pantalla», «describime la pantalla»:
+                # no vision provider is configured, so the honest scope is the
+                # text this reading recognized, said before the lines.
+                instruct(
+                    "\nThe person asked what is on the screen or to describe it. "
+                    "Say first that you cannot describe images, only read the text "
+                    "on the screen, and then report the lines as above."
+                    if response_language == "en"
+                    else "\nLa persona preguntó qué hay en la pantalla o pidió "
+                    "describirla. Di primero que no puedes describir imágenes, sólo "
+                    "leer el texto de la pantalla, y después informa las líneas como "
+                    "arriba."
+                )
         if dense_fact_contract:
             instruct(
                 "\nEste resultado contiene muchos hechos obligatorios. Usa una "
