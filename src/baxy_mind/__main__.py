@@ -1325,6 +1325,11 @@ def apply_conversation_effect_presentation(
         or decision.get("mode") != "conversation"
         or decision.get("conversation_kind") != "knowledge"
         or conversation_only_content_request(objective)
+        # IDENTITY1323 H0012 «to quien chuta eres.»: a question about who is
+        # answering or what it does is answered by identity or the catalog;
+        # the effect-shape guess («chuta» as a kick) must not turn it into a
+        # clarification or an unsupported boundary.
+        or read_request(objective).intents & {INTENT_IDENTITY, INTENT_CAPABILITY}
     ):
         return decision
     try:
@@ -6940,6 +6945,9 @@ def _prepare_turn_result(
                 temperature=0.0,
                 conversation_kind=presentation_conversation_kind,
                 authenticated_operations=tuple(intent_operations),
+                # IDENTITY1325: «cómo funciona esto» names what the served
+                # catalog does on this PC; the families come from it.
+                served_operations=available_operations,
                 # Language is independently constrained from the current message.
                 # The routing field cannot force the wrong response language.
                 response_language=response_language,
