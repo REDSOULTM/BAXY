@@ -464,6 +464,13 @@ def project_window_inventory(payload: dict, user_text: str) -> dict:
             projected["hasMore"] = seen["observedCount"] > 1
             projected.pop("limit", None)
             projected.pop("nextOffset", None)
+            # WINDOWS1317: the comparison ran over the returned page; say whether
+            # that page was the entire observed inventory.
+            projected["sizeComparisonScope"] = {
+                "windowsCompared": len(sized),
+                "windowsObserved": seen["observedCount"],
+                "comparedEveryObservedWindow": _inventory_is_entire(seen) is True and len(sized) == seen["count"],
+            }
     projected["returnedPageScope"] = {
         "windowsListedOnThisPage": projected["count"],
         "totalWindowsInSelectedInventory": total,
@@ -705,6 +712,11 @@ def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
         return "extra_claim"
     total = seen["totalCount"] if seen["complete"] else None
     entire_inventory = _inventory_is_entire(seen)
+    comparison = seen.get("sizeComparisonScope")
+    if isinstance(comparison, dict) and comparison.get("comparedEveryObservedWindow") is True:
+        # WINDOWS1317: the narrator's page holds the selected window only, but
+        # the size comparison covered every observed window.
+        entire_inventory = True
     partial_page = entire_inventory is not True
     count_question = _COUNT_QUESTION.search(fold(user_text))
     stated_subset = False

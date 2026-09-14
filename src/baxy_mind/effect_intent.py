@@ -6306,6 +6306,11 @@ def window_inventory_arguments(text: str) -> dict[str, object] | None:
     ):
         return None
     result: dict[str, object] = {"process": "*", "byTitle": False}
+    if re.fullmatch(rf"{size_question}{ending}", text, re.IGNORECASE):
+        # WINDOWS1317: the comparison must see every observed window; ask for
+        # the largest page the catalog allows (the App's default is 20).
+        result["limit"] = 50
+        return result
     limit = _match(text, rf"\b(?:primeras|first|hasta|up\s+to)\s+(?P<number>{number})\b")
     if limit is not None:
         raw = limit.group("number")

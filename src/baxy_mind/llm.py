@@ -10336,6 +10336,12 @@ class LlmRuntime:
                     " with that window's exact title or processName and, if useful, its width and"
                     " height in pixels. Do not list the other windows."
                 )
+                comparison = _merged_observed(situation).get("sizeComparisonScope")
+                if isinstance(comparison, dict) and comparison.get("comparedEveryObservedWindow") is not True:
+                    scope += (
+                        " The comparison covered only windowsCompared of windowsObserved windows:"
+                        " say that the answer is among those compared windows (a partial page)."
+                    )
             message_prompt += scope
             cpu_prompt += scope
         if (
