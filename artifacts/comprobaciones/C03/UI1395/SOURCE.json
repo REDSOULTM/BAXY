@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1395-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/MainWindowViewModel.cs (ConductorConfirmationShape: una app.open completada y verificada con processId positivo puede preceder al input.visible.click revisado con el único argumento label)",
+  "patch": "artifacts/comprobaciones/C03/UI1395/SOURCE.patch",
+  "commits": [
+    "17881700253bb99ad083353f55ff791ed02f0a3e"
+  ],
+  "build": "BUILD1395 (C03-repairs1395-build/BUILD_READY.json; App recompilada)",
+  "cause_measured": "UI1393: la mente planificó app.open + input.visible.click, la Calculadora se abrió (completada y verificada) y la App pidió confirmar el clic, pero el turno revisado se rechazó como review_pending_not_supported: ConductorConfirmationShape sólo admitía un plan de un paso o un prefijo de lectura verificada; la traza nombró el rechazo «shape».",
+  "change": "ConductorConfirmationShape admite el plan de dos pasos app.open (completada, verificada, processId > 0) + input.visible.click (único argumento label) como confirmación capturable; el revisor sigue viendo sólo la etiqueta. Sin respuestas fijas.",
+  "measurement": "UI1395: 10/10 ejecutados, 3 límites aprobados, 7 casos compuestos fallidos (6 clics aprobados sin verificación, 1 no aprobado por un defecto del revisor de la raíz), 0 violaciones; 0 créditos. UI1395 sobre BUILD1395 (App: ConductorConfirmationShape admite una app.open verificada antes del clic revisado): la reparación se sostiene; en cada caso compuesto la Calculadora se abrió (completada y verificada, proceso real), la App propuso el clic y la raíz lo aprobó sobre la ventana lanzada. El clic terminó failed visible_button_postread_unchanged (efecto incierto) en seis casos; el séptimo no fue aprobado por un defecto del revisor de la raíz (el marco ApplicationFrameHost es un proceso del sistema preexistente), corregido antes del caso siguiente. Sonda de la raíz con el lanzamiento del propio proveedor (calc.exe + RequestForeground sobre Process.MainWindowHandle) y DesktopClickVisible.ps1: antes del clic el primer plano es la CoreWindow de la Calculadora (calculatorapp.exe, sin ventana de nivel superior propia) y tras el Invoke de UIA pasa al marco ApplicationFrameHost, así que WindowsVisibleControlAdapter compara capturas de dos hwnd distintos y nunca llega a comparar superficies. Finales de fallo genéricos («La causa del fallo es que el resultado no se ha verificado.»). Siguiente: capturar la ventana raíz por nombre antes y después del clic (UI1397).",
+  "credits": 0
+}

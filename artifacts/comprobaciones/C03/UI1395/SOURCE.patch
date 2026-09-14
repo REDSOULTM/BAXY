@@ -1,0 +1,41 @@
+commit 17881700253bb99ad083353f55ff791ed02f0a3e
+
+C03: the reviewed turn accepts a verified app.open before the reviewed click (UI1395)
+
+UI1393 measured «abrí la calculadora y apretá el 5»: the mind planned app.open + input.visible.click, the Calculator opened (completed, verified, real process) and the App asked to confirm the click, but the reviewed turn was rejected as review_pending_not_supported because MainWindowViewModel.ConductorConfirmationShape only admits a single-step plan or a verified read prefix (web.search before browser.navigate, window.resolve/window.active before app.close); the shell trace names the refusal «shape».
+
+MainWindowViewModel.ConductorConfirmationShape: a two-step plan whose first step is a completed, verified app.open with a positive processId, and whose current step is input.visible.click with the single label argument, is a capturable confirmation. The reviewer still sees only the label; nothing else changes.
+
+App recompiled (BUILD1395). Tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/MainWindowViewModel.cs b/src/Baxy.App/MainWindowViewModel.cs
+index acaebdfd..64ed4d00 100644
+--- a/src/Baxy.App/MainWindowViewModel.cs
++++ b/src/Baxy.App/MainWindowViewModel.cs
+@@ -663,6 +663,23 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
+             return execution.CurrentStep.Operation is "browser.navigate" or "browser.navigate.named";
+         }
+ 
++        if (execution.Steps[0].Operation == "app.open")
++        {
++            // UI1393 «abrí la calculadora y apretá el 5»: a completed, verified
++            // opening (a real process) precedes the reviewed click on the window
++            // it produced; the reviewer still sees the single label argument.
++            return execution.CurrentStep.Operation == "input.visible.click"
++                && execution.PendingOperation is { } click
++                && click.Arguments.ValueKind == JsonValueKind.Object
++                && click.Arguments.EnumerateObject().Count() == 1
++                && click.Arguments.TryGetProperty("label", out JsonElement label)
++                && label.ValueKind == JsonValueKind.String
++                && !string.IsNullOrWhiteSpace(label.GetString())
++                && result["processId"] is JsonValue openedProcessValue
++                && openedProcessValue.TryGetValue(out int openedProcessId)
++                && openedProcessId > 0;
++        }
++
+         if (execution.Steps[0].Operation is not ("window.resolve" or "window.active")
+             || execution.CurrentStep.Operation != "app.close"
+             || execution.PendingOperation is not { } prepared

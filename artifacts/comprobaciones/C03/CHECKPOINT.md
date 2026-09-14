@@ -1,3 +1,25 @@
+## UI1395 — estado vigente 2026-09-14T12:08:01.259614+00:00
+
+Parcial: 3 aprobados, 7 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 422/742 | 320 | 0 | >=296 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 296 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); UI1395 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: UI1395: 10 ejecutados, 3 aprobados, 7 fallidos, 0 créditos (índices []); Interacción dentro de aplicaciones 4/22. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/UI1395/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 325.69 s acumulados; pico GPU 3497.56 MiB; pico RAM 2364.22 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 10; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque UI1395 precedente. -->
+
 ## UI1393 — estado vigente 2026-09-14T11:28:50.064106+00:00
 
 Parcial: 3 aprobados, 7 fallidos, 0 sin ejecutar; 0 créditos.
