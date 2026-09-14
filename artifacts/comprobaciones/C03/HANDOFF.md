@@ -1,3 +1,11 @@
+# KNOWLEDGE1475 adjudicado — 2026-09-14T22:07:54.392447+00:00
+
+**479/742 cubiertos, 263 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 9550fbe24ce079284773708f5764afe4e7de0dca767c354bf69af1ec905376af. Primeras altas 24 h >= 353 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6854a7c4 con BUILD1475 (el género citado de un fragmento no es metadiscurso; KNOWLEDGE1475/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+KNOWLEDGE1475 («Conocimiento, razonamiento y creatividad verbal», H0366 «Que es doom eternal=»): KNOWLEDGE1475: Doom Eternal contestado desde Wikipedia nombrando la fuente; H0366 cubierto, 1 créditos. Adjudicación 20853cd70c95dc8072337e03ea71ad488be8088d05162c73cad4ff0e65fb0f2d. 6/6 ejecutados, 6 aprobados, 1 crédito; el veto de metadiscurso ya no traga el género citado del fragmento
+
+---
+
 # KNOWLEDGE1473 adjudicado — 2026-09-14T22:01:09.460425+00:00
 
 **478/742 cubiertos, 264 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA cc12b87ea902a048ab0127a12c97e80df4acf8584bd8836ffae0db6a9d98f253. Primeras altas 24 h >= 352 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 63c28785 con BUILD1473 (quién o qué es una cosa con nombre buscado en páginas públicas; KNOWLEDGE1473/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

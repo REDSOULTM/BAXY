@@ -493,3 +493,7 @@ Navegación y búsqueda web pasa de 31/46 a 33/46 con la página de Steam por b�
 ## Actualización 2026-09-14 (KNOWLEDGE1473)
 
 Conocimiento, razonamiento y creatividad verbal pasa de 24/37 a 26/37 con las preguntas de quién o qué es contestadas desde páginas públicas (commit 63c28785, BUILD1473) (HEAD 63c28785): KNOWLEDGE1473: quién o qué es una cosa con nombre se contesta desde páginas públicas nombrando la fuente; H0257 y H0278 cubiertos; H0366 sin final por el veto de metadiscurso («en primera persona» citado del fragmento) y H0582 con un desenlace inventado, 2 créditos. 11/11 ejecutados, 9 aprobados, 2 fallidos, 2 créditos; Daredevil, Marvel vs. Capcom, Spider-Man y Mortal Kombat contestados desde Wikipedia/IMDb/Fandom/Minijuegos; Doom Eternal encontrado pero sin final (reparación KNOWLEDGE1475)
+
+## Actualización 2026-09-14 (KNOWLEDGE1475)
+
+Conocimiento, razonamiento y creatividad verbal pasa de 26/37 a 27/37 con el fragmento del género admitido por el compositor (commit 6854a7c4, BUILD1475) (HEAD 6854a7c4): KNOWLEDGE1475: Doom Eternal contestado desde Wikipedia nombrando la fuente; H0366 cubierto, 1 créditos. 6/6 ejecutados, 6 aprobados, 1 crédito; el veto de metadiscurso ya no traga el género citado del fragmento

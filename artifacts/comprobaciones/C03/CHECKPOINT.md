@@ -1,3 +1,25 @@
+## KNOWLEDGE1475 — estado vigente 2026-09-14T22:07:54.392447+00:00
+
+Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 479/742 | 263 | 0 | >=353 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 352 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); KNOWLEDGE1475 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: KNOWLEDGE1475: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]); Conocimiento, razonamiento y creatividad verbal 27/37. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/KNOWLEDGE1475/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 103.02 s acumulados; pico GPU 3497.56 MiB; pico RAM 1705.91 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque KNOWLEDGE1475 precedente. -->
+
 ## KNOWLEDGE1473 — estado vigente 2026-09-14T22:01:09.460425+00:00
 
 Parcial: 9 aprobados, 2 fallidos, 0 sin ejecutar; 2 créditos.

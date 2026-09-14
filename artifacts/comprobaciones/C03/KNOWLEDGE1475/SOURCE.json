@@ -1,0 +1,15 @@
+{
+  "schema": "c03-knowledge1475-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_TASK_METADISCOURSE: «disparos/juego/vista/cámara/perspectiva/shooter (en) primera persona» y «first person shooter/view/perspective/camera/combat» son géneros o vistas citados de un fragmento, no el modelo describiendo su modo de redactar; «respondo en primera persona» sigue vetado).",
+  "patch": "artifacts/comprobaciones/C03/KNOWLEDGE1475/SOURCE.patch",
+  "commits": [
+    "6854a7c4ede0b859b2a7252848eb8c2e8fed2f3f"
+  ],
+  "build": "BUILD1475 (C03-repairs1475-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "KNOWLEDGE1475: «Que es doom eternal=» encontró las páginas y los tres borradores repitieron el fragmento de Wikipedia en español («videojuego de acción de disparos en primera persona desarrollado por id Software…»), pero el veto de metadiscurso los rechazó por «en primera persona» y el turno acabó sin final.",
+  "change": "El patrón de metadiscurso excluye el género o la vista citados de un fragmento; el resto del veto no cambia. Sin respuestas fijas.",
+  "measurement": "KNOWLEDGE1475: KNOWLEDGE1475: Doom Eternal contestado desde Wikipedia nombrando la fuente; H0366 cubierto; 1 créditos. 6/6 ejecutados, 6 aprobados, 1 crédito; el veto de metadiscurso ya no traga el género citado del fragmento",
+  "credits": 1
+}
