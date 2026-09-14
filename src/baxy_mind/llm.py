@@ -7339,7 +7339,10 @@ class LlmRuntime:
         logical_attempt = max(0, int(getattr(self, "_request_attempt", 0)))
         presentation_seed = logical_attempt * 1_009
         presentation_max_tokens = (
-            (128 if presentation_shape in {"content_draft", "roleplay_draft"} else 64)
+            # NEGATIVE1309: the constraint acknowledgement's structured reply hit
+            # the 64-token ceiling twice («truncated_structured_reply») and the
+            # turn fell back to a clarification.
+            (128 if presentation_shape in {"content_draft", "roleplay_draft", "constraint_ack"} else 64)
             if presentation_shape is not None
             else {
                 "social": 64,
@@ -7660,7 +7663,7 @@ class LlmRuntime:
             retry_payload["seed"] = presentation_seed + 1
             retry_payload["max_tokens"] = (
                 128
-                if presentation_shape in {"content_draft", "roleplay_draft"}
+                if presentation_shape in {"content_draft", "roleplay_draft", "constraint_ack"}
                 else 64
                 if presentation_shape is not None
                 else 96

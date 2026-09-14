@@ -5235,6 +5235,9 @@ def explicit_negative_constraint(text: str) -> bool:
     """
 
     folded = _strip_request_envelope(_fold(text))
+    # NEGATIVE1309 «mejor no abras la calculadora»: a softening adverb before
+    # the prohibition does not change it.
+    folded = re.sub(r"^(?:mejor|por ahora|ahora|hoy|por favor)\s+", "", folded, count=1)
     if any(mark in folded for mark in ("?", "¿")):
         return False
     if any(mark in folded for mark in (";", ",")):
