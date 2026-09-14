@@ -10736,6 +10736,24 @@ def _strict_catalog_request(
             r"\b(?:nota|note|tarea|task|portapapeles|clipboard|pagina|page)\b",
         ) and _has(
             text,
+            r"\b(?:describ\w*|decime|dime|contame|cuentame|tell\s+me)\s+"
+            r"(?:lo\s+que\s+ves|que\s+ves|what\s+you\s+see)\b",
+        ) and not _has(
+            text,
+            r"\b(?:pantalla|screen)\s+(?:del|de mi|of my)\s+"
+            r"(?:telefono|celular|movil|phone|smartphone|tablet|auto|car)\b",
+        ):
+            # SCREEN1485 «Toma un screenshot de la pantalla ahora mismo y
+            # describeme lo que ves»: without a vision provider the truthful
+            # description of the screen is its recognized text (SCREEN1417).
+            resolved = intent("capture.screenshot", "ocr.read")
+            if resolved is not None:
+                return resolved
+        if not _has(
+            text,
+            r"\b(?:nota|note|tarea|task|portapapeles|clipboard|pagina|page)\b",
+        ) and _has(
+            text,
             r"\b(?:describe|describir|interpreta|interpretar|interpret|"
             r"explica|explain|dime\s+que|tell\s+me\s+what|cuentame\s+que|"
             r"contarme\s+que)\b"
@@ -13006,7 +13024,9 @@ def _review_input_and_capture_effects(
             folded,
             r"\b(?:que\s+se\s+ve|what(?:'s| is)\s+visible|"
             r"describe(?:me)?|describe it|que hay en la imagen)\b",
-        ):
+        ) and not _has(folded, r"\blo que ves\b|\bque ves\b|\bwhat you see\b"):
+            # SCREEN1485: «describeme lo que ves» after a capture is the
+            # screen-content reading below, not an image description.
             _append(
                 matches,
                 folded,
@@ -13030,7 +13050,16 @@ def _review_input_and_capture_effects(
         r"(?:\s+(?:ahora|now))?\s+(?:en|on)\s+(?:mi|la|tu|my|the)\s+(?:pantalla|screen)[\s?!.]*$|"
         r"^[¿?¡!\s]*(?:describe|describi|describime|describeme|describi?la|describila)\s+"
         r"(?:(?:mi|la|my|the)\s+(?:pantalla|screen)|lo que ves(?:\s+(?:en|on)\s+(?:mi|la|my|the)\s+(?:pantalla|screen))?|"
-        r"what you see(?:\s+on\s+(?:my|the)\s+screen)?)[\s?!.]*$",
+        r"what you see(?:\s+on\s+(?:my|the)\s+screen)?)[\s?!.]*$|"
+        # SCREEN1485 «Toma un screenshot de la pantalla ahora mismo y describeme
+        # lo que ves»: a capture order followed by the description of what is
+        # seen is the same screen-content reading.
+        r"^[¿?¡!\s]*(?:toma|tomame|saca|sacame|hace|haceme|haz|hazme|take|capture)\s+(?:(?:un|una|a)\s+)?"
+        r"(?:screenshot|screen\s*shot|screen\s+capture|captura(?:\s+de\s+pantalla)?|pantallazo)"
+        r"(?:\s+(?:de|of)\s+(?:la|mi|the|my)\s+(?:pantalla|screen))?(?:\s+(?:ahora(?:\s+mismo)?|now|right\s+now))?"
+        r"\s*(?:,\s*|\s+(?:y|and)\s+)(?:describe|describi|describime|describeme|decime|dime|contame|cuentame|tell\s+me)\s+"
+        r"(?:lo\s+que\s+ves|que\s+ves|que\s+hay|what\s+you\s+see|what(?:'s|\s+is)\s+(?:there|on\s+it))"
+        r"(?:\s+(?:en|on)\s+(?:mi|la|my|the)\s+(?:pantalla|screen))?[\s?!.]*$",
     )
     implicit_screen_read = (
         (
@@ -13055,12 +13084,15 @@ def _review_input_and_capture_effects(
         )
     )
     if implicit_screen_read:
-        _append(
-            matches,
-            folded,
-            "capture.screenshot",
-            rf"\b{_READ}\b|\b(?:que|what|describ\w*)\b",
-        )
+        if not any(operation == "capture.screenshot" for _, _, operation in matches):
+            # SCREEN1485: an explicit capture order («Toma un screenshot … y
+            # describeme lo que ves») already appended the capture above.
+            _append(
+                matches,
+                folded,
+                "capture.screenshot",
+                rf"\b{_READ}\b|\b(?:que|what|describ\w*)\b",
+            )
         _append(
             matches,
             folded,
