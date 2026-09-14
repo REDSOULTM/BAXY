@@ -1,0 +1,15 @@
+{
+  "schema": "c03-clock1333-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (compose_visible_defect: exención de cuenta atrás en la comprobación del reloj)",
+  "patch": "artifacts/comprobaciones/C03/CLOCK1333/SOURCE.patch",
+  "commits": [
+    "7d36ba075acf71e4215a258180aa50eaa4eddc0a"
+  ],
+  "build": "BUILD1333 (C03-repairs1333-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "CLOCK1331: la exención de cuenta atrás sólo llegó a _payload_fact_defect; compose_visible_defect vetó el borrador correcto 18 veces (missing_name) con su propia comprobación del reloj.",
+  "change": "Compositor: compose_visible_defect aplica la misma exención (hora observada opcional, hora pedida y resto permitidos) cuando el pedido es una cuenta atrás. Sin respuestas fijas.",
+  "measurement": "CLOCK1333: 5 ejecutados, 2 aprobados (los dos límites), 3 fallidos (cuenta atrás: literal y dos pares), 0 violaciones; 0 créditos. Medición: la mente ya compone y publica la cuenta atrás («Faltan 13 horas y 43 minutos para las 3 de la tarde.»), pero la App la rechaza con missing_literal_fact porque su política de system.time exige la hora observada literal en el final. Reparación para CLOCK1335: política de la App consciente de la cuenta atrás (o final con hora y resto).",
+  "credits": 0
+}

@@ -1,0 +1,42 @@
+commit 7d36ba075acf71e4215a258180aa50eaa4eddc0a
+
+C03: the visible-defect clock check gets the countdown exemption too (CLOCK1333)
+
+CLOCK1331 measured: the countdown exemption reached _payload_fact_defect only; compose_visible_defect keeps its own clock check and vetoed «Faltan 13 horas y 48 minutos para las 3 de la tarde.» eighteen times as missing_name. That check now treats a countdown request the same way: the observed clock is optional in the final, and the asked time and the remaining hours and minutes are not contrary clock claims.
+
+No .NET change. Offline probe only; tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 14edb8fe..549ed27d 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -5588,8 +5588,25 @@ def compose_visible_defect(
+         clock_required = not date_requested or re.search(
+             r"\b(?:hora|time)\b", user_text, re.IGNORECASE
+         )
++        allowed_clock_values: tuple[tuple[int, int], ...] = ()
++        countdown_asked = countdown_target(user_text) if clock else None
++        if countdown_asked is not None:
++            # CLOCK1331 H0399: «Faltan 13 horas y 48 minutos para las 3 de la
++            # tarde» answers the countdown; the observed clock is optional and
++            # the target and remaining figures are not contrary clock claims.
++            clock_required = False
++            local = _local_datetime_from_observed(_merged_observed(situation))
++            if local is not None:
++                facts = _countdown_facts(local, countdown_asked, "es")
++                target_hour, target_minute = (int(part) for part in countdown_asked.split(":", 1))
++                allowed_clock_values = (
++                    (target_hour, target_minute),
++                    (int(facts["remaining_hours"]), int(facts["remaining_minutes"])),
++                )
+         if clock:
+-            clock_defect = _clock_fact_defect(stripped, clock, required=bool(clock_required))
++            clock_defect = _clock_fact_defect(
++                stripped, clock, required=bool(clock_required), allowed=allowed_clock_values,
++            )
+             if clock_defect:
+                 return clock_defect
+         if clock and re.search(

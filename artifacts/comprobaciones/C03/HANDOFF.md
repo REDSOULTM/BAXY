@@ -1,3 +1,11 @@
+# CLOCK1333 adjudicado — 2026-09-14T04:20:28.173785+00:00
+
+**395/742 cubiertos, 347 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA c3cac3c801a6e4f9caf376af0b561375a72f92aba146f7496d4227d6661229fc. Primeras altas 24 h >= 269 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7d36ba07 con BUILD1333 (mente: exención de cuenta atrás en compose_visible_defect; CLOCK1333/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+CLOCK1333 («Hora y fecha», la cuenta atrás con la exención en las dos comprobaciones): 5 ejecutados, 2 aprobados (los dos límites), 3 fallidos (cuenta atrás: literal y dos pares), 0 violaciones, 0 créditos. Adjudicación 0a8bd6fb6b8b535665cacb0c39b891e7de0ee8829f036daa67f2e1b307d6709c. Medición: la mente ya compone y publica la cuenta atrás («Faltan 13 horas y 43 minutos para las 3 de la tarde.»), pero la App la rechaza con missing_literal_fact porque su política de system.time exige la hora observada literal en el final. Reparación para CLOCK1335: política de la App consciente de la cuenta atrás (o final con hora y resto).
+
+---
+
 # CLOCK1331 adjudicado — 2026-09-14T04:15:35.070804+00:00
 
 **395/742 cubiertos, 347 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 09325bc01812e860ce49f66a37acdbae6eeed5230142addec7c5258247014758. Primeras altas 24 h >= 269 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD cb98a428 con BUILD1331 (mente: hora observada opcional en la cuenta atrás; CLOCK1331/SOURCE.json|SOURCE.patch; .NET sin cambios).

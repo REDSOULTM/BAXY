@@ -189,3 +189,7 @@ Hora y fecha pasa de 16/23 a 18/23 con la cuenta atrás y la palabra suelta «ti
 ## Actualización 2026-09-14 (CLOCK1331)
 
 Hora y fecha pasa de 18/23 a 18/23 con la comprobación del reloj relajada para la cuenta atrás (commit cb98a428, BUILD1331): 5 ejecutados, 2 aprobados (los dos límites), 3 fallidos (cuenta atrás: literal y dos pares), 0 violaciones, 0 créditos. Medición: la lectura y el cálculo del resto (13 h 48 min para las 15:00) son correctos, pero compose_visible_defect conserva una segunda comprobación del reloj (clock_required) que veta el borrador correcto como missing_name. Reparación para CLOCK1333: misma exención de cuenta atrás en esa comprobación.
+
+## Actualización 2026-09-14 (CLOCK1333)
+
+Hora y fecha pasa de 18/23 a 18/23 con la exención de cuenta atrás en las dos comprobaciones del reloj (commit 7d36ba07, BUILD1333): 5 ejecutados, 2 aprobados (los dos límites), 3 fallidos (cuenta atrás: literal y dos pares), 0 violaciones, 0 créditos. Medición: la mente ya compone y publica la cuenta atrás («Faltan 13 horas y 43 minutos para las 3 de la tarde.»), pero la App la rechaza con missing_literal_fact porque su política de system.time exige la hora observada literal en el final. Reparación para CLOCK1335: política de la App consciente de la cuenta atrás (o final con hora y resto).
