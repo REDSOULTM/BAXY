@@ -10917,6 +10917,29 @@ class LlmRuntime:
                         )
                         continue
                     raise ValueError("aclaración explícita atribuye la contestación al usuario")
+            # AUDIO1461 «subí el volumen y bajá el brillo» → «¿Cuánto quieres
+            # aumentar el volumen?»: the compound question dropped the
+            # brightness. Both adjustments must be asked. One corrected retry.
+            if operations == ("audio.volume.adjust", "system.settings.adjust") and "amount" in missing_fields:
+                folded_question = _reading_fold(str(question))
+                names_volume = re.search(r"\b(?:volumen|volume|audio|sonido|sound)\b", folded_question) is not None
+                names_brightness = re.search(r"\b(?:brillo|brightness|pantalla|screen)\b", folded_question) is not None
+                if not (names_volume and names_brightness):
+                    if attempt == 0:
+                        payload["messages"].insert(
+                            -1,
+                            {
+                                "role": "system",
+                                "content": (
+                                    "Corrección: la persona pidió dos ajustes sin cantidad, el "
+                                    "volumen y el brillo. Pregunta cuánto debe cambiar cada uno, "
+                                    "nombrando los dos y conservando la dirección de cada pedido "
+                                    "(subir o bajar), en una sola pregunta."
+                                ),
+                            },
+                        )
+                        continue
+                    raise ValueError("aclaración explícita omite uno de los dos ajustes")
             # BRIGHT1287 «Subí bastante el brillo.» → «¿Cuánto subiste el
             # brillo?»: the amount question attributed the action to the
             # user's past. One corrected retry; a repeat is a failure.

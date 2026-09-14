@@ -3817,6 +3817,18 @@ def resolve_explicit_clarification_intent(
         and _literal_percentage_word_value(folded) is None
         and _literal_volume_adjustment(folded) is None
     ):
+        if (
+            "system.settings.adjust" in available
+            and _has(
+                folded,
+                rf"\b(?:{_BRIGHTNESS_UP_VERB}|{_BRIGHTNESS_DOWN_VERB})\b[^,;]{{0,24}}"
+                rf"\b{_BRIGHTNESS_OBJECT}\b",
+            )
+            and _literal_brightness_adjustment(folded) is None
+        ):
+            # AUDIO1461 «subí el volumen y bajá el brillo»: both amounts are
+            # missing; the question must name both adjustments (H0027).
+            return ClarificationIntent(("audio.volume.adjust", "system.settings.adjust"), ("amount",))
         return ClarificationIntent(("audio.volume.adjust",), ("amount",))
     if (
         "system.settings.adjust" in available
