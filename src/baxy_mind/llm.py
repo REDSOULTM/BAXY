@@ -10676,6 +10676,35 @@ class LlmRuntime:
                         )
                         continue
                     raise ValueError("aclaración explícita propone una alarma no leída")
+            # FILES1437 «How many files are in the current directory?» → «How
+            # many files are in the folder?»: the folder question restated the
+            # count instead of asking which folder. One corrected retry.
+            if operations == ("filesystem.known.search",) and missing_fields == ("folder",):
+                folded_question = _reading_fold(str(question))
+                asks_which_folder = re.search(
+                    r"\b(?:cual|cuales|que|which|what)\b.{0,40}\b(?:carpeta|directorio|folder|directory)\b"
+                    r"|\b(?:carpeta|directorio|folder|directory)\b.{0,30}\b(?:cual|que|which|what)\b",
+                    folded_question,
+                ) is not None
+                if not asks_which_folder:
+                    if attempt == 0:
+                        payload["messages"].insert(
+                            -1,
+                            {
+                                "role": "system",
+                                "content": (
+                                    "Corrección: no repitas el pedido. Pregunta sólo en qué "
+                                    "carpeta (Escritorio, Documentos, Descargas u otra) hay que "
+                                    "contar los archivos."
+                                    if response_language != "en"
+                                    else "Correction: do not restate the request. Ask only which "
+                                    "folder (Desktop, Documents, Downloads or another) the files "
+                                    "should be counted in."
+                                ),
+                            },
+                        )
+                        continue
+                    raise ValueError("aclaración explícita no pregunta la carpeta")
             # MESSAGING1363 «contestale que sí» → «A quién le vas a contestar
             # que sí?»: the recipient question handed the reply to the person.
             # BAXY answers on the person's behalf: ask whom it should answer,
