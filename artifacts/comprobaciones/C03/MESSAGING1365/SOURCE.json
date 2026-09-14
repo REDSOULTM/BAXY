@@ -1,0 +1,15 @@
+{
+  "schema": "c03-messaging1365-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (formulate_explicit_clarification_question: contrato de redacción de la pregunta de destinatario de message.send)",
+  "patch": "artifacts/comprobaciones/C03/MESSAGING1365/SOURCE.patch",
+  "commits": [
+    "5bdb7f6cf0ee1a4f471a0c612f1eb2d00ac82c67"
+  ],
+  "build": "BUILD1365 (C03-repairs1365-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "MESSAGING1363: H0045 y H0074 llegaron al contrato de destinatario ausente pero la pregunta asignó la contestación a la persona («A quién le vas a contestar que…», una vez «llegó» por «llego»); «¿A quién le quieres responder?» aprobó.",
+  "change": "Para message.send con destinatario ausente, una pregunta que atribuya la contestación a la persona (vas a / le contestas / le respondes / you will reply) o que no pregunte a quién se corrige una vez con el contrato (quien contesta por encargo es BAXY; conservar lo dicho tal cual) y falla si se repite, como la pregunta de alarma. Sin respuestas fijas.",
+  "measurement": "MESSAGING1365: 10/10 ejecutados, 9 aprobados, 1 fallido, 0 violaciones; 2 créditos. H0045 y H0074 acreditados con dos pares de destinatario cada uno: el producto pregunta «¿A quién le contesto?» en primera persona de BAXY y conserva lo que la persona quiere decir («¿A quién le respondo que ya salgo?»), sin envío ni operaciones. La variante «Contestale que gracias.» aún entregó la contestación a la persona con «¿A quién le debes contestar…?» (forma «debes contestar» fuera de la lista del contrato; residual de redacción). Los cuatro límites aprobados.",
+  "credits": 2
+}

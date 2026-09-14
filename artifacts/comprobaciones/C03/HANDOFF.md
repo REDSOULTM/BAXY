@@ -1,3 +1,11 @@
+# MESSAGING1365 adjudicado — 2026-09-14T06:57:50.062908+00:00
+
+**411/742 cubiertos, 331 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA e3f02c96768687259efa522cb0fa526e4833054a710fa45208efc4855ec34329. Primeras altas 24 h >= 285 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5bdb7f6c con BUILD1365 (mente: contrato de redacción de la pregunta de destinatario; MESSAGING1365/SOURCE.json|SOURCE.patch; .NET sin cambios). Ningún cliente de mensajería ni envío: turnos ordinarios con sólo memory.status permitido.
+
+MESSAGING1365 («Mensajería», H0045 y H0074 destinatario ausente, ordinarios sin envío): 10/10 ejecutados, 9 aprobados, 1 fallido, 0 violaciones, 2 créditos. Adjudicación 136c9af2bbfcdfd4588a908f2e082e061fb9d1f94c4a91541c84f31d3f59da5f. H0045 y H0074 acreditados con dos pares de destinatario cada uno: el producto pregunta «¿A quién le contesto?» en primera persona de BAXY y conserva lo que la persona quiere decir («¿A quién le respondo que ya salgo?»), sin envío ni operaciones. La variante «Contestale que gracias.» aún entregó la contestación a la persona con «¿A quién le debes contestar…?» (forma «debes contestar» fuera de la lista del contrato; residual de redacción). Los cuatro límites aprobados.
+
+---
+
 # MESSAGING1363 adjudicado — 2026-09-14T06:49:54.309960+00:00
 
 **409/742 cubiertos, 333 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA cadab1098a06b9ee30d52178998ac82a337c02e11ced403773e5d984cf2a676a. Primeras altas 24 h >= 283 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 3af76065 con BUILD1363 (mente: lectores de aclaración de mensajería sin envío; MESSAGING1363/SOURCE.json|SOURCE.patch; .NET sin cambios). Ningún cliente de mensajería ni envío: turnos ordinarios con sólo memory.status permitido.

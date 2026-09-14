@@ -1,0 +1,56 @@
+commit 5bdb7f6cf0ee1a4f471a0c612f1eb2d00ac82c67
+
+C03: the recipient question asks whom BAXY should answer, never hands the reply to the person (MESSAGING1365)
+
+MESSAGING1363 measured H0045 and H0074: the recipient clarification for «contestale que llego en 10» and «contestale que sí» was rendered as «A quién le vas a contestar que…» (the person executing the reply, once also «llegó» for «llego»), while «¿A quién le quieres responder?» passed.
+
+llm.formulate_explicit_clarification_question: for message.send missing the recipient, a question that assigns the answering to the person (vas a / le contestas / le respondes / you will reply…) or that does not ask whom is corrected once with the contract (BAXY answers on the person's behalf; keep what they want to say as said) and fails on repeat, like the which-alarm and the past-action checks.
+
+No .NET change. Offline syntax check only; tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 00548a54..18262793 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -10254,6 +10254,38 @@ class LlmRuntime:
+                         )
+                         continue
+                     raise ValueError("aclaración explícita propone una alarma no leída")
++            # MESSAGING1363 «contestale que sí» → «A quién le vas a contestar
++            # que sí?»: the recipient question handed the reply to the person.
++            # BAXY answers on the person's behalf: ask whom it should answer,
++            # keeping what the person wants to say as said. One corrected retry.
++            if operations == ("message.send",) and missing_fields == ("recipient",):
++                folded_question = _reading_fold(str(question))
++                person_executes = re.search(
++                    r"\b(?:vas\s+a|le\s+contestas|le\s+respondes|contestas|respondes|"
++                    r"contestaras|responderas|contestarias|responderias|"
++                    r"you\s+(?:are\s+going\s+to|will|gonna|would)\s+(?:answer|reply|respond))\b",
++                    folded_question,
++                ) is not None
++                asks_whom = re.search(
++                    r"\b(?:a\s+quien|quien|to\s+whom|whom|who)\b", folded_question,
++                ) is not None
++                if person_executes or not asks_whom:
++                    if attempt == 0:
++                        payload["messages"].insert(
++                            -1,
++                            {
++                                "role": "system",
++                                "content": (
++                                    "Corrección: quien contesta es BAXY por encargo de la "
++                                    "persona, no la persona. Pregunta a quién debe contestar "
++                                    "BAXY (por ejemplo «¿A quién le contesto?») y conserva lo "
++                                    "que quiere decir tal cual, sin cambiar la persona "
++                                    "gramatical ni los acentos."
++                                ),
++                            },
++                        )
++                        continue
++                    raise ValueError("aclaración explícita atribuye la contestación al usuario")
+             # BRIGHT1287 «Subí bastante el brillo.» → «¿Cuánto subiste el
+             # brillo?»: the amount question attributed the action to the
+             # user's past. One corrected retry; a repeat is a failure.
