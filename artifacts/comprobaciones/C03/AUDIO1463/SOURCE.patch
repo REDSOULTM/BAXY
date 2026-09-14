@@ -1,0 +1,71 @@
+commit 4e1cc74458912236c5bd73728fb9de117a9cac00
+
+C03: a compound relative request without amounts asks for both adjustments (AUDIO1463)
+
+AUDIO1461 measured that «subí el volumen y bajá el brillo» asked both amounts with both directions, but its two variants asked only about the volume: the clarification intent carried only audio.volume.adjust, and the brightness survived only when the model repeated it.
+
+baxy_mind effect_intent: when the relative volume request without an amount also carries a relative brightness request without an amount, the clarification intent lists both adjustments (audio.volume.adjust and system.settings.adjust) with the missing amount.
+baxy_mind llm: for that compound intent the formulated question must name the volume and the brightness; a question that drops one gets one corrected retry (the correction states the two adjustments and their directions) and then fails the contract instead of publishing half the question.
+
+Offline probes: the literal and the two new variants («Aumentá el volumen y reducí el brillo.», «Subí el volumen y bajá el brillo de la pantalla.») resolve to the two-operation amount clarification; «subí el volumen», «bajá el brillo» and «bajá la música» keep their single-operation clarifications; a compound with a number keeps its reading. Mind only (BUILD1463). Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index ac2aafc2..ff1902a6 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -3817,6 +3817,18 @@ def resolve_explicit_clarification_intent(
+         and _literal_percentage_word_value(folded) is None
+         and _literal_volume_adjustment(folded) is None
+     ):
++        if (
++            "system.settings.adjust" in available
++            and _has(
++                folded,
++                rf"\b(?:{_BRIGHTNESS_UP_VERB}|{_BRIGHTNESS_DOWN_VERB})\b[^,;]{{0,24}}"
++                rf"\b{_BRIGHTNESS_OBJECT}\b",
++            )
++            and _literal_brightness_adjustment(folded) is None
++        ):
++            # AUDIO1461 «subí el volumen y bajá el brillo»: both amounts are
++            # missing; the question must name both adjustments (H0027).
++            return ClarificationIntent(("audio.volume.adjust", "system.settings.adjust"), ("amount",))
+         return ClarificationIntent(("audio.volume.adjust",), ("amount",))
+     if (
+         "system.settings.adjust" in available
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 2231e28e..87d56fd2 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -10917,6 +10917,29 @@ class LlmRuntime:
+                         )
+                         continue
+                     raise ValueError("aclaración explícita atribuye la contestación al usuario")
++            # AUDIO1461 «subí el volumen y bajá el brillo» → «¿Cuánto quieres
++            # aumentar el volumen?»: the compound question dropped the
++            # brightness. Both adjustments must be asked. One corrected retry.
++            if operations == ("audio.volume.adjust", "system.settings.adjust") and "amount" in missing_fields:
++                folded_question = _reading_fold(str(question))
++                names_volume = re.search(r"\b(?:volumen|volume|audio|sonido|sound)\b", folded_question) is not None
++                names_brightness = re.search(r"\b(?:brillo|brightness|pantalla|screen)\b", folded_question) is not None
++                if not (names_volume and names_brightness):
++                    if attempt == 0:
++                        payload["messages"].insert(
++                            -1,
++                            {
++                                "role": "system",
++                                "content": (
++                                    "Corrección: la persona pidió dos ajustes sin cantidad, el "
++                                    "volumen y el brillo. Pregunta cuánto debe cambiar cada uno, "
++                                    "nombrando los dos y conservando la dirección de cada pedido "
++                                    "(subir o bajar), en una sola pregunta."
++                                ),
++                            },
++                        )
++                        continue
++                    raise ValueError("aclaración explícita omite uno de los dos ajustes")
+             # BRIGHT1287 «Subí bastante el brillo.» → «¿Cuánto subiste el
+             # brillo?»: the amount question attributed the action to the
+             # user's past. One corrected retry; a repeat is a failure.

@@ -1,3 +1,11 @@
+# AUDIO1463 adjudicado — 2026-09-14T20:55:22.258202+00:00
+
+**464/742 cubiertos, 278 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 7b1caa6b3896ef44121fea05c31a8f30459255841b4cd8b751c88eff7ec3a6ac. Primeras altas 24 h >= 338 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4e1cc744 con BUILD1463 (aclaración compuesta de volumen y brillo; AUDIO1463/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+AUDIO1463 («Audio y volumen», H0530 «subí el volumen y bajá el brillo», ajuste compuesto sin cantidades): 6/6 ejecutados, 0 violaciones; el literal y sus dos variantes preguntaron las dos cantidades conservando las dos direcciones, con cero operaciones; los tres límites respondieron con cero operaciones, 1 créditos. Adjudicación 25e0542459422660699a172cffc0a14320552b6fb0362c9c45571aea53320bb0. Filas abiertas restantes de la categoría, condicionadas: volumen en otros idiomas (límites sin marca), «subí el volumen de spotify» (sesión ausente) y «subí el volumen y decime qué fecha es» (compuesto de aclaración y lectura).
+
+---
+
 # AUDIO1461 adjudicado — 2026-09-14T20:46:24.396268+00:00
 
 **463/742 cubiertos, 279 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 20bd770a25b9c1393f0f42fb460ac296085e5144103d70adddae603b7b91b8c0. Primeras altas 24 h >= 337 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f021a487 con BUILD1461 (aclaración de cantidad para «bajá la música»; AUDIO1461/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

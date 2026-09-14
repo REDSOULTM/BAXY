@@ -1,0 +1,87 @@
+{
+  "schema": "audio1463-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1",
+  "seal_sha256": "741497f53a6da2b32f9e54d60948f46f8db4fda994016ed6d6e9658389bbd843",
+  "runner_sha256": "5bc1c120e950c37c68f28e3af333682cf5b5685afbe40b85dd127bd5dfe772c9",
+  "transport_seal_sha256": "91a1f76c965269116883bea3ff6c68b3c576e81499b149cda2005bb63fbcfb0a",
+  "files": {
+    "panel.json": "61442c66c4aeea35f7992f978db481fd7857ed03206bd42247ea38409c0af5b2",
+    "turns.jsonl": "872a5eb7a63af731d144e582bf9423c0e6428263b57cac22814f268cb804232d",
+    "case-map.json": "ce849458e5d28947844e9115ed4e5ffc73efd156bd3cde8c68bc2a3d87678d0c",
+    "PLAN.md": "dd0b594becc4c0cf20f31197412faad7be9ff433b2a8db6a7bc87fd2d95ef752"
+  },
+  "counts": {
+    "cases": 6,
+    "historical_literals": 1,
+    "original_development_variants": 2,
+    "boundaries": 3,
+    "wire_lines": 12,
+    "session_controls": 6,
+    "ordinary_turns": 6,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 6,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 2,
+    "boundary": 3
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0530",
+      "kind": "historical_literal",
+      "group": "compound_relative",
+      "credit_behavior": "compound_relative",
+      "text_sha256": "b9e0fd7309e1b7c73c4df14692213e82b3554c0c3c30fe4afa4e6316aea51a0d",
+      "criterion_sha256": "5f25c4204048b90d97cc00bce785c5a275665d0c8c8ae28cf8d8a4f707b44596"
+    },
+    {
+      "index": 1,
+      "case_id": "audio1463-dev-01",
+      "kind": "original_development_variant",
+      "group": "compound_relative",
+      "credit_behavior": "compound_relative",
+      "text_sha256": "d3e3ac0e971bb95dc3215a81a32c0abe373db26aa16734e23c17eca592fbe568",
+      "criterion_sha256": "5f25c4204048b90d97cc00bce785c5a275665d0c8c8ae28cf8d8a4f707b44596"
+    },
+    {
+      "index": 2,
+      "case_id": "audio1463-dev-02",
+      "kind": "original_development_variant",
+      "group": "compound_relative",
+      "credit_behavior": "compound_relative",
+      "text_sha256": "91734067146fc5f64220873b95c27192f1d452397d731bff8f0b9b7358cbaf18",
+      "criterion_sha256": "5f25c4204048b90d97cc00bce785c5a275665d0c8c8ae28cf8d8a4f707b44596"
+    },
+    {
+      "index": 3,
+      "case_id": "audio1463-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "f982c9352bdee87a38dc3c07b6e848873850a2dd916f24b0f3691c1f21c3a92a",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 4,
+      "case_id": "audio1463-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "be67276757ba89879b11b26a84f714275b5312e4345809c054a1387e05154677",
+      "criterion_sha256": "921265019b2c37c592e6916cdbd5d87d1e36c759b433044f628c5ef9bf424391"
+    },
+    {
+      "index": 5,
+      "case_id": "audio1463-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "3fc8abca53906ba7abcb112977f02ac3b52d3ec4471c1e7398d3ae106792f845",
+      "criterion_sha256": "63254e50babccd725db7cbdcfa1601d6663ea2a66fd81b4211de988d8972274d"
+    }
+  ]
+}

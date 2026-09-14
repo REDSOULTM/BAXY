@@ -1,0 +1,15 @@
+{
+  "schema": "c03-audio1463-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (el pedido relativo del volumen sin cantidad que trae también un brillo relativo sin cantidad lleva los dos ajustes en la intención de aclaración), src/baxy_mind/llm.py (la pregunta de aclaración compuesta debe nombrar el volumen y el brillo; un reintento corregido)",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1463/SOURCE.patch",
+  "commits": [
+    "4e1cc74458912236c5bd73728fb9de117a9cac00"
+  ],
+  "build": "BUILD1463 (C03-repairs1463-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "AUDIO1463: las dos variantes de «subí el volumen y bajá el brillo» preguntaron sólo por el volumen porque la intención de aclaración llevaba sólo audio.volume.adjust.",
+  "change": "La intención de aclaración del pedido compuesto lleva audio.volume.adjust y system.settings.adjust; la formulación exige nombrar ambos con un reintento corregido. Sin respuestas fijas.",
+  "measurement": "AUDIO1463: 6/6 ejecutados, 0 violaciones; el literal y sus dos variantes preguntaron las dos cantidades conservando las dos direcciones, con cero operaciones; los tres límites respondieron con cero operaciones; 1 créditos. Filas abiertas restantes de la categoría, condicionadas: volumen en otros idiomas (límites sin marca), «subí el volumen de spotify» (sesión ausente) y «subí el volumen y decime qué fecha es» (compuesto de aclaración y lectura).",
+  "credits": 1
+}

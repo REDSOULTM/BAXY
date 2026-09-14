@@ -1,0 +1,330 @@
+{
+  "schema": "audio1463-root-adjudication-v2",
+  "decided_at_utc": "2026-09-14T20:55:22.258202+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "4e1cc74458912236c5bd73728fb9de117a9cac00",
+  "decisions_sha256": "101a019423fc5acb175372247bf8b714461953b4517fbe794566921abba1c03e",
+  "registry_before_sha256": "20bd770a25b9c1393f0f42fb460ac296085e5144103d70adddae603b7b91b8c0",
+  "registry_before_counts": {
+    "covered": 463,
+    "open": 279,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "6095aaaebff0c2f481c617ce29abd58b05a731823fbc00472dfce8a47f8ed040",
+  "preparation_sha256": "97a23e9e437de88efb41a13fcf31072ee9dde53ea6c70fbd8ae9942211045e7e",
+  "passed": 6,
+  "failed": 0,
+  "unexecuted": 0,
+  "executed": 6,
+  "segments_started": 6,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [
+    "H0530"
+  ],
+  "counters": {
+    "covered": 464,
+    "open": 278,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 337,
+    "categories_total": 35,
+    "categories_closed_after": 4,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 337 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1463 añade 1. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 338
+  },
+  "resources": {
+    "seconds_sum": 96.26699999999255,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1700.4296875
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0530",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        1,
+        2
+      ],
+      "reason": "Preguntó la cantidad que faltaba conservando la dirección, sin operar; crédito con dos variantes aprobadas del grupo.",
+      "observation_note": "Turno ordinario de aclaración: cero operaciones; cero confirmaciones; cero violaciones; pins intactos.",
+      "final_sha256": "8101e6075c5788ea2fca112cf4a0b785c0dafd8f55e5f5f422928e4a04e56573",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-00\\EXIT.json": "ddb1ab795ab54b284fb5caf650a36bbbc22d0ad4e59e4f17dcfd19b125596f07",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-00\\RESOURCES.json": "95df9207a71b1fc5249b451390778d677dc11ba9fd1442920f870909ce1da05b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\profile-owner-00.json": "54b9e4e3be654a8eb815a9fffeb0d20b2f3169a74fe0535817f7d3df3e4cf397",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-00\\PREREG.json": "d1991d08620a098d30096f31891b23356129c09d3321ea07e6efcf4a878350ab",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-00\\capture\\events.jsonl": "e5c1e0f829b67570c9bc616df4f42b359e4c36b2a66f88339288121d2f5aa8ee",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-00\\turns.jsonl": "01ec4d1f4f5f8b242be7fc6aa56b99076b2c17398969781e6ec94dc40afa6f0b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\fixture-00.json": "5a5e0269b519e1a917437c4eddc2722586e20439412604c83634597e470251b2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\context-00.json": "092cb1a272ad7bdf1c70592046bd760ff5de0a6ef42f2f86251d2a384775a0c8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\context-prelaunch-00.json": "95c732a7cbbb88ba8ff38f8d0ea30b0a0d78184428930f5921b747fcb39f796c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-00\\case-observations.json": "2f875297a2ac7954d736e147ad68dcb38c018ef3b144ff4b878395fa1db388a0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-00\\journal-before.json": "ffacbbc04b9245054816a1d56747ce4ab1f339e2283009043ebbd1145e56cb2f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-00\\journal-after.json": "c91fe260a13b974b9bffe47ac804bc0f36582d0f6ee620d442aa6f2ddb126c9f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "6e54089b2e5b4f3eccb1deb60ec800198a77f43540ac8eada72a0b1397c50201"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "9ab0a4b0-4971-4935-8eb1-226bb241ca30",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "audio1463-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Preguntó la cantidad que faltaba conservando la dirección, sin operar.",
+      "observation_note": "Turno ordinario de aclaración: cero operaciones; cero confirmaciones; cero violaciones; pins intactos.",
+      "final_sha256": "0f93ae09d129a59bce5d0deb9e24cf3f731b7bcb771605a69125a4b22e69f702",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-01\\EXIT.json": "6ae7cb45a8e4da8aeb4ae9e313e55d9d62ede4ca7be55b888ce350f1289448ec",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-01\\RESOURCES.json": "8817ccef96341ab0af1400e439435dc8906ecb36f3afa6509a3e2768a55036e0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\profile-owner-01.json": "3c373523bb84c0199e7bb443303c206a18a1220624c61a79a41e6d07c93150eb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-01\\PREREG.json": "0439dc056f04f7afec20444bcb9888dfdb07a6b32ef0e5b0d0facdd6bc8bb93c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-01\\capture\\events.jsonl": "f5a634f5be1d173e2d89435d85b0ff1144fe7e867189ed61939e56979e18fc07",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-01\\turns.jsonl": "a97714faf4422199701d5dc8f991c956fadfe38ee725d0a12358dcde4ee5f3ea",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\fixture-01.json": "f242abe4049fc613371f88e9019317a3aa0ed33a925d4db1e03b055f9dff512d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\context-01.json": "9249a50127a2b7ca1c2e4c27f839de06955246f30cdf0edc2f8fd74fedd612c4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\context-prelaunch-01.json": "d92e11fabf9bc875c1cf26ab02b7bdb6e43f568798cadb637bf1cadf1e9a8158",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-01\\case-observations.json": "04641bfd0d0564fe118cfac533f7ea7a9bad0c6b3c4160268c406c91dbfc9b8b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-01\\journal-before.json": "8884e0ea69dcd1e9c02c96bed14d7d0a7739c784dd1e08c0e852f91eba141a6c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-01\\journal-after.json": "8f374bbbb780795faae3d876eadbadfa57458d8a26bcffbcedbe709eec7180b8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "c84ed20b786ef078788333e4f6379ad519ba5ab85a4f5710fee05cb229a12a77"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "3fc27f86-2a7e-46fc-995c-9ce4f2bb4dff",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "audio1463-dev-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Preguntó la cantidad que faltaba conservando la dirección, sin operar.",
+      "observation_note": "Turno ordinario de aclaración: cero operaciones; cero confirmaciones; cero violaciones; pins intactos.",
+      "final_sha256": "9fce11c8d505789dae693c38b8e2b239055e6b2cd7d076b9f87618de51560f84",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-02\\EXIT.json": "5ceccf833e6a06ab707b706ffdbcdd67aa97f6188cb49b0d150a622778250d8a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-02\\RESOURCES.json": "429d2c0c4b53f7ef39c790b7d2056041bb9a753094163fda82e635c462b80ebe",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\profile-owner-02.json": "774c977e50cb4cfaee747555dc8a2f364231b91e34b347d9815a3933f2d28572",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-02\\PREREG.json": "4f155a99842383e2c777128ce308f9acf8164d4bcfd47f6965c51fe5da7a8f52",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-02\\capture\\events.jsonl": "23e1312655d6796a677621734db996731c6b75c027e505936f231b598424e849",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-02\\turns.jsonl": "0a4b93bcdc8211ab86a734d2e519f4220f20da218d6d4fd46931a448740dc272",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\fixture-02.json": "9c6b1fc076511274ff9e67304c72da31112ca6604f327e6f65cfc47359d31ba7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\context-02.json": "b65f2f3849e5de468abbae11a0a3e6be30f0cffdefa39e6364301bdeb3688361",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\context-prelaunch-02.json": "e43667ebe61daeef722d47f3075fbf7b41a8e4db021ffa32391d8bf9bbf73914",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-02\\case-observations.json": "660d0c13f2df759364d5218303575c77644ffeea58ca3f09bb2714bec2ae5acf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-02\\journal-before.json": "4a3ddb248e49cffa316dc57ff0e183b019798adfafdb9964cf437b0b465cbed2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-02\\journal-after.json": "64ac5947f45a49b472a567e593058bcc2c590b093da8e83d63cbd0089eb12f9f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "a0afb583888f18bbb5f975b94e62990b00996558c45e41db6ea5df837e300f4e"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "9f3f5e19-d59a-4972-9db5-59b7c6e0f9a2",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "audio1463-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "8160adaf21a4ed20b64042070a5bc6f28654424f7d769363f99347ea3925d57c",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-03\\EXIT.json": "be42a32ebe95e4d2043b83f110ed811a3e10a44e8c6f1380cee54344f09a13b2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-03\\RESOURCES.json": "79c8fbbfc4691d40616019bc1423d111e6c8731fa80c9ad9a219ec701f9d1786",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\profile-owner-03.json": "cbe327ad37c27db4d13f5790c3d1f89a09df561e0a73b629c3f6ddd3789039e9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-03\\PREREG.json": "24d646ddecb96db00aa5d28255931a96c1f739a73e4e8178899cb29a943c3ba1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-03\\capture\\events.jsonl": "cc8be374d7ac3f2cd886e6109cac119ffbb6eab9193fb466f9acdd4424adc5ff",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-03\\turns.jsonl": "3411f4f959715ed65351b44d65d7c75fc13098fbc1c95bea0b948b4fe78eee09",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\fixture-03.json": "38131841895df56bac2d2ef632d8058141b42ea57de8222e3b5645c9e2d8b720",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\context-03.json": "62e931ea997e62948c984bc4af250f8f99fc47bce3e9dbd0266f973a49e08ba2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\context-prelaunch-03.json": "ad68381d892a9989d56c39c330a40e7f9057dfb6955182d50736894bbe6b6836",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-03\\case-observations.json": "074522c2942bdee5c1e54e42b6e528e918aa14d5f5794ef9cbc87c938431d774",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-03\\journal-before.json": "089311beb3986dbe5f7e52ecade85cddeaf53c6b7b27442b16cb08f99cc58464",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-03\\journal-after.json": "8da999baceb5a4ac1ea9d1f0dd3f338c2a931fffa6956c74ed5f4e4869038c36",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "6126e9e1a5f3a5c69ff1aaa2a594ecef137c9a5d3653f4ec1304204860f087fb"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "7fb1edf2-377d-49ee-b38c-1df78691f71c",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "audio1463-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "0ed9bf41ec285750b66e043fb68bae7214b39164fe1dec4804b574762e45c80b",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-04\\EXIT.json": "8e77519fc358e2771d5c6733a591617cfea064cd43031bf66cff7377a64f224b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-04\\RESOURCES.json": "77311df997a41ebd57d2a0c5d9528a0679f65db339c24e930806a4a390444b58",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\profile-owner-04.json": "c1eade87be168ceac9d5b8cac1a93f5862b0e7efab78e0478ca2570240ccba37",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-04\\PREREG.json": "e6ce538f10cb5b8be461c0bff0884010dbd202477b7168036ad1e7d23ee1975c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-04\\capture\\events.jsonl": "64a9aaa146c1d669186414a4e118b74f857bd100634fa83bb5da7c8f31007fa0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-04\\turns.jsonl": "843e9f362e76f8b72e1f7323c1449e8913fbc3c8c5ab1cea3cb3989a8a283cfb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\fixture-04.json": "21472b5fcb681e4bb3d1f4ce0d9e132e1c84604f2b3436dba5d93039da6c533c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\context-04.json": "d81a598702ada1c6ef2a5e135dcf919272d4ec110d488ab46969bc90a807b650",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\context-prelaunch-04.json": "df35c4829e4bed779eb9888761aeba6ce076a416c80e7f3ca3d2beb822516c6f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-04\\case-observations.json": "7c5ed804a425b841bfa9a8479eb9705a79ded0c35b96b7265907c21c79ab279e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-04\\journal-before.json": "4ef7b85f3224ae9100c13e96554cf1fdf445b334d08609814fde9b89141fbcca",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-04\\journal-after.json": "e02253f52413fdb573b3e2406e994953cfd5dc0daa22a953092272b67e1674a8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "5ff7bd42fb26dc5154f98ec088c544111616e93f18f40c8baafa5e819c976c3f"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "f6ea4940-9819-4400-a06d-2c7a2a3aed99",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "audio1463-boundary-03",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "3233b5752608cdbf85a83660a239cd206c59aae1638f79d1adfec418e42868b5",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-05\\EXIT.json": "d95525c5b0d09021b497950f504d251ba6b538c92d339b66ee9d0b563a3a2367",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-05\\RESOURCES.json": "366dafd704efaef6195afea4c0cfd3224e4cb33e69428cf9470f32680686808a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\profile-owner-05.json": "e4ad6fdafc5afe79381bbb745f84437b037a6b2f3806d27cda603a4d7e145bf4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\results\\case-05\\PREREG.json": "d4deba366498a81e3701a837ed42a915685380c318f7d90e706eacda9fcb2fd7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-05\\capture\\events.jsonl": "f346904895746138d1372882512b34503b69da334c7ec394f4f48e510eb33e2f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-05\\turns.jsonl": "8fde3e6f86f1a4252775dcf5294322e42c298c2f21708dae0945dc88d151b3e0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\fixture-05.json": "5e68cbc9bea853af3e8e6dd1b81304f9461748d60c4824c7fac7e0aa11261635",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\context-05.json": "a2613d2400a8634095d4290e6515e83d3c04d87cb9984a53d52b5242877bfc98",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\context-prelaunch-05.json": "f19ed57a128f723d06188f9f3ddd09ea690f4ef39a046c038cc9af0a9c8bf972",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-05\\case-observations.json": "9881563b3458093303e4655d67c851830b2f9a8a1ded2d5ab441d7dbfa9aea09",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-05\\journal-before.json": "6da33f2725dfe032d27e3f16fd3253ed879eff0957b961db497f541073c2a8d8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-05\\journal-after.json": "355cca9e42afd5fe880005ab1a4d0fee41e8e57f534b3379a4a2fadb9fab2344",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1463-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "fdf748f0b6389c698004c975ec9e567d24c3892f174e104c4ad794cdddbc6cee"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "aa3042e2-1966-482e-b56a-560df1cca039",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "AUDIO1463: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]); Audio y volumen 45/51. Siguiente: categoría por masa abierta según CONDICIONES.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}
