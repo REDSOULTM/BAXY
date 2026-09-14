@@ -1,0 +1,15 @@
+{
+  "schema": "c03-conversation1349-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (contrato de reassurance_ack)",
+  "patch": "artifacts/comprobaciones/C03/CONVERSATION1349/SOURCE.patch",
+  "commits": [
+    "5f59d677b3f222014c200bb65df5ee75eeb8b5dd"
+  ],
+  "build": "BUILD1349 (C03-repairs1349-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "CONVERSATION1347: el acuse «Gracias, entiendo. No hay problema.» fue rechazado por el contrato de una sola oración y el reintento estructurado volvió vacío; el turno cayó en aclaración.",
+  "change": "Compositor: el contrato de reassurance_ack admite hasta dos oraciones breves; siguen vetados la pregunta y las afirmaciones sobre el PC o acciones hechas. Sin respuestas fijas.",
+  "measurement": "CONVERSATION1349: 5 ejecutados, 5 aprobados, 0 fallidos, 0 violaciones; H0059 acreditado con dos pares; 1 créditos. Medición: con el acuse de dos oraciones admitido, la tranquilización recibe «Gracias, entiendo. No hay problema.» sin preguntar ni afirmar estados. Conversación queda en 28/31: «Artiro, artiro. Estimado, estimado.» (fragmento sin pedido legible) y dos literales fuera de aceptación por idioma.",
+  "credits": 1
+}

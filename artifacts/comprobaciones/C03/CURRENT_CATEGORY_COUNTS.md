@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación CONVERSATION1347
+# Categorías actuales — adjudicación CONVERSATION1349
 
-400/742 cubiertos; 342 abiertos; 0 no aplican; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19). Últimas 24 h: al menos 274 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337 + 1 en AGENDA1341 + 1 en CONVERSATION1343 + 1 en CONVERSATION1347; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 3d5bea13869199ab5f93956ada64b6e2b93351b0955fb588bb957bed2266761f.
+401/742 cubiertos; 341 abiertos; 0 no aplican; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19). Últimas 24 h: al menos 275 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337 + 1 en AGENDA1341 + 1 en CONVERSATION1343 + 1 en CONVERSATION1347 + 1 en CONVERSATION1349; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: a98995820f47f4f9c3d52992c0ecc53d6f34b4f449a157f51c96558498c1a5dc.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -23,7 +23,7 @@
 | Información web actual | 17 | 2 | 15 |
 | Estado de hardware y sistema | 40 | 32 | 8 |
 | Organizar ventanas y pestañas | 13 | 3 | 10 |
-| Conversación social y ayuda general | 31 | 27 | 4 |
+| Conversación social y ayuda general | 31 | 28 | 3 |
 | Estado de ventanas y aplicaciones | 14 | 14 | 0 |
 | Identidad y capacidades del asistente | 19 | 19 | 0 |
 | Hora y fecha | 23 | 19 | 4 |

@@ -1,3 +1,11 @@
+# CONVERSATION1349 adjudicado — 2026-09-14T05:21:36.715434+00:00
+
+**401/742 cubiertos, 341 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA a98995820f47f4f9c3d52992c0ecc53d6f34b4f449a157f51c96558498c1a5dc. Primeras altas 24 h >= 275 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5f59d677 con BUILD1349 (mente: acuse de dos oraciones; CONVERSATION1349/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+CONVERSATION1349 («Conversación social y ayuda general», tranquilización con el acuse de dos oraciones): 5 ejecutados, 5 aprobados, 0 fallidos, 0 violaciones; H0059 acreditado con dos pares, 1 créditos. Adjudicación 7889efa490c3c5846c166fb4b18a219f3b40affe255317d30017f88c0195771e. Medición: con el acuse de dos oraciones admitido, la tranquilización recibe «Gracias, entiendo. No hay problema.» sin preguntar ni afirmar estados. Conversación queda en 28/31: «Artiro, artiro. Estimado, estimado.» (fragmento sin pedido legible) y dos literales fuera de aceptación por idioma.
+
+---
+
 # CONVERSATION1347 adjudicado — 2026-09-14T05:16:57.304519+00:00
 
 **400/742 cubiertos, 342 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 3d5bea13869199ab5f93956ada64b6e2b93351b0955fb588bb957bed2266761f. Primeras altas 24 h >= 274 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f35a46bf con BUILD1347 (mente: presupuesto 128 para las formas; App: contenido visual fuera de catálogo; CONVERSATION1347/SOURCE.json|SOURCE.patch; App recompilada).
