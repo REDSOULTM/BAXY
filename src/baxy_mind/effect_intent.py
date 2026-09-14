@@ -14670,6 +14670,46 @@ _BOUNDED_STATUS_SEQUENCE_DOMAINS = (
 )
 
 
+_DATED_MACHINE_REPORT = re.compile(
+    r"^[¿?¡!\s]*(?:muestra|muestrame|mostra|mostrame|dime|decime|dame|"
+    r"show(?:\s+me)?|tell\s+me|give\s+me)\s+(?:(?:la|el|the)\s+)?"
+    r"(?P<clock>(?:fecha|date)(?:\s+(?:y|and)\s+(?:(?:la\s+|the\s+)?hora|time))?"
+    r"(?:\s+(?:actual(?:es)?|current|de\s+hoy|del\s+sistema|of\s+the\s+system|system))*)"
+    r"\s+(?:y|and)\s+(?P<machine>.+?)[\s.!?]*$",
+    re.IGNORECASE,
+)
+
+
+def _dated_machine_report(text: str) -> EffectIntent | None:
+    """«Muestra la fecha actual y el uso de RAM del sistema»: clock, then status.
+
+    A show/tell head, the date (optionally with the time) and one measurable
+    machine scope joined by «y/and» is a read-only plan: system.time first,
+    then system.status of the scope the existing readers ground (RAM, disk…).
+    The bounded sequence above needs two ordering markers; this shape has
+    none. Prohibitions, hypotheticals and other devices stay out.
+    """
+
+    if (
+        _is_meta_or_tool_denial(text)
+        or _is_negative_effect_clause(text)
+        or _other_device_effect_scope(text)
+    ):
+        return None
+    found = _DATED_MACHINE_REPORT.match(text)
+    if found is None:
+        return None
+    machine = found.group("machine")
+    if (
+        not _system_status_domain(machine)
+        or not _machine_status_scopes(machine)
+        or not _machine_status_scopes_are_one_reading(machine)
+        or len(_request_clauses(text)) > 2
+    ):
+        return None
+    return EffectIntent(("system.time", "system.status"), (found.group("clock"), machine))
+
+
 def _bounded_status_sequence_intent(
     text: str,
     available: frozenset[str],
@@ -14850,6 +14890,11 @@ def resolve_explicit_effects(
         note_count = len(note_dependency_order)
         operations = ("note.create",) * note_count + ("note.read",) * note_count
         return EffectIntent(operations, tuple(folded for _ in operations))
+    dated_report = _dated_machine_report(folded)
+    if dated_report is not None and {"system.time", "system.status"} <= available:
+        # SYSTEM1367: «muestra la fecha actual y el uso de RAM del sistema»
+        # is one clock read and then one status read of the named scope.
+        return dated_report
     status_sequence = _bounded_status_sequence_intent(folded, available)
     if status_sequence is not None:
         return status_sequence
