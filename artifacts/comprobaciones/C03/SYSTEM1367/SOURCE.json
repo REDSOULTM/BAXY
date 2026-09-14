@@ -1,0 +1,15 @@
+{
+  "schema": "c03-system1367-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_dated_machine_report + rama en resolve_explicit_effects: fecha (y hora) + alcance del equipo → plan system.time, system.status)",
+  "patch": "artifacts/comprobaciones/C03/SYSTEM1367/SOURCE.patch",
+  "commits": [
+    "346e930f0b6c046252838b68c4f06a18d6fe9b49"
+  ],
+  "build": "BUILD1367 (C03-repairs1367-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "Estado de hardware y sistema 32/40: «Muestra la fecha actual y el uso de RAM del sistema» y «Muestra la fecha y hora actual del sistema y el espacio libre en disco C:» resolvían sólo a system.status y perdían la fecha; la secuencia acotada exigía marcadores «primero/después».",
+  "change": "Un pedido de mostrar/decir la fecha (y hora) y un alcance medible del equipo (RAM, disco…) es un plan de lectura system.time + system.status; el alcance lo funda el lector existente (memory, disk); prohibiciones, hipótesis y otros dispositivos quedan fuera. Sin respuestas fijas.",
+  "measurement": "SYSTEM1367: 10/10 ejecutados, 8 aprobados, 2 fallidos, 0 violaciones; 2 créditos. H0106 y H0589 acreditados con dos pares cada uno: system.time y luego system.status del alcance pedido, ambas verificadas, y finales con la fecha (y hora) observada y cifras que coinciden con el journal (RAM en uso 13.33 GB de 16.54 GB totales; 102.0054 GB libres en C:). Dos límites fallaron por redacción: «No me digas la fecha.» recibió un saludo en vez de un reconocimiento y «¿Cómo se ve la fecha en Windows?» describió formatos y preguntó si explicaba. Siguiente: cerrar Steam con Steam sin ejecutar (CLOSE1369, sin cambio de fuente).",
+  "credits": 2
+}

@@ -257,3 +257,7 @@ Mensajería pasa de 6/31 a 7/31 con los lectores de aclaración de respuesta sin
 ## Actualización 2026-09-14 (MESSAGING1365)
 
 Mensajería pasa de 7/31 a 9/31 con el contrato de redacción de la pregunta de destinatario (commit 5bdb7f6c, BUILD1365): 10/10 ejecutados, 9 aprobados, 1 fallido, 0 violaciones, 2 créditos. H0045 y H0074 acreditados con dos pares de destinatario cada uno: el producto pregunta «¿A quién le contesto?» en primera persona de BAXY y conserva lo que la persona quiere decir («¿A quién le respondo que ya salgo?»), sin envío ni operaciones. La variante «Contestale que gracias.» aún entregó la contestación a la persona con «¿A quién le debes contestar…?» (forma «debes contestar» fuera de la lista del contrato; residual de redacción). Los cuatro límites aprobados.
+
+## Actualización 2026-09-14 (SYSTEM1367)
+
+Estado de hardware y sistema pasa de 32/40 a 34/40 con el lector compuesto reloj + estado (commit 346e930f, BUILD1367): 10/10 ejecutados, 8 aprobados, 2 fallidos, 0 violaciones, 2 créditos. H0106 y H0589 acreditados con dos pares cada uno: system.time y luego system.status del alcance pedido, ambas verificadas, y finales con la fecha (y hora) observada y cifras que coinciden con el journal (RAM en uso 13.33 GB de 16.54 GB totales; 102.0054 GB libres en C:). Dos límites fallaron por redacción: «No me digas la fecha.» recibió un saludo en vez de un reconocimiento y «¿Cómo se ve la fecha en Windows?» describió formatos y preguntó si explicaba. Siguiente: cerrar Steam con Steam sin ejecutar (CLOSE1369, sin cambio de fuente).

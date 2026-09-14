@@ -1,3 +1,11 @@
+# SYSTEM1367 adjudicado — 2026-09-14T07:09:10.966439+00:00
+
+**413/742 cubiertos, 329 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA ba2abe497fff2e1e63bfd6309b16430cb283fc8fa95d2e0f7721fdcfdab72bb3. Primeras altas 24 h >= 287 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 346e930f con BUILD1367 (mente: lector compuesto reloj + estado; SYSTEM1367/SOURCE.json|SOURCE.patch; .NET sin cambios). Sólo lecturas: memory.status, system.time y system.status permitidos, sin confirmación.
+
+SYSTEM1367 («Estado de hardware y sistema», H0106 y H0589 informe fechado del equipo, lecturas ordinarias): 10/10 ejecutados, 8 aprobados, 2 fallidos, 0 violaciones, 2 créditos. Adjudicación 1a9c1388f0d79a9969ed2828f43dbd328120106fdb898b98e5edb1bec8649734. H0106 y H0589 acreditados con dos pares cada uno: system.time y luego system.status del alcance pedido, ambas verificadas, y finales con la fecha (y hora) observada y cifras que coinciden con el journal (RAM en uso 13.33 GB de 16.54 GB totales; 102.0054 GB libres en C:). Dos límites fallaron por redacción: «No me digas la fecha.» recibió un saludo en vez de un reconocimiento y «¿Cómo se ve la fecha en Windows?» describió formatos y preguntó si explicaba. Siguiente: cerrar Steam con Steam sin ejecutar (CLOSE1369, sin cambio de fuente).
+
+---
+
 # MESSAGING1365 adjudicado — 2026-09-14T06:57:50.062908+00:00
 
 **411/742 cubiertos, 331 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA e3f02c96768687259efa522cb0fa526e4833054a710fa45208efc4855ec34329. Primeras altas 24 h >= 285 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5bdb7f6c con BUILD1365 (mente: contrato de redacción de la pregunta de destinatario; MESSAGING1365/SOURCE.json|SOURCE.patch; .NET sin cambios). Ningún cliente de mensajería ni envío: turnos ordinarios con sólo memory.status permitido.
