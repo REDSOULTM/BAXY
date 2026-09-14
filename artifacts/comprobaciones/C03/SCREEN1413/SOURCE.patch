@@ -1,0 +1,229 @@
+commit fa2fb8fd3839ea4548e342b2080aa6e35802e5b3
+
+C03: a screen reading is recognized in the mission-completed shape and its quoted lines are observed data (SCREEN1413)
+
+SCREEN1411 measured the grounded reading contract and found three gaps. The final of a two-step mission composes from the mission-completed situation (steps as JSON strings, completedStepsInOrder in the payload), not from a single ocr.read operation: the quoting instruction and the grounding check keyed on a top-level operation never applied, and an unfounded summary passed. When a draft did quote recognized lines, the App and the mind vetoed it as internal code because a code-heavy screen carries identifiers, paths and dotted names. And the five-second composition ceiling cut every attempt that quoted more than one line.
+
+baxy_mind.observed_response_literals: a verified ocr.read step (single or inside steps) supplies its recognized lines and identifier tokens to the vocabulary exemption, as window titles and process names already do.
+Baxy.App.ObservedResponseLiterals: the same exemption for the App's lexical checks.
+baxy_mind.llm: _recognized_screen_text / _recognized_screen_text_in_situation find the OCR text in both shapes; the quoting instruction and ocr_unsupported_terms use them.
+Baxy.App.MindSidecarClient: a verified screen reading of 512 characters or more, single or as a mission step, receives the dense composition timeout (10 s on GPU) instead of the 5-second ceiling.
+
+App recompiled (BUILD1413). Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/MindSidecarClient.cs b/src/Baxy.App/MindSidecarClient.cs
+index ee1ab377..065d82f3 100644
+--- a/src/Baxy.App/MindSidecarClient.cs
++++ b/src/Baxy.App/MindSidecarClient.cs
+@@ -212,14 +212,39 @@ internal sealed class MindSidecarClient : IAsyncDisposable
+ 
+         try
+         {
+-            if (JsonNode.Parse(source) is not JsonObject situation
+-                || situation["verified"]?.GetValueKind() != JsonValueKind.True
++            if (JsonNode.Parse(source) is not JsonObject situation)
++            {
++                return false;
++            }
++
++            // SCREEN1413: the final of a completed mission carries its steps as
++            // JSON strings; a verified screen reading among them is dense too.
++            if (situation["steps"] is JsonArray steps
++                && steps.Any(static step => step is JsonValue stepValue
++                    && stepValue.TryGetValue<string>(out string? stepSource)
++                    && HasDenseScreenReading(stepSource)))
++            {
++                return true;
++            }
++
++            if (situation["verified"]?.GetValueKind() != JsonValueKind.True
+                 || situation["succeeded"]?.GetValueKind() != JsonValueKind.True
+                 || situation["observed"] is not JsonObject observed)
+             {
+                 return false;
+             }
+ 
++            // SCREEN1411 «leéme lo que dice la pantalla»: quoting a few recognized
++            // lines verbatim is a dense output; the five-second ceiling cut every
++            // attempt while the model was still writing the quotation.
++            if (situation["operation"]?.ToString() == "ocr.read"
++                && observed["text"] is JsonValue recognized
++                && recognized.TryGetValue<string>(out string? screenText)
++                && screenText.Length >= DenseMessageFactCharacters)
++            {
++                return true;
++            }
++
+             // Inventory observations travel in situation, outside requiredFacts.
+             // Apply the same dense budget without changing the factual contract.
+             string? collection = situation["operation"]?.ToString() switch
+@@ -239,6 +264,25 @@ internal sealed class MindSidecarClient : IAsyncDisposable
+         }
+     }
+ 
++    private static bool HasDenseScreenReading(string source)
++    {
++        try
++        {
++            return JsonNode.Parse(source) is JsonObject step
++                && step["operation"]?.ToString() == "ocr.read"
++                && step["verified"]?.GetValueKind() == JsonValueKind.True
++                && step["succeeded"]?.GetValueKind() == JsonValueKind.True
++                && step["observed"] is JsonObject observed
++                && observed["text"] is JsonValue recognized
++                && recognized.TryGetValue<string>(out string? screenText)
++                && screenText.Length >= DenseMessageFactCharacters;
++        }
++        catch (JsonException)
++        {
++            return false;
++        }
++    }
++
+     /// <summary>Transcripción de voz emitida por el sidecar (hilo del pump).</summary>
+     public event Action<string>? TranscriptReceived;
+ 
+diff --git a/src/Baxy.App/ObservedResponseLiterals.cs b/src/Baxy.App/ObservedResponseLiterals.cs
+index d0374735..b0823828 100644
+--- a/src/Baxy.App/ObservedResponseLiterals.cs
++++ b/src/Baxy.App/ObservedResponseLiterals.cs
+@@ -86,6 +86,31 @@ internal static class ObservedResponseLiterals
+                 }
+             }
+         }
++        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
++            && IsString(node, "operation", "ocr.read")
++            && node.TryGetProperty("verified", out JsonElement readVerified) && readVerified.ValueKind == JsonValueKind.True
++            && node.TryGetProperty("succeeded", out JsonElement readSucceeded) && readSucceeded.ValueKind == JsonValueKind.True
++            && node.TryGetProperty("observed", out JsonElement recognized) && recognized.ValueKind == JsonValueKind.Object
++            && recognized.TryGetProperty("text", out JsonElement recognizedText) && recognizedText.ValueKind == JsonValueKind.String
++            && recognizedText.GetString() is { Length: > 0 } screenText)
++        {
++            // SCREEN1411 «leéme lo que dice la pantalla»: the person asked for the
++            // screen's words; quoting a recognized line (identifiers, paths and
++            // dotted names included) is observed data, not vocabulary about BAXY.
++            foreach (string line in screenText.Split('\n'))
++            {
++                string trimmed = line.Trim();
++                if (trimmed.Length is > 1 and <= 4096)
++                {
++                    names.Add(trimmed);
++                }
++            }
++            foreach (Match token in Regex.Matches(screenText, @"[\w-]+(?:[._][\w-]+)+",
++                         RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100)))
++            {
++                names.Add(token.Value);
++            }
++        }
+         if (node.TryGetProperty("steps", out JsonElement steps) && steps.ValueKind == JsonValueKind.Array && depth < 8)
+         {
+             foreach (JsonElement step in steps.EnumerateArray())
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 83411e2c..95b5cef4 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4412,6 +4412,53 @@ _OCR_FRAMING_STEMS = frozenset({
+ })
+ 
+ 
++def _recognized_screen_text(payload: dict) -> str | None:
++    """The verified OCR text in a compose payload, single-step or mission-shaped."""
++
++    seen = payload.get("seen")
++    if payload.get("operation") == "ocr.read" and isinstance(seen, dict):
++        text = seen.get("text")
++        if isinstance(text, str) and text.strip():
++            return text
++    for step in payload.get("completedStepsInOrder") or []:
++        if isinstance(step, dict) and step.get("operation") == "ocr.read":
++            result = step.get("resultAtThisStep")
++            step_seen = result.get("seen") if isinstance(result, dict) else None
++            text = step_seen.get("text") if isinstance(step_seen, dict) else None
++            if isinstance(text, str) and text.strip():
++                return text
++    return None
++
++
++def _recognized_screen_text_in_situation(situation: dict) -> str | None:
++    """The verified OCR text in a situation, single-step or mission-shaped."""
++
++    def from_node(node: object) -> str | None:
++        if isinstance(node, str):
++            try:
++                node = json.loads(node)
++            except (ValueError, TypeError):
++                return None
++        if not isinstance(node, dict):
++            return None
++        if (
++            node.get("operation") == "ocr.read"
++            and node.get("verified") is True
++            and node.get("succeeded") is True
++        ):
++            observed = node.get("observed")
++            text = observed.get("text") if isinstance(observed, dict) else None
++            if isinstance(text, str) and text.strip():
++                return text
++        for step in node.get("steps") or []:
++            found = from_node(step)
++            if found:
++                return found
++        return None
++
++    return from_node(situation)
++
++
+ def _ocr_unsupported_terms(text: str, recognized: str, user_text: str) -> list[str]:
+     """Content words of a screen-reading report that the recognized text lacks."""
+ 
+@@ -4547,8 +4594,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+         # virtual.»: the verified capture was echoed as an order. Report it as
+         # done, in the first person.
+         return "capture_not_reported"
+-    recognized = seen.get("text") if isinstance(seen, dict) else None
+-    if payload.get("operation") == "ocr.read" and isinstance(recognized, str) and recognized.strip():
++    recognized = _recognized_screen_text(payload)
++    if isinstance(recognized, str) and recognized.strip():
+         # SCREEN1409 «leéme lo que dice la pantalla»: the finals summarized a
+         # «Fable limit warning», generated scripts and an execution flow that
+         # the recognized text never contained. Every content word of the
+@@ -11421,11 +11468,7 @@ class LlmRuntime:
+         # 500 tokens) cannot finish inside the composition budget, and free
+         # summaries invented a warning and scripts the screen never showed. The
+         # report quotes a few lines verbatim and stays within the default budget.
+-        screen_reading = (
+-            situation.get("operation") == "ocr.read"
+-            and situation.get("verified") is True
+-            and situation.get("succeeded") is True
+-        )
++        screen_reading = _recognized_screen_text_in_situation(situation) is not None
+         # Inventory facts travel in situation, outside requiredFacts. Reuse
+         # the dense output allowance, keeping their existing prompt unchanged.
+         if dense_fact_contract or dense_inventory:
+diff --git a/src/baxy_mind/observed_response_literals.py b/src/baxy_mind/observed_response_literals.py
+index e1ad35bf..5484a771 100644
+--- a/src/baxy_mind/observed_response_literals.py
++++ b/src/baxy_mind/observed_response_literals.py
+@@ -43,6 +43,18 @@ def without_observed_names(text: str, situation: object) -> str:
+                         names.update(value for key in fields
+                                      if isinstance(value := entry.get(key), str)
+                                      and value.strip() and len(value) <= 4096)
++        if (node.get("kind") == "operation" and operation == "ocr.read"
++                and node.get("verified") is True and node.get("succeeded") is True
++                and node.get("polarity") == "success"):
++            # SCREEN1411 «leéme lo que dice la pantalla»: the person asked for the
++            # screen's words; a quoted recognized line (identifiers, paths and
++            # dotted names included) is observed data, not vocabulary about BAXY.
++            observed = node.get("observed")
++            recognized = observed.get("text") if isinstance(observed, dict) else None
++            if isinstance(recognized, str) and recognized.strip():
++                names.update(line.strip() for line in recognized.split("\n")
++                             if 1 < len(line.strip()) <= 4096)
++                names.update(re.findall(r"[\w-]+(?:[._][\w-]+)+", recognized))
+         steps = node.get("steps")
+         if isinstance(steps, list):
+             for step in steps:

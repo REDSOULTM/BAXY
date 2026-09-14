@@ -1,0 +1,15 @@
+{
+  "schema": "c03-screen1413-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py y observed_response_literals.py, src/Baxy.App/ObservedResponseLiterals.cs y MindSidecarClient.cs (lectura reconocida en ambas formas; líneas reconocidas exentas como datos observados; presupuesto denso para una lectura de pantalla)",
+  "patch": "artifacts/comprobaciones/C03/SCREEN1413/SOURCE.patch",
+  "commits": [
+    "fa2fb8fd3839ea4548e342b2080aa6e35802e5b3"
+  ],
+  "build": "BUILD1413 (C03-repairs1413-build/BUILD_READY.json; App recompilada)",
+  "cause_measured": "SCREEN1411: el final de una misión de dos pasos compone desde la forma mission_completed y la instrucción/comprobación de lectura no se aplicaron; las líneas citadas de una pantalla con código fueron vetadas como jerga interna; el techo de 5 s cortó las citas largas.",
+  "change": "La lectura se reconoce en la operación y en la forma de misión; las líneas e identificadores reconocidos de una ocr.read verificada quedan exentos de las comprobaciones léxicas de la mente y de la App; una lectura de 512 caracteres o más recibe el presupuesto denso (10 s). Sin respuestas fijas.",
+  "measurement": "SCREEN1413: 10/10 ejecutados, 3 límites aprobados, 2 casos de lectura con extracto textual fiel, 5 casos de lectura sin final por presupuesto, 0 violaciones; 0 créditos. SCREEN1413 sobre BUILD1413 (App y mente: la lectura se reconoce en la forma de misión, sus líneas citadas son datos observados, presupuesto denso): captura y ocr.read completadas y verificadas en los siete casos de lectura. Dos publicaron un extracto textual fiel del texto reconocido (ninguna palabra ajena), cortado en el tope de tokens y sin encuadre ni número de líneas; cinco no publicaron nada porque cada intento de composición agotó el presupuesto denso: con el texto completo a la vista, el modelo lo transcribe en vez de citar dos o tres líneas. Ningún borrador fue vetado ya como jerga interna. Siguiente: el compositor recibe un extracto acotado (tres líneas con contenido, recortadas) más el número de líneas, de modo que el informe queda acotado por construcción (SCREEN1415).",
+  "credits": 0
+}
