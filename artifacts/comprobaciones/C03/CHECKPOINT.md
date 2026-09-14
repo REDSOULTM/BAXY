@@ -1,3 +1,25 @@
+## AUDIO1379 — estado vigente 2026-09-14T08:09:46.139762+00:00
+
+Parcial: 6 aprobados, 4 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 418/742 | 324 | 0 | >=292 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 291 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1379 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: AUDIO1379: 10 ejecutados, 6 aprobados, 4 fallidos, 1 créditos (índices [0]); Audio y volumen 42/51. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/AUDIO1379/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 178.03 s acumulados; pico GPU 3497.56 MiB; pico RAM 1635.79 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 10; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque AUDIO1379 precedente. -->
+
 ## AUDIO1375 — estado vigente 2026-09-14T08:04:21.991475+00:00
 
 Parcial: 3 aprobados, 7 fallidos, 0 sin ejecutar; 0 créditos.

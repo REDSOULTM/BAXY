@@ -1,3 +1,11 @@
+# AUDIO1379 adjudicado — 2026-09-14T08:09:46.139762+00:00
+
+**418/742 cubiertos, 324 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA de5f3ebee7c0567d2382a78dee5d88d50845c7a00a12b58bef8d4477d73f74ae. Primeras altas 24 h >= 292 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4138c23a con BUILD1379 (mente: la pregunta del nivel deíctico debe preguntar qué; AUDIO1379/SOURCE.json|SOURCE.patch; .NET sin cambios). Turnos ordinarios con sólo memory.status permitido; volumen y brillo verificados intactos por la raíz.
+
+AUDIO1379 («Audio y volumen», H0439 y H0713 nivel para «lo» sin referente, ordinarios): 10/10 ejecutados, 6 aprobados, 4 fallidos, 0 violaciones, 1 créditos. Adjudicación 932762f106f9a2662b97db706bd3b391d95396684878d2eb845d164a8705b84e. H0439 «Ponlo a 100 ahora» acreditado con dos pares («¿A qué ajuste quieres subirlo a 80?», «What would you like to set to 100?»): cero operaciones y una pregunta que pide qué cosa poner a 100 («¿A qué cosa quieres que la ponga a 100?»). H0713 «devuelvelo a 100» y dos variantes agotaron las dos redacciones con «¿A qué nivel…?» y cayeron a la recuperación genérica («No pude entender bien tu mensaje»): el propio texto de la situación decía «a un nivel» y el modelo lo repetía. Los límites con sustantivos de volumen se sustituyeron tras las lecturas de AUDIO1375; «No cambies nada.» sigue recibiendo una oferta de ayuda genérica. Siguiente: el contrato sin la palabra «nivel» (AUDIO1381).
+
+---
+
 # AUDIO1375 adjudicado — 2026-09-14T08:04:21.991475+00:00
 
 **417/742 cubiertos, 325 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA bf5dbaaf64e8ac6476c00aaf79c997951556dc5d84006380cb18c048684d0580. Primeras altas 24 h >= 291 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 79cc3287 con BUILD1375 (mente: clase deictic_level y su aclaración; AUDIO1375/SOURCE.json|SOURCE.patch; .NET sin cambios). Turnos ordinarios con sólo memory.status permitido; volumen y brillo verificados intactos por la raíz.

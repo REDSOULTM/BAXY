@@ -1,0 +1,123 @@
+{
+  "schema": "audio1379-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1379-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1379-instrument-v1",
+  "seal_sha256": "8b3aeca4605cacef02779c696df4cbbbed10c5ace678e68fba4c715d53900db5",
+  "runner_sha256": "37bb1133d171f015777cc11f9a71cb9042e75a5515cada344002a66cc7ba21f8",
+  "transport_seal_sha256": "157e8f92bdaeeab255515ee4d289a9440e12d9d7205a4f382ea069b5bf872940",
+  "files": {
+    "panel.json": "c93db545b5d9b77e55ef7718cc6adf90022d2b11c5532a6b16c321dd9e09b6ab",
+    "turns.jsonl": "b570dd977833103217d52138a2856c550f6e436e63d45ce61b581ad3dcdc9b92",
+    "case-map.json": "9fe708ec569625babf07fcee239b417cb4e74eedec42c32e6c3318bf8d336070",
+    "PLAN.md": "6c5c339e6e1e4266b87b2321c068932d79df27afac0aa76984fd94c649fec757"
+  },
+  "counts": {
+    "cases": 10,
+    "historical_literals": 2,
+    "original_development_variants": 4,
+    "boundaries": 4,
+    "wire_lines": 20,
+    "session_controls": 10,
+    "ordinary_turns": 10,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 10,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 2,
+    "original_development_variant": 4,
+    "boundary": 4
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0439",
+      "kind": "historical_literal",
+      "group": "deictic_level",
+      "credit_behavior": "deictic_level",
+      "text_sha256": "950bf158bb9ed1512d7d1bbbeca87078b7a47901077c5ea5b8547a1fe348abb9",
+      "criterion_sha256": "9c8c867dfda446887d32fa2258d0ff8deac7da31aba69f732ce62cc24f10bcb2"
+    },
+    {
+      "index": 1,
+      "case_id": "H0713",
+      "kind": "historical_literal",
+      "group": "deictic_level",
+      "credit_behavior": "deictic_level",
+      "text_sha256": "f67e622157c6c6310bd71a2a2df6b42acf9947a4139e5505011d0b806640f1b0",
+      "criterion_sha256": "9c8c867dfda446887d32fa2258d0ff8deac7da31aba69f732ce62cc24f10bcb2"
+    },
+    {
+      "index": 2,
+      "case_id": "audio1379-dev-01",
+      "kind": "original_development_variant",
+      "group": "deictic_level",
+      "credit_behavior": "deictic_level",
+      "text_sha256": "0f98f1585920f8a2c99e2d8391805d1f0b1c6ee739484e0dafa38d4a3050b632",
+      "criterion_sha256": "9c8c867dfda446887d32fa2258d0ff8deac7da31aba69f732ce62cc24f10bcb2"
+    },
+    {
+      "index": 3,
+      "case_id": "audio1379-dev-02",
+      "kind": "original_development_variant",
+      "group": "deictic_level",
+      "credit_behavior": "deictic_level",
+      "text_sha256": "2e7c4e7201539bf91b300a72cb3c121164c6702903c5e8ada9eb636db9a489da",
+      "criterion_sha256": "9c8c867dfda446887d32fa2258d0ff8deac7da31aba69f732ce62cc24f10bcb2"
+    },
+    {
+      "index": 4,
+      "case_id": "audio1379-dev-03",
+      "kind": "original_development_variant",
+      "group": "deictic_level",
+      "credit_behavior": "deictic_level",
+      "text_sha256": "77b52e18044a32daebb54b1a4a06dc49db1d65b6ae398bed62d37eacd2b49d19",
+      "criterion_sha256": "9c8c867dfda446887d32fa2258d0ff8deac7da31aba69f732ce62cc24f10bcb2"
+    },
+    {
+      "index": 5,
+      "case_id": "audio1379-dev-04",
+      "kind": "original_development_variant",
+      "group": "deictic_level",
+      "credit_behavior": "deictic_level",
+      "text_sha256": "04a0c4284441c7f730c13cca797817e9e7e3f6c43a9be8e871131407913a16cb",
+      "criterion_sha256": "9c8c867dfda446887d32fa2258d0ff8deac7da31aba69f732ce62cc24f10bcb2"
+    },
+    {
+      "index": 6,
+      "case_id": "audio1379-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "abedfbb760eb5e22329e7a6b864e504efcf5efe6c000161639140bbd7e61b52d",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 7,
+      "case_id": "audio1379-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "b57f8f0e62de539bed53cc3e368808196b352b0bac9b6f29b55134089d47f556",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    },
+    {
+      "index": 8,
+      "case_id": "audio1379-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "3f1bff7596023f88d869d88ae160efab53848a5b0682745af9e7b441c181decb",
+      "criterion_sha256": "cf8128bfd1e05a78a58074c4bbf5cb36e9b985a72e5db9a66812a57fbe10e3ab"
+    },
+    {
+      "index": 9,
+      "case_id": "audio1379-boundary-04",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "fe3e0842cb36623d8ec8954c8f5a5b492573889d3dcaf36a973392d257294eea",
+      "criterion_sha256": "63254e50babccd725db7cbdcfa1601d6663ea2a66fd81b4211de988d8972274d"
+    }
+  ]
+}

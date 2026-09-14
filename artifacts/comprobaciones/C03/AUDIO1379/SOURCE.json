@@ -1,0 +1,15 @@
+{
+  "schema": "c03-audio1379-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (clarify_unresolved_input: la pregunta de deictic_level debe preguntar qué, no el nivel; una corrección y luego fallo)",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1379/SOURCE.patch",
+  "commits": [
+    "4138c23aa5c23e4b94745b6f3fc48b5b0a2e25cd"
+  ],
+  "build": "BUILD1379 (C03-repairs1379-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "AUDIO1375: la clase deictic_level llegó a la aclaración pero la pregunta pidió el nivel ya dicho («¿A qué nivel quieres ponerlo a 100?») o dio por hecho el ajuste («¿A qué nivel quieres poner el volumen?»).",
+  "change": "La pregunta de deictic_level debe contener «qué/cuál» y no preguntar el nivel («a qué nivel», «cuánto»); una corrección con el contrato (el nivel ya está dicho; falta qué cosa) y fallo si se repite. Sin respuestas fijas.",
+  "measurement": "AUDIO1379: 10/10 ejecutados, 6 aprobados, 4 fallidos, 0 violaciones; 1 créditos. H0439 «Ponlo a 100 ahora» acreditado con dos pares («¿A qué ajuste quieres subirlo a 80?», «What would you like to set to 100?»): cero operaciones y una pregunta que pide qué cosa poner a 100 («¿A qué cosa quieres que la ponga a 100?»). H0713 «devuelvelo a 100» y dos variantes agotaron las dos redacciones con «¿A qué nivel…?» y cayeron a la recuperación genérica («No pude entender bien tu mensaje»): el propio texto de la situación decía «a un nivel» y el modelo lo repetía. Los límites con sustantivos de volumen se sustituyeron tras las lecturas de AUDIO1375; «No cambies nada.» sigue recibiendo una oferta de ayuda genérica. Siguiente: el contrato sin la palabra «nivel» (AUDIO1381).",
+  "credits": 1
+}
