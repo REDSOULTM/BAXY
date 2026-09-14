@@ -8933,6 +8933,10 @@ def _is_direct_request(text: str) -> bool:
         r"manda|mandar|mandale|mandales|"
         r"arma|armar|marca|marcar|graba|grabar|record|stage|"
         r"borra|borrar|elimina|eliminar|delete|"
+        # AGENDA1339 «cancelame la alarma»: clitic cancellation heads are the
+        # same speech act as «cancelá»/«cancel».
+        r"cancelame|cancelamela|cancelala|borrame|borrala|quitame|quitala|"
+        r"eliminame|eliminala|"
         r"cierralo|cierrala|cerrala|cerralo|close it|dile|decile|tell|send|message|"
         r"programa|programar|programame|schedule|agenda|agendar|agendame|"
         r"ponme|pone|poneme|pongame|"
