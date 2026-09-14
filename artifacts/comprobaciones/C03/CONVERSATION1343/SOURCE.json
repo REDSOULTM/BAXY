@@ -1,0 +1,15 @@
+{
+  "schema": "c03-conversation1343-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (formas misnamed_greeting y reassurance_ack: cue, prompt, anclas, contrato); src/baxy_mind/effect_intent.py (visual_content_request); src/baxy_mind/__main__.py (clasificación no soportada del contenido visual)",
+  "patch": "artifacts/comprobaciones/C03/CONVERSATION1343/SOURCE.patch",
+  "commits": [
+    "6fa902624f14e927ea66950a310d5c00e14e1381"
+  ],
+  "build": "BUILD1343 (C03-repairs1343-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "CONVERSATION1150/1152: «hola Carter» saludó sin aclarar que es BAXY; «NO te preocupes si se abrio steam» dio un acuse contradictorio o una pregunta; «Tienes algun meme?» prometió un meme que no puede mostrar.",
+  "change": "Mente: formas de presentación misnamed_greeting (saluda y dice que se llama BAXY) y reassurance_ack (acuse breve sin preguntar ni afirmar estados) antes de la puerta de tipo; los pedidos de contenido visual se presentan como no soportados. Sin respuestas fijas.",
+  "measurement": "CONVERSATION1343: 11 ejecutados, 6 aprobados, 5 fallidos, 0 violaciones; H0122 acreditado con dos pares; 1 créditos. Medición: el saludo con otro nombre se contesta saludando y diciendo que se llama BAXY; la tranquilización no llega a su forma (la comprobación de forma semántica del efecto la convierte en aclaración) y el pedido de meme, aunque clasificado como no soportado, sale con sujeto invertido («Pido un meme…»), agota reintentos o pregunta. Reparación para CONVERSATION1345: excluir tranquilizaciones y pedidos visuales de esa aclaración y darles forma propia.",
+  "credits": 1
+}

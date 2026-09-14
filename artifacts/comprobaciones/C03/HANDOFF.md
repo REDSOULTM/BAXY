@@ -1,3 +1,11 @@
+# CONVERSATION1343 adjudicado — 2026-09-14T05:01:46.574040+00:00
+
+**399/742 cubiertos, 343 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA d82ebc8d913786c7b91fe9d4efb8e02b1f8b86909cfd8c813bb33b9f60d4d487. Primeras altas 24 h >= 273 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6fa90262 con BUILD1343 (mente: formas misnamed_greeting y reassurance_ack; contenido visual no soportado; CONVERSATION1343/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+CONVERSATION1343 («Conversación social y ayuda general», saludo con otro nombre, tranquilización, pedido de meme): 11 ejecutados, 6 aprobados, 5 fallidos, 0 violaciones; H0122 acreditado con dos pares, 1 créditos. Adjudicación f665192f4c2f9e1e2c3eafa3280635e9bb248f8c41e692399bb79bc9845e4a52. Medición: el saludo con otro nombre se contesta saludando y diciendo que se llama BAXY; la tranquilización no llega a su forma (la comprobación de forma semántica del efecto la convierte en aclaración) y el pedido de meme, aunque clasificado como no soportado, sale con sujeto invertido («Pido un meme…»), agota reintentos o pregunta. Reparación para CONVERSATION1345: excluir tranquilizaciones y pedidos visuales de esa aclaración y darles forma propia.
+
+---
+
 # AGENDA1341 adjudicado — 2026-09-14T04:51:47.523536+00:00
 
 **398/742 cubiertos, 344 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 70717d1371360f539c0b2bf5cb1bdda671182eaa45fcb703a216ec3e77d27256. Primeras altas 24 h >= 272 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e61f7626 con BUILD1341 (mente: «cancelame» pasa la puerta de pedido directo; AGENDA1341/SOURCE.json|SOURCE.patch; .NET sin cambios).

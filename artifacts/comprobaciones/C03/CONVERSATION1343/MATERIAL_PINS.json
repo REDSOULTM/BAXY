@@ -1,0 +1,132 @@
+{
+  "schema": "conversation1343-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1343-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1343-instrument-v1",
+  "seal_sha256": "58c60c8840ed489083dc00210001296047e39a2a01f444545074d7f4df3a589c",
+  "runner_sha256": "e4e05148e632a35deb1e6f0c29735c911e4884403db1cc641e046a6391e39f0a",
+  "transport_seal_sha256": "5e1f8f215b06310f4fd3d7f2f0c42ba41c86f59ad4d3d85e54d46c43c17ae066",
+  "files": {
+    "panel.json": "568952251927310f0265a194099a62e57662f5ed10c5f630eedecac63ad3e205",
+    "turns.jsonl": "e229b23117a45916d39edbea6da5f14dd56ea22d3cef9f0f4f69193b7bc0081c",
+    "case-map.json": "e40645e7a8b28189c6dd56906f354386668e4f6836692c3cade51fc21a561ff3",
+    "PLAN.md": "d9dda999cd2664fc87a55677fbfad9753bf790e1e2f697ed639620038482b78c"
+  },
+  "counts": {
+    "cases": 11,
+    "historical_literals": 3,
+    "original_development_variants": 6,
+    "boundaries": 2,
+    "wire_lines": 22,
+    "session_controls": 11,
+    "ordinary_turns": 11,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 11,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 3,
+    "original_development_variant": 6,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0122",
+      "kind": "historical_literal",
+      "group": "misnamed_greeting",
+      "credit_behavior": "misnamed_greeting",
+      "text_sha256": "27150a7988d7ff7d37c2326ba48e2b681202c6ef5b0f69bc997fd778213022d5",
+      "criterion_sha256": "5985a2183bc40d713ec4979c22d8ed764277f0df72b7252aaf793a52b0875466"
+    },
+    {
+      "index": 1,
+      "case_id": "H0059",
+      "kind": "historical_literal",
+      "group": "reassurance_ack",
+      "credit_behavior": "reassurance_ack",
+      "text_sha256": "128338867df1844084b0b193e792b58602f2733c2d556a06e8b91ab5a7bdb632",
+      "criterion_sha256": "ad415d47e083156cc04384dfd61ed0ed4652541c6256409302f89f825cb25279"
+    },
+    {
+      "index": 2,
+      "case_id": "H0069",
+      "kind": "historical_literal",
+      "group": "visual_content_unsupported",
+      "credit_behavior": "visual_content_unsupported",
+      "text_sha256": "15e8889f40cd329d544c50be0b7d699bbb57d43a8316c75e1f95a094791ef874",
+      "criterion_sha256": "6a118bef57042fcc0aa56cbd18cc81925cdcc7394d406f113357673e7743dd4b"
+    },
+    {
+      "index": 3,
+      "case_id": "conversation1343-dev-01",
+      "kind": "original_development_variant",
+      "group": "misnamed_greeting",
+      "credit_behavior": "misnamed_greeting",
+      "text_sha256": "b1542d10c28bb94fa2f95ee4e08349b1111ac4cd2bbc3743b4819882a2597c00",
+      "criterion_sha256": "5985a2183bc40d713ec4979c22d8ed764277f0df72b7252aaf793a52b0875466"
+    },
+    {
+      "index": 4,
+      "case_id": "conversation1343-dev-02",
+      "kind": "original_development_variant",
+      "group": "misnamed_greeting",
+      "credit_behavior": "misnamed_greeting",
+      "text_sha256": "9c5cca88ed82a3d6ee2111ef61bb301f38270b15852b69253a57a4104d57516b",
+      "criterion_sha256": "5985a2183bc40d713ec4979c22d8ed764277f0df72b7252aaf793a52b0875466"
+    },
+    {
+      "index": 5,
+      "case_id": "conversation1343-dev-03",
+      "kind": "original_development_variant",
+      "group": "reassurance_ack",
+      "credit_behavior": "reassurance_ack",
+      "text_sha256": "d97b66b200ba945c74e27afb842920f64e64cae33a13b25cb46ed3d5482bf04e",
+      "criterion_sha256": "ad415d47e083156cc04384dfd61ed0ed4652541c6256409302f89f825cb25279"
+    },
+    {
+      "index": 6,
+      "case_id": "conversation1343-dev-04",
+      "kind": "original_development_variant",
+      "group": "reassurance_ack",
+      "credit_behavior": "reassurance_ack",
+      "text_sha256": "1fda14893792edc8a4edb0705ff11c8ab81ee77bb1be35bed61cb65daaad328e",
+      "criterion_sha256": "ad415d47e083156cc04384dfd61ed0ed4652541c6256409302f89f825cb25279"
+    },
+    {
+      "index": 7,
+      "case_id": "conversation1343-dev-05",
+      "kind": "original_development_variant",
+      "group": "visual_content_unsupported",
+      "credit_behavior": "visual_content_unsupported",
+      "text_sha256": "ea01cf1433be0881e95fe905eed6e5f4373528becd4e8169d513dc831cc5c330",
+      "criterion_sha256": "6a118bef57042fcc0aa56cbd18cc81925cdcc7394d406f113357673e7743dd4b"
+    },
+    {
+      "index": 8,
+      "case_id": "conversation1343-dev-06",
+      "kind": "original_development_variant",
+      "group": "visual_content_unsupported",
+      "credit_behavior": "visual_content_unsupported",
+      "text_sha256": "655cc3fae374449791460b37c10b62d81c4db55110795822a993decec21b2be9",
+      "criterion_sha256": "6a118bef57042fcc0aa56cbd18cc81925cdcc7394d406f113357673e7743dd4b"
+    },
+    {
+      "index": 9,
+      "case_id": "conversation1343-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "a11f997cd32d1b5dec2d2b85b8452333df733d6404495db4d497ccba207dd312",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 10,
+      "case_id": "conversation1343-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "8e1875dcc57377e795510f185f825c1596f0af16936c071bd8674eb06aa85c0b",
+      "criterion_sha256": "ac15a70b241bb734c8efe0db6f0565d403d32aca194ef8fb2757d2c7adf925fe"
+    }
+  ]
+}

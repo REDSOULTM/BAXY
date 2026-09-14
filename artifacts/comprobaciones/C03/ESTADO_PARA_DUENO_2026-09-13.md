@@ -1,3 +1,25 @@
+## CONVERSATION1343 — estado vigente 2026-09-14T05:01:46.574040+00:00
+
+Parcial: 6 aprobados, 5 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 399/742 | 343 | 0 | >=273 | 3/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 272 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); CONVERSATION1343 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: CONVERSATION1343: 11 ejecutados, 6 aprobados, 5 fallidos, 1 créditos (índices [0]); Conversación social y ayuda general 26/31. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/CONVERSATION1343/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 205.28 s acumulados; pico GPU 3497.56 MiB; pico RAM 2069.28 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 11; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque CONVERSATION1343 precedente. -->
+
 ## AGENDA1341 — estado vigente 2026-09-14T04:51:47.523536+00:00
 
 Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
