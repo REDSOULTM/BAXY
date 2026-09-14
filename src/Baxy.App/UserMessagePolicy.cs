@@ -1016,7 +1016,7 @@ internal static class UserMessagePolicy
     private static bool AsksForDeclaredFolder(string folded, IReadOnlyList<string>? missingFields) =>
         missingFields is not null
         && missingFields.Contains("folder")
-        && Regex.IsMatch(folded, @"(?:carpeta|directorio|folder|directory)",
+        && Regex.IsMatch(folded, @"\b(?:carpeta|directorio|folder|directory)\b",
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
 
     private static bool LooksLikeMachineSlotAsk(string folded) =>
