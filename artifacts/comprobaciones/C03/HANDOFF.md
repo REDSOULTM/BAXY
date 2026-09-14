@@ -1,3 +1,11 @@
+# BRIGHT1285 adjudicado — 2026-09-14T00:24:31.353185+00:00
+
+**369/742 cubiertos, 373 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA a5a3191b18caa9995039a4b977ed206da7f9e6f2acffa3c352dae83857a5d363. Primeras altas 24 h >= 243 (+7).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4c93a154 con BUILD1285 (mente: lectores deterministas de brillo — lectura, ajuste con cantidad, pregunta por la cantidad conservando la dirección; BRIGHT1285/SOURCE.json|SOURCE.patch; .NET sin cambios). Brillo fijado en 60 por la raíz y restaurado al del dueño tras cada caso.
+
+BRIGHT1285 («Brillo y pantalla», turnos ordinarios): 16 ejecutados, 14 aprobados, 2 fallidos, 7 créditos. Adjudicación 296c2379df5e232a3e3be35017dfcf59a14d5990d6bdbd3b35cdd9f716531557. Siete literales acreditados: dos lecturas (H0171, H0662) con pares «¿Cuánto brillo tengo?» y «Decime el brillo actual de la pantalla.» (lecturas WMI verificadas, 60) y cinco relativos sin cantidad (H0242, H0606, H0446, H0494, H0031) con pares «Subime el brillo.» y «Turn the brightness down.» (cero operaciones, pregunta por la cantidad). H0496 aprobado sin crédito: sólo una variante de prohibición aprobada («No toques el brillo.» recibió una aclaración de más). Falla también el límite de capacidad (pregunta PC/móvil).
+
+---
+
 # BRIGHT1283 adjudicado — 2026-09-14T00:14:16.505660+00:00
 
 **362/742 cubiertos, 380 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 2b3ebefd500474ed142e4015af0943988cc94a39f14b7ddf636157ac58a79d5b. Primeras altas 24 h >= 236 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 38042a62 con BUILD1281 (sin fuente nueva). Primera medición de «Brillo y pantalla» (17 abiertos, 0 cubiertos; este portátil expone el brillo por WMI): 16 ejecutados, 4 aprobados, 12 fallidos, 0 créditos. Causa medida (BRIGHT1283/MEASUREMENT.json): sin lector determinista, el modelo aclara de más, devuelve el pedido como pregunta, pregunta la dirección ya dicha, lee el estado sin pedirlo o niega la capacidad. Adjudicación 6bd62c9cb49052153343a229a288d7304cfb736f3510db453bf96b14338ce1bd. Siguiente: BRIGHT1285 con lectores de brillo en la mente (gramática del volumen).

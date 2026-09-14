@@ -1,0 +1,16 @@
+{
+  "schema": "c03-bright1285-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (brightness_status_request → system.settings.status; _literal_brightness_adjustment → system.settings.adjust con cantidad y dirección dichas; brightness_relative_without_amount → ClarificationIntent(system.settings.adjust, amount) conservando la dirección; puerta de pedido directo con preámbulo/clítico); src/baxy_mind/__main__.py (fundamentación setting=brightness para status/adjust; exención de literal genérico)",
+  "patch": "artifacts/comprobaciones/C03/BRIGHT1285/SOURCE.patch",
+  "commits": [
+    "4c93a1541e8fd120dbf2e60159b722397310d04f"
+  ],
+  "build": "BUILD1285 (C03-repairs1285-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "BRIGHT1283: ningún literal de brillo tenía lector determinista (resolve_explicit_effects y resolve_explicit_clarification_intent devolvían None); el modelo aclaraba de más, devolvía el pedido como pregunta, preguntaba la dirección ya dicha, leía el estado sin pedirlo, filtraba «WMI» o negaba la capacidad.",
+  "change": "Lectores cerrados que reflejan la gramática del volumen: pregunta de brillo → lectura WMI; cantidad dicha («subí el brillo 20», «bajá el brillo un 30%») → ajuste; sin cantidad («subí el brillo», «un toque», «un poco», «turn the brightness down», con preámbulo «está oscuro…») → pregunta por la cantidad conservando la dirección (regla del dueño H0027); niveles absolutos y máximo siguen en system.settings.set (confirmación). Sin respuestas fijas.",
+  "offline_verification": "Sonda con el catálogo: 4 lecturas, 12 relativos sin cantidad (pregunta), 4 con cantidad (ajuste); «no bajes», «no toques», «poné el brillo al 80», «al máximo», «tengo el brillo al máximo», «bajá la persiana», «subí el brillo y abrí chrome», «bajaste el brillo?» sin lectura ni efecto. Sin tests (orden del dueño).",
+  "measurement": "BRIGHT1285: 16 ejecutados, 14 aprobados, 2 fallidos; 7 créditos. Siete literales acreditados: dos lecturas (H0171, H0662) con pares «¿Cuánto brillo tengo?» y «Decime el brillo actual de la pantalla.» (lecturas WMI verificadas, 60) y cinco relativos sin cantidad (H0242, H0606, H0446, H0494, H0031) con pares «Subime el brillo.» y «Turn the brightness down.» (cero operaciones, pregunta por la cantidad). H0496 aprobado sin crédito: sólo una variante de prohibición aprobada («No toques el brillo.» recibió una aclaración de más). Falla también el límite de capacidad (pregunta PC/móvil).",
+  "credits": 7
+}
