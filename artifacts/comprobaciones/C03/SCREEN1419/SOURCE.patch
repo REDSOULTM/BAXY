@@ -1,0 +1,104 @@
+commit 9d6069d9b5eba7cd658c52e6f45035d2c64b5072
+
+C03: the image-scope statement of a screen reading is not an asserted failure (SCREEN1419)
+
+SCREEN1417 measured the screen-content questions and describe forms: capture and read completed and verified, and the honest preface («no puedo describir imágenes, sólo leer el texto de la pantalla») was vetoed by the composer's failure lens as asserted_failure on a successful mission; the App's ReversesSuccessfulResult ends in the same LooksLikeFailure test and would have vetoed it too.
+
+llm.compose_visible_defect: for a verified screen reading (single operation or mission step), the clause that says images cannot be described is masked from the failure lens before the asserted-failure check; every other failure claim is still vetoed.
+Baxy.App.UserMessagePolicy.ReversesSuccessfulResult: the same clause is masked through WithoutScreenReadingImageScope when the source carries a verified ocr.read (top level or among the mission steps), as the empty known-file finding already is.
+
+App recompiled (BUILD1419). Offline probe: the prefaced reading passes the mind's lens, a real failure claim is still asserted_failure. Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/UserMessagePolicy.cs b/src/Baxy.App/UserMessagePolicy.cs
+index 3cb63b68..eab6560c 100644
+--- a/src/Baxy.App/UserMessagePolicy.cs
++++ b/src/Baxy.App/UserMessagePolicy.cs
+@@ -2605,6 +2605,7 @@ internal static class UserMessagePolicy
+         }
+ 
+         result = WithoutVerifiedEmptyKnownFileFinding(source, result);
++        result = WithoutScreenReadingImageScope(source, result);
+ 
+         if (TryReadJson(source, out JsonElement root)
+             && root.TryGetProperty("kind", out JsonElement kind) && kind.ValueKind == JsonValueKind.String && kind.GetString() == "operation"
+@@ -2651,6 +2652,54 @@ internal static class UserMessagePolicy
+         return LooksLikeFailure(result);
+     }
+ 
++    // SCREEN1417 «qué hay en la pantalla»: no vision provider exists, so a
++    // verified screen reading says it cannot describe images and reads the
++    // text. That clause states the reading's scope, not a failed mission.
++    private static string WithoutScreenReadingImageScope(string source, string result)
++    {
++        if (!HasVerifiedScreenReading(source, 0))
++        {
++            return result;
++        }
++
++        return Regex.Replace(
++            FoldForPolicy(result),
++            @"\b(?:no\s+(?:puedo|podia|podria)|(?:i\s+)?(?:can't|cannot|can\s+not|couldn't|could\s+not|am\s+unable\s+to|am\s+not\s+able\s+to))"
++            + @"\s+(?:describir|describirte|ver|describe|see)\s+(?:las\s+|the\s+)?(?:imagenes?|images?|pictures?|graficos?|graphics|visuales?|visuals)"
++            + @"[^.;]{0,80}",
++            " ",
++            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
++    }
++
++    private static bool HasVerifiedScreenReading(string source, int depth)
++    {
++        if (depth > 8 || !TryReadJson(source, out JsonElement root) || root.ValueKind != JsonValueKind.Object)
++        {
++            return false;
++        }
++
++        if (root.TryGetProperty("operation", out JsonElement operation) && operation.ValueKind == JsonValueKind.String
++            && operation.GetString() == "ocr.read"
++            && root.TryGetProperty("verified", out JsonElement verified) && verified.ValueKind == JsonValueKind.True
++            && root.TryGetProperty("succeeded", out JsonElement succeeded) && succeeded.ValueKind == JsonValueKind.True)
++        {
++            return true;
++        }
++
++        if (root.TryGetProperty("steps", out JsonElement steps) && steps.ValueKind == JsonValueKind.Array)
++        {
++            foreach (JsonElement step in steps.EnumerateArray())
++            {
++                if (step.ValueKind == JsonValueKind.String && HasVerifiedScreenReading(step.GetString()!, depth + 1))
++                {
++                    return true;
++                }
++            }
++        }
++
++        return false;
++    }
++
+     private static string WithoutVerifiedEmptyKnownFileFinding(string source, string result)
+     {
+         if (!TryReadJson(source, out JsonElement root)
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 47fa235c..df81f623 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -5573,6 +5573,18 @@ def compose_visible_defect(
+         failure_assertions = re.sub(
+             finding_predicate, "", _accent_folded_with_punctuation(stripped),
+         )
++    if _recognized_screen_text_in_situation(situation) is not None:
++        # SCREEN1417 «qué hay en la pantalla»: no vision provider exists, so the
++        # reading says it cannot describe images and reads the text. That is
++        # the stated scope of a verified reading, not a failed mission; mask
++        # only that predicate in the failure lens.
++        failure_assertions = re.sub(
++            r"\b(?:no\s+(?:puedo|podia|podria)|(?:i\s+)?(?:can't|cannot|can\s+not|couldn't|could\s+not|am\s+unable\s+to|am\s+not\s+able\s+to))"
++            r"\s+(?:describir|describirte|ver|describe|see)\s+(?:las\s+|the\s+)?(?:imagenes?|images?|pictures?|graficos?|graphics|visuales?|visuals)"
++            r"[^.;]{0,80}",
++            "",
++            _accent_folded_with_punctuation(failure_assertions),
++        )
+     if (
+         kind == "operation"
+         and situation.get("operation") == "app.installed"

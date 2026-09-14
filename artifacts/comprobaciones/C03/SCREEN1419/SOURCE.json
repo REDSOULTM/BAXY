@@ -1,0 +1,15 @@
+{
+  "schema": "c03-screen1419-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (compose_visible_defect: la cláusula «no puedo describir imágenes» de una lectura de pantalla verificada se enmascara en la lente de fallos) y src/Baxy.App/UserMessagePolicy.cs (ReversesSuccessfulResult: misma máscara, WithoutScreenReadingImageScope)",
+  "patch": "artifacts/comprobaciones/C03/SCREEN1419/SOURCE.patch",
+  "commits": [
+    "9d6069d9b5eba7cd658c52e6f45035d2c64b5072"
+  ],
+  "build": "BUILD1419 (C03-repairs1419-build/BUILD_READY.json; App recompilada)",
+  "cause_measured": "SCREEN1417: la advertencia honesta «no puedo describir imágenes, sólo leer el texto» fue vetada por la mente como asserted_failure sobre una misión exitosa; la App habría hecho lo mismo en ReversesSuccessfulResult.",
+  "change": "Para una lectura de pantalla verificada (operación única o paso de misión), la cláusula de alcance sobre las imágenes se enmascara en ambas lentes de fallos; cualquier otro fallo afirmado sigue vetado. Sin respuestas fijas.",
+  "measurement": "SCREEN1419: 10/10 ejecutados, 5 lecturas revisadas aprobadas, 2 variantes inglesas sin final, 3 límites aprobados, 0 violaciones; 3 créditos. SCREEN1419 sobre BUILD1419 (App y mente: la advertencia sobre las imágenes de una lectura de pantalla verificada enmascarada en ambas lentes de fallos): H0164 «qué hay en la pantalla», H0564 «describime la pantalla» y H0716 «leé la pantalla» acreditados con dos pares cada uno; la raíz aprobó cada captura sin argumentos, captura y ocr.read se completaron y verificaron, y los finales dicen primero que no pueden describir imágenes, sólo leer el texto de la pantalla, y luego el número de líneas reconocidas y tres líneas reconocidas tal cual; las formas de lectura simple informan las líneas sin advertencia. Dos variantes inglesas no publicaron nada: su cita copió los escapes de salto de línea del extracto y la comprobación de fundamento tomó los fragmentos pegados como palabras ajenas (SCREEN1421: el extracto viaja como lista de líneas y la comprobación ignora los escapes). Sin proveedor de visión configurado en este PC, describir imágenes sigue como condición documentada.",
+  "credits": 3
+}
