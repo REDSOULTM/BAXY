@@ -1,0 +1,15 @@
+{
+  "schema": "c03-identity1323-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/request_reading.py (identidad con una o dos palabras entre «quién» y «eres/sos»; «cómo funciona esto» como capacidad); src/baxy_mind/__main__.py (_unresolved_input_kind: dangling_comparison); src/baxy_mind/llm.py (clarify_unresolved_input: pregunta por el referente de la comparación)",
+  "patch": "artifacts/comprobaciones/C03/IDENTITY1323/SOURCE.patch",
+  "commits": [
+    "35df6425662c2fbc7c007f524b450504d3981dac"
+  ],
+  "build": "BUILD1323 (C03-repairs1323-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "IDENTITY1146: «to quien chuta eres.» leído como pregunta de fútbol; «cómo funciona esto» explicado como simple conversación; «Tú eres como eso» sin pedir el referente.",
+  "change": "Lector de pedidos: forma coloquial de identidad y «cómo funciona esto» como capacidad. Mente: una comparación con referente no nombrado y sin antecedente es entrada sin pedido y se contesta con una pregunta por el referente. Sin respuestas fijas.",
+  "measurement": "IDENTITY1323: 11 ejecutados, 5 aprobados (pares de identidad, par inglés de la comparación, dos límites), 6 fallidos, 0 violaciones; 0 créditos. Medición: la lectura de identidad/capacidad llega al decisor, pero (1) la comprobación de forma semántica del efecto convierte «quien chuta eres» en aclaración de fútbol, (2) la pregunta por el referente sale con sujeto invertido en español («te comparas») y (3) la conversación de capacidad no usa el catálogo servido. Reparación para IDENTITY1325: excluir identidad/capacidad de esa aclaración, formas de presentación identity/how_it_works con el catálogo servido, y comprobación de sujeto en la pregunta de comparación.",
+  "credits": 0
+}

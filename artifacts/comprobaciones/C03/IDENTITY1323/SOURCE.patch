@@ -1,0 +1,119 @@
+commit 35df6425662c2fbc7c007f524b450504d3981dac
+
+C03: colloquial identity, «cómo funciona esto» and a comparison without referent are read as what they are (IDENTITY1323)
+
+IDENTITY1146 left three literals open. «to quien chuta eres.» was read as a football question: request_reading now admits one or two words between «quién» and «eres/sos» (and «who the hell are you») as the identity question. «cómo funciona esto» was answered as a plain conversation: it joins the capability tokens (how this works asks what the assistant does). «Tú eres como eso» compares with a referent that was never named: the mind classifies it as an unresolved input (dangling_comparison) and the composer asks what or whom it is compared with, without guessing.
+
+No .NET change. Offline probe only; tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 106f6b30..3276230f 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -2946,6 +2946,20 @@ def _unresolved_input_kind(objective: str) -> str | None:
+         and re.search(r"\d\s*[-+*/x×÷=^%]\s*\d", folded) is None
+     ):
+         return "noise"
++    if (
++        re.fullmatch(
++            # IDENTITY1323 H0296 «Tú eres como eso»: compared with something
++            # never named; the only honest answer asks what «eso» is.
++            r"[\s¡!¿?]*(?:(?:tu|vos|usted)\s+)?(?:eres|sos|eri|es)\s+"
++            r"(?:como|igual\s+(?:a|que)|parecid[oa]\s+a|lo\s+mismo\s+que)\s+"
++            r"(?:eso|esto|aquello|ese|esa|aquel|aquella)[\s.!?]*|"
++            r"[\s¡!¿?]*(?:you\s+are|you'?re|u\s+r|ur)\s+(?:just\s+)?"
++            r"(?:like|the\s+same\s+as|similar\s+to)\s+(?:that|this|it|those)[\s.!?]*",
++            folded,
++        )
++        is not None
++    ):
++        return "dangling_comparison"
+     return None
+ 
+ 
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 431c7bb9..16b5723c 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -9144,11 +9144,22 @@ class LlmRuntime:
+         a meaning: the question names what arrived and asks what to do.
+         """
+ 
+-        if kind not in {"noise", "bare_negation"}:
++        if kind not in {"noise", "bare_negation", "dangling_comparison"}:
+             raise ValueError("clase de entrada sin pedido inválida")
+         current = str(text).strip()[:2_048]
+         situation = (
+             (
++                # IDENTITY1323 H0296 «Tú eres como eso»: the referent was never
++                # named and nothing precedes it; asking is the only honest move.
++                "Eres BAXY. El usuario te comparó con algo que no nombró («eso», "
++                "«that») y no hay nada anterior a lo que pueda referirse. Formula "
++                "una sola pregunta breve, en el idioma del usuario, que pregunte "
++                "con qué o con quién te compara. No adivines el referente, no te "
++                "ofendas, no digas que no entiendes ni que algo falló y no "
++                "ofrezcas ayuda genérica."
++            )
++            if kind == "dangling_comparison"
++            else (
+                 "Eres BAXY. El usuario respondió sólo con una negación («no») y "
+                 "no hay ningún pedido ni pregunta pendiente. Acepta la negativa: "
+                 "no harás nada. Formula una sola pregunta breve que lo diga y "
+diff --git a/src/baxy_mind/request_reading.py b/src/baxy_mind/request_reading.py
+index a3a91a04..93042db0 100644
+--- a/src/baxy_mind/request_reading.py
++++ b/src/baxy_mind/request_reading.py
+@@ -167,6 +167,10 @@ _KNOWLEDGE_TOKENS = (
+     "who are you", "quien eres", "who is speaking", "quien habla",
+     "introduce yourself", "presentate", "describe yourself", "describete",
+     "traduce", "translate ",
++    # IDENTITY1323 H0373 «cómo funciona esto»: how this works asks what the
++    # assistant does, not a definition of a mechanism.
++    "como funciona esto", "como funcionas", "como funciona baxy",
++    "como funciona este asistente", "how does this work", "how do you work",
+ )
+ 
+ # «Qué puedes hacer» pide capacidades; «qué no haces» pide el límite. Estaban
+@@ -175,6 +179,8 @@ _KNOWLEDGE_TOKENS = (
+ _CAPABILITY_TOKENS = (
+     "te ocupas", "what do you do", "what can you do", "que puedes hacer",
+     "que sabes hacer", "able to do", "echar una mano", "what are you able",
++    "como funciona esto", "como funcionas", "como funciona baxy",
++    "como funciona este asistente", "how does this work", "how do you work",
+ )
+ 
+ _IDENTITY_TOKENS = (
+@@ -182,6 +188,12 @@ _IDENTITY_TOKENS = (
+     "quien esta hablando", "introduce yourself", "presentate",
+     "describe yourself", "describete",
+ )
++# IDENTITY1323 H0012 «to quien chuta eres.»: one or two words between «quién»
++# and «eres/sos» (an expletive, «te crees que») do not change the question.
++_IDENTITY_EXPLETIVE = re.compile(
++    r"\bquien\s+(?:\w+\s+){1,2}(?:eres|sos|eri|es\s+usted)\b|"
++    r"\bwho\s+(?:the\s+\w+\s+|on\s+earth\s+)are\s+you\b"
++)
+ 
+ _REFUSE_TOKENS = (
+     "what will you", "what do you refuse", "que rechazas", "never do",
+@@ -428,7 +440,7 @@ def _read_intents(ask: str) -> frozenset[str]:
+     intents: set[str] = set()
+     if not folded:
+         return frozenset(intents)
+-    if _contains_any(folded, _KNOWLEDGE_TOKENS):
++    if _contains_any(folded, _KNOWLEDGE_TOKENS) or _IDENTITY_EXPLETIVE.search(folded):
+         intents.add(INTENT_KNOWLEDGE)
+     continue_constraint = _CONTINUE.search(folded) is not None and _contains_any(
+         folded, _CONSTRAINT_TOKENS
+@@ -460,7 +472,7 @@ def _read_intents(ask: str) -> frozenset[str]:
+         or (about_you and not marks_a_limit)
+     ):
+         intents.add(INTENT_CAPABILITY)
+-    if _contains_any(folded, _IDENTITY_TOKENS):
++    if _contains_any(folded, _IDENTITY_TOKENS) or _IDENTITY_EXPLETIVE.search(folded):
+         intents.add(INTENT_IDENTITY)
+     if (
+         _contains_any(folded, _REFUSE_TOKENS)

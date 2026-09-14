@@ -1,3 +1,11 @@
+# IDENTITY1323 adjudicado — 2026-09-14T03:22:50.664028+00:00
+
+**390/742 cubiertos, 352 abiertos, 0 NA; 2/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14); C03 formal 3/11. Registro SHA c1dc7dda34a67d242aefe81c8108da93f0323ae1c35b9854efc72c48dc6ab3cb. Primeras altas 24 h >= 264 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 35df6425 con BUILD1323 (mente: identidad coloquial, «cómo funciona esto» como capacidad, comparación sin referente → pregunta; IDENTITY1323/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+IDENTITY1323 («Identidad y capacidades del asistente», los tres literales abiertos: identidad coloquial, comparación sin referente, cómo funciona esto): 11 ejecutados, 5 aprobados (pares de identidad, par inglés de la comparación, dos límites), 6 fallidos, 0 violaciones, 0 créditos. Adjudicación aeb1e066f072b28b1c30619901634ceda822b0b1b9b9cbae222018e57ebf6811. Medición: la lectura de identidad/capacidad llega al decisor, pero (1) la comprobación de forma semántica del efecto convierte «quien chuta eres» en aclaración de fútbol, (2) la pregunta por el referente sale con sujeto invertido en español («te comparas») y (3) la conversación de capacidad no usa el catálogo servido. Reparación para IDENTITY1325: excluir identidad/capacidad de esa aclaración, formas de presentación identity/how_it_works con el catálogo servido, y comprobación de sujeto en la pregunta de comparación.
+
+---
+
 # BRIGHT1321 adjudicado — 2026-09-14T03:15:03.296889+00:00
 
 **390/742 cubiertos, 352 abiertos, 0 NA; 2/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14); C03 formal 3/11. Registro SHA 183258d4761d31494f7ebb2d29672a6e9c6ddbf35830ac2d5a420588bea3cd76. Primeras altas 24 h >= 264 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 27dc7b50 con BUILD1321 (mente: payload visible de ajustes sin token de procedencia; veto de extremo contradicho; BRIGHT1321/SOURCE.json|SOURCE.patch; .NET sin cambios). Brillo fijado en 60 por la raíz y restaurado al del dueño tras cada caso; aprobación de la raíz sólo para el valor pedido (approve_setting.py).
