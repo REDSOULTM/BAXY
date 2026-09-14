@@ -1,3 +1,11 @@
+# DIALOGUE1489 adjudicado — 2026-09-14T23:35:19.417404+00:00
+
+**486/742 cubiertos, 256 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 62f37a7172bbb986a3825a37942207fa51144c3984953595a9b223bf60c4bc5c. Primeras altas 24 h >= 360 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a60a7901 con BUILD1489 (la pregunta de qué mirar validada contra la inversión de papeles; DIALOGUE1489/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+DIALOGUE1489 («Pantalla, captura e interpretación visual», H0528 «Quiero que lo veas y de que se trata?»): DIALOGUE1489: «quiero que lo veas» pregunta qué mirar sin devolver la pregunta; H0528 cubierto, 1 créditos. Adjudicación 6798240fa1fae03d83c1e5fb0133f5ee406fb7e6fdc85a6bde50fcc601ab3d82. 6/6 ejecutados, 6 aprobados, 1 crédito; las tres preguntas piden qué mirar con el mismo verbo
+
+---
+
 # DIALOGUE1487 adjudicado — 2026-09-14T23:28:06.379743+00:00
 
 **485/742 cubiertos, 257 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA f8f0decbbacb9aaffdc93d8400580233de7fddbda268e4c10542f538e55afad1. Primeras altas 24 h >= 359 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 106e8ae6 con BUILD1487 (mirar «lo» sin antecedente pregunta qué mirar; DIALOGUE1487/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

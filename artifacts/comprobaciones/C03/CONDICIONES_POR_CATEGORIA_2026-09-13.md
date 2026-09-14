@@ -547,3 +547,7 @@ Pantalla, captura e interpretación visual pasa de 14/19 a 15/19 con los escapes
 ## Actualización 2026-09-14 (DIALOGUE1487)
 
 Pantalla, captura e interpretación visual pasa de 15/19 a 15/19 con la orden deíctica de mirar contestada con la pregunta del referente (commit 106e8ae6, BUILD1487) (HEAD 106e8ae6): DIALOGUE1487: «quiero que lo veas» pregunta qué ver, pero las variantes invierten los papeles; sin crédito, 0 créditos. 6/6 ejecutados, 3 aprobados, 3 fallidos, 0 créditos; aclarador de referente sin forma para mirar-y-decir (DIALOGUE1489)
+
+## Actualización 2026-09-14 (DIALOGUE1489)
+
+Pantalla, captura e interpretación visual pasa de 15/19 a 16/19 con la orden deíctica de mirar contestada con la pregunta validada de qué mirar (commit a60a7901, BUILD1489) (HEAD a60a7901): DIALOGUE1489: «quiero que lo veas» pregunta qué mirar sin devolver la pregunta; H0528 cubierto, 1 créditos. 6/6 ejecutados, 6 aprobados, 1 crédito; las tres preguntas piden qué mirar con el mismo verbo

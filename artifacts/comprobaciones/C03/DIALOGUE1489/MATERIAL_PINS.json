@@ -1,0 +1,87 @@
+{
+  "schema": "dialogue1489-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dialogue1489-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dialogue1489-instrument-v1",
+  "seal_sha256": "df2a6f54815491f7dd09b433b7f6dc41075358d4e73271d741c29ce653055fed",
+  "runner_sha256": "1ab59383da76265c15d2ba90a232b73161268735307659a825e65c7eed6e3f1a",
+  "transport_seal_sha256": "3b9fb83093f8dab3af852ce45b73fd57c7e2a5626a52f7efe503b72a47eb16ec",
+  "files": {
+    "panel.json": "017eef2dc8051ece9759ab21c988fac021a5b391c7acd38e50bd7bd5b250dc96",
+    "turns.jsonl": "7211e15a8d2d6657932ad777b2206138287fbc1b18642f61d6516e5a65e18636",
+    "case-map.json": "05d3889a8994bc2d456790f8008df6509025f171063bf6f2289a10d5534f4e93",
+    "PLAN.md": "ce9c30115bc78e3bef85322d288171e3caafa3e92e1536596d6b930eaac36177"
+  },
+  "counts": {
+    "cases": 6,
+    "historical_literals": 1,
+    "original_development_variants": 2,
+    "boundaries": 3,
+    "wire_lines": 12,
+    "session_controls": 6,
+    "ordinary_turns": 6,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 6,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 2,
+    "boundary": 3
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0528",
+      "kind": "historical_literal",
+      "group": "deictic_look",
+      "credit_behavior": "deictic_look",
+      "text_sha256": "b97ab06d222320451b893ee6baa0a28c528d0208ad663bc7ea8f98b541ac8761",
+      "criterion_sha256": "638d0e315ce54c76806492f0b13a12c3de5d4fe55d470fafa7bbe26724ac2860"
+    },
+    {
+      "index": 1,
+      "case_id": "dialogue1489-dev-01",
+      "kind": "original_development_variant",
+      "group": "deictic_look",
+      "credit_behavior": "deictic_look",
+      "text_sha256": "881589f5671762e5429b2fcc28317c1b5875fd6c75d44874bd14e93f545b6694",
+      "criterion_sha256": "638d0e315ce54c76806492f0b13a12c3de5d4fe55d470fafa7bbe26724ac2860"
+    },
+    {
+      "index": 2,
+      "case_id": "dialogue1489-dev-02",
+      "kind": "original_development_variant",
+      "group": "deictic_look",
+      "credit_behavior": "deictic_look",
+      "text_sha256": "61fbbd86095fa41707c7e8f7d83f1d2fefe397bb70b299a71c461e8dda22f8db",
+      "criterion_sha256": "638d0e315ce54c76806492f0b13a12c3de5d4fe55d470fafa7bbe26724ac2860"
+    },
+    {
+      "index": 3,
+      "case_id": "dialogue1489-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "673510246674976d3d8b92cce90d1433f80539a09c2933be53e972f7e09e0b56",
+      "criterion_sha256": "ac9432e776338837c1c5555b118b3f2f99f124be8d13212f5704a30407c9e4ed"
+    },
+    {
+      "index": 4,
+      "case_id": "dialogue1489-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "fd85fdb8c3237e6e642daf65c004a1a640937af169471063e265dc8958826ce1",
+      "criterion_sha256": "3facaf1e944416cf723cfc062354d353fd54382958ebc0d21e82dee9a770bc54"
+    },
+    {
+      "index": 5,
+      "case_id": "dialogue1489-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "34ae0502b6f4b4bbf2e85ed21c661e0420e96952b75684765460bd6bb6b6e6a0",
+      "criterion_sha256": "2f536468f5a2adb64f31ce0cc102dc9a98b0b0e428f6ea2346d194b41ebf29a9"
+    }
+  ]
+}

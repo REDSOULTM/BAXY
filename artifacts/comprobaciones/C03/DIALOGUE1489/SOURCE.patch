@@ -1,0 +1,144 @@
+commit a60a79019b2aaddc5463d8b8d2c8bc1fdb10ab13
+
+C03: the look-at-it order without an object gets its own clarification, validated against role inversion (DIALOGUE1489)
+
+DIALOGUE1487 measured that «Quiero que lo veas y de que se trata?» asked «¿Qué quieres que vea?» through the generic missing-referent clarifier, but «Miralo y decime de qué se trata.» got «¿De qué se trata exactamente?» (the person's request asked back) and «Mirá esto y decime qué es.» got «¿Qué es eso que miraste?» (the looking attributed to the person). The order now has its own unresolved-input kind, `deictic_look` (moved out of `_standalone_deictic_request`), with a situation that says telling what it is about is BAXY's part and naming what to look at is the person's, and a validation with one corrected retry: the question must ask what BAXY should look at (a look verb with «qué/cuál») and may not return «de qué se trata» / «qué es eso» nor say the person looked.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 20fdbd68..49b314c9 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -2909,28 +2909,6 @@ def _standalone_deictic_request(objective: str, history: object = None) -> bool:
+     if read_request(objective).has(INTENT_AMBIGUOUS_ACTION):
+         return True
+     folded = effect_intent._fold(objective).strip()
+-    if (
+-        re.fullmatch(
+-            # DIALOGUE1487 H0528 «Quiero que lo veas y de que se trata?»: a
+-            # request to look at «it/this/that» and say what it is, with
+-            # nothing named and no antecedent, has no object to look at; the
+-            # honest turn asks what to look at instead of guessing (it went to
+-            # the model as conversation).
+-            r"[\s¡!¿?]*(?:"
+-            r"(?:quiero|necesito|quisiera)\s+que\s+(?:lo|la|los|las)\s+(?:veas|mires|revises|leas|chequees)|"
+-            r"(?:mira|miralo|mirala|ve|velo|vela|fijate|revisa|revisalo|revisala|chequea|chequealo|lee|leelo|leela)"
+-            r"(?:\s+(?:eso|esto|lo|la|aquello))?|"
+-            r"(?:look\s+at|check(?:\s+out)?|see|read)\s+(?:it|this|that)(?:\s+out)?"
+-            r")"
+-            r"(?:\s*(?:,|y|and)\s*(?:me\s+)?(?:digas|decime|dime|contame|cuentame|tell\s+me)?\s*"
+-            r"(?:de\s+)?(?:que|what)\s+(?:se\s+trata|es|dice|it(?:'s|\s+is)(?:\s+about)?|it\s+says))?"
+-            r"[\s.!?¿¡]*",
+-            folded,
+-        )
+-        is not None
+-        and _previous_user_request(history if isinstance(history, list) else [], objective) is None
+-    ):
+-        return True
+     return (
+         re.fullmatch(
+             # DIALOGUE1277 H0562 «Si hazlo», «dale, hacelo»: an assent that
+@@ -2967,6 +2945,28 @@ def _unresolved_input_kind(objective: str) -> str | None:
+     folded = effect_intent._fold(objective).strip()
+     if not folded:
+         return None
++    if (
++        re.fullmatch(
++            # DIALOGUE1487/1489 H0528 «Quiero que lo veas y de que se trata?»,
++            # «Miralo y decime de qué se trata»: a request to look at
++            # «it/this/that» and say what it is, with nothing named, has no
++            # object to look at; the generic referent clarifier asked back
++            # «¿De qué se trata?» or «¿Qué es eso que miraste?», so this kind
++            # gets its own question: what should BAXY look at.
++            r"[\s¡!¿?]*(?:"
++            r"(?:quiero|necesito|quisiera)\s+que\s+(?:lo|la|los|las)\s+(?:veas|mires|revises|leas|chequees)|"
++            r"(?:mira|miralo|mirala|ve|velo|vela|fijate|revisa|revisalo|revisala|chequea|chequealo|lee|leelo|leela)"
++            r"(?:\s+(?:en\s+)?(?:eso|esto|lo|la|aquello))?|"
++            r"(?:look\s+at|check(?:\s+out)?|see|read)\s+(?:it|this|that)(?:\s+out)?"
++            r")"
++            r"(?:\s*(?:,|y|and)\s*(?:me\s+)?(?:digas|decime|dime|contame|cuentame|tell\s+me)?\s*"
++            r"(?:de\s+)?(?:que|what)\s+(?:se\s+trata|es|dice|it(?:'s|\s+is)(?:\s+about)?|it\s+says))?"
++            r"[\s.!?¿¡]*",
++            folded,
++        )
++        is not None
++    ):
++        return "deictic_look"
+     if (
+         re.fullmatch(
+             # AUDIO1375 H0439 «Ponlo a 100 ahora», H0713 «devuelvelo a 100»: a
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index a08d22f8..9199492a 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -10106,11 +10106,27 @@ class LlmRuntime:
+         a meaning: the question names what arrived and asks what to do.
+         """
+ 
+-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level"}:
++        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look"}:
+             raise ValueError("clase de entrada sin pedido inválida")
+         current = str(text).strip()[:2_048]
+         situation = (
+             (
++                # DIALOGUE1489 H0528 «Quiero que lo veas y de que se trata?»:
++                # the person orders BAXY to look at something unnamed and say
++                # what it is; the only missing datum is what to look at.
++                "Eres BAXY. El usuario te ordena mirar «lo», «esto» o «eso» y "
++                "decirle qué es o de qué se trata, pero no nombró qué cosa debes "
++                "mirar y no hay nada anterior a lo que pueda referirse. Decir de qué "
++                "se trata te corresponde a ti después de mirarlo; al usuario sólo le "
++                "corresponde decir QUÉ debes mirar. Formula una sola pregunta breve, "
++                "en el idioma del usuario, que pregunte qué cosa quiere que mires o "
++                "veas (por ejemplo: «¿Qué querés que mire?»). No preguntes de qué se "
++                "trata ni qué es, no digas que él ya lo miró, no adivines si es una "
++                "pantalla, un archivo o una imagen, no digas que no entiendes ni que "
++                "algo falló y no ofrezcas ayuda genérica."
++            )
++            if kind == "deictic_look"
++            else (
+                 # AUDIO1375 H0439 «Ponlo a 100 ahora»: a level for «lo» with
+                 # nothing named before it; ask what to set, never guess it.
+                 # AUDIO1379: with «nivel» in this text the model asked «¿A qué
+@@ -10250,6 +10266,39 @@ class LlmRuntime:
+                         )
+                         continue
+                     raise ValueError("aclaración de nivel deíctico no pregunta qué")
++            # DIALOGUE1487 «Miralo y decime de qué se trata» → «¿De qué se trata
++            # exactamente?» / «¿Qué es eso que miraste?»: the question asked
++            # back what the person asked BAXY, or attributed the looking to the
++            # person. It must ask what BAXY should look at. One corrected retry.
++            if kind == "deictic_look":
++                folded_question = _fold_dialogue_text(question)
++                inverted = re.search(
++                    r"\b(?:se\s+trata|de\s+que\s+trata|que\s+es\s+eso|que\s+es\s+esto|miraste|viste|"
++                    r"leiste|revisaste|what\s+is\s+it|what\s+it\s+is|about|you\s+(?:saw|looked))\b",
++                    folded_question,
++                ) is not None
++                asks_target = re.search(
++                    r"\b(?:que|cual|what|which)\b.{0,60}\b(?:mire|mires|vea|veas|ver|mirar|revise|revisar|lea|leer|"
++                    r"fije|chequee|look|see|check|read)\b|"
++                    r"\b(?:mire|vea|ver|mirar|revise|lea|look|see|check|read)\b.{0,40}\b(?:que|cual|what|which)\b",
++                    folded_question,
++                ) is not None
++                if inverted or not asks_target:
++                    if attempt == 0:
++                        payload["messages"].insert(
++                            -1,
++                            {
++                                "role": "system",
++                                "content": (
++                                    "Corrección: la persona te pide a ti que mires algo y le digas "
++                                    "qué es; no le preguntes de qué se trata ni qué es, ni digas que "
++                                    "ella lo miró. Pregunta sólo QUÉ COSA quieres que mire, con "
++                                    "«qué» y el verbo mirar/ver, por ejemplo: «¿Qué querés que mire?»."
++                                ),
++                            },
++                        )
++                        continue
++                    raise ValueError("aclaración de mirar deíctico no pregunta qué mirar")
+             # DIALOGUE1279 H0287 «????» → «¿Qué quieres que haga?»: a question
+             # that never names what arrived is the generic help offer the
+             # owner rejected (CLARIFY1047). One corrected retry.

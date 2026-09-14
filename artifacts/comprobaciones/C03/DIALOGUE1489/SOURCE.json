@@ -1,0 +1,15 @@
+{
+  "schema": "c03-dialogue1489-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_unresolved_input_kind: mirar «lo/esto/eso» y decir de qué se trata, sin objeto, es la clase deictic_look), src/baxy_mind/llm.py (clarify_unresolved_input: situación propia —decir de qué se trata le corresponde a BAXY; al usuario, qué mirar— y validación con reintento corregido contra la inversión de papeles).",
+  "patch": "artifacts/comprobaciones/C03/DIALOGUE1489/SOURCE.patch",
+  "commits": [
+    "a60a79019b2aaddc5463d8b8d2c8bc1fdb10ab13"
+  ],
+  "build": "BUILD1489 (C03-repairs1489-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "DIALOGUE1489: el literal preguntó «¿Qué quieres que vea?», pero el aclarador genérico devolvió a las variantes «¿De qué se trata exactamente?» y «¿Qué es eso que miraste?» (papeles invertidos), sin crédito.",
+  "change": "Clase de entrada propia con su pregunta validada; sin respuestas fijas.",
+  "measurement": "DIALOGUE1489: DIALOGUE1489: «quiero que lo veas» pregunta qué mirar sin devolver la pregunta; H0528 cubierto; 1 créditos. 6/6 ejecutados, 6 aprobados, 1 crédito; las tres preguntas piden qué mirar con el mismo verbo",
+  "credits": 1
+}
