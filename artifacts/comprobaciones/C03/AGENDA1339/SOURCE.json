@@ -1,0 +1,15 @@
+{
+  "schema": "c03-agenda1339-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (formulate_explicit_clarification_question: comprobación de which_alarm)",
+  "patch": "artifacts/comprobaciones/C03/AGENDA1339/SOURCE.patch",
+  "commits": [
+    "a703e3795ea849b6e3b45dd82d066a992b8c0b1f"
+  ],
+  "build": "BUILD1339 (C03-repairs1339-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "AGENDA1337: «cancelame la alarma» produjo «¿Quieres que cancele la alarma más reciente?», un candidato no leído, en vez de preguntar cuál alarma.",
+  "change": "Compositor: la pregunta de which_alarm debe preguntar cuál (cuál/which alarm) y no proponer ninguna (más reciente, última, latest…); un reintento corregido y luego fallo. Sin respuestas fijas.",
+  "measurement": "AGENDA1339: 5 ejecutados, 4 aprobados, 1 fallido, 0 violaciones; sin crédito (un solo par aprobado); 0 créditos. Medición: el literal y el par inglés preguntan cuál alarma por la aclaración explícita, pero «cancelame la alarma» no pasa la puerta de pedido directo (_is_direct_request no admite «cancelame») y el modelo propone «la alarma más reciente». Reparación para AGENDA1341: cabezas clíticas de cancelación en la puerta de pedido directo.",
+  "credits": 0
+}

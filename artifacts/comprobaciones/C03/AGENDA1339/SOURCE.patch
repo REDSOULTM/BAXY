@@ -1,0 +1,49 @@
+commit a703e3795ea849b6e3b45dd82d066a992b8c0b1f
+
+C03: the which-alarm clarification must ask which alarm, never propose one (AGENDA1339)
+
+AGENDA1337 measured: «cancelame la alarma» produced «¿Quieres que cancele la alarma más reciente?», a candidate the product never read. formulate_explicit_clarification_question now checks a which_alarm question: it must ask which one (cuál / which alarm) and must not name a candidate (más reciente, última, latest, first…); one corrected retry, then failure.
+
+No .NET change. Offline probe only; tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 549ed27d..19eb4d12 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -10029,6 +10029,33 @@ class LlmRuntime:
+         for attempt in range(2):
+             raw = self._post_schema_object(payload, "la aclaración explícita")
+             question = validate_missing_argument_clarification(raw, missing_fields)
++            # AGENDA1337 «cancelame la alarma» → «¿Quieres que cancele la alarma
++            # más reciente?»: a which-alarm question must ask which one, never
++            # propose a candidate the product has not read. One corrected retry.
++            if missing_fields == ("which_alarm",):
++                folded_question = _reading_fold(str(question))
++                proposes_candidate = re.search(
++                    r"\b(?:mas\s+reciente|ultima|ultimo|latest|last|most\s+recent|primera|first|proxima|next)\b",
++                    folded_question,
++                ) is not None
++                asks_which = re.search(
++                    r"\b(?:cual|cuales|que\s+alarma|which|what\s+alarm)\b", folded_question,
++                ) is not None
++                if proposes_candidate or not asks_which:
++                    if attempt == 0:
++                        payload["messages"].insert(
++                            -1,
++                            {
++                                "role": "system",
++                                "content": (
++                                    "Corrección: no conoces ninguna alarma concreta ni cuál es "
++                                    "la más reciente. Pregunta sólo cuál alarma (por su hora o "
++                                    "nombre) quiere cancelar; no propongas ninguna."
++                                ),
++                            },
++                        )
++                        continue
++                    raise ValueError("aclaración explícita propone una alarma no leída")
+             # BRIGHT1287 «Subí bastante el brillo.» → «¿Cuánto subiste el
+             # brillo?»: the amount question attributed the action to the
+             # user's past. One corrected retry; a repeat is a failure.

@@ -1,3 +1,11 @@
+# AGENDA1339 adjudicado — 2026-09-14T04:48:20.075132+00:00
+
+**397/742 cubiertos, 345 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA e2b37aaba12b2a1031adaee219da9d619c8b31c6ee6b70a3f3273a58bfc93f68. Primeras altas 24 h >= 271 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a703e379 con BUILD1339 (mente: la pregunta de which_alarm no propone candidatos; AGENDA1339/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+AGENDA1339 («Alarmas, recordatorios, tareas y agenda», alarma sin identificar con la pregunta «cuál» comprobada): 5 ejecutados, 4 aprobados, 1 fallido, 0 violaciones; sin crédito (un solo par aprobado), 0 créditos. Adjudicación 5ddf12966d1a774c9d3430419fddc72713228382749126c76a8a44b6ce48122c. Medición: el literal y el par inglés preguntan cuál alarma por la aclaración explícita, pero «cancelame la alarma» no pasa la puerta de pedido directo (_is_direct_request no admite «cancelame») y el modelo propone «la alarma más reciente». Reparación para AGENDA1341: cabezas clíticas de cancelación en la puerta de pedido directo.
+
+---
+
 # AGENDA1337 adjudicado — 2026-09-14T04:31:59.255347+00:00
 
 **397/742 cubiertos, 345 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 762842cac15e2f9556fde1f48ae2b03a66cdc58d50f42014ab40d456e88884d6. Primeras altas 24 h >= 271 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 8a590711 con BUILD1337 (mente: tarea con sólo fecha → aclaración del título; alarma sin identificar → cuál alarma; AGENDA1337/SOURCE.json|SOURCE.patch; .NET sin cambios).
