@@ -2339,7 +2339,10 @@ internal static class UserMessagePolicy
 
     private static bool InventedAppEffectOnClock(string source, string result)
     {
-        if (!TryDerivedLocalClock(source, out _))
+        // APPS1387 «abrí la calculadora y decime qué hora es»: the mission did
+        // open the application before reading the clock, so «Abrí la calculadora
+        // y son las 05:46» states a verified effect, not an invented one.
+        if (!TryDerivedLocalClock(source, out _) || MissionOpenedAnApplication(source))
         {
             return false;
         }
@@ -2354,6 +2357,37 @@ internal static class UserMessagePolicy
                 "am online", "baxy esta en el pc", "titulo de nota",
                 "el documento", "i am on the pc", "i'm at the pc",
                 "im at the pc"]);
+    }
+
+    private static bool MissionOpenedAnApplication(string source)
+    {
+        if (!IsStructuredFacts(source)
+            || !TryReadJson(source, out JsonElement root)
+            || !root.TryGetProperty("steps", out JsonElement steps)
+            || steps.ValueKind != JsonValueKind.Array)
+        {
+            return false;
+        }
+
+        foreach (JsonElement step in steps.EnumerateArray())
+        {
+            if (step.ValueKind == JsonValueKind.String
+                && step.GetString() is { Length: > 0 } text
+                && IsStructuredFacts(text)
+                && TryReadJson(text, out JsonElement nested)
+                && nested.TryGetProperty("operation", out JsonElement operation)
+                && operation.ValueKind == JsonValueKind.String
+                && operation.GetString() == "app.open"
+                && ((nested.TryGetProperty("succeeded", out JsonElement succeeded)
+                        && succeeded.ValueKind == JsonValueKind.True)
+                    || (nested.TryGetProperty("verified", out JsonElement verified)
+                        && verified.ValueKind == JsonValueKind.True)))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static bool IsBareSuccessOpener(string modelText)
