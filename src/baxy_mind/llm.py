@@ -3978,7 +3978,10 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         and "connected" in seen
         and "online" not in seen
         and re.search(
-            r"\b(?:offline|online|en linea|internet)\b",
+            # NETWORK1293 H0302: «el PC no está conectado a ninguna red» claims
+            # the whole network from a wifi-only read (Ethernet was online).
+            r"\b(?:offline|online|en linea|internet|ninguna red|any network|"
+            r"sin red|no network|no tiene red|no hay red)\b",
             folded,
         )
         is not None
@@ -11111,8 +11114,8 @@ class LlmRuntime:
             ),
             "clarification_not_a_question": "Una pregunta.",
             "invented_connectivity": (
-                "Only the wifi connection was read. Say nothing about internet "
-                "or being online or offline."
+                "Only the wifi connection was read. Say nothing about internet, "
+                "other networks, or being online or offline."
             ),
             "too_many_sentences": "Una sola frase.",
             "wrong_gender": "Masculine abierto/cerrado. Feminine abierta/cerrada.",

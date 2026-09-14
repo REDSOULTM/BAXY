@@ -162,8 +162,20 @@ _TRUE_CUES = frozenset(
         "enabled",
         "activa",
         "activar",
+        "activame",
+        "activalo",
         "enciende",
+        "enciendelo",
+        # NETWORK1293: voseo and clitic forms («encendé», «prendeme el
+        # bluetooth») asked for the state already said.
+        "encende",
+        "encendeme",
+        "encendelo",
+        "encender",
         "prende",
+        "prendeme",
+        "prendelo",
+        "prender",
         "mute",
         "mutea",
         "mudo",
@@ -173,7 +185,8 @@ _TRUE_CUES = frozenset(
     }
 )
 _FALSE_CUES = frozenset(
-    {"false", "off", "disable", "disabled", "desactiva", "apaga", "unmute", "reactiva"}
+    {"false", "off", "disable", "disabled", "desactiva", "desactivame", "desactivalo", "desactivar",
+     "apaga", "apagame", "apagalo", "apagar", "unmute", "reactiva"}
 )
 _CONDITIONAL_IDENTITY_PREDECESSORS = {
     # Search returns the authenticated URL that a following navigation must
