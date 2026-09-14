@@ -3812,14 +3812,21 @@ def _compose_situation_payload(
             # layout boxes, hashes and timestamps (about 30 KB) and the composer
             # prompt overflowed the context before the model ran. The person
             # asked for the text: keep it (bounded), the line count and language.
+            # SCREEN1413: given the whole text the model transcribed it and ran
+            # out of budget; given an excerpt it can only quote the excerpt.
             projected: dict = {}
             recognized = visible_seen.get("text")
+            layout = visible_seen.get("layout")
+            layout_lines = layout.get("lines") if isinstance(layout, dict) else None
+            if isinstance(layout_lines, list) and layout_lines:
+                # The provider joins the text with spaces; the layout keeps lines.
+                recognized = "\n".join(
+                    str(line.get("text") or "") for line in layout_lines if isinstance(line, dict)
+                )
             if isinstance(recognized, str):
-                clipped_text = recognized.strip()
-                if len(clipped_text) > 2000:
-                    clipped_text = clipped_text[:2000].rstrip() + " …"
-                    projected["textTruncated"] = True
-                projected["text"] = clipped_text
+                excerpt = _screen_text_excerpt(recognized)
+                projected["text"] = "\n".join(excerpt)
+                projected["excerptLines"] = len(excerpt)
             for key in ("lineCount", "language"):
                 if visible_seen.get(key) is not None:
                     projected[key] = visible_seen[key]
@@ -4410,6 +4417,23 @@ _OCR_FRAMING_STEMS = frozenset({
     "unic", "clar", "legi", "borr", "peque", "gran", "corto", "larg", "brev",
     "ella", "ello", "entre", "amon", "such", "them", "they", "some", "seve", "abou",
 })
+
+
+def _screen_text_excerpt(recognized: str, lines: int = 3, width: int = 120) -> list[str]:
+    """The first lines with real content, each capped, from a recognized screen text."""
+
+    chosen: list[str] = []
+    for raw in recognized.split("\n"):
+        line = " ".join(raw.split())
+        if len(line) < 12 or sum(ch.isalpha() for ch in line) < 6:
+            continue
+        chosen.append(line if len(line) <= width else line[:width].rstrip() + "…")
+        if len(chosen) >= lines:
+            break
+    if not chosen:
+        flat = " ".join(recognized.split())
+        chosen = [flat[:width].rstrip() + ("…" if len(flat) > width else "")] if flat else []
+    return chosen
 
 
 def _recognized_screen_text(payload: dict) -> str | None:
@@ -11475,19 +11499,19 @@ class LlmRuntime:
             payload["max_tokens"] = 512
         if screen_reading:
             instruct(
-                "\nThe screen text recognized is in seen.text, exactly as read. "
-                "Say what the screen shows by quoting two or three of its lines "
-                "verbatim (untranslated, in quotation marks) and say how many "
-                "lines were recognized. Use no word that is not in that text or "
-                "in the request: no purpose, no interpretation, no warnings, no "
-                "full transcription."
+                "\nseen.text holds a few lines read from the screen, exactly as "
+                "recognized, and seen.lineCount the total number of lines. Say "
+                "that the screen shows lineCount lines and quote those lines "
+                "verbatim (untranslated, in quotation marks), nothing else: no "
+                "purpose, no interpretation, no warnings, no words that are not in "
+                "seen.text or in the request."
                 if response_language == "en"
-                else "\nEl texto reconocido en la pantalla está en seen.text, tal "
-                "cual se leyó. Di qué muestra la pantalla citando dos o tres de sus "
-                "líneas tal cual (sin traducir, entre comillas) y di cuántas líneas "
-                "se reconocieron. No uses ninguna palabra que no esté en ese texto "
-                "o en el pedido: sin propósito, sin interpretación, sin avisos, sin "
-                "transcripción completa."
+                else "\nseen.text trae unas pocas líneas leídas de la pantalla, tal "
+                "cual se reconocieron, y seen.lineCount el total de líneas. Di que "
+                "la pantalla muestra lineCount líneas y cita esas líneas tal cual "
+                "(sin traducir, entre comillas), nada más: sin propósito, sin "
+                "interpretación, sin avisos, sin palabras que no estén en seen.text "
+                "o en el pedido."
             )
         if dense_fact_contract:
             instruct(
