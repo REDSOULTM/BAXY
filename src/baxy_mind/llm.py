@@ -11827,7 +11827,9 @@ class LlmRuntime:
             "missing_click_verb": (
                 "You pressed the button: say that you pressed (clicked) it, with the label the person asked for."
                 if response_language == "en"
-                else "Apretaste el botón: di que lo apretaste (pulsaste, hiciste clic), con la etiqueta que pidió la persona."
+                # UI1373 H0555: corrected drafts read «Aprié el botón 5», a
+                # conjugation the model cannot get right; steer to verbs it can.
+                else "Apretaste el botón: dilo con «Hice clic en el …» o «Pulsé el …» y la etiqueta que pidió la persona; no conjugues «apretar»."
             ),
             "missing_written_text": (
                 "Quote the exact text from writtenText and say you copied it to the clipboard."
