@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1393-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "sin cambio de fuente en esta tanda (BUILD1385: lector compuesto app.open + input.visible.click ya presente; instrumento nuevo: aprobación del clic sólo sobre la Calculadora lanzada por el producto)",
+  "patch": "artifacts/comprobaciones/C03/UI1393/SOURCE.patch",
+  "commits": [
+    "dbf481deb32d7a5cb97248573cef9e7d83cb41f4"
+  ],
+  "build": "BUILD1385 (C03-repairs1385-build/BUILD_READY.json; binarios del HEAD de WINDOWS1385, sin cambio de fuente en esta tanda)",
+  "cause_measured": "H0472 «abrí la calculadora y apretá el 5» no se había medido: exige que el producto abra la Calculadora (paso ordinario) y luego proponga el clic revisado sobre esa ventana; UI1389 sólo cubría clics sobre una Calculadora propia de la raíz y APPS1391 sólo la apertura seguida de una lectura.",
+  "change": "Sin cambio de fuente: instrumento compuesto (apps_ui_case.sh + approve_click_launched.py) que aprueba el clic sólo cuando la ventana en primer plano es la Calculadora lanzada durante el caso (pid y hwnd ausentes de la instantánea previa) y cierra la Calculadora lanzada después.",
+  "measurement": "UI1393: 10/10 ejecutados, 3 límites aprobados, 7 casos compuestos fallidos por el rechazo review_pending_not_supported de la App, 0 violaciones; 0 créditos. UI1393 sobre BUILD1385 sin cambio de fuente: «abrí la calculadora y apretá el 5» y sus seis variantes planificaron app.open + input.visible.click; la Calculadora se abrió (completada y verificada, proceso real) y la App pidió confirmar el clic, pero cada turno revisado se rechazó como review_pending_not_supported: MainWindowViewModel.ConductorConfirmationShape sólo admite un plan de un paso o un prefijo de lectura verificada (web.search antes de browser.navigate; window.resolve/window.active antes de app.close) y la traza registra conductor.capture.refused «shape». Ninguna propuesta llegó al revisor; la raíz cerró cada Calculadora lanzada (el caso 0 quedó sin ventana visible y su proceso se terminó con recibo). Siguiente: la forma admite una app.open verificada antes del clic revisado (UI1395).",
+  "credits": 0
+}
