@@ -543,3 +543,7 @@ Navegación y búsqueda web pasa de 36/46 a 38/46 con la búsqueda en YouTube no
 ## Actualización 2026-09-14 (SCREEN1485)
 
 Pantalla, captura e interpretación visual pasa de 14/19 a 15/19 con los escapes copiados deshechos y las formas de código juzgadas sobre la copia enmascarada (commit e140d940, BUILD1485) (HEAD e140d940): SCREEN1485: la orden de captura seguida de «describeme lo que ves» lee la pantalla con el aviso honesto; H0594 cubierto, 1 créditos. 6/6 ejecutados, 6 aprobados, 1 crédito; tres lecturas con advertencia honesta y citas textuales verificadas, tres límites
+
+## Actualización 2026-09-14 (DIALOGUE1487)
+
+Pantalla, captura e interpretación visual pasa de 15/19 a 15/19 con la orden deíctica de mirar contestada con la pregunta del referente (commit 106e8ae6, BUILD1487) (HEAD 106e8ae6): DIALOGUE1487: «quiero que lo veas» pregunta qué ver, pero las variantes invierten los papeles; sin crédito, 0 créditos. 6/6 ejecutados, 3 aprobados, 3 fallidos, 0 créditos; aclarador de referente sin forma para mirar-y-decir (DIALOGUE1489)

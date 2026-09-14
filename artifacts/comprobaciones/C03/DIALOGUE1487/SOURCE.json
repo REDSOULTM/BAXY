@@ -1,0 +1,15 @@
+{
+  "schema": "c03-dialogue1487-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_standalone_deictic_request: mirar «lo/esto/eso» y decir de qué se trata, sin nombre y sin pedido anterior, es una orden deíctica sin objeto; el turno pregunta el referente con clarify_missing_referent, como «abrí eso»).",
+  "patch": "artifacts/comprobaciones/C03/DIALOGUE1487/SOURCE.patch",
+  "commits": [
+    "106e8ae66bd0a92b982d60c90acfd422cfdf5101"
+  ],
+  "build": "BUILD1487 (C03-repairs1487-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "SCREEN1423: H0528 «Quiero que lo veas y de que se trata?» quedó como referente sin resolver: ningún lector lo tomaba y el turno iba al modelo como conversación.",
+  "change": "La orden deíctica de mirar sin objeto pregunta qué mirar; sin respuestas fijas.",
+  "measurement": "DIALOGUE1487: DIALOGUE1487: «quiero que lo veas» pregunta qué ver, pero las variantes invierten los papeles; sin crédito; 0 créditos. 6/6 ejecutados, 3 aprobados, 3 fallidos, 0 créditos; aclarador de referente sin forma para mirar-y-decir (DIALOGUE1489)",
+  "credits": 0
+}

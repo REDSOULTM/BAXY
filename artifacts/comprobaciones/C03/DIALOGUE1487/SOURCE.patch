@@ -1,0 +1,42 @@
+commit 106e8ae66bd0a92b982d60c90acfd422cfdf5101
+
+C03: a deictic «look at it and say what it is» with no antecedent asks what to look at (DIALOGUE1487)
+
+«Quiero que lo veas y de que se trata?» (H0528) reached no reader and went to the model as conversation. `_standalone_deictic_request` now reads a request to look at «lo/esto/eso» (miralo, fijate, velo, look at it, check it) optionally followed by «y decime de qué se trata / qué es / what it's about», with no previous request in the history, as a bare deictic order without an object; the turn answers with the missing-referent clarifier already used for «abrí eso» — one short question with the same verb, no guess.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 4a5af7f2..20fdbd68 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -2909,6 +2909,28 @@ def _standalone_deictic_request(objective: str, history: object = None) -> bool:
+     if read_request(objective).has(INTENT_AMBIGUOUS_ACTION):
+         return True
+     folded = effect_intent._fold(objective).strip()
++    if (
++        re.fullmatch(
++            # DIALOGUE1487 H0528 «Quiero que lo veas y de que se trata?»: a
++            # request to look at «it/this/that» and say what it is, with
++            # nothing named and no antecedent, has no object to look at; the
++            # honest turn asks what to look at instead of guessing (it went to
++            # the model as conversation).
++            r"[\s¡!¿?]*(?:"
++            r"(?:quiero|necesito|quisiera)\s+que\s+(?:lo|la|los|las)\s+(?:veas|mires|revises|leas|chequees)|"
++            r"(?:mira|miralo|mirala|ve|velo|vela|fijate|revisa|revisalo|revisala|chequea|chequealo|lee|leelo|leela)"
++            r"(?:\s+(?:eso|esto|lo|la|aquello))?|"
++            r"(?:look\s+at|check(?:\s+out)?|see|read)\s+(?:it|this|that)(?:\s+out)?"
++            r")"
++            r"(?:\s*(?:,|y|and)\s*(?:me\s+)?(?:digas|decime|dime|contame|cuentame|tell\s+me)?\s*"
++            r"(?:de\s+)?(?:que|what)\s+(?:se\s+trata|es|dice|it(?:'s|\s+is)(?:\s+about)?|it\s+says))?"
++            r"[\s.!?¿¡]*",
++            folded,
++        )
++        is not None
++        and _previous_user_request(history if isinstance(history, list) else [], objective) is None
++    ):
++        return True
+     return (
+         re.fullmatch(
+             # DIALOGUE1277 H0562 «Si hazlo», «dale, hacelo»: an assent that

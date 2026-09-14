@@ -1,3 +1,11 @@
+# DIALOGUE1487 adjudicado — 2026-09-14T23:28:06.379743+00:00
+
+**485/742 cubiertos, 257 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA f8f0decbbacb9aaffdc93d8400580233de7fddbda268e4c10542f538e55afad1. Primeras altas 24 h >= 359 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 106e8ae6 con BUILD1487 (mirar «lo» sin antecedente pregunta qué mirar; DIALOGUE1487/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+DIALOGUE1487 («Pantalla, captura e interpretación visual», H0528 «Quiero que lo veas y de que se trata?»): DIALOGUE1487: «quiero que lo veas» pregunta qué ver, pero las variantes invierten los papeles; sin crédito, 0 créditos. Adjudicación 2dd6f828015992d11c8072d3c1e2af520c75be39a835da8660ae698fdbe32059. 6/6 ejecutados, 3 aprobados, 3 fallidos, 0 créditos; aclarador de referente sin forma para mirar-y-decir (DIALOGUE1489)
+
+---
+
 # SCREEN1485 adjudicado — 2026-09-14T23:20:35.442788+00:00
 
 **485/742 cubiertos, 257 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 3ed1c15ff2162b3c23d342254e14be73d46fe32260d9745efbd1d64329fa71cb. Primeras altas 24 h >= 359 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e140d940 con BUILD1485 (mente: escapes copiados deshechos, formas de código sobre la copia enmascarada, líneas de layout enmascaradas; SCREEN1485/SOURCE.json|SOURCE.patch). La raíz aprueba sólo una capture.screenshot sin argumentos (approve_capture.py); la captura queda en el directorio privado del perfil y nunca se publica.

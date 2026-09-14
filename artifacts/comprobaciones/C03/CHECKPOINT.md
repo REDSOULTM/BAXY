@@ -1,3 +1,25 @@
+## DIALOGUE1487 — estado vigente 2026-09-14T23:28:06.379743+00:00
+
+Parcial: 3 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 485/742 | 257 | 0 | >=359 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 359 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); DIALOGUE1487 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: DIALOGUE1487: 6 ejecutados, 3 aprobados, 3 fallidos, 0 créditos (índices []); Pantalla, captura e interpretación visual 15/19. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/DIALOGUE1487/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 98.47 s acumulados; pico GPU 3497.56 MiB; pico RAM 1659.34 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque DIALOGUE1487 precedente. -->
+
 ## SCREEN1485 — estado vigente 2026-09-14T23:20:35.442788+00:00
 
 Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
