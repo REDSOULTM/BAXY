@@ -3516,6 +3516,17 @@ def _compose_situation_payload(
             # The receipt records whether it was running BEFORE this invocation.
             # False must not tell the narrator that the app is still closed.
             visible_seen["was_running_before_open"] = visible_seen.pop("alreadyRunning")
+        elif isinstance(operation, str) and operation.startswith("system.settings."):
+            # BRIGHT1319 H0430: «según la lectura de WMI» was copied from the
+            # provenance token; the monitor instance path is internal too. The
+            # canonical observation and the factual checks keep both.
+            visible_seen.pop("authority", None)
+            if isinstance(visible_seen.get("monitors"), list):
+                visible_seen["monitors"] = [
+                    {key: value for key, value in monitor.items() if key != "instanceName"}
+                    if isinstance(monitor, dict) else monitor
+                    for monitor in visible_seen["monitors"]
+                ]
         if (
             situation.get("verified") is True
             and situation.get("succeeded") is True
@@ -4005,6 +4016,46 @@ def _mislabelled_installed_memory(text: str, memory: dict) -> bool:
     return False
 
 
+_BRIGHTNESS_EXTREME_CLAIM = re.compile(
+    r"(?<!\w)(?:(?:al|a|en\s+el|en|at|on|to)\s+)?(?P<extreme>maximo|minimo|max|min|tope|full|maximum|minimum|100\s*%|0\s*%)(?!\w)"
+)
+_BRIGHTNESS_NEGATION_BEFORE = re.compile(r"\b(?:no|not|isn'?t|nunca|never|tampoco|ni|sin)\b")
+
+
+def _observed_brightness_values(seen: dict) -> list[int]:
+    values: list[int] = []
+    if seen.get("setting") != "brightness":
+        return values
+    if isinstance(seen.get("value"), (int, float)) and not isinstance(seen.get("value"), bool):
+        values.append(int(seen["value"]))
+    for monitor in seen.get("monitors") or []:
+        if isinstance(monitor, dict) and isinstance(monitor.get("value"), (int, float)) and not isinstance(monitor.get("value"), bool):
+            values.append(int(monitor["value"]))
+    return values
+
+
+def _contradicted_brightness_extreme(text: str, seen: dict) -> str:
+    """BRIGHT1319 H0674: «El brillo está en el máximo.» with an observed 60.
+
+    An affirmed extreme (max/min, 100 %/0 %) that the observed values do not
+    reach contradicts the reading; a negated one («no está al máximo») is the
+    correct answer and passes.
+    """
+    values = _observed_brightness_values(seen)
+    if not values:
+        return ""
+    folded = _reading_fold(text)
+    for match in _BRIGHTNESS_EXTREME_CLAIM.finditer(folded):
+        if _BRIGHTNESS_NEGATION_BEFORE.search(folded[max(0, match.start() - 24):match.start()]):
+            continue
+        extreme = match.group("extreme").replace(" ", "")
+        if extreme in {"maximo", "max", "tope", "full", "maximum", "100%"} and any(v < 100 for v in values):
+            return "contradicted_maximum"
+        if extreme in {"minimo", "min", "minimum", "0%"} and any(v > 0 for v in values):
+            return "contradicted_minimum"
+    return ""
+
+
 def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     """El texto público conserva los hechos que el payload le dio.
 
@@ -4059,6 +4110,13 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         # SYSTEM1183/1303 H0508: «16,54 GB de RAM instalados» labels the observed
         # total (16,54 GB) as installed when installed_capacity is 17,18 GB.
         return "mislabelled_installed"
+    if (
+        isinstance(payload.get("operation"), str)
+        and payload["operation"].startswith("system.settings.")
+        and isinstance(seen, dict)
+        and _contradicted_brightness_extreme(text, seen)
+    ):
+        return _contradicted_brightness_extreme(text, seen)
     if (
         payload.get("operation") == "wifi.status"
         and isinstance(seen, dict)
@@ -11271,6 +11329,20 @@ class LlmRuntime:
                 if response_language == "en"
                 else "Di sólo la edición, la versión mayor y la compilación observadas de "
                 "Windows; sin nombres de actualización como 22H2."
+            ),
+            "contradicted_maximum": (
+                "The observed brightness is not the maximum: say the observed value "
+                "and that it is not at the maximum."
+                if response_language == "en"
+                else "El brillo observado no está al máximo: di el valor observado y "
+                "que no está al máximo."
+            ),
+            "contradicted_minimum": (
+                "The observed brightness is not the minimum: say the observed value "
+                "and that it is not at the minimum."
+                if response_language == "en"
+                else "El brillo observado no está al mínimo: di el valor observado y "
+                "que no está al mínimo."
             ),
             "mislabelled_installed": (
                 "The figure you called installed is the total; the installed "
