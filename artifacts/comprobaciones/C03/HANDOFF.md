@@ -1,3 +1,11 @@
+# APPS1383 adjudicado — 2026-09-14T08:38:44.772452+00:00
+
+**419/742 cubiertos, 323 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA a343de51837f98c2155661f614970cb663f68978457c20f68d02a05eff3d3008. Primeras altas 24 h >= 293 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a87bec43 con BUILD1383 (mente: la apertura previa debe informarse; APPS1383/SOURCE.json|SOURCE.patch; .NET sin cambios). Turnos ordinarios con app.open y system.time permitidos; la raíz cierra la Calculadora lanzada tras cada caso.
+
+APPS1383 («Abrir aplicaciones», H0183 abrir la calculadora y decir la hora, ordinario): 10/10 ejecutados, 4 aprobados, 6 fallidos, 0 violaciones, 0 créditos. Adjudicación 7990d8910c53e84b8995ab735fd080143c5613097d9cd29d25ccfc9d7cbdd8e7. «abrí la calculadora y decime qué hora es» y cuatro variantes abrieron la Calculadora y leyeron el reloj (ambas verificadas; la raíz cerró cada Calculadora lanzada), pero ningún final se publicó: el defecto missing_prior_open rechazó «Son las 05:31.» y los reintentos repitieron el texto porque la pista de reintento se elige sólo por el defecto visible (línea 11720 del compositor) y los defectos de hechos del payload caen a la pista genérica. La forma inglesa «tell me what time it is» no llegó al lector compuesto. Una Calculadora lanzada escapó a la instantánea de limpieza y la guardia de instancia única rechazó los casos 2 a 5, que la raíz reejecutó uno a uno tras cerrarla. Siguiente: la pista de reintento elegida por la razón de rechazo completa (APPS1387).
+
+---
+
 # AUDIO1381 adjudicado — 2026-09-14T08:23:52.015517+00:00
 
 **419/742 cubiertos, 323 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA a09e110bfaa7a0c64087e0ccf53c6b918ca47e669ca2d1dec8c9a3f1c876390b. Primeras altas 24 h >= 293 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e8b38813 con BUILD1381 (mente: contrato del nivel deíctico sin «nivel»; AUDIO1381/SOURCE.json|SOURCE.patch; .NET sin cambios). Turnos ordinarios con sólo memory.status permitido; volumen y brillo verificados intactos por la raíz.
