@@ -3807,6 +3807,23 @@ def _compose_situation_payload(
                 and situation.get("succeeded") is True
             ):
                 visible_seen["writtenText"] = written
+        elif operation == "ocr.read":
+            # SCREEN1407 «leéme lo que dice la pantalla»: the receipt carries the
+            # layout boxes, hashes and timestamps (about 30 KB) and the composer
+            # prompt overflowed the context before the model ran. The person
+            # asked for the text: keep it (bounded), the line count and language.
+            projected: dict = {}
+            recognized = visible_seen.get("text")
+            if isinstance(recognized, str):
+                clipped_text = recognized.strip()
+                if len(clipped_text) > 2000:
+                    clipped_text = clipped_text[:2000].rstrip() + " …"
+                    projected["textTruncated"] = True
+                projected["text"] = clipped_text
+            for key in ("lineCount", "language"):
+                if visible_seen.get(key) is not None:
+                    projected[key] = visible_seen[key]
+            visible_seen = projected
         elif operation in ("capture.screenshot", "capture.active.window"):
             # SCREEN1399 H0093 «sacá un screenshot»: the receipt's captureId,
             # sha256 and timestamp were narrated («con el ID capture_…») and the
@@ -11349,9 +11366,16 @@ class LlmRuntime:
                 or len(json.dumps(inventory_entries, ensure_ascii=False, separators=(",", ":"))) >= 512
             )
         )
+        # SCREEN1407: a screen reading transcribes up to 2000 characters of
+        # recognized text; the default budget would cut it mid-sentence.
+        dense_reading = (
+            situation.get("operation") == "ocr.read"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+        )
         # Inventory facts travel in situation, outside requiredFacts. Reuse
         # the dense output allowance, keeping their existing prompt unchanged.
-        if dense_fact_contract or dense_inventory:
+        if dense_fact_contract or dense_inventory or dense_reading:
             payload["max_tokens"] = 512
         if dense_fact_contract:
             instruct(
