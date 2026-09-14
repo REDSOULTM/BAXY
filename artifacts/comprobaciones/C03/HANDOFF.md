@@ -1,3 +1,11 @@
+# CONVERSATION1345 adjudicado — 2026-09-14T05:09:24.561370+00:00
+
+**399/742 cubiertos, 343 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 3e1e8c7b966e8ca7749170fe93b173fd5bd3d67ab5c87eb127d845137391b67f. Primeras altas 24 h >= 273 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e0189729 con BUILD1345 (mente: tranquilización y contenido visual sin aclaración; forma visual_content_boundary; CONVERSATION1345/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+CONVERSATION1345 («Conversación social y ayuda general», tranquilización y pedido de meme sobre la presentación reparada): 8 ejecutados, 3 aprobados, 5 fallidos, 0 violaciones; sin crédito, 0 créditos. Adjudicación 43fe5778c68e880a9b95de57b2ffd8a21b618bce9c0716c65afe1cb5ded9962a. Medición: la forma reassurance_ack se aplica pero su respuesta estructurada se trunca a 64 tokens (truncated_structured_reply) y el turno cae en aclaración de recuperación; la mente compone «No puedo mostrar contenido visual como un meme en este entorno.» pero la App rechaza esa respuesta y publica su mensaje de fuera de catálogo con sujeto invertido. Reparación para CONVERSATION1347: presupuesto de 128 tokens para las formas nuevas y una respuesta de límite visual que la política de conversación de la App acepte.
+
+---
+
 # CONVERSATION1343 adjudicado — 2026-09-14T05:01:46.574040+00:00
 
 **399/742 cubiertos, 343 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA d82ebc8d913786c7b91fe9d4efb8e02b1f8b86909cfd8c813bb33b9f60d4d487. Primeras altas 24 h >= 273 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6fa90262 con BUILD1343 (mente: formas misnamed_greeting y reassurance_ack; contenido visual no soportado; CONVERSATION1343/SOURCE.json|SOURCE.patch; .NET sin cambios).

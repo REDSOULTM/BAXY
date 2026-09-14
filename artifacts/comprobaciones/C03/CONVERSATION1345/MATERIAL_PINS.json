@@ -1,0 +1,105 @@
+{
+  "schema": "conversation1345-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1345-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1345-instrument-v1",
+  "seal_sha256": "96c5cb9ba3c038f54e64bf504d918420fcd7f97893719ad87ce236a1e3c4fa29",
+  "runner_sha256": "52afe8eaa8f5e5d1024a45b75471f67df80d6f6c4ab7c30e9da6162465626cca",
+  "transport_seal_sha256": "3ee8173360897705ff8ca2313ece1404e92550c9c6e961738ba0c42e14678494",
+  "files": {
+    "panel.json": "eaa447b56f4ef50aa5a2dce8650294d6195832bb80618719898d26d88bad6a36",
+    "turns.jsonl": "6ee63b15e5d27df51cd1522a9c94766de0ec31ac4bdfb463386879078fb25ebe",
+    "case-map.json": "5200cccf8503aec81eec5d665d4dc7ebd153353e16e6244251cbb914677f765f",
+    "PLAN.md": "305629090a3153abf10a9cc8706616ceab4cb1382c3fe26b61f5bff3ab3436ee"
+  },
+  "counts": {
+    "cases": 8,
+    "historical_literals": 2,
+    "original_development_variants": 4,
+    "boundaries": 2,
+    "wire_lines": 16,
+    "session_controls": 8,
+    "ordinary_turns": 8,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 8,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 2,
+    "original_development_variant": 4,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0059",
+      "kind": "historical_literal",
+      "group": "reassurance_ack",
+      "credit_behavior": "reassurance_ack",
+      "text_sha256": "128338867df1844084b0b193e792b58602f2733c2d556a06e8b91ab5a7bdb632",
+      "criterion_sha256": "ad415d47e083156cc04384dfd61ed0ed4652541c6256409302f89f825cb25279"
+    },
+    {
+      "index": 1,
+      "case_id": "H0069",
+      "kind": "historical_literal",
+      "group": "visual_content_unsupported",
+      "credit_behavior": "visual_content_unsupported",
+      "text_sha256": "15e8889f40cd329d544c50be0b7d699bbb57d43a8316c75e1f95a094791ef874",
+      "criterion_sha256": "6a118bef57042fcc0aa56cbd18cc81925cdcc7394d406f113357673e7743dd4b"
+    },
+    {
+      "index": 2,
+      "case_id": "conversation1345-dev-01",
+      "kind": "original_development_variant",
+      "group": "reassurance_ack",
+      "credit_behavior": "reassurance_ack",
+      "text_sha256": "d97b66b200ba945c74e27afb842920f64e64cae33a13b25cb46ed3d5482bf04e",
+      "criterion_sha256": "ad415d47e083156cc04384dfd61ed0ed4652541c6256409302f89f825cb25279"
+    },
+    {
+      "index": 3,
+      "case_id": "conversation1345-dev-02",
+      "kind": "original_development_variant",
+      "group": "reassurance_ack",
+      "credit_behavior": "reassurance_ack",
+      "text_sha256": "1fda14893792edc8a4edb0705ff11c8ab81ee77bb1be35bed61cb65daaad328e",
+      "criterion_sha256": "ad415d47e083156cc04384dfd61ed0ed4652541c6256409302f89f825cb25279"
+    },
+    {
+      "index": 4,
+      "case_id": "conversation1345-dev-03",
+      "kind": "original_development_variant",
+      "group": "visual_content_unsupported",
+      "credit_behavior": "visual_content_unsupported",
+      "text_sha256": "ea01cf1433be0881e95fe905eed6e5f4373528becd4e8169d513dc831cc5c330",
+      "criterion_sha256": "6a118bef57042fcc0aa56cbd18cc81925cdcc7394d406f113357673e7743dd4b"
+    },
+    {
+      "index": 5,
+      "case_id": "conversation1345-dev-04",
+      "kind": "original_development_variant",
+      "group": "visual_content_unsupported",
+      "credit_behavior": "visual_content_unsupported",
+      "text_sha256": "655cc3fae374449791460b37c10b62d81c4db55110795822a993decec21b2be9",
+      "criterion_sha256": "6a118bef57042fcc0aa56cbd18cc81925cdcc7394d406f113357673e7743dd4b"
+    },
+    {
+      "index": 6,
+      "case_id": "conversation1345-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "a11f997cd32d1b5dec2d2b85b8452333df733d6404495db4d497ccba207dd312",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 7,
+      "case_id": "conversation1345-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "8e1875dcc57377e795510f185f825c1596f0af16936c071bd8674eb06aa85c0b",
+      "criterion_sha256": "ac15a70b241bb734c8efe0db6f0565d403d32aca194ef8fb2757d2c7adf925fe"
+    }
+  ]
+}

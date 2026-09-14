@@ -1,0 +1,24 @@
+{
+  "index": 5,
+  "case_id": "conversation1345-dev-04",
+  "terminal_kind": "published_final",
+  "final_sha256": "77cacf211f783c2fc17cda42223ce5c6474695d120c4d29a50f31f19526973ad",
+  "clients_absent_before": true,
+  "verdict": "failed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 20.860000000015134,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1651.6328125,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1345-instrument-v1\\results\\case-05\\EXIT.json": "414bc92fd6c1a2fccdd3d2a6da0fdfc0e3dbe24654f1dfd32ff2e6f50b5022d7",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1345-instrument-v1\\results\\case-05\\RESOURCES.json": "8d1212651f6615d55b0a070f7f7e542df61d79c500fa9e31be85a5c50cf43492",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1345-instrument-v1\\private\\run-05\\case-observations.json": "5ed4268cfcdb423083d8370340ba7b9d13547ba665b8bfbf1109ef53af8acae2"
+  }
+}

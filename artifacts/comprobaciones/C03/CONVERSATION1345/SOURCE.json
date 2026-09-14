@@ -1,0 +1,15 @@
+{
+  "schema": "c03-conversation1345-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (reassurance_statement, visual_content_noun); src/baxy_mind/__main__.py (apply_conversation_effect_presentation: exclusiones); src/baxy_mind/llm.py (forma visual_content_boundary)",
+  "patch": "artifacts/comprobaciones/C03/CONVERSATION1345/SOURCE.patch",
+  "commits": [
+    "e0189729b1c5536c0d3714fe4219de517df763eb"
+  ],
+  "build": "BUILD1345 (C03-repairs1345-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "CONVERSATION1343: la tranquilización acabó en aclaración por la comprobación de forma semántica del efecto; el pedido de meme salió como «Pido un meme, está fuera de lo que hago» (ancla genérica), un par agotó reintentos y otro preguntó qué memes.",
+  "change": "Mente: tranquilizaciones y pedidos visuales excluidos de la aclaración de forma semántica; forma de presentación visual_content_boundary (no puede mostrar memes/imágenes, sin prometer ni preguntar) con anclas y contrato propios. Sin respuestas fijas.",
+  "measurement": "CONVERSATION1345: 8 ejecutados, 3 aprobados, 5 fallidos, 0 violaciones; sin crédito; 0 créditos. Medición: la forma reassurance_ack se aplica pero su respuesta estructurada se trunca a 64 tokens (truncated_structured_reply) y el turno cae en aclaración de recuperación; la mente compone «No puedo mostrar contenido visual como un meme en este entorno.» pero la App rechaza esa respuesta y publica su mensaje de fuera de catálogo con sujeto invertido. Reparación para CONVERSATION1347: presupuesto de 128 tokens para las formas nuevas y una respuesta de límite visual que la política de conversación de la App acepte.",
+  "credits": 0
+}
