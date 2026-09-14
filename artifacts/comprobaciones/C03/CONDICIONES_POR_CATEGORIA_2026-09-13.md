@@ -457,3 +457,27 @@ Audio y volumen pasa de 44/51 a 45/51 con la aclaración compuesta de volumen y 
 ## Actualización 2026-09-14 (WEB1465)
 
 Información web actual pasa de 8/17 a 16/17 con la búsqueda fallida por resultados no pertinentes contada cuando el final dice la verdad (HEAD 11dfd835, binarios BUILD1463) (HEAD 11dfd835): 15/15 ejecutados, 0 violaciones; las doce búsquedas de clima de ciudad nombrada y de un nombre que no es un lugar terminaron fallidas por resultados no pertinentes (el motor devuelve el pronóstico local desde este PC) y cada final dijo esa verdad nombrando la ciudad o el nombre, sin inventar pronóstico (dos con deslices de estilo, no de hecho); los tres límites respondieron con cero búsquedas; créditos de fallo honesto: el producto no pudo obtener el clima de esas ciudades con su motor y lo dijo, 8 créditos. Instrumento con códigos de fallo honesto sellados por grupo (allowed_failure_codes) y adjudicador que los admite; sin cambio de fuente. Fila abierta restante de la categoría: el pedido compuesto de investigación sobre WhatsApp (H0060).
+
+## Estado consolidado 2026-09-14 (noche): 472/742 cubiertos, 270 abiertos, 4/35 categorías cerradas
+
+Diez tandas hoy (WEB1449–1455, NETWORK1457, SYSTEM1459, AUDIO1461–1463, WEB1465): 446 → 472. Dos operaciones de sólo lectura nuevas (`bluetooth.radio.status`, `display.status`), un lector de «abre un navegador y busca X» como navegación revisada a la página pública de búsqueda, y un instrumento con códigos de fallo honesto sellados (WEB1465) con el que las búsquedas de clima de ciudad nombrada, que el motor público no sirve desde este PC, se cuentan cuando el final dice la verdad nombrando la ciudad y sin inventar pronóstico (ocho créditos marcados como «fallo honesto»; el dueño puede revertirlos).
+
+Lo que queda abierto, por masa, y por qué no se avanza sin el dueño o sin un cambio de diseño:
+
+| Categoría | Abiertos | Condición |
+|---|---:|---|
+| Música | 32 | Spotify/YouTube exigen sesión real del dueño (decisión: omitir); «qué está sonando» y «pará la música» exigen reproducción real; «pon música» sin reproductor es aclaración ya cubierta en otros literales. |
+| Instalar/desinstalar | 31 | Steam del dueño nunca se lanza; desinstalar Discord/Spotify es destructivo; Photoshop sin instalador; Teams incompatible; sólo `instala requests con pip` sería viable y el dueño no quiere Python como capacidad. |
+| Vídeo y series | 26 | Netflix/Disney+/Prime exigen sesión autenticada del dueño (decisión: omitir). |
+| Mensajería | 22 | Enviar exige clientes y terceros reales (prohibido por encuesta); las lecturas exigen sesión. |
+| Navegación y búsqueda web | 17 | Búsquedas por tema y navegación por búsqueda: el motor devuelve páginas ajenas (WEB1291/ENGINE_PROBE.md) y el lector no las reclama de forma determinista; Portal UNIEJ sin destino; Opera GX es el navegador del dueño; «abre youtube.com en Chrome» no representable; «abrí una pestaña nueva» sin acción de pestaña; compuestos. |
+| Interacción dentro de aplicaciones | 17 | Discord/WhatsApp son clientes del dueño; clics sin ventana propia tocarían ventanas del dueño; aritmética en la Calculadora exige confirmaciones múltiples. |
+| Entrada incompleta | 16 | Fragmentos largos de transcripción decididos por el modelo (DIALOGUE1281); sin lector determinista justificado. |
+| Abrir aplicaciones | 14 | Steam del dueño; destinos ausentes; idiomas extranjeros (límites sin marca); «abrime el chrome» abriría el navegador del dueño. |
+| Conocimiento | 13 | Calidad del modelo local (hechos inventados en curiosidades y quién-es); referentes ausentes en sesión fresca. |
+| Organizar ventanas | 9 | Minimizar/cambiar/enfocar tocan ventanas del dueño; «la mejor» sin criterio. |
+| Archivos | 7 | Borrar carpetas/backup a pendrive/comprimir/resumir PDF: efectos sobre el escritorio del dueño o mecanismos ausentes. |
+| Red y Bluetooth | 6 | Escaneo de redes no listable; wifi sensible con radios del dueño; modo avión sin mecanismo. |
+| Audio y volumen | 6 | Idiomas extranjeros (límites sin marca); Spotify ausente; compuesto aclaración+lectura. |
+| Juegos/Correo/Contactos/Desarrollo | 6+6+5+5 | Steam, Outlook, contactos y ejecución de comandos: sesiones o capacidades ausentes (contactos: el dueño duda de que BAXY deba hacerlo). |
+| Resto (cierre 5, pantalla 5, reloj 4, memoria 3, conversación 3, resumen web 2, energía 2, hardware 2, documentos 2, agenda 1, notas 1, brillo 1, web actual 1) | 32 | Ventanas del dueño (cerrar todo), diálogos de Steam en pantalla, relojes en otros idiomas (límites sin marca), recuerdos sin guardado previo por diseño del instrumento, apagar/reiniciar el PC del dueño, Python, PowerPoint/Photoshop, fondo de pantalla, agenda de Outlook, nota en alemán, WhatsApp. |
