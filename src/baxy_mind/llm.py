@@ -41,6 +41,7 @@ from .effect_intent import (
     _PERCENTAGE_WORD_VALUES,
     _strip_request_envelope,
     conversation_only_content_request,
+    countdown_target,
     explicit_negative_constraint,
     explicit_non_action_body,
 )
@@ -3070,6 +3071,30 @@ def _parse_core_utc(value: str) -> datetime | None:
     return parsed.astimezone(timezone.utc)
 
 
+def _countdown_facts(local: datetime, target: str, language: str) -> dict:
+    """Minutes from the observed local clock to the next occurrence of target."""
+
+    hour, minute = (int(part) for part in target.split(":", 1))
+    now_minutes = local.hour * 60 + local.minute
+    target_minutes = hour * 60 + minute
+    already_passed_today = target_minutes <= now_minutes
+    remaining = (target_minutes - now_minutes) % (24 * 60)
+    hours, minutes = divmod(remaining, 60)
+    if language == "en":
+        parts = [f"{hours} h"] if hours else []
+        parts += [f"{minutes} min"] if minutes or not parts else []
+    else:
+        parts = [f"{hours} h"] if hours else []
+        parts += [f"{minutes} min"] if minutes or not parts else []
+    return {
+        "target": target,
+        "remaining": " ".join(parts),
+        "remaining_hours": hours,
+        "remaining_minutes": minutes,
+        "already_passed_today": already_passed_today,
+    }
+
+
 def _local_clock_from_observed(observed: dict | None) -> str | None:
     """HH:MM from the real system.time contract (`utc` + offset). Not localTime."""
 
@@ -3309,7 +3334,9 @@ def _clock_values(text: str) -> list[tuple[int, int]]:
     return [value for _, value in tokens]
 
 
-def _clock_fact_defect(text: str, hhmm: str, *, required: bool = True) -> str:
+def _clock_fact_defect(
+    text: str, hhmm: str, *, required: bool = True, allowed: tuple[tuple[int, int], ...] = (),
+) -> str:
     try:
         hour_text, minute_text = hhmm.split(":", 1)
         observed = (int(hour_text), int(minute_text))
@@ -3318,7 +3345,9 @@ def _clock_fact_defect(text: str, hhmm: str, *, required: bool = True) -> str:
     values = _clock_values(text)
     if required and observed not in values:
         return "missing_name"
-    return "reversed_result" if any(value != observed for value in values) else ""
+    # CLOCK1327: a countdown answer legitimately names its target time and the
+    # remaining hours and minutes; those are not contrary clock claims.
+    return "reversed_result" if any(value != observed and value not in allowed for value in values) else ""
 
 
 # Familias del catálogo activo, no una lista fija del corpus. El shell manda
@@ -3651,6 +3680,12 @@ def _compose_situation_payload(
                 r"\b(?:hora|time)\b", user_text, re.IGNORECASE
             ):
                 payload["clock"] = clock
+            target = countdown_target(user_text)
+            local = _local_datetime_from_observed(merged_seen)
+            if target is not None and local is not None:
+                # CLOCK1327 H0399: the remaining time is arithmetic on the
+                # observed clock, done here; the narrator copies the figures.
+                payload["countdown"] = _countdown_facts(local, target, language)
             if _requests_calendar_date(user_text):
                 local = _local_datetime_from_observed(merged_seen)
                 if local is not None:
@@ -4234,7 +4269,16 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         return "missing_remembered"
     clock = payload.get("clock")
     if isinstance(clock, str) and clock:
-        clock_defect = _clock_fact_defect(text, clock)
+        allowed: list[tuple[int, int]] = []
+        countdown = payload.get("countdown")
+        if isinstance(countdown, dict):
+            try:
+                target_hour, target_minute = (int(part) for part in str(countdown.get("target")).split(":", 1))
+                allowed.append((target_hour, target_minute))
+                allowed.append((int(countdown.get("remaining_hours", 0)), int(countdown.get("remaining_minutes", 0))))
+            except (TypeError, ValueError):
+                pass
+        clock_defect = _clock_fact_defect(text, clock, allowed=tuple(allowed))
         if clock_defect:
             return clock_defect
     calendar_date = payload.get("date")
@@ -10804,7 +10848,16 @@ class LlmRuntime:
             instruct(
                 "\nPreserve the 24-hour clock, or state AM/PM when converting to 12-hour time."
             )
-        if clock and _requests_calendar_date(user_text):
+        if clock and isinstance(payload.get("countdown"), dict):
+            countdown = payload["countdown"]
+            instruct(
+                "\nState the time in clock, then say that countdown.remaining remains "
+                "until countdown.target"
+                + (" (it already passed today, so this is until tomorrow)" if countdown.get("already_passed_today") else "")
+                + ". Copy those figures exactly; never compute them yourself. "
+                "Do not set the clock. Do not introduce yourself."
+            )
+        elif clock and _requests_calendar_date(user_text):
             instruct("\nState the local calendar date from date. Do not guess a date.")
         elif clock and has_audio:
             instruct(

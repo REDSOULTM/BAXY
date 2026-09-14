@@ -545,6 +545,64 @@ _CLOCK_READ_HEAD = (
 )
 
 
+_COUNTDOWN_HOUR_WORDS = {
+    "una": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5, "seis": 6, "siete": 7, "ocho": 8,
+    "nueve": 9, "diez": 10, "once": 11, "doce": 12, "one": 1, "two": 2, "three": 3, "four": 4,
+    "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
+}
+_COUNTDOWN_TARGET = re.compile(
+    r"^(?:cuanto\s+(?:tiempo\s+)?(?:falta|queda|resta)\s+(?:para|hasta)|"
+    r"how\s+(?:long|much\s+time)\s+(?:until|till|before|to|is\s+left\s+(?:until|till|before)))\s+"
+    r"(?:(?:el|la|las|the)\s+)?"
+    r"(?:(?P<noon>mediodia|noon|midday)|(?P<midnight>medianoche|midnight)|"
+    r"(?P<hour>\d{1,2}|" + "|".join(sorted(_COUNTDOWN_HOUR_WORDS, key=len, reverse=True)) + r")"
+    r"(?:[:.h](?P<minute>\d{2}))?"
+    r"(?:\s+(?:y\s+(?P<spoken_minute>media|cuarto|\d{1,2}))?)?"
+    r"(?:\s*(?P<ampm>[ap])\.?\s*m\.?|\s+(?:de\s+la\s+|en\s+la\s+|in\s+the\s+|)"
+    r"(?P<part>manana|madrugada|tarde|noche|morning|afternoon|evening|night))?"
+    r"(?:\s+(?:de\s+hoy|today|hoy))?"
+    r")\s*$"
+)
+
+
+def countdown_target(text: str) -> str | None:
+    """«cuánto falta para las 3 de la tarde» → «15:00»: the clock time asked about.
+
+    CLOCK1327 H0399: a countdown resolves by reading the clock; the
+    remaining time is computed by the mind, never by the narrator.
+    """
+
+    folded = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.,")
+    match = _COUNTDOWN_TARGET.match(folded)
+    if match is None:
+        return None
+    if match.group("noon"):
+        return "12:00"
+    if match.group("midnight"):
+        return "00:00"
+    raw_hour = match.group("hour")
+    hour = int(raw_hour) if raw_hour.isdecimal() else _COUNTDOWN_HOUR_WORDS[raw_hour]
+    minute = int(match.group("minute") or 0)
+    spoken = match.group("spoken_minute")
+    if spoken == "media":
+        minute = 30
+    elif spoken == "cuarto":
+        minute = 15
+    elif spoken and spoken.isdecimal():
+        minute = int(spoken)
+    part = match.group("part") or ""
+    ampm = match.group("ampm") or ""
+    if hour > 23 or minute > 59:
+        return None
+    if ampm == "p" or part in {"tarde", "noche", "afternoon", "evening", "night"}:
+        if hour < 12:
+            hour += 12
+    elif ampm == "a" or part in {"manana", "madrugada", "morning"}:
+        if hour == 12:
+            hour = 0
+    return f"{hour:02d}:{minute:02d}"
+
+
 def _direct_current_time_request(folded: str) -> bool:
     """Recognize a whole request for the local clock, shared by all three gates.
 
@@ -552,6 +610,13 @@ def _direct_current_time_request(folded: str) -> bool:
     CPU time, other places and literal content must not match a trailing noun.
     """
 
+    if countdown_target(folded) is not None:
+        return True
+    # CLOCK1327 H0054/H0312 «Tiempo»/«tiempo»: the bare word asks for the
+    # time; the weather is not something this PC reads.
+    if re.fullmatch(r"(?:el\s+)?tiempo(?:\s*,?\s*(?:por\s+favor|porfa|please))?",
+                    _strip_request_envelope(folded).strip(" ¿?¡!.,")):
+        return True
     current = r"(?:actual|local|(?:de\s+)?hoy|ahora(?:\s+mismo)?|(?:right\s+)?now)"
     nominal = (
         r"(?:(?:la|el|the)\s+)?"
