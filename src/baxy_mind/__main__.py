@@ -2947,6 +2947,23 @@ def _unresolved_input_kind(objective: str) -> str | None:
         return None
     if (
         re.fullmatch(
+            # DIALOGUE1491 H0393 «Ve a portal una.», H0541 «Ve Portal 2 UN»: a
+            # go-to order whose destination ends in a bare article or
+            # preposition is a message the transcription cut off; the owner
+            # asks to understand it from context or to ask. With nothing to
+            # complete it, the honest turn asks which portal or site.
+            r"[\s¡!¿?]*(?:ve|anda|andate|entra|abre|abri|ir|llevame|navega|go|open|take\s+me)\s+"
+            r"(?:(?:a|al|to)\s+)?(?:(?:el|la|the)\s+)?"
+            r"(?:portal|pagina|sitio|web|site|page)\b[^.!?]{0,40}?"
+            r"\s(?:un|una|unos|unas|el|la|los|las|de|del|en|al|a|y|con|para|por|the|to|of|and|at)"
+            r"[\s.!?¿¡]*",
+            folded,
+        )
+        is not None
+    ):
+        return "cut_destination"
+    if (
+        re.fullmatch(
             # DIALOGUE1487/1489 H0528 «Quiero que lo veas y de que se trata?»,
             # «Miralo y decime de qué se trata»: a request to look at
             # «it/this/that» and say what it is, with nothing named, has no

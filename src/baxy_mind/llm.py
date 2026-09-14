@@ -10106,11 +10106,26 @@ class LlmRuntime:
         a meaning: the question names what arrived and asks what to do.
         """
 
-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look"}:
+        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination"}:
             raise ValueError("clase de entrada sin pedido inválida")
         current = str(text).strip()[:2_048]
         situation = (
             (
+                # DIALOGUE1491 H0393 «Ve a portal una.», H0541 «Ve Portal 2 UN»:
+                # the destination's name stops at an article; the message was
+                # cut and nothing before it completes the name.
+                "Eres BAXY. El usuario te pidió ir a un portal o sitio, pero el "
+                "nombre quedó cortado: termina en un artículo o una preposición "
+                "(«portal una», «portal 2 un») y no hay nada anterior que lo "
+                "complete. Formula una sola pregunta breve, en el idioma del "
+                "usuario, que diga que el nombre parece haber quedado cortado y "
+                "pregunte a qué portal o sitio quiere ir (por ejemplo: «El nombre "
+                "parece cortado: ¿a qué portal querés ir?»). No adivines el "
+                "destino, no lo completes, no digas que no entiendes ni que algo "
+                "falló y no ofrezcas ayuda genérica."
+            )
+            if kind == "cut_destination"
+            else (
                 # DIALOGUE1489 H0528 «Quiero que lo veas y de que se trata?»:
                 # the person orders BAXY to look at something unnamed and say
                 # what it is; the only missing datum is what to look at.
@@ -10266,6 +10281,30 @@ class LlmRuntime:
                         )
                         continue
                     raise ValueError("aclaración de nivel deíctico no pregunta qué")
+            # DIALOGUE1491: the question must ask which portal or site, never
+            # complete or guess the destination. One corrected retry.
+            if kind == "cut_destination":
+                folded_question = _fold_dialogue_text(question)
+                asks_site = re.search(
+                    r"\b(?:a\s+que|que|cual|a\s+cual|which|what|where)\b.{0,50}\b(?:portal|pagina|sitio|web|site|page)\b|"
+                    r"\b(?:portal|pagina|sitio|web|site|page)\b.{0,40}\b(?:queres|quieres|quiere|want|te\s+refieres|te\s+referis)\b",
+                    folded_question,
+                ) is not None
+                if not asks_site:
+                    if attempt == 0:
+                        payload["messages"].insert(
+                            -1,
+                            {
+                                "role": "system",
+                                "content": (
+                                    "Corrección: pregunta a qué portal o sitio quiere ir, con "
+                                    "«qué» o «cuál» y la palabra portal, página o sitio, por "
+                                    "ejemplo: «El nombre parece cortado: ¿a qué portal querés ir?»."
+                                ),
+                            },
+                        )
+                        continue
+                    raise ValueError("aclaración de destino cortado no pregunta el sitio")
             # DIALOGUE1487 «Miralo y decime de qué se trata» → «¿De qué se trata
             # exactamente?» / «¿Qué es eso que miraste?»: the question asked
             # back what the person asked BAXY, or attributed the looking to the
