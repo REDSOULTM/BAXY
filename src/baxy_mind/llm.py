@@ -4414,6 +4414,21 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         and _contradicted_brightness_extreme(text, seen)
     ):
         return _contradicted_brightness_extreme(text, seen)
+    if (
+        payload.get("operation") == "input.visible.click"
+        and isinstance(seen, dict)
+        and seen.get("ok") is True
+        and re.search(
+            r"\b(?:apret\w*|puls\w*|presion\w*|toc\w*|clic|click\w*|clique\w*|"
+            r"press\w*|tap\w*|hit)\b",
+            folded,
+        )
+        is None
+    ):
+        # UI1275 H0555 «en la calculadora apretá el 5» → «Apagué el 5»: the
+        # verified click was narrated with a wrong verb. Say the button was
+        # pressed; the label stays whatever the person said.
+        return "missing_click_verb"
     written = seen.get("writtenText") if isinstance(seen, dict) else None
     if payload.get("operation") == "clipboard.write.text" and isinstance(written, str) and written:
         # CLIPBOARD1359: «Hola» / «Buen día.» were published after a verified
@@ -11808,6 +11823,11 @@ class LlmRuntime:
                 if response_language == "en"
                 else "El brillo observado no está al mínimo: di el valor observado y "
                 "que no está al mínimo."
+            ),
+            "missing_click_verb": (
+                "You pressed the button: say that you pressed (clicked) it, with the label the person asked for."
+                if response_language == "en"
+                else "Apretaste el botón: di que lo apretaste (pulsaste, hiciste clic), con la etiqueta que pidió la persona."
             ),
             "missing_written_text": (
                 "Quote the exact text from writtenText and say you copied it to the clipboard."
