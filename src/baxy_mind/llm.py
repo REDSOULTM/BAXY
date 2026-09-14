@@ -9532,12 +9532,15 @@ class LlmRuntime:
             (
                 # AUDIO1375 H0439 «Ponlo a 100 ahora»: a level for «lo» with
                 # nothing named before it; ask what to set, never guess it.
-                "Eres BAXY. El usuario pidió poner «lo» a un nivel (un número) sin "
-                "decir qué: no hay ningún volumen, brillo ni otro ajuste nombrado "
-                "antes. Formula una sola pregunta breve, en el idioma del usuario, "
-                "que pregunte qué quiere poner a ese nivel (por ejemplo el volumen o "
-                "el brillo) sin dar por hecho cuál. No digas que no entiendes ni que "
-                "algo falló y no ofrezcas ayuda genérica."
+                # AUDIO1379: with «nivel» in this text the model asked «¿A qué
+                # nivel…?»; the number is given, only the thing is missing.
+                "Eres BAXY. El usuario pidió poner o dejar «lo» en un número (por "
+                "ejemplo 100) sin decir qué cosa: no hay ningún volumen, brillo ni "
+                "otro ajuste nombrado antes. Formula una sola pregunta breve, en el "
+                "idioma del usuario, que pregunte QUÉ COSA quiere poner en ese "
+                "número (por ejemplo: «¿Qué querés poner en 100: el volumen o el "
+                "brillo?»). No preguntes el número, ya está dicho. No digas que no "
+                "entiendes ni que algo falló y no ofrezcas ayuda genérica."
             )
             if kind == "deictic_level"
             else (
@@ -9657,10 +9660,10 @@ class LlmRuntime:
                             {
                                 "role": "system",
                                 "content": (
-                                    "Corrección: el nivel ya lo dijo la persona; lo que falta es "
-                                    "QUÉ quiere poner a ese nivel. Pregunta qué cosa (por ejemplo "
-                                    "el volumen o el brillo), sin preguntar el nivel ni dar por "
-                                    "hecho cuál es."
+                                    "Corrección: el número ya lo dijo la persona; no preguntes "
+                                    "«a qué nivel» ni «cuánto». Pregunta QUÉ COSA quiere poner en "
+                                    "ese número, con «qué», por ejemplo: «¿Qué querés poner en "
+                                    "100: el volumen o el brillo?». No des por hecho cuál es."
                                 ),
                             },
                         )
