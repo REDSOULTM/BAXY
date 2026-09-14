@@ -2909,6 +2909,28 @@ def _standalone_deictic_request(objective: str, history: object = None) -> bool:
     if read_request(objective).has(INTENT_AMBIGUOUS_ACTION):
         return True
     folded = effect_intent._fold(objective).strip()
+    if (
+        re.fullmatch(
+            # DIALOGUE1487 H0528 «Quiero que lo veas y de que se trata?»: a
+            # request to look at «it/this/that» and say what it is, with
+            # nothing named and no antecedent, has no object to look at; the
+            # honest turn asks what to look at instead of guessing (it went to
+            # the model as conversation).
+            r"[\s¡!¿?]*(?:"
+            r"(?:quiero|necesito|quisiera)\s+que\s+(?:lo|la|los|las)\s+(?:veas|mires|revises|leas|chequees)|"
+            r"(?:mira|miralo|mirala|ve|velo|vela|fijate|revisa|revisalo|revisala|chequea|chequealo|lee|leelo|leela)"
+            r"(?:\s+(?:eso|esto|lo|la|aquello))?|"
+            r"(?:look\s+at|check(?:\s+out)?|see|read)\s+(?:it|this|that)(?:\s+out)?"
+            r")"
+            r"(?:\s*(?:,|y|and)\s*(?:me\s+)?(?:digas|decime|dime|contame|cuentame|tell\s+me)?\s*"
+            r"(?:de\s+)?(?:que|what)\s+(?:se\s+trata|es|dice|it(?:'s|\s+is)(?:\s+about)?|it\s+says))?"
+            r"[\s.!?¿¡]*",
+            folded,
+        )
+        is not None
+        and _previous_user_request(history if isinstance(history, list) else [], objective) is None
+    ):
+        return True
     return (
         re.fullmatch(
             # DIALOGUE1277 H0562 «Si hazlo», «dale, hacelo»: an assent that
