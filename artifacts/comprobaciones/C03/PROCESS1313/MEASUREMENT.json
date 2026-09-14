@@ -1,0 +1,11 @@
+{
+  "schema": "c03-process1313-measurement-v1",
+  "status": "measured",
+  "measured_by": "root (Claude Fable 5.1)",
+  "candidate": "HEAD a85f38cc con BUILD1311 (sin fuente nueva)",
+  "panel": "1 literal de proceso con más memoria, 2 variantes, 2 límites; system.process.list de sólo lectura",
+  "result": "5 ejecutados, 5 aprobados, 0 fallidos; 1 créditos. H0675 «qué app usa más memoria» acreditado con pares «¿Qué programa consume más RAM?» y «cuál es el proceso que más memoria usa»: system.process.list (sort memory) completada y verificada en los tres, finales que nombran el proceso observado con más memoria (Code, 821,7 MB) sin inventar. Límites aprobados. Procesos queda 9/9: primera categoría cerrada del registro.",
+  "category_closed": true,
+  "adjudication_sha256": "fa03688f371e45efce4bb59a82c977ae253271ea47c393bb59f48a8c68094e87",
+  "credits": 1
+}

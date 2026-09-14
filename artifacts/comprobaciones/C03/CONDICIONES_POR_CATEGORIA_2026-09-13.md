@@ -149,3 +149,7 @@ Restricciones negativas de apertura pasa de 1/4 a 1/4 sin cambio de fuente (BUIL
 ## Actualización 2026-09-14 (NEGATIVE1311)
 
 Restricciones negativas de apertura pasa de 1/4 a 4/4 con el acuse de restricción reparado (commit b28dc6d9, BUILD1311): 7 ejecutados, 6 aprobados, 1 fallido, 3 créditos. H0447 «no abras el navegador», H0550 «no abras chrome» y H0685 «mejor no abras la calculadora» acreditados con pares «No abras Paint.» y «Mejor no abras Spotify.»: cero operaciones y acuse de la restricción en primera persona («Entendido, no abriré…») en los cinco casos. El límite «¿Podés abrir programas en este PC?» sigue negando una capacidad real (respuesta del modelo a una pregunta de capacidad); la definición de navegador aprobó.
+
+## Actualización 2026-09-14 (PROCESS1313)
+
+Procesos pasa de 8/9 a 9/9 sin cambio de fuente (BUILD1311): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. H0675 «qué app usa más memoria» acreditado con pares «¿Qué programa consume más RAM?» y «cuál es el proceso que más memoria usa»: system.process.list (sort memory) completada y verificada en los tres, finales que nombran el proceso observado con más memoria (Code, 821,7 MB) sin inventar. Límites aprobados. Procesos queda 9/9: primera categoría cerrada del registro. Primera categoría cerrada del registro (9/9).

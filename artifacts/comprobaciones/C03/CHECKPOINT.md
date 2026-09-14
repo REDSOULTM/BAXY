@@ -1,3 +1,25 @@
+## PROCESS1313 — estado vigente 2026-09-14T02:31:08.274933+00:00
+
+Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 386/742 | 356 | 0 | >=260 | 1/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 259 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); PROCESS1313 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: PROCESS1313: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); categoría Procesos cerrada 9/9. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/PROCESS1313/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 100.14 s acumulados; pico GPU 3497.56 MiB; pico RAM 1732.76 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque PROCESS1313 precedente. -->
+
 ## NEGATIVE1311 — estado vigente 2026-09-14T02:25:33.105105+00:00
 
 Parcial: 6 aprobados, 1 fallidos, 0 sin ejecutar; 3 créditos.

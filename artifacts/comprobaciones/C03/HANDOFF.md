@@ -1,3 +1,11 @@
+# PROCESS1313 adjudicado — 2026-09-14T02:31:08.274933+00:00
+
+**386/742 cubiertos, 356 abiertos, 0 NA; 1/35 categorías cerradas (Procesos 9/9); C03 formal 3/11. Registro SHA aef5c2c9833ecf0fb2a68c68a2f7a1a4d39ccdcb1c54d2c1f914d447fbc81134. Primeras altas 24 h >= 260 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a85f38cc con BUILD1311 (sin fuente nueva).
+
+PROCESS1313 («Procesos», el proceso que más memoria usa; system.process.list de sólo lectura): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. Adjudicación fa03688f371e45efce4bb59a82c977ae253271ea47c393bb59f48a8c68094e87. H0675 «qué app usa más memoria» acreditado con pares «¿Qué programa consume más RAM?» y «cuál es el proceso que más memoria usa»: system.process.list (sort memory) completada y verificada en los tres, finales que nombran el proceso observado con más memoria (Code, 821,7 MB) sin inventar. Límites aprobados. Procesos queda 9/9: primera categoría cerrada del registro.
+
+---
+
 # NEGATIVE1311 adjudicado — 2026-09-14T02:25:33.105105+00:00
 
 **385/742 cubiertos, 357 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA c8bcfabfd9dbd21d51c0bedd5c3439cd3102dd4f43105fd15e65eada719d65fc. Primeras altas 24 h >= 259 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b28dc6d9 con BUILD1311 (mente: presupuesto del acuse de restricción y lector «mejor no»; NEGATIVE1311/SOURCE.json|SOURCE.patch; .NET sin cambios).
