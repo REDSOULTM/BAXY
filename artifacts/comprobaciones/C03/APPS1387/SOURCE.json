@@ -1,0 +1,15 @@
+{
+  "schema": "c03-apps1387-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (compose_user_message: la pista de reintento se elige por la razón de rechazo completa, incluidos los defectos de hechos del payload)",
+  "patch": "artifacts/comprobaciones/C03/APPS1387/SOURCE.patch",
+  "commits": [
+    "bcdba1fe400e97bab376b80a223bd6319082c831"
+  ],
+  "build": "BUILD1387 (C03-repairs1387-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "APPS1383: el defecto missing_prior_open rechazó «Son las 05:31.» pero los reintentos repitieron el texto: la pista de reintento se elegía sólo por el defecto visible (línea 11720) y los defectos de hechos del payload recibían la pista genérica; ningún final se publicó.",
+  "change": "La pista de reintento se elige por la razón de rechazo completa (rejection_reason), de modo que missing_prior_open, missing_click_verb y los demás defectos de hechos del payload llegan al modelo en el reintento. Sin respuestas fijas.",
+  "measurement": "APPS1387: 10/10 ejecutados, 5 aprobados, 5 fallidos, 0 violaciones; 0 créditos. Con la pista de reintento llegando al modelo, «abrí la calculadora y decime qué hora es» y las variantes en español compusieron «Abrí la calculadora y son las 05:46.» tras abrir la Calculadora y leer el reloj (ambas verificadas; la raíz cerró cada Calculadora lanzada), pero la App rechazó cada final en español como missing_literal_fact: InventedAppEffectOnClock trata cualquier «abrí » en un final de reloj como efecto inventado. La variante inglesa «I opened the calculator. The time is 05:48.» aprobó. Siguiente: la regla de la App exime a la misión que abrió realmente una aplicación (APPS1391).",
+  "credits": 0
+}

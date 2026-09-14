@@ -1,3 +1,11 @@
+# APPS1387 adjudicado — 2026-09-14T08:52:04.412976+00:00
+
+**419/742 cubiertos, 323 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 22d15a121f8d9d59ad5ef942432d04450f5aa2a2861454b86fc02755f51665fb. Primeras altas 24 h >= 293 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD bcdba1fe con BUILD1387 (mente: la pista de reintento por la razón completa; APPS1387/SOURCE.json|SOURCE.patch; .NET sin cambios). Turnos ordinarios con app.open y system.time permitidos; la raíz cierra la Calculadora lanzada tras cada caso.
+
+APPS1387 («Abrir aplicaciones», H0183 abrir la calculadora y decir la hora, ordinario): 10/10 ejecutados, 5 aprobados, 5 fallidos, 0 violaciones, 0 créditos. Adjudicación 7d83a7551f02db13a86832e8e51e349fd5b8aa060cf75679ae3bf8fafcb9b598. Con la pista de reintento llegando al modelo, «abrí la calculadora y decime qué hora es» y las variantes en español compusieron «Abrí la calculadora y son las 05:46.» tras abrir la Calculadora y leer el reloj (ambas verificadas; la raíz cerró cada Calculadora lanzada), pero la App rechazó cada final en español como missing_literal_fact: InventedAppEffectOnClock trata cualquier «abrí » en un final de reloj como efecto inventado. La variante inglesa «I opened the calculator. The time is 05:48.» aprobó. Siguiente: la regla de la App exime a la misión que abrió realmente una aplicación (APPS1391).
+
+---
+
 # APPS1383 adjudicado — 2026-09-14T08:38:44.772452+00:00
 
 **419/742 cubiertos, 323 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA a343de51837f98c2155661f614970cb663f68978457c20f68d02a05eff3d3008. Primeras altas 24 h >= 293 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a87bec43 con BUILD1383 (mente: la apertura previa debe informarse; APPS1383/SOURCE.json|SOURCE.patch; .NET sin cambios). Turnos ordinarios con app.open y system.time permitidos; la raíz cierra la Calculadora lanzada tras cada caso.

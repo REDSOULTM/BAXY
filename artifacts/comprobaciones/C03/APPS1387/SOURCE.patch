@@ -1,0 +1,31 @@
+commit bcdba1fe400e97bab376b80a223bd6319082c831
+
+C03: the retry hint is chosen from the full rejection reason, so payload-fact defects reach the model (APPS1387)
+
+APPS1383 and UI1373 measured the same loop: a draft rejected by a payload-fact defect (missing_prior_open «Son las 05:31.», missing_click_verb «Apagué el 5») was retried with the generic contract hint, because the composer looked the hint up only by the visible-defect name, and the model repeated the same draft until the retries ran out.
+
+llm.compose_user_message: the defect used to select the retry hint is the full rejection reason (visible defect, copied instruction, truncated fact word, payload-fact defect, imperative echo, promised effect), the same name the audit records. No fixed reply.
+
+No .NET change. Tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index c4a97465..a56b17a6 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -11717,7 +11717,12 @@ class LlmRuntime:
+             required_words=required_words,
+         )
+         retry_payload = dict(payload)
+-        defect = compose_visible_defect(text, intent, user_text, facts) or "contrato"
++        # APPS1383 / UI1373: a draft rejected by a payload-fact defect
++        # (missing_prior_open, missing_click_verb, …) was retried with the
++        # generic contract hint because only the visible-defect name was
++        # looked up here, so the model repeated the same draft. The full
++        # rejection reason selects the hint.
++        defect = rejection_reason(text) or "contrato"
+         inventory_answer = (
+             visible_situation.get("operation") == "window.resolve"
+             and isinstance(visible_situation.get("seen"), dict)
