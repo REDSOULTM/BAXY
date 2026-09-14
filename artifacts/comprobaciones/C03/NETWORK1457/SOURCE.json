@@ -1,0 +1,15 @@
+{
+  "schema": "c03-network1457-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (descriptor bluetooth.radio.status, sólo lectura, sin argumentos), src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs (registro), src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs (lectura de las radios Bluetooth por la API oficial: seen.radioOn, radioCount, radiosOn; sin cambio) y WindowsExternalCapabilityProvider.cs (razón), src/baxy_mind/effect_intent.py (_bluetooth_state_question, con «y el bluetooth?»), src/baxy_mind/__main__.py (argumentos vacíos), src/baxy_mind/llm.py (instrucción y vetos reversed_state/missing_state/extra_claim sobre seen.radioOn; además el acuse de prohibición publica su primera oración), alias y matriz",
+  "patch": "artifacts/comprobaciones/C03/NETWORK1457/SOURCE.patch",
+  "commits": [
+    "6a86021519b2da6d8bf8914d2027e24b040c87d9"
+  ],
+  "build": "BUILD1457 (C03-repairs1457-build/BUILD_READY.json; Kernel, Core, Providers y App recompilados)",
+  "cause_measured": "NETWORK1301 documentó que H0445 «tengo el bluetooth encendido» y H0466 «y el bluetooth?» no tenían lectura de estado de radio en el catálogo (bluetooth.device.list enumera dispositivos); WEB1455 midió que el acuse de prohibición publicaba el texto completo aunque el recorte validaba sólo la primera oración.",
+  "change": "Nueva operación de sólo lectura bluetooth.radio.status (Kernel, Core, adaptador de Windows), lector determinista de la pregunta de estado, instrucción y vetos de estado en el compositor; el acuse de prohibición publica la oración conservada. Sin respuestas fijas.",
+  "measurement": "NETWORK1457: 7/7 ejecutados, 0 violaciones; las cuatro preguntas de estado (dos literales y dos variantes) leyeron la radio Bluetooth con la nueva bluetooth.radio.status, completada y verificada (apagada), y lo dijeron con fidelidad sin afirmar cambios ni dispositivos; los tres límites respondieron con cero operaciones (definición, acuse de prohibición en una oración, conocimiento); 2 créditos. Filas abiertas restantes de la categoría, condicionadas: escaneo de redes («qué redes wifi hay»: wifi.status no lista redes), «apagá el wifi» y «conectate al wifi de casa/de la luna» (sensibles: radios del dueño y credenciales desconocidas) y «poneme el modo avión» (sin mecanismo).",
+  "credits": 2
+}

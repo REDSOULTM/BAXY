@@ -1,0 +1,329 @@
+commit 6a86021519b2da6d8bf8914d2027e24b040c87d9
+
+C03: bluetooth.radio.status reads whether the Bluetooth radio is on; constraint ack publishes its kept sentence (NETWORK1457)
+
+NETWORK1301 documented that «tengo el bluetooth encendido» (H0445) and «y el bluetooth?» (H0466) had no radio-state read in the catalog: bluetooth.device.list enumerates devices and bluetooth.radio.set only observes the state as the post-read of a change. WEB1455 measured that the constraint acknowledgement's first-sentence clip validated the shortened text but published message.content unchanged.
+
+Baxy.Kernel ProductCatalog: descriptor bluetooth.radio.status (no arguments, ReadOnly, verifier bluetooth.radio.status.windows.radio.read.v1), in ordinal order after bluetooth.radio.set.
+Baxy.Core ExternalCapabilityHandlers: the operation is handled.
+Baxy.Providers.Windows WindowsDeviceControlAdapter: BluetoothRadioStatusAsync reads the Bluetooth radios through the official Windows Radio API and reports seen.radioOn, radioCount and radiosOn without changing anything; WindowsExternalCapabilityProvider maps its unavailability reason like the other Bluetooth operations.
+baxy_mind effect_intent: _bluetooth_state_question reads «tengo/tenés el bluetooth encendido|prendido|apagado|activado», «el bluetooth está …», «está encendido el bluetooth» and the antecedent-less «y el bluetooth?» as a bluetooth.radio.status read (never a device list; not with headphones or devices named), accepted as a direct request and grounded by the domain noun.
+baxy_mind __main__: the read takes no arguments.
+baxy_mind llm: an instruction says seen.radioOn true is on and false is off; the reply must carry the observed state (missing_state), must not invert it (reversed_state, negations such as «no está encendido» or «no tienes el bluetooth encendido» read as the off state) and must not claim a change (extra_claim); the constraint acknowledgement now publishes the sentence it kept.
+Catalog aliases: one row for the read (alias_count 159); documentación/base/05_MATRIZ_EJECUCION.json: the read is registered as read-only without effect.
+
+Offline probes: the two literals and both variants resolve to one bluetooth.radio.status; the boundaries resolve to nothing and «No apagues el bluetooth.» is a prohibition; over an observed radioOn=false, «El bluetooth está encendido» and «Sí, tienes el bluetooth encendido» are vetoed while «No, el bluetooth está apagado» and «El bluetooth no está encendido» pass. Providers project compiled clean before sealing (build servers shut down). Kernel, Core, Providers and App recompiled (BUILD1457). Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/documentacion/base/05_MATRIZ_EJECUCION.json b/documentacion/base/05_MATRIZ_EJECUCION.json
+index 1ed6b2d6..1cf27425 100644
+--- a/documentacion/base/05_MATRIZ_EJECUCION.json
++++ b/documentacion/base/05_MATRIZ_EJECUCION.json
+@@ -565,6 +565,15 @@
+       "surface": "none",
+       "reason": "Mutación de radio/emparejamiento no restaurable en esta sesión."
+     },
++    {
++      "operation": "bluetooth.radio.status",
++      "verifierContractId": "bluetooth.radio.status.windows.radio.read.v1",
++      "risk": "read_only",
++      "observation": "bluetooth.radio.status.windows.radio.read.v1",
++      "verdict": "unverifiable",
++      "surface": "none",
++      "reason": "Lee el estado de las radios Bluetooth por la API oficial de Windows; sin efecto."
++    },
+     {
+       "operation": "browser.control",
+       "verifierContractId": "browser.control.cdp.postread.v1",
+diff --git a/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs b/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
+index d1ea81f2..ec3250c2 100644
+--- a/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
++++ b/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
+@@ -11,6 +11,7 @@ internal static class ExternalCapabilityHandlers
+         "bluetooth.device.list",
+         "bluetooth.device.pair",
+         "bluetooth.radio.set",
++        "bluetooth.radio.status",
+         "backup.known.create",
+         "backup.known.list",
+         "backup.known.restore.latest",
+diff --git a/src/Baxy.Kernel/Operations/ProductCatalog.cs b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+index 684bd925..6b1f5e08 100644
+--- a/src/Baxy.Kernel/Operations/ProductCatalog.cs
++++ b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+@@ -179,6 +179,13 @@ public static class ProductCatalog
+             "bluetooth.radio.set.windows.radio.postread.v1",
+             ToolExposure.Public,
+             "Enciende o apaga las radios Bluetooth mediante la API oficial de Windows y verifica su estado final."),
++        Descriptor(
++            "bluetooth.radio.status",
++            EmptySchema(),
++            OperationRisks.ReadOnly,
++            "bluetooth.radio.status.windows.radio.read.v1",
++            ToolExposure.Public,
++            "Lee si las radios Bluetooth están encendidas o apagadas mediante la API oficial de Windows; sin efecto."),
+         Descriptor(
+             "browser.control",
+             Schema([String("action", values:
+diff --git a/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs b/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
+index f6502bd9..b96e4989 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
+@@ -267,7 +267,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+ 
+     public bool CanHandle(string operation) => operation is
+         "bluetooth.device.list" or "bluetooth.device.pair"
+-        or "bluetooth.radio.set"
++        or "bluetooth.radio.set" or "bluetooth.radio.status"
+         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
+         or "wifi.profile.list" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
+         or "wifi.ensure.connected" or "wifi.status"
+@@ -288,6 +288,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+                     operation, arguments, effectBoundary, cancellationToken),
+                 "bluetooth.radio.set" => await BluetoothRadioSetAsync(
+                     operation, arguments, effectBoundary, cancellationToken),
++                "bluetooth.radio.status" => await BluetoothRadioStatusAsync(operation),
+                 "peripheral.list" => await PeripheralListAsync(operation, arguments, cancellationToken),
+                 "peripheral.print" => await PrintAsync(
+                     operation, arguments, effectBoundary, cancellationToken),
+@@ -464,6 +465,37 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+         return ExternalJson.Success(operation, result, effectObserved);
+     }
+ 
++    // NETWORK1457 «tengo el bluetooth encendido», «y el bluetooth?»: the radio
++    // state was only observable as the post-read of a change; a read-only
++    // read answers the question without touching the radio.
++    private static async ValueTask<ExternalCapabilityReceipt> BluetoothRadioStatusAsync(string operation)
++    {
++        RadioAccessStatus access = await Radio.RequestAccessAsync();
++        if (access != RadioAccessStatus.Allowed)
++        {
++            return ExternalJson.Failure(operation, "bluetooth_radio_access_denied");
++        }
++        Radio[] radios = (await Radio.GetRadiosAsync())
++            .Where(radio => radio.Kind == RadioKind.Bluetooth)
++            .ToArray();
++        if (radios.Length == 0)
++        {
++            return ExternalJson.Failure(operation, "bluetooth_radio_not_found");
++        }
++        bool on = radios.Any(radio => radio.State == RadioState.On);
++        JsonElement result = ExternalJson.Create(writer =>
++        {
++            writer.WriteStartObject();
++            writer.WriteNumber("version", 1);
++            writer.WriteBoolean("radioOn", on);
++            writer.WriteNumber("radioCount", radios.Length);
++            writer.WriteNumber("radiosOn", radios.Count(radio => radio.State == RadioState.On));
++            writer.WriteString("authority", "windows_radio_api_read");
++            writer.WriteEndObject();
++        });
++        return ExternalJson.Success(operation, result, effectObserved: false);
++    }
++
+     private async ValueTask<ExternalCapabilityReceipt> PeripheralListAsync(
+         string operation,
+         JsonElement arguments,
+diff --git a/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs b/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
+index 0d04accb..526d845f 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
+@@ -193,7 +193,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
+                 or "notification.list" or "notification.schedule" =>
+                 "windows_task_scheduler_required",
+             "game.installed.named" => "steam_epic_game_manifest_inventory_required",
+-            "bluetooth.device.list" or "bluetooth.device.pair" or "bluetooth.radio.set" =>
++            "bluetooth.device.list" or "bluetooth.device.pair" or "bluetooth.radio.set"
++                or "bluetooth.radio.status" =>
+                 "bluetooth_hardware_gate_required",
+             "game.install.prepare" or "game.install.commit" or "game.install.named" or "game.install.status"
+                 or "game.install.cancel"
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 0f309b9d..45ea6abf 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -5187,6 +5187,10 @@ def _explicit_arguments_from_evidence(
+         if effect_intent._notification_listing_request(evidence):
+             return {}
+ 
++    if operation == "bluetooth.radio.status":
++        if effect_intent._bluetooth_state_question(evidence):
++            return {}
++
+     if operation == "filesystem.known.list":
+         recent_listing = effect_intent._known_folder_recent_listing(evidence)
+         if recent_listing is not None:
+diff --git a/src/baxy_mind/data/catalog_operation_aliases.v1.json b/src/baxy_mind/data/catalog_operation_aliases.v1.json
+index c9cc1858..27af8412 100644
+--- a/src/baxy_mind/data/catalog_operation_aliases.v1.json
++++ b/src/baxy_mind/data/catalog_operation_aliases.v1.json
+@@ -1,5 +1,5 @@
+ {
+-  "alias_count": 158,
++  "alias_count": 159,
+   "aliases": [
+     {
+       "normalized_text": "cierra la ventana de bloc de notas.",
+@@ -775,6 +775,14 @@
+       "target_operation": "notification.dismiss",
+       "text": "Dismiss el recordatorio vencido que acabo de seleccionar."
+     },
++    {
++      "normalized_text": "decime si tengo el bluetooth encendido.",
++      "operations": [
++        "bluetooth.radio.status"
++      ],
++      "target_operation": "bluetooth.radio.status",
++      "text": "Decime si tengo el bluetooth encendido."
++    },
+     {
+       "normalized_text": "lista los timers y alarmas programados.",
+       "operations": [
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 627aaa53..7058c1b1 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -1353,6 +1353,10 @@ def _curated_domain_is_grounded(
+         ):
+             return False
+         return True
++    if operation == "bluetooth.radio.status":
++        return _has(folded, r"\bbluetooth\b") and not _has(
++            folded, r"\b(?:configuracion|settings|entra|enter|abre|open)\b"
++        )
+     if operation == "bluetooth.device.list":
+         return (
+             _has(folded, r"\bbluetooth\b")
+@@ -9100,6 +9104,34 @@ _WIFI_STATE_QUESTION = re.compile(
+ )
+ 
+ 
++_BLUETOOTH_STATE_QUESTION = re.compile(
++    r"^[¿?¡!\s]*(?:"
++    # «tengo el bluetooth encendido», «¿tengo el bluetooth prendido?»
++    r"(?:tengo|tenes|tienes|dejaste|deje|do\s+i\s+have)\s+(?:el\s+|the\s+)?bluetooth\s+"
++    r"(?:prendid[oa]|encendid[oa]|apagad[oa]|activ[oa]|activad[oa]|desactivad[oa]|on|off|enabled|disabled)|"
++    # «el bluetooth está prendido?», «bluetooth is on?»
++    r"(?:el\s+|the\s+)?bluetooth\s+(?:esta|is|anda|queda|quedo)\s+"
++    r"(?:prendid[oa]|encendid[oa]|apagad[oa]|activ[oa]|activad[oa]|desactivad[oa]|on|off|enabled|disabled)|"
++    # «está encendido el bluetooth?», «is the bluetooth on?»
++    r"(?:esta|is)\s+(?:prendid[oa]|encendid[oa]|apagad[oa]|activ[oa]|activad[oa]|on|off|enabled)\s+(?:el\s+|the\s+)?bluetooth|"
++    # «y el bluetooth?», «and bluetooth?»: the state question with no antecedent.
++    r"(?:y|and)\s+(?:el\s+|the\s+)?bluetooth"
++    r")\b[\s?!.,]*$",
++    re.IGNORECASE,
++)
++
++
++def _bluetooth_state_question(text: str) -> bool:
++    """NETWORK1457 «tengo el bluetooth encendido», «y el bluetooth?»: a
++    bluetooth.radio.status read — the radio's state, never a device list."""
++
++    folded = _strip_request_envelope(_fold(text)).strip()
++    return (
++        _BLUETOOTH_STATE_QUESTION.match(folded) is not None
++        and not _has(folded, r"\b(?:dispositivo|device|auriculares?|headphones?|parlante|speaker)\b")
++    )
++
++
+ def _wifi_state_question(text: str) -> bool:
+     """«decime si el wifi está prendido», «¿el wifi está encendido?»: a wifi.status read."""
+ 
+@@ -9132,6 +9164,7 @@ def _is_direct_request(text: str) -> bool:
+         # NETWORK1293: «¿el wifi está encendido?» is a read request without a
+         # verb head; the state question itself is the speech act.
+         or _wifi_state_question(text)
++        or _bluetooth_state_question(text)
+     ):
+         return True
+     request_head = (
+@@ -9348,6 +9381,8 @@ def _strict_catalog_request(
+         return EffectIntent(("filesystem.known.list",), (text,))
+     if "notification.list" in available_operations and _notification_listing_request(text):
+         return EffectIntent(("notification.list",), (text,))
++    if "bluetooth.radio.status" in available_operations and _bluetooth_state_question(text):
++        return EffectIntent(("bluetooth.radio.status",), (text,))
+     if window_inventory_arguments(text) is not None:
+         return (
+             EffectIntent(("window.resolve",), (text,))
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 7fdcbd72..ea6e1241 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4843,6 +4843,31 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+             folded,
+         ) is None:
+             return "echo_without_report"
++    if (
++        payload.get("operation") == "bluetooth.radio.status"
++        and isinstance(seen, dict)
++        and isinstance(seen.get("radioOn"), bool)
++    ):
++        # NETWORK1457: the read is one boolean; the reply must carry it and
++        # must not claim a change («lo encendí»).
++        on_words = r"\b(?:encendid[oa]|prendid[oa]|activad[oa]|activ[oa]|on)\b"
++        off_words = r"\b(?:apagad[oa]|desactivad[oa]|inactiv[oa]|off)\b"
++        # «no está encendido», «no tienes el bluetooth encendido»: up to three
++        # words may separate the negation from the state word.
++        negated = r"\bno\s+(?:\w+\s+){0,3}?"
++        negated_on = re.search(negated + on_words, folded) is not None
++        negated_off = re.search(negated + off_words, folded) is not None
++        # «no está encendido» states the off state; «no está apagado» the on state.
++        says_on = (re.search(on_words, folded) is not None and not negated_on) or negated_off
++        says_off = (re.search(off_words, folded) is not None and not negated_off) or negated_on
++        if seen["radioOn"] is True and (says_off and not says_on):
++            return "reversed_state"
++        if seen["radioOn"] is False and (says_on and not says_off):
++            return "reversed_state"
++        if not says_on and not says_off:
++            return "missing_state"
++        if re.search(r"\b(?:encendi|apague|active|desactive|prendi|lo\s+puse|turned|switched)\b", folded):
++            return "extra_claim"
+     if (
+         payload.get("operation") == "wifi.status"
+         and isinstance(seen, dict)
+@@ -8636,7 +8661,10 @@ class LlmRuntime:
+                 presentation_shape,
+                 authenticated_operations=authenticated_operations,
+             ):
++                # WEB1455: the published text is message.content, not
++                # final_content; both must carry the kept sentence.
+                 final_content = head
++                message = {**message, "content": head}
+         if (
+             not final_content
+             or _reply_uses_opposite_language(final_content, response_language)
+@@ -11822,6 +11850,19 @@ class LlmRuntime:
+                 "su tipo, su título tal cual entre comillas y su próxima ejecución. "
+                 "Sin propósito, sin interpretación, sin otros elementos."
+             )
++        if (
++            visible_situation.get("operation") == "bluetooth.radio.status"
++            and isinstance(visible_situation.get("seen"), dict)
++            and isinstance(visible_situation["seen"].get("radioOn"), bool)
++        ):
++            # NETWORK1457 «tengo el bluetooth encendido»: the read is one boolean.
++            instruct(
++                "\nseen.radioOn is the Bluetooth radio: true means it is on, false means it "
++                "is off. Say which, in one short sentence; nothing was changed."
++                if response_language == "en"
++                else "\nseen.radioOn es la radio Bluetooth: true significa encendida, false "
++                "significa apagada. Di cuál, en una oración corta; no se cambió nada."
++            )
+         if _search_results_text(visible_situation) is not None:
+             # WEB1445: the person asked a live question; the results are pages,
+             # not the answer itself. Say what was found, never what it might say.
+@@ -12524,6 +12565,11 @@ class LlmRuntime:
+                 if response_language == "en"
+                 else "No afirmes un estado del tiempo, temperatura ni pronóstico que los resultados no contengan; nombra en su lugar las páginas encontradas (sus títulos y sitios)."
+             ),
++            "reversed_state": (
++                "State the observed Bluetooth radio state exactly: seen.radioOn true is on, false is off."
++                if response_language == "en"
++                else "Di el estado observado de la radio Bluetooth tal cual: seen.radioOn true es encendida, false es apagada."
++            ),
+             "search_result_denied": (
+                 "The search did return results: do not say you have no information; name the pages found."
+                 if response_language == "en"

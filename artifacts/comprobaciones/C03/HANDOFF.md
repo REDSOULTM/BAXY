@@ -1,3 +1,11 @@
+# NETWORK1457 adjudicado — 2026-09-14T20:04:06.687409+00:00
+
+**458/742 cubiertos, 284 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA fbee059ec016b13745d57c4f663773bd2d8c88873221de93d4b5e3d60418eeb3. Primeras altas 24 h >= 332 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6a860215 con BUILD1457 (lectura bluetooth.radio.status; NETWORK1457/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación.
+
+NETWORK1457 («Red y Bluetooth», H0445 «tengo el bluetooth encendido», H0466 «y el bluetooth?», lectura de estado de la radio): 7/7 ejecutados, 0 violaciones; las cuatro preguntas de estado (dos literales y dos variantes) leyeron la radio Bluetooth con la nueva bluetooth.radio.status, completada y verificada (apagada), y lo dijeron con fidelidad sin afirmar cambios ni dispositivos; los tres límites respondieron con cero operaciones (definición, acuse de prohibición en una oración, conocimiento), 2 créditos. Adjudicación 95194bb0ecf660105a352a60bf98db4dd02ed0f733e2e3a0875eeec875ebd6d1. Filas abiertas restantes de la categoría, condicionadas: escaneo de redes («qué redes wifi hay»: wifi.status no lista redes), «apagá el wifi» y «conectate al wifi de casa/de la luna» (sensibles: radios del dueño y credenciales desconocidas) y «poneme el modo avión» (sin mecanismo).
+
+---
+
 # WEB1455 adjudicado — 2026-09-14T19:31:30.473635+00:00
 
 **456/742 cubiertos, 286 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA ad51d34590bf12be976d72702a41501f769680ed8724893ee95519630ad96634. Primeras altas 24 h >= 330 (+4).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD bc34b7ec con BUILD1455 (abrir un navegador y buscar como navegación revisada; clima nombrando internet; definiciones; acuse de prohibición; WEB1455/SOURCE.json|SOURCE.patch). Turnos revisados de navegación aprobados por la raíz sólo hacia www.bing.com. Turnos ordinarios de sólo lectura sin confirmación y turnos revisados de navegación (una aprobación de la raíz cada uno).
