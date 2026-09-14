@@ -7668,7 +7668,12 @@ class LlmRuntime:
             # NEGATIVE1309: the constraint acknowledgement's structured reply hit
             # the 64-token ceiling twice («truncated_structured_reply») and the
             # turn fell back to a clarification.
-            (160 if presentation_shape == "how_it_works" else 128 if presentation_shape in {"content_draft", "roleplay_draft", "constraint_ack"} else 64)
+            # CONVERSATION1345: the reassurance acknowledgement truncated twice
+            # at 64 tokens (truncated_structured_reply) like constraint_ack did.
+            (160 if presentation_shape == "how_it_works" else 128 if presentation_shape in {
+                "content_draft", "roleplay_draft", "constraint_ack", "reassurance_ack",
+                "misnamed_greeting", "identity", "visual_content_boundary",
+            } else 64)
             if presentation_shape is not None
             else {
                 "social": 64,
@@ -7990,7 +7995,10 @@ class LlmRuntime:
             retry_payload["max_tokens"] = (
                 160 if presentation_shape == "how_it_works" else
                 128
-                if presentation_shape in {"content_draft", "roleplay_draft", "constraint_ack"}
+                if presentation_shape in {
+                    "content_draft", "roleplay_draft", "constraint_ack", "reassurance_ack",
+                    "misnamed_greeting", "identity", "visual_content_boundary",
+                }
                 else 64
                 if presentation_shape is not None
                 else 96

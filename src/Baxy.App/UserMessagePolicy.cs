@@ -1304,8 +1304,24 @@ internal static class UserMessagePolicy
     // Whole words only: «martes» contains «marte», and a note about next
     // Tuesday is not a trip to Mars. NOTES1142 measured that substring
     // match sending a verified note result through the conversation veto.
+    /// <summary>
+    /// CONVERSATION1345 «Tienes algun meme?»: memes, images, photos, gifs and
+    /// stickers cannot be shown here; the mind's plain boundary reply («no
+    /// puedo mostrar memes…») must not be rejected as a failure report.
+    /// </summary>
+    private static bool AsksForVisualContent(string user) =>
+        Regex.IsMatch(
+            user,
+            @"\b(?:tienes|tenes|tendras|tendrias|hay|manda|mandas|mandame|envia|envias|enviame|pasa|pasas|pasame|"
+            + @"muestra|muestras|muestrame|mostra|mostrame|da|das|dame|tira|tirame|"
+            + @"do you have|have you got|got|send|show|give)\b"
+            + @"[^.!?]{0,40}\b(?:meme|memes|imagen|imagenes|foto|fotos|gif|gifs|sticker|stickers|dibujo|dibujos|"
+            + @"picture|pictures|image|images|photo|photos)\b",
+            RegexOptions.CultureInvariant);
+
     private static bool LooksLikeOutOfWorldRequest(string user) =>
         AsksForAWorldAction(user)
+        || AsksForVisualContent(user)
         || ContainsAnyWholeWord(
             user,
             ["marte", "mars", "jupiter", "saturn", "neptun", "pluton",
