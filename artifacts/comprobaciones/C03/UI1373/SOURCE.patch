@@ -1,0 +1,51 @@
+commit be01aa218d38b128c7fa0600886a12c2d902fb82
+
+C03: a verified visible click must be narrated with a click verb (UI1373)
+
+UI1275 measured H0555 «en la calculadora apretá el 5»: the click on «Cinco» completed and verified, and the final said «Apagué el 5» (a wrong verb from the model) after the correct pairs said «Apreté el 5», «Pulsé el 7».
+
+llm._payload_fact_defect: a verified input.visible.click final that carries no click verb (apretar/pulsar/presionar/tocar/hacer clic/click/press/tap) is missing_click_verb; the retry hint asks to say that the button was pressed. No fixed reply.
+
+No .NET change. Offline probe only; tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 9d683c74..1c7e25dc 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4414,6 +4414,21 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+         and _contradicted_brightness_extreme(text, seen)
+     ):
+         return _contradicted_brightness_extreme(text, seen)
++    if (
++        payload.get("operation") == "input.visible.click"
++        and isinstance(seen, dict)
++        and seen.get("ok") is True
++        and re.search(
++            r"\b(?:apret\w*|puls\w*|presion\w*|toc\w*|clic|click\w*|clique\w*|"
++            r"press\w*|tap\w*|hit)\b",
++            folded,
++        )
++        is None
++    ):
++        # UI1275 H0555 «en la calculadora apretá el 5» → «Apagué el 5»: the
++        # verified click was narrated with a wrong verb. Say the button was
++        # pressed; the label stays whatever the person said.
++        return "missing_click_verb"
+     written = seen.get("writtenText") if isinstance(seen, dict) else None
+     if payload.get("operation") == "clipboard.write.text" and isinstance(written, str) and written:
+         # CLIPBOARD1359: «Hola» / «Buen día.» were published after a verified
+@@ -11809,6 +11824,11 @@ class LlmRuntime:
+                 else "El brillo observado no está al mínimo: di el valor observado y "
+                 "que no está al mínimo."
+             ),
++            "missing_click_verb": (
++                "You pressed the button: say that you pressed (clicked) it, with the label the person asked for."
++                if response_language == "en"
++                else "Apretaste el botón: di que lo apretaste (pulsaste, hiciste clic), con la etiqueta que pidió la persona."
++            ),
+             "missing_written_text": (
+                 "Quote the exact text from writtenText and say you copied it to the clipboard."
+                 if response_language == "en"
