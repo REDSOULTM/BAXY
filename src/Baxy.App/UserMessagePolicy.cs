@@ -287,8 +287,11 @@ internal static class UserMessagePolicy
             return "no_response";
         }
 
-        if (LooksLikeMachineSlotAsk(FoldForPolicy(modelText))
-            || LooksLikeRestatingDefinitionAsk(FoldForPolicy(modelText))
+        // WEB1481 «Investiga en internet que es el h2o»: a quoted result title
+        // («¿Qué significa H2O?») is observed data, not the model restating the
+        // definition ask; the lexical checks read the masked vocabulary.
+        if (LooksLikeMachineSlotAsk(FoldForPolicy(vocabularyText))
+            || LooksLikeRestatingDefinitionAsk(FoldForPolicy(vocabularyText))
             || HasRepeatedWord(FoldForPolicy(modelText))
             || ContainsPersonMetadiscourse(FoldForPolicy(modelText))
             || ContainsInternalCode(vocabularyText, string.Concat(userText, " ", priorUserText))

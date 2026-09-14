@@ -35,7 +35,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable
-from urllib.parse import urlparse
+from urllib.parse import parse_qs, urlparse
 
 from .effect_intent import (
     _PERCENTAGE_WORD_VALUES,
@@ -4044,6 +4044,25 @@ def _app_is_feminine(name: str) -> bool:
     return name.casefold() in _FEMININE_APP_NAMES
 
 
+def _opened_search_in_navigation(situation: dict) -> tuple[str, str] | None:
+    """WEB1481: the site and query of a verified navigation whose address is a
+    search-results page (YouTube results, Bing search); None otherwise."""
+
+    observed = _merged_observed(situation)
+    for key in ("finalUrl", "requestedUrl"):
+        value = observed.get(key)
+        if not isinstance(value, str) or not value:
+            continue
+        parts = urlparse(value)
+        host = (parts.hostname or "").casefold()
+        params = parse_qs(parts.query)
+        if host.endswith("youtube.com") and parts.path == "/results" and params.get("search_query"):
+            return "YouTube", params["search_query"][0].strip()
+        if host.endswith("bing.com") and parts.path == "/search" and params.get("q"):
+            return "Bing", params["q"][0].strip()
+    return None
+
+
 def _compose_shape_instruction(situation: dict, language: str, user_text: str) -> str:
     """Describe what to name. Never the sentence the person should read."""
 
@@ -4099,14 +4118,29 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
         ):
             # WEB1259: «Voy a youtube.» / «Vamos a github.» promised a navigation
             # that had already been verified by its final URL.
-            bits.append(
-                "You have just opened the site in the browser and its final URL was "
-                "verified: report that in the past, naming the site the person asked "
-                "for (for example «Abrí YouTube en el navegador»). If finalUrl is a "
-                "sign-in page, say the site asks to sign in. Never promise to go or "
-                "open it later, and never say it was already open before. "
-                "Address the person naturally in their language."
-            )
+            opened_search = _opened_search_in_navigation(situation)
+            if opened_search is not None:
+                # WEB1481 «buscá videos de gatos en youtube»: the verified page
+                # is a results page; the final must name the search it opened,
+                # not just the site («Abrí YouTube en el navegador» hid it).
+                site, query = opened_search
+                bits.append(
+                    f"You have just opened, in the browser, the {site} search results "
+                    f"for «{query}» and the final URL was verified: report in the past "
+                    f"that you opened that search on {site}, naming «{query}» exactly; "
+                    "do not say you merely opened the site, do not describe or invent "
+                    "any result, never promise to search later and never say it was "
+                    "already open before. Address the person naturally in their language."
+                )
+            else:
+                bits.append(
+                    "You have just opened the site in the browser and its final URL was "
+                    "verified: report that in the past, naming the site the person asked "
+                    "for (for example «Abrí YouTube en el navegador»). If finalUrl is a "
+                    "sign-in page, say the site asks to sign in. Never promise to go or "
+                    "open it later, and never say it was already open before. "
+                    "Address the person naturally in their language."
+                )
         if (
             situation.get("operation") in {"note.create", "task.create"}
             and situation.get("verified") is True
