@@ -509,3 +509,7 @@ Navegación y búsqueda web pasa de 35/46 a 36/46 con la página oficial pedida 
 ## Actualización 2026-09-14 (WEB1481)
 
 Navegación y búsqueda web pasa de 36/46 a 36/46 con la búsqueda en YouTube abierta bajo revisión y la pregunta investigada contestada desde una página (commit c21a630d, BUILD1481) (HEAD c21a630d): WEB1481: la búsqueda en YouTube abre su página de resultados bajo revisión pero el final calla la búsqueda; H0618 encontró Wikipedia y la App rechazó el título citado; sin crédito, 0 créditos. 9/9 ejecutados, 5 aprobados, 4 fallidos, 0 créditos; dos defectos del compositor y de la App medidos (WEB1483)
+
+## Actualización 2026-09-14 (WEB1483)
+
+Navegación y búsqueda web pasa de 36/46 a 38/46 con la búsqueda en YouTube nombrada en el final y la pregunta investigada contestada desde una página (commit 21c4876a, BUILD1483) (HEAD 21c4876a): WEB1483: la búsqueda en YouTube nombra lo que abrió y la pregunta investigada se contesta desde una página; H0728 y H0618 cubiertos, 2 créditos. 9/9 ejecutados, 8 aprobados, 1 límite fallido, 2 créditos

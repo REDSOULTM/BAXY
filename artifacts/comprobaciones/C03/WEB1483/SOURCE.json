@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1483-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_opened_search_in_navigation: cuando la dirección verificada es una página de resultados de YouTube o Bing, la instrucción de navegación exige nombrar la búsqueda abierta con su consulta exacta), src/Baxy.App/UserMessagePolicy.cs (LooksLikeMachineSlotAsk y LooksLikeRestatingDefinitionAsk leen el vocabulario con los títulos observados enmascarados).",
+  "patch": "artifacts/comprobaciones/C03/WEB1483/SOURCE.patch",
+  "commits": [
+    "21c4876a98a8c70e33d6a1bbd54f56c7e00fd6a9"
+  ],
+  "build": "BUILD1483 (C03-repairs1483-build/BUILD_READY.json; mente y App)",
+  "cause_measured": "WEB1483: las tres navegaciones a resultados de YouTube se verificaron pero el final dijo sólo «Abrí YouTube en el navegador» (frase de ejemplo de la instrucción); «Investiga en internet que es el h2o» compuso seis veces la respuesta desde Wikipedia y la App la rechazó como internal_code por «que significa» dentro del título citado «¿Qué significa H2O?».",
+  "change": "Instrucción de navegación con la búsqueda abierta; comprobación de la App sobre el vocabulario enmascarado. Sin respuestas fijas.",
+  "measurement": "WEB1483: WEB1483: la búsqueda en YouTube nombra lo que abrió y la pregunta investigada se contesta desde una página; H0728 y H0618 cubiertos; 2 créditos. 9/9 ejecutados, 8 aprobados, 1 límite fallido, 2 créditos",
+  "credits": 2
+}
