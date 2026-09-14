@@ -1,0 +1,55 @@
+commit f021a487656cefdb732304c0e4036839c7f50740
+
+C03: «bajá la música» without an amount asks how much, like any relative volume request (AUDIO1461)
+
+H0075 «bajá la música» was answered as out of capability without resolving its scope: in the mind, music is a media object and only a numeric level construction («bajá la música al 20%») made it the audio level, so the bare request reached no reader and the model declined. The owner's rule for relative volume requests (H0027) is to ask the amount.
+
+baxy_mind effect_intent: _bare_music_volume_request reads a volume verb («bajá», «subí», «baja», «sube»…) whose only object is the music («bajá la música», «Subí la música»), with no amount, player or level; it counts as the volume domain and enters the relative-volume amount clarification, so the product asks how much instead of declining. «bajá la música al 20%», «bajá la música de spotify» and «pausá la música» keep their readings.
+
+Offline probes: «bajá la música», «Bajá la música.», «baja la musica» and «Subí la música» resolve to the audio.volume.adjust amount clarification with zero effects; «subí el volumen y bajá el brillo» keeps its amount clarification; the boundaries resolve to nothing and «No bajes el volumen.» is a prohibition. Mind only (BUILD1461). Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index f7a3ba51..ac2aafc2 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -3811,6 +3811,7 @@ def resolve_explicit_clarification_intent(
+             )
+             and _has(folded, r"\b(?:volumen|volume)\b")
+             or relative_spoken_volume
++            or _bare_music_volume_request(folded)
+         )
+         and not _has(folded, r"\b(?:100|[0-9]{1,2})\b")
+         and _literal_percentage_word_value(folded) is None
+@@ -6239,6 +6240,17 @@ _VOLUME_OBJECT = (
+ )
+ 
+ 
++def _bare_music_volume_request(folded: str) -> bool:
++    """AUDIO1461 «bajá la música», «subí la música»: a volume verb whose only
++    object is the music, with no amount, player or level."""
++
++    return _has(
++        folded,
++        rf"^[¿?¡!\s]*(?:{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB})\s+"
++        r"(?:un\s+poco\s+|un\s+poquito\s+|a\s+)?(?:la\s+|el\s+|the\s+)?(?:musica|music)\s*[.!?]*$",
++    )
++
++
+ def _volume_domain(text: str) -> bool:
+     if _has_app_scoped_audio(text):
+         return False
+@@ -6257,6 +6269,11 @@ def _volume_domain(text: str) -> bool:
+     ) and not _has(text, r"\b(?:brillo|brightness|luz\s+de\s+la\s+pantalla)\b"):
+         return True
+     if _has(text, r"\b(?:musica|music)\b"):
++        # AUDIO1461 «bajá la música»: a bare volume verb with the music as its
++        # only object is the everyday way of asking for less (or more) volume;
++        # without an amount it takes the relative-volume clarification (H0027).
++        if _bare_music_volume_request(text):
++            return True
+         # Music is primarily a media object. It denotes the global audio
+         # level only when a local numeric level/adjustment construction says
+         # so; decades, track numbers and genre names carry no volume authority.

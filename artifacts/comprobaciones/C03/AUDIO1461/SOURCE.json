@@ -1,0 +1,15 @@
+{
+  "schema": "c03-audio1461-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_bare_music_volume_request: «bajá/subí la música» sin cantidad, reproductor ni nivel es el ajuste relativo del volumen y entra en la aclaración de cantidad; dominio del volumen y lector de aclaraciones)",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1461/SOURCE.patch",
+  "commits": [
+    "f021a487656cefdb732304c0e4036839c7f50740"
+  ],
+  "build": "BUILD1461 (C03-repairs1461-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "H0075 «bajá la música» se declaraba fuera de capacidad sin resolver el alcance (la música es objeto de medios salvo con nivel numérico); H0530 «subí el volumen y bajá el brillo» aprobaba sin crédito por faltar un segundo par.",
+  "change": "«bajá/subí la música» sin cantidad toma la aclaración de cantidad del volumen (regla del dueño H0027). Sin respuestas fijas.",
+  "measurement": "AUDIO1461: 9/9 ejecutados, 0 violaciones; «bajá la música» y sus dos variantes preguntaron cuánto bajar el volumen sin operar ni declararlo fuera de capacidad; «subí el volumen y bajá el brillo» preguntó las dos cantidades con las dos direcciones, pero sus dos variantes preguntaron sólo por el volumen y omitieron el brillo (la intención de aclaración lleva sólo audio.volume.adjust), sin par; los tres límites respondieron con cero operaciones; 1 créditos. Causa residual: la aclaración de un pedido compuesto sin cantidades debe llevar los dos ajustes (volumen y brillo) para que la pregunta nombre ambos; las demás filas abiertas siguen condicionadas (volumen en otros idiomas: límites sin marca; «subí el volumen de spotify»: sesión ausente; «subí el volumen y decime qué fecha es»: compuesto de aclaración y lectura).",
+  "credits": 1
+}

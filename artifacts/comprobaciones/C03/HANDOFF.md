@@ -1,3 +1,11 @@
+# AUDIO1461 adjudicado — 2026-09-14T20:46:24.396268+00:00
+
+**463/742 cubiertos, 279 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 20bd770a25b9c1393f0f42fb460ac296085e5144103d70adddae603b7b91b8c0. Primeras altas 24 h >= 337 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f021a487 con BUILD1461 (aclaración de cantidad para «bajá la música»; AUDIO1461/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+AUDIO1461 («Audio y volumen», H0530 «subí el volumen y bajá el brillo», H0075 «bajá la música», ajustes relativos sin cantidad): 9/9 ejecutados, 0 violaciones; «bajá la música» y sus dos variantes preguntaron cuánto bajar el volumen sin operar ni declararlo fuera de capacidad; «subí el volumen y bajá el brillo» preguntó las dos cantidades con las dos direcciones, pero sus dos variantes preguntaron sólo por el volumen y omitieron el brillo (la intención de aclaración lleva sólo audio.volume.adjust), sin par; los tres límites respondieron con cero operaciones, 1 créditos. Adjudicación 0183de67f649ba4d478b88b97954776879a8e7b5f29f7831e85e46e5a872bbc3. Causa residual: la aclaración de un pedido compuesto sin cantidades debe llevar los dos ajustes (volumen y brillo) para que la pregunta nombre ambos; las demás filas abiertas siguen condicionadas (volumen en otros idiomas: límites sin marca; «subí el volumen de spotify»: sesión ausente; «subí el volumen y decime qué fecha es»: compuesto de aclaración y lectura).
+
+---
+
 # SYSTEM1459 adjudicado — 2026-09-14T20:34:43.687454+00:00
 
 **462/742 cubiertos, 280 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA ac0d35a7d48a9acec18ba3d5dc30d7f2e5a73326c01d75d0a3e5cf41ebd0f8aa. Primeras altas 24 h >= 336 (+4).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c40ba5f8 con BUILD1459 (lectura display.status; SYSTEM1459/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación.
