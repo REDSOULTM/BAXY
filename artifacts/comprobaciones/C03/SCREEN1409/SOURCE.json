@@ -1,0 +1,15 @@
+{
+  "schema": "c03-screen1409-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_compose_situation_payload: la situación de ocr.read se proyecta al texto reconocido acotado, el número de líneas y el idioma; presupuesto denso de salida para una ocr.read verificada)",
+  "patch": "artifacts/comprobaciones/C03/SCREEN1409/SOURCE.patch",
+  "commits": [
+    "062ee0c4b7768ea5b16b8bb19b5575363ed053e0"
+  ],
+  "build": "BUILD1409 (C03-repairs1409-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "SCREEN1407: con la captura y la ocr.read verificadas, el compositor enviaba la situación completa de ocr.read (~32 KB de layout, hashes y metadatos), 31.5 K caracteres contra un techo de contexto de 4096 tokens, y cada intento fallaba antes del modelo.",
+  "change": "El payload de ocr.read conserva el texto reconocido (acotado a 2000 caracteres, marcado si se recorta), el número de líneas y el idioma; layout, hashes y marcas de tiempo quedan en el recibo; una ocr.read verificada recibe 512 tokens de salida. Sin respuestas fijas.",
+  "measurement": "SCREEN1409: 10/10 ejecutados, 3 límites aprobados, 7 casos de lectura fallidos (4 sin final por presupuesto, 3 con resumen infiel), 0 violaciones; 0 créditos. SCREEN1409 sobre BUILD1409 (mente: la situación de ocr.read proyectada a texto, número de líneas e idioma): captura y ocr.read completadas y verificadas en los siete casos de lectura. Cuatro no publicaron nada: cada intento de composición agotó el presupuesto de 5 s intentando transcribir el texto reconocido completo (~1.9 KB), fuera del alcance de este modelo en ese presupuesto. Tres publicaron resúmenes que el texto reconocido no sostiene (un aviso de «límite de Fable», scripts generados, un flujo de ejecución): el compositor no exige que las palabras del final provengan del texto reconocido. El texto reconocido queda privado. Siguiente: comprobación de fundamento (cada palabra de contenido del final debe aparecer en el texto reconocido) e instrucción de citar unas pocas líneas tal cual (SCREEN1411).",
+  "credits": 0
+}

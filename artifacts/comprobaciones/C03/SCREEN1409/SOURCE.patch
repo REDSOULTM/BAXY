@@ -1,0 +1,60 @@
+commit 062ee0c4b7768ea5b16b8bb19b5575363ed053e0
+
+C03: a screen reading composes from the recognized text, not from the layout receipt (SCREEN1409)
+
+SCREEN1407 measured the reviewed screen reading with the read running: capture approved, completed and verified, ocr.read completed and verified without a second confirmation, and no final. The composer sent the whole ocr.read situation in its prompt (about 32 KB of layout boxes, hashes and timestamps), 31.5 K characters against a 4096-token context ceiling, so every attempt failed before the model; reproduced offline with the real receipt.
+
+llm._compose_situation_payload: for ocr.read the payload keeps the recognized text (bounded to 2000 characters, flagged when truncated), the line count and the language; layout, hashes and timestamps stay in the receipt. The prompt for the same receipt is 2.7 K characters.
+llm._compose_situation_payload: a verified ocr.read gets the dense output budget (512 tokens) so a transcription is not cut mid-sentence.
+
+No .NET change. Offline probe only; tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index d064ecce..3e3dac76 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3807,6 +3807,23 @@ def _compose_situation_payload(
+                 and situation.get("succeeded") is True
+             ):
+                 visible_seen["writtenText"] = written
++        elif operation == "ocr.read":
++            # SCREEN1407 «leéme lo que dice la pantalla»: the receipt carries the
++            # layout boxes, hashes and timestamps (about 30 KB) and the composer
++            # prompt overflowed the context before the model ran. The person
++            # asked for the text: keep it (bounded), the line count and language.
++            projected: dict = {}
++            recognized = visible_seen.get("text")
++            if isinstance(recognized, str):
++                clipped_text = recognized.strip()
++                if len(clipped_text) > 2000:
++                    clipped_text = clipped_text[:2000].rstrip() + " …"
++                    projected["textTruncated"] = True
++                projected["text"] = clipped_text
++            for key in ("lineCount", "language"):
++                if visible_seen.get(key) is not None:
++                    projected[key] = visible_seen[key]
++            visible_seen = projected
+         elif operation in ("capture.screenshot", "capture.active.window"):
+             # SCREEN1399 H0093 «sacá un screenshot»: the receipt's captureId,
+             # sha256 and timestamp were narrated («con el ID capture_…») and the
+@@ -11349,9 +11366,16 @@ class LlmRuntime:
+                 or len(json.dumps(inventory_entries, ensure_ascii=False, separators=(",", ":"))) >= 512
+             )
+         )
++        # SCREEN1407: a screen reading transcribes up to 2000 characters of
++        # recognized text; the default budget would cut it mid-sentence.
++        dense_reading = (
++            situation.get("operation") == "ocr.read"
++            and situation.get("verified") is True
++            and situation.get("succeeded") is True
++        )
+         # Inventory facts travel in situation, outside requiredFacts. Reuse
+         # the dense output allowance, keeping their existing prompt unchanged.
+-        if dense_fact_contract or dense_inventory:
++        if dense_fact_contract or dense_inventory or dense_reading:
+             payload["max_tokens"] = 512
+         if dense_fact_contract:
+             instruct(
