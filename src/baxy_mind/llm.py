@@ -10254,6 +10254,38 @@ class LlmRuntime:
                         )
                         continue
                     raise ValueError("aclaración explícita propone una alarma no leída")
+            # MESSAGING1363 «contestale que sí» → «A quién le vas a contestar
+            # que sí?»: the recipient question handed the reply to the person.
+            # BAXY answers on the person's behalf: ask whom it should answer,
+            # keeping what the person wants to say as said. One corrected retry.
+            if operations == ("message.send",) and missing_fields == ("recipient",):
+                folded_question = _reading_fold(str(question))
+                person_executes = re.search(
+                    r"\b(?:vas\s+a|le\s+contestas|le\s+respondes|contestas|respondes|"
+                    r"contestaras|responderas|contestarias|responderias|"
+                    r"you\s+(?:are\s+going\s+to|will|gonna|would)\s+(?:answer|reply|respond))\b",
+                    folded_question,
+                ) is not None
+                asks_whom = re.search(
+                    r"\b(?:a\s+quien|quien|to\s+whom|whom|who)\b", folded_question,
+                ) is not None
+                if person_executes or not asks_whom:
+                    if attempt == 0:
+                        payload["messages"].insert(
+                            -1,
+                            {
+                                "role": "system",
+                                "content": (
+                                    "Corrección: quien contesta es BAXY por encargo de la "
+                                    "persona, no la persona. Pregunta a quién debe contestar "
+                                    "BAXY (por ejemplo «¿A quién le contesto?») y conserva lo "
+                                    "que quiere decir tal cual, sin cambiar la persona "
+                                    "gramatical ni los acentos."
+                                ),
+                            },
+                        )
+                        continue
+                    raise ValueError("aclaración explícita atribuye la contestación al usuario")
             # BRIGHT1287 «Subí bastante el brillo.» → «¿Cuánto subiste el
             # brillo?»: the amount question attributed the action to the
             # user's past. One corrected retry; a repeat is a failure.
