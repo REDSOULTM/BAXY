@@ -4414,6 +4414,25 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         and _contradicted_brightness_extreme(text, seen)
     ):
         return _contradicted_brightness_extreme(text, seen)
+    prior_steps = payload.get("completedStepsInOrder")
+    if (
+        isinstance(prior_steps, list)
+        and any(
+            isinstance(step, dict)
+            and step.get("operation") == "app.open"
+            and isinstance(step.get("resultAtThisStep"), dict)
+            and step["resultAtThisStep"].get("outcome") == "completed"
+            for step in prior_steps
+        )
+        and re.search(
+            r"\b(?:abr\w*|open\w*|lanc\w*|launch\w*|inici\w*|start\w*)\b", folded,
+        )
+        is None
+    ):
+        # APPS1231 H0183 «abrí la calculadora y decime qué hora es»: both ran
+        # and verified, the final only gave the time. The opening is a fact
+        # of this turn and must be reported too.
+        return "missing_prior_open"
     if (
         payload.get("operation") == "input.visible.click"
         and isinstance(seen, dict)
@@ -11866,6 +11885,11 @@ class LlmRuntime:
                 if response_language == "en"
                 else "El brillo observado no está al mínimo: di el valor observado y "
                 "que no está al mínimo."
+            ),
+            "missing_prior_open": (
+                "You also opened the application in this turn: say that you opened it, then the rest."
+                if response_language == "en"
+                else "En este turno también abriste la aplicación: di que la abriste y luego lo demás."
             ),
             "missing_click_verb": (
                 "You pressed the button: say that you pressed (clicked) it, with the label the person asked for."
