@@ -63,6 +63,7 @@ from .effect_intent import (
     resolve_explicit_effects,
     resolve_game_catalog_app_id,
     unresolved_compound_contract,
+    reassurance_statement,
     unsupported_effect_demonstration_request,
     unsupported_live_machine_query,
     visual_content_request,
@@ -1331,6 +1332,11 @@ def apply_conversation_effect_presentation(
         # the effect-shape guess («chuta» as a kick) must not turn it into a
         # clarification or an unsupported boundary.
         or read_request(objective).intents & {INTENT_IDENTITY, INTENT_CAPABILITY}
+        # CONVERSATION1343: a reassurance («no te preocupes si…») is answered
+        # with an acknowledgement and a visual-content request with a plain
+        # boundary; neither is an incomplete effect to clarify.
+        or reassurance_statement(objective)
+        or visual_content_request(objective)
     ):
         return decision
     try:

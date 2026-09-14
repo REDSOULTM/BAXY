@@ -2298,6 +2298,30 @@ _VISUAL_CONTENT_REQUEST = re.compile(
 )
 
 
+_REASSURANCE_STATEMENT = re.compile(
+    r"^[\s¿?¡!]*(?:(?:no|nunca)\s+(?:te|se)\s+preocup\w*|tranqui(?:lo|la|los|las)?\b|no\s+pasa\s+nada|"
+    r"(?:don'?\s?t|dont|do\s+not)\s+worry|no\s+worries|it'?\s?s\s+(?:ok|okay|fine|alright)|esta\s+bien\s+si\b|todo\s+bien\s+si\b)"
+)
+
+
+def reassurance_statement(text: str) -> bool:
+    """CONVERSATION1343 H0059 «NO te preocupes si se abrio steam»: a reassurance, not a request."""
+
+    return _REASSURANCE_STATEMENT.match(_strip_request_envelope(_fold(text)).strip()) is not None
+
+
+_VISUAL_CONTENT_NOUN = re.compile(
+    r"\b(?P<noun>meme|memes|imagen|imagenes|foto|fotos|gif|gifs|sticker|stickers|dibujo|dibujos|picture|pictures|image|images|photo|photos)\b"
+)
+
+
+def visual_content_noun(text: str) -> str:
+    """The visual noun asked for («meme», «foto»), for the boundary reply."""
+
+    match = _VISUAL_CONTENT_NOUN.search(_fold(text))
+    return match.group("noun") if match is not None else ""
+
+
 def visual_content_request(text: str) -> bool:
     """CONVERSATION1150 H0069 «Tienes algun meme?»: memes and images cannot be shown here.
 
