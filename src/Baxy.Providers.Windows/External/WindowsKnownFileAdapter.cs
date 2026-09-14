@@ -22,7 +22,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
     }
 
     public bool CanHandle(string operation) => operation is
-        "filesystem.known.duplicates" or "filesystem.known.search"
+        "filesystem.known.duplicates" or "filesystem.known.list" or "filesystem.known.search"
         or "filesystem.known.trash.named" or "filesystem.path.ensure.absent";
 
     public ValueTask<ExternalCapabilityReceipt> InvokeAsync(
@@ -48,6 +48,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             {
                 "filesystem.known.duplicates" => Duplicates(
                     operation, roots, arguments, cancellationToken),
+                "filesystem.known.list" => List(operation, roots, arguments),
                 "filesystem.known.search" => Search(operation, roots, arguments),
                 "filesystem.known.trash.named" => Trash(
                     operation, roots, arguments, effectBoundary),
@@ -236,6 +237,74 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             writer.WriteBoolean("exhaustive", false);
             writer.WriteEndObject();
             writer.WriteString("authority", "windows_known_folders_bounded_postread");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    private static ExternalCapabilityReceipt List(
+        string operation,
+        (string Label, string Root)[] roots,
+        JsonElement arguments)
+    {
+        // FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
+        // the top-level entries of one known folder, names and kinds only.
+        // Hidden and system entries (desktop.ini) are not what the person sees.
+        int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 50), 1, 100);
+        var options = new EnumerationOptions
+        {
+            RecurseSubdirectories = false,
+            IgnoreInaccessible = true,
+            AttributesToSkip = FileAttributes.Hidden | FileAttributes.System,
+        };
+        List<(string Name, bool IsFolder, long Size, DateTime ModifiedUtc)> entries = [];
+        bool anyRoot = false;
+        string folderLabel = roots.Length > 0 ? roots[0].Label : "";
+        foreach ((string label, string root) in roots)
+        {
+            if (!Directory.Exists(root)) continue;
+            anyRoot = true;
+            folderLabel = label;
+            foreach (string path in Directory.EnumerateFileSystemEntries(root, "*", options))
+            {
+                bool isFolder = Directory.Exists(path);
+                entries.Add((
+                    Path.GetFileName(path),
+                    isFolder,
+                    isFolder ? 0 : new FileInfo(path).Length,
+                    isFolder ? Directory.GetLastWriteTimeUtc(path) : File.GetLastWriteTimeUtc(path)));
+            }
+        }
+        if (!anyRoot) return ExternalJson.Failure(operation, "known_folder_unavailable");
+        var shown = entries
+            .OrderBy(item => item.IsFolder ? 0 : 1)
+            .ThenBy(item => item.Name, StringComparer.OrdinalIgnoreCase)
+            .Take(limit)
+            .ToArray();
+        int folderCount = entries.Count(item => item.IsFolder);
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("folder", folderLabel);
+            writer.WriteNumber("count", entries.Count);
+            writer.WriteNumber("fileCount", entries.Count - folderCount);
+            writer.WriteNumber("folderCount", folderCount);
+            writer.WriteStartArray("entries");
+            foreach (var entry in shown)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("name", entry.Name);
+                writer.WriteString("kind", entry.IsFolder ? "folder" : "file");
+                if (!entry.IsFolder) writer.WriteNumber("size", entry.Size);
+                writer.WriteString("modifiedUtc", entry.ModifiedUtc);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteNumber("shownCount", shown.Length);
+            writer.WriteNumber("resultLimit", limit);
+            writer.WriteBoolean("resultsMayBeTruncated", entries.Count > shown.Length);
+            writer.WriteBoolean("hiddenAndSystemSkipped", true);
+            writer.WriteString("authority", "windows_known_folder_toplevel_postread");
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);

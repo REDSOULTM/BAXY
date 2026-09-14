@@ -5139,6 +5139,11 @@ def _explicit_arguments_from_evidence(
         if len(folders) == 1:
             return {"folder": next(iter(folders))}
 
+    if operation == "filesystem.known.list":
+        listed_folder = effect_intent._known_folder_listing_request(evidence)
+        if listed_folder is not None:
+            return {"folder": listed_folder, "limit": 100}
+
     if operation == "filesystem.known.search":
         literal_search = effect_intent._literal_known_file_search(evidence)
         if literal_search is not None:
@@ -5255,6 +5260,13 @@ def _ground_explicit_arguments(
             explicit = {"name": name}
     if explicit is None:
         return None
+    if (
+        operation == "filesystem.known.list"
+        and effect_intent._known_folder_listing_request(evidence) == explicit.get("folder")
+    ):
+        # The listing reader owns the known-folder enum and the bounded limit;
+        # neither is a word the person must spell literally.
+        return explicit if validate_json_schema_instance(explicit, schema) else None
     if (
         operation == "filesystem.known.search"
         and effect_intent._literal_known_file_search(evidence) == explicit

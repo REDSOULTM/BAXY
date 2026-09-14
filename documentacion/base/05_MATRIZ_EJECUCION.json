@@ -755,6 +755,15 @@
       "reason": "Opera sobre carpetas conocidas del usuario (Desktop/Documents/…); no restaurable aquí."
     },
     {
+      "operation": "filesystem.known.list",
+      "verifierContractId": "filesystem.known.list.windows.toplevel.identities.v1",
+      "risk": "read_only",
+      "observation": "filesystem.known.list.windows.toplevel.identities.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Opera sobre carpetas conocidas del usuario (Desktop/Documents/…); no restaurable aquí."
+    },
+    {
       "operation": "filesystem.known.search",
       "verifierContractId": "filesystem.known.search.windows.identities.v1",
       "risk": "read_only",

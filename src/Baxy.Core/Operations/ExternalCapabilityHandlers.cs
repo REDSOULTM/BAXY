@@ -79,6 +79,7 @@ internal static class ExternalCapabilityHandlers
         "filesystem.file.open.latest",
         "filesystem.folder.open",
         "filesystem.known.duplicates",
+        "filesystem.known.list",
         "filesystem.known.search",
         "filesystem.known.trash.named",
         "filesystem.path.ensure.absent",

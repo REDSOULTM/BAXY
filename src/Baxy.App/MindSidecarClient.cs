@@ -251,6 +251,7 @@ internal sealed class MindSidecarClient : IAsyncDisposable
             {
                 "window.resolve" => "windows",
                 "system.process.list" => "processes",
+                "filesystem.known.list" => "entries",
                 _ => null,
             };
             return collection is not null && observed[collection] is JsonArray rows

@@ -43,6 +43,17 @@ def without_observed_names(text: str, situation: object) -> str:
                         names.update(value for key in fields
                                      if isinstance(value := entry.get(key), str)
                                      and value.strip() and len(value) <= 4096)
+        if (node.get("kind") == "operation" and operation == "filesystem.known.list"
+                and node.get("verified") is True and node.get("succeeded") is True
+                and node.get("polarity") == "success"):
+            # FILES1425 «lista los archivos del escritorio»: a listed name is
+            # observed data (dots, hyphens and underscores included).
+            observed = node.get("observed")
+            listed = observed.get("entries") if isinstance(observed, dict) else None
+            if isinstance(listed, list):
+                names.update(name.strip() for entry in listed if isinstance(entry, dict)
+                             and isinstance(name := entry.get("name"), str)
+                             and 0 < len(name.strip()) <= 4096)
         if (node.get("kind") == "operation" and operation == "ocr.read"
                 and node.get("verified") is True and node.get("succeeded") is True
                 and node.get("polarity") == "success"):

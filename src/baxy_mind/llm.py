@@ -3807,6 +3807,8 @@ def _compose_situation_payload(
                 and situation.get("succeeded") is True
             ):
                 visible_seen["writtenText"] = written
+        elif operation == "filesystem.known.list":
+            visible_seen = _project_known_listing(visible_seen, language)
         elif operation == "ocr.read":
             # SCREEN1407 «leéme lo que dice la pantalla»: the receipt carries the
             # layout boxes, hashes and timestamps (about 30 KB) and the composer
@@ -4456,6 +4458,72 @@ def _recognized_screen_text(payload: dict) -> str | None:
     return None
 
 
+_LISTING_SHOWN_NAMES = 6
+_KNOWN_FOLDER_LABELS = {
+    "desktop": ("el escritorio", "the desktop"),
+    "downloads": ("Descargas", "Downloads"),
+    "documents": ("Documentos", "Documents"),
+}
+
+
+def _project_known_listing(observed: dict, language: str) -> dict:
+    """FILES1425 «lista los archivos del escritorio»: the receipt carries up to a
+    hundred entries with sizes and dates; the person needs the count and some
+    names, exactly as listed. Folders come first, as the provider ordered them."""
+
+    entries = observed.get("entries")
+    names = [
+        str(entry.get("name")).strip()
+        for entry in (entries if isinstance(entries, list) else [])
+        if isinstance(entry, dict) and isinstance(entry.get("name"), str) and entry.get("name").strip()
+    ]
+    shown = names[:_LISTING_SHOWN_NAMES]
+    folder = observed.get("folder")
+    labels = _KNOWN_FOLDER_LABELS.get(str(folder), (str(folder), str(folder)))
+    count = observed.get("count") if type(observed.get("count")) is int else len(names)
+    projected: dict = {
+        "folder": labels[1 if language == "en" else 0],
+        "count": count,
+        "names": shown,
+        "shownNames": len(shown),
+        "moreNotShown": max(count - len(shown), 0),
+    }
+    for key in ("fileCount", "folderCount"):
+        if type(observed.get(key)) is int:
+            projected[key] = observed[key]
+    return projected
+
+
+def _known_listing_in_payload(payload: dict) -> dict | None:
+    """The projected listing («seen» with names) of a verified known-folder listing."""
+
+    if payload.get("operation") != "filesystem.known.list":
+        return None
+    seen = payload.get("seen")
+    if isinstance(seen, dict) and isinstance(seen.get("names"), list):
+        return seen
+    return None
+
+
+def _listing_fact_defect(text: str, seen: dict) -> str:
+    """A quoted name must be a listed name; a number must be one of the counts."""
+
+    listed = {_reading_fold(str(name)) for name in seen.get("names") or []}
+    for quoted in re.findall(r'[«"“]([^»"”]{1,4096})[»"”]', text):
+        candidate = _reading_fold(quoted.strip().rstrip(".,;:"))
+        if candidate and candidate not in listed:
+            return "listing_unlisted_name"
+    counts = {
+        str(seen.get(key)) for key in ("count", "fileCount", "folderCount", "shownNames", "moreNotShown")
+        if type(seen.get(key)) is int
+    }
+    prose = re.sub(r'[«"“][^»"”]{1,4096}[»"”]', " ", text)
+    for number in re.findall(r"(?<![\w.-])\d+(?![\w.-])", prose):
+        if number not in counts:
+            return "listing_wrong_count"
+    return ""
+
+
 def _recognized_screen_text_in_situation(situation: dict) -> str | None:
     """The verified OCR text in a situation, single-step or mission-shaped."""
 
@@ -4632,6 +4700,13 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         # about reading a screen are the only allowance.
         if _ocr_unsupported_terms(text, recognized, user_text):
             return "ocr_unsupported_terms"
+    listing = _known_listing_in_payload(payload)
+    if listing is not None:
+        # FILES1425: the person asked what the folder holds; a name that is not
+        # in the listing or a count that is not the observed one is invented.
+        listing_defect = _listing_fact_defect(text, listing)
+        if listing_defect:
+            return listing_defect
     written = seen.get("writtenText") if isinstance(seen, dict) else None
     if payload.get("operation") == "clipboard.write.text" and isinstance(written, str) and written:
         # CLIPBOARD1359: «Hola» / «Buen día.» were published after a verified
@@ -11494,11 +11569,15 @@ class LlmRuntime:
         )
         inventory_seen = visible_situation.get("seen")
         inventory_entries = (
-            inventory_seen.get("windows" if situation.get("operation") == "window.resolve" else "processes")
+            inventory_seen.get(
+                "windows" if situation.get("operation") == "window.resolve"
+                else "names" if situation.get("operation") == "filesystem.known.list"
+                else "processes"
+            )
             if isinstance(inventory_seen, dict) else None
         )
         dense_inventory = (
-            situation.get("operation") in {"window.resolve", "system.process.list"}
+            situation.get("operation") in {"window.resolve", "system.process.list", "filesystem.known.list"}
             and situation.get("verified") is True
             and situation.get("succeeded") is True
             and isinstance(inventory_entries, list)
@@ -11516,6 +11595,26 @@ class LlmRuntime:
         # the dense output allowance, keeping their existing prompt unchanged.
         if dense_fact_contract or dense_inventory:
             payload["max_tokens"] = 512
+        if _known_listing_in_payload(visible_situation) is not None:
+            # FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
+            # the report is the count and a few names exactly as listed.
+            instruct(
+                "\nseen.names holds some entries of the folder seen.folder, exactly "
+                "as they are named, and seen.count the total number of entries "
+                "(seen.fileCount files and seen.folderCount folders). Say how many "
+                "entries the folder has and name the entries in seen.names verbatim, "
+                "each in its own quotation marks; if seen.moreNotShown is greater "
+                "than zero, say that there are more. Nothing else: no purpose, no "
+                "interpretation, no other numbers, no names that are not in seen.names."
+                if response_language == "en"
+                else "\nseen.names trae algunas entradas de la carpeta seen.folder, tal "
+                "cual se llaman, y seen.count el total de entradas (seen.fileCount "
+                "archivos y seen.folderCount carpetas). Di cuántas entradas tiene la "
+                "carpeta y nombra las entradas de seen.names tal cual, cada una entre "
+                "sus propias comillas; si seen.moreNotShown es mayor que cero, di que "
+                "hay más. Nada más: sin propósito, sin interpretación, sin otros "
+                "números, sin nombres que no estén en seen.names."
+            )
         if screen_reading:
             instruct(
                 "\nseen.lines holds a few lines read from the screen, exactly as "
@@ -12152,6 +12251,16 @@ class LlmRuntime:
                 "Use only words that appear in the recognized text: quote two or three of its lines exactly as they are, say how many lines were recognized, and add no interpretation, purpose or warning."
                 if response_language == "en"
                 else "Usa sólo palabras que estén en el texto reconocido: cita dos o tres de sus líneas tal cual, di cuántas líneas se reconocieron y no añadas interpretación, propósito ni avisos."
+            ),
+            "listing_unlisted_name": (
+                "Quote only names that appear in seen.names, exactly as written, each in its own quotation marks; do not invent or alter any name."
+                if response_language == "en"
+                else "Cita sólo nombres que estén en seen.names, tal cual están escritos, cada uno entre sus propias comillas; no inventes ni cambies ningún nombre."
+            ),
+            "listing_wrong_count": (
+                "The only numbers you may state are seen.count (total entries), seen.fileCount, seen.folderCount and seen.moreNotShown; do not invent other figures."
+                if response_language == "en"
+                else "Los únicos números que puedes decir son seen.count (entradas en total), seen.fileCount, seen.folderCount y seen.moreNotShown; no inventes otras cifras."
             ),
             "capture_not_reported": (
                 "You took the screenshot: say so in the first person past tense, without repeating the request, without identifiers, and without inventing where it was saved."

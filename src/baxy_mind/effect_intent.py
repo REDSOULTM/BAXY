@@ -9115,6 +9115,36 @@ def _is_direct_request(text: str) -> bool:
     )
 
 
+_KNOWN_FOLDER_LISTING = (
+    r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
+    r"(?:(?:lista|listame|list|enumera|enumerame|mostrame|muestrame|muestra|show me|show|"
+    r"decime|dime|contame|cuentame|tell me)\s+(?:me\s+)?(?:que\s+|what\s+)?(?:los|las|the|mis|my|todos los|all the|all)?\s*"
+    r"(?:archivos|ficheros|files|documentos|cosas|things)\s+(?:(?:que\s+)?(?:hay|tengo|are|is)\s+)?"
+    r"(?:de|del|en|in|on|of|from)\s+|"
+    r"(?:que|what)\s+(?:(?:archivos?|ficheros?|files?|cosas?|things?)\s+)?"
+    r"(?:hay|tengo|is|is there|are|are there|do i have|i have)\s+(?:en|in|on)\s+)"
+    r"(?:mi|el|la|my|the)?\s*(?:carpeta\s+(?:de\s+)?|folder\s+)?"
+    r"(?P<folder>escritorio|desktop|descargas|downloads|documentos|documents)"
+    r"(?:\s+(?:folder|carpeta))?[\s?!.]*$"
+)
+_KNOWN_FOLDER_ENUM = {
+    "escritorio": "desktop", "desktop": "desktop",
+    "descargas": "downloads", "downloads": "downloads",
+    "documentos": "documents", "documents": "documents",
+}
+
+
+def _known_folder_listing_request(text: str) -> str | None:
+    """FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
+    the known-folder enum of a whole-folder listing request, else None."""
+
+    folded = _fold(text)
+    match = re.match(_KNOWN_FOLDER_LISTING, folded)
+    if match is None:
+        return None
+    return _KNOWN_FOLDER_ENUM.get(match.group("folder"))
+
+
 def _strict_catalog_request(
     text: str,
     available_operations: frozenset[str],
@@ -9132,6 +9162,11 @@ def _strict_catalog_request(
     # (``Baxy, por favor: ...``).  The outer resolver removes one layer; peel
     # at most one remaining non-semantic layer for surface invariance.
     text = _strip_request_envelope(text).strip().rstrip(".!?").rstrip()
+    if (
+        "filesystem.known.list" in available_operations
+        and _known_folder_listing_request(text) is not None
+    ):
+        return EffectIntent(("filesystem.known.list",), (text,))
     if window_inventory_arguments(text) is not None:
         return (
             EffectIntent(("window.resolve",), (text,))

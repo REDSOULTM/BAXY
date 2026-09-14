@@ -87,6 +87,26 @@ internal static class ObservedResponseLiterals
             }
         }
         if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+            && IsString(node, "operation", "filesystem.known.list")
+            && node.TryGetProperty("verified", out JsonElement listVerified) && listVerified.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("succeeded", out JsonElement listSucceeded) && listSucceeded.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("observed", out JsonElement listing) && listing.ValueKind == JsonValueKind.Object
+            && listing.TryGetProperty("entries", out JsonElement listed) && listed.ValueKind == JsonValueKind.Array)
+        {
+            // FILES1425 «lista los archivos del escritorio»: the person asked for
+            // the folder's names; a listed name (dots, hyphens, underscores
+            // included) is observed data, not vocabulary about BAXY.
+            foreach (JsonElement entry in listed.EnumerateArray())
+            {
+                if (entry.ValueKind == JsonValueKind.Object
+                    && entry.TryGetProperty("name", out JsonElement listedName) && listedName.ValueKind == JsonValueKind.String
+                    && listedName.GetString() is { Length: > 0 and <= 4096 } entryName && !string.IsNullOrWhiteSpace(entryName))
+                {
+                    names.Add(entryName);
+                }
+            }
+        }
+        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
             && IsString(node, "operation", "ocr.read")
             && node.TryGetProperty("verified", out JsonElement readVerified) && readVerified.ValueKind == JsonValueKind.True
             && node.TryGetProperty("succeeded", out JsonElement readSucceeded) && readSucceeded.ValueKind == JsonValueKind.True
