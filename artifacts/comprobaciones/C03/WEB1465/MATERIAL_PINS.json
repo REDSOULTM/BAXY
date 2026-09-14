@@ -1,0 +1,168 @@
+{
+  "schema": "web1465-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1465-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1465-instrument-v1",
+  "seal_sha256": "a68589ef2e53f7c3e23765444506f3a038affda8a9405fb2575c32467ef0f432",
+  "runner_sha256": "c227fc4d66ac70cdec3a2215aa52c891f0709152a7451d4ab2221df187706ba5",
+  "transport_seal_sha256": "d6c75d4742360df103702fac29b4ea5d98acddd2add783075e115f23bff3a8a4",
+  "files": {
+    "panel.json": "c8fb12a65583554abefc0c1d8bc4a66cd0ec4307461b6e4e3c51c873459fa06e",
+    "turns.jsonl": "e2e3a4e0099b29515de0ff63bb391f6cf6d987ff8c8193ef433b31a924d1b1b7",
+    "case-map.json": "ff72fa844eafb95d0c8851cbad6e7abae3378c2662d813cd7a07fe0164d9816d",
+    "PLAN.md": "7fde4b2b823757c11d097444924297667285a506de8c8428cb745ffb32dfb30d"
+  },
+  "counts": {
+    "cases": 15,
+    "historical_literals": 8,
+    "original_development_variants": 4,
+    "boundaries": 3,
+    "wire_lines": 30,
+    "session_controls": 15,
+    "ordinary_turns": 15,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 15,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 8,
+    "original_development_variant": 4,
+    "boundary": 3
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0034",
+      "kind": "historical_literal",
+      "group": "named_city_weather",
+      "credit_behavior": "named_city_weather",
+      "text_sha256": "0b4e681fd9933e70a640d095811625224940fe9c61e30b023414a8d4e8ecbe11",
+      "criterion_sha256": "211a89ab7a87c4b6d2d311bc1de89dbc8aec4a71b33ec71ea06c196714217930"
+    },
+    {
+      "index": 1,
+      "case_id": "H0061",
+      "kind": "historical_literal",
+      "group": "named_city_weather",
+      "credit_behavior": "named_city_weather",
+      "text_sha256": "13741f59c198f481a38e6a2fbb59e1a3f205b66e9eb311518893b4082f5aec72",
+      "criterion_sha256": "211a89ab7a87c4b6d2d311bc1de89dbc8aec4a71b33ec71ea06c196714217930"
+    },
+    {
+      "index": 2,
+      "case_id": "H0415",
+      "kind": "historical_literal",
+      "group": "named_city_weather",
+      "credit_behavior": "named_city_weather",
+      "text_sha256": "8c129380be2e7bc2af8cf62e02b5005eca40d4ce9531a8decd14c514b986931b",
+      "criterion_sha256": "211a89ab7a87c4b6d2d311bc1de89dbc8aec4a71b33ec71ea06c196714217930"
+    },
+    {
+      "index": 3,
+      "case_id": "H0478",
+      "kind": "historical_literal",
+      "group": "named_city_weather",
+      "credit_behavior": "named_city_weather",
+      "text_sha256": "a090d1f50763ec26d5e0dd1130e2e86130a9c06252c1f4965fe3084b48eb4a01",
+      "criterion_sha256": "211a89ab7a87c4b6d2d311bc1de89dbc8aec4a71b33ec71ea06c196714217930"
+    },
+    {
+      "index": 4,
+      "case_id": "H0590",
+      "kind": "historical_literal",
+      "group": "named_city_weather",
+      "credit_behavior": "named_city_weather",
+      "text_sha256": "cc7b0a29051133cfa779c29be82e5c942e472fdb0226a301cf14136b820dbf8c",
+      "criterion_sha256": "211a89ab7a87c4b6d2d311bc1de89dbc8aec4a71b33ec71ea06c196714217930"
+    },
+    {
+      "index": 5,
+      "case_id": "H0699",
+      "kind": "historical_literal",
+      "group": "named_city_weather",
+      "credit_behavior": "named_city_weather",
+      "text_sha256": "f2a3202f85ea9f529315e72bfb05d5ab2df60f438e141caa72364ff10fa7d2b6",
+      "criterion_sha256": "211a89ab7a87c4b6d2d311bc1de89dbc8aec4a71b33ec71ea06c196714217930"
+    },
+    {
+      "index": 6,
+      "case_id": "H0664",
+      "kind": "historical_literal",
+      "group": "named_city_weather",
+      "credit_behavior": "named_city_weather",
+      "text_sha256": "e364e2f5710737a314700a2ca3238cec4a1da8b9e414ad25e8c85599669f764d",
+      "criterion_sha256": "211a89ab7a87c4b6d2d311bc1de89dbc8aec4a71b33ec71ea06c196714217930"
+    },
+    {
+      "index": 7,
+      "case_id": "H0266",
+      "kind": "historical_literal",
+      "group": "nonsense_place_weather",
+      "credit_behavior": "nonsense_place_weather",
+      "text_sha256": "564e5fe3b57a859adcd4ecfec45c0f6e9f37f5c87b0bb388d38511d43feb7e8c",
+      "criterion_sha256": "9af87b351fb38f8988399c34eaa5d77963ca6e2a0b142bc1028b84124e62ad02"
+    },
+    {
+      "index": 8,
+      "case_id": "web1465-dev-01",
+      "kind": "original_development_variant",
+      "group": "named_city_weather",
+      "credit_behavior": "named_city_weather",
+      "text_sha256": "dc5200f143350e2662036e3447582d1d2d41dc6b31b0924a3a4ceb6818a57988",
+      "criterion_sha256": "211a89ab7a87c4b6d2d311bc1de89dbc8aec4a71b33ec71ea06c196714217930"
+    },
+    {
+      "index": 9,
+      "case_id": "web1465-dev-02",
+      "kind": "original_development_variant",
+      "group": "named_city_weather",
+      "credit_behavior": "named_city_weather",
+      "text_sha256": "752a59447c5ae3af28925bc8fa29d50880987723cf1359d34277884908bbf766",
+      "criterion_sha256": "211a89ab7a87c4b6d2d311bc1de89dbc8aec4a71b33ec71ea06c196714217930"
+    },
+    {
+      "index": 10,
+      "case_id": "web1465-dev-03",
+      "kind": "original_development_variant",
+      "group": "nonsense_place_weather",
+      "credit_behavior": "nonsense_place_weather",
+      "text_sha256": "8b35a0d93060285c991470519f85dab73d9378208e2b9d18a3b84d7242962551",
+      "criterion_sha256": "9af87b351fb38f8988399c34eaa5d77963ca6e2a0b142bc1028b84124e62ad02"
+    },
+    {
+      "index": 11,
+      "case_id": "web1465-dev-04",
+      "kind": "original_development_variant",
+      "group": "nonsense_place_weather",
+      "credit_behavior": "nonsense_place_weather",
+      "text_sha256": "9b62f7dd21e2556b6d2c60a4f87fa493d9814fd5b0a87225d73efd2cd4ceff48",
+      "criterion_sha256": "9af87b351fb38f8988399c34eaa5d77963ca6e2a0b142bc1028b84124e62ad02"
+    },
+    {
+      "index": 12,
+      "case_id": "web1465-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "fabccac1858dc4578cf7eab14fd002c21c3ba90b6d5fc563377713b1c0c6bd99",
+      "criterion_sha256": "8acd04d670aaa2d5189135208765becd1891b9f16a23d01357ec0d56cd80c93d"
+    },
+    {
+      "index": 13,
+      "case_id": "web1465-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "0878ccdc95241c76461e1152378f8d028bdb934e6860885237824bc3979efcac",
+      "criterion_sha256": "d3aa2b74b96a89a885b6d8b632cccc84ec394d6eab5f6c2e1a51e94bf3697897"
+    },
+    {
+      "index": 14,
+      "case_id": "web1465-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "f3093b961306df1ac2b3d099e74c643bb6f4bad3fffc0fb8aa99a9233053b946",
+      "criterion_sha256": "f15437de3081edaa1ecd35b0ffcb0362ae6913300279fb619efa465066581276"
+    }
+  ]
+}

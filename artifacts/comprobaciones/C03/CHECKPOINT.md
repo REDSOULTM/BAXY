@@ -1,3 +1,25 @@
+## WEB1465 — estado vigente 2026-09-14T21:09:43.825700+00:00
+
+Parcial: 15 aprobados, 0 fallidos, 0 sin ejecutar; 8 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 472/742 | 270 | 0 | >=346 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 338 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WEB1465 añade 8. No se cuentan revalidaciones.
+
+Siguiente acción: WEB1465: 15 ejecutados, 15 aprobados, 0 fallidos, 8 créditos (índices [0, 1, 2, 3, 4, 5, 6, 7]); Información web actual 16/17. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/WEB1465/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 268.69 s acumulados; pico GPU 3497.56 MiB; pico RAM 1714.23 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 15; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WEB1465 precedente. -->
+
 ## AUDIO1463 — estado vigente 2026-09-14T20:55:22.258202+00:00
 
 Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

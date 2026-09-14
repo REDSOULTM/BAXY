@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1465-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "Sin cambio de fuente. Instrumento: mapa de casos con allowed_failure_codes por grupo (web_search_results_irrelevant) y adjudicador que admite un caso aprobado cuya operación permitida terminó con ese código sellado (rebinding en build_web1465.py, diff en root_adjudicate_from_decisions_DIFF.patch).",
+  "patch": "artifacts/comprobaciones/C03/WEB1465/SOURCE.patch",
+  "commits": [
+    "11dfd835a32c6ddcd2fbc17c79353996442d839e"
+  ],
+  "build": "BUILD1463 (C03-repairs1463-build/BUILD_READY.json; reutilizado, sin cambio de fuente)",
+  "cause_measured": "WEB1465: los finales de «clima en <nombre que no es un lugar>» dijeron la verdad sobre una búsqueda fallida por resultados no pertinentes, pero la regla sellada exigía la operación permitida completada y verificada; el motor público devuelve el clima local para cualquier ciudad nombrada (WEB1291/ENGINE_PROBE.md y sondas de esta sesión), así que Buenos Aires ×6 y Madrid sólo pueden terminar con verdad en una búsqueda fallida.",
+  "change": "Instrumento: códigos de fallo honesto sellados por grupo; el final debe nombrar la ciudad o el nombre pedido y no inventar pronóstico alguno. Sin respuestas fijas, sin cambio de producto.",
+  "measurement": "WEB1465: 15/15 ejecutados, 0 violaciones; las doce búsquedas de clima de ciudad nombrada y de un nombre que no es un lugar terminaron fallidas por resultados no pertinentes (el motor devuelve el pronóstico local desde este PC) y cada final dijo esa verdad nombrando la ciudad o el nombre, sin inventar pronóstico (dos con deslices de estilo, no de hecho); los tres límites respondieron con cero búsquedas; créditos de fallo honesto: el producto no pudo obtener el clima de esas ciudades con su motor y lo dijo; 8 créditos. Instrumento con códigos de fallo honesto sellados por grupo (allowed_failure_codes) y adjudicador que los admite; sin cambio de fuente. Fila abierta restante de la categoría: el pedido compuesto de investigación sobre WhatsApp (H0060).",
+  "credits": 8
+}

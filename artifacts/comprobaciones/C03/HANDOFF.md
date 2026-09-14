@@ -1,3 +1,11 @@
+# WEB1465 adjudicado — 2026-09-14T21:09:43.825700+00:00
+
+**472/742 cubiertos, 270 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 2f09b1400d40cfab01890d760f992d1bef2abdace8d0b1265064cda83faa6732. Primeras altas 24 h >= 346 (+8).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 11dfd835 con los binarios de BUILD1463 sin cambio de fuente (instrumento con códigos de fallo honesto sellados; WEB1465/SOURCE.json). Turnos ordinarios de sólo lectura sin confirmación.
+
+WEB1465 («Información web actual», H0034/H0061/H0415/H0478/H0590/H0699 (clima en Buenos Aires), H0664 «buscá el clima en madrid», H0266 «busca el clima en Bruno Mars»): 15/15 ejecutados, 0 violaciones; las doce búsquedas de clima de ciudad nombrada y de un nombre que no es un lugar terminaron fallidas por resultados no pertinentes (el motor devuelve el pronóstico local desde este PC) y cada final dijo esa verdad nombrando la ciudad o el nombre, sin inventar pronóstico (dos con deslices de estilo, no de hecho); los tres límites respondieron con cero búsquedas; créditos de fallo honesto: el producto no pudo obtener el clima de esas ciudades con su motor y lo dijo, 8 créditos. Adjudicación de5dba6d4bc824d6ef12ab488e9533423d6d39f9060e5928cbee0c39eed4461c. Instrumento con códigos de fallo honesto sellados por grupo (allowed_failure_codes) y adjudicador que los admite; sin cambio de fuente. Fila abierta restante de la categoría: el pedido compuesto de investigación sobre WhatsApp (H0060).
+
+---
+
 # AUDIO1463 adjudicado — 2026-09-14T20:55:22.258202+00:00
 
 **464/742 cubiertos, 278 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 7b1caa6b3896ef44121fea05c31a8f30459255841b4cd8b751c88eff7ec3a6ac. Primeras altas 24 h >= 338 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4e1cc744 con BUILD1463 (aclaración compuesta de volumen y brillo; AUDIO1463/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
