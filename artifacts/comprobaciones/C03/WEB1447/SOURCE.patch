@@ -1,0 +1,238 @@
+commit c64e97484f892f898e977de4cc254376dd697bba
+
+C03: a weather search report is grounded in the pages found (WEB1447)
+
+WEB1445 measured the local weather searches: four verified with five forecast index pages whose snippets carry no values, and the finals invented «buen tiempo, temperaturas agradables, poco viento y baja probabilidad de lluvia» or denied having any information; over a failed search another final asserted «Sí, va a llover mañana».
+
+baxy_mind llm: for a verified web.search, _search_unsupported_claim vetoes a weather assertion (conditions, temperatures, rain, «hace buen tiempo»…) that no result states verbatim; for weather lookups _search_unsupported_terms vetoes content words absent from the results and the request (news summaries keep their latitude and the WEB1271 finals still pass); search_result_denied vetoes «no tengo información» over verified results; each veto carries a hint, and the instruction tells the composer to name the pages found by title and site and never state a forecast the results do not contain.
+baxy_mind observed_response_literals and Baxy.App ObservedResponseLiterals: result titles and hosts («tiempo.cl», «eltiempoen.com») are observed names, not dotted operation names.
+
+Offline probe on the WEB1445 receipts: the three invented finals and the denial are vetoed; the faithful report of the pages found passes; the four credited WEB1271 news finals still pass. App recompiled (BUILD1447). Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/ObservedResponseLiterals.cs b/src/Baxy.App/ObservedResponseLiterals.cs
+index f3b955f5..2f8a7cac 100644
+--- a/src/Baxy.App/ObservedResponseLiterals.cs
++++ b/src/Baxy.App/ObservedResponseLiterals.cs
+@@ -86,6 +86,30 @@ internal static class ObservedResponseLiterals
+                 }
+             }
+         }
++        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
++            && IsString(node, "operation", "web.search")
++            && node.TryGetProperty("verified", out JsonElement searchVerified) && searchVerified.ValueKind == JsonValueKind.True
++            && node.TryGetProperty("succeeded", out JsonElement searchSucceeded) && searchSucceeded.ValueKind == JsonValueKind.True
++            && node.TryGetProperty("observed", out JsonElement searchObserved) && searchObserved.ValueKind == JsonValueKind.Object
++            && searchObserved.TryGetProperty("results", out JsonElement searchResults) && searchResults.ValueKind == JsonValueKind.Array)
++        {
++            // WEB1447 «qué clima hace hoy»: a result's title and host are observed data.
++            foreach (JsonElement entry in searchResults.EnumerateArray())
++            {
++                if (entry.ValueKind != JsonValueKind.Object) continue;
++                if (entry.TryGetProperty("title", out JsonElement resultTitle) && resultTitle.ValueKind == JsonValueKind.String
++                    && resultTitle.GetString() is { Length: > 0 and <= 4096 } titleText && !string.IsNullOrWhiteSpace(titleText))
++                {
++                    names.Add(titleText.Trim());
++                }
++                if (entry.TryGetProperty("url", out JsonElement resultUrl) && resultUrl.ValueKind == JsonValueKind.String
++                    && Uri.TryCreate(resultUrl.GetString(), UriKind.Absolute, out Uri? resultUri)
++                    && resultUri.Host is { Length: > 0 } hostName)
++                {
++                    names.Add(hostName.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ? hostName[4..] : hostName);
++                }
++            }
++        }
+         if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+             && IsString(node, "operation", "notification.list")
+             && node.TryGetProperty("verified", out JsonElement notifVerified) && notifVerified.ValueKind == JsonValueKind.True
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index ee4d253c..1d32a198 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4616,6 +4616,79 @@ def _ocr_unsupported_terms(text: str, recognized: str, user_text: str) -> list[s
+     return unsupported
+ 
+ 
++_SEARCH_FRAMING_STEMS = frozenset({
++    "enco", "resu", "busq", "busc", "fuen", "sour", "foun", "sear", "pagi", "page", "siti", "site",
++    "segu", "acco", "aqui", "here", "tien", "esto", "thes", "algu", "some", "pued", "cons", "chec",
++    "deta", "info", "mues", "show", "ofre", "offe", "enla", "link", "disp", "avai", "esta", "ther",
++    "sobr", "abou", "para", "with", "from", "that", "this", "como", "tamb", "also", "otro", "othe",
++    "vari", "seve", "prop", "prov", "list", "trae", "carr", "valo", "valu", "cifr", "figu", "exac",
++    "pron", "fore", "clim", "weat", "tiem", "toda", "mana", "tomo", "loca", "actu", "curr", "ciud",
++    "city", "regi", "zona", "area", "ubic", "reco", "sugi", "sugg", "remi", "refe", "encu", "hall",
++    "apar", "publ", "posi", "mult", "dato", "data", "dice", "dijo", "says", "said", "indi", "seña",
++    "sena", "menc", "ment", "nomb", "name", "titu", "titl", "resp", "answ", "cont", "incl", "trat",
++    "enco", "veri", "comp", "podr", "podi", "coul", "quie", "want", "mira", "look", "revi", "abri",
++    "open", "visi", "entr", "acce", "web", "inte", "onli", "mome", "ahor", "ya", "solo", "unic",
++    "teng", "teni", "have", "has", "sabe", "know", "segu", "sure",
++})
++_SEARCH_WEATHER_CLAIM = re.compile(
++    r"(?:hace\s+(?:buen|mal|mucho|poco)\s+(?:tiempo|frio|calor)|"
++    r"temperaturas?\s+(?:agradables?|moderadas?|altas?|bajas?|frescas?|calidas?|elevadas?|templadas?)|"
++    r"\d{1,3}\s*(?:°|º|grados|degrees)|"
++    r"(?:poco|mucho|fuerte|sin)\s+viento|"
++    r"(?:baja|alta|poca|mucha|sin)\s+probabilidad\s+de\s+(?:lluvias?|precipitaciones?)|"
++    r"(?:no\s+)?(?:va|van)\s+a\s+llover|(?:si|no)\s+llueve|llovera|"
++    r"(?:esta|estara|amanece|amanecera)\s+(?:soleado|nublado|lluvioso|despejado|ventoso|cubierto)|"
++    r"\b(?:soleado|nublado|lluvioso|despejado|cubierto)\b|"
++    r"(?:it\s+)?(?:is|will\s+be|won't\s+be)\s+(?:sunny|cloudy|rainy|clear|windy|hot|cold|warm)|"
++    r"(?:it\s+)?(?:will|won't|will\s+not)\s+rain|(?:low|high)\s+chance\s+of\s+rain)",
++)
++
++
++def _search_results_text(payload: dict) -> str | None:
++    """Titles, hosts and snippets of a verified web.search, joined; None otherwise."""
++
++    if payload.get("operation") != "web.search":
++        return None
++    seen = payload.get("seen")
++    results = seen.get("results") if isinstance(seen, dict) else None
++    if not isinstance(results, list) or not results:
++        return None
++    parts: list[str] = []
++    for item in results:
++        if not isinstance(item, dict):
++            continue
++        for key in ("title", "snippet", "url"):
++            value = item.get(key)
++            if isinstance(value, str) and value.strip():
++                parts.append(re.sub(r"[/._?=&%:-]+", " ", value) if key == "url" else value)
++    return "\n".join(parts) if parts else None
++
++
++def _search_unsupported_terms(text: str, results_text: str, user_text: str) -> list[str]:
++    """Content words of a search report that neither the results nor the request carry."""
++
++    def stems(value: str) -> set[str]:
++        return {word[:4] for word in re.findall(r"[a-z0-9]{4,}", _reading_fold(value))}
++
++    allowed = stems(results_text) | stems(user_text) | _SEARCH_FRAMING_STEMS | _OCR_FRAMING_STEMS
++    unsupported: list[str] = []
++    for word in re.findall(r"[a-z0-9]{5,}", _reading_fold(text)):
++        if word[:4] not in allowed and word not in unsupported:
++            unsupported.append(word)
++    return unsupported
++
++
++def _search_unsupported_claim(text: str, results_text: str) -> str | None:
++    """A weather assertion in a search report that no result states verbatim."""
++
++    folded_results = _reading_fold(results_text)
++    for match in _SEARCH_WEATHER_CLAIM.finditer(_reading_fold(text)):
++        claim = re.sub(r"\s+", " ", match.group(0)).strip()
++        if claim and claim not in folded_results:
++            return claim
++    return None
++
++
+ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+     """El texto público conserva los hechos que el payload le dio.
+ 
+@@ -4750,6 +4823,28 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+         listing_defect = _listing_fact_defect(text, listing)
+         if listing_defect:
+             return listing_defect
++    results_text = _search_results_text(payload)
++    if results_text is not None:
++        # WEB1445 «qué clima hace hoy»: the results were forecast index pages and
++        # the finals invented «buen tiempo, temperaturas agradables, poco viento»
++        # or denied having any information. A weather claim must be quoted from
++        # a result and every content word must come from the results or the request.
++        if _search_unsupported_claim(text, results_text) is not None:
++            return "search_unsupported_claim"
++        if re.search(
++            r"\b(?:clima|tiempo|weather|forecast|pronostico|lluvia|llueve|llover|llovera|rain|temperatura|temperature)\b",
++            _reading_fold(user_text),
++        ) and _search_unsupported_terms(text, results_text, user_text):
++            # Word grounding only for weather lookups: a news report may summarize
++            # («destacan», «temas») and the WEB1271 finals stay valid.
++            return "search_unsupported_terms"
++        if re.search(
++            r"\bno\s+(?:tengo|dispongo\s+de|encontre|hay|pude\s+(?:obtener|encontrar))\b.{0,40}"
++            r"\b(?:informacion|datos|resultados|clima|pronostico|tiempo)\b"
++            r"|\b(?:i\s+)?(?:don't|do\s+not|couldn't|could\s+not)\s+(?:have|find|get)\b",
++            _reading_fold(text),
++        ):
++            return "search_result_denied"
+     written = seen.get("writtenText") if isinstance(seen, dict) else None
+     if payload.get("operation") == "clipboard.write.text" and isinstance(written, str) and written:
+         # CLIPBOARD1359: «Hola» / «Buen día.» were published after a verified
+@@ -11703,6 +11798,23 @@ class LlmRuntime:
+                 "su tipo, su título tal cual entre comillas y su próxima ejecución. "
+                 "Sin propósito, sin interpretación, sin otros elementos."
+             )
++        if _search_results_text(visible_situation) is not None:
++            # WEB1445: the person asked a live question; the results are pages,
++            # not the answer itself. Say what was found, never what it might say.
++            instruct(
++                "\nseen.results are the pages the public search returned (title, url, "
++                "snippet). Report what was found: name the pages by title and site and, "
++                "if a snippet states a fact, you may repeat it with its words. Never "
++                "state a temperature, forecast, condition or any fact that no result "
++                "contains; if the results only point to forecast pages, say that."
++                if response_language == "en"
++                else "\nseen.results son las páginas que devolvió la búsqueda pública "
++                "(título, url, fragmento). Informa lo encontrado: nombra las páginas por "
++                "título y sitio y, si un fragmento afirma un dato, puedes repetirlo con "
++                "sus palabras. Nunca afirmes una temperatura, un pronóstico, un estado "
++                "del tiempo ni ningún dato que ningún resultado contenga; si los "
++                "resultados sólo remiten a páginas de pronóstico, dilo."
++            )
+         if _known_listing_in_payload(visible_situation) is not None:
+             # FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
+             # the report is the count and a few names exactly as listed.
+@@ -12362,6 +12474,21 @@ class LlmRuntime:
+                 if response_language == "en"
+                 else "Usa sólo palabras que estén en el texto reconocido: cita dos o tres de sus líneas tal cual, di cuántas líneas se reconocieron y no añadas interpretación, propósito ni avisos."
+             ),
++            "search_unsupported_claim": (
++                "Do not state a weather condition, temperature or forecast the results do not contain; name the pages found (their titles and sites) instead."
++                if response_language == "en"
++                else "No afirmes un estado del tiempo, temperatura ni pronóstico que los resultados no contengan; nombra en su lugar las páginas encontradas (sus títulos y sitios)."
++            ),
++            "search_unsupported_terms": (
++                "Report only what the results say: name the pages found (their titles and sites) and use no words that are not in the results or in the request."
++                if response_language == "en"
++                else "Informa sólo lo que dicen los resultados: nombra las páginas encontradas (sus títulos y sitios) y no uses palabras que no estén en los resultados o en el pedido."
++            ),
++            "search_result_denied": (
++                "The search did return results: do not say you have no information; name the pages found."
++                if response_language == "en"
++                else "La búsqueda sí devolvió resultados: no digas que no tienes información; nombra las páginas encontradas."
++            ),
+             "listing_unlisted_name": (
+                 "Quote only names that appear in seen.names, exactly as written, each in its own quotation marks; do not invent or alter any name."
+                 if response_language == "en"
+diff --git a/src/baxy_mind/observed_response_literals.py b/src/baxy_mind/observed_response_literals.py
+index 6209daa9..64c0974f 100644
+--- a/src/baxy_mind/observed_response_literals.py
++++ b/src/baxy_mind/observed_response_literals.py
+@@ -43,6 +43,25 @@ def without_observed_names(text: str, situation: object) -> str:
+                         names.update(value for key in fields
+                                      if isinstance(value := entry.get(key), str)
+                                      and value.strip() and len(value) <= 4096)
++        if (node.get("kind") == "operation" and operation == "web.search"
++                and node.get("verified") is True and node.get("succeeded") is True
++                and node.get("polarity") == "success"):
++            # WEB1447 «qué clima hace hoy»: a result's title and host («tiempo.cl»,
++            # «eltiempoen.com») are observed data, not dotted operation names.
++            observed = node.get("observed")
++            found = observed.get("results") if isinstance(observed, dict) else None
++            if isinstance(found, list):
++                for entry in found:
++                    if not isinstance(entry, dict):
++                        continue
++                    title = entry.get("title")
++                    if isinstance(title, str) and 0 < len(title.strip()) <= 4096:
++                        names.add(title.strip())
++                    url = entry.get("url")
++                    if isinstance(url, str):
++                        host = re.match(r"^(?:https?://)?(?:www\.)?([^/?#]+)", url)
++                        if host and 0 < len(host.group(1)) <= 253:
++                            names.add(host.group(1))
+         if (node.get("kind") == "operation" and operation == "notification.list"
+                 and node.get("verified") is True and node.get("succeeded") is True
+                 and node.get("polarity") == "success"):

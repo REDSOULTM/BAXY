@@ -1,3 +1,11 @@
+# WEB1447 adjudicado — 2026-09-14T17:28:04.414769+00:00
+
+**446/742 cubiertos, 296 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 3b8bea97c2062317ae08d545c267109620777145bb2e35e8f145c596fa8d2662. Primeras altas 24 h >= 320 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c64e9748 con BUILD1447 (informe de búsqueda fundado en los resultados; WEB1447/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación.
+
+WEB1447 («Información web actual», H0339 «qué clima hace hoy», H0689 «mostrame el clima», H0617 «va a llover mañana», búsqueda pública del clima local): 10/10 ejecutados, 3 aprobados (límites), 7 fallidos (búsquedas verificadas con borradores fieles que otros vetos ocultaron: corte «actual»/«actualizada», palabras corrientes, títulos con «¿Va a llover?», «no puedo confirmar»), cero violaciones; los casos 1 y 2 reejecutados solos tras una edición de fuente de la raíz revertida en el acto, 0 créditos. Adjudicación 8b138e2ec8f65c9532cbace42039ffa37c5b37ec472a584cce584c132e60a40f. Causa medida: los borradores ya son fieles (nombran las páginas encontradas sin afirmar el pronóstico) y los vetan _truncated_fact_word (fragmentos como nombres), el fundamento por palabras, la prueba de pregunta sobre títulos citados y la lente de fallos sobre «no puedo confirmar». Reparación en WEB1449.
+
+---
+
 # WEB1445 adjudicado — 2026-09-14T17:09:43.340982+00:00
 
 **446/742 cubiertos, 296 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA e0461cb7ca5622762bc8f7934951d73d7f5cdda2e4053d5513c7f65957163795. Primeras altas 24 h >= 320 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 677c7efb con BUILD1445 (consulta de clima con las palabras de la persona y sinónimos en el filtro de pertinencia; WEB1445/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación.

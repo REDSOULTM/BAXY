@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1447-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_search_results_text, _search_unsupported_terms, _search_unsupported_claim: el informe de una búsqueda de clima usa sólo palabras de los resultados o del pedido, cita toda afirmación de tiempo de un resultado y no niega un resultado verificado; pistas; instrucción de nombrar las páginas encontradas), src/baxy_mind/observed_response_literals.py y src/Baxy.App/ObservedResponseLiterals.cs (títulos y sitios de los resultados como nombres observados)",
+  "patch": "artifacts/comprobaciones/C03/WEB1447/SOURCE.patch",
+  "commits": [
+    "c64e97484f892f898e977de4cc254376dd697bba"
+  ],
+  "build": "BUILD1447 (C03-repairs1447-build/BUILD_READY.json; App recompilada)",
+  "cause_measured": "WEB1447: con la búsqueda verificada sobre páginas de pronóstico sin valores, tres finales inventaron el pronóstico («buen tiempo, temperaturas agradables, poco viento…») y uno negó tener información; sobre una búsqueda fallida otro afirmó «Sí, va a llover mañana».",
+  "change": "Vetos search_unsupported_claim, search_unsupported_terms (sólo para búsquedas de clima) y search_result_denied con pistas; instrucción de informar las páginas encontradas sin afirmar el pronóstico; títulos y sitios como nombres observados. Sin respuestas fijas.",
+  "measurement": "WEB1447: 10/10 ejecutados, 3 aprobados (límites), 7 fallidos (búsquedas verificadas con borradores fieles que otros vetos ocultaron: corte «actual»/«actualizada», palabras corrientes, títulos con «¿Va a llover?», «no puedo confirmar»), cero violaciones; los casos 1 y 2 reejecutados solos tras una edición de fuente de la raíz revertida en el acto; 0 créditos. Causa medida: los borradores ya son fieles (nombran las páginas encontradas sin afirmar el pronóstico) y los vetan _truncated_fact_word (fragmentos como nombres), el fundamento por palabras, la prueba de pregunta sobre títulos citados y la lente de fallos sobre «no puedo confirmar». Reparación en WEB1449.",
+  "credits": 0
+}
