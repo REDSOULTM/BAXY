@@ -1,0 +1,49 @@
+commit fb5984b6c696f7555f4afc5dfea13c8d03ffe2ee
+
+C03: a file count over «the current directory» asks for the folder (FILES1437)
+
+«Dime cuantos archivos .py hay en el directorio actual» (H0701) asks for a count over a working directory BAXY does not have: it is not a shell, and the person's folders are the known ones.
+
+baxy_mind effect_intent: resolve_explicit_clarification_intent recognizes a file count over «el directorio/carpeta actual» («current/working directory») without a named known folder and returns the deterministic clarification of filesystem.known.search with the folder field missing; the App asks for the folder in the person's language with zero operations. Offline probe: the literal and three variants clarify; a count over a named folder, a definition and a prohibition do not. Mind only. Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 76d4ffb2..c8fa8bcb 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -2836,6 +2836,22 @@ def _task_without_title(folded: str) -> bool:
+     return _TASK_DATE_ONLY.match(_strip_request_envelope(folded).strip(" ¿?¡!.,")) is not None
+ 
+ 
++def _current_directory_file_count(folded: str) -> bool:
++    """FILES1437 «dime cuántos archivos .py hay en el directorio actual»: a
++    file count over «the current directory», which BAXY does not have."""
++
++    return (
++        _has(folded, r"\b(?:cuantos|cuantas|how many|count|cuenta|conta|contame|cuentame)\b")
++        and _has(folded, r"\b(?:archivos?|ficheros?|files?)\b")
++        and _has(
++            folded,
++            r"\b(?:directorio|carpeta|folder|directory)\s+(?:actual|current|de trabajo|en (?:el|la) que estoy)\b"
++            r"|\b(?:current|working|present)\s+(?:directory|folder)\b|\bcwd\b",
++        )
++        and not _has(folded, r"\b(?:escritorio|desktop|descargas|downloads|documentos|documents)\b")
++    )
++
++
+ def resolve_explicit_clarification_intent(
+     text: str,
+     available_operations: Iterable[str],
+@@ -2857,6 +2873,10 @@ def resolve_explicit_clarification_intent(
+     if _literal_note_payload_request(folded):
+         # The subordinate text is note content, not a message recipient/body.
+         return None
++    if "filesystem.known.search" in available and _current_directory_file_count(folded):
++        # FILES1437 «dime cuántos archivos .py hay en el directorio actual»: BAXY
++        # has no working directory; the count needs the person's folder.
++        return ClarificationIntent(("filesystem.known.search",), ("folder",))
+     hourly_dynamic_notification = (
+         re.fullmatch(
+             r"(?:get|send|give)\s+(?:me\s+)?(?:an?\s+)?hourly\s+"

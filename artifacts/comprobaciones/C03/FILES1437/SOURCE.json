@@ -1,0 +1,15 @@
+{
+  "schema": "c03-files1437-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (resolve_explicit_clarification_intent: _current_directory_file_count devuelve una aclaración determinista de filesystem.known.search con folder ausente)",
+  "patch": "artifacts/comprobaciones/C03/FILES1437/SOURCE.patch",
+  "commits": [
+    "fb5984b6c696f7555f4afc5dfea13c8d03ffe2ee"
+  ],
+  "build": "BUILD1437 (C03-repairs1437-build/BUILD_READY.json; sólo mente, sin recompilar la App)",
+  "cause_measured": "H0701 pide un recuento sobre «el directorio actual», que BAXY no tiene: sin lector ni aclaración determinista, el turno dependía del modelo.",
+  "change": "Aclaración determinista: el recuento de archivos sobre el directorio o carpeta actual pregunta la carpeta (filesystem.known.search, campo folder), sin operaciones. Sin respuestas fijas.",
+  "measurement": "FILES1437: 6/6 ejecutados, 4 aprobados (2 aclaraciones de carpeta, 2 límites), 2 fallidos (la variante inglesa repitió el pedido sin preguntar la carpeta; el límite de prohibición contestó con un acuse mal conjugado), cero violaciones; 0 créditos. Causa medida: el contrato de la aclaración explícita no exige que la pregunta pida la carpeta; reparación en FILES1439 (pregunta que pida cuál carpeta, con un reintento corregido).",
+  "credits": 0
+}

@@ -1,3 +1,11 @@
+# FILES1437 adjudicado — 2026-09-14T16:29:14.550033+00:00
+
+**445/742 cubiertos, 297 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA c796a2e69aa9e0f764085191db9c300ed096cd3bee953600369db14e26a48fca. Primeras altas 24 h >= 319 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD fb5984b6 con BUILD1437 (mente: aclaración determinista de la carpeta; FILES1437/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación; los nombres listados quedan en los recibos privados y nunca se publican.
+
+FILES1437 («Archivos y carpetas», H0701 «Dime cuantos archivos .py hay en el directorio actual», aclaración de la carpeta): 6/6 ejecutados, 4 aprobados (2 aclaraciones de carpeta, 2 límites), 2 fallidos (la variante inglesa repitió el pedido sin preguntar la carpeta; el límite de prohibición contestó con un acuse mal conjugado), cero violaciones, 0 créditos. Adjudicación 80eb9f251515760b1996360cca7f2e4eba6b8e0dade68e1aeff3621fd44f9017. Causa medida: el contrato de la aclaración explícita no exige que la pregunta pida la carpeta; reparación en FILES1439 (pregunta que pida cuál carpeta, con un reintento corregido).
+
+---
+
 # AGENDA1435 adjudicado — 2026-09-14T16:21:28.033234+00:00
 
 **445/742 cubiertos, 297 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 398175dafcaa02c9b185c569e8df51a0ce43671880c2959b303876b1c4a70794. Primeras altas 24 h >= 319 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 2bbd25fc con BUILD1435 (notification.list; AGENDA1435/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación; los nombres listados quedan en los recibos privados y nunca se publican.
