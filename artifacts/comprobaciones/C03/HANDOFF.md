@@ -1,3 +1,11 @@
+# WEB1471 adjudicado — 2026-09-14T21:38:44.816566+00:00
+
+**476/742 cubiertos, 266 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 63a5833cc2e412fddd725fd26d8f0d1d1deea44f761c1271f9626920d5220d5d. Primeras altas 24 h >= 350 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4eac0d2e con los binarios de BUILD1463 sin cambio de fuente (turnos revisados con fallo honesto sin propuesta; WEB1471/SOURCE.json). Turnos ordinarios de sólo lectura sin confirmación.
+
+WEB1471 («Navegación y búsqueda web», H0360/H0723 «ve a la pagina de marvel rivals de/en steam»): WEB1471: la página de Steam por búsqueda abre bajo revisión o falla con verdad; H0360 y H0723 cubiertos (WEB1469 ejecutó el mismo panel sin poder adjudicarse por su regla sellada de admisiones), 2 créditos. Adjudicación 7768ae1959978e793ba1f19be262696a310d9ac28a0bf086947f931ad11cd6b1. 7/7 ejecutados, 7 aprobados, 2 créditos; Terraria navegada bajo revisión; Marvel Rivals y Stardew Valley con fallo honesto
+
+---
+
 # WEB1467 adjudicado — 2026-09-14T21:22:50.096920+00:00
 
 **474/742 cubiertos, 268 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 5acf4f6014a87f6abddee84a4bc7399938c6b42853a2d2aa1541e7fd8b1f77ce. Primeras altas 24 h >= 348 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 2adb59ef con los binarios de BUILD1463 sin cambio de fuente (instrumento de fallo honesto con regla de prefijo; WEB1467/SOURCE.json). Turnos ordinarios de sólo lectura sin confirmación.

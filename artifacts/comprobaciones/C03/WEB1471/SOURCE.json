@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1471-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "Sin cambio de fuente. Instrumento: turnos revisados (aprobación de la raíz sólo hacia store.steampowered.com) y regla de fallo honesto para un caso revisado que terminó en la búsqueda fallida sin propuesta (un terminal, una admisión, sin revisión ni confirmación) (rebinding en build_web1471.py, diff en root_adjudicate_from_decisions_DIFF.patch). WEB1469 ejecutó el mismo panel 7/7 con los mismos resultados pero su regla sellada de admisiones seguía exigiendo dos admisiones a todo caso revisado y no pudo adjudicarse; no se alteró nada tras el sello: se corrigió la regla y se volvió a ejecutar.",
+  "patch": "artifacts/comprobaciones/C03/WEB1471/SOURCE.patch",
+  "commits": [
+    "4eac0d2eefe5393d6be1632cb15e954aa5997b6f"
+  ],
+  "build": "BUILD1463 (C03-repairs1463-build/BUILD_READY.json; reutilizado, sin cambio de fuente)",
+  "cause_measured": "WEB1471: los literales de Marvel Rivals dijeron la verdad al no hallar la página, pero la variante de Terraria la encontró y el producto pidió confirmar la navegación, que el turno ordinario no admite; el grupo quedó sin par.",
+  "change": "Instrumento: el grupo corre como turnos revisados y el fallo honesto sin propuesta se admite con un solo terminal. Sin respuestas fijas, sin cambio de producto.",
+  "measurement": "WEB1471: WEB1471: la página de Steam por búsqueda abre bajo revisión o falla con verdad; H0360 y H0723 cubiertos (WEB1469 ejecutó el mismo panel sin poder adjudicarse por su regla sellada de admisiones); 2 créditos. 7/7 ejecutados, 7 aprobados, 2 créditos; Terraria navegada bajo revisión; Marvel Rivals y Stardew Valley con fallo honesto",
+  "credits": 2
+}
