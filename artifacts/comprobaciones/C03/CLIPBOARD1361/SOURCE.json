@@ -1,0 +1,15 @@
+{
+  "schema": "c03-clipboard1361-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (writtenText en el payload visible de clipboard.write.text; vetos missing_written_text y echo_without_report con sus pistas)",
+  "patch": "artifacts/comprobaciones/C03/CLIPBOARD1361/SOURCE.patch",
+  "commits": [
+    "52bc66294141d6b26e86903d49ce7b41583bc407"
+  ],
+  "build": "BUILD1361 (C03-repairs1361-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "CLIPBOARD1359: H0199 y H0356 escribieron y verificaron el texto exacto pero el final en español fue un eco («Hola», «Hola mundo», «Buen día.») sin informar la copia; el payload visible sólo llevaba sequenceNumber, characterCount y changed.",
+  "change": "Proyección: el texto escrito (el literal fundado por el lector desde el mismo pedido, verificado por postlectura) entra como writtenText en el payload visible de clipboard.write.text. Vetos: el final debe citar ese texto (missing_written_text) y decir que lo copió (echo_without_report), con pistas de reintento. Sin respuestas fijas.",
+  "measurement": "CLIPBOARD1361: 10/10 ejecutados, 9 aprobados, 1 fallido, 0 violaciones; 2 créditos. H0199 y H0356 acreditados con los cuatro pares de escritura: cada clipboard.write.text propuesta con el literal exacto, aprobada por la raíz, completada y verificada por postlectura, y finales que citan el texto e informan la copia («\"Hola\" ya está en tu portapapeles», «Copié hola mundo al portapapeles»). El límite de capacidad «¿Podés copiar imágenes al portapapeles?» no publicó respuesta: el borrador veraz «No, no puedo copiar imágenes al portapapeles.» fue vetado nueve veces como asserted_failure por el contrato de conversación (condición del compositor registrada para una tanda de conversación). Los otros tres límites aprobados.",
+  "credits": 2
+}

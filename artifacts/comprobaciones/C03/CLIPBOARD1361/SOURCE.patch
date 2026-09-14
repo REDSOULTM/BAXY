@@ -1,0 +1,81 @@
+commit 52bc66294141d6b26e86903d49ce7b41583bc407
+
+C03: the clipboard write final carries the written text and must report the copy, not echo it (CLIPBOARD1361)
+
+CLIPBOARD1359 measured H0199 and H0356: the write was proposed with the exact literal, approved, completed and verified, but the Spanish final after the confirmation was a bare echo («Hola», «Hola mundo», «Buen día.») because the visible payload of clipboard.write.text carried only sequenceNumber, characterCount and changed.
+
+llm._compose_situation_payload: for a verified clipboard.write.text the written literal (grounded by literal_clipboard_write_text from the same request and verified by the provider's post-read) enters the narrator's copy as writtenText.
+llm._payload_fact_defect: missing_written_text when the final does not quote that text; echo_without_report when it repeats the text without saying it was copied. Hints for both retries.
+
+No .NET change. Offline probe only; tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 38d46450..00548a54 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -42,6 +42,7 @@ from .effect_intent import (
+     _strip_request_envelope,
+     conversation_only_content_request,
+     countdown_target,
++    literal_clipboard_write_text,
+     reassurance_statement,
+     visual_content_noun,
+     visual_content_request,
+@@ -3785,6 +3786,19 @@ def _compose_situation_payload(
+             # The receipt records whether it was running BEFORE this invocation.
+             # False must not tell the narrator that the app is still closed.
+             visible_seen["was_running_before_open"] = visible_seen.pop("alreadyRunning")
++        elif operation == "clipboard.write.text":
++            # CLIPBOARD1359 H0199/H0356: the receipt carries only the sequence
++            # number and the character count, so the narrator echoed the text
++            # («Hola») instead of reporting the copy. The written literal is
++            # the one the reader grounded from this same request; the receipt
++            # verified it by post-read.
++            written = literal_clipboard_write_text(user_text) if user_text else None
++            if (
++                isinstance(written, str)
++                and situation.get("verified") is True
++                and situation.get("succeeded") is True
++            ):
++                visible_seen["writtenText"] = written
+         elif isinstance(operation, str) and operation.startswith("system.settings."):
+             # BRIGHT1319 H0430: «según la lectura de WMI» was copied from the
+             # provenance token; the monitor instance path is internal too. The
+@@ -4392,6 +4406,17 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+         and _contradicted_brightness_extreme(text, seen)
+     ):
+         return _contradicted_brightness_extreme(text, seen)
++    written = seen.get("writtenText") if isinstance(seen, dict) else None
++    if payload.get("operation") == "clipboard.write.text" and isinstance(written, str) and written:
++        # CLIPBOARD1359: «Hola» / «Buen día.» were published after a verified
++        # write. The final must carry the written text and say it was copied.
++        if _reading_fold(written) not in folded:
++            return "missing_written_text"
++        if re.search(
++            r"\b(?:copi\w*|pegu\w*|portapapeles|clipboard|pasted?|paste)\b",
++            folded,
++        ) is None:
++            return "echo_without_report"
+     if (
+         payload.get("operation") == "wifi.status"
+         and isinstance(seen, dict)
+@@ -11737,6 +11762,16 @@ class LlmRuntime:
+                 else "El brillo observado no está al mínimo: di el valor observado y "
+                 "que no está al mínimo."
+             ),
++            "missing_written_text": (
++                "Quote the exact text from writtenText and say you copied it to the clipboard."
++                if response_language == "en"
++                else "Cita el texto exacto de writtenText y di que lo copiaste al portapapeles."
++            ),
++            "echo_without_report": (
++                "Do not just repeat the text: say that you copied it to the clipboard."
++                if response_language == "en"
++                else "No repitas sólo el texto: di que lo copiaste al portapapeles."
++            ),
+             "mislabelled_installed": (
+                 "The figure you called installed is the total; the installed "
+                 "capacity is a different observed value. Say total, or use the "
