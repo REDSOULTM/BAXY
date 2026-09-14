@@ -1,3 +1,11 @@
+# WEB1477 adjudicado — 2026-09-14T22:19:19.803367+00:00
+
+**481/742 cubiertos, 261 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 179557d4808aa4690bdd9e4b08451a7c85a5eeee19f0998a9658414f038b569e. Primeras altas 24 h >= 355 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 73c92e22 con los binarios de BUILD1475 sin cambio de fuente (turnos revisados hacia el dominio esperado; WEB1477/SOURCE.json). Turnos ordinarios de sólo lectura sin confirmación.
+
+WEB1477 («Navegación y búsqueda web», H0004 «ve a portal uniej», H0573 «abre Portal UNIEJ», H0082 «Abre la página oficial de OpenAI»): WEB1477: el portal de la universidad abre por búsqueda bajo revisión; H0004 y H0573 cubiertos; H0082 con carácter corrupto sin operación, Wikipedia con dirección mal citada, un límite que preguntó, 2 créditos. Adjudicación ddcc5c0957c0aea131954cc36f4748ecb6a5d40d68e694f025b4a5acb6b180fd. 10/10 ejecutados, 7 aprobados, 3 fallidos, 2 créditos; uniej.cl, mozilla.org navegados y verificados
+
+---
+
 # KNOWLEDGE1475 adjudicado — 2026-09-14T22:07:54.392447+00:00
 
 **479/742 cubiertos, 263 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 9550fbe24ce079284773708f5764afe4e7de0dca767c354bf69af1ec905376af. Primeras altas 24 h >= 353 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6854a7c4 con BUILD1475 (el género citado de un fragmento no es metadiscurso; KNOWLEDGE1475/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

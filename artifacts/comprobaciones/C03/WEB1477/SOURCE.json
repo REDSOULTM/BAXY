@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1477-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "Sin cambio de fuente (binarios BUILD1475). Instrumento de WEB1477: turnos revisados con aprobación de la raíz sólo hacia el dominio esperado (uniej.cl, openai.com, wikipedia.org, mozilla.org) y fallo honesto sin propuesta con una admisión.",
+  "patch": "artifacts/comprobaciones/C03/WEB1477/SOURCE.patch",
+  "commits": [
+    "73c92e22de9314e22da952263bc391a4f708351b"
+  ],
+  "build": "BUILD1475 (C03-repairs1475-build/BUILD_READY.json; reutilizado, sin cambio de fuente)",
+  "cause_measured": "El dueño anotó que «portal uniej» debe entenderse en su contexto; los lectores ya planifican web.search + browser.navigate para «ve a portal uniej», «abre Portal UNIEJ» y «Abre la página oficial de OpenAI», y desde este PC el motor devuelve la intranet de estudiantes de la UNIEJ para «portal uniej» y openai.com para «OpenAI»; faltaba ejecutarlos con el transporte revisado que WEB1477 acreditó para Steam.",
+  "change": "Instrumento: el grupo corre como turnos revisados con el dominio esperado por caso. Sin respuestas fijas, sin cambio de producto.",
+  "measurement": "WEB1477: WEB1477: el portal de la universidad abre por búsqueda bajo revisión; H0004 y H0573 cubiertos; H0082 con carácter corrupto sin operación, Wikipedia con dirección mal citada, un límite que preguntó; 2 créditos. 10/10 ejecutados, 7 aprobados, 3 fallidos, 2 créditos; uniej.cl, mozilla.org navegados y verificados",
+  "credits": 2
+}
