@@ -1,3 +1,11 @@
+# BRIGHT1319 adjudicado — 2026-09-14T03:05:01.706194+00:00
+
+**388/742 cubiertos, 354 abiertos, 0 NA; 2/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14); C03 formal 3/11. Registro SHA f334f4acdb2c0da7c5e5ee637140bc8312f57f4f9cfe824f589eeb6a544b2289. Primeras altas 24 h >= 262 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 098469b6 con BUILD1319 (mente: afirmación de nivel de brillo → lectura; BRIGHT1319/SOURCE.json|SOURCE.patch; .NET sin cambios). Brillo fijado en 60 por la raíz y restaurado al del dueño tras cada caso; aprobación de la raíz sólo para el valor pedido (approve_setting.py).
+
+BRIGHT1319 («Brillo y pantalla», últimos alcanzables: nivel absoluto revisado, prohibición, afirmación de nivel): 10 ejecutados, 8 aprobados, 2 fallidos, 0 violaciones; H0496 acreditado con dos pares (cero operaciones, brillo intacto verificado por la raíz), 1 créditos. Adjudicación a9b6fe49f08cbe8de74700fe8d23231e66d6f225110ee6ed59b0c0e31a040e06. Medición: H0430 volvió a ejecutarse y verificarse (60 → 80) pero el final tras la confirmación agotó los borradores porque el modelo copia «WMI» del campo authority del payload visible (forbidden_term); H0674 leyó 60 y aun así dio la razón a «al máximo» (sin veto que compare un extremo con el valor observado). Reparación para BRIGHT1321: quitar authority del payload visible de system.settings.* y vetar el extremo contradicho.
+
+---
+
 # WINDOWS1317 adjudicado — 2026-09-14T02:48:48.402441+00:00
 
 **387/742 cubiertos, 355 abiertos, 0 NA; 2/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14); C03 formal 3/11. Registro SHA dd330c05a9d37c9dc9c1b8069cf5bd737895991f3c2aacc2e39c47b4651451aa. Primeras altas 24 h >= 261 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c46e6f4d con BUILD1317 (página 50 para la pregunta de tamaño + sizeComparisonScope; sin cambio .NET).

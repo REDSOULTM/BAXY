@@ -1,0 +1,15 @@
+{
+  "schema": "c03-bright1319-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (brightness_status_request: una afirmación o pregunta sobre el nivel actual en un extremo, «tengo el brillo al máximo», es la misma lectura system.settings.status)",
+  "patch": "artifacts/comprobaciones/C03/BRIGHT1319/SOURCE.patch",
+  "commits": [
+    "098469b64b2c3c6605de9cc620a73da2b4e1e3c9"
+  ],
+  "build": "BUILD1319 (C03-repairs1319-build/BUILD_READY.json; .NET sin cambios; «wmi» prohibido en la App desde e9620ca7/BUILD1311)",
+  "cause_measured": "H0674 «tengo el brillo al máximo» no tenía lector (afirmación); H0430 falló dos veces por «WMI» en el final de la App; H0496 quedó sin dos pares en BRIGHT1285.",
+  "change": "Lector de afirmación de nivel (extremos y alto/bajo; las cifras y los estados pasados quedan fuera) → lectura. Sin respuestas fijas.",
+  "measurement": "BRIGHT1319: 10 ejecutados, 8 aprobados, 2 fallidos, 0 violaciones; H0496 acreditado con dos pares (cero operaciones, brillo intacto verificado por la raíz); 1 créditos. Medición: H0430 volvió a ejecutarse y verificarse (60 → 80) pero el final tras la confirmación agotó los borradores porque el modelo copia «WMI» del campo authority del payload visible (forbidden_term); H0674 leyó 60 y aun así dio la razón a «al máximo» (sin veto que compare un extremo con el valor observado). Reparación para BRIGHT1321: quitar authority del payload visible de system.settings.* y vetar el extremo contradicho.",
+  "credits": 1
+}
