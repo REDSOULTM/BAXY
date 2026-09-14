@@ -2946,6 +2946,20 @@ def _unresolved_input_kind(objective: str) -> str | None:
         and re.search(r"\d\s*[-+*/x×÷=^%]\s*\d", folded) is None
     ):
         return "noise"
+    if (
+        re.fullmatch(
+            # IDENTITY1323 H0296 «Tú eres como eso»: compared with something
+            # never named; the only honest answer asks what «eso» is.
+            r"[\s¡!¿?]*(?:(?:tu|vos|usted)\s+)?(?:eres|sos|eri|es)\s+"
+            r"(?:como|igual\s+(?:a|que)|parecid[oa]\s+a|lo\s+mismo\s+que)\s+"
+            r"(?:eso|esto|aquello|ese|esa|aquel|aquella)[\s.!?]*|"
+            r"[\s¡!¿?]*(?:you\s+are|you'?re|u\s+r|ur)\s+(?:just\s+)?"
+            r"(?:like|the\s+same\s+as|similar\s+to)\s+(?:that|this|it|those)[\s.!?]*",
+            folded,
+        )
+        is not None
+    ):
+        return "dangling_comparison"
     return None
 
 

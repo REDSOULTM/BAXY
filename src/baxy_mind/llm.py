@@ -9144,11 +9144,22 @@ class LlmRuntime:
         a meaning: the question names what arrived and asks what to do.
         """
 
-        if kind not in {"noise", "bare_negation"}:
+        if kind not in {"noise", "bare_negation", "dangling_comparison"}:
             raise ValueError("clase de entrada sin pedido inválida")
         current = str(text).strip()[:2_048]
         situation = (
             (
+                # IDENTITY1323 H0296 «Tú eres como eso»: the referent was never
+                # named and nothing precedes it; asking is the only honest move.
+                "Eres BAXY. El usuario te comparó con algo que no nombró («eso», "
+                "«that») y no hay nada anterior a lo que pueda referirse. Formula "
+                "una sola pregunta breve, en el idioma del usuario, que pregunte "
+                "con qué o con quién te compara. No adivines el referente, no te "
+                "ofendas, no digas que no entiendes ni que algo falló y no "
+                "ofrezcas ayuda genérica."
+            )
+            if kind == "dangling_comparison"
+            else (
                 "Eres BAXY. El usuario respondió sólo con una negación («no») y "
                 "no hay ningún pedido ni pregunta pendiente. Acepta la negativa: "
                 "no harás nada. Formula una sola pregunta breve que lo diga y "

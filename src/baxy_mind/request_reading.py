@@ -167,6 +167,10 @@ _KNOWLEDGE_TOKENS = (
     "who are you", "quien eres", "who is speaking", "quien habla",
     "introduce yourself", "presentate", "describe yourself", "describete",
     "traduce", "translate ",
+    # IDENTITY1323 H0373 «cómo funciona esto»: how this works asks what the
+    # assistant does, not a definition of a mechanism.
+    "como funciona esto", "como funcionas", "como funciona baxy",
+    "como funciona este asistente", "how does this work", "how do you work",
 )
 
 # «Qué puedes hacer» pide capacidades; «qué no haces» pide el límite. Estaban
@@ -175,12 +179,20 @@ _KNOWLEDGE_TOKENS = (
 _CAPABILITY_TOKENS = (
     "te ocupas", "what do you do", "what can you do", "que puedes hacer",
     "que sabes hacer", "able to do", "echar una mano", "what are you able",
+    "como funciona esto", "como funcionas", "como funciona baxy",
+    "como funciona este asistente", "how does this work", "how do you work",
 )
 
 _IDENTITY_TOKENS = (
     "who are you", "quien eres", "quien sos", "who is speaking", "quien habla",
     "quien esta hablando", "introduce yourself", "presentate",
     "describe yourself", "describete",
+)
+# IDENTITY1323 H0012 «to quien chuta eres.»: one or two words between «quién»
+# and «eres/sos» (an expletive, «te crees que») do not change the question.
+_IDENTITY_EXPLETIVE = re.compile(
+    r"\bquien\s+(?:\w+\s+){1,2}(?:eres|sos|eri|es\s+usted)\b|"
+    r"\bwho\s+(?:the\s+\w+\s+|on\s+earth\s+)are\s+you\b"
 )
 
 _REFUSE_TOKENS = (
@@ -428,7 +440,7 @@ def _read_intents(ask: str) -> frozenset[str]:
     intents: set[str] = set()
     if not folded:
         return frozenset(intents)
-    if _contains_any(folded, _KNOWLEDGE_TOKENS):
+    if _contains_any(folded, _KNOWLEDGE_TOKENS) or _IDENTITY_EXPLETIVE.search(folded):
         intents.add(INTENT_KNOWLEDGE)
     continue_constraint = _CONTINUE.search(folded) is not None and _contains_any(
         folded, _CONSTRAINT_TOKENS
@@ -460,7 +472,7 @@ def _read_intents(ask: str) -> frozenset[str]:
         or (about_you and not marks_a_limit)
     ):
         intents.add(INTENT_CAPABILITY)
-    if _contains_any(folded, _IDENTITY_TOKENS):
+    if _contains_any(folded, _IDENTITY_TOKENS) or _IDENTITY_EXPLETIVE.search(folded):
         intents.add(INTENT_IDENTITY)
     if (
         _contains_any(folded, _REFUSE_TOKENS)
