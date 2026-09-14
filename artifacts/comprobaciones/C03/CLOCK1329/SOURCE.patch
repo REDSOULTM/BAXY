@@ -1,0 +1,208 @@
+commit 9568882101bdba9c9608e27dd67da9af91968c5e
+
+C03: a countdown to a clock time and the bare word «tiempo» read the clock; the remaining time is computed by the mind (CLOCK1329)
+
+CLOCK1155/1156 left three literals open. «cuánto falta para las 3 de la tarde» was declared out of scope: effect_intent.countdown_target reads the asked time (hours, minutes, parts of the day, am/pm, noon/midnight) and the request is a system.time read; the composer adds countdown facts (target, remaining hours and minutes, whether it already passed today) computed from the observed clock, instructs the narrator to copy them, and the clock fact check accepts the target and the remaining figures as non-contrary values. «Tiempo»/«tiempo» asked for confirmation with internal vocabulary: the bare word is the clock read.
+
+No .NET change. Offline probe only; tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 70414eba..2d21e95d 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -545,6 +545,64 @@ _CLOCK_READ_HEAD = (
+ )
+ 
+ 
++_COUNTDOWN_HOUR_WORDS = {
++    "una": 1, "dos": 2, "tres": 3, "cuatro": 4, "cinco": 5, "seis": 6, "siete": 7, "ocho": 8,
++    "nueve": 9, "diez": 10, "once": 11, "doce": 12, "one": 1, "two": 2, "three": 3, "four": 4,
++    "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9, "ten": 10, "eleven": 11, "twelve": 12,
++}
++_COUNTDOWN_TARGET = re.compile(
++    r"^(?:cuanto\s+(?:tiempo\s+)?(?:falta|queda|resta)\s+(?:para|hasta)|"
++    r"how\s+(?:long|much\s+time)\s+(?:until|till|before|to|is\s+left\s+(?:until|till|before)))\s+"
++    r"(?:(?:el|la|las|the)\s+)?"
++    r"(?:(?P<noon>mediodia|noon|midday)|(?P<midnight>medianoche|midnight)|"
++    r"(?P<hour>\d{1,2}|" + "|".join(sorted(_COUNTDOWN_HOUR_WORDS, key=len, reverse=True)) + r")"
++    r"(?:[:.h](?P<minute>\d{2}))?"
++    r"(?:\s+(?:y\s+(?P<spoken_minute>media|cuarto|\d{1,2}))?)?"
++    r"(?:\s*(?P<ampm>[ap])\.?\s*m\.?|\s+(?:de\s+la\s+|en\s+la\s+|in\s+the\s+|)"
++    r"(?P<part>manana|madrugada|tarde|noche|morning|afternoon|evening|night))?"
++    r"(?:\s+(?:de\s+hoy|today|hoy))?"
++    r")\s*$"
++)
++
++
++def countdown_target(text: str) -> str | None:
++    """«cuánto falta para las 3 de la tarde» → «15:00»: the clock time asked about.
++
++    CLOCK1327 H0399: a countdown resolves by reading the clock; the
++    remaining time is computed by the mind, never by the narrator.
++    """
++
++    folded = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.,")
++    match = _COUNTDOWN_TARGET.match(folded)
++    if match is None:
++        return None
++    if match.group("noon"):
++        return "12:00"
++    if match.group("midnight"):
++        return "00:00"
++    raw_hour = match.group("hour")
++    hour = int(raw_hour) if raw_hour.isdecimal() else _COUNTDOWN_HOUR_WORDS[raw_hour]
++    minute = int(match.group("minute") or 0)
++    spoken = match.group("spoken_minute")
++    if spoken == "media":
++        minute = 30
++    elif spoken == "cuarto":
++        minute = 15
++    elif spoken and spoken.isdecimal():
++        minute = int(spoken)
++    part = match.group("part") or ""
++    ampm = match.group("ampm") or ""
++    if hour > 23 or minute > 59:
++        return None
++    if ampm == "p" or part in {"tarde", "noche", "afternoon", "evening", "night"}:
++        if hour < 12:
++            hour += 12
++    elif ampm == "a" or part in {"manana", "madrugada", "morning"}:
++        if hour == 12:
++            hour = 0
++    return f"{hour:02d}:{minute:02d}"
++
++
+ def _direct_current_time_request(folded: str) -> bool:
+     """Recognize a whole request for the local clock, shared by all three gates.
+ 
+@@ -552,6 +610,13 @@ def _direct_current_time_request(folded: str) -> bool:
+     CPU time, other places and literal content must not match a trailing noun.
+     """
+ 
++    if countdown_target(folded) is not None:
++        return True
++    # CLOCK1327 H0054/H0312 «Tiempo»/«tiempo»: the bare word asks for the
++    # time; the weather is not something this PC reads.
++    if re.fullmatch(r"(?:el\s+)?tiempo(?:\s*,?\s*(?:por\s+favor|porfa|please))?",
++                    _strip_request_envelope(folded).strip(" ¿?¡!.,")):
++        return True
+     current = r"(?:actual|local|(?:de\s+)?hoy|ahora(?:\s+mismo)?|(?:right\s+)?now)"
+     nominal = (
+         r"(?:(?:la|el|the)\s+)?"
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index ef72343e..c65efb85 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -41,6 +41,7 @@ from .effect_intent import (
+     _PERCENTAGE_WORD_VALUES,
+     _strip_request_envelope,
+     conversation_only_content_request,
++    countdown_target,
+     explicit_negative_constraint,
+     explicit_non_action_body,
+ )
+@@ -3070,6 +3071,30 @@ def _parse_core_utc(value: str) -> datetime | None:
+     return parsed.astimezone(timezone.utc)
+ 
+ 
++def _countdown_facts(local: datetime, target: str, language: str) -> dict:
++    """Minutes from the observed local clock to the next occurrence of target."""
++
++    hour, minute = (int(part) for part in target.split(":", 1))
++    now_minutes = local.hour * 60 + local.minute
++    target_minutes = hour * 60 + minute
++    already_passed_today = target_minutes <= now_minutes
++    remaining = (target_minutes - now_minutes) % (24 * 60)
++    hours, minutes = divmod(remaining, 60)
++    if language == "en":
++        parts = [f"{hours} h"] if hours else []
++        parts += [f"{minutes} min"] if minutes or not parts else []
++    else:
++        parts = [f"{hours} h"] if hours else []
++        parts += [f"{minutes} min"] if minutes or not parts else []
++    return {
++        "target": target,
++        "remaining": " ".join(parts),
++        "remaining_hours": hours,
++        "remaining_minutes": minutes,
++        "already_passed_today": already_passed_today,
++    }
++
++
+ def _local_clock_from_observed(observed: dict | None) -> str | None:
+     """HH:MM from the real system.time contract (`utc` + offset). Not localTime."""
+ 
+@@ -3309,7 +3334,9 @@ def _clock_values(text: str) -> list[tuple[int, int]]:
+     return [value for _, value in tokens]
+ 
+ 
+-def _clock_fact_defect(text: str, hhmm: str, *, required: bool = True) -> str:
++def _clock_fact_defect(
++    text: str, hhmm: str, *, required: bool = True, allowed: tuple[tuple[int, int], ...] = (),
++) -> str:
+     try:
+         hour_text, minute_text = hhmm.split(":", 1)
+         observed = (int(hour_text), int(minute_text))
+@@ -3318,7 +3345,9 @@ def _clock_fact_defect(text: str, hhmm: str, *, required: bool = True) -> str:
+     values = _clock_values(text)
+     if required and observed not in values:
+         return "missing_name"
+-    return "reversed_result" if any(value != observed for value in values) else ""
++    # CLOCK1327: a countdown answer legitimately names its target time and the
++    # remaining hours and minutes; those are not contrary clock claims.
++    return "reversed_result" if any(value != observed and value not in allowed for value in values) else ""
+ 
+ 
+ # Familias del catálogo activo, no una lista fija del corpus. El shell manda
+@@ -3651,6 +3680,12 @@ def _compose_situation_payload(
+                 r"\b(?:hora|time)\b", user_text, re.IGNORECASE
+             ):
+                 payload["clock"] = clock
++            target = countdown_target(user_text)
++            local = _local_datetime_from_observed(merged_seen)
++            if target is not None and local is not None:
++                # CLOCK1327 H0399: the remaining time is arithmetic on the
++                # observed clock, done here; the narrator copies the figures.
++                payload["countdown"] = _countdown_facts(local, target, language)
+             if _requests_calendar_date(user_text):
+                 local = _local_datetime_from_observed(merged_seen)
+                 if local is not None:
+@@ -4234,7 +4269,16 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+         return "missing_remembered"
+     clock = payload.get("clock")
+     if isinstance(clock, str) and clock:
+-        clock_defect = _clock_fact_defect(text, clock)
++        allowed: list[tuple[int, int]] = []
++        countdown = payload.get("countdown")
++        if isinstance(countdown, dict):
++            try:
++                target_hour, target_minute = (int(part) for part in str(countdown.get("target")).split(":", 1))
++                allowed.append((target_hour, target_minute))
++                allowed.append((int(countdown.get("remaining_hours", 0)), int(countdown.get("remaining_minutes", 0))))
++            except (TypeError, ValueError):
++                pass
++        clock_defect = _clock_fact_defect(text, clock, allowed=tuple(allowed))
+         if clock_defect:
+             return clock_defect
+     calendar_date = payload.get("date")
+@@ -10804,7 +10848,16 @@ class LlmRuntime:
+             instruct(
+                 "\nPreserve the 24-hour clock, or state AM/PM when converting to 12-hour time."
+             )
+-        if clock and _requests_calendar_date(user_text):
++        if clock and isinstance(payload.get("countdown"), dict):
++            countdown = payload["countdown"]
++            instruct(
++                "\nState the time in clock, then say that countdown.remaining remains "
++                "until countdown.target"
++                + (" (it already passed today, so this is until tomorrow)" if countdown.get("already_passed_today") else "")
++                + ". Copy those figures exactly; never compute them yourself. "
++                "Do not set the clock. Do not introduce yourself."
++            )
++        elif clock and _requests_calendar_date(user_text):
+             instruct("\nState the local calendar date from date. Do not guess a date.")
+         elif clock and has_audio:
+             instruct(

@@ -1,3 +1,25 @@
+## CLOCK1329 — estado vigente 2026-09-14T03:58:16.508697+00:00
+
+Parcial: 6 aprobados, 3 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 395/742 | 347 | 0 | >=269 | 3/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 267 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); CLOCK1329 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: CLOCK1329: 9 ejecutados, 6 aprobados, 3 fallidos, 2 créditos (índices [1, 2]); Hora y fecha 18/23 (los literales en otros idiomas quedan fuera de aceptación). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/CLOCK1329/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 168.56 s acumulados; pico GPU 3497.56 MiB; pico RAM 2278.83 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque CLOCK1329 precedente. -->
+
 ## IDENTITY1327 — estado vigente 2026-09-14T03:41:28.850019+00:00
 
 Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.

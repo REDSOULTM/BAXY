@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación IDENTITY1327
+# Categorías actuales — adjudicación CLOCK1329
 
-393/742 cubiertos; 349 abiertos; 0 no aplican; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19). Últimas 24 h: al menos 267 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: caef2706693d55bd5ce2d996b4dbd2a098f24c88dd5833a16e99a5a743e0aa0e.
+395/742 cubiertos; 347 abiertos; 0 no aplican; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19). Últimas 24 h: al menos 269 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: ce1bb8ca71278ef9cadc9d98713d201d6493dfbb33f619844db8897221a881a9.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -26,7 +26,7 @@
 | Conversación social y ayuda general | 31 | 25 | 6 |
 | Estado de ventanas y aplicaciones | 14 | 14 | 0 |
 | Identidad y capacidades del asistente | 19 | 19 | 0 |
-| Hora y fecha | 23 | 16 | 7 |
+| Hora y fecha | 23 | 18 | 5 |
 | Memoria personal | 10 | 7 | 3 |
 | Correo | 6 | 0 | 6 |
 | Bibliotecas y fichas de juegos | 6 | 0 | 6 |

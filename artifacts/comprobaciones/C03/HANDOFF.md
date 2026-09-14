@@ -1,3 +1,11 @@
+# CLOCK1329 adjudicado — 2026-09-14T03:58:16.508697+00:00
+
+**395/742 cubiertos, 347 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA ce1bb8ca71278ef9cadc9d98713d201d6493dfbb33f619844db8897221a881a9. Primeras altas 24 h >= 269 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 95688821 con BUILD1329 (mente: cuenta atrás calculada sobre el reloj observado; «tiempo» como lectura; CLOCK1329/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+CLOCK1329 («Hora y fecha», cuenta atrás hasta una hora y la palabra suelta «tiempo»): 9 ejecutados, 6 aprobados, 3 fallidos (cuenta atrás: literal y dos pares), 0 violaciones; H0054 y H0312 acreditados con dos pares, 2 créditos. Adjudicación acefde3a501775ea1aca79321906f389825da8a590509bb6f03407069312156a. Medición: la palabra suelta «tiempo» se lee como hora y el final da el reloj observado; la cuenta atrás lee el reloj y la mente calcula el resto (14 h 7 min para las 15:00), pero la comprobación del reloj exige la hora observada en el texto y veta el borrador correcto (missing_name). Reparación para CLOCK1331: en una cuenta atrás la hora observada no es obligatoria en el final.
+
+---
+
 # IDENTITY1327 adjudicado — 2026-09-14T03:41:28.850019+00:00
 
 **393/742 cubiertos, 349 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA caef2706693d55bd5ce2d996b4dbd2a098f24c88dd5833a16e99a5a743e0aa0e. Primeras altas 24 h >= 267 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5f5d2470 con BUILD1327 (mente: forma identity; how_it_works sin conductas universales; IDENTITY1327/SOURCE.json|SOURCE.patch; .NET sin cambios).

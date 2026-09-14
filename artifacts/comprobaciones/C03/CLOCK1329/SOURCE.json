@@ -1,0 +1,15 @@
+{
+  "schema": "c03-clock1329-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (countdown_target; _direct_current_time_request acepta la cuenta atrás y «tiempo»); src/baxy_mind/llm.py (_countdown_facts, payload countdown, instrucción, _clock_fact_defect con valores permitidos)",
+  "patch": "artifacts/comprobaciones/C03/CLOCK1329/SOURCE.patch",
+  "commits": [
+    "9568882101bdba9c9608e27dd67da9af91968c5e"
+  ],
+  "build": "BUILD1329 (C03-repairs1329-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "CLOCK1155/1156: «cuánto falta para las 3 de la tarde» declarado fuera de alcance; «Tiempo»/«tiempo» pidieron confirmación con vocabulario interno.",
+  "change": "Lector: countdown_target (hora pedida con partes del día, am/pm, mediodía/medianoche) y la palabra suelta «tiempo» → system.time. Compositor: countdown en el payload (hora pedida, horas y minutos restantes calculados sobre el reloj observado, si ya pasó hoy), instrucción de copiar las cifras y valores de reloj permitidos en la comprobación. Sin respuestas fijas.",
+  "measurement": "CLOCK1329: 9 ejecutados, 6 aprobados, 3 fallidos (cuenta atrás: literal y dos pares), 0 violaciones; H0054 y H0312 acreditados con dos pares; 2 créditos. Medición: la palabra suelta «tiempo» se lee como hora y el final da el reloj observado; la cuenta atrás lee el reloj y la mente calcula el resto (14 h 7 min para las 15:00), pero la comprobación del reloj exige la hora observada en el texto y veta el borrador correcto (missing_name). Reparación para CLOCK1331: en una cuenta atrás la hora observada no es obligatoria en el final.",
+  "credits": 2
+}

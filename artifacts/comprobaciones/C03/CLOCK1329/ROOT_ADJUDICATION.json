@@ -1,0 +1,563 @@
+{
+  "schema": "clock1329-root-adjudication-v2",
+  "decided_at_utc": "2026-09-14T03:58:16.508697+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "9568882101bdba9c9608e27dd67da9af91968c5e",
+  "decisions_sha256": "a6e4c0a4f4c79f1d21a54763b510dbb0ffa0abda69ccf00ba8bcca79472c3516",
+  "registry_before_sha256": "caef2706693d55bd5ce2d996b4dbd2a098f24c88dd5833a16e99a5a743e0aa0e",
+  "registry_before_counts": {
+    "covered": 393,
+    "open": 349,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "56db14e93ea899dd17411cbe9a627aa88ac01bfae0584c910ecfdb5ce5f9a071",
+  "preparation_sha256": "ef4d4e5cb6f2b6b100550c31ae6cec33698ac766d8c45408aacee6052e44c15b",
+  "passed": 6,
+  "failed": 3,
+  "unexecuted": 0,
+  "executed": 9,
+  "segments_started": 9,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [
+    "H0054",
+    "H0312"
+  ],
+  "counters": {
+    "covered": 395,
+    "open": 347,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 267,
+    "categories_total": 35,
+    "categories_closed_after": 3,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 267 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); CLOCK1329 añade 2. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 269
+  },
+  "resources": {
+    "seconds_sum": 168.56100000001607,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 2278.828125
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0399",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: la lectura no se hizo o el final no fue fiel al reloj observado.",
+      "observation_note": "Turno ordinario: system.time de sólo lectura completada y verificada; ningún final publicado (borradores vetados por la comprobación del reloj); cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-00\\EXIT.json": "c1a295cf8bdc3356ab5c25b50c0fdfcbc273f59ce4a1c68c4f2eadc87f199b60",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-00\\RESOURCES.json": "bbb017e59b460d0448b0a8158b5e963e735881fbe942ad982b1f07c2d56c44ec",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\profile-owner-00.json": "b5c3a286e34fc530acd856cc23964e880ea755568883862b0b1a0a7c9cf6c417",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-00\\PREREG.json": "03e08ac4f01f7bb73705915eaeb039abc48eb29e9039853655a0314c2ff22d29",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-00\\capture\\events.jsonl": "259134ffd845895eee23c1c08a584b02ff36e806c33515b441d770ef2a5e01cc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-00\\turns.jsonl": "2d5ef166156eb9c8aded9630b760938a489cc46e7039319713f2ae42cba98b91",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\fixture-00.json": "f94056decc6712d73584432c7cbbec7c63ab3c3d0d199ddff4b08c2e1ff60c94",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-00.json": "cd22094c455a2bad7243f911767c8b972469f32cdd41989d5401fc408f717c58",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-prelaunch-00.json": "b0c494f90ddc5da1b4220582b5bfaebd9224337689019f860801f1ee356e905b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-00\\case-observations.json": "7fc06a58adf222a9cfeecefc521ab93d0205087b5df6fcb650f222c49598074f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-00\\journal-before.json": "47da80dc814362d69d8a5bb0694d3b48b8f2989183342073bedd72a3ec004362",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-00\\journal-after.json": "8d01d8cb558ce55814ac4f1c43a819b3846e9618a42e88f26aceb991c619253d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "e3f01260e7f0f174bd0a2a44859dd7542917b85b7f3b22760d5db378a6527fc8"
+      },
+      "terminal_kind": "composition_failed",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "92efb424-f465-4268-a267-5a8a13c0834c",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "5b7ebccd-4f87-4d48-91c3-ff088505a721",
+          "operation": "system.time",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0054",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        5,
+        6
+      ],
+      "reason": "Lectura verificada y respuesta fiel; crédito con dos variantes aprobadas.",
+      "observation_note": "Turno ordinario: system.time de sólo lectura completada y verificada; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "11a6eb73cbf288cf8522e31ea45e0a094e35a9eb100b6ff2e34286531b22e659",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-01\\EXIT.json": "0c6f005cc3287e78a6adf2d7307f5d7cfd8b26fd44bdf1f248655009dfd124d3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-01\\RESOURCES.json": "5f2d644a8f46135a1d3af0d0e8513f9d2a9e6352a61f4125bb87082a473f9659",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\profile-owner-01.json": "c38108787492656586f5920e4a6410902eb77f0b2d0fedb1cb7ecfd97578e506",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-01\\PREREG.json": "8437a5ed6675f56737e4a50717c6a3e1324c1f06dd42ff6a130cabd28aeb9ca0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-01\\capture\\events.jsonl": "836728bd74b62f1960f728b2007d4d9a3bb09b691dc6e72425bdc35a95819862",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-01\\turns.jsonl": "189d6d398f48c4743a8b1ded93e188c0c2ca85c723866796410691b4c2f72769",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\fixture-01.json": "6cc53f3c79a66073f000ad290c180ee59a024d2810cb3973e0c1cddad6adf8f1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-01.json": "9aa83317a1366425921e746819828ab5e4279047fbba0a49b0182c018cd8bc91",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-prelaunch-01.json": "0654045fb384d9790278f4e109e7cd6723417f78b5dc044389bebd39656408d9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-01\\case-observations.json": "eb4ee6fb5ce54fba5db7eaf7311b8f5cd3aeaaf9b68ab14f73838826ce2104af",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-01\\journal-before.json": "f80d35490433cabd6fe699a494c0eceaba76f183e1392cc60ab342ef74cc48fe",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-01\\journal-after.json": "d122f2490721087157d1d6fac4da71151525a904ad3711493a1c8d511a4667c9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "cb99a9201827025118d2e168e4481fd45a81a3285e499c89cc9de75b2c0caece"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "affe13cb-0e0f-4e56-926c-9d81d73638f5",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "6901a2d3-9a29-46bd-a5f6-09ffd08c92dc",
+          "operation": "system.time",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "H0312",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        5,
+        6
+      ],
+      "reason": "Lectura verificada y respuesta fiel; crédito con dos variantes aprobadas.",
+      "observation_note": "Turno ordinario: system.time de sólo lectura completada y verificada; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "11a6eb73cbf288cf8522e31ea45e0a094e35a9eb100b6ff2e34286531b22e659",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-02\\EXIT.json": "aa0df7ee7dd9769e1da5dc3f9900d6a8f8932cee74b5c1d286b7c12c343f409b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-02\\RESOURCES.json": "1920b216d1531673a62f886762ed972d425879147526e6cfe0ec272d1b7cbe22",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\profile-owner-02.json": "41a6c043ee41a37b3e91dd3826c0ea8b9ff191fa10ab19ee0ad52cb2193665b5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-02\\PREREG.json": "cd15d81fcbb83b6ab07d86aac19aa94bec89653da086f9379aa849aacbe09e1e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-02\\capture\\events.jsonl": "3643a6dd444be2f8735f812661ac2d9ecaf804e5be9cf31aa23b2b053ae51590",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-02\\turns.jsonl": "667c8d446947087189ec1548eb3038af38f36fbb4896f728453b76886042e179",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\fixture-02.json": "52520b43700ffd531d4d4c2d9cd100957c1282c45b3ac63ea5a302494b370178",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-02.json": "218c24f742ed7a703dbf96e87b5ea45ef9cf51fe893ed91a243e6bf9fbe6a783",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-prelaunch-02.json": "d182e76c0dcbe7c8c31f7dd523c55d1df4d20019bbb7772595b5573126a6ce6a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-02\\case-observations.json": "f5ef464ed2aa082cc1d41feb2df1182ec9a5f4a9a0473cc3ff96155b32427a37",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-02\\journal-before.json": "7ff478b269cde40e31c884f29c313cb38e84decec186c3ab43daf81f740a2975",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-02\\journal-after.json": "eb9d14ad3024f4a7cf5524019b62776040beeaec3634f222915983895bc44fc6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "65bf7a5e0525f4b4c272f81525ffbdd7708fc93d03c895840888ca02a1b0c297"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "db9ff572-cc25-4e9f-9b68-cf5769d131b6",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "8941c6c4-10fa-4873-8970-e5c813301a2d",
+          "operation": "system.time",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "clock1329-dev-01",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: la lectura no se hizo o el final no fue fiel al reloj observado.",
+      "observation_note": "Turno ordinario: system.time de sólo lectura completada y verificada; ningún final publicado (borradores vetados por la comprobación del reloj); cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-03\\EXIT.json": "e5eeafa6b662a21a49bb814e34310950db70e486e5c81dfaf48276353ba949c3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-03\\RESOURCES.json": "804a701758d9caa4b1d695095f85f59c4df25bbd8e14c50bb6d7d473f2e43380",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\profile-owner-03.json": "34150ece7d47219a6e5716356ec3fe77a8e8254c58af8316f4dcff6a95714f80",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-03\\PREREG.json": "9cff934c83fde61d5b2684f2919711da33c5ed6176edac2f1700ec42565fc4bc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-03\\capture\\events.jsonl": "c373d46f8930916702ecf8822f281c83b1b2914ac6177a60a09458ae2cc18c17",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-03\\turns.jsonl": "5ffaf2880b7c7edf7545a7939bba6c7eedc4b25c0d8463abdf12c237f60c3bd8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\fixture-03.json": "fd287060bc1e6a25076a6dbdfa30932253b73c089219b8fb8e6cd359d1a03430",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-03.json": "6f75020235a64ebf792ba55ee4045cd13638ae18db7bf0d19dd6398c3eb89d54",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-prelaunch-03.json": "f9366913d4ffe2c9d6b6e0590407f692819e3282291c4391cc1549dd60ad907f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-03\\case-observations.json": "44cfcb1f8310c1fe0ad33065aa47a7ea53941c315c9796874908bbcf8f44dd66",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-03\\journal-before.json": "26919304c8e1caf3a0fcbb2f3980c9dacca2ec4ebcfefc0720289b641ccab6cc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-03\\journal-after.json": "b30a59a50623665180dd66501b0d24762d78bc30b9e279cb68de0685a81d0990",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "d842a66ad6f1acdacf1544ed46e1bcf2fd84e97b67c82a8f0d517f5c93a0be95"
+      },
+      "terminal_kind": "composition_failed",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "03319405-6ffd-48cd-a39c-01426d033391",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "0b5965cf-baf5-4946-b61a-8f71f1bead99",
+          "operation": "system.time",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "clock1329-dev-02",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: la lectura no se hizo o el final no fue fiel al reloj observado.",
+      "observation_note": "Turno ordinario: system.time de sólo lectura completada y verificada; ningún final publicado (borradores vetados por la comprobación del reloj); cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-04\\EXIT.json": "fa54d80aaef7a934041add5be864be07a2cf1b620e7161f62fe66fbfc33d5a8e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-04\\RESOURCES.json": "a2354e6299031dcbe3e01623f2602e86ef1bfdd86b9ca3fb18395520c373c6e2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\profile-owner-04.json": "6b8ab0a87dd01868ef1121450449e9ab3289381a43b3b45d806253284079753a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-04\\PREREG.json": "09e89ab49a7289b37513ca7ddbe4d8f04635950aa18c5230decf770d3b5a050f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-04\\capture\\events.jsonl": "8046f4298dffb762e3adc94dd70632ba8404178563425c01c7e8150ea27b6479",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-04\\turns.jsonl": "191a1c52c4760abd5c651c0282e55c73a9f38b1351e6c45e0cd15a47789eb02f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\fixture-04.json": "46f21b1a135279c1fc10a36de54b95afded063c2017617b35120da8b0ea3252f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-04.json": "b46bf8593d6b12d8fb93fdcd3536ecbffe9f7bcccabbb232bfb861fc994f8f11",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-prelaunch-04.json": "6bebd4bc0c2864609074dfd3956255ae453a44d17d5aa55d2383e2e800e5f9f2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-04\\case-observations.json": "4d152b5e7c44484eb198827e366d772602995ca0ad0804614aa57729a8de95d6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-04\\journal-before.json": "29f38198dfd2dab6ef9b3df6fa9035a861705bd3bdf2938efdd8a02b98c25f7f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-04\\journal-after.json": "70e23cdf27e6748f4172963cbbadd09c55c861dc05a970c48311c90243b591e2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "67be9898c34a664d7a4772ddab9cfa994a8bbf5af356941a55568aa4b64b42a2"
+      },
+      "terminal_kind": "composition_failed",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "e0ae640f-5d93-42ed-8260-68cae5d4183f",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "f8708695-e9fe-4ff3-b755-f3d9fd087bc7",
+          "operation": "system.time",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "clock1329-dev-03",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Lectura verificada y respuesta fiel.",
+      "observation_note": "Turno ordinario: system.time de sólo lectura completada y verificada; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "c3425c0308413a2de2b09c85ff8b9196ca21c8cad7842954576d74156f91f702",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-05\\EXIT.json": "fb5cbdf28120bbec2d4d50930b03d1e377d57eb3b5ab1d6cbe10b0df439cad09",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-05\\RESOURCES.json": "e844d806fa2ab0a424776c4921d4d0d47bb26ab8d1bea77ffb4441f3aad8a238",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\profile-owner-05.json": "d7bdd5ff653aeec0cff7f014637796c3d705319ae07884dfe8416a503cc936c3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-05\\PREREG.json": "31e1acd04442188758ac7c375e3389499c214317455973aed484980cceece85c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-05\\capture\\events.jsonl": "3753dd44f993697e99db3c2cee7656d179e33dac954084afbf8956ce306ea882",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-05\\turns.jsonl": "0ab5b26f66d8497a35003291e8e436218d60be38ace5b40b2567f74b7763ecf0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\fixture-05.json": "159105e14a4b3614f4f23bf87c34f7ab4290518f8474fb54898f19d866cfa55c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-05.json": "7b6e2fedfa70eb685c9f91114e75b1a241f19ac8959b94eea4b3935ec7e961e7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-prelaunch-05.json": "e916b6bfb5820880e3ca63528c9d9c6c07c0770e5825e42a592343a9c9ea608d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-05\\case-observations.json": "34aebec97a58554309044ca84c882cb50dc0f68e98b40f9a4a94cb87fd74404f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-05\\journal-before.json": "7915caccc6c4300ea8467760263cf293be5e9bf3467aa4cf4617c8a86f16a6f8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-05\\journal-after.json": "6140746a15e1f99d0136c7c22df46aa7b5e8bdb37c8e0b21065196124371870c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "9e5c759797f67ae96fb3313f8960a4215fa87a30660971e2f01a3fe9db697afc"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "a102a231-4815-4cca-b9c1-271ba649c284",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "d02d62de-c333-4d83-971b-54042c41a752",
+          "operation": "system.time",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "clock1329-dev-04",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Lectura verificada y respuesta fiel.",
+      "observation_note": "Turno ordinario: system.time de sólo lectura completada y verificada; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "c3425c0308413a2de2b09c85ff8b9196ca21c8cad7842954576d74156f91f702",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-06\\EXIT.json": "e4bc12816b82d19b69bc1d97f9cf87631f3bf9da06f6dd1bced811a0c15e3e07",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-06\\RESOURCES.json": "428f6e6621c6f6d3b0f70eec0ae5676b7b4d5e9bbd06e1cfb31055d33d13baa7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\profile-owner-06.json": "cffbbb781a5ec03db0e249d8e2f8ed70fa7c51d76a0c51da911ddb1497cca92c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-06\\PREREG.json": "00275ff7ef2aa82484637d4f71e0dbb40ed59bbd768399b78d2e5d3f3ca880b2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-06\\capture\\events.jsonl": "08feefd795dc8e69f6ff53f7f7572f3abb0fb7f2c2cde3ff72acb9934bff3646",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-06\\turns.jsonl": "82e07cb304aef100657c6da2ec1489eaed4c838026401bc842d9e8b7dbe2aad8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\fixture-06.json": "ccbf157607f20b19b1d9ce7b3cfe009335e72f6012f463f2d1795a91e0920429",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-06.json": "4e03a842de0d8e4d6e2c49c63267a16c651a6b4203c113f67e04716b354ac26d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-prelaunch-06.json": "80fa4bd4445df7be9473921c661b86ad148accf8026b4f0d74c876991371d6b0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-06\\case-observations.json": "25c8134ccb9082230c13ec9a6ba1d67e2146d4527c6a176597ce9dc414a42890",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-06\\journal-before.json": "f7f1a1844cf8b84e5eb80aa39102349c2e7f6c0a5a76b88445d242e5f93cd47a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-06\\journal-after.json": "22ff1c1055b34410a9886771c6b4eef1a194ca016700dc681d0361e860c4101d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-06\\journal.snapshot.jsonl": "f609afcb32e73db6bb18cb4020a9b22853d5c0e48ee8ec90299d89e955e1eb87"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "44fdb3f8-9397-4a36-ac32-8c27e4f0160b",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "751e39dd-a824-4431-92db-a0b49e787825",
+          "operation": "system.time",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "case_id": "clock1329-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "60312ca77ff204706b7a81cd11650d8d48de88f7e11956bebbb7e5763d564782",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-07\\EXIT.json": "bcd9cf79251b7649be20eaaadf8e95fb96faa20df27e54518e8aaeff9f3fbed6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-07\\RESOURCES.json": "f18bd0e29443431e613beb0bd409b324ef75940c7f6f78e059e3fe3ddda9fcb2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\profile-owner-07.json": "f21604d0c1df421cf5df9326fbea111f98be3b2af0bdf8c1cc355b22cd45cebc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-07\\PREREG.json": "469740f745e608ff2e95a9dedeaa2fa03c085e80d9ad37ba60c1e47f022d65a1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-07\\capture\\events.jsonl": "fe07bc654c7fba63727a60fb4457ef6831df511edbc36aff15f1ca0b9c965800",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-07\\turns.jsonl": "558ee2255b86a209129e428ac5413d279e98b486cbd5d2db64da015353a3c5a9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\fixture-07.json": "225711609f2d6f916f01270e82fa99a27f6829579d78ff3d0693fe49201a0c93",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-07.json": "89c8226c2c6e9daec50b4ad7c164aa46246b5bc03dffcc829d3494e8521258bf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-prelaunch-07.json": "9167aae193c3d4a001fc76e15676dfc6ee00e22a1e887ada0e56131271b1e81c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-07\\case-observations.json": "c7551e88a0f7c6cc31973cc82aff32130f332652ec62e7a178178211581c5a6b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-07\\journal-before.json": "692ea5a8278e2f1f67511834a3957799273c5000537be4529583020b7648af2c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-07\\journal-after.json": "049d2f0059d7d76dbcdd8f83ac403aff7f5fc40d76837756b88c78cffbdd1931",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-07\\journal.snapshot.jsonl": "2da4866a962a2739b4e23093e04b178cf70fc116ff86f51c030b80cfb29464e7"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "ef8e84b3-3fb8-47fd-ae66-ec0b2c01f82e",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "case_id": "clock1329-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "322cbc43413e4781b16cec94b4505219c195c6f74fdf9d1e5b1dcd29a3f95878",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-08\\EXIT.json": "9c0c991d73590bff06d49093468eab9c6ea829861f9214a140bee9907fc63461",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-08\\RESOURCES.json": "9a110b756e3fec03f40d92eaf718ce8367ea026e462f5e8b3672279417e2c9ac",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\profile-owner-08.json": "eaec0e1f0bcb22e5ba899a35b47ab7fb7a2ff1fe2e18c416f7d9903e8824f4fa",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\results\\case-08\\PREREG.json": "583eb7bf52428c1434c619faa98c406b2a5d03482180be3ea13bfd4cf556c83d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-08\\capture\\events.jsonl": "236f353913510fa62825e427c765e78ac1d8ca000e6e2b24b6f494c3d399e363",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-08\\turns.jsonl": "9bcf45ac5d98df34c2fc3553059e78b8f63252210d44fcb0c5b4c083172a82a3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\fixture-08.json": "b9fefd79dd0c108f2d1f911bad1da45e3abe89753284d1f4b13710b06c409244",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-08.json": "35d821676f8b607d96cb5f8c39a9dc08aa38c438621d081d991507264f3fc152",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\context-prelaunch-08.json": "77b540741249e2b388efae0defe1f76a5ad0109ef4b32cb45bc4438163f64446",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-08\\case-observations.json": "2e45fc2d9c9672424493fc9ff32076c08f4dbd52ea5ce8e699a96668815aac79",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-08\\journal-before.json": "460ca47578cecbeeb3c487866345eed493a0efadf744e3fbda71030b3b93e95c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-08\\journal-after.json": "c0ec03277440a21284303495877b3bd05edcbf7f7930c6c2b36323562c2fb910",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1\\private\\run-08\\journal.snapshot.jsonl": "842d307b442d8895ac1cfed145cec7b96d73e32795557f1a918e93fda23437ac"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "0bd1e42a-7300-4af6-bc94-4bed56afe973",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "CLOCK1329: 9 ejecutados, 6 aprobados, 3 fallidos, 2 créditos (índices [1, 2]); Hora y fecha 18/23 (los literales en otros idiomas quedan fuera de aceptación). Siguiente: categoría por masa abierta según CONDICIONES.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

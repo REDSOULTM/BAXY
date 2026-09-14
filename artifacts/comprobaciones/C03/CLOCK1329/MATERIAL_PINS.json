@@ -1,0 +1,114 @@
+{
+  "schema": "clock1329-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-clock1329-instrument-v1",
+  "seal_sha256": "a33e2db64a18de4111ce8477728588567bd2a6b7a827c495dbe97984b97cde05",
+  "runner_sha256": "1fcddabc99663a8aa66eebb92990906a7b01f5e2984a7d33d7b3cd187136f3c3",
+  "transport_seal_sha256": "711180069555c1bc1fb20bc099517fdad403fb43e9c4375787dd3cb71af5a15f",
+  "files": {
+    "panel.json": "0c5c860cf63fb85f64d49a1f6112e7e47cac26d4d206ccc9bac1e78d9f7f38e2",
+    "turns.jsonl": "a5434e0d7889ae24aed1bfdf3baad98fac7df04ac2f75952d0178376baeb61dd",
+    "case-map.json": "93c251263c68d7b68019b99798c04f79c4c7c673a6365aa54054fb2c080afc10",
+    "PLAN.md": "4a2d31057e2989ff49b83880cc0fe10eb17af18f9e6e14dd4b97be73a47c398a"
+  },
+  "counts": {
+    "cases": 9,
+    "historical_literals": 3,
+    "original_development_variants": 4,
+    "boundaries": 2,
+    "wire_lines": 18,
+    "session_controls": 9,
+    "ordinary_turns": 9,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 9,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 3,
+    "original_development_variant": 4,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0399",
+      "kind": "historical_literal",
+      "group": "countdown",
+      "credit_behavior": "countdown",
+      "text_sha256": "8878e947d29d9cb046c4154487ba6af64b39b3408151f7a64a62d515cce1df51",
+      "criterion_sha256": "e29f5f1ac8d819f1592f88be5fa87e155d01072a2142a4f6e80fc7af45b3dc49"
+    },
+    {
+      "index": 1,
+      "case_id": "H0054",
+      "kind": "historical_literal",
+      "group": "bare_time",
+      "credit_behavior": "bare_time",
+      "text_sha256": "112f861342a869c793d8c1524246927e55550975cc2739c922b001a7d7c87369",
+      "criterion_sha256": "67870ac504071fb809c5ec4dcb33066e4fcbdd3beb2b9f459fdbb931b8dd5a33"
+    },
+    {
+      "index": 2,
+      "case_id": "H0312",
+      "kind": "historical_literal",
+      "group": "bare_time",
+      "credit_behavior": "bare_time",
+      "text_sha256": "666a9f67617f9f9ac26efc6fa809e7da5f19c26cf0884591537127fdcb1ed202",
+      "criterion_sha256": "67870ac504071fb809c5ec4dcb33066e4fcbdd3beb2b9f459fdbb931b8dd5a33"
+    },
+    {
+      "index": 3,
+      "case_id": "clock1329-dev-01",
+      "kind": "original_development_variant",
+      "group": "countdown",
+      "credit_behavior": "countdown",
+      "text_sha256": "74cacee65b15c62190143d768f55231478df3c775726d65b6e3e7c0cbd47628d",
+      "criterion_sha256": "e29f5f1ac8d819f1592f88be5fa87e155d01072a2142a4f6e80fc7af45b3dc49"
+    },
+    {
+      "index": 4,
+      "case_id": "clock1329-dev-02",
+      "kind": "original_development_variant",
+      "group": "countdown",
+      "credit_behavior": "countdown",
+      "text_sha256": "70024cf0f540d025092a9f04106be6e342ff5c1dde10a6eb202db7663b9469e1",
+      "criterion_sha256": "e29f5f1ac8d819f1592f88be5fa87e155d01072a2142a4f6e80fc7af45b3dc49"
+    },
+    {
+      "index": 5,
+      "case_id": "clock1329-dev-03",
+      "kind": "original_development_variant",
+      "group": "bare_time",
+      "credit_behavior": "bare_time",
+      "text_sha256": "b5591569121b009dccb8ab335581e8d769216d01b13701d76d34280d503d64a2",
+      "criterion_sha256": "67870ac504071fb809c5ec4dcb33066e4fcbdd3beb2b9f459fdbb931b8dd5a33"
+    },
+    {
+      "index": 6,
+      "case_id": "clock1329-dev-04",
+      "kind": "original_development_variant",
+      "group": "bare_time",
+      "credit_behavior": "bare_time",
+      "text_sha256": "5b632c1d0186da69f5e613d3fd3ac5f9f07944ab67b3ea9b4dfaa62f4bbf4a6a",
+      "criterion_sha256": "67870ac504071fb809c5ec4dcb33066e4fcbdd3beb2b9f459fdbb931b8dd5a33"
+    },
+    {
+      "index": 7,
+      "case_id": "clock1329-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "d15d505302ba163e8a0b2ec817256dab46647725962588a67e37c262b3d5aed4",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 8,
+      "case_id": "clock1329-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "6af5358d2f54d120a306402f00dbdd67980879593af406b27477d7031f596bf1",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    }
+  ]
+}

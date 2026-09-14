@@ -181,3 +181,7 @@ Identidad y capacidades del asistente pasa de 16/19 a 17/19 con la reparación d
 ## Actualización 2026-09-14 (IDENTITY1327)
 
 Identidad y capacidades del asistente pasa de 17/19 a 19/19 con la forma de presentación identity y el contrato how_it_works sin conductas universales (commit 5f5d2470, BUILD1327): 8 ejecutados, 8 aprobados, 0 fallidos, 0 violaciones; H0012 y H0373 acreditados con dos pares cada uno, 2 créditos. Medición: con la forma de presentación identity la pregunta coloquial se contesta identificándose; con el contrato how_it_works sin conductas universales la explicación nombra este PC y sólo capacidades del catálogo servido. Identidad y capacidades cerrada 19/19 (tercera categoría). Tercera categoría cerrada del registro (19/19).
+
+## Actualización 2026-09-14 (CLOCK1329)
+
+Hora y fecha pasa de 16/23 a 18/23 con la cuenta atrás y la palabra suelta «tiempo» como lecturas del reloj (commit 95688821, BUILD1329): 9 ejecutados, 6 aprobados, 3 fallidos (cuenta atrás: literal y dos pares), 0 violaciones; H0054 y H0312 acreditados con dos pares, 2 créditos. Medición: la palabra suelta «tiempo» se lee como hora y el final da el reloj observado; la cuenta atrás lee el reloj y la mente calcula el resto (14 h 7 min para las 15:00), pero la comprobación del reloj exige la hora observada en el texto y veta el borrador correcto (missing_name). Reparación para CLOCK1331: en una cuenta atrás la hora observada no es obligatoria en el final.
