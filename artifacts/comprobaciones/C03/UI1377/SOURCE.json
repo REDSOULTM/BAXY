@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1377-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (pista de reintento missing_click_verb en español orientada a «Hice clic en el …» / «Pulsé el …»)",
+  "patch": "artifacts/comprobaciones/C03/UI1377/SOURCE.patch",
+  "commits": [
+    "ff0bfcb955ec8cefef944454e72567e2bdc16ece"
+  ],
+  "build": "BUILD1377 (C03-repairs1377-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "UI1373: con el veto missing_click_verb, «Apague el 5» se rechazó pero los borradores corregidos decían «Aprié el botón 5» (conjugación de «apretar» que el modelo no produce para este pedido) y el turno terminó sin respuesta.",
+  "change": "La pista de reintento en español orienta a «Hice clic en el …» o «Pulsé el …» con la etiqueta pedida y pide no conjugar «apretar»; el modelo sigue redactando. Sin respuestas fijas.",
+  "measurement": "UI1377: 10/10 ejecutados, 8 aprobados, 2 fallidos, 0 violaciones; 0 créditos. H0555 «en la calculadora apretá el 5»: el clic sobre «Cinco» se aprobó, completó y verificó por tercera vez y ningún final se publicó: incluso con la pista orientada a «Hice clic en el …» / «Pulsé el …», los borradores dijeron «Apagué el 5» y «Aprié el botón 5», mientras el mismo modelo conjuga bien «Pulsé el 7», «Presioné el nueve», «Apreté el botón siete» y «Hice clic en el 2» (seis variantes aprobadas). Condición de morfología del modelo para este literal, documentada y cerrada; la pregunta informativa sobre los botones volvió a quedar sin respuesta.",
+  "credits": 0
+}

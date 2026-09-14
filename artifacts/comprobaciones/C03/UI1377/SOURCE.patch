@@ -1,0 +1,28 @@
+commit ff0bfcb955ec8cefef944454e72567e2bdc16ece
+
+C03: the Spanish click retry hint steers to verbs the model conjugates (UI1377)
+
+UI1373 measured H0555 «en la calculadora apretá el 5»: the click-verb check rejected «Apague el 5» and the corrected drafts read «Aprié el botón 5», a conjugation of «apretar» the model cannot produce for this request, so the turn ended without a response while «Pulsé el 7» and «Apreté el botón siete» passed.
+
+llm hint missing_click_verb (es): say it with «Hice clic en el …» or «Pulsé el …» and the label the person asked for, without conjugating «apretar». The model still composes the sentence; no fixed reply.
+
+No .NET change. Tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 1c7e25dc..343e0e31 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -11827,7 +11827,9 @@ class LlmRuntime:
+             "missing_click_verb": (
+                 "You pressed the button: say that you pressed (clicked) it, with the label the person asked for."
+                 if response_language == "en"
+-                else "Apretaste el botón: di que lo apretaste (pulsaste, hiciste clic), con la etiqueta que pidió la persona."
++                # UI1373 H0555: corrected drafts read «Aprié el botón 5», a
++                # conjugation the model cannot get right; steer to verbs it can.
++                else "Apretaste el botón: dilo con «Hice clic en el …» o «Pulsé el …» y la etiqueta que pidió la persona; no conjugues «apretar»."
+             ),
+             "missing_written_text": (
+                 "Quote the exact text from writtenText and say you copied it to the clipboard."

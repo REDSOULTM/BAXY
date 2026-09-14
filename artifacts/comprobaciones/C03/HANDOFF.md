@@ -1,3 +1,11 @@
+# UI1377 adjudicado — 2026-09-14T07:55:25.192099+00:00
+
+**417/742 cubiertos, 325 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 525d9e22535ee7ae7c1252f0972c1e7b54d1d942c3cf86a14573d06e878dba29. Primeras altas 24 h >= 291 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD ff0bfcb9 con BUILD1377 (mente: pista de reintento del clic orientada; UI1377/SOURCE.json|SOURCE.patch; .NET sin cambios). La raíz abre su propia Calculadora, aprueba sólo la etiqueta esperada sobre su ventana en primer plano (approve_click.py) y la cierra después de cada caso.
+
+UI1377 («Interacción dentro de aplicaciones», H0555 «en la calculadora apretá el 5», clic revisado): 10/10 ejecutados, 8 aprobados, 2 fallidos, 0 violaciones, 0 créditos. Adjudicación a5f0dc63d429ee8fbc98cdbeb5f9713c9aa61965a6ed2ef7f9099b523b88b47e. H0555 «en la calculadora apretá el 5»: el clic sobre «Cinco» se aprobó, completó y verificó por tercera vez y ningún final se publicó: incluso con la pista orientada a «Hice clic en el …» / «Pulsé el …», los borradores dijeron «Apagué el 5» y «Aprié el botón 5», mientras el mismo modelo conjuga bien «Pulsé el 7», «Presioné el nueve», «Apreté el botón siete» y «Hice clic en el 2» (seis variantes aprobadas). Condición de morfología del modelo para este literal, documentada y cerrada; la pregunta informativa sobre los botones volvió a quedar sin respuesta.
+
+---
+
 # UI1373 adjudicado — 2026-09-14T07:46:58.492689+00:00
 
 **417/742 cubiertos, 325 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA d58b6ae74bf383b1833c25789187760a29f9af173985a69fa0c03c8eccc4a9ac. Primeras altas 24 h >= 291 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD be01aa21 con BUILD1373 (mente: verbo de clic exigido en el final; UI1373/SOURCE.json|SOURCE.patch; .NET sin cambios). La raíz abre su propia Calculadora, aprueba sólo la etiqueta esperada sobre su ventana en primer plano (approve_click.py) y la cierra después de cada caso.
