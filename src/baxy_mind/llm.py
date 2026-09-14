@@ -11717,7 +11717,12 @@ class LlmRuntime:
             required_words=required_words,
         )
         retry_payload = dict(payload)
-        defect = compose_visible_defect(text, intent, user_text, facts) or "contrato"
+        # APPS1383 / UI1373: a draft rejected by a payload-fact defect
+        # (missing_prior_open, missing_click_verb, …) was retried with the
+        # generic contract hint because only the visible-defect name was
+        # looked up here, so the model repeated the same draft. The full
+        # rejection reason selects the hint.
+        defect = rejection_reason(text) or "contrato"
         inventory_answer = (
             visible_situation.get("operation") == "window.resolve"
             and isinstance(visible_situation.get("seen"), dict)
