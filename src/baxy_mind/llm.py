@@ -479,7 +479,10 @@ def _starts_with_request_imperative(text: str) -> bool:
         re.search(
             r"^\s*(?:(?:list|show|tell|open|create|set|mute|close|delete|send)\b|"
             r"(?:lista|muestra)\s+(?:el|la|los|las|un|una)\b|"
-            r"(?:dime|abre|crea|pon|silencia|cierra|elimina|envia|guarda)\b)",
+            r"(?:dime|abre|crea|pon|silencia|cierra|elimina|envia|guarda|"
+            # AUDIO1239 H0465 «poné el volumen al 30» → final «Poné el volumen
+            # al 30.»: the voseo and clitic forms of «pon» are the same echo.
+            r"pone|poneme|ponme|ponelo|ponlo)\b)",
             folded,
         )
         is not None
