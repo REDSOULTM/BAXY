@@ -1,0 +1,439 @@
+commit 2bbd25fcbb84270b775bdca60f532dabfeb4e9d2
+
+C03: the scheduled alarms and reminders can be listed on request (AGENDA1435 infrastructure, BUILD1435)
+
+«listá los timers» (H0262) was conditioned since AGENDA1337: only the due notifications could be listed (notification.list.due), never the scheduled ones.
+
+Baxy.Kernel ProductCatalog: notification.list (limit 1..50), read-only, public, "windows.task.postread.v1", placed in ordinal order.
+Baxy.Core ExternalCapabilityHandlers: routed to the external provider.
+Baxy.Providers.Windows WindowsScheduledNotificationAdapter.ListAsync: runs the scheduler script in diagnose mode, keeps the BAXY-Alarm/BAXY-Reminder tasks whose next run lies in the future (a fired one-shot task keeps its registration without a next run and is counted as stale, not listed), reads each title from the ring script's base64, and reports kind, title, nextRunUtc and state, with count, staleTaskCount and the limit; WindowsExternalCapabilityProvider names the required adapter.
+Baxy.App ObservedResponseLiterals: listed titles are observed data.
+baxy_mind effect_intent: _notification_listing_request reads «listá los timers/alarmas», «qué alarmas tengo programadas», «what timers do I have» (never the due forms); __main__ grounds the empty argument object; llm projects count and scheduled items (kind label, title, next run in local time) and instructs to say that none are scheduled when the count is zero; observed_response_literals masks the titles; one alias example.
+
+Offline probe: the literal and five variants resolve to notification.list; the due, schedule, cancel and prohibition forms do not; projection and the empty-count final pass the vetoes; the product compiles and the core advertises the operation. This PC currently holds 910 stale BAXY-Alarm tasks (fired, no next run): they are excluded from the count. Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/ObservedResponseLiterals.cs b/src/Baxy.App/ObservedResponseLiterals.cs
+index 478fc6f2..f3b955f5 100644
+--- a/src/Baxy.App/ObservedResponseLiterals.cs
++++ b/src/Baxy.App/ObservedResponseLiterals.cs
+@@ -86,6 +86,24 @@ internal static class ObservedResponseLiterals
+                 }
+             }
+         }
++        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
++            && IsString(node, "operation", "notification.list")
++            && node.TryGetProperty("verified", out JsonElement notifVerified) && notifVerified.ValueKind == JsonValueKind.True
++            && node.TryGetProperty("succeeded", out JsonElement notifSucceeded) && notifSucceeded.ValueKind == JsonValueKind.True
++            && node.TryGetProperty("observed", out JsonElement notifObserved) && notifObserved.ValueKind == JsonValueKind.Object
++            && notifObserved.TryGetProperty("notifications", out JsonElement notifications) && notifications.ValueKind == JsonValueKind.Array)
++        {
++            // AGENDA1435 «listá los timers»: a scheduled title is observed data.
++            foreach (JsonElement entry in notifications.EnumerateArray())
++            {
++                if (entry.ValueKind == JsonValueKind.Object
++                    && entry.TryGetProperty("title", out JsonElement notifTitle) && notifTitle.ValueKind == JsonValueKind.String
++                    && notifTitle.GetString() is { Length: > 0 and <= 4096 } titleText && !string.IsNullOrWhiteSpace(titleText))
++                {
++                    names.Add(titleText);
++                }
++            }
++        }
+         if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+             && IsString(node, "operation", "filesystem.known.list")
+             && node.TryGetProperty("verified", out JsonElement listVerified) && listVerified.ValueKind == JsonValueKind.True
+diff --git a/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs b/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
+index b48fdf35..d1ea81f2 100644
+--- a/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
++++ b/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
+@@ -56,6 +56,7 @@ internal static class ExternalCapabilityHandlers
+         "notification.cancel.at",
+         "notification.cancel.latest",
+         "notification.diagnose",
++        "notification.list",
+         "notification.schedule",
+         "office.document.create",
+         "office.document.read",
+diff --git a/src/Baxy.Kernel/Operations/ProductCatalog.cs b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+index 15919eb0..684bd925 100644
+--- a/src/Baxy.Kernel/Operations/ProductCatalog.cs
++++ b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+@@ -1031,6 +1031,13 @@ public static class ProductCatalog
+             "notification.dismiss.reminder.postread.v1",
+             ToolExposure.Public,
+             "Descarta una notificación vencida seleccionada mediante identidad y versión exactas."),
++        Descriptor(
++            "notification.list",
++            Schema([Integer("limit", 1, 50)], []),
++            OperationRisks.ReadOnly,
++            "notification.list.windows.task.postread.v1",
++            ToolExposure.Public,
++            "Enumera las alarmas y recordatorios programados por BAXY (tipo, título y próxima ejecución) sin modificar el sistema."),
+         Descriptor(
+             "notification.list.due",
+             Schema([Integer("limit", 1, 50)], []),
+diff --git a/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs b/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
+index 8d12f090..0d04accb 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
+@@ -190,7 +190,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
+                 ProcessExists("WhatsApp") || ProcessExists("Discord")
+                     ? "messaging_session_adapter_required" : "messaging_client_not_running",
+             "notification.cancel.at" or "notification.cancel.latest" or "notification.diagnose"
+-                or "notification.schedule" =>
++                or "notification.list" or "notification.schedule" =>
+                 "windows_task_scheduler_required",
+             "game.installed.named" => "steam_epic_game_manifest_inventory_required",
+             "bluetooth.device.list" or "bluetooth.device.pair" or "bluetooth.radio.set" =>
+diff --git a/src/Baxy.Providers.Windows/External/WindowsScheduledNotificationAdapter.cs b/src/Baxy.Providers.Windows/External/WindowsScheduledNotificationAdapter.cs
+index 34a220ba..0cb174bf 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsScheduledNotificationAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsScheduledNotificationAdapter.cs
+@@ -1,5 +1,6 @@
+ using System.Text;
+ using System.Text.Json;
++using System.Text.RegularExpressions;
+ 
+ namespace Baxy.Providers.Windows.External;
+ 
+@@ -33,7 +34,7 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
+ 
+     public bool CanHandle(string operation) => operation is
+         "notification.cancel.at" or "notification.cancel.latest"
+-        or "notification.diagnose" or "notification.schedule";
++        or "notification.diagnose" or "notification.list" or "notification.schedule";
+ 
+     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
+         string operation,
+@@ -54,6 +55,20 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
+                 return ExternalJson.Failure(operation, "notification_diagnostics_failed");
+             }
+         }
++        if (operation == "notification.list")
++        {
++            if (!File.Exists(_schedulerScript))
++                return ExternalJson.Failure(operation, "notification_scheduler_script_missing");
++            try
++            {
++                return await ListAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
++            }
++            catch (Exception exception) when (exception is IOException or JsonException
++                or UnauthorizedAccessException or TimeoutException)
++            {
++                return ExternalJson.Failure(operation, "notification_list_failed");
++            }
++        }
+         string kind;
+         try
+         {
+@@ -260,6 +275,102 @@ internal sealed class WindowsScheduledNotificationAdapter : IExternalOperationAd
+         return ExternalJson.Success(operation, result, false);
+     }
+ 
++    private async ValueTask<ExternalCapabilityReceipt> ListAsync(
++        string operation,
++        JsonElement arguments,
++        CancellationToken cancellationToken)
++    {
++        // AGENDA1435 «listá los timers»: the scheduled BAXY tasks (alarms and
++        // reminders) with the title kept in each ring script and the next run.
++        int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 20), 1, 50);
++        ExternalProcessResult process = await _runner.RunAsync(
++            "powershell.exe",
++            ["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File",
++                _schedulerScript, "-Mode", "diagnose", "-Kind", "reminder",
++                "-AlarmRoot", _alarmRoot],
++            TimeSpan.FromSeconds(30), cancellationToken).ConfigureAwait(false);
++        string? line = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
++            .LastOrDefault();
++        if (process.ExitCode != 0 || line is null)
++            return ExternalJson.Failure(operation, "notification_list_process_failed");
++        using JsonDocument document = JsonDocument.Parse(line);
++        JsonElement source = document.RootElement;
++        if (!source.TryGetProperty("ok", out JsonElement ok) || ok.ValueKind != JsonValueKind.True)
++            return ExternalJson.Failure(operation, "notification_list_postread_failed");
++        List<(string Kind, string? Title, string? NextRunUtc, string State)> items = [];
++        int staleTasks = 0;
++        DateTimeOffset now = DateTimeOffset.UtcNow;
++        if (source.TryGetProperty("tasks", out JsonElement tasks) && tasks.ValueKind == JsonValueKind.Array)
++        {
++            foreach (JsonElement task in tasks.EnumerateArray())
++            {
++                string taskName = task.TryGetProperty("taskName", out JsonElement nameElement)
++                    && nameElement.ValueKind == JsonValueKind.String ? nameElement.GetString() ?? "" : "";
++                Match identity = Regex.Match(taskName, "^BAXY-(Alarm|Reminder)-[0-9a-f]{32}$",
++                    RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100));
++                if (!identity.Success) continue;
++                string? nextRun = task.TryGetProperty("nextRunUtc", out JsonElement nextElement)
++                    && nextElement.ValueKind == JsonValueKind.String ? nextElement.GetString() : null;
++                string state = task.TryGetProperty("state", out JsonElement stateElement)
++                    && stateElement.ValueKind == JsonValueKind.String ? stateElement.GetString() ?? "" : "";
++                // A one-shot task that already fired keeps its registration without a
++                // next run: it is not scheduled any more and is not listed.
++                if (nextRun is null
++                    || !DateTimeOffset.TryParse(nextRun, System.Globalization.CultureInfo.InvariantCulture,
++                        System.Globalization.DateTimeStyles.RoundtripKind, out DateTimeOffset nextRunAt)
++                    || nextRunAt <= now)
++                {
++                    staleTasks++;
++                    continue;
++                }
++                items.Add((
++                    identity.Groups[1].Value == "Alarm" ? "alarm" : "reminder",
++                    ReadRingTitle(Path.Combine(_alarmRoot, taskName + ".ps1")),
++                    nextRun,
++                    state));
++            }
++        }
++        var shown = items.OrderBy(item => item.NextRunUtc ?? "~", StringComparer.Ordinal).Take(limit).ToArray();
++        JsonElement result = ExternalJson.Create(writer =>
++        {
++            writer.WriteStartObject(); writer.WriteNumber("version", 1);
++            writer.WriteNumber("count", items.Count);
++            writer.WriteStartArray("notifications");
++            foreach (var item in shown)
++            {
++                writer.WriteStartObject();
++                writer.WriteString("kind", item.Kind);
++                if (item.Title is not null) writer.WriteString("title", item.Title);
++                if (item.NextRunUtc is not null) writer.WriteString("nextRunUtc", item.NextRunUtc);
++                writer.WriteString("state", item.State);
++                writer.WriteEndObject();
++            }
++            writer.WriteEndArray();
++            writer.WriteNumber("staleTaskCount", staleTasks);
++            writer.WriteNumber("resultLimit", limit);
++            writer.WriteBoolean("resultsMayBeTruncated", items.Count > shown.Length);
++            writer.WriteString("authority", "windows_task_scheduler_notification_list_postread");
++            writer.WriteEndObject();
++        });
++        return ExternalJson.Success(operation, result, effectObserved: false);
++    }
++
++    private static string? ReadRingTitle(string path)
++    {
++        if (!File.Exists(path)) return null;
++        Match encoded = Regex.Match(File.ReadAllText(path), @"FromBase64String\('([A-Za-z0-9+/=]+)'\)",
++            RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100));
++        if (!encoded.Success) return null;
++        try
++        {
++            return Encoding.UTF8.GetString(Convert.FromBase64String(encoded.Groups[1].Value));
++        }
++        catch (FormatException)
++        {
++            return null;
++        }
++    }
++
+     private async ValueTask<ExternalCapabilityReceipt> ScheduleAsync(
+         string operation,
+         string kind,
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 8d9e0956..d215fa16 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -5139,6 +5139,10 @@ def _explicit_arguments_from_evidence(
+         if len(folders) == 1:
+             return {"folder": next(iter(folders))}
+ 
++    if operation == "notification.list":
++        if effect_intent._notification_listing_request(evidence):
++            return {}
++
+     if operation == "filesystem.known.list":
+         recent_listing = effect_intent._known_folder_recent_listing(evidence)
+         if recent_listing is not None:
+diff --git a/src/baxy_mind/data/catalog_operation_aliases.v1.json b/src/baxy_mind/data/catalog_operation_aliases.v1.json
+index 2a1d7533..c9cc1858 100644
+--- a/src/baxy_mind/data/catalog_operation_aliases.v1.json
++++ b/src/baxy_mind/data/catalog_operation_aliases.v1.json
+@@ -1,5 +1,5 @@
+ {
+-  "alias_count": 157,
++  "alias_count": 158,
+   "aliases": [
+     {
+       "normalized_text": "cierra la ventana de bloc de notas.",
+@@ -775,6 +775,14 @@
+       "target_operation": "notification.dismiss",
+       "text": "Dismiss el recordatorio vencido que acabo de seleccionar."
+     },
++    {
++      "normalized_text": "lista los timers y alarmas programados.",
++      "operations": [
++        "notification.list"
++      ],
++      "target_operation": "notification.list",
++      "text": "Lista los timers y alarmas programados."
++    },
+     {
+       "normalized_text": "lista los recordatorios vencidos que aun no descarte.",
+       "operations": [
+@@ -1278,8 +1286,8 @@
+     }
+   ],
+   "authority": "proposal_only_authenticated_catalog_intersection",
+-  "catalog_operations": 174,
+-  "catalog_sha256": "23784c0d5e223c368be9e7665067378ad369aa5e934d9c27de5bd5a8dac518ae",
++  "catalog_operations": 174,
++  "catalog_sha256": "23784c0d5e223c368be9e7665067378ad369aa5e934d9c27de5bd5a8dac518ae",
+   "excluded_app_memory_operations": [
+     "memory.correct",
+     "memory.disable",
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index fedb08ca..76d4ffb2 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -9162,6 +9162,32 @@ def _known_folder_recent_listing(text: str) -> tuple[str, int] | None:
+     return (enum, int(match.group("n"))) if enum else None
+ 
+ 
++_NOTIFICATION_LISTING = (
++    r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
++    r"(?:(?:lista|listame|list|enumera|enumerame|mostrame|muestrame|muestra|show me|show|decime|dime|"
++    r"contame|cuentame|tell me)\s+(?:me\s+)?(?:cuales\s+son\s+|which\s+are\s+|what\s+are\s+)?"
++    r"(?:los|las|mis|my|the|todos los|todas las|all my|all the|all)?\s*|"
++    r"(?:cuales|which|what)\s+(?:son\s+)?(?:los|las|mis|my|the)?\s*|"
++    r"(?:que|what)\s+)"
++    r"(?:(?:programad[oa]s?|activ[oa]s?|scheduled|active)\s+)?"
++    r"(?:timers?|temporizadores?|alarmas?|alarms?|cuentas?\s+(?:atras|regresivas?)|countdowns?)"
++    r"(?:\s+(?:y|and)\s+(?:timers?|temporizadores?|alarmas?|alarms?|recordatorios?|reminders?))?"
++    r"(?:\s+(?:programad[oa]s?|activ[oa]s?|pendientes|scheduled|active|set))?"
++    r"(?:\s+(?:que\s+)?(?:tengo|hay|do i have|are (?:there|set)|i have))?"
++    r"(?:\s+(?:programad[oa]s?|activ[oa]s?|pendientes|scheduled|active|set))?[\s?!.]*$"
++)
++
++
++def _notification_listing_request(text: str) -> bool:
++    """AGENDA1435 «listá los timers», «qué alarmas tengo»: the scheduled
++    alarms and reminders, never the due ones (those keep notification.list.due)."""
++
++    folded = _fold(text)
++    if _has(folded, r"\b(?:vencid[oa]s?|due|overdue|expired|pendientes\s+de\s+descartar)\b"):
++        return False
++    return re.match(_NOTIFICATION_LISTING, folded) is not None
++
++
+ def _known_folder_listing_request(text: str) -> str | None:
+     """FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
+     the known-folder enum of a whole-folder listing request, else None."""
+@@ -9195,6 +9221,8 @@ def _strict_catalog_request(
+         or _known_folder_recent_listing(text) is not None
+     ):
+         return EffectIntent(("filesystem.known.list",), (text,))
++    if "notification.list" in available_operations and _notification_listing_request(text):
++        return EffectIntent(("notification.list",), (text,))
+     if window_inventory_arguments(text) is not None:
+         return (
+             EffectIntent(("window.resolve",), (text,))
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 723ac0bc..152b72d3 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3809,6 +3809,8 @@ def _compose_situation_payload(
+                 visible_seen["writtenText"] = written
+         elif operation == "filesystem.known.list":
+             visible_seen = _project_known_listing(visible_seen, language)
++        elif operation == "notification.list":
++            visible_seen = _project_notification_listing(visible_seen, language)
+         elif operation == "ocr.read":
+             # SCREEN1407 «leéme lo que dice la pantalla»: the receipt carries the
+             # layout boxes, hashes and timestamps (about 30 KB) and the composer
+@@ -4497,6 +4499,44 @@ def _project_known_listing(observed: dict, language: str) -> dict:
+     return projected
+ 
+ 
++def _project_notification_listing(observed: dict, language: str) -> dict:
++    """AGENDA1435 «listá los timers»: kind, title and next run of each scheduled
++    alarm or reminder, plus the count; the task identities stay out."""
++
++    entries = observed.get("notifications")
++    scheduled = []
++    for entry in (entries if isinstance(entries, list) else []):
++        if not isinstance(entry, dict):
++            continue
++        kind = entry.get("kind")
++        label = {
++            "alarm": ("alarma", "alarm"),
++            "reminder": ("recordatorio", "reminder"),
++        }.get(str(kind), (str(kind), str(kind)))[1 if language == "en" else 0]
++        item: dict = {"kind": label}
++        if isinstance(entry.get("title"), str) and entry["title"].strip():
++            item["title"] = entry["title"].strip()
++        next_run = entry.get("nextRunUtc")
++        if isinstance(next_run, str) and next_run:
++            local = _local_clock_text(next_run)
++            item["nextRun"] = local or next_run
++        scheduled.append(item)
++    count = observed.get("count") if type(observed.get("count")) is int else len(scheduled)
++    return {"count": count, "scheduled": scheduled}
++
++
++def _local_clock_text(iso_utc: str) -> str | None:
++    """A UTC ISO instant as local «YYYY-MM-DD HH:MM»; None when unparsable."""
++
++    try:
++        instant = datetime.fromisoformat(iso_utc.replace("Z", "+00:00"))
++    except ValueError:
++        return None
++    if instant.tzinfo is None:
++        instant = instant.replace(tzinfo=timezone.utc)
++    return instant.astimezone().strftime("%Y-%m-%d %H:%M")
++
++
+ def _known_listing_in_payload(payload: dict) -> dict | None:
+     """The projected listing («seen» with names) of a verified known-folder listing."""
+ 
+@@ -11612,6 +11652,28 @@ class LlmRuntime:
+         # the dense output allowance, keeping their existing prompt unchanged.
+         if dense_fact_contract or dense_inventory:
+             payload["max_tokens"] = 512
++        if (
++            visible_situation.get("operation") == "notification.list"
++            and isinstance(visible_situation.get("seen"), dict)
++            and isinstance(visible_situation["seen"].get("scheduled"), list)
++        ):
++            # AGENDA1435 «listá los timers»: the report is the count and, for
++            # each scheduled alarm or reminder, its kind, title and next run.
++            instruct(
++                "\nseen.scheduled holds the alarms and reminders BAXY has scheduled "
++                "(kind, title, nextRun in local time) and seen.count their number. "
++                "If seen.count is 0, say that there are no alarms or reminders "
++                "scheduled, nothing else. Otherwise say how many there are and name "
++                "each one with its kind, its title verbatim in quotation marks and "
++                "its next run. No purpose, no interpretation, no other items."
++                if response_language == "en"
++                else "\nseen.scheduled trae las alarmas y recordatorios que BAXY tiene "
++                "programados (tipo, título, nextRun en hora local) y seen.count su "
++                "número. Si seen.count es 0, di que no hay alarmas ni recordatorios "
++                "programados, nada más. Si no, di cuántos hay y nombra cada uno con "
++                "su tipo, su título tal cual entre comillas y su próxima ejecución. "
++                "Sin propósito, sin interpretación, sin otros elementos."
++            )
+         if _known_listing_in_payload(visible_situation) is not None:
+             # FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
+             # the report is the count and a few names exactly as listed.
+diff --git a/src/baxy_mind/observed_response_literals.py b/src/baxy_mind/observed_response_literals.py
+index 2f132fa5..6209daa9 100644
+--- a/src/baxy_mind/observed_response_literals.py
++++ b/src/baxy_mind/observed_response_literals.py
+@@ -43,6 +43,16 @@ def without_observed_names(text: str, situation: object) -> str:
+                         names.update(value for key in fields
+                                      if isinstance(value := entry.get(key), str)
+                                      and value.strip() and len(value) <= 4096)
++        if (node.get("kind") == "operation" and operation == "notification.list"
++                and node.get("verified") is True and node.get("succeeded") is True
++                and node.get("polarity") == "success"):
++            # AGENDA1435 «listá los timers»: a scheduled title is observed data.
++            observed = node.get("observed")
++            scheduled = observed.get("notifications") if isinstance(observed, dict) else None
++            if isinstance(scheduled, list):
++                names.update(title.strip() for entry in scheduled if isinstance(entry, dict)
++                             and isinstance(title := entry.get("title"), str)
++                             and 0 < len(title.strip()) <= 4096)
+         if (node.get("kind") == "operation" and operation == "filesystem.known.list"
+                 and node.get("verified") is True and node.get("succeeded") is True
+                 and node.get("polarity") == "success"):

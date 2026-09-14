@@ -393,3 +393,7 @@ Energía del sistema pasa de 0/3 a 1/3 con el validador de mención del pedido r
 ## Actualización 2026-09-14 (FILES1433)
 
 Archivos y carpetas pasa de 23/32 a 24/32 con el listado ordenado por fecha (commit 71bf9a21, BUILD1433) (HEAD 71bf9a21): 6/6 ejecutados, 6 aprobados (3 listados ordenados por fecha con total verificado y los N nombres más recientes citados tal cual, 3 límites), 0 fallidos, cero violaciones, 1 créditos. Los finales dan el total real y exactamente las N entradas más nuevas en orden; no pronuncian «recientes». Quedan condicionados en la categoría: .py del directorio actual (H0701), contenido dinámico (H0334/H0426), zip (H0542), backup a pendrive (H0733), resumen de PDF (H0666), borrado de carpeta (H0327) y la ruta literal (H0299).
+
+## Actualización 2026-09-14 (AGENDA1435)
+
+Alarmas, recordatorios, tareas y agenda pasa de 36/38 a 37/38 con el listado de notificaciones programadas construido (commit 2bbd25fc, BUILD1435) (HEAD 2bbd25fc): 6/6 ejecutados, 6 aprobados (3 listados de notificaciones programadas verificados con recuento cero fiel, 3 límites), 0 fallidos, cero violaciones, 1 créditos. El listado excluye las 910 tareas BAXY-Alarm ya disparadas sin próxima ejecución que siguen registradas en este PC; el final dice con verdad que no hay alarmas ni recordatorios programados. Queda condicionado «qué tengo agendado para hoy» (calendar.event.list exige cuenta Microsoft).

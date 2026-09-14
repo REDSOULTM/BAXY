@@ -1,3 +1,11 @@
+# AGENDA1435 adjudicado — 2026-09-14T16:21:28.033234+00:00
+
+**445/742 cubiertos, 297 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 398175dafcaa02c9b185c569e8df51a0ce43671880c2959b303876b1c4a70794. Primeras altas 24 h >= 319 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 2bbd25fc con BUILD1435 (notification.list; AGENDA1435/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación; los nombres listados quedan en los recibos privados y nunca se publican.
+
+AGENDA1435 («Alarmas, recordatorios, tareas y agenda», H0262 «listá los timers», listado de alarmas y recordatorios programados): 6/6 ejecutados, 6 aprobados (3 listados de notificaciones programadas verificados con recuento cero fiel, 3 límites), 0 fallidos, cero violaciones, 1 créditos. Adjudicación 72cf1e72d670b2b553cefe954e58eaa52f0a7d7893b0a25e2c6eb30d7d5db611. El listado excluye las 910 tareas BAXY-Alarm ya disparadas sin próxima ejecución que siguen registradas en este PC; el final dice con verdad que no hay alarmas ni recordatorios programados. Queda condicionado «qué tengo agendado para hoy» (calendar.event.list exige cuenta Microsoft).
+
+---
+
 # FILES1433 adjudicado — 2026-09-14T16:07:30.289934+00:00
 
 **444/742 cubiertos, 298 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA e6248a29d6709c9b29d2f941ec2995d359d1a2e477109f73cec4711c742d7d60. Primeras altas 24 h >= 318 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 71bf9a21 con BUILD1433 (filesystem.known.list con orden por fecha; FILES1433/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación; los nombres listados quedan en los recibos privados y nunca se publican.

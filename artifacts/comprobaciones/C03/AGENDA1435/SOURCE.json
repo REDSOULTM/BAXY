@@ -1,0 +1,15 @@
+{
+  "schema": "c03-agenda1435-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (descriptor notification.list de sólo lectura), src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs (handler), src/Baxy.Providers.Windows/External/WindowsScheduledNotificationAdapter.cs y WindowsExternalCapabilityProvider.cs (tareas BAXY-* con próxima ejecución futura: tipo, título del script de aviso, próxima ejecución; las ya disparadas no se listan), src/Baxy.App/ObservedResponseLiterals.cs (títulos como datos observados), src/baxy_mind/effect_intent.py, __main__.py, llm.py, observed_response_literals.py y catalog_operation_aliases.v1.json (lector, fundamento, proyección, instrucción, enmascarado, alias)",
+  "patch": "artifacts/comprobaciones/C03/AGENDA1435/SOURCE.patch",
+  "commits": [
+    "2bbd25fcbb84270b775bdca60f532dabfeb4e9d2"
+  ],
+  "build": "BUILD1435 (C03-repairs1435-build/BUILD_READY.json; Kernel, Core, Providers.Windows y App recompilados)",
+  "cause_measured": "H0262 «listá los timers» condicionado desde AGENDA1337: no había listado completo de notificaciones programadas (sólo notification.list.due, las vencidas).",
+  "change": "Nueva operación notification.list (sólo lectura) que enumera las alarmas y recordatorios programados por BAXY con próxima ejecución futura (tipo, título, próxima ejecución), sin identidades de tarea; lector de «listá los timers/alarmas»; el compositor dice cuántos hay o que no hay ninguno. Sin respuestas fijas.",
+  "measurement": "AGENDA1435: 6/6 ejecutados, 6 aprobados (3 listados de notificaciones programadas verificados con recuento cero fiel, 3 límites), 0 fallidos, cero violaciones; 1 créditos. El listado excluye las 910 tareas BAXY-Alarm ya disparadas sin próxima ejecución que siguen registradas en este PC; el final dice con verdad que no hay alarmas ni recordatorios programados. Queda condicionado «qué tengo agendado para hoy» (calendar.event.list exige cuenta Microsoft).",
+  "credits": 1
+}
