@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación NETWORK1297
+# Categorías actuales — adjudicación NETWORK1299
 
-377/742 cubiertos; 365 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 251 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: bf221a777e03779cc15e70aa33a188b06e5e0a4bbeb99cc6f748f4f7fb44098d.
+377/742 cubiertos; 365 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 251 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: fe51c6c71b0a80be65a4adf64158b327817fd668bdefe97754387d6c8c9f17e9.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|

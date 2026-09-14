@@ -1,0 +1,15 @@
+{
+  "schema": "c03-network1299-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (action_attributed_to_user devuelto por _payload_fact_defect, la puerta que acepta candidatos; missing_scan_limit revertido)",
+  "patch": "artifacts/comprobaciones/C03/NETWORK1299/SOURCE.patch",
+  "commits": [
+    "e59ca7127e5c8d902bb3223897b84c20ef7fceb8"
+  ],
+  "build": "BUILD1299 (C03-repairs1299-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "NETWORK1297: el veto de actor sólo etiquetaba la auditoría (rejection_reason); la aceptación la decide blocked → _payload_fact_defect, así que «Ya apagaste el bluetooth» se publicó igual. missing_scan_limit agotó los borradores de wifi.status (no_response).",
+  "change": "El defecto de actor vive en _payload_fact_defect (gate real); missing_scan_limit eliminado y el límite de escaneo documentado como condición. Sin respuestas fijas.",
+  "measurement": "NETWORK1299: 6 ejecutados, 5 aprobados, 1 fallido; 0 créditos. Sin crédito: «Apagame el bluetooth.» volvió a publicar «Ya apagaste el bluetooth» porque la carga visible del compositor sólo trae operation y seen y el defecto de actor exigía kind/verified/succeeded (compose-audit payload_keys); H0071, H0179 y «Desactivame» aprobados con radio verificada.",
+  "credits": 0
+}

@@ -1,3 +1,11 @@
+# NETWORK1299 adjudicado — 2026-09-14T01:48:51.776930+00:00
+
+**377/742 cubiertos, 365 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA fe51c6c71b0a80be65a4adf64158b327817fd668bdefe97754387d6c8c9f17e9. Primeras altas 24 h >= 251 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e59ca712 con BUILD1299 (mente: defecto de actor en la puerta de aceptación del compositor; NETWORK1299/SOURCE.json|SOURCE.patch; .NET sin cambios). Radio Bluetooth propia del PC fijada por la raíz antes de cada caso y restaurada (apagada) después (net_case.sh, bt_radio.ps1).
+
+NETWORK1299 («Red y Bluetooth», apagado del bluetooth con pares clíticos; turnos ordinarios): 6 ejecutados, 5 aprobados, 1 fallido, 0 créditos. Adjudicación dbf5ddd46b8ba726c20c25333b36d73755817346fdb9adbf13f573ac7feb3588. Sin crédito: «Apagame el bluetooth.» volvió a publicar «Ya apagaste el bluetooth» porque la carga visible del compositor sólo trae operation y seen y el defecto de actor exigía kind/verified/succeeded (compose-audit payload_keys); H0071, H0179 y «Desactivame» aprobados con radio verificada.
+
+---
+
 # NETWORK1297 adjudicado — 2026-09-14T01:42:22.112433+00:00
 
 **377/742 cubiertos, 365 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA bf221a777e03779cc15e70aa33a188b06e5e0a4bbeb99cc6f748f4f7fb44098d. Primeras altas 24 h >= 251 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 93af506c con BUILD1297 (mente: veto de acción atribuida al usuario y límite de escaneo en wifi.status; NETWORK1297/SOURCE.json|SOURCE.patch; .NET sin cambios). Radio Bluetooth propia del PC fijada por la raíz antes de cada caso y restaurada (apagada) después (net_case.sh, bt_radio.ps1).

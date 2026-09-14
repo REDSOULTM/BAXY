@@ -1,0 +1,377 @@
+{
+  "schema": "network1299-root-adjudication-v2",
+  "decided_at_utc": "2026-09-14T01:48:51.776930+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "e59ca7127e5c8d902bb3223897b84c20ef7fceb8",
+  "decisions_sha256": "9f22d5b70af6463b471ef5e03de8e13aa51df3c3017f3fac6a9b3a208cf5f5ae",
+  "registry_before_sha256": "bf221a777e03779cc15e70aa33a188b06e5e0a4bbeb99cc6f748f4f7fb44098d",
+  "registry_before_counts": {
+    "covered": 377,
+    "open": 365,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "fb7a9380e7da5633ad0879699bcd9ae05a4fcbb24d9bd52d1d7755552320f572",
+  "preparation_sha256": "30db52b9dec1406cd1d1bf0137c6bb16fd2e645498c7014bde7486b57b7c9487",
+  "passed": 5,
+  "failed": 1,
+  "unexecuted": 0,
+  "executed": 6,
+  "segments_started": 6,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [],
+  "counters": {
+    "covered": 377,
+    "open": 365,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 251,
+    "categories_total": 35,
+    "categories_closed_after": 0,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 251 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); NETWORK1299 añade 0. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 251
+  },
+  "resources": {
+    "seconds_sum": 101.6699999999837,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1574.4140625
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0071",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Respuesta fiel y útil.",
+      "observation_note": "Turno ordinario: bluetooth.radio.set (radio propia del PC, sin dispositivos en uso; estado previo fijado por la raíz y restaurado después) completada y verificada por la API oficial de radios; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "ace3ee2c643d8bc35e63720563a31a0eba74c4bba8c65e056c0fd269d1b44109",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-00\\EXIT.json": "8283594d196800de5936a4662d760007575062fefeb3000249062acf1d525407",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-00\\RESOURCES.json": "248a31bab683bb0f2cf5813f31d6e12a22491f9a30ad9ad118c9ef56428e1ff7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\profile-owner-00.json": "89730c9310ef5ca1268bb2d0028d13e0e0de93490f7eb6016c85fe16ffbd855d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-00\\PREREG.json": "c9643642e442643d6075da5acf6429cf3ca583b5ed7961cfd2cb33ad3b901367",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-00\\capture\\events.jsonl": "00a3807c0c5a55a0b715874a02474cb485ebc76aa6b755203eea302f7f52bea7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-00\\turns.jsonl": "e63f268f27e9b742b506269f9879cce4a1b73c7e407bbd21fd7823613f377fe1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\fixture-00.json": "18c113994ce795191fbb04dbc2b0b4e3f37f61a5aefac5e82abe0309d53843e3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\context-00.json": "59aebdc15fe2d0f185cfd92b6e40efffb2faf621a3df30f5b0941ef4d2c327bb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\context-prelaunch-00.json": "18044aeb1b5bc69dad4e95e80322aa440ab82d66cb5a6fdad2fefd26d2d17164",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-00\\case-observations.json": "161ff176cc85f03167cbbba9b1613d86e1b9b40d9a245dd8b14a3023d1f06eb3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-00\\journal-before.json": "f42ba869fba161830e6b66276866be3e922b3ab2e717372aa26409cc80059c15",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-00\\journal-after.json": "0da3f16841472e2b3ff13ed69d1bb991ee2afe9d417ff1c259f5d58db9c3f58e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "5d7a14241137c1489a509651cd2d812518c52685737313492f69046cf4a7e080"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "60c93244-88a0-4e12-8501-f75f55fe18d2",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "976fc4a4-6213-43ef-8ab7-340462369b17",
+          "operation": "bluetooth.radio.set",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0179",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Respuesta fiel y útil.",
+      "observation_note": "Turno ordinario: bluetooth.radio.set (radio propia del PC, sin dispositivos en uso; estado previo fijado por la raíz y restaurado después) completada y verificada por la API oficial de radios; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "3fd72b4a18e25cbe432e768bbf508196bfc15d01152825d5b42c706983e4287a",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-01\\EXIT.json": "5da52dce6b71438e9a91f4ea9f8d0af91d3da24d1419f1c7656dce203cddfa04",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-01\\RESOURCES.json": "6ce4d109cd4fb7ee299b9e467a919c625f10bc738ff51a4fd36d7d77db11a089",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\profile-owner-01.json": "935e6dcc2142669f908fc2f099c6b201594b1ff7bf4d6c9593b9ef6ba133043a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-01\\PREREG.json": "f8d40eeab18600d7dfbe315d2ad563900395fe66c66e4447305be6c8ce09f13f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-01\\capture\\events.jsonl": "bded48fd89c28a6a811950c2e45e6175a5983f3cd6b9815495efbe901344e906",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-01\\turns.jsonl": "6fb18bb35e0787b8834bae8e638733b4f9a0cec3487165eab3b1feecb6342ea7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\fixture-01.json": "e6f4c1c9a8e646af3a73a8b18cc2c66e8a2e08bdac3ed207cd869a521ce4de05",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\context-01.json": "94cc0f0b4721716eef18147b7af701a4430c36d5716829657b50596ff8aa3529",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\context-prelaunch-01.json": "fd3ec3bc24c594d3d569b49c03a0e4320aafe4a163027eb72e250d5db0f316cb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-01\\case-observations.json": "a852d25ad898bae8b06b4d85637882ac3384bbc52ac09cafb3dc46803cd8edb5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-01\\journal-before.json": "d6ac8e6f2c021902ba59a511b3d146f7321e70892d0ef15065b26428b0bb98b5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-01\\journal-after.json": "36d509e3574b7d36cba0a4ea8dc90e5bc7ca03e1383105e453f5bba4b1e4e678",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "bef99d6010376aa95622f265f574f286e6b958777bdf255eda52db098de9b82c"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "a15d0e64-db58-4607-ad2c-5ee0c4010a84",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "0608ef27-b95d-4cdb-b189-edbedcef27b6",
+          "operation": "bluetooth.radio.set",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "network1299-dev-01",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: la operación no se completó y verificó, o el final no fue fiel.",
+      "observation_note": "Final publicado; bluetooth.radio.set completada y verificada; el final atribuyó la acción al usuario; pins intactos.",
+      "final_sha256": "b35c4edaeb6e09f8b818845fb1d4ef25d3ef4d83d5152c01dabcbc94796dd5ba",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-02\\EXIT.json": "ca273564a450e964d078b89196d40c928a73766f19b93caf25b00d2e0f313349",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-02\\RESOURCES.json": "3675e3bd584b4d05f4f51d3044345d39256f58f90a2e962f4c6cc4fdf1103e3f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\profile-owner-02.json": "59a7207d9bfef365944aa069382ac3ebc7c1c264816c4893a8d4869793b81ed8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-02\\PREREG.json": "ecda7c405179a8dc4f032b38d81604dfa4aac6abc013adde5295dd0e29f3c250",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-02\\capture\\events.jsonl": "84c53ead44672534fbf42a644a3ced4e3452d7e4d5a1fc08aee523dd9c05ca0c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-02\\turns.jsonl": "a68228eb3ee789d6ad37657ad7e1359d328a488ad5567c594baea21d9dc38af2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\fixture-02.json": "d3e0ba2dc7043743b3e0dc7f26f4c4d3a297950e7ca5acfe337948133aba41b1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\context-02.json": "8a27bce4ee43af9a5440e4c25dee20e09992559fb256b184ddbed6801cd45855",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\context-prelaunch-02.json": "2eed7265173457db188ebebbcf5daacbd7790e4433d0c4b5b0964796d880c4e9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-02\\case-observations.json": "084f0aa3b7b4e343696b619810033a64a30a5b43711769f9748e1f19d094b8e2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-02\\journal-before.json": "9215e108c1e9299c81640983ea799be50b68efbacad5ffb54b2a494219b23072",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-02\\journal-after.json": "5ebf18d39d8484925d931ce9e572e5453dc43a28cd57c4b2f7be788a52758435",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "feda35770054698232d67a9203355fb1e84008843d89422f1071f4aedd3e73d6"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "a16924ac-6fe6-4149-a8b6-90ee7eb341f2",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "7d9f0621-c323-4463-8136-ea0441aa033f",
+          "operation": "bluetooth.radio.set",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "network1299-dev-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Respuesta fiel y útil.",
+      "observation_note": "Turno ordinario: bluetooth.radio.set (radio propia del PC, sin dispositivos en uso; estado previo fijado por la raíz y restaurado después) completada y verificada por la API oficial de radios; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "39717d23116356ccb3b0e2f204221cea8b72a908c3e85a923556cd6e9757840b",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-03\\EXIT.json": "30f39d6c91a8380d9298eb2015a751331a8c196894b60d90984a6b871567f54e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-03\\RESOURCES.json": "dccc13b99309f5ef2cc3d43f954076c524011eed2ff23ddf3138fd412d7a0c90",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\profile-owner-03.json": "a84d60fce02bba94c02fa9996e1534db149c13aa9f2ccc9207249fa15d9bb908",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-03\\PREREG.json": "c53f8eaa7d0d440049843285fd8e3933c740034ee20bf6cbd04fdd2644b645bd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-03\\capture\\events.jsonl": "f35f7d3de3258acd86b42ccb47f22308ca86a4711fe6aab3498b0ba2fc232f4b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-03\\turns.jsonl": "454be057e8b3977c39a9d110aaacb72a7afd10e6cde0380eefd5b455ca083d84",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\fixture-03.json": "7bbee36b6bf9d83f4d481bdf009951be0e95888a72db4b4d0aefc6500ec464fd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\context-03.json": "de4cac6ab170824446a46ca5a1a2ebcad1cf5e5231457c51d501127f8ef4da9c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\context-prelaunch-03.json": "18606daa117560723e8f106cb9994219c27d8760aa31367c1ee7744a67a7e937",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-03\\case-observations.json": "6e745d2cbf39b6036e0797c8dca428b5e2fb0dd483ea642156b90d084945a035",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-03\\journal-before.json": "57d68bc7d6af7529d17f3110a91428a7cfbefcbb31c05d1e65b43a7a88cb1aaa",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-03\\journal-after.json": "be30807c1a2f3be8373f4d21c7a47195c21ea739b7966f050f8c147c9c87dd1f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "4c588b6cfb5cb9abe4ca0b0853a686f214dc52e31ed8f5b35c865ba99a3ddf9c"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "c8196b7d-146c-4c68-987c-3f9e5fc413f0",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "8157c6e8-2b0b-4a08-b4fd-6033084bb618",
+          "operation": "bluetooth.radio.set",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "network1299-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "7cd81f0845e5e7e4bd23d1cfcc78cb1771683c338e8b2a9c0d7fd11d3fad12c0",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-04\\EXIT.json": "82bc0ba8fbbd2382d65a8942ce03aa39d34552ae80385f1411e937392ed42eaa",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-04\\RESOURCES.json": "62b58c8bfe9c74429208e7acbf971cd8bee475d9a4b3cf9628c3eb6e942210f5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\profile-owner-04.json": "ba84c34b26e33f1d8f2305c65ca9c06cc962c00f71f4d1ad1a648b5183ab75e8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-04\\PREREG.json": "b3dfc0495a19b282baf1f523d83dadbc7ebf218e916c2c00493cd1ba687465f4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-04\\capture\\events.jsonl": "4ed1d9816814372776fae9c4b46fa1fa6afa726e6bcc5cad171dba3cd681b1dc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-04\\turns.jsonl": "d16b9118ab793b3ce1c9856f5dfcd6d1e7232af729cb7d137888aff512643825",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\fixture-04.json": "3fe6d1d1d0108f7a9d14ec25efacce0cd7e0e4a3d7a549ec7453ba3b0326367a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\context-04.json": "7b861dd5b15dc9628b4feeb4b5255a88f87d80c53208ed99acf175b8fe14dd32",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\context-prelaunch-04.json": "1f0cc25a6bb268783874c43a08bbdab6a4dbd14c4728a765b36db0a62ee3ec53",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-04\\case-observations.json": "5e2904745251dd5a746df8d8466547c2fe1602594b20fcda83da99370fad1a3e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-04\\journal-before.json": "dcf419663283a78503fddc4aea6048212349b5b04c02cc34132aa8a0625b1b82",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-04\\journal-after.json": "35694f466ee919e0ffe420671677f566044826b5834576a814dc49b9442a5b03",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "675f1a1a9396b5d835438e94138b785ec17ab003c373b2d8bb43fa2c595c2516"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "9c8625f4-339f-4730-b158-27cf6c7c7dfd",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "network1299-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "e5f4717bdc1f76d97622623ed9bc3f958c35676efb866a633ba0757b541fbc2c",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-05\\EXIT.json": "fc1db58bea7e56b140c2d4425eee7d0b3ab4b9d191f23697601df839ed77279a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-05\\RESOURCES.json": "0bfceb0bf339cb8068ec2ac45716d51714c1fab698a9857b97b30002f27c69df",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\profile-owner-05.json": "be1e0d13fd7d921025eba781c36016a2b581fda1d8b9badee3f6ffbcc3a86cb1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\results\\case-05\\PREREG.json": "daec9fb5bdc2a08c961df234bdcfd2a34a58097b36bd0a1a8858fac0ee8e6d26",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-05\\capture\\events.jsonl": "bad192a75bcd024a107f3d72fb4bc71d89b31f97a391e42dff922f95be2c5e50",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-05\\turns.jsonl": "0d758993f367ac51c68cb823fee4a88bedc0f7d8f395dea4a5e53279304e5d5d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\fixture-05.json": "9c2ffc912e2e283d0095de704f1fab82acb4000c1e700a65cae578d63b4ef937",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\context-05.json": "63c8e94e57a0b7d7a189e879e782d0cee295c3a06fa710a91e6d9347243ab4fd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\context-prelaunch-05.json": "458541b9316978084a3441267a3004f8232b5c02855806ce0c976821117568f9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-05\\case-observations.json": "75eceee3e462b6f7bc52e81e0a47ac827419d9b24b84a5ade66864ab70bdca30",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-05\\journal-before.json": "995aaf14ba728d2f4a2b6b9ed6850bc8e160e14f479646ae9d47f5152a50c080",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-05\\journal-after.json": "7dbf7cc5a4a2c96f9851fafa9e0e0f06c2997364d01f23aadaa8efc17c6ec105",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1299-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "41c822a57c132718b956161be88372309ba2bb4409675cad55024b07d858cff6"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "29fb19b6-574f-4df2-a3a4-f0d1f23ecd78",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "NETWORK1299: 6 ejecutados, 5 aprobados, 1 fallidos, 0 créditos (índices []). Siguiente: categoría por masa abierta según CONDICIONES.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}
