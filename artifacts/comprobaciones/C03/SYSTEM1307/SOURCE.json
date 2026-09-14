@@ -1,0 +1,17 @@
+{
+  "schema": "c03-system1307-source-adoption-v1",
+  "status": "adopted_measured",
+  "commits": [
+    "f0fa080403090010de800ad09bae2990c53eaaae"
+  ],
+  "owner": "src/baxy_mind/llm.py (invented_version en _payload_fact_defect: nombre de actualización de Windows o número de versión ausente de los hechos de os; pista de reintento)",
+  "patch": "artifacts/comprobaciones/C03/SYSTEM1307/SOURCE.patch",
+  "build": "BUILD1307 (C03-repairs1307-build/BUILD_READY.json; .NET sin cambios)",
+  "measured_by": "root (Claude Fable 5.1)",
+  "candidate": "HEAD f0fa0804 con BUILD1307",
+  "panel": "os_memory con dos pares; 2 límites",
+  "result": "5 ejecutados, 5 aprobados, 0 fallidos; 1 créditos. H0508 «Dime que version de Windows tengo y cuanta RAM tiene este PC.» acreditado con pares «Qué Windows tengo y cuánta RAM tiene el PC» y «Decime qué Windows tengo y cuánta RAM tiene esta compu.»: system.status (os_memory) verificada en los tres, finales con la versión observada (10.0.26200 x64 / Windows 11 Home) y el total de RAM (16,54 GB) sin etiqueta falsa ni nombre de actualización inventado. Límites aprobados.",
+  "cause_measured": "SYSTEM1305: H0508 inventó «versión 22H2» (observado: majorVersion 10, buildNumber 26200, caption Windows 11 Home Single Language).",
+  "adjudication_sha256": "22c08f6c9f1c1d6b2cecdb97c9b1d744f00d8c097a7f8c14a332cf5d9330a288",
+  "credits": 1
+}

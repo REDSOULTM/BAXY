@@ -1,0 +1,64 @@
+commit f0fa080403090010de800ad09bae2990c53eaaae
+
+C03: an unobserved Windows version label is a composer defect (SYSTEM1305 residual H0508)
+
+llm: invented_version in _payload_fact_defect when a system.status draft names a feature update («22H2») or a version number absent from the observed os facts; hint restricts the final to the observed edition, major version and build.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 79c0e670..e7adf5b0 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3967,6 +3967,20 @@ def _memory_value_forms(value: object) -> list[str]:
+     return sorted(forms, key=len, reverse=True)
+ 
+ 
++def _invented_windows_version(text: str, os_facts: dict) -> bool:
++    """A feature-update name («22H2») or a version number absent from the observed os facts."""
++
++    observed = " ".join(str(value) for value in os_facts.values() if isinstance(value, (str, int, float)))
++    folded = text.casefold()
++    if re.search(r"\b\d{2}h[12]\b", folded) and not re.search(r"\b\d{2}h[12]\b", observed.casefold()):
++        return True
++    observed_numbers = set(re.findall(r"\d+", observed))
++    for match in re.finditer(r"\b(?:version|versión|build|compilación|compilacion)\s+(\d+(?:\.\d+)*)", folded):
++        if any(part not in observed_numbers for part in match.group(1).split(".")):
++            return True
++    return False
++
++
+ def _mislabelled_installed_memory(text: str, memory: dict) -> bool:
+     """A total or usable figure called «instalada»/«installed» when the observed installed value differs."""
+ 
+@@ -4027,6 +4041,15 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+         # predicate that gates acceptance (blocked → payload defect), not
+         # only the audit label in rejection_reason.
+         return "action_attributed_to_user"
++    if (
++        payload.get("operation") == "system.status"
++        and isinstance(seen, dict)
++        and isinstance(seen.get("os"), dict)
++        and _invented_windows_version(text, seen["os"])
++    ):
++        # SYSTEM1305 H0508: «Windows 11 versión 22H2» — no feature-update name
++        # or version number is observed beyond major/minor/build.
++        return "invented_version"
+     if (
+         payload.get("operation") == "system.status"
+         and isinstance(seen, dict)
+@@ -11224,6 +11247,13 @@ class LlmRuntime:
+                 if response_language == "en"
+                 else "Lo hiciste tú, no la persona: di lo que hiciste, en primera persona."
+             ),
++            "invented_version": (
++                "Name only the observed Windows edition, major version and build; "
++                "no feature-update name like 22H2."
++                if response_language == "en"
++                else "Di sólo la edición, la versión mayor y la compilación observadas de "
++                "Windows; sin nombres de actualización como 22H2."
++            ),
+             "mislabelled_installed": (
+                 "The figure you called installed is the total; the installed "
+                 "capacity is a different observed value. Say total, or use the "

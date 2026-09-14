@@ -1,3 +1,11 @@
+# SYSTEM1307 adjudicado — 2026-09-14T02:13:16.963260+00:00
+
+**382/742 cubiertos, 360 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA a6d68f6353c01839530a8c95b9ed78e00d55a6f5fe103a682296cb196b3d9d91. Primeras altas 24 h >= 256 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f0fa0804 con BUILD1307 (mente: defecto invented_version; SYSTEM1307/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+SYSTEM1307 («Estado de hardware y sistema», Windows+RAM sobre el defecto de versión inventada): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. Adjudicación 22c08f6c9f1c1d6b2cecdb97c9b1d744f00d8c097a7f8c14a332cf5d9330a288. H0508 «Dime que version de Windows tengo y cuanta RAM tiene este PC.» acreditado con pares «Qué Windows tengo y cuánta RAM tiene el PC» y «Decime qué Windows tengo y cuánta RAM tiene esta compu.»: system.status (os_memory) verificada en los tres, finales con la versión observada (10.0.26200 x64 / Windows 11 Home) y el total de RAM (16,54 GB) sin etiqueta falsa ni nombre de actualización inventado. Límites aprobados.
+
+---
+
 # SYSTEM1305 adjudicado — 2026-09-14T02:08:05.113860+00:00
 
 **381/742 cubiertos, 361 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 33e5c468560fbe557e8edec5460ff53a4f533fd1e9f486c73101290c74d0d24b. Primeras altas 24 h >= 255 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c94e71e8 con BUILD1305 (mente: defecto mislabelled_installed; SYSTEM1305/SOURCE.json|SOURCE.patch; .NET sin cambios).
