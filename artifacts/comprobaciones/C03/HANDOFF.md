@@ -1,3 +1,11 @@
+# AUDIO1351 adjudicado — 2026-09-14T05:28:51.135049+00:00
+
+**403/742 cubiertos, 339 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA c553a3ab33c576685b69ea6e4b52db0388ab265c06e07e88774c46fd29268f7c. Primeras altas 24 h >= 277 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a82301b7 con BUILD1351 (mente: «poné» como eco imperativo; AUDIO1351/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+AUDIO1351 («Audio y volumen», los dos niveles absolutos de volumen abiertos): 8 ejecutados, 6 aprobados, 2 fallidos, 0 violaciones; H0465 y H0640 acreditados con dos pares cada uno, 2 créditos. Adjudicación 43df9ce1c9693885f09bf05098120eea1f104da333439e0ffeefbc81ec3f886e. Medición: con «poné» como eco imperativo el final informa el nivel puesto («El volumen se puso al 30…»); «a la mitad» se ejecuta como 50 y se verifica. Residual: un par afirmó «Bajé» tras subir 40→50 (dirección falsa) y «No toques el volumen» pide aclaración («toques» fuera del lector de prohibiciones). Audio queda en 41/51 con compuestos, alcance ambiguo, volumen por app, pronombres sin antecedente y cuatro idiomas fuera.
+
+---
+
 # CONVERSATION1349 adjudicado — 2026-09-14T05:21:36.715434+00:00
 
 **401/742 cubiertos, 341 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA a98995820f47f4f9c3d52992c0ecc53d6f34b4f449a157f51c96558498c1a5dc. Primeras altas 24 h >= 275 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5f59d677 con BUILD1349 (mente: acuse de dos oraciones; CONVERSATION1349/SOURCE.json|SOURCE.patch; .NET sin cambios).

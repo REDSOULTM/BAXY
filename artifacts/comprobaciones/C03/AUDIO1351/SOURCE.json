@@ -1,0 +1,15 @@
+{
+  "schema": "c03-audio1351-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_starts_with_request_imperative: formas voseo y clíticas de «pon»)",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1351/SOURCE.patch",
+  "commits": [
+    "a82301b73c69afd74bea9e80e64a9fa1177f2d90"
+  ],
+  "build": "BUILD1351 (C03-repairs1351-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "AUDIO1239: «poné el volumen al 30» fijó y verificó el nivel pero el final repitió la orden en imperativo («Poné el volumen al 30.»); AUDIO861: «subí el volumen a la mitad» ejecutó 100→50 y agotó la composición.",
+  "change": "Compositor: «pone/poné/poneme/ponme/ponelo/ponlo» cuentan como eco imperativo, así que el final informa el resultado. Sin respuestas fijas.",
+  "measurement": "AUDIO1351: 8 ejecutados, 6 aprobados, 2 fallidos, 0 violaciones; H0465 y H0640 acreditados con dos pares cada uno; 2 créditos. Medición: con «poné» como eco imperativo el final informa el nivel puesto («El volumen se puso al 30…»); «a la mitad» se ejecuta como 50 y se verifica. Residual: un par afirmó «Bajé» tras subir 40→50 (dirección falsa) y «No toques el volumen» pide aclaración («toques» fuera del lector de prohibiciones). Audio queda en 41/51 con compuestos, alcance ambiguo, volumen por app, pronombres sin antecedente y cuatro idiomas fuera.",
+  "credits": 2
+}

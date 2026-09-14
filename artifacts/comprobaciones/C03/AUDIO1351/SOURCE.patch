@@ -1,0 +1,27 @@
+commit a82301b73c69afd74bea9e80e64a9fa1177f2d90
+
+C03: «poné/poneme/ponme» count as an imperative echo in the composer (AUDIO1351)
+
+AUDIO1239 measured «poné el volumen al 30» → final «Poné el volumen al 30.»: the level was set and verified, but the final repeated the order because the imperative-echo check only knew «pon». The voseo and clitic forms (pone, poneme, ponme, ponelo, ponlo) now count as the same echo, so the composer reports the result instead.
+
+No .NET change. Offline probe only; tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 74e509bf..9303c278 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -479,7 +479,10 @@ def _starts_with_request_imperative(text: str) -> bool:
+         re.search(
+             r"^\s*(?:(?:list|show|tell|open|create|set|mute|close|delete|send)\b|"
+             r"(?:lista|muestra)\s+(?:el|la|los|las|un|una)\b|"
+-            r"(?:dime|abre|crea|pon|silencia|cierra|elimina|envia|guarda)\b)",
++            r"(?:dime|abre|crea|pon|silencia|cierra|elimina|envia|guarda|"
++            # AUDIO1239 H0465 «poné el volumen al 30» → final «Poné el volumen
++            # al 30.»: the voseo and clitic forms of «pon» are the same echo.
++            r"pone|poneme|ponme|ponelo|ponlo)\b)",
+             folded,
+         )
+         is not None
