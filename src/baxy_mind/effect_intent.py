@@ -1353,6 +1353,8 @@ def _curated_domain_is_grounded(
         ):
             return False
         return True
+    if operation == "display.status":
+        return _has(folded, r"\b(?:resolucion|monitor(?:es)?|pantallas?|screens?|displays?|hz|hertz|hercios|frecuencia|refresh)\b")
     if operation == "bluetooth.radio.status":
         return _has(folded, r"\bbluetooth\b") and not _has(
             folded, r"\b(?:configuracion|settings|entra|enter|abre|open)\b"
@@ -9121,6 +9123,30 @@ _BLUETOOTH_STATE_QUESTION = re.compile(
 )
 
 
+_DISPLAY_STATUS_QUESTION = re.compile(
+    r"^[¿?¡!\s]*(?:"
+    # «qué resolución tengo», «qué resolución de pantalla tengo», «cuál es la resolución de mi pantalla»
+    r"(?:que|cual\s+es\s+la|what|what's|whats|dime\s+(?:que|la|cual)|decime\s+(?:que|la|cual))\s+resolucion(?:\s+(?:de|del)\s+(?:la\s+|mi\s+|el\s+|the\s+|my\s+)?(?:pantalla|monitor|screen|display))?(?:\s+(?:tengo|tiene|uso|estoy\s+usando|do\s+i\s+have|is|am\s+i\s+using))?|"
+    # «cuántos monitores tengo», «how many monitors do i have»
+    r"(?:cuantos|cuantas|how\s+many)\s+(?:monitores|pantallas|monitors|screens|displays)(?:\s+(?:tengo|hay|tiene|do\s+i\s+have|are\s+there|are\s+connected))?|"
+    # «qué Hz tiene el monitor», «a cuántos Hz va la pantalla», «qué frecuencia de refresco tiene el monitor»
+    r"(?:que|cuantos|a\s+cuantos|what|how\s+many)\s+(?:hz|hertz|hercios|frecuencia(?:\s+de\s+(?:refresco|actualizacion))?|refresh\s+rate)\s+(?:tiene|va|corre|tengo|has|is|does)?\s*(?:el\s+|la\s+|mi\s+|the\s+|my\s+)?(?:monitor|pantalla|screen|display)?(?:\s+(?:have|run\s+at|running\s+at))?"
+    r")\b[\s?!.,]*$",
+    re.IGNORECASE,
+)
+
+
+def _display_status_question(text: str) -> bool:
+    """SYSTEM1459 «qué resolución tengo», «cuántos monitores tengo», «qué Hz tiene el
+    monitor»: a display.status read of the attached monitors — never a change."""
+
+    folded = _strip_request_envelope(_fold(text)).strip()
+    return (
+        _DISPLAY_STATUS_QUESTION.match(folded) is not None
+        and not _has(folded, r"\b(?:cambia|cambiar|pone|poner|ajusta|ajustar|sube|baja|set|change|brillo|brightness)\b")
+    )
+
+
 def _bluetooth_state_question(text: str) -> bool:
     """NETWORK1457 «tengo el bluetooth encendido», «y el bluetooth?»: a
     bluetooth.radio.status read — the radio's state, never a device list."""
@@ -9165,6 +9191,7 @@ def _is_direct_request(text: str) -> bool:
         # verb head; the state question itself is the speech act.
         or _wifi_state_question(text)
         or _bluetooth_state_question(text)
+        or _display_status_question(text)
     ):
         return True
     request_head = (
@@ -9383,6 +9410,8 @@ def _strict_catalog_request(
         return EffectIntent(("notification.list",), (text,))
     if "bluetooth.radio.status" in available_operations and _bluetooth_state_question(text):
         return EffectIntent(("bluetooth.radio.status",), (text,))
+    if "display.status" in available_operations and _display_status_question(text):
+        return EffectIntent(("display.status",), (text,))
     if window_inventory_arguments(text) is not None:
         return (
             EffectIntent(("window.resolve",), (text,))

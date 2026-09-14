@@ -1,5 +1,5 @@
 {
-  "alias_count": 159,
+  "alias_count": 160,
   "aliases": [
     {
       "normalized_text": "cierra la ventana de bloc de notas.",
@@ -774,6 +774,14 @@
       ],
       "target_operation": "notification.dismiss",
       "text": "Dismiss el recordatorio vencido que acabo de seleccionar."
+    },
+    {
+      "normalized_text": "decime que resolucion de pantalla tengo.",
+      "operations": [
+        "display.status"
+      ],
+      "target_operation": "display.status",
+      "text": "Decime qué resolución de pantalla tengo."
     },
     {
       "normalized_text": "decime si tengo el bluetooth encendido.",

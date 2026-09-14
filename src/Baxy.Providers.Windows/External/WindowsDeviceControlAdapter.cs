@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
@@ -268,6 +269,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     public bool CanHandle(string operation) => operation is
         "bluetooth.device.list" or "bluetooth.device.pair"
         or "bluetooth.radio.set" or "bluetooth.radio.status"
+        or "display.status"
         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
         or "wifi.profile.list" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
         or "wifi.ensure.connected" or "wifi.status"
@@ -289,6 +291,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 "bluetooth.radio.set" => await BluetoothRadioSetAsync(
                     operation, arguments, effectBoundary, cancellationToken),
                 "bluetooth.radio.status" => await BluetoothRadioStatusAsync(operation),
+                "display.status" => DisplayStatus(operation),
                 "peripheral.list" => await PeripheralListAsync(operation, arguments, cancellationToken),
                 "peripheral.print" => await PrintAsync(
                     operation, arguments, effectBoundary, cancellationToken),
@@ -495,6 +498,121 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
+
+    // SYSTEM1459 «qué resolución tengo», «cuántos monitores tengo», «qué Hz tiene el
+    // monitor»: the desktop's attached display devices and their current mode,
+    // read through the Win32 display API without changing anything.
+    private static ExternalCapabilityReceipt DisplayStatus(string operation)
+    {
+        var monitors = new List<(string Name, bool Primary, uint Width, uint Height, uint Hertz)>();
+        for (uint index = 0; index < 32; index++)
+        {
+            DisplayDevice device = default;
+            device.Size = (uint)Marshal.SizeOf<DisplayDevice>();
+            if (!EnumDisplayDevicesW(null, index, ref device, 0))
+            {
+                break;
+            }
+            const uint attachedToDesktop = 0x1;
+            const uint primaryDevice = 0x4;
+            if ((device.StateFlags & attachedToDesktop) == 0)
+            {
+                continue;
+            }
+            string name;
+            unsafe
+            {
+                name = new string(device.DeviceName).TrimEnd('\0');
+            }
+            DeviceMode mode = default;
+            mode.Size = (ushort)Marshal.SizeOf<DeviceMode>();
+            const int currentSettings = -1;
+            if (!EnumDisplaySettingsW(name, currentSettings, ref mode))
+            {
+                continue;
+            }
+            monitors.Add((name, (device.StateFlags & primaryDevice) != 0, mode.PelsWidth, mode.PelsHeight, mode.DisplayFrequency));
+        }
+        if (monitors.Count == 0)
+        {
+            return ExternalJson.Failure(operation, "display_devices_not_found");
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteNumber("monitorCount", monitors.Count);
+            writer.WriteStartArray("monitors");
+            foreach ((string name, bool primary, uint width, uint height, uint hertz) in monitors)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("name", name);
+                writer.WriteBoolean("primary", primary);
+                writer.WriteNumber("width", width);
+                writer.WriteNumber("height", height);
+                writer.WriteNumber("refreshHz", hertz);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteString("authority", "windows_display_devices_api_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    private unsafe struct DisplayDevice
+    {
+        public uint Size;
+        public fixed char DeviceName[32];
+        public fixed char DeviceString[128];
+        public uint StateFlags;
+        public fixed char DeviceId[128];
+        public fixed char DeviceKey[128];
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    private unsafe struct DeviceMode
+    {
+        public fixed char DeviceName[32];
+        public ushort SpecVersion;
+        public ushort DriverVersion;
+        public ushort Size;
+        public ushort DriverExtra;
+        public uint Fields;
+        public int PositionX;
+        public int PositionY;
+        public uint DisplayOrientation;
+        public uint DisplayFixedOutput;
+        public short Color;
+        public short Duplex;
+        public short YResolution;
+        public short TtOption;
+        public short Collate;
+        public fixed char FormName[32];
+        public ushort LogPixels;
+        public uint BitsPerPel;
+        public uint PelsWidth;
+        public uint PelsHeight;
+        public uint DisplayFlags;
+        public uint DisplayFrequency;
+        public uint IcmMethod;
+        public uint IcmIntent;
+        public uint MediaType;
+        public uint DitherType;
+        public uint Reserved1;
+        public uint Reserved2;
+        public uint PanningWidth;
+        public uint PanningHeight;
+    }
+
+    [LibraryImport("user32.dll", StringMarshalling = StringMarshalling.Utf16)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool EnumDisplayDevicesW(string? device, uint deviceIndex, ref DisplayDevice displayDevice, uint flags);
+
+    [LibraryImport("user32.dll", StringMarshalling = StringMarshalling.Utf16)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool EnumDisplaySettingsW(string deviceName, int modeIndex, ref DeviceMode deviceMode);
 
     private async ValueTask<ExternalCapabilityReceipt> PeripheralListAsync(
         string operation,

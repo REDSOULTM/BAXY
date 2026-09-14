@@ -25,6 +25,7 @@ internal static class ExternalCapabilityHandlers
         "calendar.event.list",
         "clipboard.copy",
         "clipboard.paste",
+        "display.status",
         "email.latest.read",
         "email.latest.reply",
         "game.catalog.list",

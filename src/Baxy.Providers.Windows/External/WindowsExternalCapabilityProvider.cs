@@ -206,6 +206,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                     ? "vision_provider_not_configured" : "vision_session_adapter_required",
             "peripheral.list" or "peripheral.print" or "peripheral.scan" =>
                 "peripheral_hardware_gate_required",
+            "display.status" => "windows_display_api_required",
             "ocr.read" => "windows_ocr_language_pack_gate_required",
             "package.install.prepare" or "package.install.commit" => "winget_adapter_gate_required",
             "system.settings.adjust" or "system.settings.set" or "system.settings.status" =>

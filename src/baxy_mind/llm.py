@@ -4844,6 +4844,39 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         ) is None:
             return "echo_without_report"
     if (
+        payload.get("operation") == "display.status"
+        and isinstance(seen, dict)
+        and isinstance(seen.get("monitors"), list)
+    ):
+        # SYSTEM1459: every number in the reply must be an observed one
+        # (width, height, refresh rate, count), and the asked number must appear.
+        observed_numbers: set[str] = set()
+        for monitor in seen["monitors"]:
+            if isinstance(monitor, dict):
+                for key in ("width", "height", "refreshHz"):
+                    if isinstance(monitor.get(key), int):
+                        observed_numbers.add(str(monitor[key]))
+        count = seen.get("monitorCount")
+        if isinstance(count, int):
+            observed_numbers.add(str(count))
+        numbers_in_text = re.findall(r"(?<![\d.,])\d{2,}(?![\d.,])", text)
+        if any(number not in observed_numbers for number in numbers_in_text):
+            return "invented_number"
+        asks = _reading_fold(user_text)
+        if re.search(r"\bresoluci", asks) and not all(
+            any(str(monitor.get(key)) in text for monitor in seen["monitors"] if isinstance(monitor, dict))
+            for key in ("width", "height")
+        ):
+            return "missing_state"
+        if re.search(r"\b(?:hz|hertz|hercios|frecuencia|refresh)\b", asks) and not any(
+            str(monitor.get("refreshHz")) in text for monitor in seen["monitors"] if isinstance(monitor, dict)
+        ):
+            return "missing_state"
+        if re.search(r"\b(?:cuantos|cuantas|how\s+many)\b", asks) and isinstance(count, int):
+            words = {1: r"\b(?:un|uno|una|one|solo\s+un|1)\b", 2: r"\b(?:dos|two|2)\b", 3: r"\b(?:tres|three|3)\b", 4: r"\b(?:cuatro|four|4)\b"}
+            if not re.search(words.get(count, rf"\b{count}\b"), folded):
+                return "missing_state"
+    if (
         payload.get("operation") == "bluetooth.radio.status"
         and isinstance(seen, dict)
         and isinstance(seen.get("radioOn"), bool)
@@ -11863,6 +11896,26 @@ class LlmRuntime:
                 else "\nseen.radioOn es la radio Bluetooth: true significa encendida, false "
                 "significa apagada. Di cuál, en una oración corta; no se cambió nada."
             )
+        if (
+            visible_situation.get("operation") == "display.status"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("monitors"), list)
+        ):
+            # SYSTEM1459: the read lists the attached monitors; answer only
+            # what was asked with the observed numbers.
+            instruct(
+                "\nseen.monitors are the attached monitors (name, primary, width, height "
+                "in pixels, refreshHz) and seen.monitorCount their number. Answer only "
+                "what the person asked with those exact numbers: the resolution as "
+                "width x height, the count, or the refresh rate in Hz. One or two short "
+                "sentences; no other numbers, nothing was changed."
+                if response_language == "en"
+                else "\nseen.monitors son los monitores conectados (name, primary, width, "
+                "height en píxeles, refreshHz) y seen.monitorCount su cantidad. Contesta "
+                "sólo lo que preguntó la persona con esos números exactos: la resolución "
+                "como ancho x alto, la cantidad, o la frecuencia en Hz. Una o dos "
+                "oraciones cortas; sin otros números; no se cambió nada."
+            )
         if _search_results_text(visible_situation) is not None:
             # WEB1445: the person asked a live question; the results are pages,
             # not the answer itself. Say what was found, never what it might say.
@@ -12564,6 +12617,11 @@ class LlmRuntime:
                 "Do not state a weather condition, temperature or forecast the results do not contain; name the pages found (their titles and sites) instead."
                 if response_language == "en"
                 else "No afirmes un estado del tiempo, temperatura ni pronóstico que los resultados no contengan; nombra en su lugar las páginas encontradas (sus títulos y sitios)."
+            ),
+            "invented_number": (
+                "Use only the observed numbers from seen.monitors (width, height, refreshHz) and seen.monitorCount; no other number."
+                if response_language == "en"
+                else "Usa sólo los números observados de seen.monitors (width, height, refreshHz) y seen.monitorCount; ningún otro número."
             ),
             "reversed_state": (
                 "State the observed Bluetooth radio state exactly: seen.radioOn true is on, false is off."

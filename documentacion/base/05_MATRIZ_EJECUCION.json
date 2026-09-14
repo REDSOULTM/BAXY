@@ -692,6 +692,15 @@
       "reason": null
     },
     {
+      "operation": "display.status",
+      "verifierContractId": "display.status.windows.display.devices.read.v1",
+      "risk": "read_only",
+      "observation": "display.status.windows.display.devices.read.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Lee los monitores conectados (cantidad, resolución, frecuencia) por la API de pantalla de Windows; sin efecto."
+    },
+    {
       "operation": "email.latest.read",
       "verifierContractId": "email.latest.read.outlook.mapi.snapshot.v1",
       "risk": "privacy_sensitive",

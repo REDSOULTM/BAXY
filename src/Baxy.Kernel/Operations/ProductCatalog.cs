@@ -295,6 +295,13 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Reemplaza texto del portapapeles y verifica contenido y secuencia mediante postlectura."),
         Descriptor(
+            "display.status",
+            EmptySchema(),
+            OperationRisks.ReadOnly,
+            "display.status.windows.display.devices.read.v1",
+            ToolExposure.Public,
+            "Lee los monitores conectados (cantidad, resolución y frecuencia de refresco) mediante la API de pantalla de Windows; sin efecto."),
+        Descriptor(
             "email.latest.read",
             EmptySchema(),
             OperationRisks.PrivacySensitive,
