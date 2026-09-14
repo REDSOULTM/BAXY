@@ -1,0 +1,76 @@
+commit b680d2637730d230f753bcb79610592864d2ed54
+
+C03: the screen excerpt travels as a list of lines and the grounding check ignores JSON escapes (SCREEN1421)
+
+SCREEN1419 measured the screen-content questions on the masked failure lenses: the Spanish forms published faithful readings, but the two English variants published nothing. Their drafts quoted the three excerpt lines in a single quotation copying the JSON newline escapes of seen.text, and _ocr_unsupported_terms took the glued fragments (the escape letter stuck to the next word) as words foreign to the recognized text.
+
+llm._compose_situation_payload: the ocr.read projection carries the excerpt as seen.lines (a list) next to seen.text, and the screen-reading instruction asks for each line in its own quotation marks.
+llm._ocr_unsupported_terms: literal \n, \r and \t escapes in the draft are separators before tokenizing; «visu» joins the framing stems (the honest preface says it cannot visualize images).
+
+Offline probe on the SCREEN1419 private audit: the 18 vetoed drafts pass every veto now; an invented description is still vetoed as ocr_unsupported_terms. Mind only, no App recompilation. Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index df81f623..bc9c3bda 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3825,6 +3825,9 @@ def _compose_situation_payload(
+                 )
+             if isinstance(recognized, str):
+                 excerpt = _screen_text_excerpt(recognized)
++                # SCREEN1419: quoted as a joined string, the model copied the
++                # JSON newline escapes into the quotation; a list quotes cleanly.
++                projected["lines"] = excerpt
+                 projected["text"] = "\n".join(excerpt)
+                 projected["excerptLines"] = len(excerpt)
+             for key in ("lineCount", "language"):
+@@ -4401,7 +4404,7 @@ _OCR_FRAMING_STEMS = frozenset({
+     # reading, the screen, lines, quoting
+     "pant", "scre", "text", "lect", "leid", "leyo", "leer", "lei", "reco", "line",
+     "mues", "most", "show", "disp", "apar", "appe", "dice", "dijo", "says", "said",
+-    "vist", "visi", "escr", "pala", "word", "cita", "quot", "capt", "imag", "foto",
++    "vist", "visi", "visu", "escr", "pala", "word", "cita", "quot", "capt", "imag", "foto",
+     "pict", "desc", "cann", "uniej", "pued", "puedo", "veo", "cont", "incl", "tien",
+     "encu", "esta", "hay", "ests", "sigu", "foll", "here",
+     # position words about the screen
+@@ -4493,6 +4496,9 @@ def _ocr_unsupported_terms(text: str, recognized: str, user_text: str) -> list[s
+ 
+     allowed = stems(recognized) | stems(user_text) | _OCR_FRAMING_STEMS
+     unsupported: list[str] = []
++    # A quotation may carry the JSON escapes of the excerpt («…\\n…»); they are
++    # separators, not words.
++    text = re.sub(r"\\[nrt]", " ", text)
+     for word in re.findall(r"[a-z0-9]{5,}", _reading_fold(text)):
+         if word[:4] not in allowed and word not in unsupported:
+             unsupported.append(word)
+@@ -11510,19 +11516,19 @@ class LlmRuntime:
+             payload["max_tokens"] = 512
+         if screen_reading:
+             instruct(
+-                "\nseen.text holds a few lines read from the screen, exactly as "
++                "\nseen.lines holds a few lines read from the screen, exactly as "
+                 "recognized, and seen.lineCount the total number of lines. Say "
+-                "that the screen shows lineCount lines and quote those lines "
+-                "verbatim (untranslated, in quotation marks), nothing else: no "
++                "that the screen shows lineCount lines and quote each of those "
++                "lines verbatim, each in its own quotation marks, nothing else: no "
+                 "purpose, no interpretation, no warnings, no words that are not in "
+-                "seen.text or in the request."
++                "seen.lines or in the request."
+                 if response_language == "en"
+-                else "\nseen.text trae unas pocas líneas leídas de la pantalla, tal "
++                else "\nseen.lines trae unas pocas líneas leídas de la pantalla, tal "
+                 "cual se reconocieron, y seen.lineCount el total de líneas. Di que "
+-                "la pantalla muestra lineCount líneas y cita esas líneas tal cual "
+-                "(sin traducir, entre comillas), nada más: sin propósito, sin "
+-                "interpretación, sin avisos, sin palabras que no estén en seen.text "
+-                "o en el pedido."
++                "la pantalla muestra lineCount líneas y cita cada una de esas líneas "
++                "tal cual, cada una entre sus propias comillas, nada más: sin "
++                "propósito, sin interpretación, sin avisos, sin palabras que no "
++                "estén en seen.lines o en el pedido."
+             )
+             if re.search(
+                 r"\b(?:describ\w*|ves|viendo|see|seeing|hay en|is on|what'?s on)\b",

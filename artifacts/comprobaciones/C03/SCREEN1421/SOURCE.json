@@ -1,0 +1,15 @@
+{
+  "schema": "c03-screen1421-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_compose_situation_payload: el extracto de ocr.read viaja como seen.lines; instrucción de lectura por líneas; _ocr_unsupported_terms: los escapes literales \n/\r/\t son separadores; «visu» entre los tallos de encuadre)",
+  "patch": "artifacts/comprobaciones/C03/SCREEN1421/SOURCE.patch",
+  "commits": [
+    "b680d2637730d230f753bcb79610592864d2ed54"
+  ],
+  "build": "BUILD1421 (C03-repairs1421-build/BUILD_READY.json; sólo mente, sin recompilar la App)",
+  "cause_measured": "SCREEN1419: las dos variantes en inglés citaron las tres líneas del extracto en una sola cita copiando los escapes de salto de línea del JSON de seen.text y la comprobación de fundamento tomó los fragmentos pegados como palabras ajenas al texto reconocido (ocr_unsupported_terms).",
+  "change": "El extracto viaja como seen.lines (lista) junto a seen.text y la instrucción pide cada línea entre sus propias comillas; la comprobación de fundamento trata los escapes literales como separadores y admite «visu» como encuadre. Sin respuestas fijas.",
+  "measurement": "SCREEN1421: 14/14 ejecutados, 12 aprobados (9 lecturas con advertencia honesta y citas textuales verificadas, 3 límites), 2 fallidos (H0458/H0593: cita fiel de una línea de pantalla que termina en «: false» vetada como internal_code), cero violaciones; 5 créditos. Causa medida: compose_visible_defect comprueba la forma de código «: true/false» sobre el texto sin enmascarar, y el enmascarado por líneas usa observed.text (unido con espacios por el proveedor) en vez de layout.lines; siguiente SCREEN1423 con ambas correcciones. Sin proveedor de visión: describir imágenes sigue condicionado; Steam/Doom, «Quiero que lo veas» y H0594 condicionados.",
+  "credits": 5
+}
