@@ -4810,6 +4810,12 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         if listing_defect:
             return listing_defect
     results_text = _search_results_text(payload)
+    if payload.get("operation") == "web.search" and results_text is None:
+        # WEB1445/002 «va a llover mañana» over a search that returned nothing
+        # relevant: «Sí, va a llover mañana. Pero no pude confirmarlo…» asserts
+        # a forecast no result gave. A failed search supports no weather claim.
+        if _SEARCH_WEATHER_CLAIM.search(_reading_fold(text)) is not None:
+            return "search_unsupported_claim"
     if results_text is not None:
         # WEB1445 «qué clima hace hoy»: the results were forecast index pages and
         # the finals invented «buen tiempo, temperaturas agradables, poco viento»
@@ -11808,17 +11814,19 @@ class LlmRuntime:
             # not the answer itself. Say what was found, never what it might say.
             instruct(
                 "\nseen.results are the pages the public search returned (title, url, "
-                "snippet). Report what was found: name the pages by title and site and, "
-                "if a snippet states a fact, you may repeat it with its words. Never "
-                "state a temperature, forecast, condition or any fact that no result "
-                "contains; if the results only point to forecast pages, say that."
+                "snippet). Report what was found in at most three sentences: name at "
+                "most three pages by title and site and, if a snippet states a fact, "
+                "you may repeat it with its words. Never state a temperature, forecast, "
+                "condition or any fact that no result contains; if the results only "
+                "point to forecast pages, say that."
                 if response_language == "en"
                 else "\nseen.results son las páginas que devolvió la búsqueda pública "
-                "(título, url, fragmento). Informa lo encontrado: nombra las páginas por "
-                "título y sitio y, si un fragmento afirma un dato, puedes repetirlo con "
-                "sus palabras. Nunca afirmes una temperatura, un pronóstico, un estado "
-                "del tiempo ni ningún dato que ningún resultado contenga; si los "
-                "resultados sólo remiten a páginas de pronóstico, dilo."
+                "(título, url, fragmento). Informa lo encontrado en tres oraciones como "
+                "máximo: nombra como máximo tres páginas por título y sitio y, si un "
+                "fragmento afirma un dato, puedes repetirlo con sus palabras. Nunca "
+                "afirmes una temperatura, un pronóstico, un estado del tiempo ni ningún "
+                "dato que ningún resultado contenga; si los resultados sólo remiten a "
+                "páginas de pronóstico, dilo."
             )
         if _known_listing_in_payload(visible_situation) is not None:
             # FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:

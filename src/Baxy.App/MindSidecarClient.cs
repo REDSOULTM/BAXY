@@ -252,6 +252,9 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 "window.resolve" => "windows",
                 "system.process.list" => "processes",
                 "filesystem.known.list" => "entries",
+                // WEB1451 «Investiga Spider-Man»: five results with snippets make
+                // a report the five-second ceiling cut before its shortened retry.
+                "web.search" => "results",
                 _ => null,
             };
             return collection is not null && observed[collection] is JsonArray rows

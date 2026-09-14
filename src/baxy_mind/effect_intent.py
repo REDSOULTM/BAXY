@@ -8165,6 +8165,7 @@ _COVERAGE_ACTION_HEAD = (
     r"navigate|ve|go|ir|anda|entra|entrar|recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|"
     rf"play|{_MEDIA_RESUME_VERB}|pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
     r"consulta|consultar|comprueba|comprobar|checkea|averigua|averiguar|"
+    r"investiga|investigar|research|"
     r"find\s+out|inspect|inspecciona|give|prepara|prepare|resolve|"
     r"envia|enviar|enviale|enviales|manda|mandar|mandale|mandales|"
     r"dile|decile|tell|send|"
