@@ -1,3 +1,25 @@
+## BRIGHT1321 — estado vigente 2026-09-14T03:15:03.296889+00:00
+
+Parcial: 10 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 390/742 | 352 | 0 | >=264 | 2/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 262 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); BRIGHT1321 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: BRIGHT1321: 10 ejecutados, 10 aprobados, 0 fallidos, 2 créditos (índices [0, 1]); Brillo y pantalla 16/17 (H0459 fondo de pantalla sin mecanismo). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/BRIGHT1321/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 180.03 s acumulados; pico GPU 3497.56 MiB; pico RAM 1657.95 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 10; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque BRIGHT1321 precedente. -->
+
 ## BRIGHT1319 — estado vigente 2026-09-14T03:05:01.706194+00:00
 
 Parcial: 8 aprobados, 2 fallidos, 0 sin ejecutar; 1 créditos.

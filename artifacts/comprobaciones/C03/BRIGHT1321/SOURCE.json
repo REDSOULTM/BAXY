@@ -1,0 +1,15 @@
+{
+  "schema": "c03-bright1321-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (payload visible de system.settings.* sin authority ni instanceName; _payload_fact_defect contradicted_maximum/minimum con sus pistas)",
+  "patch": "artifacts/comprobaciones/C03/BRIGHT1321/SOURCE.patch",
+  "commits": [
+    "27dc7b5026dce1af6e4f72b63b471634957d5cd9"
+  ],
+  "build": "BUILD1321 (C03-repairs1321-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "BRIGHT1319: H0430 agotó los borradores copiando «WMI» del campo authority del payload visible; H0674 leyó 60 y publicó «El brillo está en el máximo.» sin veto.",
+  "change": "Proyección: authority e instanceName fuera de la copia del narrador para system.settings.* (la observación canónica y las comprobaciones los conservan). Veto: un extremo afirmado (máximo/mínimo/100 %/0 %) que los valores observados no alcanzan es defecto de hecho; el extremo negado pasa. Sin respuestas fijas.",
+  "measurement": "BRIGHT1321: 10 ejecutados, 10 aprobados, 0 fallidos, 0 violaciones; H0430 y H0674 acreditados con dos pares cada uno; 2 créditos. Medición: con el payload visible sin authority el final de la set se publica al primer reintento («El brillo del sistema se ha ajustado al 80%»); con el veto contradicted_maximum la afirmación «tengo el brillo al máximo» recibe el valor observado (60). Brillo y pantalla queda en 16/17: H0459 (fondo de pantalla) sin mecanismo.",
+  "credits": 2
+}

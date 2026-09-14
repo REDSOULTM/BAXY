@@ -1,3 +1,11 @@
+# BRIGHT1321 adjudicado — 2026-09-14T03:15:03.296889+00:00
+
+**390/742 cubiertos, 352 abiertos, 0 NA; 2/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14); C03 formal 3/11. Registro SHA 183258d4761d31494f7ebb2d29672a6e9c6ddbf35830ac2d5a420588bea3cd76. Primeras altas 24 h >= 264 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 27dc7b50 con BUILD1321 (mente: payload visible de ajustes sin token de procedencia; veto de extremo contradicho; BRIGHT1321/SOURCE.json|SOURCE.patch; .NET sin cambios). Brillo fijado en 60 por la raíz y restaurado al del dueño tras cada caso; aprobación de la raíz sólo para el valor pedido (approve_setting.py).
+
+BRIGHT1321 («Brillo y pantalla», H0430 nivel absoluto revisado y H0674 afirmación de nivel): 10 ejecutados, 10 aprobados, 0 fallidos, 0 violaciones; H0430 y H0674 acreditados con dos pares cada uno, 2 créditos. Adjudicación 61dfc880f7d6f22ae828fb23f9f803e52a552c5ff25f34f84df8b46ddc1960c9. Medición: con el payload visible sin authority el final de la set se publica al primer reintento («El brillo del sistema se ha ajustado al 80%»); con el veto contradicted_maximum la afirmación «tengo el brillo al máximo» recibe el valor observado (60). Brillo y pantalla queda en 16/17: H0459 (fondo de pantalla) sin mecanismo.
+
+---
+
 # BRIGHT1319 adjudicado — 2026-09-14T03:05:01.706194+00:00
 
 **388/742 cubiertos, 354 abiertos, 0 NA; 2/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14); C03 formal 3/11. Registro SHA f334f4acdb2c0da7c5e5ee637140bc8312f57f4f9cfe824f589eeb6a544b2289. Primeras altas 24 h >= 262 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 098469b6 con BUILD1319 (mente: afirmación de nivel de brillo → lectura; BRIGHT1319/SOURCE.json|SOURCE.patch; .NET sin cambios). Brillo fijado en 60 por la raíz y restaurado al del dueño tras cada caso; aprobación de la raíz sólo para el valor pedido (approve_setting.py).
