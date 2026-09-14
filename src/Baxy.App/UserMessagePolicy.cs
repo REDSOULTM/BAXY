@@ -2605,6 +2605,7 @@ internal static class UserMessagePolicy
         }
 
         result = WithoutVerifiedEmptyKnownFileFinding(source, result);
+        result = WithoutScreenReadingImageScope(source, result);
 
         if (TryReadJson(source, out JsonElement root)
             && root.TryGetProperty("kind", out JsonElement kind) && kind.ValueKind == JsonValueKind.String && kind.GetString() == "operation"
@@ -2649,6 +2650,54 @@ internal static class UserMessagePolicy
         }
 
         return LooksLikeFailure(result);
+    }
+
+    // SCREEN1417 «qué hay en la pantalla»: no vision provider exists, so a
+    // verified screen reading says it cannot describe images and reads the
+    // text. That clause states the reading's scope, not a failed mission.
+    private static string WithoutScreenReadingImageScope(string source, string result)
+    {
+        if (!HasVerifiedScreenReading(source, 0))
+        {
+            return result;
+        }
+
+        return Regex.Replace(
+            FoldForPolicy(result),
+            @"\b(?:no\s+(?:puedo|podia|podria)|(?:i\s+)?(?:can't|cannot|can\s+not|couldn't|could\s+not|am\s+unable\s+to|am\s+not\s+able\s+to))"
+            + @"\s+(?:describir|describirte|ver|describe|see)\s+(?:las\s+|the\s+)?(?:imagenes?|images?|pictures?|graficos?|graphics|visuales?|visuals)"
+            + @"[^.;]{0,80}",
+            " ",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+    }
+
+    private static bool HasVerifiedScreenReading(string source, int depth)
+    {
+        if (depth > 8 || !TryReadJson(source, out JsonElement root) || root.ValueKind != JsonValueKind.Object)
+        {
+            return false;
+        }
+
+        if (root.TryGetProperty("operation", out JsonElement operation) && operation.ValueKind == JsonValueKind.String
+            && operation.GetString() == "ocr.read"
+            && root.TryGetProperty("verified", out JsonElement verified) && verified.ValueKind == JsonValueKind.True
+            && root.TryGetProperty("succeeded", out JsonElement succeeded) && succeeded.ValueKind == JsonValueKind.True)
+        {
+            return true;
+        }
+
+        if (root.TryGetProperty("steps", out JsonElement steps) && steps.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement step in steps.EnumerateArray())
+            {
+                if (step.ValueKind == JsonValueKind.String && HasVerifiedScreenReading(step.GetString()!, depth + 1))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     private static string WithoutVerifiedEmptyKnownFileFinding(string source, string result)

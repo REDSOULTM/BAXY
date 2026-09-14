@@ -5573,6 +5573,18 @@ def compose_visible_defect(
         failure_assertions = re.sub(
             finding_predicate, "", _accent_folded_with_punctuation(stripped),
         )
+    if _recognized_screen_text_in_situation(situation) is not None:
+        # SCREEN1417 «qué hay en la pantalla»: no vision provider exists, so the
+        # reading says it cannot describe images and reads the text. That is
+        # the stated scope of a verified reading, not a failed mission; mask
+        # only that predicate in the failure lens.
+        failure_assertions = re.sub(
+            r"\b(?:no\s+(?:puedo|podia|podria)|(?:i\s+)?(?:can't|cannot|can\s+not|couldn't|could\s+not|am\s+unable\s+to|am\s+not\s+able\s+to))"
+            r"\s+(?:describir|describirte|ver|describe|see)\s+(?:las\s+|the\s+)?(?:imagenes?|images?|pictures?|graficos?|graphics|visuales?|visuals)"
+            r"[^.;]{0,80}",
+            "",
+            _accent_folded_with_punctuation(failure_assertions),
+        )
     if (
         kind == "operation"
         and situation.get("operation") == "app.installed"
