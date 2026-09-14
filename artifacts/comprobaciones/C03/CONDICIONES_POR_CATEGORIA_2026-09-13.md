@@ -373,3 +373,8 @@ Pantalla, captura e interpretación visual pasa de 7/19 a 12/19 con el extracto 
 ## Actualización 2026-09-14 (SCREEN1423)
 
 Pantalla, captura e interpretación visual pasa de 12/19 a 14/19 con los escapes copiados deshechos y las formas de código juzgadas sobre la copia enmascarada (commit a5ff01d4, BUILD1423) (HEAD a5ff01d4): 9/9 ejecutados, 9 aprobados (6 lecturas con advertencia honesta y tres citas textuales verificadas, 3 límites), 0 fallidos, cero violaciones, 2 créditos. Los finales no muestran escapes residuales ni formas de código. Quedan condicionados en la categoría: Steam/Doom Eternal (cliente ausente), «Quiero que lo veas y de que se trata?» (referente sin resolver) y H0594 (captura + describir: el lector resuelve sólo la captura). Sin proveedor de visión: describir imágenes sigue condicionado.
+
+## Actualización 2026-09-14 (FILES1425, abortada)
+
+Archivos y carpetas sigue en 19/32: BUILD1425 construyó `filesystem.known.list` (listado de primer nivel de una carpeta conocida, sin rutas) para H0201/H0264 «lista los archivos del escritorio» y H0329/H0698 «qué hay en Descargas», pero el núcleo no arrancó (descriptor fuera del orden ordinal del catálogo) y los 4 casos ejecutados quedaron `blocked_environment`; la raíz detuvo la tanda y recompiló antes de adjudicar, con lo que los pins de binarios dejaron de coincidir: sin adjudicación formal (FILES1425/ROOT_ABORT.md), sin créditos ni cambio del registro. Reparación (orden del catálogo) medida en FILES1427.
+
