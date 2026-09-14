@@ -539,3 +539,7 @@ Navegación y búsqueda web pasa de 36/46 a 36/46 con la búsqueda en YouTube ab
 ## Actualización 2026-09-14 (WEB1483)
 
 Navegación y búsqueda web pasa de 36/46 a 38/46 con la búsqueda en YouTube nombrada en el final y la pregunta investigada contestada desde una página (commit 21c4876a, BUILD1483) (HEAD 21c4876a): WEB1483: la búsqueda en YouTube nombra lo que abrió y la pregunta investigada se contesta desde una página; H0728 y H0618 cubiertos, 2 créditos. 9/9 ejecutados, 8 aprobados, 1 límite fallido, 2 créditos
+
+## Actualización 2026-09-14 (SCREEN1485)
+
+Pantalla, captura e interpretación visual pasa de 14/19 a 15/19 con los escapes copiados deshechos y las formas de código juzgadas sobre la copia enmascarada (commit e140d940, BUILD1485) (HEAD e140d940): SCREEN1485: la orden de captura seguida de «describeme lo que ves» lee la pantalla con el aviso honesto; H0594 cubierto, 1 créditos. 6/6 ejecutados, 6 aprobados, 1 crédito; tres lecturas con advertencia honesta y citas textuales verificadas, tres límites

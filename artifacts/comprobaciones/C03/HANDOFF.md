@@ -1,3 +1,11 @@
+# SCREEN1485 adjudicado — 2026-09-14T23:20:35.442788+00:00
+
+**485/742 cubiertos, 257 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 3ed1c15ff2162b3c23d342254e14be73d46fe32260d9745efbd1d64329fa71cb. Primeras altas 24 h >= 359 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e140d940 con BUILD1485 (mente: escapes copiados deshechos, formas de código sobre la copia enmascarada, líneas de layout enmascaradas; SCREEN1485/SOURCE.json|SOURCE.patch). La raíz aprueba sólo una capture.screenshot sin argumentos (approve_capture.py); la captura queda en el directorio privado del perfil y nunca se publica.
+
+SCREEN1485 («Pantalla, captura e interpretación visual», H0458/H0593 «que ves en mi pantalla», captura revisada seguida de lectura OCR): SCREEN1485: la orden de captura seguida de «describeme lo que ves» lee la pantalla con el aviso honesto; H0594 cubierto, 1 créditos. Adjudicación a08cad9527a578278d0d801741fe365d9db2647ea647151b8f9a9fd78f396512. 6/6 ejecutados, 6 aprobados, 1 crédito; tres lecturas con advertencia honesta y citas textuales verificadas, tres límites
+
+---
+
 # WEB1483 adjudicado — 2026-09-14T23:06:58.343770+00:00
 
 **484/742 cubiertos, 258 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 494f306f1b9ff28c887d4e196b63cfd077753a07889b6326d71ce1ee560503d5. Primeras altas 24 h >= 358 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 21c4876a con BUILD1483 (la búsqueda abierta se nombra; el título citado no es re-pregunta; WEB1483/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

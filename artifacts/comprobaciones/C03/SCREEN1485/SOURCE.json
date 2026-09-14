@@ -1,0 +1,15 @@
+{
+  "schema": "c03-screen1485-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (la orden de captura seguida de «describeme/decime lo que ves» o «describe what you see» es la lectura del contenido de la pantalla: rama estricta del catálogo y lectura implícita de pantalla, sin duplicar la captura y sin vision.describe).",
+  "patch": "artifacts/comprobaciones/C03/SCREEN1485/SOURCE.patch",
+  "commits": [
+    "e140d940c5900dd2079fea07a11b422132fda182"
+  ],
+  "build": "BUILD1485 (C03-repairs1485-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "SCREEN1485 dejó H0594 condicionado: el lector resolvía sólo la captura (la rama estricta exige «describe» como palabra entera; «describeme» no lo es) y la lectura implícita de pantalla exigía que el pedido fuera sólo «describe lo que ves».",
+  "change": "Lectura de captura + texto reconocido con el aviso honesto para la orden compuesta; sin respuestas fijas.",
+  "measurement": "SCREEN1485: SCREEN1485: la orden de captura seguida de «describeme lo que ves» lee la pantalla con el aviso honesto; H0594 cubierto; 1 créditos. 6/6 ejecutados, 6 aprobados, 1 crédito; tres lecturas con advertencia honesta y citas textuales verificadas, tres límites",
+  "credits": 1
+}
