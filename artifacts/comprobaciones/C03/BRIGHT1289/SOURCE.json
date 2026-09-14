@@ -1,0 +1,15 @@
+{
+  "schema": "c03-bright1289-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py («wmi» en el veto de vocabulario interno de las preguntas de aclaración; formulate_explicit_clarification_question reintenta una vez cuando la pregunta atribuye la acción al pasado del usuario)",
+  "patch": "artifacts/comprobaciones/C03/BRIGHT1289/SOURCE.patch",
+  "commits": [
+    "11467c9cb99d0f02646f4df92b55f5209b2e466a"
+  ],
+  "build": "BUILD1289 (C03-repairs1289-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "BRIGHT1287: el final de H0430 filtró «WMI»; la pregunta explícita de cantidad ante «Subí bastante el brillo.» salió como «¿Cuánto subiste el brillo?» (pasado del usuario).",
+  "change": "Vocabulario interno: «wmi» (sólo en las aclaraciones de la mente; el final tras confirmación lo compone la App con UserMessagePolicy.ForbiddenTerms, pendiente); reintento corregido (una vez) de la pregunta de cantidad cuando atribuye la acción al usuario. Sin respuestas fijas.",
+  "measurement": "BRIGHT1289: 10 ejecutados, 9 aprobados, 1 fallido; 3 créditos. Tres relativos acreditados (H0123 con preámbulo, H0193 «un poco», H0627 «bastante») con pares «Subí bastante el brillo.» y «Subime un poco el brillo.»: cero operaciones y pregunta por la cantidad conservando la dirección; el reintento evita el pasado del usuario. Las dos variantes de nivel (65, 45) pasaron con set verificada. H0430 volvió a fallar: el final que compone la App tras la confirmación filtra «WMI» y el veto de la mente sólo cubre aclaraciones; pendiente en UserMessagePolicy.ForbiddenTerms.",
+  "credits": 3
+}

@@ -1,3 +1,11 @@
+# BRIGHT1289 adjudicado — 2026-09-14T00:48:36.759962+00:00
+
+**375/742 cubiertos, 367 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA a636395436fddd5f304f70d9b4d8d81c5609c1f371c49bc2f141ad627d7b3a6b. Primeras altas 24 h >= 249 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 11467c9c con BUILD1289 (mente: «wmi» vetado en aclaraciones y reintento de la pregunta de cantidad ante pasado del usuario; BRIGHT1289/SOURCE.json|SOURCE.patch; .NET sin cambios). Brillo fijado en 60 por la raíz y restaurado al del dueño tras cada caso; aprobación de la raíz sólo para el valor pedido (approve_setting.py).
+
+BRIGHT1289 («Brillo y pantalla», restos: un nivel absoluto revisado y tres relativos): 10 ejecutados, 9 aprobados, 1 fallido, 3 créditos. Adjudicación f1cd2ff7bb37e6b62f50f0fc7d4728f9a42b16d39ab1ba2b6ae87150551ff14a. Tres relativos acreditados (H0123 con preámbulo, H0193 «un poco», H0627 «bastante») con pares «Subí bastante el brillo.» y «Subime un poco el brillo.»: cero operaciones y pregunta por la cantidad conservando la dirección; el reintento evita el pasado del usuario. Las dos variantes de nivel (65, 45) pasaron con set verificada. H0430 volvió a fallar: el final que compone la App tras la confirmación filtra «WMI» y el veto de la mente sólo cubre aclaraciones; pendiente en UserMessagePolicy.ForbiddenTerms.
+
+---
+
 # BRIGHT1287 adjudicado — 2026-09-14T00:38:15.634688+00:00
 
 **372/742 cubiertos, 370 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 57cc59c1aa32203559e74cbe2a74973ecd97b29c27d1c858942faa51e6d15d77. Primeras altas 24 h >= 246 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4e8c2caa con BUILD1287 (mente: lector de nivel absoluto de brillo → system.settings.set; App: system.settings.set admitido en el turno revisado; BRIGHT1287/SOURCE.json|APP_SOURCE.json|*.patch). Brillo fijado en 60 por la raíz y restaurado al del dueño tras cada caso; aprobación de la raíz sólo para el valor pedido (approve_setting.py).

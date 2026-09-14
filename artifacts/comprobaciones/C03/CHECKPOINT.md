@@ -1,3 +1,25 @@
+## BRIGHT1289 — estado vigente 2026-09-14T00:48:36.759962+00:00
+
+Parcial: 9 aprobados, 1 fallidos, 0 sin ejecutar; 3 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 375/742 | 367 | 0 | >=249 | 0/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 246 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); BRIGHT1289 añade 3. No se cuentan revalidaciones.
+
+Siguiente acción: BRIGHT1289: 10 ejecutados, 9 aprobados, 1 fallidos, 3 créditos (índices [1, 2, 3]). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/BRIGHT1289/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 166.77 s acumulados; pico GPU 3497.56 MiB; pico RAM 1648.84 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 10; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque BRIGHT1289 precedente. -->
+
 ## BRIGHT1287 — estado vigente 2026-09-14T00:38:15.634688+00:00
 
 Parcial: 10 aprobados, 3 fallidos, 0 sin ejecutar; 3 créditos.
