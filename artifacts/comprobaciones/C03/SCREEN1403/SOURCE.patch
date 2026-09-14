@@ -1,0 +1,35 @@
+commit eb8ea283fdfc98a0d8a81ba0a60a416b2d5aa610
+
+C03: the reviewed turn accepts a pending capture followed by its read (SCREEN1403)
+
+«leéme lo que dice la pantalla» (H0038), «lee lo que hay en la pantalla» (H0709) and «leé lo que dice la pantalla» (H0616) plan capture.screenshot then ocr.read: the first step is the privacy-sensitive capture that needs the confirmation, the second is the read that binds the approved capture. MainWindowViewModel.ConductorConfirmationShape admitted only a single-step pending plan or a verified read prefix, so the reviewed turn could not capture that confirmation.
+
+MainWindowViewModel.ConductorConfirmationShape: a two-step plan whose pending first step is capture.screenshot or capture.active.window and whose second step is ocr.read or vision.describe is a capturable confirmation; nothing else changes.
+
+App recompiled (BUILD1403). Tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/MainWindowViewModel.cs b/src/Baxy.App/MainWindowViewModel.cs
+index 64ed4d00..1e6845b2 100644
+--- a/src/Baxy.App/MainWindowViewModel.cs
++++ b/src/Baxy.App/MainWindowViewModel.cs
+@@ -641,6 +641,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
+             return !allowVerifiedReadPrefix || execution.CurrentStep.Operation != "app.close";
+         }
+ 
++        if (execution.Steps.Count == 2 && execution.NextIndex == 0
++            && execution.Observations.Count == 0 && execution.CompletedMessages.Count == 0
++            && execution.CurrentStep.Operation is "capture.screenshot" or "capture.active.window"
++            && execution.Steps[1].Operation is "ocr.read" or "vision.describe")
++        {
++            // SCREEN1403 «leéme lo que dice la pantalla»: the reviewed capture is
++            // the first step; the read that follows it needs no confirmation
++            // and binds the capture the reviewer approved.
++            return true;
++        }
++
+         // CompleteStep records completed, verified responses. Failed/uncertain
+         // steps retain a boundary or replan; Capture rejects replans separately.
+         if (!allowVerifiedReadPrefix

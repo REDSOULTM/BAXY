@@ -1,0 +1,15 @@
+{
+  "schema": "c03-screen1403-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/MainWindowViewModel.cs (ConductorConfirmationShape: un plan de dos pasos con la captura pendiente en primer lugar y ocr.read/vision.describe después es una confirmación capturable)",
+  "patch": "artifacts/comprobaciones/C03/SCREEN1403/SOURCE.patch",
+  "commits": [
+    "eb8ea283fdfc98a0d8a81ba0a60a416b2d5aa610"
+  ],
+  "build": "BUILD1403 (C03-repairs1403-build/BUILD_READY.json; App recompilada)",
+  "cause_measured": "Los literales de lectura de pantalla planifican capture.screenshot + ocr.read: la captura sensible pendiente va primero y ConductorConfirmationShape sólo admitía un plan pendiente de un paso o un prefijo de lectura verificada, así que el turno revisado no podía capturar la confirmación.",
+  "change": "ConductorConfirmationShape admite el plan de dos pasos captura pendiente (capture.screenshot o capture.active.window) + lectura (ocr.read o vision.describe); la raíz aprueba sólo la captura sin argumentos; la captura y el texto leído quedan privados. Sin respuestas fijas.",
+  "measurement": "SCREEN1403: 10/10 ejecutados, 3 límites aprobados, 7 casos de lectura fallidos por la segunda confirmación de ocr.read, 0 violaciones; 0 créditos. SCREEN1403 sobre BUILD1403 (App: la captura pendiente seguida de su lectura es una confirmación capturable): los tres literales de lectura y las cuatro variantes llegaron al turno revisado; la captura se propuso sin argumentos, la raíz la aprobó y se completó y verificó, y la misión pidió una segunda confirmación para ocr.read, también PrivacySensitive; el turno revisado aloja una sola confirmación, así que no hubo lectura ni final. El caso 6 se reejecutó solo tras una parada del runner causada por la raíz (edición del Kernel en disco al lanzarlo, sin turno admitido; recibos preservados). Siguiente: el motor de misión trata la lectura de una captura confirmada en la misma misión como cubierta por ese consentimiento (SCREEN1405).",
+  "credits": 0
+}
