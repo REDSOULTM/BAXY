@@ -167,6 +167,37 @@ def _weather_lookup_query(text: str) -> str | None:
     return query if query and _has(_fold(query), _WEATHER_WORDS) else None
 
 
+_TOPIC_RESEARCH = re.compile(
+    r"^[¿?¡!\s]*(?:investiga|investigá|investigar|investigue|investigame|investígame|"
+    r"research|look\s+into|look\s+up)\s+"
+    r"(?:(?:en\s+internet|en\s+la\s+web|online|on\s+the\s+internet|on\s+the\s+web)\s+)?"
+    r"(?:(?:sobre|acerca\s+de|about|a)\s+)?"
+    r"(?P<topic>.+?)"
+    r"(?:\s+(?:en\s+internet|en\s+la\s+web|online|on\s+the\s+internet|on\s+the\s+web))?"
+    r"\s*[.!?]*$",
+    re.IGNORECASE,
+)
+
+
+def _topic_research_query(text: str) -> str | None:
+    """WEB1451 «Investiga Spider-Man»: the topic the person asked to research,
+    with its own spelling; None when the request is not a research order or
+    the topic is a question («investiga qué es…»), a local thing or empty."""
+
+    match = _TOPIC_RESEARCH.match(text.strip())
+    if match is None:
+        return None
+    topic = match.group("topic").strip(" \t\r\n.,;:")
+    folded_topic = _fold(topic)
+    if not folded_topic or len(topic.encode("utf-8")) > 200:
+        return None
+    if _has(folded_topic, r"^(?:que|quien|quienes|como|cual|cuales|donde|cuando|por\s+que|porque|what|who|how|which|where|when|why)\b"):
+        return None
+    if _has(folded_topic, r"\b(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|documents?|mi\s+pc|my\s+pc|este\s+equipo)\b"):
+        return None
+    return topic
+
+
 def _public_live_lookup_request(folded: str) -> bool:
     """Recognize live feeds that require a public lookup to answer."""
 
@@ -247,9 +278,23 @@ def _public_live_lookup_request(folded: str) -> bool:
         r"umbrella|paraguas|temperature|temperatura|hot|caluroso|calurosa|"
         r"cold|frio|fria)\b",
     )
+    # WEB1451 «qué pasó hoy en el mundo»: what happened today is the news.
+    todays_events = (
+        re.match(
+            r"^[¿?¡!\s]*(?:que|what)\s+"
+            r"(?:paso|pasa|ha\s+pasado|esta\s+pasando|ocurrio|ocurre|sucedio|"
+            r"happened|is\s+happening|has\s+happened)\s+(?:hoy|today)\b",
+            folded,
+            re.IGNORECASE,
+        )
+        is not None
+    )
+    # WEB1451 «Investiga Spider-Man»: a research order about a named topic
+    # is a public lookup of that topic.
+    topic_research = _topic_research_query(folded) is not None
     # A file, note or document named after the weather, or a question about the
     # word itself («¿qué significa la palabra clima?»), is not a live lookup.
-    if (weather or news) and _has(
+    if (weather or news or todays_events or topic_research) and _has(
         folded,
         r"\b(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|"
         r"documents?|txt|pdf|docx|significa|significado|definicion|define|"
@@ -257,6 +302,8 @@ def _public_live_lookup_request(folded: str) -> bool:
     ):
         weather = False
         news = False
+        todays_events = False
+        topic_research = False
     market_direction = (
         re.match(
             (
@@ -540,6 +587,8 @@ def _public_live_lookup_request(folded: str) -> bool:
         (
             news,
             weather,
+            todays_events,
+            topic_research,
             market_direction,
             market_price,
             local_events,

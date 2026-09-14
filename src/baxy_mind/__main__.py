@@ -4447,6 +4447,23 @@ def _explicit_media_control_arguments(evidence: str) -> dict[str, object] | None
     return arguments
 
 
+def _todays_news_query(text: str) -> str | None:
+    """WEB1451 «qué pasó hoy en el mundo»: a news query with the person's own
+    scope words; None when the request is not a what-happened-today question."""
+
+    match = re.match(
+        r"^[¿?¡!\s]*(?:qué|que|what)\s+"
+        r"(?:pasó|paso|pasa|ha\s+pasado|está\s+pasando|esta\s+pasando|ocurrió|ocurrio|ocurre|sucedió|sucedio|"
+        r"happened|is\s+happening|has\s+happened)\s+(?P<scope>(?:hoy|today)\b.*?)\s*[.!?]*$",
+        text.strip(),
+        re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    scope = re.sub(r"\s+", " ", match.group("scope")).strip()
+    return ("news " if scope.casefold().startswith("today") else "noticias de ") + scope
+
+
 def _explicit_arguments_from_evidence(
     operation: str,
     evidence: str,
@@ -4723,6 +4740,17 @@ def _explicit_arguments_from_evidence(
         location = _explicit_location_search_arguments(search_evidence)
         if location is not None:
             return location
+        topic = effect_intent._topic_research_query(search_evidence)
+        if topic is not None:
+            # WEB1451 «Investiga Spider-Man»: the engine answers the topic, not
+            # the research verb («investiga» never appears in a result page).
+            return {"query": topic}
+        news_query = _todays_news_query(search_evidence)
+        if news_query is not None:
+            # WEB1451 «qué pasó hoy en el mundo»: the engine answers a news
+            # query with the person's scope words («noticias de hoy en el
+            # mundo»); the question itself returns unrelated pages.
+            return {"query": news_query}
         weather_query = effect_intent._weather_lookup_query(search_evidence)
         if weather_query is not None:
             # WEB1445 «qué clima hace hoy», «mostrame el clima», «va a llover
@@ -5275,6 +5303,10 @@ def _ground_explicit_arguments(
             explicit = {"name": name}
     if explicit is None:
         return None
+    if operation == "web.search" and explicit.get("query") == _todays_news_query(evidence):
+        # WEB1451 «qué pasó hoy en el mundo»: the news reader supplies the
+        # word «noticias»; the scope words are the person's own.
+        return explicit if validate_json_schema_instance(explicit, schema) else None
     if operation == "filesystem.known.list" and explicit.get("folder") in (
         effect_intent._known_folder_listing_request(evidence),
         (effect_intent._known_folder_recent_listing(evidence) or (None, None))[0],

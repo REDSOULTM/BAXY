@@ -1609,7 +1609,11 @@ internal static class UserMessagePolicy
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking))
         {
             string word = token.Value;
-            for (int size = 2; size <= 4 && size * 2 <= word.Length; size++)
+            // WEB1449: a doubled two-letter tail is ordinary morphology
+            // («contienen», «intereses», «preparar», «succeeded»), not a
+            // stutter; the measured stutters («llamarar») are listed by
+            // token above. Only a doubled tail of three or more letters counts.
+            for (int size = 3; size <= 4 && size * 2 <= word.Length; size++)
             {
                 string end = word[^size..];
                 string before = word[^(size * 2)..^size];

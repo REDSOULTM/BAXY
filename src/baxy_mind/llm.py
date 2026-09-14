@@ -12149,9 +12149,20 @@ class LlmRuntime:
                 user_text,
             )
 
+        # WEB1449 «Qué clima hay hoy?»: a draft whose generation stopped at the
+        # token budget ended mid-sentence («…pero no contienen») and was
+        # published; the person must never read an unfinished reply. The
+        # texts of the stages that ended by length are remembered here.
+        cut_by_length: set[str] = set()
+
+        def note_length_cut(candidate: str, response: object) -> None:
+            if candidate and _finish_reason_of(response) == "length":
+                cut_by_length.add(candidate)
+
         def blocked(candidate: str) -> bool:
             return (
-                bool(compose_visible_defect(candidate, intent, user_text, facts))
+                candidate in cut_by_length
+                or bool(compose_visible_defect(candidate, intent, user_text, facts))
                 or echoes_an_instruction(candidate)
                 or _truncated_fact_word(candidate, visible_situation)
                 or bool(_payload_fact_defect(candidate, visible_situation, user_text))
@@ -12165,6 +12176,8 @@ class LlmRuntime:
             )
 
         def rejection_reason(candidate: str) -> str:
+            if candidate in cut_by_length:
+                return "cut_by_length"
             defect = compose_visible_defect(candidate, intent, user_text, facts)
             if defect:
                 return defect
@@ -12268,6 +12281,7 @@ class LlmRuntime:
         first_raw = (response["choices"][0]["message"].get("content") or "").strip()
         text = _strip_prompt_labels(first_raw)
         text = title_clip(acting_clip(screen_clip(text)))
+        note_length_cut(text, response)
         if publishable(text):
             record_stage("first", first_raw, text, response, "", True)
             return text
@@ -12408,6 +12422,11 @@ class LlmRuntime:
                 else "Answer the question. Do not greet."
             ),
             "invented": "No invented or truncated words.",
+            "cut_by_length": (
+                "The reply was cut off before its end. Write a shorter one: at most three sentences, naming at most three items, and finish the last sentence."
+                if response_language == "en"
+                else "La respuesta se cortó antes de terminar. Escribe una más corta: como máximo tres oraciones, nombrando como máximo tres elementos, y termina la última oración."
+            ),
             "welcome_repeat": "Un solo Hola.",
             "copied_instruction": "Devuelve el mensaje, no la etiqueta ni la instrucción.",
             "lowercase": (
@@ -12627,6 +12646,7 @@ class LlmRuntime:
         retry_raw = (retry["choices"][0]["message"].get("content") or "").strip()
         retry_text = _strip_prompt_labels(retry_raw)
         retry_text = title_clip(acting_clip(screen_clip(retry_text)))
+        note_length_cut(retry_text, retry)
         if publishable(retry_text):
             record_stage("retry", retry_raw, retry_text, retry, "", True)
             return retry_text
@@ -12668,6 +12688,7 @@ class LlmRuntime:
         third_raw = (third["choices"][0]["message"].get("content") or "").strip()
         third_text = _strip_prompt_labels(third_raw)
         third_text = title_clip(acting_clip(screen_clip(third_text)))
+        note_length_cut(third_text, third)
         if publishable(third_text):
             record_stage("third", third_raw, third_text, third, "", True)
             return third_text
