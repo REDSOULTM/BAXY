@@ -5059,7 +5059,14 @@ _TASK_METADISCOURSE = re.compile(
     r"cumple con (?:los|las) (?:requisitos|reglas)|meets the requirements|"
     r"respond[eo]s? en (?:espa[nñ]ol|ingl[eé]s)|"
     r"respond(?:s|ing)? in (?:spanish|english)|"
-    r"(?:en |in )?primera persona|first person|"
+    # KNOWLEDGE1473 «Que es doom eternal=»: «videojuego de disparos en primera
+    # persona» quoted from a Wikipedia snippet is the genre, not the model
+    # telling that it wrote in the first person.
+    r"(?<!disparos )(?<!disparos en )(?<!juego )(?<!juego en )(?<!vista )(?<!vista en )"
+    r"(?<!camara )(?<!camara en )(?<!cámara )(?<!cámara en )(?<!perspectiva )(?<!perspectiva en )"
+    r"(?<!shooter )(?<!shooter en )"
+    r"(?:en |in )?primera persona(?! shooter)|"
+    r"first person(?! shooter| view| perspective| camera| combat)|"
     r"sin (?:c[oó]digo|t[eé]rminos internos)|no internal (?:codes?|terms?)",
     re.IGNORECASE,
 )
