@@ -1,0 +1,15 @@
+{
+  "schema": "c03-screen1399-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/ProductConductorHost.cs (capture.screenshot y capture.active.window admitidas en el turno revisado; la raíz aprueba sólo una captura sin argumentos)",
+  "patch": "artifacts/comprobaciones/C03/SCREEN1399/SOURCE.patch",
+  "commits": [
+    "3586d2524f02c0e7af7526fe7e2df61ed8408172"
+  ],
+  "build": "BUILD1399 (C03-repairs1399-build/BUILD_READY.json; App recompilada)",
+  "cause_measured": "«sacá un screenshot» resuelve a capture.screenshot (riesgo PrivacySensitive, exige confirmación): el turno ordinario termina en la pregunta y el turno revisado rechazaba la operación pendiente como review_pending_not_supported porque ProductConductorHost no la admitía.",
+  "change": "capture.screenshot y capture.active.window entran en la lista de operaciones revisadas; la raíz aprueba sólo una captura sin argumentos; la captura queda en el directorio privado del perfil y el final sólo lleva identidad, dimensiones y hash. Sin respuestas fijas.",
+  "measurement": "SCREEN1399: 10/10 ejecutados, 3 capturas revisadas aprobadas con final fiel, 4 capturas revisadas verificadas con final infiel o sin final, 3 límites aprobados, 0 violaciones; 0 créditos. SCREEN1399 sobre BUILD1399 (App: capture.screenshot y capture.active.window admitidas en el turno revisado): cada captura se propuso sin argumentos, la raíz la aprobó y se completó y verificó (pantalla virtual; el BMP queda en el perfil privado del caso y no se publica). El literal «sacá un screenshot» publicó un eco imperativo de la orden («Sacá un screenshot del área virtual.») en vez de informar la captura; tres variantes no publicaron nada porque todos los borradores narraron el identificador interno de la captura (captureId y sha256 expuestos por el payload de situación) y el veto de códigos internos los bloqueó sin pista de reintento; tres variantes aprobaron («Tomé una captura de pantalla…», «Ya capturé la pantalla.», «Ya saqué la captura de pantalla.»). Siguiente: el payload proyecta sólo el alcance y las dimensiones de la captura y el compositor exige el informe en primera persona con su pista (SCREEN1401).",
+  "credits": 0
+}

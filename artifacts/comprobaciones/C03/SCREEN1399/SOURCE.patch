@@ -1,0 +1,29 @@
+commit 3586d2524f02c0e7af7526fe7e2df61ed8408172
+
+C03: the reviewed turn accepts the privacy-sensitive capture operations (SCREEN1399)
+
+«sacá un screenshot» (H0093) resolves to capture.screenshot, whose risk class (PrivacySensitive → Sensitive) requires a confirmation; an ordinary turn ends on the question and the reviewed turn rejected the pending operation as review_pending_not_supported because ProductConductorHost only admitted navigation, app.close, input.visible.click, system.settings.set and the clipboard operations.
+
+ProductConductorHost: capture.screenshot and capture.active.window join the reviewed operations; the root reviewer approves only an argument-less capture (no path, no target). The capture stays in the profile's private capture directory and the final carries only its identity, dimensions and hash.
+
+App recompiled (BUILD1399). Tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/ProductConductorHost.cs b/src/Baxy.App/ProductConductorHost.cs
+index f26a7ae7..45231e88 100644
+--- a/src/Baxy.App/ProductConductorHost.cs
++++ b/src/Baxy.App/ProductConductorHost.cs
+@@ -352,7 +352,10 @@ internal static class ProductConductorHost
+             || initial.Diagnostic is not null
+             || observed.Prepared.OperationName is not (
+                 "browser.navigate" or "browser.navigate.named" or "app.close" or "input.visible.click"
+-                or "system.settings.set" or "clipboard.write.text" or "clipboard.read.text"))
++                or "system.settings.set" or "clipboard.write.text" or "clipboard.read.text"
++                // SCREEN1399 «sacá un screenshot»: a privacy-sensitive capture is
++                // confirmed by the root reviewer like the clipboard operations.
++                or "capture.screenshot" or "capture.active.window"))
+         {
+             return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
+         }
