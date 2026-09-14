@@ -1,0 +1,15 @@
+{
+  "schema": "c03-identity1327-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (IDENTITY_PRESENTATION_PROMPT y forma identity; HOW_IT_WORKS_PRESENTATION_PROMPT sin conductas universales; contrato de ambas formas)",
+  "patch": "artifacts/comprobaciones/C03/IDENTITY1327/SOURCE.patch",
+  "commits": [
+    "5f5d2470bfd520601f711974918f3ddde60bedb0"
+  ],
+  "build": "BUILD1327 (C03-repairs1327-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "IDENTITY1325: «to quien chuta eres.» recibió una respuesta de conocimiento confundida por «chuta»; «cómo funciona esto» cerró con «siempre preguntando antes de cambiar algo» y su par inglés inventó «always watching and listening».",
+  "change": "Mente: forma de presentación identity (nombre y dónde corre como anclas) para toda pregunta de identidad; el contrato how_it_works rechaza conductas universales (siempre, always, vigilar, escuchar, monitorizar) y el prompt las prohíbe. Sin respuestas fijas.",
+  "measurement": "IDENTITY1327: 8 ejecutados, 8 aprobados, 0 fallidos, 0 violaciones; H0012 y H0373 acreditados con dos pares cada uno; 2 créditos. Medición: con la forma de presentación identity la pregunta coloquial se contesta identificándose; con el contrato how_it_works sin conductas universales la explicación nombra este PC y sólo capacidades del catálogo servido. Identidad y capacidades cerrada 19/19 (tercera categoría).",
+  "credits": 2
+}

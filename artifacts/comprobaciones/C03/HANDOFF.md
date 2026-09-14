@@ -1,3 +1,11 @@
+# IDENTITY1327 adjudicado — 2026-09-14T03:41:28.850019+00:00
+
+**393/742 cubiertos, 349 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA caef2706693d55bd5ce2d996b4dbd2a098f24c88dd5833a16e99a5a743e0aa0e. Primeras altas 24 h >= 267 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5f5d2470 con BUILD1327 (mente: forma identity; how_it_works sin conductas universales; IDENTITY1327/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+IDENTITY1327 («Identidad y capacidades del asistente», los tres literales abiertos: identidad coloquial, comparación sin referente, cómo funciona esto): 8 ejecutados, 8 aprobados, 0 fallidos, 0 violaciones; H0012 y H0373 acreditados con dos pares cada uno, 2 créditos. Adjudicación 84f5058e36e11607ccfddf37c8bedea4d4f36dc9b47846ac872b88906db5a2d7. Medición: con la forma de presentación identity la pregunta coloquial se contesta identificándose; con el contrato how_it_works sin conductas universales la explicación nombra este PC y sólo capacidades del catálogo servido. Identidad y capacidades cerrada 19/19 (tercera categoría).
+
+---
+
 # IDENTITY1325 adjudicado — 2026-09-14T03:33:10.678130+00:00
 
 **391/742 cubiertos, 351 abiertos, 0 NA; 2/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14); C03 formal 3/11. Registro SHA eea54ab6a358b9f66a70ee3b3962062e12f4366d0baaa036a12a3b190bedebf4. Primeras altas 24 h >= 265 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5aa7b9f5 con BUILD1325 (mente: identidad/capacidad sin aclaración, forma how_it_works con catálogo, sujeto de la comparación; IDENTITY1325/SOURCE.json|SOURCE.patch; .NET sin cambios).
