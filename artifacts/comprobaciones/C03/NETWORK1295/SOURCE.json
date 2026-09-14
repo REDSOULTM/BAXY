@@ -1,0 +1,15 @@
+{
+  "schema": "c03-network1295-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/planner.py (_TRUE_CUES/_FALSE_CUES con clíticos y voseo: apagame, desactivame, encendé, prendeme, activalo…); src/baxy_mind/llm.py (invented_connectivity también veta «ninguna red»/«sin red» en una lectura sólo de wifi)",
+  "patch": "artifacts/comprobaciones/C03/NETWORK1295/SOURCE.patch",
+  "commits": [
+    "dd1fae93b6ebd8e764ae1921cf771b5fb2cfce0e"
+  ],
+  "build": "BUILD1295 (C03-repairs1295-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "NETWORK1293: «Apagame» y «Encendé el bluetooth» resolvían la operación y el estado, pero el normalizador literal exige que el booleano tenga una clave en el texto y sus claves no tenían clíticos ni voseo → aclaración «¿qué estado deseas?»; «qué redes wifi hay» compuso «el PC no está conectado a ninguna red» desde wifi.status.",
+  "change": "Claves booleanas ampliadas; validador de conectividad ampliado (hint: sólo se leyó la conexión wifi). Sin respuestas fijas.",
+  "measurement": "NETWORK1295: 12 ejecutados, 8 aprobados, 4 fallidos; 1 créditos. H0537 «prendé el bluetooth» acreditado con pares «Encendé el bluetooth.» y «Prendeme el bluetooth.» (bluetooth.radio.set true verificada Off→On; el normalizador ya fundamenta el estado con clíticos/voseo). H0071/H0179 aprobados de nuevo sin crédito: «Apagame el bluetooth.» ejecutó y verificó la radio pero el final atribuyó la acción al usuario («Ya apagaste el bluetooth»), «Desactivame» pasó. H0302 y sus pares: wifi.status verificada, ya sin inventar el estado de la red, pero ninguno dice que no puede escanear redes disponibles («Mostrame las redes wifi disponibles.» se declaró fuera de funciones sin leer).",
+  "credits": 1
+}

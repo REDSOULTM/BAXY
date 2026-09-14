@@ -1,0 +1,71 @@
+commit dd1fae93b6ebd8e764ae1921cf771b5fb2cfce0e
+
+C03: boolean cues with clitics and voseo; wifi read must not claim the whole network (NETWORK1293 residual)
+
+planner: _TRUE_CUES/_FALSE_CUES accept «apagame», «encendé», «prendeme», «desactivame», «activalo»… so the literal normalizer grounds state without asking. llm: invented_connectivity also vetoes «ninguna red»/«sin red» from a wifi-only read.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index f5a648fa..c778d4b8 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3978,7 +3978,10 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+         and "connected" in seen
+         and "online" not in seen
+         and re.search(
+-            r"\b(?:offline|online|en linea|internet)\b",
++            # NETWORK1293 H0302: «el PC no está conectado a ninguna red» claims
++            # the whole network from a wifi-only read (Ethernet was online).
++            r"\b(?:offline|online|en linea|internet|ninguna red|any network|"
++            r"sin red|no network|no tiene red|no hay red)\b",
+             folded,
+         )
+         is not None
+@@ -11111,8 +11114,8 @@ class LlmRuntime:
+             ),
+             "clarification_not_a_question": "Una pregunta.",
+             "invented_connectivity": (
+-                "Only the wifi connection was read. Say nothing about internet "
+-                "or being online or offline."
++                "Only the wifi connection was read. Say nothing about internet, "
++                "other networks, or being online or offline."
+             ),
+             "too_many_sentences": "Una sola frase.",
+             "wrong_gender": "Masculine abierto/cerrado. Feminine abierta/cerrada.",
+diff --git a/src/baxy_mind/planner.py b/src/baxy_mind/planner.py
+index 09087368..2eef2990 100644
+--- a/src/baxy_mind/planner.py
++++ b/src/baxy_mind/planner.py
+@@ -162,8 +162,20 @@ _TRUE_CUES = frozenset(
+         "enabled",
+         "activa",
+         "activar",
++        "activame",
++        "activalo",
+         "enciende",
++        "enciendelo",
++        # NETWORK1293: voseo and clitic forms («encendé», «prendeme el
++        # bluetooth») asked for the state already said.
++        "encende",
++        "encendeme",
++        "encendelo",
++        "encender",
+         "prende",
++        "prendeme",
++        "prendelo",
++        "prender",
+         "mute",
+         "mutea",
+         "mudo",
+@@ -173,7 +185,8 @@ _TRUE_CUES = frozenset(
+     }
+ )
+ _FALSE_CUES = frozenset(
+-    {"false", "off", "disable", "disabled", "desactiva", "apaga", "unmute", "reactiva"}
++    {"false", "off", "disable", "disabled", "desactiva", "desactivame", "desactivalo", "desactivar",
++     "apaga", "apagame", "apagalo", "apagar", "unmute", "reactiva"}
+ )
+ _CONDITIONAL_IDENTITY_PREDECESSORS = {
+     # Search returns the authenticated URL that a following navigation must

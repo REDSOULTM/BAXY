@@ -1,3 +1,11 @@
+# NETWORK1295 adjudicado — 2026-09-14T01:33:24.760391+00:00
+
+**377/742 cubiertos, 365 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA b4571c2d11c67ef8dc589f484205aa1153f7433773278c0f5ba30e34b88ffdb9. Primeras altas 24 h >= 251 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD dd1fae93 con BUILD1295 (mente: claves booleanas con clíticos/voseo; validador de conectividad ampliado; NETWORK1295/SOURCE.json|SOURCE.patch; .NET sin cambios). Radio Bluetooth propia del PC fijada por la raíz antes de cada caso y restaurada (apagada) después (net_case.sh, bt_radio.ps1).
+
+NETWORK1295 («Red y Bluetooth», radio bluetooth con pares clíticos/voseo y redes wifi; turnos ordinarios): 12 ejecutados, 8 aprobados, 4 fallidos, 1 créditos. Adjudicación 3f893b3acce490d285b9306195a9450af514bdd6335d24b679cae12f285979c3. H0537 «prendé el bluetooth» acreditado con pares «Encendé el bluetooth.» y «Prendeme el bluetooth.» (bluetooth.radio.set true verificada Off→On; el normalizador ya fundamenta el estado con clíticos/voseo). H0071/H0179 aprobados de nuevo sin crédito: «Apagame el bluetooth.» ejecutó y verificó la radio pero el final atribuyó la acción al usuario («Ya apagaste el bluetooth»), «Desactivame» pasó. H0302 y sus pares: wifi.status verificada, ya sin inventar el estado de la red, pero ninguno dice que no puede escanear redes disponibles («Mostrame las redes wifi disponibles.» se declaró fuera de funciones sin leer).
+
+---
+
 # NETWORK1293 adjudicado — 2026-09-14T01:24:31.123110+00:00
 
 **376/742 cubiertos, 366 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 5194965153a18d3dd2f98886162f7ee0b7593c13387696c0fd2f975a92823fde. Primeras altas 24 h >= 250 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b6828d9c con BUILD1293 (mente: verbos de radio con clíticos/voseo, pregunta de estado del wifi → wifi.status, «decime si» como pregunta indirecta; NETWORK1293/SOURCE.json|SOURCE.patch; .NET sin cambios). Radio Bluetooth propia del PC fijada por la raíz antes de cada caso y restaurada (apagada) después (net_case.sh, bt_radio.ps1).

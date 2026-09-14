@@ -1,0 +1,141 @@
+{
+  "schema": "network1295-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1295-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1295-instrument-v1",
+  "seal_sha256": "eaf46de39bc5c1f80108acfad5586788a11639c9a4f7bee2856957b011fd9941",
+  "runner_sha256": "44d8f90cac09c7c1d68d6c907e0a4b680a11df7b7437f0ee076a41c65a4b1fd4",
+  "transport_seal_sha256": "952618cd362692831dc7cb251e0c05be77798d8fe42d91083f7feb2fce24cd53",
+  "files": {
+    "panel.json": "611b6dfbef5efa8a83b04395f2f0f0580ab353bc035f62c5a679363d60f0aada",
+    "turns.jsonl": "726c524216724f1470e3ce111c3584d0d5fc61609ba3f9aa309faf66229ea5a3",
+    "case-map.json": "d8654268912fffeea96789286b376cb5e6405841de0f3ba02a574f81153fc199",
+    "PLAN.md": "fa1333efcd2e06b6c631705adafda92ea6f1a477631c6030afdb7f7fd5704c7d"
+  },
+  "counts": {
+    "cases": 12,
+    "historical_literals": 4,
+    "original_development_variants": 6,
+    "boundaries": 2,
+    "wire_lines": 24,
+    "session_controls": 12,
+    "ordinary_turns": 12,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 12,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 4,
+    "original_development_variant": 6,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0071",
+      "kind": "historical_literal",
+      "group": "bluetooth_off",
+      "credit_behavior": "bluetooth_off",
+      "text_sha256": "15f6e10d5731910d620b1ed50fecf9afa80597e4c987c3e312ec45ab7faab446",
+      "criterion_sha256": "ce82ecebd55a131f1cef54566c8f79d8e032824760ab6e9ab996756d909c00b2"
+    },
+    {
+      "index": 1,
+      "case_id": "H0179",
+      "kind": "historical_literal",
+      "group": "bluetooth_off",
+      "credit_behavior": "bluetooth_off",
+      "text_sha256": "37c86473a0a050e0971fa34229cb10ffb02e9e614c16e0402c284978686ec240",
+      "criterion_sha256": "ce82ecebd55a131f1cef54566c8f79d8e032824760ab6e9ab996756d909c00b2"
+    },
+    {
+      "index": 2,
+      "case_id": "H0537",
+      "kind": "historical_literal",
+      "group": "bluetooth_on",
+      "credit_behavior": "bluetooth_on",
+      "text_sha256": "bda717699305f86765800a7fe5219af817fcb6b0dbd1647db3f6e5b6706ad33e",
+      "criterion_sha256": "d73e3b521a43325e1c4b7e7f1ed22794040b650d77eccf7976fa392eb4d0e869"
+    },
+    {
+      "index": 3,
+      "case_id": "H0302",
+      "kind": "historical_literal",
+      "group": "wifi_state",
+      "credit_behavior": "wifi_state",
+      "text_sha256": "62fdad3226c71acb5763089b841807d6d6702175ee65d4aec476f65949dc58ea",
+      "criterion_sha256": "cbb465bcf8310a6f1f38c8578663f64a6a0701e31d1ade0ff4e6b7a7162dd8f5"
+    },
+    {
+      "index": 4,
+      "case_id": "network1295-dev-01",
+      "kind": "original_development_variant",
+      "group": "bluetooth_off",
+      "credit_behavior": "bluetooth_off",
+      "text_sha256": "a929536860e40ef36f9c16b463444f68f03ecba008da313b7399183bc99fd66d",
+      "criterion_sha256": "ce82ecebd55a131f1cef54566c8f79d8e032824760ab6e9ab996756d909c00b2"
+    },
+    {
+      "index": 5,
+      "case_id": "network1295-dev-02",
+      "kind": "original_development_variant",
+      "group": "bluetooth_off",
+      "credit_behavior": "bluetooth_off",
+      "text_sha256": "2f7a8bf53bc20d4b077c5e8c9e1f8e65691c63b673db0fd9982df8c3a3d7b87e",
+      "criterion_sha256": "ce82ecebd55a131f1cef54566c8f79d8e032824760ab6e9ab996756d909c00b2"
+    },
+    {
+      "index": 6,
+      "case_id": "network1295-dev-03",
+      "kind": "original_development_variant",
+      "group": "bluetooth_on",
+      "credit_behavior": "bluetooth_on",
+      "text_sha256": "46935a9b1a155755e600fa0cb56fbf812eb7081413c814cd49f467a74274eba9",
+      "criterion_sha256": "d73e3b521a43325e1c4b7e7f1ed22794040b650d77eccf7976fa392eb4d0e869"
+    },
+    {
+      "index": 7,
+      "case_id": "network1295-dev-04",
+      "kind": "original_development_variant",
+      "group": "bluetooth_on",
+      "credit_behavior": "bluetooth_on",
+      "text_sha256": "900623e8fbb3d94a094698ec9eb40de75bc069d629e0505655364e8f8f0deef8",
+      "criterion_sha256": "d73e3b521a43325e1c4b7e7f1ed22794040b650d77eccf7976fa392eb4d0e869"
+    },
+    {
+      "index": 8,
+      "case_id": "network1295-dev-05",
+      "kind": "original_development_variant",
+      "group": "wifi_state",
+      "credit_behavior": "wifi_state",
+      "text_sha256": "24ddccc8865993c1ff23f62abb9d1095fadf6e8dee535ec1a175747af57eeb76",
+      "criterion_sha256": "cbb465bcf8310a6f1f38c8578663f64a6a0701e31d1ade0ff4e6b7a7162dd8f5"
+    },
+    {
+      "index": 9,
+      "case_id": "network1295-dev-06",
+      "kind": "original_development_variant",
+      "group": "wifi_state",
+      "credit_behavior": "wifi_state",
+      "text_sha256": "46563733b51ccb8cb91fa0492723f4d439e130a9125d6307437dc78749710c89",
+      "criterion_sha256": "cbb465bcf8310a6f1f38c8578663f64a6a0701e31d1ade0ff4e6b7a7162dd8f5"
+    },
+    {
+      "index": 10,
+      "case_id": "network1295-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "2f6c2ba2e272ae1e4b77d1de3673231fc3922c4429d23c62f9c1cc86cfd8a38b",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    },
+    {
+      "index": 11,
+      "case_id": "network1295-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "21e40eff0c20a546dff2a3c56b856744afd30b386f2f50181d73abe2f2b8ca8c",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    }
+  ]
+}
