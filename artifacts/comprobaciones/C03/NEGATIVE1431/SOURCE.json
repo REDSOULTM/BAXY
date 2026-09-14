@@ -1,0 +1,15 @@
+{
+  "schema": "c03-negative1431-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_unsupported_answer_mentions_request: los acrónimos de dispositivo de dos letras «pc», «tv», «ip» cuentan como concepto del pedido y un tallo de cinco letras compartido cuenta como mención)",
+  "patch": "artifacts/comprobaciones/C03/NEGATIVE1431/SOURCE.patch",
+  "commits": [
+    "d4ba9808b9fb4dab4cb5c420fe0d88d76661568e"
+  ],
+  "build": "BUILD1431 (C03-repairs1431-build/BUILD_READY.json; sólo mente, sin recompilar la App)",
+  "cause_measured": "NEGATIVE1429: «jamás apagues la pc» y «No apagues la PC.» produjeron el acuse correcto («Entendido, nunca apagaré la PC.») que el contrato de forma rechazó dos veces (shaped_presentation) porque el validador de mención del pedido descarta «pc» por tener dos letras y compara tokens exactos («apagues» ≠ «apagaré»); el turno cayó en una aclaración.",
+  "change": "Los acrónimos de dispositivo de dos letras cuentan como concepto del pedido y un tallo de cinco letras compartido entre pedido y respuesta cuenta como mención; una respuesta ajena o un «Entendido.» suelto siguen rechazados. Sin respuestas fijas.",
+  "measurement": "NEGATIVE1431: 6/6 ejecutados, 6 aprobados (3 acuses de prohibición, 3 límites), 0 fallidos, cero violaciones; 1 créditos. El acuse «Entendido, nunca apagaré la PC.» pasa el contrato de forma; «apagá la computadora» y «reiniciá la PC» quedan condicionados (apagar o reiniciar el PC del dueño no se ejecuta en tandas).",
+  "credits": 1
+}

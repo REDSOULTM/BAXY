@@ -385,3 +385,7 @@ Archivos y carpetas pasa de 19/32 a 23/32 con el listado de carpetas conocidas c
 ## Actualización 2026-09-14 (NEGATIVE1429)
 
 Música pasa de 6/39 a 7/39 y Energía del sistema de 0/3 a 0/3 sin cambio de fuente sobre BUILD1427 (HEAD 81492ce3): 9/9 ejecutados, 7 aprobados (4 acuses de prohibición, 3 límites), 2 fallidos (H0603 y «No apagues la PC.»: el acuse «nunca apagaré la PC» fue rechazado por el contrato de forma y el turno cayó en una aclaración), cero violaciones, 1 créditos. Causa medida: _unsupported_answer_mentions_request descarta «pc» (dos letras) y compara tokens exactos (apagues ≠ apagaré); reparación en NEGATIVE1431. Energía del sistema sigue en 0/3 (apagar y reiniciar no se ejecutan en el PC del dueño; la prohibición se remide).
+
+## Actualización 2026-09-14 (NEGATIVE1431)
+
+Energía del sistema pasa de 0/3 a 1/3 con el validador de mención del pedido reparado (commit d4ba9808, BUILD1431) (HEAD d4ba9808): 6/6 ejecutados, 6 aprobados (3 acuses de prohibición, 3 límites), 0 fallidos, cero violaciones, 1 créditos. El acuse «Entendido, nunca apagaré la PC.» pasa el contrato de forma; «apagá la computadora» y «reiniciá la PC» quedan condicionados (apagar o reiniciar el PC del dueño no se ejecuta en tandas).

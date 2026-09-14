@@ -1,3 +1,25 @@
+## NEGATIVE1431 — estado vigente 2026-09-14T15:56:02.824246+00:00
+
+Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 443/742 | 299 | 0 | >=317 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 316 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); NEGATIVE1431 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: NEGATIVE1431: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]); Energía del sistema 1/3. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/NEGATIVE1431/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 90.04 s acumulados; pico GPU 3497.56 MiB; pico RAM 1612.74 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque NEGATIVE1431 precedente. -->
+
 ## NEGATIVE1429 — estado vigente 2026-09-14T15:48:37.942297+00:00
 
 Parcial: 7 aprobados, 2 fallidos, 0 sin ejecutar; 1 créditos.

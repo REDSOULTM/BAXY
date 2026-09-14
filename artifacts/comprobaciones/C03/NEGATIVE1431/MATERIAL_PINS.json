@@ -1,0 +1,87 @@
+{
+  "schema": "negative1431-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-negative1431-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-negative1431-instrument-v1",
+  "seal_sha256": "7465abe3b29692cc6451b016daf260e9b7db4e92ab8d1c37e12e9cfa106b9ee0",
+  "runner_sha256": "7ef80dd47b4235583d0d33956e5603898f21cab6613b3c5d8ff4e40f10cdcdea",
+  "transport_seal_sha256": "d0f652bf94228eff8457ea5cce47bcd9be4b142f3a37d0176a5e87ec7b900fd5",
+  "files": {
+    "panel.json": "a0affa2c7f5ce6c3ac8b4e3ee1e1b7b49670d50a700671d319f02a87564dd602",
+    "turns.jsonl": "61199ec75945ecb2e8e17221a16a6c6fe1ed570d4ff44c41838459076d9a55a5",
+    "case-map.json": "d582b42d4828a10b71c5d88cfb28b89ea8a1afd72ef5df4c7f656beabe8da4c2",
+    "PLAN.md": "c5e203aa49ac94d1ee2f15414c0614ed4e33495b4dbca6959a1580c928992acd"
+  },
+  "counts": {
+    "cases": 6,
+    "historical_literals": 1,
+    "original_development_variants": 2,
+    "boundaries": 3,
+    "wire_lines": 12,
+    "session_controls": 6,
+    "ordinary_turns": 6,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 6,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 2,
+    "boundary": 3
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0603",
+      "kind": "historical_literal",
+      "group": "power_negative",
+      "credit_behavior": "power_negative",
+      "text_sha256": "d0a0390fbd4d2557fbcf7d2824850c8e73855e848375bfc43f4d1eab5edba014",
+      "criterion_sha256": "dd6be364216babb1979e780ae789a3d773024b341e154ae51da55d6a69af25ba"
+    },
+    {
+      "index": 1,
+      "case_id": "negative1431-dev-01",
+      "kind": "original_development_variant",
+      "group": "power_negative",
+      "credit_behavior": "power_negative",
+      "text_sha256": "f40788ab9ec55cbf2468e5c582e6f620a1ca33aa2408ada70859e6d45855a512",
+      "criterion_sha256": "dd6be364216babb1979e780ae789a3d773024b341e154ae51da55d6a69af25ba"
+    },
+    {
+      "index": 2,
+      "case_id": "negative1431-dev-02",
+      "kind": "original_development_variant",
+      "group": "power_negative",
+      "credit_behavior": "power_negative",
+      "text_sha256": "ec5534524d333b577ff8279a51841c4a78f891f873ece46ee4d6129a9e689755",
+      "criterion_sha256": "dd6be364216babb1979e780ae789a3d773024b341e154ae51da55d6a69af25ba"
+    },
+    {
+      "index": 3,
+      "case_id": "negative1431-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "7e7a5b8f51b8bd46b84a395c9a1b508bbe947b762278e1efb0e0373f124fc155",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 4,
+      "case_id": "negative1431-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "06fd3f562aea34e2862e822400b48f83c67ae5ed41ae772e302a717944dabaca",
+      "criterion_sha256": "63254e50babccd725db7cbdcfa1601d6663ea2a66fd81b4211de988d8972274d"
+    },
+    {
+      "index": 5,
+      "case_id": "negative1431-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "53b2f799a29c72b834d5caac5cfbaaa803455cd5f584623c0866ecb378685ebb",
+      "criterion_sha256": "63254e50babccd725db7cbdcfa1601d6663ea2a66fd81b4211de988d8972274d"
+    }
+  ]
+}

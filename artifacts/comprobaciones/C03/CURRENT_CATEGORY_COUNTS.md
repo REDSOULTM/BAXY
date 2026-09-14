@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación NEGATIVE1429
+# Categorías actuales — adjudicación NEGATIVE1431
 
-442/742 cubiertos; 300 abiertos; 0 no aplican; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3). Últimas 24 h: al menos 316 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337 + 1 en AGENDA1341 + 1 en CONVERSATION1343 + 1 en CONVERSATION1347 + 1 en CONVERSATION1349 + 2 en AUDIO1351 + 1 en KNOWLEDGE1353 + 1 en KNOWLEDGE1357 + 1 en CLIPBOARD1359 + 2 en CLIPBOARD1361 + 1 en MESSAGING1363 + 2 en MESSAGING1365 + 2 en SYSTEM1367 + 4 en CLOSE1371 + 1 en AUDIO1379 + 1 en AUDIO1381 + 1 en APPS1391 + 1 en UI1389 + 1 en WINDOWS1385 + 1 en UI1397 + 1 en SCREEN1401 + 3 en SCREEN1415 + 3 en SCREEN1419 + 5 en SCREEN1421 + 2 en SCREEN1423 + 4 en FILES1427 + 1 en NEGATIVE1429; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: bfa3d94167072616c4b67e3da29739e54f496571fb4097fe913d37142adac93a.
+443/742 cubiertos; 299 abiertos; 0 no aplican; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3). Últimas 24 h: al menos 317 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337 + 1 en AGENDA1341 + 1 en CONVERSATION1343 + 1 en CONVERSATION1347 + 1 en CONVERSATION1349 + 2 en AUDIO1351 + 1 en KNOWLEDGE1353 + 1 en KNOWLEDGE1357 + 1 en CLIPBOARD1359 + 2 en CLIPBOARD1361 + 1 en MESSAGING1363 + 2 en MESSAGING1365 + 2 en SYSTEM1367 + 4 en CLOSE1371 + 1 en AUDIO1379 + 1 en AUDIO1381 + 1 en APPS1391 + 1 en UI1389 + 1 en WINDOWS1385 + 1 en UI1397 + 1 en SCREEN1401 + 3 en SCREEN1415 + 3 en SCREEN1419 + 5 en SCREEN1421 + 2 en SCREEN1423 + 4 en FILES1427 + 1 en NEGATIVE1429 + 1 en NEGATIVE1431; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 69d86a225f712f10d0830cfdef4bc663e5ef67990587c5d28ddb31b89891dca7.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -34,7 +34,7 @@
 | Desarrollo y ejecución de comandos | 5 | 0 | 5 |
 | Restricciones negativas de apertura | 4 | 4 | 0 |
 | Portapapeles | 3 | 3 | 0 |
-| Energía del sistema | 3 | 0 | 3 |
+| Energía del sistema | 3 | 1 | 2 |
 | Crear documentos y editar imágenes | 2 | 0 | 2 |
 | Leer y resumir páginas web | 2 | 0 | 2 |
 | Notas | 12 | 11 | 1 |

@@ -1,3 +1,11 @@
+# NEGATIVE1431 adjudicado — 2026-09-14T15:56:02.824246+00:00
+
+**443/742 cubiertos, 299 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 69d86a225f712f10d0830cfdef4bc663e5ef67990587c5d28ddb31b89891dca7. Primeras altas 24 h >= 317 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d4ba9808 con BUILD1431 (mente: el validador de mención del pedido admite el acrónimo «pc» y el tallo del verbo; NEGATIVE1431/SOURCE.json|SOURCE.patch). Turnos ordinarios sin operaciones: acuse de la prohibición en primera persona.
+
+NEGATIVE1431 («Energía del sistema», H0603 «jamás apagues la pc», prohibición suelta sin efecto): 6/6 ejecutados, 6 aprobados (3 acuses de prohibición, 3 límites), 0 fallidos, cero violaciones, 1 créditos. Adjudicación 68ba39c9bb876b1333b2aeb260bdc73f60aff4a4e9d390a11e978e48da62bdd6. El acuse «Entendido, nunca apagaré la PC.» pasa el contrato de forma; «apagá la computadora» y «reiniciá la PC» quedan condicionados (apagar o reiniciar el PC del dueño no se ejecuta en tandas).
+
+---
+
 # NEGATIVE1429 adjudicado — 2026-09-14T15:48:37.942297+00:00
 
 **442/742 cubiertos, 300 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA bfa3d94167072616c4b67e3da29739e54f496571fb4097fe913d37142adac93a. Primeras altas 24 h >= 316 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 81492ce3 con BUILD1427 sin cambio de fuente (NEGATIVE1429/SOURCE.json|SOURCE.patch). Turnos ordinarios sin operaciones: acuse de la prohibición en primera persona.
