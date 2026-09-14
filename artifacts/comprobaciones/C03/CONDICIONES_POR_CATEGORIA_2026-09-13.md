@@ -409,3 +409,7 @@ Archivos y carpetas pasa de 24/32 a 24/32 con la pregunta de carpeta que pregunt
 ## Actualización 2026-09-14 (FILES1441)
 
 Archivos y carpetas pasa de 24/32 a 24/32 con la pregunta de carpeta admitida por la App (commit 402a42bc, BUILD1441) (HEAD 402a42bc): 6/6 ejecutados, 4 aprobados (2 aclaraciones de carpeta, 2 límites), 2 fallidos (la exención de la App se compiló con bytes de retroceso en lugar de \b y el veto machine_slot_ask siguió; el límite de prohibición repitió el acuse mal conjugado), cero violaciones, 0 créditos. Causa medida: el patrón de AsksForDeclaredFolder llegó al fuente con caracteres 0x08 (heredoc de la raíz) y nunca coincide; reparación en FILES1443 con el patrón escrito por el editor y verificado en el ensamblado.
+
+## Actualización 2026-09-14 (FILES1443)
+
+Archivos y carpetas pasa de 24/32 a 25/32 con la exención de la pregunta de carpeta reparada (commit ce6257eb, BUILD1443) (HEAD ce6257eb): 6/6 ejecutados, 5 aprobados (3 aclaraciones de carpeta, 2 límites), 1 fallido (el límite de prohibición contestó con un acuse mal conjugado), cero violaciones, 1 créditos. El literal y sus dos pares preguntan la carpeta sin operaciones ni cifras inventadas; la pregunta inglesa nombra las carpetas conocidas. Quedan condicionados en la categoría: contenido dinámico (H0334/H0426), zip (H0542), backup a pendrive (H0733), resumen de PDF (H0666), borrado de carpeta (H0327) y la ruta literal (H0299).

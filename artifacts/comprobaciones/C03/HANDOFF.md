@@ -1,3 +1,11 @@
+# FILES1443 adjudicado — 2026-09-14T16:51:42.711003+00:00
+
+**446/742 cubiertos, 296 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 14fecb5a69f2607eb348d11209d4382491cfc5b193885e2099bb4695863325e9. Primeras altas 24 h >= 320 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD ce6257eb con BUILD1443 (App: la exención de la pregunta de carpeta reparada y verificada en el ensamblado; FILES1443/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación; los nombres listados quedan en los recibos privados y nunca se publican.
+
+FILES1443 («Archivos y carpetas», H0701 «Dime cuantos archivos .py hay en el directorio actual», aclaración de la carpeta): 6/6 ejecutados, 5 aprobados (3 aclaraciones de carpeta, 2 límites), 1 fallido (el límite de prohibición contestó con un acuse mal conjugado), cero violaciones, 1 créditos. Adjudicación 45eb164f432f49d471fd3062a4412a7f68c068093f0a90f2b00409b4038cfc5a. El literal y sus dos pares preguntan la carpeta sin operaciones ni cifras inventadas; la pregunta inglesa nombra las carpetas conocidas. Quedan condicionados en la categoría: contenido dinámico (H0334/H0426), zip (H0542), backup a pendrive (H0733), resumen de PDF (H0666), borrado de carpeta (H0327) y la ruta literal (H0299).
+
+---
+
 # FILES1441 adjudicado — 2026-09-14T16:45:48.068377+00:00
 
 **445/742 cubiertos, 297 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA fc07f4028a2411beca718e4a344581a8576a386de860599274b01dcee8b09b37. Primeras altas 24 h >= 319 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 402a42bc con BUILD1441 (App: el campo folder declarado exime la pregunta de carpeta del veto machine_slot_ask; FILES1441/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación; los nombres listados quedan en los recibos privados y nunca se publican.

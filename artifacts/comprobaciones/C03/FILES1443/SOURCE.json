@@ -1,0 +1,15 @@
+{
+  "schema": "c03-files1443-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (AsksForDeclaredFolder: patrón con límites de palabra reales en lugar de los bytes de retroceso que dejó el heredoc; verificado por reflexión en Baxy.dll)",
+  "patch": "artifacts/comprobaciones/C03/FILES1443/SOURCE.patch",
+  "commits": [
+    "ce6257eb951dddef7f8f8370fc0b285ec1e51f67"
+  ],
+  "build": "BUILD1443 (C03-repairs1443-build/BUILD_READY.json; App recompilada)",
+  "cause_measured": "FILES1443: la exención AsksForDeclaredFolder se compiló con dos caracteres 0x08 en lugar de los límites de palabra del patrón (el guion de parcheo de la raíz pasó por un heredoc) y nunca coincidió; la App volvió a vetar la pregunta correcta.",
+  "change": "Patrón reparado byte a byte y comprobado en el ensamblado compilado: con folder declarado la pregunta por la carpeta pasa; sin campo o con otro campo sigue vetada. Sin respuestas fijas.",
+  "measurement": "FILES1443: 6/6 ejecutados, 5 aprobados (3 aclaraciones de carpeta, 2 límites), 1 fallido (el límite de prohibición contestó con un acuse mal conjugado), cero violaciones; 1 créditos. El literal y sus dos pares preguntan la carpeta sin operaciones ni cifras inventadas; la pregunta inglesa nombra las carpetas conocidas. Quedan condicionados en la categoría: contenido dinámico (H0334/H0426), zip (H0542), backup a pendrive (H0733), resumen de PDF (H0666), borrado de carpeta (H0327) y la ruta literal (H0299).",
+  "credits": 1
+}

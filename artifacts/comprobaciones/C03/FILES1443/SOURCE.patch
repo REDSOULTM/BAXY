@@ -1,0 +1,24 @@
+commit ce6257eb951dddef7f8f8370fc0b285ec1e51f67
+
+C03: the folder-question exemption gets real word boundaries (FILES1443)
+
+FILES1441 measured nothing: the committed AsksForDeclaredFolder pattern carried two literal backspace characters (0x08) where «\b» belonged, because the root's patch script passed the source through a shell heredoc; the exemption never matched and the App kept vetoing the folder question as a machine slot ask.
+
+Baxy.App UserMessagePolicy.AsksForDeclaredFolder: the pattern is «\b(?:carpeta|directorio|folder|directory)\b», written byte by byte with the editor. Verified by reflection on the compiled assembly: with the folder field declared the question «In which folder (Desktop, Documents, Downloads, or another) should the files be counted?» is accepted; with no fields or another field it is still rejected as machine_slot_ask. App recompiled (BUILD1443). Tests not run (owner order).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/UserMessagePolicy.cs b/src/Baxy.App/UserMessagePolicy.cs
+index 5756ad31..01c44457 100644
+--- a/src/Baxy.App/UserMessagePolicy.cs
++++ b/src/Baxy.App/UserMessagePolicy.cs
+@@ -1016,7 +1016,7 @@ internal static class UserMessagePolicy
+     private static bool AsksForDeclaredFolder(string folded, IReadOnlyList<string>? missingFields) =>
+         missingFields is not null
+         && missingFields.Contains("folder")
+-        && Regex.IsMatch(folded, @"(?:carpeta|directorio|folder|directory)",
++        && Regex.IsMatch(folded, @"\b(?:carpeta|directorio|folder|directory)\b",
+             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+ 
+     private static bool LooksLikeMachineSlotAsk(string folded) =>
