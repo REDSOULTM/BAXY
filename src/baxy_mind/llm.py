@@ -3807,6 +3807,23 @@ def _compose_situation_payload(
                 and situation.get("succeeded") is True
             ):
                 visible_seen["writtenText"] = written
+        elif operation in ("capture.screenshot", "capture.active.window"):
+            # SCREEN1399 H0093 «sacá un screenshot»: the receipt's captureId,
+            # sha256 and timestamp were narrated («con el ID capture_…») and the
+            # internal-code veto blocked every draft. The person needs to know
+            # that the capture was taken, of what, and that it stayed private.
+            scope = visible_seen.get("scope")
+            visible_seen = {
+                key: visible_seen[key]
+                for key in ("width", "height")
+                if isinstance(visible_seen.get(key), int)
+            }
+            visible_seen["captured"] = (
+                ("the active window" if scope == "active_window" else "the whole screen")
+                if language == "en"
+                else ("la ventana activa" if scope == "active_window" else "toda la pantalla")
+            )
+            visible_seen["storedPrivately"] = True
         elif isinstance(operation, str) and operation.startswith("system.settings."):
             # BRIGHT1319 H0430: «según la lectura de WMI» was copied from the
             # provenance token; the monitor instance path is internal too. The
@@ -4448,6 +4465,29 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         # verified click was narrated with a wrong verb. Say the button was
         # pressed; the label stays whatever the person said.
         return "missing_click_verb"
+    if (
+        payload.get("operation") in ("capture.screenshot", "capture.active.window")
+        and isinstance(seen, dict)
+        and seen.get("storedPrivately") is True
+        and (
+            re.search(
+                r"\b(?:saqu[eé]|tom[eé]|captur[eé]|hice|realic[eé]|guard[eé]|"
+                r"took|captured|taken|saved|made)\b",
+                folded,
+            )
+            is None
+            or re.match(
+                r"^[¡!¿?\s]*(?:sac[aá]|sacame|tom[aá]|tomame|captur[aá]|hac[eé]|"
+                r"take|capture|grab)\b",
+                folded,
+            )
+            is not None
+        )
+    ):
+        # SCREEN1399 H0093 «sacá un screenshot» → «Sacá un screenshot del área
+        # virtual.»: the verified capture was echoed as an order. Report it as
+        # done, in the first person.
+        return "capture_not_reported"
     written = seen.get("writtenText") if isinstance(seen, dict) else None
     if payload.get("operation") == "clipboard.write.text" and isinstance(written, str) and written:
         # CLIPBOARD1359: «Hola» / «Buen día.» were published after a verified
@@ -11902,6 +11942,11 @@ class LlmRuntime:
                 # UI1373 H0555: corrected drafts read «Aprié el botón 5», a
                 # conjugation the model cannot get right; steer to verbs it can.
                 else "Apretaste el botón: dilo con «Hice clic en el …» o «Pulsé el …» y la etiqueta que pidió la persona; no conjugues «apretar»."
+            ),
+            "capture_not_reported": (
+                "You took the screenshot: say so in the first person past tense, without repeating the request, without identifiers, and without inventing where it was saved."
+                if response_language == "en"
+                else "Sacaste la captura de pantalla: dilo en pasado y en primera persona («Saqué/Tomé una captura de pantalla»), sin repetir la orden, sin identificadores y sin inventar dónde quedó."
             ),
             "missing_written_text": (
                 "Quote the exact text from writtenText and say you copied it to the clipboard."
