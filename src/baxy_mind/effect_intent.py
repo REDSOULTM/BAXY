@@ -3201,6 +3201,9 @@ def resolve_explicit_clarification_intent(
         and not incomplete_message_shape
         and not relative_spoken_volume
         and not telegraphic_calendar_invite
+        # BRIGHT1283: «estoy cansado subí el brillo», «subime el brillo» carry
+        # a preamble or a clitic the direct-request heads do not list.
+        and not brightness_relative_without_amount(folded)
     ):
         return None
     corrected_generic_game_request = (
@@ -3524,6 +3527,14 @@ def resolve_explicit_clarification_intent(
         and _literal_volume_adjustment(folded) is None
     ):
         return ClarificationIntent(("audio.volume.adjust",), ("amount",))
+    if (
+        "system.settings.adjust" in available
+        and brightness_relative_without_amount(folded)
+        and _literal_brightness_adjustment(folded) is None
+    ):
+        # BRIGHT1283: «subí el brillo» keeps its direction and asks how much,
+        # the same owner rule as the volume (H0027); no default step.
+        return ClarificationIntent(("system.settings.adjust",), ("amount",))
     if (
         {"memory.recall", "clipboard.write.text"} <= available
         and _head_is(_request_head(folded), r"(?:copy|copia|copiame)")
@@ -11400,6 +11411,128 @@ def _literal_volume_adjustment(text: str) -> dict[str, object] | None:
     return {"amount": value, "direction": "up" if up else "down"}
 
 
+# BRIGHT1283: no brightness literal had a deterministic reader, so «qué brillo
+# tengo» became a clarification, «subí el brillo» asked for the direction it
+# already carried and «turn the brightness down» denied the capability. The
+# readers below mirror the volume grammar: a status question, a relative
+# adjustment with an authored amount, and a relative request without amount
+# that keeps its direction and asks how much (owner rule on H0027).
+_BRIGHTNESS_SCREEN = (
+    r"(?:\s+(?:de\s+(?:la\s+|mi\s+)?|del\s+|of\s+(?:the\s+|my\s+)?)"
+    r"(?:pantalla|monitor|screen|display))?"
+)
+_BRIGHTNESS_OBJECT = (
+    rf"(?:(?:nivel\s+de\s+)?(?:brillo|brightness){_BRIGHTNESS_SCREEN}"
+    rf"(?:\s+actual)?{_BRIGHTNESS_SCREEN})"
+)
+_BRIGHTNESS_UP_VERB = (
+    r"(?:sube(?:me|lo|la)?|subi(?:me|lo|la)?|subir|aumenta(?:me|lo|la)?|aumentar|"
+    r"incrementa|incrementar|increase|raise|brighten)"
+)
+_BRIGHTNESS_DOWN_VERB = (
+    r"(?:baja(?:me|lo|la)?|bajar|reduce(?:me|lo|la)?|reducir|disminui(?:me|lo|la)?|"
+    r"disminuye|disminuir|decrease|lower|dim)"
+)
+_BRIGHTNESS_ABSOLUTE = (
+    r"\b(?:a|al|to|at|hasta)\s*(?:100|[0-9]{1,2})\b|"
+    r"\b(?:al\s+|to\s+(?:the\s+)?)?(?:maximo|minimo|max|min|tope|full|maximum|minimum)\b"
+)
+_BRIGHTNESS_ENGLISH_TURN = r"\bturn\s+(?:the\s+|my\s+)?(?:screen\s+)?brightness\s+(?P<dir>up|down)\b"
+_BRIGHTNESS_RELATIVE_WORDS = (
+    r"\b(?:un\s+(?:poco|toque|poquito|cacho|pelin)|bastante|mucho|algo|"
+    r"a\s+little|a\s+bit|slightly)\b"
+)
+
+
+def brightness_status_request(text: str) -> bool:
+    """«qué brillo tengo», «mostrame el brillo», «what's the brightness»: read it."""
+
+    folded = _strip_request_envelope(_fold(text)).strip(" ¿?¡!.,")
+    if re.search(r"\d", folded) or _is_past_or_hypothetical_state(folded):
+        return False
+    obj = _BRIGHTNESS_OBJECT
+    return re.fullmatch(
+        rf"(?:(?:y|and)\s+)?(?:"
+        rf"(?:que|cual|cuanto|cuanta|como)\s+(?:es\s+|esta\s+|tengo\s+(?:de\s+)?)?"
+        rf"(?:el\s+|mi\s+)?{obj}(?:\s+(?:tengo|hay|tiene|esta|puesto|ahora))*|"
+        rf"(?:a|en)\s+(?:cuanto|que|que\s+nivel)\s+(?:esta|tengo|tiene)\s+(?:el\s+|mi\s+)?{obj}|"
+        rf"(?:dime|decime|mostrame|muestrame|muestra|mostra|ver|quiero\s+ver|"
+        rf"show(?:\s+me)?|tell\s+me|check|revisa|chequea|fijate)\s+"
+        rf"(?:el\s+|mi\s+|the\s+|my\s+)?(?:nivel\s+(?:actual\s+)?de\s+)?{obj}|"
+        rf"what(?:'s|\s+is)\s+(?:the\s+|my\s+)?(?:current\s+)?{obj}(?:\s+(?:level|at|now|set\s+to))*|"
+        rf"how\s+bright\s+is\s+(?:the\s+|my\s+)?(?:screen|display|monitor)"
+        rf")(?:\s*,?\s*(?:por\s+favor|please))?",
+        folded,
+    ) is not None
+
+
+def _literal_brightness_adjustment(text: str) -> dict[str, object] | None:
+    """Bind a relative quantity to its authored direction and the brightness object."""
+
+    folded = _strip_request_envelope(_fold(text))
+    if (
+        _is_negative_effect_clause(folded)
+        or _is_meta_or_tool_denial(folded)
+        or _has_contradictory_correction(folded)
+        or _has(folded, r"\b(?:o|or)\b")
+        or re.search(_BRIGHTNESS_ABSOLUTE, folded) is not None
+        # «un toque», «un poco»: a relative word is not a quantity («un» is
+        # not one point); the request asks how much instead.
+        or re.search(_BRIGHTNESS_RELATIVE_WORDS, folded) is not None
+    ):
+        return None
+    english = re.search(_BRIGHTNESS_ENGLISH_TURN, folded)
+    up = _has(folded, rf"\b{_BRIGHTNESS_UP_VERB}\b") or (english is not None and english.group("dir") == "up")
+    down = _has(folded, rf"\b{_BRIGHTNESS_DOWN_VERB}\b") or (english is not None and english.group("dir") == "down")
+    if up == down:
+        return None
+    direction = rf"(?:{_BRIGHTNESS_UP_VERB}|{_BRIGHTNESS_DOWN_VERB})"
+    amount = rf"(?P<amount>\d{{1,3}}|{_PERCENTAGE_WORD_PATTERN})(?![a-z0-9])"
+    unit = r"(?:puntos?|(?:percentage\s+)?points?|por\s+ciento|percent|%)"
+    obj = _BRIGHTNESS_OBJECT
+    patterns = (
+        rf"\b{direction}\s+(?:(?:un|a)\s+)?{amount}\s*{unit}?\s+(?:(?:el|la|the)\s+)?{obj}\b",
+        rf"\b{direction}\s+(?:(?:el|la|the|my|mi)\s+)?{obj}\s+(?:(?:en|by|un|a)\s+)?{amount}(?:\s*{unit})?",
+        rf"{_BRIGHTNESS_ENGLISH_TURN}\s+(?:by\s+)?{amount}(?:\s*{unit})?",
+    )
+    matches = [found for pattern in patterns for found in re.finditer(pattern, folded)]
+    if len(matches) != 1:
+        return None
+    raw = matches[0].group("amount")
+    value = int(raw) if raw.isdigit() else _PERCENTAGE_WORD_VALUES.get(raw)
+    digits = re.findall(r"\d+", folded)
+    if value is None or not 1 <= value <= 100 or digits != ([raw] if raw.isdigit() else []):
+        return None
+    return {"amount": value, "direction": "up" if up else "down"}
+
+
+def brightness_relative_without_amount(text: str) -> bool:
+    """«subí el brillo», «bajame el brillo un toque», «turn the brightness down»: ask how much."""
+
+    folded = _strip_request_envelope(_fold(text))
+    if (
+        _is_negative_effect_clause(folded)
+        or _is_meta_or_tool_denial(folded)
+        or _has_contradictory_correction(folded)
+        or _is_past_or_hypothetical_state(folded)
+        or re.search(r"\d", folded) is not None
+        or _literal_percentage_word_value(folded) is not None
+        or re.search(_BRIGHTNESS_ABSOLUTE, folded) is not None
+        or len(_request_clauses(folded)) != 1
+        or _has(folded, r"\b(?:y|and)\s+(?:abre|open|crea|create|apaga|silencia|pon|cierra|close)\b")
+    ):
+        return False
+    return (
+        re.search(
+            rf"\b(?:{_BRIGHTNESS_UP_VERB}|{_BRIGHTNESS_DOWN_VERB})\s+(?:{_BRIGHTNESS_RELATIVE_WORDS}\s+)?"
+            rf"(?:(?:el|la|the|my|mi)\s+)?{_BRIGHTNESS_OBJECT}\b",
+            folded,
+        ) is not None
+        or re.search(_BRIGHTNESS_ENGLISH_TURN, folded) is not None
+        or re.search(r"\b(?:brighten|dim)\s+(?:the\s+|my\s+)?(?:screen|display)\b", folded) is not None
+    )
+
+
 def _bare_spoken_number_media_query(text: str) -> str | None:
     """Preserve a word-valued media title without inventing volume context."""
 
@@ -14325,6 +14458,22 @@ def resolve_explicit_effects(
     ):
         # A named file deletion is the recoverable trash of that one file.
         return EffectIntent(("filesystem.known.trash.named",), (folded,))
+    if (
+        "system.settings.status" in available
+        and brightness_status_request(folded)
+        and not _is_negative_effect_clause(folded)
+        and not _is_meta_or_tool_denial(folded)
+    ):
+        # BRIGHT1283: the brightness question is a read of the monitor value.
+        return EffectIntent(("system.settings.status",), (folded,))
+    if (
+        "system.settings.adjust" in available
+        and _literal_brightness_adjustment(folded) is not None
+        and not _is_negative_effect_clause(folded)
+        and not _is_meta_or_tool_denial(folded)
+        and not _has_contradictory_correction(folded)
+    ):
+        return EffectIntent(("system.settings.adjust",), (folded,))
     if (
         "filesystem.create.directory" in available
         and _directory_creation_request(folded) is not None

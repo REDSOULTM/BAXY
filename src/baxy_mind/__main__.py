@@ -4445,6 +4445,14 @@ def _explicit_arguments_from_evidence(
     if operation == "system.status":
         return _explicit_system_status_scope(evidence)
 
+    if operation == "system.settings.status":
+        # BRIGHT1283: the reader owns the setting enum; «brillo» is the literal.
+        return {"setting": "brightness"} if effect_intent.brightness_status_request(evidence) else None
+
+    if operation == "system.settings.adjust":
+        adjustment = effect_intent._literal_brightness_adjustment(evidence)
+        return {**adjustment, "setting": "brightness"} if adjustment is not None else None
+
     if operation == "window.resolve":
         application_name = effect_intent.resolve_application_close_name(
             evidence, application_names,
@@ -5232,6 +5240,8 @@ def _ground_explicit_arguments(
         "media.control",
         "media.play.query",
         "system.process.list",
+        "system.settings.adjust",
+        "system.settings.status",
         "system.status",
         "window.application.status",
     }:
