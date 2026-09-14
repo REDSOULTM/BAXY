@@ -5060,7 +5060,7 @@ def _explicit_arguments_from_evidence(
         )
         true_signal = bool(
             re.search(
-                r"\b(?:on|enable|activa|enciende|prende|mutea|silencia)\w*\b",
+                r"\b(?:on|enable|activa|enciende|encende|prende|mutea|silencia)\w*\b",
                 folded,
             )
         )

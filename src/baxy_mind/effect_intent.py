@@ -6833,6 +6833,16 @@ def _media_play_domain(text: str) -> bool:
 def _has_unsupported_deferred_effect(text: str) -> bool:
     """Veto immediate execution when the request actually asks for later."""
 
+    # NETWORK1293 H0230 «decime si el wifi está prendido»: «decime si …» is an
+    # indirect question, not a condition that defers the request. Read the
+    # rest as the question itself; timing words after it still count.
+    text = re.sub(
+        r"^([¿?¡!\s]*(?:decime|dime|contame|cuentame|tell\s+me|fijate|chequea|check)\s+)si\b",
+        r"\1",
+        text,
+        count=1,
+        flags=re.IGNORECASE,
+    )
     # Retaining a fact for a later question is not scheduling its write. Only
     # remove that subordinate purpose, leaving an earlier "tomorrow" or a
     # separate coordinated action visible to the existing timing check.
@@ -8695,6 +8705,31 @@ def _machine_status_topic(text: str) -> re.Match[str] | None:
     return found
 
 
+_WIFI_STATE_QUESTION = re.compile(
+    r"\bwi[\s-]?fi\s+(?:esta|is|anda)\s+(?:prendid[oa]|encendid[oa]|apagad[oa]|"
+    r"activ[oa]|activad[oa]|desactivad[oa]|conectad[oa]|funcionando|on|off|"
+    r"enabled|disabled|connected|working)\b|"
+    r"\b(?:esta|is)\s+(?:prendid[oa]|encendid[oa]|apagad[oa]|activ[oa]|on|off|enabled)\s+"
+    r"(?:el\s+|the\s+)?wi[\s-]?fi\b",
+    re.IGNORECASE,
+)
+
+
+def _wifi_state_question(text: str) -> bool:
+    """«decime si el wifi está prendido», «¿el wifi está encendido?»: a wifi.status read."""
+
+    return (
+        _WIFI_STATE_QUESTION.search(text) is not None
+        and not _has(
+            text,
+            r"\b(?:apaga\w*|prende\w*|enciende\w*|encende\w*|activa\w*|desactiva\w*|"
+            r"conecta\w*|desconecta\w*|turn|enable|disable)\b",
+        )
+        # «… y apagalo»: a second action makes it a compound, not a bare read.
+        and not _has(text, r"\b(?:y|and)\s+\w")
+    )
+
+
 def _is_direct_request(text: str) -> bool:
     """Require a request speech act before granting deterministic authority."""
 
@@ -8709,6 +8744,9 @@ def _is_direct_request(text: str) -> bool:
         or _resume_existing_media(text)
         or _media_transport_action(text)
         or _direct_alarm_schedule_request(text)
+        # NETWORK1293: «¿el wifi está encendido?» is a read request without a
+        # verb head; the state question itself is the speech act.
+        or _wifi_state_question(text)
     ):
         return True
     request_head = (
@@ -8755,6 +8793,11 @@ def _is_direct_request(text: str) -> bool:
         r"agendame|"
         r"para(?=\s+(?:lo\s+que\s+esta|la\s+descarga))|"
         r"scroll|scrollea|scrollear|"
+        # NETWORK1293: radio verbs with clitics or voseo («apagame el
+        # bluetooth», «encendé el bluetooth», «activá»).
+        r"apaga|apagame|apagalo|enciende|encende|encendeme|encendelo|"
+        r"prende|prendeme|prendelo|activa|activame|activalo|"
+        r"desactiva|desactivame|desactivalo|"
         r"apuntame|apunta|jot|"
         r"dale(?=\s+(?:enter|intro|return))|"
         r"llevame|anda|andar|andate|"
@@ -10909,8 +10952,10 @@ def _review_system_and_network_effects(
             r"\bbluetooth\b",
         )
     bluetooth_radio_verb = (
-        r"(?:activa|activar|desactiva|desactivar|enciende|encender|prende|"
-        r"prender|apaga|apagar|enable|disable|turn)"
+        r"(?:activa(?:me|lo)?|activar|desactiva(?:me|lo)?|desactivar|enciende(?:me|lo)?|"
+        # NETWORK1293: voseo «encendé el bluetooth» folds to «encende».
+        r"encende(?:me|lo)?|encender|prende(?:me|lo)?|"
+        r"prender|apaga(?:me|lo)?|apagar|enable|disable|turn)"
     )
     if (
         _head_is(head, bluetooth_radio_verb)
@@ -10961,6 +11006,10 @@ def _review_system_and_network_effects(
             folded,
             r"\b(?:como|estado|status|health|conectad[oa]|connected)\b",
         ):
+            _append(matches, folded, "wifi.status", r"\bwi[\s-]?fi\b")
+        elif _wifi_state_question(folded):
+            # NETWORK1293 H0230 «decime si el wifi está prendido», «¿el wifi
+            # está encendido?»: a state question is the read, not an effect.
             _append(matches, folded, "wifi.status", r"\bwi[\s-]?fi\b")
         elif _head_is(head, r"(?:apaga|apagar|desconecta|disconnect)") and _has(
             folded, r"\b(?:apaga|apagar|desconecta|disconnect)\b"
