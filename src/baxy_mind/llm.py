@@ -3840,6 +3840,14 @@ def _compose_situation_payload(
                 if visible_seen.get(key) is not None:
                     projected[key] = visible_seen[key]
             visible_seen = projected
+        elif operation == "browser.control":
+            # BROWSER1493 «abrí una pestaña nueva»: the target id is an
+            # internal identifier; the person needs the action and its state.
+            visible_seen = {
+                key: visible_seen[key]
+                for key in ("action", "observedState")
+                if isinstance(visible_seen.get(key), str)
+            }
         elif operation in ("capture.screenshot", "capture.active.window"):
             # SCREEN1399 H0093 «sacá un screenshot»: the receipt's captureId,
             # sha256 and timestamp were narrated («con el ID capture_…») and the
@@ -4141,6 +4149,21 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
                     "open it later, and never say it was already open before. "
                     "Address the person naturally in their language."
                 )
+        if (
+            situation.get("operation") == "browser.control"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and _merged_observed(situation).get("action") == "new_tab"
+        ):
+            # BROWSER1493: the tab exists now; say so in the past, nothing else.
+            bits.append(
+                "You have just opened a new, empty tab in the browser and its "
+                "presence was verified: say that in the past in one short sentence "
+                "(for example «Abrí una pestaña nueva en el navegador»). Do not "
+                "mention identifiers, states or codes, do not promise anything "
+                "and do not say it was already open. Address the person naturally "
+                "in their language."
+            )
         if (
             situation.get("operation") in {"note.create", "task.create"}
             and situation.get("verified") is True

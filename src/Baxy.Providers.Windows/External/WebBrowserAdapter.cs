@@ -799,10 +799,35 @@ internal class CdpBrowserSession : IDisposable
         string action,
         CancellationToken cancellationToken)
     {
-        if (action is not ("back" or "close" or "fullscreen_video" or "reload"
+        if (action is not ("back" or "close" or "fullscreen_video" or "new_tab" or "reload"
             or "scroll_down" or "scroll_up"))
             return new(false, false, action, string.Empty, string.Empty, "browser_control_action_invalid");
         Uri endpoint = await EnsureEndpointAsync(cancellationToken).ConfigureAwait(false);
+        if (action == "new_tab")
+        {
+            // BROWSER1493 «abrí una pestaña nueva»: a new blank page target in
+            // the product's own browser, verified by its presence in /json/list.
+            using var request = new HttpRequestMessage(
+                HttpMethod.Put, new Uri(endpoint, "json/new?about%3Ablank"));
+            using HttpResponseMessage response = await _http.SendAsync(request, cancellationToken)
+                .ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+                return new(false, false, action, string.Empty, string.Empty, "cdp_new_tab_rejected");
+            using Stream createdStream = await response.Content.ReadAsStreamAsync(cancellationToken)
+                .ConfigureAwait(false);
+            using JsonDocument created = await JsonDocument.ParseAsync(
+                createdStream, cancellationToken: cancellationToken).ConfigureAwait(false);
+            if (!created.RootElement.TryGetProperty("id", out JsonElement createdId)
+                || createdId.GetString() is not { Length: > 0 } newTargetId)
+                return new(false, true, action, string.Empty, string.Empty, "cdp_new_tab_not_verified");
+            for (int attempt = 0; attempt < 20; attempt++)
+            {
+                if (await TargetExistsAsync(endpoint, newTargetId, cancellationToken).ConfigureAwait(false))
+                    return new(true, true, action, newTargetId, "target_created", string.Empty);
+                await Task.Delay(100, cancellationToken).ConfigureAwait(false);
+            }
+            return new(false, true, action, newTargetId, string.Empty, "cdp_new_tab_not_verified");
+        }
         (string targetId, Uri webSocket) = await ResolveTargetAsync(
             endpoint, createIfMissing: false, cancellationToken)
             .ConfigureAwait(false);

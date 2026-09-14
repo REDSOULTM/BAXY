@@ -4554,7 +4554,7 @@ def _explicit_arguments_from_evidence(
         return value.strip().rstrip(".!?").rstrip()
 
     if operation == "browser.control":
-        return effect_intent.browser_back_arguments(evidence)
+        return effect_intent.browser_back_arguments(evidence) or effect_intent.browser_new_tab_arguments(evidence)
 
     if operation == "system.status":
         return _explicit_system_status_scope(evidence)

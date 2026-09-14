@@ -6732,6 +6732,32 @@ def browser_back_arguments(text: str) -> dict[str, str] | None:
     return {"action": "back"}
 
 
+def browser_new_tab_arguments(text: str) -> dict[str, str] | None:
+    """BROWSER1493 «abrí una pestaña nueva», «abre una nueva pestaña», «open a
+    new tab»: one complete new-tab request in the product's browser; None for
+    anything else (a named browser, a URL, a tab to close, a deferred or
+    prohibited request keep their own reading)."""
+
+    if not text or len(text) > 16_384:
+        return None
+    folded = _fold(text).strip(" ¿?¡!. ")
+    if _has(folded, r"\b(?:chrome|opera|edge|firefox|brave|no\b|nunca|jamas|never|don't|do\s+not|cierra|cerra|close)\b|https?://|www\."):
+        return None
+    prefix = r"(?:(?:por\s+favor|please)\s*[,;:]?\s+)?(?:(?:podes|puedes|podrias|can\s+you|could\s+you)\s+)?"
+    courtesy = r"(?:\s*,?\s*(?:por\s+favor|please|porfa))?"
+    spanish = (
+        r"(?:abri|abre|abrime|abreme|abrir|crea|creame|creá|nueva)\s+"
+        r"(?:(?:una|otra)\s+)?(?:(?:nueva|otra)\s+)?pestana(?:\s+nueva)?"
+        r"(?:\s+(?:en\s+(?:el|este)\s+navegador))?"
+    )
+    english = (
+        r"open\s+(?:a\s+)?(?:new|another)\s+tab(?:\s+in\s+(?:the|this)\s+browser)?|new\s+tab"
+    )
+    if re.fullmatch(rf"{prefix}(?:{spanish}|{english}){courtesy}", folded) is None:
+        return None
+    return {"action": "new_tab"}
+
+
 def explicit_window_title(text: str) -> str | None:
     """Copy one explicitly named window title; never infer a process or HWND."""
     matches = tuple(
@@ -9338,6 +9364,7 @@ def _is_direct_request(text: str) -> bool:
     text = _negative_state_question_body(text) or text
     if (
         browser_back_arguments(text) is not None
+        or browser_new_tab_arguments(text) is not None
         or _direct_process_inventory_request(text)
         or _explicit_google_search_query(text) is not None
         or _resume_existing_media(text)
@@ -15429,6 +15456,10 @@ def resolve_explicit_effects(
         application_names,
     )
     authenticated_games = build_game_catalog_index(game_catalog)
+    if "browser.control" in available and browser_new_tab_arguments(text) is not None:
+        # BROWSER1493 «abrí una pestaña nueva»: one new blank tab in the
+        # product's browser, verified by its presence.
+        return EffectIntent(("browser.control",), (text,))
     if "browser.control" in available and browser_back_arguments(text) is not None:
         # A complete history request is not a destination to search.
         return EffectIntent(("browser.control",), (text,))
