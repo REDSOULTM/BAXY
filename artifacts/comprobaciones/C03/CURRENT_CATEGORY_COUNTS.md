@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación SYSTEM1307
+# Categorías actuales — adjudicación NEGATIVE1309
 
-382/742 cubiertos; 360 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 256 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: a6d68f6353c01839530a8c95b9ed78e00d55a6f5fe103a682296cb196b3d9d91.
+382/742 cubiertos; 360 abiertos; 0 no aplican; 0/35 categorías cerradas. Últimas 24 h: al menos 256 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: b4d7b41398685924efd1dcc4a60adb0ede4b8e54c29458fc1951f5a9dec320a7.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|

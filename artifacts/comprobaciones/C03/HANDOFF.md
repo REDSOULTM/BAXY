@@ -1,3 +1,11 @@
+# NEGATIVE1309 adjudicado — 2026-09-14T02:19:58.560445+00:00
+
+**382/742 cubiertos, 360 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA b4d7b41398685924efd1dcc4a60adb0ede4b8e54c29458fc1951f5a9dec320a7. Primeras altas 24 h >= 256 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 287b1c1c con BUILD1307 (sin fuente nueva).
+
+NEGATIVE1309 («Restricciones negativas de apertura», prohibiciones de abrir como turnos ordinarios sin efectos): 7 ejecutados, 3 aprobados, 4 fallidos, 0 créditos. Adjudicación a778ece0d75f97e1954e8a0792b34231c0cb80990be8de4f44a179bc65fa8fb5. Sin crédito: H0685 «mejor no abras la calculadora» y «No abras Paint.» reconocieron la restricción sin abrir nada, pero H0447 «no abras el navegador» contestó que no entendió, H0550 «no abras chrome» y «Mejor no abras Spotify.» pidieron aclaración, y el límite «¿Podés abrir programas en este PC?» negó una capacidad real. Causa por reparar: la prohibición se reconoce como restricción negativa (explicit_negative_constraint) pero la ruta de reconocimiento no produce el acuse; «mejor no abras» no entra en el lector.
+
+---
+
 # SYSTEM1307 adjudicado — 2026-09-14T02:13:16.963260+00:00
 
 **382/742 cubiertos, 360 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA a6d68f6353c01839530a8c95b9ed78e00d55a6f5fe103a682296cb196b3d9d91. Primeras altas 24 h >= 256 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f0fa0804 con BUILD1307 (mente: defecto invented_version; SYSTEM1307/SOURCE.json|SOURCE.patch; .NET sin cambios).

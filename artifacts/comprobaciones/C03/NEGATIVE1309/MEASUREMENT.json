@@ -1,0 +1,10 @@
+{
+  "schema": "c03-negative1309-measurement-v1",
+  "status": "measured",
+  "measured_by": "root (Claude Fable 5.1)",
+  "candidate": "HEAD 287b1c1c con BUILD1307 (sin fuente nueva)",
+  "panel": "3 prohibiciones de abrir, 2 variantes, 2 límites; turnos ordinarios sin efectos",
+  "result": "7 ejecutados, 3 aprobados, 4 fallidos; 0 créditos. Sin crédito: H0685 «mejor no abras la calculadora» y «No abras Paint.» reconocieron la restricción sin abrir nada, pero H0447 «no abras el navegador» contestó que no entendió, H0550 «no abras chrome» y «Mejor no abras Spotify.» pidieron aclaración, y el límite «¿Podés abrir programas en este PC?» negó una capacidad real. Causa por reparar: la prohibición se reconoce como restricción negativa (explicit_negative_constraint) pero la ruta de reconocimiento no produce el acuse; «mejor no abras» no entra en el lector.",
+  "adjudication_sha256": "a778ece0d75f97e1954e8a0792b34231c0cb80990be8de4f44a179bc65fa8fb5",
+  "credits": 0
+}
