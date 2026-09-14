@@ -3973,6 +3973,17 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     # (NETWORK1161/010-011, 1163/005, 1165/004) while network.status read
     # online=true. Only a reading that carries `online` may speak about it.
     if (
+        payload.get("kind") == "operation"
+        and payload.get("verified") is True
+        and payload.get("succeeded") is True
+        and _ACTION_ATTRIBUTED_TO_USER.search(text) is not None
+    ):
+        # NETWORK1295/1297 «Apagame el bluetooth.» → «Ya apagaste el
+        # bluetooth»: the assistant did it, not the person. This is the
+        # predicate that gates acceptance (blocked → payload defect), not
+        # only the audit label in rejection_reason.
+        return "action_attributed_to_user"
+    if (
         payload.get("operation") == "wifi.status"
         and isinstance(seen, dict)
         and "connected" in seen
@@ -3987,26 +3998,10 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         is not None
     ):
         return "invented_connectivity"
-    if (
-        payload.get("operation") == "wifi.status"
-        and isinstance(seen, dict)
-        and "connected" in seen
-        and re.search(r"\b(?:redes|networks?)\b", _fold_dialogue_text(user_text)) is not None
-        and re.search(
-            r"\b(?:hay|disponibles?|available|ves|see|cerca|nearby|alrededor|"
-            r"mostrame|muestrame|show|lista|listame|list|cuales|which|que)\b",
-            _fold_dialogue_text(user_text),
-        ) is not None
-        and re.search(
-            r"\bno (?:puedo|logro|se puede|es posible) (?:ver|escanear|listar|mostrar|buscar|detectar|enumerar)|"
-            r"\b(?:can't|cannot|can not|unable to) (?:see|scan|list|show|detect)|"
-            r"\bsin (?:poder )?escanear\b|\bno escane",
-            folded,
-        ) is None
-    ):
-        # NETWORK1295 H0302 «qué redes wifi hay»: the read only says whether
-        # wifi is connected; a list of available networks is not observable.
-        return "missing_scan_limit"
+    # NETWORK1297: a «missing_scan_limit» defect here («qué redes wifi hay» must
+    # say it cannot scan) exhausted every retry into no_response: the other
+    # composer vetoes leave no room for that sentence. The scan limit stays a
+    # documented condition of wifi.status, not a composer rule.
     # A verified account read must survive composition. UI264 returned the
     # assistant's identity while omitting the actual Windows userName. Match
     # the observed value, including accents, without accepting a longer name.
