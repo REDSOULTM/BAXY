@@ -86,6 +86,31 @@ internal static class ObservedResponseLiterals
                 }
             }
         }
+        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+            && IsString(node, "operation", "ocr.read")
+            && node.TryGetProperty("verified", out JsonElement readVerified) && readVerified.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("succeeded", out JsonElement readSucceeded) && readSucceeded.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("observed", out JsonElement recognized) && recognized.ValueKind == JsonValueKind.Object
+            && recognized.TryGetProperty("text", out JsonElement recognizedText) && recognizedText.ValueKind == JsonValueKind.String
+            && recognizedText.GetString() is { Length: > 0 } screenText)
+        {
+            // SCREEN1411 «leéme lo que dice la pantalla»: the person asked for the
+            // screen's words; quoting a recognized line (identifiers, paths and
+            // dotted names included) is observed data, not vocabulary about BAXY.
+            foreach (string line in screenText.Split('\n'))
+            {
+                string trimmed = line.Trim();
+                if (trimmed.Length is > 1 and <= 4096)
+                {
+                    names.Add(trimmed);
+                }
+            }
+            foreach (Match token in Regex.Matches(screenText, @"[\w-]+(?:[._][\w-]+)+",
+                         RegexOptions.CultureInvariant, TimeSpan.FromMilliseconds(100)))
+            {
+                names.Add(token.Value);
+            }
+        }
         if (node.TryGetProperty("steps", out JsonElement steps) && steps.ValueKind == JsonValueKind.Array && depth < 8)
         {
             foreach (JsonElement step in steps.EnumerateArray())

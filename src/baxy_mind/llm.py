@@ -4412,6 +4412,53 @@ _OCR_FRAMING_STEMS = frozenset({
 })
 
 
+def _recognized_screen_text(payload: dict) -> str | None:
+    """The verified OCR text in a compose payload, single-step or mission-shaped."""
+
+    seen = payload.get("seen")
+    if payload.get("operation") == "ocr.read" and isinstance(seen, dict):
+        text = seen.get("text")
+        if isinstance(text, str) and text.strip():
+            return text
+    for step in payload.get("completedStepsInOrder") or []:
+        if isinstance(step, dict) and step.get("operation") == "ocr.read":
+            result = step.get("resultAtThisStep")
+            step_seen = result.get("seen") if isinstance(result, dict) else None
+            text = step_seen.get("text") if isinstance(step_seen, dict) else None
+            if isinstance(text, str) and text.strip():
+                return text
+    return None
+
+
+def _recognized_screen_text_in_situation(situation: dict) -> str | None:
+    """The verified OCR text in a situation, single-step or mission-shaped."""
+
+    def from_node(node: object) -> str | None:
+        if isinstance(node, str):
+            try:
+                node = json.loads(node)
+            except (ValueError, TypeError):
+                return None
+        if not isinstance(node, dict):
+            return None
+        if (
+            node.get("operation") == "ocr.read"
+            and node.get("verified") is True
+            and node.get("succeeded") is True
+        ):
+            observed = node.get("observed")
+            text = observed.get("text") if isinstance(observed, dict) else None
+            if isinstance(text, str) and text.strip():
+                return text
+        for step in node.get("steps") or []:
+            found = from_node(step)
+            if found:
+                return found
+        return None
+
+    return from_node(situation)
+
+
 def _ocr_unsupported_terms(text: str, recognized: str, user_text: str) -> list[str]:
     """Content words of a screen-reading report that the recognized text lacks."""
 
@@ -4547,8 +4594,8 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         # virtual.»: the verified capture was echoed as an order. Report it as
         # done, in the first person.
         return "capture_not_reported"
-    recognized = seen.get("text") if isinstance(seen, dict) else None
-    if payload.get("operation") == "ocr.read" and isinstance(recognized, str) and recognized.strip():
+    recognized = _recognized_screen_text(payload)
+    if isinstance(recognized, str) and recognized.strip():
         # SCREEN1409 «leéme lo que dice la pantalla»: the finals summarized a
         # «Fable limit warning», generated scripts and an execution flow that
         # the recognized text never contained. Every content word of the
@@ -11421,11 +11468,7 @@ class LlmRuntime:
         # 500 tokens) cannot finish inside the composition budget, and free
         # summaries invented a warning and scripts the screen never showed. The
         # report quotes a few lines verbatim and stays within the default budget.
-        screen_reading = (
-            situation.get("operation") == "ocr.read"
-            and situation.get("verified") is True
-            and situation.get("succeeded") is True
-        )
+        screen_reading = _recognized_screen_text_in_situation(situation) is not None
         # Inventory facts travel in situation, outside requiredFacts. Reuse
         # the dense output allowance, keeping their existing prompt unchanged.
         if dense_fact_contract or dense_inventory:

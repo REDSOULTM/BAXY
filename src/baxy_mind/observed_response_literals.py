@@ -43,6 +43,18 @@ def without_observed_names(text: str, situation: object) -> str:
                         names.update(value for key in fields
                                      if isinstance(value := entry.get(key), str)
                                      and value.strip() and len(value) <= 4096)
+        if (node.get("kind") == "operation" and operation == "ocr.read"
+                and node.get("verified") is True and node.get("succeeded") is True
+                and node.get("polarity") == "success"):
+            # SCREEN1411 «leéme lo que dice la pantalla»: the person asked for the
+            # screen's words; a quoted recognized line (identifiers, paths and
+            # dotted names included) is observed data, not vocabulary about BAXY.
+            observed = node.get("observed")
+            recognized = observed.get("text") if isinstance(observed, dict) else None
+            if isinstance(recognized, str) and recognized.strip():
+                names.update(line.strip() for line in recognized.split("\n")
+                             if 1 < len(line.strip()) <= 4096)
+                names.update(re.findall(r"[\w-]+(?:[._][\w-]+)+", recognized))
         steps = node.get("steps")
         if isinstance(steps, list):
             for step in steps:

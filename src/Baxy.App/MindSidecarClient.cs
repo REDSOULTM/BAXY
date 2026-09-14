@@ -212,12 +212,37 @@ internal sealed class MindSidecarClient : IAsyncDisposable
 
         try
         {
-            if (JsonNode.Parse(source) is not JsonObject situation
-                || situation["verified"]?.GetValueKind() != JsonValueKind.True
+            if (JsonNode.Parse(source) is not JsonObject situation)
+            {
+                return false;
+            }
+
+            // SCREEN1413: the final of a completed mission carries its steps as
+            // JSON strings; a verified screen reading among them is dense too.
+            if (situation["steps"] is JsonArray steps
+                && steps.Any(static step => step is JsonValue stepValue
+                    && stepValue.TryGetValue<string>(out string? stepSource)
+                    && HasDenseScreenReading(stepSource)))
+            {
+                return true;
+            }
+
+            if (situation["verified"]?.GetValueKind() != JsonValueKind.True
                 || situation["succeeded"]?.GetValueKind() != JsonValueKind.True
                 || situation["observed"] is not JsonObject observed)
             {
                 return false;
+            }
+
+            // SCREEN1411 «leéme lo que dice la pantalla»: quoting a few recognized
+            // lines verbatim is a dense output; the five-second ceiling cut every
+            // attempt while the model was still writing the quotation.
+            if (situation["operation"]?.ToString() == "ocr.read"
+                && observed["text"] is JsonValue recognized
+                && recognized.TryGetValue<string>(out string? screenText)
+                && screenText.Length >= DenseMessageFactCharacters)
+            {
+                return true;
             }
 
             // Inventory observations travel in situation, outside requiredFacts.
@@ -232,6 +257,25 @@ internal sealed class MindSidecarClient : IAsyncDisposable
                 && ((collection == "processes" && rows.Count > 1)
                     || rows.Count >= DenseMessageFactCount
                     || rows.ToJsonString().Length >= DenseMessageFactCharacters);
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+    }
+
+    private static bool HasDenseScreenReading(string source)
+    {
+        try
+        {
+            return JsonNode.Parse(source) is JsonObject step
+                && step["operation"]?.ToString() == "ocr.read"
+                && step["verified"]?.GetValueKind() == JsonValueKind.True
+                && step["succeeded"]?.GetValueKind() == JsonValueKind.True
+                && step["observed"] is JsonObject observed
+                && observed["text"] is JsonValue recognized
+                && recognized.TryGetValue<string>(out string? screenText)
+                && screenText.Length >= DenseMessageFactCharacters;
         }
         catch (JsonException)
         {
