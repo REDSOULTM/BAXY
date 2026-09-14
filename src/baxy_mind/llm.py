@@ -10029,6 +10029,33 @@ class LlmRuntime:
         for attempt in range(2):
             raw = self._post_schema_object(payload, "la aclaración explícita")
             question = validate_missing_argument_clarification(raw, missing_fields)
+            # AGENDA1337 «cancelame la alarma» → «¿Quieres que cancele la alarma
+            # más reciente?»: a which-alarm question must ask which one, never
+            # propose a candidate the product has not read. One corrected retry.
+            if missing_fields == ("which_alarm",):
+                folded_question = _reading_fold(str(question))
+                proposes_candidate = re.search(
+                    r"\b(?:mas\s+reciente|ultima|ultimo|latest|last|most\s+recent|primera|first|proxima|next)\b",
+                    folded_question,
+                ) is not None
+                asks_which = re.search(
+                    r"\b(?:cual|cuales|que\s+alarma|which|what\s+alarm)\b", folded_question,
+                ) is not None
+                if proposes_candidate or not asks_which:
+                    if attempt == 0:
+                        payload["messages"].insert(
+                            -1,
+                            {
+                                "role": "system",
+                                "content": (
+                                    "Corrección: no conoces ninguna alarma concreta ni cuál es "
+                                    "la más reciente. Pregunta sólo cuál alarma (por su hora o "
+                                    "nombre) quiere cancelar; no propongas ninguna."
+                                ),
+                            },
+                        )
+                        continue
+                    raise ValueError("aclaración explícita propone una alarma no leída")
             # BRIGHT1287 «Subí bastante el brillo.» → «¿Cuánto subiste el
             # brillo?»: the amount question attributed the action to the
             # user's past. One corrected retry; a repeat is a failure.
