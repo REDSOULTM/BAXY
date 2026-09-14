@@ -3237,6 +3237,37 @@ def resolve_explicit_clarification_intent(
         and not _has(folded, r"\b(?:whatsapp|wsp|discord)\b")
     ):
         return ClarificationIntent(("message.send",), ("channel",))
+    # MESSAGING1363: a reply with content but no addressee and no antecedent
+    # («contestale que sí», «respondele que llego en 10») names nobody to
+    # answer; the recipient is what is missing, not the channel.
+    reply_head = (
+        r"(?:contestale|contestales|respondele|respondeles|contesta|responde|"
+        r"reply|answer)"
+    )
+    reply_without_addressee = _has(
+        folded, rf"^[^\w]*{reply_head}\s+(?:que|that)\s+\S"
+    ) and not _has(folded, rf"^[^\w]*{reply_head}\s+(?:a|to)\s+")
+    if "message.send" in available and reply_without_addressee:
+        return ClarificationIntent(("message.send",), ("recipient",))
+    # MESSAGING1363: an addressee and a channel with nothing to say
+    # («escribile por whatsapp a Pedro», «mandale un whatsapp a Ana»).
+    addressed_without_content = _has(
+        folded,
+        (
+            r"^[^\w]*(?:escrib[ei]le|escrib[ei]les|mandale|mandales|enviale|"
+            r"enviales|hablale|escrib[ei]|manda|envia|write|send|message|text)\s+"
+            # The addressee is one or two bare tokens: «mandale hola a Lucas
+            # por whatsapp» carries its content and is not this shape.
+            r"(?:(?:por|en|via|on)\s+(?:whatsapp|wsp|discord)\s+(?:a|to)\s+"
+            r"[a-z0-9][a-z0-9._-]{0,40}(?:\s+[a-z0-9][a-z0-9._-]{0,40})?|"
+            r"(?:(?:a|to)\s+)?[a-z0-9][a-z0-9._-]{0,40}\s+(?:por|en|via|on)\s+"
+            r"(?:whatsapp|wsp|discord)|"
+            r"(?:un|una|a)\s+(?:whatsapp|wsp|discord)\s+(?:a|to)\s+"
+            r"[a-z0-9][a-z0-9._-]{0,40}(?:\s+[a-z0-9][a-z0-9._-]{0,40})?)[\s.!?]*$"
+        ),
+    ) and not _has(folded, r"\b(?:que|that|diciendo|saying)\b|[:\"«»“”]")
+    if "message.send" in available and addressed_without_content:
+        return ClarificationIntent(("message.send",), ("message_text",))
     corrected_browser = (
         "browser.navigate.named" in available
         and _has(folded, r"\b(?:youtube|video)\b")
