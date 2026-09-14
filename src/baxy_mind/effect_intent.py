@@ -2048,6 +2048,7 @@ def _curated_domain_is_grounded(
     if operation == "window.resolve":
         return (
             _authenticated_application_close_target(folded, application_names) is not None
+            or _authenticated_application_focus_target(folded, application_names) is not None
             or window_inventory_arguments(folded) is not None or _window_domain(folded)
             or _has(folded, r"\b(?:aplicacion|application|proceso|process)\b")
         )
@@ -4417,6 +4418,75 @@ def deictic_close_request(folded: str) -> bool:
     """
 
     return _DEICTIC_CLOSE_REQUEST.match(folded) is not None
+
+
+_FOCUS_HEAD_ONLY = r"(?:enfoca|enfocame|enfocar|focus|switch\s+to|cambia\s+a|cambiame\s+a)"
+_FOCUS_HEAD_WITH_TAIL = (
+    r"(?:trae|traeme|traer|pone|poneme|pon|ponme|poner|lleva|llevame|llevar|"
+    r"activa|activame|mostra|mostrame|muestra|muestrame|bring|show|put)"
+)
+_FOCUS_TAIL = (
+    r"(?:al\s+frente|adelante|al\s+primer\s+plano|en\s+primer\s+plano|"
+    r"to\s+the\s+front|forward|in\s+front|up\s+front)"
+)
+
+
+def _authenticated_application_focus_target(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> tuple[int, str] | None:
+    """Recognize one request to bring an authenticated application to the front.
+
+    WINDOWS1385 «traé chrome al frente», «enfocá chrome», «bring Chrome to
+    the front»: a focus-only head, or a carry/put head with the front tail,
+    over one exact catalog identity. Window identity still comes from
+    window.resolve; an absent window ends there truthfully.
+    """
+    if (
+        not effect_request_is_authoritative(text)
+        or _has_unsupported_deferred_effect(_fold(text))
+        or _other_device_effect_scope(_fold(text))
+    ):
+        return None
+    folded = _strip_request_envelope(_fold(text))
+    request = _match(
+        folded,
+        rf"^[¿?¡!\s]*(?:(?:necesito|quiero|queria|quisiera|podes|podrias|podria|me\s+(?:podes|podrias|podria))\s+(?:que\s+)?)?"
+        rf"(?:{_FOCUS_HEAD_ONLY}\s+(?:(?:me|a)\s+)?(?P<target_a>.+?)(?:\s+{_FOCUS_TAIL})?"
+        rf"|{_FOCUS_HEAD_WITH_TAIL}\s+(?:(?:me|a)\s+)?(?P<target_b>.+?)\s+{_FOCUS_TAIL})[\s.!?]*$",
+    )
+    if request is None:
+        return None
+    group = "target_a" if request.group("target_a") is not None else "target_b"
+    raw_target = request.group(group)
+    catalog = build_application_catalog_index(application_names)
+    matches: list[tuple[int, str]] = []
+    for target, offset in _close_target_forms(raw_target):
+        suffix = raw_target[offset + len(target):].strip(" ,;:.!?")
+        suffix = re.sub(r"^(?:window|app|application)\b", "", suffix).strip(" ,;:.!?")
+        if suffix and _APPLICATION_TRAILING_REQUEST.fullmatch(" " + suffix) is None \
+                and _CLOSE_TRAILING_COURTESY.fullmatch(" " + suffix) is None:
+            continue
+        key = _authenticated_close_key(target, catalog)
+        if key is not None:
+            matches.append((request.start(group) + offset, key))
+    identities = {key for _, key in matches}
+    if len(identities) != 1:
+        return None
+    return min(matches, key=lambda item: item[0])
+
+
+def resolve_application_focus_name(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> str | None:
+    """Preserve an authenticated focus target as a catalog display name."""
+    catalog = build_application_catalog_index(application_names)
+    target = _authenticated_application_focus_target(text, catalog)
+    if target is None:
+        return None
+    names = {name for name, key in catalog.entries if key == target[1]}
+    return next(iter(names)) if len(names) == 1 else None
 
 
 def resolve_application_close_name(
@@ -9005,6 +9075,10 @@ def _is_direct_request(text: str) -> bool:
         r"consulta|consultar|comprueba|comprobar|checkea|chequea|averigua|averiguar|"
         r"(?:fijate|fijese)(?=\s+si\b)|"
         r"find\s+out|inspect|inspecciona|give|prepara|prepare|resolve|"
+        # WINDOWS1385 «traé chrome al frente», «enfocá chrome», «bring Chrome
+        # to the front»: focus heads are request speech acts too.
+        r"trae|traeme|traer|lleva|llevar|bring|enfoca|enfocame|enfocar|focus|"
+        r"switch(?=\s+to\b)|"
         r"cierra|cerra|cerrar|cerrame|cierrame|cierres|close|envia|enviar|enviale|enviales|"
         r"manda|mandar|mandale|mandales|"
         r"arma|armar|marca|marcar|graba|grabar|record|stage|"
@@ -14806,6 +14880,15 @@ def resolve_explicit_effects(
     if "browser.control" in available and browser_back_arguments(text) is not None:
         # A complete history request is not a destination to search.
         return EffectIntent(("browser.control",), (text,))
+    if (
+        "window.focus" in available
+        and resolve_application_focus_name(text, authenticated_applications) is not None
+        and not _is_negative_effect_clause(folded)
+        and not _is_meta_or_tool_denial(folded)
+    ):
+        # WINDOWS1385: bringing an authenticated application to the front is
+        # window.focus; window.resolve (its prerequisite) binds the window.
+        return EffectIntent(("window.focus",), (folded,))
     destination = _symbolic_web_destination(text)
     if (
         destination is not None

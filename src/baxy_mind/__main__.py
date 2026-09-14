@@ -4513,6 +4513,8 @@ def _explicit_arguments_from_evidence(
     if operation == "window.resolve":
         application_name = effect_intent.resolve_application_close_name(
             evidence, application_names,
+        ) or effect_intent.resolve_application_focus_name(
+            evidence, application_names,
         )
         if application_name is not None:
             return {"applicationName": application_name}

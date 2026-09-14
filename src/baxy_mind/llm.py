@@ -3181,7 +3181,7 @@ _CAUSE_FACT = {
     # the state: no window of that application is open, nothing was closed.
     "window_not_found": (
         "that application has no open window right now, so it is not open; "
-        "nothing was closed"
+        "nothing was done to it"
     ),
     "mission_failed": "mission unfinished",
     "acting": "still working",
