@@ -1,3 +1,11 @@
+# DIALOGUE1491 adjudicado — 2026-09-14T23:42:31.553654+00:00
+
+**488/742 cubiertos, 254 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 6e2d9ea5bb309cdf62ef3f68c9861fb910f8aa58f52353afd7b52380ecf7c0bb. Primeras altas 24 h >= 362 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 9a26dbdd con BUILD1491 (el destino cortado pregunta a qué portal; DIALOGUE1491/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+DIALOGUE1491 («Navegación y búsqueda web», H0393 «Ve a portal una.», H0541 «Ve Portal 2 UN»): DIALOGUE1491: el destino cortado por la transcripción pregunta a qué portal ir; H0393 y H0541 cubiertos, 2 créditos. Adjudicación dfcef5c94eee8c2aae8205eb24085378b4f0d5a632047f8a15944eef457e1852. 7/7 ejecutados, 7 aprobados, 2 créditos; las cuatro preguntas dicen que el nombre parece cortado y piden el portal
+
+---
+
 # DIALOGUE1489 adjudicado — 2026-09-14T23:35:19.417404+00:00
 
 **486/742 cubiertos, 256 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 62f37a7172bbb986a3825a37942207fa51144c3984953595a9b223bf60c4bc5c. Primeras altas 24 h >= 360 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a60a7901 con BUILD1489 (la pregunta de qué mirar validada contra la inversión de papeles; DIALOGUE1489/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

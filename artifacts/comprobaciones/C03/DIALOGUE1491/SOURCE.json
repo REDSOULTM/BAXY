@@ -1,0 +1,15 @@
+{
+  "schema": "c03-dialogue1491-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_unresolved_input_kind: ir a un portal o sitio cuyo nombre termina en artículo o preposición es la clase cut_destination), src/baxy_mind/llm.py (clarify_unresolved_input: situación propia —el nombre parece cortado; pregunta a qué portal o sitio— y validación con reintento corregido).",
+  "patch": "artifacts/comprobaciones/C03/DIALOGUE1491/SOURCE.patch",
+  "commits": [
+    "9a26dbddaf24eb96f2c09918c1619dd3456924fa"
+  ],
+  "build": "BUILD1491 (C03-repairs1491-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "El dueño anotó que «Ve a portal una.» y «Ve Portal 2 UN» son mensajes cortados por la transcripción: entender con contexto o preguntar; sin contexto, el producto buscaba «portal una» (fallo honesto, WEB1471/1477) o mandaba «Ve Portal 2 UN» al modelo.",
+  "change": "Clase de entrada propia con su pregunta validada; sin respuestas fijas.",
+  "measurement": "DIALOGUE1491: DIALOGUE1491: el destino cortado por la transcripción pregunta a qué portal ir; H0393 y H0541 cubiertos; 2 créditos. 7/7 ejecutados, 7 aprobados, 2 créditos; las cuatro preguntas dicen que el nombre parece cortado y piden el portal",
+  "credits": 2
+}

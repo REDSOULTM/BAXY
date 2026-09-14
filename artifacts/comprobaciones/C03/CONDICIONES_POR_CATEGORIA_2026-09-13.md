@@ -551,3 +551,7 @@ Pantalla, captura e interpretación visual pasa de 15/19 a 15/19 con la orden de
 ## Actualización 2026-09-14 (DIALOGUE1489)
 
 Pantalla, captura e interpretación visual pasa de 15/19 a 16/19 con la orden deíctica de mirar contestada con la pregunta validada de qué mirar (commit a60a7901, BUILD1489) (HEAD a60a7901): DIALOGUE1489: «quiero que lo veas» pregunta qué mirar sin devolver la pregunta; H0528 cubierto, 1 créditos. 6/6 ejecutados, 6 aprobados, 1 crédito; las tres preguntas piden qué mirar con el mismo verbo
+
+## Actualización 2026-09-14 (DIALOGUE1491)
+
+Navegación y búsqueda web pasa de 38/46 a 40/46 con los destinos cortados por la transcripción contestados con la pregunta de a qué portal (commit 9a26dbdd, BUILD1491) (HEAD 9a26dbdd): DIALOGUE1491: el destino cortado por la transcripción pregunta a qué portal ir; H0393 y H0541 cubiertos, 2 créditos. 7/7 ejecutados, 7 aprobados, 2 créditos; las cuatro preguntas dicen que el nombre parece cortado y piden el portal
