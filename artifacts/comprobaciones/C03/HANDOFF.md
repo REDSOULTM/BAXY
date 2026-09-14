@@ -1,3 +1,11 @@
+# WEB1449 adjudicado — 2026-09-14T17:43:10.722943+00:00
+
+**449/742 cubiertos, 293 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 50266cd489cab930fd8d1034a53a18889311976b2b8bee0aad762fafbc5a26f2. Primeras altas 24 h >= 323 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f106005c con BUILD1449 (cuatro vetos del compositor corregidos para el informe de clima; WEB1449/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación.
+
+WEB1449 («Información web actual», H0339 «qué clima hace hoy», H0689 «mostrame el clima», H0617 «va a llover mañana», búsqueda pública del clima local): 10/10 ejecutados, 0 violaciones; los tres literales y tres de las cuatro variantes publicaron un informe fiel de las páginas de pronóstico encontradas (títulos citados tal cual, sitios nombrados, sin afirmar temperatura ni pronóstico; ante la pregunta por la lluvia, «no especifican si va a llover o no»), cada uno sobre una web.search de sólo lectura verificada; una variante falló por dos causas apiladas: la mente publicó un borrador cortado por el presupuesto de 256 tokens (finish_reason length) y la App lo rechazó como internal_code porque ContainsStutteredToken toma el verbo «contienen» por un tartamudeo; las tres fronteras respondieron sin buscar, 3 créditos. Adjudicación 22680f9283976747af7ece73e4fa8e4f420dc6ac4c5b1927353c1ebcd84d5bad. Causas residuales: un borrador terminado por longitud no debe publicarse (pedir un informe más corto) y las terminaciones verbales «-ienen» no son tartamudeos (WEB1451); las ciudades nombradas siguen condicionadas (el motor devuelve el clima local).
+
+---
+
 # WEB1447 adjudicado — 2026-09-14T17:28:04.414769+00:00
 
 **446/742 cubiertos, 296 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 3b8bea97c2062317ae08d545c267109620777145bb2e35e8f145c596fa8d2662. Primeras altas 24 h >= 320 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c64e9748 con BUILD1447 (informe de búsqueda fundado en los resultados; WEB1447/SOURCE.json|SOURCE.patch). Turnos ordinarios de sólo lectura sin confirmación.

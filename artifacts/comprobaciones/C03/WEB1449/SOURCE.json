@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1449-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_truncated_fact_word: los fragmentos de resultados son prosa; _payload_fact_defect: se retira search_unsupported_terms y quedan search_unsupported_claim y search_result_denied; compose_visible_defect: los títulos citados de una búsqueda verificada se enmascaran antes del veto de pregunta y el alcance «no puedo confirmar…» de una búsqueda verificada se enmascara en la lente de fallo)",
+  "patch": "artifacts/comprobaciones/C03/WEB1449/SOURCE.patch",
+  "commits": [
+    "f106005cdef9e1aa2a6e907468bc3ec2202506da"
+  ],
+  "build": "BUILD1449 (C03-repairs1449-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "WEB1449: las siete búsquedas verificaron páginas de pronóstico locales y todos los borradores describieron fielmente las páginas encontradas, pero cuatro vetos del compositor («actual» tomado como corte de «actualizada», palabras corrientes sin fundamento, un título citado con «¿Va a llover?» y el alcance honesto «no puedo confirmar si va a llover mañana…») impidieron publicar cualquier final.",
+  "change": "Los fragmentos son prosa para el corte de palabras; se retira el fundamento de palabras (quedan el veto de afirmación inventada y el de negación); los títulos citados se enmascaran antes del veto de pregunta; el alcance honesto de una búsqueda verificada se enmascara en la lente de fallo. Sin respuestas fijas.",
+  "measurement": "WEB1449: 10/10 ejecutados, 0 violaciones; los tres literales y tres de las cuatro variantes publicaron un informe fiel de las páginas de pronóstico encontradas (títulos citados tal cual, sitios nombrados, sin afirmar temperatura ni pronóstico; ante la pregunta por la lluvia, «no especifican si va a llover o no»), cada uno sobre una web.search de sólo lectura verificada; una variante falló por dos causas apiladas: la mente publicó un borrador cortado por el presupuesto de 256 tokens (finish_reason length) y la App lo rechazó como internal_code porque ContainsStutteredToken toma el verbo «contienen» por un tartamudeo; las tres fronteras respondieron sin buscar; 3 créditos. Causas residuales: un borrador terminado por longitud no debe publicarse (pedir un informe más corto) y las terminaciones verbales «-ienen» no son tartamudeos (WEB1451); las ciudades nombradas siguen condicionadas (el motor devuelve el clima local).",
+  "credits": 3
+}
