@@ -1,0 +1,11 @@
+{
+  "schema": "c03-windows1317-measurement-v1",
+  "status": "measured",
+  "measured_by": "root (Claude Fable 5.1)",
+  "candidate": "HEAD c46e6f4d con BUILD1317 (página 50 para la pregunta de tamaño + sizeComparisonScope; sin cambio .NET)",
+  "panel": "1 literal de ventana más grande, 2 variantes, 2 límites; window.resolve de inventario de sólo lectura",
+  "result": "5 ejecutados, 4 aprobados, 1 límite fallido (saludo no cumplido), 0 violaciones; H0419 acreditado con dos pares sobre window.resolve verificada de las 22 ventanas observadas; 1 créditos. Medición: con página 50 la comparación cubre todo el inventario y el compositor publica al primer intento; residual: con más de 50 ventanas el final debe declarar el subconjunto comparado.",
+  "category_closed": true,
+  "adjudication_sha256": "5f725998437a96ea4dd1be6e9e3fccca5c035ae8046229b735aeee02e68a742d",
+  "credits": 1
+}

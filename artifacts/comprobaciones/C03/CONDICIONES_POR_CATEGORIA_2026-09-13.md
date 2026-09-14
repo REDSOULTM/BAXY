@@ -157,3 +157,7 @@ Procesos pasa de 8/9 a 9/9 sin cambio de fuente (BUILD1311): 5 ejecutados, 5 apr
 ## Actualización 2026-09-14 (WINDOWS1315)
 
 Estado de ventanas y aplicaciones pasa de 13/14 a 13/14 con BUILD1315 (lector «cuál es la ventana más grande» → window.resolve de inventario; largestWindow calculado sobre ancho×alto observados en la proyección): 5 ejecutados, 2 aprobados (los dos límites), 3 fallidos (literal y dos pares: lectura window.resolve verificada sobre 20 de 22 ventanas, borradores de la ventana más grande vetados como missing_fact), 0 créditos. Medición: la proyección de una sola ventana choca con la guardia de página parcial; reparación para WINDOWS1317: página de 50 para la pregunta de tamaño y campo sizeComparisonScope que la guardia acepta.
+
+## Actualización 2026-09-14 (WINDOWS1317)
+
+Estado de ventanas y aplicaciones pasa de 13/14 a 14/14 con BUILD1317 (página 50 para la pregunta de tamaño; sizeComparisonScope declarado por la proyección y aceptado por la guardia de página parcial): 5 ejecutados, 4 aprobados, 1 límite fallido (saludo no cumplido), 0 violaciones; H0419 acreditado con dos pares sobre window.resolve verificada de las 22 ventanas observadas, 1 créditos. Medición: con página 50 la comparación cubre todo el inventario y el compositor publica al primer intento; residual: con más de 50 ventanas el final debe declarar el subconjunto comparado. Segunda categoría cerrada del registro (14/14).

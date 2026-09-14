@@ -1,3 +1,25 @@
+## WINDOWS1317 — estado vigente 2026-09-14T02:48:48.402441+00:00
+
+Parcial: 4 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 387/742 | 355 | 0 | >=261 | 2/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 260 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WINDOWS1317 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: WINDOWS1317: 5 ejecutados, 4 aprobados, 1 fallidos, 1 créditos (índices [0]); categoría Estado de ventanas y aplicaciones cerrada 14/14. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/WINDOWS1317/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 84.06 s acumulados; pico GPU 3497.56 MiB; pico RAM 1595.11 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WINDOWS1317 precedente. -->
+
 ## WINDOWS1315 — estado vigente 2026-09-14T02:43:58.229233+00:00
 
 Parcial: 2 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.

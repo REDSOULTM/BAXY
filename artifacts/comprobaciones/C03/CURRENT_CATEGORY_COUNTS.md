@@ -1,6 +1,6 @@
-# Categorías actuales — adjudicación WINDOWS1315
+# Categorías actuales — adjudicación WINDOWS1317
 
-386/742 cubiertos; 356 abiertos; 0 no aplican; 1/35 categorías cerradas (Procesos 9/9). Últimas 24 h: al menos 260 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: d0d8d612aa2d43d9d9e42939a939c00318f40266dc4af16fe73be8ff1841adf4.
+387/742 cubiertos; 355 abiertos; 0 no aplican; 2/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14). Últimas 24 h: al menos 261 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: dd330c05a9d37c9dc9c1b8069cf5bd737895991f3c2aacc2e39c47b4651451aa.
 
 | Categoría | Total | Cubiertos | Abiertos |
 |---|---:|---:|---:|
@@ -24,7 +24,7 @@
 | Estado de hardware y sistema | 40 | 32 | 8 |
 | Organizar ventanas y pestañas | 13 | 3 | 10 |
 | Conversación social y ayuda general | 31 | 25 | 6 |
-| Estado de ventanas y aplicaciones | 14 | 13 | 1 |
+| Estado de ventanas y aplicaciones | 14 | 14 | 0 |
 | Identidad y capacidades del asistente | 19 | 16 | 3 |
 | Hora y fecha | 23 | 16 | 7 |
 | Memoria personal | 10 | 7 | 3 |

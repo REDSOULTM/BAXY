@@ -1,3 +1,11 @@
+# WINDOWS1317 adjudicado — 2026-09-14T02:48:48.402441+00:00
+
+**387/742 cubiertos, 355 abiertos, 0 NA; 2/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14); C03 formal 3/11. Registro SHA dd330c05a9d37c9dc9c1b8069cf5bd737895991f3c2aacc2e39c47b4651451aa. Primeras altas 24 h >= 261 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c46e6f4d con BUILD1317 (página 50 para la pregunta de tamaño + sizeComparisonScope; sin cambio .NET).
+
+WINDOWS1317 («Estado de ventanas y aplicaciones», la ventana abierta más grande; window.resolve de inventario de sólo lectura, geometría comparada en la proyección): 5 ejecutados, 4 aprobados, 1 límite fallido (saludo no cumplido), 0 violaciones; H0419 acreditado con dos pares sobre window.resolve verificada de las 22 ventanas observadas, 1 créditos. Adjudicación 5f725998437a96ea4dd1be6e9e3fccca5c035ae8046229b735aeee02e68a742d. Medición: con página 50 la comparación cubre todo el inventario y el compositor publica al primer intento; residual: con más de 50 ventanas el final debe declarar el subconjunto comparado.
+
+---
+
 # WINDOWS1315 adjudicado — 2026-09-14T02:43:58.229233+00:00
 
 **386/742 cubiertos, 356 abiertos, 0 NA; 1/35 categorías cerradas (Procesos 9/9); C03 formal 3/11. Registro SHA d0d8d612aa2d43d9d9e42939a939c00318f40266dc4af16fe73be8ff1841adf4. Primeras altas 24 h >= 260 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 3e0bbd3f con BUILD1315 (lector de ventana más grande + proyección de geometría; sin cambio .NET).
