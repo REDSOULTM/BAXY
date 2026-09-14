@@ -389,7 +389,12 @@ internal static class UserMessagePolicy
                 @"\b(?:fecha|date|d[ií]a|day)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
             bool clockRequested = !dateRequested || Regex.IsMatch(userText ?? string.Empty,
                 @"\b(?:hora|time)\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
-            if (clockRequested && !PreservesObservedClock(draft.Source, modelText))
+            // CLOCK1333 «cuánto falta para las 3 de la tarde»: the answer is the
+            // remaining time computed by the mind («Faltan 13 horas y 43 minutos
+            // para las 3 de la tarde»); the observed clock is optional there and
+            // the asked time is not an extra invented clock.
+            bool countdownRequested = IsCountdownRequest(userText);
+            if (clockRequested && !countdownRequested && !PreservesObservedClock(draft.Source, modelText))
             {
                 return "missing_literal_fact";
             }
@@ -421,7 +426,7 @@ internal static class UserMessagePolicy
             {
                 return "missing_literal_fact";
             }
-            if (InventedExtraClock(draft.Source, modelText))
+            if (!countdownRequested && InventedExtraClock(draft.Source, modelText))
             {
                 return "missing_literal_fact";
             }
@@ -650,6 +655,17 @@ internal static class UserMessagePolicy
         "puedober",
         "fabric",
     ];
+
+    /// <summary>
+    /// A countdown to a clock time («cuánto falta para las 3 de la tarde»,
+    /// «how long until 6 pm»): the mind reads the clock and computes the rest.
+    /// </summary>
+    internal static bool IsCountdownRequest(string? text) =>
+        Regex.IsMatch(
+            text ?? string.Empty,
+            @"^\s*[¿¡]?\s*(?:cu[aá]nto\s+(?:tiempo\s+)?(?:falta|queda|resta)\s+(?:para|hasta)\b|"
+            + @"how\s+(?:long|much\s+time)\s+(?:until|till|before|to|is\s+left)\b)",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
     internal static bool IsConnectivityStatusRequest(string text)
     {
