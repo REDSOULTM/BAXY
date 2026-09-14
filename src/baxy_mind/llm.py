@@ -5532,9 +5532,11 @@ def compose_visible_defect(
         and "provider" not in (user_text or "").casefold()
     ):
         return "internal_code"
-    if re.search(r":\s*(?:true|false)\b", folded) is not None:
+    # SCREEN1421: a screen line quoted verbatim may itself read «"key": false»;
+    # observed text is data, so these code shapes are judged on the masked copy.
+    if re.search(r":\s*(?:true|false)\b", vocabulary_text.casefold()) is not None:
         return "internal_code"
-    if re.search(r"localTime|stepCount", stripped):
+    if re.search(r"localTime|stepCount", vocabulary_text):
         return "internal_code"
     if _glued_proper_name(stripped, situation, user_text):
         return "invented"
@@ -11919,6 +11921,15 @@ class LlmRuntime:
                 rest = rest[0].upper() + rest[1:]
             return rest if publishable(rest) else candidate
 
+        def screen_clip(candidate: str) -> str:
+            # SCREEN1421: quoting seen.lines, the model copied the JSON escapes
+            # of the prompt («\"key\": false,», «\n»); the person's screen has
+            # the plain characters. Unescape only for a verified screen reading.
+            if not screen_reading or "\\" not in (candidate or ""):
+                return candidate
+            unescaped = re.sub(r"\\[nrt]", " ", candidate)
+            return re.sub(r"\\([\"\\])", r"\1", unescaped)
+
         acting_facts = _compose_user_content(user_text, prompt_facts, language_contract, include_request=False)
         if cause == "acting":
             message_prompt = cpu_prompt
@@ -11930,7 +11941,7 @@ class LlmRuntime:
         response = post(payload)
         first_raw = (response["choices"][0]["message"].get("content") or "").strip()
         text = _strip_prompt_labels(first_raw)
-        text = title_clip(acting_clip(text))
+        text = title_clip(acting_clip(screen_clip(text)))
         if publishable(text):
             record_stage("first", first_raw, text, response, "", True)
             return text
@@ -12269,7 +12280,7 @@ class LlmRuntime:
         retry = post(retry_payload)
         retry_raw = (retry["choices"][0]["message"].get("content") or "").strip()
         retry_text = _strip_prompt_labels(retry_raw)
-        retry_text = title_clip(acting_clip(retry_text))
+        retry_text = title_clip(acting_clip(screen_clip(retry_text)))
         if publishable(retry_text):
             record_stage("retry", retry_raw, retry_text, retry, "", True)
             return retry_text
@@ -12310,7 +12321,7 @@ class LlmRuntime:
         third = post(third_payload)
         third_raw = (third["choices"][0]["message"].get("content") or "").strip()
         third_text = _strip_prompt_labels(third_raw)
-        third_text = title_clip(acting_clip(third_text))
+        third_text = title_clip(acting_clip(screen_clip(third_text)))
         if publishable(third_text):
             record_stage("third", third_raw, third_text, third, "", True)
             return third_text

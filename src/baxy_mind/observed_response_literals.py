@@ -55,6 +55,14 @@ def without_observed_names(text: str, situation: object) -> str:
                 names.update(line.strip() for line in recognized.split("\n")
                              if 1 < len(line.strip()) <= 4096)
                 names.update(re.findall(r"[\w-]+(?:[._][\w-]+)+", recognized))
+            # SCREEN1421: the provider joins `text` with spaces; the recognized
+            # lines (what the composer quotes) live in layout.lines[].text.
+            layout = observed.get("layout") if isinstance(observed, dict) else None
+            layout_lines = layout.get("lines") if isinstance(layout, dict) else None
+            if isinstance(layout_lines, list):
+                names.update(line_text.strip() for line in layout_lines if isinstance(line, dict)
+                             and isinstance(line_text := line.get("text"), str)
+                             and 1 < len(line_text.strip()) <= 4096)
         steps = node.get("steps")
         if isinstance(steps, list):
             for step in steps:
