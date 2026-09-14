@@ -1,0 +1,141 @@
+{
+  "schema": "web1451-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1451-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-web1451-instrument-v1",
+  "seal_sha256": "631cc1e4dc2294c756795823ebe79f5902d31bcc499554ae6d3be656b33fce26",
+  "runner_sha256": "dde5b50f9a7addec6d39d442a7240b619a6a80bcc1e92a7b3844922e4cf2e344",
+  "transport_seal_sha256": "ae488c12cc4a2a12bbab7e7c25d863fc9de60cb1f6aab4170b200d53ea489533",
+  "files": {
+    "panel.json": "69220f26a40524a6ba7a53d2d1db24390859b60bbb5254fb95d06ac801d5d262",
+    "turns.jsonl": "6e6505428055e90e3432f0556d92bfbb24bf8c23eb412c8c046c755b0a39bd71",
+    "case-map.json": "809e259d11336ad61c8b960b0d06ff349b54924ed22e1ae0f6c3bb206ba2f708",
+    "PLAN.md": "be2ddabfbb681e44845d63a5a9ca9fa7f2003f367c2f1fbe5ba6bf720b2e5abe"
+  },
+  "counts": {
+    "cases": 12,
+    "historical_literals": 3,
+    "original_development_variants": 6,
+    "boundaries": 3,
+    "wire_lines": 24,
+    "session_controls": 12,
+    "ordinary_turns": 12,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 12,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 3,
+    "original_development_variant": 6,
+    "boundary": 3
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0431",
+      "kind": "historical_literal",
+      "group": "google_weather",
+      "credit_behavior": "google_weather",
+      "text_sha256": "92bb6f0bd27e5bce090ef4aa00f8fabffd581ad51966db13c553e7b1fcafd64d",
+      "criterion_sha256": "728964094e4f6c6a993301d8a07333cffd57ed3ebad886e3a7eac115e6f59266"
+    },
+    {
+      "index": 1,
+      "case_id": "H0451",
+      "kind": "historical_literal",
+      "group": "topic_research",
+      "credit_behavior": "topic_research",
+      "text_sha256": "98dd0eeb59bf3282601e389e1f71eab94a4768e6f864b07b190dbfb252624c66",
+      "criterion_sha256": "333ce5fbf2726eb86360391f7202dea32f589c29f05f5b03d66be66351b86cd0"
+    },
+    {
+      "index": 2,
+      "case_id": "H0509",
+      "kind": "historical_literal",
+      "group": "world_news",
+      "credit_behavior": "world_news",
+      "text_sha256": "af0ec3207330ad02aabd51f5c1517e9a7a6d923fa129cff76a32208c0694a276",
+      "criterion_sha256": "5fd5d7abb998e012f3c44d7f5ae29123e9fb99ff6f493b0496478ea33028b61f"
+    },
+    {
+      "index": 3,
+      "case_id": "web1451-dev-01",
+      "kind": "original_development_variant",
+      "group": "google_weather",
+      "credit_behavior": "google_weather",
+      "text_sha256": "f7fb13a156c1b8eccd1c10fbb0c6df22a8312b1c4cd3806fd71bdf3194d87b9f",
+      "criterion_sha256": "728964094e4f6c6a993301d8a07333cffd57ed3ebad886e3a7eac115e6f59266"
+    },
+    {
+      "index": 4,
+      "case_id": "web1451-dev-02",
+      "kind": "original_development_variant",
+      "group": "google_weather",
+      "credit_behavior": "google_weather",
+      "text_sha256": "b3e7e905cf045f6080b1791c416d8b18fc041a9ecb4fb72d77d499c7a78bce69",
+      "criterion_sha256": "728964094e4f6c6a993301d8a07333cffd57ed3ebad886e3a7eac115e6f59266"
+    },
+    {
+      "index": 5,
+      "case_id": "web1451-dev-03",
+      "kind": "original_development_variant",
+      "group": "topic_research",
+      "credit_behavior": "topic_research",
+      "text_sha256": "5ddc950184254cd04f35ec2a605c7ea89882122710ed7a97688c2623ae46c5ae",
+      "criterion_sha256": "333ce5fbf2726eb86360391f7202dea32f589c29f05f5b03d66be66351b86cd0"
+    },
+    {
+      "index": 6,
+      "case_id": "web1451-dev-04",
+      "kind": "original_development_variant",
+      "group": "topic_research",
+      "credit_behavior": "topic_research",
+      "text_sha256": "8ad41fc4d79ed89867b6ffb91c46e8173309f5f82552806678d79dbc0645892a",
+      "criterion_sha256": "333ce5fbf2726eb86360391f7202dea32f589c29f05f5b03d66be66351b86cd0"
+    },
+    {
+      "index": 7,
+      "case_id": "web1451-dev-05",
+      "kind": "original_development_variant",
+      "group": "world_news",
+      "credit_behavior": "world_news",
+      "text_sha256": "79943e967b6495a8f13b5775a3bfa6dec05819ff79d513bf2c56867876dfbd90",
+      "criterion_sha256": "5fd5d7abb998e012f3c44d7f5ae29123e9fb99ff6f493b0496478ea33028b61f"
+    },
+    {
+      "index": 8,
+      "case_id": "web1451-dev-06",
+      "kind": "original_development_variant",
+      "group": "world_news",
+      "credit_behavior": "world_news",
+      "text_sha256": "afeb715f9cb63bb1c5d901f99d5a4257df84d2a3945a8d95ee65e5d4fb566823",
+      "criterion_sha256": "5fd5d7abb998e012f3c44d7f5ae29123e9fb99ff6f493b0496478ea33028b61f"
+    },
+    {
+      "index": 9,
+      "case_id": "web1451-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "e1a2ed8a83310eb823e39cb5ad3c9fb2d2a6cdd0b165f368875709a642ded604",
+      "criterion_sha256": "8acd04d670aaa2d5189135208765becd1891b9f16a23d01357ec0d56cd80c93d"
+    },
+    {
+      "index": 10,
+      "case_id": "web1451-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "21015cd9554e146a7eab1b6f1d52fc875d831eb131054684adfcb91d0a2cb794",
+      "criterion_sha256": "d3aa2b74b96a89a885b6d8b632cccc84ec394d6eab5f6c2e1a51e94bf3697897"
+    },
+    {
+      "index": 11,
+      "case_id": "web1451-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "3b6916612506f16a18ec7b5c4447fed0e4b2efa4d0cfe2b8ffdbc760d3d6c7b9",
+      "criterion_sha256": "f15437de3081edaa1ecd35b0ffcb0362ae6913300279fb619efa465066581276"
+    }
+  ]
+}
