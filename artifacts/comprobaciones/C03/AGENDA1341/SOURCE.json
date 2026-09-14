@@ -1,0 +1,15 @@
+{
+  "schema": "c03-agenda1341-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_is_direct_request: cabezas clíticas de cancelación)",
+  "patch": "artifacts/comprobaciones/C03/AGENDA1341/SOURCE.patch",
+  "commits": [
+    "e61f76263055b4568bc4fe06a4df258c01ac33df"
+  ],
+  "build": "BUILD1341 (C03-repairs1341-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "AGENDA1339: «cancelame la alarma» no pasó la puerta de pedido directo (sin la cabeza «cancelame») y el modelo propuso «la alarma más reciente».",
+  "change": "Lector: cabezas clíticas de cancelación (cancelame, cancelamela, borrame, quitame, eliminame y formas en -la) en _is_direct_request. Sin respuestas fijas.",
+  "measurement": "AGENDA1341: 5 ejecutados, 5 aprobados, 0 fallidos, 0 violaciones; H0011 acreditado con dos pares; 1 créditos. Medición: con las cabezas clíticas en la puerta de pedido directo, «cancelame la alarma» entra en la aclaración explícita y las tres formas preguntan cuál alarma sin proponer ninguna. Agenda queda en 36/38: «listá los timers» (sin listado completo de notificaciones) y «qué tengo agendado para hoy» (cuenta Microsoft).",
+  "credits": 1
+}

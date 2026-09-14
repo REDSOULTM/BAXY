@@ -1,0 +1,26 @@
+commit e61f76263055b4568bc4fe06a4df258c01ac33df
+
+C03: clitic cancellation heads pass the direct-request gate (AGENDA1341)
+
+AGENDA1339 measured: «cancelame la alarma» never reached the explicit which-alarm clarification because _is_direct_request did not admit the clitic head «cancelame» (it admits «cancelá» and «cancel»); the model path then proposed «la alarma más reciente». The clitic cancellation heads (cancelame, cancelamela, borrame, quitame, eliminame and their -la forms) are now the same speech act in the gate.
+
+No .NET change. Offline probe only; tests not run (owner order).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 8d33e5db..2c998a38 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -8933,6 +8933,10 @@ def _is_direct_request(text: str) -> bool:
+         r"manda|mandar|mandale|mandales|"
+         r"arma|armar|marca|marcar|graba|grabar|record|stage|"
+         r"borra|borrar|elimina|eliminar|delete|"
++        # AGENDA1339 «cancelame la alarma»: clitic cancellation heads are the
++        # same speech act as «cancelá»/«cancel».
++        r"cancelame|cancelamela|cancelala|borrame|borrala|quitame|quitala|"
++        r"eliminame|eliminala|"
+         r"cierralo|cierrala|cerrala|cerralo|close it|dile|decile|tell|send|message|"
+         r"programa|programar|programame|schedule|agenda|agendar|agendame|"
+         r"ponme|pone|poneme|pongame|"

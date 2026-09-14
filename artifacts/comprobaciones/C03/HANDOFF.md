@@ -1,3 +1,11 @@
+# AGENDA1341 adjudicado — 2026-09-14T04:51:47.523536+00:00
+
+**398/742 cubiertos, 344 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA 70717d1371360f539c0b2bf5cb1bdda671182eaa45fcb703a216ec3e77d27256. Primeras altas 24 h >= 272 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e61f7626 con BUILD1341 (mente: «cancelame» pasa la puerta de pedido directo; AGENDA1341/SOURCE.json|SOURCE.patch; .NET sin cambios).
+
+AGENDA1341 («Alarmas, recordatorios, tareas y agenda», alarma sin identificar con las cabezas clíticas admitidas): 5 ejecutados, 5 aprobados, 0 fallidos, 0 violaciones; H0011 acreditado con dos pares, 1 créditos. Adjudicación 22326d19cdc9382e3cdd0386a4a89923243093c1bdc17b98fa351ae4ff4d8eae. Medición: con las cabezas clíticas en la puerta de pedido directo, «cancelame la alarma» entra en la aclaración explícita y las tres formas preguntan cuál alarma sin proponer ninguna. Agenda queda en 36/38: «listá los timers» (sin listado completo de notificaciones) y «qué tengo agendado para hoy» (cuenta Microsoft).
+
+---
+
 # AGENDA1339 adjudicado — 2026-09-14T04:48:20.075132+00:00
 
 **397/742 cubiertos, 345 abiertos, 0 NA; 3/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19); C03 formal 3/11. Registro SHA e2b37aaba12b2a1031adaee219da9d619c8b31c6ee6b70a3f3273a58bfc93f68. Primeras altas 24 h >= 271 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a703e379 con BUILD1339 (mente: la pregunta de which_alarm no propone candidatos; AGENDA1339/SOURCE.json|SOURCE.patch; .NET sin cambios).
