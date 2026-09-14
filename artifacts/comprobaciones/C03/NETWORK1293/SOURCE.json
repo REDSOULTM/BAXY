@@ -1,0 +1,15 @@
+{
+  "schema": "c03-network1293-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (verbos de radio con clíticos y voseo «apagame/encendé/activá el bluetooth» en el lector y en las cabezas de pedido directo; _wifi_state_question → wifi.status; «decime si …» es pregunta indirecta, no condición diferida); src/baxy_mind/__main__.py («encende» fundamenta state=true)",
+  "patch": "artifacts/comprobaciones/C03/NETWORK1293/SOURCE.patch",
+  "commits": [
+    "b6828d9c9d20493bbef611e3e8757f9595afd183"
+  ],
+  "build": "BUILD1293 (C03-repairs1293-build/BUILD_READY.json; .NET sin cambios)",
+  "cause_measured": "Sonda offline con el catálogo: «apagame el bluetooth» y «encendé el bluetooth» no llegaban a bluetooth.radio.set (cabezas sin clítico ni voseo); «decime si el wifi está prendido» caía en la regla de efecto diferido («si» leído como condición) y «¿el wifi está encendido?» no pasaba la puerta de pedido directo (NETWORK1161/1163: ruta de aclaración temprana).",
+  "change": "Lectores cerrados; sin respuestas fijas; la raíz enciende/apaga la radio antes de cada caso y restaura el estado del dueño (apagada).",
+  "measurement": "NETWORK1293: 13 ejecutados, 10 aprobados, 3 fallidos; 1 créditos. H0230 «decime si el wifi está prendido» acreditado con pares «¿El wifi está encendido?» y «Decime si el wifi está activo.» (wifi.status verificada, connected=false; finales directos y fieles). Los tres literales de radio pasaron con bluetooth.radio.set verificada (On→Off, Off→On) pero sin crédito: las variantes con clítico o voseo («Apagame», «Encendé») pidieron el estado ya dicho porque la normalización literal del booleano no reconoce esas formas; «Turn off» y «Activá» pasaron. H0302 «qué redes wifi hay» falló: el final afirmó que el PC no está conectado a ninguna red (Ethernet en uso, no observado) y no dijo que no puede escanear.",
+  "credits": 1
+}
