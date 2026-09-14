@@ -4473,6 +4473,16 @@ def _explicit_arguments_from_evidence(
     if operation == "system.status":
         return _explicit_system_status_scope(evidence)
 
+    if operation == "clipboard.write.text":
+        # CLIPBOARD1359: the quoted or colon-introduced fragment is the
+        # person's literal, case and accents preserved by the reader.
+        literal = effect_intent.literal_clipboard_write_text(evidence)
+        return {"text": literal} if literal is not None else None
+
+    if operation == "clipboard.read.text":
+        # The read takes no literal; naming the clipboard is the whole request.
+        return {} if re.search(r"\b(?:portapapeles|clipboard)\b", folded) else None
+
     if operation == "system.settings.status":
         # BRIGHT1283: the reader owns the setting enum; «brillo» is the literal.
         return {"setting": "brightness"} if effect_intent.brightness_status_request(evidence) else None

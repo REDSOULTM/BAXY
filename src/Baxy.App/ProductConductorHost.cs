@@ -352,7 +352,7 @@ internal static class ProductConductorHost
             || initial.Diagnostic is not null
             || observed.Prepared.OperationName is not (
                 "browser.navigate" or "browser.navigate.named" or "app.close" or "input.visible.click"
-                or "system.settings.set"))
+                or "system.settings.set" or "clipboard.write.text" or "clipboard.read.text"))
         {
             return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
         }

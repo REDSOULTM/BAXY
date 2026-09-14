@@ -11762,6 +11762,58 @@ _BRIGHTNESS_EXTREME_VALUES = {
 }
 
 
+_CLIPBOARD_WRITE_HEAD = (
+    r"(?:copia|copiar|copiame|copy|pon|pone|poneme|ponme|ponelo|ponlo|put|"
+    r"escribe|escribi|escribime|write|guarda|guardame|save|deja|dejame|leave|"
+    r"mete|meteme|carga|cargame|load)"
+)
+_CLIPBOARD_QUOTED = re.compile(r'"([^"\n]+)"|“([^”\n]+)”|«([^»\n]+)»|‘([^’\n]+)’')
+
+
+def literal_clipboard_write_text(text: str) -> str | None:
+    """Return the literal a person asked to put on the OS clipboard, or None.
+
+    «Copia a mi portapapeles "Hola"», «copiá esto al portapapeles: hola mundo»,
+    «Copy "hello" to my clipboard»: the head is a copy/put verb, the clipboard
+    is named and the literal is either quoted or introduced by a colon after
+    the clipboard noun. The literal keeps its case and accents. Nothing is
+    inferred when no literal is given («copiá este texto al portapapeles» stays
+    a clarification) or when the clause is a prohibition.
+    """
+
+    collapsed = " ".join(text.split())
+    folded = _strip_request_envelope(_fold(collapsed))
+    if not _has(folded, r"\b(?:portapapeles|clipboard)\b"):
+        return None
+    if not _head_is(_request_head(folded), _CLIPBOARD_WRITE_HEAD):
+        return None
+    if _is_negative_effect_clause(folded):
+        return None
+    quoted = [
+        group
+        for found in _CLIPBOARD_QUOTED.finditer(collapsed)
+        for group in found.groups()
+        if group
+    ]
+    if len(quoted) > 1:
+        return None
+    if quoted:
+        literal = quoted[0].strip()
+        return literal or None
+    colon = re.search(
+        r"\b(?:portapapeles|clipboard)\b[^:]*:\s*(?P<literal>.+)$",
+        collapsed,
+        re.IGNORECASE,
+    )
+    if colon is None:
+        return None
+    literal = colon.group("literal").strip()
+    if literal.endswith(".") and literal.count(".") == 1:
+        # The sentence's own full stop is not part of a dictated fragment.
+        literal = literal[:-1].rstrip()
+    return literal or None
+
+
 def _literal_brightness_level(text: str) -> int | None:
     """«poné el brillo al 80», «pon el brillo al 80%», «subí el brillo al máximo»: an absolute level."""
 
@@ -14743,6 +14795,16 @@ def resolve_explicit_effects(
     ):
         # BRIGHT1287: an absolute brightness level is the sensitive set (confirmation).
         return EffectIntent(("system.settings.set",), (folded,))
+    if (
+        "clipboard.write.text" in available
+        and literal_clipboard_write_text(text) is not None
+        and not _is_meta_or_tool_denial(folded)
+        and not _has_contradictory_correction(folded)
+    ):
+        # CLIPBOARD1359: a quoted or colon-introduced literal for the clipboard
+        # is the sensitive write (confirmation). The raw text is the evidence so
+        # the literal keeps its case and accents.
+        return EffectIntent(("clipboard.write.text",), (text,))
     if (
         "filesystem.create.directory" in available
         and _directory_creation_request(folded) is not None
