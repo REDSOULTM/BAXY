@@ -1,0 +1,738 @@
+{
+  "schema": "bright1287-root-adjudication-v2",
+  "decided_at_utc": "2026-09-14T00:38:15.634688+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "4e8c2caad78f5ebbdc28127df5bc230803fe8922",
+  "decisions_sha256": "380f31370ace217c20a6b6141c1b5f5c1b50bbf44074093dd4ad2eeb09cebf9b",
+  "registry_before_sha256": "a5a3191b18caa9995039a4b977ed206da7f9e6f2acffa3c352dae83857a5d363",
+  "registry_before_counts": {
+    "covered": 369,
+    "open": 373,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "a51adfd5284428e430a47764c66e17318e95b42ea20548722710e5c4d5a40fbd",
+  "preparation_sha256": "feaa9227019db39b63ab18ca1c047e1c15932d15ef8122a811a984210c3d9bf3",
+  "passed": 10,
+  "failed": 3,
+  "unexecuted": 0,
+  "executed": 13,
+  "segments_started": 13,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [
+    "H0109",
+    "H0196",
+    "H0255"
+  ],
+  "counters": {
+    "covered": 372,
+    "open": 370,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 243,
+    "categories_total": 35,
+    "categories_closed_after": 0,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 243 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); BRIGHT1287 añade 3. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 246
+  },
+  "resources": {
+    "seconds_sum": 209.23499999995693,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1643.03515625
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0109",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        7,
+        8
+      ],
+      "reason": "Respuesta fiel y útil; crédito con dos variantes aprobadas.",
+      "observation_note": "Turno revisado: system.settings.set (brightness, valor pedido) propuesta, aprobada por la raíz por valor exacto, completada y verificada por WMI; una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "e01b7b94492d67322dd97fe4a90f1a4b1acd6e922d4ed5756d4e205ca684082c",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-00\\EXIT.json": "38bb7e00dc0b67f725f4043edfaedff0a9c1b626911506b2d8524f0843292281",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-00\\RESOURCES.json": "ed2f89d06334a5da04715e1b41898d79165d73546e832eac2f06e7c89972ad23",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\profile-owner-00.json": "8ad265ba5636865f4185720f004dede7cb455b303a4ba3b3528f9bddc8319571",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-00\\PREREG.json": "040f06c4635c4c37d05dff539cbce85f34a2d351b0462b4b3dd54d4a2e9f51e7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-00\\capture\\events.jsonl": "820d0a56fe717e2ebfe92388396d8f8a0981297f9b3b0ea9545c9c707c9bc80e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-00\\turns.jsonl": "3b8b861e3ea9bde7092799cb0c4c2d503d24c6b63acc270484913779b49215ac",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\fixture-00.json": "f5d75900d154c4290866dc61873e1faecf2958fbca439500e43683f6b70fb29c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-00.json": "2bfaa94051a0099940af3014ded60d03659690c58c3fd1d03bd5c7121b553968",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-prelaunch-00.json": "8ca2ebf8a57f2794fa63bb0b34bb9d442429d30b05e678fa11a3fa9adcc21e6c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-00\\case-observations.json": "d45e1868160ed90fba59900213d29618d37a315bd4d2b6eb9994ad30fdd07cb0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-00\\journal-before.json": "2683becc8e2dd3b30000e82f396d0da32e35541588b6f652ec0e5c623174202b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-00\\journal-after.json": "20bc420957447e58b3bb2bb20753c8742ce6ffd172a04e43c01cf5639608aaa0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "f836b6f8315d8a2e54fb1030d85ee4a6e0dc190fc3ecf1a4bb36df8653febf5c"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "1fb62967-b419-4409-91de-6957904aa4e3",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "63e19ea1-0054-42d4-ae5f-2931eb856dd0",
+          "operation": "system.settings.set",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0255",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        7,
+        8
+      ],
+      "reason": "Respuesta fiel y útil; crédito con dos variantes aprobadas.",
+      "observation_note": "Turno revisado: system.settings.set (brightness, valor pedido) propuesta, aprobada por la raíz por valor exacto, completada y verificada por WMI; una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "8bc259c16f56539c45a0b0397244543bbb82df3b628b70662094d72258f94778",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-01\\EXIT.json": "cae0ba8caa8dfa2b47acc0a7c788914f131cf7b0cffdbe7999c545b60088591c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-01\\RESOURCES.json": "e9b7a5645d804ad90d95ccc72fa636201785877a146c8e9a6b353f3f97cd0ea2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\profile-owner-01.json": "dae4ff10ec83437ac361ec7549b42697b4d11ab947936931f665cb8e8582ff6c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-01\\PREREG.json": "77b30f8d783e5230a669bbea1685cdece8ac019de3ca6d50b93cdda5b56a73cc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-01\\capture\\events.jsonl": "5a308c24a0fd210ffd37ea6573254b2788174771cf0e3e5f1a7b64f116ee8fe0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-01\\turns.jsonl": "82acbf543a5749a6c70b63374c2db742c6de282464a7b6dac58d4ef5883469d4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\fixture-01.json": "b010db70293801ca81426cef1751ccc79283ef8e753e9de06c56e87cded67f56",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-01.json": "530807450bcdd3a0f6c08207511626020a36d03057dc7a143ffdff7048b76c2b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-prelaunch-01.json": "000ade750281fa6f16978e450bc9ac9801927d187c7072bb38e606fe71990a3b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-01\\case-observations.json": "cd51608b746dd0dd64bf8e8c36a46ef4060d4215d84298c53953d707ae420916",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-01\\journal-before.json": "06d180d501106441ce7787bc13e0074a9f26b11f1018f8311c66a74facde89fb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-01\\journal-after.json": "5127c046cf419c686f0f9fbe61f9a8e976fc6ad4bf54bd2e6a2b8b3ecbde527c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "d534722110199fdb7e860331eb47ae758fdc7da630ae0602c94b7002cec7d670"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "98781580-30dd-4f53-af78-19873ae3b9cb",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "ac25ae3b-39cb-4fc7-928c-b468cb2c4e1e",
+          "operation": "system.settings.set",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "H0430",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: el final no fue fiel (vocabulario interno) o no preguntó la cantidad conservando la dirección.",
+      "observation_note": "Turno revisado: system.settings.set (brightness, valor pedido) propuesta, aprobada por la raíz por valor exacto, completada y verificada por WMI; una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "6c9d84c7d12f04585f01d7b95f900c78d323fef9b06111a6e1ca343bf3eccd8a",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-02\\EXIT.json": "8696fd3c5aca7130a3e230c5166a0751896ccdeedef637178bc46cbc7450ee99",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-02\\RESOURCES.json": "f2b91581a27265d733b1252a21848c432b02637e9466096e87ef6d6635d80bc9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\profile-owner-02.json": "4de9cca1505ecdc69dfe81d527ee24e89f973835ed698fcbc527c577855a7a91",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-02\\PREREG.json": "5ea0220f08b5eb3d113ad4cecdeec8be97755c769e3cc59318481b6a66bb387d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-02\\capture\\events.jsonl": "234ec670bba58b48b23220fea4c4ee7ff4cc7ae7c78183ce3f75e98aab37cfa9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-02\\turns.jsonl": "e1e25eef8d2606901984a1414286f58243cbba631e88db1873761a089cb50423",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\fixture-02.json": "f3cdd04a313b8cb80bf370120e3df9cf1055caaa9418859dd9d6a06d3a43229c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-02.json": "73178c697f9950c501d2cbe78027367cefddc21569c9f56e24905b88637870da",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-prelaunch-02.json": "5cc820ad184d145592c83919d19dfd90ca72b42009d51331fc04249cc3ae3e66",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-02\\case-observations.json": "909592e4045e06f33d6915b4dbc19ffbfad1264684393302ffe2b9656e5a34d2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-02\\journal-before.json": "c5acfa9b7b141ac0a1ba97baf9e0f9aa42c959f58eaa0b3a6b390abe0a482825",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-02\\journal-after.json": "247069792bcd24a83e6b0536dfe7b688df61dc84d5d4ebef55b93605c2b89f9d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "9a3b1fd74ae366ddac8900210145d9d18c584f145a230d3d8c7a77a08ad1d076"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "28591e5f-4005-437e-9bd7-e6c57be220c2",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "0b1329c7-9301-482e-866f-66d36ca3cef5",
+          "operation": "system.settings.set",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "H0196",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        7,
+        8
+      ],
+      "reason": "Respuesta fiel y útil; crédito con dos variantes aprobadas.",
+      "observation_note": "Turno revisado: system.settings.set (brightness, valor pedido) propuesta, aprobada por la raíz por valor exacto, completada y verificada por WMI; una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "b40400caa887441400afff652b78af7126a2b84b33c9328503c3a19e22915be4",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-03\\EXIT.json": "f2882fbe8367cc29902712dc1677f96bb1864771919402f404d4a6af2edab203",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-03\\RESOURCES.json": "2d4abad08fb6032541e23ba2a03567a5983fdd9d542bca229e2e506e6cdd5bc4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\profile-owner-03.json": "c8496c1b554305799a4802328e03bd8c3a83d6f0e04ebae524a4bd57d2857143",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-03\\PREREG.json": "63eac0a48e1533ffdfe984deef264c42b9ab1bed14ba8597e336c5e7c57228f6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-03\\capture\\events.jsonl": "f4997a87393e3b50c1321550df643c224eb6184bfb31fd1a9a7904201ed1a9bf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-03\\turns.jsonl": "cadf5f1213a6951dffc2b9c39ea55afc9ddac9b66fb5fc7330982e8e449820d4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\fixture-03.json": "b84212254f212bd99d04f5675315c278f8012b236b948f8e3c6b697dc28de1e5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-03.json": "6a9e5b74eaa4e15bdbe1826c7548aff71d00b9cd533289f4f3de50500451f0bc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-prelaunch-03.json": "d165bb3beb0b3dfdd78fa66451db96a42a287007bea137ec537b915a363f510c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-03\\case-observations.json": "108c92c304df3ddde3c0b1257a8782fadd254a33c3967c6172b98517d92ab469",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-03\\journal-before.json": "1976e74d863f2328877b788ba45d2e8eeaf275fc1830010ab8f5a56f0f369e2b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-03\\journal-after.json": "fe2e1bf6086a54cf02fc37821da3fd0ead3fd1534aabe3a955d60cb15d55fa82",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "9661eadeb47157ee8518599923b64c692c7b2288950c00c1601748734a5c5a26"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "cb5d93ae-e543-46cf-838b-e3ed94e55557",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "092611bb-702f-47b6-b593-8bbb66cb9f4d",
+          "operation": "system.settings.set",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "H0123",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Respuesta fiel y útil.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "4f2e13cf2dbba4bbd6ea77f2184ebdfd95dd38f4894bcc1b294a1fd22591463e",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-04\\EXIT.json": "86f0ba5395f43274825ebc7b83edc613b4a14c40a8caaee1944c119f4a25a7f9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-04\\RESOURCES.json": "6c0615a01df9e5b0b4abfa9bb57c993ef19a7ecfcb304e925aa9e3c7e11a6dd2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\profile-owner-04.json": "d089241436c0de5e782689f1476aff112d81a65fed28860773d52cea3c2ce088",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-04\\PREREG.json": "06b951f67179212799f652bf506cfabbb74a05f8aad252f51d0dba0a55c59c1e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-04\\capture\\events.jsonl": "fdc0c92c9f475e7ffb1fd53f3e548e0744b11b4e7f584fede62ede5275be30e8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-04\\turns.jsonl": "0e94e6ba4b61939b19562d08303075a629187bbcb91d79553389a6fb2eb2e5a5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\fixture-04.json": "5af62802ac983e8ac004b71602938b8391aa5578a2caa52e6f7b3402e2584803",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-04.json": "314b4fa3bce16f2a0db015505f56c66a69f83f839df7da450c870b709b6b887d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-prelaunch-04.json": "813e117debb1bed734726589f7f5382e85836f8ce73067924cd23468a264ffe1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-04\\case-observations.json": "e112c2cbc4c5c892017a778ce411c3fcdc16a45ea131c29dee1fd96c57304d10",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-04\\journal-before.json": "559913af819a9c23ebce5867113d4f9828dd3dfdb4c265f6db58468df58a0163",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-04\\journal-after.json": "70e60957debfccc65c092d0ee806566e820edf701a4ad8ece92956de3fa3207e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "2b52c2bc4ef2d800a008d69c000545d73861dc5074a8603c7de61cdddd136f88"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "144c374d-6247-4f75-afce-a63a09e76647",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "H0193",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Respuesta fiel y útil.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "2c4f74ed6df81d91c68be1721d02c40350faa5b56ed320ad8f1d1ab1c7e1a0c7",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-05\\EXIT.json": "540354c9f7f57a2e293d2d2fed3966b7833fb6718ee8b7b6a2d8fddfb3271842",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-05\\RESOURCES.json": "e33c818f5a905a81d5db35c526d841400c75b1b5c6710846d585bd17400cb8c8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\profile-owner-05.json": "6d7f8f63dcf651ec14e493ddc3b073f814059a4b6f9daaa50bbcd0f158e69bd3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-05\\PREREG.json": "48663cdd7a2d4545e8aa30f6c2a847cce71d63eff849bc8002aa8ebd13c88358",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-05\\capture\\events.jsonl": "b772c9367c6160cd81b38290f06130b10ad5854243194d18ab6f4ee9eb1cc67e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-05\\turns.jsonl": "a58d6436f71f038acb7a7b22e95ea6490df05cf75107b75292e74f2cfff293f4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\fixture-05.json": "880630298c7117fa16db78cb377ff83b881837ce458835b29252646be1a760d9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-05.json": "d3e3d37ad6f7e0881a1efcca16e3484578e05c7bc793c38280027825628d4444",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-prelaunch-05.json": "527936ec510212d7f8b223fcb4b2a9d68309873f4c849325a3f4b4a495e620dd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-05\\case-observations.json": "726423a0706edfc6b93173c19bfcc527a0b5390c9b089c8c342fd6057e968c56",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-05\\journal-before.json": "5e002243d5b9dd88d908d066602e1f9ed62d0e7c83e66c876a267c2927fefcb5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-05\\journal-after.json": "1a2fa72f679475db4093e71d4f667354f92a4d70b14ff569eff30b6d65601b6e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "c0f600d6631d3f162cb6d2170abeccb33ca04aa92332cc4d9225b20ca935810c"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "45073b64-24ac-4fb5-8919-7d4a43648c2d",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "H0627",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Respuesta fiel y útil.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "50272b051d1e9b063c6eace0a076225a3fecd22da2910ac1f4bee4d6c173b219",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-06\\EXIT.json": "a5c7402767d36213d8bd1b1632af426b09ec7f9dbc52dcf05357726004be8481",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-06\\RESOURCES.json": "3c1905bc72bbb059d2f24c8f52f97c0a14df98e6777df2d351aed00e6600f637",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\profile-owner-06.json": "3fb822e0d9af275afac96cc1fa45bdb6ca63684f1b60a97b58e21844e7f04c84",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-06\\PREREG.json": "1175b7ceac77d57da75cd9a98314b67538a2a19ad321024ef423cdfc2c928e81",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-06\\capture\\events.jsonl": "d5a23ccddf093e85eda6dd4950bc98e2251b6c14010b8dc66745a4db89e07824",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-06\\turns.jsonl": "aa181fd04195b5019ebf9e1f2d6ef3055f593513d8a0abd034f2526012fbcfa5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\fixture-06.json": "165d87ef1c8fb82c8463d8978507b57c154fb0e954dcb9b2124f3ebce7bf89d3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-06.json": "37a26126731115d6519ff48bdeccbd77bd5f5090be0d103e4aa6b269b70aba80",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-prelaunch-06.json": "40a2cec3138d8ee56bb48f4899d5dbf5be8f680f212bf147669d2fc3e2a3e79d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-06\\case-observations.json": "575d6c57580d9fc912ffd156fe1bc10f86c08e0f10f064cc8ea13092ca23d75c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-06\\journal-before.json": "0b73b2d668eb5107407d77d314da0892821f2295fc0c0cd4958defbe22da2734",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-06\\journal-after.json": "8a7f172c6a68a775a74aeee10698a774cf5d5eb4fcda507fa08d178581a75621",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-06\\journal.snapshot.jsonl": "e34cd12d67cd58f013aa5ca120234a32a2312ecc738d67b86cee4eb03c6a56b2"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "efb4a952-e876-4fdf-a406-15a8a995a49b",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "case_id": "bright1287-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Respuesta fiel y útil.",
+      "observation_note": "Turno revisado: system.settings.set (brightness, valor pedido) propuesta, aprobada por la raíz por valor exacto, completada y verificada por WMI; una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "a4451f50f678a9c03b6f35db5939f1639996992f7e54d48816521e7503cdf8fc",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-07\\EXIT.json": "b614f3981a200bdb976bb42c3987ce8bf3a9dd27d0d942de2e22dea20d82197c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-07\\RESOURCES.json": "acd2a66ac5a8d41d009b8e239b9bd0708415d6c8edff63954337dfaa3ecb05c1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\profile-owner-07.json": "5e0044c8b4bcb0eb22d624c558fe39c37f0e3120ccf3743ccf414509b69af28a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-07\\PREREG.json": "9bef50583b590c424211b7497834bb3af10ae7d6be000d359069c629e0d009e9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-07\\capture\\events.jsonl": "e8f2df69946a3c1d7c1356945a441aca11ce755db4a64e1367241ab602d6fa72",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-07\\turns.jsonl": "e0393efe3508d7165f2f16df9e410601411fb974f1db0f4feee8c2100dd605b8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\fixture-07.json": "825faacfd6a34a5a3056784a507f201db1e4715b4c00aee08047de29b4b7380a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-07.json": "263c3ea0529b0be6d8fe6c686e7fd20295f3a3f32db92bf6460c8b39f8e5d732",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-prelaunch-07.json": "ee63b1a16ec5ea90d4d1760466d15ad8a87a8ac896d858118a5382433734e5ab",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-07\\case-observations.json": "7cf4e8f0f2229a09519e68b3bd655434c2ad68a87d38fb1965101400e3d443f4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-07\\journal-before.json": "3f1662354f95bd03935e098c6bfbe0bdb07f32108f2c3ca775a518c17e542a9b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-07\\journal-after.json": "27a6ce6a58e6c4bfdf0ea411a054adc5bcc5826fb1272d79a82adca62bea6d75",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-07\\journal.snapshot.jsonl": "bb601720d8211650c40ae994cb19f65a91725a8c887ec58c58861b509ec11330"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "7b389673-f1e2-4f45-b59b-3fd4f0a07f63",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "11ca289d-8cdd-40b4-9226-fc3413a8f390",
+          "operation": "system.settings.set",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "case_id": "bright1287-dev-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Respuesta fiel y útil.",
+      "observation_note": "Turno revisado: system.settings.set (brightness, valor pedido) propuesta, aprobada por la raíz por valor exacto, completada y verificada por WMI; una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "3c941787b9e79524584a0e95493e3d1b84a57f385e677f304b607e6133e96a35",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-08\\EXIT.json": "5e8da7da5e32feed86345195a48115bd269fda6c7a0d229afc4b1e0846741665",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-08\\RESOURCES.json": "eb1d659469703a79dc8fae08d8022f68e1af50548feae0d8390d69648d7af03f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\profile-owner-08.json": "f01b37d639d4a7cea7bca9dd3cd64e4ee7a321ea00b58ae82d9f7ec2d5d49263",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-08\\PREREG.json": "f9e1818cf7338ca2dc47f105a460a9f331dac5ad90644e03ce541ce840113d85",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-08\\capture\\events.jsonl": "882ff0837bd58d44398475646bd59c1489a5b891160cd0e431892f77b9fb0287",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-08\\turns.jsonl": "165f8c8cb04da56305b881fe1e2f7ee75307ce4130113c092ac9ae391b77f1d2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\fixture-08.json": "faa8006772a9178476a4066276e9dbe06d0ffcd64effc6330b6e55e134926597",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-08.json": "3b378b66bce7df30edfbe3c89c81fbd524296218bdc00013dc8c4437940b91a3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-prelaunch-08.json": "b821e4210918d5d088718479923fadc185f8d054844db166403a08559f5c60d0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-08\\case-observations.json": "f09ad4dbb2627c636fe30b8c56b0ece5063adc7f6884f1162d07bd9d547f36ae",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-08\\journal-before.json": "25bf34f0defe9084d74c7faef811f654994f872ec90dd14bed1da02a58a92c26",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-08\\journal-after.json": "dbefa1cd472107778b1e24617a1c295f031a53a3003630acf18b23828d28286c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-08\\journal.snapshot.jsonl": "f2c892085703bf189d2a2957740dcb60b3a037bdce3946f8e476d6684d37f454"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "d2ae9e5b-49c0-40a6-98c6-5ebec0c2f03e",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "3e4660a2-59ff-4bb0-ad90-0b5cc8df8864",
+          "operation": "system.settings.set",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "case_id": "bright1287-dev-03",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Respuesta fiel y útil.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "50272b051d1e9b063c6eace0a076225a3fecd22da2910ac1f4bee4d6c173b219",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-09\\EXIT.json": "a13f16989100fb022b7347449382fd08da66f822caf39a6e09a26d78b1866e5f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-09\\RESOURCES.json": "4881f9c1835bcbcf4aedc8f6ccf8f020bed4834d056d203b42d78227c4c9149d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\profile-owner-09.json": "2155aef409790c47448df05f4361e4619aac94c676e09f3299e0967d6e577b88",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-09\\PREREG.json": "f7f3e9705fe5a915dd3958c7e743c04c1fc98eb55eff702a7d2db62cd5760d56",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-09\\capture\\events.jsonl": "1116385c58025e51fb3461d918af12ceb47c5cef1e93ca207ec6fa85e029c986",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-09\\turns.jsonl": "78bc328a8ea1888830f1ad175fd41a3d74f21101df3554683f301e38be943d9d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\fixture-09.json": "b6bc34d4a24145411c0a87ba93c492b7c1fbedcd3a5ef93a3a85a8fd0634f419",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-09.json": "dcc1e0da640d82aef8b42f2085e683e0cf5f8c2a5c1e0bde48085cabc8499e9c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-prelaunch-09.json": "73fd666e445e602b22eb1621a0b0824ea00eb043d52d59398348cd1bc74503e3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-09\\case-observations.json": "7b770804ec7b19aad58ac70e5bd0bf0946bf5f6b16aa28d9057c71a0b511c8e7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-09\\journal-before.json": "486baffaa955847f414c456679ea047243963d1eac874a9d0c971ea2b34ee00b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-09\\journal-after.json": "a1618c0e0a0ac8d1fa238e4cabf8f60bf2a03628dc6ae3005c687458aaf9255e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-09\\journal.snapshot.jsonl": "0b9758d6549fb3aeb1fe3540bf0d670e0182cd5fa8b916b1eccf28638cfd2c1d"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "1a8583c6-e079-4089-8de6-d90568d1ead7",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "case_id": "bright1287-dev-04",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: el final no fue fiel (vocabulario interno) o no preguntó la cantidad conservando la dirección.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "ab12f856092944693e3e90b0695f640cbe486311d37d4cac7a53fce75d056776",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-10\\EXIT.json": "4f520b00d3fa63db415f2d4d559473b5df120fcadc5b34d10bd67c6f9bafa58f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-10\\RESOURCES.json": "3dfee95dac4f0e69108ceb6861a73992fd5fd36ee28a5efc9be179a5d351c103",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\profile-owner-10.json": "37b780d2724aee92142339bb958d137e0ea018a8a1d7fe4a7952364fe2580ec9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-10\\PREREG.json": "7218694c45ce6ec2176f6d868e3cc943f1bafb0f8aa6400703e784ea197f1571",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-10\\capture\\events.jsonl": "d1efe65ea0f55f22e787839c4d405cb609fac114e7fb4ed1c8d4a487d0184995",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-10\\turns.jsonl": "2a8e9a399890e26d79cdafc262b799cbf8df8ae400cdca5de17550009c004fa2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\fixture-10.json": "bf9cd0220bb876c7ac62f158860e3888ba14e0d210fd4d443ca91669e32ea1cf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-10.json": "4b59588f4f26fa83eb0ed6fd4f0b05ec9df9d8fa24f01c871970a2165c487632",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-prelaunch-10.json": "1a452e1cde89191685489ed0c9098267367c39907bc2a32e61cd8ff368433c6a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-10\\case-observations.json": "fee41248af6f81ef6c80a5fe756f05e0f72b09d1a3e3b459d50ef815abd3b14f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-10\\journal-before.json": "a3d6fc630dbe285f4f9b3d92e59e5b20943c9b50040c0edccf8f36733c474dcb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-10\\journal-after.json": "df57eb5e6a8914e2285227a873721cdcfab92c207cafcc423fc33cf1b8bee0f1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-10\\journal.snapshot.jsonl": "3d4e2835ae23ac171d3f4b6ca3055a99b791a62e03487f04610e59c1bd25bccb"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "36a959f4-ef17-41af-8ddf-9f975a851053",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 11,
+      "case_id": "bright1287-boundary-01",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite fallido: cero operaciones, pero la respuesta no fue fiel o útil.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "d7300dcd89da67aa5d72cb0aabd76fe897539130f7e5068a3242975a51d9e0ac",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-11\\EXIT.json": "c2c6b72c6681759d57b67d28f803a0e010185e17d5d6ba8b80cd26372422896a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-11\\RESOURCES.json": "73ff31cf2a6add58c74ef0de1c58e35b72987e0faf6deb28c0b813ac37e0fd87",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\profile-owner-11.json": "2168ee96c48d01bc6c87930c0e8e1ec4afe5229c1a5ffe1887661da62436d4c0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-11\\PREREG.json": "709445df3252c53d6e2a673a5aec46d4e395f0e1c48f5ccd7a6b4255dbe25315",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-11\\capture\\events.jsonl": "a316d347873e79512309b4be4b54b279580643a16d26bac8f68ea89404549443",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-11\\turns.jsonl": "91961969344a32f4ba29d2024f8a313ab829228343ad6d6ea11917809cbf2911",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\fixture-11.json": "3b563bd6f61cb405918274c7fdf65233d6108bf0c48cc896418a840f4a717323",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-11.json": "d1e93e331ffdc399850af7e7d356f6ec71b3be80fa37adaa7f15aecb2d60eb9f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-prelaunch-11.json": "81c8c87626f3a52134242f7c706c3a0b8a04625adb0424331468c76543dbdf28",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-11\\case-observations.json": "ebf1d44e4794efaea1432c748ac67a0454d9500762e4b528265425a4998d175d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-11\\journal-before.json": "b260c77785a9a884ef52e0b99a3e481bb2783b19c0117fc1bf577147698249fd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-11\\journal-after.json": "54740f081dcfbe937fcc7279801b11bb11ee219d903de1f19da443f9343eaf9a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-11\\journal.snapshot.jsonl": "866f67af69cb21fe7f0b1a85b0b7ce0b878295f1c026fe0b64e88df4114685ff"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "77e38493-86c1-4284-a255-e26a3df048e6",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "case_id": "bright1287-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "c74f33571b24ca661913cd1e5786465c3b24e49bc87ebe254f3eacb373c5a96b",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-12\\EXIT.json": "0547aee4c05e800798a326a83a60393b709afddb5f62f3b692b9c102dce620b5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-12\\RESOURCES.json": "60d3eca1602b4c89de6cb8eabfedf18340337ddacca37ac9bf2bea95c18ffea7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\profile-owner-12.json": "79265740cbcb6163e4abdae7144a4739b2cb1e2efd6021166fcdb54c16e30b31",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\results\\case-12\\PREREG.json": "e9ea54740255bf3f64376b4ae7e652974d570f53101b223c314056e8646fe5dc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-12\\capture\\events.jsonl": "2446518bbda76e91bb2af62c19882419b41b7586580cea29a6b3f496fd0bf103",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-12\\turns.jsonl": "85d35ba0957ccd6b9a734020f309ace2a9eb55729c15c32f1dee1b7bad52af75",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\fixture-12.json": "d013525a53628c4f2fc423d00c858b1971f8ee8fdb9f105d7c4cbbca9627da93",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-12.json": "ac9baa043340f2dffd1364c0a1d0b7ea01bffb1662d5ba750f8e7df737a36f9b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\context-prelaunch-12.json": "3bfba6a21fa1b2979c09a6fbbe66edb589408527fb613dcb4283bb240d167e0f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-12\\case-observations.json": "02fb277504c9b068af57b3e1154e64f54d2b3972dcd3ba3a96386eb9f5c4b542",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-12\\journal-before.json": "7c990dbb69692f5d8e574a06b038a2803d27c8741659657067e3126cf6104307",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-12\\journal-after.json": "5d1c2250d057af428b9e3e097ca4c52f3e647f78287b55bd267d378cb3894893",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-bright1287-instrument-v1\\private\\run-12\\journal.snapshot.jsonl": "5b1c161d0d692a13f77f75c58eb8e0ea7f8f31d4df258530c50bb36ab2a7c76e"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "2e435def-31dd-4248-909f-3037792119a2",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "BRIGHT1287: 13 ejecutados, 10 aprobados, 3 fallidos, 3 créditos (índices [0, 1, 3]). Siguiente: categoría por masa abierta según CONDICIONES.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

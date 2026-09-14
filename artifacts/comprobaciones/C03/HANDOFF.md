@@ -1,3 +1,11 @@
+# BRIGHT1287 adjudicado — 2026-09-14T00:38:15.634688+00:00
+
+**372/742 cubiertos, 370 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA 57cc59c1aa32203559e74cbe2a74973ecd97b29c27d1c858942faa51e6d15d77. Primeras altas 24 h >= 246 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4e8c2caa con BUILD1287 (mente: lector de nivel absoluto de brillo → system.settings.set; App: system.settings.set admitido en el turno revisado; BRIGHT1287/SOURCE.json|APP_SOURCE.json|*.patch). Brillo fijado en 60 por la raíz y restaurado al del dueño tras cada caso; aprobación de la raíz sólo para el valor pedido (approve_setting.py).
+
+BRIGHT1287 («Brillo y pantalla», niveles absolutos como turnos revisados y relativos restantes): 13 ejecutados, 10 aprobados, 3 fallidos, 3 créditos. Adjudicación d673632fcdea42781b87add957af656a2860cba563009bf8bb8b4e367dd52cf8. Tres niveles absolutos acreditados (H0109 80, H0255 50, H0196 máximo) con pares «Poné el brillo al 70.» y «Set the brightness to 40.»: cada system.settings.set propuesta como turno revisado, aprobada por la raíz por valor exacto, completada y verificada por WMI desde el preset 60. H0430 («al 80%») se ejecutó y verificó pero el final filtró «WMI»: fallido. Los tres relativos restantes (H0123, H0193, H0627) preguntaron cuánto conservando la dirección pero sólo una variante aprobó («Subí bastante el brillo.» recibió «¿Cuánto subiste el brillo?», pasado del usuario): sin crédito. El límite de consejo pidió aclaración.
+
+---
+
 # BRIGHT1285 adjudicado — 2026-09-14T00:24:31.353185+00:00
 
 **369/742 cubiertos, 373 abiertos, 0 NA; 0/35 categorías cerradas; C03 formal 3/11. Registro SHA a5a3191b18caa9995039a4b977ed206da7f9e6f2acffa3c352dae83857a5d363. Primeras altas 24 h >= 243 (+7).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4c93a154 con BUILD1285 (mente: lectores deterministas de brillo — lectura, ajuste con cantidad, pregunta por la cantidad conservando la dirección; BRIGHT1285/SOURCE.json|SOURCE.patch; .NET sin cambios). Brillo fijado en 60 por la raíz y restaurado al del dueño tras cada caso.

@@ -1,0 +1,14 @@
+{
+  "schema": "c03-bright1287-app-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/ProductConductorHost.cs (ExecuteReviewedAsync admite system.settings.set)",
+  "patch": "artifacts/comprobaciones/C03/BRIGHT1287/APP_SOURCE.patch",
+  "commits": [
+    "4e8c2caad78f5ebbdc28127df5bc230803fe8922"
+  ],
+  "build": "BUILD1287",
+  "change": "El turno revisado del conductor admite system.settings.set como efecto revisado (aprobación de la raíz sólo si los argumentos son exactamente {setting: brightness, value: pedido}, approve_setting.py).",
+  "measurement": "BRIGHT1287: Tres niveles absolutos acreditados (H0109 80, H0255 50, H0196 máximo) con pares «Poné el brillo al 70.» y «Set the brightness to 40.»: cada system.settings.set propuesta como turno revisado, aprobada por la raíz por valor exacto, completada y verificada por WMI desde el preset 60. H0430 («al 80%») se ejecutó y verificó pero el final filtró «WMI»: fallido. Los tres relativos restantes (H0123, H0193, H0627) preguntaron cuánto conservando la dirección pero sólo una variante aprobó («Subí bastante el brillo.» recibió «¿Cuánto subiste el brillo?», pasado del usuario): sin crédito. El límite de consejo pidió aclaración.",
+  "credits": 0
+}

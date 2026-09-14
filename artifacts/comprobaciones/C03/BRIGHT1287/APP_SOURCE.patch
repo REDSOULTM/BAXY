@@ -1,0 +1,23 @@
+commit 4e8c2caad78f5ebbdc28127df5bc230803fe8922
+
+C03: absolute brightness level reader and reviewed system.settings.set (BRIGHT1287)
+
+effect_intent: _literal_brightness_level («poné el brillo al 80», «al 80%», «al máximo», «set the brightness to 40») → system.settings.set; __main__ grounds {setting: brightness, value}. App: ExecuteReviewedAsync admits system.settings.set so the root can approve the sensitive set for the requested value.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/ProductConductorHost.cs b/src/Baxy.App/ProductConductorHost.cs
+index f9162fca..90090286 100644
+--- a/src/Baxy.App/ProductConductorHost.cs
++++ b/src/Baxy.App/ProductConductorHost.cs
+@@ -351,7 +351,8 @@ internal static class ProductConductorHost
+             || initial.Terminal != ProductTurnTerminal.PublishedFinal
+             || initial.Diagnostic is not null
+             || observed.Prepared.OperationName is not (
+-                "browser.navigate" or "browser.navigate.named" or "app.close" or "input.visible.click"))
++                "browser.navigate" or "browser.navigate.named" or "app.close" or "input.visible.click"
++                or "system.settings.set"))
+         {
+             return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
+         }
