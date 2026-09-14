@@ -5187,6 +5187,10 @@ def _explicit_arguments_from_evidence(
         if effect_intent._notification_listing_request(evidence):
             return {}
 
+    if operation == "bluetooth.radio.status":
+        if effect_intent._bluetooth_state_question(evidence):
+            return {}
+
     if operation == "filesystem.known.list":
         recent_listing = effect_intent._known_folder_recent_listing(evidence)
         if recent_listing is not None:

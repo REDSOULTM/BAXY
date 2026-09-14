@@ -193,7 +193,8 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
                 or "notification.list" or "notification.schedule" =>
                 "windows_task_scheduler_required",
             "game.installed.named" => "steam_epic_game_manifest_inventory_required",
-            "bluetooth.device.list" or "bluetooth.device.pair" or "bluetooth.radio.set" =>
+            "bluetooth.device.list" or "bluetooth.device.pair" or "bluetooth.radio.set"
+                or "bluetooth.radio.status" =>
                 "bluetooth_hardware_gate_required",
             "game.install.prepare" or "game.install.commit" or "game.install.named" or "game.install.status"
                 or "game.install.cancel"

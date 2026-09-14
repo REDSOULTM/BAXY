@@ -11,6 +11,7 @@ internal static class ExternalCapabilityHandlers
         "bluetooth.device.list",
         "bluetooth.device.pair",
         "bluetooth.radio.set",
+        "bluetooth.radio.status",
         "backup.known.create",
         "backup.known.list",
         "backup.known.restore.latest",

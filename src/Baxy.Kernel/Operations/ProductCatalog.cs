@@ -180,6 +180,13 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Enciende o apaga las radios Bluetooth mediante la API oficial de Windows y verifica su estado final."),
         Descriptor(
+            "bluetooth.radio.status",
+            EmptySchema(),
+            OperationRisks.ReadOnly,
+            "bluetooth.radio.status.windows.radio.read.v1",
+            ToolExposure.Public,
+            "Lee si las radios Bluetooth están encendidas o apagadas mediante la API oficial de Windows; sin efecto."),
+        Descriptor(
             "browser.control",
             Schema([String("action", values:
                 ["back", "close", "fullscreen_video", "reload", "scroll_down", "scroll_up"])], ["action"]),

@@ -4844,6 +4844,31 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         ) is None:
             return "echo_without_report"
     if (
+        payload.get("operation") == "bluetooth.radio.status"
+        and isinstance(seen, dict)
+        and isinstance(seen.get("radioOn"), bool)
+    ):
+        # NETWORK1457: the read is one boolean; the reply must carry it and
+        # must not claim a change («lo encendí»).
+        on_words = r"\b(?:encendid[oa]|prendid[oa]|activad[oa]|activ[oa]|on)\b"
+        off_words = r"\b(?:apagad[oa]|desactivad[oa]|inactiv[oa]|off)\b"
+        # «no está encendido», «no tienes el bluetooth encendido»: up to three
+        # words may separate the negation from the state word.
+        negated = r"\bno\s+(?:\w+\s+){0,3}?"
+        negated_on = re.search(negated + on_words, folded) is not None
+        negated_off = re.search(negated + off_words, folded) is not None
+        # «no está encendido» states the off state; «no está apagado» the on state.
+        says_on = (re.search(on_words, folded) is not None and not negated_on) or negated_off
+        says_off = (re.search(off_words, folded) is not None and not negated_off) or negated_on
+        if seen["radioOn"] is True and (says_off and not says_on):
+            return "reversed_state"
+        if seen["radioOn"] is False and (says_on and not says_off):
+            return "reversed_state"
+        if not says_on and not says_off:
+            return "missing_state"
+        if re.search(r"\b(?:encendi|apague|active|desactive|prendi|lo\s+puse|turned|switched)\b", folded):
+            return "extra_claim"
+    if (
         payload.get("operation") == "wifi.status"
         and isinstance(seen, dict)
         and "connected" in seen
@@ -8636,7 +8661,10 @@ class LlmRuntime:
                 presentation_shape,
                 authenticated_operations=authenticated_operations,
             ):
+                # WEB1455: the published text is message.content, not
+                # final_content; both must carry the kept sentence.
                 final_content = head
+                message = {**message, "content": head}
         if (
             not final_content
             or _reply_uses_opposite_language(final_content, response_language)
@@ -11822,6 +11850,19 @@ class LlmRuntime:
                 "su tipo, su título tal cual entre comillas y su próxima ejecución. "
                 "Sin propósito, sin interpretación, sin otros elementos."
             )
+        if (
+            visible_situation.get("operation") == "bluetooth.radio.status"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("radioOn"), bool)
+        ):
+            # NETWORK1457 «tengo el bluetooth encendido»: the read is one boolean.
+            instruct(
+                "\nseen.radioOn is the Bluetooth radio: true means it is on, false means it "
+                "is off. Say which, in one short sentence; nothing was changed."
+                if response_language == "en"
+                else "\nseen.radioOn es la radio Bluetooth: true significa encendida, false "
+                "significa apagada. Di cuál, en una oración corta; no se cambió nada."
+            )
         if _search_results_text(visible_situation) is not None:
             # WEB1445: the person asked a live question; the results are pages,
             # not the answer itself. Say what was found, never what it might say.
@@ -12523,6 +12564,11 @@ class LlmRuntime:
                 "Do not state a weather condition, temperature or forecast the results do not contain; name the pages found (their titles and sites) instead."
                 if response_language == "en"
                 else "No afirmes un estado del tiempo, temperatura ni pronóstico que los resultados no contengan; nombra en su lugar las páginas encontradas (sus títulos y sitios)."
+            ),
+            "reversed_state": (
+                "State the observed Bluetooth radio state exactly: seen.radioOn true is on, false is off."
+                if response_language == "en"
+                else "Di el estado observado de la radio Bluetooth tal cual: seen.radioOn true es encendida, false es apagada."
             ),
             "search_result_denied": (
                 "The search did return results: do not say you have no information; name the pages found."

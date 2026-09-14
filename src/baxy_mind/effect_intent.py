@@ -1353,6 +1353,10 @@ def _curated_domain_is_grounded(
         ):
             return False
         return True
+    if operation == "bluetooth.radio.status":
+        return _has(folded, r"\bbluetooth\b") and not _has(
+            folded, r"\b(?:configuracion|settings|entra|enter|abre|open)\b"
+        )
     if operation == "bluetooth.device.list":
         return (
             _has(folded, r"\bbluetooth\b")
@@ -9100,6 +9104,34 @@ _WIFI_STATE_QUESTION = re.compile(
 )
 
 
+_BLUETOOTH_STATE_QUESTION = re.compile(
+    r"^[¿?¡!\s]*(?:"
+    # «tengo el bluetooth encendido», «¿tengo el bluetooth prendido?»
+    r"(?:tengo|tenes|tienes|dejaste|deje|do\s+i\s+have)\s+(?:el\s+|the\s+)?bluetooth\s+"
+    r"(?:prendid[oa]|encendid[oa]|apagad[oa]|activ[oa]|activad[oa]|desactivad[oa]|on|off|enabled|disabled)|"
+    # «el bluetooth está prendido?», «bluetooth is on?»
+    r"(?:el\s+|the\s+)?bluetooth\s+(?:esta|is|anda|queda|quedo)\s+"
+    r"(?:prendid[oa]|encendid[oa]|apagad[oa]|activ[oa]|activad[oa]|desactivad[oa]|on|off|enabled|disabled)|"
+    # «está encendido el bluetooth?», «is the bluetooth on?»
+    r"(?:esta|is)\s+(?:prendid[oa]|encendid[oa]|apagad[oa]|activ[oa]|activad[oa]|on|off|enabled)\s+(?:el\s+|the\s+)?bluetooth|"
+    # «y el bluetooth?», «and bluetooth?»: the state question with no antecedent.
+    r"(?:y|and)\s+(?:el\s+|the\s+)?bluetooth"
+    r")\b[\s?!.,]*$",
+    re.IGNORECASE,
+)
+
+
+def _bluetooth_state_question(text: str) -> bool:
+    """NETWORK1457 «tengo el bluetooth encendido», «y el bluetooth?»: a
+    bluetooth.radio.status read — the radio's state, never a device list."""
+
+    folded = _strip_request_envelope(_fold(text)).strip()
+    return (
+        _BLUETOOTH_STATE_QUESTION.match(folded) is not None
+        and not _has(folded, r"\b(?:dispositivo|device|auriculares?|headphones?|parlante|speaker)\b")
+    )
+
+
 def _wifi_state_question(text: str) -> bool:
     """«decime si el wifi está prendido», «¿el wifi está encendido?»: a wifi.status read."""
 
@@ -9132,6 +9164,7 @@ def _is_direct_request(text: str) -> bool:
         # NETWORK1293: «¿el wifi está encendido?» is a read request without a
         # verb head; the state question itself is the speech act.
         or _wifi_state_question(text)
+        or _bluetooth_state_question(text)
     ):
         return True
     request_head = (
@@ -9348,6 +9381,8 @@ def _strict_catalog_request(
         return EffectIntent(("filesystem.known.list",), (text,))
     if "notification.list" in available_operations and _notification_listing_request(text):
         return EffectIntent(("notification.list",), (text,))
+    if "bluetooth.radio.status" in available_operations and _bluetooth_state_question(text):
+        return EffectIntent(("bluetooth.radio.status",), (text,))
     if window_inventory_arguments(text) is not None:
         return (
             EffectIntent(("window.resolve",), (text,))

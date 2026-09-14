@@ -1,5 +1,5 @@
 {
-  "alias_count": 158,
+  "alias_count": 159,
   "aliases": [
     {
       "normalized_text": "cierra la ventana de bloc de notas.",
@@ -774,6 +774,14 @@
       ],
       "target_operation": "notification.dismiss",
       "text": "Dismiss el recordatorio vencido que acabo de seleccionar."
+    },
+    {
+      "normalized_text": "decime si tengo el bluetooth encendido.",
+      "operations": [
+        "bluetooth.radio.status"
+      ],
+      "target_operation": "bluetooth.radio.status",
+      "text": "Decime si tengo el bluetooth encendido."
     },
     {
       "normalized_text": "lista los timers y alarmas programados.",

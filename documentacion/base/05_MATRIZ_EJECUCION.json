@@ -566,6 +566,15 @@
       "reason": "Mutación de radio/emparejamiento no restaurable en esta sesión."
     },
     {
+      "operation": "bluetooth.radio.status",
+      "verifierContractId": "bluetooth.radio.status.windows.radio.read.v1",
+      "risk": "read_only",
+      "observation": "bluetooth.radio.status.windows.radio.read.v1",
+      "verdict": "unverifiable",
+      "surface": "none",
+      "reason": "Lee el estado de las radios Bluetooth por la API oficial de Windows; sin efecto."
+    },
+    {
       "operation": "browser.control",
       "verifierContractId": "browser.control.cdp.postread.v1",
       "risk": "low_reversible",

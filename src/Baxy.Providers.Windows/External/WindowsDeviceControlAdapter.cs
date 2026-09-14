@@ -267,7 +267,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
 
     public bool CanHandle(string operation) => operation is
         "bluetooth.device.list" or "bluetooth.device.pair"
-        or "bluetooth.radio.set"
+        or "bluetooth.radio.set" or "bluetooth.radio.status"
         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
         or "wifi.profile.list" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
         or "wifi.ensure.connected" or "wifi.status"
@@ -288,6 +288,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                     operation, arguments, effectBoundary, cancellationToken),
                 "bluetooth.radio.set" => await BluetoothRadioSetAsync(
                     operation, arguments, effectBoundary, cancellationToken),
+                "bluetooth.radio.status" => await BluetoothRadioStatusAsync(operation),
                 "peripheral.list" => await PeripheralListAsync(operation, arguments, cancellationToken),
                 "peripheral.print" => await PrintAsync(
                     operation, arguments, effectBoundary, cancellationToken),
@@ -462,6 +463,37 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved);
+    }
+
+    // NETWORK1457 «tengo el bluetooth encendido», «y el bluetooth?»: the radio
+    // state was only observable as the post-read of a change; a read-only
+    // read answers the question without touching the radio.
+    private static async ValueTask<ExternalCapabilityReceipt> BluetoothRadioStatusAsync(string operation)
+    {
+        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        if (access != RadioAccessStatus.Allowed)
+        {
+            return ExternalJson.Failure(operation, "bluetooth_radio_access_denied");
+        }
+        Radio[] radios = (await Radio.GetRadiosAsync())
+            .Where(radio => radio.Kind == RadioKind.Bluetooth)
+            .ToArray();
+        if (radios.Length == 0)
+        {
+            return ExternalJson.Failure(operation, "bluetooth_radio_not_found");
+        }
+        bool on = radios.Any(radio => radio.State == RadioState.On);
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteBoolean("radioOn", on);
+            writer.WriteNumber("radioCount", radios.Length);
+            writer.WriteNumber("radiosOn", radios.Count(radio => radio.State == RadioState.On));
+            writer.WriteString("authority", "windows_radio_api_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
     private async ValueTask<ExternalCapabilityReceipt> PeripheralListAsync(
