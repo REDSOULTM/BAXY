@@ -9525,11 +9525,22 @@ class LlmRuntime:
         a meaning: the question names what arrived and asks what to do.
         """
 
-        if kind not in {"noise", "bare_negation", "dangling_comparison"}:
+        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level"}:
             raise ValueError("clase de entrada sin pedido inválida")
         current = str(text).strip()[:2_048]
         situation = (
             (
+                # AUDIO1375 H0439 «Ponlo a 100 ahora»: a level for «lo» with
+                # nothing named before it; ask what to set, never guess it.
+                "Eres BAXY. El usuario pidió poner «lo» a un nivel (un número) sin "
+                "decir qué: no hay ningún volumen, brillo ni otro ajuste nombrado "
+                "antes. Formula una sola pregunta breve, en el idioma del usuario, "
+                "que pregunte qué quiere poner a ese nivel (por ejemplo el volumen o "
+                "el brillo) sin dar por hecho cuál. No digas que no entiendes ni que "
+                "algo falló y no ofrezcas ayuda genérica."
+            )
+            if kind == "deictic_level"
+            else (
                 # IDENTITY1323 H0296 «Tú eres como eso»: the referent was never
                 # named and nothing precedes it; asking is the only honest move.
                 "Eres BAXY. El usuario te comparó con algo que no nombró («eso», "

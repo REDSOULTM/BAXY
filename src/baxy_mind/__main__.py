@@ -2947,6 +2947,21 @@ def _unresolved_input_kind(objective: str) -> str | None:
         return None
     if (
         re.fullmatch(
+            # AUDIO1375 H0439 «Ponlo a 100 ahora», H0713 «devuelvelo a 100»: a
+            # level for «lo» with nothing named before it; the only honest
+            # answer asks what to set (volume, brightness…).
+            r"[\s¡!¿?]*(?:pon[eé]?lo|ponla|pon[eé]?melo|pon[eé]?mela|dejalo|dejala|dejamelo|"
+            r"devolvelo|devuelvelo|devolvela|devuelvela|subilo|subila|subimelo|bajalo|bajala|"
+            r"bajamelo|llevalo|llevala|set\s+it|put\s+it|turn\s+it|leave\s+it|bring\s+it)\s+"
+            r"(?:a|al|en|to|at|on|back\s+to)\s+(?:el\s+|the\s+)?\d{1,3}\s*(?:%|por\s+ciento|percent)?"
+            r"(?:\s+(?:ahora|ya|now|de\s+nuevo|otra\s+vez|again|please|por\s+favor|porfa))*[\s.!?]*",
+            folded,
+        )
+        is not None
+    ):
+        return "deictic_level"
+    if (
+        re.fullmatch(
             r"[\s¡!¿?.,]*(?:no|nop|nope|nah|nunca|jamas)"
             r"(?:[\s,.!¡]+(?:no|nop|nope|nah|nunca|jamas))*[\s.!?]*",
             folded,
