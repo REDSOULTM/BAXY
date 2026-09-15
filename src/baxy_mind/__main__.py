@@ -4805,6 +4805,12 @@ def _explicit_arguments_from_evidence(
             # KNOWLEDGE1473 «¿Quién es Daredevil?»: the engine answers the bare
             # name; the question words around it return unrelated pages.
             return {"query": entity}
+        curiosity_subject = effect_intent.curiosity_topic(search_evidence)
+        if curiosity_subject is not None:
+            # KNOWLEDGE1505 «decime una curiosidad»: the engine serves no pages
+            # for the word «curiosidad»; it answers a well-known subject with
+            # its public page, and the curiosity is what that page states.
+            return {"query": curiosity_subject}
         topic = effect_intent._topic_research_query(search_evidence)
         if topic is not None:
             # WEB1451 «Investiga Spider-Man»: the engine answers the topic, not

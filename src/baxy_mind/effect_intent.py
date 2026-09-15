@@ -15,7 +15,10 @@ allow-list of audited sentences.
 
 from __future__ import annotations
 
+import hashlib
+import random
 import re
+import time
 import unicodedata
 from dataclasses import dataclass, field
 from typing import Iterable, Iterator
@@ -418,6 +421,9 @@ def _public_live_lookup_request(folded: str) -> bool:
     # KNOWLEDGE1473 «¿Quién es Daredevil?»: who or what a named thing is gets
     # looked up in public pages instead of recited from the model's memory.
     entity_lookup = _entity_lookup_query(folded) is not None
+    # KNOWLEDGE1505 «decime una curiosidad»: a curiosity with no topic is
+    # looked up about a subject BAXY picks, never invented (KNOWLEDGE1353).
+    curiosity = curiosity_request(folded)
     # WEB1453 «¿Qué es un pronóstico del tiempo?»: a question about what a
     # forecast, a news item or the weather is (indefinite article) asks for a
     # definition; «what is the weather» keeps its article and stays a lookup.
@@ -734,6 +740,7 @@ def _public_live_lookup_request(folded: str) -> bool:
             todays_events,
             topic_research,
             entity_lookup,
+            curiosity,
             market_direction,
             market_price,
             local_events,
@@ -2560,6 +2567,54 @@ _PREFERENCE_REQUEST_HEAD = re.compile(
     r"lanza|inicia|reproduce|manda|envia|escribe|crea|guarda|recuerda|recorda|"
     r"open|play|search|send|close|save|remember|remind)\b"
 )
+
+
+_CURIOSITY_REQUEST = re.compile(
+    r"^(?:baxy\s*[,:]?\s*)?(?:(?:contame|cuentame|conta|cuenta|decime|dime|tirame|tira|explicame|explica|"
+    r"tell\s+me|give\s+me)\s+"
+    r"(?:(?:un|una|algun|alguna|otra|otro|a|an|another|some)\s+)?"
+    r"(?:curiosidad|curiosidades|dato\s+curioso|datos\s+curiosos|fun\s+fact|fun\s+facts|"
+    r"interesting\s+fact|random\s+fact|algo|something)"
+    r"(?:\s+(?:interesante|curioso|curiosa|nuevo|nueva|interesting|curious|cool|random|new))?"
+    r"(?:\s*,?\s*(?:por\s+favor|porfa|please))?[\s.!?]*$"
+    r"|^(?:estoy|ando|me\s+siento)\s+(?:re\s+|muy\s+|super\s+)?aburrid[oa][\s.!?]*$"
+    r"|^i(?:'?m|\s+am)\s+(?:so\s+)?bored[\s.!?]*$)",
+    re.IGNORECASE,
+)
+# KNOWLEDGE1505: the engine returns the public page of a bare, well-known name
+# (its Wikipedia article or an encyclopedic page first); the names below are
+# subjects verified against the engine's relevance rule on 2026-09-15, never
+# replies. Many other common names returned unrelated pages that day.
+_CURIOSITY_TOPICS_ES = (
+    "Colibrí", "Luna", "Saturno", "Antártida", "Ornitorrinco", "Amazonas", "Pingüino", "Delfín",
+    "Miel", "Chocolate", "Arcoíris", "Jirafa", "Koala", "Coliseo", "Titanic", "Neptuno", "Ballena",
+    "Girasol", "Urano", "Plutón", "Abeja", "Mariposa", "Tortuga", "Cactus", "Microscopio", "Tsunami",
+)
+_CURIOSITY_TOPICS_EN = (
+    "Moon", "Whale", "Jupiter", "Tsunami", "Titanic", "Koala", "Chocolate", "Cactus",
+)
+
+
+def curiosity_request(text: str) -> bool:
+    """KNOWLEDGE1505 «decime una curiosidad», «contame algo», «estoy aburrido»: a curiosity with no topic."""
+
+    return _CURIOSITY_REQUEST.match(_strip_request_envelope(_fold(text)).strip()) is not None
+
+
+def curiosity_topic(text: str) -> str | None:
+    """The public subject BAXY looks up for a curiosity request, or None.
+
+    The topic is drawn at random from a list of well-known subjects in the
+    language of the request; the answer is whatever the public page states."""
+
+    if not curiosity_request(text):
+        return None
+    folded = _strip_request_envelope(_fold(text)).strip()
+    english = re.match(r"^(?:baxy\s*[,:]?\s*)?(?:tell|give|i)\b", folded, re.IGNORECASE) is not None
+    # The pick is stable for one request within the same hour, so every
+    # reading of the turn (planning, verification) names the same subject.
+    seed = hashlib.sha256(f"{folded}|{int(time.time() // 3600)}".encode("utf-8")).hexdigest()
+    return random.Random(seed).choice(_CURIOSITY_TOPICS_EN if english else _CURIOSITY_TOPICS_ES)
 
 
 def first_person_preference(text: str) -> str | None:

@@ -44,6 +44,7 @@ from .effect_intent import (
     _strip_request_envelope,
     conversation_only_content_request,
     countdown_target,
+    curiosity_request,
     first_person_preference,
     literal_clipboard_write_text,
     reassurance_statement,
@@ -12291,7 +12292,39 @@ class LlmRuntime:
             if _search_results_text(visible_situation) is not None
             else None
         )
-        if entity_asked is not None:
+        curiosity_subject = (
+            (visible_situation.get("seen") or {}).get("query")
+            if _search_results_text(visible_situation) is not None
+            and entity_asked is None
+            and curiosity_request(user_text or "")
+            else None
+        )
+        if isinstance(curiosity_subject, str) and curiosity_subject.strip():
+            # KNOWLEDGE1505 «decime una curiosidad»: the person asked for
+            # something interesting with no topic; BAXY looked up a subject of
+            # its own choosing and the curiosity is what a snippet states.
+            subject = curiosity_subject.strip()
+            instruct(
+                f"\nThe person asked for a curiosity or something interesting, with no "
+                f"topic. You searched the public web for «{subject}» and seen.results "
+                "are the pages returned (title, url, snippet). Answer in one or two "
+                f"sentences: say the curiosity is about «{subject}» and tell one thing a "
+                "snippet states about it, in its words, naming the page or site it "
+                "comes from (for example Wikipedia). Never add a date, number, place "
+                "or any fact that no snippet contains; if no snippet states anything "
+                "about it, name the pages found instead. No question at the end."
+                if response_language == "en"
+                else f"\nLa persona pidió una curiosidad o algo interesante, sin tema. "
+                f"Buscaste en la web pública «{subject}» y seen.results son las páginas "
+                "devueltas (título, url, fragmento). Responde en una o dos oraciones: "
+                f"di que la curiosidad es sobre «{subject}» y cuenta una cosa que un "
+                "fragmento afirma sobre ello, con sus palabras, nombrando la página o "
+                "el sitio de donde sale (por ejemplo Wikipedia). Nunca añadas una "
+                "fecha, cifra, lugar ni ningún dato que ningún fragmento contenga; si "
+                "ningún fragmento afirma nada, nombra las páginas encontradas. Sin "
+                "pregunta al final."
+            )
+        elif entity_asked is not None:
             # KNOWLEDGE1473 «¿Quién es Daredevil?»: the person asked who or what
             # a named thing is; the answer is what a result snippet states about
             # it, with its words and its page, never the model's own memory.
