@@ -1,3 +1,11 @@
+# DIALOGUE1515 adjudicado — 2026-09-15T02:05:30.494024+00:00
+
+**507/742 cubiertos, 235 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA f23414c27539a25c938fb59451a2701ec7a91f6a02a80b7ff23d79ac5372bc50. Primeras altas 24 h >= 381 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD fed364ff con BUILD1515 (la conformidad sin pendiente y la alternativa suelta reciben su propia pregunta; DIALOGUE1515/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+DIALOGUE1515 («Entrada incompleta, ruido y control de diálogo», H0562 «Si hazlo», H0205 «o en la de siempre.»): 9 ejecutados, 6 aprobados, 3 fallidos, 1 créditos. Adjudicación e614e2987918829c6677d85b0875d75c9862ee6cccae4f4daec38b2bf079810c. «Si hazlo» y sus dos variantes dijeron que no hay nada pendiente y preguntaron qué hacer, con cero operaciones (H0562 acreditado); «o en la de siempre.» y sus variantes preguntaron a qué se refiere la parte suelta pero no dijeron que sólo llegó esa parte, como exige el criterio sellado: el validador aceptó la pregunta del referente sola (sin crédito para H0205; DIALOGUE1517 exigirá las dos cosas). Los tres límites pasaron. Cero violaciones en los nueve.
+
+---
+
 # DIALOGUE1513 adjudicado — 2026-09-15T01:57:07.439305+00:00
 
 **506/742 cubiertos, 236 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA e4f76cfbf0662df50c164d52f83decffa3ae7452274ac60fe006cbb0466d6a16. Primeras altas 24 h >= 380 (+7).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f3216caa con BUILD1513 (la conversación ajena recibe la pregunta de si la persona necesita algo; DIALOGUE1513/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

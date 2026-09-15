@@ -1,0 +1,15 @@
+{
+  "schema": "c03-dialogue1515-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_unresolved_input_kind: bare_confirmation —conformidad «sí, hacelo» sin nada pendiente— y dangling_alternative —conjunción, preposición y artículo sin verbo de orden—) y src/baxy_mind/llm.py (clarify_unresolved_input: preguntas validadas; la primera dice que no hay nada pendiente y pregunta qué hacer, rechaza «¿qué haces?» y acciones inventadas; la segunda dice que sólo llegó esa parte y pregunta a qué se refiere, rechaza saludos y acciones inventadas; un reintento corregido).",
+  "patch": "artifacts/comprobaciones/C03/DIALOGUE1515/SOURCE.patch",
+  "commits": [
+    "fed364ff56375b434af32256df0bc97aaaa0c0bc"
+  ],
+  "build": "BUILD1515 (C03-repairs1515-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "DIALOGUE1281: «Si hazlo» recibió «¿Qué haces?» y «o en la de siempre.» un saludo; ningún lector reconocía la conformidad sin pendiente ni la alternativa suelta.",
+  "change": "Clases de entrada sin pedido bare_confirmation y dangling_alternative con su aclaración validada; sin respuestas fijas.",
+  "measurement": "DIALOGUE1515: 9 ejecutados, 6 aprobados, 3 fallidos; 1 créditos. «Si hazlo» y sus dos variantes dijeron que no hay nada pendiente y preguntaron qué hacer, con cero operaciones (H0562 acreditado); «o en la de siempre.» y sus variantes preguntaron a qué se refiere la parte suelta pero no dijeron que sólo llegó esa parte, como exige el criterio sellado: el validador aceptó la pregunta del referente sola (sin crédito para H0205; DIALOGUE1517 exigirá las dos cosas). Los tres límites pasaron. Cero violaciones en los nueve.",
+  "credits": 1
+}
