@@ -10320,11 +10320,25 @@ class LlmRuntime:
         a meaning: the question names what arrived and asks what to do.
         """
 
-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative"}:
+        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent"}:
             raise ValueError("clase de entrada sin pedido inválida")
         current = str(text).strip()[:2_048]
         situation = (
             (
+                # KNOWLEDGE1523 H0424 «¿Cuál es su identidad secreta?», H0645
+                # «¿Quién es de verdad?»: nobody was named and nothing precedes
+                # the question; asking whom is the only honest move.
+                "Eres BAXY. El usuario pregunta por la identidad o el nombre real "
+                "de alguien («su identidad secreta», «quién es de verdad») sin "
+                "nombrar a nadie, y no hay nada anterior a lo que pueda referirse. "
+                "Formula una sola pregunta breve, en el idioma del usuario, que "
+                "pregunte de quién habla (por ejemplo: «¿De quién hablás?»). No "
+                "adivines un personaje ni una persona, no contestes con tu propia "
+                "identidad, no digas que no entiendes ni que algo falló y no "
+                "ofrezcas ayuda genérica."
+            )
+            if kind == "missing_person_referent"
+            else (
                 # DIALOGUE1515 H0562 «Si hazlo»: the person agrees to do
                 # something, but nothing was proposed, asked or left pending.
                 "Eres BAXY. El usuario dio su conformidad para que hagas algo "
@@ -10597,6 +10611,35 @@ class LlmRuntime:
                         )
                         continue
                     raise ValueError("aclaración de mirar deíctico no pregunta qué mirar")
+            # KNOWLEDGE1523: the question must ask whom, never name a character
+            # or answer with BAXY's own identity. One corrected retry.
+            if kind == "missing_person_referent":
+                folded_question = _fold_dialogue_text(question)
+                asks_whom = re.search(
+                    r"\b(?:de\s+quien|a\s+quien|sobre\s+quien|quien\s+es\s+(?:la\s+persona|esa\s+persona)|"
+                    r"de\s+que\s+persona|de\s+que\s+personaje|who\s+do\s+you\s+mean|whom|which\s+person|about\s+who)\b",
+                    folded_question,
+                ) is not None
+                names_someone = re.search(
+                    r"\b(?:batman|superman|spider|bruce|wayne|clark|kent|peter|parker|hulk|thor|goku|"
+                    r"soy\s+baxy|mi\s+identidad|my\s+identity|i\s+am\s+baxy)\b",
+                    folded_question,
+                ) is not None
+                if not asks_whom or names_someone:
+                    if attempt == 0:
+                        payload["messages"].insert(
+                            -1,
+                            {
+                                "role": "system",
+                                "content": (
+                                    "Corrección: nadie fue nombrado; pregunta sólo de quién habla, "
+                                    "por ejemplo: «¿De quién hablás?». No nombres ningún personaje "
+                                    "ni contestes con tu identidad."
+                                ),
+                            },
+                        )
+                        continue
+                    raise ValueError("aclaración de referente personal no pregunta de quién")
             # DIALOGUE1515: the confirmation with nothing pending must say so
             # and ask what to do, never ask what the person does or guess an
             # action. One corrected retry.

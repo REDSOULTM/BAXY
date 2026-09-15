@@ -3018,6 +3018,23 @@ def _unresolved_input_kind(objective: str) -> str | None:
         return "overheard_speech"
     if (
         re.fullmatch(
+            # KNOWLEDGE1523 H0424 «¿Cuál es su identidad secreta?», H0645
+            # «¿Quién es de verdad?»: the real identity or name of someone
+            # never named, with nothing before it; the honest turn asks whom.
+            r"[\s¡!¿?]*(?:"
+            r"(?:cual|cuales)\s+es\s+su\s+(?:identidad(?:\s+secreta|\s+real|\s+verdadera)?|"
+            r"(?:verdadero|verdadera|autentico|autentica)\s+(?:nombre|identidad)|nombre\s+(?:real|verdadero|de\s+verdad))|"
+            r"quien\s+es\s+(?:de\s+verdad|realmente|en\s+realidad|en\s+verdad|de\s+veras)|"
+            r"what(?:'s|\s+is)\s+(?:his|her|their)\s+(?:secret\s+identity|real\s+(?:name|identity))|"
+            r"who\s+(?:is|are)\s+(?:he|she|they)\s+really"
+            r")[\s.!?¿¡]*",
+            folded,
+        )
+        is not None
+    ):
+        return "missing_person_referent"
+    if (
+        re.fullmatch(
             # DIALOGUE1515 H0562 «Si hazlo»: agreement to do something when
             # nothing was proposed or asked; the honest turn says nothing is
             # pending and asks what to do (DIALOGUE1281: «¿Qué haces?»).
