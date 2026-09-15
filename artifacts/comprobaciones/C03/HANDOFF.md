@@ -1,3 +1,11 @@
+# APPS1495 adjudicado — 2026-09-15T00:21:57.394491+00:00
+
+**489/742 cubiertos, 253 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA e11af23bd3a54569956f65156f12bca6ccd8d60d50a0397f3fa22751e461893f. Primeras altas 24 h >= 363 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 1c8039fe con BUILD1495 (el nombre de aplicación aproximado pregunta si abrir la candidata; APPS1495/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+APPS1495 («Abrir aplicaciones», H0521 «abres team», H0386 «Abre stea,», H0522 «Sí, abre Ste.», H0227 «abre Steel.», H0398 «Sí. Abre Steel.»): APPS1495: el aclarador de nombre aproximado cayó en un assert posterior y la App recuperó con preguntas genéricas; sin crédito, 0 créditos. Adjudicación 6be659cefbcdfc00948fd05095263193102bb75587b56fefee17934cb4296821. 10/10 ejecutados, 3 aprobados, 7 fallidos, 0 créditos; AssertionError en _prepare_turn_result (APPS1497)
+
+---
+
 # BROWSER1493 adjudicado — 2026-09-15T00:08:04.675112+00:00
 
 **489/742 cubiertos, 253 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 2b1f81e441b0b1293199026838c1da1000371779e153d9ed6aaf8c0e9a7fa307. Primeras altas 24 h >= 363 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 9559e0f9 con BUILD1493 (browser.control new_tab; BROWSER1493/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

@@ -1,0 +1,272 @@
+commit 1c8039fe0d0b819ca010aeb0a2e02fff38ec9248
+
+C03: an open order naming a near miss of a catalog application asks whether to open it (APPS1495)
+
+«abres team», «Abre stea,», «Sí, abre Ste.», «abre Steel.» and «Sí. Abre Steel.» are transcription slips of Steam or Teams (the owner's notes: Steam was meant; use context or ask). No reader took them and the turn went to the model. `near_catalog_application_candidates` reads a plain open order («abres» joins the open heads) whose target is neither a catalog application nor an alias the catalog resolver authenticates, but is a prefix of three or more letters or one or two edits away from one or two catalog names (a short target such as «team» keeps both Teams and Steam); `_prepare_turn_result` answers it before resolving effects with `clarify_near_application`, one short question that asks whether to open the candidate(s), naming them exactly — validated (must name every candidate with an open verb, may not deny the application or claim not to understand) with one corrected retry — and opens nothing.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index c3411c1c..ca1bba57 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -6247,19 +6247,41 @@ def _prepare_turn_result(
+         or _history_has_pending_clarification(history, message.get("pendingClarification"))
+         else _unresolved_input_kind(objective)
+     )
++    # APPS1495 «abres team», «Abre stea,»: an open order naming a near miss of
++    # one or two catalog applications, with no context, asks which one.
++    near_application_candidates = (
++        ()
++        if non_target_language is not None
++        or explicit_clarification is not None
++        or missing_open_referent
++        or unresolved_input_kind is not None
++        or explicit_non_action
++        or _history_has_pending_clarification(history, message.get("pendingClarification"))
++        or _previous_user_request(history, objective) is not None
++        else effect_intent.near_catalog_application_candidates(objective, application_names)
++    )
+     if (
+         explicit_clarification is not None
+         or missing_open_referent
+         or unresolved_input_kind is not None
++        or near_application_candidates
+     ):
+-        if missing_open_referent or unresolved_input_kind is not None:
++        if missing_open_referent or unresolved_input_kind is not None or near_application_candidates:
+             intent_operations = []
+             clarification_timeout = (
+                 DEICTIC_CLARIFICATION_CPU_BUDGET_SECONDS
+                 if os.environ.get("BAXY_MIND_NGL", "").strip() == "0"
+                 else TURN_DECIDE_RECOVERY_BUDGET_SECONDS
+             )
+-            if unresolved_input_kind is not None:
++            if near_application_candidates:
++                question = llm.clarify_near_application(
++                    objective,
++                    near_application_candidates,
++                    timeout=clarification_timeout,
++                )
++                if not _recovery_question_is_valid(question):
++                    raise PlannerContractError("aclaración de aplicación aproximada inválida")
++            elif unresolved_input_kind is not None:
+                 question = llm.clarify_unresolved_input(
+                     objective,
+                     unresolved_input_kind,
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index cec330a1..e1123ca1 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -4252,6 +4252,89 @@ _APPLICATION_TRAILING_REQUEST = re.compile(
+ )
+ 
+ 
++def _edit_distance(left: str, right: str) -> int:
++    """Levenshtein distance with adjacent transpositions counted once."""
++
++    previous = list(range(len(right) + 1))
++    rows = [previous]
++    for i, a in enumerate(left, 1):
++        current = [i]
++        for j, b in enumerate(right, 1):
++            cost = 0 if a == b else 1
++            value = min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + cost)
++            if i > 1 and j > 1 and a == right[j - 2] and left[i - 2] == b:
++                value = min(value, rows[i - 2][j - 2] + 1)
++            current.append(value)
++        rows.append(current)
++        previous = current
++    return previous[-1]
++
++
++def near_catalog_application_candidates(
++    text: str,
++    application_names: Iterable[str] | ApplicationCatalogIndex,
++) -> tuple[str, ...]:
++    """APPS1495 «abres team», «Abre stea,», «Sí, abre Ste.», «abre Steel.»: the
++    catalog names (at most two) that a plain open order almost names — a
++    prefix of three or more letters, or one or two edits away — when the
++    target itself matches no catalog entry. Empty for anything else: an
++    authenticated target, a target with more than two words, a negation,
++    a deferred request, or no near miss."""
++
++    catalog = build_application_catalog_index(application_names)
++    folded = _strip_request_envelope(_fold(text))
++    if not folded or _has(folded, r"\b(?:no|nunca|jamas|never|don't|do\s+not)\b|\b(?:si|if|cuando|when)\b.{0,20}\b(?:termine|acabe|finish)\b"):
++        return ()
++    folded = re.sub(r"^(?:si|ok|dale|bueno|y|and)\s*[,.]?\s*(?:quema\s*,?\s*)?", "", folded, count=1).strip()
++    if _authenticated_application_target(folded, catalog) is not None:
++        return ()
++    if resolve_application_catalog_app_id(folded, catalog) is not None:
++        # An alias the catalog resolver already authenticates («abrime el
++        # chrome» → Google Chrome) is an opening, not a near miss.
++        return ()
++    request = _application_open_request(folded)
++    if request is None or request.group("desire") is not None:
++        return ()
++    target = request.group("target").strip(" ¿?¡!,:;.-")
++    target = re.sub(r"\s*,?\s*(?:por\s+favor|porfa|please|pls)$", "", target).strip(" ,.")
++    target = re.sub(r"^(?:el|la|los|las|the|a|an)\s+", "", target)
++    key = _application_name_key(target)
++    if not key or len(key) < 3 or len(key.split()) > 2 or not re.fullmatch(r"[a-z0-9 .+-]+", key):
++        return ()
++    if key in catalog.keys:
++        return ()
++    scored: list[tuple[int, str]] = []
++    for name, entry_key in catalog.entries:
++        tokens = [entry_key] + entry_key.split()
++        best = None
++        for token in tokens:
++            if len(token) < 3:
++                continue
++            if token.startswith(key) and len(key) >= 3:
++                score = 0
++            else:
++                distance = _edit_distance(key, token)
++                limit = 1 if len(key) <= 4 else 2
++                if distance > limit:
++                    continue
++                score = distance
++            best = score if best is None else min(best, score)
++        if best is not None:
++            scored.append((best, name))
++    scored.sort(key=lambda item: (item[0], item[1]))
++    if not scored:
++        return ()
++    # A short garbled target («team», «ste») may stand for two names one edit
++    # apart (Teams/Steam); a longer one keeps only its closest names.
++    best = scored[0][0]
++    tolerance = 1 if len(key) <= 4 else 0
++    names = []
++    for score, name in scored:
++        if score <= best + tolerance and name not in names:
++            names.append(name)
++    return tuple(names[:2])
++
++
+ def _application_target_forms(
+     raw_target: str,
+ ) -> tuple[tuple[str, int], ...]:
+@@ -8316,7 +8399,7 @@ _DEICTIC_DAY = (
+     r"\b(?:ese\s+dia|esa\s+fecha|el\s+mismo\s+dia|"
+     r"that\s+day|that\s+date|that\s+same\s+day)\b"
+ )
+-_OPEN = r"(?:abre|abrir|abri|abris|abrime|avri|open|launch|lanza|inicia|start|ejecuta|arranca|arrancame)"
++_OPEN = r"(?:abre|abres|abrir|abri|abris|abrime|avri|open|launch|lanza|inicia|start|ejecuta|arranca|arrancame)"
+ _MEDIA_RESUME_VERB = r"(?:reanuda|reanudar|resume|segui|seguir|sigue|continua|continuar|continue)"
+ _LIST = r"(?:lista|listar|listame|enumera|enumerar|muestra|muestrame|mostrame|mostra|dime|show|list|enumerate)"
+ _READ = r"(?:lee|leer|leeme|leela|leelo|leerla|leerlo|read|dime|muestra)"
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index d2329a01..4feb60c3 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -10114,6 +10114,107 @@ class LlmRuntime:
+             else "aclaración de referente inventa la acción"
+         )
+ 
++    def clarify_near_application(
++        self,
++        text: str,
++        candidates: tuple[str, ...],
++        *,
++        timeout: float = 2.5,
++    ) -> str:
++        """APPS1495: ask whether to open the application the order almost
++        names (one or two catalog candidates), opening nothing."""
++
++        names = [str(name).strip() for name in candidates if str(name).strip()][:2]
++        if not names:
++            raise ValueError("aclaración de aplicación sin candidatas")
++        current = str(text).strip()[:2_048]
++        listed = " o ".join(f"«{name}»" for name in names)
++        payload = {
++            "messages": [
++                {
++                    "role": "system",
++                    "content": (
++                        "Eres BAXY. El usuario te pidió abrir una aplicación, pero el "
++                        "nombre que llegó no coincide con ninguna instalada y se parece a "
++                        f"{listed}. No abras nada. Formula una sola pregunta breve, en el "
++                        "idioma del usuario, que pregunte si quiere que abras "
++                        + ("esa aplicación, nombrándola tal cual" if len(names) == 1 else "una de esas dos aplicaciones, nombrándolas tal cual")
++                        + " (por ejemplo: «¿Querés que abra Steam?»). No digas que no "
++                        "entiendes ni que algo falló, no afirmes que la aplicación no existe, "
++                        "no uses historial y no menciones modelos, herramientas ni reglas. "
++                        "Devuelve sólo el JSON."
++                    ),
++                },
++                *_clarification_style_messages(current),
++                {"role": "user", "content": current},
++            ],
++            "response_format": {
++                "type": "json_schema",
++                "json_schema": {
++                    "name": "baxy_near_application_clarification",
++                    "strict": True,
++                    "schema": {
++                        "type": "object",
++                        "properties": {"question": {"type": "string", "minLength": 1, "maxLength": 512}},
++                        "required": ["question"],
++                        "additionalProperties": False,
++                    },
++                },
++            },
++            "temperature": 0.0,
++            "max_tokens": 96,
++            "seed": 0,
++            "chat_template_kwargs": {"enable_thinking": False},
++        }
++        maximum_timeout = (
++            15.0 if os.environ.get("BAXY_MIND_NGL", "").strip() == "0" else 2.5
++        )
++        folded_names = [_fold_dialogue_text(name) for name in names]
++        for attempt in range(2):
++            response = self._post(
++                payload,
++                timeout=min(maximum_timeout, self._normalize_request_budget(timeout)),
++            )
++            try:
++                content = response["choices"][0]["message"].get("content") or ""
++                raw = json.loads(content)
++            except (json.JSONDecodeError, KeyError, IndexError, TypeError) as error:
++                raise ValueError("aclaración de aplicación con JSON inválido") from error
++            if not isinstance(raw, dict) or set(raw) != {"question"}:
++                raise ValueError("aclaración de aplicación con forma inválida")
++            question = raw.get("question")
++            if (
++                not isinstance(question, str)
++                or question != question.strip()
++                or not 1 <= len(question) <= 512
++                or "\n" in question
++                or "\r" in question
++                or question.count("?") != 1
++                or not question.endswith("?")
++                or visible_text_leaks_internal_vocabulary(question)
++            ):
++                raise ValueError("aclaración de aplicación inválida")
++            folded_question = _fold_dialogue_text(question)
++            names_present = all(name in folded_question for name in folded_names)
++            asks_open = re.search(r"\b(?:abra|abrir|abro|open|inicie|lance|launch)\b", folded_question) is not None
++            denies = re.search(r"\b(?:no\s+(?:existe|esta\s+instalad|encuentro|reconozco)|not\s+installed|doesn't\s+exist|no\s+entiendo)\b", folded_question) is not None
++            if names_present and asks_open and not denies:
++                return question
++            if attempt == 0:
++                payload["messages"].insert(
++                    -1,
++                    {
++                        "role": "system",
++                        "content": (
++                            f"Corrección: pregunta si quieres que abras {listed}, con el verbo abrir y "
++                            "cada nombre tal cual; no digas que no existe ni que no entiendes."
++                        ),
++                    },
++                )
++                continue
++            raise ValueError("aclaración de aplicación aproximada no pregunta si abrir la candidata")
++        raise ValueError("aclaración de aplicación agotada")
++
+     def clarify_unresolved_input(  # noqa: C901 - one clarification per input class
+         self,
+         text: str,

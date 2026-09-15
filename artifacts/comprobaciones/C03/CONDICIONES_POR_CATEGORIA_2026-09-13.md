@@ -559,3 +559,7 @@ Navegación y búsqueda web pasa de 38/46 a 40/46 con los destinos cortados por 
 ## Actualización 2026-09-14 (BROWSER1493)
 
 Navegación y búsqueda web pasa de 40/46 a 41/46 con la pestaña nueva abierta en el navegador propio (commit 9559e0f9, BUILD1493) (HEAD 9559e0f9): BROWSER1493: la pestaña nueva se abre en el navegador propio del producto; H0084 cubierto, 1 créditos. 6/6 ejecutados, 4 aprobados, 2 límites fallidos, 1 crédito; browser.control new_tab verificado tres veces
+
+## Actualización 2026-09-14 (APPS1495)
+
+Abrir aplicaciones pasa de 40/54 a 40/54 con los nombres de aplicación aproximados contestados con la pregunta de si abrir la candidata (commit 1c8039fe, BUILD1495) (HEAD 1c8039fe): APPS1495: el aclarador de nombre aproximado cayó en un assert posterior y la App recuperó con preguntas genéricas; sin crédito, 0 créditos. 10/10 ejecutados, 3 aprobados, 7 fallidos, 0 créditos; AssertionError en _prepare_turn_result (APPS1497)

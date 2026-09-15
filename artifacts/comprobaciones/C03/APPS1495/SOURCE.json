@@ -1,0 +1,15 @@
+{
+  "schema": "c03-apps1495-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (near_catalog_application_candidates: orden de abrir cuyo objetivo no es una aplicación instalada ni un alias pero es prefijo o está a una o dos ediciones de una o dos del catálogo; «abres» como cabeza de apertura), src/baxy_mind/__main__.py (rama de aclaración antes de resolver efectos), src/baxy_mind/llm.py (clarify_near_application: pregunta si abrir la candidata nombrándola tal cual, con validación y reintento corregido).",
+  "patch": "artifacts/comprobaciones/C03/APPS1495/SOURCE.patch",
+  "commits": [
+    "1c8039fe0d0b819ca010aeb0a2e02fff38ec9248"
+  ],
+  "build": "BUILD1495 (C03-repairs1495-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "Cinco literales de apertura son transcripciones fallidas de Steam/Teams (notas del dueño: quiso decir Steam; usar contexto o preguntar); ningún lector los tomaba y el turno iba al modelo; abrir Steam sería lanzar el cliente del dueño.",
+  "change": "Aclaración determinista del nombre aproximado; nada se abre; sin respuestas fijas.",
+  "measurement": "APPS1495: APPS1495: el aclarador de nombre aproximado cayó en un assert posterior y la App recuperó con preguntas genéricas; sin crédito; 0 créditos. 10/10 ejecutados, 3 aprobados, 7 fallidos, 0 créditos; AssertionError en _prepare_turn_result (APPS1497)",
+  "credits": 0
+}
