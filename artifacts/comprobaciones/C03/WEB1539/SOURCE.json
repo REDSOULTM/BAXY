@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1539-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (resumir esta página o la página actual es browser.page.read: cabezas de resumir en el acto de pedido y en el lector de página; «esta página» sin palabra de documento es la página abierta) y src/baxy_mind/llm.py (_project_page_read: título, sitio y el comienzo del texto visible tal cual; instrucción de nombrar la página y citar sus primeras oraciones; _page_read_quote_defect rechaza pasajes citados que no estén en ese texto y cifras que no traiga).",
+  "patch": "artifacts/comprobaciones/C03/WEB1539/SOURCE.patch",
+  "commits": [
+    "2871d4babe7af76dec50b7af49c73f9f1e7a812c"
+  ],
+  "build": "BUILD1539 (C03-repairs1539-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "«resumime esta página» y «resumime la página actual» no llegaban a ningún lector: resumir no era cabeza de pedido y la lectura de página exigía «lee»; el compositor no tenía proyección ni contrato para la página leída.",
+  "change": "Lector de resumen de página hacia la lectura revisada y proyección del texto leído con instrucción y veto; sin respuestas fijas.",
+  "measurement": "WEB1539: 7 ejecutados, 3 aprobados (los tres límites), 4 rechazados; 0 créditos. La mente decidió browser.page.read para los cuatro turnos de resumen y el producto preparó la operación con confirmación, pero el conductor revisado de la aplicación sólo propone al revisor raíz navegación, cierre, clics, ajustes, portapapeles y capturas: rechazó los turnos (review_pending_not_supported) sin leer la página; el fixture raíz (Edge y página propios, BAXY_CDP_ENDPOINT registrado en runtime.json) se levantó y se cerró limpiamente. Los tres límites pasaron. Siguiente: el conductor revisado admite browser.page.read como las capturas (WEB1541).",
+  "credits": 0
+}

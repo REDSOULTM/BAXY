@@ -1,3 +1,11 @@
+# WEB1539 adjudicado — 2026-09-15T04:05:15.266528+00:00
+
+**517/742 cubiertos, 225 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA cfb7bdd63b5ee0f440ba92f62c42842976702d59a45d1d0c759859f076212f68. Primeras altas 24 h >= 391 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 2871d4ba con BUILD1539 (resumir esta página es leer la página abierta y citar su comienzo). La raíz aprueba sólo una capture.screenshot sin argumentos (approve_capture.py); la captura queda en el directorio privado del perfil y nunca se publica.
+
+WEB1539 («Leer y resumir páginas web», H0561 «resumime esta página», H0738 «resumime la página actual», lectura revisada de la página abierta en la sesión del navegador sobre el fixture raíz): 7 ejecutados, 3 aprobados (los tres límites), 4 rechazados, 0 créditos. Adjudicación b8d08547bb360b900ca0b049639bee5f2aa59244effd1bef45db54b2a58f3b77. La mente decidió browser.page.read para los cuatro turnos de resumen y el producto preparó la operación con confirmación, pero el conductor revisado de la aplicación sólo propone al revisor raíz navegación, cierre, clics, ajustes, portapapeles y capturas: rechazó los turnos (review_pending_not_supported) sin leer la página; el fixture raíz (Edge y página propios, BAXY_CDP_ENDPOINT registrado en runtime.json) se levantó y se cerró limpiamente. Los tres límites pasaron. Siguiente: el conductor revisado admite browser.page.read como las capturas (WEB1541).
+
+---
+
 # WINDOWS1537 adjudicado — 2026-09-15T03:36:02.411984+00:00
 
 **517/742 cubiertos, 225 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 420b308afa75010b19a46b9489f4c9de5da5b03f220c7d8aa1e039a89be951fd. Primeras altas 24 h >= 391 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c330c976 con BUILD1537 (la ventana nombrada sólo por «la otra» o «la mejor» se pregunta; WINDOWS1537/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

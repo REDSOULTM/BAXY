@@ -1,3 +1,25 @@
+## WEB1539 — estado vigente 2026-09-15T04:05:15.266528+00:00
+
+Parcial: 3 aprobados, 4 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 517/742 | 225 | 0 | >=391 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 391 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WEB1539 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: WEB1539: 7 ejecutados, 3 aprobados, 4 fallidos, 0 créditos (índices []); Leer y resumir páginas web 0/2. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/WEB1539/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 112.63 s acumulados; pico GPU 3497.56 MiB; pico RAM 1654.09 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 7; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WEB1539 precedente. -->
+
 ## WINDOWS1537 — estado vigente 2026-09-15T03:36:02.411984+00:00
 
 Parcial: 7 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.

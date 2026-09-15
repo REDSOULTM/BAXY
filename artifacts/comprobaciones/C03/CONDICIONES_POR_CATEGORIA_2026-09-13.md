@@ -689,3 +689,7 @@ Abrir aplicaciones pasa de 45/54 a 45/54 con la muletilla hablada delante de la 
 ## Actualización 2026-09-14 (WINDOWS1537)
 
 Organizar ventanas y pestañas pasa de 4/13 a 6/13 con la ventana nombrada sólo por «la otra» o «la mejor» preguntada (commit c330c976, BUILD1537) (HEAD c330c976): 7 ejecutados, 7 aprobados, 0 fallidos, 2 créditos. Los dos literales y las dos variantes terminaron con cero operaciones y una pregunta validada de a qué ventana cambiar o enfocar («¿A qué ventana querés cambiar?»), sin adivinar ninguna; los tres límites pasaron. Cero violaciones en los siete.
+
+## Actualización 2026-09-14 (WEB1539)
+
+Leer y resumir páginas web pasa de 0/2 a 0/2 con resumir la página leída como la página abierta en el navegador, nombrada y citada tal cual (commit 2871d4ba, BUILD1539) (HEAD 2871d4ba): 7 ejecutados, 3 aprobados (los tres límites), 4 rechazados, 0 créditos. La mente decidió browser.page.read para los cuatro turnos de resumen y el producto preparó la operación con confirmación, pero el conductor revisado de la aplicación sólo propone al revisor raíz navegación, cierre, clics, ajustes, portapapeles y capturas: rechazó los turnos (review_pending_not_supported) sin leer la página; el fixture raíz (Edge y página propios, BAXY_CDP_ENDPOINT registrado en runtime.json) se levantó y se cerró limpiamente. Los tres límites pasaron. Siguiente: el conductor revisado admite browser.page.read como las capturas (WEB1541).
