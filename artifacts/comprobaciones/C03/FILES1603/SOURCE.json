@@ -1,0 +1,15 @@
+{
+  "schema": "c03-files1603-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (InventedVolume judges the sentences before the trailing question when the person's request named the volume; WithoutTrailingQuestion) and src/baxy_mind/effect_intent.py (_negative_action_forms admits «toca»/«touch»).",
+  "patch": "artifacts/comprobaciones/C03/FILES1603/SOURCE.patch",
+  "commits": [
+    "d91dcfb4c62df190eb8bfed9370b3a5acb7b95b6"
+  ],
+  "build": "BUILD1603 (C03-repairs1603-build/BUILD_READY.json; Providers y mente)",
+  "cause_measured": "H0327 nunca ejecutado: el lector de borrado exigía un archivo y el adaptador sólo movía archivos.",
+  "change": "Borrado de carpeta nombrada a la papelera privada; sin respuestas fijas.",
+  "measurement": "FILES1603: 5 ejecutados, 2 aprobados, 3 fallidos; 0 créditos. El literal y las dos variantes decidieron la operación de papelera sobre la carpeta creada por la raíz y el adaptador la encontró, pero Directory.Move no cruza volúmenes (Escritorio redirigido en D:, papelera privada en C:) y la operación falló con un final veraz; la segunda variante halló además otra carpeta del mismo nombre y no publicó final. Los dos límites pasaron con cero operaciones. Siguiente: el adaptador copia el árbol y borra el origen entre volúmenes; nombres de fixture únicos (FILES1605).",
+  "credits": 0
+}

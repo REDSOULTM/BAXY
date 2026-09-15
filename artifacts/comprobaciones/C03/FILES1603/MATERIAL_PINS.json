@@ -1,0 +1,78 @@
+{
+  "schema": "files1603-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1603-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1603-instrument-v1",
+  "seal_sha256": "f87ca6ac34a0f415318ff37a20f802c8b7a6444dfa37a2e171254bfea647f1c9",
+  "runner_sha256": "1b35a2fcbe248a0c5be88bc879a051371f81eff148a3e5f60817e7137a9f74cb",
+  "transport_seal_sha256": "595e7962ae5c1d8d70b058d5eb41615f721755d7d25b95651ba0e11e421f0e0f",
+  "files": {
+    "panel.json": "1c18cee644a2c41098e02da85087ded19754e7391c98aab597b6722c1277ddef",
+    "turns.jsonl": "23006e99b5fd211a79f5aa51b392958e81ab6d218c2360764922bdb27109764c",
+    "case-map.json": "232955ef59ca6c6eece5e9f5cb47dbb97d53b5518850899b21ad0475aba6b9a4",
+    "PLAN.md": "655bb7b5c6cdf7b3cb854b7ffa56a9e69280fa7e9919d3e4988cbfa9b1312423"
+  },
+  "counts": {
+    "cases": 5,
+    "historical_literals": 1,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 10,
+    "session_controls": 5,
+    "ordinary_turns": 5,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 5,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0327",
+      "kind": "historical_literal",
+      "group": "trash_known_folder",
+      "credit_behavior": "trash_known_folder",
+      "text_sha256": "6a7b44c5de268917977af32e81c591b91ddc1e693a5b3c7f1bd7bcb939dd7e68",
+      "criterion_sha256": "c334a453f1ad209e87cecb0dcd9cc59bbe98ecd678071e7fc3e69c826b820d96"
+    },
+    {
+      "index": 1,
+      "case_id": "files1603-dev-01",
+      "kind": "original_development_variant",
+      "group": "trash_known_folder",
+      "credit_behavior": "trash_known_folder",
+      "text_sha256": "f3a07350f92e090bc88f821ab61874ecda0e6f22add309a92db7a274fbf51a72",
+      "criterion_sha256": "c334a453f1ad209e87cecb0dcd9cc59bbe98ecd678071e7fc3e69c826b820d96"
+    },
+    {
+      "index": 2,
+      "case_id": "files1603-dev-02",
+      "kind": "original_development_variant",
+      "group": "trash_known_folder",
+      "credit_behavior": "trash_known_folder",
+      "text_sha256": "f77db3f0add22c67150fb5c6ee41d7d53617caf2f35177db766f76bb83b4abbd",
+      "criterion_sha256": "c334a453f1ad209e87cecb0dcd9cc59bbe98ecd678071e7fc3e69c826b820d96"
+    },
+    {
+      "index": 3,
+      "case_id": "files1603-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "59c5cf50b4f52427dd2f76ea2c4c7701bb4d7165d5cc07df5e8434d66805cb03",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 4,
+      "case_id": "files1603-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "8cfc5190cf7ca3020ef360db5ea8c778fa4fd65052477f3ccfbd52316247d9c3",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    }
+  ]
+}

@@ -1,3 +1,11 @@
+# FILES1603 adjudicado — 2026-09-15T19:59:50.454229+00:00
+
+**547/742 cubiertos, 195 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA f9d407f1bd4eeb8c349b60325275156beb43ba9e7902551b316b112bf97e44c8. Primeras altas 24 h >= 421 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d91dcfb4 con BUILD1603 (una carpeta nombrada del escritorio va a la papelera privada). Turnos ordinarios sin operaciones.
+
+FILES1603 («Archivos y carpetas», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos. Adjudicación c4dc3e5c784b858606eca5d4c162b107e21ab3de1e5a917ae3bced6c9198db69. El literal y las dos variantes decidieron la operación de papelera sobre la carpeta creada por la raíz y el adaptador la encontró, pero Directory.Move no cruza volúmenes (Escritorio redirigido en D:, papelera privada en C:) y la operación falló con un final veraz; la segunda variante halló además otra carpeta del mismo nombre y no publicó final. Los dos límites pasaron con cero operaciones. Siguiente: el adaptador copia el árbol y borra el origen entre volúmenes; nombres de fixture únicos (FILES1605).
+
+---
+
 # MEMORY1601 adjudicado — 2026-09-15T19:31:54.021919+00:00
 
 **547/742 cubiertos, 195 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 8b673e2b8f2c9b69819fad91fae35b210b774ff7b58f3a18fb497da048dad153. Primeras altas 24 h >= 421 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d747311a con BUILD1601 (el recuerdo se dice en segunda persona). Guardados explícitos guionizados por la raíz y recuerdos en el perfil aislado; sin revisión.

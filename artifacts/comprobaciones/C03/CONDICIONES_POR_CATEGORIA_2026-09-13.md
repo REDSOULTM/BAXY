@@ -877,3 +877,7 @@ Memoria personal pasa de 8/10 a 8/10 con los recuerdos tras un guardado en el mi
 ## Actualización 2026-09-14 (MEMORY1601)
 
 Memoria personal pasa de 8/10 a 10/10 con el recuerdo dicho en segunda persona (commit d747311a, BUILD1601) (HEAD d747311a): 9 ejecutados, 9 aprobados, 0 fallidos, 2 créditos. Los seis casos guardaron el dato guionizado por el canal de memoria privada (activación confirmada, guardado verificado) y luego lo recordaron con memory.recall verificada, diciéndolo a la persona en segunda persona con el valor guardado tal cual. Las tres fronteras pasaron con cero operaciones. Memoria personal queda cerrada (10/10). La categoría queda cerrada.
+
+## Actualización 2026-09-14 (FILES1603)
+
+Archivos y carpetas pasa de 27/32 a 27/32 con la carpeta nombrada del escritorio llevada a la papelera privada (commit d91dcfb4, BUILD1603) (HEAD d91dcfb4): 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos. El literal y las dos variantes decidieron la operación de papelera sobre la carpeta creada por la raíz y el adaptador la encontró, pero Directory.Move no cruza volúmenes (Escritorio redirigido en D:, papelera privada en C:) y la operación falló con un final veraz; la segunda variante halló además otra carpeta del mismo nombre y no publicó final. Los dos límites pasaron con cero operaciones. Siguiente: el adaptador copia el árbol y borra el origen entre volúmenes; nombres de fixture únicos (FILES1605).
