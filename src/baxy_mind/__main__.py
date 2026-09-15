@@ -3018,6 +3018,45 @@ def _unresolved_input_kind(objective: str) -> str | None:
         return "overheard_speech"
     if (
         re.fullmatch(
+            # DIALOGUE1515 H0562 «Si hazlo»: agreement to do something when
+            # nothing was proposed or asked; the honest turn says nothing is
+            # pending and asks what to do (DIALOGUE1281: «¿Qué haces?»).
+            r"[\s¡!¿?.,]*(?:(?:si|dale|ok|okay|bueno|claro|de\s+acuerdo|yes|yeah|yep|sure|obvio|vale)[\s,.!]*)?"
+            r"(?:hazlo|hacelo|hacela|hazla|haz\s+lo|hace\s+lo|procede|do\s+it|go\s+ahead)"
+            r"(?:\s+(?:ya|ahora|nomas|now|please|por\s+favor|porfa))*[\s.!?]*",
+            folded,
+        )
+        is not None
+    ):
+        return "bare_confirmation"
+    if (
+        re.fullmatch(
+            # DIALOGUE1515 H0205 «o en la de siempre.»: the tail of a sentence,
+            # an alternative with nothing before it and no request inside;
+            # the honest turn says only that part arrived and asks what it
+            # refers to (DIALOGUE1281: a greeting).
+            r"[\s¡!¿?]*(?:o|u|y|e|pero|sino|ni)\s+"
+            r"(?:en|a|al|con|de|del|para|por|sin|sobre|desde|hasta)\s+"
+            r"(?:la|el|los|las|lo|una|un|mi|tu|su|esa|ese|esta|este|aquella|aquel)\s+"
+            r"[a-z][a-z0-9 ]{0,40}[\s.!?]*",
+            folded,
+        )
+        is not None
+        # «y con la calculadora abre algo» carries an order; only a fragment
+        # without any order verb is a dangling alternative.
+        and re.search(
+            r"\b(?:abre|abri|abris|abrir|abrime|pone|pon|poneme|poner|busca|buscame|buscar|cierra|cerra|cerrar|"
+            r"reproduce|manda|envia|escribe|crea|guarda|recuerda|recorda|sube|subi|baja|silencia|apaga|prende|"
+            r"enciende|lanza|inicia|muestra|mostrame|dime|decime|contame|explica|lee|copia|pega|borra|elimina|"
+            r"instala|descarga|toma|saca|captura|open|play|search|close|send|write|set|turn|show|tell|launch|"
+            r"start|stop|find|take|click)\b",
+            folded,
+        )
+        is None
+    ):
+        return "dangling_alternative"
+    if (
+        re.fullmatch(
             # IDENTITY1323 H0296 «Tú eres como eso»: compared with something
             # never named; the only honest answer asks what «eso» is.
             r"[\s¡!¿?]*(?:(?:tu|vos|usted)\s+)?(?:eres|sos|eri|es)\s+"

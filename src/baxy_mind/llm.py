@@ -10320,11 +10320,37 @@ class LlmRuntime:
         a meaning: the question names what arrived and asks what to do.
         """
 
-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech"}:
+        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative"}:
             raise ValueError("clase de entrada sin pedido inválida")
         current = str(text).strip()[:2_048]
         situation = (
             (
+                # DIALOGUE1515 H0562 «Si hazlo»: the person agrees to do
+                # something, but nothing was proposed, asked or left pending.
+                "Eres BAXY. El usuario dio su conformidad para que hagas algo "
+                "(«sí, hacelo»), pero no hay ningún pedido, propuesta ni pregunta "
+                "pendiente a la que responda: no tienes nada pendiente que hacer. "
+                "Formula una sola pregunta breve, en el idioma del usuario, que "
+                "diga que no tienes nada pendiente y pregunte qué quiere que hagas "
+                "(por ejemplo: «No tengo nada pendiente; ¿qué querés que haga?»). "
+                "No preguntes qué hace él, no adivines una acción, no digas que no "
+                "entiendes ni que algo falló y no ofrezcas ayuda genérica."
+            )
+            if kind == "bare_confirmation"
+            else (
+                # DIALOGUE1515 H0205 «o en la de siempre.»: only the tail of a
+                # sentence arrived, an alternative with nothing before it.
+                "Eres BAXY. Del usuario llegó sólo el final de una frase, una "
+                "alternativa («o en la de siempre») sin lo que iba antes, y no hay "
+                "ningún pedido anterior que la complete. Formula una sola pregunta "
+                "breve, en el idioma del usuario, que diga que sólo te llegó esa "
+                "parte y pregunte a qué se refiere (por ejemplo: «Sólo me llegó "
+                "“o en la de siempre”: ¿a qué te referís?»). No adivines de qué "
+                "habla, no inventes una acción, no saludes, no digas que no "
+                "entiendes ni que algo falló y no ofrezcas ayuda genérica."
+            )
+            if kind == "dangling_alternative"
+            else (
                 # DIALOGUE1513 H0006, H0139, H0332, H0372, H0429, H0441, H0483,
                 # H0735: a long stretch of other people's talk or a broadcast,
                 # with no question, order or vocative for BAXY. The honest turn
@@ -10570,6 +10596,75 @@ class LlmRuntime:
                         )
                         continue
                     raise ValueError("aclaración de mirar deíctico no pregunta qué mirar")
+            # DIALOGUE1515: the confirmation with nothing pending must say so
+            # and ask what to do, never ask what the person does or guess an
+            # action. One corrected retry.
+            if kind == "bare_confirmation":
+                folded_question = _fold_dialogue_text(question)
+                says_nothing_pending = re.search(
+                    r"\b(?:no\s+(?:tengo|hay|veo|encuentro|me\s+consta)\b.{0,30}\b(?:pendiente|pedido|propuesta|nada|accion|instruccion|tarea)|"
+                    r"nada\s+pendiente|no\s+se\s+a\s+que|no\s+se\s+que\s+(?:es|era)|nothing\s+pending|no\s+pending)\b",
+                    folded_question,
+                ) is not None
+                asks_what = re.search(
+                    r"\b(?:que|cual|what)\b.{0,40}\b(?:hag|hac|quer|quier|deb|want|do|should)\w*",
+                    folded_question,
+                ) is not None
+                inverted = re.search(
+                    r"\b(?:que\s+haces|que\s+haces\s+vos|que\s+estas\s+haciendo|what\s+do\s+you\s+do|what\s+are\s+you\s+doing)\b",
+                    folded_question,
+                ) is not None
+                invents = re.search(
+                    r"\b(?:abrir|abra|abro|poner|ponga|pongo|buscar|busque|busco|cerrar|cierre|cierro|open|play|search|close)\b",
+                    folded_question,
+                ) is not None
+                if not says_nothing_pending or not asks_what or inverted or invents:
+                    if attempt == 0:
+                        payload["messages"].insert(
+                            -1,
+                            {
+                                "role": "system",
+                                "content": (
+                                    "Corrección: di que no tienes nada pendiente y pregunta qué "
+                                    "quiere que hagas tú, por ejemplo: «No tengo nada pendiente; "
+                                    "¿qué querés que haga?». No preguntes qué hace él ni adivines "
+                                    "una acción."
+                                ),
+                            },
+                        )
+                        continue
+                    raise ValueError("aclaración de conformidad sin pendiente no pregunta qué hacer")
+            # DIALOGUE1515: the dangling alternative must say only that part
+            # arrived and ask what it refers to; no greeting, no guessed action.
+            # One corrected retry.
+            if kind == "dangling_alternative":
+                folded_question = _fold_dialogue_text(question)
+                asks_referent = re.search(
+                    r"\b(?:a\s+que\s+te\s+refer|a\s+que\s+se\s+refiere|que\s+quer[eé]s\s+decir|que\s+quieres\s+decir|"
+                    r"solo\s+(?:me\s+)?llego|solo\s+recib|solo\s+(?:me\s+)?llega|que\s+(?:iba|va|venia|viene)\s+antes|"
+                    r"de\s+que\s+(?:hablas|hablas|habla|estas\s+hablando)|what\s+do\s+you\s+mean|refer(?:ring)?\s+to)\b",
+                    folded_question,
+                ) is not None
+                greets = re.search(r"\b(?:hola|buenas|buenos\s+dias|hello|hi)\b", folded_question) is not None
+                invents = re.search(
+                    r"\b(?:abrir|abra|abro|poner|ponga|pongo|buscar|busque|busco|cerrar|cierre|cierro|open|play|search|close)\b",
+                    folded_question,
+                ) is not None
+                if not asks_referent or greets or invents:
+                    if attempt == 0:
+                        payload["messages"].insert(
+                            -1,
+                            {
+                                "role": "system",
+                                "content": (
+                                    "Corrección: di que sólo te llegó esa parte y pregunta a qué se "
+                                    "refiere, por ejemplo: «Sólo me llegó “o en la de siempre”: ¿a "
+                                    "qué te referís?». No saludes ni adivines una acción."
+                                ),
+                            },
+                        )
+                        continue
+                    raise ValueError("aclaración de alternativa suelta no pregunta el referente")
             # DIALOGUE1513: the question must say no request was found for
             # BAXY and ask whether the person needs something; it must not
             # repeat the talk, answer it or invent an action. One corrected retry.
