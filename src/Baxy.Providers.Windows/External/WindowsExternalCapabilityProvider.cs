@@ -34,9 +34,12 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new DesktopMessagingAdapter(),
             new WindowsMicrophoneAdapter(),
             new WindowsAudioAdjustmentAdapter(),
+            // MUSIC1593: the local YouTube player answers media.status and
+            // media.control while it plays (SMTC never sees mpv); without an
+            // active player it stands aside and the SMTC adapter answers.
+            new YouTubeMpvAdapter(),
             new WindowsMediaSessionAdapter(),
             new SpotifyDesktopAdapter(),
-            new YouTubeMpvAdapter(),
             new SteamLocalAdapter(),
             new WindowsGameInstallationAdapter(),
             new WindowsDeviceControlAdapter(

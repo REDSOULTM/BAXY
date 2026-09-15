@@ -186,6 +186,12 @@ internal static class ProductConductorHost
                 conductor, command, timeout, profileDirectory, capture, cancellationToken)
                 .ConfigureAwait(true);
         }
+        if (cmd == "turn.playback-then")
+        {
+            return await ExecutePlaybackThenAsync(
+                conductor, command, timeout, profileDirectory, capture, cancellationToken)
+                .ConfigureAwait(true);
+        }
         if (cmd == "turn.confirm-if-matches")
         {
             string? caseId = command["caseId"] is JsonValue caseValue
@@ -306,7 +312,8 @@ internal static class ProductConductorHost
         TimeSpan timeout,
         string profileDirectory,
         StreamWriter? capture,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string completionPhase = "final")
     {
         string? caseId = ReviewString(command, "caseId");
         string? text = ReviewString(command, "text");
@@ -469,7 +476,10 @@ internal static class ProductConductorHost
                         initial, observed, prepared.OperationName, arguments,
                         timeout - elapsed.Elapsed, cancellationToken,
                         allowVerifiedReadPrefix: true).ConfigureAwait(true);
-                    await EmitTurnAsync(final, capture, cancellationToken, caseId, "final")
+                    // MUSIC1593: a playback that a follow-up turn continues is
+                    // emitted as an intermediate «request» phase; the case's
+                    // final is the follow-up.
+                    await EmitTurnAsync(final, capture, cancellationToken, caseId, completionPhase)
                         .ConfigureAwait(true);
                     // One reviewed effect only. Never auto-approve a suffix.
                     return !final.TimedOut
@@ -559,6 +569,73 @@ internal static class ProductConductorHost
         return await ExecuteReviewedAsync(
             conductor, reviewed, timeout, profileDirectory, capture, cancellationToken)
             .ConfigureAwait(true);
+    }
+
+    /// <summary>
+    /// MUSIC1593 «pará la música» / «qué está sonando» after a playback: the
+    /// reviewed playback runs first (proposal and completion emitted as the two
+    /// «request» phases), then the scripted follow-up runs as an ordinary turn
+    /// whose terminal is the case's «final». The follow-up never runs when the
+    /// playback did not complete.
+    /// </summary>
+    private static async Task<bool> ExecutePlaybackThenAsync(
+        ProductConductor conductor,
+        JsonObject command,
+        TimeSpan timeout,
+        string profileDirectory,
+        StreamWriter? capture,
+        CancellationToken cancellationToken)
+    {
+        string? caseId = ReviewString(command, "caseId");
+        string? text = ReviewString(command, "text");
+        string? followup = ReviewString(command, "followup");
+        string? directory = ReviewString(command, "reviewDirectory");
+        async Task<bool> RejectAsync(string diagnostic)
+        {
+            await EmitTurnAsync(conductor.RejectConfirmation(diagnostic),
+                capture, cancellationToken, caseId, "final").ConfigureAwait(true);
+            return false;
+        }
+
+        if (command.Count != 5 || string.IsNullOrWhiteSpace(caseId)
+            || string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(followup)
+            || string.IsNullOrWhiteSpace(directory)
+            || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
+        {
+            return await RejectAsync("playback_then_command_not_admitted").ConfigureAwait(true);
+        }
+
+        var reviewed = new JsonObject
+        {
+            ["cmd"] = "turn.confirm-reviewed",
+            ["text"] = text,
+            ["caseId"] = caseId,
+            ["reviewDirectory"] = directory,
+        };
+        var started = System.Diagnostics.Stopwatch.StartNew();
+        bool played = await ExecuteReviewedAsync(
+            conductor, reviewed, timeout, profileDirectory, capture, cancellationToken,
+            completionPhase: "request").ConfigureAwait(true);
+        if (!played || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
+        {
+            // The playback did not complete: nothing follows, and the case has
+            // its terminal already (a «request» phase ends it as not passed).
+            return false;
+        }
+
+        TimeSpan remaining = timeout - started.Elapsed;
+        if (remaining <= TimeSpan.Zero)
+        {
+            return await RejectAsync("playback_then_timed_out").ConfigureAwait(true);
+        }
+
+        ProductTurnResult final = await conductor.TurnAsync(followup, remaining, cancellationToken)
+            .ConfigureAwait(true);
+        await EmitTurnAsync(final, capture, cancellationToken, caseId, "final")
+            .ConfigureAwait(true);
+        return !final.TimedOut
+            && final.Terminal == ProductTurnTerminal.PublishedFinal
+            && !final.Posterior.HasPendingPlan && !final.Posterior.HasCompositionError;
     }
 
     private static async Task<bool> ExecuteMemoryConfirmAsync(

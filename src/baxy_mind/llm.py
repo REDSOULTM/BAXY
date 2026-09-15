@@ -4454,7 +4454,7 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             situation.get("operation") == "media.control"
             and situation.get("verified") is True
             and situation.get("succeeded") is True
-            and observed.get("authority") == "windows_smtc"
+            and observed.get("authority") in {"windows_smtc", "local_youtube_player"}
             and isinstance(observed.get("sourceAppUserModelId"), str)
             and bool(observed["sourceAppUserModelId"].strip())
             and observed.get("playbackStatus") in {"playing", "paused", "stopped"}
@@ -6850,7 +6850,9 @@ def compose_visible_defect(
             operation == "media.control"
             and situation.get("verified") is True
             and situation.get("succeeded") is True
-            and observed_dict.get("authority") == "windows_smtc"
+            # MUSIC1593: the local YouTube player reports and stops its own
+            # playback with the same fields as an SMTC session.
+            and observed_dict.get("authority") in {"windows_smtc", "local_youtube_player"}
             and isinstance(observed_dict.get("sourceAppUserModelId"), str)
             and bool(observed_dict["sourceAppUserModelId"].strip())
             and observed_dict.get("playbackStatus") in {"playing", "paused", "stopped"}
