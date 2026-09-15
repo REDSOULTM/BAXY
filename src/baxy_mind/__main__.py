@@ -6380,7 +6380,12 @@ def _prepare_turn_result(
         or explicit_non_action
         or _history_has_pending_clarification(history, message.get("pendingClarification"))
         or _previous_user_request(history, objective) is not None
-        else effect_intent.near_catalog_application_candidates(objective, application_names)
+        else (
+            effect_intent.near_catalog_application_candidates(objective, application_names)
+            # GAMES1533 «Ve a Mad de Rivals.»: an installed game almost named
+            # is asked about the same way as an application.
+            or effect_intent.near_catalog_game_candidates(objective, game_catalog)
+        )
     )
     if (
         explicit_clarification is not None

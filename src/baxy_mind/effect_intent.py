@@ -4420,6 +4420,64 @@ def near_catalog_application_candidates(
     return tuple(names[:2])
 
 
+_NEAR_GAME_ORDER = re.compile(
+    r"^[\s¡!¿?]*(?:abre|abri|abrime|abris|lanza|lanzame|inicia|iniciame|pone|pon|poneme|juga|jugar\s+a|jugar|"
+    r"ve\s+a|anda\s+a|andate\s+a|entra\s+a|vamos\s+a|open|launch|play|go\s+to|start)\s+"
+    r"(?:(?:el|la|los|las|the|a|al)\s+)?(?P<target>[a-z0-9][a-z0-9 .'+-]{1,40}?)[\s.!?,]*$"
+)
+
+
+def near_catalog_game_candidates(
+    text: str,
+    games: Iterable[tuple[str, str, str]] | GameCatalogIndex,
+) -> tuple[str, ...]:
+    """GAMES1533 «Ve a Mad de Rivals.»: the installed game names (at most two)
+    that an open, launch or go-to order almost names — a word of five or more
+    letters shared with the title, or the whole target one or two edits away —
+    when the target matches no game exactly. Empty for anything else."""
+
+    index = build_game_catalog_index(games)
+    if not index.entries:
+        return ()
+    folded = _strip_request_envelope(_fold(text))
+    if not folded or _has(folded, r"\b(?:no|nunca|jamas|never|don't|do\s+not)\b|\b(?:si|if|cuando|when)\b.{0,20}\b(?:termine|acabe|finish)\b"):
+        return ()
+    folded = re.sub(r"^(?:si|ok|dale|bueno|y|and)\s*[,.]?\s*(?:quema\s*,?\s*)?", "", folded, count=1).strip()
+    request = _NEAR_GAME_ORDER.match(folded)
+    if request is None:
+        return ()
+    target = request.group("target").strip(" ¿?¡!,:;.-")
+    target = re.sub(r"\s*,?\s*(?:por\s+favor|porfa|please|pls)$", "", target).strip(" ,.")
+    key = _entity_key(target)
+    if not key or len(key) < 3 or len(key.split()) > 3:
+        return ()
+    if key in {"eso", "esto", "aquello", "ese", "esa", "este", "esta", "algo", "todo", "that", "this", "it"}:
+        # «abrí eso» is a deictic, never a near miss of a short title (DSX).
+        return ()
+    if any(entry[0] == key for entry in index.entries):
+        return ()
+    target_tokens = {token for token in key.split() if len(token) >= 5}
+    scored: list[tuple[int, str]] = []
+    for normalized, _provider, _app_id, display in index.entries:
+        name_tokens = set(normalized.split())
+        if target_tokens & name_tokens:
+            score = 0
+        else:
+            if len(key) < 5:
+                continue
+            distance = _edit_distance(key, normalized)
+            if distance > 2:
+                continue
+            score = distance
+        scored.append((score, display))
+    scored.sort(key=lambda item: (item[0], item[1]))
+    names: list[str] = []
+    for score, name in scored:
+        if score <= scored[0][0] and name not in names:
+            names.append(name)
+    return tuple(names[:2])
+
+
 def _application_target_forms(
     raw_target: str,
 ) -> tuple[tuple[str, int], ...]:
