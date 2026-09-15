@@ -146,7 +146,7 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         start.ArgumentList.Add("--encoding");
         start.ArgumentList.Add("utf-8");
         start.ArgumentList.Add("--format");
-        start.ArgumentList.Add("18/b[ext=mp4][protocol=https]/b[protocol=https]");
+        start.ArgumentList.Add("140/bestaudio[ext=m4a][protocol=https]/18/b[ext=mp4][protocol=https]/b[protocol=https]");
         start.ArgumentList.Add("--print");
         start.ArgumentList.Add("title");
         start.ArgumentList.Add("--print");
@@ -193,13 +193,22 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
             UseShellExecute = false,
             CreateNoWindow = false,
         };
+        // MUSIC1567: the player writes its own log next to the product's local data so a
+        // stalled start can be read afterwards; audio only, so no GPU surface competes
+        // with the language model and the stream is the small audio one.
+        string logDirectory = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "BAXY", "logs", "youtube");
+        Directory.CreateDirectory(logDirectory);
+        string logFile = Path.Combine(logDirectory, "mpv-" + pipeName + ".log");
         foreach (string argument in new[]
         {
             "--no-config",
             "--really-quiet",
             "--force-window=yes",
             "--keep-open=no",
+            "--vid=no",
             "--title=BAXY YouTube",
+            "--log-file=" + logFile,
             "--input-ipc-server=\\\\.\\pipe\\" + pipeName,
             stream.AbsoluteUri,
         })
@@ -249,6 +258,7 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
                         json.WriteString("provider", "youtube"); json.WriteString("query", query);
                         json.WriteString("title", title ?? query); json.WriteString("playbackStatus", "playing");
                         json.WriteBoolean("titleObserved", title is not null);
+                        json.WriteString("playerLog", logFile);
                         json.WriteNumber("processId", player.Id);
                         json.WriteString("authority", "yt_dlp_mpv_ipc_postread");
                         json.WriteEndObject();
