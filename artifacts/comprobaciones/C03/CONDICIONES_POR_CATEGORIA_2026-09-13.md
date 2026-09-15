@@ -589,3 +589,7 @@ Abrir aplicaciones pasa de 42/54 a 45/54 con los nombres de aplicación aproxima
 ## Actualización 2026-09-14 (MEMORY1501)
 
 Memoria personal pasa de 7/10 a 7/10 con la afirmación de preferencia reconocida sin tomarla como pedido (commit 6a23dadd, BUILD1501) (HEAD 6a23dadd): MEMORY1501: la afirmación de preferencia ya no se toma como pedido, pero la conversación social inventa gustos propios del asistente; sin crédito, 0 créditos. 6/6 ejecutados, 3 aprobados, 3 fallidos, 0 créditos; instrucción social para preferencias (MEMORY1503)
+
+## Actualización 2026-09-14 (MEMORY1503)
+
+Memoria personal pasa de 7/10 a 8/10 con el acuse de la preferencia que nombra lo dicho sin gustos propios, ofertas ni preguntas (commit 52b40fdc, BUILD1503) (HEAD 52b40fdc): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Los tres acuses de preferencia nombraron lo dicho sin gustos propios, ofertas ni preguntas («Entiendo que te gusta tomar café.», «Entiendo que prefieres el mate.»; la variante del chocolate negro fue evaluativa —califica la elección— y pasa el criterio sellado, aunque un acuse liso es preferible); los tres límites explicaron o reconocieron sin operaciones. Cero operaciones y cero violaciones en los seis; GPU pico 3498 MiB.

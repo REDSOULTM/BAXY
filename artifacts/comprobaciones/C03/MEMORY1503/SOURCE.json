@@ -1,0 +1,15 @@
+{
+  "schema": "c03-memory1503-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (first_person_preference: el lector compartido del gusto en primera persona), src/baxy_mind/__main__.py (_personal_checkin_statement lo usa) y src/baxy_mind/llm.py (forma de presentación preference_ack: instrucción y contrato —nombra la preferencia de la persona, sin gustos propios, sin ofertas de preparar o traer, sin pregunta, sin guardado inventado—, carga útil {response_language, preference, thing}, 128 tokens).",
+  "patch": "artifacts/comprobaciones/C03/MEMORY1503/SOURCE.patch",
+  "commits": [
+    "52b40fdc88abef6d88a67a9a5067e8429eb95d83"
+  ],
+  "build": "BUILD1503 (C03-repairs1503-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "MEMORY1503: la afirmación de preferencia ya era un turno social sin operaciones, pero el modelo inventó gustos propios («Me encanta el café…», «¡A mí también!») y ofertas («¿Quieres un té…?»); la ruta social no tenía forma ni contrato.",
+  "change": "Forma de presentación preference_ack con contrato validado; sin respuestas fijas.",
+  "measurement": "MEMORY1503: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. Los tres acuses de preferencia nombraron lo dicho sin gustos propios, ofertas ni preguntas («Entiendo que te gusta tomar café.», «Entiendo que prefieres el mate.»; la variante del chocolate negro fue evaluativa —califica la elección— y pasa el criterio sellado, aunque un acuse liso es preferible); los tres límites explicaron o reconocieron sin operaciones. Cero operaciones y cero violaciones en los seis; GPU pico 3498 MiB.",
+  "credits": 1
+}

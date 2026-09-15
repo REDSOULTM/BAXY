@@ -1,3 +1,11 @@
+# MEMORY1503 adjudicado — 2026-09-15T00:56:28.616749+00:00
+
+**495/742 cubiertos, 247 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 7a9a99419043a8ac6e0872b7728992e0ad84fc929a58e91fcb7b4f500509e8fd. Primeras altas 24 h >= 369 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 52b40fdc con BUILD1503 (el acuse de la preferencia nombra lo dicho sin gustos propios, ofertas ni preguntas; MEMORY1503/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+MEMORY1503 («Memoria personal», H0174 «Me gusta tomar café.»): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Adjudicación f6e7ebd350e85ac11151d999c7a4e1a84d845d2b8d1c6ba6d4861a445dcc5f01. Los tres acuses de preferencia nombraron lo dicho sin gustos propios, ofertas ni preguntas («Entiendo que te gusta tomar café.», «Entiendo que prefieres el mate.»; la variante del chocolate negro fue evaluativa —califica la elección— y pasa el criterio sellado, aunque un acuse liso es preferible); los tres límites explicaron o reconocieron sin operaciones. Cero operaciones y cero violaciones en los seis; GPU pico 3498 MiB.
+
+---
+
 # MEMORY1501 adjudicado — 2026-09-15T00:45:41.672770+00:00
 
 **494/742 cubiertos, 248 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 344f9cc70fbe6c4d26b5b75a3155fc5486ee617fb289a59ea87e8b3b7cbc6edc. Primeras altas 24 h >= 368 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6a23dadd con BUILD1501 (la afirmación de preferencia se reconoce sin tomarla como pedido; MEMORY1501/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
