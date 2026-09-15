@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1583-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "Sin cambio de fuente: la lectura de aclaración de música sin nombrar ya cubre «pon youtube y pon música» y el instrumento de diálogo de MUSIC1571–1575 la reproduce desde YouTube.",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1583/SOURCE.patch",
+  "commits": [
+    "0a6804fbad3d2e1c884fa3c8a517fb93d88ab4a9"
+  ],
+  "build": "BUILD1579 (C03-repairs1579-build/BUILD_READY.json; mismos binarios)",
+  "cause_measured": "H0129 nunca ejecutado: condicionado como compuesto con el navegador; la capacidad de YouTube del producto es el reproductor local.",
+  "change": "Ninguno en esta tanda; caso de diálogo de dos turnos; sin respuestas fijas.",
+  "measurement": "MUSIC1583: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. El literal y las dos variantes preguntaron qué música reproducir en YouTube sin proponer nada; la respuesta guionizada completó el pedido como media.play.youtube revisado, la reproducción se verificó en el reproductor local y el final nombró el título observado completo; ningún navegador se abrió. Las tres fronteras pasaron con cero operaciones; volumen restaurado; ningún reproductor sobrevivió a su caso.",
+  "credits": 1
+}

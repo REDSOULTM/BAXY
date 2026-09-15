@@ -1,3 +1,11 @@
+# MUSIC1583 adjudicado — 2026-09-15T17:47:53.208221+00:00
+
+**537/742 cubiertos, 205 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA be005d95693291d4cd2a7e39fe124ee5154fc4c3375f205490dc5ce0bf5b454c. Primeras altas 24 h >= 411 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 0a6804fb con BUILD1579 (mismos binarios; «pon youtube y pon música» como diálogo de dos turnos). La raíz aprueba sólo una media.play.youtube con una consulta de texto (approve_youtube.py); el reproductor local (mpv) nace en el caso y la raíz lo detiene al terminar; el volumen maestro se preajusta a 12 y se restaura al estado del dueño.
+
+MUSIC1583 («Música», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Adjudicación 00b2a34d0f2edf6b842747ac0e37dadd18a989a18fdb71a249242e5f346b42b0. El literal y las dos variantes preguntaron qué música reproducir en YouTube sin proponer nada; la respuesta guionizada completó el pedido como media.play.youtube revisado, la reproducción se verificó en el reproductor local y el final nombró el título observado completo; ningún navegador se abrió. Las tres fronteras pasaron con cero operaciones; volumen restaurado; ningún reproductor sobrevivió a su caso.
+
+---
+
 # WINDOWS1581 adjudicado — 2026-09-15T17:40:21.033027+00:00
 
 **536/742 cubiertos, 206 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA d751be2f3aff376f4f2bf8f846c8d6a26b09f2dc8c95203e29de69b50c66016f. Primeras altas 24 h >= 410 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 745ea8ed con BUILD1579 (el listado se hace y cuál ventana enfocar se pregunta al final). Turnos ordinarios de sólo lectura (window.resolve); ninguna ventana se enfoca.
