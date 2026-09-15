@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1553-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs (yt-dlp imprime el título del video resuelto y el recibo lo lleva con titleObserved), src/Baxy.App/ProductConductorHost.cs (el turno revisado propone media.play.youtube al revisor raíz), src/baxy_mind/effect_intent.py (youtube_play_query: la consulta con las palabras de la persona; formas voseantes del lector), src/baxy_mind/__main__.py (enlace del argumento query) y src/baxy_mind/llm.py (proyección query/título/estado, instrucción de citar el título observado, veto youtube_unobserved_title/youtube_question, «se reproduce» como estado de reproducción).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1553/SOURCE.patch",
+  "commits": [
+    "9615349df7e767bb76d48d1b2aee0087f9307e5f"
+  ],
+  "build": "BUILD1553 (C03-repairs1553-build/BUILD_READY.json; App, Providers y mente)",
+  "cause_measured": "MUSIC1078: los literales de YouTube quedaron sin vínculo individual; el recibo de media.play.youtube traía la consulta como título, el conductor revisado no proponía la reproducción y la mente no enlazaba la consulta.",
+  "change": "Título observado en el recibo, reproducción propuesta al revisor, consulta con las palabras de la persona y final por título; sin respuestas fijas.",
+  "measurement": "MUSIC1553: 7 ejecutados, 3 aprobados (los tres límites), 4 fallidos; 0 créditos. Medido: las cuatro reproducciones revisadas se propusieron con las palabras de la persona y la raíz las aprobó; yt-dlp resolvió el primer resultado con su título, pero mpv no reprodujo porque la URL de flujo del cliente android_vr responde 403 al HTTP del reproductor (youtube_mpv_playback_not_verified); tres turnos sin final y uno negó la capacidad; el volumen se preajustó y restauró. Siguiente: el resolutor usa el cliente android, cuyas URL de flujo se reproducen directamente en mpv (MUSIC1555).",
+  "credits": 0
+}

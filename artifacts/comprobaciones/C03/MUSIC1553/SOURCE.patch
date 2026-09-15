@@ -1,0 +1,340 @@
+commit 9615349df7e767bb76d48d1b2aee0087f9307e5f
+
+C03: playing a video or a song on YouTube runs the local player and the reply names the observed title (MUSIC1553)
+
+MUSIC1078 left the YouTube literals without an individual link: media.play.youtube existed (yt-dlp resolves the first result, mpv plays it; both installed on this PC) but the receipt carried the query as the title, the reviewed conductor never proposed the playback and the mind bound no query. YouTubeMpvAdapter now prints the resolved video's title before the stream URL and carries it in the receipt (titleObserved); ProductConductorHost proposes media.play.youtube to the root reviewer like the captures and the page read; the mind binds the query with the person's own words minus a leading article (youtube_play_query: «video de lofi», «cancion de michael jackson»; the reader also admits «reproducí»/«poné»), the composer projects query/title/state, instructs the report to say it is playing and quote the observed title verbatim, vetoes any unobserved title or a question (youtube_unobserved_title, youtube_question) and accepts «se reproduce» as the playing state. The constraint acknowledgement prompt excludes a trailing question. Registry-wide recogniser diff with the real Start catalog: no literal changes.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/ProductConductorHost.cs b/src/Baxy.App/ProductConductorHost.cs
+index 6d1d1ec3..e4a5495c 100644
+--- a/src/Baxy.App/ProductConductorHost.cs
++++ b/src/Baxy.App/ProductConductorHost.cs
+@@ -358,7 +358,10 @@ internal static class ProductConductorHost
+                 or "capture.screenshot" or "capture.active.window"
+                 // WEB1539 «resumime esta página»: the privacy-sensitive read of the
+                 // page open in the browser session is reviewed the same way.
+-                or "browser.page.read"))
++                or "browser.page.read"
++                // MUSIC1553 «pon un video de lofi en youtube»: the external
++                // playback (yt-dlp + local mpv) is confirmed by the root reviewer.
++                or "media.play.youtube"))
+         {
+             return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
+         }
+diff --git a/src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs b/src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs
+index ed8d02d3..f0bd8014 100644
+--- a/src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs
+@@ -63,15 +63,18 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
+         await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
+         try
+         {
+-            Uri? stream = _streamResolver is null
+-                ? await ResolveStreamAsync(query, cancellationToken).ConfigureAwait(false)
+-                : await _streamResolver(query, cancellationToken).ConfigureAwait(false);
++            Uri? stream;
++            string? title = null;
++            if (_streamResolver is null)
++                (stream, title) = await ResolveStreamAsync(query, cancellationToken).ConfigureAwait(false);
++            else
++                stream = await _streamResolver(query, cancellationToken).ConfigureAwait(false);
+             if (stream is null)
+                 return ExternalJson.FailureBeforeEffect(
+                     operation, "youtube_stream_not_resolved");
+             effectBoundary.Cross(cancellationToken);
+             StopActivePlayer();
+-            return await StartAndVerifyAsync(operation, query, stream, cancellationToken)
++            return await StartAndVerifyAsync(operation, query, title, stream, cancellationToken)
+                 .ConfigureAwait(false);
+         }
+         catch (OperationCanceledException) when (
+@@ -97,7 +100,10 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
+         finally { _gate.Release(); _gate.Dispose(); }
+     }
+ 
+-    private async ValueTask<Uri?> ResolveStreamAsync(
++    // MUSIC1553: the receipt used to carry the query as the title; the reply
++    // then could only echo the request. yt-dlp prints the resolved video's
++    // title before the stream URL, so the reply can name what is playing.
++    private async ValueTask<(Uri? Stream, string? Title)> ResolveStreamAsync(
+         string query,
+         CancellationToken cancellationToken)
+     {
+@@ -119,7 +125,10 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
+         }
+         start.ArgumentList.Add("--format");
+         start.ArgumentList.Add("18/b[ext=mp4][protocol=https]/b[protocol=https]");
+-        start.ArgumentList.Add("--get-url");
++        start.ArgumentList.Add("--print");
++        start.ArgumentList.Add("title");
++        start.ArgumentList.Add("--print");
++        start.ArgumentList.Add("urls");
+         start.ArgumentList.Add("ytsearch1:" + query);
+         using Process process = Process.Start(start) ?? throw new IOException("yt-dlp did not start.");
+         Task<string> outputTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
+@@ -129,21 +138,30 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
+         await process.WaitForExitAsync(timeout.Token).ConfigureAwait(false);
+         string output = await outputTask.ConfigureAwait(false);
+         _ = await errorTask.ConfigureAwait(false);
+-        if (process.ExitCode != 0) return null;
+-        string? line = output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
++        if (process.ExitCode != 0) return (null, null);
++        string[] lines = output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+             .Select(static value => value.Trim())
+-            .FirstOrDefault();
++            .Where(static value => value.Length > 0)
++            .ToArray();
++        // Printed in argument order: the title line, then the URL line(s).
++        string? line = lines.FirstOrDefault(static value =>
++            value.StartsWith("https://", StringComparison.OrdinalIgnoreCase));
++        string? title = lines.FirstOrDefault(static value =>
++            !value.StartsWith("https://", StringComparison.OrdinalIgnoreCase));
+         if (!Uri.TryCreate(line, UriKind.Absolute, out Uri? uri)
+             || uri.Scheme != Uri.UriSchemeHttps
+             || !(uri.Host.EndsWith("googlevideo.com", StringComparison.OrdinalIgnoreCase)
+                 || uri.Host.EndsWith("youtube.com", StringComparison.OrdinalIgnoreCase)))
+-            return null;
+-        return uri;
++            return (null, null);
++        if (title is not null && Encoding.UTF8.GetByteCount(title) > 512)
++            title = null;
++        return (uri, title);
+     }
+ 
+     private async ValueTask<ExternalCapabilityReceipt> StartAndVerifyAsync(
+         string operation,
+         string query,
++        string? title,
+         Uri stream,
+         CancellationToken cancellationToken)
+     {
+@@ -205,7 +223,8 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
+                     {
+                         json.WriteStartObject(); json.WriteNumber("version", 1);
+                         json.WriteString("provider", "youtube"); json.WriteString("query", query);
+-                        json.WriteString("title", query); json.WriteString("playbackStatus", "playing");
++                        json.WriteString("title", title ?? query); json.WriteString("playbackStatus", "playing");
++                        json.WriteBoolean("titleObserved", title is not null);
+                         json.WriteNumber("processId", player.Id);
+                         json.WriteString("authority", "yt_dlp_mpv_ipc_postread");
+                         json.WriteEndObject();
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 1e4d4290..a36597b0 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -4898,6 +4898,12 @@ def _explicit_arguments_from_evidence(
+     if operation == "media.play.query":
+         return _explicit_live_media_query_arguments(evidence)
+ 
++    if operation == "media.play.youtube":
++        # MUSIC1553: the person's own words name what to play; the provider
++        # searches YouTube with them and the receipt carries the title played.
++        youtube_query = effect_intent.youtube_play_query(evidence)
++        return {"query": youtube_query} if youtube_query is not None else None
++
+     if operation == "calendar.event.list":
+         return _explicit_calendar_range_arguments(evidence)
+ 
+@@ -5565,6 +5571,7 @@ def _ground_explicit_arguments(
+         "game.launch",
+         "media.control",
+         "media.play.query",
++        "media.play.youtube",
+         "system.process.list",
+         "system.settings.adjust",
+         "system.settings.set",
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index c849feb7..b679ccd6 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -324,6 +324,45 @@ def _youtube_search_query(text: str) -> str | None:
+     return query
+ 
+ 
++_YOUTUBE_PLAY = re.compile(
++    r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
++    r"(?:pon|poné|pone|ponme|poneme|reproduce|reproducí|reproduci|reproducime|play|put on)\s+"
++    r"(?:(?P<query>.+?)\s+(?:en|on|in|de|from)\s+youtube|(?:en|on|in)\s+youtube\s+(?P<query_after>.+?))"
++    r"(?:\s*[,;:]?\s+(?:por favor|please|porfa|porfi|pls|plz|dale|ahora|now))?\s*[.!?]*$",
++    re.IGNORECASE,
++)
++
++
++def youtube_play_query(text: str) -> str | None:
++    """MUSIC1553 «pon un video de lofi en youtube», «pon una cancion de michael
++    jackson en youtube»: the thing to play, in the person's own words with only
++    a leading article dropped («video de lofi», «cancion de michael jackson»),
++    as the search query for the local YouTube playback; None for any other shape,
++    for a generic «pon youtube» and for a query that names a local thing."""
++
++    match = _YOUTUBE_PLAY.match(text.strip())
++    if match is None:
++        return None
++    query = (match.group("query") or match.group("query_after") or "").strip().strip("\"'“”«»").strip()
++    query = re.sub(
++        r"^(?:un|una|el|la|algun|alguna|algún|some|a|an|the)\s+(?=\S)",
++        "",
++        query,
++        count=1,
++        flags=re.IGNORECASE,
++    ).strip()
++    folded_query = _fold(query)
++    if (
++        not query
++        or len(query.encode("utf-8")) > 512
++        or any(ord(character) < 32 for character in query)
++        or re.fullmatch(r"(?:algo|something|musica|music|videos?|a\s+video|cancion(?:es)?|songs?|temas?|un\s+tema)", folded_query)
++        or _has(folded_query, r"\b(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|documents?|mi\s+pc|my\s+pc|este\s+equipo)\b")
++    ):
++        return None
++    return query
++
++
+ def _public_live_lookup_request(folded: str) -> bool:
+     """Recognize live feeds that require a public lookup to answer."""
+ 
+@@ -1786,7 +1825,8 @@ def _curated_domain_is_grounded(
+     if operation == "media.play.youtube":
+         return (
+             _has(folded, r"\byoutube\b")
+-            and _has(folded, r"\b(?:reproduce|reproducir|play|pon|poner)\b")
++            # MUSIC1553: the voseo and clitic forms («reproducí», «poné», «poneme»).
++            and _has(folded, r"\b(?:reproduce|reproducir|reproduci|reproducime|play|pon|pone|poneme|ponme|poner)\b")
+             and not _has(
+                 folded,
+                 r"\b(?:primer|primero|first|segundo|second|tercer|third|"
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 4e59d82c..e8d44a86 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4065,6 +4065,14 @@ def _compose_situation_payload(
+             visible_seen = _project_game_listing(visible_seen, language)
+         elif operation == "browser.page.read":
+             visible_seen = _project_page_read(visible_seen, language)
++        elif operation == "media.play.youtube":
++            # MUSIC1553: the process id and the IPC authority are not for the
++            # person; the query, the observed title and the state are.
++            visible_seen = {
++                key: visible_seen[key]
++                for key in ("provider", "query", "title", "playbackStatus", "titleObserved")
++                if key in visible_seen
++            }
+         elif operation == "notification.list":
+             visible_seen = _project_notification_listing(visible_seen, language)
+         elif operation == "ocr.read":
+@@ -4916,6 +4924,41 @@ def _page_read_in_payload(payload: dict) -> dict | None:
+     return None
+ 
+ 
++def _youtube_playback_in_payload(payload: dict) -> dict | None:
++    """The projected «seen» of a verified media.play.youtube that is playing."""
++
++    if payload.get("operation") != "media.play.youtube":
++        return None
++    if payload.get("verified") is not True or payload.get("succeeded") is not True:
++        return None
++    seen = payload.get("seen")
++    if not isinstance(seen, dict) or seen.get("playbackStatus") != "playing":
++        return None
++    return seen
++
++
++def _youtube_playback_defect(text: str, seen: dict) -> str:
++    """MUSIC1553: every quoted passage must be the observed title (or the
++    person's own query); a title the receipt did not observe is invented."""
++
++    title = re.sub(r"\s+", " ", _reading_fold(str(seen.get("title") or "")))
++    query = re.sub(r"\s+", " ", _reading_fold(str(seen.get("query") or "")))
++    observed = bool(seen.get("titleObserved"))
++    quoted_any = False
++    for quoted in re.findall(r'[«"“]([^»"”]{1,512})[»"”]', text):
++        quoted_any = True
++        candidate = re.sub(r"\s+", " ", _reading_fold(quoted.strip().rstrip(".,;:…"))).strip()
++        if candidate == query:
++            continue
++        if not observed or candidate != title:
++            return "youtube_unobserved_title"
++    if observed and not quoted_any:
++        return "youtube_title_not_named"
++    if "?" in text:
++        return "youtube_question"
++    return ""
++
++
+ def _page_read_quote_defect(text: str, seen: dict) -> str:
+     """Every quoted passage must appear in the lead as read; a number must be in it too."""
+ 
+@@ -5287,6 +5330,12 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+         page_defect = _page_read_quote_defect(text, page)
+         if page_defect:
+             return page_defect
++    playing = _youtube_playback_in_payload(payload)
++    if playing is not None:
++        # MUSIC1553: the only title the report may quote is the observed one.
++        playback_defect = _youtube_playback_defect(text, playing)
++        if playback_defect:
++            return playback_defect
+     results_text = _search_results_text(payload)
+     if payload.get("operation") == "web.search" and results_text is None:
+         # WEB1445/002 «va a llover mañana» over a search that returned nothing
+@@ -6704,6 +6753,13 @@ def compose_visible_defect(
+             and isinstance(observed_dict.get("sourceAppUserModelId"), str)
+             and bool(observed_dict["sourceAppUserModelId"].strip())
+             and observed_dict.get("playbackStatus") in {"playing", "paused", "stopped"}
++        ) or (
++            # MUSIC1553: the local YouTube playback names what plays by its
++            # observed title; «título» need not be said for the quote to count.
++            operation == "media.play.youtube"
++            and situation.get("verified") is True
++            and situation.get("succeeded") is True
++            and observed_dict.get("playbackStatus") == "playing"
+         )
+         scheduled_due = _verified_notification_due(situation)
+         title = observed_dict.get("title")
+@@ -6754,7 +6810,7 @@ def compose_visible_defect(
+                     r"\b(?:(?P<negative>no|not|nothing|isn't|isn’t|aren't|aren’t)\s+)?"
+                     r"(?:(?:se|est[aá]|est[aá]n|is|are|sigue|still|currently|"
+                     r"hay|nada|ahora|actualmente)\s+)*"
+-                    r"(?:(?P<playing>sonando|suena|reproduci[eé]ndo(?:se)?|playing)|"
++                    r"(?:(?P<playing>sonando|suena|reproduci[eé]ndo(?:se)?|reproduce|playing)|"
+                     r"(?P<paused>pausad[oa]s?|en\s+pausa|paused)|"
+                     r"(?P<stopped>detenid[oa]s?|parad[oa]s?|stopped))\b",
+                     playback_text,
+@@ -13045,6 +13101,35 @@ class LlmRuntime:
+                 "di que la página sigue. Nada más: sin resumen con tus palabras, sin "
+                 "datos, nombres ni cifras que no estén en seen.lead, sin pregunta."
+             )
++        elif _youtube_playback_in_payload(visible_situation) is not None:
++            # MUSIC1553 «pon un video de lofi en youtube»: the local player is
++            # playing the first YouTube result for the person's words; the
++            # report names that video by its observed title and nothing more.
++            playing = _youtube_playback_in_payload(visible_situation)
++            instruct(
++                "\nThe first YouTube result for the words in seen.query is now playing "
++                "in the local player; seen.title is its title exactly as YouTube "
++                "names it. Say that it is playing and quote seen.title verbatim inside "
++                "quotation marks as what is playing. Nothing else: do not judge whether "
++                "it fits, do not name any other video, artist or song, no question."
++                if response_language == "en"
++                else "\nEl primer resultado de YouTube para las palabras de seen.query "
++                "ya se está reproduciendo en el reproductor local; seen.title es su "
++                "título tal cual lo nombra YouTube. Di que está sonando o "
++                "reproduciéndose y cita seen.title tal cual, entre comillas, como lo "
++                "que se reproduce. Nada más: no juzgues si encaja, no nombres otro "
++                "video, artista ni canción, sin pregunta."
++                if playing.get("titleObserved") else
++                "\nThe first YouTube result for the words in seen.query is now playing "
++                "in the local player; its title was not observed. Say that a YouTube "
++                "result for those words is playing, without inventing a title, an "
++                "artist or a song; no question."
++                if response_language == "en"
++                else "\nEl primer resultado de YouTube para las palabras de seen.query ya "
++                "se está reproduciendo en el reproductor local; su título no se "
++                "observó. Di que se reproduce un resultado de YouTube para esas "
++                "palabras, sin inventar título, artista ni canción; sin pregunta."
++            )
+         elif visible_situation.get("operation") == "game.catalog.list" and _known_listing_in_payload(visible_situation) is not None:
+             # GAMES1531 «Ver la biblioteca de Steam»: the report is how many
+             # games are installed and their names exactly as listed.

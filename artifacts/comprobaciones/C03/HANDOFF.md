@@ -1,3 +1,11 @@
+# MUSIC1553 adjudicado — 2026-09-15T06:28:09.048468+00:00
+
+**521/742 cubiertos, 221 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA 8661ae28f8bfafe40de70de7b7918a38530e6a93762c04731a5dba2b341f0e79. Primeras altas 24 h >= 395 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 9615349d con BUILD1553 (la reproducción de YouTube informa el título observado). La raíz aprueba sólo una media.play.youtube con una consulta de texto (approve_youtube.py); el reproductor local (mpv) nace en el caso y la raíz lo detiene al terminar; el volumen maestro se preajusta a 12 y se restaura al estado del dueño.
+
+MUSIC1553 («Música», H0614 «pon un video de lofi en youtube», H0560 «pon una cancion de michael jackson en youtube», reproducción revisada del primer resultado de YouTube en el reproductor local con el volumen preajustado por la raíz): 7 ejecutados, 3 aprobados (los tres límites), 4 fallidos, 0 créditos. Adjudicación 28487b71ef485a33d269708672d2f745538dbf8febc6671ce4be6e8ebd6401ac. Medido: las cuatro reproducciones revisadas se propusieron con las palabras de la persona y la raíz las aprobó; yt-dlp resolvió el primer resultado con su título, pero mpv no reprodujo porque la URL de flujo del cliente android_vr responde 403 al HTTP del reproductor (youtube_mpv_playback_not_verified); tres turnos sin final y uno negó la capacidad; el volumen se preajustó y restauró. Siguiente: el resolutor usa el cliente android, cuyas URL de flujo se reproducen directamente en mpv (MUSIC1555).
+
+---
+
 # APPS1551 adjudicado — 2026-09-15T05:48:55.992636+00:00
 
 **521/742 cubiertos, 221 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA 713951a5c2f4d7603bb8d23d28156530cf155edfcf4201cbea69fb8ab2e57fff. Primeras altas 24 h >= 395 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 3dc076cf con BUILD1551 (el enlace del argumento admite el nombre propio que el resolutor admitió). Turnos ordinarios de aclaración sin operaciones.

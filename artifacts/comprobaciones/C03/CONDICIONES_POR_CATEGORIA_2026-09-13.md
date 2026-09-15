@@ -717,3 +717,7 @@ Abrir aplicaciones pasa de 45/54 a 45/54 con el nombre propio sin catálogo leí
 ## Actualización 2026-09-14 (APPS1551)
 
 Abrir aplicaciones pasa de 45/54 a 46/54 con el argumento de la lectura de presencia enlazado al nombre propio (commit 3dc076cf, BUILD1551) (HEAD 3dc076cf): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Medido: el literal y sus dos variantes ejecutaron una app.installed verificada cada uno y los finales nombraron el nombre pedido tal cual («Saint Rose», «Saint Row») diciendo que no se encontró en el catálogo de inicio de Windows y no se puede abrir, sin pregunta ni otra aplicación; los tres límites pasaron. H0249 acreditado con sus dos variantes.
+
+## Actualización 2026-09-14 (MUSIC1553)
+
+Música pasa de 7/39 a 7/39 con la reproducción de YouTube en el reproductor local informada por su título observado (commit 9615349d, BUILD1553) (HEAD 9615349d): 7 ejecutados, 3 aprobados (los tres límites), 4 fallidos, 0 créditos. Medido: las cuatro reproducciones revisadas se propusieron con las palabras de la persona y la raíz las aprobó; yt-dlp resolvió el primer resultado con su título, pero mpv no reprodujo porque la URL de flujo del cliente android_vr responde 403 al HTTP del reproductor (youtube_mpv_playback_not_verified); tres turnos sin final y uno negó la capacidad; el volumen se preajustó y restauró. Siguiente: el resolutor usa el cliente android, cuyas URL de flujo se reproducen directamente en mpv (MUSIC1555).
