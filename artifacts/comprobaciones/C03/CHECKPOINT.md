@@ -1,3 +1,25 @@
+## KNOWLEDGE1505 — estado vigente 2026-09-15T01:19:22.949182+00:00
+
+Parcial: 3 aprobados, 8 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 495/742 | 247 | 0 | >=369 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 369 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); KNOWLEDGE1505 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: KNOWLEDGE1505: 11 ejecutados, 3 aprobados, 8 fallidos, 0 créditos (índices []); Conocimiento, razonamiento y creatividad verbal 27/37. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/KNOWLEDGE1505/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 172.81 s acumulados; pico GPU 3497.56 MiB; pico RAM 1605.06 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 11; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque KNOWLEDGE1505 precedente. -->
+
 ## MEMORY1503 — estado vigente 2026-09-15T00:56:28.616749+00:00
 
 Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

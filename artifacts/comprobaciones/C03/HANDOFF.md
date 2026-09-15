@@ -1,3 +1,11 @@
+# KNOWLEDGE1505 adjudicado — 2026-09-15T01:19:22.949182+00:00
+
+**495/742 cubiertos, 247 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA c8b1d3f47f85bbf5231780e7d187f892bdba13e7874fc8ec67d26bdd5de57631. Primeras altas 24 h >= 369 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a5083fe7 con BUILD1505 (la curiosidad sin tema contada desde una página pública sobre un tema elegido; KNOWLEDGE1505/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+KNOWLEDGE1505 («Conocimiento, razonamiento y creatividad verbal», H0003 «explicame algo interesante», H0476 «contame algo», H0520 «decime una curiosidad», H0703 «estoy aburrido»): 11 ejecutados, 3 aprobados (los tres límites), 8 fallidos, 0 créditos. Adjudicación 4ebf653327baa400226d3717fa71ba32c4e3f1e5b0abba893e45fd288feff9d7. La mente decidió web.search con el tema elegido en los ocho pedidos de curiosidad, pero el aterrizaje de argumentos exige que la consulta aparezca literalmente en el texto de la persona (sólo la consulta de noticias está exenta) y los ocho turnos acabaron en una aclaración invertida («¿Qué curiosidad me puedes contar?») sin operaciones; los límites de chiste, prohibición y definición pasaron. Siguiente: exención de aterrizaje para el tema elegido por el lector (KNOWLEDGE1507).
+
+---
+
 # MEMORY1503 adjudicado — 2026-09-15T00:56:28.616749+00:00
 
 **495/742 cubiertos, 247 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 7a9a99419043a8ac6e0872b7728992e0ad84fc929a58e91fcb7b4f500509e8fd. Primeras altas 24 h >= 369 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 52b40fdc con BUILD1503 (el acuse de la preferencia nombra lo dicho sin gustos propios, ofertas ni preguntas; MEMORY1503/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

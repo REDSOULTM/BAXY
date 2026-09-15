@@ -1,0 +1,167 @@
+commit a5083fe7146e449d80d2622ea844f1d8df14f7eb
+
+C03: a curiosity request without a topic is a public search on a subject the product picks, told from the page found (KNOWLEDGE1505)
+
+KNOWLEDGE1353/1355 measured that «decime una curiosidad», «contame algo» and «explicame algo interesante» invented facts or asked which topic, and the engine returns unrelated pages for the word «curiosidad»; KNOWLEDGE1473 measured that the bare name of a well-known thing returns its public page. `effect_intent.curiosity_request` reads the topicless curiosity («decime/contame/explicame una curiosidad|algo (interesante)», «estoy aburrido», «tell me a fun fact») and the live-lookup gate admits it; `curiosity_topic` picks the subject from a list of names verified against the engine's relevance rule (stable per request and hour), and the web.search query is that subject. The composer says which subject the curiosity is about and repeats what a snippet states, naming the page, never adding facts or a question. The lists are queries, not replies.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 340b0310..88bade1b 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -4805,6 +4805,12 @@ def _explicit_arguments_from_evidence(
+             # KNOWLEDGE1473 «¿Quién es Daredevil?»: the engine answers the bare
+             # name; the question words around it return unrelated pages.
+             return {"query": entity}
++        curiosity_subject = effect_intent.curiosity_topic(search_evidence)
++        if curiosity_subject is not None:
++            # KNOWLEDGE1505 «decime una curiosidad»: the engine serves no pages
++            # for the word «curiosidad»; it answers a well-known subject with
++            # its public page, and the curiosity is what that page states.
++            return {"query": curiosity_subject}
+         topic = effect_intent._topic_research_query(search_evidence)
+         if topic is not None:
+             # WEB1451 «Investiga Spider-Man»: the engine answers the topic, not
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 014fffbc..0307f151 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -15,7 +15,10 @@ allow-list of audited sentences.
+ 
+ from __future__ import annotations
+ 
++import hashlib
++import random
+ import re
++import time
+ import unicodedata
+ from dataclasses import dataclass, field
+ from typing import Iterable, Iterator
+@@ -418,6 +421,9 @@ def _public_live_lookup_request(folded: str) -> bool:
+     # KNOWLEDGE1473 «¿Quién es Daredevil?»: who or what a named thing is gets
+     # looked up in public pages instead of recited from the model's memory.
+     entity_lookup = _entity_lookup_query(folded) is not None
++    # KNOWLEDGE1505 «decime una curiosidad»: a curiosity with no topic is
++    # looked up about a subject BAXY picks, never invented (KNOWLEDGE1353).
++    curiosity = curiosity_request(folded)
+     # WEB1453 «¿Qué es un pronóstico del tiempo?»: a question about what a
+     # forecast, a news item or the weather is (indefinite article) asks for a
+     # definition; «what is the weather» keeps its article and stays a lookup.
+@@ -734,6 +740,7 @@ def _public_live_lookup_request(folded: str) -> bool:
+             todays_events,
+             topic_research,
+             entity_lookup,
++            curiosity,
+             market_direction,
+             market_price,
+             local_events,
+@@ -2562,6 +2569,54 @@ _PREFERENCE_REQUEST_HEAD = re.compile(
+ )
+ 
+ 
++_CURIOSITY_REQUEST = re.compile(
++    r"^(?:baxy\s*[,:]?\s*)?(?:(?:contame|cuentame|conta|cuenta|decime|dime|tirame|tira|explicame|explica|"
++    r"tell\s+me|give\s+me)\s+"
++    r"(?:(?:un|una|algun|alguna|otra|otro|a|an|another|some)\s+)?"
++    r"(?:curiosidad|curiosidades|dato\s+curioso|datos\s+curiosos|fun\s+fact|fun\s+facts|"
++    r"interesting\s+fact|random\s+fact|algo|something)"
++    r"(?:\s+(?:interesante|curioso|curiosa|nuevo|nueva|interesting|curious|cool|random|new))?"
++    r"(?:\s*,?\s*(?:por\s+favor|porfa|please))?[\s.!?]*$"
++    r"|^(?:estoy|ando|me\s+siento)\s+(?:re\s+|muy\s+|super\s+)?aburrid[oa][\s.!?]*$"
++    r"|^i(?:'?m|\s+am)\s+(?:so\s+)?bored[\s.!?]*$)",
++    re.IGNORECASE,
++)
++# KNOWLEDGE1505: the engine returns the public page of a bare, well-known name
++# (its Wikipedia article or an encyclopedic page first); the names below are
++# subjects verified against the engine's relevance rule on 2026-09-15, never
++# replies. Many other common names returned unrelated pages that day.
++_CURIOSITY_TOPICS_ES = (
++    "Colibrí", "Luna", "Saturno", "Antártida", "Ornitorrinco", "Amazonas", "Pingüino", "Delfín",
++    "Miel", "Chocolate", "Arcoíris", "Jirafa", "Koala", "Coliseo", "Titanic", "Neptuno", "Ballena",
++    "Girasol", "Urano", "Plutón", "Abeja", "Mariposa", "Tortuga", "Cactus", "Microscopio", "Tsunami",
++)
++_CURIOSITY_TOPICS_EN = (
++    "Moon", "Whale", "Jupiter", "Tsunami", "Titanic", "Koala", "Chocolate", "Cactus",
++)
++
++
++def curiosity_request(text: str) -> bool:
++    """KNOWLEDGE1505 «decime una curiosidad», «contame algo», «estoy aburrido»: a curiosity with no topic."""
++
++    return _CURIOSITY_REQUEST.match(_strip_request_envelope(_fold(text)).strip()) is not None
++
++
++def curiosity_topic(text: str) -> str | None:
++    """The public subject BAXY looks up for a curiosity request, or None.
++
++    The topic is drawn at random from a list of well-known subjects in the
++    language of the request; the answer is whatever the public page states."""
++
++    if not curiosity_request(text):
++        return None
++    folded = _strip_request_envelope(_fold(text)).strip()
++    english = re.match(r"^(?:baxy\s*[,:]?\s*)?(?:tell|give|i)\b", folded, re.IGNORECASE) is not None
++    # The pick is stable for one request within the same hour, so every
++    # reading of the turn (planning, verification) names the same subject.
++    seed = hashlib.sha256(f"{folded}|{int(time.time() // 3600)}".encode("utf-8")).hexdigest()
++    return random.Random(seed).choice(_CURIOSITY_TOPICS_EN if english else _CURIOSITY_TOPICS_ES)
++
++
+ def first_person_preference(text: str) -> str | None:
+     """MEMORY1501/1503 H0174 «Me gusta tomar café.»: the thing a first-person taste names, or None.
+ 
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 83e8c651..55950f02 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -44,6 +44,7 @@ from .effect_intent import (
+     _strip_request_envelope,
+     conversation_only_content_request,
+     countdown_target,
++    curiosity_request,
+     first_person_preference,
+     literal_clipboard_write_text,
+     reassurance_statement,
+@@ -12291,7 +12292,39 @@ class LlmRuntime:
+             if _search_results_text(visible_situation) is not None
+             else None
+         )
+-        if entity_asked is not None:
++        curiosity_subject = (
++            (visible_situation.get("seen") or {}).get("query")
++            if _search_results_text(visible_situation) is not None
++            and entity_asked is None
++            and curiosity_request(user_text or "")
++            else None
++        )
++        if isinstance(curiosity_subject, str) and curiosity_subject.strip():
++            # KNOWLEDGE1505 «decime una curiosidad»: the person asked for
++            # something interesting with no topic; BAXY looked up a subject of
++            # its own choosing and the curiosity is what a snippet states.
++            subject = curiosity_subject.strip()
++            instruct(
++                f"\nThe person asked for a curiosity or something interesting, with no "
++                f"topic. You searched the public web for «{subject}» and seen.results "
++                "are the pages returned (title, url, snippet). Answer in one or two "
++                f"sentences: say the curiosity is about «{subject}» and tell one thing a "
++                "snippet states about it, in its words, naming the page or site it "
++                "comes from (for example Wikipedia). Never add a date, number, place "
++                "or any fact that no snippet contains; if no snippet states anything "
++                "about it, name the pages found instead. No question at the end."
++                if response_language == "en"
++                else f"\nLa persona pidió una curiosidad o algo interesante, sin tema. "
++                f"Buscaste en la web pública «{subject}» y seen.results son las páginas "
++                "devueltas (título, url, fragmento). Responde en una o dos oraciones: "
++                f"di que la curiosidad es sobre «{subject}» y cuenta una cosa que un "
++                "fragmento afirma sobre ello, con sus palabras, nombrando la página o "
++                "el sitio de donde sale (por ejemplo Wikipedia). Nunca añadas una "
++                "fecha, cifra, lugar ni ningún dato que ningún fragmento contenga; si "
++                "ningún fragmento afirma nada, nombra las páginas encontradas. Sin "
++                "pregunta al final."
++            )
++        elif entity_asked is not None:
+             # KNOWLEDGE1473 «¿Quién es Daredevil?»: the person asked who or what
+             # a named thing is; the answer is what a result snippet states about
+             # it, with its words and its page, never the model's own memory.

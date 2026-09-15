@@ -593,3 +593,7 @@ Memoria personal pasa de 7/10 a 7/10 con la afirmación de preferencia reconocid
 ## Actualización 2026-09-14 (MEMORY1503)
 
 Memoria personal pasa de 7/10 a 8/10 con el acuse de la preferencia que nombra lo dicho sin gustos propios, ofertas ni preguntas (commit 52b40fdc, BUILD1503) (HEAD 52b40fdc): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Los tres acuses de preferencia nombraron lo dicho sin gustos propios, ofertas ni preguntas («Entiendo que te gusta tomar café.», «Entiendo que prefieres el mate.»; la variante del chocolate negro fue evaluativa —califica la elección— y pasa el criterio sellado, aunque un acuse liso es preferible); los tres límites explicaron o reconocieron sin operaciones. Cero operaciones y cero violaciones en los seis; GPU pico 3498 MiB.
+
+## Actualización 2026-09-14 (KNOWLEDGE1505)
+
+Conocimiento, razonamiento y creatividad verbal pasa de 27/37 a 27/37 con la curiosidad sin tema contada desde una página pública sobre un tema elegido (commit a5083fe7, BUILD1505) (HEAD a5083fe7): 11 ejecutados, 3 aprobados (los tres límites), 8 fallidos, 0 créditos. La mente decidió web.search con el tema elegido en los ocho pedidos de curiosidad, pero el aterrizaje de argumentos exige que la consulta aparezca literalmente en el texto de la persona (sólo la consulta de noticias está exenta) y los ocho turnos acabaron en una aclaración invertida («¿Qué curiosidad me puedes contar?») sin operaciones; los límites de chiste, prohibición y definición pasaron. Siguiente: exención de aterrizaje para el tema elegido por el lector (KNOWLEDGE1507).

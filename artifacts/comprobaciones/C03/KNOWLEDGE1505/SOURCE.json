@@ -1,0 +1,15 @@
+{
+  "schema": "c03-knowledge1505-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (curiosity_request/curiosity_topic: el pedido de curiosidad o de algo interesante sin tema es una búsqueda pública; el tema sale de una lista de temas conocidos, estable por pedido y hora; la compuerta de búsqueda en vivo lo admite), src/baxy_mind/__main__.py (la consulta de web.search es el tema elegido) y src/baxy_mind/llm.py (instrucción: decir sobre qué tema es la curiosidad y contar lo que un fragmento afirma nombrando la página, sin añadir datos ni pregunta).",
+  "patch": "artifacts/comprobaciones/C03/KNOWLEDGE1505/SOURCE.patch",
+  "commits": [
+    "a5083fe7146e449d80d2622ea844f1d8df14f7eb"
+  ],
+  "build": "BUILD1505 (C03-repairs1505-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "KNOWLEDGE1353/1355: las curiosidades y «explicame algo interesante» inventaban hechos o preguntaban el tema; el motor no devuelve páginas para «curiosidad» (páginas ajenas), pero sí la página de un nombre conocido (KNOWLEDGE1505).",
+  "change": "Lector de curiosidad sin tema hacia la búsqueda pública de un tema elegido; la respuesta repite un fragmento nombrando la página. Sin respuestas fijas: los temas son consultas, no réplicas.",
+  "measurement": "KNOWLEDGE1505: 11 ejecutados, 3 aprobados (los tres límites), 8 fallidos; 0 créditos. La mente decidió web.search con el tema elegido en los ocho pedidos de curiosidad, pero el aterrizaje de argumentos exige que la consulta aparezca literalmente en el texto de la persona (sólo la consulta de noticias está exenta) y los ocho turnos acabaron en una aclaración invertida («¿Qué curiosidad me puedes contar?») sin operaciones; los límites de chiste, prohibición y definición pasaron. Siguiente: exención de aterrizaje para el tema elegido por el lector (KNOWLEDGE1507).",
+  "credits": 0
+}
