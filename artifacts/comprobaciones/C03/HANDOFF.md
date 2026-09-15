@@ -1,3 +1,11 @@
+# APPS1607 adjudicado — 2026-09-15T20:34:57.741686+00:00
+
+**548/742 cubiertos, 194 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA cb62ec624d1b8086000a757852a9c19c82d599e35781ce18409d2d40927a3ddc. Primeras altas 24 h >= 422 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a9c46cbb con BUILD1605 (mismos binarios; apertura de Steam autorizada por el dueño). Turnos ordinarios sin operaciones.
+
+APPS1607 («Abrir aplicaciones», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): 6 ejecutados, 1 aprobado, 5 fallidos, 0 créditos. Adjudicación 20d303fc4d8377d7c7367289b05cfb87ea9bab24560d113027994e10281fa8bf. Los dos literales y las dos variantes lanzaron el Steam del dueño (autorizado el 2026-09-16) y el cliente mostró su ventana, pero el producto no lo verificó: la ventana pertenece a steamwebhelper.exe y el lanzador sólo cuenta steam.exe; la raíz cerró Steam ordenadamente tras cada caso. «¿Qué es Steam?» fue a web.search, no admitida por el panel; «No abras Steam.» fue reconocida. Siguiente: un proceso auxiliar bajo el directorio de instalación del objetivo cuenta para el lanzamiento (APPS1609).
+
+---
+
 # FILES1605 adjudicado — 2026-09-15T20:20:54.682894+00:00
 
 **548/742 cubiertos, 194 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA fcbb649d70879bbdfa3801f6bbb1d9f854e0a68156e433785a1cf368fa3ab085. Primeras altas 24 h >= 422 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 89460fd6 con BUILD1605 (la carpeta cruza de volumen hasta la papelera privada). Turnos ordinarios sin operaciones.

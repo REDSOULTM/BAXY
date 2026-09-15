@@ -1,3 +1,25 @@
+## APPS1607 — estado vigente 2026-09-15T20:34:57.741686+00:00
+
+Parcial: 1 aprobados, 5 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 548/742 | 194 | 0 | >=422 | 6/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 422 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); APPS1607 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: APPS1607: 6 ejecutados, 1 aprobados, 5 fallidos, 0 créditos (índices []); Abrir aplicaciones 46/54. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/APPS1607/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 114.88 s acumulados; pico GPU 3497.56 MiB; pico RAM 1662.45 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque APPS1607 precedente. -->
+
 ## FILES1605 — estado vigente 2026-09-15T20:20:54.682894+00:00
 
 Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

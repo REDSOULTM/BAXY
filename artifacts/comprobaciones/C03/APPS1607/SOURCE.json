@@ -1,0 +1,15 @@
+{
+  "schema": "c03-apps1607-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (InventedVolume judges the sentences before the trailing question when the person's request named the volume; WithoutTrailingQuestion) and src/baxy_mind/effect_intent.py (_negative_action_forms admits «toca»/«touch»).",
+  "patch": "artifacts/comprobaciones/C03/APPS1607/SOURCE.patch",
+  "commits": [
+    "a9c46cbb1d08b5a452380c3b487e809f0bd0ee22"
+  ],
+  "build": "BUILD1605 (C03-repairs1605-build/BUILD_READY.json; mismos binarios)",
+  "cause_measured": "La raíz excluía el Steam del dueño por prudencia; el dueño autorizó abrirlo el 2026-09-16 («Sí hazlo»).",
+  "change": "Ninguno; autorización del dueño y cierre ordenado de Steam por la raíz; sin respuestas fijas.",
+  "measurement": "APPS1607: 6 ejecutados, 1 aprobado, 5 fallidos; 0 créditos. Los dos literales y las dos variantes lanzaron el Steam del dueño (autorizado el 2026-09-16) y el cliente mostró su ventana, pero el producto no lo verificó: la ventana pertenece a steamwebhelper.exe y el lanzador sólo cuenta steam.exe; la raíz cerró Steam ordenadamente tras cada caso. «¿Qué es Steam?» fue a web.search, no admitida por el panel; «No abras Steam.» fue reconocida. Siguiente: un proceso auxiliar bajo el directorio de instalación del objetivo cuenta para el lanzamiento (APPS1609).",
+  "credits": 0
+}
