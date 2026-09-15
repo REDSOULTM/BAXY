@@ -45,6 +45,7 @@ from .effect_intent import (
     conversation_only_content_request,
     countdown_target,
     curiosity_request,
+    declined_means,
     first_person_preference,
     literal_clipboard_write_text,
     reassurance_statement,
@@ -5069,6 +5070,29 @@ def _search_unsupported_claim(text: str, results_text: str) -> str | None:
     return None
 
 
+_MEANS_WORDS = (
+    r"(?:python|powershell|bash|cmd|scripts?|c[oó]digo|code|terminal|consola|console)"
+)
+# «sin Python», «sin usar un script», «no usé la terminal», «without running code»:
+# a negated mention is the honest disclaimer, not a claim.
+_NEGATED_MEANS = re.compile(
+    r"\b(?:sin(?:\s+(?:usar|ejecutar|correr|necesitar|recurrir\s+a|tener\s+que\s+usar))?|"
+    r"no\s+(?:us[eé]|utilic[eé]|ejecut[eé]|corr[ií]|necesit[oé]|recurr[ií]\s+a|hace\s+falta|"
+    r"necesito|uso|utilizo|ejecuto)|"
+    r"without(?:\s+(?:using|running|needing))?|"
+    r"(?:did\s+not|didn't|don't|do\s+not)\s+(?:use|run|need)|no\s+need\s+(?:for|of))"
+    r"(?:\s+(?:el|la|un|una|ningun|ninguna|a|the|any))?\s+" + _MEANS_WORDS + r"\b",
+    re.IGNORECASE,
+)
+
+
+def _claims_declined_means(text: str) -> bool:
+    """True when the reply mentions the declined means other than to deny it."""
+
+    folded = _NEGATED_MEANS.sub(" ", _reading_fold(text))
+    return re.search(r"\b" + _MEANS_WORDS + r"\b", folded) is not None
+
+
 def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     """El texto público conserva los hechos que el payload le dio.
 
@@ -5105,6 +5129,16 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         # predicate that gates acceptance (blocked → payload defect), not
         # only the audit label in rejection_reason.
         return "action_attributed_to_user"
+    if (
+        user_text
+        and declined_means(user_text) is not None
+        and not payload.get("error")
+        and _claims_declined_means(text)
+    ):
+        # SYSTEM1545 H0076: the person named Python; the reading was direct.
+        # A report that says it used or ran a language, a script or a terminal
+        # claims a capability the assistant does not have.
+        return "claimed_means"
     if (
         payload.get("operation") == "system.status"
         and isinstance(seen, dict)
@@ -12358,6 +12392,29 @@ class LlmRuntime:
                 " Memory and disk keys: total is the whole size, free is the"
                 " free amount, used is in use, installed_capacity is the"
                 " installed hardware. Never call the total free or available."
+            )
+            message_prompt += scope
+            cpu_prompt += scope
+        if (
+            user_text
+            and declined_means(user_text) is not None
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+        ):
+            # SYSTEM1545 H0076 «… Usa Python.»: the readings come from the
+            # product's own observation; the assistant does not program or run
+            # scripts as a capability (owner's ruling). Report the readings and
+            # never claim the means, a script, or a terminal.
+            scope = (
+                " The request names a means (a language, a script or a terminal)"
+                " that was not used: the values in seen were read directly by the"
+                " assistant. Report them; do not say that you used or ran that"
+                " means, a script or code, and do not ask for a terminal."
+                if response_language == "en"
+                else " El pedido nombra un medio (un lenguaje, un script o una"
+                " terminal) que no se usó: los valores de seen los leyó el asistente"
+                " directamente. Informalos; no digas que usaste ni ejecutaste ese"
+                " medio, un script ni código, y no pidas una terminal."
             )
             message_prompt += scope
             cpu_prompt += scope

@@ -5827,6 +5827,44 @@ _TRAILING_SOCIAL_CLOSURE = re.compile(
 )
 
 
+# SYSTEM1545 H0076 «Dime que version de Windows tengo y cuanta RAM tiene este
+# PC. Usa Python.»: a trailing sentence that names the means (Python, a script,
+# the terminal) is not a second request. The owner does not want the assistant
+# to program as a capability; the readable request before it is answered from
+# the product's own readings and the means is declined, never followed.
+_TRAILING_MEANS_DIRECTIVE = re.compile(
+    r"\s*[.,;:]\s*(?:"
+    r"(?:us[aá]|usando|utiliz[aá]|utilizando|emple[aá]|empleando|hazlo con|"
+    r"hacelo con|con|mediante|a trav[eé]s de|use|using|with|by using|via)"
+    r"\s+(?:el\s+|la\s+|un\s+|una\s+|a\s+|the\s+)?"
+    r"(?P<means>python|powershell|bash|cmd|"
+    r"script(?:\s+(?:de|en|of|in)\s+(?:python|powershell|bash))?|"
+    r"c[oó]digo(?:\s+(?:de|en)\s+python)?|code|terminal|consola|console)"
+    r")\s*[.!]*$",
+    re.IGNORECASE,
+)
+
+
+def declined_means(text: str) -> str | None:
+    """The means a trailing directive names (lowercase), or None.
+
+    Only a directive that follows a request counts: «Usa Python.» alone is a
+    request of its own and stays untouched.
+    """
+
+    found = _TRAILING_MEANS_DIRECTIVE.search(text)
+    if found is None or found.start() == 0:
+        return None
+    return found.group("means").casefold()
+
+
+def _strip_trailing_means_directive(text: str) -> str:
+    found = _TRAILING_MEANS_DIRECTIVE.search(text)
+    if found is None or found.start() == 0:
+        return text
+    return text[: found.start()].rstrip()
+
+
 def _strip_trailing_social_closure(text: str) -> str:
     """Drop a trailing social closure without ever emptying the request.
 
@@ -5835,6 +5873,7 @@ def _strip_trailing_social_closure(text: str) -> str:
     the bounded guard used by the private memory parser.
     """
 
+    text = _strip_trailing_means_directive(text)
     found = _TRAILING_SOCIAL_CLOSURE.search(text)
     if found is None or found.start() == 0:
         return text
