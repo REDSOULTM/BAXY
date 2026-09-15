@@ -72,8 +72,9 @@ internal static class NotepadIdentityPolicy
             && string.IsNullOrEmpty(observation.PackageFullName))
         {
             return PathsEqual(
-                observation.ExecutablePath,
-                target.BootstrapExecutablePath);
+                    observation.ExecutablePath,
+                    target.BootstrapExecutablePath)
+                || IsHelperInOwnInstallTree(observation.ExecutablePath, target);
         }
 
         if (!string.Equals(
@@ -149,6 +150,63 @@ internal static class NotepadIdentityPolicy
             && fields[2] is "x64" or "x86" or "arm64"
             && fields[3].Length == 0
             && string.Equals(fields[4], MicrosoftPublisherId, StringComparison.Ordinal);
+    }
+
+    // APPS1607 «Abre Steam»: steam.exe shows its window through steamwebhelper.exe,
+    // a helper it starts from its own install tree (d:\steam\bin\cef\…). A process
+    // whose executable lives under the target's install directory is the same
+    // application; shared roots (the Windows directory, Program Files themselves)
+    // never count, so an unrelated process started there is not mistaken for it.
+    private static bool IsHelperInOwnInstallTree(string? executablePath, NotepadLaunchTarget target)
+    {
+        if (string.IsNullOrWhiteSpace(executablePath)
+            || string.IsNullOrWhiteSpace(target.BootstrapExecutablePath))
+        {
+            return false;
+        }
+
+        try
+        {
+            string? installDirectory = Path.GetDirectoryName(Path.GetFullPath(target.BootstrapExecutablePath));
+            if (string.IsNullOrEmpty(installDirectory))
+            {
+                return false;
+            }
+
+            string root = Path.GetPathRoot(installDirectory) ?? string.Empty;
+            string windows = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
+            string[] sharedRoots =
+            [
+                root,
+                windows,
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+                Path.Combine(target.ProgramFilesDirectory, "WindowsApps"),
+            ];
+            string installFull = Path.TrimEndingDirectorySeparator(installDirectory);
+            if (sharedRoots.Any(shared => !string.IsNullOrEmpty(shared)
+                    && string.Equals(Path.TrimEndingDirectorySeparator(Path.GetFullPath(shared)), installFull,
+                        StringComparison.OrdinalIgnoreCase))
+                || Path.GetFullPath(installDirectory).StartsWith(
+                    Path.TrimEndingDirectorySeparator(windows) + Path.DirectorySeparatorChar,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            string candidate = Path.GetFullPath(executablePath);
+            return candidate.StartsWith(installFull + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+                && target.PathTrust.IsExistingPathWithoutReparse(candidate);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or NotSupportedException
+            or PathTooLongException
+            or SecurityException
+            or IOException
+            or UnauthorizedAccessException)
+        {
+            return false;
+        }
     }
 
     private static bool PathsEqual(string? left, string? right)
