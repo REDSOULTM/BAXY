@@ -5514,6 +5514,29 @@ def _ground_explicit_arguments(
         name = _window_query_reference_name(evidence, history, application_names)
         if name is not None:
             explicit = {"name": name}
+    if (
+        explicit is None
+        and operation in ("media.play.youtube", "media.play.query")
+        and isinstance(history, list)
+    ):
+        # MUSIC1571 «poné una canción» → «¿qué música?» → «Bad Bunny»: the
+        # answer alone names no request, so the literal reader abstained and
+        # the model's extraction decided the turn (H0405 asked «¿qué buscas
+        # en YouTube sobre Bad Bunny?»; H0066 «lofi» happened to ground).
+        # The decision already read the answer as the completed music
+        # request; the arguments read that same surface.
+        completed = effect_intent._completed_missing_music_request(
+            evidence,
+            _previous_user_request(history, evidence),
+            ("media.play.query", "media.play.youtube"),
+        )
+        if completed is not None:
+            explicit = _explicit_arguments_from_evidence(
+                operation,
+                completed,
+                application_names,
+                game_catalog,
+            )
     if explicit is None:
         return None
     if operation == "web.search" and explicit.get("query") == _todays_news_query(evidence):

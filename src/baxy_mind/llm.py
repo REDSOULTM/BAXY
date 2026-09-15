@@ -5863,6 +5863,22 @@ def _claims_the_target_was_open_before(folded: str) -> bool:
     ) is not None
 
 
+def _bracket_is_observed(bracketed: str, facts: dict) -> bool:
+    """MUSIC1571: «[11.Larga Vida al Rey]» inside a quoted YouTube title is
+    observed text, not a template hole left unfilled."""
+
+    try:
+        situation = _situation_from_facts(facts) if isinstance(facts, dict) else {}
+    except Exception:  # noqa: BLE001 - a malformed situation is not evidence
+        return False
+    needle = _reading_fold(bracketed)
+    observed = _merged_observed(situation) if isinstance(situation, dict) else {}
+    for value in (observed.values() if isinstance(observed, dict) else ()):
+        if isinstance(value, str) and needle and needle in _reading_fold(value):
+            return True
+    return False
+
+
 def compose_visible_defect(
     text: str,
     intent: str,
@@ -5926,7 +5942,8 @@ def compose_visible_defect(
         return "copied_instruction"
     # Un hueco por rellenar no es una respuesta: «La hora actual es [hora
     # actual en español].» (conocimiento-3/t3).
-    if re.search(r"\[[^\]]{3,}\]|\{[^}]{3,}\}|<[a-z ]{3,}>", stripped) is not None:
+    placeholder = re.search(r"\[[^\]]{3,}\]|\{[^}]{3,}\}|<[a-z ]{3,}>", stripped)
+    if placeholder is not None and not _bracket_is_observed(placeholder.group(0), facts):
         return "copied_instruction"
     # `can` es lo que hace BAXY. Atribuírselo a la persona invierte el actor:
     # «Puedes abrir y cerrar programas…» ante «qué puedes hacer en este PC».
