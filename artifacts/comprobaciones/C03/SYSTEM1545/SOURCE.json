@@ -1,0 +1,15 @@
+{
+  "schema": "c03-system1545-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_TRAILING_MEANS_DIRECTIVE/declined_means: la directiva final de medio —usa/usá/con/mediante Python, PowerShell, un script, código, la terminal— es envoltorio sólo detrás de un pedido) y src/baxy_mind/llm.py (instrucción: los valores se leyeron directamente, no digas que usaste ese medio; veto claimed_means: mención no negada de Python, script, código o terminal en el final).",
+  "patch": "artifacts/comprobaciones/C03/SYSTEM1545/SOURCE.patch",
+  "commits": [
+    "56cd8016ae9f6b36ec565bf3e70fc6537008761e"
+  ],
+  "build": "BUILD1545 (C03-repairs1545-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "SYSTEM1028: «… Usa Python.» dejaba el pedido sin lector (la segunda oración rompía la resolución) y el candidato de entonces pidió una terminal para ejecutar un script; el dueño no quiere que BAXY programe como capacidad.",
+  "change": "Directiva final de medio declinada como envoltorio; instrucción y veto del compositor; sin respuestas fijas.",
+  "measurement": "SYSTEM1545: 6 ejecutados, 3 aprobados (una variante y dos límites), 3 fallidos; 0 créditos. Medido: la directiva «Usa Python.» se declinó y las tres lecturas system.status se verificaron; una variante publicó un final fiel sin mencionar Python, pero el literal y la otra variante quedaron sin final porque el compositor rechazó tres borradores seguidos que llamaban instalada a la memoria total utilizable (16,54 GB) cuando la capacidad instalada leída es 17,18 GB (mislabelled_installed; un borrador inventó además «22H2»); la prohibición «No uses Python.» recibió un saludo porque «usar» no encabeza ningún pedido. Siguiente: instrucción y pista de reintento con las dos cifras y sus etiquetas, y prohibir un medio es una prohibición (SYSTEM1547).",
+  "credits": 0
+}

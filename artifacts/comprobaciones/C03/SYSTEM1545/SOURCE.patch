@@ -1,0 +1,155 @@
+commit 56cd8016ae9f6b36ec565bf3e70fc6537008761e
+
+C03: a trailing means directive («Usa Python.») is declined as envelope and the system reading is reported without claiming it (SYSTEM1545)
+
+H0076 «Dime que version de Windows tengo y cuanta RAM tiene este PC. Usa Python.» reached no reader: the second sentence is not a request and broke the resolution, and SYSTEM1028 measured the candidate of the time asking for a terminal to run a script. The owner does not want the assistant to program as a capability; the reading comes from its own observation. effect_intent.py strips a trailing means directive (usa/usá/con/mediante + Python, PowerShell, a script, code, the terminal) only behind a request and exposes it as declined_means; llm.py instructs that the values were read directly and vetoes a final that says it used or ran that means, a script or code, or asks for a terminal (claimed_means); a negated mention («sin Python») is the honest disclaimer, not a claim. Registry-wide recogniser diff: only H0076 changes (None → system.status).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 036c4121..dab9aaf0 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -5827,6 +5827,44 @@ _TRAILING_SOCIAL_CLOSURE = re.compile(
+ )
+ 
+ 
++# SYSTEM1545 H0076 «Dime que version de Windows tengo y cuanta RAM tiene este
++# PC. Usa Python.»: a trailing sentence that names the means (Python, a script,
++# the terminal) is not a second request. The owner does not want the assistant
++# to program as a capability; the readable request before it is answered from
++# the product's own readings and the means is declined, never followed.
++_TRAILING_MEANS_DIRECTIVE = re.compile(
++    r"\s*[.,;:]\s*(?:"
++    r"(?:us[aá]|usando|utiliz[aá]|utilizando|emple[aá]|empleando|hazlo con|"
++    r"hacelo con|con|mediante|a trav[eé]s de|use|using|with|by using|via)"
++    r"\s+(?:el\s+|la\s+|un\s+|una\s+|a\s+|the\s+)?"
++    r"(?P<means>python|powershell|bash|cmd|"
++    r"script(?:\s+(?:de|en|of|in)\s+(?:python|powershell|bash))?|"
++    r"c[oó]digo(?:\s+(?:de|en)\s+python)?|code|terminal|consola|console)"
++    r")\s*[.!]*$",
++    re.IGNORECASE,
++)
++
++
++def declined_means(text: str) -> str | None:
++    """The means a trailing directive names (lowercase), or None.
++
++    Only a directive that follows a request counts: «Usa Python.» alone is a
++    request of its own and stays untouched.
++    """
++
++    found = _TRAILING_MEANS_DIRECTIVE.search(text)
++    if found is None or found.start() == 0:
++        return None
++    return found.group("means").casefold()
++
++
++def _strip_trailing_means_directive(text: str) -> str:
++    found = _TRAILING_MEANS_DIRECTIVE.search(text)
++    if found is None or found.start() == 0:
++        return text
++    return text[: found.start()].rstrip()
++
++
+ def _strip_trailing_social_closure(text: str) -> str:
+     """Drop a trailing social closure without ever emptying the request.
+ 
+@@ -5835,6 +5873,7 @@ def _strip_trailing_social_closure(text: str) -> str:
+     the bounded guard used by the private memory parser.
+     """
+ 
++    text = _strip_trailing_means_directive(text)
+     found = _TRAILING_SOCIAL_CLOSURE.search(text)
+     if found is None or found.start() == 0:
+         return text
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 0dec867b..fd8b2d79 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -45,6 +45,7 @@ from .effect_intent import (
+     conversation_only_content_request,
+     countdown_target,
+     curiosity_request,
++    declined_means,
+     first_person_preference,
+     literal_clipboard_write_text,
+     reassurance_statement,
+@@ -5069,6 +5070,29 @@ def _search_unsupported_claim(text: str, results_text: str) -> str | None:
+     return None
+ 
+ 
++_MEANS_WORDS = (
++    r"(?:python|powershell|bash|cmd|scripts?|c[oó]digo|code|terminal|consola|console)"
++)
++# «sin Python», «sin usar un script», «no usé la terminal», «without running code»:
++# a negated mention is the honest disclaimer, not a claim.
++_NEGATED_MEANS = re.compile(
++    r"\b(?:sin(?:\s+(?:usar|ejecutar|correr|necesitar|recurrir\s+a|tener\s+que\s+usar))?|"
++    r"no\s+(?:us[eé]|utilic[eé]|ejecut[eé]|corr[ií]|necesit[oé]|recurr[ií]\s+a|hace\s+falta|"
++    r"necesito|uso|utilizo|ejecuto)|"
++    r"without(?:\s+(?:using|running|needing))?|"
++    r"(?:did\s+not|didn't|don't|do\s+not)\s+(?:use|run|need)|no\s+need\s+(?:for|of))"
++    r"(?:\s+(?:el|la|un|una|ningun|ninguna|a|the|any))?\s+" + _MEANS_WORDS + r"\b",
++    re.IGNORECASE,
++)
++
++
++def _claims_declined_means(text: str) -> bool:
++    """True when the reply mentions the declined means other than to deny it."""
++
++    folded = _NEGATED_MEANS.sub(" ", _reading_fold(text))
++    return re.search(r"\b" + _MEANS_WORDS + r"\b", folded) is not None
++
++
+ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+     """El texto público conserva los hechos que el payload le dio.
+ 
+@@ -5105,6 +5129,16 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+         # predicate that gates acceptance (blocked → payload defect), not
+         # only the audit label in rejection_reason.
+         return "action_attributed_to_user"
++    if (
++        user_text
++        and declined_means(user_text) is not None
++        and not payload.get("error")
++        and _claims_declined_means(text)
++    ):
++        # SYSTEM1545 H0076: the person named Python; the reading was direct.
++        # A report that says it used or ran a language, a script or a terminal
++        # claims a capability the assistant does not have.
++        return "claimed_means"
+     if (
+         payload.get("operation") == "system.status"
+         and isinstance(seen, dict)
+@@ -12361,6 +12395,29 @@ class LlmRuntime:
+             )
+             message_prompt += scope
+             cpu_prompt += scope
++        if (
++            user_text
++            and declined_means(user_text) is not None
++            and situation.get("verified") is True
++            and situation.get("succeeded") is True
++        ):
++            # SYSTEM1545 H0076 «… Usa Python.»: the readings come from the
++            # product's own observation; the assistant does not program or run
++            # scripts as a capability (owner's ruling). Report the readings and
++            # never claim the means, a script, or a terminal.
++            scope = (
++                " The request names a means (a language, a script or a terminal)"
++                " that was not used: the values in seen were read directly by the"
++                " assistant. Report them; do not say that you used or ran that"
++                " means, a script or code, and do not ask for a terminal."
++                if response_language == "en"
++                else " El pedido nombra un medio (un lenguaje, un script o una"
++                " terminal) que no se usó: los valores de seen los leyó el asistente"
++                " directamente. Informalos; no digas que usaste ni ejecutaste ese"
++                " medio, un script ni código, y no pidas una terminal."
++            )
++            message_prompt += scope
++            cpu_prompt += scope
+         if (
+             situation.get("operation") == "window.resolve"
+             and situation.get("verified") is True

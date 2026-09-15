@@ -1,3 +1,25 @@
+## SYSTEM1545 — estado vigente 2026-09-15T05:15:27.393790+00:00
+
+Parcial: 3 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 519/742 | 223 | 0 | >=393 | 5/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 393 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SYSTEM1545 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: SYSTEM1545: 6 ejecutados, 3 aprobados, 3 fallidos, 0 créditos (índices []); Estado de hardware y sistema 38/40. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/SYSTEM1545/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 127.56 s acumulados; pico GPU 3497.56 MiB; pico RAM 2324.18 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SYSTEM1545 precedente. -->
+
 ## WEB1543 — estado vigente 2026-09-15T04:54:06.412155+00:00
 
 Parcial: 7 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.
