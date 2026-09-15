@@ -219,14 +219,17 @@ public static class ProductCatalog
             OperationRisks.PrivacySensitive,
             "browser.page.read.cdp.dom.snapshot.v1",
             ToolExposure.Public,
-            "Lee titulo, URL y texto visible de la pagina CDP activa sin modificarla y limita el contenido devuelto."),
+            "Lee titulo, URL y texto visible de la pagina CDP activa sin modificarla y limita el contenido devuelto.",
+            // WEB1541: a read observes no effect; the receipt says so truthfully.
+            requiresObservedEffect: false),
         Descriptor(
             "browser.tabs.list",
             Schema([Integer("limit", 1, 50)], []),
             OperationRisks.PrivacySensitive,
             "browser.tabs.list.cdp.targets.snapshot.v1",
             ToolExposure.Public,
-            "Enumera las pestanas web de la sesion CDP local con identidad, titulo y URL observados."),
+            "Enumera las pestanas web de la sesion CDP local con identidad, titulo y URL observados.",
+            requiresObservedEffect: false),
         Descriptor(
             "calendar.event.create",
             Schema(
