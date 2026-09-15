@@ -204,7 +204,8 @@ CONSTRAINT_PRESENTATION_PROMPT = (
     "intention in first person, preserving the user's time scope without "
     "adding universal commitments. Do not promise that the device state "
     "cannot change. Return one short natural sentence in response_language, "
-    "without JSON or explanation of these instructions."
+    "without JSON or explanation of these instructions. No question and no "
+    "offer of help after it: the acknowledgement is the whole reply."
 )
 
 OBSERVATION_ACK_PRESENTATION_PROMPT = (
