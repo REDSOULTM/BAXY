@@ -1,0 +1,204 @@
+{
+  "schema": "install1621-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-install1621-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-install1621-instrument-v1",
+  "seal_sha256": "70abeb39656cfc17641d99cfe3acab9898167f7ba6ab924673167ebe193fd46d",
+  "runner_sha256": "b7254ce115e1ce23258291c57e09ddb2896ad6ae834c1d63777c8c0422b192a7",
+  "transport_seal_sha256": "d85fabe42927002a7dbfabcdc648ac176f8c8721fa4ced96b6db39a52bdda910",
+  "files": {
+    "panel.json": "1c7a5cc569977ceb50244263f276428207722b1291d0202a240782a29c1e6459",
+    "turns.jsonl": "4b102568f57061b5c5bc09640d48e0d2f44da4905a23ae42554f70766a5b4ba7",
+    "case-map.json": "b6983f15ba40c9f477eab324f4ac3ed60fa586b63043ab480147b37338e86507",
+    "PLAN.md": "d194719ea33e1168c9f4823d9b7ddb44f4062122e102663279206aaed6fbdae5"
+  },
+  "counts": {
+    "cases": 19,
+    "historical_literals": 15,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 38,
+    "session_controls": 19,
+    "ordinary_turns": 19,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 19,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 15,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0482",
+      "kind": "historical_literal",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "a15492daf428c2f78156690a073698f279d1e45682e1929e829d0f72c6a1e843",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 1,
+      "case_id": "H0049",
+      "kind": "historical_literal",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "0ed105d60abdfc12bbe9b6f2f7db1de86f724574261d1511460b4291fc840b88",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 2,
+      "case_id": "H0659",
+      "kind": "historical_literal",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "e10fabd87733853ce11452b8adc88914773b3411d338a4c3fdc8c38ab3cf9132",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 3,
+      "case_id": "H0643",
+      "kind": "historical_literal",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "dd4c0837e08e96d1b6d1f8fd40954a4c61fc392ca54de71253e4180134d2cfaf",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 4,
+      "case_id": "H0039",
+      "kind": "historical_literal",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "0d58cb03f2fdb326661938be928a3b9ce7e762db03a06876ed71754ce20ad6a6",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 5,
+      "case_id": "H0612",
+      "kind": "historical_literal",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "d31a465a45877cce08bb9f545b60c56d6f9207dd0bc546a59df94538b7269da4",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 6,
+      "case_id": "H0118",
+      "kind": "historical_literal",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "254926d02dc7600c2072f0e2737ec1fc996ca2fb1d35247e4d4493850f05dbb4",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 7,
+      "case_id": "H0382",
+      "kind": "historical_literal",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "7fb94dc1f09a929dd1c311a22fa517500e914ea6b3afd7b9d01b34606b98ff1e",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 8,
+      "case_id": "H0680",
+      "kind": "historical_literal",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "eb8ae8657078251a2175784532a8c8e2ff741a43ecb6e0c525314d437e91611e",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 9,
+      "case_id": "H0295",
+      "kind": "historical_literal",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "60643d70bde7b807a250aef592eb46e44ff50e82d1c228da4d2398d6c6d32679",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 10,
+      "case_id": "H0345",
+      "kind": "historical_literal",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "71416cb461229433512d602a9c995b80b3ac95246310614b27cbb65864d72f48",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 11,
+      "case_id": "H0390",
+      "kind": "historical_literal",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "836bd86a7254dde1e76e0f0d8ecb0f82a2b3c43e7a1f37b6b4b6c11bdaf6059b",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 12,
+      "case_id": "H0671",
+      "kind": "historical_literal",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "e71c83c09a76e8e9c90a77f8de3d36211df833db01d17c8914e3dcb807b7fedf",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 13,
+      "case_id": "H0272",
+      "kind": "historical_literal",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "59039c8f1cb5f8cee627fbbba3a36e9c1b144990ba475d89764ffec7b8c1709c",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 14,
+      "case_id": "H0434",
+      "kind": "historical_literal",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "934d6076db1da83c3db6a52d9b0e6054f14ab0f77c2ce3e374f84097612b2996",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 15,
+      "case_id": "install1621-dev-01",
+      "kind": "original_development_variant",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "fb522268f87fe325ab65587e140922af87002a7372f54da50c58fafce2913059",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 16,
+      "case_id": "install1621-dev-02",
+      "kind": "original_development_variant",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "1acee2061ef898914b7d62afbd60196fbefbd8b57d8644c5773f70090f4be2ce",
+      "criterion_sha256": "8e9a0282e9ac84c258d96b8cbaf691335dc48b28854f2bc7fa6e8935d47c9485"
+    },
+    {
+      "index": 17,
+      "case_id": "install1621-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "089b78aadbb25d94121b11639399753035c6682d68d7fb184fb4f2240df17f09",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 18,
+      "case_id": "install1621-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "c47ef56fc14bf1b85a8010c81b2364f2286938904c0736c3358e733f748a033a",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    }
+  ]
+}

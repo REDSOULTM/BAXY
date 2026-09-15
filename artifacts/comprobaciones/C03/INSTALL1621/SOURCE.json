@@ -1,0 +1,15 @@
+{
+  "schema": "c03-install1621-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (game.entitlement.named title matched through punctuation between its words; failure-lens mask admits «cannot be downloaded/installed» and the Spanish reflexive forms).",
+  "patch": "artifacts/comprobaciones/C03/INSTALL1621/SOURCE.patch",
+  "commits": [
+    "15352c41251d86c7700bf6a5badfa52383961b9c"
+  ],
+  "build": "BUILD1621 (C03-repairs1621-build/BUILD_READY.json; mente)",
+  "cause_measured": "INSTALL1621: missing_name sobre un título puntuado por el modelo y asserted_failure sobre «cannot be downloaded or installed»; una sola variante aprobada, sin par.",
+  "change": "Título de biblioteca reconocido a través de puntuación; máscara del lente de fallo con la pasiva inglesa y las reflexivas españolas; sin respuestas fijas.",
+  "measurement": "INSTALL1621: catorce literales y la variante en español con lectura verificada y final fiel; un literal con una frase inventada; la variante en inglés rechazada por la política de la App (reversed_result sobre «cannot»); dos límites aprobados; sin par de variantes, sin créditos; 0 créditos. Medición raíz: el compositor de la mente ya acepta el título puntuado y la pasiva inglesa; la política de la App marca «cannot» como fallo sin máscara para la consecuencia de biblioteca, y el modelo insinuó una licencia en un caso; siguiente INSTALL1623.",
+  "credits": 0
+}

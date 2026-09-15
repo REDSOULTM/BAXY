@@ -917,3 +917,7 @@ Cerrar aplicaciones y ventanas pasa de 15/20 a 15/20 con WhatsApp y Discord del 
 ## Actualización 2026-09-14 (INSTALL1619)
 
 Instalar y desinstalar software pasa de 0/31 a 0/31 con las descargas en Steam respondidas desde la biblioteca autenticada del dueño (commit a1d68f1c, BUILD1619) (HEAD a1d68f1c): trece literales y una variante con lectura de biblioteca verificada y final fiel, un literal y la variante en inglés sin final por vetos del compositor (título puntuado; «cannot be downloaded» en el lente de fallo), dos límites aprobados; sin par de variantes, sin créditos, 0 créditos. Medición raíz: la lectura y los finales en español funcionan; el compositor aún veta el título con puntuación distinta y la consecuencia en inglés; siguiente INSTALL1621 con ambas máscaras.
+
+## Actualización 2026-09-14 (INSTALL1621)
+
+Instalar y desinstalar software pasa de 0/31 a 0/31 con las descargas en Steam respondidas desde la biblioteca autenticada del dueño (commit 15352c41, BUILD1621) (HEAD 15352c41): catorce literales y la variante en español con lectura verificada y final fiel; un literal con una frase inventada; la variante en inglés rechazada por la política de la App (reversed_result sobre «cannot»); dos límites aprobados; sin par de variantes, sin créditos, 0 créditos. Medición raíz: el compositor de la mente ya acepta el título puntuado y la pasiva inglesa; la política de la App marca «cannot» como fallo sin máscara para la consecuencia de biblioteca, y el modelo insinuó una licencia en un caso; siguiente INSTALL1623.

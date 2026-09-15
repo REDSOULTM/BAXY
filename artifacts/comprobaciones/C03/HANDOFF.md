@@ -1,3 +1,11 @@
+# INSTALL1621 adjudicado — 2026-09-15T23:09:46.568332+00:00
+
+**551/742 cubiertos, 191 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA b5d7fae650ee5b356f83f656a45126982f77252f363bd6304944000cd750069b. Primeras altas 24 h >= 425 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 15352c41 con BUILD1621 (el título puntuado y la consecuencia en inglés no son defectos). Turnos ordinarios sin operaciones.
+
+INSTALL1621 («Instalar y desinstalar software», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): catorce literales y la variante en español con lectura verificada y final fiel; un literal con una frase inventada; la variante en inglés rechazada por la política de la App (reversed_result sobre «cannot»); dos límites aprobados; sin par de variantes, sin créditos, 0 créditos. Adjudicación 01d108ba8f8b559959311e8f361ad75284c2f3d1128e1e36b8ea2013762e182c. Medición raíz: el compositor de la mente ya acepta el título puntuado y la pasiva inglesa; la política de la App marca «cannot» como fallo sin máscara para la consecuencia de biblioteca, y el modelo insinuó una licencia en un caso; siguiente INSTALL1623.
+
+---
+
 # INSTALL1619 adjudicado — 2026-09-15T22:57:24.226999+00:00
 
 **551/742 cubiertos, 191 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 8696a59d92a821ef9e9e2fa34250d92e5d38f2afc2f89b29d0525169cdbd681e. Primeras altas 24 h >= 425 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a1d68f1c con BUILD1619 (el final de biblioteca nombra el juego sin la palabra «título»). Turnos ordinarios sin operaciones.
