@@ -1,3 +1,25 @@
+## MUSIC1561 — estado vigente 2026-09-15T13:23:09.322547+00:00
+
+Parcial: 7 aprobados, 2 fallidos, 1 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 523/742 | 219 | 0 | >=397 | 5/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 397 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1561 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: MUSIC1561: 9 ejecutados (el límite 9 no se ejecutó: el proceso raíz se interrumpió tras escribir su recibo de fixture), 7 aprobados, 2 fallidos, 0 créditos (índices []); Música 9/39. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1561/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 222.51 s acumulados; pico GPU 3515.54 MiB; pico RAM 2675.93 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1561 precedente. -->
+
 ## MUSIC1559 — estado vigente 2026-09-15T07:19:07.328252+00:00
 
 Parcial: 7 aprobados, 3 fallidos, -3 sin ejecutar; 0 créditos.

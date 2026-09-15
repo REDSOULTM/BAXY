@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1561-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (los valores observados quedan exentos del veto de instrucción copiada; las comprobaciones de título comparan sin acentos) y src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs (yt-dlp con --encoding utf-8; ventana de verificación de 120 × 250 ms).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1561/SOURCE.patch",
+  "commits": [
+    "32ab800164dc20801611f0d9764ea5365c791d36"
+  ],
+  "build": "BUILD1561 (C03-repairs1561-build/BUILD_READY.json; Providers y mente)",
+  "cause_measured": "MUSIC1561: el veto de eco tomó por instrucción copiada el título observado que la pista nombra; el título llegó en la página de códigos de la consola y el borrador lo escribió con acento; una mezcla larga no arrancó en 12,5 s.",
+  "change": "Exención de valores observados en el veto de eco, títulos sin acentos, UTF-8 y treinta segundos de verificación; sin respuestas fijas.",
+  "measurement": "MUSIC1561: 9 ejecutados (el límite de identidad no se ejecutó), 7 aprobados, 2 fallidos (un literal y una variante); 0 créditos. Medido: los cinco literales y las dos variantes se propusieron, aprobaron, reprodujeron y verificaron en el reproductor local (las mezclas largas arrancan en la ventana de treinta segundos; los títulos llegan en UTF-8); seis finales nombraron el título observado completo, pero H0598 y «poneme algo de música alegre» perdieron el suyo: tras un borrador que juzgó la pertinencia u omitió el título, los reintentos escribieron el título solo y luego «Estoy escuchando «…»», que el veto de estado no lee como reproducción (missing_state). El límite de identidad no se ejecutó (proceso raíz interrumpido tras escribir el recibo de fixture; el instrumento sellado no admite segunda ejecución). Sin la segunda variante aprobada no hay crédito. Siguiente: «escuchando» cuenta como estado de reproducción y la pista de missing_state nombra el estado a afirmar (MUSIC1563).",
+  "credits": 0
+}
