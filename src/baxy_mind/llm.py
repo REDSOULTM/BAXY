@@ -6572,8 +6572,8 @@ def compose_visible_defect(
         failure_assertions = re.sub(
             r"\b(?:no\s+(?:puedo|podre|podria|se\s+puede|es\s+posible|voy\s+a\s+poder)|"
             r"(?:i\s+)?(?:can't|cannot|can\s+not|couldn't|could\s+not|am\s+unable\s+to|it\s+is\s+not\s+possible\s+to|won't\s+be\s+able\s+to))"
-            r"\s+(?:descargar|descargarlo|descargarla|descargartelo|bajar|bajarlo|bajarla|instalar|instalarlo|instalarla|instalartelo|"
-            r"desinstalar|desinstalarlo|desinstalarla|download|install|uninstall|remove)"
+            r"\s+(?:be\s+)?(?:descargar|descargarlo|descargarla|descargartelo|descargarse|bajar|bajarlo|bajarla|instalar|instalarlo|instalarla|instalartelo|instalarse|"
+            r"desinstalar|desinstalarlo|desinstalarla|desinstalarse|download|downloaded|install|installed|uninstall|uninstalled|remove|removed)"
             r"[^.;]{0,80}",
             "",
             _accent_folded_with_punctuation(failure_assertions),
@@ -6974,7 +6974,16 @@ def compose_visible_defect(
             # when the draft writes it with single ones.
             title_named = title.casefold() in folded or re.search(
                 r"\s+".join(re.escape(part) for part in _reading_fold(title).split()), _reading_fold(stripped)
-            ) is not None
+            ) is not None or (
+                # INSTALL1619: the model wrote «Batman: Arkham Knight» for the
+                # library title «batman arkham knight»; punctuation between the
+                # words of the game's title still names it.
+                operation == "game.entitlement.named"
+                and re.search(
+                    r"[\s:,\-–—.]+".join(re.escape(part) for part in _reading_fold(title).split()),
+                    _reading_fold(stripped),
+                ) is not None
+            )
             if not title_named or (
                 operation != "media.status" and not verified_media_transport
                 and scheduled_due is None
