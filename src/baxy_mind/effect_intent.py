@@ -15001,7 +15001,16 @@ def steam_library_title(text: str) -> str | None:
         return None
     match = _STEAM_LIBRARY_REQUEST.fullmatch(folded.rstrip(".!?").strip())
     if match is None:
-        return None
+        # INSTALL1627 H0396/H0456: the request is followed by instructions
+        # about the same install (an AppID, a steam:// URL, the store page);
+        # the first sentence is the request, the rest names no other effect.
+        head, separator, rest = folded.partition(". ")
+        if separator and _has(rest, r"\bapp\s*id\b|steam://|store\.steampowered\.com") and not _has(
+            rest, r"\b(?:luego|despues|then|y\s+(?:abre|lanza|abri|ejecuta|open|launch|run)|cierra|close)\b",
+        ):
+            match = _STEAM_LIBRARY_REQUEST.fullmatch(head.rstrip(".!?").strip())
+        if match is None:
+            return None
     title = match.group("title").strip(" .")
     if not title or _has(title, r"^(?:el|la|the|un|una|a|an|juego|game|algo|something)$"):
         return None
