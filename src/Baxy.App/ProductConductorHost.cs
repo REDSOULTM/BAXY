@@ -192,6 +192,12 @@ internal static class ProductConductorHost
                 conductor, command, timeout, profileDirectory, capture, cancellationToken)
                 .ConfigureAwait(true);
         }
+        if (cmd == "turn.memory-then")
+        {
+            return await ExecuteMemoryThenAsync(
+                conductor, command, timeout, capture, cancellationToken)
+                .ConfigureAwait(true);
+        }
         if (cmd == "turn.confirm-if-matches")
         {
             string? caseId = command["caseId"] is JsonValue caseValue
@@ -643,7 +649,8 @@ internal static class ProductConductorHost
         JsonObject command,
         TimeSpan timeout,
         StreamWriter? capture,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+        string completionPhase = "final")
     {
         string? caseId = ReviewString(command, "caseId");
         string? text = ReviewString(command, "text");
@@ -685,6 +692,73 @@ internal static class ProductConductorHost
 
         // The private channel reads the same closed reply words a person types.
         ProductTurnResult final = await conductor.TurnAsync("confirmar", timeout, cancellationToken)
+            .ConfigureAwait(true);
+        // MEMORY1599: a save that a recall continues is emitted as an
+        // intermediate «request» phase; the case's final is the recall.
+        await EmitTurnAsync(final, capture, cancellationToken, caseId, completionPhase)
+            .ConfigureAwait(true);
+        return !final.TimedOut
+            && final.Terminal == ProductTurnTerminal.PublishedFinal
+            && !final.Posterior.HasPendingPlan && !final.Posterior.HasCompositionError;
+    }
+
+    /// <summary>
+    /// MEMORY1599 «como me llamo» / «que me gusta tomar»: a recall needs a
+    /// prior save in the same profile. The explicit save runs first through
+    /// the private-memory activation handshake (its request and completion
+    /// emitted as the two «request» phases), then the scripted recall runs as
+    /// an ordinary turn whose terminal is the case's «final». Nothing follows
+    /// a save that did not complete.
+    /// </summary>
+    private static async Task<bool> ExecuteMemoryThenAsync(
+        ProductConductor conductor,
+        JsonObject command,
+        TimeSpan timeout,
+        StreamWriter? capture,
+        CancellationToken cancellationToken)
+    {
+        string? caseId = ReviewString(command, "caseId");
+        string? text = ReviewString(command, "text");
+        string? expectedOperation = ReviewString(command, "expectedOperation");
+        string? followup = ReviewString(command, "followup");
+        async Task<bool> RejectAsync(string diagnostic)
+        {
+            await EmitTurnAsync(conductor.RejectConfirmation(diagnostic),
+                capture, cancellationToken, caseId, "final").ConfigureAwait(true);
+            return false;
+        }
+
+        if (command.Count != 5 || string.IsNullOrWhiteSpace(caseId)
+            || string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(expectedOperation)
+            || string.IsNullOrWhiteSpace(followup)
+            || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
+        {
+            return await RejectAsync("memory_then_command_not_admitted").ConfigureAwait(true);
+        }
+
+        var save = new JsonObject
+        {
+            ["cmd"] = "turn.memory-confirm",
+            ["text"] = text,
+            ["caseId"] = caseId,
+            ["expectedOperation"] = expectedOperation,
+        };
+        var started = System.Diagnostics.Stopwatch.StartNew();
+        bool saved = await ExecuteMemoryConfirmAsync(
+            conductor, save, timeout, capture, cancellationToken, completionPhase: "request")
+            .ConfigureAwait(true);
+        if (!saved || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
+        {
+            return false;
+        }
+
+        TimeSpan remaining = timeout - started.Elapsed;
+        if (remaining <= TimeSpan.Zero)
+        {
+            return await RejectAsync("memory_then_timed_out").ConfigureAwait(true);
+        }
+
+        ProductTurnResult final = await conductor.TurnAsync(followup, remaining, cancellationToken)
             .ConfigureAwait(true);
         await EmitTurnAsync(final, capture, cancellationToken, caseId, "final")
             .ConfigureAwait(true);

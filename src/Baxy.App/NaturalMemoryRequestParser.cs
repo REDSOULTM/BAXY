@@ -865,6 +865,16 @@ internal static partial class NaturalMemoryRequestParser
             return true;
         }
 
+        // MEMORY1599 «que me gusta tomar» recalls favorite_drink, so «recuerda
+        // que me gusta tomar mate» must save that selector, not a generic fact.
+        match = FavoriteDrinkSavePattern().Match(command);
+        if (match.Success
+            && TrySafeCapturedValue(match.Groups["value"].Value, out string drink))
+        {
+            operation = Save("favorite_drink", drink, "preference", "persistent");
+            return true;
+        }
+
         match = NameSavePattern().Match(command);
         if (match.Success
             && TrySafeCapturedValue(match.Groups["value"].Value, out string name))
@@ -947,6 +957,12 @@ internal static partial class NaturalMemoryRequestParser
         if (FavoriteColorRecallPattern().IsMatch(command))
         {
             operation = Recall("exact", "favorite_color");
+            return true;
+        }
+
+        if (FavoriteDrinkRecallPattern().IsMatch(command))
+        {
+            operation = Recall("exact", "favorite_drink");
             return true;
         }
 
@@ -1711,6 +1727,11 @@ internal static partial class NaturalMemoryRequestParser
     private static partial Regex FavoriteColorSavePattern();
 
     [GeneratedRegex(
+        "^(?:(?:recuerda|record[aá]|acordate|acuérdate|guarda|guard[aá]|remember)(?:[ ]+que|[ ]+that)?)[ ]+(?:me[ ]+gusta[ ]+(?:tomar|beber)|mi[ ]+bebida[ ]+favorita[ ]+es|i[ ]+like[ ]+to[ ]+drink|my[ ]+favorite[ ]+drink[ ]+is)[ ]+(?:el[ ]+|la[ ]+|the[ ]+)?(?<value>[\\p{L}][\\p{L} -]{0,39})$",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex FavoriteDrinkSavePattern();
+
+    [GeneratedRegex(
         // «recordá que me llamo …» (voseo), «acordate que me llamo …» and «quiero que
         // me recuerdes como …» ask to persist the name as plainly as «recuerda que
         // me llamo …» (MEMORY1245: H0149 read as a reminder without a time).
@@ -1824,6 +1845,11 @@ internal static partial class NaturalMemoryRequestParser
         "^(?:qu[eé][ ]+color[ ]+me[ ]+gusta|what(?:[ ]+is|'s)[ ]+my[ ]+favorite[ ]+color)$",
         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
     private static partial Regex FavoriteColorRecallPattern();
+
+    [GeneratedRegex(
+        "^(?:(?:decime|dime|sab[eé]s)[ ]+)?(?:qu[eé][ ]+(?:me[ ]+gusta|bebida[ ]+me[ ]+gusta)[ ]+(?:tomar|beber)|cu[aá]l[ ]+es[ ]+mi[ ]+bebida[ ]+favorita|what(?:[ ]+is|'s)[ ]+my[ ]+favorite[ ]+drink|what[ ]+do[ ]+i[ ]+like[ ]+to[ ]+drink)$",
+        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+    private static partial Regex FavoriteDrinkRecallPattern();
 
     [GeneratedRegex(
         "^(?:borra|olvida|delete|forget)[ ]+(?:mi|my)[ ]+(?:color[ ]+favorito|favorite[ ]+color)$",
