@@ -660,3 +660,7 @@ Conocimiento, razonamiento y creatividad verbal pasa de 35/37 a 35/37 con la ofe
 ## Actualización 2026-09-14 (KNOWLEDGE1529)
 
 Conocimiento, razonamiento y creatividad verbal pasa de 35/37 a 36/37 con el contrato de la oferta que admite tres oraciones (commit fd5e1b2f, BUILD1529) (HEAD fd5e1b2f): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes dijeron que BAXY no necesita la cosa, nombrándola, y ofrecieron hacer algo con ella si era la intención, sin aceptar, sin gustos inventados ni pregunta («No necesito un acompañante de Batman, gracias por compartirlo. Si quisieras que haga algo con eso, por favor dime.»); los tres límites pasaron. Cero operaciones y cero violaciones en los seis.
+
+## Actualización 2026-09-14 (GAMES1531)
+
+Bibliotecas y fichas de juegos pasa de 0/6 a 1/6 con la biblioteca de Steam listada en local sin abrir Steam (commit 2bef0b2f, BUILD1531) (HEAD 2bef0b2f): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes ejecutaron una game.catalog.list de sólo lectura sobre los manifiestos locales y dijeron el total real de juegos instalados, seis nombres tal cual y que hay más, sin abrir Steam (los nombres citados y la cifra coinciden con la observación); los tres límites pasaron. Cero violaciones en los seis.

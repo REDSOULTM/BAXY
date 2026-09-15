@@ -1,3 +1,11 @@
+# GAMES1531 adjudicado — 2026-09-15T03:09:03.390179+00:00
+
+**514/742 cubiertos, 228 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 67dfde98e62b437a77df8488e7525288c6558fea1d088846c60eb8601983e459. Primeras altas 24 h >= 388 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 2bef0b2f con BUILD1531 (ver la biblioteca de Steam es el listado local de sólo lectura, contado y nombrado tal cual; GAMES1531/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+GAMES1531 («Bibliotecas y fichas de juegos», H0274 «Ver la biblioteca de Steam»): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Adjudicación a97569118e09cfce473b155fbd186f06191c7ea3be16fa2bf82a9aeae6b63379. El literal y las dos variantes ejecutaron una game.catalog.list de sólo lectura sobre los manifiestos locales y dijeron el total real de juegos instalados, seis nombres tal cual y que hay más, sin abrir Steam (los nombres citados y la cifra coinciden con la observación); los tres límites pasaron. Cero violaciones en los seis.
+
+---
+
 # KNOWLEDGE1529 adjudicado — 2026-09-15T02:59:22.655757+00:00
 
 **513/742 cubiertos, 229 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 2359d9989924a4b68bd42128e64b4c6ee205e964eb8127454bbd59d5a870fc96. Primeras altas 24 h >= 387 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD fd5e1b2f con BUILD1529 (el contrato de la oferta admite tres oraciones y sólo rechaza la aceptación real; KNOWLEDGE1529/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

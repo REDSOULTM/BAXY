@@ -1,0 +1,369 @@
+{
+  "schema": "games1531-root-adjudication-v2",
+  "decided_at_utc": "2026-09-15T03:09:03.390179+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "2bef0b2f6901c432c48ce274af91b7c34b908942",
+  "decisions_sha256": "5cc905a2168e09772d7874b37c7f994eba454c4d3902c77b2240ad185c2cc21f",
+  "registry_before_sha256": "2359d9989924a4b68bd42128e64b4c6ee205e964eb8127454bbd59d5a870fc96",
+  "registry_before_counts": {
+    "covered": 513,
+    "open": 229,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "f2c49918fced99e1ae4db9282bdb1775c6bf63598f75ccb5ed0eb24ea22e9e7a",
+  "preparation_sha256": "a268b9cfd6544add29707bce18f1a368c67093c661d91e04a01fdeca0d146a71",
+  "passed": 6,
+  "failed": 0,
+  "unexecuted": 0,
+  "executed": 6,
+  "segments_started": 6,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [
+    "H0274"
+  ],
+  "counters": {
+    "covered": 514,
+    "open": 228,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 387,
+    "categories_total": 35,
+    "categories_closed_after": 4,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 387 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); GAMES1531 añade 1. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 388
+  },
+  "resources": {
+    "seconds_sum": 109.15599999998813,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1515.02734375
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0274",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        1,
+        2
+      ],
+      "reason": "Respuesta fiel: listó en local la biblioteca de Steam y dijo cuántos juegos hay y sus nombres tal cual, sin abrir Steam; crédito con dos variantes aprobadas del grupo.",
+      "observation_note": "Turno ordinario: una game.catalog.list de sólo lectura completada y verificada sobre los manifiestos locales, sin abrir Steam; cero confirmaciones; cero violaciones; pins intactos.",
+      "final_sha256": "a5859676adb7387a7c618c1a77103d13673d56c3af95bfd4885512e976ffe03b",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-00\\EXIT.json": "a4974143bdcb4d69f6e42a8e5c844c3844169b0aab3b73a38c7a03a8d75b1a48",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-00\\RESOURCES.json": "bb94a8f84276fe7ea3edb542a783e9b0d4368bc0a81053fb11b842857be501e2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\profile-owner-00.json": "9914b2d8db146e880a2a9f63d96ba52f11eb74fbd2d9046a4ebba82cb2018548",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-00\\PREREG.json": "23a2518fb1b6dfaa964877fb908a9674dab6469f913d1e67fad068f14953f08f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-00\\capture\\events.jsonl": "e1b10c1756f739d7a8f485eb9b0ed7d1b5b2f7efc62f1bd35e06db2338c22e66",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-00\\turns.jsonl": "e124de40e24478014c5d86ef9849ed5c483f89bcc0398eeddf6e0a9afd638861",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\fixture-00.json": "37e4a5ed45712298114a4d1fed75bf29cab4353cbcb1512c38bdf4d7e218da56",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\context-00.json": "0803d0c451014b55c2fc29fda48aa15b04ee79499ddd246150078a36ea03fb24",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\context-prelaunch-00.json": "4409fda367512aed202ef5ec1b0cfe9faf974496c2e427b3fb7725e3660af49b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-00\\case-observations.json": "7d77761f018f5849ab7f1d3b0d6f43d4e75237738cc52379e845709b50f101b6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-00\\journal-before.json": "6316888795492c3f311d6fd00df92b0e6e314d2e2ab0132322188213fef14549",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-00\\journal-after.json": "0d9cc42c1726b67bcccf5030029db39ce7898d5ec3591d65be455488af0a80d4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "d15cff47b6f699788a841f591a84505f160d289d80d637048f268ae71b9fed19"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "6d5c774d-c988-4338-ba13-065596aeb26c",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "598d614c-d84f-4cfd-a59b-0ff8b6963fba",
+          "operation": "game.catalog.list",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "games1531-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Buscó de sólo lectura, el motor no devolvió páginas pertinentes y el final lo dijo con verdad sin inventar pronóstico.",
+      "observation_note": "Turno ordinario: una game.catalog.list de sólo lectura completada y verificada sobre los manifiestos locales, sin abrir Steam; cero confirmaciones; cero violaciones; pins intactos.",
+      "final_sha256": "1d34b148b8c6d424ed7fdd0fcb5fff65b261decc2026fc18648d82aeb3d1a678",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-01\\EXIT.json": "11f178f38066672997fe71cfa24251eb844db7b1decbf82880603a19034d8ce6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-01\\RESOURCES.json": "ba4a508b96514ee53d7dd6081c21735607b9ae16f054e8e7fc6bf97b0d07c6d0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\profile-owner-01.json": "37418517abff5aec466726cb475217e131dba826305763b3bd33f7a7f3b46f1d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-01\\PREREG.json": "142d44b4d44ec4b66762f488bc2a5639298a4d029c47c6c1d22e8138d19240bc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-01\\capture\\events.jsonl": "55c8d3c47068d7c3aa4effc7e6cfed92a319a500fd98994385ccd6fdcb50cfd9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-01\\turns.jsonl": "cc594b56d35ed3c11f75c0263c31e3fbd9f1bbe7b0f1a70c1e9dd852908626f8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\fixture-01.json": "8ef64ca5463d69b5283f53033e2b058bbffc1c68ba80df2c36d4f90136727a0d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\context-01.json": "e57ed5ae645553c8890864078fefb0616eabeffb28ae2f825c4dd33bccea3586",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\context-prelaunch-01.json": "d19b12bff66aa6322134bd83c9822ff1b8f809e5a1686a9d9a9e39fa066c4b0d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-01\\case-observations.json": "c329a462043781530cae2ad0827043bcecbf4d94dc9b3aa999a772bcf7f9a9e8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-01\\journal-before.json": "93d0cdf7e2def591f40ab03850d697ef4bdeb33b493cc89063c97ba80022c8ae",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-01\\journal-after.json": "190ae3c6b3a1bdaca62faec31a834179a835262b9f81bfca9787a18ce6a56c51",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "fa23f1f9234b8c26e4942344e984750356af4c910a9f6e91fbcb39754054bd78"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "932b3d01-d7fd-462c-8b44-7ae11ff257aa",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "76804205-3a11-4db8-8cfd-f5c3a142b72c",
+          "operation": "game.catalog.list",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "games1531-dev-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Buscó de sólo lectura, el motor no devolvió páginas pertinentes y el final lo dijo con verdad sin inventar pronóstico.",
+      "observation_note": "Turno ordinario: una game.catalog.list de sólo lectura completada y verificada sobre los manifiestos locales, sin abrir Steam; cero confirmaciones; cero violaciones; pins intactos.",
+      "final_sha256": "1d34b148b8c6d424ed7fdd0fcb5fff65b261decc2026fc18648d82aeb3d1a678",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-02\\EXIT.json": "9d6912785cb2f651bdfbeaebc36f3968c989ea8b68f33e5ca9932d23830d75af",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-02\\RESOURCES.json": "ffe0b5341afdc4c4890f10b7bab1a9f6ec4e9138216eff7d8bb43e610c80a2c0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\profile-owner-02.json": "3c8bca4829977ce4358d135074f81634fdb0eb2b393e73e2c55cb77042726946",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-02\\PREREG.json": "6e1a11a56078dbe6764bcee0df3514abfdbc8ef46490baca2a34067421595458",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-02\\capture\\events.jsonl": "64b5597a235ffce6889c5ae8dd078a465f6d44b2ff3089c5c75be0f52b1c425a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-02\\turns.jsonl": "cd5532eb638992a3ac00319ac2762bed07cc28e4ead3bb2e77d1e26be43f0517",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\fixture-02.json": "2cae29759682cde0807b802639858ff52568faa0b0cc9ea2aef98f92fc1b87e7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\context-02.json": "8adc156fb68471ef1f418e1460540313e9ba9c9563eda47098a662eec109b753",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\context-prelaunch-02.json": "a5e32ad17c7d51f4da339ed8a35faccfbf8ba2ce02749eba043d667ea80a49de",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-02\\case-observations.json": "8dabf28a25b15295cdbe5b1961e915df389a31160f9996b41f03e8340b19418e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-02\\journal-before.json": "848451a4908b904a89e5a29d0ce56e3c51b573800cdb660f49035b237a992f53",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-02\\journal-after.json": "5d4025169ae5d84920a2bf5d32d04bd4962942771ef1ce091bd0053d231d2a11",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "73c8edba328baaf71c5b411879b42e1b5cb27d028f721608e6e56ae4cd3c18cf"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "df6544ad-23ca-4a8e-9ac3-b7622b95fa79",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "b415ab50-f14f-466f-873f-be8308aaabd3",
+          "operation": "game.catalog.list",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "games1531-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "b49ec80a5e55ce5fc1e721e776739829c324d3329210cbd5ba010d9e88093720",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-03\\EXIT.json": "c67a0dd28ea355a617d9ab7a30498b7ce2347f240b188a673fbe16057c1f6dc8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-03\\RESOURCES.json": "c9e49addf5fc2ef81f5e2a6b097daebf9c4f2d60a5f02fa3ae393afe414862d0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\profile-owner-03.json": "ad3bbbe447af6f31a1c759a47522cfaae13f0c2bca2649454f56e73ee8008238",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-03\\PREREG.json": "fa4e4e35d2f91384177f7ad9c585210603340336a83d5bbe9b6e830840f4c351",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-03\\capture\\events.jsonl": "24e3a7cd44099c2ab86039ffbe8e126463b05c19ff137e4f747bd21745b88940",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-03\\turns.jsonl": "e8541abc417b614962e44cc64f0d698f76e6d7c274427585efcd18c663af71b5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\fixture-03.json": "524216c6a8e77e27ea2ef9d9450958aa7dab4993782789cbf37d60e2a26adb5b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\context-03.json": "0d3749bd2877ead7db801487a88b04a5ed645f2ed8b9654a8ca101792280ceac",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\context-prelaunch-03.json": "abd98aa83a1035365a560eb3888bffcb2347ee415ec10abf496f913d5e5d0405",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-03\\case-observations.json": "30af3cf493e04ef1e9dba6f948e1223d86b0de2fd30dcd67ca1daf632f0961a4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-03\\journal-before.json": "cc8e1c8b543f84b17d8c53430c1fb0ad5b1ee7cb67364b2bd84bbdb5cdc4a2d9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-03\\journal-after.json": "23821540e1ad85f1c1fa5bda98ce7e41a843e036cb50091f26e27adc106998a6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "2057879b4f91b13a155ed70e880be2e131fddef489d0f073d150612a84911b53"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "c236d619-96bf-403f-b783-d448defd7ae9",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "games1531-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "d9704c2c08753653993b0991e2efea217a51df60564c7c97b5381467718a428b",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-04\\EXIT.json": "73d3108a4d05156b32706802fbc20b0364d35328de3b839fb25fc09ff9309760",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-04\\RESOURCES.json": "9b2fa920824e024385119a257a697bff816bc398bc317f3b7689a7dd2f1b0888",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\profile-owner-04.json": "62ed15268850259053497bc519feebce1436d8b8ff4e46fb7b85b9116d71c0ed",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-04\\PREREG.json": "6222a83b96ad2acf4bb82ea669fc4ba3605e64050e638e163654b5a9f3dc889a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-04\\capture\\events.jsonl": "01dde1fa7fd012010170b8b9182f53d37d1eae93e8b3e0d9c3e5324d211a7b5d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-04\\turns.jsonl": "1e90af2e7c6bf72106a099f6390c03528648507917010b1a7999a85b328586b1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\fixture-04.json": "2a744f81599113f8670dad8dba38c0ebee5dd0008b7afd83d28f86d47959f086",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\context-04.json": "2abf696f172a1071d93f2ddfe4d2eb7c8fa8a78ba0864a0911e71849c5890ad6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\context-prelaunch-04.json": "0a04d5fa0b4d13e45e005882da062ec5f150beace9ffae2e394f5ae4acd4e688",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-04\\case-observations.json": "6b73ac9aaa3584dce9a1e5c1da43338c72f0ed691538fe0f437557c5c656c82a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-04\\journal-before.json": "0529d9fbd9c70b8dd57f6744a8e66dfd47ed1dbcd9efafd4f3dceeb85de907e0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-04\\journal-after.json": "42e12a771e06f8a7e4648eb44cc197a2ee8a8e20feb36b51fe1ff9833cab4524",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "7dab46320e3f8132cd77a258168de4b324cb8f54216f7f6a559c26080b13f867"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "fa1f169e-4d15-4ed7-89c0-4b717cec3e3e",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "games1531-boundary-03",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "1026f757f1610d2f691d8ffb319a6e43c2133298c7bd7dbdfd8903317098a76c",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-05\\EXIT.json": "99433c401a7010e43dc9b9e314807dfa6696bb393d0d81afc2b2360da203e1f8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-05\\RESOURCES.json": "ebc103f0b1dcf35b6dd8bc4944a3895c23020e2b3b664465a884e709f2bdccf2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\profile-owner-05.json": "d0291e6626925b1f0f9639a6b5b96bb756023fc2a47d3796be2f1bf104678167",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-05\\PREREG.json": "6620c5dc2b0d203cdeec26062947657769757b5f8bf1dc3ac8e4b8b39e1730d7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-05\\capture\\events.jsonl": "7bb0a960a5ca441e430f9c74e6ad076f534f5569c5a9c61bb7f9f087aae4bd8b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-05\\turns.jsonl": "a3e7cea01c6f2c5eddc3b9c346c3799b44d9f626bb8e139ed3b55912f1cae3fb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\fixture-05.json": "3586c674d9ea95033802aa6b43cefa328a8bf76e0cbac3f4388dd01330a0b10b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\context-05.json": "8de3b9bf4eba8d22d2163476a33c0d43ac35b6b34c7cdf226fb0701bab2c86fb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\context-prelaunch-05.json": "385f7d9a079b84e4108305c85bf866cbce593d8a469a6a087b7ab817ae61ba08",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-05\\case-observations.json": "51b999d4a0a690141b93272a2a0780b3b1c7fe18df541a6fd755d23c8c11dfb2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-05\\journal-before.json": "1b6309c4386a35a6bc015ddc6945fbae76f9326ca9a07a88f211f638e74b6665",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-05\\journal-after.json": "1ef3502a60ff118ba972d4036345000e33f41a81a5bb1412879394a30ea4e624",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "ce77c90b99a7148233eb301c8b57175b564dbcf8838e58f917ec1386e752f0ce"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "443bd4a0-3492-4844-a62b-07bb4aef29c5",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "GAMES1531: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]); Bibliotecas y fichas de juegos 1/6. Siguiente: categoría por masa abierta según CONDICIONES.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

@@ -1,0 +1,24 @@
+{
+  "index": 1,
+  "case_id": "games1531-dev-01",
+  "terminal_kind": "published_final",
+  "final_sha256": "1d34b148b8c6d424ed7fdd0fcb5fff65b261decc2026fc18648d82aeb3d1a678",
+  "clients_absent_before": true,
+  "verdict": "passed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 15.48399999999674,
+    "gpu_peak_mib": 3495.55859375,
+    "ram_peak_mib": 1513.50390625,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-01\\EXIT.json": "11f178f38066672997fe71cfa24251eb844db7b1decbf82880603a19034d8ce6",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\results\\case-01\\RESOURCES.json": "ba4a508b96514ee53d7dd6081c21735607b9ae16f054e8e7fc6bf97b0d07c6d0",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-games1531-instrument-v1\\private\\run-01\\case-observations.json": "c329a462043781530cae2ad0827043bcecbf4d94dc9b3aa999a772bcf7f9a9e8"
+  }
+}

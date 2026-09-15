@@ -1,0 +1,15 @@
+{
+  "schema": "c03-games1531-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (el lector del listado del catálogo de Steam acepta ver/mirar/mostrame/muéstrame/dame/quiero ver además de lista/muestra) y src/baxy_mind/llm.py (_project_game_listing: cuántos juegos instalados y sus nombres tal cual, como el listado de carpetas; instrucción propia para game.catalog.list; el veto de nombres citados y cifras del listado se aplica también a los juegos).",
+  "patch": "artifacts/comprobaciones/C03/GAMES1531/SOURCE.patch",
+  "commits": [
+    "2bef0b2f6901c432c48ce274af91b7c34b908942"
+  ],
+  "build": "BUILD1531 (C03-repairs1531-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "«Ver la biblioteca de Steam» no llegaba a ningún lector: el listado del catálogo sólo aceptaba «lista/muestra … biblioteca … steam», y el compositor no tenía proyección del listado de juegos.",
+  "change": "Cabezas de ver/mostrar en el lector del catálogo y proyección del listado de juegos con instrucción y veto; sin respuestas fijas.",
+  "measurement": "GAMES1531: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. El literal y las dos variantes ejecutaron una game.catalog.list de sólo lectura sobre los manifiestos locales y dijeron el total real de juegos instalados, seis nombres tal cual y que hay más, sin abrir Steam (los nombres citados y la cifra coinciden con la observación); los tres límites pasaron. Cero violaciones en los seis.",
+  "credits": 1
+}
