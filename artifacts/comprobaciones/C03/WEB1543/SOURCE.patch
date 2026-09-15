@@ -1,0 +1,33 @@
+commit 91ed5738b0a57a57b4e849d526a5e017100d52cf
+
+C03: the CDP page read and tab listing declare that a read observes no effect (WEB1543)
+
+WEB1541 measured that the reviewed page read was proposed, approved by the root reviewer and executed over the root fixture, but the kernel failed it: the browser.page.read descriptor, privacy-sensitive, inherited the default that a non-read-only operation must observe an effect, and the CDP adapter truthfully reports that a read observes none (external_verification_failed / external_effect_unobserved). browser.page.read and browser.tabs.list now declare requiresObservedEffect: false, like ocr.read; nothing else in the catalog changes.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Kernel/Operations/ProductCatalog.cs b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+index 7f165b44..c9b55e3b 100644
+--- a/src/Baxy.Kernel/Operations/ProductCatalog.cs
++++ b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+@@ -219,14 +219,17 @@ public static class ProductCatalog
+             OperationRisks.PrivacySensitive,
+             "browser.page.read.cdp.dom.snapshot.v1",
+             ToolExposure.Public,
+-            "Lee titulo, URL y texto visible de la pagina CDP activa sin modificarla y limita el contenido devuelto."),
++            "Lee titulo, URL y texto visible de la pagina CDP activa sin modificarla y limita el contenido devuelto.",
++            // WEB1541: a read observes no effect; the receipt says so truthfully.
++            requiresObservedEffect: false),
+         Descriptor(
+             "browser.tabs.list",
+             Schema([Integer("limit", 1, 50)], []),
+             OperationRisks.PrivacySensitive,
+             "browser.tabs.list.cdp.targets.snapshot.v1",
+             ToolExposure.Public,
+-            "Enumera las pestanas web de la sesion CDP local con identidad, titulo y URL observados."),
++            "Enumera las pestanas web de la sesion CDP local con identidad, titulo y URL observados.",
++            requiresObservedEffect: false),
+         Descriptor(
+             "calendar.event.create",
+             Schema(

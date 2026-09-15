@@ -1,3 +1,11 @@
+# WEB1543 adjudicado — 2026-09-15T04:54:06.412155+00:00
+
+**519/742 cubiertos, 223 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA aa90864d30e8357b540af787b089e7c43ba4879d511c2722c8b9929ccfc34675. Primeras altas 24 h >= 393 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 91ed5738 con BUILD1543 (la lectura de página declara no observar ningún efecto). La raíz aprueba sólo una browser.page.read sin destino (approve_read.py) sobre su propio fixture (Edge y página del raíz); el texto leído es el de esa página y nunca el de una página del dueño.
+
+WEB1543 («Leer y resumir páginas web», H0561 «resumime esta página», H0738 «resumime la página actual», lectura revisada de la página abierta en la sesión del navegador sobre el fixture raíz): 7 ejecutados, 7 aprobados, 0 fallidos, 2 créditos. Adjudicación 0c2e3b1cc82de44532a990bb57b3f92676a269f809bbb6541ca3af25980951e7. Medido: los descriptores de lectura CDP declaran que no observan efecto; las cuatro lecturas revisadas se completaron y verificaron sobre el fixture raíz y los finales nombraron la página y citaron su primer párrafo tal cual (el juez de citas contra el fixture no halló pasaje ni cifra ajenos). H0561 y H0738 acreditados con sus dos variantes; la categoría queda cerrada.
+
+---
+
 # WEB1541 adjudicado — 2026-09-15T04:27:27.034336+00:00
 
 **517/742 cubiertos, 225 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 63206a4dbc7e9e6cd291a882fee31cb645be910dcf9f1ef48db8815861111cb9. Primeras altas 24 h >= 391 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD be724dbe con BUILD1541 (el conductor revisado propone la lectura de página al revisor raíz). La raíz aprueba sólo una capture.screenshot sin argumentos (approve_capture.py); la captura queda en el directorio privado del perfil y nunca se publica.

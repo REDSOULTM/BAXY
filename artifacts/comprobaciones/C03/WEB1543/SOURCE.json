@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1543-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (browser.page.read y browser.tabs.list declaran requiresObservedEffect: false, como ocr.read: una lectura no observa ningún efecto y el núcleo ya no la da por fallida por ello).",
+  "patch": "artifacts/comprobaciones/C03/WEB1543/SOURCE.patch",
+  "commits": [
+    "91ed5738b0a57a57b4e849d526a5e017100d52cf"
+  ],
+  "build": "BUILD1543 (C03-repairs1543-build/BUILD_READY.json; Kernel)",
+  "cause_measured": "WEB1541: la lectura revisada y aprobada se ejecutó, pero el núcleo la dio por fallida porque el descriptor exigía por defecto un efecto observado y una lectura no lo tiene (external_effect_unobserved).",
+  "change": "Los descriptores de lectura CDP declaran que no hay efecto observable; sin respuestas fijas.",
+  "measurement": "WEB1543: 7 ejecutados, 7 aprobados, 0 fallidos; 2 créditos. Medido: los descriptores de lectura CDP declaran que no observan efecto; las cuatro lecturas revisadas se completaron y verificaron sobre el fixture raíz y los finales nombraron la página y citaron su primer párrafo tal cual (el juez de citas contra el fixture no halló pasaje ni cifra ajenos). H0561 y H0738 acreditados con sus dos variantes; la categoría queda cerrada.",
+  "credits": 2
+}
