@@ -1,0 +1,145 @@
+commit f5ca39a5f181ba09ec1fef444e8bfb92d501d532
+
+C03: «dime si …» after a conjunction is the same indirect question; with Steam open, an installed question about a game reads its manifests (APPS1613)
+
+H0275 «Abre Steam y dime si Fall Guys ya está instalado» never resolved: the NETWORK1293 reading of «decime si …» as an indirect question applied only at the start of the request, so after «y» the «si» was taken for a condition and the unsupported-deferred-effect veto refused the whole compound; resolved by hand, its second clause went to the Start catalog (app.installed) although the person had just opened Steam and asked about a game. Now «dime/decime/contame/fijate/tell me si|if|whether» is the indirect question after a conjunction or a clause boundary too; inside a compound that opened Steam, an installed question about a name absent from the Start catalog decides game.installed.named, whose title and provider are read from the clause itself (installed_game_title, installed_game_provider); «decime», «contame» and «fijate» join the observation heads. Registry-wide diff: H0275 (plan app.open + game.installed.named) and H0221 «decime qué onda con el wifi» (wifi.status, the same read that covered it).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index b8b80fd7..9caa85e8 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -4800,6 +4800,14 @@ def _explicit_arguments_from_evidence(
+         name = resolve_application_installed_name(evidence, application_names)
+         return {"name": name} if name is not None else None
+ 
++    if operation == "game.installed.named":
++        # APPS1613 H0275: the title is the clause's own literal; the provider
++        # is the one the clause names, otherwise every manifest family.
++        title = effect_intent.installed_game_title(evidence)
++        if title is None:
++            return None
++        return {"provider": effect_intent.installed_game_provider(evidence), "title": title}
++
+     if operation == "game.launch":
+         app_id = resolve_game_catalog_app_id(evidence, game_catalog)
+         return {"appId": app_id} if app_id is not None else None
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index d1a90045..1bbc3924 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -7813,11 +7813,13 @@ def _has_unsupported_deferred_effect(text: str) -> bool:
+     # NETWORK1293 H0230 «decime si el wifi está prendido»: «decime si …» is an
+     # indirect question, not a condition that defers the request. Read the
+     # rest as the question itself; timing words after it still count.
++    # APPS1613 H0275 «Abre Steam y dime si Fall Guys ya está instalado»: the
++    # same indirect question after a conjunction or a clause boundary.
+     text = re.sub(
+-        r"^([¿?¡!\s]*(?:decime|dime|contame|cuentame|tell\s+me|fijate|chequea|check)\s+)si\b",
+-        r"\1",
++        r"(^[¿?¡!\s]*|[,;.]\s*|\b(?:y|and|luego|then)\s+)"
++        r"((?:decime|dime|contame|cuentame|tell\s+me|fijate|chequea|check)\s+)(?:si|if|whether)\b",
++        r"\1\2",
+         text,
+-        count=1,
+         flags=re.IGNORECASE,
+     )
+     # Retaining a fact for a later question is not scheduling its write. Only
+@@ -10211,7 +10213,7 @@ def _strict_catalog_request(
+         r"sabe(?=\s+en\s+imagen\b)|"
+         r"as(?=\s+a\s+list\b)|find\s+out|"
+         r"consulta|consultar|revisa|revisar|review|inspect|inspecciona|mira|"
+-        r"dime|dame|cuentame|tell|show|display|muestra|muestrame|ensename|"
++        r"dime|decime|contame|fijate|dame|cuentame|tell|show|display|muestra|muestrame|ensename|"
+         r"indica|indicate|detalla|detail|lista|listar|list|give|describe|"
+         r"presenta|present|state|determina|"
+         r"determine|identifica|identify|recitame|recite|"
+@@ -14964,6 +14966,47 @@ def _open_application_spans(text: str) -> tuple[tuple[int, str], ...]:
+     return tuple(applications)
+ 
+ 
++def installed_game_title(text: str) -> str | None:
++    """Read the game named by an installed question («dime si X ya está instalado»).
++
++    APPS1613 H0275: the clause is the person's folded surface; the title is
++    everything between the question head and the installed predicate, without
++    the article, «el juego» or «ya».  Free mentions and other shapes abstain.
++    """
++
++    folded = _strip_request_envelope(_fold(text)).strip().rstrip(".?!").strip()
++    match = re.fullmatch(
++        r"(?:[¿?¡!\s]*(?:y|and|luego|then)\s+)?"
++        r"(?:decime|dime|contame|cuentame|tell\s+me|fijate|chequea|check|"
++        r"comprueba|verifica|revisa|verify|confirm|confirma)\s+"
++        r"(?:si|if|whether)\s+"
++        r"(?:tengo\s+(?:instalado\s+)?|i\s+have\s+(?:installed\s+)?)?"
++        r"(?:(?:el|la|the)\s+)?(?:(?:juego|game)\s+)?"
++        r"(?P<title>[a-z0-9][a-z0-9 .:'&+-]{0,80}?)"
++        r"(?:\s+(?:ya|already|esta|is)){0,2}"
++        r"\s+(?:instalad[oa]|installed)"
++        r"(?:\s+(?:en|on)\s+(?:steam|epic(?:\s+games)?))?",
++        folded,
++    )
++    if match is None:
++        return None
++    title = match.group("title").strip()
++    if not title or _has(title, r"^(?:el|la|the|un|una|a|an|ya|already|esta|is)$"):
++        return None
++    return title
++
++
++def installed_game_provider(text: str) -> str:
++    """The manifest family the installed question names; ``any`` otherwise."""
++
++    folded = _fold(text)
++    if _has(folded, r"\bsteam\b"):
++        return "steam"
++    if _has(folded, r"\bepic\b"):
++        return "epic"
++    return "any"
++
++
+ def _opened_applications(text: str) -> tuple[str, ...]:
+     applications = [application for _, application in _open_application_spans(text)]
+     return tuple(applications)
+@@ -16790,6 +16833,7 @@ def resolve_explicit_effects(
+     records: list[dict[str, str | None]] = []
+     context_browser: str | None = None
+     context_spotify = False
++    context_steam = False
+     context_open_application = False
+     context_capture = False
+     context_note = False
+@@ -16880,6 +16924,22 @@ def resolve_explicit_effects(
+                     tuple("note.read" for _ in read_order),
+                     tuple(clause for _ in read_order),
+                 )
++        if (
++            result is not None
++            and result.operations == ("app.installed",)
++            and context_steam
++            and "game.installed.named" in available
++            and not (
++                authenticated_applications.occurrence_pattern is not None
++                and authenticated_applications.occurrence_pattern.search(clause)
++            )
++            and installed_game_title(clause) is not None
++        ):
++            # APPS1613 H0275 «Abre Steam y dime si Fall Guys ya está
++            # instalado»: after Steam was opened in this request, an installed
++            # question about a name absent from the Start catalog asks the
++            # Steam/Epic manifests, not the Start catalog.
++            result = EffectIntent(("game.installed.named",), (clause,))
+         if result is None:
+             if (
+                 _is_negative_effect_clause(clause)
+@@ -16986,6 +17046,7 @@ def resolve_explicit_effects(
+                 latest if latest in {"opera", "opera_gx", "chrome", "edge", "firefox"} else None
+             )
+             context_spotify = latest == "spotify"
++            context_steam = latest == "steam"
+         elif "browser.navigate.named" in result.operations:
+             context_browser = local_browser or context_browser
+         elif any(

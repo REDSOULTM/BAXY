@@ -1,0 +1,15 @@
+{
+  "schema": "c03-apps1613-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_has_unsupported_deferred_effect: «dime si|if|whether» after a conjunction; installed_game_title/installed_game_provider; context_steam → game.installed.named; decime/contame/fijate observation heads) and src/baxy_mind/__main__.py (_explicit_arguments_from_evidence for game.installed.named).",
+  "patch": "artifacts/comprobaciones/C03/APPS1613/SOURCE.patch",
+  "commits": [
+    "f5ca39a5f181ba09ec1fef444e8bfb92d501d532"
+  ],
+  "build": "BUILD1613 (C03-repairs1613-build/BUILD_READY.json; mente)",
+  "cause_measured": "APPS1613/H0275: «y dime si … instalado» vetado como efecto diferido y, resuelto, leído contra el catálogo de inicio en vez de los manifiestos de Steam.",
+  "change": "Pregunta indirecta «dime si» tras conjunción; game.installed.named con Steam abierto en la misma petición; lectura de título/proveedor; sin respuestas fijas.",
+  "measurement": "APPS1613: tres planes app.open + game.installed.named completados y verificados con finales fieles, dos límites aprobados; 1 créditos. Medición raíz: la pregunta indirecta «dime si» tras la conjunción y la lectura de manifiestos con Steam abierto; el juego nombrado no está instalado y el final lo dijo tal cual; el cliente se cerró por la raíz tras cada caso.",
+  "credits": 1
+}

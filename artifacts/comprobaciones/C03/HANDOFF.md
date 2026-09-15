@@ -1,3 +1,11 @@
+# APPS1613 adjudicado — 2026-09-15T21:42:49.960054+00:00
+
+**551/742 cubiertos, 191 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA ee6c77dad1197f36d35e49a92b58442e751bb091fbc9c49200683b26a3919c11. Primeras altas 24 h >= 425 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f5ca39a5 con BUILD1613 (abrir Steam y responder si un juego está instalado). Turnos ordinarios sin operaciones.
+
+APPS1613 («Bibliotecas y fichas de juegos», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): tres planes app.open + game.installed.named completados y verificados con finales fieles, dos límites aprobados, 1 créditos. Adjudicación 3835d1f2008d567c1784adaec8d4a1ac940e994613717870e7afe5819db5173b. Medición raíz: la pregunta indirecta «dime si» tras la conjunción y la lectura de manifiestos con Steam abierto; el juego nombrado no está instalado y el final lo dijo tal cual; el cliente se cerró por la raíz tras cada caso.
+
+---
+
 # APPS1611 adjudicado — 2026-09-15T21:24:33.647380+00:00
 
 **550/742 cubiertos, 192 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 206ff1d4b34bd57057dea59caadd9a0937f9e3b6a40fc219f6a019ff6cc0ef69. Primeras altas 24 h >= 424 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD bd12a553 con BUILD1611 (el proveedor de catálogo espera la primera ventana de un cliente lento). Turnos ordinarios sin operaciones.

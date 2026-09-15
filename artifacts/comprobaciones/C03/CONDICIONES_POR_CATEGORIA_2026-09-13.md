@@ -903,3 +903,7 @@ Abrir aplicaciones pasa de 46/54 a 46/54 con la reparación del lanzador medida 
 ## Actualización 2026-09-14 (APPS1611)
 
 Abrir aplicaciones pasa de 46/54 a 48/54 con el Steam del dueño abierto y verificado por su primera ventana (commit bd12a553, BUILD1611) (HEAD bd12a553): cuatro app.open de Steam completadas y verificadas con finales fieles, dos límites aprobados, 2 créditos. Medición raíz: el proveedor de catálogo verifica la apertura en cuanto aparece la primera ventana de Steam (steamwebhelper.exe); el cliente se cerró por la raíz tras cada caso.
+
+## Actualización 2026-09-14 (APPS1613)
+
+Bibliotecas y fichas de juegos pasa de 2/6 a 3/6 con Steam abierto y la instalación del juego nombrado respondida desde sus manifiestos (commit f5ca39a5, BUILD1613) (HEAD f5ca39a5): tres planes app.open + game.installed.named completados y verificados con finales fieles, dos límites aprobados, 1 créditos. Medición raíz: la pregunta indirecta «dime si» tras la conjunción y la lectura de manifiestos con Steam abierto; el juego nombrado no está instalado y el final lo dijo tal cual; el cliente se cerró por la raíz tras cada caso.
