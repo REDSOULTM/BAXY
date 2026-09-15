@@ -74,8 +74,22 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
                     operation, "youtube_stream_not_resolved");
             effectBoundary.Cross(cancellationToken);
             StopActivePlayer();
-            return await StartAndVerifyAsync(operation, query, title, stream, cancellationToken)
-                .ConfigureAwait(false);
+            ExternalCapabilityReceipt receipt = await StartAndVerifyAsync(
+                operation, query, title, stream, cancellationToken).ConfigureAwait(false);
+            if (!receipt.Verified && _streamResolver is null)
+            {
+                // MUSIC1563: the same query that plays by hand stalled twice inside a
+                // tanda; a fresh resolution lands on another media server. One retry.
+                (Uri? again, string? againTitle) = await ResolveStreamAsync(query, cancellationToken)
+                    .ConfigureAwait(false);
+                if (again is not null)
+                {
+                    StopActivePlayer();
+                    receipt = await StartAndVerifyAsync(
+                        operation, query, againTitle ?? title, again, cancellationToken).ConfigureAwait(false);
+                }
+            }
+            return receipt;
         }
         catch (OperationCanceledException) when (
             cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
