@@ -3014,6 +3014,8 @@ def _unresolved_input_kind(objective: str) -> str | None:
         and re.search(r"\d\s*[-+*/x×÷=^%]\s*\d", folded) is None
     ):
         return "noise"
+    if _overheard_speech(folded):
+        return "overheard_speech"
     if (
         re.fullmatch(
             # IDENTITY1323 H0296 «Tú eres como eso»: compared with something
@@ -3029,6 +3031,49 @@ def _unresolved_input_kind(objective: str) -> str | None:
     ):
         return "dangling_comparison"
     return None
+
+
+_OVERHEARD_ACTION_WORDS = re.compile(
+    # An order verb counts where a clause starts: after the beginning, a
+    # punctuation mark or a connective («…, toma un screenshot», «y ve que
+    # hay»); «si hace bien el trabajo» or «la ve y si no» inside a stretch of
+    # talk is not an order to BAXY.
+    r"(?:^|[,.;:!¡¿]\s*|\b(?:y|o|e|u|baxy|entonces|luego|despues|ahora|primero|tambien)\s+)"
+    r"(?:baxy|abre|abri|abris|abrir|abrime|pone|pon|poneme|pongas|poner|busca|buscame|buscar|"
+    r"cierra|cerra|cerrar|reproduce|reproduci|manda|mandame|envia|enviame|escribe|escribi|crea|"
+    r"guarda|guardame|recuerda|recorda|recordame|sube|subi|subile|baja|baji|bajale|silencia|"
+    r"apaga|prende|enciende|lanza|inicia|muestra|mostrame|dime|decime|contame|cuentame|explica|"
+    r"explicame|avisame|avisa|llama|llamame|programa|agenda|calcula|traduce|traducime|lee|leeme|"
+    r"copia|pega|borra|elimina|instala|desinstala|descarga|configura|conecta|desconecta|"
+    r"toma|tomame|saca|sacame|captura|capturame|identifica|mira|mirame|revisa|revisame|haz|hace|haceme|"
+    r"dale|clic|click|clickea|presiona|pulsa|selecciona|elige|escoge|ejecuta|corre|ve|anda|entra|"
+    r"screenshot|dime|responde|contesta|resume|resumime|completa|completalo|completala|termina|terminalo|"
+    r"confirma|confirmalo|acepta|aceptalo|cancela|cancelalo|"
+    r"open|play|search|close|send|write|set|turn|remind|show|tell|launch|start|stop|find|take|click|"
+    r"puedes|podes|podrias|puede|quiero\s+que|necesito\s+que|me\s+(?:ayudas|ayudarias|dices|decis|cuentas|contas|explicas))\b"
+    # «Mira, bueno, la neta…», «Dale, dale.»: a verb followed by a comma or a
+    # period is a discourse marker in talk, not an order with an object.
+    r"(?!\s*[,.;])"
+)
+
+
+def _overheard_speech(folded: str) -> bool:
+    """DIALOGUE1513: a long stretch of talk with no request for BAXY.
+
+    H0006, H0139, H0332, H0372, H0429, H0441, H0483, H0735: the microphone
+    caught other people's conversation or a broadcast (fifteen words or more,
+    no question, no order verb, no vocative). Nothing in it is addressed to
+    the assistant; DIALOGUE1281 measured the model reconstructing the
+    fragment or answering it as if it were. The honest turn says it finds no
+    request for it in what arrived and asks whether the person needs
+    something."""
+
+    if "?" in folded or "¿" in folded:
+        return False
+    words = re.findall(r"[a-z0-9]+", folded)
+    if len(words) < 15:
+        return False
+    return _OVERHEARD_ACTION_WORDS.search(folded) is None and "baxy" not in folded
 
 
 def _general_factoid_prompt(objective: str) -> bool:

@@ -10320,11 +10320,29 @@ class LlmRuntime:
         a meaning: the question names what arrived and asks what to do.
         """
 
-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination"}:
+        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech"}:
             raise ValueError("clase de entrada sin pedido inválida")
         current = str(text).strip()[:2_048]
         situation = (
             (
+                # DIALOGUE1513 H0006, H0139, H0332, H0372, H0429, H0441, H0483,
+                # H0735: a long stretch of other people's talk or a broadcast,
+                # with no question, order or vocative for BAXY. The honest turn
+                # says it finds no request for it there and asks whether the
+                # person needs something; it never answers the talk itself.
+                "Eres BAXY. Lo que llegó es un tramo largo de conversación o de "
+                "una transmisión que el micrófono captó: no contiene ninguna "
+                "pregunta, orden ni pedido dirigido a ti. Formula una sola "
+                "pregunta breve, en el idioma del texto, que diga con honestidad "
+                "que en eso no encuentras un pedido para ti y pregunte si la "
+                "persona necesita algo (por ejemplo: «En eso no encuentro un "
+                "pedido para mí; ¿necesitás algo?»). No respondas al contenido, "
+                "no lo resumas, no repitas sus frases, no adivines quién habla ni "
+                "de qué trata, no digas que fallaste y no ofrezcas ayuda genérica "
+                "sin decir antes que no ves un pedido."
+            )
+            if kind == "overheard_speech"
+            else (
                 # DIALOGUE1491 H0393 «Ve a portal una.», H0541 «Ve Portal 2 UN»:
                 # the destination's name stops at an article; the message was
                 # cut and nothing before it completes the name.
@@ -10552,6 +10570,49 @@ class LlmRuntime:
                         )
                         continue
                     raise ValueError("aclaración de mirar deíctico no pregunta qué mirar")
+            # DIALOGUE1513: the question must say no request was found for
+            # BAXY and ask whether the person needs something; it must not
+            # repeat the talk, answer it or invent an action. One corrected retry.
+            if kind == "overheard_speech":
+                folded_question = _fold_dialogue_text(question)
+                folded_current = _fold_dialogue_text(current)
+                says_no_request = re.search(
+                    r"\bno\s+(?:encuentro|veo|logro\s+ver|identifico|reconozco|hay|parece\s+haber|detecto)\b.{0,40}"
+                    r"\b(?:pedido|peticion|solicitud|orden|instruccion|request|pregunta)\b|"
+                    r"\b(?:no\s+(?:parece|esta|va)\s+dirigid[oa]|no\s+es\s+para\s+mi|otra\s+conversacion|"
+                    r"(?:don't|do\s+not|can't|cannot)\s+(?:see|find)\b.{0,30}\brequest)\b",
+                    folded_question,
+                ) is not None
+                asks_need = re.search(
+                    r"\b(?:necesit|quer[eé]s|quieres|te\s+ayudo|puedo\s+ayudar|en\s+que\s+(?:te\s+)?ayud|hago|haga|"
+                    r"need|want|help)\w*\b",
+                    folded_question,
+                ) is not None
+                words = re.findall(r"[a-z0-9]+", folded_current)
+                repeats = any(
+                    " ".join(words[i:i + 5]) in folded_question for i in range(max(0, len(words) - 4))
+                )
+                invents = re.search(
+                    r"\b(?:abrir|abra|abro|poner|ponga|pongo|buscar|busque|busco|cerrar|cierre|cierro|"
+                    r"firmar|firme|cheque|dinero|trabajo|open|play|search|close)\b",
+                    folded_question,
+                ) is not None
+                if not says_no_request or not asks_need or repeats or invents:
+                    if attempt == 0:
+                        payload["messages"].insert(
+                            -1,
+                            {
+                                "role": "system",
+                                "content": (
+                                    "Corrección: no respondas ni repitas el texto. Di que en eso no "
+                                    "encuentras un pedido para ti y pregunta si la persona necesita "
+                                    "algo, por ejemplo: «En eso no encuentro un pedido para mí; "
+                                    "¿necesitás algo?»."
+                                ),
+                            },
+                        )
+                        continue
+                    raise ValueError("aclaración de conversación ajena no dice que no ve un pedido")
             # DIALOGUE1279 H0287 «????» → «¿Qué quieres que haga?»: a question
             # that never names what arrived is the generic help offer the
             # owner rejected (CLARIFY1047). One corrected retry.
