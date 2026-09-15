@@ -1,0 +1,87 @@
+{
+  "schema": "music1595-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1",
+  "seal_sha256": "009af8dafec7e4515606d95f565819002f04f751e226bea0e5118c89dc7eb3e4",
+  "runner_sha256": "6733f1c5919f29418acf81ef2a15f315c8d245125728b67e23179a80bc2b68c4",
+  "transport_seal_sha256": "64d9a72c49cf586c1826228c57b3f53dd6edfc07deacbbd35b798fcb21437558",
+  "files": {
+    "panel.json": "d15a6d0b99f0b0bd3a6fef810df15c97671a3a8a53a5503e1dd406b981958126",
+    "turns.jsonl": "859cb500261b53765ca4dea2c25bc7865a3f37b6c8a4990f04c6fc772465a647",
+    "case-map.json": "2ca3bf48985bf19661ef1220fd38e68f432623fb1a64b1086f9ae24ab0ed340c",
+    "PLAN.md": "34085d4b018382712abc1b037b4a7925037136d9cb9a2741aaf8c348c5c000c2"
+  },
+  "counts": {
+    "cases": 6,
+    "historical_literals": 1,
+    "original_development_variants": 2,
+    "boundaries": 3,
+    "wire_lines": 12,
+    "session_controls": 6,
+    "ordinary_turns": 3,
+    "reviewed_turns": 3,
+    "maximum_reportable_terminals": 12,
+    "maximum_internal_confirmations": 6
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 2,
+    "boundary": 3
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0543",
+      "kind": "historical_literal",
+      "group": "now_playing",
+      "credit_behavior": "now_playing",
+      "text_sha256": "c05f6fc53f16a048cdc04ccd3df207cd35d73d626384c697efd4aaef4a4327a4",
+      "criterion_sha256": "d6f16780b81d971665906923b3181db69d5c7bb23a0558d115a6c9194680da2b"
+    },
+    {
+      "index": 1,
+      "case_id": "music1595-dev-01",
+      "kind": "original_development_variant",
+      "group": "now_playing",
+      "credit_behavior": "now_playing",
+      "text_sha256": "91cedd0bc5afcb52ff623624f906ad78310b3c786ff72ac755eff8e9311638c4",
+      "criterion_sha256": "d6f16780b81d971665906923b3181db69d5c7bb23a0558d115a6c9194680da2b"
+    },
+    {
+      "index": 2,
+      "case_id": "music1595-dev-02",
+      "kind": "original_development_variant",
+      "group": "now_playing",
+      "credit_behavior": "now_playing",
+      "text_sha256": "e913cdb7a9dc58d753782b60111646f5bdd32ce8b1fb3cef6b6188d3a9943356",
+      "criterion_sha256": "d6f16780b81d971665906923b3181db69d5c7bb23a0558d115a6c9194680da2b"
+    },
+    {
+      "index": 3,
+      "case_id": "music1595-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "f8afeec870bf74354168f1e47974db6ff429e5a5f64e7d2e642ec695293041b8",
+      "criterion_sha256": "ac9432e776338837c1c5555b118b3f2f99f124be8d13212f5704a30407c9e4ed"
+    },
+    {
+      "index": 4,
+      "case_id": "music1595-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "054de9517f67889b93f0a6b7c5a08583189bd2ade7b8ecc9eadc26aee1c6a2b7",
+      "criterion_sha256": "b35ec0429967be117381303ac4c12ac43ce4bc8b4450c2d4a9f0a67a33269ce6"
+    },
+    {
+      "index": 5,
+      "case_id": "music1595-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "bc24898c6d653acc0303bda963f8edd69ad552c3e75140829c1ecc5b591f40cc",
+      "criterion_sha256": "50757e30c0886c9c9d6fe25617d31896c91ed2f486ced29f1b243a9954f5945b"
+    }
+  ]
+}

@@ -836,3 +836,7 @@ Archivos y carpetas pasa de 26/32 a 27/32 con el pedido cortado dicho y pregunta
 ## Actualización 2026-09-14 (MUSIC1593)
 
 Música pasa de 21/39 a 24/39 con el estado y la parada del reproductor local tras una reproducción (commit 1050ce6a, BUILD1593) (HEAD 1050ce6a): 11 ejecutados, 10 aprobados, 1 fallido, 3 créditos. Los ocho casos de diálogo reprodujeron con revisión la música guionizada en el reproductor local y luego respondieron al literal sobre ese reproductor: «qué está sonando» y sus dos variantes leyeron el reproductor (media.status) y nombraron el título observado sonando; «qué canción está sonando» leyó pero no publicó final (fragmento del título y luego título traducido); «pará la música», «para la musica» y sus dos variantes detuvieron el reproductor (media.control, salida verificada) y dijeron con verdad, en estilo de informe, que la reproducción quedó detenida. Las tres fronteras pasaron con cero operaciones; ningún reproductor sobrevivió a su caso; volumen restaurado.
+
+## Actualización 2026-09-14 (MUSIC1595)
+
+Música pasa de 24/39 a 25/39 con el título completo del reproductor local en una frase (commit 080cef4a, BUILD1595) (HEAD 080cef4a): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes, tras una reproducción revisada verificada en el reproductor local, leyeron ese reproductor y respondieron en una frase citando el título observado completo como sonando. Las tres fronteras pasaron con cero operaciones; ningún reproductor sobrevivió a su caso; volumen restaurado.

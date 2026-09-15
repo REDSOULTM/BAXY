@@ -1,3 +1,11 @@
+# MUSIC1595 adjudicado — 2026-09-15T18:51:26.274788+00:00
+
+**544/742 cubiertos, 198 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA 7ced1023bd480858a0983189abd6734e4fa1581a5d2ac0bdf41d39c882066957. Primeras altas 24 h >= 418 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 080cef4a con BUILD1595 (el final del reproductor local cita el título completo en una frase). La raíz aprueba sólo una media.play.youtube con una consulta de texto (approve_youtube.py); el reproductor local (mpv) nace en el caso y la raíz lo detiene al terminar; el volumen maestro se preajusta a 12 y se restaura al estado del dueño.
+
+MUSIC1595 («Música», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Adjudicación 1785f6ccdca72e362454a5422968cc81a446de90a61c35782cec0e66ce259285. El literal y las dos variantes, tras una reproducción revisada verificada en el reproductor local, leyeron ese reproductor y respondieron en una frase citando el título observado completo como sonando. Las tres fronteras pasaron con cero operaciones; ningún reproductor sobrevivió a su caso; volumen restaurado.
+
+---
+
 # MUSIC1593 adjudicado — 2026-09-15T18:43:33.878429+00:00
 
 **543/742 cubiertos, 199 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA 438fd1fc12b56d4caff7482e6c2eb2727d61feb31a0b9905b095aa7b00878b33. Primeras altas 24 h >= 417 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 1050ce6a con BUILD1593 (el reproductor local responde qué suena y se detiene). La raíz aprueba sólo una media.play.youtube con una consulta de texto (approve_youtube.py); el reproductor local (mpv) nace en el caso y la raíz lo detiene al terminar; el volumen maestro se preajusta a 12 y se restaura al estado del dueño.

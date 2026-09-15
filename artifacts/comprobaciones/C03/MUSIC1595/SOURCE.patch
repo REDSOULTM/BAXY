@@ -1,0 +1,65 @@
+commit 080cef4a232664f29a330c8d0564a1cd6e5d400c
+
+C03: the local player's finals quote the whole observed title in one sentence (MUSIC1595)
+
+MUSIC1593 measured that «qué canción está sonando» read the local YouTube player but published no final: the first draft quoted a fragment («Greatest Hits (2)») of the observed title and the retries translated its bracketed duration, which the title checks rightly refuse; the stop finals came out as field reports («Estado de reproducción: "stopped"»). For a verified media.status or media.control observed on the local player, the composer now gives the whole-title `missing_name` hint that the playback finals already had, and instructs one natural sentence in the person's language — the title verbatim inside quotation marks, the state in words, no field list, no English status words, no artist unless observed, no translation of any part of the title.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 33d227fb..8758e8d6 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4466,6 +4466,18 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
+                 "question's playing premise as a fact or claim PC-wide silence. "
+                 "If no session or metadata was observed, report only that scope."
+             )
++            if observed.get("authority") == "local_youtube_player":
++                # MUSIC1593: the local player's finals listed fields («Título
++                # observado: … Estado de reproducción: "stopped"») or quoted a
++                # fragment of the title; one sentence in the person's words.
++                bits.append(
++                    "This is the local YouTube player. Answer in one natural sentence "
++                    "in the person's language: quote the whole title exactly as "
++                    "observed, inside quotation marks, and say in words whether it is "
++                    "playing or was stopped. No field list, no internal status words "
++                    "such as playing or stopped in English, no artist unless observed, "
++                    "and never translate any part of the title."
++                )
+         if isinstance(observed.get("app"), str) and observed["app"].strip():
+             bits.append(
+                 "Name observed.app. State open, closed or playing from the facts."
+@@ -5940,6 +5952,21 @@ def _without_deferred_question(text: str) -> str:
+     return " ".join(sentences)
+ 
+ 
++def _local_player_session(situation: dict) -> bool:
++    """MUSIC1593: a verified media.status/media.control observed on the local YouTube player."""
++
++    observed = _merged_observed(situation) if isinstance(situation, dict) else {}
++    return (
++        situation.get("operation") in {"media.status", "media.control"}
++        and situation.get("verified") is True
++        and situation.get("succeeded") is True
++        and isinstance(observed, dict)
++        and observed.get("authority") == "local_youtube_player"
++        and isinstance(observed.get("title"), str)
++        and bool(observed["title"].strip())
++    )
++
++
+ def _bracket_is_observed(bracketed: str, facts: dict) -> bool:
+     """MUSIC1571: «[11.Larga Vida al Rey]» inside a quoted YouTube title is
+     observed text, not a template hole left unfilled."""
+@@ -14104,6 +14131,10 @@ class LlmRuntime:
+                     + "«" + str(_merged_observed(situation).get("title")) + "»"
+                 )
+                 if _youtube_playback_in_payload({"operation": situation.get("operation"), "verified": situation.get("verified"), "succeeded": situation.get("succeeded"), "seen": _merged_observed(situation)}) is not None
++                # MUSIC1593 H0543 «qué canción está sonando» on the local player: the
++                # draft quoted «Greatest Hits (2)» and then translated the bracketed
++                # duration; the whole observed title, verbatim, is the name here too.
++                or _local_player_session(situation)
+                 else "Include names and numbers from seen."
+             ),
+             "promised_effect": (

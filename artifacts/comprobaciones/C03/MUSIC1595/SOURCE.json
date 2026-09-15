@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1595-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (the local-player media.status/media.control finals get the whole-title missing_name hint and a one-sentence instruction: title verbatim, state in words, no field list, no English status words).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1595/SOURCE.patch",
+  "commits": [
+    "080cef4a232664f29a330c8d0564a1cd6e5d400c"
+  ],
+  "build": "BUILD1595 (C03-repairs1595-build/BUILD_READY.json; mente)",
+  "cause_measured": "MUSIC1595: «qué canción está sonando» citó un fragmento del título y luego lo tradujo; los finales de parada salieron como informes de campos.",
+  "change": "Pista del título completo e instrucción de una frase para los finales del reproductor local; sin respuestas fijas.",
+  "measurement": "MUSIC1595: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. El literal y las dos variantes, tras una reproducción revisada verificada en el reproductor local, leyeron ese reproductor y respondieron en una frase citando el título observado completo como sonando. Las tres fronteras pasaron con cero operaciones; ningún reproductor sobrevivió a su caso; volumen restaurado.",
+  "credits": 1
+}
