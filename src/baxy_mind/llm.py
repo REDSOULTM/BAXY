@@ -10858,7 +10858,7 @@ class LlmRuntime:
         a meaning: the question names what arrived and asks what to do.
         """
 
-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window"}:
+        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window", "echoed_words"}:
             raise ValueError("clase de entrada sin pedido inválida")
         current = str(text).strip()[:2_048]
         situation = (
@@ -11000,6 +11000,21 @@ class LlmRuntime:
                 "no digas que algo falló y no inventes a qué se refiere el no."
             )
             if kind == "bare_negation"
+            else (
+                # CONVERSATION1150 H0410 «Artiro, artiro. Estimado, estimado.»:
+                # words that only repeat, with no request in them; the turn
+                # pretended to understand them.
+                "Eres BAXY. Del usuario llegaron sólo palabras repetidas, una "
+                "tras otra, sin ningún pedido, pregunta ni saludo entre ellas. "
+                "Formula una sola pregunta breve, en el idioma del usuario, que "
+                "diga que sólo te llegaron palabras repetidas sin un pedido y "
+                "pregunte qué necesita (por ejemplo: «Sólo me llegaron palabras "
+                "repetidas, sin un pedido: ¿qué necesitás?»). No repitas ni cites "
+                "sus palabras, no les atribuyas un significado, no digas que las "
+                "reconoces, no saludes, no digas que fallaste ni que está fuera "
+                "de lo que haces y no ofrezcas ayuda genérica sin decir lo que llegó."
+            )
+            if kind == "echoed_words"
             else (
                 "Eres BAXY. Lo que llegó del usuario no contiene un pedido "
                 "legible: sólo signos, cifras, una letra suelta, símbolos o "
@@ -11377,6 +11392,39 @@ class LlmRuntime:
                     )
                     continue
                 raise ValueError("aclaración de comparación con sujeto invertido")
+            if kind == "echoed_words":
+                folded_question = _fold_dialogue_text(question)
+                folded_input = _fold_dialogue_text(current)
+                names_repetition = re.search(
+                    r"\b(?:palabras?\s+repetidas?|repetid[ao]s?|se\s+repiten?|repeated\s+words?|"
+                    r"sin\s+(?:un\s+)?pedido|no\s+(?:veo|encuentro|hay|leo)\s+(?:un\s+|ning[uú]n\s+)?pedido|no\s+request)\b",
+                    folded_question,
+                ) is not None
+                asks_need = re.search(
+                    r"\b(?:que\s+(?:necesit|quer|quier|busc|prefer)|en\s+que\s+(?:te\s+)?(?:puedo|ayud)|what\s+(?:do\s+you\s+)?(?:need|want))",
+                    folded_question,
+                ) is not None
+                echoes = any(
+                    word in folded_question
+                    for word in set(re.findall(r"[a-z]{4,}", folded_input))
+                )
+                if names_repetition and asks_need and not echoes:
+                    return question
+                if attempt == 0:
+                    payload["messages"].insert(
+                        -1,
+                        {
+                            "role": "system",
+                            "content": (
+                                "Corrección: di que sólo te llegaron palabras repetidas sin "
+                                "un pedido y pregunta qué necesita, sin repetir ninguna de "
+                                "sus palabras, por ejemplo: «Sólo me llegaron palabras "
+                                "repetidas, sin un pedido: ¿qué necesitás?»."
+                            ),
+                        },
+                    )
+                    continue
+                raise ValueError("aclaración de palabras repetidas no reconoce lo recibido")
             if kind != "noise" or _NOISE_ACKNOWLEDGED.search(
                 _fold_dialogue_text(question)
             ):

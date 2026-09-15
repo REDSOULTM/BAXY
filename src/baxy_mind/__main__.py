@@ -2930,6 +2930,30 @@ def _standalone_deictic_request(objective: str, history: object = None) -> bool:
     )
 
 
+def _echoed_words(folded: str) -> bool:
+    """CONVERSATION1150 H0410 «Artiro, artiro. Estimado, estimado.»: every
+    word arrives at least twice and nothing else does; no assent, negation,
+    question or request head. Words alone, however familiar, are not a
+    request; the honest turn says so and asks what the person needs."""
+
+    words = re.findall(r"[a-z]{2,}", folded)
+    if not 4 <= len(words) <= 12 or len(set(words)) > 4:
+        return False
+    if any(words.count(word) < 2 for word in set(words)):
+        return False
+    if re.search(r"\d|[?¿]", folded):
+        return False
+    if any(
+        word in {"si", "no", "dale", "ok", "okay", "bueno", "claro", "vale", "listo",
+                 "yes", "yeah", "nope", "never", "nunca", "jamas", "hola", "hello", "baxy"}
+        for word in words
+    ):
+        return False
+    return not any(
+        effect_intent._head_is(word, effect_intent._COVERAGE_ACTION_HEAD) for word in set(words)
+    )
+
+
 def _unresolved_input_kind(objective: str) -> str | None:
     """Name an input that carries no readable request at all.
 
@@ -3016,6 +3040,8 @@ def _unresolved_input_kind(objective: str) -> str | None:
         return "noise"
     if _overheard_speech(folded):
         return "overheard_speech"
+    if _echoed_words(folded):
+        return "echoed_words"
     if effect_intent.INDETERMINATE_WINDOW_CLAUSE.fullmatch(folded) is not None:
         # WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá la
         # mejor»: a window named only by «la otra», «la mejor», «la
