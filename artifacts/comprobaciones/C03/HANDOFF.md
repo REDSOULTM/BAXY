@@ -1,3 +1,11 @@
+# KNOWLEDGE1527 adjudicado — 2026-09-15T02:54:32.668923+00:00
+
+**512/742 cubiertos, 230 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA aefbf0b2d33d50f0a90fd464e525d2a0bdef6f8b3531f8519737c88240083742. Primeras altas 24 h >= 386 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 105e47bd con BUILD1527 (la oferta a BAXY se contesta sin deseos propios; KNOWLEDGE1527/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+KNOWLEDGE1527 («Conocimiento, razonamiento y creatividad verbal», H0030 «¿Quieres el acompañante de Batman?»): 6 ejecutados, 4 aprobados, 2 fallidos, 0 créditos. Adjudicación 2f2bc082987fcdd7f5617961dbe134db13f897ba08970a04fd6bcbc7b1f6634a. El literal se contestó sin deseos propios nombrando la cosa y ofreciendo hacer algo con eso; los borradores con forma de las dos variantes («No necesito un café… Si tenías en mente algo…, por favor dime») cayeron por un contrato demasiado estricto —sólo dos oraciones, y «por favor» y «gracias. Si…» tomados por aceptación— y se publicaron preguntas de recuperación; comprobado fuera del instrumento contra el mismo modelo. Los tres límites pasaron. Siguiente: tres oraciones y sólo la aceptación real rechazada (KNOWLEDGE1529).
+
+---
+
 # KNOWLEDGE1525 adjudicado — 2026-09-15T02:46:47.854404+00:00
 
 **512/742 cubiertos, 230 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 627402a681be993321fa518d1d5abbd3beae70ad0abb15ba6f664bcf6981cbed. Primeras altas 24 h >= 386 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD ae7c8dc9 con BUILD1525 (quién gana es una opinión declarada y el sarcasmo pedido afirma la verdad; KNOWLEDGE1525/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

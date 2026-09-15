@@ -1,3 +1,25 @@
+## KNOWLEDGE1527 — estado vigente 2026-09-15T02:54:32.668923+00:00
+
+Parcial: 4 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 512/742 | 230 | 0 | >=386 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 386 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); KNOWLEDGE1527 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: KNOWLEDGE1527: 6 ejecutados, 4 aprobados, 2 fallidos, 0 créditos (índices []); Conocimiento, razonamiento y creatividad verbal 35/37. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/KNOWLEDGE1527/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 115.47 s acumulados; pico GPU 3497.56 MiB; pico RAM 1962.04 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque KNOWLEDGE1527 precedente. -->
+
 ## KNOWLEDGE1525 — estado vigente 2026-09-15T02:46:47.854404+00:00
 
 Parcial: 9 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.

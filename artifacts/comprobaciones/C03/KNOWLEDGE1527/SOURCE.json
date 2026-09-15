@@ -1,0 +1,15 @@
+{
+  "schema": "c03-knowledge1527-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (forma de presentación assistant_desire: lector assistant_desire_thing —quieres/querés/te gustaría + artículo + cosa, sin cláusula «que» ni verbo de orden—, instrucción y contrato: no lo necesita nombrando la cosa, ofrece hacer algo con eso si era la intención; rechaza aceptar, gustos inventados y pregunta final; 128 tokens).",
+  "patch": "artifacts/comprobaciones/C03/KNOWLEDGE1527/SOURCE.patch",
+  "commits": [
+    "105e47bd87e10eb3696a1368604a82c53f1d1712"
+  ],
+  "build": "BUILD1527 (C03-repairs1527-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "KNOWLEDGE1149: «¿Quieres el acompañante de Batman?» recibió una deflexión sin contenido; la oferta al asistente no tenía forma ni contrato.",
+  "change": "Forma de presentación assistant_desire con contrato validado; sin respuestas fijas.",
+  "measurement": "KNOWLEDGE1527: 6 ejecutados, 4 aprobados, 2 fallidos; 0 créditos. El literal se contestó sin deseos propios nombrando la cosa y ofreciendo hacer algo con eso; los borradores con forma de las dos variantes («No necesito un café… Si tenías en mente algo…, por favor dime») cayeron por un contrato demasiado estricto —sólo dos oraciones, y «por favor» y «gracias. Si…» tomados por aceptación— y se publicaron preguntas de recuperación; comprobado fuera del instrumento contra el mismo modelo. Los tres límites pasaron. Siguiente: tres oraciones y sólo la aceptación real rechazada (KNOWLEDGE1529).",
+  "credits": 0
+}
