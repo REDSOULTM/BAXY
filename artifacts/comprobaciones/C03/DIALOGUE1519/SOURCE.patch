@@ -1,0 +1,28 @@
+commit 90e983f6d4b112ff3dc61981693d58ee12f0ad91
+
+C03: the dangling-alternative referent check uses open stems, «referís» matches (DIALOGUE1519)
+
+DIALOGUE1517 measured that the clarifier produced the required question twice («Sólo me llegó "…": ¿a qué te referís?», verified offline against the same model) but the validator's referent check ended in a word boundary after «refer» and never matched «referís», so the turns fell back to the generic recovery question. The stems are open now («a qué te refer…», «a qué se refier…»); nothing else changes.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 3d8e4273..7e1274e3 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -10649,10 +10649,12 @@ class LlmRuntime:
+                     r"only\s+(?:got|received|heard)|(?:came|arrived)\s+(?:cut|incomplete))\b",
+                     folded_question,
+                 ) is not None
++                # DIALOGUE1517: «¿a qué te referís?» ends in «referís», so a word
++                # boundary after «refer» never matched; the stems are open.
+                 asks_referent = re.search(
+-                    r"\b(?:a\s+que\s+te\s+refer|a\s+que\s+se\s+refiere|que\s+quer[eé]s\s+decir|que\s+quieres\s+decir|"
++                    r"\b(?:a\s+que\s+te\s+refer\w*|a\s+que\s+se\s+refier\w*|que\s+quer[eé]s\s+decir|que\s+quieres\s+decir|"
+                     r"que\s+(?:iba|va|venia|viene)\s+antes|de\s+que\s+(?:hablas|habla|estas\s+hablando)|"
+-                    r"what\s+do\s+you\s+mean|refer(?:ring)?\s+to)\b",
++                    r"what\s+do\s+you\s+mean|refer(?:ring)?\s+to)",
+                     folded_question,
+                 ) is not None
+                 greets = re.search(r"\b(?:hola|buenas|buenos\s+dias|hello|hi)\b", folded_question) is not None

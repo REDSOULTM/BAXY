@@ -1,0 +1,15 @@
+{
+  "schema": "c03-dialogue1519-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (clarify_unresolved_input, kind dangling_alternative: la comprobación del referente usa raíces abiertas —«a qué te refer…», «a qué se refier…»— y ya casa «referís»; el resto del validador no cambia).",
+  "patch": "artifacts/comprobaciones/C03/DIALOGUE1519/SOURCE.patch",
+  "commits": [
+    "90e983f6d4b112ff3dc61981693d58ee12f0ad91"
+  ],
+  "build": "BUILD1519 (C03-repairs1519-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "DIALOGUE1519: el aclarador produjo la pregunta requerida pero el validador la rechazó por un límite de palabra tras «refer» («referís»); el turno cayó en la pregunta genérica, que adivinó el referente.",
+  "change": "Raíces abiertas en la comprobación del referente del validador; sin respuestas fijas.",
+  "measurement": "DIALOGUE1519: 6 ejecutados, 3 aprobados (los tres límites), 3 fallidos; 0 créditos. La mente produjo y validó la pregunta requerida para el literal y las dos variantes («Sólo me llegó \"…\": ¿a qué te referís?», en la auditoría del turno), pero la política de respuestas de la aplicación la rechazó por repetir el texto de la persona (echoes_request: la pregunta cita el fragmento entero) y publicó una pregunta compuesta que adivinó el referente. Los tres límites pasaron. Siguiente: la pregunta nombra el final de la frase sin citarlo (DIALOGUE1521).",
+  "credits": 0
+}

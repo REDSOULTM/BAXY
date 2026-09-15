@@ -1,3 +1,11 @@
+# DIALOGUE1519 adjudicado — 2026-09-15T02:23:47.550193+00:00
+
+**507/742 cubiertos, 235 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 264226233c90d3623bf06817be80f917910b66b03e4cef727852925e1e8eb7ed. Primeras altas 24 h >= 381 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 90e983f6 con BUILD1519 (la comprobación del referente casa «referís»; DIALOGUE1519/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+DIALOGUE1519 («Entrada incompleta, ruido y control de diálogo», H0205 «o en la de siempre.»): 6 ejecutados, 3 aprobados (los tres límites), 3 fallidos, 0 créditos. Adjudicación f743e6c74ef6ba50045896c05b1268530dbd25e4e8aec84c02acaca0fcf7b237. La mente produjo y validó la pregunta requerida para el literal y las dos variantes («Sólo me llegó "…": ¿a qué te referís?», en la auditoría del turno), pero la política de respuestas de la aplicación la rechazó por repetir el texto de la persona (echoes_request: la pregunta cita el fragmento entero) y publicó una pregunta compuesta que adivinó el referente. Los tres límites pasaron. Siguiente: la pregunta nombra el final de la frase sin citarlo (DIALOGUE1521).
+
+---
+
 # DIALOGUE1517 adjudicado — 2026-09-15T02:16:57.827901+00:00
 
 **507/742 cubiertos, 235 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 742f69c434305020dc6df0f398ef0dae3d8e9934e602b9ef677fdf40bc85caf7. Primeras altas 24 h >= 381 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 627cdac0 con BUILD1517 (la alternativa suelta dice que sólo llegó esa parte y pregunta a qué se refiere; DIALOGUE1517/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
