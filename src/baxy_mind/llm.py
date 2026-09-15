@@ -6771,7 +6771,12 @@ def compose_visible_defect(
             # A generated description is not an explicitly chosen identity.
             title = None
         if isinstance(title, str) and title.strip():
-            if title.casefold() not in folded or (
+            # MUSIC1555: a YouTube title with doubled spaces is still named
+            # when the draft writes it with single ones.
+            title_named = title.casefold() in folded or re.search(
+                r"\s+".join(re.escape(part) for part in title.casefold().split()), folded
+            ) is not None
+            if not title_named or (
                 operation != "media.status" and not verified_media_transport
                 and scheduled_due is None
                 and not (
@@ -6800,7 +6805,11 @@ def compose_visible_defect(
             for field in ("title", "artist"):
                 name = observed_dict.get(field)
                 if isinstance(name, str) and name.strip():
-                    pattern = r"(?<!\w)" + re.escape(name.strip()) + r"(?!\w)"
+                    # MUSIC1555: YouTube titles carry doubled spaces («Lofi  Study»)
+                    # that the draft collapses; any whitespace run matches one.
+                    pattern = r"(?<!\w)" + r"\s+".join(
+                        re.escape(part) for part in name.split()
+                    ) + r"(?!\w)"
                     if not re.search(pattern, stripped, re.IGNORECASE):
                         return "missing_name"
                     playback_text = re.sub(pattern, "", playback_text, flags=re.IGNORECASE)
@@ -13109,15 +13118,15 @@ class LlmRuntime:
             instruct(
                 "\nThe first YouTube result for the words in seen.query is now playing "
                 "in the local player; seen.title is its title exactly as YouTube "
-                "names it. Say that it is playing and quote seen.title verbatim inside "
-                "quotation marks as what is playing. Nothing else: do not judge whether "
+                "names it. Say that it is playing and quote the whole of seen.title, "
+                "verbatim, inside quotation marks as what is playing. Nothing else: do not judge whether "
                 "it fits, do not name any other video, artist or song, no question."
                 if response_language == "en"
                 else "\nEl primer resultado de YouTube para las palabras de seen.query "
                 "ya se está reproduciendo en el reproductor local; seen.title es su "
                 "título tal cual lo nombra YouTube. Di que está sonando o "
-                "reproduciéndose y cita seen.title tal cual, entre comillas, como lo "
-                "que se reproduce. Nada más: no juzgues si encaja, no nombres otro "
+                "reproduciéndose y cita seen.title completo, de principio a fin y tal "
+                "cual, entre comillas, como lo que se reproduce. Nada más: no juzgues si encaja, no nombres otro "
                 "video, artista ni canción, sin pregunta."
                 if playing.get("titleObserved") else
                 "\nThe first YouTube result for the words in seen.query is now playing "
@@ -13778,6 +13787,15 @@ class LlmRuntime:
                     "muted" in _merged_observed(situation)
                     or "level" in _merged_observed(situation)
                 )
+                # MUSIC1555: the drafts quoted a fragment («Smooth Criminal»)
+                # of the observed title; the whole title, verbatim, is the name.
+                else (
+                    ("Quote the whole title exactly as observed, inside quotation marks: "
+                     if response_language == "en"
+                     else "Cita el título completo tal cual se observó, entre comillas: ")
+                    + "«" + str(_merged_observed(situation).get("title")) + "»"
+                )
+                if _youtube_playback_in_payload({"operation": situation.get("operation"), "verified": situation.get("verified"), "succeeded": situation.get("succeeded"), "seen": _merged_observed(situation)}) is not None
                 else "Include names and numbers from seen."
             ),
             "promised_effect": (
