@@ -6826,7 +6826,7 @@ def compose_visible_defect(
                     r"\b(?:(?P<negative>no|not|nothing|isn't|isn’t|aren't|aren’t)\s+)?"
                     r"(?:(?:se|est[aá]|est[aá]n|is|are|sigue|still|currently|"
                     r"hay|nada|ahora|actualmente)\s+)*"
-                    r"(?:(?P<playing>sonando|suena|reproduci[eé]ndo(?:se)?|reproduce|playing)|"
+                    r"(?:(?P<playing>sonando|suena|reproduci[eé]ndo(?:se)?|reproduce|escuchando|playing)|"
                     r"(?P<paused>pausad[oa]s?|en\s+pausa|paused)|"
                     r"(?P<stopped>detenid[oa]s?|parad[oa]s?|stopped))\b",
                     playback_text,
@@ -13952,6 +13952,14 @@ class LlmRuntime:
                 else (
                     "State the observed playbackStatus; a loaded title does not imply playback."
                     if situation.get("operation") == "media.status"
+                    # MUSIC1561: the drafts wrote the bare title or «Estoy escuchando»;
+                    # the reply must assert the playing state with the title.
+                    else (
+                        ("Say that it is playing and quote the whole title: «" if response_language == "en"
+                         else "Di que está sonando o reproduciéndose y cita el título completo: «")
+                        + str(_merged_observed(situation).get("title")) + "»"
+                    )
+                    if situation.get("operation") == "media.play.youtube"
                     else "abierto/open, no el imperativo."
                 )
             ),
