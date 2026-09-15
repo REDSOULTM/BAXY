@@ -824,3 +824,7 @@ Conversación social y ayuda general pasa de 28/31 a 29/31 con las palabras repe
 ## Actualización 2026-09-14 (FILES1587)
 
 Archivos y carpetas pasa de 25/32 a 25/32 con la ruta pegada sin pedido nombrada y preguntada (commit 9853dd95, BUILD1587) (HEAD 9853dd95): 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos. El literal y las dos variantes se leyeron como ruta pegada sin pedido, pero la pregunta compuesta fue rechazada dos veces por la comprobación de vocabulario interno de la propia mente (un nombre de archivo con punto parece un identificador de operación) y los turnos cayeron en la recuperación total. Los dos límites pasaron con cero operaciones. Siguiente: el nombre de archivo pegado queda exento de esa comprobación (FILES1589).
+
+## Actualización 2026-09-14 (FILES1589)
+
+Archivos y carpetas pasa de 25/32 a 26/32 con el nombre del archivo pegado exento del veto de vocabulario interno (commit 990ec215, BUILD1589) (HEAD 990ec215): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes se leyeron como ruta pegada sin pedido y respondieron con cero operaciones y una sola pregunta que nombra el archivo sólo por su nombre, dice que llegó sin pedido y pregunta qué hacer con él, sin repetir la ruta ni abrir nada. Los dos límites pasaron con cero operaciones.

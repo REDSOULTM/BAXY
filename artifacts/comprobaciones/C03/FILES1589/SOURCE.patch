@@ -1,0 +1,26 @@
+commit 990ec215d82532f795e0bfcdb0f1a729579613cb
+
+C03: the pasted file name is the person's text, not machine vocabulary, in the bare-path clarification (FILES1589)
+
+FILES1587 measured that the pasted path was read as the input kind bare_path, but every composed question was refused by the mind's own validity check: `visible_text_leaks_internal_vocabulary` reads a dotted file name («ROADMAP.md», «informe final.docx») as an operation identifier, so both attempts raised and the turns fell to the total-recovery fallback. For that kind the check now runs on the question with the pasted file name removed; the rest of the question is still watched, and the App's policy already exempts identifiers the person supplied.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 2ff79032..ae44e5df 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -11110,7 +11110,11 @@ class LlmRuntime:
+                 or question.count("?") != 1
+                 or not question.endswith("?")
+                 or _normalized_dialogue_text(question) == _normalized_dialogue_text(current)
+-                or visible_text_leaks_internal_vocabulary(question)
++                # FILES1587 H0299: the pasted file name («ROADMAP.md») is the
++                # person's own text, not an operation id; the rest still is.
++                or visible_text_leaks_internal_vocabulary(
++                    question.replace(_bare_path_name(current), " ") if kind == "bare_path" else question
++                )
+             ):
+                 raise ValueError("aclaración de entrada inválida")
+             # AUDIO1375 H0439 «Ponlo a 100 ahora» → «¿A qué nivel quieres

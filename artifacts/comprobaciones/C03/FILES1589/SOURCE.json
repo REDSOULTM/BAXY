@@ -1,0 +1,15 @@
+{
+  "schema": "c03-files1589-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (InventedVolume judges the sentences before the trailing question when the person's request named the volume; WithoutTrailingQuestion) and src/baxy_mind/effect_intent.py (_negative_action_forms admits «toca»/«touch»).",
+  "patch": "artifacts/comprobaciones/C03/FILES1589/SOURCE.patch",
+  "commits": [
+    "990ec215d82532f795e0bfcdb0f1a729579613cb"
+  ],
+  "build": "BUILD1589 (C03-repairs1589-build/BUILD_READY.json; mente)",
+  "cause_measured": "FILES1589: la comprobación de vocabulario interno tomó el nombre de archivo con punto por un identificador y rechazó toda aclaración.",
+  "change": "Nombre del archivo pegado exento de la comprobación de vocabulario interno en la aclaración bare_path; sin respuestas fijas.",
+  "measurement": "FILES1589: 5 ejecutados, 5 aprobados, 0 fallidos; 1 créditos. El literal y las dos variantes se leyeron como ruta pegada sin pedido y respondieron con cero operaciones y una sola pregunta que nombra el archivo sólo por su nombre, dice que llegó sin pedido y pregunta qué hacer con él, sin repetir la ruta ni abrir nada. Los dos límites pasaron con cero operaciones.",
+  "credits": 1
+}

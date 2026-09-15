@@ -1,0 +1,78 @@
+{
+  "schema": "files1589-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1589-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1589-instrument-v1",
+  "seal_sha256": "1a26dc12f390fc3eef6ed7f57a026709d47a62c37c4bc681753b0509629fd474",
+  "runner_sha256": "6c2a8acd732dbab20ee7ab19724fd23b457a6b6de79bec3ed47ae73dce445b8d",
+  "transport_seal_sha256": "0ecf9569b191c75763f823e27267fc237ddf5002731ecae932f407460e819226",
+  "files": {
+    "panel.json": "f5239e6182b129be00a4f2c612e2d8fd25c4829da095895bfe6d6657b9faf831",
+    "turns.jsonl": "8840c58c81f02b989e495cef075356f5a19ebb200bc1be5adcde496d6379c079",
+    "case-map.json": "032c5ba744756905f87fc61a1f8de3e74bcca94d26e15b1df4a37a2b3e260935",
+    "PLAN.md": "5fa3574f76a066167c41721e28b8d27d1ee11b528612c7a993e146204534a6cc"
+  },
+  "counts": {
+    "cases": 5,
+    "historical_literals": 1,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 10,
+    "session_controls": 5,
+    "ordinary_turns": 5,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 5,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0299",
+      "kind": "historical_literal",
+      "group": "bare_path",
+      "credit_behavior": "bare_path",
+      "text_sha256": "614d61078203b993f2303beb57dc79e33e73a18e62504bbe1d87a7048b410a7c",
+      "criterion_sha256": "d0ee55dff15ea31e5caee4b4c002ec217aa6e14585fe7d3922d956161dd097e2"
+    },
+    {
+      "index": 1,
+      "case_id": "files1589-dev-01",
+      "kind": "original_development_variant",
+      "group": "bare_path",
+      "credit_behavior": "bare_path",
+      "text_sha256": "6166124d6ed6d64c768f09b56aebf7adeba756c8496c444529f93efa9844274b",
+      "criterion_sha256": "d0ee55dff15ea31e5caee4b4c002ec217aa6e14585fe7d3922d956161dd097e2"
+    },
+    {
+      "index": 2,
+      "case_id": "files1589-dev-02",
+      "kind": "original_development_variant",
+      "group": "bare_path",
+      "credit_behavior": "bare_path",
+      "text_sha256": "edcc8596f6acddcacc91d1a955e98a270bdbf1ddeefd2f91e49a67882b428be6",
+      "criterion_sha256": "d0ee55dff15ea31e5caee4b4c002ec217aa6e14585fe7d3922d956161dd097e2"
+    },
+    {
+      "index": 3,
+      "case_id": "files1589-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "76b67050c87105338791ecea041b3a3ec28561f6a1954673c707ded55e062446",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 4,
+      "case_id": "files1589-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "a4ec3fe179da8c718ed4de32fb4908f30c834927807b18f69a45cef31d9e2054",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    }
+  ]
+}
