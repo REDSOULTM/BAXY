@@ -1,0 +1,106 @@
+commit bd12a553fd3a5a86e7b068656b0e8bcb07c54fce
+
+C03: the catalog provider waits for the first window of a slow client; the inert launcher-policy change reverted (APPS1611)
+
+APPS1609 measured that «Abre Steam» still failed verification at 3.6 s: the product wires WindowsInstalledApplicationOpenProvider for catalog applications, which already accepts steamwebhelper by process-name prefix, but its verification budget was 28 polls of 100 ms and Steam shows its login window 4.6 s after launch (its main window at 7.9 s). The budget is now 120 polls; the launch is verified the moment the window shows, so a prompt application pays nothing. NotepadIdentityPolicy returns to its content before APPS1609: that policy serves WindowsApplicationLauncher, which the product does not wire, and the change was measured inert.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/Applications/NotepadIdentityPolicy.cs b/src/Baxy.Providers.Windows/Applications/NotepadIdentityPolicy.cs
+index f458346b..2a80e3aa 100644
+--- a/src/Baxy.Providers.Windows/Applications/NotepadIdentityPolicy.cs
++++ b/src/Baxy.Providers.Windows/Applications/NotepadIdentityPolicy.cs
+@@ -72,9 +72,8 @@ internal static class NotepadIdentityPolicy
+             && string.IsNullOrEmpty(observation.PackageFullName))
+         {
+             return PathsEqual(
+-                    observation.ExecutablePath,
+-                    target.BootstrapExecutablePath)
+-                || IsHelperInOwnInstallTree(observation.ExecutablePath, target);
++                observation.ExecutablePath,
++                target.BootstrapExecutablePath);
+         }
+ 
+         if (!string.Equals(
+@@ -152,63 +151,6 @@ internal static class NotepadIdentityPolicy
+             && string.Equals(fields[4], MicrosoftPublisherId, StringComparison.Ordinal);
+     }
+ 
+-    // APPS1607 «Abre Steam»: steam.exe shows its window through steamwebhelper.exe,
+-    // a helper it starts from its own install tree (d:\steam\bin\cef\…). A process
+-    // whose executable lives under the target's install directory is the same
+-    // application; shared roots (the Windows directory, Program Files themselves)
+-    // never count, so an unrelated process started there is not mistaken for it.
+-    private static bool IsHelperInOwnInstallTree(string? executablePath, NotepadLaunchTarget target)
+-    {
+-        if (string.IsNullOrWhiteSpace(executablePath)
+-            || string.IsNullOrWhiteSpace(target.BootstrapExecutablePath))
+-        {
+-            return false;
+-        }
+-
+-        try
+-        {
+-            string? installDirectory = Path.GetDirectoryName(Path.GetFullPath(target.BootstrapExecutablePath));
+-            if (string.IsNullOrEmpty(installDirectory))
+-            {
+-                return false;
+-            }
+-
+-            string root = Path.GetPathRoot(installDirectory) ?? string.Empty;
+-            string windows = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
+-            string[] sharedRoots =
+-            [
+-                root,
+-                windows,
+-                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+-                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+-                Path.Combine(target.ProgramFilesDirectory, "WindowsApps"),
+-            ];
+-            string installFull = Path.TrimEndingDirectorySeparator(installDirectory);
+-            if (sharedRoots.Any(shared => !string.IsNullOrEmpty(shared)
+-                    && string.Equals(Path.TrimEndingDirectorySeparator(Path.GetFullPath(shared)), installFull,
+-                        StringComparison.OrdinalIgnoreCase))
+-                || Path.GetFullPath(installDirectory).StartsWith(
+-                    Path.TrimEndingDirectorySeparator(windows) + Path.DirectorySeparatorChar,
+-                    StringComparison.OrdinalIgnoreCase))
+-            {
+-                return false;
+-            }
+-
+-            string candidate = Path.GetFullPath(executablePath);
+-            return candidate.StartsWith(installFull + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
+-                && target.PathTrust.IsExistingPathWithoutReparse(candidate);
+-        }
+-        catch (Exception exception) when (exception is ArgumentException
+-            or NotSupportedException
+-            or PathTooLongException
+-            or SecurityException
+-            or IOException
+-            or UnauthorizedAccessException)
+-        {
+-            return false;
+-        }
+-    }
+-
+     private static bool PathsEqual(string? left, string? right)
+     {
+         if (string.IsNullOrWhiteSpace(left) || string.IsNullOrWhiteSpace(right))
+diff --git a/src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs b/src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs
+index 39cc2b3d..f4417850 100644
+--- a/src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs
++++ b/src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs
+@@ -15,7 +15,11 @@ public sealed class WindowsInstalledApplicationOpenProvider :
+     IApplicationInventoryProvider,
+     IApplicationCatalogProvider
+ {
+-    private const int VerificationAttempts = 28;
++    // APPS1609 «Abre Steam»: a client that updates itself before showing anything
++    // (Steam's login window at 4.6 s, its main window at 7.9 s after launch) never
++    // fit the earlier 28 polls; the launch is verified as soon as the window shows,
++    // so the longer budget costs nothing to a prompt application.
++    private const int VerificationAttempts = 120;
+     private static readonly TimeSpan ObservationDelay = TimeSpan.FromMilliseconds(100);
+     private static readonly TimeSpan CatalogLifetime = TimeSpan.FromMinutes(5);
+ 

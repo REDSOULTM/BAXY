@@ -899,3 +899,7 @@ Abrir aplicaciones pasa de 46/54 a 46/54 con el Steam del dueño abierto por el 
 ## Actualización 2026-09-14 (APPS1609)
 
 Abrir aplicaciones pasa de 46/54 a 46/54 con la reparación del lanzador medida inerte: Steam arranca y sigue sin verificarse (commit 48d00a6a, BUILD1609) (HEAD 48d00a6a): cuatro app.open de Steam con verification_failed a los 3,6 s (la reparación de la política del lanzador no está en el camino del producto; la primera ventana de Steam aparece a los 4,6 s), dos límites aprobados, 0 créditos. Medición raíz: el producto cablea WindowsInstalledApplicationOpenProvider (presupuesto de verificación ≈3 s) y Steam muestra su primera ventana a los 4,6 s y la principal a los 7,9 s; siguiente: presupuesto de verificación suficiente para un cliente lento y reversión de la política inerte (APPS1611).
+
+## Actualización 2026-09-14 (APPS1611)
+
+Abrir aplicaciones pasa de 46/54 a 48/54 con el Steam del dueño abierto y verificado por su primera ventana (commit bd12a553, BUILD1611) (HEAD bd12a553): cuatro app.open de Steam completadas y verificadas con finales fieles, dos límites aprobados, 2 créditos. Medición raíz: el proveedor de catálogo verifica la apertura en cuanto aparece la primera ventana de Steam (steamwebhelper.exe); el cliente se cerró por la raíz tras cada caso.

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-apps1611-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs (VerificationAttempts 28 → 120: the launch is verified as soon as the window shows) and src/Baxy.Providers.Windows/Applications/NotepadIdentityPolicy.cs (reverted to its pre-APPS1611 content: the policy is off the product path).",
+  "patch": "artifacts/comprobaciones/C03/APPS1611/SOURCE.patch",
+  "commits": [
+    "bd12a553fd3a5a86e7b068656b0e8bcb07c54fce"
+  ],
+  "build": "BUILD1611 (C03-repairs1611-build/BUILD_READY.json; Providers)",
+  "cause_measured": "APPS1611: el proveedor de catálogo agota su presupuesto de verificación (≈3 s) antes de que Steam muestre su primera ventana (4,6 s); la reparación de la política del lanzador estaba fuera del camino del producto.",
+  "change": "Presupuesto de verificación de apertura de 120 sondeos de 100 ms; política del lanzador revertida; sin respuestas fijas.",
+  "measurement": "APPS1611: cuatro app.open de Steam completadas y verificadas con finales fieles, dos límites aprobados; 2 créditos. Medición raíz: el proveedor de catálogo verifica la apertura en cuanto aparece la primera ventana de Steam (steamwebhelper.exe); el cliente se cerró por la raíz tras cada caso.",
+  "credits": 2
+}

@@ -1,3 +1,11 @@
+# APPS1611 adjudicado — 2026-09-15T21:24:33.647380+00:00
+
+**550/742 cubiertos, 192 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 206ff1d4b34bd57057dea59caadd9a0937f9e3b6a40fc219f6a019ff6cc0ef69. Primeras altas 24 h >= 424 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD bd12a553 con BUILD1611 (el proveedor de catálogo espera la primera ventana de un cliente lento). Turnos ordinarios sin operaciones.
+
+APPS1611 («Abrir aplicaciones», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): cuatro app.open de Steam completadas y verificadas con finales fieles, dos límites aprobados, 2 créditos. Adjudicación e573eb581a61ba4289a0b7d621d79c1b8a542f05de7bb8d75c92da2bccd2b5f9. Medición raíz: el proveedor de catálogo verifica la apertura en cuanto aparece la primera ventana de Steam (steamwebhelper.exe); el cliente se cerró por la raíz tras cada caso.
+
+---
+
 # APPS1609 adjudicado — 2026-09-15T21:02:59.266088+00:00
 
 **548/742 cubiertos, 194 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 268aa212e897d0fa54c60a4733c20a0d886f03093e7f9cc51f5ba19dcfa8e27d. Primeras altas 24 h >= 422 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 48d00a6a con BUILD1609 (el proceso auxiliar de Steam cuenta para verificar la apertura). Turnos ordinarios sin operaciones.
