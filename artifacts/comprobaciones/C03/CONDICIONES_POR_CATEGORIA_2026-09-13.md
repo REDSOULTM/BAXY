@@ -785,3 +785,7 @@ Audio y volumen pasa de 45/51 a 45/51 con la lectura hecha y la cantidad del vol
 ## Actualización 2026-09-14 (AUDIO1579)
 
 Audio y volumen pasa de 45/51 a 46/51 con la pregunta final que nombra el volumen pedido juzgada aparte por la App (commit 7bb180bd, BUILD1579) (HEAD 7bb180bd): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes decidieron una sola system.time verificada, no cambiaron el volumen y publicaron a la primera el dato observado seguido de una sola pregunta por la cantidad; la App juzga ya aparte esa pregunta final cuando el pedido nombró el volumen. Los dos límites pasaron con cero operaciones (el ajuste sin cantidad preguntó cuánto; «No toques el volumen.» fue reconocida).
+
+## Actualización 2026-09-14 (WINDOWS1581)
+
+Organizar ventanas y pestañas pasa de 6/13 a 7/13 con el listado hecho y cuál ventana enfocar preguntado al final (commit 745ea8ed, BUILD1579) (HEAD 745ea8ed): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes decidieron una sola window.resolve verificada, no enfocaron ninguna ventana y publicaron el listado observado (proceso y título) seguido de una sola pregunta por cuál ventana enfocar, como manda la regla del dueño cuando el contexto no determina «la mejor». Los dos límites pasaron con cero operaciones («enfocá la mejor» solo preguntó cuál; «No toques las ventanas.» fue reconocida).

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-windows1581-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (InventedVolume judges the sentences before the trailing question when the person's request named the volume; WithoutTrailingQuestion) and src/baxy_mind/effect_intent.py (_negative_action_forms admits «toca»/«touch»).",
+  "patch": "artifacts/comprobaciones/C03/WINDOWS1581/SOURCE.patch",
+  "commits": [
+    "745ea8ed5f70829cddd42c7fb72770942d75eef2"
+  ],
+  "build": "BUILD1579 (C03-repairs1579-build/BUILD_READY.json; mismos binarios)",
+  "cause_measured": "H0527 nunca ejecutado: «listá las ventanas y enfocá la mejor» no resolvía (compuesto con una ventana indeterminada); regla del dueño: usar el contexto o preguntar.",
+  "change": "Ninguno en esta tanda: la aclaración diferida lista las ventanas y pregunta cuál enfocar; sin respuestas fijas.",
+  "measurement": "WINDOWS1581: 5 ejecutados, 5 aprobados, 0 fallidos; 1 créditos. El literal y las dos variantes decidieron una sola window.resolve verificada, no enfocaron ninguna ventana y publicaron el listado observado (proceso y título) seguido de una sola pregunta por cuál ventana enfocar, como manda la regla del dueño cuando el contexto no determina «la mejor». Los dos límites pasaron con cero operaciones («enfocá la mejor» solo preguntó cuál; «No toques las ventanas.» fue reconocida).",
+  "credits": 1
+}

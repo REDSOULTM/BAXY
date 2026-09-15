@@ -1,0 +1,1249 @@
+commit 745ea8ed5f70829cddd42c7fb72770942d75eef2
+
+C03: AUDIO1579 adjudicated, «subí el volumen y decime qué fecha es» gives the date and asks how much, 1 credit (535/742)
+
+Five cases on BUILD1579 (HEAD 7bb180bd): «subí el volumen y decime qué fecha es» and both variants («bajá el volumen y decime qué hora es», «Decime qué fecha es y subí el volumen.») decided a single verified system.time read, changed no volume, and their first drafts were published as finals: the observed date or time followed by one question for the amount («Hoy es 15 de septiembre de 2026. ¿Cuánto querías aumentar el volumen?», «14:33, ¿cuánto querés bajar el volumen?»). The App's InventedVolume rule now judges only the sentences before that trailing question when the person's request named the volume. The two boundaries passed with zero operations: the bare relative request asked the amount, and «No toques el volumen.» was acknowledged («Entendido, no tocaré el volumen.») now that «toca» counts as a prohibited action. 1 credit (H0067, both variants approved); registry 535/742, 207 open, 0 NA; «Audio y volumen» 46/51.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/GoalC03.txt b/GoalC03.txt
+index cf6c4529..d22a5569 100644
+--- a/GoalC03.txt
++++ b/GoalC03.txt
+@@ -67,8 +67,8 @@ Trabaja autónomamente hasta el cierre demostrado del goal completo. No pares en
+ ## Estado de avance (Fable, 2026-09-13 04:20 local) — anexo del relevo, no altera las órdenes anteriores
+ 
+ - Relevo asumido como único escritor (RELEVO_ACTIVO.json con la identidad real de sesión); rama `codex/kiro-goal-c03`, `main` intacto; todo comprometido y empujado (último commit: ver HANDOFF.md).
+-- **Cobertura: 203 → 534/742 cubiertos, 208 abiertos, 0 NA; 5/35 categorías cerradas (Procesos, Estado de ventanas, Identidad, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11.** Registro canónico SHA256 `e55a3e1ec3d4fc2d15ff5b78a7c1b132f7de5d3903ade94e6cab5e9c84e26cdc`. Primeras altas 24 h ≥ 169.
+-- Tandas adjudicadas en este relevo: TIME1134 (papeleo), MESSAGING1136 adoptado, MESSAGING1140, NOTES1141/1142, BUILD1143, KNOWLEDGE1144/1149, IDENTITY1145/1146/1148, CONVERSATION1150/1152/1160, CLOCK1155/1156/1157/1159, NETWORK1161/1163/1165/1167, SYSTEM1169/1171/1173/1175/1177, KNOWLEDGE1179, SYSTEM1181, SYSTEM1183, TIME1185, TIME1187, TIME1189, TIME1191, TIME1193, TIME1195, TIME1197, TIME1199, NETWORK1201, NETWORK1203, FILES1205, WINDOWS1207, WINDOWS1209, WINDOWS1211, WINDOWS1213, CLOSE1215, CLOSE1217, CLOSE1219, CLOSE1221, CLOSE1223, CLOSE1225, CLOSE1227, ARRANGE1229, APPS1231, APPS1237, AUDIO1239, FILES1243, MEMORY1245, MEMORY1247, MEMORY1249, MEMORY1251, MEMORY1253, MEMORY1255, WEB1257, WEB1259, WEB1261, WEB1263, WEB1265, WEB1267, WEB1269, WEB1271, UI1275, DIALOGUE1277 (medición, 0 créditos), DIALOGUE1279, DIALOGUE1281, BRIGHT1283 (medición, 0 créditos), BRIGHT1285, BRIGHT1287, BRIGHT1289, WEB1291 (medición, 0 créditos), NETWORK1293, NETWORK1295, NETWORK1297, NETWORK1299, NETWORK1301, SYSTEM1303, SYSTEM1305, SYSTEM1307, NEGATIVE1309, NEGATIVE1311, PROCESS1313, WINDOWS1315, WINDOWS1317, BRIGHT1319, BRIGHT1321, IDENTITY1323, IDENTITY1325, IDENTITY1327, CLOCK1329, CLOCK1331, CLOCK1333, CLOCK1335, AGENDA1337, AGENDA1339, AGENDA1341, CONVERSATION1343, CONVERSATION1345, CONVERSATION1347, CONVERSATION1349, AUDIO1351, KNOWLEDGE1353, KNOWLEDGE1355, KNOWLEDGE1357, CLIPBOARD1359, CLIPBOARD1361, MESSAGING1363, MESSAGING1365, SYSTEM1367, CLOSE1369, CLOSE1371, UI1373, UI1377, AUDIO1375, AUDIO1379, AUDIO1381, APPS1383, APPS1387, APPS1391, UI1389, WINDOWS1385, UI1393, UI1395, UI1397, SCREEN1399, SCREEN1401, SCREEN1403, SCREEN1405, SCREEN1407, SCREEN1409, SCREEN1411, SCREEN1413, SCREEN1415, SCREEN1417, SCREEN1419, SCREEN1421, SCREEN1423, FILES1427, NEGATIVE1429, NEGATIVE1431, FILES1433, AGENDA1435, FILES1437, FILES1439, FILES1441, FILES1443, WEB1445, WEB1447, WEB1449, WEB1451, WEB1453, WEB1455, NETWORK1457, SYSTEM1459, AUDIO1461, AUDIO1463, WEB1465, WEB1467, WEB1471, KNOWLEDGE1473, KNOWLEDGE1475, WEB1477, WEB1479, WEB1481, WEB1483, SCREEN1485, DIALOGUE1487, DIALOGUE1489, DIALOGUE1491, BROWSER1493, APPS1495, APPS1497, APPS1499, MEMORY1501, MEMORY1503, KNOWLEDGE1505, KNOWLEDGE1507, KNOWLEDGE1509, KNOWLEDGE1511, DIALOGUE1513, DIALOGUE1515, DIALOGUE1517, DIALOGUE1519, DIALOGUE1521, KNOWLEDGE1523, KNOWLEDGE1525, KNOWLEDGE1527, KNOWLEDGE1529, GAMES1531, GAMES1533, APPS1535, WINDOWS1537, WEB1539, WEB1541, WEB1543, SYSTEM1545, SYSTEM1547, APPS1549, APPS1551, MUSIC1553, MUSIC1555, MUSIC1557, MUSIC1559, MUSIC1561, MUSIC1563, MUSIC1565, MUSIC1567, MUSIC1569, MUSIC1573, MUSIC1575, AUDIO1577. Registro por campaña en artifacts/comprobaciones/C03/<CAMPAÑA>/ (ROOT_ADJUDICATION, SOURCE/APP_SOURCE con parche y medición).
++- **Cobertura: 203 → 535/742 cubiertos, 207 abiertos, 0 NA; 5/35 categorías cerradas (Procesos, Estado de ventanas, Identidad, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11.** Registro canónico SHA256 `e74d04b021f09ea6785859021a9d827104dc21a43443c0e3324ff566163bc1d0`. Primeras altas 24 h ≥ 169.
++- Tandas adjudicadas en este relevo: TIME1134 (papeleo), MESSAGING1136 adoptado, MESSAGING1140, NOTES1141/1142, BUILD1143, KNOWLEDGE1144/1149, IDENTITY1145/1146/1148, CONVERSATION1150/1152/1160, CLOCK1155/1156/1157/1159, NETWORK1161/1163/1165/1167, SYSTEM1169/1171/1173/1175/1177, KNOWLEDGE1179, SYSTEM1181, SYSTEM1183, TIME1185, TIME1187, TIME1189, TIME1191, TIME1193, TIME1195, TIME1197, TIME1199, NETWORK1201, NETWORK1203, FILES1205, WINDOWS1207, WINDOWS1209, WINDOWS1211, WINDOWS1213, CLOSE1215, CLOSE1217, CLOSE1219, CLOSE1221, CLOSE1223, CLOSE1225, CLOSE1227, ARRANGE1229, APPS1231, APPS1237, AUDIO1239, FILES1243, MEMORY1245, MEMORY1247, MEMORY1249, MEMORY1251, MEMORY1253, MEMORY1255, WEB1257, WEB1259, WEB1261, WEB1263, WEB1265, WEB1267, WEB1269, WEB1271, UI1275, DIALOGUE1277 (medición, 0 créditos), DIALOGUE1279, DIALOGUE1281, BRIGHT1283 (medición, 0 créditos), BRIGHT1285, BRIGHT1287, BRIGHT1289, WEB1291 (medición, 0 créditos), NETWORK1293, NETWORK1295, NETWORK1297, NETWORK1299, NETWORK1301, SYSTEM1303, SYSTEM1305, SYSTEM1307, NEGATIVE1309, NEGATIVE1311, PROCESS1313, WINDOWS1315, WINDOWS1317, BRIGHT1319, BRIGHT1321, IDENTITY1323, IDENTITY1325, IDENTITY1327, CLOCK1329, CLOCK1331, CLOCK1333, CLOCK1335, AGENDA1337, AGENDA1339, AGENDA1341, CONVERSATION1343, CONVERSATION1345, CONVERSATION1347, CONVERSATION1349, AUDIO1351, KNOWLEDGE1353, KNOWLEDGE1355, KNOWLEDGE1357, CLIPBOARD1359, CLIPBOARD1361, MESSAGING1363, MESSAGING1365, SYSTEM1367, CLOSE1369, CLOSE1371, UI1373, UI1377, AUDIO1375, AUDIO1379, AUDIO1381, APPS1383, APPS1387, APPS1391, UI1389, WINDOWS1385, UI1393, UI1395, UI1397, SCREEN1399, SCREEN1401, SCREEN1403, SCREEN1405, SCREEN1407, SCREEN1409, SCREEN1411, SCREEN1413, SCREEN1415, SCREEN1417, SCREEN1419, SCREEN1421, SCREEN1423, FILES1427, NEGATIVE1429, NEGATIVE1431, FILES1433, AGENDA1435, FILES1437, FILES1439, FILES1441, FILES1443, WEB1445, WEB1447, WEB1449, WEB1451, WEB1453, WEB1455, NETWORK1457, SYSTEM1459, AUDIO1461, AUDIO1463, WEB1465, WEB1467, WEB1471, KNOWLEDGE1473, KNOWLEDGE1475, WEB1477, WEB1479, WEB1481, WEB1483, SCREEN1485, DIALOGUE1487, DIALOGUE1489, DIALOGUE1491, BROWSER1493, APPS1495, APPS1497, APPS1499, MEMORY1501, MEMORY1503, KNOWLEDGE1505, KNOWLEDGE1507, KNOWLEDGE1509, KNOWLEDGE1511, DIALOGUE1513, DIALOGUE1515, DIALOGUE1517, DIALOGUE1519, DIALOGUE1521, KNOWLEDGE1523, KNOWLEDGE1525, KNOWLEDGE1527, KNOWLEDGE1529, GAMES1531, GAMES1533, APPS1535, WINDOWS1537, WEB1539, WEB1541, WEB1543, SYSTEM1545, SYSTEM1547, APPS1549, APPS1551, MUSIC1553, MUSIC1555, MUSIC1557, MUSIC1559, MUSIC1561, MUSIC1563, MUSIC1565, MUSIC1567, MUSIC1569, MUSIC1573, MUSIC1575, AUDIO1577, AUDIO1579. Registro por campaña en artifacts/comprobaciones/C03/<CAMPAÑA>/ (ROOT_ADJUDICATION, SOURCE/APP_SOURCE con parche y medición).
+ - Reparaciones causales adoptadas y medidas: notas (léxico), App palabra completa, prompt (SIEMPRE/idioma), voseo (lector y shell, BUILD1147), pregunta de recuperación publicada (BUILD1151), reloj (reconocedor y proyección de fecha; shell día/day, BUILD1158), wifi (dominio y validador de conectividad), GPU (scope), disco («espacio», elipsis nominal), claves de medidas total/free/used (autorizado), alarmas relativas al segundo entero publicado (decisión del dueño, TIME1139), duraciones compactas y «media hora», despertar como alarma, recordatorios con duración al inicio, alarmas y recordatorios con hora explícita, aclaraciones deterministas de agenda (hora imposible, aviso sin contenido), «contá N minutos», IP propia sin confirmación (BUILD1201, decisión del dueño), proveedor de carpetas conocidas para crear archivos y carpetas en escritorio/Documentos (BUILD1205, decisión del dueño, infraestructura ≥10 abiertos). Un validador retirado tras medir agotamiento (mislabeled_memory, 0e8edfec).
+ - Sin tests/dueñas/Fast/Full, por orden vigente: ningún criterio formal de validación se declara cumplido. Guardas intactas.
+ - Decisiones del dueño recibidas el 2026-09-13 (artifacts/comprobaciones/C03/DECISIONES_DUENO_2026-09-13.md): poder total en este PC, cierre de apps sin autorización por app, proveedor de carpetas conocidas, renombrado de claves de medidas, IP sin confirmación, TIME1139 a elección de raíz con obligación de cumplirlo, y saltar lo que exija sesiones ausentes (Netflix). Reanudación exacta en HANDOFF.md y CONDICIONES_POR_CATEGORIA_2026-09-13.md.
+diff --git a/artifacts/comprobaciones/C03/AUDIO1579/MATERIAL_PINS.json b/artifacts/comprobaciones/C03/AUDIO1579/MATERIAL_PINS.json
+new file mode 100644
+index 00000000..c66d52ef
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/AUDIO1579/MATERIAL_PINS.json
+@@ -0,0 +1,78 @@
++{
++  "schema": "audio1579-public-material-pins-v1",
++  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-proposal",
++  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1",
++  "seal_sha256": "8bcaaf9bfecfd669cbcbcbf2348e7c825442643a121ad11446a0bf7a29713a31",
++  "runner_sha256": "5c470c32983597b3680444449a41c95758eeab41530aecd8b7b9780b7b62eb6f",
++  "transport_seal_sha256": "d86b8da5aff385abf3147f18503fee47ffd8a707fa82ad85e5a9b1d86ac5f02c",
++  "files": {
++    "panel.json": "4bd16041ec41d1092ae3d870407dfb35c13a25cb82d891cb96fc91d2c7366631",
++    "turns.jsonl": "811a9bdf4a53ca5f2ec2a526808d4508bb2dac41be2c5a53fbcdc697d25f2ada",
++    "case-map.json": "eabe4c86c92164a87d116c211f923fbcc58bf0e76420004b2c1550368aaca2b3",
++    "PLAN.md": "bcde5a31468a35da56b91fdc94de227d87d719f71dba07a261f9882b1b6a303d"
++  },
++  "counts": {
++    "cases": 5,
++    "historical_literals": 1,
++    "original_development_variants": 2,
++    "boundaries": 2,
++    "wire_lines": 10,
++    "session_controls": 5,
++    "ordinary_turns": 5,
++    "reviewed_turns": 0,
++    "maximum_reportable_terminals": 5,
++    "maximum_internal_confirmations": 0
++  },
++  "kind_counts": {
++    "historical_literal": 1,
++    "original_development_variant": 2,
++    "boundary": 2
++  },
++  "case_identities": [
++    {
++      "index": 0,
++      "case_id": "H0067",
++      "kind": "historical_literal",
++      "group": "deferred_volume",
++      "credit_behavior": "deferred_volume",
++      "text_sha256": "1571ae8464db5a2c3462f7e2360c26704fc07573fbcce3a91957481156dbcfd6",
++      "criterion_sha256": "5c3fa16c4f92773d0ac61fa6fe3e69b27a34873263e919d18e13666e08c96b48"
++    },
++    {
++      "index": 1,
++      "case_id": "audio1579-dev-01",
++      "kind": "original_development_variant",
++      "group": "deferred_volume",
++      "credit_behavior": "deferred_volume",
++      "text_sha256": "20893ac849745cc0612e85c025a47e33b45117a5a21cf0eb3708bb2b31c5f232",
++      "criterion_sha256": "5c3fa16c4f92773d0ac61fa6fe3e69b27a34873263e919d18e13666e08c96b48"
++    },
++    {
++      "index": 2,
++      "case_id": "audio1579-dev-02",
++      "kind": "original_development_variant",
++      "group": "deferred_volume",
++      "credit_behavior": "deferred_volume",
++      "text_sha256": "3678d63bc2e289e15eb1b7aa315cb63cd2640ba791aba66aab32f8b109de3137",
++      "criterion_sha256": "5c3fa16c4f92773d0ac61fa6fe3e69b27a34873263e919d18e13666e08c96b48"
++    },
++    {
++      "index": 3,
++      "case_id": "audio1579-boundary-01",
++      "kind": "boundary",
++      "group": "no_effect_boundary",
++      "credit_behavior": "no_effect_boundary",
++      "text_sha256": "9397d34b3784fc2ac9f9cee0d701c902ee3d39bee9ee828f297d45732e8e84e5",
++      "criterion_sha256": "39ba793c3eccceee01a550c54edd5a4a8c838e4edaf93e750fdcdd29a13cb56b"
++    },
++    {
++      "index": 4,
++      "case_id": "audio1579-boundary-02",
++      "kind": "boundary",
++      "group": "no_effect_boundary",
++      "credit_behavior": "no_effect_boundary",
++      "text_sha256": "39f381ee538b21a0cc5db071a0e160895336caef097799542ebff674dba1315f",
++      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
++    }
++  ]
++}
+diff --git a/artifacts/comprobaciones/C03/AUDIO1579/REGISTRY_UPDATE.json b/artifacts/comprobaciones/C03/AUDIO1579/REGISTRY_UPDATE.json
+new file mode 100644
+index 00000000..4e5c0259
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/AUDIO1579/REGISTRY_UPDATE.json
+@@ -0,0 +1,18 @@
++{
++  "registry_before_sha256": "e55a3e1ec3d4fc2d15ff5b78a7c1b132f7de5d3903ade94e6cab5e9c84e26cdc",
++  "registry_after_sha256": "e74d04b021f09ea6785859021a9d827104dc21a43443c0e3324ff566163bc1d0",
++  "touched_ids": [
++    "H0067"
++  ],
++  "credited_ids": [
++    "H0067"
++  ],
++  "counters": {
++    "covered": 535,
++    "open": 207,
++    "not_applicable": 0,
++    "total": 742
++  },
++  "decisions_sha256": "8cd182d0975d6d5874f845b251788a962a08e8ea4b1ac32aa0fb4cc826ec61ca",
++  "updated_at": "2026-09-15T17:34:50.409412+00:00"
++}
+diff --git a/artifacts/comprobaciones/C03/AUDIO1579/ROOT_ADJUDICATION.json b/artifacts/comprobaciones/C03/AUDIO1579/ROOT_ADJUDICATION.json
+new file mode 100644
+index 00000000..9bf49137
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/AUDIO1579/ROOT_ADJUDICATION.json
+@@ -0,0 +1,323 @@
++{
++  "schema": "audio1579-root-adjudication-v2",
++  "decided_at_utc": "2026-09-15T17:34:50.409412+00:00",
++  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
++  "head": "7bb180bdd2f90576fea29151105117a5dbea9df0",
++  "decisions_sha256": "8cd182d0975d6d5874f845b251788a962a08e8ea4b1ac32aa0fb4cc826ec61ca",
++  "registry_before_sha256": "e55a3e1ec3d4fc2d15ff5b78a7c1b132f7de5d3903ade94e6cab5e9c84e26cdc",
++  "registry_before_counts": {
++    "covered": 534,
++    "open": 208,
++    "not_applicable": 0,
++    "total": 742
++  },
++  "candidate_manifest_sha256": "670d46e9efa8c4cbf75c4441c5b8998ce77517550c3627df584debd0091b241c",
++  "preparation_sha256": "8aa2aefdb186c8d6e87f9519c325b671b28283378ba618435047dc686374146e",
++  "passed": 5,
++  "failed": 0,
++  "unexecuted": 0,
++  "executed": 5,
++  "segments_started": 5,
++  "aborted_before_admission": 0,
++  "aborted_before_admission_indices": [],
++  "credits": [
++    "H0067"
++  ],
++  "counters": {
++    "covered": 535,
++    "open": 207,
++    "not_applicable": 0,
++    "total": 742
++  },
++  "metrics": {
++    "first_covered_last24h_is_lower_bound": true,
++    "first_covered_last24h_before": 408,
++    "categories_total": 35,
++    "categories_closed_after": 5,
++    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 408 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1579 añade 1. No se cuentan revalidaciones.",
++    "first_covered_last24h_after": 409
++  },
++  "resources": {
++    "seconds_sum": 81.5460000000021,
++    "gpu_peak_mib": 3497.55859375,
++    "ram_peak_mib": 1485.84375
++  },
++  "cases": [
++    {
++      "index": 0,
++      "case_id": "H0067",
++      "verdict": "passed",
++      "credit": true,
++      "pair_indices": [
++        1,
++        2
++      ],
++      "reason": "Lectura verificada, dato observado en el final y una sola pregunta por la cantidad del volumen, sin cambiarlo; crédito con dos variantes aprobadas.",
++      "observation_note": "Turno ordinario: system.time de sólo lectura completada y verificada; cero confirmaciones y violaciones; pins intactos.",
++      "final_sha256": "45a62719d45838c1f38f1afb6542710d08bf03c055d1d06c7ccdc80c842197eb",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-00\\EXIT.json": "26c16110ee14cd8d47cbcc0925a56617a3c03b6a76e0fa5d279d98af865a2921",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-00\\RESOURCES.json": "4953ff2ecd50864479f3a32708a3b54497968a38b9219d335336bb4b734439a9",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\profile-owner-00.json": "30fe01735492587d29ba6da08e061a8635aadcfad40b93a923bcfd232d77941f",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-00\\PREREG.json": "a60b1e79dbe42af4b5e27de4e669c1c76f0c2de2466ac7736fc73386d637006f",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-00\\capture\\events.jsonl": "67aa2cdc960ae80b3fded35b7aa276c00655b3823dac202983aaacf4272d0406",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-00\\turns.jsonl": "4206215f81cb689e11ac29d8a9634cd408f4aaf5ff26c641154e5fb9d605c634",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\fixture-00.json": "de47143301ee19979517266d925fac54a63ca543003de5967df633a0386203e5",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-00.json": "f3c25016465ec232b7531c3b35a685840d9f1ca322d2675db3357623d51ebb5b",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-prelaunch-00.json": "f2fa87c3c6de7fede4650a6387ba17467425167043ecdf124f5affd2935af88a",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-00\\case-observations.json": "41aea251b697a696c6042fabb187315438ae9433cd9b37dfcb8f909a75b7d2f4",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-00\\journal-before.json": "9af9bcbac5115864f7c0243ba3b04b7010632a4bef7cd36b3370ceff44a5247a",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-00\\journal-after.json": "079994a895571450ed07074782720c97eb5113194b7c860dbb90e7bfaa03d144",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "c208408e91fb220a7919bd669b855ae4e2d9dda043a2c50edfd08c36f61057f7"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "f448bcf9-5ad5-4d1d-b65e-bfb14083dada",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        },
++        {
++          "invocation_id": "650a9af7-a234-4c51-bec0-964df9466fc3",
++          "operation": "system.time",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    },
++    {
++      "index": 1,
++      "case_id": "audio1579-dev-01",
++      "verdict": "passed",
++      "credit": false,
++      "pair_indices": [],
++      "reason": "Lectura verificada, dato observado en el final y una sola pregunta por la cantidad del volumen, sin cambiarlo.",
++      "observation_note": "Turno ordinario: system.time de sólo lectura completada y verificada; cero confirmaciones y violaciones; pins intactos.",
++      "final_sha256": "855273c2e93aa73614f0e196790dd622ccfbbbf3fac35a96b25d644712ac19ef",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-01\\EXIT.json": "fab1518a7e5f1b731f74b137216a05ad52978dedf70347e3500bf34fc6a907b3",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-01\\RESOURCES.json": "778e9864c493b7e82e01b2270ceb67fd07c29dd0be42690d867cc8b7fbb48927",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\profile-owner-01.json": "6bd6e5ccc57dfea23a21a5a4e15ddcd5c7f8f0fb84fbe190bd2c51ca40eb9a82",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-01\\PREREG.json": "062055b671eb2b1d6a168996ff2dcb94e5dbe8321f89016cbd649cc40d411709",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-01\\capture\\events.jsonl": "3bf9de17f6a9264b8140b7f34ed10eb96f073579d0fa13cd324616b6b56a2873",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-01\\turns.jsonl": "9e7faed17255965f5de6236a32b9b90d6efbf3df6e0861b7a2856f13074d4055",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\fixture-01.json": "ccbe5419cc962a800e0c0cf63bb3873b64a360f81a2d31faaa85cf0eee4570f7",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-01.json": "210027882e1b863a630ad9a4abed8c02fd21c529a696af681a8708ca4ed5da62",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-prelaunch-01.json": "cc248fe131886f54cf9641f9477c428ab22d0a1faab909a4d864f892ad421879",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-01\\case-observations.json": "6dd12ee2d529f1a267de34fe64367e1ec177d2b0c45ed04131bc518fa77b378d",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-01\\journal-before.json": "01fbdc31829a30b264e8f0750de32c62833ca02b776fdeb35550f06a9851e49b",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-01\\journal-after.json": "d87a6148b8d08b3e301b6429b935e23897212466093e2d3351d24067254fef9a",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "cd485ce69730014c76709f13fbc18bb394999068e84ad4fecba317f8faaee0a3"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "b6bd766f-1e9f-421f-8aa7-59eda8191f94",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        },
++        {
++          "invocation_id": "1821c1f8-3fcc-408c-a910-25f1ed140c72",
++          "operation": "system.time",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    },
++    {
++      "index": 2,
++      "case_id": "audio1579-dev-02",
++      "verdict": "passed",
++      "credit": false,
++      "pair_indices": [],
++      "reason": "Lectura verificada, dato observado en el final y una sola pregunta por la cantidad del volumen, sin cambiarlo.",
++      "observation_note": "Turno ordinario: system.time de sólo lectura completada y verificada; cero confirmaciones y violaciones; pins intactos.",
++      "final_sha256": "2ddb6d510b49ad129f08cfc1fbfbba75bfee6d0ae3cb05fdd52668a4da7e2d9d",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-02\\EXIT.json": "6f9935d4a48097d2668fcb907d63543dfeeabf53a66205c9ababfff6f0158335",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-02\\RESOURCES.json": "9c5aa907ff7e164e172999736378bdb222c64bbfedd2855594069745f2b986cc",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\profile-owner-02.json": "0a4871dd647dedf358b59e6c0aaf72a650eaa2a7f5180dc44ce7cf4a24f07fad",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-02\\PREREG.json": "818df111a75f38ecf6dd5a55f43ffbadbbdd5451a5f87cf8fe964546e91e3ac1",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-02\\capture\\events.jsonl": "3d1868b3a79b7d558fd88460a95da293c9745ed4b77deba83cdc5b0003be4631",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-02\\turns.jsonl": "b5a49c6091f5532f6c1e56a56999bcefd40bba0c24739590a8544c8fd9d41073",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\fixture-02.json": "3c99f2821ad3d01f3aa1ceeac0342fb68b74c847e380cb819d3fb74e6b62525d",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-02.json": "e669f4bb092876142e61d610d4fc4098e15dc60b3a8223e34473e1943a13a9c5",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-prelaunch-02.json": "31f7164980f45be5f338a05541fad90c51d808b0f230ef68dd40a085d5069e95",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-02\\case-observations.json": "51f527d2dd762a9c3d696e5c6bdf29ea2c9ea264e7203f5a0a43d2b680f2d63b",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-02\\journal-before.json": "543da39503ccb827f7dbd6cd52e068aa34b8c6d8d619cb2cb10c911953421daf",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-02\\journal-after.json": "ed1c8175d4d57e7b5043910a686a071b2c23c88952337d4fcbca4e67866f6c3e",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "e98b4d5b26ac45e0065ba89252ae2da3529da9803580aa0ec3d73f03b5f963d9"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "1d5a5893-3985-4154-b297-d0f7001ee6da",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        },
++        {
++          "invocation_id": "e1f361ab-c763-4abd-869d-8f11d41b8f7e",
++          "operation": "system.time",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    },
++    {
++      "index": 3,
++      "case_id": "audio1579-boundary-01",
++      "verdict": "passed",
++      "credit": false,
++      "pair_indices": [],
++      "reason": "Límite aprobado.",
++      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++      "final_sha256": "fb9d060f25a00580da878b1b959c72000b60169b1d0a67cb10e9f047d07439aa",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-03\\EXIT.json": "24273bf3dcdd1e5d6df4fda9d3553b78349f68aa13a38a934c7f6dc3fe6cf4e7",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-03\\RESOURCES.json": "b0729c93843c12beee087136386375d258085004a8496f7261f3d5d132c7fd0d",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\profile-owner-03.json": "2d0aeca78bd5d093eed078280154e313719c57c41936a12fe9c1367e7994fb45",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-03\\PREREG.json": "4114175389211f029745a34bdb19e3ef88c92b93487650e2ff90493faf6c8d11",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-03\\capture\\events.jsonl": "03251795fe3747baceba1d9e0356870f5164ba68e2cd0af0d8e8ada1ac2340f1",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-03\\turns.jsonl": "20050b82c0ba80a94d75fce691b76859810aa5b753e3c4c461ec8264d371a627",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\fixture-03.json": "03b13eba4d7ba4121c0d5302bfa24d6d42bd0803a44b61d88ad36a2416ae2641",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-03.json": "95787f837433a8e7ea47b8249defa145f5a87cae9b1ce99f3e304e836f3c321b",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-prelaunch-03.json": "09ebc4f3ac5f1161daa3722ef2a022a92968db619535e6bca594dd36579338a8",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-03\\case-observations.json": "b92994c011ed7c031fd17684258bc7e537c30a476972ccec23326a2427ddf81b",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-03\\journal-before.json": "4d6ebeb79377f34a814c5ce4c6d446c8e600f0f820cf9f075be3bc2a11d7b792",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-03\\journal-after.json": "6a4fd6ffdf35bd2e272b42f9ca5e515420006a97df6e41ffde72e87c2bc18307",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "7ce5f39fcdb19b741aabdd97433be9279c50d3f24ada3d14a252653d2384de19"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "3d9b183f-3097-4123-b896-1ebe5e57338b",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    },
++    {
++      "index": 4,
++      "case_id": "audio1579-boundary-02",
++      "verdict": "passed",
++      "credit": false,
++      "pair_indices": [],
++      "reason": "Límite aprobado.",
++      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++      "final_sha256": "d4c35856cd2688ec852830ef6f4db736d2181367802693e885f9c8c52ffe32b4",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-04\\EXIT.json": "ec55b7e9b147f866b11619bf9ee32bfd46ccd52d46b0539f5c4f6ea3943d5a99",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-04\\RESOURCES.json": "805734db1b030b5dd4db6a965ec8b5f5cb1892f17201310870137471bd1fd9f7",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\profile-owner-04.json": "b0f1adad6990db199bd701ba1921a8c9919ed3a20ea73ba8ba4d204fdfff7c94",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-04\\PREREG.json": "51795d635b1c1620c28c55b6b68865ee0dd1a99aa43afbe1680aa46373cf6b57",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-04\\capture\\events.jsonl": "6a8f867ff1ccfbdaaa6090ec064569d337b618136cca2656cc22d63a70e9f4ed",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-04\\turns.jsonl": "13e1a93bf806728664743c6eaab54726e9cd912148fc78bfb074f75107315295",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\fixture-04.json": "001597effe5f3b2265a239c724ccd471dae72f5ca2838566227d4677cd79b429",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-04.json": "357acd687b2075618af9aa1b46dc01cbbcf50828f599b61e51ba68119b505901",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-prelaunch-04.json": "9798ec2c0ea0c1f406f590f98515ad5e712cdfb888d401085d2be9b4f8cb0476",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-04\\case-observations.json": "a107ba03d25d57869db5329f27c0188f5ba71107c148b2cb787eb48431c4338d",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-04\\journal-before.json": "4ead2bca450d8f8fff9c77dd210d2a0c6a4b90ea1c33c09d74d49e9fe647f798",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-04\\journal-after.json": "405fa131dda389fbf4d1b4100d539d3acf5b526a373360226e424d70efc347e7",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "f49a1628f99841ded9d5b5e9b6223370b23187567c45e47f7df041d9f8874c0f"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "29a5edec-b0dd-4934-b8be-2398b8a302e6",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    }
++  ],
++  "unexecuted_indices": [],
++  "next_action": "AUDIO1579: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Audio y volumen 46/51. Siguiente: categoría por masa abierta según CONDICIONES.",
++  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
++  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
++}
+diff --git a/artifacts/comprobaciones/C03/AUDIO1579/ROOT_ADJUDICATION.md b/artifacts/comprobaciones/C03/AUDIO1579/ROOT_ADJUDICATION.md
+new file mode 100644
+index 00000000..6b88df3f
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/AUDIO1579/ROOT_ADJUDICATION.md
+@@ -0,0 +1,31 @@
++# AUDIO1579 — adjudicación de la raíz
++
++## AUDIO1579 — estado vigente 2026-09-15T17:34:50.409412+00:00
++
++Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
++
++| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
++|---:|---:|---:|---:|---:|
++| 535/742 | 207 | 0 | >=409 | 5/35 |
++
++Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 408 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1579 añade 1. No se cuentan revalidaciones.
++
++Siguiente acción: AUDIO1579: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Audio y volumen 46/51. Siguiente: categoría por masa abierta según CONDICIONES.
++
++Evidencia: `artifacts/comprobaciones/C03/AUDIO1579/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
++
++Recursos de los segmentos: 81.55 s acumulados; pico GPU 3497.56 MiB; pico RAM 1485.84 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
++
++Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
++
++| Índice | Caso | Veredicto | Causa de la raíz | Observación |
++|---:|---|---|---|---|
++| 0 | H0067 | passed | Lectura verificada, dato observado en el final y una sola pregunta por la cantidad del volumen, sin cambiarlo; crédito con dos variantes aprobadas. | Turno ordinario: system.time de sólo lectura completada y verificada; cero confirmaciones y violaciones; pins intactos. |
++| 1 | audio1579-dev-01 | passed | Lectura verificada, dato observado en el final y una sola pregunta por la cantidad del volumen, sin cambiarlo. | Turno ordinario: system.time de sólo lectura completada y verificada; cero confirmaciones y violaciones; pins intactos. |
++| 2 | audio1579-dev-02 | passed | Lectura verificada, dato observado en el final y una sola pregunta por la cantidad del volumen, sin cambiarlo. | Turno ordinario: system.time de sólo lectura completada y verificada; cero confirmaciones y violaciones; pins intactos. |
++| 3 | audio1579-boundary-01 | passed | Límite aprobado. | Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos. |
++| 4 | audio1579-boundary-02 | passed | Límite aprobado. | Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos. |
++
++Recursos: 81.55 s de segmentos; pico GPU 3497.56 MiB; pico RAM 1485.84 MiB. La muestra del árbol de procesos puede incluir descendientes ajenos a BAXY; no equivale a consumo exclusivo del modelo.
++
++Sólo se atribuyen invocaciones nuevas de cada segmento. El aislamiento de contexto o la ausencia de operaciones no acredita por sí sola una respuesta útil. Los casos no ejecutados conservan sus datos y estado.
+diff --git a/artifacts/comprobaciones/C03/AUDIO1579/ROOT_CASE_JUDGMENTS.json b/artifacts/comprobaciones/C03/AUDIO1579/ROOT_CASE_JUDGMENTS.json
+new file mode 100644
+index 00000000..7264e4db
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/AUDIO1579/ROOT_CASE_JUDGMENTS.json
+@@ -0,0 +1,274 @@
++[
++  {
++    "index": 0,
++    "case_id": "H0067",
++    "verdict": "passed",
++    "credit": true,
++    "pair_indices": [
++      1,
++      2
++    ],
++    "reason": "Lectura verificada, dato observado en el final y una sola pregunta por la cantidad del volumen, sin cambiarlo; crédito con dos variantes aprobadas.",
++    "observation_note": "Turno ordinario: system.time de sólo lectura completada y verificada; cero confirmaciones y violaciones; pins intactos.",
++    "final_sha256": "45a62719d45838c1f38f1afb6542710d08bf03c055d1d06c7ccdc80c842197eb",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-00\\EXIT.json": "26c16110ee14cd8d47cbcc0925a56617a3c03b6a76e0fa5d279d98af865a2921",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-00\\RESOURCES.json": "4953ff2ecd50864479f3a32708a3b54497968a38b9219d335336bb4b734439a9",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\profile-owner-00.json": "30fe01735492587d29ba6da08e061a8635aadcfad40b93a923bcfd232d77941f",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-00\\PREREG.json": "a60b1e79dbe42af4b5e27de4e669c1c76f0c2de2466ac7736fc73386d637006f",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-00\\capture\\events.jsonl": "67aa2cdc960ae80b3fded35b7aa276c00655b3823dac202983aaacf4272d0406",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-00\\turns.jsonl": "4206215f81cb689e11ac29d8a9634cd408f4aaf5ff26c641154e5fb9d605c634",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\fixture-00.json": "de47143301ee19979517266d925fac54a63ca543003de5967df633a0386203e5",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-00.json": "f3c25016465ec232b7531c3b35a685840d9f1ca322d2675db3357623d51ebb5b",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-prelaunch-00.json": "f2fa87c3c6de7fede4650a6387ba17467425167043ecdf124f5affd2935af88a",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-00\\case-observations.json": "41aea251b697a696c6042fabb187315438ae9433cd9b37dfcb8f909a75b7d2f4",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-00\\journal-before.json": "9af9bcbac5115864f7c0243ba3b04b7010632a4bef7cd36b3370ceff44a5247a",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-00\\journal-after.json": "079994a895571450ed07074782720c97eb5113194b7c860dbb90e7bfaa03d144",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "c208408e91fb220a7919bd669b855ae4e2d9dda043a2c50edfd08c36f61057f7"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "f448bcf9-5ad5-4d1d-b65e-bfb14083dada",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      },
++      {
++        "invocation_id": "650a9af7-a234-4c51-bec0-964df9466fc3",
++        "operation": "system.time",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  },
++  {
++    "index": 1,
++    "case_id": "audio1579-dev-01",
++    "verdict": "passed",
++    "credit": false,
++    "pair_indices": [],
++    "reason": "Lectura verificada, dato observado en el final y una sola pregunta por la cantidad del volumen, sin cambiarlo.",
++    "observation_note": "Turno ordinario: system.time de sólo lectura completada y verificada; cero confirmaciones y violaciones; pins intactos.",
++    "final_sha256": "855273c2e93aa73614f0e196790dd622ccfbbbf3fac35a96b25d644712ac19ef",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-01\\EXIT.json": "fab1518a7e5f1b731f74b137216a05ad52978dedf70347e3500bf34fc6a907b3",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-01\\RESOURCES.json": "778e9864c493b7e82e01b2270ceb67fd07c29dd0be42690d867cc8b7fbb48927",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\profile-owner-01.json": "6bd6e5ccc57dfea23a21a5a4e15ddcd5c7f8f0fb84fbe190bd2c51ca40eb9a82",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-01\\PREREG.json": "062055b671eb2b1d6a168996ff2dcb94e5dbe8321f89016cbd649cc40d411709",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-01\\capture\\events.jsonl": "3bf9de17f6a9264b8140b7f34ed10eb96f073579d0fa13cd324616b6b56a2873",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-01\\turns.jsonl": "9e7faed17255965f5de6236a32b9b90d6efbf3df6e0861b7a2856f13074d4055",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\fixture-01.json": "ccbe5419cc962a800e0c0cf63bb3873b64a360f81a2d31faaa85cf0eee4570f7",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-01.json": "210027882e1b863a630ad9a4abed8c02fd21c529a696af681a8708ca4ed5da62",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-prelaunch-01.json": "cc248fe131886f54cf9641f9477c428ab22d0a1faab909a4d864f892ad421879",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-01\\case-observations.json": "6dd12ee2d529f1a267de34fe64367e1ec177d2b0c45ed04131bc518fa77b378d",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-01\\journal-before.json": "01fbdc31829a30b264e8f0750de32c62833ca02b776fdeb35550f06a9851e49b",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-01\\journal-after.json": "d87a6148b8d08b3e301b6429b935e23897212466093e2d3351d24067254fef9a",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "cd485ce69730014c76709f13fbc18bb394999068e84ad4fecba317f8faaee0a3"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "b6bd766f-1e9f-421f-8aa7-59eda8191f94",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      },
++      {
++        "invocation_id": "1821c1f8-3fcc-408c-a910-25f1ed140c72",
++        "operation": "system.time",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  },
++  {
++    "index": 2,
++    "case_id": "audio1579-dev-02",
++    "verdict": "passed",
++    "credit": false,
++    "pair_indices": [],
++    "reason": "Lectura verificada, dato observado en el final y una sola pregunta por la cantidad del volumen, sin cambiarlo.",
++    "observation_note": "Turno ordinario: system.time de sólo lectura completada y verificada; cero confirmaciones y violaciones; pins intactos.",
++    "final_sha256": "2ddb6d510b49ad129f08cfc1fbfbba75bfee6d0ae3cb05fdd52668a4da7e2d9d",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-02\\EXIT.json": "6f9935d4a48097d2668fcb907d63543dfeeabf53a66205c9ababfff6f0158335",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-02\\RESOURCES.json": "9c5aa907ff7e164e172999736378bdb222c64bbfedd2855594069745f2b986cc",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\profile-owner-02.json": "0a4871dd647dedf358b59e6c0aaf72a650eaa2a7f5180dc44ce7cf4a24f07fad",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-02\\PREREG.json": "818df111a75f38ecf6dd5a55f43ffbadbbdd5451a5f87cf8fe964546e91e3ac1",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-02\\capture\\events.jsonl": "3d1868b3a79b7d558fd88460a95da293c9745ed4b77deba83cdc5b0003be4631",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-02\\turns.jsonl": "b5a49c6091f5532f6c1e56a56999bcefd40bba0c24739590a8544c8fd9d41073",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\fixture-02.json": "3c99f2821ad3d01f3aa1ceeac0342fb68b74c847e380cb819d3fb74e6b62525d",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-02.json": "e669f4bb092876142e61d610d4fc4098e15dc60b3a8223e34473e1943a13a9c5",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-prelaunch-02.json": "31f7164980f45be5f338a05541fad90c51d808b0f230ef68dd40a085d5069e95",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-02\\case-observations.json": "51f527d2dd762a9c3d696e5c6bdf29ea2c9ea264e7203f5a0a43d2b680f2d63b",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-02\\journal-before.json": "543da39503ccb827f7dbd6cd52e068aa34b8c6d8d619cb2cb10c911953421daf",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-02\\journal-after.json": "ed1c8175d4d57e7b5043910a686a071b2c23c88952337d4fcbca4e67866f6c3e",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "e98b4d5b26ac45e0065ba89252ae2da3529da9803580aa0ec3d73f03b5f963d9"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "1d5a5893-3985-4154-b297-d0f7001ee6da",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      },
++      {
++        "invocation_id": "e1f361ab-c763-4abd-869d-8f11d41b8f7e",
++        "operation": "system.time",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  },
++  {
++    "index": 3,
++    "case_id": "audio1579-boundary-01",
++    "verdict": "passed",
++    "credit": false,
++    "pair_indices": [],
++    "reason": "Límite aprobado.",
++    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++    "final_sha256": "fb9d060f25a00580da878b1b959c72000b60169b1d0a67cb10e9f047d07439aa",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-03\\EXIT.json": "24273bf3dcdd1e5d6df4fda9d3553b78349f68aa13a38a934c7f6dc3fe6cf4e7",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-03\\RESOURCES.json": "b0729c93843c12beee087136386375d258085004a8496f7261f3d5d132c7fd0d",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\profile-owner-03.json": "2d0aeca78bd5d093eed078280154e313719c57c41936a12fe9c1367e7994fb45",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-03\\PREREG.json": "4114175389211f029745a34bdb19e3ef88c92b93487650e2ff90493faf6c8d11",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-03\\capture\\events.jsonl": "03251795fe3747baceba1d9e0356870f5164ba68e2cd0af0d8e8ada1ac2340f1",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-03\\turns.jsonl": "20050b82c0ba80a94d75fce691b76859810aa5b753e3c4c461ec8264d371a627",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\fixture-03.json": "03b13eba4d7ba4121c0d5302bfa24d6d42bd0803a44b61d88ad36a2416ae2641",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-03.json": "95787f837433a8e7ea47b8249defa145f5a87cae9b1ce99f3e304e836f3c321b",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-prelaunch-03.json": "09ebc4f3ac5f1161daa3722ef2a022a92968db619535e6bca594dd36579338a8",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-03\\case-observations.json": "b92994c011ed7c031fd17684258bc7e537c30a476972ccec23326a2427ddf81b",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-03\\journal-before.json": "4d6ebeb79377f34a814c5ce4c6d446c8e600f0f820cf9f075be3bc2a11d7b792",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-03\\journal-after.json": "6a4fd6ffdf35bd2e272b42f9ca5e515420006a97df6e41ffde72e87c2bc18307",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "7ce5f39fcdb19b741aabdd97433be9279c50d3f24ada3d14a252653d2384de19"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "3d9b183f-3097-4123-b896-1ebe5e57338b",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  },
++  {
++    "index": 4,
++    "case_id": "audio1579-boundary-02",
++    "verdict": "passed",
++    "credit": false,
++    "pair_indices": [],
++    "reason": "Límite aprobado.",
++    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++    "final_sha256": "d4c35856cd2688ec852830ef6f4db736d2181367802693e885f9c8c52ffe32b4",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-04\\EXIT.json": "ec55b7e9b147f866b11619bf9ee32bfd46ccd52d46b0539f5c4f6ea3943d5a99",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-04\\RESOURCES.json": "805734db1b030b5dd4db6a965ec8b5f5cb1892f17201310870137471bd1fd9f7",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\profile-owner-04.json": "b0f1adad6990db199bd701ba1921a8c9919ed3a20ea73ba8ba4d204fdfff7c94",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-04\\PREREG.json": "51795d635b1c1620c28c55b6b68865ee0dd1a99aa43afbe1680aa46373cf6b57",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-04\\capture\\events.jsonl": "6a8f867ff1ccfbdaaa6090ec064569d337b618136cca2656cc22d63a70e9f4ed",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-04\\turns.jsonl": "13e1a93bf806728664743c6eaab54726e9cd912148fc78bfb074f75107315295",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\fixture-04.json": "001597effe5f3b2265a239c724ccd471dae72f5ca2838566227d4677cd79b429",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-04.json": "357acd687b2075618af9aa1b46dc01cbbcf50828f599b61e51ba68119b505901",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\context-prelaunch-04.json": "9798ec2c0ea0c1f406f590f98515ad5e712cdfb888d401085d2be9b4f8cb0476",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-04\\case-observations.json": "a107ba03d25d57869db5329f27c0188f5ba71107c148b2cb787eb48431c4338d",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-04\\journal-before.json": "4ead2bca450d8f8fff9c77dd210d2a0c6a4b90ea1c33c09d74d49e9fe647f798",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-04\\journal-after.json": "405fa131dda389fbf4d1b4100d539d3acf5b526a373360226e424d70efc347e7",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "f49a1628f99841ded9d5b5e9b6223370b23187567c45e47f7df041d9f8874c0f"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "29a5edec-b0dd-4934-b8be-2398b8a302e6",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  }
++]
+diff --git a/artifacts/comprobaciones/C03/AUDIO1579/ROOT_DECISION_PINS.json b/artifacts/comprobaciones/C03/AUDIO1579/ROOT_DECISION_PINS.json
+new file mode 100644
+index 00000000..23bcdda0
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/AUDIO1579/ROOT_DECISION_PINS.json
+@@ -0,0 +1,6 @@
++{
++  "decisions_sha256": "8cd182d0975d6d5874f845b251788a962a08e8ea4b1ac32aa0fb4cc826ec61ca",
++  "candidate_manifest_sha256": "670d46e9efa8c4cbf75c4441c5b8998ce77517550c3627df584debd0091b241c",
++  "preparation_sha256": "8aa2aefdb186c8d6e87f9519c325b671b28283378ba618435047dc686374146e",
++  "head": "7bb180bdd2f90576fea29151105117a5dbea9df0"
++}
+diff --git a/artifacts/comprobaciones/C03/AUDIO1579/SOURCE.json b/artifacts/comprobaciones/C03/AUDIO1579/SOURCE.json
+new file mode 100644
+index 00000000..84b451e3
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/AUDIO1579/SOURCE.json
+@@ -0,0 +1,15 @@
++{
++  "schema": "c03-audio1579-source-adoption-v1",
++  "status": "adopted_measured",
++  "adopted_by": "root (Claude Fable 5.1)",
++  "owner": "src/Baxy.App/UserMessagePolicy.cs (InventedVolume judges the sentences before the trailing question when the person's request named the volume; WithoutTrailingQuestion) and src/baxy_mind/effect_intent.py (_negative_action_forms admits «toca»/«touch»).",
++  "patch": "artifacts/comprobaciones/C03/AUDIO1579/SOURCE.patch",
++  "commits": [
++    "7bb180bdd2f90576fea29151105117a5dbea9df0"
++  ],
++  "build": "BUILD1579 (C03-repairs1579-build/BUILD_READY.json; App y mente)",
++  "cause_measured": "AUDIO1579: la App vetó como nivel inventado la pregunta final que nombra el volumen pedido; «No toques el volumen.» no se leía como prohibición.",
++  "change": "Pregunta final excluida del veto de volumen inventado cuando el pedido nombró el volumen; «toca/touch» como prohibición; sin respuestas fijas.",
++  "measurement": "AUDIO1579: 5 ejecutados, 5 aprobados, 0 fallidos; 1 créditos. El literal y las dos variantes decidieron una sola system.time verificada, no cambiaron el volumen y publicaron a la primera el dato observado seguido de una sola pregunta por la cantidad; la App juzga ya aparte esa pregunta final cuando el pedido nombró el volumen. Los dos límites pasaron con cero operaciones (el ajuste sin cantidad preguntó cuánto; «No toques el volumen.» fue reconocida).",
++  "credits": 1
++}
+diff --git a/artifacts/comprobaciones/C03/AUDIO1579/SOURCE.patch b/artifacts/comprobaciones/C03/AUDIO1579/SOURCE.patch
+new file mode 100644
+index 00000000..8b6b1f05
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/AUDIO1579/SOURCE.patch
+@@ -0,0 +1,76 @@
++commit 7bb180bdd2f90576fea29151105117a5dbea9df0
++
++C03: the App judges the trailing question that names the volume the person asked about apart from an invented level, and «no toques» is a prohibition (AUDIO1579)
++
++AUDIO1577 measured that «subí el volumen y decime qué fecha es» and both variants read the clock and the mind's first draft was already the intended final («Hoy es 15 de septiembre de 2026. ¿Cuánto querías aumentar el volumen?»), while `UserMessagePolicy.InventedVolume` rejected every final that mentions the volume when the observed facts carry no level. When the person's own request names the volume, the rule now judges only the sentences before the trailing question (`WithoutTrailingQuestion`): the question states no level, it asks for one. The boundary «No toques el volumen.» answered with a question because `_negative_action_forms` did not know «toques»; «toca»/«touch» now count as prohibited actions, as «usa» already did.
++
++Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
++
++
++diff --git a/src/Baxy.App/UserMessagePolicy.cs b/src/Baxy.App/UserMessagePolicy.cs
++index bc5e290c..b6c15207 100644
++--- a/src/Baxy.App/UserMessagePolicy.cs
+++++ b/src/Baxy.App/UserMessagePolicy.cs
++@@ -413,7 +413,7 @@ internal static class UserMessagePolicy
++             {
++                 return "missing_literal_fact";
++             }
++-            if (InventedVolume(draft.Source, modelText))
+++            if (InventedVolume(draft.Source, modelText, userText))
++             {
++                 return "missing_literal_fact";
++             }
++@@ -2067,9 +2067,18 @@ internal static class UserMessagePolicy
++         return found;
++     }
++ 
++-    private static bool InventedVolume(string source, string result)
+++    private static bool InventedVolume(string source, string result, string? userText = null)
++     {
++         string folded = FoldForPolicy(result);
+++        if (userText is not null
+++            && ContainsAny(FoldForPolicy(userText), ["volumen", "volume"]))
+++        {
+++            // AUDIO1577 «subí el volumen y decime qué fecha es»: the final reports
+++            // the date and ends by asking how much to change the volume. The
+++            // question names the volume the person asked about; it states no
+++            // level. Only the sentences before that question can invent one.
+++            folded = FoldForPolicy(WithoutTrailingQuestion(result));
+++        }
++         if (!ContainsAny(folded, ["volumen", "volume", " muted", "silenci"]))
++         {
++             return false;
++@@ -2085,6 +2094,18 @@ internal static class UserMessagePolicy
++             && !source.Contains("\"volumePercent\"", StringComparison.Ordinal);
++     }
++ 
+++    private static string WithoutTrailingQuestion(string result)
+++    {
+++        string trimmed = result.TrimEnd();
+++        if (!trimmed.EndsWith('?'))
+++        {
+++            return result;
+++        }
+++
+++        int cut = trimmed.LastIndexOfAny(['.', '!', '?'], Math.Max(0, trimmed.Length - 2));
+++        return cut < 0 ? string.Empty : trimmed[..(cut + 1)];
+++    }
+++
++     private static bool InventedExtraClock(string source, string result)
++     {
++         if (!TryDerivedLocalClock(source, out string hhmm))
++diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
++index 0450b86f..e9d859dd 100644
++--- a/src/baxy_mind/effect_intent.py
+++++ b/src/baxy_mind/effect_intent.py
++@@ -6181,7 +6181,9 @@ def _negative_action_forms(folded: str) -> tuple[str, ...]:
++         for head in dict.fromkeys(heads)
++         # SYSTEM1545 «No uses Python.»: forbidding a means (use, employ) is a
++         # prohibition to acknowledge, although «usa» heads no request.
++-        if re.fullmatch(_COVERAGE_ACTION_HEAD, head) or head in {"usa", "utiliza", "emplea", "use"}
+++        # AUDIO1577 «No toques el volumen.»: forbidding to touch something is
+++        # the same prohibition as forbidding to change it.
+++        if re.fullmatch(_COVERAGE_ACTION_HEAD, head) or head in {"usa", "utiliza", "emplea", "use", "toca", "touch"}
++     )
++ 
++ 
+diff --git a/artifacts/comprobaciones/C03/AUDIO1579/case-00.json b/artifacts/comprobaciones/C03/AUDIO1579/case-00.json
+new file mode 100644
+index 00000000..6ac7b701
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/AUDIO1579/case-00.json
+@@ -0,0 +1,24 @@
++{
++  "index": 0,
++  "case_id": "H0067",
++  "terminal_kind": "published_final",
++  "final_sha256": "45a62719d45838c1f38f1afb6542710d08bf03c055d1d06c7ccdc80c842197eb",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 19.968999999997322,
++    "gpu_peak_mib": 3497.55859375,
++    "ram_peak_mib": 1463.30078125,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-00\\EXIT.json": "26c16110ee14cd8d47cbcc0925a56617a3c03b6a76e0fa5d279d98af865a2921",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-00\\RESOURCES.json": "4953ff2ecd50864479f3a32708a3b54497968a38b9219d335336bb4b734439a9",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-00\\case-observations.json": "41aea251b697a696c6042fabb187315438ae9433cd9b37dfcb8f909a75b7d2f4"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/AUDIO1579/case-01.json b/artifacts/comprobaciones/C03/AUDIO1579/case-01.json
+new file mode 100644
+index 00000000..662a468f
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/AUDIO1579/case-01.json
+@@ -0,0 +1,24 @@
++{
++  "index": 1,
++  "case_id": "audio1579-dev-01",
++  "terminal_kind": "published_final",
++  "final_sha256": "855273c2e93aa73614f0e196790dd622ccfbbbf3fac35a96b25d644712ac19ef",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 15.889999999999418,
++    "gpu_peak_mib": 3497.55859375,
++    "ram_peak_mib": 1458.61328125,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-01\\EXIT.json": "fab1518a7e5f1b731f74b137216a05ad52978dedf70347e3500bf34fc6a907b3",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-01\\RESOURCES.json": "778e9864c493b7e82e01b2270ceb67fd07c29dd0be42690d867cc8b7fbb48927",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-01\\case-observations.json": "6dd12ee2d529f1a267de34fe64367e1ec177d2b0c45ed04131bc518fa77b378d"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/AUDIO1579/case-02.json b/artifacts/comprobaciones/C03/AUDIO1579/case-02.json
+new file mode 100644
+index 00000000..8519f882
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/AUDIO1579/case-02.json
+@@ -0,0 +1,24 @@
++{
++  "index": 2,
++  "case_id": "audio1579-dev-02",
++  "terminal_kind": "published_final",
++  "final_sha256": "2ddb6d510b49ad129f08cfc1fbfbba75bfee6d0ae3cb05fdd52668a4da7e2d9d",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 15.359000000004016,
++    "gpu_peak_mib": 3497.55859375,
++    "ram_peak_mib": 1485.84375,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-02\\EXIT.json": "6f9935d4a48097d2668fcb907d63543dfeeabf53a66205c9ababfff6f0158335",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-02\\RESOURCES.json": "9c5aa907ff7e164e172999736378bdb222c64bbfedd2855594069745f2b986cc",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-02\\case-observations.json": "51f527d2dd762a9c3d696e5c6bdf29ea2c9ea264e7203f5a0a43d2b680f2d63b"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/AUDIO1579/case-03.json b/artifacts/comprobaciones/C03/AUDIO1579/case-03.json
+new file mode 100644
+index 00000000..80533812
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/AUDIO1579/case-03.json
+@@ -0,0 +1,24 @@
++{
++  "index": 3,
++  "case_id": "audio1579-boundary-01",
++  "terminal_kind": "published_final",
++  "final_sha256": "fb9d060f25a00580da878b1b959c72000b60169b1d0a67cb10e9f047d07439aa",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 15.203000000001339,
++    "gpu_peak_mib": 3495.55859375,
++    "ram_peak_mib": 1460.78125,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-03\\EXIT.json": "24273bf3dcdd1e5d6df4fda9d3553b78349f68aa13a38a934c7f6dc3fe6cf4e7",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-03\\RESOURCES.json": "b0729c93843c12beee087136386375d258085004a8496f7261f3d5d132c7fd0d",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-03\\case-observations.json": "b92994c011ed7c031fd17684258bc7e537c30a476972ccec23326a2427ddf81b"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/AUDIO1579/case-04.json b/artifacts/comprobaciones/C03/AUDIO1579/case-04.json
+new file mode 100644
+index 00000000..6d973a8e
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/AUDIO1579/case-04.json
+@@ -0,0 +1,24 @@
++{
++  "index": 4,
++  "case_id": "audio1579-boundary-02",
++  "terminal_kind": "published_final",
++  "final_sha256": "d4c35856cd2688ec852830ef6f4db736d2181367802693e885f9c8c52ffe32b4",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 15.125,
++    "gpu_peak_mib": 3493.55859375,
++    "ram_peak_mib": 1443.71484375,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-04\\EXIT.json": "ec55b7e9b147f866b11619bf9ee32bfd46ccd52d46b0539f5c4f6ea3943d5a99",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\results\\case-04\\RESOURCES.json": "805734db1b030b5dd4db6a965ec8b5f5cb1892f17201310870137471bd1fd9f7",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1579-instrument-v1\\private\\run-04\\case-observations.json": "a107ba03d25d57869db5329f27c0188f5ba71107c148b2cb787eb48431c4338d"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/CHECKPOINT.md b/artifacts/comprobaciones/C03/CHECKPOINT.md
+index 9854b827..f2618a1d 100644
+--- a/artifacts/comprobaciones/C03/CHECKPOINT.md
++++ b/artifacts/comprobaciones/C03/CHECKPOINT.md
+@@ -1,3 +1,25 @@
++## AUDIO1579 — estado vigente 2026-09-15T17:34:50.409412+00:00
++
++Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
++
++| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
++|---:|---:|---:|---:|---:|
++| 535/742 | 207 | 0 | >=409 | 5/35 |
++
++Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 408 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1579 añade 1. No se cuentan revalidaciones.
++
++Siguiente acción: AUDIO1579: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Audio y volumen 46/51. Siguiente: categoría por masa abierta según CONDICIONES.
++
++Evidencia: `artifacts/comprobaciones/C03/AUDIO1579/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
++
++Recursos de los segmentos: 81.55 s acumulados; pico GPU 3497.56 MiB; pico RAM 1485.84 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
++
++Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
++
++---
++
++<!-- Historial anterior conservado; rige el bloque AUDIO1579 precedente. -->
++
+ ## AUDIO1577 — estado vigente 2026-09-15T17:13:47.620595+00:00
+ 
+ Parcial: 1 aprobados, 4 fallidos, 0 sin ejecutar; 0 créditos.
+diff --git a/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md b/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md
+index cb5fc557..fa2b0149 100644
+--- a/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md
++++ b/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md
+@@ -781,3 +781,7 @@ Música pasa de 19/39 a 20/39 con el título observado enmascarado del vocabular
+ ## Actualización 2026-09-14 (AUDIO1577)
+ 
+ Audio y volumen pasa de 45/51 a 45/51 con la lectura hecha y la cantidad del volumen preguntada al final (commit 40a7f6cd, BUILD1577) (HEAD 40a7f6cd): 5 ejecutados, 1 aprobado, 4 fallidos, 0 créditos. El literal y las dos variantes decidieron una sola system.time, la ejecutaron verificada y el primer borrador de la mente ya era el final buscado (el dato observado y una sola pregunta por la cantidad del volumen), pero la App (UserMessagePolicy.InventedVolume) rechazó tres veces cada final por nombrar el volumen sin nivel observado. El ajuste sin cantidad solo preguntó cuánto sin operar; «No toques el volumen.» respondió con una pregunta en vez de un acuse (el lector de prohibiciones no conoce «toques»). Siguiente: la App juzga aparte la pregunta final cuando el propio pedido nombró el volumen (AUDIO1579).
++
++## Actualización 2026-09-14 (AUDIO1579)
++
++Audio y volumen pasa de 45/51 a 46/51 con la pregunta final que nombra el volumen pedido juzgada aparte por la App (commit 7bb180bd, BUILD1579) (HEAD 7bb180bd): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes decidieron una sola system.time verificada, no cambiaron el volumen y publicaron a la primera el dato observado seguido de una sola pregunta por la cantidad; la App juzga ya aparte esa pregunta final cuando el pedido nombró el volumen. Los dos límites pasaron con cero operaciones (el ajuste sin cantidad preguntó cuánto; «No toques el volumen.» fue reconocida).
+diff --git a/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md b/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md
+index 87e87e0b..7f21feff 100644
+--- a/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md
++++ b/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md
+@@ -1,6 +1,6 @@
+-# Categorías actuales — adjudicación AUDIO1577
++# Categorías actuales — adjudicación AUDIO1579
+ 
+-534/742 cubiertos; 208 abiertos; 0 no aplican; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2). Últimas 24 h: al menos 408 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337 + 1 en AGENDA1341 + 1 en CONVERSATION1343 + 1 en CONVERSATION1347 + 1 en CONVERSATION1349 + 2 en AUDIO1351 + 1 en KNOWLEDGE1353 + 1 en KNOWLEDGE1357 + 1 en CLIPBOARD1359 + 2 en CLIPBOARD1361 + 1 en MESSAGING1363 + 2 en MESSAGING1365 + 2 en SYSTEM1367 + 4 en CLOSE1371 + 1 en AUDIO1379 + 1 en AUDIO1381 + 1 en APPS1391 + 1 en UI1389 + 1 en WINDOWS1385 + 1 en UI1397 + 1 en SCREEN1401 + 3 en SCREEN1415 + 3 en SCREEN1419 + 5 en SCREEN1421 + 2 en SCREEN1423 + 4 en FILES1427 + 1 en NEGATIVE1429 + 1 en NEGATIVE1431 + 1 en FILES1433 + 1 en AGENDA1435 + 1 en FILES1443 + 3 en WEB1449 + 2 en WEB1451 + 1 en WEB1453 + 4 en WEB1455 + 2 en NETWORK1457 + 4 en SYSTEM1459 + 1 en AUDIO1461 + 1 en AUDIO1463 + 8 en WEB1465 + 2 en WEB1467 + 2 en WEB1471 + 2 en KNOWLEDGE1473 + 1 en KNOWLEDGE1475 + 2 en WEB1477 + 1 en WEB1479 + 2 en WEB1483 + 1 en SCREEN1485 + 1 en DIALOGUE1489 + 2 en DIALOGUE1491 + 1 en BROWSER1493 + 2 en APPS1497 + 3 en APPS1499 + 1 en MEMORY1503 + 3 en KNOWLEDGE1507 + 1 en KNOWLEDGE1511 + 7 en DIALOGUE1513 + 1 en DIALOGUE1515 + 1 en DIALOGUE1521 + 2 en KNOWLEDGE1523 + 2 en KNOWLEDGE1525 + 1 en KNOWLEDGE1529 + 1 en GAMES1531 + 1 en GAMES1533 + 2 en WINDOWS1537 + 2 en WEB1543 + 1 en SYSTEM1547 + 1 en APPS1551 + 2 en MUSIC1557 + 5 en MUSIC1569 + 5 en MUSIC1573 + 1 en MUSIC1575; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: e55a3e1ec3d4fc2d15ff5b78a7c1b132f7de5d3903ade94e6cab5e9c84e26cdc.
++535/742 cubiertos; 207 abiertos; 0 no aplican; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2). Últimas 24 h: al menos 409 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337 + 1 en AGENDA1341 + 1 en CONVERSATION1343 + 1 en CONVERSATION1347 + 1 en CONVERSATION1349 + 2 en AUDIO1351 + 1 en KNOWLEDGE1353 + 1 en KNOWLEDGE1357 + 1 en CLIPBOARD1359 + 2 en CLIPBOARD1361 + 1 en MESSAGING1363 + 2 en MESSAGING1365 + 2 en SYSTEM1367 + 4 en CLOSE1371 + 1 en AUDIO1379 + 1 en AUDIO1381 + 1 en APPS1391 + 1 en UI1389 + 1 en WINDOWS1385 + 1 en UI1397 + 1 en SCREEN1401 + 3 en SCREEN1415 + 3 en SCREEN1419 + 5 en SCREEN1421 + 2 en SCREEN1423 + 4 en FILES1427 + 1 en NEGATIVE1429 + 1 en NEGATIVE1431 + 1 en FILES1433 + 1 en AGENDA1435 + 1 en FILES1443 + 3 en WEB1449 + 2 en WEB1451 + 1 en WEB1453 + 4 en WEB1455 + 2 en NETWORK1457 + 4 en SYSTEM1459 + 1 en AUDIO1461 + 1 en AUDIO1463 + 8 en WEB1465 + 2 en WEB1467 + 2 en WEB1471 + 2 en KNOWLEDGE1473 + 1 en KNOWLEDGE1475 + 2 en WEB1477 + 1 en WEB1479 + 2 en WEB1483 + 1 en SCREEN1485 + 1 en DIALOGUE1489 + 2 en DIALOGUE1491 + 1 en BROWSER1493 + 2 en APPS1497 + 3 en APPS1499 + 1 en MEMORY1503 + 3 en KNOWLEDGE1507 + 1 en KNOWLEDGE1511 + 7 en DIALOGUE1513 + 1 en DIALOGUE1515 + 1 en DIALOGUE1521 + 2 en KNOWLEDGE1523 + 2 en KNOWLEDGE1525 + 1 en KNOWLEDGE1529 + 1 en GAMES1531 + 1 en GAMES1533 + 2 en WINDOWS1537 + 2 en WEB1543 + 1 en SYSTEM1547 + 1 en APPS1551 + 2 en MUSIC1557 + 5 en MUSIC1569 + 5 en MUSIC1573 + 1 en MUSIC1575 + 1 en AUDIO1579; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: e74d04b021f09ea6785859021a9d827104dc21a43443c0e3324ff566163bc1d0.
+ 
+ | Categoría | Total | Cubiertos | Abiertos |
+ |---|---:|---:|---:|
+@@ -12,7 +12,7 @@
+ | Vídeo y series | 26 | 0 | 26 |
+ | Mensajería | 31 | 9 | 22 |
+ | Abrir aplicaciones | 54 | 46 | 8 |
+-| Audio y volumen | 51 | 45 | 6 |
++| Audio y volumen | 51 | 46 | 5 |
+ | Alarmas, recordatorios, tareas y agenda | 38 | 37 | 1 |
+ | Interacción dentro de aplicaciones | 22 | 5 | 17 |
+ | Red y Bluetooth | 21 | 15 | 6 |
+diff --git a/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md b/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md
+index 969891c4..42aa7aea 100644
+--- a/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md
++++ b/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md
+@@ -1,3 +1,25 @@
++## AUDIO1579 — estado vigente 2026-09-15T17:34:50.409412+00:00
++
++Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
++
++| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
++|---:|---:|---:|---:|---:|
++| 535/742 | 207 | 0 | >=409 | 5/35 |
++
++Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 408 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1579 añade 1. No se cuentan revalidaciones.
++
++Siguiente acción: AUDIO1579: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Audio y volumen 46/51. Siguiente: categoría por masa abierta según CONDICIONES.
++
++Evidencia: `artifacts/comprobaciones/C03/AUDIO1579/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
++
++Recursos de los segmentos: 81.55 s acumulados; pico GPU 3497.56 MiB; pico RAM 1485.84 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
++
++Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
++
++---
++
++<!-- Historial anterior conservado; rige el bloque AUDIO1579 precedente. -->
++
+ ## AUDIO1577 — estado vigente 2026-09-15T17:13:47.620595+00:00
+ 
+ Parcial: 1 aprobados, 4 fallidos, 0 sin ejecutar; 0 créditos.
+diff --git a/artifacts/comprobaciones/C03/HANDOFF.md b/artifacts/comprobaciones/C03/HANDOFF.md
+index e1c3bc7c..67814473 100644
+--- a/artifacts/comprobaciones/C03/HANDOFF.md
++++ b/artifacts/comprobaciones/C03/HANDOFF.md
+@@ -1,3 +1,11 @@
++# AUDIO1579 adjudicado — 2026-09-15T17:34:50.409412+00:00
++
++**535/742 cubiertos, 207 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA e74d04b021f09ea6785859021a9d827104dc21a43443c0e3324ff566163bc1d0. Primeras altas 24 h >= 409 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7bb180bd con BUILD1579 (la App juzga aparte la pregunta final que nombra el volumen pedido). Turnos ordinarios de sólo lectura (system.time); el volumen no se toca.
++
++AUDIO1579 («Audio y volumen», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. Adjudicación 5ce82020e70b48ed12da235c0444fbf45faeb8696b864abdc219860e8849034d. El literal y las dos variantes decidieron una sola system.time verificada, no cambiaron el volumen y publicaron a la primera el dato observado seguido de una sola pregunta por la cantidad; la App juzga ya aparte esa pregunta final cuando el pedido nombró el volumen. Los dos límites pasaron con cero operaciones (el ajuste sin cantidad preguntó cuánto; «No toques el volumen.» fue reconocida).
++
++---
++
+ # AUDIO1577 adjudicado — 2026-09-15T17:13:47.620595+00:00
+ 
+ **534/742 cubiertos, 208 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA e55a3e1ec3d4fc2d15ff5b78a7c1b132f7de5d3903ade94e6cab5e9c84e26cdc. Primeras altas 24 h >= 408 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 40a7f6cd con BUILD1577 (la lectura se hace y la cantidad del volumen se pregunta al final). Turnos ordinarios de sólo lectura (system.time); el volumen no se toca.
+diff --git a/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json b/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json
+index a14308e2..b1f4b786 100644
+--- a/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json
++++ b/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json
+@@ -152,26 +152,26 @@
+     "modelBlockerResolvedEarlier": true
+   },
+   "goalStatus": "active",
+-  "workStatus": "AUDIO1577 adjudicado: 1 aprobados, 4 fallidos, 0 sin ejecutar; 0 créditos.",
++  "workStatus": "AUDIO1579 adjudicado: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.",
+   "executionPausedByOwner": false,
+   "branch": "codex/kiro-goal-c03",
+-  "checkpoint": "534/742 cubiertos, 208 abiertos, 0 no aplican. AUDIO1577: 0 créditos explícitos de raíz.",
++  "checkpoint": "535/742 cubiertos, 207 abiertos, 0 no aplican. AUDIO1579: 1 créditos explícitos de raíz.",
+   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
+   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
+   "surveyVerificationCounts": {
+-    "covered": 534,
+-    "open": 208,
++    "covered": 535,
++    "open": 207,
+     "not_applicable": 0,
+     "total": 742
+   },
+-  "surveyRegistrySha256": "e55a3e1ec3d4fc2d15ff5b78a7c1b132f7de5d3903ade94e6cab5e9c84e26cdc",
++  "surveyRegistrySha256": "e74d04b021f09ea6785859021a9d827104dc21a43443c0e3324ff566163bc1d0",
+   "surveyRegistryPresentOnDestination": true,
+   "surveyCategories": {
+     "closed": 5,
+     "total": 35
+   },
+-  "surveyCoverageLast24h": 408,
+-  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–14 septiembre: 408 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1577 añade 0. No se cuentan revalidaciones.",
++  "surveyCoverageLast24h": 409,
++  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–14 septiembre: 408 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1579 añade 1. No se cuentan revalidaciones.",
+   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
+   "testsRun": false,
+   "testsOmittedByOwner": true,
+@@ -196,7 +196,7 @@
+     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
+     "agenda1024": "parche recibido y revisado, sin integrar"
+   },
+-  "utcUpdated": "2026-09-15T17:13:47.620595+00:00",
++  "utcUpdated": "2026-09-15T17:34:50.409412+00:00",
+   "batchesThisSession": [
+     {
+       "batch": 1029,
+@@ -621,7 +621,7 @@
+     "freeze_ended_at": "2026-09-12T13:33:18.245252-03:00",
+     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
+   },
+-  "updatedAtUtc": "2026-09-15T17:13:47.620595+00:00",
++  "updatedAtUtc": "2026-09-15T17:34:50.409412+00:00",
+   "currentContinuation1065": {
+     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
+     "quality": {
+@@ -2298,26 +2298,28 @@
+     "next": "FILES1205 completa: 19 ejecutados, 19 aprobados, 12 créditos (8 archivos en escritorio/Documentos, 3 carpetas en el escritorio, 1 carpeta en el sandbox), cada uno con dos pares aprobados. El proveedor de carpetas conocidas (BUILD1205) y los lectores de creación se demuestran: 18 creaciones verificadas por el producto y comprobadas en disco por raíz (existencia, tipo y hash del contenido literal), ninguna preexistente, todas eliminadas tras la postlectura. Archivos queda 15/32; restan borrados (fixtures en carpetas personales), listados del escritorio, contenido dinámico («que contenga la fecha», procesos), rutas absolutas, comprimir/abrir, resumir PDF y copia a pendrive."
+   },
+   "currentContinuation1207": {
+-    "head": "40a7f6cdfda011343a98db5b44108a46a20427b7",
++    "head": "7bb180bdd2f90576fea29151105117a5dbea9df0",
+     "quality": {
+-      "passed": 1,
+-      "failed": 4,
++      "passed": 5,
++      "failed": 0,
+       "executed": 5,
+       "not_executed": 0,
+       "sealed_total": 8,
+       "segments_started": 5,
+       "aborted_before_admission": 0
+     },
+-    "new_credits": 0,
+-    "credited_ids": [],
+-    "registry_sha256": "e55a3e1ec3d4fc2d15ff5b78a7c1b132f7de5d3903ade94e6cab5e9c84e26cdc",
+-    "survey": 534,
+-    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\AUDIO1577\\ROOT_ADJUDICATION.json",
++    "new_credits": 1,
++    "credited_ids": [
++      "H0067"
++    ],
++    "registry_sha256": "e74d04b021f09ea6785859021a9d827104dc21a43443c0e3324ff566163bc1d0",
++    "survey": 535,
++    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\AUDIO1579\\ROOT_ADJUDICATION.json",
+     "resources": {
+-      "seconds_sum": 107.81200000000536,
++      "seconds_sum": 81.5460000000021,
+       "gpu_peak_mib": 3497.55859375,
+-      "ram_peak_mib": 1589.90625
++      "ram_peak_mib": 1485.84375
+     },
+-    "next": "AUDIO1577: 5 ejecutados, 1 aprobados, 4 fallidos, 0 créditos (índices []); Audio y volumen 45/51. Siguiente: categoría por masa abierta según CONDICIONES."
++    "next": "AUDIO1579: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Audio y volumen 46/51. Siguiente: categoría por masa abierta según CONDICIONES."
+   }
+ }

@@ -1,3 +1,11 @@
+# WINDOWS1581 adjudicado — 2026-09-15T17:40:21.033027+00:00
+
+**536/742 cubiertos, 206 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA d751be2f3aff376f4f2bf8f846c8d6a26b09f2dc8c95203e29de69b50c66016f. Primeras altas 24 h >= 410 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 745ea8ed con BUILD1579 (el listado se hace y cuál ventana enfocar se pregunta al final). Turnos ordinarios de sólo lectura (window.resolve); ninguna ventana se enfoca.
+
+WINDOWS1581 («Organizar ventanas y pestañas», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. Adjudicación e34f5926684cffd1a996f0505d2a97b127b4070d9585de671aed8db2765f023e. El literal y las dos variantes decidieron una sola window.resolve verificada, no enfocaron ninguna ventana y publicaron el listado observado (proceso y título) seguido de una sola pregunta por cuál ventana enfocar, como manda la regla del dueño cuando el contexto no determina «la mejor». Los dos límites pasaron con cero operaciones («enfocá la mejor» solo preguntó cuál; «No toques las ventanas.» fue reconocida).
+
+---
+
 # AUDIO1579 adjudicado — 2026-09-15T17:34:50.409412+00:00
 
 **535/742 cubiertos, 207 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA e74d04b021f09ea6785859021a9d827104dc21a43443c0e3324ff566163bc1d0. Primeras altas 24 h >= 409 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7bb180bd con BUILD1579 (la App juzga aparte la pregunta final que nombra el volumen pedido). Turnos ordinarios de sólo lectura (system.time); el volumen no se toca.
