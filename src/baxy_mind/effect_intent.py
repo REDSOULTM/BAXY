@@ -4252,6 +4252,89 @@ _APPLICATION_TRAILING_REQUEST = re.compile(
 )
 
 
+def _edit_distance(left: str, right: str) -> int:
+    """Levenshtein distance with adjacent transpositions counted once."""
+
+    previous = list(range(len(right) + 1))
+    rows = [previous]
+    for i, a in enumerate(left, 1):
+        current = [i]
+        for j, b in enumerate(right, 1):
+            cost = 0 if a == b else 1
+            value = min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + cost)
+            if i > 1 and j > 1 and a == right[j - 2] and left[i - 2] == b:
+                value = min(value, rows[i - 2][j - 2] + 1)
+            current.append(value)
+        rows.append(current)
+        previous = current
+    return previous[-1]
+
+
+def near_catalog_application_candidates(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> tuple[str, ...]:
+    """APPS1495 «abres team», «Abre stea,», «Sí, abre Ste.», «abre Steel.»: the
+    catalog names (at most two) that a plain open order almost names — a
+    prefix of three or more letters, or one or two edits away — when the
+    target itself matches no catalog entry. Empty for anything else: an
+    authenticated target, a target with more than two words, a negation,
+    a deferred request, or no near miss."""
+
+    catalog = build_application_catalog_index(application_names)
+    folded = _strip_request_envelope(_fold(text))
+    if not folded or _has(folded, r"\b(?:no|nunca|jamas|never|don't|do\s+not)\b|\b(?:si|if|cuando|when)\b.{0,20}\b(?:termine|acabe|finish)\b"):
+        return ()
+    folded = re.sub(r"^(?:si|ok|dale|bueno|y|and)\s*[,.]?\s*(?:quema\s*,?\s*)?", "", folded, count=1).strip()
+    if _authenticated_application_target(folded, catalog) is not None:
+        return ()
+    if resolve_application_catalog_app_id(folded, catalog) is not None:
+        # An alias the catalog resolver already authenticates («abrime el
+        # chrome» → Google Chrome) is an opening, not a near miss.
+        return ()
+    request = _application_open_request(folded)
+    if request is None or request.group("desire") is not None:
+        return ()
+    target = request.group("target").strip(" ¿?¡!,:;.-")
+    target = re.sub(r"\s*,?\s*(?:por\s+favor|porfa|please|pls)$", "", target).strip(" ,.")
+    target = re.sub(r"^(?:el|la|los|las|the|a|an)\s+", "", target)
+    key = _application_name_key(target)
+    if not key or len(key) < 3 or len(key.split()) > 2 or not re.fullmatch(r"[a-z0-9 .+-]+", key):
+        return ()
+    if key in catalog.keys:
+        return ()
+    scored: list[tuple[int, str]] = []
+    for name, entry_key in catalog.entries:
+        tokens = [entry_key] + entry_key.split()
+        best = None
+        for token in tokens:
+            if len(token) < 3:
+                continue
+            if token.startswith(key) and len(key) >= 3:
+                score = 0
+            else:
+                distance = _edit_distance(key, token)
+                limit = 1 if len(key) <= 4 else 2
+                if distance > limit:
+                    continue
+                score = distance
+            best = score if best is None else min(best, score)
+        if best is not None:
+            scored.append((best, name))
+    scored.sort(key=lambda item: (item[0], item[1]))
+    if not scored:
+        return ()
+    # A short garbled target («team», «ste») may stand for two names one edit
+    # apart (Teams/Steam); a longer one keeps only its closest names.
+    best = scored[0][0]
+    tolerance = 1 if len(key) <= 4 else 0
+    names = []
+    for score, name in scored:
+        if score <= best + tolerance and name not in names:
+            names.append(name)
+    return tuple(names[:2])
+
+
 def _application_target_forms(
     raw_target: str,
 ) -> tuple[tuple[str, int], ...]:
@@ -8316,7 +8399,7 @@ _DEICTIC_DAY = (
     r"\b(?:ese\s+dia|esa\s+fecha|el\s+mismo\s+dia|"
     r"that\s+day|that\s+date|that\s+same\s+day)\b"
 )
-_OPEN = r"(?:abre|abrir|abri|abris|abrime|avri|open|launch|lanza|inicia|start|ejecuta|arranca|arrancame)"
+_OPEN = r"(?:abre|abres|abrir|abri|abris|abrime|avri|open|launch|lanza|inicia|start|ejecuta|arranca|arrancame)"
 _MEDIA_RESUME_VERB = r"(?:reanuda|reanudar|resume|segui|seguir|sigue|continua|continuar|continue)"
 _LIST = r"(?:lista|listar|listame|enumera|enumerar|muestra|muestrame|mostrame|mostra|dime|show|list|enumerate)"
 _READ = r"(?:lee|leer|leeme|leela|leelo|leerla|leerlo|read|dime|muestra)"

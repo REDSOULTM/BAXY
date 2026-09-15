@@ -6247,19 +6247,41 @@ def _prepare_turn_result(
         or _history_has_pending_clarification(history, message.get("pendingClarification"))
         else _unresolved_input_kind(objective)
     )
+    # APPS1495 «abres team», «Abre stea,»: an open order naming a near miss of
+    # one or two catalog applications, with no context, asks which one.
+    near_application_candidates = (
+        ()
+        if non_target_language is not None
+        or explicit_clarification is not None
+        or missing_open_referent
+        or unresolved_input_kind is not None
+        or explicit_non_action
+        or _history_has_pending_clarification(history, message.get("pendingClarification"))
+        or _previous_user_request(history, objective) is not None
+        else effect_intent.near_catalog_application_candidates(objective, application_names)
+    )
     if (
         explicit_clarification is not None
         or missing_open_referent
         or unresolved_input_kind is not None
+        or near_application_candidates
     ):
-        if missing_open_referent or unresolved_input_kind is not None:
+        if missing_open_referent or unresolved_input_kind is not None or near_application_candidates:
             intent_operations = []
             clarification_timeout = (
                 DEICTIC_CLARIFICATION_CPU_BUDGET_SECONDS
                 if os.environ.get("BAXY_MIND_NGL", "").strip() == "0"
                 else TURN_DECIDE_RECOVERY_BUDGET_SECONDS
             )
-            if unresolved_input_kind is not None:
+            if near_application_candidates:
+                question = llm.clarify_near_application(
+                    objective,
+                    near_application_candidates,
+                    timeout=clarification_timeout,
+                )
+                if not _recovery_question_is_valid(question):
+                    raise PlannerContractError("aclaración de aplicación aproximada inválida")
+            elif unresolved_input_kind is not None:
                 question = llm.clarify_unresolved_input(
                     objective,
                     unresolved_input_kind,

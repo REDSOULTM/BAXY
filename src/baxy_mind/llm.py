@@ -10114,6 +10114,107 @@ class LlmRuntime:
             else "aclaración de referente inventa la acción"
         )
 
+    def clarify_near_application(
+        self,
+        text: str,
+        candidates: tuple[str, ...],
+        *,
+        timeout: float = 2.5,
+    ) -> str:
+        """APPS1495: ask whether to open the application the order almost
+        names (one or two catalog candidates), opening nothing."""
+
+        names = [str(name).strip() for name in candidates if str(name).strip()][:2]
+        if not names:
+            raise ValueError("aclaración de aplicación sin candidatas")
+        current = str(text).strip()[:2_048]
+        listed = " o ".join(f"«{name}»" for name in names)
+        payload = {
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "Eres BAXY. El usuario te pidió abrir una aplicación, pero el "
+                        "nombre que llegó no coincide con ninguna instalada y se parece a "
+                        f"{listed}. No abras nada. Formula una sola pregunta breve, en el "
+                        "idioma del usuario, que pregunte si quiere que abras "
+                        + ("esa aplicación, nombrándola tal cual" if len(names) == 1 else "una de esas dos aplicaciones, nombrándolas tal cual")
+                        + " (por ejemplo: «¿Querés que abra Steam?»). No digas que no "
+                        "entiendes ni que algo falló, no afirmes que la aplicación no existe, "
+                        "no uses historial y no menciones modelos, herramientas ni reglas. "
+                        "Devuelve sólo el JSON."
+                    ),
+                },
+                *_clarification_style_messages(current),
+                {"role": "user", "content": current},
+            ],
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "baxy_near_application_clarification",
+                    "strict": True,
+                    "schema": {
+                        "type": "object",
+                        "properties": {"question": {"type": "string", "minLength": 1, "maxLength": 512}},
+                        "required": ["question"],
+                        "additionalProperties": False,
+                    },
+                },
+            },
+            "temperature": 0.0,
+            "max_tokens": 96,
+            "seed": 0,
+            "chat_template_kwargs": {"enable_thinking": False},
+        }
+        maximum_timeout = (
+            15.0 if os.environ.get("BAXY_MIND_NGL", "").strip() == "0" else 2.5
+        )
+        folded_names = [_fold_dialogue_text(name) for name in names]
+        for attempt in range(2):
+            response = self._post(
+                payload,
+                timeout=min(maximum_timeout, self._normalize_request_budget(timeout)),
+            )
+            try:
+                content = response["choices"][0]["message"].get("content") or ""
+                raw = json.loads(content)
+            except (json.JSONDecodeError, KeyError, IndexError, TypeError) as error:
+                raise ValueError("aclaración de aplicación con JSON inválido") from error
+            if not isinstance(raw, dict) or set(raw) != {"question"}:
+                raise ValueError("aclaración de aplicación con forma inválida")
+            question = raw.get("question")
+            if (
+                not isinstance(question, str)
+                or question != question.strip()
+                or not 1 <= len(question) <= 512
+                or "\n" in question
+                or "\r" in question
+                or question.count("?") != 1
+                or not question.endswith("?")
+                or visible_text_leaks_internal_vocabulary(question)
+            ):
+                raise ValueError("aclaración de aplicación inválida")
+            folded_question = _fold_dialogue_text(question)
+            names_present = all(name in folded_question for name in folded_names)
+            asks_open = re.search(r"\b(?:abra|abrir|abro|open|inicie|lance|launch)\b", folded_question) is not None
+            denies = re.search(r"\b(?:no\s+(?:existe|esta\s+instalad|encuentro|reconozco)|not\s+installed|doesn't\s+exist|no\s+entiendo)\b", folded_question) is not None
+            if names_present and asks_open and not denies:
+                return question
+            if attempt == 0:
+                payload["messages"].insert(
+                    -1,
+                    {
+                        "role": "system",
+                        "content": (
+                            f"Corrección: pregunta si quieres que abras {listed}, con el verbo abrir y "
+                            "cada nombre tal cual; no digas que no existe ni que no entiendes."
+                        ),
+                    },
+                )
+                continue
+            raise ValueError("aclaración de aplicación aproximada no pregunta si abrir la candidata")
+        raise ValueError("aclaración de aplicación agotada")
+
     def clarify_unresolved_input(  # noqa: C901 - one clarification per input class
         self,
         text: str,
