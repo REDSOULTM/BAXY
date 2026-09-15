@@ -508,6 +508,19 @@ Lo que queda abierto, por masa, y por qué no se avanza sin el dueño o sin un c
 
 Condición transversal medida hoy: el motor público (Bing RSS) devuelve a veces las páginas de una consulta anterior o páginas ajenas (fotosíntesis → Excel; grafeno → foros); el filtro las rechaza y el producto lo dice con verdad. Las tandas con búsqueda se adjudican con el fallo honesto sellado.
 
+## Estado consolidado 2026-09-15 (noche): 517/742 cubiertos, 225 abiertos, 4/35 categorías cerradas
+
+Siete tandas más desde la tarde (KNOWLEDGE1525–1529, GAMES1531–1533, APPS1535, WINDOWS1537): 510 → 517. Reparaciones adoptadas: quién gana es una opinión declarada y el sarcasmo pedido afirma la verdad (formas con contrato); la oferta al asistente se declina sin deseos propios (contrato relajado a tres oraciones tras una ronda); la biblioteca de Steam se lista en local sin abrir Steam (cuántos y nombres tal cual); el nombre casi igual al de un juego instalado se pregunta como el de una aplicación («¿Querés que abra Marvel Rivals?»); la muletilla hablada delante de una orden es envoltorio (sin crédito: el final de fuera de catálogo no nombra el pedido y las variantes preguntaron por abrir un nombre inexistente); la ventana nombrada sólo por «la otra» o «la mejor» se pregunta. Conocimiento 36/37, Bibliotecas 2/6, Organizar ventanas 6/13.
+
+| Categoría | Abiertos | Condición |
+|---|---:|---|
+| Conocimiento | 1 | H0297 (monólogo sobre el calor: ahora leído como conversación ajena, sin expectativa clara). |
+| Bibliotecas y fichas de juegos | 4 | Abrir Steam o Epic (clientes del dueño) para ver la biblioteca o comprobar un juego; el App ID por la API pública (motor con páginas ajenas). |
+| Organizar ventanas | 7 | Minimizar todo o a Ópera (ventanas del dueño); Chrome a la izquierda y cerrar sus pestañas (Chrome del dueño); «listá las ventanas y enfocá la mejor» (inventario más pregunta en un turno). |
+| Abrir aplicaciones | 9 | Steam/Chrome del dueño; idiomas extranjeros (límites sin marca); «Saint Rose» fuera de catálogo: el final genérico no nombra el pedido. |
+
+Sin cambio: Música 32, Instalar 31, Vídeo 26, Mensajería 22, Interacción 17, Entrada incompleta 7, Archivos 7, Red 6, Audio 6, Navegación 5, Cerrar 5, Correo/Contactos/Desarrollo 16, resto.
+
 ## Estado consolidado 2026-09-15 (tarde): 510/742 cubiertos, 232 abiertos, 4/35 categorías cerradas
 
 Once tandas más desde la madrugada (MEMORY1503, KNOWLEDGE1505–1511, DIALOGUE1513–1521, KNOWLEDGE1523): 494 → 510. Reparaciones adoptadas: la afirmación de preferencia recibe un acuse con forma y contrato (nombra lo dicho, sin gustos propios, ofertas ni preguntas; Memoria personal 8/10); la curiosidad sin tema se busca sobre un tema público elegido por el producto y se cuenta desde un fragmento nombrando la página (aterrizaje de la consulta elegida, singular no es corte del plural, URL fuera del veto de palabra cortada; Conocimiento 33/37 con las dos preguntas de identidad sin nombrar contestadas preguntando de quién); la conversación ajena captada por el micrófono, la conformidad sin pendiente y la alternativa suelta tienen clases de entrada sin pedido con aclaración validada (Entrada incompleta 27/34; tres rondas para que la pregunta de la alternativa suelta dijera que sólo llegó el final de la frase sin citarlo, porque la política de la aplicación descarta las preguntas que repiten el texto de la persona).
