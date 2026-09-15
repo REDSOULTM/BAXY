@@ -1,0 +1,15 @@
+{
+  "schema": "c03-audio1577-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (deferred_clarification_split: two clauses joined by «y», a read the turn can do and an incomplete request that needs a question; INDETERMINATE_WINDOW_CLAUSE shared), src/baxy_mind/__main__.py (the deferred compound is neither a clarification nor an unresolved compound; the arguments ground on the read clause) and src/baxy_mind/llm.py (the final reports the read and ends with the one question; a claimed volume change or a missing question is rejected).",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1577/SOURCE.patch",
+  "commits": [
+    "40a7f6cdfda011343a98db5b44108a46a20427b7"
+  ],
+  "build": "BUILD1577 (C03-repairs1577-build/BUILD_READY.json; mente)",
+  "cause_measured": "AUDIO858: «subí el volumen y decime qué fecha es» preguntó la cantidad del volumen y omitió la fecha pedida; una cláusula legible se perdía detrás de la cláusula incompleta.",
+  "change": "Aclaración diferida: la lectura se ejecuta y el final termina con la pregunta de la otra cláusula; sin respuestas fijas.",
+  "measurement": "AUDIO1577: 5 ejecutados, 1 aprobado, 4 fallidos; 0 créditos. El literal y las dos variantes decidieron una sola system.time, la ejecutaron verificada y el primer borrador de la mente ya era el final buscado (el dato observado y una sola pregunta por la cantidad del volumen), pero la App (UserMessagePolicy.InventedVolume) rechazó tres veces cada final por nombrar el volumen sin nivel observado. El ajuste sin cantidad solo preguntó cuánto sin operar; «No toques el volumen.» respondió con una pregunta en vez de un acuse (el lector de prohibiciones no conoce «toques»). Siguiente: la App juzga aparte la pregunta final cuando el propio pedido nombró el volumen (AUDIO1579).",
+  "credits": 0
+}

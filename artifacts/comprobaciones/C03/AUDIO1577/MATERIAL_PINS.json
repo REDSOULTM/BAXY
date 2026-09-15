@@ -1,0 +1,78 @@
+{
+  "schema": "audio1577-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1577-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1577-instrument-v1",
+  "seal_sha256": "083111f1cc2eec0d73ba0ee02543e10662b64e27cbbd24e033311d798e165f03",
+  "runner_sha256": "31c81815ff082c393c053b943ec1bf8b5a40aa3e721a1163f840ea89b52c842e",
+  "transport_seal_sha256": "388019d4a1ea6239b605d2f6b69b0852da11839906ec7490a6f16c3cbf907f41",
+  "files": {
+    "panel.json": "3499a8669d441caa80d0b6418a396b4392f6fb87066549b7e04cd501cef75f07",
+    "turns.jsonl": "811a9bdf4a53ca5f2ec2a526808d4508bb2dac41be2c5a53fbcdc697d25f2ada",
+    "case-map.json": "a9347c57c39ce1cb1c59068df509f260073cb460bd67be5d035956878509e8e3",
+    "PLAN.md": "f23b06b22a68fdbc3fc3f5a8f6c4adc15a2b13c0105d4f10c786896baf71033d"
+  },
+  "counts": {
+    "cases": 5,
+    "historical_literals": 1,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 10,
+    "session_controls": 5,
+    "ordinary_turns": 5,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 5,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0067",
+      "kind": "historical_literal",
+      "group": "deferred_volume",
+      "credit_behavior": "deferred_volume",
+      "text_sha256": "1571ae8464db5a2c3462f7e2360c26704fc07573fbcce3a91957481156dbcfd6",
+      "criterion_sha256": "5c3fa16c4f92773d0ac61fa6fe3e69b27a34873263e919d18e13666e08c96b48"
+    },
+    {
+      "index": 1,
+      "case_id": "audio1577-dev-01",
+      "kind": "original_development_variant",
+      "group": "deferred_volume",
+      "credit_behavior": "deferred_volume",
+      "text_sha256": "20893ac849745cc0612e85c025a47e33b45117a5a21cf0eb3708bb2b31c5f232",
+      "criterion_sha256": "5c3fa16c4f92773d0ac61fa6fe3e69b27a34873263e919d18e13666e08c96b48"
+    },
+    {
+      "index": 2,
+      "case_id": "audio1577-dev-02",
+      "kind": "original_development_variant",
+      "group": "deferred_volume",
+      "credit_behavior": "deferred_volume",
+      "text_sha256": "3678d63bc2e289e15eb1b7aa315cb63cd2640ba791aba66aab32f8b109de3137",
+      "criterion_sha256": "5c3fa16c4f92773d0ac61fa6fe3e69b27a34873263e919d18e13666e08c96b48"
+    },
+    {
+      "index": 3,
+      "case_id": "audio1577-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "9397d34b3784fc2ac9f9cee0d701c902ee3d39bee9ee828f297d45732e8e84e5",
+      "criterion_sha256": "39ba793c3eccceee01a550c54edd5a4a8c838e4edaf93e750fdcdd29a13cb56b"
+    },
+    {
+      "index": 4,
+      "case_id": "audio1577-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "39f381ee538b21a0cc5db071a0e160895336caef097799542ebff674dba1315f",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    }
+  ]
+}
