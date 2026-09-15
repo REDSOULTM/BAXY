@@ -2477,7 +2477,9 @@ def _shaped_conversation_answer_violates_contract(
             not content
             or "\n" in content
             or any(marker in content for marker in ("?", "¿", "？"))
-            or len(re.findall(r"[.!…]\s+\S", content)) > 1
+            # KNOWLEDGE1527: the model adds a third short sentence («Gracias por pensar
+            # en mí»); three are accepted, «por favor dime» is not an acceptance.
+            or len(re.findall(r"[.!…]\s+\S", content)) > 2
             or re.search(
                 r"\b(?:no\s+(?:necesito|quiero|tengo|puedo\s+(?:querer|tener|tomar|comer|usar))|no\s+me\s+hace\s+falta|"
                 r"i\s+(?:don't|do\s+not)\s+(?:need|want)|no\s+need)\b",
@@ -2485,7 +2487,7 @@ def _shaped_conversation_answer_violates_contract(
             ) is None
             or (bool(thing_words) and not any(re.search(r"\b" + re.escape(w[:-1] if len(w) > 5 else w), folded_content) for w in thing_words))
             or re.search(
-                r"\b(?:si,?\s+quiero|me\s+encantaria|me\s+gustaria|claro\s+que\s+si|gracias,?\s+si|por\s+favor|"
+                r"\b(?:si,?\s+quiero|me\s+encantaria|me\s+gustaria|claro\s+que\s+si|"
                 r"yes,?\s+please|i'?d\s+love|i\s+would\s+like|me\s+encanta|me\s+gusta)\b",
                 folded_content,
             ) is not None
