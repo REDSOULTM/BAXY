@@ -5670,6 +5670,7 @@ def repeats_a_sent_instruction(
     candidate: str,
     instructions: object,
     request: str = "",
+    observed_texts: tuple[str, ...] = (),
 ) -> bool:
     """El texto visible reproduce el encargo que se envió en este turno.
 
@@ -5713,6 +5714,12 @@ def repeats_a_sent_instruction(
             if len(fragment) < 16 or fragment not in folded_candidate:
                 continue
             if folded_request and fragment in folded_request:
+                continue
+            # MUSIC1559: a hint that names an observed value («Daft Punk -
+            # Instant Crush (Official Video) ft. Julian Casablancas») is
+            # asking for that value; the draft that quotes it is not copying
+            # the instruction.
+            if any(fragment.strip(" «»\"'") in _reading_fold(value) for value in observed_texts if value):
                 continue
             return True
     return False
@@ -6774,7 +6781,7 @@ def compose_visible_defect(
             # MUSIC1555: a YouTube title with doubled spaces is still named
             # when the draft writes it with single ones.
             title_named = title.casefold() in folded or re.search(
-                r"\s+".join(re.escape(part) for part in title.casefold().split()), folded
+                r"\s+".join(re.escape(part) for part in _reading_fold(title).split()), _reading_fold(stripped)
             ) is not None
             if not title_named or (
                 operation != "media.status" and not verified_media_transport
@@ -6808,11 +6815,11 @@ def compose_visible_defect(
                     # MUSIC1555: YouTube titles carry doubled spaces («Lofi  Study»)
                     # that the draft collapses; any whitespace run matches one.
                     pattern = r"(?<!\w)" + r"\s+".join(
-                        re.escape(part) for part in name.split()
+                        re.escape(part) for part in _reading_fold(name).split()
                     ) + r"(?!\w)"
-                    if not re.search(pattern, stripped, re.IGNORECASE):
+                    if not re.search(pattern, _reading_fold(stripped), re.IGNORECASE):
                         return "missing_name"
-                    playback_text = re.sub(pattern, "", playback_text, flags=re.IGNORECASE)
+                    playback_text = re.sub(pattern, "", _reading_fold(playback_text), flags=re.IGNORECASE)
             playback = observed_dict.get("playbackStatus")
             if playback in {"playing", "paused", "stopped"}:
                 assertions = list(re.finditer(
@@ -13482,10 +13489,12 @@ class LlmRuntime:
             for key in visible_situation:
                 if f"({str(key).casefold()})" in folded_candidate:
                     return True
+            seen_values = visible_situation.get("seen") if isinstance(visible_situation, dict) else None
             return repeats_a_sent_instruction(
                 candidate,
                 sent_instructions,
                 user_text,
+                tuple(str(v) for v in (seen_values.values() if isinstance(seen_values, dict) else ()) if isinstance(v, str)),
             )
 
         # WEB1449 «Qué clima hay hoy?»: a draft whose generation stopped at the

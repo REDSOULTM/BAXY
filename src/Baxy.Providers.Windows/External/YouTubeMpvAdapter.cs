@@ -127,6 +127,10 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         // player's own HTTP client; the android client's URLs play directly in mpv.
         start.ArgumentList.Add("--extractor-args");
         start.ArgumentList.Add("youtube:player_client=android");
+        // MUSIC1559: without this the title reaches us in the console code page
+        // («�ltimo» for «Último») and the reply can never quote it exactly.
+        start.ArgumentList.Add("--encoding");
+        start.ArgumentList.Add("utf-8");
         start.ArgumentList.Add("--format");
         start.ArgumentList.Add("18/b[ext=mp4][protocol=https]/b[protocol=https]");
         start.ArgumentList.Add("--print");
@@ -206,7 +210,9 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
             double? before = null;
             double? after = null;
             bool paused = true;
-            for (int attempt = 0; attempt < 50; attempt++)
+            // MUSIC1559: a two-hour mix took longer than 50 × 250 ms to reach
+            // its first half second; the window is now about thirty seconds.
+            for (int attempt = 0; attempt < 120; attempt++)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 if (player.HasExited) break;
