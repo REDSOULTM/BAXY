@@ -1,0 +1,15 @@
+{
+  "schema": "c03-install1623-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (WithoutLibraryEntitlementConsequence in ReversesSuccessfulResult) and src/baxy_mind/llm.py (extra_claim veto for licence/confirmation hints on a verified not-owned read).",
+  "patch": "artifacts/comprobaciones/C03/INSTALL1623/SOURCE.patch",
+  "commits": [
+    "5b8cfc2ffe05bb59fa20f912426bf27a960574d2"
+  ],
+  "build": "BUILD1623 (C03-repairs1623-build/BUILD_READY.json; App+mente)",
+  "cause_measured": "INSTALL1623: reversed_result de la App sobre «cannot be downloaded or installed» y una frase inventada que insinúa licencia; una sola variante aprobada, sin par.",
+  "change": "Máscara de la consecuencia de biblioteca en la política de la App; veto de insinuaciones de licencia/confirmación en el compositor; sin respuestas fijas.",
+  "measurement": "INSTALL1623: quince literales y dos variantes con lectura de biblioteca completada y verificada y finales fieles, dos límites aprobados; 15 créditos. Medición raíz: la lectura game.entitlement.named responde desde la biblioteca autenticada del dueño y los manifiestos; la política de la App y el compositor aceptan la consecuencia observada en español e inglés; nada descargado ni comprado.",
+  "credits": 15
+}

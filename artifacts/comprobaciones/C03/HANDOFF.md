@@ -1,3 +1,11 @@
+# INSTALL1623 adjudicado — 2026-09-15T23:39:33.204277+00:00
+
+**566/742 cubiertos, 176 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA bb211259e834f0ebdb45094549d66aa9874d0aca48b8c6c6fd4a47b194f91058. Primeras altas 24 h >= 440 (+15).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5b8cfc2f con BUILD1623 (la consecuencia de biblioteca no es un fallo para la App y la licencia insinuada se veta). Turnos ordinarios sin operaciones.
+
+INSTALL1623 («Instalar y desinstalar software», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): quince literales y dos variantes con lectura de biblioteca completada y verificada y finales fieles, dos límites aprobados, 15 créditos. Adjudicación d3887a011313be885bca4a084e4e107174e81806466abb0ec45b93ea08ca2af6. Medición raíz: la lectura game.entitlement.named responde desde la biblioteca autenticada del dueño y los manifiestos; la política de la App y el compositor aceptan la consecuencia observada en español e inglés; nada descargado ni comprado.
+
+---
+
 # INSTALL1621 adjudicado — 2026-09-15T23:09:46.568332+00:00
 
 **551/742 cubiertos, 191 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA b5d7fae650ee5b356f83f656a45126982f77252f363bd6304944000cd750069b. Primeras altas 24 h >= 425 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 15352c41 con BUILD1621 (el título puntuado y la consecuencia en inglés no son defectos). Turnos ordinarios sin operaciones.

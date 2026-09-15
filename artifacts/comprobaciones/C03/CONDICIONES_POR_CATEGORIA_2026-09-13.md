@@ -921,3 +921,7 @@ Instalar y desinstalar software pasa de 0/31 a 0/31 con las descargas en Steam r
 ## Actualización 2026-09-14 (INSTALL1621)
 
 Instalar y desinstalar software pasa de 0/31 a 0/31 con las descargas en Steam respondidas desde la biblioteca autenticada del dueño (commit 15352c41, BUILD1621) (HEAD 15352c41): catorce literales y la variante en español con lectura verificada y final fiel; un literal con una frase inventada; la variante en inglés rechazada por la política de la App (reversed_result sobre «cannot»); dos límites aprobados; sin par de variantes, sin créditos, 0 créditos. Medición raíz: el compositor de la mente ya acepta el título puntuado y la pasiva inglesa; la política de la App marca «cannot» como fallo sin máscara para la consecuencia de biblioteca, y el modelo insinuó una licencia en un caso; siguiente INSTALL1623.
+
+## Actualización 2026-09-14 (INSTALL1623)
+
+Instalar y desinstalar software pasa de 0/31 a 15/31 con las descargas en Steam respondidas desde la biblioteca autenticada del dueño (commit 5b8cfc2f, BUILD1623) (HEAD 5b8cfc2f): quince literales y dos variantes con lectura de biblioteca completada y verificada y finales fieles, dos límites aprobados, 15 créditos. Medición raíz: la lectura game.entitlement.named responde desde la biblioteca autenticada del dueño y los manifiestos; la política de la App y el compositor aceptan la consecuencia observada en español e inglés; nada descargado ni comprado.
