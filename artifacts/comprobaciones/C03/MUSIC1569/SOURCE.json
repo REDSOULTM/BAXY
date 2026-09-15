@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1569-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs (la verificación acepta el avance de time-pos o de demuxer-cache-state.reader-pts; el recibo anota progressClock).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1569/SOURCE.patch",
+  "commits": [
+    "ae74c68535081df2b995c5ebbf906503f1f6d2ab"
+  ],
+  "build": "BUILD1569 (C03-repairs1569-build/BUILD_READY.json; Providers)",
+  "cause_measured": "MUSIC1569: el reproductor arrancaba y consumía audio pero el reloj WASAPI de este portátil quedaba en cero y el adaptador sólo miraba time-pos: seis de siete reproducciones dadas por no verificadas.",
+  "change": "Segundo reloj de verificación (lector del demuxer); sin respuestas fijas.",
+  "measurement": "MUSIC1569: 10 ejecutados, 10 aprobados, 0 fallidos; 5 créditos. Medido: los cinco literales y las dos variantes se propusieron y aprobaron como media.play.youtube con la música nombrada; yt-dlp resolvió el primer resultado con su título en UTF-8, mpv lo reprodujo sólo en audio con el volumen preajustado y el adaptador verificó la reproducción por la posición del lector del demuxer donde el reloj de audio de este portátil queda en cero; cada final dijo que se reproduce citando el título observado completo, sin otro dato ni pregunta; el volumen se restauró y ningún reproductor sobrevivió a su caso. Los cinco literales acreditados con sus dos variantes.",
+  "credits": 5
+}

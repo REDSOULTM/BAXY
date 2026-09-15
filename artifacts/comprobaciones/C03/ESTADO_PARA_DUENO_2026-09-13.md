@@ -1,3 +1,25 @@
+## MUSIC1569 — estado vigente 2026-09-15T15:23:40.539803+00:00
+
+Parcial: 10 aprobados, 0 fallidos, 0 sin ejecutar; 5 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 528/742 | 214 | 0 | >=402 | 5/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 397 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1569 añade 5. No se cuentan revalidaciones.
+
+Siguiente acción: MUSIC1569: 10 ejecutados, 10 aprobados, 0 fallidos, 5 créditos (índices [0, 1, 2, 3, 4]); Música 14/39. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1569/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 215.47 s acumulados; pico GPU 3513.33 MiB; pico RAM 3177.55 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 10; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1569 precedente. -->
+
 ## MUSIC1567 — estado vigente 2026-09-15T15:00:51.835524+00:00
 
 Parcial: 4 aprobados, 6 fallidos, 0 sin ejecutar; 0 créditos.

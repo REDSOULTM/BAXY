@@ -1,0 +1,24 @@
+{
+  "index": 2,
+  "case_id": "H0250",
+  "terminal_kind": "published_final",
+  "final_sha256": "8122abec99d189b0eeef1dc215a8f5d2664a6137af4b95ee88cb5710fb29b96e",
+  "clients_absent_before": true,
+  "verdict": "passed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 22.18699999999808,
+    "gpu_peak_mib": 3513.328125,
+    "ram_peak_mib": 1948.55078125,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1569-instrument-v1\\results\\case-02\\EXIT.json": "2e35be7deb5d6a9811a4b12564aeca3a31a94d73cba3ea4e7776883db5a1e2fc",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1569-instrument-v1\\results\\case-02\\RESOURCES.json": "5d474e381724169125f9b42ec86dacb45abf6169ba85c08e362a1141612de496",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1569-instrument-v1\\private\\run-02\\case-observations.json": "5d936b6d3872815dcb85368e913ef4174153d0fb071b06e430b432d041e4923f"
+  }
+}
