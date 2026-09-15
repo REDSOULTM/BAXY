@@ -4359,6 +4359,25 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             "Explain the finding briefly and naturally in the person's language."
         )
     if (
+        situation.get("operation") == "game.entitlement.named"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+    ):
+        bits.append(
+            "This result reads the person's Steam library only: owned says "
+            "whether the title is in their authenticated library, installed "
+            "whether it is on disk. Nothing was downloaded, installed, "
+            "uninstalled, purchased or opened. If owned is false, say the game "
+            "is not in their Steam library, so it cannot be downloaded or "
+            "installed (for an uninstall request: it is not installed); do not "
+            "offer to buy it, open the store, search or add it. If owned is true "
+            "and installed is false, say it is in the library but not installed "
+            "and that installing needs their confirmation; do not claim a "
+            "download started. If installed is true, say it is already "
+            "installed. Name the game as the person named it, in one or two "
+            "sentences, in the person's language."
+        )
+    if (
         situation.get("operation") == "app.installed"
         and situation.get("verified") is True
         and situation.get("succeeded") is True
@@ -6537,6 +6556,27 @@ def compose_visible_defect(
         )
         failure_assertions = re.sub(
             finding_predicate, "", _accent_folded_with_punctuation(stripped),
+        )
+    if (
+        kind == "operation"
+        and situation.get("operation") == "game.entitlement.named"
+        and polarity == "success"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+        and presence.get("owned") is False
+    ):
+        # INSTALL1617 «Descarga Worms Rumble en Steam»: the library read
+        # verified the game is not the person's; «no puedo descargarlo /
+        # instalarlo / desinstalarlo» states that consequence, not a failed
+        # read. Mask only that predicate in the failure lens.
+        failure_assertions = re.sub(
+            r"\b(?:no\s+(?:puedo|podre|podria|se\s+puede|es\s+posible|voy\s+a\s+poder)|"
+            r"(?:i\s+)?(?:can't|cannot|can\s+not|couldn't|could\s+not|am\s+unable\s+to|it\s+is\s+not\s+possible\s+to|won't\s+be\s+able\s+to))"
+            r"\s+(?:descargar|descargarlo|descargarla|descargartelo|bajar|bajarlo|bajarla|instalar|instalarlo|instalarla|instalartelo|"
+            r"desinstalar|desinstalarlo|desinstalarla|download|install|uninstall|remove)"
+            r"[^.;]{0,80}",
+            "",
+            _accent_folded_with_punctuation(failure_assertions),
         )
     if _verified_search_results(situation):
         # WEB1447 «va a llover mañana»: the search verified forecast pages that

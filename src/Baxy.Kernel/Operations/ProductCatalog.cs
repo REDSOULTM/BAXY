@@ -553,6 +553,13 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Lista el catálogo local de Steam mediante una sesión resuelta y acotada."),
         Descriptor(
+            "game.entitlement.named",
+            Schema([String("title", maximumUtf8Bytes: 256, nonWhitespace: true)], ["title"]),
+            OperationRisks.ReadOnly,
+            "game.entitlement.named.steam.librarycache.manifest.postread.v1",
+            ToolExposure.Public,
+            "Comprueba por título si un juego de Steam figura en la biblioteca autenticada local y si está instalado; no descarga, no compra ni abre diálogos."),
+        Descriptor(
             "game.install.cancel",
             Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
             OperationRisks.WorkLoss,

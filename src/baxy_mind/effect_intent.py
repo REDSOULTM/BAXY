@@ -14966,6 +14966,49 @@ def _open_application_spans(text: str) -> tuple[tuple[int, str], ...]:
     return tuple(applications)
 
 
+_STEAM_LIBRARY_VERB = (
+    r"(?:descarga|descargar|descargame|descargate|baja|bajar|bajame|bajate|"
+    r"instala|instalar|instalame|instalate|instalaes|install|download|"
+    r"desinstala|desinstalar|desinstalame|desinstalate|uninstall|remove)"
+)
+_STEAM_LIBRARY_REQUEST = re.compile(
+    r"[¿?¡!\s]*(?:(?:necesito|quiero|quisiera|podes|podrias|puedes|podria|can\s+you|could\s+you|please)\s+(?:que\s+)?)?"
+    rf"(?:me\s+)?{_STEAM_LIBRARY_VERB}\s+(?:(?:el|la|the)\s+)?(?:(?:juego|game)\s+)?"
+    r"(?P<title>[a-z0-9][a-z0-9 .:'&+-]{0,80}?)"
+    r"\s+(?:en|de|desde|por|from|on|in|via|through)\s+(?:steam|seam|stim|estim)"
+    r"(?:\s+(?:por\s+favor|please|ahora|now))?[\s.!?]*"
+)
+
+
+def steam_library_title(text: str) -> str | None:
+    """The game named by a Steam download/install/uninstall request.
+
+    INSTALL1617 H0482 «Descarga Worms Rumble en Steam», H0049 «… en seam»,
+    H0118 «Descarga doom eternal de steam», H0643 «Necesito que instalaes worms
+    rumble en steam»: one verb, one title, Steam named after it. The title is
+    returned with the person's own spelling and case; instructions after the
+    request (AppIDs, URLs, a second sentence) keep the request out of this
+    reader. Negations and meta talk abstain.
+    """
+
+    folded = _strip_request_envelope(_fold(text)).strip()
+    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(folded):
+        return None
+    match = _STEAM_LIBRARY_REQUEST.fullmatch(folded.rstrip(".!?").strip())
+    if match is None:
+        return None
+    title = match.group("title").strip(" .")
+    if not title or _has(title, r"^(?:el|la|the|un|una|a|an|juego|game|algo|something)$"):
+        return None
+    raw = str(text)
+    folded_raw = _fold(raw)
+    if len(folded_raw) == len(raw):
+        position = folded_raw.find(title)
+        if position >= 0:
+            return raw[position:position + len(title)]
+    return title
+
+
 def installed_game_title(text: str) -> str | None:
     """Read the game named by an installed question («dime si X ya está instalado»).
 
@@ -16028,6 +16071,12 @@ def resolve_explicit_effects(
         application_names,
     )
     authenticated_games = build_game_catalog_index(game_catalog)
+    if "game.entitlement.named" in available and steam_library_title(text) is not None:
+        # INSTALL1617: a Steam download, install or uninstall of a named game
+        # first reads whether the title is in the person's library and on disk;
+        # the install effect itself needs an entitlement and a confirmation,
+        # and most such requests name games the library does not hold.
+        return EffectIntent(("game.entitlement.named",), (text,))
     if "browser.control" in available and browser_new_tab_arguments(text) is not None:
         # BROWSER1493 «abrí una pestaña nueva»: one new blank tab in the
         # product's browser, verified by its presence.

@@ -98,6 +98,7 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             return operation switch
             {
                 "game.catalog.list" => List(operation, arguments),
+                "game.entitlement.named" => EntitlementNamed(operation, arguments),
                 "game.install.prepare" => Prepare(operation, arguments),
                 "game.install.commit" => await CommitAsync(
                     operation, arguments, effectBoundary, cancellationToken)
@@ -163,6 +164,45 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 WriteGame(writer, game);
             }
             writer.WriteEndArray(); writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    // INSTALL1617 «Descarga Worms Rumble en Steam»: before any download the
+    // turn needs a truthful answer to «is this game mine and is it installed?».
+    // The title resolves like game.install.named (closed titles, then the local
+    // snapshot); an unresolved title is reported as such, never guessed.
+    private ExternalCapabilityReceipt EntitlementNamed(string operation, JsonElement arguments)
+    {
+        string title = ExternalJson.RequiredString(arguments, "title");
+        if (string.IsNullOrWhiteSpace(title) || Encoding.UTF8.GetByteCount(title) > 256)
+        {
+            return ExternalJson.Failure(operation, "steam_title_invalid");
+        }
+        string folded = FoldTitle(title);
+        string? appId = KnownTitleAppIds.TryGetValue(folded, out string? known)
+            ? known
+            : ResolveSnapshotTitle(folded);
+        SteamLocalGame? game = appId is null
+            ? null
+            : _snapshot().SingleOrDefault(candidate => candidate.AppId == appId);
+        bool owned = appId is not null && _owned().Contains(appId);
+        bool installed = game is { Installed: true };
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("query", title);
+            writer.WriteBoolean("resolved", appId is not null);
+            if (appId is null) writer.WriteNull("appId"); else writer.WriteString("appId", appId);
+            writer.WriteString("title", game?.Name ?? title);
+            writer.WriteBoolean("owned", owned);
+            writer.WriteBoolean("installed", installed);
+            writer.WriteString("state", appId is null ? "title_not_resolved"
+                : installed ? "installed"
+                : owned ? "owned_not_installed" : "not_in_library");
+            writer.WriteString("authority", installed
+                ? "steam_local_appmanifest" : "steam_authenticated_library_cache");
+            writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
     }

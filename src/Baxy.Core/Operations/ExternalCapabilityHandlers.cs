@@ -29,6 +29,7 @@ internal static class ExternalCapabilityHandlers
         "email.latest.read",
         "email.latest.reply",
         "game.catalog.list",
+        "game.entitlement.named",
         "game.installed.named",
         "game.install.cancel",
         "game.install.cancel.active",
