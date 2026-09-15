@@ -1,3 +1,11 @@
+# INSTALL1625 adjudicado — 2026-09-15T23:54:06.360412+00:00
+
+**571/742 cubiertos, 171 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 112546e9cf33521cd27010ffc8556cf67c25e9b35cf2185ac84f0c51e3863a4d. Primeras altas 24 h >= 445 (+5).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b6f8fc12 con BUILD1625 (instalar o desinstalar una aplicación del catálogo se responde por su presencia; «en Teams» es Steam). Turnos ordinarios sin operaciones.
+
+INSTALL1625 («Instalar y desinstalar software», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): cinco literales y cuatro variantes con lectura completada y verificada (presencia en el catálogo o biblioteca de Steam) y finales fieles, dos límites aprobados, 5 créditos. Adjudicación 42a9c941e2c2e0615d0dce91161af42f6cf6f9e27885d55b9a650a6abb4668f5. Medición raíz: instalar o desinstalar una aplicación del catálogo se responde por su presencia sin negar capacidades; «en Teams» se lee como Steam; nada instalado, quitado ni descargado.
+
+---
+
 # INSTALL1623 adjudicado — 2026-09-15T23:39:33.204277+00:00
 
 **566/742 cubiertos, 176 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA bb211259e834f0ebdb45094549d66aa9874d0aca48b8c6c6fd4a47b194f91058. Primeras altas 24 h >= 440 (+15).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5b8cfc2f con BUILD1623 (la consecuencia de biblioteca no es un fallo para la App y la licencia insinuada se veta). Turnos ordinarios sin operaciones.

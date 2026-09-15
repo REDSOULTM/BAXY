@@ -1,0 +1,15 @@
+{
+  "schema": "c03-install1625-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (installed_catalog_application_name and its hook; steam_library_title admits «teams» and launch verbs, skipping installed games), src/baxy_mind/__main__.py (app.installed argument from the install request), src/baxy_mind/llm.py (instruction for install/uninstall requests answered by the presence read).",
+  "patch": "artifacts/comprobaciones/C03/INSTALL1625/SOURCE.patch",
+  "commits": [
+    "b6f8fc1244793bfb51df2b80fe4ce9af47b405da"
+  ],
+  "build": "BUILD1625 (C03-repairs1625-build/BUILD_READY.json; mente)",
+  "cause_measured": "Las peticiones de instalar/desinstalar una aplicación del catálogo y las de Steam escritas «en Teams» iban al modelo sin lectura.",
+  "change": "app.installed para instalar/desinstalar aplicaciones del catálogo; «teams» y verbos de lanzamiento en la lectura de biblioteca; sin respuestas fijas.",
+  "measurement": "INSTALL1625: cinco literales y cuatro variantes con lectura completada y verificada (presencia en el catálogo o biblioteca de Steam) y finales fieles, dos límites aprobados; 5 créditos. Medición raíz: instalar o desinstalar una aplicación del catálogo se responde por su presencia sin negar capacidades; «en Teams» se lee como Steam; nada instalado, quitado ni descargado.",
+  "credits": 5
+}

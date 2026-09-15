@@ -1,0 +1,147 @@
+commit b6f8fc1244793bfb51df2b80fe4ce9af47b405da
+
+C03: installing or uninstalling a catalog application reads its presence; «en Teams» reads the Steam library (INSTALL1625)
+
+Five open survey rows went to the model without a read. «instala Spotify», «desinstalá Spotify» and «desinstalá Discord» name applications the Windows Start catalog already holds; the product installs nothing by name and uninstalls nothing, so the truthful turn reads app.installed and says the application is already installed, or that it is installed and removing it is done from Windows Settings > Apps, without denying a capability (installed_catalog_application_name; the presence read decides; the argument is the catalog name). «instala Batman Arkham Knight en Teams» ×2 writes Steam as «Teams», as the owner already clarified (H0386, H0522): the Steam library read admits «teams» as the platform and the launch verbs («lanzá X en Steam»), and never replaces the launch of a game the local catalog holds.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 68a65554..882101c6 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -4797,7 +4797,9 @@ def _explicit_arguments_from_evidence(
+         return {"label": label} if label is not None else None
+ 
+     if operation == "app.installed":
+-        name = resolve_application_installed_name(evidence, application_names)
++        name = effect_intent.installed_catalog_application_name(
++            evidence, application_names,
++        ) or resolve_application_installed_name(evidence, application_names)
+         return {"name": name} if name is not None else None
+ 
+     if operation == "game.entitlement.named":
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index b8003430..8e62aa16 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -14969,13 +14969,18 @@ def _open_application_spans(text: str) -> tuple[tuple[int, str], ...]:
+ _STEAM_LIBRARY_VERB = (
+     r"(?:descarga|descargar|descargame|descargate|baja|bajar|bajame|bajate|"
+     r"instala|instalar|instalame|instalate|instalaes|install|download|"
+-    r"desinstala|desinstalar|desinstalame|desinstalate|uninstall|remove)"
++    r"desinstala|desinstalar|desinstalame|desinstalate|uninstall|remove|"
++    # INSTALL1625 H0083 «lanzá Mortal Kombat en Steam»: launching a game the
++    # library does not hold is answered by the same read.
++    r"lanza|lanzar|lanzame|launch|run|juega|jugar|play|start|abre|abrir|abrime|open)"
+ )
+ _STEAM_LIBRARY_REQUEST = re.compile(
+     r"[¿?¡!\s]*(?:(?:necesito|quiero|quisiera|podes|podrias|puedes|podria|can\s+you|could\s+you|please)\s+(?:que\s+)?)?"
+     rf"(?:me\s+)?{_STEAM_LIBRARY_VERB}\s+(?:(?:el|la|the)\s+)?(?:(?:juego|game)\s+)?"
+     r"(?P<title>[a-z0-9][a-z0-9 .:'&+-]{0,80}?)"
+-    r"\s+(?:en|de|desde|por|from|on|in|via|through)\s+(?:steam|seam|stim|estim)"
++    # INSTALL1625 H0387/H0721 «… en Teams»: the owner's transcriptions write
++    # Steam as «Teams» (H0386/H0522); a game platform, never the meeting app.
++    r"\s+(?:en|de|desde|por|from|on|in|via|through)\s+(?:steam|seam|stim|estim|teams|team)"
+     r"(?:\s+(?:por\s+favor|please|ahora|now))?[\s.!?]*"
+ )
+ 
+@@ -15009,6 +15014,43 @@ def steam_library_title(text: str) -> str | None:
+     return title
+ 
+ 
++_CATALOG_INSTALL_VERB = (
++    r"(?:instala|instalar|instalame|instalate|install|descarga|descargar|descargame|download|baja|bajar|bajame|"
++    r"desinstala|desinstalar|desinstalame|desinstalate|uninstall)"
++)
++
++
++def installed_catalog_application_name(
++    text: str,
++    application_names: Iterable[str] | ApplicationCatalogIndex,
++) -> str | None:
++    """The Start-catalog application an install or uninstall request names.
++
++    INSTALL1625 H0651 «instala Spotify», H0574 «desinstalá Spotify», H0089
++    «desinstalá Discord»: the product installs nothing by name and uninstalls
++    nothing; the truthful turn reads whether the application is present and
++    says so. Only an authenticated catalog name qualifies; anything else stays
++    with the model.
++    """
++
++    folded = _strip_request_envelope(_fold(text)).strip().rstrip(".!?").strip()
++    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(folded):
++        return None
++    match = re.fullmatch(
++        rf"[¿?¡!\s]*(?:(?:necesito|quiero|quisiera|podes|podrias|puedes|can\s+you|could\s+you|please)\s+(?:que\s+)?)?"
++        rf"(?:me\s+)?{_CATALOG_INSTALL_VERB}\s+(?:(?:el|la|the|a)\s+)?(?:(?:app|aplicacion|programa|application)\s+)?"
++        r"(?P<name>[a-z0-9][a-z0-9 .+'&-]{0,60}?)"
++        r"(?:[\s,]+(?:por\s+favor|please|ahora|now|de\s+nuevo|again))?",
++        folded,
++    )
++    if match is None:
++        return None
++    name = match.group("name").strip()
++    if not name:
++        return None
++    return resolve_application_catalog_app_id("abre " + name, application_names)
++
++
+ def installed_game_title(text: str) -> str | None:
+     """Read the game named by an installed question («dime si X ya está instalado»).
+ 
+@@ -16071,12 +16113,24 @@ def resolve_explicit_effects(
+         application_names,
+     )
+     authenticated_games = build_game_catalog_index(game_catalog)
+-    if "game.entitlement.named" in available and steam_library_title(text) is not None:
++    if (
++        "game.entitlement.named" in available
++        and steam_library_title(text) is not None
++        # INSTALL1625: a game the local catalog holds is launched, not read.
++        and _authenticated_game_target(folded, authenticated_games) is None
++    ):
+         # INSTALL1617: a Steam download, install or uninstall of a named game
+         # first reads whether the title is in the person's library and on disk;
+         # the install effect itself needs an entitlement and a confirmation,
+         # and most such requests name games the library does not hold.
+         return EffectIntent(("game.entitlement.named",), (text,))
++    if (
++        "app.installed" in available
++        and installed_catalog_application_name(text, authenticated_applications) is not None
++    ):
++        # INSTALL1625: installing or uninstalling a catalog application is
++        # answered by its presence; nothing is installed or removed.
++        return EffectIntent(("app.installed",), (text,))
+     if "browser.control" in available and browser_new_tab_arguments(text) is not None:
+         # BROWSER1493 «abrí una pestaña nueva»: one new blank tab in the
+         # product's browser, verified by its presence.
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index cf396261..f8aeb346 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4382,6 +4382,23 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
+         and situation.get("verified") is True
+         and situation.get("succeeded") is True
+     ):
++        if re.search(
++            r"\b(?:instal|install|desinstal|uninstall|descarg|download|baj[aá])",
++            (user_text or "").casefold(),
++        ):
++            # INSTALL1625: an install or uninstall request answered by the
++            # presence read; nothing was installed or removed.
++            bits.append(
++                "The person asked to install or uninstall this application and "
++                "this result only reads its presence: nothing was installed, "
++                "downloaded or removed. If installed is true and installing was "
++                "asked, say it is already installed. If installed is true and "
++                "uninstalling was asked, say it is installed and that removing it "
++                "is done from Windows Settings > Apps, as a fact, without saying "
++                "you cannot or failed. If installed is false, say it is not in "
++                "the Windows Start catalog. One or two sentences, the person's "
++                "language, the application named as they named it."
++            )
+         bits.append(
+             "This result verifies application presence only, not an opening. "
+             "Preserve requestedName and the original purpose of the request. "

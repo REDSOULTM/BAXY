@@ -925,3 +925,7 @@ Instalar y desinstalar software pasa de 0/31 a 0/31 con las descargas en Steam r
 ## Actualización 2026-09-14 (INSTALL1623)
 
 Instalar y desinstalar software pasa de 0/31 a 15/31 con las descargas en Steam respondidas desde la biblioteca autenticada del dueño (commit 5b8cfc2f, BUILD1623) (HEAD 5b8cfc2f): quince literales y dos variantes con lectura de biblioteca completada y verificada y finales fieles, dos límites aprobados, 15 créditos. Medición raíz: la lectura game.entitlement.named responde desde la biblioteca autenticada del dueño y los manifiestos; la política de la App y el compositor aceptan la consecuencia observada en español e inglés; nada descargado ni comprado.
+
+## Actualización 2026-09-14 (INSTALL1625)
+
+Instalar y desinstalar software pasa de 15/31 a 20/31 con las instalaciones y desinstalaciones de aplicaciones del catálogo respondidas por su presencia y las peticiones «en Teams» desde la biblioteca de Steam (commit b6f8fc12, BUILD1625) (HEAD b6f8fc12): cinco literales y cuatro variantes con lectura completada y verificada (presencia en el catálogo o biblioteca de Steam) y finales fieles, dos límites aprobados, 5 créditos. Medición raíz: instalar o desinstalar una aplicación del catálogo se responde por su presencia sin negar capacidades; «en Teams» se lee como Steam; nada instalado, quitado ni descargado.
