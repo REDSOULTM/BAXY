@@ -508,6 +508,19 @@ Lo que queda abierto, por masa, y por qué no se avanza sin el dueño o sin un c
 
 Condición transversal medida hoy: el motor público (Bing RSS) devuelve a veces las páginas de una consulta anterior o páginas ajenas (fotosíntesis → Excel; grafeno → foros); el filtro las rechaza y el producto lo dice con verdad. Las tandas con búsqueda se adjudican con el fallo honesto sellado.
 
+## Estado consolidado 2026-09-15 (tarde): 510/742 cubiertos, 232 abiertos, 4/35 categorías cerradas
+
+Once tandas más desde la madrugada (MEMORY1503, KNOWLEDGE1505–1511, DIALOGUE1513–1521, KNOWLEDGE1523): 494 → 510. Reparaciones adoptadas: la afirmación de preferencia recibe un acuse con forma y contrato (nombra lo dicho, sin gustos propios, ofertas ni preguntas; Memoria personal 8/10); la curiosidad sin tema se busca sobre un tema público elegido por el producto y se cuenta desde un fragmento nombrando la página (aterrizaje de la consulta elegida, singular no es corte del plural, URL fuera del veto de palabra cortada; Conocimiento 33/37 con las dos preguntas de identidad sin nombrar contestadas preguntando de quién); la conversación ajena captada por el micrófono, la conformidad sin pendiente y la alternativa suelta tienen clases de entrada sin pedido con aclaración validada (Entrada incompleta 27/34; tres rondas para que la pregunta de la alternativa suelta dijera que sólo llegó el final de la frase sin citarlo, porque la política de la aplicación descarta las preguntas que repiten el texto de la persona).
+
+| Categoría | Abiertos | Condición |
+|---|---:|---|
+| Conocimiento | 4 | Quién gana (H0582: opinión sin desenlace inventado, calidad del modelo); sarcasmo (H0596); «¿Quieres el acompañante de Batman?» (H0030, pregunta de deseo al asistente); H0297 (monólogo sobre el calor, ahora leído como conversación ajena). |
+| Entrada incompleta | 7 | Fragmentos cortos sin lector determinista seguro («Hable este.», «Vean con teléfono.», «¡Habristín!», «Calendar Devil?», H0246, H0139 con pregunta) y el marcador redactado (H0639): decididos por el modelo. |
+| Memoria personal | 2 | Recuerdos que exigen un guardado previo en el mismo perfil (H0604, H0173). |
+| Motor de búsqueda | — | Bing RSS devuelve páginas ajenas para cerca de la mitad de los nombres sueltos (Pulpo, Marte, Volcán…); la lista de temas de curiosidad se limitó a nombres verificados y el fallo honesto sigue sellado (web_search_results_irrelevant). |
+
+Sin cambio: Música 32, Instalar 31, Vídeo 26, Mensajería 22, Interacción 17, Organizar ventanas 9, Abrir aplicaciones 9, Archivos 7, Red 6, Audio 6, Navegación 5, Cerrar 5, Juegos/Correo/Contactos/Desarrollo 22, resto.
+
 ## Estado consolidado 2026-09-15 (madrugada): 494/742 cubiertos, 248 abiertos, 4/35 categorías cerradas
 
 Nueve tandas más desde el cierre de jornada (SCREEN1485, DIALOGUE1487–1491, BROWSER1493, APPS1495–1499): 484 → 494. Reparaciones adoptadas: la orden de captura seguida de «describeme lo que ves» lee la pantalla con el aviso honesto; mirar «lo» sin antecedente pregunta qué mirar (clase propia, validada contra la inversión de papeles); el destino cortado por la transcripción («Ve a portal una.») pregunta a qué portal; browser.control abre una pestaña nueva en el navegador propio del producto (acción new_tab, Kernel+proveedor); el nombre de aplicación aproximado («abres team», «Abre stea,», «abre Steel.») pregunta si abrir la candidata instalada sin abrir nada. Filas que cambian en la tabla anterior:
