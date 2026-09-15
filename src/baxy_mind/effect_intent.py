@@ -2983,7 +2983,7 @@ _FILE_TRASH_REQUEST = re.compile(
     r"^[¿?¡!\s]*(?:borr[aá]|borrar|borr[aá]me|elimin[aá]|eliminar|elimin[aá]me|"
     r"delete|remove|"
     r"(?:mand[aá]|manda|envi[aá]|envia|tir[aá]|tira)(?:me)?\s+a\s+la\s+papelera)(?:me)?\s+"
-    r"(?:(?:el|la|the)\s+)?(?P<noun>(?:archivo|fichero|file)\s+)?"
+    r"(?:(?:el|la|the)\s+)?(?P<noun>(?:archivo|fichero|file|carpeta|folder|directorio|directory)\s+)?"
     r"(?:(?:llamad[oa]|named|called)\s+)?"
     r"(?P<name>\"[^\"]+\"|'[^']+'|[^\s\"']+)"
     rf"(?:\s+(?:del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}))?"
@@ -2993,7 +2993,8 @@ _FILE_TRASH_REQUEST = re.compile(
 
 
 def _file_trash_request(text: str) -> re.Match[str] | None:
-    """Match one literal deletion of a named file in the person's known folders."""
+    """Match one literal deletion of a named file (or, FILES1603 H0327 «Borra la
+    carpeta CarterTest del escritorio», a named folder) in the person's known folders."""
 
     found = _FILE_TRASH_REQUEST.match(text.strip())
     if found is None:

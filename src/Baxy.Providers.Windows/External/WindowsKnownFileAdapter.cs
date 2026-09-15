@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using System.Text.Json;
+using System.Text;
 
 namespace Baxy.Providers.Windows.External;
 
@@ -329,7 +330,10 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             || fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
             || fileName.Contains('*') || fileName.Contains('?'))
             return ExternalJson.Failure(operation, "known_file_name_invalid");
+        // FILES1603 «Borra la carpeta CarterTest del escritorio»: a directory with
+        // that name in a known folder is trashed the same way, whole.
         var matches = Enumerate(roots)
+            .Concat(EnumerateDirectories(roots))
             .Where(item => string.Equals(
                 Path.GetFileName(item.Path), fileName, StringComparison.OrdinalIgnoreCase))
             .Take(2)
@@ -337,24 +341,61 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         if (matches.Length == 0) return ExternalJson.Failure(operation, "known_file_not_found");
         if (matches.Length > 1) return ExternalJson.Failure(operation, "known_file_ambiguous");
         (string label, string source) = matches[0];
+        bool isFolder = Directory.Exists(source);
         effectBoundary.Cross();
         Directory.CreateDirectory(_trashRoot);
         string restoreId = "restore_" + Guid.NewGuid().ToString("N");
         string destination = Path.Combine(_trashRoot, restoreId + "_" + fileName);
-        File.Move(source, destination);
-        if (File.Exists(source) || !File.Exists(destination))
+        if (isFolder) Directory.Move(source, destination); else File.Move(source, destination);
+        bool gone = isFolder ? !Directory.Exists(source) : !File.Exists(source);
+        bool arrived = isFolder ? Directory.Exists(destination) : File.Exists(destination);
+        if (!gone || !arrived)
             return ExternalJson.Failure(operation, "known_file_trash_postread_failed", true);
+        int entries = isFolder
+            ? Directory.EnumerateFileSystemEntries(destination, "*", SearchOption.AllDirectories).Count()
+            : 0;
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("reviewLabel", fileName); writer.WriteString("folder", label);
             writer.WriteString("restoreId", restoreId); writer.WriteBoolean("sourceAbsent", true);
-            writer.WriteString("sha256", Convert.ToHexStringLower(
-                SHA256.HashData(File.ReadAllBytes(destination))));
+            writer.WriteBoolean("isFolder", isFolder);
+            if (isFolder)
+            {
+                writer.WriteNumber("entries", entries);
+                writer.WriteString("sha256", Convert.ToHexStringLower(SHA256.HashData(
+                    Encoding.UTF8.GetBytes(string.Join("\n", Directory
+                        .EnumerateFileSystemEntries(destination, "*", SearchOption.AllDirectories)
+                        .Select(path => Path.GetRelativePath(destination, path))
+                        .OrderBy(static path => path, StringComparer.Ordinal))))));
+            }
+            else
+            {
+                writer.WriteString("sha256", Convert.ToHexStringLower(
+                    SHA256.HashData(File.ReadAllBytes(destination))));
+            }
             writer.WriteString("authority", "windows_known_file_private_trash_postread");
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: true);
+    }
+
+    private static IEnumerable<(string Label, string Path)> EnumerateDirectories(
+        IReadOnlyList<(string Label, string Root)> roots)
+    {
+        var options = new EnumerationOptions
+        {
+            RecurseSubdirectories = true,
+            IgnoreInaccessible = true,
+            AttributesToSkip = FileAttributes.ReparsePoint,
+            MaxRecursionDepth = 12,
+        };
+        foreach ((string label, string root) in roots)
+        {
+            if (!Directory.Exists(root)) continue;
+            foreach (string directory in Directory.EnumerateDirectories(root, "*", options))
+                yield return (label, directory);
+        }
     }
 
     private static IEnumerable<(string Label, string Path)> Enumerate(
