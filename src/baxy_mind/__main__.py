@@ -3018,6 +3018,25 @@ def _unresolved_input_kind(objective: str) -> str | None:
         return "overheard_speech"
     if (
         re.fullmatch(
+            # WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá la
+            # mejor»: a window named only by «la otra», «la mejor», «la
+            # siguiente» with nothing before it; the honest turn asks which.
+            r"[\s¡!¿?]*(?:"
+            r"(?:cambia|cambiame|pasa|pasame|anda|andate|ve|salta|volve|vuelve|switch|go|jump|move)"
+            r"(?:\s+(?:a|to))?\s+(?:la|the)\s+(?:otra|other|next|siguiente|anterior|previous|ultima|last|mejor|best)"
+            r"(?:\s+(?:ventana|window|pestana|tab))?|"
+            r"(?:enfoca|enfocame|foca|activa|activame|trae|traeme|pone|poneme|lleva|llevame|focus|bring|put)"
+            r"\s+(?:la|the)\s+(?:otra|other|mejor|best|siguiente|next|anterior|previous|ultima|last|"
+            r"mas\s+grande|biggest|largest|mas\s+chica|smallest|mas\s+importante|principal|main)"
+            r"(?:\s+(?:ventana|window))?(?:\s+(?:al\s+frente|adelante|to\s+the\s+front|forward))?"
+            r")[\s.!?¿¡]*",
+            folded,
+        )
+        is not None
+    ):
+        return "indeterminate_window"
+    if (
+        re.fullmatch(
             # KNOWLEDGE1523 H0424 «¿Cuál es su identidad secreta?», H0645
             # «¿Quién es de verdad?»: the real identity or name of someone
             # never named, with nothing before it; the honest turn asks whom.

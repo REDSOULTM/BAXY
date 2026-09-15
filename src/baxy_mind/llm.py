@@ -10531,11 +10531,26 @@ class LlmRuntime:
         a meaning: the question names what arrived and asks what to do.
         """
 
-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent"}:
+        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window"}:
             raise ValueError("clase de entrada sin pedido inválida")
         current = str(text).strip()[:2_048]
         situation = (
             (
+                # WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá
+                # la mejor»: «la otra» or «la mejor» names no window when
+                # nothing came before and several windows may be open.
+                "Eres BAXY. El usuario te pidió cambiar a otra ventana o enfocar "
+                "«la mejor», «la otra» o «la siguiente», sin decir cuál es y sin "
+                "nada anterior a lo que pueda referirse; puede haber varias "
+                "ventanas abiertas y no tienes criterio para elegir. Formula una "
+                "sola pregunta breve, en el idioma del usuario, que pregunte a qué "
+                "ventana quiere cambiar o cuál quiere que enfoques, por su nombre o "
+                "aplicación (por ejemplo: «¿A qué ventana querés cambiar?»). No "
+                "adivines ninguna ventana ni aplicación, no digas que no entiendes "
+                "ni que algo falló y no ofrezcas ayuda genérica."
+            )
+            if kind == "indeterminate_window"
+            else (
                 # KNOWLEDGE1523 H0424 «¿Cuál es su identidad secreta?», H0645
                 # «¿Quién es de verdad?»: nobody was named and nothing precedes
                 # the question; asking whom is the only honest move.
@@ -10822,6 +10837,36 @@ class LlmRuntime:
                         )
                         continue
                     raise ValueError("aclaración de mirar deíctico no pregunta qué mirar")
+            # WINDOWS1537: the question must ask which window (or application),
+            # never guess one. One corrected retry.
+            if kind == "indeterminate_window":
+                folded_question = _fold_dialogue_text(question)
+                asks_which = re.search(
+                    r"\b(?:a\s+(?:que|cual)|que|cual|which|what)\b.{0,40}\b(?:ventana|window|aplicacion|application|app|programa|pestana|tab)\b|"
+                    r"\b(?:ventana|window)\b.{0,30}\b(?:queres|quieres|te\s+refieres|te\s+referis|do\s+you\s+mean|want)\b",
+                    folded_question,
+                ) is not None
+                guesses = re.search(
+                    r"\b(?:chrome|opera|steam|spotify|discord|notepad|bloc\s+de\s+notas|calculadora|explorador|navegador|browser|"
+                    r"no\s+entiendo|no\s+puedo|fallo|error)\b",
+                    folded_question,
+                ) is not None
+                if not asks_which or guesses:
+                    if attempt == 0:
+                        payload["messages"].insert(
+                            -1,
+                            {
+                                "role": "system",
+                                "content": (
+                                    "Corrección: pregunta sólo a qué ventana o aplicación quiere "
+                                    "cambiar o enfocar, con «qué» o «cuál» y la palabra ventana, por "
+                                    "ejemplo: «¿A qué ventana querés cambiar?». No nombres ninguna "
+                                    "aplicación ni digas que no entiendes."
+                                ),
+                            },
+                        )
+                        continue
+                    raise ValueError("aclaración de ventana indeterminada no pregunta cuál")
             # KNOWLEDGE1523: the question must ask whom, never name a character
             # or answer with BAXY's own identity. One corrected retry.
             if kind == "missing_person_referent":
