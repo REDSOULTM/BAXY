@@ -1,3 +1,11 @@
+# SYSTEM1547 adjudicado — 2026-09-15T05:24:02.397221+00:00
+
+**520/742 cubiertos, 222 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA 389233adb6788ca79f89194b8966245da08a95e3a1762c4d0b80ad3b78f3115c. Primeras altas 24 h >= 394 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 58dbad66 con BUILD1547 (la RAM instalada y la utilizable se nombran con su etiqueta; prohibir un medio es una prohibición). Turnos ordinarios de aclaración sin operaciones.
+
+SYSTEM1547 («Estado de hardware y sistema», H0076 «Dime que version de Windows tengo y cuanta RAM tiene este PC. Usa Python.», lectura system.status os_memory con la directiva de medio declinada): 6 ejecutados, 5 aprobados, 1 fallido (el límite de prohibición sin final), 1 créditos. Adjudicación c1490a9c7940dee7e72580fbc063f6d33b7faea38ceb939961850e06fcc31b2d. Medido: la directiva «Usa Python.» se declinó, las tres lecturas system.status se verificaron y los finales informaron Windows 11 versión 10.0.26200 x64 y 17,18 GB de RAM instalada (installed_capacity) sin mencionar Python; el literal H0076 queda acreditado con sus dos variantes. Residual: el acuse de «No uses Python.» añadió una pregunta de ayuda y el reintento quedó vacío (truncated_structured_reply), y la aclaración de recuperación fue rechazada por eco; el prompt del acuse pasa a excluir la pregunta.
+
+---
+
 # SYSTEM1545 adjudicado — 2026-09-15T05:15:27.393790+00:00
 
 **519/742 cubiertos, 223 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA 00fee1f69ca9cdda3d30954134ab464c0d67f605b8623b085de8c47f9b462db5. Primeras altas 24 h >= 393 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 56cd8016 con BUILD1545 (la directiva final de medio se declina y la lectura se informa sin reclamar Python). Turnos ordinarios de aclaración sin operaciones.

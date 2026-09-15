@@ -1,3 +1,25 @@
+## SYSTEM1547 — estado vigente 2026-09-15T05:24:02.397221+00:00
+
+Parcial: 5 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 520/742 | 222 | 0 | >=394 | 5/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 393 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SYSTEM1547 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: SYSTEM1547: 6 ejecutados, 5 aprobados, 1 fallidos, 1 créditos (índices [0]); Estado de hardware y sistema 39/40. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/SYSTEM1547/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 106.95 s acumulados; pico GPU 3497.56 MiB; pico RAM 2075.01 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SYSTEM1547 precedente. -->
+
 ## SYSTEM1545 — estado vigente 2026-09-15T05:15:27.393790+00:00
 
 Parcial: 3 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.

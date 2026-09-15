@@ -1,0 +1,15 @@
+{
+  "schema": "c03-system1547-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_memory_capacity_note: la instrucción de memoria y la pista de reintento mislabelled_installed nombran las dos cifras observadas con su etiqueta: installed_capacity es la RAM instalada, total la utilizable) y src/baxy_mind/effect_intent.py (_negative_action_forms admite usa/utiliza/emplea: prohibir un medio es una prohibición).",
+  "patch": "artifacts/comprobaciones/C03/SYSTEM1547/SOURCE.patch",
+  "commits": [
+    "58dbad667620e813fe283b3edce03b218c341516"
+  ],
+  "build": "BUILD1547 (C03-repairs1547-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "SYSTEM1547: la lectura se verificó pero tres borradores seguidos llamaron instalada a la memoria total utilizable (16,54 GB frente a 17,18 GB instalados) y el turno quedó sin final; «No uses Python.» cayó en conversación (saludo).",
+  "change": "Cifras de memoria con etiqueta en instrucción y pista; verbo de medio en la prohibición; sin respuestas fijas.",
+  "measurement": "SYSTEM1547: 6 ejecutados, 5 aprobados, 1 fallido (el límite de prohibición sin final); 1 créditos. Medido: la directiva «Usa Python.» se declinó, las tres lecturas system.status se verificaron y los finales informaron Windows 11 versión 10.0.26200 x64 y 17,18 GB de RAM instalada (installed_capacity) sin mencionar Python; el literal H0076 queda acreditado con sus dos variantes. Residual: el acuse de «No uses Python.» añadió una pregunta de ayuda y el reintento quedó vacío (truncated_structured_reply), y la aclaración de recuperación fue rechazada por eco; el prompt del acuse pasa a excluir la pregunta.",
+  "credits": 1
+}
