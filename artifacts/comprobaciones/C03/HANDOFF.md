@@ -1,3 +1,11 @@
+# KNOWLEDGE1523 adjudicado — 2026-09-15T02:37:44.192863+00:00
+
+**510/742 cubiertos, 232 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 82872ae86885470e6c682268bcc20215f6deb69bcfcde9f3731f73fc9fe942ae. Primeras altas 24 h >= 384 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f3bdcfa8 con BUILD1523 (la identidad de alguien sin nombrar se contesta preguntando de quién; KNOWLEDGE1523/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+KNOWLEDGE1523 («Conocimiento, razonamiento y creatividad verbal», H0424 «¿Cuál es su identidad secreta?», H0645 «¿Quién es de verdad?»): 7 ejecutados, 7 aprobados, 0 fallidos, 2 créditos. Adjudicación 981010ef87864cbc73c281c6f768a95259b0b6f9b4d6a6939bb061990c56eea0. Los dos literales y las dos variantes terminaron con cero operaciones y la pregunta validada «¿De quién hablás?», sin nombrar personajes ni contestar con la identidad propia; los tres límites (definición, prohibición, identidad propia) pasaron. Cero violaciones en los siete.
+
+---
+
 # DIALOGUE1521 adjudicado — 2026-09-15T02:29:37.697381+00:00
 
 **508/742 cubiertos, 234 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA c8b0d68380ce23fdfccc610a8933417e535052861e428a9a59d0a1806f25aae9. Primeras altas 24 h >= 382 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD ffa35636 con BUILD1521 (la pregunta nombra el final de la frase sin citarlo; DIALOGUE1521/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

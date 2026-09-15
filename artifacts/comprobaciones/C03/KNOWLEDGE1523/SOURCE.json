@@ -1,0 +1,15 @@
+{
+  "schema": "c03-knowledge1523-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_unresolved_input_kind: missing_person_referent —«cuál es su identidad/nombre real», «quién es de verdad/realmente» sin nadie nombrado—) y src/baxy_mind/llm.py (clarify_unresolved_input: pregunta validada de quién habla; rechaza nombrar personajes o contestar con la identidad propia; un reintento corregido).",
+  "patch": "artifacts/comprobaciones/C03/KNOWLEDGE1523/SOURCE.patch",
+  "commits": [
+    "f3bdcfa82d83966b1226140d40d816afa3b7128c"
+  ],
+  "build": "BUILD1523 (C03-repairs1523-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "KNOWLEDGE1144/1149: «¿Cuál es su identidad secreta?» y «¿Quién es de verdad?» sin nadie nombrado recibían respuestas del modelo sobre un personaje o una deflexión sin contenido; ningún lector reconocía el referente ausente.",
+  "change": "Clase de entrada sin pedido missing_person_referent con su aclaración validada; sin respuestas fijas.",
+  "measurement": "KNOWLEDGE1523: 7 ejecutados, 7 aprobados, 0 fallidos; 2 créditos. Los dos literales y las dos variantes terminaron con cero operaciones y la pregunta validada «¿De quién hablás?», sin nombrar personajes ni contestar con la identidad propia; los tres límites (definición, prohibición, identidad propia) pasaron. Cero violaciones en los siete.",
+  "credits": 2
+}
