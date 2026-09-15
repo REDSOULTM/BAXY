@@ -1,0 +1,15 @@
+{
+  "schema": "c03-install1619-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (the generic title check exempts a verified game.entitlement.named result: naming the game is enough).",
+  "patch": "artifacts/comprobaciones/C03/INSTALL1619/SOURCE.patch",
+  "commits": [
+    "a1d68f1c4d0ff1d56c510d7dc51ad1dbafea42b7"
+  ],
+  "build": "BUILD1619 (C03-repairs1619-build/BUILD_READY.json; mente)",
+  "cause_measured": "INSTALL1617: el compositor vetó con missing_name los finales fieles de la lectura de biblioteca (exigencia genérica de la palabra «título»); la raíz cambió una fuente durante la ejecución.",
+  "change": "Exención de la lectura de biblioteca en la comprobación genérica de título del compositor; sin respuestas fijas.",
+  "measurement": "INSTALL1619: trece literales y una variante con lectura de biblioteca verificada y final fiel, un literal y la variante en inglés sin final por vetos del compositor (título puntuado; «cannot be downloaded» en el lente de fallo), dos límites aprobados; sin par de variantes, sin créditos; 0 créditos. Medición raíz: la lectura y los finales en español funcionan; el compositor aún veta el título con puntuación distinta y la consecuencia en inglés; siguiente INSTALL1621 con ambas máscaras.",
+  "credits": 0
+}

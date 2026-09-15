@@ -1,0 +1,28 @@
+commit a1d68f1c4d0ff1d56c510d7dc51ad1dbafea42b7
+
+C03: the Steam library final names the game without the word «título» (INSTALL1619)
+
+INSTALL1617 measured that game.entitlement.named is decided, completed and verified for the Steam download, install and uninstall rows, and that the model drafts the intended final («<juego> no está en tu biblioteca, así que no puedes descargarlo ni instalarlo»), but the composer's generic title check rejected every draft with missing_name: a payload that carries `title` demanded the word «título» in the sentence. A verified library read is now exempt from that word, as the local YouTube playback already is: naming the game is what the sentence owes.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 7d8d12b1..627f7abb 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -6983,6 +6983,14 @@ def compose_visible_defect(
+                     and situation.get("verified") is True
+                     and situation.get("succeeded") is True
+                 )
++                # INSTALL1617: the Steam library read names the game by its
++                # title; «Worms Rumble no está en tu biblioteca» names it
++                # without the word «título».
++                and not (
++                    operation == "game.entitlement.named"
++                    and situation.get("verified") is True
++                    and situation.get("succeeded") is True
++                )
+                 and not re.search(r"nota|note|t[íi]tulo|title", folded)
+             ):
+                 return "missing_name"
