@@ -1,0 +1,1449 @@
+commit ac221c25af30f7a3d1fbe2cd27e1e5c5499b29d8
+
+C03: MUSIC1595 adjudicated, «qué canción está sonando» names the whole title playing in the local player, 1 credit (544/742)
+
+Six cases on BUILD1595 (mind): «qué canción está sonando» (H0543) and both variants («qué está sonando ahora», «que se esta reproduciendo»), each after a root-scripted reviewed YouTube playback verified in the local player, read that player through media.status and answered in one sentence quoting the whole observed title as playing («"Queen – Bohemian Rhapsody (Official Video Remastered)" está sonando.»); the whole-title hint and the one-sentence instruction now reach the local-player finals. The three boundaries passed with zero operations; no player outlived its case and the volume was restored after every case. 1 credit (H0543, both variants approved); registry 544/742, 198 open, 0 NA; «Música» 25/39.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/GoalC03.txt b/GoalC03.txt
+index ff01834c..ac796733 100644
+--- a/GoalC03.txt
++++ b/GoalC03.txt
+@@ -67,8 +67,8 @@ Trabaja autónomamente hasta el cierre demostrado del goal completo. No pares en
+ ## Estado de avance (Fable, 2026-09-13 04:20 local) — anexo del relevo, no altera las órdenes anteriores
+ 
+ - Relevo asumido como único escritor (RELEVO_ACTIVO.json con la identidad real de sesión); rama `codex/kiro-goal-c03`, `main` intacto; todo comprometido y empujado (último commit: ver HANDOFF.md).
+-- **Cobertura: 203 → 543/742 cubiertos, 199 abiertos, 0 NA; 5/35 categorías cerradas (Procesos, Estado de ventanas, Identidad, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11.** Registro canónico SHA256 `438fd1fc12b56d4caff7482e6c2eb2727d61feb31a0b9905b095aa7b00878b33`. Primeras altas 24 h ≥ 169.
+-- Tandas adjudicadas en este relevo: TIME1134 (papeleo), MESSAGING1136 adoptado, MESSAGING1140, NOTES1141/1142, BUILD1143, KNOWLEDGE1144/1149, IDENTITY1145/1146/1148, CONVERSATION1150/1152/1160, CLOCK1155/1156/1157/1159, NETWORK1161/1163/1165/1167, SYSTEM1169/1171/1173/1175/1177, KNOWLEDGE1179, SYSTEM1181, SYSTEM1183, TIME1185, TIME1187, TIME1189, TIME1191, TIME1193, TIME1195, TIME1197, TIME1199, NETWORK1201, NETWORK1203, FILES1205, WINDOWS1207, WINDOWS1209, WINDOWS1211, WINDOWS1213, CLOSE1215, CLOSE1217, CLOSE1219, CLOSE1221, CLOSE1223, CLOSE1225, CLOSE1227, ARRANGE1229, APPS1231, APPS1237, AUDIO1239, FILES1243, MEMORY1245, MEMORY1247, MEMORY1249, MEMORY1251, MEMORY1253, MEMORY1255, WEB1257, WEB1259, WEB1261, WEB1263, WEB1265, WEB1267, WEB1269, WEB1271, UI1275, DIALOGUE1277 (medición, 0 créditos), DIALOGUE1279, DIALOGUE1281, BRIGHT1283 (medición, 0 créditos), BRIGHT1285, BRIGHT1287, BRIGHT1289, WEB1291 (medición, 0 créditos), NETWORK1293, NETWORK1295, NETWORK1297, NETWORK1299, NETWORK1301, SYSTEM1303, SYSTEM1305, SYSTEM1307, NEGATIVE1309, NEGATIVE1311, PROCESS1313, WINDOWS1315, WINDOWS1317, BRIGHT1319, BRIGHT1321, IDENTITY1323, IDENTITY1325, IDENTITY1327, CLOCK1329, CLOCK1331, CLOCK1333, CLOCK1335, AGENDA1337, AGENDA1339, AGENDA1341, CONVERSATION1343, CONVERSATION1345, CONVERSATION1347, CONVERSATION1349, AUDIO1351, KNOWLEDGE1353, KNOWLEDGE1355, KNOWLEDGE1357, CLIPBOARD1359, CLIPBOARD1361, MESSAGING1363, MESSAGING1365, SYSTEM1367, CLOSE1369, CLOSE1371, UI1373, UI1377, AUDIO1375, AUDIO1379, AUDIO1381, APPS1383, APPS1387, APPS1391, UI1389, WINDOWS1385, UI1393, UI1395, UI1397, SCREEN1399, SCREEN1401, SCREEN1403, SCREEN1405, SCREEN1407, SCREEN1409, SCREEN1411, SCREEN1413, SCREEN1415, SCREEN1417, SCREEN1419, SCREEN1421, SCREEN1423, FILES1427, NEGATIVE1429, NEGATIVE1431, FILES1433, AGENDA1435, FILES1437, FILES1439, FILES1441, FILES1443, WEB1445, WEB1447, WEB1449, WEB1451, WEB1453, WEB1455, NETWORK1457, SYSTEM1459, AUDIO1461, AUDIO1463, WEB1465, WEB1467, WEB1471, KNOWLEDGE1473, KNOWLEDGE1475, WEB1477, WEB1479, WEB1481, WEB1483, SCREEN1485, DIALOGUE1487, DIALOGUE1489, DIALOGUE1491, BROWSER1493, APPS1495, APPS1497, APPS1499, MEMORY1501, MEMORY1503, KNOWLEDGE1505, KNOWLEDGE1507, KNOWLEDGE1509, KNOWLEDGE1511, DIALOGUE1513, DIALOGUE1515, DIALOGUE1517, DIALOGUE1519, DIALOGUE1521, KNOWLEDGE1523, KNOWLEDGE1525, KNOWLEDGE1527, KNOWLEDGE1529, GAMES1531, GAMES1533, APPS1535, WINDOWS1537, WEB1539, WEB1541, WEB1543, SYSTEM1545, SYSTEM1547, APPS1549, APPS1551, MUSIC1553, MUSIC1555, MUSIC1557, MUSIC1559, MUSIC1561, MUSIC1563, MUSIC1565, MUSIC1567, MUSIC1569, MUSIC1573, MUSIC1575, AUDIO1577, AUDIO1579, WINDOWS1581, MUSIC1583, CONVERSATION1585, FILES1587, FILES1589, FILES1591, MUSIC1593. Registro por campaña en artifacts/comprobaciones/C03/<CAMPAÑA>/ (ROOT_ADJUDICATION, SOURCE/APP_SOURCE con parche y medición).
++- **Cobertura: 203 → 544/742 cubiertos, 198 abiertos, 0 NA; 5/35 categorías cerradas (Procesos, Estado de ventanas, Identidad, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11.** Registro canónico SHA256 `7ced1023bd480858a0983189abd6734e4fa1581a5d2ac0bdf41d39c882066957`. Primeras altas 24 h ≥ 169.
++- Tandas adjudicadas en este relevo: TIME1134 (papeleo), MESSAGING1136 adoptado, MESSAGING1140, NOTES1141/1142, BUILD1143, KNOWLEDGE1144/1149, IDENTITY1145/1146/1148, CONVERSATION1150/1152/1160, CLOCK1155/1156/1157/1159, NETWORK1161/1163/1165/1167, SYSTEM1169/1171/1173/1175/1177, KNOWLEDGE1179, SYSTEM1181, SYSTEM1183, TIME1185, TIME1187, TIME1189, TIME1191, TIME1193, TIME1195, TIME1197, TIME1199, NETWORK1201, NETWORK1203, FILES1205, WINDOWS1207, WINDOWS1209, WINDOWS1211, WINDOWS1213, CLOSE1215, CLOSE1217, CLOSE1219, CLOSE1221, CLOSE1223, CLOSE1225, CLOSE1227, ARRANGE1229, APPS1231, APPS1237, AUDIO1239, FILES1243, MEMORY1245, MEMORY1247, MEMORY1249, MEMORY1251, MEMORY1253, MEMORY1255, WEB1257, WEB1259, WEB1261, WEB1263, WEB1265, WEB1267, WEB1269, WEB1271, UI1275, DIALOGUE1277 (medición, 0 créditos), DIALOGUE1279, DIALOGUE1281, BRIGHT1283 (medición, 0 créditos), BRIGHT1285, BRIGHT1287, BRIGHT1289, WEB1291 (medición, 0 créditos), NETWORK1293, NETWORK1295, NETWORK1297, NETWORK1299, NETWORK1301, SYSTEM1303, SYSTEM1305, SYSTEM1307, NEGATIVE1309, NEGATIVE1311, PROCESS1313, WINDOWS1315, WINDOWS1317, BRIGHT1319, BRIGHT1321, IDENTITY1323, IDENTITY1325, IDENTITY1327, CLOCK1329, CLOCK1331, CLOCK1333, CLOCK1335, AGENDA1337, AGENDA1339, AGENDA1341, CONVERSATION1343, CONVERSATION1345, CONVERSATION1347, CONVERSATION1349, AUDIO1351, KNOWLEDGE1353, KNOWLEDGE1355, KNOWLEDGE1357, CLIPBOARD1359, CLIPBOARD1361, MESSAGING1363, MESSAGING1365, SYSTEM1367, CLOSE1369, CLOSE1371, UI1373, UI1377, AUDIO1375, AUDIO1379, AUDIO1381, APPS1383, APPS1387, APPS1391, UI1389, WINDOWS1385, UI1393, UI1395, UI1397, SCREEN1399, SCREEN1401, SCREEN1403, SCREEN1405, SCREEN1407, SCREEN1409, SCREEN1411, SCREEN1413, SCREEN1415, SCREEN1417, SCREEN1419, SCREEN1421, SCREEN1423, FILES1427, NEGATIVE1429, NEGATIVE1431, FILES1433, AGENDA1435, FILES1437, FILES1439, FILES1441, FILES1443, WEB1445, WEB1447, WEB1449, WEB1451, WEB1453, WEB1455, NETWORK1457, SYSTEM1459, AUDIO1461, AUDIO1463, WEB1465, WEB1467, WEB1471, KNOWLEDGE1473, KNOWLEDGE1475, WEB1477, WEB1479, WEB1481, WEB1483, SCREEN1485, DIALOGUE1487, DIALOGUE1489, DIALOGUE1491, BROWSER1493, APPS1495, APPS1497, APPS1499, MEMORY1501, MEMORY1503, KNOWLEDGE1505, KNOWLEDGE1507, KNOWLEDGE1509, KNOWLEDGE1511, DIALOGUE1513, DIALOGUE1515, DIALOGUE1517, DIALOGUE1519, DIALOGUE1521, KNOWLEDGE1523, KNOWLEDGE1525, KNOWLEDGE1527, KNOWLEDGE1529, GAMES1531, GAMES1533, APPS1535, WINDOWS1537, WEB1539, WEB1541, WEB1543, SYSTEM1545, SYSTEM1547, APPS1549, APPS1551, MUSIC1553, MUSIC1555, MUSIC1557, MUSIC1559, MUSIC1561, MUSIC1563, MUSIC1565, MUSIC1567, MUSIC1569, MUSIC1573, MUSIC1575, AUDIO1577, AUDIO1579, WINDOWS1581, MUSIC1583, CONVERSATION1585, FILES1587, FILES1589, FILES1591, MUSIC1593, MUSIC1595. Registro por campaña en artifacts/comprobaciones/C03/<CAMPAÑA>/ (ROOT_ADJUDICATION, SOURCE/APP_SOURCE con parche y medición).
+ - Reparaciones causales adoptadas y medidas: notas (léxico), App palabra completa, prompt (SIEMPRE/idioma), voseo (lector y shell, BUILD1147), pregunta de recuperación publicada (BUILD1151), reloj (reconocedor y proyección de fecha; shell día/day, BUILD1158), wifi (dominio y validador de conectividad), GPU (scope), disco («espacio», elipsis nominal), claves de medidas total/free/used (autorizado), alarmas relativas al segundo entero publicado (decisión del dueño, TIME1139), duraciones compactas y «media hora», despertar como alarma, recordatorios con duración al inicio, alarmas y recordatorios con hora explícita, aclaraciones deterministas de agenda (hora imposible, aviso sin contenido), «contá N minutos», IP propia sin confirmación (BUILD1201, decisión del dueño), proveedor de carpetas conocidas para crear archivos y carpetas en escritorio/Documentos (BUILD1205, decisión del dueño, infraestructura ≥10 abiertos). Un validador retirado tras medir agotamiento (mislabeled_memory, 0e8edfec).
+ - Sin tests/dueñas/Fast/Full, por orden vigente: ningún criterio formal de validación se declara cumplido. Guardas intactas.
+ - Decisiones del dueño recibidas el 2026-09-13 (artifacts/comprobaciones/C03/DECISIONES_DUENO_2026-09-13.md): poder total en este PC, cierre de apps sin autorización por app, proveedor de carpetas conocidas, renombrado de claves de medidas, IP sin confirmación, TIME1139 a elección de raíz con obligación de cumplirlo, y saltar lo que exija sesiones ausentes (Netflix). Reanudación exacta en HANDOFF.md y CONDICIONES_POR_CATEGORIA_2026-09-13.md.
+diff --git a/artifacts/comprobaciones/C03/CHECKPOINT.md b/artifacts/comprobaciones/C03/CHECKPOINT.md
+index 655f738b..1eae4ae2 100644
+--- a/artifacts/comprobaciones/C03/CHECKPOINT.md
++++ b/artifacts/comprobaciones/C03/CHECKPOINT.md
+@@ -1,3 +1,25 @@
++## MUSIC1595 — estado vigente 2026-09-15T18:51:26.274788+00:00
++
++Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
++
++| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
++|---:|---:|---:|---:|---:|
++| 544/742 | 198 | 0 | >=418 | 5/35 |
++
++Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 417 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1595 añade 1. No se cuentan revalidaciones.
++
++Siguiente acción: MUSIC1595: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]); Música 25/39. Siguiente: categoría por masa abierta según CONDICIONES.
++
++Evidencia: `artifacts/comprobaciones/C03/MUSIC1595/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
++
++Recursos de los segmentos: 138.31 s acumulados; pico GPU 3513.33 MiB; pico RAM 2170.14 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
++
++Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
++
++---
++
++<!-- Historial anterior conservado; rige el bloque MUSIC1595 precedente. -->
++
+ ## MUSIC1593 — estado vigente 2026-09-15T18:43:33.878429+00:00
+ 
+ Parcial: 10 aprobados, 1 fallidos, 0 sin ejecutar; 3 créditos.
+diff --git a/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md b/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md
+index a4f16641..cc294c2d 100644
+--- a/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md
++++ b/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md
+@@ -836,3 +836,7 @@ Archivos y carpetas pasa de 26/32 a 27/32 con el pedido cortado dicho y pregunta
+ ## Actualización 2026-09-14 (MUSIC1593)
+ 
+ Música pasa de 21/39 a 24/39 con el estado y la parada del reproductor local tras una reproducción (commit 1050ce6a, BUILD1593) (HEAD 1050ce6a): 11 ejecutados, 10 aprobados, 1 fallido, 3 créditos. Los ocho casos de diálogo reprodujeron con revisión la música guionizada en el reproductor local y luego respondieron al literal sobre ese reproductor: «qué está sonando» y sus dos variantes leyeron el reproductor (media.status) y nombraron el título observado sonando; «qué canción está sonando» leyó pero no publicó final (fragmento del título y luego título traducido); «pará la música», «para la musica» y sus dos variantes detuvieron el reproductor (media.control, salida verificada) y dijeron con verdad, en estilo de informe, que la reproducción quedó detenida. Las tres fronteras pasaron con cero operaciones; ningún reproductor sobrevivió a su caso; volumen restaurado.
++
++## Actualización 2026-09-14 (MUSIC1595)
++
++Música pasa de 24/39 a 25/39 con el título completo del reproductor local en una frase (commit 080cef4a, BUILD1595) (HEAD 080cef4a): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes, tras una reproducción revisada verificada en el reproductor local, leyeron ese reproductor y respondieron en una frase citando el título observado completo como sonando. Las tres fronteras pasaron con cero operaciones; ningún reproductor sobrevivió a su caso; volumen restaurado.
+diff --git a/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md b/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md
+index 8e41decb..faf568e6 100644
+--- a/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md
++++ b/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md
+@@ -1,10 +1,10 @@
+-# Categorías actuales — adjudicación MUSIC1593
++# Categorías actuales — adjudicación MUSIC1595
+ 
+-543/742 cubiertos; 199 abiertos; 0 no aplican; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2). Últimas 24 h: al menos 417 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337 + 1 en AGENDA1341 + 1 en CONVERSATION1343 + 1 en CONVERSATION1347 + 1 en CONVERSATION1349 + 2 en AUDIO1351 + 1 en KNOWLEDGE1353 + 1 en KNOWLEDGE1357 + 1 en CLIPBOARD1359 + 2 en CLIPBOARD1361 + 1 en MESSAGING1363 + 2 en MESSAGING1365 + 2 en SYSTEM1367 + 4 en CLOSE1371 + 1 en AUDIO1379 + 1 en AUDIO1381 + 1 en APPS1391 + 1 en UI1389 + 1 en WINDOWS1385 + 1 en UI1397 + 1 en SCREEN1401 + 3 en SCREEN1415 + 3 en SCREEN1419 + 5 en SCREEN1421 + 2 en SCREEN1423 + 4 en FILES1427 + 1 en NEGATIVE1429 + 1 en NEGATIVE1431 + 1 en FILES1433 + 1 en AGENDA1435 + 1 en FILES1443 + 3 en WEB1449 + 2 en WEB1451 + 1 en WEB1453 + 4 en WEB1455 + 2 en NETWORK1457 + 4 en SYSTEM1459 + 1 en AUDIO1461 + 1 en AUDIO1463 + 8 en WEB1465 + 2 en WEB1467 + 2 en WEB1471 + 2 en KNOWLEDGE1473 + 1 en KNOWLEDGE1475 + 2 en WEB1477 + 1 en WEB1479 + 2 en WEB1483 + 1 en SCREEN1485 + 1 en DIALOGUE1489 + 2 en DIALOGUE1491 + 1 en BROWSER1493 + 2 en APPS1497 + 3 en APPS1499 + 1 en MEMORY1503 + 3 en KNOWLEDGE1507 + 1 en KNOWLEDGE1511 + 7 en DIALOGUE1513 + 1 en DIALOGUE1515 + 1 en DIALOGUE1521 + 2 en KNOWLEDGE1523 + 2 en KNOWLEDGE1525 + 1 en KNOWLEDGE1529 + 1 en GAMES1531 + 1 en GAMES1533 + 2 en WINDOWS1537 + 2 en WEB1543 + 1 en SYSTEM1547 + 1 en APPS1551 + 2 en MUSIC1557 + 5 en MUSIC1569 + 5 en MUSIC1573 + 1 en MUSIC1575 + 1 en AUDIO1579 + 1 en WINDOWS1581 + 1 en MUSIC1583 + 1 en CONVERSATION1585 + 1 en FILES1589 + 1 en FILES1591 + 3 en MUSIC1593; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 438fd1fc12b56d4caff7482e6c2eb2727d61feb31a0b9905b095aa7b00878b33.
++544/742 cubiertos; 198 abiertos; 0 no aplican; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2). Últimas 24 h: al menos 418 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337 + 1 en AGENDA1341 + 1 en CONVERSATION1343 + 1 en CONVERSATION1347 + 1 en CONVERSATION1349 + 2 en AUDIO1351 + 1 en KNOWLEDGE1353 + 1 en KNOWLEDGE1357 + 1 en CLIPBOARD1359 + 2 en CLIPBOARD1361 + 1 en MESSAGING1363 + 2 en MESSAGING1365 + 2 en SYSTEM1367 + 4 en CLOSE1371 + 1 en AUDIO1379 + 1 en AUDIO1381 + 1 en APPS1391 + 1 en UI1389 + 1 en WINDOWS1385 + 1 en UI1397 + 1 en SCREEN1401 + 3 en SCREEN1415 + 3 en SCREEN1419 + 5 en SCREEN1421 + 2 en SCREEN1423 + 4 en FILES1427 + 1 en NEGATIVE1429 + 1 en NEGATIVE1431 + 1 en FILES1433 + 1 en AGENDA1435 + 1 en FILES1443 + 3 en WEB1449 + 2 en WEB1451 + 1 en WEB1453 + 4 en WEB1455 + 2 en NETWORK1457 + 4 en SYSTEM1459 + 1 en AUDIO1461 + 1 en AUDIO1463 + 8 en WEB1465 + 2 en WEB1467 + 2 en WEB1471 + 2 en KNOWLEDGE1473 + 1 en KNOWLEDGE1475 + 2 en WEB1477 + 1 en WEB1479 + 2 en WEB1483 + 1 en SCREEN1485 + 1 en DIALOGUE1489 + 2 en DIALOGUE1491 + 1 en BROWSER1493 + 2 en APPS1497 + 3 en APPS1499 + 1 en MEMORY1503 + 3 en KNOWLEDGE1507 + 1 en KNOWLEDGE1511 + 7 en DIALOGUE1513 + 1 en DIALOGUE1515 + 1 en DIALOGUE1521 + 2 en KNOWLEDGE1523 + 2 en KNOWLEDGE1525 + 1 en KNOWLEDGE1529 + 1 en GAMES1531 + 1 en GAMES1533 + 2 en WINDOWS1537 + 2 en WEB1543 + 1 en SYSTEM1547 + 1 en APPS1551 + 2 en MUSIC1557 + 5 en MUSIC1569 + 5 en MUSIC1573 + 1 en MUSIC1575 + 1 en AUDIO1579 + 1 en WINDOWS1581 + 1 en MUSIC1583 + 1 en CONVERSATION1585 + 1 en FILES1589 + 1 en FILES1591 + 3 en MUSIC1593 + 1 en MUSIC1595; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 7ced1023bd480858a0983189abd6734e4fa1581a5d2ac0bdf41d39c882066957.
+ 
+ | Categoría | Total | Cubiertos | Abiertos |
+ |---|---:|---:|---:|
+-| Música | 39 | 24 | 15 |
++| Música | 39 | 25 | 14 |
+ | Instalar y desinstalar software | 31 | 0 | 31 |
+ | Navegación y búsqueda web | 46 | 41 | 5 |
+ | Archivos y carpetas | 32 | 27 | 5 |
+diff --git a/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md b/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md
+index d53d3f7d..918b151b 100644
+--- a/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md
++++ b/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md
+@@ -1,3 +1,25 @@
++## MUSIC1595 — estado vigente 2026-09-15T18:51:26.274788+00:00
++
++Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
++
++| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
++|---:|---:|---:|---:|---:|
++| 544/742 | 198 | 0 | >=418 | 5/35 |
++
++Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 417 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1595 añade 1. No se cuentan revalidaciones.
++
++Siguiente acción: MUSIC1595: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]); Música 25/39. Siguiente: categoría por masa abierta según CONDICIONES.
++
++Evidencia: `artifacts/comprobaciones/C03/MUSIC1595/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
++
++Recursos de los segmentos: 138.31 s acumulados; pico GPU 3513.33 MiB; pico RAM 2170.14 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
++
++Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
++
++---
++
++<!-- Historial anterior conservado; rige el bloque MUSIC1595 precedente. -->
++
+ ## MUSIC1593 — estado vigente 2026-09-15T18:43:33.878429+00:00
+ 
+ Parcial: 10 aprobados, 1 fallidos, 0 sin ejecutar; 3 créditos.
+diff --git a/artifacts/comprobaciones/C03/HANDOFF.md b/artifacts/comprobaciones/C03/HANDOFF.md
+index ae900abb..dfdbd786 100644
+--- a/artifacts/comprobaciones/C03/HANDOFF.md
++++ b/artifacts/comprobaciones/C03/HANDOFF.md
+@@ -1,3 +1,11 @@
++# MUSIC1595 adjudicado — 2026-09-15T18:51:26.274788+00:00
++
++**544/742 cubiertos, 198 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA 7ced1023bd480858a0983189abd6734e4fa1581a5d2ac0bdf41d39c882066957. Primeras altas 24 h >= 418 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 080cef4a con BUILD1595 (el final del reproductor local cita el título completo en una frase). La raíz aprueba sólo una media.play.youtube con una consulta de texto (approve_youtube.py); el reproductor local (mpv) nace en el caso y la raíz lo detiene al terminar; el volumen maestro se preajusta a 12 y se restaura al estado del dueño.
++
++MUSIC1595 («Música», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Adjudicación 1785f6ccdca72e362454a5422968cc81a446de90a61c35782cec0e66ce259285. El literal y las dos variantes, tras una reproducción revisada verificada en el reproductor local, leyeron ese reproductor y respondieron en una frase citando el título observado completo como sonando. Las tres fronteras pasaron con cero operaciones; ningún reproductor sobrevivió a su caso; volumen restaurado.
++
++---
++
+ # MUSIC1593 adjudicado — 2026-09-15T18:43:33.878429+00:00
+ 
+ **543/742 cubiertos, 199 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA 438fd1fc12b56d4caff7482e6c2eb2727d61feb31a0b9905b095aa7b00878b33. Primeras altas 24 h >= 417 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 1050ce6a con BUILD1593 (el reproductor local responde qué suena y se detiene). La raíz aprueba sólo una media.play.youtube con una consulta de texto (approve_youtube.py); el reproductor local (mpv) nace en el caso y la raíz lo detiene al terminar; el volumen maestro se preajusta a 12 y se restaura al estado del dueño.
+diff --git a/artifacts/comprobaciones/C03/MUSIC1595/MATERIAL_PINS.json b/artifacts/comprobaciones/C03/MUSIC1595/MATERIAL_PINS.json
+new file mode 100644
+index 00000000..1f4215ea
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/MUSIC1595/MATERIAL_PINS.json
+@@ -0,0 +1,87 @@
++{
++  "schema": "music1595-public-material-pins-v1",
++  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-proposal",
++  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1",
++  "seal_sha256": "009af8dafec7e4515606d95f565819002f04f751e226bea0e5118c89dc7eb3e4",
++  "runner_sha256": "6733f1c5919f29418acf81ef2a15f315c8d245125728b67e23179a80bc2b68c4",
++  "transport_seal_sha256": "64d9a72c49cf586c1826228c57b3f53dd6edfc07deacbbd35b798fcb21437558",
++  "files": {
++    "panel.json": "d15a6d0b99f0b0bd3a6fef810df15c97671a3a8a53a5503e1dd406b981958126",
++    "turns.jsonl": "859cb500261b53765ca4dea2c25bc7865a3f37b6c8a4990f04c6fc772465a647",
++    "case-map.json": "2ca3bf48985bf19661ef1220fd38e68f432623fb1a64b1086f9ae24ab0ed340c",
++    "PLAN.md": "34085d4b018382712abc1b037b4a7925037136d9cb9a2741aaf8c348c5c000c2"
++  },
++  "counts": {
++    "cases": 6,
++    "historical_literals": 1,
++    "original_development_variants": 2,
++    "boundaries": 3,
++    "wire_lines": 12,
++    "session_controls": 6,
++    "ordinary_turns": 3,
++    "reviewed_turns": 3,
++    "maximum_reportable_terminals": 12,
++    "maximum_internal_confirmations": 6
++  },
++  "kind_counts": {
++    "historical_literal": 1,
++    "original_development_variant": 2,
++    "boundary": 3
++  },
++  "case_identities": [
++    {
++      "index": 0,
++      "case_id": "H0543",
++      "kind": "historical_literal",
++      "group": "now_playing",
++      "credit_behavior": "now_playing",
++      "text_sha256": "c05f6fc53f16a048cdc04ccd3df207cd35d73d626384c697efd4aaef4a4327a4",
++      "criterion_sha256": "d6f16780b81d971665906923b3181db69d5c7bb23a0558d115a6c9194680da2b"
++    },
++    {
++      "index": 1,
++      "case_id": "music1595-dev-01",
++      "kind": "original_development_variant",
++      "group": "now_playing",
++      "credit_behavior": "now_playing",
++      "text_sha256": "91cedd0bc5afcb52ff623624f906ad78310b3c786ff72ac755eff8e9311638c4",
++      "criterion_sha256": "d6f16780b81d971665906923b3181db69d5c7bb23a0558d115a6c9194680da2b"
++    },
++    {
++      "index": 2,
++      "case_id": "music1595-dev-02",
++      "kind": "original_development_variant",
++      "group": "now_playing",
++      "credit_behavior": "now_playing",
++      "text_sha256": "e913cdb7a9dc58d753782b60111646f5bdd32ce8b1fb3cef6b6188d3a9943356",
++      "criterion_sha256": "d6f16780b81d971665906923b3181db69d5c7bb23a0558d115a6c9194680da2b"
++    },
++    {
++      "index": 3,
++      "case_id": "music1595-boundary-01",
++      "kind": "boundary",
++      "group": "no_effect_boundary",
++      "credit_behavior": "no_effect_boundary",
++      "text_sha256": "f8afeec870bf74354168f1e47974db6ff429e5a5f64e7d2e642ec695293041b8",
++      "criterion_sha256": "ac9432e776338837c1c5555b118b3f2f99f124be8d13212f5704a30407c9e4ed"
++    },
++    {
++      "index": 4,
++      "case_id": "music1595-boundary-02",
++      "kind": "boundary",
++      "group": "no_effect_boundary",
++      "credit_behavior": "no_effect_boundary",
++      "text_sha256": "054de9517f67889b93f0a6b7c5a08583189bd2ade7b8ecc9eadc26aee1c6a2b7",
++      "criterion_sha256": "b35ec0429967be117381303ac4c12ac43ce4bc8b4450c2d4a9f0a67a33269ce6"
++    },
++    {
++      "index": 5,
++      "case_id": "music1595-boundary-03",
++      "kind": "boundary",
++      "group": "no_effect_boundary",
++      "credit_behavior": "no_effect_boundary",
++      "text_sha256": "bc24898c6d653acc0303bda963f8edd69ad552c3e75140829c1ecc5b591f40cc",
++      "criterion_sha256": "50757e30c0886c9c9d6fe25617d31896c91ed2f486ced29f1b243a9954f5945b"
++    }
++  ]
++}
+diff --git a/artifacts/comprobaciones/C03/MUSIC1595/REGISTRY_UPDATE.json b/artifacts/comprobaciones/C03/MUSIC1595/REGISTRY_UPDATE.json
+new file mode 100644
+index 00000000..afbd75f2
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/MUSIC1595/REGISTRY_UPDATE.json
+@@ -0,0 +1,18 @@
++{
++  "registry_before_sha256": "438fd1fc12b56d4caff7482e6c2eb2727d61feb31a0b9905b095aa7b00878b33",
++  "registry_after_sha256": "7ced1023bd480858a0983189abd6734e4fa1581a5d2ac0bdf41d39c882066957",
++  "touched_ids": [
++    "H0543"
++  ],
++  "credited_ids": [
++    "H0543"
++  ],
++  "counters": {
++    "covered": 544,
++    "open": 198,
++    "not_applicable": 0,
++    "total": 742
++  },
++  "decisions_sha256": "0dc4d22c66190e47ca6cd59cb6ee52667f8d828611d452a8b8ae01d9ac152862",
++  "updated_at": "2026-09-15T18:51:26.274788+00:00"
++}
+diff --git a/artifacts/comprobaciones/C03/MUSIC1595/ROOT_ADJUDICATION.json b/artifacts/comprobaciones/C03/MUSIC1595/ROOT_ADJUDICATION.json
+new file mode 100644
+index 00000000..8893c79d
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/MUSIC1595/ROOT_ADJUDICATION.json
+@@ -0,0 +1,408 @@
++{
++  "schema": "music1595-root-adjudication-v2",
++  "decided_at_utc": "2026-09-15T18:51:26.274788+00:00",
++  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
++  "head": "080cef4a232664f29a330c8d0564a1cd6e5d400c",
++  "decisions_sha256": "0dc4d22c66190e47ca6cd59cb6ee52667f8d828611d452a8b8ae01d9ac152862",
++  "registry_before_sha256": "438fd1fc12b56d4caff7482e6c2eb2727d61feb31a0b9905b095aa7b00878b33",
++  "registry_before_counts": {
++    "covered": 543,
++    "open": 199,
++    "not_applicable": 0,
++    "total": 742
++  },
++  "candidate_manifest_sha256": "d090f93aa2c0ddcb5b4919073016dce75a19f7e5ab9213836e21093e6b3c9471",
++  "preparation_sha256": "168e5f1bf9edd19fc3b2f965a0dce9acc451adb28e6140d8608ee898d07aa0f1",
++  "passed": 6,
++  "failed": 0,
++  "unexecuted": 0,
++  "executed": 6,
++  "segments_started": 6,
++  "aborted_before_admission": 0,
++  "aborted_before_admission_indices": [],
++  "credits": [
++    "H0543"
++  ],
++  "counters": {
++    "covered": 544,
++    "open": 198,
++    "not_applicable": 0,
++    "total": 742
++  },
++  "metrics": {
++    "first_covered_last24h_is_lower_bound": true,
++    "first_covered_last24h_before": 417,
++    "categories_total": 35,
++    "categories_closed_after": 5,
++    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 417 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1595 añade 1. No se cuentan revalidaciones.",
++    "first_covered_last24h_after": 418
++  },
++  "resources": {
++    "seconds_sum": 138.31300000000192,
++    "gpu_peak_mib": 3513.328125,
++    "ram_peak_mib": 2170.14453125
++  },
++  "cases": [
++    {
++      "index": 0,
++      "case_id": "H0543",
++      "verdict": "passed",
++      "credit": true,
++      "pair_indices": [
++        1,
++        2
++      ],
++      "reason": "Reprodujo con revisión la música guionizada en el reproductor local y luego respondió al literal sobre ese reproductor (qué suena o parada) con un final fiel; crédito con dos variantes aprobadas.",
++      "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos.",
++      "final_sha256": "9954ef9820810d8a62dbba2c5ad3c3d4141c2666758c6e1749ab22b9f528fc55",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-00\\EXIT.json": "56c76e50f53f28752ecfa5bfef4655f6809f1c6680372fae32e51653535525be",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-00\\RESOURCES.json": "da5fb34322ed8003f824fc77b73b281caa1f0e997b3c90e8946b19c9d5ee7ea9",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\profile-owner-00.json": "8fcafb691abb04ebb21a7884ba35e370b3f1b02c609df6e7ba45b698d9e04585",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-00\\PREREG.json": "8d601356852da51ce849a0129e264b52661d35b0ba0748023740e8cd18bfea4c",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-00\\capture\\events.jsonl": "e603a7789d4cbc753f351f9af2b5e37b17d56f78e4dc64809f20cd6d93f3047e",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-00\\turns.jsonl": "9245c63010af37dc9191981014dfae63ea5ac4eaeeee8a3b9c51bca7879a2eb3",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\fixture-00.json": "64832b8003165c2a056155d4d2fce732ab630373e2244ffc2377fd76b6008549",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-00.json": "babe8912ae8ff9ae478757cbc5fa4e9c45d7598b9d597fe70cf2e23f1d9c7adc",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-prelaunch-00.json": "aba4421e134e7cef6266e05df36b61b25451e1f7213c87af69bcce803651be93",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-00\\case-observations.json": "62e65e38c040c58c820f90608616927bbd97429774975aef69c74ec696a650be",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-00\\journal-before.json": "b424882dbc237a8dabbfd41b024d09d511a05ee8d0febae9334dae96f29be043",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-00\\journal-after.json": "d3407b0cea1ffe9c3f84e0e505c5f3d39ec6b09ea2664f886935440490cc2477",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "4dead1d9c95e9a1a2e83bc459b67fbd2c3d7ed6c44d12d8f05b49136f10526fc"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "2201631e-f0ef-4df7-a555-19c8a65682e4",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        },
++        {
++          "invocation_id": "01730dea-ca9b-43f0-9249-ba64970098c1",
++          "operation": "media.play.youtube",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        },
++        {
++          "invocation_id": "53726412-35f4-4034-af5f-9f959fc92c35",
++          "operation": "media.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    },
++    {
++      "index": 1,
++      "case_id": "music1595-dev-01",
++      "verdict": "passed",
++      "credit": false,
++      "pair_indices": [],
++      "reason": "Preguntó qué música poner y reprodujo con revisión lo contestado, nombrándolo por su título observado; variante o literal sin dos pares aprobados.",
++      "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos.",
++      "final_sha256": "40cced55e288c4d4c638b2915926946dd00a0e9aef6f84c2f7ec4f32eb6003e2",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-01\\EXIT.json": "cb532bbbe13a5836f2513989bf0db6990b01a59145acf5b3eaeac85cafc9404f",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-01\\RESOURCES.json": "831167e5362d26fd456c70fa90f97ceb0e3d88e75fc4fa700fa94b85e9d4e943",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\profile-owner-01.json": "ef45529919a31253ceada9115d37179200f3a3f59141c3e8258d360b0d0b8417",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-01\\PREREG.json": "54cb15db4751af67c3a4733ed8f7a4341189b8fbca54b9cbcfe867bbfdc4e408",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-01\\capture\\events.jsonl": "59ebda82e8ac2964a861191bd6398a0211967f570f9e0ed197f1dd8544465c64",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-01\\turns.jsonl": "167330ebc74d64a992e276d7e0979f6a0c572f3b3733a9196797eea08e14e2d6",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\fixture-01.json": "0d022afe7849ebe1ebfa4c6914aa40cb1c565d3a71dccc340334af678b22b863",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-01.json": "b8b71685d628bf4b10496071aa825bcfd8a73a8d279ee9a96b08792624387915",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-prelaunch-01.json": "b1ce546a7230aa0671ecd54cdffef8914736155fc8c938329054e644ff2c1800",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-01\\case-observations.json": "767e8a0cea1d595d8b96e04a7ff17374f38107e5dd295abfa56f36d5247b4f3e",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-01\\journal-before.json": "86e1de49724dfd081131bd43f63a58db5d3a7af7ae43bedb48b725fabb2611ad",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-01\\journal-after.json": "ffa13f41ce9270c9ac6c7a92c34371b25d54895e22d370f5a05e010325572837",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "76cc340397911559d5ac1ac5d1e83fadaa95f7063dfdeec8e914b5dee1638bf9"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "f4857a64-a449-4d89-934a-925d6947a513",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        },
++        {
++          "invocation_id": "5dbe926c-8ff1-4af8-9ec7-a661b310a761",
++          "operation": "media.play.youtube",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        },
++        {
++          "invocation_id": "f1836668-a5cc-42b9-ac85-20db8fcc6277",
++          "operation": "media.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    },
++    {
++      "index": 2,
++      "case_id": "music1595-dev-02",
++      "verdict": "passed",
++      "credit": false,
++      "pair_indices": [],
++      "reason": "Preguntó qué música poner y reprodujo con revisión lo contestado, nombrándolo por su título observado; variante o literal sin dos pares aprobados.",
++      "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos.",
++      "final_sha256": "c1c438b90cfe28a95d5d67d7b7a5a8c3b8675b5842763e2f6a84bb35d8f9ee3a",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-02\\EXIT.json": "26bfbfa8fc44a5df8cc287a8e03756ee6cce19c4a5413d69e5e45efd2b1674a1",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-02\\RESOURCES.json": "bc23ff6721d413cd88f43b8dee4998eae830aaff6ab9d648856de31c39516c55",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\profile-owner-02.json": "956d323f23eb5d66fd1bada5aa74a656626e460817d52bc4dd3194f4c846faad",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-02\\PREREG.json": "7c503a0d07ab6b8ac6180c41810c0a78efbcbe2a5dbfe8883d1fe81c330355c1",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-02\\capture\\events.jsonl": "971fcad9dcab9c9d5a034abcf336d628e9282486bbe914e233c67bf0ce16d60a",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-02\\turns.jsonl": "93e3866102e8858ac6f84da5c9530ae4ae6a09e1408974a7523905977b338f0a",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\fixture-02.json": "16440433de83c52318a70bcd35e135abd5cbbedec8fbe07d481159674be5bfa4",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-02.json": "afa037e952c7328ea5a02d1c4101589243563778dd1831676db6686dda9f282a",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-prelaunch-02.json": "6ac3bc46f35f8d73ba25822598aee25bbf05e659de7e66a7fa271d6ce3fbdedc",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-02\\case-observations.json": "7b7452813c17614f9b5a104365af9274e194331e858b3160f542293bc4234561",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-02\\journal-before.json": "a71c90f4669e742ba6e8bf17b4503aeb8dde6e13ffe22790688d45a9507505a4",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-02\\journal-after.json": "d1a1628941e5bd70a7ba3b4aa39e1a45c5b11b323f9fad04dae22719e4b013a2",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "cab4415eefbfbd4a7afb01af5fb29b7af4342bd063ee09f34f615e84c65175e8"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "8dd01ea9-3f14-4b69-a06a-fb4221a6db62",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        },
++        {
++          "invocation_id": "930ba25d-509b-471b-8fa7-b5d630864807",
++          "operation": "media.play.youtube",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        },
++        {
++          "invocation_id": "783c5322-31da-408c-89eb-fba11000a15f",
++          "operation": "media.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    },
++    {
++      "index": 3,
++      "case_id": "music1595-boundary-01",
++      "verdict": "passed",
++      "credit": false,
++      "pair_indices": [],
++      "reason": "Límite aprobado.",
++      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++      "final_sha256": "d679499a9774c016f813749881fb866b3887c43cf99a4538820f788a02ddf987",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-03\\EXIT.json": "c45c8f738fda81cbd0bb8ff26ea852c0875df3bf11c243312551ce8b71c95efc",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-03\\RESOURCES.json": "38e78fe1fbb8d128131dbeb74a3c3e8ba9f36e19e06c7e0304b1cacece1cd6c6",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\profile-owner-03.json": "c883fde2b63efb6a0f062c6c1cbd7902c23b2574cd7aa82dc2c486d14d590c54",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-03\\PREREG.json": "dfc990f9cd448ed55989a34a14e25a6051082a2089a32ac6bae077542237676a",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-03\\capture\\events.jsonl": "2ec1a92bcc2c1f7eee65a6d49bbdf03e07b802ce7153ac27856d6bc2a2815a9d",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-03\\turns.jsonl": "188e266bec52b36413245dc27f70c33d944c7e6b0404b5f543252a353f0e16b1",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\fixture-03.json": "8f6cab8ddaf7517cf4e4cae61deff1040b539febf87409e8875f73ff719cd7d0",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-03.json": "28fb9570784cd6805b4662cf843da406837ebbd597e5ba576ab6c4cadf757736",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-prelaunch-03.json": "9ec50654ef064373f99deaf5782171a863c6799a34eb1b5cd3fb2377cbe6732a",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-03\\case-observations.json": "2b03b31fafbea7a23b549306e151acee7e1188080b124996830a604f87b2e8a6",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-03\\journal-before.json": "b324f5714b1180b1c6d52a15bb4b83aae4f0ab0b4b9ae31d6b7cad63e54eef35",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-03\\journal-after.json": "c8129597dcbe2f40d23e387b45c958545ef98d54e89038e985b4c252dedc308c",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "2f9329c8e03069ccd8efa55c7bd59c310b34769686c36c22e84d64822b5ddae4"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "17ea6c49-3586-4aaa-8711-4fb4afb4fdc1",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    },
++    {
++      "index": 4,
++      "case_id": "music1595-boundary-02",
++      "verdict": "passed",
++      "credit": false,
++      "pair_indices": [],
++      "reason": "Límite aprobado.",
++      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++      "final_sha256": "13c1ca26e95ff2a690f0ed4ffd3124da465f048dac936f31dedd1598e8bcb22b",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-04\\EXIT.json": "1e205e2774715612332ec854fadd92f6a6e1f192208f648badaaafe48f85b6ed",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-04\\RESOURCES.json": "1eb2c5897ea022c80cf548d5317e927c9579b5ca958fd39009009c7c26d42f0a",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\profile-owner-04.json": "d2ae884654a880fd797c6ac4463ce3347516e352733e1a80da5179f079eaba5d",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-04\\PREREG.json": "05ef4fc7737f083fc7d212b39b95ab286eba20c248dc5901281246eb68d15b8a",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-04\\capture\\events.jsonl": "c71973c855a2f1796c2fa68d982636bc226406cd6b0763231d76e5b94c02053f",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-04\\turns.jsonl": "ad2a767e3d4040f198a1fbdb455fe4a97e6d77941f91377471adcc8d666dc262",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\fixture-04.json": "8bbff985e1afaba0219749fccb4166556f550fca4a76ed4082ab6f7112581af8",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-04.json": "5f0dfac19bc097f377b389ca9b3aa8abf3083761bc1ea6c07acfae6e981d3466",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-prelaunch-04.json": "051baeb68297538da4657fcd798bacaf1dfb5cccef5707b707e35ef85dbf1910",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-04\\case-observations.json": "14435828218e55315371007bf7a7b33eae57bb518a9df4f7bcf3d92ba528303f",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-04\\journal-before.json": "bc33cf5bba9f11bfe4e28d6bf701e179a12bbd6bd941b0dfa353d2cc48f60ea7",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-04\\journal-after.json": "3ac01a86a573b541fcb0a0333f4a756046fb7e34f7cd34b25692dade221c9aa6",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "512a0d46284239c4cb925996f1bad9dbc92d1ccd000517e9645d7ebc87fd022f"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "3228a4ce-ff82-4481-8940-dc4e5a4909d8",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    },
++    {
++      "index": 5,
++      "case_id": "music1595-boundary-03",
++      "verdict": "passed",
++      "credit": false,
++      "pair_indices": [],
++      "reason": "Límite aprobado.",
++      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++      "final_sha256": "1026f757f1610d2f691d8ffb319a6e43c2133298c7bd7dbdfd8903317098a76c",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-05\\EXIT.json": "a409cffb0299fa559b5ffd1e5d3deb2b90ba67b839f063d5c018f690450e0d11",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-05\\RESOURCES.json": "79b93ddd2a96e26f31067cac5b666b54daa31af6f2595fc137de166a0fd990a4",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\profile-owner-05.json": "a0ce8807dac26c2589c04434639cc64aab1cc72b67e88e62a9d238faf53aa79d",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-05\\PREREG.json": "07acd820378d83cb0c3bda164d00655d8148b522733f3b83bf9a107bd7fe62ec",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-05\\capture\\events.jsonl": "b33fe0985d1afecadf39e76dc05878f9297f1abfc9a23ba8597a721ce33fafcc",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-05\\turns.jsonl": "a3e7cea01c6f2c5eddc3b9c346c3799b44d9f626bb8e139ed3b55912f1cae3fb",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\fixture-05.json": "6c2a66729c3c16a155d1f4921d705dd8f221f71f57989a8c8d07c0bd37024e2f",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-05.json": "3282614a13e1c170138a9d11fb1e0a40338e96ef4dc478e338ec70d0d79027aa",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-prelaunch-05.json": "3de5b5d2977eaa56f831ae9b74c362e46bb5ad68ada07d5a4f6bf085cf4d6c0b",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-05\\case-observations.json": "421eabf06bbb638340adf5e647698a11ff614455874c208763b06ab009f9949d",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-05\\journal-before.json": "2b629a70ed031a2d97b851371f0b11dc5e7a12c20d98d0949877c7f48075d99c",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-05\\journal-after.json": "8bbea99af1fcded3676001c52d65596e9b8c1f91abb368ca7bbf08f6c681630d",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "e6f4a4ed0510cc3c88e9e8a374c7c313f271b3aea7cf816afa7ebfc995c0de35"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "53218e37-1509-4571-948a-60033e888d51",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    }
++  ],
++  "unexecuted_indices": [],
++  "next_action": "MUSIC1595: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]); Música 25/39. Siguiente: categoría por masa abierta según CONDICIONES.",
++  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
++  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
++}
+diff --git a/artifacts/comprobaciones/C03/MUSIC1595/ROOT_ADJUDICATION.md b/artifacts/comprobaciones/C03/MUSIC1595/ROOT_ADJUDICATION.md
+new file mode 100644
+index 00000000..248f22cf
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/MUSIC1595/ROOT_ADJUDICATION.md
+@@ -0,0 +1,32 @@
++# MUSIC1595 — adjudicación de la raíz
++
++## MUSIC1595 — estado vigente 2026-09-15T18:51:26.274788+00:00
++
++Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
++
++| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
++|---:|---:|---:|---:|---:|
++| 544/742 | 198 | 0 | >=418 | 5/35 |
++
++Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 417 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1595 añade 1. No se cuentan revalidaciones.
++
++Siguiente acción: MUSIC1595: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]); Música 25/39. Siguiente: categoría por masa abierta según CONDICIONES.
++
++Evidencia: `artifacts/comprobaciones/C03/MUSIC1595/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
++
++Recursos de los segmentos: 138.31 s acumulados; pico GPU 3513.33 MiB; pico RAM 2170.14 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
++
++Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
++
++| Índice | Caso | Veredicto | Causa de la raíz | Observación |
++|---:|---|---|---|---|
++| 0 | H0543 | passed | Reprodujo con revisión la música guionizada en el reproductor local y luego respondió al literal sobre ese reproductor (qué suena o parada) con un final fiel; crédito con dos variantes aprobadas. | Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos. |
++| 1 | music1595-dev-01 | passed | Preguntó qué música poner y reprodujo con revisión lo contestado, nombrándolo por su título observado; variante o literal sin dos pares aprobados. | Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos. |
++| 2 | music1595-dev-02 | passed | Preguntó qué música poner y reprodujo con revisión lo contestado, nombrándolo por su título observado; variante o literal sin dos pares aprobados. | Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos. |
++| 3 | music1595-boundary-01 | passed | Límite aprobado. | Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos. |
++| 4 | music1595-boundary-02 | passed | Límite aprobado. | Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos. |
++| 5 | music1595-boundary-03 | passed | Límite aprobado. | Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos. |
++
++Recursos: 138.31 s de segmentos; pico GPU 3513.33 MiB; pico RAM 2170.14 MiB. La muestra del árbol de procesos puede incluir descendientes ajenos a BAXY; no equivale a consumo exclusivo del modelo.
++
++Sólo se atribuyen invocaciones nuevas de cada segmento. El aislamiento de contexto o la ausencia de operaciones no acredita por sí sola una respuesta útil. Los casos no ejecutados conservan sus datos y estado.
+diff --git a/artifacts/comprobaciones/C03/MUSIC1595/ROOT_CASE_JUDGMENTS.json b/artifacts/comprobaciones/C03/MUSIC1595/ROOT_CASE_JUDGMENTS.json
+new file mode 100644
+index 00000000..403806a8
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/MUSIC1595/ROOT_CASE_JUDGMENTS.json
+@@ -0,0 +1,359 @@
++[
++  {
++    "index": 0,
++    "case_id": "H0543",
++    "verdict": "passed",
++    "credit": true,
++    "pair_indices": [
++      1,
++      2
++    ],
++    "reason": "Reprodujo con revisión la música guionizada en el reproductor local y luego respondió al literal sobre ese reproductor (qué suena o parada) con un final fiel; crédito con dos variantes aprobadas.",
++    "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos.",
++    "final_sha256": "9954ef9820810d8a62dbba2c5ad3c3d4141c2666758c6e1749ab22b9f528fc55",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-00\\EXIT.json": "56c76e50f53f28752ecfa5bfef4655f6809f1c6680372fae32e51653535525be",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-00\\RESOURCES.json": "da5fb34322ed8003f824fc77b73b281caa1f0e997b3c90e8946b19c9d5ee7ea9",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\profile-owner-00.json": "8fcafb691abb04ebb21a7884ba35e370b3f1b02c609df6e7ba45b698d9e04585",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-00\\PREREG.json": "8d601356852da51ce849a0129e264b52661d35b0ba0748023740e8cd18bfea4c",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-00\\capture\\events.jsonl": "e603a7789d4cbc753f351f9af2b5e37b17d56f78e4dc64809f20cd6d93f3047e",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-00\\turns.jsonl": "9245c63010af37dc9191981014dfae63ea5ac4eaeeee8a3b9c51bca7879a2eb3",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\fixture-00.json": "64832b8003165c2a056155d4d2fce732ab630373e2244ffc2377fd76b6008549",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-00.json": "babe8912ae8ff9ae478757cbc5fa4e9c45d7598b9d597fe70cf2e23f1d9c7adc",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-prelaunch-00.json": "aba4421e134e7cef6266e05df36b61b25451e1f7213c87af69bcce803651be93",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-00\\case-observations.json": "62e65e38c040c58c820f90608616927bbd97429774975aef69c74ec696a650be",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-00\\journal-before.json": "b424882dbc237a8dabbfd41b024d09d511a05ee8d0febae9334dae96f29be043",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-00\\journal-after.json": "d3407b0cea1ffe9c3f84e0e505c5f3d39ec6b09ea2664f886935440490cc2477",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "4dead1d9c95e9a1a2e83bc459b67fbd2c3d7ed6c44d12d8f05b49136f10526fc"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "2201631e-f0ef-4df7-a555-19c8a65682e4",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      },
++      {
++        "invocation_id": "01730dea-ca9b-43f0-9249-ba64970098c1",
++        "operation": "media.play.youtube",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      },
++      {
++        "invocation_id": "53726412-35f4-4034-af5f-9f959fc92c35",
++        "operation": "media.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  },
++  {
++    "index": 1,
++    "case_id": "music1595-dev-01",
++    "verdict": "passed",
++    "credit": false,
++    "pair_indices": [],
++    "reason": "Preguntó qué música poner y reprodujo con revisión lo contestado, nombrándolo por su título observado; variante o literal sin dos pares aprobados.",
++    "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos.",
++    "final_sha256": "40cced55e288c4d4c638b2915926946dd00a0e9aef6f84c2f7ec4f32eb6003e2",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-01\\EXIT.json": "cb532bbbe13a5836f2513989bf0db6990b01a59145acf5b3eaeac85cafc9404f",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-01\\RESOURCES.json": "831167e5362d26fd456c70fa90f97ceb0e3d88e75fc4fa700fa94b85e9d4e943",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\profile-owner-01.json": "ef45529919a31253ceada9115d37179200f3a3f59141c3e8258d360b0d0b8417",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-01\\PREREG.json": "54cb15db4751af67c3a4733ed8f7a4341189b8fbca54b9cbcfe867bbfdc4e408",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-01\\capture\\events.jsonl": "59ebda82e8ac2964a861191bd6398a0211967f570f9e0ed197f1dd8544465c64",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-01\\turns.jsonl": "167330ebc74d64a992e276d7e0979f6a0c572f3b3733a9196797eea08e14e2d6",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\fixture-01.json": "0d022afe7849ebe1ebfa4c6914aa40cb1c565d3a71dccc340334af678b22b863",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-01.json": "b8b71685d628bf4b10496071aa825bcfd8a73a8d279ee9a96b08792624387915",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-prelaunch-01.json": "b1ce546a7230aa0671ecd54cdffef8914736155fc8c938329054e644ff2c1800",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-01\\case-observations.json": "767e8a0cea1d595d8b96e04a7ff17374f38107e5dd295abfa56f36d5247b4f3e",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-01\\journal-before.json": "86e1de49724dfd081131bd43f63a58db5d3a7af7ae43bedb48b725fabb2611ad",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-01\\journal-after.json": "ffa13f41ce9270c9ac6c7a92c34371b25d54895e22d370f5a05e010325572837",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "76cc340397911559d5ac1ac5d1e83fadaa95f7063dfdeec8e914b5dee1638bf9"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "f4857a64-a449-4d89-934a-925d6947a513",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      },
++      {
++        "invocation_id": "5dbe926c-8ff1-4af8-9ec7-a661b310a761",
++        "operation": "media.play.youtube",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      },
++      {
++        "invocation_id": "f1836668-a5cc-42b9-ac85-20db8fcc6277",
++        "operation": "media.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  },
++  {
++    "index": 2,
++    "case_id": "music1595-dev-02",
++    "verdict": "passed",
++    "credit": false,
++    "pair_indices": [],
++    "reason": "Preguntó qué música poner y reprodujo con revisión lo contestado, nombrándolo por su título observado; variante o literal sin dos pares aprobados.",
++    "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos.",
++    "final_sha256": "c1c438b90cfe28a95d5d67d7b7a5a8c3b8675b5842763e2f6a84bb35d8f9ee3a",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-02\\EXIT.json": "26bfbfa8fc44a5df8cc287a8e03756ee6cce19c4a5413d69e5e45efd2b1674a1",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-02\\RESOURCES.json": "bc23ff6721d413cd88f43b8dee4998eae830aaff6ab9d648856de31c39516c55",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\profile-owner-02.json": "956d323f23eb5d66fd1bada5aa74a656626e460817d52bc4dd3194f4c846faad",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-02\\PREREG.json": "7c503a0d07ab6b8ac6180c41810c0a78efbcbe2a5dbfe8883d1fe81c330355c1",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-02\\capture\\events.jsonl": "971fcad9dcab9c9d5a034abcf336d628e9282486bbe914e233c67bf0ce16d60a",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-02\\turns.jsonl": "93e3866102e8858ac6f84da5c9530ae4ae6a09e1408974a7523905977b338f0a",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\fixture-02.json": "16440433de83c52318a70bcd35e135abd5cbbedec8fbe07d481159674be5bfa4",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-02.json": "afa037e952c7328ea5a02d1c4101589243563778dd1831676db6686dda9f282a",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-prelaunch-02.json": "6ac3bc46f35f8d73ba25822598aee25bbf05e659de7e66a7fa271d6ce3fbdedc",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-02\\case-observations.json": "7b7452813c17614f9b5a104365af9274e194331e858b3160f542293bc4234561",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-02\\journal-before.json": "a71c90f4669e742ba6e8bf17b4503aeb8dde6e13ffe22790688d45a9507505a4",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-02\\journal-after.json": "d1a1628941e5bd70a7ba3b4aa39e1a45c5b11b323f9fad04dae22719e4b013a2",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "cab4415eefbfbd4a7afb01af5fb29b7af4342bd063ee09f34f615e84c65175e8"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "8dd01ea9-3f14-4b69-a06a-fb4221a6db62",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      },
++      {
++        "invocation_id": "930ba25d-509b-471b-8fa7-b5d630864807",
++        "operation": "media.play.youtube",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      },
++      {
++        "invocation_id": "783c5322-31da-408c-89eb-fba11000a15f",
++        "operation": "media.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  },
++  {
++    "index": 3,
++    "case_id": "music1595-boundary-01",
++    "verdict": "passed",
++    "credit": false,
++    "pair_indices": [],
++    "reason": "Límite aprobado.",
++    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++    "final_sha256": "d679499a9774c016f813749881fb866b3887c43cf99a4538820f788a02ddf987",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-03\\EXIT.json": "c45c8f738fda81cbd0bb8ff26ea852c0875df3bf11c243312551ce8b71c95efc",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-03\\RESOURCES.json": "38e78fe1fbb8d128131dbeb74a3c3e8ba9f36e19e06c7e0304b1cacece1cd6c6",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\profile-owner-03.json": "c883fde2b63efb6a0f062c6c1cbd7902c23b2574cd7aa82dc2c486d14d590c54",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-03\\PREREG.json": "dfc990f9cd448ed55989a34a14e25a6051082a2089a32ac6bae077542237676a",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-03\\capture\\events.jsonl": "2ec1a92bcc2c1f7eee65a6d49bbdf03e07b802ce7153ac27856d6bc2a2815a9d",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-03\\turns.jsonl": "188e266bec52b36413245dc27f70c33d944c7e6b0404b5f543252a353f0e16b1",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\fixture-03.json": "8f6cab8ddaf7517cf4e4cae61deff1040b539febf87409e8875f73ff719cd7d0",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-03.json": "28fb9570784cd6805b4662cf843da406837ebbd597e5ba576ab6c4cadf757736",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-prelaunch-03.json": "9ec50654ef064373f99deaf5782171a863c6799a34eb1b5cd3fb2377cbe6732a",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-03\\case-observations.json": "2b03b31fafbea7a23b549306e151acee7e1188080b124996830a604f87b2e8a6",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-03\\journal-before.json": "b324f5714b1180b1c6d52a15bb4b83aae4f0ab0b4b9ae31d6b7cad63e54eef35",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-03\\journal-after.json": "c8129597dcbe2f40d23e387b45c958545ef98d54e89038e985b4c252dedc308c",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "2f9329c8e03069ccd8efa55c7bd59c310b34769686c36c22e84d64822b5ddae4"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "17ea6c49-3586-4aaa-8711-4fb4afb4fdc1",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  },
++  {
++    "index": 4,
++    "case_id": "music1595-boundary-02",
++    "verdict": "passed",
++    "credit": false,
++    "pair_indices": [],
++    "reason": "Límite aprobado.",
++    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++    "final_sha256": "13c1ca26e95ff2a690f0ed4ffd3124da465f048dac936f31dedd1598e8bcb22b",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-04\\EXIT.json": "1e205e2774715612332ec854fadd92f6a6e1f192208f648badaaafe48f85b6ed",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-04\\RESOURCES.json": "1eb2c5897ea022c80cf548d5317e927c9579b5ca958fd39009009c7c26d42f0a",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\profile-owner-04.json": "d2ae884654a880fd797c6ac4463ce3347516e352733e1a80da5179f079eaba5d",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-04\\PREREG.json": "05ef4fc7737f083fc7d212b39b95ab286eba20c248dc5901281246eb68d15b8a",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-04\\capture\\events.jsonl": "c71973c855a2f1796c2fa68d982636bc226406cd6b0763231d76e5b94c02053f",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-04\\turns.jsonl": "ad2a767e3d4040f198a1fbdb455fe4a97e6d77941f91377471adcc8d666dc262",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\fixture-04.json": "8bbff985e1afaba0219749fccb4166556f550fca4a76ed4082ab6f7112581af8",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-04.json": "5f0dfac19bc097f377b389ca9b3aa8abf3083761bc1ea6c07acfae6e981d3466",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-prelaunch-04.json": "051baeb68297538da4657fcd798bacaf1dfb5cccef5707b707e35ef85dbf1910",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-04\\case-observations.json": "14435828218e55315371007bf7a7b33eae57bb518a9df4f7bcf3d92ba528303f",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-04\\journal-before.json": "bc33cf5bba9f11bfe4e28d6bf701e179a12bbd6bd941b0dfa353d2cc48f60ea7",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-04\\journal-after.json": "3ac01a86a573b541fcb0a0333f4a756046fb7e34f7cd34b25692dade221c9aa6",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "512a0d46284239c4cb925996f1bad9dbc92d1ccd000517e9645d7ebc87fd022f"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "3228a4ce-ff82-4481-8940-dc4e5a4909d8",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  },
++  {
++    "index": 5,
++    "case_id": "music1595-boundary-03",
++    "verdict": "passed",
++    "credit": false,
++    "pair_indices": [],
++    "reason": "Límite aprobado.",
++    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++    "final_sha256": "1026f757f1610d2f691d8ffb319a6e43c2133298c7bd7dbdfd8903317098a76c",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-05\\EXIT.json": "a409cffb0299fa559b5ffd1e5d3deb2b90ba67b839f063d5c018f690450e0d11",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-05\\RESOURCES.json": "79b93ddd2a96e26f31067cac5b666b54daa31af6f2595fc137de166a0fd990a4",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\profile-owner-05.json": "a0ce8807dac26c2589c04434639cc64aab1cc72b67e88e62a9d238faf53aa79d",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-05\\PREREG.json": "07acd820378d83cb0c3bda164d00655d8148b522733f3b83bf9a107bd7fe62ec",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-05\\capture\\events.jsonl": "b33fe0985d1afecadf39e76dc05878f9297f1abfc9a23ba8597a721ce33fafcc",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-05\\turns.jsonl": "a3e7cea01c6f2c5eddc3b9c346c3799b44d9f626bb8e139ed3b55912f1cae3fb",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\fixture-05.json": "6c2a66729c3c16a155d1f4921d705dd8f221f71f57989a8c8d07c0bd37024e2f",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-05.json": "3282614a13e1c170138a9d11fb1e0a40338e96ef4dc478e338ec70d0d79027aa",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\context-prelaunch-05.json": "3de5b5d2977eaa56f831ae9b74c362e46bb5ad68ada07d5a4f6bf085cf4d6c0b",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-05\\case-observations.json": "421eabf06bbb638340adf5e647698a11ff614455874c208763b06ab009f9949d",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-05\\journal-before.json": "2b629a70ed031a2d97b851371f0b11dc5e7a12c20d98d0949877c7f48075d99c",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-05\\journal-after.json": "8bbea99af1fcded3676001c52d65596e9b8c1f91abb368ca7bbf08f6c681630d",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "e6f4a4ed0510cc3c88e9e8a374c7c313f271b3aea7cf816afa7ebfc995c0de35"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "53218e37-1509-4571-948a-60033e888d51",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  }
++]
+diff --git a/artifacts/comprobaciones/C03/MUSIC1595/ROOT_DECISION_PINS.json b/artifacts/comprobaciones/C03/MUSIC1595/ROOT_DECISION_PINS.json
+new file mode 100644
+index 00000000..37f20838
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/MUSIC1595/ROOT_DECISION_PINS.json
+@@ -0,0 +1,6 @@
++{
++  "decisions_sha256": "0dc4d22c66190e47ca6cd59cb6ee52667f8d828611d452a8b8ae01d9ac152862",
++  "candidate_manifest_sha256": "d090f93aa2c0ddcb5b4919073016dce75a19f7e5ab9213836e21093e6b3c9471",
++  "preparation_sha256": "168e5f1bf9edd19fc3b2f965a0dce9acc451adb28e6140d8608ee898d07aa0f1",
++  "head": "080cef4a232664f29a330c8d0564a1cd6e5d400c"
++}
+diff --git a/artifacts/comprobaciones/C03/MUSIC1595/SOURCE.json b/artifacts/comprobaciones/C03/MUSIC1595/SOURCE.json
+new file mode 100644
+index 00000000..eff03021
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/MUSIC1595/SOURCE.json
+@@ -0,0 +1,15 @@
++{
++  "schema": "c03-music1595-source-adoption-v1",
++  "status": "adopted_measured",
++  "adopted_by": "root (Claude Fable 5.1)",
++  "owner": "src/baxy_mind/llm.py (the local-player media.status/media.control finals get the whole-title missing_name hint and a one-sentence instruction: title verbatim, state in words, no field list, no English status words).",
++  "patch": "artifacts/comprobaciones/C03/MUSIC1595/SOURCE.patch",
++  "commits": [
++    "080cef4a232664f29a330c8d0564a1cd6e5d400c"
++  ],
++  "build": "BUILD1595 (C03-repairs1595-build/BUILD_READY.json; mente)",
++  "cause_measured": "MUSIC1595: «qué canción está sonando» citó un fragmento del título y luego lo tradujo; los finales de parada salieron como informes de campos.",
++  "change": "Pista del título completo e instrucción de una frase para los finales del reproductor local; sin respuestas fijas.",
++  "measurement": "MUSIC1595: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. El literal y las dos variantes, tras una reproducción revisada verificada en el reproductor local, leyeron ese reproductor y respondieron en una frase citando el título observado completo como sonando. Las tres fronteras pasaron con cero operaciones; ningún reproductor sobrevivió a su caso; volumen restaurado.",
++  "credits": 1
++}
+diff --git a/artifacts/comprobaciones/C03/MUSIC1595/SOURCE.patch b/artifacts/comprobaciones/C03/MUSIC1595/SOURCE.patch
+new file mode 100644
+index 00000000..7900ee82
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/MUSIC1595/SOURCE.patch
+@@ -0,0 +1,65 @@
++commit 080cef4a232664f29a330c8d0564a1cd6e5d400c
++
++C03: the local player's finals quote the whole observed title in one sentence (MUSIC1595)
++
++MUSIC1593 measured that «qué canción está sonando» read the local YouTube player but published no final: the first draft quoted a fragment («Greatest Hits (2)») of the observed title and the retries translated its bracketed duration, which the title checks rightly refuse; the stop finals came out as field reports («Estado de reproducción: "stopped"»). For a verified media.status or media.control observed on the local player, the composer now gives the whole-title `missing_name` hint that the playback finals already had, and instructs one natural sentence in the person's language — the title verbatim inside quotation marks, the state in words, no field list, no English status words, no artist unless observed, no translation of any part of the title.
++
++Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
++
++
++diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
++index 33d227fb..8758e8d6 100644
++--- a/src/baxy_mind/llm.py
+++++ b/src/baxy_mind/llm.py
++@@ -4466,6 +4466,18 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
++                 "question's playing premise as a fact or claim PC-wide silence. "
++                 "If no session or metadata was observed, report only that scope."
++             )
+++            if observed.get("authority") == "local_youtube_player":
+++                # MUSIC1593: the local player's finals listed fields («Título
+++                # observado: … Estado de reproducción: "stopped"») or quoted a
+++                # fragment of the title; one sentence in the person's words.
+++                bits.append(
+++                    "This is the local YouTube player. Answer in one natural sentence "
+++                    "in the person's language: quote the whole title exactly as "
+++                    "observed, inside quotation marks, and say in words whether it is "
+++                    "playing or was stopped. No field list, no internal status words "
+++                    "such as playing or stopped in English, no artist unless observed, "
+++                    "and never translate any part of the title."
+++                )
++         if isinstance(observed.get("app"), str) and observed["app"].strip():
++             bits.append(
++                 "Name observed.app. State open, closed or playing from the facts."
++@@ -5940,6 +5952,21 @@ def _without_deferred_question(text: str) -> str:
++     return " ".join(sentences)
++ 
++ 
+++def _local_player_session(situation: dict) -> bool:
+++    """MUSIC1593: a verified media.status/media.control observed on the local YouTube player."""
+++
+++    observed = _merged_observed(situation) if isinstance(situation, dict) else {}
+++    return (
+++        situation.get("operation") in {"media.status", "media.control"}
+++        and situation.get("verified") is True
+++        and situation.get("succeeded") is True
+++        and isinstance(observed, dict)
+++        and observed.get("authority") == "local_youtube_player"
+++        and isinstance(observed.get("title"), str)
+++        and bool(observed["title"].strip())
+++    )
+++
+++
++ def _bracket_is_observed(bracketed: str, facts: dict) -> bool:
++     """MUSIC1571: «[11.Larga Vida al Rey]» inside a quoted YouTube title is
++     observed text, not a template hole left unfilled."""
++@@ -14104,6 +14131,10 @@ class LlmRuntime:
++                     + "«" + str(_merged_observed(situation).get("title")) + "»"
++                 )
++                 if _youtube_playback_in_payload({"operation": situation.get("operation"), "verified": situation.get("verified"), "succeeded": situation.get("succeeded"), "seen": _merged_observed(situation)}) is not None
+++                # MUSIC1593 H0543 «qué canción está sonando» on the local player: the
+++                # draft quoted «Greatest Hits (2)» and then translated the bracketed
+++                # duration; the whole observed title, verbatim, is the name here too.
+++                or _local_player_session(situation)
++                 else "Include names and numbers from seen."
++             ),
++             "promised_effect": (
+diff --git a/artifacts/comprobaciones/C03/MUSIC1595/case-00.json b/artifacts/comprobaciones/C03/MUSIC1595/case-00.json
+new file mode 100644
+index 00000000..248567a6
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/MUSIC1595/case-00.json
+@@ -0,0 +1,24 @@
++{
++  "index": 0,
++  "case_id": "H0543",
++  "terminal_kind": "published_final",
++  "final_sha256": "9954ef9820810d8a62dbba2c5ad3c3d4141c2666758c6e1749ab22b9f528fc55",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 30.860000000000582,
++    "gpu_peak_mib": 3513.328125,
++    "ram_peak_mib": 1985.578125,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-00\\EXIT.json": "56c76e50f53f28752ecfa5bfef4655f6809f1c6680372fae32e51653535525be",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-00\\RESOURCES.json": "da5fb34322ed8003f824fc77b73b281caa1f0e997b3c90e8946b19c9d5ee7ea9",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-00\\case-observations.json": "62e65e38c040c58c820f90608616927bbd97429774975aef69c74ec696a650be"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/MUSIC1595/case-01.json b/artifacts/comprobaciones/C03/MUSIC1595/case-01.json
+new file mode 100644
+index 00000000..ec3162d2
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/MUSIC1595/case-01.json
+@@ -0,0 +1,24 @@
++{
++  "index": 1,
++  "case_id": "music1595-dev-01",
++  "terminal_kind": "published_final",
++  "final_sha256": "40cced55e288c4d4c638b2915926946dd00a0e9aef6f84c2f7ec4f32eb6003e2",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 26.25,
++    "gpu_peak_mib": 3511.328125,
++    "ram_peak_mib": 2011.85546875,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-01\\EXIT.json": "cb532bbbe13a5836f2513989bf0db6990b01a59145acf5b3eaeac85cafc9404f",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-01\\RESOURCES.json": "831167e5362d26fd456c70fa90f97ceb0e3d88e75fc4fa700fa94b85e9d4e943",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-01\\case-observations.json": "767e8a0cea1d595d8b96e04a7ff17374f38107e5dd295abfa56f36d5247b4f3e"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/MUSIC1595/case-02.json b/artifacts/comprobaciones/C03/MUSIC1595/case-02.json
+new file mode 100644
+index 00000000..32310809
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/MUSIC1595/case-02.json
+@@ -0,0 +1,24 @@
++{
++  "index": 2,
++  "case_id": "music1595-dev-02",
++  "terminal_kind": "published_final",
++  "final_sha256": "c1c438b90cfe28a95d5d67d7b7a5a8c3b8675b5842763e2f6a84bb35d8f9ee3a",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 26.875,
++    "gpu_peak_mib": 3513.328125,
++    "ram_peak_mib": 2170.14453125,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-02\\EXIT.json": "26bfbfa8fc44a5df8cc287a8e03756ee6cce19c4a5413d69e5e45efd2b1674a1",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-02\\RESOURCES.json": "bc23ff6721d413cd88f43b8dee4998eae830aaff6ab9d648856de31c39516c55",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-02\\case-observations.json": "7b7452813c17614f9b5a104365af9274e194331e858b3160f542293bc4234561"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/MUSIC1595/case-03.json b/artifacts/comprobaciones/C03/MUSIC1595/case-03.json
+new file mode 100644
+index 00000000..4a555872
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/MUSIC1595/case-03.json
+@@ -0,0 +1,24 @@
++{
++  "index": 3,
++  "case_id": "music1595-boundary-01",
++  "terminal_kind": "published_final",
++  "final_sha256": "d679499a9774c016f813749881fb866b3887c43cf99a4538820f788a02ddf987",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 17.735000000000582,
++    "gpu_peak_mib": 3497.55859375,
++    "ram_peak_mib": 1516.859375,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-03\\EXIT.json": "c45c8f738fda81cbd0bb8ff26ea852c0875df3bf11c243312551ce8b71c95efc",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-03\\RESOURCES.json": "38e78fe1fbb8d128131dbeb74a3c3e8ba9f36e19e06c7e0304b1cacece1cd6c6",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-03\\case-observations.json": "2b03b31fafbea7a23b549306e151acee7e1188080b124996830a604f87b2e8a6"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/MUSIC1595/case-04.json b/artifacts/comprobaciones/C03/MUSIC1595/case-04.json
+new file mode 100644
+index 00000000..31bb623e
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/MUSIC1595/case-04.json
+@@ -0,0 +1,24 @@
++{
++  "index": 4,
++  "case_id": "music1595-boundary-02",
++  "terminal_kind": "published_final",
++  "final_sha256": "13c1ca26e95ff2a690f0ed4ffd3124da465f048dac936f31dedd1598e8bcb22b",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 16.359000000004016,
++    "gpu_peak_mib": 3493.55859375,
++    "ram_peak_mib": 1567.91796875,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-04\\EXIT.json": "1e205e2774715612332ec854fadd92f6a6e1f192208f648badaaafe48f85b6ed",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-04\\RESOURCES.json": "1eb2c5897ea022c80cf548d5317e927c9579b5ca958fd39009009c7c26d42f0a",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-04\\case-observations.json": "14435828218e55315371007bf7a7b33eae57bb518a9df4f7bcf3d92ba528303f"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/MUSIC1595/case-05.json b/artifacts/comprobaciones/C03/MUSIC1595/case-05.json
+new file mode 100644
+index 00000000..98c65a42
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/MUSIC1595/case-05.json
+@@ -0,0 +1,24 @@
++{
++  "index": 5,
++  "case_id": "music1595-boundary-03",
++  "terminal_kind": "published_final",
++  "final_sha256": "1026f757f1610d2f691d8ffb319a6e43c2133298c7bd7dbdfd8903317098a76c",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 20.23399999999674,
++    "gpu_peak_mib": 3497.55859375,
++    "ram_peak_mib": 1658.83203125,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-05\\EXIT.json": "a409cffb0299fa559b5ffd1e5d3deb2b90ba67b839f063d5c018f690450e0d11",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\results\\case-05\\RESOURCES.json": "79b93ddd2a96e26f31067cac5b666b54daa31af6f2595fc137de166a0fd990a4",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1595-instrument-v1\\private\\run-05\\case-observations.json": "421eabf06bbb638340adf5e647698a11ff614455874c208763b06ab009f9949d"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json b/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json
+index f854ab02..78104a89 100644
+--- a/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json
++++ b/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json
+@@ -152,26 +152,26 @@
+     "modelBlockerResolvedEarlier": true
+   },
+   "goalStatus": "active",
+-  "workStatus": "MUSIC1593 adjudicado: 10 aprobados, 1 fallidos, 0 sin ejecutar; 3 créditos.",
++  "workStatus": "MUSIC1595 adjudicado: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.",
+   "executionPausedByOwner": false,
+   "branch": "codex/kiro-goal-c03",
+-  "checkpoint": "543/742 cubiertos, 199 abiertos, 0 no aplican. MUSIC1593: 3 créditos explícitos de raíz.",
++  "checkpoint": "544/742 cubiertos, 198 abiertos, 0 no aplican. MUSIC1595: 1 créditos explícitos de raíz.",
+   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
+   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
+   "surveyVerificationCounts": {
+-    "covered": 543,
+-    "open": 199,
++    "covered": 544,
++    "open": 198,
+     "not_applicable": 0,
+     "total": 742
+   },
+-  "surveyRegistrySha256": "438fd1fc12b56d4caff7482e6c2eb2727d61feb31a0b9905b095aa7b00878b33",
++  "surveyRegistrySha256": "7ced1023bd480858a0983189abd6734e4fa1581a5d2ac0bdf41d39c882066957",
+   "surveyRegistryPresentOnDestination": true,
+   "surveyCategories": {
+     "closed": 5,
+     "total": 35
+   },
+-  "surveyCoverageLast24h": 417,
+-  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–14 septiembre: 414 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1593 añade 3. No se cuentan revalidaciones.",
++  "surveyCoverageLast24h": 418,
++  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–14 septiembre: 417 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1595 añade 1. No se cuentan revalidaciones.",
+   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
+   "testsRun": false,
+   "testsOmittedByOwner": true,
+@@ -196,7 +196,7 @@
+     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
+     "agenda1024": "parche recibido y revisado, sin integrar"
+   },
+-  "utcUpdated": "2026-09-15T18:43:33.878429+00:00",
++  "utcUpdated": "2026-09-15T18:51:26.274788+00:00",
+   "batchesThisSession": [
+     {
+       "batch": 1029,
+@@ -621,7 +621,7 @@
+     "freeze_ended_at": "2026-09-12T13:33:18.245252-03:00",
+     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
+   },
+-  "updatedAtUtc": "2026-09-15T18:43:33.878429+00:00",
++  "updatedAtUtc": "2026-09-15T18:51:26.274788+00:00",
+   "currentContinuation1065": {
+     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
+     "quality": {
+@@ -2298,30 +2298,28 @@
+     "next": "FILES1205 completa: 19 ejecutados, 19 aprobados, 12 créditos (8 archivos en escritorio/Documentos, 3 carpetas en el escritorio, 1 carpeta en el sandbox), cada uno con dos pares aprobados. El proveedor de carpetas conocidas (BUILD1205) y los lectores de creación se demuestran: 18 creaciones verificadas por el producto y comprobadas en disco por raíz (existencia, tipo y hash del contenido literal), ninguna preexistente, todas eliminadas tras la postlectura. Archivos queda 15/32; restan borrados (fixtures en carpetas personales), listados del escritorio, contenido dinámico («que contenga la fecha», procesos), rutas absolutas, comprimir/abrir, resumir PDF y copia a pendrive."
+   },
+   "currentContinuation1207": {
+-    "head": "1050ce6a4642917025dc1159f1b1b254336cdd6d",
++    "head": "080cef4a232664f29a330c8d0564a1cd6e5d400c",
+     "quality": {
+-      "passed": 10,
+-      "failed": 1,
+-      "executed": 11,
++      "passed": 6,
++      "failed": 0,
++      "executed": 6,
+       "not_executed": 0,
+       "sealed_total": 8,
+-      "segments_started": 11,
++      "segments_started": 6,
+       "aborted_before_admission": 0
+     },
+-    "new_credits": 3,
++    "new_credits": 1,
+     "credited_ids": [
+-      "H0224",
+-      "H0580",
+-      "H0686"
++      "H0543"
+     ],
+-    "registry_sha256": "438fd1fc12b56d4caff7482e6c2eb2727d61feb31a0b9905b095aa7b00878b33",
+-    "survey": 543,
+-    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\MUSIC1593\\ROOT_ADJUDICATION.json",
++    "registry_sha256": "7ced1023bd480858a0983189abd6734e4fa1581a5d2ac0bdf41d39c882066957",
++    "survey": 544,
++    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\MUSIC1595\\ROOT_ADJUDICATION.json",
+     "resources": {
+-      "seconds_sum": 263.9690000000119,
+-      "gpu_peak_mib": 3513.33203125,
+-      "ram_peak_mib": 2636.59765625
++      "seconds_sum": 138.31300000000192,
++      "gpu_peak_mib": 3513.328125,
++      "ram_peak_mib": 2170.14453125
+     },
+-    "next": "MUSIC1593: 11 ejecutados, 10 aprobados, 1 fallidos, 3 créditos (índices [0, 2, 3]); Música 24/39. Siguiente: categoría por masa abierta según CONDICIONES."
++    "next": "MUSIC1595: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]); Música 25/39. Siguiente: categoría por masa abierta según CONDICIONES."
+   }
+ }

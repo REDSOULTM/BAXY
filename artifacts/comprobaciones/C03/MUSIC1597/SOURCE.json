@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1597-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "Sin cambio de fuente: el instrumento de diálogo de MUSIC1571–1595 con otra respuesta guionizada (fixture de la raíz).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1597/SOURCE.patch",
+  "commits": [
+    "ac221c25af30f7a3d1fbe2cd27e1e5c5499b29d8"
+  ],
+  "build": "BUILD1595 (C03-repairs1595-build/BUILD_READY.json; mismos binarios)",
+  "cause_measured": "MUSIC1575: el primer resultado de «jazz» (vídeo de 3 h 51 min sólo en mp4 muxado) no arrancó en la ventana de verificación; condición ambiental, no del producto.",
+  "change": "Ninguno; otra respuesta guionizada; sin respuestas fijas.",
+  "measurement": "MUSIC1597: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. El literal y las dos variantes preguntaron qué poner sin proponer nada; las respuestas guionizadas (fixtures cuyo primer resultado arranca) completaron el pedido como media.play.youtube revisado, la reproducción se verificó en el reproductor local y el final citó el título observado completo. Las tres fronteras pasaron con cero operaciones; ningún reproductor sobrevivió a su caso; volumen restaurado.",
+  "credits": 1
+}

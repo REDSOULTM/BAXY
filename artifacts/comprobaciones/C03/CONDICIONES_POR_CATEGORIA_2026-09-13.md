@@ -840,3 +840,7 @@ Música pasa de 21/39 a 24/39 con el estado y la parada del reproductor local tr
 ## Actualización 2026-09-14 (MUSIC1595)
 
 Música pasa de 24/39 a 25/39 con el título completo del reproductor local en una frase (commit 080cef4a, BUILD1595) (HEAD 080cef4a): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes, tras una reproducción revisada verificada en el reproductor local, leyeron ese reproductor y respondieron en una frase citando el título observado completo como sonando. Las tres fronteras pasaron con cero operaciones; ningún reproductor sobrevivió a su caso; volumen restaurado.
+
+## Actualización 2026-09-14 (MUSIC1597)
+
+Música pasa de 25/39 a 26/39 con «poneme una canción» contestada con una música cuyo primer resultado arranca (commit ac221c25, BUILD1595) (HEAD ac221c25): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes preguntaron qué poner sin proponer nada; las respuestas guionizadas (fixtures cuyo primer resultado arranca) completaron el pedido como media.play.youtube revisado, la reproducción se verificó en el reproductor local y el final citó el título observado completo. Las tres fronteras pasaron con cero operaciones; ningún reproductor sobrevivió a su caso; volumen restaurado.
