@@ -14075,8 +14075,10 @@ def _review_media_and_email_effects(
         and _has(folded, r"\b(?:reproduce|reproducir|play|pon)\b")
     )
     if _explicit_named_music_query(folded) is not None and _desired_music_query(folded) is not None:
+        # MUSIC1559: music named without a provider («pon música de daft punk»)
+        # plays from YouTube in the local player; «en Spotify» keeps Spotify.
         _append(
-            matches, folded, "media.play.query",
+            matches, folded, "media.play.query" if spotify else "media.play.youtube",
             r"\b(?:pon|ponme|poneme|pone|reproduce|reproducir|reproduci|play)\b",
         )
     elif _desired_music_query(folded) is not None:
@@ -16005,6 +16007,13 @@ def resolve_explicit_effects(
         or _desired_music_query(folded) is not None
     ):
         evidence = text if _explicit_named_music_query(text) is not None else folded
+        if (
+            "media.play.youtube" in available
+            and not _has(folded, r"\bspotify\b")
+            and _explicit_named_music_query(folded) is not None
+        ):
+            # MUSIC1559: no provider named → the local YouTube playback.
+            return EffectIntent(("media.play.youtube",), (evidence,))
         return EffectIntent(("media.play.query",), (evidence,))
     if "web.search" in available and _public_live_lookup_request(folded):
         # WEB1445: the evidence keeps the person's accents («mañana»); the
