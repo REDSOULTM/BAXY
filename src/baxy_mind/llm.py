@@ -37,6 +37,7 @@ from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import parse_qs, urlparse
 
+from . import effect_intent
 from .effect_intent import (
     _PERCENTAGE_WORD_VALUES,
     _entity_lookup_query,
@@ -5868,6 +5869,77 @@ def _claims_the_target_was_open_before(folded: str) -> bool:
     ) is not None
 
 
+# The reads and the incomplete request a deferred clarification can join;
+# the composer re-reads the person's text with this closed set only.
+_DEFERRED_COMPOSE_OPERATIONS = (
+    "system.time", "window.resolve", "audio.volume.adjust", "audio.volume",
+)
+_DEFERRED_QUESTION_WORDS = {
+    "volume_amount": re.compile(
+        r"cu[aá]nto|qu[eé]\s+cantidad|a\s+qu[eé]\s+nivel|cu[aá]ntos?\s+(?:puntos|niveles|por\s+ciento)|how\s+much|what\s+level|by\s+how",
+        re.IGNORECASE,
+    ),
+    "indeterminate_window": re.compile(
+        r"cu[aá]l|qu[eé]\s+ventana|which(?:\s+window|\s+one)?", re.IGNORECASE,
+    ),
+}
+_DEFERRED_EFFECT_CLAIMS = {
+    "volume_amount": re.compile(
+        r"(?:sub[ií]|baj[eé]|aument[eé]|reduj[eé]|ajust[eé]|cambi[eé]|pus[eé])\s+(?:el\s+)?volumen|"
+        r"volumen\s+(?:subido|bajado|ajustado|cambiado)|(?:raised|lowered|turned\s+(?:up|down)|adjusted|changed)\s+the\s+volume",
+        re.IGNORECASE,
+    ),
+    "indeterminate_window": re.compile(
+        # «enfoqué» (done) is a claim; «que enfoque» (the question) is not.
+        r"\benfoqué\b|\b(?:ya|la|lo)\s+enfoqu[eé]\b|\b(?:quedó|está)\s+enfocad[ao]\b|"
+        r"\bla\s+(?:traje|activé|puse\s+al\s+frente)\b|\b(?:i\s+)?(?:focused|brought)\b",
+        re.IGNORECASE,
+    ),
+}
+
+
+def _deferred_clarification_for(user_text: str, situation: dict) -> object | None:
+    """AUDIO858 H0067, H0527: the read the turn ran plus the question its final owes."""
+
+    operation = situation.get("operation")
+    if not isinstance(operation, str) or operation not in {"system.time", "window.resolve"}:
+        return None
+    if situation.get("verified") is not True or situation.get("succeeded") is not True:
+        return None
+    deferred = effect_intent.deferred_clarification_split(user_text or "", _DEFERRED_COMPOSE_OPERATIONS)
+    if deferred is None:
+        return None
+    read = effect_intent.resolve_explicit_effects(deferred.read_text, _DEFERRED_COMPOSE_OPERATIONS)
+    if read is None or read.operations != (operation,):
+        return None
+    return deferred
+
+
+def _deferred_question_defect(text: str, deferred: object) -> str:
+    """The final states the read and ends with the one question the other clause needs."""
+
+    stripped = text.strip()
+    if _DEFERRED_EFFECT_CLAIMS[deferred.kind].search(stripped) is not None:
+        return "extra_claim"
+    sentences = [part for part in re.split(r"(?<=[.!?])\s+", stripped) if part.strip()]
+    if not sentences or not sentences[-1].rstrip().endswith("?"):
+        return "missing_deferred_question"
+    if _DEFERRED_QUESTION_WORDS[deferred.kind].search(sentences[-1]) is None:
+        return "missing_deferred_question"
+    if stripped.count("?") > 1:
+        return "too_many_sentences"
+    return ""
+
+
+def _without_deferred_question(text: str) -> str:
+    """The trailing question is owed; the rest is judged as an operation final."""
+
+    sentences = [part for part in re.split(r"(?<=[.!?])\s+", text.strip()) if part.strip()]
+    if sentences and sentences[-1].rstrip().endswith("?"):
+        sentences = sentences[:-1]
+    return " ".join(sentences)
+
+
 def _bracket_is_observed(bracketed: str, facts: dict) -> bool:
     """MUSIC1571: «[11.Larga Vida al Rey]» inside a quoted YouTube title is
     observed text, not a template hole left unfilled."""
@@ -6923,6 +6995,16 @@ def compose_visible_defect(
         elif not clock and re.search(r"(?<!\d)\d{1,2}:\d{2}(?!\d)", stripped):
             return "extra_claim"
         question_text = stripped
+        deferred_clarification = _deferred_clarification_for(user_text, situation)
+        if deferred_clarification is not None:
+            # AUDIO858 H0067 «subí el volumen y decime qué fecha es», H0527
+            # «listá las ventanas y enfocá la mejor»: the final owes one
+            # question for the clause the turn could not complete; judged
+            # apart from the read it reports.
+            deferred_defect = _deferred_question_defect(stripped, deferred_clarification)
+            if deferred_defect:
+                return deferred_defect
+            question_text = _without_deferred_question(stripped)
         if (
             operation in {"browser.navigate", "browser.navigate.named"}
             and situation.get("verified") is True
@@ -12908,6 +12990,30 @@ class LlmRuntime:
             )
         elif has_audio:
             instruct("\nName mute or volume from seen. Do not restate the request.")
+        deferred_clarification = _deferred_clarification_for(user_text, situation)
+        if deferred_clarification is not None:
+            # AUDIO858 H0067, H0527: the other clause was not done; the final
+            # reports the read and ends with the one question it needs.
+            if deferred_clarification.kind == "volume_amount":
+                instruct(
+                    "\nThe person also asked to change the volume without saying by how much. "
+                    "You did not change it; do not say you did. After the observed fact, end "
+                    "with one short question asking how much to change the volume."
+                    if response_language == "en"
+                    else "\nLa persona también pidió cambiar el volumen sin decir cuánto. No "
+                    "lo cambiaste; no digas que lo hiciste. Después del dato observado, "
+                    "terminá con una sola pregunta breve que pida cuánto cambiar el volumen."
+                )
+            else:
+                instruct(
+                    "\nThe person also asked to focus «the best» window without saying which. "
+                    "You focused none; do not say you did. After the list, end with one short "
+                    "question asking which window to focus."
+                    if response_language == "en"
+                    else "\nLa persona también pidió enfocar «la mejor» ventana sin decir cuál. "
+                    "No enfocaste ninguna; no digas que lo hiciste. Después de la lista, "
+                    "terminá con una sola pregunta breve que pida cuál ventana enfocar."
+                )
         shape = _compose_shape_instruction(situation, response_language, user_text)
         if shape:
             instruct("\n" + shape)
@@ -13750,7 +13856,17 @@ class LlmRuntime:
             return ""
 
         observed_playback = _merged_observed(situation).get("playbackStatus")
+        deferred_for_hint = _deferred_clarification_for(user_text, situation)
         retry_hint = {
+            "missing_deferred_question": (
+                ("End with one question: how much to change the volume."
+                 if response_language == "en"
+                 else "Terminá con una sola pregunta: cuánto cambiar el volumen.")
+                if deferred_for_hint is not None and deferred_for_hint.kind == "volume_amount"
+                else ("End with one question: which window to focus."
+                      if response_language == "en"
+                      else "Terminá con una sola pregunta: cuál ventana enfocar.")
+            ),
             "missing_confirmation_choice": (
                 "Pregunta con todas estas opciones literales: "
                 f"{', '.join(required_words) or 'confirmar, cancelar'}."

@@ -15836,6 +15836,87 @@ def _bounded_status_sequence_intent(
     )
 
 
+# WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá la mejor»: a
+# window named only by «la otra», «la mejor», «la siguiente» with nothing
+# before it; the honest turn asks which. Shared with __main__'s input kinds
+# and with the deferred clause reader below.
+INDETERMINATE_WINDOW_CLAUSE = re.compile(
+    r"[\s¡!¿?]*(?:"
+    r"(?:cambia|cambiame|pasa|pasame|anda|andate|ve|salta|volve|vuelve|switch|go|jump|move)"
+    r"(?:\s+(?:a|to))?\s+(?:la|the)\s+(?:otra|other|next|siguiente|anterior|previous|ultima|last|mejor|best)"
+    r"(?:\s+(?:ventana|window|pestana|tab))?|"
+    r"(?:enfoca|enfocame|foca|activa|activame|trae|traeme|pone|poneme|lleva|llevame|focus|bring|put)"
+    r"\s+(?:la|the)\s+(?:otra|other|mejor|best|siguiente|next|anterior|previous|ultima|last|"
+    r"mas\s+grande|biggest|largest|mas\s+chica|smallest|mas\s+importante|principal|main)"
+    r"(?:\s+(?:ventana|window))?(?:\s+(?:al\s+frente|adelante|to\s+the\s+front|forward))?"
+    r")[\s.!?¿¡]*"
+)
+
+# Reads a turn may run before asking about the other clause.
+_DEFERRED_READ_OPERATIONS = frozenset({"system.time", "window.resolve"})
+
+
+@dataclass(frozen=True, slots=True)
+class DeferredClarification:
+    """A read the turn runs now, and the kind of question its final must end with."""
+
+    read_text: str
+    kind: str
+    clause: str
+
+
+def _deferred_clause_kind(clause: str, available: frozenset[str]) -> str | None:
+    folded = _strip_request_envelope(_fold(clause)).strip()
+    if not folded:
+        return None
+    if INDETERMINATE_WINDOW_CLAUSE.fullmatch(folded) is not None:
+        return "indeterminate_window"
+    asked = resolve_explicit_clarification_intent(clause, available)
+    if (
+        asked is not None
+        and asked.operations == ("audio.volume.adjust",)
+        and asked.missing_fields == ("amount",)
+    ):
+        return "volume_amount"
+    return None
+
+
+def deferred_clarification_split(
+    text: str,
+    available_operations: Iterable[str],
+    application_names: Iterable[str] | ApplicationCatalogIndex = (),
+    game_catalog: Iterable[tuple[str, str, str]] | GameCatalogIndex = (),
+) -> DeferredClarification | None:
+    """AUDIO858 H0067 «subí el volumen y decime qué fecha es», H0527 «listá las
+    ventanas y enfocá la mejor»: two clauses joined by «y», one a read the turn
+    can do (the date, the window listing) and the other a request that needs
+    a question before any effect (the amount, which window). The turn asked
+    the amount and dropped the date, or listed nothing. The read runs and the
+    final ends with that one question; nothing is guessed for the other clause."""
+
+    if explicit_non_action_frame(text):
+        return None
+    parts = re.split(r"\s*(?:,\s*)?(?<![\w])(?:y|e|and)(?![\w])\s+", text.strip(), maxsplit=1)
+    if len(parts) != 2 or not parts[0].strip() or not parts[1].strip():
+        return None
+    available = frozenset(available_operations)
+    for read, other in ((parts[0], parts[1]), (parts[1], parts[0])):
+        kind = _deferred_clause_kind(other, available)
+        if kind is None:
+            continue
+        if _deferred_clause_kind(read, available) is not None:
+            return None
+        intent = resolve_explicit_effects(read, available, application_names, game_catalog)
+        if (
+            intent is None
+            or len(intent.operations) != 1
+            or intent.operations[0] not in _DEFERRED_READ_OPERATIONS
+        ):
+            continue
+        return DeferredClarification(read.strip(), kind, other.strip())
+    return None
+
+
 def resolve_explicit_effects(
     text: str,
     available_operations: Iterable[str],
@@ -15858,6 +15939,12 @@ def resolve_explicit_effects(
         # recientes»: the literal count bounds the listing; it is not a note
         # cardinality and the conjunction is one read, not two effects.
         return EffectIntent(("filesystem.known.list",), (folded,))
+    deferred = deferred_clarification_split(text, available, application_names, game_catalog)
+    if deferred is not None:
+        # The read clause resolves alone; the other clause is asked in the final.
+        return resolve_explicit_effects(
+            deferred.read_text, available, application_names, game_catalog,
+        )
     completed_level_request = _completed_missing_volume_level_request(
         text, previous_user_text, available,
     )
@@ -16965,6 +17052,10 @@ def unresolved_compound_contract(
     """
 
     available = tuple(available_operations)
+    if deferred_clarification_split(text, available, application_names, game_catalog) is not None:
+        # The read clause is the whole effect of the turn; the other clause
+        # becomes the final's question, not an unresolved positive action.
+        return None
     completed_level_request = _completed_missing_volume_level_request(
         text, previous_user_text, available,
     )

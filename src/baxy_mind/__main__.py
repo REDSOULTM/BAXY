@@ -3016,24 +3016,10 @@ def _unresolved_input_kind(objective: str) -> str | None:
         return "noise"
     if _overheard_speech(folded):
         return "overheard_speech"
-    if (
-        re.fullmatch(
-            # WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá la
-            # mejor»: a window named only by «la otra», «la mejor», «la
-            # siguiente» with nothing before it; the honest turn asks which.
-            r"[\s¡!¿?]*(?:"
-            r"(?:cambia|cambiame|pasa|pasame|anda|andate|ve|salta|volve|vuelve|switch|go|jump|move)"
-            r"(?:\s+(?:a|to))?\s+(?:la|the)\s+(?:otra|other|next|siguiente|anterior|previous|ultima|last|mejor|best)"
-            r"(?:\s+(?:ventana|window|pestana|tab))?|"
-            r"(?:enfoca|enfocame|foca|activa|activame|trae|traeme|pone|poneme|lleva|llevame|focus|bring|put)"
-            r"\s+(?:la|the)\s+(?:otra|other|mejor|best|siguiente|next|anterior|previous|ultima|last|"
-            r"mas\s+grande|biggest|largest|mas\s+chica|smallest|mas\s+importante|principal|main)"
-            r"(?:\s+(?:ventana|window))?(?:\s+(?:al\s+frente|adelante|to\s+the\s+front|forward))?"
-            r")[\s.!?¿¡]*",
-            folded,
-        )
-        is not None
-    ):
+    if effect_intent.INDETERMINATE_WINDOW_CLAUSE.fullmatch(folded) is not None:
+        # WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá la
+        # mejor»: a window named only by «la otra», «la mejor», «la
+        # siguiente» with nothing before it; the honest turn asks which.
         return "indeterminate_window"
     if (
         re.fullmatch(
@@ -5514,6 +5500,17 @@ def _ground_explicit_arguments(
         name = _window_query_reference_name(evidence, history, application_names)
         if name is not None:
             explicit = {"name": name}
+    if explicit is None:
+        deferred = effect_intent.deferred_clarification_split(
+            evidence, (operation, "audio.volume.adjust", "audio.volume"), application_names, game_catalog,
+        )
+        if deferred is not None:
+            # AUDIO858 H0067, H0527: the App sends the whole compound; the
+            # read clause alone carries the arguments (window.resolve's
+            # listing selector), the other clause is asked in the final.
+            explicit = _explicit_arguments_from_evidence(
+                operation, deferred.read_text, application_names, game_catalog,
+            )
     if (
         explicit is None
         and operation in ("media.play.youtube", "media.play.query")
@@ -6398,12 +6395,30 @@ def _prepare_turn_result(
         read_request(objective).intents
         & {INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
     )
+    # AUDIO858 H0067 «subí el volumen y decime qué fecha es», H0527 «listá
+    # las ventanas y enfocá la mejor»: the read clause runs now and the
+    # final ends with the question the other clause needs; the turn is not
+    # a clarification and the input is not unresolved.
+    deferred_clarification = (
+        None
+        if non_target_language is not None
+        or content_drafting
+        or explicit_non_action
+        or nothing_to_clarify
+        else effect_intent.deferred_clarification_split(
+            objective,
+            authenticated_operations,
+            application_names,
+            game_catalog,
+        )
+    )
     explicit_clarification = (
         None
         if non_target_language is not None
         or content_drafting
         or explicit_non_action
         or nothing_to_clarify
+        or deferred_clarification is not None
         else resolve_explicit_clarification_intent(
             objective,
             authenticated_operations,
@@ -6422,6 +6437,7 @@ def _prepare_turn_result(
         None
         if non_target_language is not None
         or explicit_clarification is not None
+        or deferred_clarification is not None
         or missing_open_referent
         or _history_has_pending_clarification(history, message.get("pendingClarification"))
         else _unresolved_input_kind(objective)
