@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1567-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs (registro propio de mpv en %LOCALAPPDATA%\\BAXY\\logs\\youtube; reproducción sólo de audio con --vid=no; formato de yt-dlp con el audio m4a primero).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1567/SOURCE.patch",
+  "commits": [
+    "4819d11146519fae09051d2120a811a45d545a61"
+  ],
+  "build": "BUILD1567 (C03-repairs1567-build/BUILD_READY.json; Providers)",
+  "cause_measured": "MUSIC1567: seis de siete reproducciones no arrancaron en mpv en dos flujos resueltos aunque a mano arrancan en segundos; sin registro del reproductor no había causa visible.",
+  "change": "Registro del reproductor, sólo audio y flujo de audio pequeño; sin respuestas fijas.",
+  "measurement": "MUSIC1567: 10 ejecutados, 4 aprobados (una variante y tres límites), 6 fallidos; 0 créditos. Medido: las siete reproducciones se propusieron y aprobaron y el registro de mpv muestra en todas el flujo abierto, el decodificador y WASAPI arrancados y «audio=playing», pero seis se dieron por no verificadas porque el adaptador espera que avance time-pos y en este portátil el reloj WASAPI queda en cero mientras el audio se consume (sondeo raíz: time-pos ≈ 0,0001 durante treinta segundos, reader-pts del demuxer avanzando en tiempo real, --length=3 terminando a tiempo); sólo la mezcla larga avanzó el reloj. Siguiente: la posición del lector del demuxer cuenta como prueba de reproducción junto al reloj de audio (MUSIC1569).",
+  "credits": 0
+}
