@@ -1,3 +1,11 @@
+# APPS1535 adjudicado — 2026-09-15T03:28:40.183089+00:00
+
+**515/742 cubiertos, 227 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 80a61532dda2787934ea3474fbe647e69d30396e46dae7dda165e4866d74873d. Primeras altas 24 h >= 389 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD cc567171 con BUILD1535 (la muletilla hablada delante de la orden es envoltorio; APPS1535/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+APPS1535 («Abrir aplicaciones», H0249 «Y quema, abre Saint Rose.»): 6 ejecutados, 3 aprobados (los tres límites), 3 fallidos, 0 créditos. Adjudicación f165cab4f7c3b94a7b2e4d4daff54687b3521b9e084597b0e083792aac6dcb10. Con la muletilla quitada, «Y quema, abre Saint Rose.» llegó a la conversación de fuera de catálogo (cero operaciones), pero su final genérico («No puedo hacer eso, está fuera de mi ámbito.») no nombra Saint Rose ni dice que no lo encuentra; las dos variantes pasaron por la decisión del modelo (app.open propuesto y descartado por el catálogo) y terminaron preguntando si abrir un nombre que no existe en ningún catálogo. Los tres límites pasaron. La fila queda condicionada: la apertura de un nombre fuera de catálogo necesita un final que lo nombre y diga que no está disponible.
+
+---
+
 # GAMES1533 adjudicado — 2026-09-15T03:18:37.649959+00:00
 
 **515/742 cubiertos, 227 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 704aaef4865592a5a40762b63d0fcd4f102db9b88a00a87eba176d5a6c8eb0c7. Primeras altas 24 h >= 389 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 065bf9f8 con BUILD1533 (el nombre casi igual al de un juego instalado se pregunta como el de una aplicación; GAMES1533/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

@@ -1,0 +1,87 @@
+{
+  "schema": "apps1535-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1535-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1535-instrument-v1",
+  "seal_sha256": "d067efb7022ddcd6d4ac3c986d7c279e122b44a37d7d6a4fc5078edd3bf5dfd6",
+  "runner_sha256": "7ef2061fd0228593618c6eb90ccc7064599d45fe9131eb68258748c6ee65f75a",
+  "transport_seal_sha256": "656c3dd60644fb955a768832ef5172838d41b4ecbca5ba17a0877bee9e6acaad",
+  "files": {
+    "panel.json": "4b8019368321505eff41e7a3934624bf5d7cde1535655fd10e5712349562ea71",
+    "turns.jsonl": "9bcfde8b69c10bb9747cd176b2bd776ea284f076166a065e4347ec2677cf3eac",
+    "case-map.json": "a2616a1eb278ff9bb9198fc4e9e43f99fb2486067f41c71a5aaf206c5a8eb654",
+    "PLAN.md": "e81df4407795b7957c77d7b936f6f7575ff087e04dd9d9643eb75d4fdaf0c58f"
+  },
+  "counts": {
+    "cases": 6,
+    "historical_literals": 1,
+    "original_development_variants": 2,
+    "boundaries": 3,
+    "wire_lines": 12,
+    "session_controls": 6,
+    "ordinary_turns": 6,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 6,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 2,
+    "boundary": 3
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0249",
+      "kind": "historical_literal",
+      "group": "absent_name_open",
+      "credit_behavior": "absent_name_open",
+      "text_sha256": "5020cdcc5c5dbbb493496e964c1046f37d45779780bfeb94708dfb1bbc6be2c1",
+      "criterion_sha256": "ad8db6e8bf4245b3b4a239725581607cda55a2d4a956fc26ef9fc8ab16fcb5e8"
+    },
+    {
+      "index": 1,
+      "case_id": "apps1535-dev-01",
+      "kind": "original_development_variant",
+      "group": "absent_name_open",
+      "credit_behavior": "absent_name_open",
+      "text_sha256": "654f2586a23cbf4ffc8e6a55a14935b0299254a90f46ae6fd0cbcce996d0216b",
+      "criterion_sha256": "ad8db6e8bf4245b3b4a239725581607cda55a2d4a956fc26ef9fc8ab16fcb5e8"
+    },
+    {
+      "index": 2,
+      "case_id": "apps1535-dev-02",
+      "kind": "original_development_variant",
+      "group": "absent_name_open",
+      "credit_behavior": "absent_name_open",
+      "text_sha256": "8670ca0db5a90ff12f540856244291b0bc801c1337cf503541a9060b3a311caa",
+      "criterion_sha256": "ad8db6e8bf4245b3b4a239725581607cda55a2d4a956fc26ef9fc8ab16fcb5e8"
+    },
+    {
+      "index": 3,
+      "case_id": "apps1535-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "dfedf559856a2ada09fa580f619e8f0549f5609daf3154ceaaeaab359d649f5a",
+      "criterion_sha256": "ac9432e776338837c1c5555b118b3f2f99f124be8d13212f5704a30407c9e4ed"
+    },
+    {
+      "index": 4,
+      "case_id": "apps1535-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "a6d244af22e38b34cfc850dfb9f63319698e09cb83aff28f74bfcc8d66f8bb32",
+      "criterion_sha256": "d5203b8d7e225741e26a9ef3a9821ed37ce01a54529c3f12f977a5e64867aee1"
+    },
+    {
+      "index": 5,
+      "case_id": "apps1535-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "bc24898c6d653acc0303bda963f8edd69ad552c3e75140829c1ecc5b591f40cc",
+      "criterion_sha256": "50757e30c0886c9c9d6fe25617d31896c91ed2f486ced29f1b243a9954f5945b"
+    }
+  ]
+}

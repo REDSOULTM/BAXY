@@ -668,3 +668,7 @@ Bibliotecas y fichas de juegos pasa de 0/6 a 1/6 con la biblioteca de Steam list
 ## Actualización 2026-09-14 (GAMES1533)
 
 Bibliotecas y fichas de juegos pasa de 1/6 a 2/6 con el nombre casi igual al de un juego instalado preguntado como el de una aplicación (commit 065bf9f8, BUILD1533) (HEAD 065bf9f8): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. «Ve a Mad de Rivals.» y sus dos variantes terminaron con cero operaciones y la pregunta validada «¿Querés que abra Marvel Rivals?», nombrando el juego instalado tal cual, sin buscar, navegar ni abrir; los tres límites pasaron. Cero violaciones en los seis.
+
+## Actualización 2026-09-14 (APPS1535)
+
+Abrir aplicaciones pasa de 45/54 a 45/54 con la muletilla hablada delante de la orden tratada como envoltorio (commit cc567171, BUILD1535) (HEAD cc567171): 6 ejecutados, 3 aprobados (los tres límites), 3 fallidos, 0 créditos. Con la muletilla quitada, «Y quema, abre Saint Rose.» llegó a la conversación de fuera de catálogo (cero operaciones), pero su final genérico («No puedo hacer eso, está fuera de mi ámbito.») no nombra Saint Rose ni dice que no lo encuentra; las dos variantes pasaron por la decisión del modelo (app.open propuesto y descartado por el catálogo) y terminaron preguntando si abrir un nombre que no existe en ningún catálogo. Los tres límites pasaron. La fila queda condicionada: la apertura de un nombre fuera de catálogo necesita un final que lo nombre y diga que no está disponible.

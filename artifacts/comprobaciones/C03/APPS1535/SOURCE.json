@@ -1,0 +1,15 @@
+{
+  "schema": "c03-apps1535-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_strip_request_envelope: una conjunción, una palabra y una coma delante de una cabeza de orden —«Y quema,», «Y bueno,», «Y dale,»— son envoltorio, como el «sí,» de conformidad; «y que…», «y si…», «y no…» quedan fuera).",
+  "patch": "artifacts/comprobaciones/C03/APPS1535/SOURCE.patch",
+  "commits": [
+    "cc567171639fe7cc90cd0e06211df51eb715ab75"
+  ],
+  "build": "BUILD1535 (C03-repairs1535-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "«Y quema, abre Saint Rose.» no llegaba a ningún lector por la muletilla de la transcripción; sin ella el nombre fuera de catálogo ya recibe la respuesta de no disponible.",
+  "change": "La muletilla hablada delante de una orden es envoltorio; sin respuestas fijas.",
+  "measurement": "APPS1535: 6 ejecutados, 3 aprobados (los tres límites), 3 fallidos; 0 créditos. Con la muletilla quitada, «Y quema, abre Saint Rose.» llegó a la conversación de fuera de catálogo (cero operaciones), pero su final genérico («No puedo hacer eso, está fuera de mi ámbito.») no nombra Saint Rose ni dice que no lo encuentra; las dos variantes pasaron por la decisión del modelo (app.open propuesto y descartado por el catálogo) y terminaron preguntando si abrir un nombre que no existe en ningún catálogo. Los tres límites pasaron. La fila queda condicionada: la apertura de un nombre fuera de catálogo necesita un final que lo nombre y diga que no está disponible.",
+  "credits": 0
+}
