@@ -5132,11 +5132,13 @@ def _truncated_fact_word(text: str, facts: dict) -> bool:
             # is not a cut of the provenance value
             # «windows_active_unicast_addresses_secondread» (NETWORK1201/002).
             # A search result snippet is prose, not a name: «clima actual» is
-            # not a cut of the snippet word «actualizada» (WEB1447/001).
+            # not a cut of the snippet word «actualizada» (WEB1447/001). A
+            # result URL glues words together («atlasanimal.com»): «Atlas» is
+            # not a cut of it (KNOWLEDGE1509/000).
             return [
                 text
                 for key, child in value.items()
-                if key not in {"observationScope", "unit", "operation", "authority", "snippet"}
+                if key not in {"observationScope", "unit", "operation", "authority", "snippet", "url"}
                 for text in values_only(child)
             ]
         if isinstance(value, (list, tuple)):
