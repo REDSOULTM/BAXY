@@ -1,3 +1,11 @@
+# KNOWLEDGE1511 adjudicado — 2026-09-15T01:40:52.261251+00:00
+
+**499/742 cubiertos, 243 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 62e723e07c8e20ad257488b525360d6f2c520de66c5bf04772267b0bf241b53e. Primeras altas 24 h >= 373 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 3967dc08 con BUILD1511 (la URL de un resultado no es un nombre a preservar en el veto de palabra cortada; KNOWLEDGE1511/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+KNOWLEDGE1511 («Conocimiento, razonamiento y creatividad verbal», H0520 «decime una curiosidad»): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Adjudicación d45e010f2dc1daa0b44615fe14ec39427733bb240d06ad1442f589509edcf975. El literal y las dos variantes buscaron un tema elegido por el producto y contaron lo que un fragmento afirma nombrando la página (Atlas Animal, Wikipedia), sin añadir datos ni preguntar («Una curiosidad sobre el colibrí es que es la única especie capaz de volar en todas las direcciones y de forma muy veloz, según informa el sitio Atlas Animal.»); los tres límites pasaron. Cero violaciones en los seis.
+
+---
+
 # KNOWLEDGE1509 adjudicado — 2026-09-15T01:35:05.568550+00:00
 
 **498/742 cubiertos, 244 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA e622137968ca276453fc6f17f2c20a4179d7f742218fb50868a5fb0a71581b09. Primeras altas 24 h >= 372 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d7752fe8 con BUILD1509 (el singular no es un corte del plural en el veto de palabra cortada; KNOWLEDGE1509/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

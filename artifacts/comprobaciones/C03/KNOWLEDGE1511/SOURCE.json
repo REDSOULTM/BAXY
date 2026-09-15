@@ -1,0 +1,15 @@
+{
+  "schema": "c03-knowledge1511-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_truncated_fact_word: las URL de los hechos quedan fuera de la comprobación de palabra cortada, como los fragmentos; sus palabras pegadas —«atlasanimal»— no son nombres a preservar; el resto del veto no cambia).",
+  "patch": "artifacts/comprobaciones/C03/KNOWLEDGE1511/SOURCE.patch",
+  "commits": [
+    "3967dc082d873eb597c4124881ea0877c4537c2d"
+  ],
+  "build": "BUILD1511 (C03-repairs1511-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "KNOWLEDGE1511: «decime una curiosidad» buscó «Colibrí» y los borradores repetían el fragmento nombrando Atlas Animal, pero el veto de palabra cortada tomó «Atlas» por un corte de «atlasanimal» (host de la URL) y el turno acabó sin final.",
+  "change": "El veto de palabra cortada excluye las URL de los hechos; sin respuestas fijas.",
+  "measurement": "KNOWLEDGE1511: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. El literal y las dos variantes buscaron un tema elegido por el producto y contaron lo que un fragmento afirma nombrando la página (Atlas Animal, Wikipedia), sin añadir datos ni preguntar («Una curiosidad sobre el colibrí es que es la única especie capaz de volar en todas las direcciones y de forma muy veloz, según informa el sitio Atlas Animal.»); los tres límites pasaron. Cero violaciones en los seis.",
+  "credits": 1
+}

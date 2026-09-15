@@ -605,3 +605,7 @@ Conocimiento, razonamiento y creatividad verbal pasa de 27/37 a 30/37 con el tem
 ## Actualización 2026-09-14 (KNOWLEDGE1509)
 
 Conocimiento, razonamiento y creatividad verbal pasa de 30/37 a 30/37 con el singular admitido frente al plural por el veto de palabra cortada (commit d7752fe8, BUILD1509) (HEAD d7752fe8): 6 ejecutados, 5 aprobados, 1 fallido, 0 créditos. Las dos variantes buscaron su tema y contaron lo que un fragmento afirma nombrando la página (Wikipedia, National Geographic); el literal «decime una curiosidad» completó la búsqueda de «Colibrí» pero sus tres borradores («…según Atlas Animal») cayeron por el veto de palabra cortada, que tomó «Atlas» por un corte de las palabras pegadas del host de la URL («atlasanimal»); los tres límites pasaron. Siguiente: las URL no son nombres a preservar (KNOWLEDGE1511).
+
+## Actualización 2026-09-14 (KNOWLEDGE1511)
+
+Conocimiento, razonamiento y creatividad verbal pasa de 30/37 a 31/37 con las URL fuera del veto de palabra cortada (commit 3967dc08, BUILD1511) (HEAD 3967dc08): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes buscaron un tema elegido por el producto y contaron lo que un fragmento afirma nombrando la página (Atlas Animal, Wikipedia), sin añadir datos ni preguntar («Una curiosidad sobre el colibrí es que es la única especie capaz de volar en todas las direcciones y de forma muy veloz, según informa el sitio Atlas Animal.»); los tres límites pasaron. Cero violaciones en los seis.

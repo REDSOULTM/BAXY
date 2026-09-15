@@ -1,0 +1,29 @@
+commit 3967dc082d873eb597c4124881ea0877c4537c2d
+
+C03: a result URL is not a name to preserve in the truncated-word veto (KNOWLEDGE1511)
+
+KNOWLEDGE1509 measured that «decime una curiosidad» searched «Colibrí» and every draft repeated the Atlas Animal snippet naming it, but `_truncated_fact_word` took «Atlas» for a cut of the glued host words of the result URL («atlasanimal») and no final was published. URL values are excluded from the truncation check, as snippets already were; the rest of the veto is unchanged.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 12dff1e6..e0909d27 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -5132,11 +5132,13 @@ def _truncated_fact_word(text: str, facts: dict) -> bool:
+             # is not a cut of the provenance value
+             # «windows_active_unicast_addresses_secondread» (NETWORK1201/002).
+             # A search result snippet is prose, not a name: «clima actual» is
+-            # not a cut of the snippet word «actualizada» (WEB1447/001).
++            # not a cut of the snippet word «actualizada» (WEB1447/001). A
++            # result URL glues words together («atlasanimal.com»): «Atlas» is
++            # not a cut of it (KNOWLEDGE1509/000).
+             return [
+                 text
+                 for key, child in value.items()
+-                if key not in {"observationScope", "unit", "operation", "authority", "snippet"}
++                if key not in {"observationScope", "unit", "operation", "authority", "snippet", "url"}
+                 for text in values_only(child)
+             ]
+         if isinstance(value, (list, tuple)):
