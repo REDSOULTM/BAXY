@@ -1,0 +1,15 @@
+{
+  "schema": "c03-files1605-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (InventedVolume judges the sentences before the trailing question when the person's request named the volume; WithoutTrailingQuestion) and src/baxy_mind/effect_intent.py (_negative_action_forms admits «toca»/«touch»).",
+  "patch": "artifacts/comprobaciones/C03/FILES1605/SOURCE.patch",
+  "commits": [
+    "89460fd6cbcd2a7c6dc0dc0c83417b07406d0766"
+  ],
+  "build": "BUILD1605 (C03-repairs1605-build/BUILD_READY.json; Providers)",
+  "cause_measured": "FILES1605: Directory.Move no cruza volúmenes (Escritorio en D:, papelera privada en C:) y un nombre de fixture coincidía con otra carpeta del dueño.",
+  "change": "Movimiento de carpeta entre volúmenes por copia verificada y borrado del origen; nombres de fixture únicos; sin respuestas fijas.",
+  "measurement": "FILES1605: 5 ejecutados, 5 aprobados, 0 fallidos; 1 créditos. El literal y las dos variantes movieron entera la carpeta creada por la raíz a la papelera privada del producto (copia verificada entre volúmenes y borrado del origen), la postlectura de la raíz confirmó que dejó el Escritorio redirigido y que su contenido llegó a la copia, y los finales lo dijeron con verdad. Los dos límites pasaron con cero operaciones.",
+  "credits": 1
+}

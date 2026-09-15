@@ -881,3 +881,7 @@ Memoria personal pasa de 8/10 a 10/10 con el recuerdo dicho en segunda persona (
 ## Actualización 2026-09-14 (FILES1603)
 
 Archivos y carpetas pasa de 27/32 a 27/32 con la carpeta nombrada del escritorio llevada a la papelera privada (commit d91dcfb4, BUILD1603) (HEAD d91dcfb4): 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos. El literal y las dos variantes decidieron la operación de papelera sobre la carpeta creada por la raíz y el adaptador la encontró, pero Directory.Move no cruza volúmenes (Escritorio redirigido en D:, papelera privada en C:) y la operación falló con un final veraz; la segunda variante halló además otra carpeta del mismo nombre y no publicó final. Los dos límites pasaron con cero operaciones. Siguiente: el adaptador copia el árbol y borra el origen entre volúmenes; nombres de fixture únicos (FILES1605).
+
+## Actualización 2026-09-14 (FILES1605)
+
+Archivos y carpetas pasa de 27/32 a 28/32 con la carpeta nombrada llevada entera a la papelera privada aunque cruce de volumen (commit 89460fd6, BUILD1605) (HEAD 89460fd6): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes movieron entera la carpeta creada por la raíz a la papelera privada del producto (copia verificada entre volúmenes y borrado del origen), la postlectura de la raíz confirmó que dejó el Escritorio redirigido y que su contenido llegó a la copia, y los finales lo dijeron con verdad. Los dos límites pasaron con cero operaciones.

@@ -1,0 +1,59 @@
+commit 89460fd6cbcd2a7c6dc0dc0c83417b07406d0766
+
+C03: a folder reaches the private trash across volumes (FILES1605)
+
+FILES1603 measured that the deletion reader and the known-file adapter find the named folder, but Directory.Move refuses another volume and the redirected Desktop (D:) and the product's private trash (under the profile on C:) sit on different drives. `MoveDirectory` keeps Directory.Move on the same root and otherwise recreates the tree in the private trash, copies every file, verifies that as many entries arrived as left, and only then removes the source; the receipt and the post-read are unchanged.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs b/src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs
+index 16f32620..9b55ad15 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs
+@@ -346,7 +346,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
+         Directory.CreateDirectory(_trashRoot);
+         string restoreId = "restore_" + Guid.NewGuid().ToString("N");
+         string destination = Path.Combine(_trashRoot, restoreId + "_" + fileName);
+-        if (isFolder) Directory.Move(source, destination); else File.Move(source, destination);
++        if (isFolder) MoveDirectory(source, destination); else File.Move(source, destination);
+         bool gone = isFolder ? !Directory.Exists(source) : !File.Exists(source);
+         bool arrived = isFolder ? Directory.Exists(destination) : File.Exists(destination);
+         if (!gone || !arrived)
+@@ -380,6 +380,36 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
+         return ExternalJson.Success(operation, result, effectObserved: true);
+     }
+ 
++    // FILES1603: Directory.Move refuses another volume (the redirected Desktop
++    // lives on D:, the private trash under the profile on C:); copy the tree
++    // and remove the source only once every entry arrived.
++    private static void MoveDirectory(string source, string destination)
++    {
++        if (string.Equals(Path.GetPathRoot(source), Path.GetPathRoot(destination),
++                StringComparison.OrdinalIgnoreCase))
++        {
++            Directory.Move(source, destination);
++            return;
++        }
++        var options = new EnumerationOptions
++        {
++            RecurseSubdirectories = true,
++            IgnoreInaccessible = false,
++            AttributesToSkip = FileAttributes.ReparsePoint,
++            MaxRecursionDepth = 12,
++        };
++        Directory.CreateDirectory(destination);
++        foreach (string directory in Directory.EnumerateDirectories(source, "*", options))
++            Directory.CreateDirectory(Path.Combine(destination, Path.GetRelativePath(source, directory)));
++        foreach (string file in Directory.EnumerateFiles(source, "*", options))
++            File.Copy(file, Path.Combine(destination, Path.GetRelativePath(source, file)), overwrite: false);
++        int expected = Directory.EnumerateFileSystemEntries(source, "*", options).Count();
++        int arrived = Directory.EnumerateFileSystemEntries(destination, "*", options).Count();
++        if (arrived < expected)
++            throw new IOException("The folder did not arrive whole in the private trash.");
++        Directory.Delete(source, recursive: true);
++    }
++
+     private static IEnumerable<(string Label, string Path)> EnumerateDirectories(
+         IReadOnlyList<(string Label, string Root)> roots)
+     {
