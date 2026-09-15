@@ -1,0 +1,15 @@
+{
+  "schema": "c03-files1587-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (InventedVolume judges the sentences before the trailing question when the person's request named the volume; WithoutTrailingQuestion) and src/baxy_mind/effect_intent.py (_negative_action_forms admits «toca»/«touch»).",
+  "patch": "artifacts/comprobaciones/C03/FILES1587/SOURCE.patch",
+  "commits": [
+    "9853dd95cce85eca37ef5fb220b0edce6d8417c7"
+  ],
+  "build": "BUILD1587 (C03-repairs1587-build/BUILD_READY.json; mente)",
+  "cause_measured": "H0299 nunca ejecutado: una ruta pegada sin verbo no resolvía a nada y habría ido al planificador o a una conversación.",
+  "change": "Clase de entrada sin pedido «bare_path» con su aclaración; sin respuestas fijas.",
+  "measurement": "FILES1587: 5 ejecutados, 2 aprobados, 3 fallidos; 0 créditos. El literal y las dos variantes se leyeron como ruta pegada sin pedido, pero la pregunta compuesta fue rechazada dos veces por la comprobación de vocabulario interno de la propia mente (un nombre de archivo con punto parece un identificador de operación) y los turnos cayeron en la recuperación total. Los dos límites pasaron con cero operaciones. Siguiente: el nombre de archivo pegado queda exento de esa comprobación (FILES1589).",
+  "credits": 0
+}

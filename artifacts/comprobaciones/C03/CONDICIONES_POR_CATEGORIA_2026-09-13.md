@@ -820,3 +820,7 @@ Música pasa de 20/39 a 21/39 con «pon youtube y pon música» preguntando qué
 ## Actualización 2026-09-14 (CONVERSATION1585)
 
 Conversación social y ayuda general pasa de 28/31 a 29/31 con las palabras repetidas sin pedido dichas y preguntadas (commit d82387e4, BUILD1585) (HEAD d82387e4): 5 ejecutados, 4 aprobados, 1 fallido, 1 créditos. El literal y las dos variantes se leyeron como palabras repetidas sin pedido y respondieron con cero operaciones y una sola pregunta que dice que sólo llegaron palabras repetidas y pregunta qué necesita (los tres finales reproducen la frase de ejemplo de la situación, compuesta por el modelo bajo esa guía, no una respuesta fija). «¿Qué es un estimado?» se explicó sin operar; «Bueno, bueno. Dale, dale.» quedó en una invención social del modelo (sin crédito en juego).
+
+## Actualización 2026-09-14 (FILES1587)
+
+Archivos y carpetas pasa de 25/32 a 25/32 con la ruta pegada sin pedido nombrada y preguntada (commit 9853dd95, BUILD1587) (HEAD 9853dd95): 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos. El literal y las dos variantes se leyeron como ruta pegada sin pedido, pero la pregunta compuesta fue rechazada dos veces por la comprobación de vocabulario interno de la propia mente (un nombre de archivo con punto parece un identificador de operación) y los turnos cayeron en la recuperación total. Los dos límites pasaron con cero operaciones. Siguiente: el nombre de archivo pegado queda exento de esa comprobación (FILES1589).

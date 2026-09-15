@@ -1,3 +1,11 @@
+# FILES1587 adjudicado — 2026-09-15T18:01:38.642433+00:00
+
+**538/742 cubiertos, 204 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA 33db60e6b726fc54688395ac2be73438bc4e316fea90bfd074ca89d9c2f61a0f. Primeras altas 24 h >= 412 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 9853dd95 con BUILD1587 (la ruta pegada sin pedido se nombra por su archivo y se pregunta qué hacer). Turnos ordinarios sin operaciones.
+
+FILES1587 («Archivos y carpetas», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos. Adjudicación ffd237c0c8f7b513a67ce7a04947e72498dbb5e1bcc3af675079646deb7303f3. El literal y las dos variantes se leyeron como ruta pegada sin pedido, pero la pregunta compuesta fue rechazada dos veces por la comprobación de vocabulario interno de la propia mente (un nombre de archivo con punto parece un identificador de operación) y los turnos cayeron en la recuperación total. Los dos límites pasaron con cero operaciones. Siguiente: el nombre de archivo pegado queda exento de esa comprobación (FILES1589).
+
+---
+
 # CONVERSATION1585 adjudicado — 2026-09-15T17:55:57.641222+00:00
 
 **538/742 cubiertos, 204 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA 49bfb99287d0fc3646a3b11496e0e02019f63220bd813a0f13ea9cf21568edca. Primeras altas 24 h >= 412 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d82387e4 con BUILD1585 (las palabras repetidas sin pedido se dicen y se pregunta qué necesita). Turnos ordinarios sin operaciones.
