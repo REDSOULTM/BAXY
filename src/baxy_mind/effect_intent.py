@@ -5237,6 +5237,14 @@ def resolve_application_installed_name(
     opening_name = unresolved_application_open_name(text, application_names)
     if opening_name is not None:
         return opening_name
+    # APPS1549: the resolver admits a proper name behind a plain open verb only
+    # after ruling out games, near names and public sites; the argument bound
+    # here is that same name, exactly as the person wrote it.
+    opening_name = unresolved_application_open_name(
+        text, application_names, proper_name=True,
+    )
+    if opening_name is not None:
+        return opening_name
     catalog = build_application_catalog_index(application_names)
     folded = _strip_request_envelope(_fold(text)).strip().rstrip(".?!").strip()
     if not folded:
