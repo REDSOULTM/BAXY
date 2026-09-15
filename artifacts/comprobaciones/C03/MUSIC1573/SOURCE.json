@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1573-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_ground_explicit_arguments: media.play.youtube/media.play.query ground on the completed music request read from the history antecedent) and src/baxy_mind/llm.py (_bracket_is_observed: a bracketed segment that is observed text is not a template hole).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1573/SOURCE.patch",
+  "commits": [
+    "6c4fff53e86c87dbdec62e828765697db04068a3"
+  ],
+  "build": "BUILD1573 (C03-repairs1573-build/BUILD_READY.json; mente)",
+  "cause_measured": "MUSIC1573 (no adjudicada): la respuesta con nombre desnudo no fundamentaba los argumentos del segundo turno y un título observado con corchetes perdía todos sus finales por el veto de hueco.",
+  "change": "Argumentos del segundo turno sobre el pedido completado; corchete observado exento del veto; cota de tres terminales en la derivación; sin respuestas fijas.",
+  "measurement": "MUSIC1573: 12 ejecutados, 10 aprobados, 2 fallidos; 5 créditos. Siete literales y dos variantes preguntaron qué música sin proponer nada; la respuesta guionizada completó el pedido como media.play.youtube revisado (también un nombre de artista desnudo, «Bad Bunny», propuso y se aprobó) y el final nombró el título observado en 5 literales y ambas variantes. Fallaron en el compositor del candidato H0405 (reproducción verificada; los borradores omitieron el título o dijeron «viendo», que el veto de estado no lee como reproducción) y H0009 (reproducción verificada; el reintento con sólo el título inglés fue vetado por idioma y el borrador siguiente perdió el título). Las tres fronteras pasaron con cero operaciones; volumen restaurado; ningún reproductor sobrevivió a su caso.",
+  "credits": 5
+}

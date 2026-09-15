@@ -1,0 +1,80 @@
+commit 6c4fff53e86c87dbdec62e828765697db04068a3
+
+C03: the answer to «what music?» grounds the playback query on the completed request, and a bracket inside an observed title is not a placeholder (MUSIC1573)
+
+MUSIC1571 (executed, not adjudicable) measured two candidate causes on the two-turn music dialogue. «poné una canción» → «Bad Bunny»: the App's arguments stage sends the answer alone, `_ground_explicit_arguments` abstains on a bare name and the model's extraction decided the turn, which asked «¿Qué buscas en YouTube sobre Bad Bunny?» instead of playing. Now media.play.youtube and media.play.query ground on the completed music request that the decision already read (`_completed_missing_music_request` over the history antecedent), so «Bad Bunny», «lofi» or «música clásica» become the query with the person's own words; a negation, a question or an unrelated antecedent still abstain. «poneme una canción» → «algo de jazz»: the playback was verified but the observed title carried «[11.Larga Vida al Rey]» and the composer's template-hole veto rejected every final; `_bracket_is_observed` exempts a bracketed segment that is observed text, while «[hora actual]» stays a hole.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 21ee0d74..9e7fba57 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -5514,6 +5514,29 @@ def _ground_explicit_arguments(
+         name = _window_query_reference_name(evidence, history, application_names)
+         if name is not None:
+             explicit = {"name": name}
++    if (
++        explicit is None
++        and operation in ("media.play.youtube", "media.play.query")
++        and isinstance(history, list)
++    ):
++        # MUSIC1571 «poné una canción» → «¿qué música?» → «Bad Bunny»: the
++        # answer alone names no request, so the literal reader abstained and
++        # the model's extraction decided the turn (H0405 asked «¿qué buscas
++        # en YouTube sobre Bad Bunny?»; H0066 «lofi» happened to ground).
++        # The decision already read the answer as the completed music
++        # request; the arguments read that same surface.
++        completed = effect_intent._completed_missing_music_request(
++            evidence,
++            _previous_user_request(history, evidence),
++            ("media.play.query", "media.play.youtube"),
++        )
++        if completed is not None:
++            explicit = _explicit_arguments_from_evidence(
++                operation,
++                completed,
++                application_names,
++                game_catalog,
++            )
+     if explicit is None:
+         return None
+     if operation == "web.search" and explicit.get("query") == _todays_news_query(evidence):
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index e2307ae4..6038a026 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -5863,6 +5863,22 @@ def _claims_the_target_was_open_before(folded: str) -> bool:
+     ) is not None
+ 
+ 
++def _bracket_is_observed(bracketed: str, facts: dict) -> bool:
++    """MUSIC1571: «[11.Larga Vida al Rey]» inside a quoted YouTube title is
++    observed text, not a template hole left unfilled."""
++
++    try:
++        situation = _situation_from_facts(facts) if isinstance(facts, dict) else {}
++    except Exception:  # noqa: BLE001 - a malformed situation is not evidence
++        return False
++    needle = _reading_fold(bracketed)
++    observed = _merged_observed(situation) if isinstance(situation, dict) else {}
++    for value in (observed.values() if isinstance(observed, dict) else ()):
++        if isinstance(value, str) and needle and needle in _reading_fold(value):
++            return True
++    return False
++
++
+ def compose_visible_defect(
+     text: str,
+     intent: str,
+@@ -5926,7 +5942,8 @@ def compose_visible_defect(
+         return "copied_instruction"
+     # Un hueco por rellenar no es una respuesta: «La hora actual es [hora
+     # actual en español].» (conocimiento-3/t3).
+-    if re.search(r"\[[^\]]{3,}\]|\{[^}]{3,}\}|<[a-z ]{3,}>", stripped) is not None:
++    placeholder = re.search(r"\[[^\]]{3,}\]|\{[^}]{3,}\}|<[a-z ]{3,}>", stripped)
++    if placeholder is not None and not _bracket_is_observed(placeholder.group(0), facts):
+         return "copied_instruction"
+     # `can` es lo que hace BAXY. Atribuírselo a la persona invierte el actor:
+     # «Puedes abrir y cerrar programas…» ante «qué puedes hacer en este PC».
