@@ -4061,6 +4061,8 @@ def _compose_situation_payload(
             visible_seen = _project_known_listing(visible_seen, language)
         elif operation == "game.catalog.list":
             visible_seen = _project_game_listing(visible_seen, language)
+        elif operation == "browser.page.read":
+            visible_seen = _project_page_read(visible_seen, language)
         elif operation == "notification.list":
             visible_seen = _project_notification_listing(visible_seen, language)
         elif operation == "ocr.read":
@@ -4830,6 +4832,67 @@ def _project_game_listing(observed: dict, language: str) -> dict:
     }
 
 
+_PAGE_LEAD_CHARACTERS = 600
+
+
+def _project_page_read(observed: dict, language: str) -> dict:
+    """WEB1539 «resumime esta página»: the receipt carries up to 12 000 characters
+    of visible text; the composer receives the title, the site and the
+    beginning of the text exactly as read, cut at a sentence end."""
+
+    text = observed.get("text") if isinstance(observed.get("text"), str) else ""
+    text = re.sub(r"[ \t]+", " ", text).strip()
+    lead = text[:_PAGE_LEAD_CHARACTERS]
+    if len(text) > _PAGE_LEAD_CHARACTERS:
+        cut = max(lead.rfind(". "), lead.rfind(".\n"), lead.rfind("! "), lead.rfind("? "))
+        if cut >= 120:
+            lead = lead[: cut + 1]
+    url = observed.get("url") if isinstance(observed.get("url"), str) else ""
+    try:
+        host = urlparse(url).hostname or ""
+    except ValueError:
+        host = ""
+    projected: dict = {
+        "title": (observed.get("title") if isinstance(observed.get("title"), str) else "").strip(),
+        "site": host,
+        "lead": lead.strip(),
+        "moreNotShown": len(text) > len(lead) or observed.get("truncated") is True,
+    }
+    return projected
+
+
+def _page_read_in_payload(payload: dict) -> dict | None:
+    """The projected page («seen» with a lead) of a verified browser.page.read."""
+
+    if payload.get("operation") != "browser.page.read":
+        return None
+    seen = payload.get("seen")
+    if isinstance(seen, dict) and isinstance(seen.get("lead"), str):
+        return seen
+    return None
+
+
+def _page_read_quote_defect(text: str, seen: dict) -> str:
+    """Every quoted passage must appear in the lead as read; a number must be in it too."""
+
+    lead = _reading_fold(str(seen.get("lead") or ""))
+    lead = re.sub(r"\s+", " ", lead)
+    title = re.sub(r"\s+", " ", _reading_fold(str(seen.get("title") or "")))
+    quoted_any = False
+    for quoted in re.findall(r'[«"“]([^»"”]{1,4096})[»"”]', text):
+        quoted_any = True
+        candidate = re.sub(r"\s+", " ", _reading_fold(quoted.strip().rstrip(".,;:…"))).strip()
+        if candidate and candidate not in lead and candidate != title:
+            return "page_unquoted_passage"
+    if not quoted_any:
+        return "page_missing_quote"
+    prose = re.sub(r'[«"“][^»"”]{1,4096}[»"”]', " ", text)
+    for number in re.findall(r"(?<![\w.-])\d+(?![\w.-])", prose):
+        if number not in lead and number not in title:
+            return "page_unread_number"
+    return ""
+
+
 def _project_notification_listing(observed: dict, language: str) -> dict:
     """AGENDA1435 «listá los timers»: kind, title and next run of each scheduled
     alarm or reminder, plus the count; the task identities stay out."""
@@ -5140,6 +5203,13 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         listing_defect = _listing_fact_defect(text, listing)
         if listing_defect:
             return listing_defect
+    page = _page_read_in_payload(payload)
+    if page is not None:
+        # WEB1539: a passage the page did not show, or a number it did not
+        # carry, is invented; the report quotes the page as read.
+        page_defect = _page_read_quote_defect(text, page)
+        if page_defect:
+            return page_defect
     results_text = _search_results_text(payload)
     if payload.get("operation") == "web.search" and results_text is None:
         # WEB1445/002 «va a llover mañana» over a search that returned nothing
@@ -12846,7 +12916,29 @@ class LlmRuntime:
                 "dato que ningún resultado contenga; si los resultados sólo remiten a "
                 "páginas de pronóstico, dilo."
             )
-        if visible_situation.get("operation") == "game.catalog.list" and _known_listing_in_payload(visible_situation) is not None:
+        if _page_read_in_payload(visible_situation) is not None:
+            # WEB1539 «resumime esta página»: the report names the page and
+            # quotes the beginning of its visible text verbatim; nothing is
+            # summarized in the model's own words.
+            instruct(
+                "\nseen.title is the title of the page open in the browser, seen.site "
+                "its site and seen.lead the beginning of its visible text exactly as "
+                "read. Say which page it is (title and site) and quote, inside "
+                "quotation marks, the first one or two sentences of seen.lead "
+                "verbatim as what the page says; if seen.moreNotShown is true, say "
+                "that the page continues. Nothing else: no summary in your own "
+                "words, no facts, names or numbers that are not in seen.lead, no "
+                "question."
+                if response_language == "en"
+                else "\nseen.title es el título de la página abierta en el navegador, "
+                "seen.site su sitio y seen.lead el comienzo de su texto visible tal "
+                "cual se leyó. Di qué página es (título y sitio) y cita, entre "
+                "comillas, la primera o las dos primeras oraciones de seen.lead tal "
+                "cual, como lo que dice la página; si seen.moreNotShown es verdadero, "
+                "di que la página sigue. Nada más: sin resumen con tus palabras, sin "
+                "datos, nombres ni cifras que no estén en seen.lead, sin pregunta."
+            )
+        elif visible_situation.get("operation") == "game.catalog.list" and _known_listing_in_payload(visible_situation) is not None:
             # GAMES1531 «Ver la biblioteca de Steam»: the report is how many
             # games are installed and their names exactly as listed.
             instruct(

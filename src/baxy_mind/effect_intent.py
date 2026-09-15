@@ -8619,6 +8619,8 @@ _COVERAGE_ACTION_HEAD = (
     r"diagnostica|diagnosticar|diagnose|"
     r"completa|completar|complete|reabre|reabrir|reopen|actualiza|"
     r"actualizar|update|describe|describir|redimensiona|redimensionar|"
+    # WEB1539 «resumime esta página»: summarizing is an order head too.
+    r"resumime|resumeme|resumi|resumir|resumelo|resumela|summarize|summarise|"
     r"resize|enfoca|enfocar|focus|presiona|presionar|press|clic|click|vacia|vaciar|"
     r"apreta|apretale|apretalo|apretala|apretar|aprieta|pulsa|pulsale|hace(?=\s+clic)|"
     r"empty|termina|terminar|terminate|verifica|verificar|verify|"
@@ -9613,6 +9615,8 @@ def _is_direct_request(text: str) -> bool:
         r"snapshot|captura|capturar|retrata|retratar|take|capture|"
         r"genera|generar|generate|grab|reporta|report|enumera|enumerar|enumerate|"
         r"indica|indicate|detalla|detail|cuentame|describe|presenta|present|"
+        # WEB1539 «resumime esta página»: summarizing is a request speech act.
+        r"resumime|resumeme|resumi|resumir|resumelo|resumela|summarize|summarise|"
         r"ask(?=\s+(?:on\s+the\s+what\s+bluetooth\s+radio\s+can\s+see|"
         r"kick\s+check\b|capture\b))|"
         r"sabe(?=\s+en\s+imagen\b)|"
@@ -13878,6 +13882,27 @@ def _review_web_and_browser_effects(
             folded,
             "browser.page.read",
             r"\b(?:lee|leer|read)\b",
+            priority=1,
+        )
+    # WEB1539 H0561 «resumime esta página», H0738 «resumime la página actual»:
+    # summarizing this or the current page is reading the page open in the
+    # browser session; «esta página» without a document word is that page.
+    summary_heads = r"(?:resume|resumeme|resumime|resumi|resumir|resumelo|resumela|summarize|summarise|sum\s+up)"
+    if (
+        _head_is(head, summary_heads)
+        and browser_page_grounded
+        and _has(
+            folded,
+            r"\b(?:esta|this|the|la)\s+(?:pagina|page)\b"
+            r"(?:\s+(?:actual|current|abierta|open|de\s+ahora))?",
+        )
+        and not _has(folded, r"\b(?:pdf|docx?|archivo|file|libro|book|documento|document)\b")
+    ):
+        _append(
+            matches,
+            folded,
+            "browser.page.read",
+            rf"\b{summary_heads}\b",
             priority=1,
         )
     if (
