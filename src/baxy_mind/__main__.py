@@ -6314,7 +6314,9 @@ def _prepare_turn_result(
             "question": question,
             "reply": "",
         }
-        if not missing_open_referent and unresolved_input_kind is None:
+        if not missing_open_referent and unresolved_input_kind is None and not near_application_candidates:
+            # APPS1495: the near-miss application question has no missing
+            # field of an explicit clarification; asserting one failed the turn.
             assert explicit_clarification is not None
             result["missingFields"] = list(explicit_clarification.missing_fields)
         if effect_request_is_authoritative(objective):
@@ -6322,7 +6324,9 @@ def _prepare_turn_result(
             # preceding request. Keep its own objective for the next answer.
             result["startsNewObjective"] = True
         clarification_path = (
-            "unresolved_input_clarification"
+            "near_application_clarification"
+            if near_application_candidates
+            else "unresolved_input_clarification"
             if unresolved_input_kind is not None
             else "deictic_referent_clarification"
             if missing_open_referent
