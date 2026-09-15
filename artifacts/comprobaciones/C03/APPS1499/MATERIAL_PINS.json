@@ -1,0 +1,105 @@
+{
+  "schema": "apps1499-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1499-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-apps1499-instrument-v1",
+  "seal_sha256": "895400825cc308a186732ea619dba528c5c60564bd271e71b96fad91788d0b70",
+  "runner_sha256": "cc9a2b29c1baa0acca6e7fea396538402b1d0b3ad7eeed22158727785b1a5488",
+  "transport_seal_sha256": "90a429e82fbe86063f7542231128f67f4997ab09d0e9a7743bcf717d453e017d",
+  "files": {
+    "panel.json": "166e5b89c750fe3c5f6e4af6039a6ebb7f0152c7716b748387a5ca64d848873d",
+    "turns.jsonl": "310e8c2b2b9b3d429ff618e5020712efee1506d7a44bcd1a0ab940068a0db5bd",
+    "case-map.json": "e66147676a50f5496538205bd8d7a24aa844ab98f7a7135deac82b9fd10fb5e2",
+    "PLAN.md": "223bbbff784529a95266c4023cf8166572b2a9ae06823a8676acc8324090fab0"
+  },
+  "counts": {
+    "cases": 8,
+    "historical_literals": 3,
+    "original_development_variants": 2,
+    "boundaries": 3,
+    "wire_lines": 16,
+    "session_controls": 8,
+    "ordinary_turns": 8,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 8,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 3,
+    "original_development_variant": 2,
+    "boundary": 3
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0521",
+      "kind": "historical_literal",
+      "group": "near_app",
+      "credit_behavior": "near_app",
+      "text_sha256": "b642a4f134afa84898380c5ca469f204d9b76bbed6609b7e22e5ad0122fb527e",
+      "criterion_sha256": "6900d84b6bdad27d84edf2995e6024d166c309acd220e4c2d8fec811de190812"
+    },
+    {
+      "index": 1,
+      "case_id": "H0227",
+      "kind": "historical_literal",
+      "group": "near_app",
+      "credit_behavior": "near_app",
+      "text_sha256": "499230f5f0c418a60ca58e180fe209f3bd912d587740fae5f0206e7891d0d27d",
+      "criterion_sha256": "6900d84b6bdad27d84edf2995e6024d166c309acd220e4c2d8fec811de190812"
+    },
+    {
+      "index": 2,
+      "case_id": "H0398",
+      "kind": "historical_literal",
+      "group": "near_app",
+      "credit_behavior": "near_app",
+      "text_sha256": "883fca49b6b13df83d38f402aac96d86b0e16e92af22c498a45e0d4237254544",
+      "criterion_sha256": "6900d84b6bdad27d84edf2995e6024d166c309acd220e4c2d8fec811de190812"
+    },
+    {
+      "index": 3,
+      "case_id": "apps1499-dev-01",
+      "kind": "original_development_variant",
+      "group": "near_app",
+      "credit_behavior": "near_app",
+      "text_sha256": "1033ef4c3228810027efc9350bf45bffc1d477bc6c1e6c552ae3d0db7379c586",
+      "criterion_sha256": "6900d84b6bdad27d84edf2995e6024d166c309acd220e4c2d8fec811de190812"
+    },
+    {
+      "index": 4,
+      "case_id": "apps1499-dev-02",
+      "kind": "original_development_variant",
+      "group": "near_app",
+      "credit_behavior": "near_app",
+      "text_sha256": "4fb1e53697c061d480108c71af18930d1252cf9c222cf080a118f60eacdf9816",
+      "criterion_sha256": "6900d84b6bdad27d84edf2995e6024d166c309acd220e4c2d8fec811de190812"
+    },
+    {
+      "index": 5,
+      "case_id": "apps1499-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "dadf00e32735cd5f94d0f658302fe15673f7bbf31f1aeceedb14c1ff2257ca72",
+      "criterion_sha256": "ac9432e776338837c1c5555b118b3f2f99f124be8d13212f5704a30407c9e4ed"
+    },
+    {
+      "index": 6,
+      "case_id": "apps1499-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "4025be47071bcb64b767100e7924bf19c4292c22b99fc088f6f0f90716c34a09",
+      "criterion_sha256": "94e71856696220b73a8cb1384b7153f627e2ba244d37f20bd59682c9a87b7648"
+    },
+    {
+      "index": 7,
+      "case_id": "apps1499-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "14c6e4c2de08d4692922492d7599eb0985581b82a64d22c89bab8a2bc6758c26",
+      "criterion_sha256": "2f536468f5a2adb64f31ce0cc102dc9a98b0b0e428f6ea2346d194b41ebf29a9"
+    }
+  ]
+}

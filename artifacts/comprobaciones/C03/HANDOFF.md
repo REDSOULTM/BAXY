@@ -1,3 +1,11 @@
+# APPS1499 adjudicado — 2026-09-15T00:37:56.835391+00:00
+
+**494/742 cubiertos, 248 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 23987ad55abe004ff8370ebf48d26b8f609fc8b882d41a4ba2f6949387c3f002. Primeras altas 24 h >= 368 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 1dad9bd9 con BUILD1499 (el aclarador nombra las candidatas y no repite el nombre mal escrito; APPS1499/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+APPS1499 («Abrir aplicaciones», H0521 «abres team», H0227 «abre Steel.», H0398 «Sí. Abre Steel.»): APPS1499: «abres team» pregunta Steam o Microsoft Teams y los «Steel» preguntan Steam; H0521, H0227 y H0398 cubiertos, 3 créditos. Adjudicación 5551cf999417986f234164f9568fcaa02b9e16a531f77a216933b26de56c261a. 8/8 ejecutados, 8 aprobados, 3 créditos; ninguna aplicación abierta
+
+---
+
 # APPS1497 adjudicado — 2026-09-15T00:30:39.777815+00:00
 
 **491/742 cubiertos, 251 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 35d1f776d453fb4d99c24ad1d987a975c4d5477d86afa76d128c89d3ae841353. Primeras altas 24 h >= 365 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7843f576 con BUILD1497 (la ruta de aplicación aproximada ya no cae en el assert; APPS1497/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

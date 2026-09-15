@@ -1,0 +1,15 @@
+{
+  "schema": "c03-apps1499-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (clarify_near_application: la situación nombra las candidatas instaladas exactamente y prohíbe repetir el nombre mal escrito; el validador admite un token distintivo del nombre, p. ej. «Teams» por «Microsoft Teams»).",
+  "patch": "artifacts/comprobaciones/C03/APPS1499/SOURCE.patch",
+  "commits": [
+    "1dad9bd9226364f40401faef866642269c97e86a"
+  ],
+  "build": "BUILD1499 (C03-repairs1499-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "APPS1499: «abres team» (dos candidatas) y los dos «Steel» fallaron porque el validador exigía cada nombre completo y el modelo repetía «Steel» en vez de Steam; la App recuperó con preguntas genéricas.",
+  "change": "Situación y validación del aclarador ajustadas; sin respuestas fijas.",
+  "measurement": "APPS1499: APPS1499: «abres team» pregunta Steam o Microsoft Teams y los «Steel» preguntan Steam; H0521, H0227 y H0398 cubiertos; 3 créditos. 8/8 ejecutados, 8 aprobados, 3 créditos; ninguna aplicación abierta",
+  "credits": 3
+}

@@ -1,0 +1,65 @@
+commit 1dad9bd9226364f40401faef866642269c97e86a
+
+C03: the near-miss application question names the installed candidates and never echoes the misspelt name (APPS1499)
+
+APPS1497 measured that «Abre stea,» and «Sí, abre Ste.» asked «¿Querés que abra Steam?», but «abres team» (Microsoft Teams and Steam) and both «Steel» literals failed: the validator demanded each full catalog name and the model echoed «Steel» instead of writing Steam, so the App recovered with generic questions. The clarifier's situation now lists the installed candidates exactly and forbids repeating the person's misspelt name (with a spelled-out example in the corrected retry), and the validator accepts a distinctive token of a name («Teams» for «Microsoft Teams»), ignoring vendor words.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 4feb60c3..475285a0 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -10135,11 +10135,14 @@ class LlmRuntime:
+                     "role": "system",
+                     "content": (
+                         "Eres BAXY. El usuario te pidió abrir una aplicación, pero el "
+-                        "nombre que llegó no coincide con ninguna instalada y se parece a "
+-                        f"{listed}. No abras nada. Formula una sola pregunta breve, en el "
+-                        "idioma del usuario, que pregunte si quiere que abras "
+-                        + ("esa aplicación, nombrándola tal cual" if len(names) == 1 else "una de esas dos aplicaciones, nombrándolas tal cual")
+-                        + " (por ejemplo: «¿Querés que abra Steam?»). No digas que no "
++                        "nombre que escribió no coincide con ninguna instalada; las "
++                        f"instaladas que se le parecen son {listed}. No abras nada. Formula "
++                        "una sola pregunta breve, en el idioma del usuario, que pregunte si "
++                        "quiere que abras "
++                        + ("esa aplicación, escribiendo su nombre exactamente así: " + listed if len(names) == 1 else "una de esas dos aplicaciones, escribiendo los dos nombres exactamente así: " + listed)
++                        + " (por ejemplo: «¿Querés que abra Steam?» o «¿Querés que abra "
++                        "Steam o Microsoft Teams?»). Nunca repitas el nombre mal escrito "
++                        "del usuario: usa sólo los nombres instalados. No digas que no "
+                         "entiendes ni que algo falló, no afirmes que la aplicación no existe, "
+                         "no uses historial y no menciones modelos, herramientas ni reglas. "
+                         "Devuelve sólo el JSON."
+@@ -10195,7 +10198,19 @@ class LlmRuntime:
+             ):
+                 raise ValueError("aclaración de aplicación inválida")
+             folded_question = _fold_dialogue_text(question)
+-            names_present = all(name in folded_question for name in folded_names)
++
++            def _present(folded_name: str) -> bool:
++                # «Microsoft Teams» may be asked as «Teams»: its distinctive
++                # token (the longest of four or more letters) is enough.
++                if folded_name in folded_question:
++                    return True
++                tokens = [
++                    t for t in re.findall(r"[a-z0-9]+", folded_name)
++                    if len(t) >= 4 and t not in {"microsoft", "google", "adobe", "windows", "apple", "mozilla", "desktop"}
++                ]
++                return any(re.search(r"\b" + re.escape(t) + r"\b", folded_question) for t in tokens)
++
++            names_present = all(_present(name) for name in folded_names)
+             asks_open = re.search(r"\b(?:abra|abrir|abro|open|inicie|lance|launch)\b", folded_question) is not None
+             denies = re.search(r"\b(?:no\s+(?:existe|esta\s+instalad|encuentro|reconozco)|not\s+installed|doesn't\s+exist|no\s+entiendo)\b", folded_question) is not None
+             if names_present and asks_open and not denies:
+@@ -10207,7 +10222,9 @@ class LlmRuntime:
+                         "role": "system",
+                         "content": (
+                             f"Corrección: pregunta si quieres que abras {listed}, con el verbo abrir y "
+-                            "cada nombre tal cual; no digas que no existe ni que no entiendes."
++                            "cada nombre escrito exactamente así, sin repetir el nombre mal escrito del "
++                            "usuario; no digas que no existe ni que no entiendes. Por ejemplo: "
++                            f"«¿Querés que abra {' o '.join(names)}?»."
+                         ),
+                     },
+                 )

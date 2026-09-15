@@ -567,3 +567,7 @@ Abrir aplicaciones pasa de 40/54 a 40/54 con los nombres de aplicación aproxima
 ## Actualización 2026-09-14 (APPS1497)
 
 Abrir aplicaciones pasa de 40/54 a 42/54 con los nombres de aplicación aproximados contestados con la pregunta de si abrir la candidata (commit 7843f576, BUILD1497) (HEAD 7843f576): APPS1497: «Abre stea,» y «Sí, abre Ste.» preguntan si abrir Steam; H0386 y H0522 cubiertos; «team» y «Steel» rechazados por el validador, 2 créditos. 10/10 ejecutados, 7 aprobados, 3 fallidos, 2 créditos; validador demasiado estricto y eco del nombre mal escrito (APPS1499)
+
+## Actualización 2026-09-14 (APPS1499)
+
+Abrir aplicaciones pasa de 42/54 a 45/54 con los nombres de aplicación aproximados contestados con la pregunta de si abrir la candidata (commit 1dad9bd9, BUILD1499) (HEAD 1dad9bd9): APPS1499: «abres team» pregunta Steam o Microsoft Teams y los «Steel» preguntan Steam; H0521, H0227 y H0398 cubiertos, 3 créditos. 8/8 ejecutados, 8 aprobados, 3 créditos; ninguna aplicación abierta
