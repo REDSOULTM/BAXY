@@ -10649,10 +10649,12 @@ class LlmRuntime:
                     r"only\s+(?:got|received|heard)|(?:came|arrived)\s+(?:cut|incomplete))\b",
                     folded_question,
                 ) is not None
+                # DIALOGUE1517: «¿a qué te referís?» ends in «referís», so a word
+                # boundary after «refer» never matched; the stems are open.
                 asks_referent = re.search(
-                    r"\b(?:a\s+que\s+te\s+refer|a\s+que\s+se\s+refiere|que\s+quer[eé]s\s+decir|que\s+quieres\s+decir|"
+                    r"\b(?:a\s+que\s+te\s+refer\w*|a\s+que\s+se\s+refier\w*|que\s+quer[eé]s\s+decir|que\s+quieres\s+decir|"
                     r"que\s+(?:iba|va|venia|viene)\s+antes|de\s+que\s+(?:hablas|habla|estas\s+hablando)|"
-                    r"what\s+do\s+you\s+mean|refer(?:ring)?\s+to)\b",
+                    r"what\s+do\s+you\s+mean|refer(?:ring)?\s+to)",
                     folded_question,
                 ) is not None
                 greets = re.search(r"\b(?:hola|buenas|buenos\s+dias|hello|hi)\b", folded_question) is not None
