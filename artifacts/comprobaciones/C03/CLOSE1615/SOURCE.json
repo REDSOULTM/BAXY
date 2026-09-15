@@ -1,0 +1,15 @@
+{
+  "schema": "c03-close1615-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "no source change (the CLOSE1615 binaries reused): root fixtures whatsapp/discord in owned_window.py (main window by exact or «<view> - <name>» title; the client is closed afterwards).",
+  "patch": "artifacts/comprobaciones/C03/CLOSE1615/SOURCE.patch",
+  "commits": [
+    "b0b9a36da6b98305fb918b99cbd5ef2ad8b14ffe"
+  ],
+  "build": "BUILD1613 (C03-repairs1613-build/BUILD_READY.json; mismos binarios)",
+  "cause_measured": "Filas pendientes por prudencia de la raíz (clientes del dueño), no por defecto del producto; autorización del dueño registrada.",
+  "change": "Sin cambio de fuente; fixtures raíz de WhatsApp y Discord; sin respuestas fijas.",
+  "measurement": "CLOSE1615: cinco casos con fixture no admitidos por el invariante de ausencia de clientes de mensajería del instrumento sellado, dos límites aprobados; publicación rechazada por la cota de índices del publicador sellado (INSTRUMENTO_NO_PUBLICABLE.md); 0 créditos. Medición raíz: el runner sellado exige la ausencia de WhatsApp.Root.exe/Discord.exe antes de admitir y declara que un cliente de mensajería nunca es fixture raíz; la raíz conserva el invariante (ningún mensaje enviado) y deja las filas condicionadas a una decisión de instrumento del dueño.",
+  "credits": 0
+}

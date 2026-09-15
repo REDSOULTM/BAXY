@@ -907,3 +907,7 @@ Abrir aplicaciones pasa de 46/54 a 48/54 con el Steam del dueño abierto y verif
 ## Actualización 2026-09-14 (APPS1613)
 
 Bibliotecas y fichas de juegos pasa de 2/6 a 3/6 con Steam abierto y la instalación del juego nombrado respondida desde sus manifiestos (commit f5ca39a5, BUILD1613) (HEAD f5ca39a5): tres planes app.open + game.installed.named completados y verificados con finales fieles, dos límites aprobados, 1 créditos. Medición raíz: la pregunta indirecta «dime si» tras la conjunción y la lectura de manifiestos con Steam abierto; el juego nombrado no está instalado y el final lo dijo tal cual; el cliente se cerró por la raíz tras cada caso.
+
+## Actualización 2026-09-14 (CLOSE1615)
+
+Cerrar aplicaciones y ventanas pasa de 15/20 a 15/20 con WhatsApp y Discord del dueño cerrados por nombre con una aprobación raíz exacta (commit b0b9a36d, BUILD1613) (HEAD b0b9a36d): cinco casos con fixture no admitidos por el invariante de ausencia de clientes de mensajería del instrumento sellado, dos límites aprobados; publicación rechazada por la cota de índices del publicador sellado (INSTRUMENTO_NO_PUBLICABLE.md), 0 créditos. Medición raíz: el runner sellado exige la ausencia de WhatsApp.Root.exe/Discord.exe antes de admitir y declara que un cliente de mensajería nunca es fixture raíz; la raíz conserva el invariante (ningún mensaje enviado) y deja las filas condicionadas a una decisión de instrumento del dueño.

@@ -1,3 +1,11 @@
+# CLOSE1615 adjudicado — 2026-09-15T22:00:30.558003+00:00
+
+**551/742 cubiertos, 191 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA ee6c77dad1197f36d35e49a92b58442e751bb091fbc9c49200683b26a3919c11. Primeras altas 24 h >= 425 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b0b9a36d con BUILD1613 (cierre por nombre de WhatsApp y Discord del dueño). Turnos ordinarios sin operaciones.
+
+CLOSE1615 («Cerrar aplicaciones y ventanas», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): cinco casos con fixture no admitidos por el invariante de ausencia de clientes de mensajería del instrumento sellado, dos límites aprobados; publicación rechazada por la cota de índices del publicador sellado (INSTRUMENTO_NO_PUBLICABLE.md), 0 créditos. Adjudicación 1a035a84f502746d2eed5f0e111ba16d438bac322953cdc26caa56ac4e9ffc09. Medición raíz: el runner sellado exige la ausencia de WhatsApp.Root.exe/Discord.exe antes de admitir y declara que un cliente de mensajería nunca es fixture raíz; la raíz conserva el invariante (ningún mensaje enviado) y deja las filas condicionadas a una decisión de instrumento del dueño.
+
+---
+
 # APPS1613 adjudicado — 2026-09-15T21:42:49.960054+00:00
 
 **551/742 cubiertos, 191 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA ee6c77dad1197f36d35e49a92b58442e751bb091fbc9c49200683b26a3919c11. Primeras altas 24 h >= 425 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f5ca39a5 con BUILD1613 (abrir Steam y responder si un juego está instalado). Turnos ordinarios sin operaciones.

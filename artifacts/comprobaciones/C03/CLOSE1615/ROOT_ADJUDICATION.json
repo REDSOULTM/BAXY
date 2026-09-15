@@ -1,0 +1,147 @@
+{
+  "schema": "close1615-root-adjudication-v2",
+  "decided_at_utc": "2026-09-15T22:00:30.558003+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "b0b9a36da6b98305fb918b99cbd5ef2ad8b14ffe",
+  "decisions_sha256": "585a50273ff552f4a17ad507b74865a75296226cff4364700ee532cb7a73157c",
+  "registry_before_sha256": "ee6c77dad1197f36d35e49a92b58442e751bb091fbc9c49200683b26a3919c11",
+  "registry_before_counts": {
+    "covered": 551,
+    "open": 191,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "89e5264f4635cc0a2c78b57fc9ea91cf6bbb1d2ede33be7813ebb4dd171c5c56",
+  "preparation_sha256": "0c1505bf34f72e8d891db4a8c7cb59466968e002d1c5fc0108495428d3bee2fb",
+  "passed": 2,
+  "failed": 0,
+  "unexecuted": 5,
+  "executed": 2,
+  "segments_started": 2,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [],
+  "counters": {
+    "covered": 551,
+    "open": 191,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 425,
+    "categories_total": 35,
+    "categories_closed_after": 6,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 425 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); CLOSE1615 añade 0. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 425
+  },
+  "resources": {
+    "seconds_sum": 43.93699999999808,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1619.66015625
+  },
+  "cases": [
+    {
+      "index": 5,
+      "case_id": "close1615-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "f9ff09eb015cc189c5e653facb4d2a996359152bc9b2d3b1cbad6a2d1e708e42",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\results\\case-05\\EXIT.json": "dc2e11832317450b5bfc0eb90e86070c38312c87d3e97961936c4c581987c161",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\results\\case-05\\RESOURCES.json": "bb92887b7ade4efdf4e86e99be38094f8f66069ae346014be99cf9bb1643e33a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\profile-owner-05.json": "75daefec28f0930973396a57b34ea9bbf68f271865ebf7651d061713c65a20a4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\results\\case-05\\PREREG.json": "0f78c45ad34e299daa0c4f91aa1a6cfa37989ff29e3482604f1af03d59e3748f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\run-05\\capture\\events.jsonl": "f948c9416fa38979356fa0f4923a18956e1758bfbab3d5c97c65d0319eebad6c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\run-05\\turns.jsonl": "4c05ceac389554c4fa4251919d7422b99295f0b8cb8d7ea58074db020b264c0f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\fixture-05.json": "a3a4ddcb2a047c3ae426caece597c1e01aa836c73c3e8990e3e87c31add1da25",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\context-05.json": "f3f1bf661a427c7ff571d1ec059b56338aaad38c996a3dacda83c2437390200f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\context-prelaunch-05.json": "7e4994e82f23fa77b55a92072cc6df23d22e870da08485712dccc980c89189b6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\run-05\\case-observations.json": "424bb527f6ef18db3f17ec673a84771011b8bb971c30748185bfd91fe5317a64",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\run-05\\journal-before.json": "61ccaf9d90a84273c096b70ff425d9c40306115e49c53d2ef138c79c472601a8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\run-05\\journal-after.json": "ef4b7153733dbef8ac9c4613111a542e973c528d10c896f0d9b2a65bf0838fe5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "6fee37648f46dad49a193fe602d549972c5513cb5d5574adde1878b50bc33e3d"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "fa1b656d-a22b-4f0b-9c09-66a22080b591",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "close1615-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "a49ec5121e5e85a39d0c417107539d31c613e572098264ee268d2f43185bff7a",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\results\\case-06\\EXIT.json": "be166c003359fb8acd06d4a18e0c0196c204626fcd2588b9dae8f1f738252783",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\results\\case-06\\RESOURCES.json": "a11a2c6ffc69c00b5ab0ed0b6930e5a08540d046a2d03e43849f43a5deb310a2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\profile-owner-06.json": "4b828ca0a56e3c6f68b2734ec42359844f0ea24ede95c197a121d35ca43a2ed9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\results\\case-06\\PREREG.json": "a0be25e73b6cea41e2992328662e95b69cb5806131e696db36c0349bc449167d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\run-06\\capture\\events.jsonl": "6e052045b5bbdc04c613e088ff80d8d84701a4f160255539831f13d076b925d7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\run-06\\turns.jsonl": "e83a5c32f958b4b41c44c34d198bae731bea4a98af84ddd5b6e2072836c9d9db",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\fixture-06.json": "c6712232ee707a846f97e9f68474fb288d7842bc8e75f8df07ebcc505b2a55e4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\context-06.json": "fd788faf386be7ee49edb8c5f14151f6e129a0162d1f51351e8c0a8d000088fe",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\context-prelaunch-06.json": "c7f3597da855c42f4ea6404afc5dd893de3fb520028bc75c2e81845d223af67f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\run-06\\case-observations.json": "9a1e2e39966fe94bd8c69c015a8c3e7bbec81e9081e3366a8bd54530b65371d2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\run-06\\journal-before.json": "6d9ebef9d8fb58e299aaac0f36119e75f89d0d1d41dcb1a05ab2363f0b539e98",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\run-06\\journal-after.json": "45cdd397907fc7915b55fb13869c39254758030f7904a19bbb0e53012ce52d09",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-close1615-instrument-v1\\private\\run-06\\journal.snapshot.jsonl": "0a48612e61fddfd843845fc49185597b63dc57860b363b9743b8e19c79e8bbaa"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "cf11efd6-f149-46a5-93c4-9d67abe8dea0",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "next_action": "CLOSE1615: 6 ejecutados, 2 aprobados, 4 fallidos, 0 créditos (índices []); Abrir aplicaciones 46/54. Siguiente: categoría por masa abierta según CONDICIONES.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}
