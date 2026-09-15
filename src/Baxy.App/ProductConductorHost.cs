@@ -355,7 +355,10 @@ internal static class ProductConductorHost
                 or "system.settings.set" or "clipboard.write.text" or "clipboard.read.text"
                 // SCREEN1399 «sacá un screenshot»: a privacy-sensitive capture is
                 // confirmed by the root reviewer like the clipboard operations.
-                or "capture.screenshot" or "capture.active.window"))
+                or "capture.screenshot" or "capture.active.window"
+                // WEB1539 «resumime esta página»: the privacy-sensitive read of the
+                // page open in the browser session is reviewed the same way.
+                or "browser.page.read"))
         {
             return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
         }
