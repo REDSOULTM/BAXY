@@ -1,3 +1,11 @@
+# APPS1609 adjudicado — 2026-09-15T21:02:59.266088+00:00
+
+**548/742 cubiertos, 194 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 268aa212e897d0fa54c60a4733c20a0d886f03093e7f9cc51f5ba19dcfa8e27d. Primeras altas 24 h >= 422 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 48d00a6a con BUILD1609 (el proceso auxiliar de Steam cuenta para verificar la apertura). Turnos ordinarios sin operaciones.
+
+APPS1609 («Abrir aplicaciones», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): cuatro app.open de Steam con verification_failed a los 3,6 s (la reparación de la política del lanzador no está en el camino del producto; la primera ventana de Steam aparece a los 4,6 s), dos límites aprobados, 0 créditos. Adjudicación b8dc3aef9ba4512c9259b55244861ad6d747c35666f4152f849cc7463e7f3e19. Medición raíz: el producto cablea WindowsInstalledApplicationOpenProvider (presupuesto de verificación ≈3 s) y Steam muestra su primera ventana a los 4,6 s y la principal a los 7,9 s; siguiente: presupuesto de verificación suficiente para un cliente lento y reversión de la política inerte (APPS1611).
+
+---
+
 # APPS1607 adjudicado — 2026-09-15T20:34:57.741686+00:00
 
 **548/742 cubiertos, 194 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA cb62ec624d1b8086000a757852a9c19c82d599e35781ce18409d2d40927a3ddc. Primeras altas 24 h >= 422 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a9c46cbb con BUILD1605 (mismos binarios; apertura de Steam autorizada por el dueño). Turnos ordinarios sin operaciones.

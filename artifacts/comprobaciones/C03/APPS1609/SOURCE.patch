@@ -1,0 +1,89 @@
+commit 48d00a6ad0347c545117fa24d3580ce500cc6b74
+
+C03: a helper process under the application's own install tree counts for the launch (APPS1609)
+
+APPS1607 measured that «Abre Steam» starts the owner's Steam client and its window appears, but the product reports verification_failed: the visible window belongs to steamwebhelper.exe, a helper steam.exe starts from its own install tree, and NotepadIdentityPolicy.IsAllowed counted only the bootstrap executable. A process whose executable lives under the target's install directory is now the same application for the launch observation — never when that directory is the Windows directory, a Program Files root or WindowsApps, where unrelated processes share the tree — so the helper's window verifies the launch and the receipt keeps one consistent process and window.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/Applications/NotepadIdentityPolicy.cs b/src/Baxy.Providers.Windows/Applications/NotepadIdentityPolicy.cs
+index 2a80e3aa..f458346b 100644
+--- a/src/Baxy.Providers.Windows/Applications/NotepadIdentityPolicy.cs
++++ b/src/Baxy.Providers.Windows/Applications/NotepadIdentityPolicy.cs
+@@ -72,8 +72,9 @@ internal static class NotepadIdentityPolicy
+             && string.IsNullOrEmpty(observation.PackageFullName))
+         {
+             return PathsEqual(
+-                observation.ExecutablePath,
+-                target.BootstrapExecutablePath);
++                    observation.ExecutablePath,
++                    target.BootstrapExecutablePath)
++                || IsHelperInOwnInstallTree(observation.ExecutablePath, target);
+         }
+ 
+         if (!string.Equals(
+@@ -151,6 +152,63 @@ internal static class NotepadIdentityPolicy
+             && string.Equals(fields[4], MicrosoftPublisherId, StringComparison.Ordinal);
+     }
+ 
++    // APPS1607 «Abre Steam»: steam.exe shows its window through steamwebhelper.exe,
++    // a helper it starts from its own install tree (d:\steam\bin\cef\…). A process
++    // whose executable lives under the target's install directory is the same
++    // application; shared roots (the Windows directory, Program Files themselves)
++    // never count, so an unrelated process started there is not mistaken for it.
++    private static bool IsHelperInOwnInstallTree(string? executablePath, NotepadLaunchTarget target)
++    {
++        if (string.IsNullOrWhiteSpace(executablePath)
++            || string.IsNullOrWhiteSpace(target.BootstrapExecutablePath))
++        {
++            return false;
++        }
++
++        try
++        {
++            string? installDirectory = Path.GetDirectoryName(Path.GetFullPath(target.BootstrapExecutablePath));
++            if (string.IsNullOrEmpty(installDirectory))
++            {
++                return false;
++            }
++
++            string root = Path.GetPathRoot(installDirectory) ?? string.Empty;
++            string windows = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
++            string[] sharedRoots =
++            [
++                root,
++                windows,
++                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
++                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
++                Path.Combine(target.ProgramFilesDirectory, "WindowsApps"),
++            ];
++            string installFull = Path.TrimEndingDirectorySeparator(installDirectory);
++            if (sharedRoots.Any(shared => !string.IsNullOrEmpty(shared)
++                    && string.Equals(Path.TrimEndingDirectorySeparator(Path.GetFullPath(shared)), installFull,
++                        StringComparison.OrdinalIgnoreCase))
++                || Path.GetFullPath(installDirectory).StartsWith(
++                    Path.TrimEndingDirectorySeparator(windows) + Path.DirectorySeparatorChar,
++                    StringComparison.OrdinalIgnoreCase))
++            {
++                return false;
++            }
++
++            string candidate = Path.GetFullPath(executablePath);
++            return candidate.StartsWith(installFull + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase)
++                && target.PathTrust.IsExistingPathWithoutReparse(candidate);
++        }
++        catch (Exception exception) when (exception is ArgumentException
++            or NotSupportedException
++            or PathTooLongException
++            or SecurityException
++            or IOException
++            or UnauthorizedAccessException)
++        {
++            return false;
++        }
++    }
++
+     private static bool PathsEqual(string? left, string? right)
+     {
+         if (string.IsNullOrWhiteSpace(left) || string.IsNullOrWhiteSpace(right))

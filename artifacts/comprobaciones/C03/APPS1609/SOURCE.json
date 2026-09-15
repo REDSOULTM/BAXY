@@ -1,0 +1,15 @@
+{
+  "schema": "c03-apps1609-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/Applications/NotepadIdentityPolicy.cs (IsHelperInOwnInstallTree; medido inerte: el producto cablea WindowsInstalledApplicationOpenProvider para las aplicaciones del catálogo, no el lanzador que sirve esta política).",
+  "patch": "artifacts/comprobaciones/C03/APPS1609/SOURCE.patch",
+  "commits": [
+    "48d00a6ad0347c545117fa24d3580ce500cc6b74"
+  ],
+  "build": "BUILD1609 (C03-repairs1609-build/BUILD_READY.json; Providers)",
+  "cause_measured": "APPS1609: la reparación no actuó (NotepadIdentityPolicy sirve a WindowsApplicationLauncher, que el producto no cablea); el proveedor de catálogo ya admite steamwebhelper por prefijo de nombre de proceso, pero su presupuesto de verificación es de 28 sondeos de 100 ms (≈3 s) y la primera ventana de Steam aparece a los 4,6 s (medida raíz; ventana principal a los 7,9 s): verification_failed a los 3,6 s en los cuatro casos.",
+  "change": "Procesos auxiliares del propio árbol de instalación admitidos en la política del lanzador (fuera del camino del producto; se revierte en APPS1611); límite de definición sin entidad nombrada; sin respuestas fijas.",
+  "measurement": "APPS1609: cuatro app.open de Steam con verification_failed a los 3,6 s (la reparación de la política del lanzador no está en el camino del producto; la primera ventana de Steam aparece a los 4,6 s), dos límites aprobados; 0 créditos. Medición raíz: el producto cablea WindowsInstalledApplicationOpenProvider (presupuesto de verificación ≈3 s) y Steam muestra su primera ventana a los 4,6 s y la principal a los 7,9 s; siguiente: presupuesto de verificación suficiente para un cliente lento y reversión de la política inerte (APPS1611).",
+  "credits": 0
+}

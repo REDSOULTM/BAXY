@@ -895,3 +895,7 @@ Condiciones que siguen: Instalar 31 (Steam del dueño, desinstalaciones destruct
 ## Actualización 2026-09-14 (APPS1607)
 
 Abrir aplicaciones pasa de 46/54 a 46/54 con el Steam del dueño abierto por el producto (commit a9c46cbb, BUILD1605) (HEAD a9c46cbb): 6 ejecutados, 1 aprobado, 5 fallidos, 0 créditos. Los dos literales y las dos variantes lanzaron el Steam del dueño (autorizado el 2026-09-16) y el cliente mostró su ventana, pero el producto no lo verificó: la ventana pertenece a steamwebhelper.exe y el lanzador sólo cuenta steam.exe; la raíz cerró Steam ordenadamente tras cada caso. «¿Qué es Steam?» fue a web.search, no admitida por el panel; «No abras Steam.» fue reconocida. Siguiente: un proceso auxiliar bajo el directorio de instalación del objetivo cuenta para el lanzamiento (APPS1609).
+
+## Actualización 2026-09-14 (APPS1609)
+
+Abrir aplicaciones pasa de 46/54 a 46/54 con la reparación del lanzador medida inerte: Steam arranca y sigue sin verificarse (commit 48d00a6a, BUILD1609) (HEAD 48d00a6a): cuatro app.open de Steam con verification_failed a los 3,6 s (la reparación de la política del lanzador no está en el camino del producto; la primera ventana de Steam aparece a los 4,6 s), dos límites aprobados, 0 créditos. Medición raíz: el producto cablea WindowsInstalledApplicationOpenProvider (presupuesto de verificación ≈3 s) y Steam muestra su primera ventana a los 4,6 s y la principal a los 7,9 s; siguiente: presupuesto de verificación suficiente para un cliente lento y reversión de la política inerte (APPS1611).
