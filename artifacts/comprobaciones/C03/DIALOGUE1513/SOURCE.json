@@ -1,0 +1,15 @@
+{
+  "schema": "c03-dialogue1513-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_unresolved_input_kind/_overheard_speech: quince palabras o más, sin pregunta, sin verbo de orden al inicio de una cláusula —los verbos seguidos de coma son muletillas— y sin vocativo es conversación ajena) y src/baxy_mind/llm.py (clarify_unresolved_input kind overheard_speech: pregunta validada que dice no encontrar un pedido para BAXY y pregunta si la persona necesita algo; rechaza repetir cinco palabras seguidas del texto, contestar el contenido o inventar una acción; un reintento corregido).",
+  "patch": "artifacts/comprobaciones/C03/DIALOGUE1513/SOURCE.patch",
+  "commits": [
+    "f3216caa18114d00e36462d151c2040c5aacbb21"
+  ],
+  "build": "BUILD1513 (C03-repairs1513-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "DIALOGUE1281: los tramos largos de conversación ajena quedaron en manos del modelo, que reconstruía el fragmento, se atribuía la firma o contestaba como si le hablaran; ningún lector los reconocía.",
+  "change": "Clase de entrada sin pedido overheard_speech con su aclaración validada; sin respuestas fijas.",
+  "measurement": "DIALOGUE1513: 12 ejecutados, 12 aprobados, 0 fallidos; 7 créditos. Los siete literales de conversación ajena y las dos variantes terminaron con cero operaciones y una sola pregunta validada que dice no encontrar un pedido para BAXY y pregunta si la persona necesita algo, sin responder ni repetir el contenido; los nueve finales coinciden con la frase de ejemplo de la instrucción («En eso no encuentro un pedido para mí; ¿necesitás algo?»): la respuesta la compone y valida el modelo, no es una cadena fija, pero la dependencia del ejemplo queda anotada. Los tres límites (definición, prohibición, saludo) pasaron. Cero violaciones en los doce.",
+  "credits": 7
+}

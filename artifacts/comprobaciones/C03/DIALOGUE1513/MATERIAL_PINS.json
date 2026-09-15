@@ -1,0 +1,141 @@
+{
+  "schema": "dialogue1513-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dialogue1513-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-dialogue1513-instrument-v1",
+  "seal_sha256": "5a47f9584aaf0bcdc64804d3a74b35ba2d295cec58518d29ab5f19841e11899f",
+  "runner_sha256": "1da7611242e4053e76420e6f30d23cbbecec486e8bf384e6a43a9302699b2b5b",
+  "transport_seal_sha256": "1e9970844671890e7f87f4f2c3f6749c6b0593f591ec3ab47ffd897d89a1b050",
+  "files": {
+    "panel.json": "b04e2106eaa8eee4538e0d9aa7c89777b0eadaa4d0e468d28837a1f4327e4584",
+    "turns.jsonl": "c25f7aa31a545be7f6822aedc84d6d5ed41c79bed22eca9c3432599b9ca38dd6",
+    "case-map.json": "2848faa28ffcb5be6d2af4b8b07ea26c579fa3055908ea4130e1c1a35b130b5b",
+    "PLAN.md": "a3d5263b1e690ad91f414f599861e19f5c75b9ee6cebb5858687fb63566a3524"
+  },
+  "counts": {
+    "cases": 12,
+    "historical_literals": 7,
+    "original_development_variants": 2,
+    "boundaries": 3,
+    "wire_lines": 24,
+    "session_controls": 12,
+    "ordinary_turns": 12,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 12,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 7,
+    "original_development_variant": 2,
+    "boundary": 3
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0006",
+      "kind": "historical_literal",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "00d0717422cc78ddfe83c1ccff831e6356546d3992fcb6efb8a5552c497615fc",
+      "criterion_sha256": "8d6a1b442cac051c010f41bda3750dc9925b80dc8e52638fd0aea001cc64a0ef"
+    },
+    {
+      "index": 1,
+      "case_id": "H0332",
+      "kind": "historical_literal",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "6d4fd6663728354b39170e478185b667e67196466e9991a6fd9a26e942d6131a",
+      "criterion_sha256": "8d6a1b442cac051c010f41bda3750dc9925b80dc8e52638fd0aea001cc64a0ef"
+    },
+    {
+      "index": 2,
+      "case_id": "H0372",
+      "kind": "historical_literal",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "7bdd86587ba5b2034ac264f9ab6e3acc5a524718bb0db689aeae668cf33f01b7",
+      "criterion_sha256": "8d6a1b442cac051c010f41bda3750dc9925b80dc8e52638fd0aea001cc64a0ef"
+    },
+    {
+      "index": 3,
+      "case_id": "H0429",
+      "kind": "historical_literal",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "917164371cfa29922fb536a421ca823bca7443d53bdb22552cc5954626d475ec",
+      "criterion_sha256": "8d6a1b442cac051c010f41bda3750dc9925b80dc8e52638fd0aea001cc64a0ef"
+    },
+    {
+      "index": 4,
+      "case_id": "H0441",
+      "kind": "historical_literal",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "95caa6db694c501ed0249228c3869b13198b309fee7b1275f8ee3a1cf9cf3b68",
+      "criterion_sha256": "8d6a1b442cac051c010f41bda3750dc9925b80dc8e52638fd0aea001cc64a0ef"
+    },
+    {
+      "index": 5,
+      "case_id": "H0483",
+      "kind": "historical_literal",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "a3e07884e4e65b67e55705c66d2eedb2c9c4bfc043f8bfeadc097f4b847f2791",
+      "criterion_sha256": "8d6a1b442cac051c010f41bda3750dc9925b80dc8e52638fd0aea001cc64a0ef"
+    },
+    {
+      "index": 6,
+      "case_id": "H0735",
+      "kind": "historical_literal",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "fd547ab7e5d20bf19a883de1d2856467d43fa04cb556d7f8fced74d93db3f494",
+      "criterion_sha256": "8d6a1b442cac051c010f41bda3750dc9925b80dc8e52638fd0aea001cc64a0ef"
+    },
+    {
+      "index": 7,
+      "case_id": "dialogue1513-dev-01",
+      "kind": "original_development_variant",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "86924b6b02101619360a8e2aeb26df7c7c3857ec84169165e285bba89f84870b",
+      "criterion_sha256": "8d6a1b442cac051c010f41bda3750dc9925b80dc8e52638fd0aea001cc64a0ef"
+    },
+    {
+      "index": 8,
+      "case_id": "dialogue1513-dev-02",
+      "kind": "original_development_variant",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "21f79a13323887b3524c3e6f377e3d81bb02eecdeadb114cecafce1075b5364b",
+      "criterion_sha256": "8d6a1b442cac051c010f41bda3750dc9925b80dc8e52638fd0aea001cc64a0ef"
+    },
+    {
+      "index": 9,
+      "case_id": "dialogue1513-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "ef484ad48229c9e2543f72e8e9ab050b0f4ec8793d42b35f69e5baa393f62203",
+      "criterion_sha256": "ac9432e776338837c1c5555b118b3f2f99f124be8d13212f5704a30407c9e4ed"
+    },
+    {
+      "index": 10,
+      "case_id": "dialogue1513-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "76f237fe72e0f3f2c6007cde04e78f04bda821b12ca76a813d7326fd0146eacc",
+      "criterion_sha256": "1f236967b5ef950b8599f929009c7a7b13714375200d242f84fa1feb91fc9e6c"
+    },
+    {
+      "index": 11,
+      "case_id": "dialogue1513-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "ad500b0c49a76ec9484fa973766c85b8d5ee77b6e3c3ded56da1fa9d23d080cd",
+      "criterion_sha256": "cc52d796775c878b4bc1e4e35c61a5019dfe701928465bba6fcc40e3571f624c"
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+commit f3216caa18114d00e36462d151c2040c5aacbb21
+
+C03: overheard speech gets its own clarification, no request found and does the person need something (DIALOGUE1513)
+
+DIALOGUE1281 left the long stretches of other people's talk or broadcasts caught by the microphone to the model, which reconstructed the fragment, attributed itself the signature or answered as if addressed. `_unresolved_input_kind` now names «overheard_speech»: fifteen words or more, no question, no order verb at the start of a clause (a verb followed by a comma is a discourse marker), no vocative. `clarify_unresolved_input` composes a validated question for it: it says it finds no request for BAXY in what arrived and asks whether the person needs something; it rejects repeating five consecutive words of the talk, answering it or inventing an action, with one corrected retry.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 9f6c46a5..e4a00182 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -3014,6 +3014,8 @@ def _unresolved_input_kind(objective: str) -> str | None:
+         and re.search(r"\d\s*[-+*/x×÷=^%]\s*\d", folded) is None
+     ):
+         return "noise"
++    if _overheard_speech(folded):
++        return "overheard_speech"
+     if (
+         re.fullmatch(
+             # IDENTITY1323 H0296 «Tú eres como eso»: compared with something
+@@ -3031,6 +3033,49 @@ def _unresolved_input_kind(objective: str) -> str | None:
+     return None
+ 
+ 
++_OVERHEARD_ACTION_WORDS = re.compile(
++    # An order verb counts where a clause starts: after the beginning, a
++    # punctuation mark or a connective («…, toma un screenshot», «y ve que
++    # hay»); «si hace bien el trabajo» or «la ve y si no» inside a stretch of
++    # talk is not an order to BAXY.
++    r"(?:^|[,.;:!¡¿]\s*|\b(?:y|o|e|u|baxy|entonces|luego|despues|ahora|primero|tambien)\s+)"
++    r"(?:baxy|abre|abri|abris|abrir|abrime|pone|pon|poneme|pongas|poner|busca|buscame|buscar|"
++    r"cierra|cerra|cerrar|reproduce|reproduci|manda|mandame|envia|enviame|escribe|escribi|crea|"
++    r"guarda|guardame|recuerda|recorda|recordame|sube|subi|subile|baja|baji|bajale|silencia|"
++    r"apaga|prende|enciende|lanza|inicia|muestra|mostrame|dime|decime|contame|cuentame|explica|"
++    r"explicame|avisame|avisa|llama|llamame|programa|agenda|calcula|traduce|traducime|lee|leeme|"
++    r"copia|pega|borra|elimina|instala|desinstala|descarga|configura|conecta|desconecta|"
++    r"toma|tomame|saca|sacame|captura|capturame|identifica|mira|mirame|revisa|revisame|haz|hace|haceme|"
++    r"dale|clic|click|clickea|presiona|pulsa|selecciona|elige|escoge|ejecuta|corre|ve|anda|entra|"
++    r"screenshot|dime|responde|contesta|resume|resumime|completa|completalo|completala|termina|terminalo|"
++    r"confirma|confirmalo|acepta|aceptalo|cancela|cancelalo|"
++    r"open|play|search|close|send|write|set|turn|remind|show|tell|launch|start|stop|find|take|click|"
++    r"puedes|podes|podrias|puede|quiero\s+que|necesito\s+que|me\s+(?:ayudas|ayudarias|dices|decis|cuentas|contas|explicas))\b"
++    # «Mira, bueno, la neta…», «Dale, dale.»: a verb followed by a comma or a
++    # period is a discourse marker in talk, not an order with an object.
++    r"(?!\s*[,.;])"
++)
++
++
++def _overheard_speech(folded: str) -> bool:
++    """DIALOGUE1513: a long stretch of talk with no request for BAXY.
++
++    H0006, H0139, H0332, H0372, H0429, H0441, H0483, H0735: the microphone
++    caught other people's conversation or a broadcast (fifteen words or more,
++    no question, no order verb, no vocative). Nothing in it is addressed to
++    the assistant; DIALOGUE1281 measured the model reconstructing the
++    fragment or answering it as if it were. The honest turn says it finds no
++    request for it in what arrived and asks whether the person needs
++    something."""
++
++    if "?" in folded or "¿" in folded:
++        return False
++    words = re.findall(r"[a-z0-9]+", folded)
++    if len(words) < 15:
++        return False
++    return _OVERHEARD_ACTION_WORDS.search(folded) is None and "baxy" not in folded
++
++
+ def _general_factoid_prompt(objective: str) -> bool:
+     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
+     return (
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index e0909d27..b64531d7 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -10320,11 +10320,29 @@ class LlmRuntime:
+         a meaning: the question names what arrived and asks what to do.
+         """
+ 
+-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination"}:
++        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech"}:
+             raise ValueError("clase de entrada sin pedido inválida")
+         current = str(text).strip()[:2_048]
+         situation = (
+             (
++                # DIALOGUE1513 H0006, H0139, H0332, H0372, H0429, H0441, H0483,
++                # H0735: a long stretch of other people's talk or a broadcast,
++                # with no question, order or vocative for BAXY. The honest turn
++                # says it finds no request for it there and asks whether the
++                # person needs something; it never answers the talk itself.
++                "Eres BAXY. Lo que llegó es un tramo largo de conversación o de "
++                "una transmisión que el micrófono captó: no contiene ninguna "
++                "pregunta, orden ni pedido dirigido a ti. Formula una sola "
++                "pregunta breve, en el idioma del texto, que diga con honestidad "
++                "que en eso no encuentras un pedido para ti y pregunte si la "
++                "persona necesita algo (por ejemplo: «En eso no encuentro un "
++                "pedido para mí; ¿necesitás algo?»). No respondas al contenido, "
++                "no lo resumas, no repitas sus frases, no adivines quién habla ni "
++                "de qué trata, no digas que fallaste y no ofrezcas ayuda genérica "
++                "sin decir antes que no ves un pedido."
++            )
++            if kind == "overheard_speech"
++            else (
+                 # DIALOGUE1491 H0393 «Ve a portal una.», H0541 «Ve Portal 2 UN»:
+                 # the destination's name stops at an article; the message was
+                 # cut and nothing before it completes the name.
+@@ -10552,6 +10570,49 @@ class LlmRuntime:
+                         )
+                         continue
+                     raise ValueError("aclaración de mirar deíctico no pregunta qué mirar")
++            # DIALOGUE1513: the question must say no request was found for
++            # BAXY and ask whether the person needs something; it must not
++            # repeat the talk, answer it or invent an action. One corrected retry.
++            if kind == "overheard_speech":
++                folded_question = _fold_dialogue_text(question)
++                folded_current = _fold_dialogue_text(current)
++                says_no_request = re.search(
++                    r"\bno\s+(?:encuentro|veo|logro\s+ver|identifico|reconozco|hay|parece\s+haber|detecto)\b.{0,40}"
++                    r"\b(?:pedido|peticion|solicitud|orden|instruccion|request|pregunta)\b|"
++                    r"\b(?:no\s+(?:parece|esta|va)\s+dirigid[oa]|no\s+es\s+para\s+mi|otra\s+conversacion|"
++                    r"(?:don't|do\s+not|can't|cannot)\s+(?:see|find)\b.{0,30}\brequest)\b",
++                    folded_question,
++                ) is not None
++                asks_need = re.search(
++                    r"\b(?:necesit|quer[eé]s|quieres|te\s+ayudo|puedo\s+ayudar|en\s+que\s+(?:te\s+)?ayud|hago|haga|"
++                    r"need|want|help)\w*\b",
++                    folded_question,
++                ) is not None
++                words = re.findall(r"[a-z0-9]+", folded_current)
++                repeats = any(
++                    " ".join(words[i:i + 5]) in folded_question for i in range(max(0, len(words) - 4))
++                )
++                invents = re.search(
++                    r"\b(?:abrir|abra|abro|poner|ponga|pongo|buscar|busque|busco|cerrar|cierre|cierro|"
++                    r"firmar|firme|cheque|dinero|trabajo|open|play|search|close)\b",
++                    folded_question,
++                ) is not None
++                if not says_no_request or not asks_need or repeats or invents:
++                    if attempt == 0:
++                        payload["messages"].insert(
++                            -1,
++                            {
++                                "role": "system",
++                                "content": (
++                                    "Corrección: no respondas ni repitas el texto. Di que en eso no "
++                                    "encuentras un pedido para ti y pregunta si la persona necesita "
++                                    "algo, por ejemplo: «En eso no encuentro un pedido para mí; "
++                                    "¿necesitás algo?»."
++                                ),
++                            },
++                        )
++                        continue
++                    raise ValueError("aclaración de conversación ajena no dice que no ve un pedido")
+             # DIALOGUE1279 H0287 «????» → «¿Qué quieres que haga?»: a question
+             # that never names what arrived is the generic help offer the
+             # owner rejected (CLARIFY1047). One corrected retry.

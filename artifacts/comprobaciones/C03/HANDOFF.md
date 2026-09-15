@@ -1,3 +1,11 @@
+# DIALOGUE1513 adjudicado — 2026-09-15T01:57:07.439305+00:00
+
+**506/742 cubiertos, 236 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA e4f76cfbf0662df50c164d52f83decffa3ae7452274ac60fe006cbb0466d6a16. Primeras altas 24 h >= 380 (+7).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f3216caa con BUILD1513 (la conversación ajena recibe la pregunta de si la persona necesita algo; DIALOGUE1513/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+DIALOGUE1513 («Entrada incompleta, ruido y control de diálogo», H0006, H0332, H0372, H0429, H0441, H0483 y H0735 (transcripciones de conversación ajena)): 12 ejecutados, 12 aprobados, 0 fallidos, 7 créditos. Adjudicación e12d4822ed4ce55662cea0ddc0669f8d94ced53c6c64ffecde1955516159a77c. Los siete literales de conversación ajena y las dos variantes terminaron con cero operaciones y una sola pregunta validada que dice no encontrar un pedido para BAXY y pregunta si la persona necesita algo, sin responder ni repetir el contenido; los nueve finales coinciden con la frase de ejemplo de la instrucción («En eso no encuentro un pedido para mí; ¿necesitás algo?»): la respuesta la compone y valida el modelo, no es una cadena fija, pero la dependencia del ejemplo queda anotada. Los tres límites (definición, prohibición, saludo) pasaron. Cero violaciones en los doce.
+
+---
+
 # KNOWLEDGE1511 adjudicado — 2026-09-15T01:40:52.261251+00:00
 
 **499/742 cubiertos, 243 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 62e723e07c8e20ad257488b525360d6f2c520de66c5bf04772267b0bf241b53e. Primeras altas 24 h >= 373 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 3967dc08 con BUILD1511 (la URL de un resultado no es un nombre a preservar en el veto de palabra cortada; KNOWLEDGE1511/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

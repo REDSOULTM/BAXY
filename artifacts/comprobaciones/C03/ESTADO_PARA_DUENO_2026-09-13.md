@@ -1,3 +1,25 @@
+## DIALOGUE1513 — estado vigente 2026-09-15T01:57:07.439305+00:00
+
+Parcial: 12 aprobados, 0 fallidos, 0 sin ejecutar; 7 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 506/742 | 236 | 0 | >=380 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 373 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); DIALOGUE1513 añade 7. No se cuentan revalidaciones.
+
+Siguiente acción: DIALOGUE1513: 12 ejecutados, 12 aprobados, 0 fallidos, 7 créditos (índices [0, 1, 2, 3, 4, 5, 6]); Entrada incompleta, ruido y control de diálogo 25/34. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/DIALOGUE1513/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 183.66 s acumulados; pico GPU 3497.56 MiB; pico RAM 1578.73 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 12; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque DIALOGUE1513 precedente. -->
+
 ## KNOWLEDGE1511 — estado vigente 2026-09-15T01:40:52.261251+00:00
 
 Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
