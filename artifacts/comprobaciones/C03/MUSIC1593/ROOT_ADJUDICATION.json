@@ -1,0 +1,776 @@
+{
+  "schema": "music1593-root-adjudication-v2",
+  "decided_at_utc": "2026-09-15T18:43:33.878429+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "1050ce6a4642917025dc1159f1b1b254336cdd6d",
+  "decisions_sha256": "7981a8929d031ec844eb2b05e3e962025c07cc733675ed65904747b8b7ebd705",
+  "registry_before_sha256": "e9e40e18513f3d4c14cdea0042f66e455a43dbcee009bca6c4baa9356620157e",
+  "registry_before_counts": {
+    "covered": 540,
+    "open": 202,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "828e856d867c5bd2d508806b4cac63431fe750f99787852c6e61bd40f891894d",
+  "preparation_sha256": "c633d726ca6936baf162b257a7d63547b2f2e8f573121def5cf14e860fc51f7a",
+  "passed": 10,
+  "failed": 1,
+  "unexecuted": 0,
+  "executed": 11,
+  "segments_started": 11,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [
+    "H0224",
+    "H0580",
+    "H0686"
+  ],
+  "counters": {
+    "covered": 543,
+    "open": 199,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 414,
+    "categories_total": 35,
+    "categories_closed_after": 5,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 414 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1593 añade 3. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 417
+  },
+  "resources": {
+    "seconds_sum": 263.9690000000119,
+    "gpu_peak_mib": 3513.33203125,
+    "ram_peak_mib": 2636.59765625
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0224",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        4,
+        5
+      ],
+      "reason": "Reprodujo con revisión la música guionizada en el reproductor local y luego respondió al literal sobre ese reproductor (qué suena o parada) con un final fiel; crédito con dos variantes aprobadas.",
+      "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos.",
+      "final_sha256": "770327865d779e8dd9b595a1c54299e356ea25e3e1394f66b7ccfc0caaa82722",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-00\\EXIT.json": "443bb5f78d218aae56c062d1e16cf4375f0bcf372a33778a8355d254f0e73cbd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-00\\RESOURCES.json": "c652ded87faa4c2b3bf7310f6dcc2b14d875cae12c20b7cfa0415ef154b9d7f1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\profile-owner-00.json": "b1c8c20d34fb87cbc7b6d85f35bd7fa025dac041f6f0c16f3a02fcf97384256a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-00\\PREREG.json": "35b58625ea15c690c5657144ffe676522abc347dbd39edf0289ee777111d98ab",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-00\\capture\\events.jsonl": "b8ff8353e31408c1cf4e632ce936bc6a78c61dab4dc81b23263f048bb57cd5b2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-00\\turns.jsonl": "585fbf0b2406b5a80f69341d6697b0f0ee668b7ac1c0afb3aab5f8ebe06d395f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\fixture-00.json": "b57c42a89ec26befc18f0565eb6c14cd474c96df9a5215580352b33703983260",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-00.json": "167dd7fc57aca05c9bd295cf2168747097ad8fe8d9e1bdd27a291e211a4b9a8d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-prelaunch-00.json": "d785e086c4387038e6710834c5012df451338220187d374765c627b86c05cb34",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-00\\case-observations.json": "be2253fa2b727abe40c57d8c7fd0fd8c53f1b52f8d2fc3cb7ae94d01d1b5e3ed",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-00\\journal-before.json": "931ea33bccdbfe0458cde4ba75521ff33f1c0daa07a8402c406874fdd1add1c5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-00\\journal-after.json": "3e19ecca5b9d6af9161703707612f970c437422af2368a55fe412bf0b82be4c3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "b9d112d84df550fcaf84c18ef9b145d7f6b16f8d4c758ceeba9e7920eccc05bb"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "f35b81a7-586a-4ca2-9399-f8f00b71b166",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "db832d8c-2dde-48c0-a524-1860a657532f",
+          "operation": "media.play.youtube",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "a6938560-e544-4aea-aa93-ce6344f53e9a",
+          "operation": "media.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0543",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: la reproducción no se verificó, la operación de seguimiento no se hizo o no se verificó, o el final no fue fiel al estado observado.",
+      "observation_note": "Reproducción revisada verificada y lectura del reproductor local verificada; el turno no produjo final (fragmento del título y luego título traducido); cero violaciones; pins intactos.",
+      "final_sha256": "9954ef9820810d8a62dbba2c5ad3c3d4141c2666758c6e1749ab22b9f528fc55",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-01\\EXIT.json": "557f316fd91df8a677ffa2c45fdef71ffe975faad70805a85665b8f64859fea3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-01\\RESOURCES.json": "0bb25bf94855024083719874cb2beef7484e15ee479206d70c85cf7604aba7fa",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\profile-owner-01.json": "9666c189dd826e70157dacbab780db330576536e048e3c264b47783db4cdfe50",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-01\\PREREG.json": "64e5bb68602021d26eb792629b81a6c26148f206760aebdeb0f2c2a89c1f4b03",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-01\\capture\\events.jsonl": "52e6d987636e2aab6d2c33990a09bf1d78ffae5e2d6c670426b1d26a2a74db17",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-01\\turns.jsonl": "bf5b23bb87a104c3bb75d2729c9df57c6112f39849b0c16ff290f381d4d09293",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\fixture-01.json": "33fe35fc93b68b75b6d8598b449646d8f1b53d4152b91609f35fcfb7a3ec9376",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-01.json": "cb14443a36f0dcfe41bf2108e6bd97bbcc0fe77de78fc7df11e703466a680eb8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-prelaunch-01.json": "38be606b8e1a11898899c5c15134b20334f783cf622dbfc37437b2895e2ba37f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-01\\case-observations.json": "8d35458238f74b6611f9cd80c8782bd44424b145f8558a803e18b2a87e3f9562",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-01\\journal-before.json": "38fe13ae78a44029076fecb5ee5b7194828616d71dd2c7a575adad845735afa6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-01\\journal-after.json": "341f875ad4ce9143dd5bfc7190082592f8aea7e339c13731467b9678626cb1b6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "d55f30ffb67a5df7846192a32c27ab8dfac057c3af851272fb6dd0106815a390"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "4d0b8b2b-f439-48d7-b1ba-235c5aad461f",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "49961d96-6f69-4fb6-9551-77650baabd96",
+          "operation": "media.play.youtube",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "73cd23b7-ec7c-4e6c-a51b-0898f80cd777",
+          "operation": "media.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "H0580",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        6,
+        7
+      ],
+      "reason": "Reprodujo con revisión la música guionizada en el reproductor local y luego respondió al literal sobre ese reproductor (qué suena o parada) con un final fiel; crédito con dos variantes aprobadas.",
+      "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos.",
+      "final_sha256": "69bc08ed9a0971b9db48d46e5efff0bef4f7feedc36d2dfbbe23976ce6e20abf",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-02\\EXIT.json": "33a00e5cba5179bc4197e265b7b12313f64facfbf22aaab6a96c67b87fadec7c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-02\\RESOURCES.json": "675877c5586d59a2d5cd3d4d27eedb2b5a9cb3e26d2e4d2f5b5e69da60d6a029",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\profile-owner-02.json": "bb96924ae301f3d77a3d70ca823486d1faaf8448bca5cc629f9b923af6e3f8ec",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-02\\PREREG.json": "2790bae43c2cdd607bca8ad46f148b838d6ec6529d46746a7eac3de0061cf0b8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-02\\capture\\events.jsonl": "1c3e7e996b001b128c484423a445662e6c137608b753573a6c19873ec3562dad",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-02\\turns.jsonl": "43407d4fbd6150d30f5349b2931947b1a1fb23081cb294e603a89c721d8001d5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\fixture-02.json": "0ec9460082a5e3430f9be1223798a5ec01b66f5de5572e59c94f57a88d928375",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-02.json": "1b4d4881d8d321e45b95342af7d13cd3f6543401a5f012cc36e722336844b106",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-prelaunch-02.json": "e54fe081677ef4a0acc9f7152a62c6ed3d621ea956d0e68e666859422e530686",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-02\\case-observations.json": "d0200ed053ae9f0a8d78903a5fd791fb81fb2e8280247bf43405111c7f0af47f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-02\\journal-before.json": "d2cf4649666fc7a6a27a6e7631f0b437f11e079332602481b07d7e2cb2464daf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-02\\journal-after.json": "5ea19d2b8305b6cf5b1fef84c4e5c0b18a1cdbb9a01048bcf933c96a04201ece",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "fdfc7bc70b0aba24cea3864ba0aa0e7a5b9f86e8422c4172844a61538c2aa6b9"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "85c47f72-9cc2-41b7-a5e2-fea745058b91",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "e6d3cf7b-edee-47f8-a018-63a8a35c6a0c",
+          "operation": "media.play.youtube",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "73234c9a-8b67-452e-9c06-80a3e9e94bb0",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "H0686",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        6,
+        7
+      ],
+      "reason": "Reprodujo con revisión la música guionizada en el reproductor local y luego respondió al literal sobre ese reproductor (qué suena o parada) con un final fiel; crédito con dos variantes aprobadas.",
+      "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos.",
+      "final_sha256": "5c17e1960c6d8cef175490c9f12bd7c3253e27e278abbd5706730235c560e42a",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-03\\EXIT.json": "212816758b83e3b4200dccca29f79028cf6a897149c43df996666c359bab15e6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-03\\RESOURCES.json": "cd8491cb80d3810e94d42da565af2436b604a75ad2cf252754c0cbb170d818cd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\profile-owner-03.json": "7ec98540eaec922ee78623227d16fcf6b2ef2b4dfeb054589b37fb228ced866a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-03\\PREREG.json": "6259fb9ecbb19e7c4a951c09f8af2271ecda1a525a67a23151e1155ebf9a13ca",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-03\\capture\\events.jsonl": "b476179e1d8e53e8c56b08da64d5a3ce99fd02676d6c48a37381c137f4c2618d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-03\\turns.jsonl": "0dcfdb5abcf1cdae5c18fab05eb8f1e6f4f5e9ec1e6e617d643e2c1bdc23f0dd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\fixture-03.json": "fdb2d19c0303fa9da4fd647970594cce006074c360fc4ff0ffe94a0a6f8d7a8c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-03.json": "6ce8c0c1727a064c5a7ec8c007142b627ac8f9b621cb0bce67df67993da6dbc4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-prelaunch-03.json": "ab65314a8faf3ceb2a9cb8df2025c079fe37d92ca49ccc73673fcce2defc0469",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-03\\case-observations.json": "6a01b8de28192d24caf3ed7415a10103c84922817539b004bc809a45dc29d8c3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-03\\journal-before.json": "d33e942e5640c5ed073cc056a384590405fd1f64164f06ab6fe2d88ed5767512",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-03\\journal-after.json": "dd4344f7b06f72e5674418bdaa69d9794933aad3e94b4c0469379dab449b6b82",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "b60c51c1fd2f70d98e02518f24c299624aa47473ff9424700f22776ab49e7d04"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "3b389b7e-513b-4cf9-a7dc-a274fef0b69a",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "0ea6cc3e-3398-433c-8839-c5b45cb38453",
+          "operation": "media.play.youtube",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "74b86057-81a0-4f27-b481-078c3e957224",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "music1593-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Preguntó qué música poner y reprodujo con revisión lo contestado, nombrándolo por su título observado; variante o literal sin dos pares aprobados.",
+      "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos.",
+      "final_sha256": "40cced55e288c4d4c638b2915926946dd00a0e9aef6f84c2f7ec4f32eb6003e2",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-04\\EXIT.json": "c2ade11cd8d7a52322e8b2e3e75eb52cec2982ea3859ad3790dee3c47789691f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-04\\RESOURCES.json": "f3bc3554c60fc7752acbba6bb4d7257c096ab5a6a86bc86d274c9cd7d49ddd02",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\profile-owner-04.json": "c0e21bec12e572335403731320273e5f3f45965bc0fea6b737596300f24e6f61",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-04\\PREREG.json": "f81ce0dd199c195f9ce2069d36bca30c13cfc173b5999571fcc686c609c45776",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-04\\capture\\events.jsonl": "057247c33a3857fe661e3ed9497b00bfcf096f6d82259514ae78d924ce6b3c6d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-04\\turns.jsonl": "4affb0d895851d508b118e5632a7426008e17d0793351c361a2c29582a9596fe",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\fixture-04.json": "77651256c09041420d6e88b26bd25a56a6ab21b979372d6d540d2d34b6eaa495",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-04.json": "7b72df885e17fd27141044ddcdd53a6b9090985ce6019a74a42a0714313f34b0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-prelaunch-04.json": "8f9f82069a4cb2e0955fca3480b8080e5a3fac697d503e50c4858ee788350c70",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-04\\case-observations.json": "0445a07d702896dff6d6f76b70add706bf53dabe3077b53733bfac470b8b377a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-04\\journal-before.json": "bfadd25be066f7b6158280e447ef9b0f26ec810ab6ccd6c8deac5021b446c2da",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-04\\journal-after.json": "10d788f215bbe46e4d6026978d0ebd9ecba0d6a6d5b4ac6b74463622518b94f6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "70c820fdbcda34143d1b952c31e7ce4b8911b5b26ecba939851465331776c25f"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "4dfaf325-ecc5-4d49-9374-54158c1badc8",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "48d7c423-0fe5-4c0c-b0a9-c4a2fa1c3739",
+          "operation": "media.play.youtube",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "f4d9a7ea-6fa1-43f7-89a5-f59eff03db8b",
+          "operation": "media.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "music1593-dev-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Preguntó qué música poner y reprodujo con revisión lo contestado, nombrándolo por su título observado; variante o literal sin dos pares aprobados.",
+      "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos.",
+      "final_sha256": "c1c438b90cfe28a95d5d67d7b7a5a8c3b8675b5842763e2f6a84bb35d8f9ee3a",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-05\\EXIT.json": "63b28bca367834b83e0f5ebc0c0c27ce5bb9a1de11b3920ac8192a404301ac02",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-05\\RESOURCES.json": "4681e0ebd1ef6da62e80a5fb3c67717d48b0fba64c642d8fade5d48e5307bb70",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\profile-owner-05.json": "5469f103ac48d73b77641bd1e42148da227187ca905244d82f58cadf963541ce",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-05\\PREREG.json": "7ecbbd0d1917c47af0b5ee2fccceeab1b2d2de83ce561aeb763a9127e431a403",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-05\\capture\\events.jsonl": "3515ac275dd0122708711008e9748372ec33da46b847184e152f811ec803bd18",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-05\\turns.jsonl": "8dfbf87a1273292862092023b18f701c25f366b4e7f0264c0f3dde26f82323cd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\fixture-05.json": "cc48428c1422215a6a584fc4918c16aa17b7a2b8b16364799946bbd5b3d33e94",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-05.json": "2a12db09891d5529563fa58818f853bb3e431bde57b15c3f42baf40a02443748",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-prelaunch-05.json": "dfa0ee48e72aa560d4caadb8a22d23bc0e80409b11d796f8058fdbc901d93bd9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-05\\case-observations.json": "0e804fd903536142787551c288dd5be94eb7347e52d16ec0adf265819a2eddc3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-05\\journal-before.json": "a061d991bd0ef9f30e76b6608748487df33a99084eb5340b26935472e3e9c679",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-05\\journal-after.json": "4a004715fe5570836aafb6ac3e5b0e583723d63af664ab2de1538ceb4ad5f24b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "774ca10e943e4aac97cc6e993b99f56878508dfd36b0d549d5e07a5c6e5e7ae3"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "16f1624e-a40c-4b8d-9185-f4ad368ddcf5",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "14b8ff1c-5ee4-4a7b-8eef-de687b557539",
+          "operation": "media.play.youtube",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "1251ccfc-cc4f-4809-8e03-b19c88023b3e",
+          "operation": "media.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "music1593-dev-03",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Preguntó qué música poner y reprodujo con revisión lo contestado, nombrándolo por su título observado; variante o literal sin dos pares aprobados.",
+      "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos.",
+      "final_sha256": "770327865d779e8dd9b595a1c54299e356ea25e3e1394f66b7ccfc0caaa82722",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-06\\EXIT.json": "949abf8f7b5a5ce1f852f3aaf1b76a83f8093e18970b8c06534d9ab007c1ab7d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-06\\RESOURCES.json": "86432fa61defd8b2ada2b154db29dc72c7890acf7ed42d91cd50c36b93a0651d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\profile-owner-06.json": "d2c947bf51242a28258469c3d912686dc4164c365f09b77e1406d4de75179249",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-06\\PREREG.json": "23ac325c40c6ebcf27cd73e2fffd4acd7d922272faba712df49acf0ef3d2932b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-06\\capture\\events.jsonl": "d8ba34636169d84dece167e1829ac5b30ad0890f83e668c10f734333afa594fc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-06\\turns.jsonl": "332c677a6351adc0c9f58999b2b081db1503fe4e164879c5530e2809df4a1472",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\fixture-06.json": "dd5c7162f2b342efef8a1b4c305f30f6d4d8905de2f0df8b958ff3cdca3ba729",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-06.json": "24074106a21dae19b4f1c3f63311fe49242453ea7c70d509744cd82439bc0288",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-prelaunch-06.json": "3e105a798ed62a9ec08322df93f65ca6baacb8b5d27942370d3332151100c8bb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-06\\case-observations.json": "e77abe4b61015f8f759f71ec1601cd2c1ffa98f341c59387c56a37b7592233e6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-06\\journal-before.json": "a82a65a2966b7c8de83d434c264af4eefc9880d7b21e9fd30a72d9d4852faa33",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-06\\journal-after.json": "e9fe6f33c4070b1e40cdff8acc41db0670e121ac7e340f2d071150a58096737a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-06\\journal.snapshot.jsonl": "9e3f54d54f83e559d41677816fb80ccbd9574d06a75852a3a6546fb6c3706787"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "3d03baad-9865-4324-bb3b-9370eeb5a7c4",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "edff311e-6cfe-4f30-967c-ed842c7d6fe0",
+          "operation": "media.play.youtube",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "77a60b15-c67a-4890-a6ff-5ddea5d84e25",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "case_id": "music1593-dev-04",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Preguntó qué música poner y reprodujo con revisión lo contestado, nombrándolo por su título observado; variante o literal sin dos pares aprobados.",
+      "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos.",
+      "final_sha256": "9954ef9820810d8a62dbba2c5ad3c3d4141c2666758c6e1749ab22b9f528fc55",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-07\\EXIT.json": "e5b4698111d6e1e5315d81c8476c1d13bc59a008d4318a347068568587363234",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-07\\RESOURCES.json": "06805b3ecb8e3628b71b1751bcd63ce1e07142c5bca0d2aab1c85377a2c417c7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\profile-owner-07.json": "bffd060d2666d4198cabf05d765d4352c5ae3161929417c5b53750ac547510b3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-07\\PREREG.json": "2cbd7fd0566054dbc6f57c7eb74700c646110d2719fdd28eed8c3945a0eeb920",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-07\\capture\\events.jsonl": "005cc1e3a30b84dbe139658743d298d3e94ebac1a3754229215585bf38d8590e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-07\\turns.jsonl": "3e35940b112b02c4dbf77d8789f185a2ab658e898394b85934d0715be30b12ec",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\fixture-07.json": "7315b0e8b59e7515be30225611c54e022006a2397910132ef43053b8763b2408",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-07.json": "49aa911fbc81b2f542f32b1157e9e2f8717b5238a6857fd0f0c4a8015319a948",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-prelaunch-07.json": "08159df31e74655c8636372b89dd669fc69c3e6995ce4f03f99acba7622399b2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-07\\case-observations.json": "ba7b32d0c9f46ace5a7fc62d2a6740ee37d4c3bcde768708ccaec57b32ce37a0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-07\\journal-before.json": "2db3d2e410415238b2580fef852c0e09793edb8d24e47edc20d06720b2e5071d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-07\\journal-after.json": "a95268d1e55c8ba25388d402c898a21d77b038c48d86d243fa6ded76d161a7d9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-07\\journal.snapshot.jsonl": "295cd4e49008a60534bb99fd94a74f3e46f252e748fdb9382239e9dcaea9c678"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "bf91334a-2693-4206-9315-ac8ae85f72b0",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "ba42552e-6ed0-44ac-9263-7dd94270d61f",
+          "operation": "media.play.youtube",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "86f88382-9f7c-470c-b0fb-d76c149d9ca9",
+          "operation": "media.control",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 8,
+      "case_id": "music1593-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "d679499a9774c016f813749881fb866b3887c43cf99a4538820f788a02ddf987",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-08\\EXIT.json": "9ffc10771c8df54850d7ccd846f59ff2abff4c94d1955ac79f1b35a3b69aaccc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-08\\RESOURCES.json": "77de7dffb2d1ecacf10f3e870b5312519cf337aa0f29faddd3820cd2cd96e9cf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\profile-owner-08.json": "d4e189c4f94099c10ba23fac10ffa19c0609521fdbbc2643796fceaf359b140b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-08\\PREREG.json": "2711c7c46f57f1e7533061a080b5a251f752b5c7cb5ddafe860f3dafef8a1ee8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-08\\capture\\events.jsonl": "01b6796f52593ffdf3e392cbb328949aaa5708f8f3b9bf916de8bb7c1cc13e17",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-08\\turns.jsonl": "188e266bec52b36413245dc27f70c33d944c7e6b0404b5f543252a353f0e16b1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\fixture-08.json": "093de74e36d0ad465aef308419618013801d560afa1fffa73f29a88168a7bfb3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-08.json": "11df2d653cdf151ce279c480a597c72c228f945549a1404a477d4486e3b8b8e0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-prelaunch-08.json": "b90b7f7b5e122efd9912b8ab7e9b5f4b50f361db256898923c6ab17e39a7fbae",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-08\\case-observations.json": "dc6e04464a0f4f7b9055a444ae7661231aa094ad71873a6d23b15058fc048d50",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-08\\journal-before.json": "94aa46fe8cce32a43c78b6c4764c7f515c385e6d2bd6669ef4c3294d8e3a29c6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-08\\journal-after.json": "77c25e7571e1d36f7dec00154de61d1988e0c5c606fce1b74f2fde9d1c63b9d2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-08\\journal.snapshot.jsonl": "14d5a1e66e25661697e615f160931b0ef41e4f12019d03d07bb9eb7cba095863"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "d97e4f22-5e54-4b6f-b6e0-420a4fdcdb52",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 9,
+      "case_id": "music1593-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "13c1ca26e95ff2a690f0ed4ffd3124da465f048dac936f31dedd1598e8bcb22b",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-09\\EXIT.json": "03a88650790367fe8314372b6b97aa7bd01ab6ad93366c3f3edfcfc60403ffa0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-09\\RESOURCES.json": "ccd22a6ec66d3ea758f778e15a29a526d0d10fb3e94b625caabcfa2ab4a034b7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\profile-owner-09.json": "d805244d079e7aed32998dcf4da910f740c483bf20c746a5cfbb992bed699843",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-09\\PREREG.json": "68f863fe645296d714818ece8082b7f8ffb0ba60a1323abf7993c9c5e79b5ed3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-09\\capture\\events.jsonl": "a254d8e4b3f2a9f58ac8041d125d6514acb9760cca4957ad6501b099abfd9673",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-09\\turns.jsonl": "ad2a767e3d4040f198a1fbdb455fe4a97e6d77941f91377471adcc8d666dc262",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\fixture-09.json": "39cf47375afd1fb38b0aeceeee79d3d2c840e2d50a1ac36b595d473c4b6b1da8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-09.json": "80d86e82655776e4f8f26d2c4988ccccde7678cbf882adad2531b6166eb5c321",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-prelaunch-09.json": "6087442a075c761c6f1b63719b086385fd5e85d02d14dc15c8a52ea6f10fb9db",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-09\\case-observations.json": "e3cc7b4260a503a8bae1b03c893f5f55ece77d5a91cdba7df820eb41dc4aa9c3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-09\\journal-before.json": "6c2c16439e591ca1723b7396350e1dbddabbc599a5330f2b3fe076d80cf198d2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-09\\journal-after.json": "a2ec48634cefae6fcad0bf7d1b52d90417b31b1b894bfddac6e355e00aae034a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-09\\journal.snapshot.jsonl": "1d13335ff2b4b19cf354d9e187e224742e7a374c2b38040d4af7def2d4fe7885"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "08baab3b-289c-4930-bc4a-aeb73d211c56",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 10,
+      "case_id": "music1593-boundary-03",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "1026f757f1610d2f691d8ffb319a6e43c2133298c7bd7dbdfd8903317098a76c",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-10\\EXIT.json": "8636c9d2adafe2dcd501dff9d544e8c1877e35c2890bfaf76cc6a68ba653b392",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-10\\RESOURCES.json": "2ba511230cc85b0af558eb769cdc1186279cfe930cccc76526823bbd5282f574",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\profile-owner-10.json": "9875dd099f3a1e3268993f593fde475d3c58141a40e61b624aa1d8bd213938f7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\results\\case-10\\PREREG.json": "b4f38b318e03b7225ee52caf3dd44774e9035ed28895aa71f254dd8af5218d6e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-10\\capture\\events.jsonl": "63958e2724184fb050d204ca5dcafa4a2ef2914cb8edfbed06315c9caa5791c8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-10\\turns.jsonl": "a3e7cea01c6f2c5eddc3b9c346c3799b44d9f626bb8e139ed3b55912f1cae3fb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\fixture-10.json": "1526624694906da3333512b75f9cfb71d60f2dbd03625be967e0e44aad16f3b9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-10.json": "694dfa06f8d4e80552d810f664a30d798dbefa390c5241dda1a70fda79ae9f03",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\context-prelaunch-10.json": "d8227b463402f22b2fd2b9623c29a6a1b8a2e95aaf3ae17cbe7302640a50010a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-10\\case-observations.json": "24cac8d7418cf476850f4a0ed4137cdf95c752cabdf7aa38be181eb3ad1fe54b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-10\\journal-before.json": "5cb8756d8fc85050a566b12d1d6485c9245797f024a1dcabe3e0a5c2b14ef0f1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-10\\journal-after.json": "f2018ab6623a499eb1ca9b5ca3d326d7ce720666e3df663a348eaabf04ff272e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1593-instrument-v1\\private\\run-10\\journal.snapshot.jsonl": "5110e21f12c75cc15260631d0085386ea82c4f9c65657628576b1d1a98b0848b"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "6cbf8cec-07b1-4f1d-9c2c-867afbbb952b",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "MUSIC1593: 11 ejecutados, 10 aprobados, 1 fallidos, 3 créditos (índices [0, 2, 3]); Música 24/39. Siguiente: categoría por masa abierta según CONDICIONES.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

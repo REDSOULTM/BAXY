@@ -1,3 +1,25 @@
+## MUSIC1593 — estado vigente 2026-09-15T18:43:33.878429+00:00
+
+Parcial: 10 aprobados, 1 fallidos, 0 sin ejecutar; 3 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 543/742 | 199 | 0 | >=417 | 5/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 414 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1593 añade 3. No se cuentan revalidaciones.
+
+Siguiente acción: MUSIC1593: 11 ejecutados, 10 aprobados, 1 fallidos, 3 créditos (índices [0, 2, 3]); Música 24/39. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1593/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 263.97 s acumulados; pico GPU 3513.33 MiB; pico RAM 2636.60 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 11; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1593 precedente. -->
+
 ## FILES1591 — estado vigente 2026-09-15T18:10:13.049752+00:00
 
 Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

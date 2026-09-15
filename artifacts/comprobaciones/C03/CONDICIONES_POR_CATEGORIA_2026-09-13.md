@@ -832,3 +832,7 @@ Archivos y carpetas pasa de 25/32 a 26/32 con el nombre del archivo pegado exent
 ## Actualización 2026-09-14 (FILES1591)
 
 Archivos y carpetas pasa de 26/32 a 27/32 con el pedido cortado dicho y preguntado cómo sigue (commit e2cd0e4f, BUILD1591) (HEAD e2cd0e4f): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes se leyeron como pedido cortado y respondieron con cero operaciones y una sola pregunta que dice en qué palabras llegó cortado el mensaje y pregunta cómo sigue, sin completar el pedido por su cuenta. Los dos límites pasaron con cero operaciones.
+
+## Actualización 2026-09-14 (MUSIC1593)
+
+Música pasa de 21/39 a 24/39 con el estado y la parada del reproductor local tras una reproducción (commit 1050ce6a, BUILD1593) (HEAD 1050ce6a): 11 ejecutados, 10 aprobados, 1 fallido, 3 créditos. Los ocho casos de diálogo reprodujeron con revisión la música guionizada en el reproductor local y luego respondieron al literal sobre ese reproductor: «qué está sonando» y sus dos variantes leyeron el reproductor (media.status) y nombraron el título observado sonando; «qué canción está sonando» leyó pero no publicó final (fragmento del título y luego título traducido); «pará la música», «para la musica» y sus dos variantes detuvieron el reproductor (media.control, salida verificada) y dijeron con verdad, en estilo de informe, que la reproducción quedó detenida. Las tres fronteras pasaron con cero operaciones; ningún reproductor sobrevivió a su caso; volumen restaurado.

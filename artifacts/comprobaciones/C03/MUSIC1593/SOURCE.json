@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1593-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs (media.status and media.control on the active local player by IPC; stands aside without one), WindowsExternalCapabilityProvider.cs (the YouTube adapter before the SMTC adapter), src/Baxy.App/ProductConductorHost.cs (turn.playback-then: reviewed playback as two request phases, the follow-up as the final) and src/baxy_mind/llm.py (local_youtube_player accepted as a media session authority).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1593/SOURCE.patch",
+  "commits": [
+    "1050ce6a4642917025dc1159f1b1b254336cdd6d"
+  ],
+  "build": "BUILD1593 (C03-repairs1593-build/BUILD_READY.json; App, Providers y mente)",
+  "cause_measured": "«qué está sonando» y «pará la música» exigen una reproducción previa que el catálogo no observaba con el reproductor local (SMTC no ve a mpv); H0224/H0543 habían agotado la recuperación del compositor sobre sesiones SMTC.",
+  "change": "El reproductor local responde estado y parada; mandato de dos turnos reproducción-luego-literal; sin respuestas fijas.",
+  "measurement": "MUSIC1593: 11 ejecutados, 10 aprobados, 1 fallido; 3 créditos. Los ocho casos de diálogo reprodujeron con revisión la música guionizada en el reproductor local y luego respondieron al literal sobre ese reproductor: «qué está sonando» y sus dos variantes leyeron el reproductor (media.status) y nombraron el título observado sonando; «qué canción está sonando» leyó pero no publicó final (fragmento del título y luego título traducido); «pará la música», «para la musica» y sus dos variantes detuvieron el reproductor (media.control, salida verificada) y dijeron con verdad, en estilo de informe, que la reproducción quedó detenida. Las tres fronteras pasaron con cero operaciones; ningún reproductor sobrevivió a su caso; volumen restaurado.",
+  "credits": 3
+}
