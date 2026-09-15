@@ -1,3 +1,11 @@
+# MEMORY1601 adjudicado — 2026-09-15T19:31:54.021919+00:00
+
+**547/742 cubiertos, 195 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 8b673e2b8f2c9b69819fad91fae35b210b774ff7b58f3a18fb497da048dad153. Primeras altas 24 h >= 421 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d747311a con BUILD1601 (el recuerdo se dice en segunda persona). Guardados explícitos guionizados por la raíz y recuerdos en el perfil aislado; sin revisión.
+
+MEMORY1601 («Memoria personal», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): 9 ejecutados, 9 aprobados, 0 fallidos, 2 créditos. Adjudicación 3e8371d2f3f7bfb11ef6a14133cc3089a20627266e44e499e33a6cf154033533. Los seis casos guardaron el dato guionizado por el canal de memoria privada (activación confirmada, guardado verificado) y luego lo recordaron con memory.recall verificada, diciéndolo a la persona en segunda persona con el valor guardado tal cual. Las tres fronteras pasaron con cero operaciones. Memoria personal queda cerrada (10/10).
+
+---
+
 # MEMORY1599 adjudicado — 2026-09-15T19:26:16.133149+00:00
 
 **545/742 cubiertos, 197 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA e90c6c177ea2c92ab50886077267a00538fcfa52b01db33fd8be3912dfa7255f. Primeras altas 24 h >= 419 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 672421ed con BUILD1599 (guardado guionizado y luego el recuerdo en el mismo perfil). Guardados explícitos guionizados por la raíz y recuerdos en el perfil aislado; sin revisión.

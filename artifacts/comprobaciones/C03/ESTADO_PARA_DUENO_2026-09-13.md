@@ -1,3 +1,25 @@
+## MEMORY1601 — estado vigente 2026-09-15T19:31:54.021919+00:00
+
+Parcial: 9 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 547/742 | 195 | 0 | >=421 | 5/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 419 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MEMORY1601 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: MEMORY1601: 9 ejecutados, 9 aprobados, 0 fallidos, 2 créditos (índices [0, 1]); Memoria personal 10/10. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/MEMORY1601/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 160.20 s acumulados; pico GPU 3497.56 MiB; pico RAM 1748.11 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MEMORY1601 precedente. -->
+
 ## MEMORY1599 — estado vigente 2026-09-15T19:26:16.133149+00:00
 
 Parcial: 5 aprobados, 4 fallidos, 0 sin ejecutar; 0 créditos.

@@ -1,0 +1,79 @@
+commit d747311a9078aad859153b4dba372619eff375ab
+
+C03: a recalled record is said in the second person, never as BAXY's own (MEMORY1601)
+
+MEMORY1599 measured that a save and its recall run and verify in the same profile, but the recall finals said the person's own datum in the first person: «Como me llamo» → «Me llamo Valentina.», «que me gusta tomar.» → «Me gusta tomar mate.». For a verified memory.recall with records, the composer now instructs the recorded value exactly as stored, addressed to the person in the second person («te llamás …», «te gusta …», «your name is …»), and rejects a draft that opens in the first person («me llamo», «me gusta», «mi bebida favorita es», «my name is», «I like») as recalled_as_own, with a hint that names the second person.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 8758e8d6..baa49065 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4436,6 +4436,16 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
+                 "Briefly confirm what you saved, using its title and relevant "
+                 "content. Address the person naturally in their language."
+             )
++        if _recalled_records(situation):
++            # MEMORY1599: the record is about the person who asks; «Me llamo
++            # Valentina» and «Me gusta tomar mate» made it BAXY's own.
++            bits.append(
++                "The records are facts about the person who is asking, kept in this "
++                "computer's private memory. Answer their question with the recorded "
++                "value exactly as stored, addressing them in the second person "
++                "(«te llamás …», «te gusta …», «your name is …»); never say it in the "
++                "first person as if it were about you, and never invent a record."
++            )
+         if (
+             situation.get("operation") in {"memory.save", "memory.sensitive.save", "memory.correct"}
+             and situation.get("verified") is True
+@@ -5952,6 +5962,25 @@ def _without_deferred_question(text: str) -> str:
+     return " ".join(sentences)
+ 
+ 
++def _recalled_records(situation: dict) -> list[dict]:
++    """MEMORY1599: the records of a verified memory.recall (label/value pairs about the person)."""
++
++    if not isinstance(situation, dict) or situation.get("operation") != "memory.recall":
++        return []
++    if situation.get("verified") is not True or situation.get("succeeded") is not True:
++        return []
++    observed = _merged_observed(situation)
++    records = observed.get("records") if isinstance(observed, dict) else None
++    return [r for r in records if isinstance(r, dict) and isinstance(r.get("value"), str)] if isinstance(records, list) else []
++
++
++_RECALLED_AS_OWN = re.compile(
++    r"^\W*(?:me\s+llamo|mi\s+nombre\s+es|me\s+gusta|me\s+encanta|mi\s+(?:bebida|color|ciudad|comida)\s+favorit[ao]\s+es|"
++    r"my\s+name\s+is|i\s+like|i\s+love|i\s+am\s+called|i'm\s+called|my\s+favou?rite)\b",
++    re.IGNORECASE,
++)
++
++
+ def _local_player_session(situation: dict) -> bool:
+     """MUSIC1593: a verified media.status/media.control observed on the local YouTube player."""
+ 
+@@ -7024,6 +7053,10 @@ def compose_visible_defect(
+         elif not clock and re.search(r"(?<!\d)\d{1,2}:\d{2}(?!\d)", stripped):
+             return "extra_claim"
+         question_text = stripped
++        if _recalled_records(situation) and _RECALLED_AS_OWN.match(stripped) is not None:
++            # MEMORY1599 «Como me llamo» → «Me llamo Valentina.»: the recalled
++            # record is the person's; said in the first person it becomes BAXY's.
++            return "recalled_as_own"
+         deferred_clarification = _deferred_clarification_for(user_text, situation)
+         if deferred_clarification is not None:
+             # AUDIO858 H0067 «subí el volumen y decime qué fecha es», H0527
+@@ -14042,6 +14075,11 @@ class LlmRuntime:
+         observed_playback = _merged_observed(situation).get("playbackStatus")
+         deferred_for_hint = _deferred_clarification_for(user_text, situation)
+         retry_hint = {
++            "recalled_as_own": (
++                "The record is about the person: say it in the second person («your name is …», «you like …»)."
++                if response_language == "en"
++                else "El dato es de la persona: dilo en segunda persona («te llamás …», «te gusta …»), nunca «me llamo» ni «me gusta»."
++            ),
+             "missing_deferred_question": (
+                 ("End with one question: how much to change the volume."
+                  if response_language == "en"

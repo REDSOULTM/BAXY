@@ -873,3 +873,7 @@ Sin cambio: Hora 4 (límites sin marca), Juegos 4 (Steam/Epic del dueño), Conve
 ## Actualización 2026-09-14 (MEMORY1599)
 
 Memoria personal pasa de 8/10 a 8/10 con los recuerdos tras un guardado en el mismo perfil (commit 672421ed, BUILD1599) (HEAD 672421ed): 9 ejecutados, 5 aprobados, 4 fallidos, 0 créditos. Los seis casos guardaron el dato guionizado por el canal de memoria privada (activación confirmada, guardado verificado; «me gusta tomar mate» ya como bebida favorita) y luego recordaron con memory.recall verificada, pero los dos literales y las dos variantes de bebida dijeron el dato en primera persona («Me llamo Valentina.», «Me gusta tomar mate.»), como si fuera de BAXY; las dos variantes de nombre respondieron con el nombre escueto. Las tres fronteras pasaron con cero operaciones. Siguiente: el compositor dice el recuerdo en segunda persona y veta la primera (MEMORY1601).
+
+## Actualización 2026-09-14 (MEMORY1601)
+
+Memoria personal pasa de 8/10 a 10/10 con el recuerdo dicho en segunda persona (commit d747311a, BUILD1601) (HEAD d747311a): 9 ejecutados, 9 aprobados, 0 fallidos, 2 créditos. Los seis casos guardaron el dato guionizado por el canal de memoria privada (activación confirmada, guardado verificado) y luego lo recordaron con memory.recall verificada, diciéndolo a la persona en segunda persona con el valor guardado tal cual. Las tres fronteras pasaron con cero operaciones. Memoria personal queda cerrada (10/10). La categoría queda cerrada.

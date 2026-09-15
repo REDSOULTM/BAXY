@@ -1,0 +1,15 @@
+{
+  "schema": "c03-memory1601-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_recalled_records, _RECALLED_AS_OWN: instruction and veto for memory.recall finals; retry hint).",
+  "patch": "artifacts/comprobaciones/C03/MEMORY1601/SOURCE.patch",
+  "commits": [
+    "d747311a9078aad859153b4dba372619eff375ab"
+  ],
+  "build": "BUILD1601 (C03-repairs1601-build/BUILD_READY.json; mente)",
+  "cause_measured": "MEMORY1601: los finales de recuerdo atribuyeron a BAXY el nombre y la bebida de la persona.",
+  "change": "Instrucción en segunda persona y veto de primera persona para los finales de memory.recall; sin respuestas fijas.",
+  "measurement": "MEMORY1601: 9 ejecutados, 9 aprobados, 0 fallidos; 2 créditos. Los seis casos guardaron el dato guionizado por el canal de memoria privada (activación confirmada, guardado verificado) y luego lo recordaron con memory.recall verificada, diciéndolo a la persona en segunda persona con el valor guardado tal cual. Las tres fronteras pasaron con cero operaciones. Memoria personal queda cerrada (10/10).",
+  "credits": 2
+}
