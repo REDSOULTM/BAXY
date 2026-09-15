@@ -6065,7 +6065,9 @@ def _negative_action_forms(folded: str) -> tuple[str, ...]:
     return tuple(
         head + folded[found.end():]
         for head in dict.fromkeys(heads)
-        if re.fullmatch(_COVERAGE_ACTION_HEAD, head)
+        # SYSTEM1545 «No uses Python.»: forbidding a means (use, employ) is a
+        # prohibition to acknowledge, although «usa» heads no request.
+        if re.fullmatch(_COVERAGE_ACTION_HEAD, head) or head in {"usa", "utiliza", "emplea", "use"}
     )
 
 

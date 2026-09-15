@@ -4649,6 +4649,48 @@ def _invented_windows_version(text: str, os_facts: dict) -> bool:
     return False
 
 
+def _memory_capacity_figures(memory: object) -> tuple[str, str] | None:
+    """(installed, total) in GB with two decimals when both are observed and differ."""
+
+    if not isinstance(memory, dict):
+        return None
+    total, installed = memory.get("totalBytes"), memory.get("installedBytes")
+    if isinstance(memory.get("total"), dict) or isinstance(memory.get("installed_capacity"), dict):
+        # Already projected: {"value": 16.5395, "unit": "GB"}.
+        total = (memory.get("total") or {}).get("value") if isinstance(memory.get("total"), dict) else None
+        installed = (memory.get("installed_capacity") or {}).get("value") if isinstance(memory.get("installed_capacity"), dict) else None
+        if not isinstance(total, (int, float)) or not isinstance(installed, (int, float)):
+            return None
+        total_gb, installed_gb = float(total), float(installed)
+    else:
+        if not isinstance(total, (int, float)) or not isinstance(installed, (int, float)) or isinstance(total, bool) or isinstance(installed, bool):
+            return None
+        total_gb, installed_gb = float(total) / 10**9, float(installed) / 10**9
+    if installed_gb < total_gb or abs(total_gb - installed_gb) < 0.05:
+        return None
+    return f"{installed_gb:.2f}", f"{total_gb:.2f}"
+
+
+def _memory_capacity_note(memory: object, language: str) -> str:
+    figures = _memory_capacity_figures(memory)
+    if figures is None:
+        return ""
+    installed, total = figures
+    if language == "en":
+        return (
+            f" The RAM installed in this machine is installed_capacity, {installed} GB:"
+            " when asked how much RAM the PC has, give that figure and call it"
+            f" installed. total, {total} GB, is what the system can use: if you"
+            " mention it, call it usable or total, never installed."
+        )
+    return (
+        f" La RAM instalada en este equipo es installed_capacity, {installed.replace('.', ',')} GB:"
+        " si preguntan cuánta RAM tiene el PC, da esa cifra y llámala instalada."
+        f" total, {total.replace('.', ',')} GB, es la que el sistema puede usar: si la"
+        " mencionas, llámala utilizable o total, nunca instalada."
+    )
+
+
 def _mislabelled_installed_memory(text: str, memory: dict) -> bool:
     """A total or usable figure called «instalada»/«installed» when the observed installed value differs."""
 
@@ -12393,6 +12435,13 @@ class LlmRuntime:
                 " free amount, used is in use, installed_capacity is the"
                 " installed hardware. Never call the total free or available."
             )
+            # SYSTEM1545 H0076: asked how much RAM the PC has, three drafts in
+            # a row called the usable total (16,54 GB) «instalados» while the
+            # installed capacity read 17,18 GB. Name both figures and their
+            # labels so the small model does not have to infer them.
+            scope += _memory_capacity_note(
+                _merged_observed(situation).get("memory"), response_language
+            )
             message_prompt += scope
             cpu_prompt += scope
         if (
@@ -13751,7 +13800,7 @@ class LlmRuntime:
                 else "La cifra que llamaste instalada es el total; la capacidad "
                 "instalada es otro valor observado. Di total, o usa la cifra de "
                 "installed_capacity para instalada."
-            ),
+            ) + _memory_capacity_note(_merged_observed(situation).get("memory"), response_language),
             "missing_scan_limit": (
                 "Only the wifi connection state was read; you cannot scan or list "
                 "available networks. Say so plainly."
