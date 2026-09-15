@@ -664,3 +664,7 @@ Conocimiento, razonamiento y creatividad verbal pasa de 35/37 a 36/37 con el con
 ## Actualización 2026-09-14 (GAMES1531)
 
 Bibliotecas y fichas de juegos pasa de 0/6 a 1/6 con la biblioteca de Steam listada en local sin abrir Steam (commit 2bef0b2f, BUILD1531) (HEAD 2bef0b2f): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes ejecutaron una game.catalog.list de sólo lectura sobre los manifiestos locales y dijeron el total real de juegos instalados, seis nombres tal cual y que hay más, sin abrir Steam (los nombres citados y la cifra coinciden con la observación); los tres límites pasaron. Cero violaciones en los seis.
+
+## Actualización 2026-09-14 (GAMES1533)
+
+Bibliotecas y fichas de juegos pasa de 1/6 a 2/6 con el nombre casi igual al de un juego instalado preguntado como el de una aplicación (commit 065bf9f8, BUILD1533) (HEAD 065bf9f8): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. «Ve a Mad de Rivals.» y sus dos variantes terminaron con cero operaciones y la pregunta validada «¿Querés que abra Marvel Rivals?», nombrando el juego instalado tal cual, sin buscar, navegar ni abrir; los tres límites pasaron. Cero violaciones en los seis.

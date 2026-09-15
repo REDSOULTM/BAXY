@@ -1,0 +1,15 @@
+{
+  "schema": "c03-games1533-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (near_catalog_game_candidates: una orden de abrir, lanzar o ir a un nombre que comparte una palabra de cinco letras o más con el título de un juego instalado, o está a una o dos ediciones, sin coincidencia exacta ni deíctico) y src/baxy_mind/__main__.py (las candidatas de juego se preguntan por el mismo aclarador validado de las aplicaciones).",
+  "patch": "artifacts/comprobaciones/C03/GAMES1533/SOURCE.patch",
+  "commits": [
+    "065bf9f8e18b183a33b2b659b4e9eba914844600"
+  ],
+  "build": "BUILD1533 (C03-repairs1533-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "«Ve a Mad de Rivals.» se leía como ir a un sitio web (búsqueda pública y navegación a una página ajena) cuando el dueño quiso Marvel Rivals, instalado; ningún lector comparaba el nombre con los juegos instalados.",
+  "change": "Lector de nombres casi iguales a juegos instalados hacia el aclarador de aplicaciones; sin respuestas fijas.",
+  "measurement": "GAMES1533: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. «Ve a Mad de Rivals.» y sus dos variantes terminaron con cero operaciones y la pregunta validada «¿Querés que abra Marvel Rivals?», nombrando el juego instalado tal cual, sin buscar, navegar ni abrir; los tres límites pasaron. Cero violaciones en los seis.",
+  "credits": 1
+}

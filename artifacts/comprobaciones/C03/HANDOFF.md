@@ -1,3 +1,11 @@
+# GAMES1533 adjudicado — 2026-09-15T03:18:37.649959+00:00
+
+**515/742 cubiertos, 227 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 704aaef4865592a5a40762b63d0fcd4f102db9b88a00a87eba176d5a6c8eb0c7. Primeras altas 24 h >= 389 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 065bf9f8 con BUILD1533 (el nombre casi igual al de un juego instalado se pregunta como el de una aplicación; GAMES1533/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+GAMES1533 («Bibliotecas y fichas de juegos», H0682 «Ve a Mad de Rivals.»): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Adjudicación 83b069a6c57c423f9ce59265f920a29a0b0d0841fb60793c4d90745d8de4193c. «Ve a Mad de Rivals.» y sus dos variantes terminaron con cero operaciones y la pregunta validada «¿Querés que abra Marvel Rivals?», nombrando el juego instalado tal cual, sin buscar, navegar ni abrir; los tres límites pasaron. Cero violaciones en los seis.
+
+---
+
 # GAMES1531 adjudicado — 2026-09-15T03:09:03.390179+00:00
 
 **514/742 cubiertos, 228 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 67dfde98e62b437a77df8488e7525288c6558fea1d088846c60eb8601983e459. Primeras altas 24 h >= 388 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 2bef0b2f con BUILD1531 (ver la biblioteca de Steam es el listado local de sólo lectura, contado y nombrado tal cual; GAMES1531/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

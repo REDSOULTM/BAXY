@@ -1,0 +1,96 @@
+commit 065bf9f8e18b183a33b2b659b4e9eba914844600
+
+C03: an order that almost names an installed game asks whether to open it (GAMES1533)
+
+«Ve a Mad de Rivals.» was read as going to a web site («Mad de Rivals»: a public search and a navigation to a stranger's page) when the owner meant Marvel Rivals, installed in their library. `effect_intent.near_catalog_game_candidates` reads an open, launch or go-to order whose target shares a word of five or more letters with an installed game's title (or is one or two edits away), excluding exact matches and deictics; the turn asks whether to open it with the same validated clarifier as near-miss applications (APPS1499): zero operations, no search, no launch.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 6f31f2c8..0d46a80d 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -6380,7 +6380,12 @@ def _prepare_turn_result(
+         or explicit_non_action
+         or _history_has_pending_clarification(history, message.get("pendingClarification"))
+         or _previous_user_request(history, objective) is not None
+-        else effect_intent.near_catalog_application_candidates(objective, application_names)
++        else (
++            effect_intent.near_catalog_application_candidates(objective, application_names)
++            # GAMES1533 «Ve a Mad de Rivals.»: an installed game almost named
++            # is asked about the same way as an application.
++            or effect_intent.near_catalog_game_candidates(objective, game_catalog)
++        )
+     )
+     if (
+         explicit_clarification is not None
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 20951542..bc5d38a9 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -4420,6 +4420,64 @@ def near_catalog_application_candidates(
+     return tuple(names[:2])
+ 
+ 
++_NEAR_GAME_ORDER = re.compile(
++    r"^[\s¡!¿?]*(?:abre|abri|abrime|abris|lanza|lanzame|inicia|iniciame|pone|pon|poneme|juga|jugar\s+a|jugar|"
++    r"ve\s+a|anda\s+a|andate\s+a|entra\s+a|vamos\s+a|open|launch|play|go\s+to|start)\s+"
++    r"(?:(?:el|la|los|las|the|a|al)\s+)?(?P<target>[a-z0-9][a-z0-9 .'+-]{1,40}?)[\s.!?,]*$"
++)
++
++
++def near_catalog_game_candidates(
++    text: str,
++    games: Iterable[tuple[str, str, str]] | GameCatalogIndex,
++) -> tuple[str, ...]:
++    """GAMES1533 «Ve a Mad de Rivals.»: the installed game names (at most two)
++    that an open, launch or go-to order almost names — a word of five or more
++    letters shared with the title, or the whole target one or two edits away —
++    when the target matches no game exactly. Empty for anything else."""
++
++    index = build_game_catalog_index(games)
++    if not index.entries:
++        return ()
++    folded = _strip_request_envelope(_fold(text))
++    if not folded or _has(folded, r"\b(?:no|nunca|jamas|never|don't|do\s+not)\b|\b(?:si|if|cuando|when)\b.{0,20}\b(?:termine|acabe|finish)\b"):
++        return ()
++    folded = re.sub(r"^(?:si|ok|dale|bueno|y|and)\s*[,.]?\s*(?:quema\s*,?\s*)?", "", folded, count=1).strip()
++    request = _NEAR_GAME_ORDER.match(folded)
++    if request is None:
++        return ()
++    target = request.group("target").strip(" ¿?¡!,:;.-")
++    target = re.sub(r"\s*,?\s*(?:por\s+favor|porfa|please|pls)$", "", target).strip(" ,.")
++    key = _entity_key(target)
++    if not key or len(key) < 3 or len(key.split()) > 3:
++        return ()
++    if key in {"eso", "esto", "aquello", "ese", "esa", "este", "esta", "algo", "todo", "that", "this", "it"}:
++        # «abrí eso» is a deictic, never a near miss of a short title (DSX).
++        return ()
++    if any(entry[0] == key for entry in index.entries):
++        return ()
++    target_tokens = {token for token in key.split() if len(token) >= 5}
++    scored: list[tuple[int, str]] = []
++    for normalized, _provider, _app_id, display in index.entries:
++        name_tokens = set(normalized.split())
++        if target_tokens & name_tokens:
++            score = 0
++        else:
++            if len(key) < 5:
++                continue
++            distance = _edit_distance(key, normalized)
++            if distance > 2:
++                continue
++            score = distance
++        scored.append((score, display))
++    scored.sort(key=lambda item: (item[0], item[1]))
++    names: list[str] = []
++    for score, name in scored:
++        if score <= scored[0][0] and name not in names:
++            names.append(name)
++    return tuple(names[:2])
++
++
+ def _application_target_forms(
+     raw_target: str,
+ ) -> tuple[tuple[str, int], ...]:
