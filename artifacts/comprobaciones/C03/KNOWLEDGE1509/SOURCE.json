@@ -1,0 +1,15 @@
+{
+  "schema": "c03-knowledge1509-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_truncated_fact_word: una palabra de los hechos que es el token más «s» o «es» —el plural de un singular publicado— no cuenta como palabra cortada; el resto del veto no cambia).",
+  "patch": "artifacts/comprobaciones/C03/KNOWLEDGE1509/SOURCE.patch",
+  "commits": [
+    "d7752fe8ffbe3d0762f1b3897da5affa062b20db"
+  ],
+  "build": "BUILD1509 (C03-repairs1509-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "KNOWLEDGE1509: «decime una curiosidad» y «explicame algo curioso» buscaron su tema y los borradores repetían el fragmento nombrando la página, pero el veto de palabra cortada tomó «curiosidad» por un corte de «curiosidades» (título de un resultado) y el turno acabó sin final.",
+  "change": "El veto de palabra cortada exime el plural en «s»/«es» del token; sin respuestas fijas.",
+  "measurement": "KNOWLEDGE1509: 6 ejecutados, 5 aprobados, 1 fallido; 0 créditos. Las dos variantes buscaron su tema y contaron lo que un fragmento afirma nombrando la página (Wikipedia, National Geographic); el literal «decime una curiosidad» completó la búsqueda de «Colibrí» pero sus tres borradores («…según Atlas Animal») cayeron por el veto de palabra cortada, que tomó «Atlas» por un corte de las palabras pegadas del host de la URL («atlasanimal»); los tres límites pasaron. Siguiente: las URL no son nombres a preservar (KNOWLEDGE1511).",
+  "credits": 0
+}

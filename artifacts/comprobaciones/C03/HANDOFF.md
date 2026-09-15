@@ -1,3 +1,11 @@
+# KNOWLEDGE1509 adjudicado — 2026-09-15T01:35:05.568550+00:00
+
+**498/742 cubiertos, 244 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA e622137968ca276453fc6f17f2c20a4179d7f742218fb50868a5fb0a71581b09. Primeras altas 24 h >= 372 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d7752fe8 con BUILD1509 (el singular no es un corte del plural en el veto de palabra cortada; KNOWLEDGE1509/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+KNOWLEDGE1509 («Conocimiento, razonamiento y creatividad verbal», H0520 «decime una curiosidad»): 6 ejecutados, 5 aprobados, 1 fallido, 0 créditos. Adjudicación 0617af7c4229817b31e0c2fd1e2475d8cc6d3d834f857520e880cb56ab422673. Las dos variantes buscaron su tema y contaron lo que un fragmento afirma nombrando la página (Wikipedia, National Geographic); el literal «decime una curiosidad» completó la búsqueda de «Colibrí» pero sus tres borradores («…según Atlas Animal») cayeron por el veto de palabra cortada, que tomó «Atlas» por un corte de las palabras pegadas del host de la URL («atlasanimal»); los tres límites pasaron. Siguiente: las URL no son nombres a preservar (KNOWLEDGE1511).
+
+---
+
 # KNOWLEDGE1507 adjudicado — 2026-09-15T01:29:24.013058+00:00
 
 **498/742 cubiertos, 244 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA b880fae27c7eb6ba8264d4b2ac1297304b01db0986c649106c48454f7a6b2c1b. Primeras altas 24 h >= 372 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f779b5f1 con BUILD1507 (el tema elegido por el lector de curiosidad aterrizado como la consulta de noticias; KNOWLEDGE1507/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

@@ -1,0 +1,26 @@
+commit d7752fe8ffbe3d0762f1b3897da5affa062b20db
+
+C03: a singular is not a cut of its plural in the truncated-word veto (KNOWLEDGE1509)
+
+KNOWLEDGE1507 measured that «decime una curiosidad» and «explicame algo curioso» searched their subject and every draft repeated the snippet naming its page, but `_truncated_fact_word` took the singular «curiosidad» for a cut of «curiosidades» in a result title and no final was published. A fact word that is the token plus «s» or «es» no longer counts as a truncation; the rest of the veto is unchanged.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 55950f02..12dff1e6 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -5155,7 +5155,11 @@ def _truncated_fact_word(text: str, facts: dict) -> bool:
+         if token in fact_words:
+             continue
+         if any(
+-            word.startswith(token) and len(word) >= len(token) + 2
++            word.startswith(token)
++            and len(word) >= len(token) + 2
++            # KNOWLEDGE1507: «curiosidad» is the singular of the result title
++            # word «curiosidades», not a cut of it; the same for «-s» plurals.
++            and word not in (token + "s", token + "es")
+             for word in fact_words
+         ):
+             return True
