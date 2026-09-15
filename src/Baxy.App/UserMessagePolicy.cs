@@ -413,7 +413,7 @@ internal static class UserMessagePolicy
             {
                 return "missing_literal_fact";
             }
-            if (InventedVolume(draft.Source, modelText))
+            if (InventedVolume(draft.Source, modelText, userText))
             {
                 return "missing_literal_fact";
             }
@@ -2067,9 +2067,18 @@ internal static class UserMessagePolicy
         return found;
     }
 
-    private static bool InventedVolume(string source, string result)
+    private static bool InventedVolume(string source, string result, string? userText = null)
     {
         string folded = FoldForPolicy(result);
+        if (userText is not null
+            && ContainsAny(FoldForPolicy(userText), ["volumen", "volume"]))
+        {
+            // AUDIO1577 «subí el volumen y decime qué fecha es»: the final reports
+            // the date and ends by asking how much to change the volume. The
+            // question names the volume the person asked about; it states no
+            // level. Only the sentences before that question can invent one.
+            folded = FoldForPolicy(WithoutTrailingQuestion(result));
+        }
         if (!ContainsAny(folded, ["volumen", "volume", " muted", "silenci"]))
         {
             return false;
@@ -2083,6 +2092,18 @@ internal static class UserMessagePolicy
         return !source.Contains("\"level\"", StringComparison.Ordinal)
             && !source.Contains("\"muted\"", StringComparison.Ordinal)
             && !source.Contains("\"volumePercent\"", StringComparison.Ordinal);
+    }
+
+    private static string WithoutTrailingQuestion(string result)
+    {
+        string trimmed = result.TrimEnd();
+        if (!trimmed.EndsWith('?'))
+        {
+            return result;
+        }
+
+        int cut = trimmed.LastIndexOfAny(['.', '!', '?'], Math.Max(0, trimmed.Length - 2));
+        return cut < 0 ? string.Empty : trimmed[..(cut + 1)];
     }
 
     private static bool InventedExtraClock(string source, string result)

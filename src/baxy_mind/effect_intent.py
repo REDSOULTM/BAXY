@@ -6181,7 +6181,9 @@ def _negative_action_forms(folded: str) -> tuple[str, ...]:
         for head in dict.fromkeys(heads)
         # SYSTEM1545 «No uses Python.»: forbidding a means (use, employ) is a
         # prohibition to acknowledge, although «usa» heads no request.
-        if re.fullmatch(_COVERAGE_ACTION_HEAD, head) or head in {"usa", "utiliza", "emplea", "use"}
+        # AUDIO1577 «No toques el volumen.»: forbidding to touch something is
+        # the same prohibition as forbidding to change it.
+        if re.fullmatch(_COVERAGE_ACTION_HEAD, head) or head in {"usa", "utiliza", "emplea", "use", "toca", "touch"}
     )
 
 
