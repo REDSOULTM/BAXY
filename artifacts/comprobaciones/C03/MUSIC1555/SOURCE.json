@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1555-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs (yt-dlp con --extractor-args youtube:player_client=android: sus URL de flujo se reproducen directamente en mpv; el título observado sigue en el recibo).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1555/SOURCE.patch",
+  "commits": [
+    "b714f8046ea7eba348d1801ac48b3f87d22f3c8f"
+  ],
+  "build": "BUILD1555 (C03-repairs1555-build/BUILD_READY.json; Providers)",
+  "cause_measured": "MUSIC1555: la reproducción se propuso, se aprobó y se resolvió con título, pero la URL de flujo del cliente android_vr respondió 403 al HTTP del reproductor y mpv no reprodujo (youtube_mpv_playback_not_verified).",
+  "change": "Cliente android en la resolución de yt-dlp; sin respuestas fijas.",
+  "measurement": "MUSIC1555: 7 ejecutados, 3 aprobados (los tres límites), 4 fallidos; 0 créditos. Medido: con el cliente android las cuatro reproducciones revisadas se resolvieron, reprodujeron y verificaron en el reproductor local con su título observado en el recibo; el volumen se preajustó y restauró y los reproductores se detuvieron. Ningún final se publicó: los borradores que citaron el título completo lo escribieron con espacios simples donde el observado trae espacios dobles, y los demás citaron sólo un fragmento («Smooth Criminal»); el veto de nombre rechazó los tres intentos. Siguiente: las comprobaciones de nombre toleran los espacios colapsados y la pista de reintento nombra el título completo (MUSIC1557).",
+  "credits": 0
+}

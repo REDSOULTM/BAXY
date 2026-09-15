@@ -1,0 +1,24 @@
+commit b714f8046ea7eba348d1801ac48b3f87d22f3c8f
+
+C03: the YouTube resolver uses the android client, whose stream URLs play in the local player (MUSIC1555)
+
+MUSIC1553 measured that the reviewed playback was proposed, approved and resolved with its title, but mpv never played: the stream URL of yt-dlp's default client (android_vr) answers 403 Forbidden to the player's HTTP client. A root probe showed that with --extractor-args youtube:player_client=android the resolved itag 18 URL plays directly in mpv (WASAPI audio and video), while web, tv, ios and mweb do not. YouTubeMpvAdapter passes that client to yt-dlp; nothing else changes.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs b/src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs
+index f0bd8014..0ba289a6 100644
+--- a/src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs
+@@ -123,6 +123,10 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
+             start.ArgumentList.Add("--js-runtimes");
+             start.ArgumentList.Add("node:" + _nodePath);
+         }
++        // MUSIC1553: the default (android_vr) client's stream URLs answer 403 to the
++        // player's own HTTP client; the android client's URLs play directly in mpv.
++        start.ArgumentList.Add("--extractor-args");
++        start.ArgumentList.Add("youtube:player_client=android");
+         start.ArgumentList.Add("--format");
+         start.ArgumentList.Add("18/b[ext=mp4][protocol=https]/b[protocol=https]");
+         start.ArgumentList.Add("--print");

@@ -1,3 +1,25 @@
+## MUSIC1555 — estado vigente 2026-09-15T06:53:04.382204+00:00
+
+Parcial: 3 aprobados, 4 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 521/742 | 221 | 0 | >=395 | 5/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 395 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1555 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: MUSIC1555: 7 ejecutados, 3 aprobados, 4 fallidos, 0 créditos (índices []); Leer y resumir páginas web 0/2. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1555/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 190.22 s acumulados; pico GPU 3512.46 MiB; pico RAM 2786.53 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 7; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1555 precedente. -->
+
 ## MUSIC1553 — estado vigente 2026-09-15T06:28:09.048468+00:00
 
 Parcial: 3 aprobados, 4 fallidos, 0 sin ejecutar; 0 créditos.
