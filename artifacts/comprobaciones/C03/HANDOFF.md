@@ -1,3 +1,11 @@
+# WINDOWS1537 adjudicado — 2026-09-15T03:36:02.411984+00:00
+
+**517/742 cubiertos, 225 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 420b308afa75010b19a46b9489f4c9de5da5b03f220c7d8aa1e039a89be951fd. Primeras altas 24 h >= 391 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c330c976 con BUILD1537 (la ventana nombrada sólo por «la otra» o «la mejor» se pregunta; WINDOWS1537/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+WINDOWS1537 («Organizar ventanas y pestañas», H0263 «cambiá a la otra ventana», H0392 «enfocá la mejor»): 7 ejecutados, 7 aprobados, 0 fallidos, 2 créditos. Adjudicación 9add07a60ada221cc46345b17eac2c4c59205cd2e95e661e6382f9ca897f3eed. Los dos literales y las dos variantes terminaron con cero operaciones y una pregunta validada de a qué ventana cambiar o enfocar («¿A qué ventana querés cambiar?»), sin adivinar ninguna; los tres límites pasaron. Cero violaciones en los siete.
+
+---
+
 # APPS1535 adjudicado — 2026-09-15T03:28:40.183089+00:00
 
 **515/742 cubiertos, 227 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 80a61532dda2787934ea3474fbe647e69d30396e46dae7dda165e4866d74873d. Primeras altas 24 h >= 389 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD cc567171 con BUILD1535 (la muletilla hablada delante de la orden es envoltorio; APPS1535/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

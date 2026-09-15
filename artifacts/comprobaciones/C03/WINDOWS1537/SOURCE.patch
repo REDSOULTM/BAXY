@@ -1,0 +1,108 @@
+commit c330c97683f8ff4748166ac30668050f4a5bf895
+
+C03: a window named only by «la otra» or «la mejor» asks which window (WINDOWS1537)
+
+ARRANGE1229 left «cambiá a la otra ventana» and «enfocá la mejor» as a condition: with nothing before them and no criterion there is no determinate window, and window.focus runs without confirmation. `_unresolved_input_kind` now names «indeterminate_window» (switch/go to «la otra/siguiente/anterior/mejor» window, focus/bring «la otra/mejor/más grande») and `clarify_unresolved_input` composes a validated question asking which window or application, rejecting guessed applications and «no entiendo», with one corrected retry; verified offline against the same model («¿A qué ventana querés cambiar?»).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 0d46a80d..1e4d4290 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -3016,6 +3016,25 @@ def _unresolved_input_kind(objective: str) -> str | None:
+         return "noise"
+     if _overheard_speech(folded):
+         return "overheard_speech"
++    if (
++        re.fullmatch(
++            # WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá la
++            # mejor»: a window named only by «la otra», «la mejor», «la
++            # siguiente» with nothing before it; the honest turn asks which.
++            r"[\s¡!¿?]*(?:"
++            r"(?:cambia|cambiame|pasa|pasame|anda|andate|ve|salta|volve|vuelve|switch|go|jump|move)"
++            r"(?:\s+(?:a|to))?\s+(?:la|the)\s+(?:otra|other|next|siguiente|anterior|previous|ultima|last|mejor|best)"
++            r"(?:\s+(?:ventana|window|pestana|tab))?|"
++            r"(?:enfoca|enfocame|foca|activa|activame|trae|traeme|pone|poneme|lleva|llevame|focus|bring|put)"
++            r"\s+(?:la|the)\s+(?:otra|other|mejor|best|siguiente|next|anterior|previous|ultima|last|"
++            r"mas\s+grande|biggest|largest|mas\s+chica|smallest|mas\s+importante|principal|main)"
++            r"(?:\s+(?:ventana|window))?(?:\s+(?:al\s+frente|adelante|to\s+the\s+front|forward))?"
++            r")[\s.!?¿¡]*",
++            folded,
++        )
++        is not None
++    ):
++        return "indeterminate_window"
+     if (
+         re.fullmatch(
+             # KNOWLEDGE1523 H0424 «¿Cuál es su identidad secreta?», H0645
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 6a2d6751..f717d602 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -10531,11 +10531,26 @@ class LlmRuntime:
+         a meaning: the question names what arrived and asks what to do.
+         """
+ 
+-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent"}:
++        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window"}:
+             raise ValueError("clase de entrada sin pedido inválida")
+         current = str(text).strip()[:2_048]
+         situation = (
+             (
++                # WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá
++                # la mejor»: «la otra» or «la mejor» names no window when
++                # nothing came before and several windows may be open.
++                "Eres BAXY. El usuario te pidió cambiar a otra ventana o enfocar "
++                "«la mejor», «la otra» o «la siguiente», sin decir cuál es y sin "
++                "nada anterior a lo que pueda referirse; puede haber varias "
++                "ventanas abiertas y no tienes criterio para elegir. Formula una "
++                "sola pregunta breve, en el idioma del usuario, que pregunte a qué "
++                "ventana quiere cambiar o cuál quiere que enfoques, por su nombre o "
++                "aplicación (por ejemplo: «¿A qué ventana querés cambiar?»). No "
++                "adivines ninguna ventana ni aplicación, no digas que no entiendes "
++                "ni que algo falló y no ofrezcas ayuda genérica."
++            )
++            if kind == "indeterminate_window"
++            else (
+                 # KNOWLEDGE1523 H0424 «¿Cuál es su identidad secreta?», H0645
+                 # «¿Quién es de verdad?»: nobody was named and nothing precedes
+                 # the question; asking whom is the only honest move.
+@@ -10822,6 +10837,36 @@ class LlmRuntime:
+                         )
+                         continue
+                     raise ValueError("aclaración de mirar deíctico no pregunta qué mirar")
++            # WINDOWS1537: the question must ask which window (or application),
++            # never guess one. One corrected retry.
++            if kind == "indeterminate_window":
++                folded_question = _fold_dialogue_text(question)
++                asks_which = re.search(
++                    r"\b(?:a\s+(?:que|cual)|que|cual|which|what)\b.{0,40}\b(?:ventana|window|aplicacion|application|app|programa|pestana|tab)\b|"
++                    r"\b(?:ventana|window)\b.{0,30}\b(?:queres|quieres|te\s+refieres|te\s+referis|do\s+you\s+mean|want)\b",
++                    folded_question,
++                ) is not None
++                guesses = re.search(
++                    r"\b(?:chrome|opera|steam|spotify|discord|notepad|bloc\s+de\s+notas|calculadora|explorador|navegador|browser|"
++                    r"no\s+entiendo|no\s+puedo|fallo|error)\b",
++                    folded_question,
++                ) is not None
++                if not asks_which or guesses:
++                    if attempt == 0:
++                        payload["messages"].insert(
++                            -1,
++                            {
++                                "role": "system",
++                                "content": (
++                                    "Corrección: pregunta sólo a qué ventana o aplicación quiere "
++                                    "cambiar o enfocar, con «qué» o «cuál» y la palabra ventana, por "
++                                    "ejemplo: «¿A qué ventana querés cambiar?». No nombres ninguna "
++                                    "aplicación ni digas que no entiendes."
++                                ),
++                            },
++                        )
++                        continue
++                    raise ValueError("aclaración de ventana indeterminada no pregunta cuál")
+             # KNOWLEDGE1523: the question must ask whom, never name a character
+             # or answer with BAXY's own identity. One corrected retry.
+             if kind == "missing_person_referent":

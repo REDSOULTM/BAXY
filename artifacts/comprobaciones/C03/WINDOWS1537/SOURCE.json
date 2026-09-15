@@ -1,0 +1,15 @@
+{
+  "schema": "c03-windows1537-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_unresolved_input_kind: indeterminate_window —cambiar/pasar/ir a «la otra/siguiente/anterior/mejor» ventana o enfocar/traer «la otra/mejor/más grande»— sin antecedente) y src/baxy_mind/llm.py (clarify_unresolved_input: pregunta validada de a qué ventana o aplicación; rechaza nombrar aplicaciones o decir que no entiende; un reintento corregido).",
+  "patch": "artifacts/comprobaciones/C03/WINDOWS1537/SOURCE.patch",
+  "commits": [
+    "c330c97683f8ff4748166ac30668050f4a5bf895"
+  ],
+  "build": "BUILD1537 (C03-repairs1537-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "ARRANGE1229: «cambiá a la otra ventana» y «enfocá la mejor» no tienen referente determinado sin antecedente ni criterio y window.focus corre sin confirmación; quedaron como condición.",
+  "change": "Clase de entrada sin pedido indeterminate_window con su aclaración validada; sin respuestas fijas.",
+  "measurement": "WINDOWS1537: 7 ejecutados, 7 aprobados, 0 fallidos; 2 créditos. Los dos literales y las dos variantes terminaron con cero operaciones y una pregunta validada de a qué ventana cambiar o enfocar («¿A qué ventana querés cambiar?»), sin adivinar ninguna; los tres límites pasaron. Cero violaciones en los siete.",
+  "credits": 2
+}

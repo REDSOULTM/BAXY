@@ -672,3 +672,7 @@ Bibliotecas y fichas de juegos pasa de 1/6 a 2/6 con el nombre casi igual al de 
 ## Actualización 2026-09-14 (APPS1535)
 
 Abrir aplicaciones pasa de 45/54 a 45/54 con la muletilla hablada delante de la orden tratada como envoltorio (commit cc567171, BUILD1535) (HEAD cc567171): 6 ejecutados, 3 aprobados (los tres límites), 3 fallidos, 0 créditos. Con la muletilla quitada, «Y quema, abre Saint Rose.» llegó a la conversación de fuera de catálogo (cero operaciones), pero su final genérico («No puedo hacer eso, está fuera de mi ámbito.») no nombra Saint Rose ni dice que no lo encuentra; las dos variantes pasaron por la decisión del modelo (app.open propuesto y descartado por el catálogo) y terminaron preguntando si abrir un nombre que no existe en ningún catálogo. Los tres límites pasaron. La fila queda condicionada: la apertura de un nombre fuera de catálogo necesita un final que lo nombre y diga que no está disponible.
+
+## Actualización 2026-09-14 (WINDOWS1537)
+
+Organizar ventanas y pestañas pasa de 4/13 a 6/13 con la ventana nombrada sólo por «la otra» o «la mejor» preguntada (commit c330c976, BUILD1537) (HEAD c330c976): 7 ejecutados, 7 aprobados, 0 fallidos, 2 créditos. Los dos literales y las dos variantes terminaron con cero operaciones y una pregunta validada de a qué ventana cambiar o enfocar («¿A qué ventana querés cambiar?»), sin adivinar ninguna; los tres límites pasaron. Cero violaciones en los siete.

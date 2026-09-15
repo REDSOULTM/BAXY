@@ -1,0 +1,96 @@
+{
+  "schema": "windows1537-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1537-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1537-instrument-v1",
+  "seal_sha256": "b0f3d48aefcef949a5d0204395aca42b3f4a3e073a41fb48b93ef2721ddf991c",
+  "runner_sha256": "c6e1c323fe2fdfc7060f22806cd4224342bb4aa4ae5607ed9dbb37ff1bd26d5e",
+  "transport_seal_sha256": "4544e3346bfb6dc95799ddcc3f6f8bdf57ed84a7e9ca6b50f40b731a79ee2555",
+  "files": {
+    "panel.json": "dbb6aa55f31e1cc3d1c23a4c220fa6d86796b1ecff6f29102b1823719e992815",
+    "turns.jsonl": "185003b6765cfce89271702d3297e1019898b1e3f8b1b29da8f3dac5569e631f",
+    "case-map.json": "1d4f4b4193eba1434886cfa089ae243072b90091884182718e7576cf78702289",
+    "PLAN.md": "6d80d74d1f0c136cd6ed0c4d8f84c41239b3fcc24c3191b4099c97d6230c5297"
+  },
+  "counts": {
+    "cases": 7,
+    "historical_literals": 2,
+    "original_development_variants": 2,
+    "boundaries": 3,
+    "wire_lines": 14,
+    "session_controls": 7,
+    "ordinary_turns": 7,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 7,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 2,
+    "original_development_variant": 2,
+    "boundary": 3
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0263",
+      "kind": "historical_literal",
+      "group": "indeterminate_window",
+      "credit_behavior": "indeterminate_window",
+      "text_sha256": "55369c9bd3eb3935369bf088d2349ab7aa9987d6aec4d3474590e753f8090299",
+      "criterion_sha256": "09da11a74310be7afa8162bd8ec58e5b1fb0626029e053585800bc629a3a0a65"
+    },
+    {
+      "index": 1,
+      "case_id": "H0392",
+      "kind": "historical_literal",
+      "group": "indeterminate_window",
+      "credit_behavior": "indeterminate_window",
+      "text_sha256": "86452218cbddf7688e03c110fe43c2f6e53e6671e3b4ccd55935c0f39dda6eb5",
+      "criterion_sha256": "09da11a74310be7afa8162bd8ec58e5b1fb0626029e053585800bc629a3a0a65"
+    },
+    {
+      "index": 2,
+      "case_id": "windows1537-dev-01",
+      "kind": "original_development_variant",
+      "group": "indeterminate_window",
+      "credit_behavior": "indeterminate_window",
+      "text_sha256": "da5709bb5663236e228ffb76db225aacf17adcea88e6fffa3594f09ada93deea",
+      "criterion_sha256": "09da11a74310be7afa8162bd8ec58e5b1fb0626029e053585800bc629a3a0a65"
+    },
+    {
+      "index": 3,
+      "case_id": "windows1537-dev-02",
+      "kind": "original_development_variant",
+      "group": "indeterminate_window",
+      "credit_behavior": "indeterminate_window",
+      "text_sha256": "a250387589887a0bdfb5931c9ec2a42c09ed3c39bebfc15e9da85c509519b503",
+      "criterion_sha256": "09da11a74310be7afa8162bd8ec58e5b1fb0626029e053585800bc629a3a0a65"
+    },
+    {
+      "index": 4,
+      "case_id": "windows1537-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "ed16752bbc579cc41d33f54fc1493e36ff758cfa329c76fe2f04f526adfce2e4",
+      "criterion_sha256": "ac9432e776338837c1c5555b118b3f2f99f124be8d13212f5704a30407c9e4ed"
+    },
+    {
+      "index": 5,
+      "case_id": "windows1537-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "6a9494df8e4b4b3f1104bd1861cccf114908727be44b4c57922b3e4bbb2bf763",
+      "criterion_sha256": "1f236967b5ef950b8599f929009c7a7b13714375200d242f84fa1feb91fc9e6c"
+    },
+    {
+      "index": 6,
+      "case_id": "windows1537-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "bc24898c6d653acc0303bda963f8edd69ad552c3e75140829c1ecc5b591f40cc",
+      "criterion_sha256": "50757e30c0886c9c9d6fe25617d31896c91ed2f486ced29f1b243a9954f5945b"
+    }
+  ]
+}
