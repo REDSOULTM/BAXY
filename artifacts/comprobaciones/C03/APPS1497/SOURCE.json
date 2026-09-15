@@ -1,0 +1,15 @@
+{
+  "schema": "c03-apps1497-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_prepare_turn_result: el bloque de resultado de aclaración exime la ruta de aplicación aproximada del assert de aclaración explícita y la etiqueta near_application_clarification en la auditoría).",
+  "patch": "artifacts/comprobaciones/C03/APPS1497/SOURCE.patch",
+  "commits": [
+    "7843f5768904b8c7769d4ada982661f1bb222ba9"
+  ],
+  "build": "BUILD1497 (C03-repairs1497-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "APPS1497: la rama nueva leía las candidatas y producía el resultado de aclaración, pero el bloque de resultado aseguraba una aclaración explícita en esa ruta (AssertionError ×2 por caso) y la App recuperaba con una pregunta genérica que no nombraba la candidata.",
+  "change": "Exención del assert en la ruta nueva; sin respuestas fijas.",
+  "measurement": "APPS1497: APPS1497: «Abre stea,» y «Sí, abre Ste.» preguntan si abrir Steam; H0386 y H0522 cubiertos; «team» y «Steel» rechazados por el validador; 2 créditos. 10/10 ejecutados, 7 aprobados, 3 fallidos, 2 créditos; validador demasiado estricto y eco del nombre mal escrito (APPS1499)",
+  "credits": 2
+}

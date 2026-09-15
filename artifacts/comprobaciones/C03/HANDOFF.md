@@ -1,3 +1,11 @@
+# APPS1497 adjudicado — 2026-09-15T00:30:39.777815+00:00
+
+**491/742 cubiertos, 251 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 35d1f776d453fb4d99c24ad1d987a975c4d5477d86afa76d128c89d3ae841353. Primeras altas 24 h >= 365 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7843f576 con BUILD1497 (la ruta de aplicación aproximada ya no cae en el assert; APPS1497/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+APPS1497 («Abrir aplicaciones», H0521 «abres team», H0386 «Abre stea,», H0522 «Sí, abre Ste.», H0227 «abre Steel.», H0398 «Sí. Abre Steel.»): APPS1497: «Abre stea,» y «Sí, abre Ste.» preguntan si abrir Steam; H0386 y H0522 cubiertos; «team» y «Steel» rechazados por el validador, 2 créditos. Adjudicación 245f491ed07992ddd419d902b52fd18cfb12003d03def28163bda22f7a1ad044. 10/10 ejecutados, 7 aprobados, 3 fallidos, 2 créditos; validador demasiado estricto y eco del nombre mal escrito (APPS1499)
+
+---
+
 # APPS1495 adjudicado — 2026-09-15T00:21:57.394491+00:00
 
 **489/742 cubiertos, 253 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA e11af23bd3a54569956f65156f12bca6ccd8d60d50a0397f3fa22751e461893f. Primeras altas 24 h >= 363 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 1c8039fe con BUILD1495 (el nombre de aplicación aproximado pregunta si abrir la candidata; APPS1495/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

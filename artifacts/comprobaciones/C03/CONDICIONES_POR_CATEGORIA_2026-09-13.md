@@ -563,3 +563,7 @@ Navegación y búsqueda web pasa de 40/46 a 41/46 con la pestaña nueva abierta 
 ## Actualización 2026-09-14 (APPS1495)
 
 Abrir aplicaciones pasa de 40/54 a 40/54 con los nombres de aplicación aproximados contestados con la pregunta de si abrir la candidata (commit 1c8039fe, BUILD1495) (HEAD 1c8039fe): APPS1495: el aclarador de nombre aproximado cayó en un assert posterior y la App recuperó con preguntas genéricas; sin crédito, 0 créditos. 10/10 ejecutados, 3 aprobados, 7 fallidos, 0 créditos; AssertionError en _prepare_turn_result (APPS1497)
+
+## Actualización 2026-09-14 (APPS1497)
+
+Abrir aplicaciones pasa de 40/54 a 42/54 con los nombres de aplicación aproximados contestados con la pregunta de si abrir la candidata (commit 7843f576, BUILD1497) (HEAD 7843f576): APPS1497: «Abre stea,» y «Sí, abre Ste.» preguntan si abrir Steam; H0386 y H0522 cubiertos; «team» y «Steel» rechazados por el validador, 2 créditos. 10/10 ejecutados, 7 aprobados, 3 fallidos, 2 créditos; validador demasiado estricto y eco del nombre mal escrito (APPS1499)

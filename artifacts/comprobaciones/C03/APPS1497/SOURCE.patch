@@ -1,0 +1,35 @@
+commit 7843f5768904b8c7769d4ada982661f1bb222ba9
+
+C03: the near-miss application clarification no longer trips the explicit-clarification assert (APPS1497)
+
+APPS1495 measured that the near-application branch read its candidates and built the clarify result, but the result block then asserted an explicit clarification (only the deictic-referent and unresolved-input paths were exempt), so every case failed twice at runtime and the App recovered with a generic question that never named the candidate. The block now exempts the near-application path and labels it `near_application_clarification` in the turn audit.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index ca1bba57..72947511 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -6314,7 +6314,9 @@ def _prepare_turn_result(
+             "question": question,
+             "reply": "",
+         }
+-        if not missing_open_referent and unresolved_input_kind is None:
++        if not missing_open_referent and unresolved_input_kind is None and not near_application_candidates:
++            # APPS1495: the near-miss application question has no missing
++            # field of an explicit clarification; asserting one failed the turn.
+             assert explicit_clarification is not None
+             result["missingFields"] = list(explicit_clarification.missing_fields)
+         if effect_request_is_authoritative(objective):
+@@ -6322,7 +6324,9 @@ def _prepare_turn_result(
+             # preceding request. Keep its own objective for the next answer.
+             result["startsNewObjective"] = True
+         clarification_path = (
+-            "unresolved_input_clarification"
++            "near_application_clarification"
++            if near_application_candidates
++            else "unresolved_input_clarification"
+             if unresolved_input_kind is not None
+             else "deictic_referent_clarification"
+             if missing_open_referent
