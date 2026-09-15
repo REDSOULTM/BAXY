@@ -5155,7 +5155,11 @@ def _truncated_fact_word(text: str, facts: dict) -> bool:
         if token in fact_words:
             continue
         if any(
-            word.startswith(token) and len(word) >= len(token) + 2
+            word.startswith(token)
+            and len(word) >= len(token) + 2
+            # KNOWLEDGE1507: «curiosidad» is the singular of the result title
+            # word «curiosidades», not a cut of it; the same for «-s» plurals.
+            and word not in (token + "s", token + "es")
             for word in fact_words
         ):
             return True
