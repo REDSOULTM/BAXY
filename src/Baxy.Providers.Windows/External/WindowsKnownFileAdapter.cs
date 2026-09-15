@@ -346,7 +346,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
         Directory.CreateDirectory(_trashRoot);
         string restoreId = "restore_" + Guid.NewGuid().ToString("N");
         string destination = Path.Combine(_trashRoot, restoreId + "_" + fileName);
-        if (isFolder) Directory.Move(source, destination); else File.Move(source, destination);
+        if (isFolder) MoveDirectory(source, destination); else File.Move(source, destination);
         bool gone = isFolder ? !Directory.Exists(source) : !File.Exists(source);
         bool arrived = isFolder ? Directory.Exists(destination) : File.Exists(destination);
         if (!gone || !arrived)
@@ -378,6 +378,36 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: true);
+    }
+
+    // FILES1603: Directory.Move refuses another volume (the redirected Desktop
+    // lives on D:, the private trash under the profile on C:); copy the tree
+    // and remove the source only once every entry arrived.
+    private static void MoveDirectory(string source, string destination)
+    {
+        if (string.Equals(Path.GetPathRoot(source), Path.GetPathRoot(destination),
+                StringComparison.OrdinalIgnoreCase))
+        {
+            Directory.Move(source, destination);
+            return;
+        }
+        var options = new EnumerationOptions
+        {
+            RecurseSubdirectories = true,
+            IgnoreInaccessible = false,
+            AttributesToSkip = FileAttributes.ReparsePoint,
+            MaxRecursionDepth = 12,
+        };
+        Directory.CreateDirectory(destination);
+        foreach (string directory in Directory.EnumerateDirectories(source, "*", options))
+            Directory.CreateDirectory(Path.Combine(destination, Path.GetRelativePath(source, directory)));
+        foreach (string file in Directory.EnumerateFiles(source, "*", options))
+            File.Copy(file, Path.Combine(destination, Path.GetRelativePath(source, file)), overwrite: false);
+        int expected = Directory.EnumerateFileSystemEntries(source, "*", options).Count();
+        int arrived = Directory.EnumerateFileSystemEntries(destination, "*", options).Count();
+        if (arrived < expected)
+            throw new IOException("The folder did not arrive whole in the private trash.");
+        Directory.Delete(source, recursive: true);
     }
 
     private static IEnumerable<(string Label, string Path)> EnumerateDirectories(
