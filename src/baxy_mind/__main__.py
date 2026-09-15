@@ -4800,6 +4800,14 @@ def _explicit_arguments_from_evidence(
         name = resolve_application_installed_name(evidence, application_names)
         return {"name": name} if name is not None else None
 
+    if operation == "game.installed.named":
+        # APPS1613 H0275: the title is the clause's own literal; the provider
+        # is the one the clause names, otherwise every manifest family.
+        title = effect_intent.installed_game_title(evidence)
+        if title is None:
+            return None
+        return {"provider": effect_intent.installed_game_provider(evidence), "title": title}
+
     if operation == "game.launch":
         app_id = resolve_game_catalog_app_id(evidence, game_catalog)
         return {"appId": app_id} if app_id is not None else None
