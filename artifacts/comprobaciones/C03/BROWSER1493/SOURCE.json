@@ -1,0 +1,15 @@
+{
+  "schema": "c03-browser1493-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (browser.control admite la acción new_tab), src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs (new_tab crea un objetivo de página en blanco con json/new en el navegador propio y lo verifica por su presencia), src/baxy_mind/effect_intent.py (browser_new_tab_arguments: «abrí/abre una (nueva) pestaña», «open a new tab», nunca con navegador nombrado, URL, prohibición ni cierre), src/baxy_mind/__main__.py (argumento new_tab), src/baxy_mind/llm.py (proyección sin targetId e instrucción del final).",
+  "patch": "artifacts/comprobaciones/C03/BROWSER1493/SOURCE.patch",
+  "commits": [
+    "9559e0f91ba8b7af654fdb1249273f72a975a0a8"
+  ],
+  "build": "BUILD1493 (C03-repairs1493-build/BUILD_READY.json; Kernel, proveedor y mente)",
+  "cause_measured": "«abrí una pestaña nueva» no tenía operación: browser.control sólo admitía back/close/fullscreen_video/reload/scroll (condición documentada en CONDICIONES).",
+  "change": "Nueva acción new_tab de sólo efecto reversible en el navegador propio del producto; sin respuestas fijas.",
+  "measurement": "BROWSER1493: BROWSER1493: la pestaña nueva se abre en el navegador propio del producto; H0084 cubierto; 1 créditos. 6/6 ejecutados, 4 aprobados, 2 límites fallidos, 1 crédito; browser.control new_tab verificado tres veces",
+  "credits": 1
+}

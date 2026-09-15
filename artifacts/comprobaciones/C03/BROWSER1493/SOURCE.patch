@@ -1,0 +1,173 @@
+commit 9559e0f91ba8b7af654fdb1249273f72a975a0a8
+
+C03: browser.control opens a new tab in the product's browser (BROWSER1493)
+
+«abrí una pestaña nueva» (H0084) had no operation: browser.control admitted only back, close, fullscreen_video, reload and scrolling. Kernel: the action enum gains `new_tab` (LowReversible, no confirmation). Provider: `ControlAsync("new_tab")` creates a blank page target through the CDP `json/new` endpoint of the product's own browser and verifies it by its presence in `json/list` (`target_created`; `cdp_new_tab_rejected` / `cdp_new_tab_not_verified` otherwise). Mind: `browser_new_tab_arguments` reads «abrí/abre/abrime una (nueva/otra) pestaña (nueva)» and «open a new tab», never with a named browser, a URL, a prohibition or a close; the argument builder grounds `{"action": "new_tab"}`; the composer projects the control result without its target id and instructs the final to say, in the past, that a new empty tab was opened.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Kernel/Operations/ProductCatalog.cs b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+index 2d61070d..7f165b44 100644
+--- a/src/Baxy.Kernel/Operations/ProductCatalog.cs
++++ b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+@@ -189,7 +189,7 @@ public static class ProductCatalog
+         Descriptor(
+             "browser.control",
+             Schema([String("action", values:
+-                ["back", "close", "fullscreen_video", "reload", "scroll_down", "scroll_up"])], ["action"]),
++                ["back", "close", "fullscreen_video", "new_tab", "reload", "scroll_down", "scroll_up"])], ["action"]),
+             OperationRisks.LowReversible,
+             "browser.control.cdp.postread.v1",
+             ToolExposure.Public,
+diff --git a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+index cdd364b8..f73c9463 100644
+--- a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+@@ -799,10 +799,35 @@ internal class CdpBrowserSession : IDisposable
+         string action,
+         CancellationToken cancellationToken)
+     {
+-        if (action is not ("back" or "close" or "fullscreen_video" or "reload"
++        if (action is not ("back" or "close" or "fullscreen_video" or "new_tab" or "reload"
+             or "scroll_down" or "scroll_up"))
+             return new(false, false, action, string.Empty, string.Empty, "browser_control_action_invalid");
+         Uri endpoint = await EnsureEndpointAsync(cancellationToken).ConfigureAwait(false);
++        if (action == "new_tab")
++        {
++            // BROWSER1493 «abrí una pestaña nueva»: a new blank page target in
++            // the product's own browser, verified by its presence in /json/list.
++            using var request = new HttpRequestMessage(
++                HttpMethod.Put, new Uri(endpoint, "json/new?about%3Ablank"));
++            using HttpResponseMessage response = await _http.SendAsync(request, cancellationToken)
++                .ConfigureAwait(false);
++            if (!response.IsSuccessStatusCode)
++                return new(false, false, action, string.Empty, string.Empty, "cdp_new_tab_rejected");
++            using Stream createdStream = await response.Content.ReadAsStreamAsync(cancellationToken)
++                .ConfigureAwait(false);
++            using JsonDocument created = await JsonDocument.ParseAsync(
++                createdStream, cancellationToken: cancellationToken).ConfigureAwait(false);
++            if (!created.RootElement.TryGetProperty("id", out JsonElement createdId)
++                || createdId.GetString() is not { Length: > 0 } newTargetId)
++                return new(false, true, action, string.Empty, string.Empty, "cdp_new_tab_not_verified");
++            for (int attempt = 0; attempt < 20; attempt++)
++            {
++                if (await TargetExistsAsync(endpoint, newTargetId, cancellationToken).ConfigureAwait(false))
++                    return new(true, true, action, newTargetId, "target_created", string.Empty);
++                await Task.Delay(100, cancellationToken).ConfigureAwait(false);
++            }
++            return new(false, true, action, newTargetId, string.Empty, "cdp_new_tab_not_verified");
++        }
+         (string targetId, Uri webSocket) = await ResolveTargetAsync(
+             endpoint, createIfMissing: false, cancellationToken)
+             .ConfigureAwait(false);
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 88fd333a..c3411c1c 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -4554,7 +4554,7 @@ def _explicit_arguments_from_evidence(
+         return value.strip().rstrip(".!?").rstrip()
+ 
+     if operation == "browser.control":
+-        return effect_intent.browser_back_arguments(evidence)
++        return effect_intent.browser_back_arguments(evidence) or effect_intent.browser_new_tab_arguments(evidence)
+ 
+     if operation == "system.status":
+         return _explicit_system_status_scope(evidence)
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 4d13d758..cec330a1 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -6732,6 +6732,32 @@ def browser_back_arguments(text: str) -> dict[str, str] | None:
+     return {"action": "back"}
+ 
+ 
++def browser_new_tab_arguments(text: str) -> dict[str, str] | None:
++    """BROWSER1493 «abrí una pestaña nueva», «abre una nueva pestaña», «open a
++    new tab»: one complete new-tab request in the product's browser; None for
++    anything else (a named browser, a URL, a tab to close, a deferred or
++    prohibited request keep their own reading)."""
++
++    if not text or len(text) > 16_384:
++        return None
++    folded = _fold(text).strip(" ¿?¡!. ")
++    if _has(folded, r"\b(?:chrome|opera|edge|firefox|brave|no\b|nunca|jamas|never|don't|do\s+not|cierra|cerra|close)\b|https?://|www\."):
++        return None
++    prefix = r"(?:(?:por\s+favor|please)\s*[,;:]?\s+)?(?:(?:podes|puedes|podrias|can\s+you|could\s+you)\s+)?"
++    courtesy = r"(?:\s*,?\s*(?:por\s+favor|please|porfa))?"
++    spanish = (
++        r"(?:abri|abre|abrime|abreme|abrir|crea|creame|creá|nueva)\s+"
++        r"(?:(?:una|otra)\s+)?(?:(?:nueva|otra)\s+)?pestana(?:\s+nueva)?"
++        r"(?:\s+(?:en\s+(?:el|este)\s+navegador))?"
++    )
++    english = (
++        r"open\s+(?:a\s+)?(?:new|another)\s+tab(?:\s+in\s+(?:the|this)\s+browser)?|new\s+tab"
++    )
++    if re.fullmatch(rf"{prefix}(?:{spanish}|{english}){courtesy}", folded) is None:
++        return None
++    return {"action": "new_tab"}
++
++
+ def explicit_window_title(text: str) -> str | None:
+     """Copy one explicitly named window title; never infer a process or HWND."""
+     matches = tuple(
+@@ -9338,6 +9364,7 @@ def _is_direct_request(text: str) -> bool:
+     text = _negative_state_question_body(text) or text
+     if (
+         browser_back_arguments(text) is not None
++        or browser_new_tab_arguments(text) is not None
+         or _direct_process_inventory_request(text)
+         or _explicit_google_search_query(text) is not None
+         or _resume_existing_media(text)
+@@ -15429,6 +15456,10 @@ def resolve_explicit_effects(
+         application_names,
+     )
+     authenticated_games = build_game_catalog_index(game_catalog)
++    if "browser.control" in available and browser_new_tab_arguments(text) is not None:
++        # BROWSER1493 «abrí una pestaña nueva»: one new blank tab in the
++        # product's browser, verified by its presence.
++        return EffectIntent(("browser.control",), (text,))
+     if "browser.control" in available and browser_back_arguments(text) is not None:
+         # A complete history request is not a destination to search.
+         return EffectIntent(("browser.control",), (text,))
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index d09f8df7..d2329a01 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3840,6 +3840,14 @@ def _compose_situation_payload(
+                 if visible_seen.get(key) is not None:
+                     projected[key] = visible_seen[key]
+             visible_seen = projected
++        elif operation == "browser.control":
++            # BROWSER1493 «abrí una pestaña nueva»: the target id is an
++            # internal identifier; the person needs the action and its state.
++            visible_seen = {
++                key: visible_seen[key]
++                for key in ("action", "observedState")
++                if isinstance(visible_seen.get(key), str)
++            }
+         elif operation in ("capture.screenshot", "capture.active.window"):
+             # SCREEN1399 H0093 «sacá un screenshot»: the receipt's captureId,
+             # sha256 and timestamp were narrated («con el ID capture_…») and the
+@@ -4141,6 +4149,21 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
+                     "open it later, and never say it was already open before. "
+                     "Address the person naturally in their language."
+                 )
++        if (
++            situation.get("operation") == "browser.control"
++            and situation.get("verified") is True
++            and situation.get("succeeded") is True
++            and _merged_observed(situation).get("action") == "new_tab"
++        ):
++            # BROWSER1493: the tab exists now; say so in the past, nothing else.
++            bits.append(
++                "You have just opened a new, empty tab in the browser and its "
++                "presence was verified: say that in the past in one short sentence "
++                "(for example «Abrí una pestaña nueva en el navegador»). Do not "
++                "mention identifiers, states or codes, do not promise anything "
++                "and do not say it was already open. Address the person naturally "
++                "in their language."
++            )
+         if (
+             situation.get("operation") in {"note.create", "task.create"}
+             and situation.get("verified") is True

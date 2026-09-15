@@ -555,3 +555,7 @@ Pantalla, captura e interpretación visual pasa de 15/19 a 16/19 con la orden de
 ## Actualización 2026-09-14 (DIALOGUE1491)
 
 Navegación y búsqueda web pasa de 38/46 a 40/46 con los destinos cortados por la transcripción contestados con la pregunta de a qué portal (commit 9a26dbdd, BUILD1491) (HEAD 9a26dbdd): DIALOGUE1491: el destino cortado por la transcripción pregunta a qué portal ir; H0393 y H0541 cubiertos, 2 créditos. 7/7 ejecutados, 7 aprobados, 2 créditos; las cuatro preguntas dicen que el nombre parece cortado y piden el portal
+
+## Actualización 2026-09-14 (BROWSER1493)
+
+Navegación y búsqueda web pasa de 40/46 a 41/46 con la pestaña nueva abierta en el navegador propio (commit 9559e0f9, BUILD1493) (HEAD 9559e0f9): BROWSER1493: la pestaña nueva se abre en el navegador propio del producto; H0084 cubierto, 1 créditos. 6/6 ejecutados, 4 aprobados, 2 límites fallidos, 1 crédito; browser.control new_tab verificado tres veces

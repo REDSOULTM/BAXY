@@ -1,3 +1,11 @@
+# BROWSER1493 adjudicado — 2026-09-15T00:08:04.675112+00:00
+
+**489/742 cubiertos, 253 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 2b1f81e441b0b1293199026838c1da1000371779e153d9ed6aaf8c0e9a7fa307. Primeras altas 24 h >= 363 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 9559e0f9 con BUILD1493 (browser.control new_tab; BROWSER1493/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+BROWSER1493 («Navegación y búsqueda web», H0084 «abrí una pestaña nueva»): BROWSER1493: la pestaña nueva se abre en el navegador propio del producto; H0084 cubierto, 1 créditos. Adjudicación ffa2a51de9012f8618ab6f2238bcc61c079b0125c7ed30e66955899c3e85cd40. 6/6 ejecutados, 4 aprobados, 2 límites fallidos, 1 crédito; browser.control new_tab verificado tres veces
+
+---
+
 # DIALOGUE1491 adjudicado — 2026-09-14T23:42:31.553654+00:00
 
 **488/742 cubiertos, 254 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 6e2d9ea5bb309cdf62ef3f68c9861fb910f8aa58f52353afd7b52380ecf7c0bb. Primeras altas 24 h >= 362 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 9a26dbdd con BUILD1491 (el destino cortado pregunta a qué portal; DIALOGUE1491/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
