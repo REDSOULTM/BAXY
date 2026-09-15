@@ -1,3 +1,11 @@
+# AUDIO1579 adjudicado — 2026-09-15T17:34:50.409412+00:00
+
+**535/742 cubiertos, 207 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA e74d04b021f09ea6785859021a9d827104dc21a43443c0e3324ff566163bc1d0. Primeras altas 24 h >= 409 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7bb180bd con BUILD1579 (la App juzga aparte la pregunta final que nombra el volumen pedido). Turnos ordinarios de sólo lectura (system.time); el volumen no se toca.
+
+AUDIO1579 («Audio y volumen», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. Adjudicación 5ce82020e70b48ed12da235c0444fbf45faeb8696b864abdc219860e8849034d. El literal y las dos variantes decidieron una sola system.time verificada, no cambiaron el volumen y publicaron a la primera el dato observado seguido de una sola pregunta por la cantidad; la App juzga ya aparte esa pregunta final cuando el pedido nombró el volumen. Los dos límites pasaron con cero operaciones (el ajuste sin cantidad preguntó cuánto; «No toques el volumen.» fue reconocida).
+
+---
+
 # AUDIO1577 adjudicado — 2026-09-15T17:13:47.620595+00:00
 
 **534/742 cubiertos, 208 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA e55a3e1ec3d4fc2d15ff5b78a7c1b132f7de5d3903ade94e6cab5e9c84e26cdc. Primeras altas 24 h >= 408 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 40a7f6cd con BUILD1577 (la lectura se hace y la cantidad del volumen se pregunta al final). Turnos ordinarios de sólo lectura (system.time); el volumen no se toca.

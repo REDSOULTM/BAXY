@@ -1,0 +1,76 @@
+commit 7bb180bdd2f90576fea29151105117a5dbea9df0
+
+C03: the App judges the trailing question that names the volume the person asked about apart from an invented level, and «no toques» is a prohibition (AUDIO1579)
+
+AUDIO1577 measured that «subí el volumen y decime qué fecha es» and both variants read the clock and the mind's first draft was already the intended final («Hoy es 15 de septiembre de 2026. ¿Cuánto querías aumentar el volumen?»), while `UserMessagePolicy.InventedVolume` rejected every final that mentions the volume when the observed facts carry no level. When the person's own request names the volume, the rule now judges only the sentences before the trailing question (`WithoutTrailingQuestion`): the question states no level, it asks for one. The boundary «No toques el volumen.» answered with a question because `_negative_action_forms` did not know «toques»; «toca»/«touch» now count as prohibited actions, as «usa» already did.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/UserMessagePolicy.cs b/src/Baxy.App/UserMessagePolicy.cs
+index bc5e290c..b6c15207 100644
+--- a/src/Baxy.App/UserMessagePolicy.cs
++++ b/src/Baxy.App/UserMessagePolicy.cs
+@@ -413,7 +413,7 @@ internal static class UserMessagePolicy
+             {
+                 return "missing_literal_fact";
+             }
+-            if (InventedVolume(draft.Source, modelText))
++            if (InventedVolume(draft.Source, modelText, userText))
+             {
+                 return "missing_literal_fact";
+             }
+@@ -2067,9 +2067,18 @@ internal static class UserMessagePolicy
+         return found;
+     }
+ 
+-    private static bool InventedVolume(string source, string result)
++    private static bool InventedVolume(string source, string result, string? userText = null)
+     {
+         string folded = FoldForPolicy(result);
++        if (userText is not null
++            && ContainsAny(FoldForPolicy(userText), ["volumen", "volume"]))
++        {
++            // AUDIO1577 «subí el volumen y decime qué fecha es»: the final reports
++            // the date and ends by asking how much to change the volume. The
++            // question names the volume the person asked about; it states no
++            // level. Only the sentences before that question can invent one.
++            folded = FoldForPolicy(WithoutTrailingQuestion(result));
++        }
+         if (!ContainsAny(folded, ["volumen", "volume", " muted", "silenci"]))
+         {
+             return false;
+@@ -2085,6 +2094,18 @@ internal static class UserMessagePolicy
+             && !source.Contains("\"volumePercent\"", StringComparison.Ordinal);
+     }
+ 
++    private static string WithoutTrailingQuestion(string result)
++    {
++        string trimmed = result.TrimEnd();
++        if (!trimmed.EndsWith('?'))
++        {
++            return result;
++        }
++
++        int cut = trimmed.LastIndexOfAny(['.', '!', '?'], Math.Max(0, trimmed.Length - 2));
++        return cut < 0 ? string.Empty : trimmed[..(cut + 1)];
++    }
++
+     private static bool InventedExtraClock(string source, string result)
+     {
+         if (!TryDerivedLocalClock(source, out string hhmm))
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 0450b86f..e9d859dd 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -6181,7 +6181,9 @@ def _negative_action_forms(folded: str) -> tuple[str, ...]:
+         for head in dict.fromkeys(heads)
+         # SYSTEM1545 «No uses Python.»: forbidding a means (use, employ) is a
+         # prohibition to acknowledge, although «usa» heads no request.
+-        if re.fullmatch(_COVERAGE_ACTION_HEAD, head) or head in {"usa", "utiliza", "emplea", "use"}
++        # AUDIO1577 «No toques el volumen.»: forbidding to touch something is
++        # the same prohibition as forbidding to change it.
++        if re.fullmatch(_COVERAGE_ACTION_HEAD, head) or head in {"usa", "utiliza", "emplea", "use", "toca", "touch"}
+     )
+ 
+ 

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-audio1579-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (InventedVolume judges the sentences before the trailing question when the person's request named the volume; WithoutTrailingQuestion) and src/baxy_mind/effect_intent.py (_negative_action_forms admits «toca»/«touch»).",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1579/SOURCE.patch",
+  "commits": [
+    "7bb180bdd2f90576fea29151105117a5dbea9df0"
+  ],
+  "build": "BUILD1579 (C03-repairs1579-build/BUILD_READY.json; App y mente)",
+  "cause_measured": "AUDIO1579: la App vetó como nivel inventado la pregunta final que nombra el volumen pedido; «No toques el volumen.» no se leía como prohibición.",
+  "change": "Pregunta final excluida del veto de volumen inventado cuando el pedido nombró el volumen; «toca/touch» como prohibición; sin respuestas fijas.",
+  "measurement": "AUDIO1579: 5 ejecutados, 5 aprobados, 0 fallidos; 1 créditos. El literal y las dos variantes decidieron una sola system.time verificada, no cambiaron el volumen y publicaron a la primera el dato observado seguido de una sola pregunta por la cantidad; la App juzga ya aparte esa pregunta final cuando el pedido nombró el volumen. Los dos límites pasaron con cero operaciones (el ajuste sin cantidad preguntó cuánto; «No toques el volumen.» fue reconocida).",
+  "credits": 1
+}
