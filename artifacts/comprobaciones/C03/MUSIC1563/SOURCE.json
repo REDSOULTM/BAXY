@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1563-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py («escuchando» entra en las formas del estado de reproducción; la pista de reintento missing_state de una reproducción de YouTube pide afirmar que está sonando o reproduciéndose citando el título completo).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1563/SOURCE.patch",
+  "commits": [
+    "9108abf4d7c2d6deb8dc9453361af9454cc39340"
+  ],
+  "build": "BUILD1563 (C03-repairs1563-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "MUSIC1563: las siete reproducciones se verificaron pero dos finales se perdieron: los reintentos escribieron el título solo y luego «Estoy escuchando «…»», que el veto de estado no leía como reproducción.",
+  "change": "«escuchando» como estado de reproducción y pista de estado con el título; sin respuestas fijas.",
+  "measurement": "MUSIC1563: 10 ejecutados, 8 aprobados, 2 fallidos (un literal y una variante); 0 créditos. Medido: las siete reproducciones se propusieron y aprobaron; cinco se reprodujeron, verificaron y nombraron por su título observado («escuchando» cuenta ya como estado), incluida la variante «música alegre»; H0598 y la variante de Soda Stereo fallaron en la reproducción: mpv no llegó al primer medio segundo en la ventana de treinta segundos aunque los mismos flujos se reproducen a mano (un final honesto, el otro perdido en negaciones de capacidad vetadas). Sin la variante aprobada no hay crédito. Siguiente: un arranque no verificado vuelve a resolver el flujo y lo reproduce una vez más antes de fallar (MUSIC1565).",
+  "credits": 0
+}
