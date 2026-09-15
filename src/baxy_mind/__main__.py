@@ -2950,6 +2950,31 @@ def bare_path_file_name(objective: str) -> str | None:
     return name
 
 
+_CUT_TAIL_WORDS = frozenset({
+    "del", "de", "la", "el", "los", "las", "un", "una", "unos", "unas", "al",
+    "y", "e", "o", "u", "con", "para", "por", "en", "que", "mi", "mis", "su",
+    "sus", "tu", "tus", "the", "a", "an", "of", "and", "or", "with", "for", "my",
+})
+
+
+def cut_request_tail(objective: str) -> str | None:
+    """FILES H0426 «…que contenga la fecha actual, el nombre del»: a request
+    of six or more words that stops, without closing punctuation, on an
+    article, preposition or conjunction arrived cut there. Returns the last
+    three words (what the person will recognise) or None."""
+
+    text = objective.strip()
+    if not text or text[-1] in ".!?…»\")" or len(text) > 512:
+        return None
+    words = re.findall(r"[^\s]+", text)
+    if len(words) < 6:
+        return None
+    last = effect_intent._fold(words[-1]).strip(",;:")
+    if last not in _CUT_TAIL_WORDS:
+        return None
+    return " ".join(words[-3:])
+
+
 def _echoed_words(folded: str) -> bool:
     """CONVERSATION1150 H0410 «Artiro, artiro. Estimado, estimado.»: every
     word arrives at least twice and nothing else does; no assent, negation,
@@ -3064,6 +3089,8 @@ def _unresolved_input_kind(objective: str) -> str | None:
         return "echoed_words"
     if bare_path_file_name(objective) is not None:
         return "bare_path"
+    if cut_request_tail(objective) is not None:
+        return "cut_request"
     if effect_intent.INDETERMINATE_WINDOW_CLAUSE.fullmatch(folded) is not None:
         # WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá la
         # mejor»: a window named only by «la otra», «la mejor», «la
