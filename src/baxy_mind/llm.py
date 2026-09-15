@@ -5336,6 +5336,11 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         playback_defect = _youtube_playback_defect(text, playing)
         if playback_defect:
             return playback_defect
+        if not re.sub(r'[«"“][^»"”]{1,512}[»"”]', "", text).strip(" .,;:!¡\n\t"):
+            # MUSIC1573 «poneme una canción» → «algo de jazz»: the retry wrote
+            # the English title alone and the language veto answered, so the
+            # next hint dropped the title. The title alone lacks the state.
+            return "missing_state"
     results_text = _search_results_text(payload)
     if payload.get("operation") == "web.search" and results_text is None:
         # WEB1445/002 «va a llover mañana» over a search that returned nothing
@@ -6843,7 +6848,11 @@ def compose_visible_defect(
                     r"\b(?:(?P<negative>no|not|nothing|isn't|isn’t|aren't|aren’t)\s+)?"
                     r"(?:(?:se|est[aá]|est[aá]n|is|are|sigue|still|currently|"
                     r"hay|nada|ahora|actualmente)\s+)*"
-                    r"(?:(?P<playing>sonando|suena|reproduci[eé]ndo(?:se)?|reproduce|escuchando|playing)|"
+                    r"(?:(?P<playing>sonando|suena|reproduci[eé]ndo(?:se)?|reproduce|escuchando|playing"
+                    # MUSIC1573 «poné una canción» → «Bad Bunny»: «Estoy viendo el
+                    # video «…» en YouTube» states the playback of the video the
+                    # product itself announced; watching is the playing state here.
+                    + (r"|viendo|watching" if operation == "media.play.youtube" else "") + r")|"
                     r"(?P<paused>pausad[oa]s?|en\s+pausa|paused)|"
                     r"(?P<stopped>detenid[oa]s?|parad[oa]s?|stopped))\b",
                     playback_text,

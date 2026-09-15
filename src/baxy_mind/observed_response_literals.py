@@ -103,6 +103,18 @@ def without_observed_names(text: str, situation: object) -> str:
                 names.update(line_text.strip() for line in layout_lines if isinstance(line, dict)
                              and isinstance(line_text := line.get("text"), str)
                              and 1 < len(line_text.strip()) <= 4096)
+        if (node.get("kind") == "operation" and operation == "media.play.youtube"
+                and node.get("verified") is True and node.get("succeeded") is True
+                and node.get("polarity") == "success"):
+            # MUSIC1573 «poneme una canción» → «algo de jazz»: the observed
+            # YouTube title («4K Cozy Coffee Shop with Smooth Piano Jazz Music…»)
+            # keeps its own language; quoted in a Spanish reply it is observed
+            # data, not the reply's vocabulary.
+            observed = node.get("observed")
+            title = observed.get("title") if isinstance(observed, dict) else None
+            if (isinstance(observed, dict) and observed.get("titleObserved") is True
+                    and isinstance(title, str) and 0 < len(title.strip()) <= 4096):
+                names.add(title.strip())
         steps = node.get("steps")
         if isinstance(steps, list):
             for step in steps:
