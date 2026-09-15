@@ -1,0 +1,78 @@
+{
+  "schema": "conversation1585-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1",
+  "seal_sha256": "cd4477c3e63bd5565747f3f286449d32ca83051193b075999ac233938e4786d1",
+  "runner_sha256": "0dd419bebaa00c1b7ddf4ae30df5fa21f4b13f26ceeeb965c4f2c3b5670e9024",
+  "transport_seal_sha256": "09ec7281c6959767077fb76110037566ea075f64f54d9eeec07e94152943fc31",
+  "files": {
+    "panel.json": "0db19e66353cbc1bbc9c02e3bc41ddf09e2ca73f4fe4b7951202c8a3731ee6d0",
+    "turns.jsonl": "11160917b00759419557f45e7be006a73950f55d311a6e272397af8b369fdfc1",
+    "case-map.json": "fdf83e3810065ad0752817db0aa5604d81b48bbedddd57c3e6bff98740979143",
+    "PLAN.md": "1ac696f88c06e4afd6acb0e0f0f15300ae39a21c4c3726c3807419c0740a8604"
+  },
+  "counts": {
+    "cases": 5,
+    "historical_literals": 1,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 10,
+    "session_controls": 5,
+    "ordinary_turns": 5,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 5,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0410",
+      "kind": "historical_literal",
+      "group": "echoed_words",
+      "credit_behavior": "echoed_words",
+      "text_sha256": "8b5cd5950245f1062becc701161d1543ea870a3e1b4185f15aa41cf6b60b3856",
+      "criterion_sha256": "2fdb299d1dceaf598435c85562186d7c21aa82d0fa5b92c924818677c5716a58"
+    },
+    {
+      "index": 1,
+      "case_id": "conversation1585-dev-01",
+      "kind": "original_development_variant",
+      "group": "echoed_words",
+      "credit_behavior": "echoed_words",
+      "text_sha256": "8b1d51e9b3573501b47aece30ea406a39bc9433300f5f92a6efc1559eb2c81da",
+      "criterion_sha256": "2fdb299d1dceaf598435c85562186d7c21aa82d0fa5b92c924818677c5716a58"
+    },
+    {
+      "index": 2,
+      "case_id": "conversation1585-dev-02",
+      "kind": "original_development_variant",
+      "group": "echoed_words",
+      "credit_behavior": "echoed_words",
+      "text_sha256": "6346820f542110e0f48dec948941ca02d17070948ad5fbadd28c5751384f0407",
+      "criterion_sha256": "2fdb299d1dceaf598435c85562186d7c21aa82d0fa5b92c924818677c5716a58"
+    },
+    {
+      "index": 3,
+      "case_id": "conversation1585-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "32e451810f4fa3320d4ba04ba75d6d32f74340157ca9f8379b0e449eb8090c17",
+      "criterion_sha256": "80103d43e9280de7aa602d9d6780b509fe0cdc5b058820bb5be0f2fed28ebef7"
+    },
+    {
+      "index": 4,
+      "case_id": "conversation1585-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "460d4f371d2525a93a7d37a04d8c52c409a8a09822a4aef74deddd24cd65db7e",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    }
+  ]
+}

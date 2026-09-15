@@ -1,0 +1,235 @@
+[
+  {
+    "index": 0,
+    "case_id": "H0410",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      1,
+      2
+    ],
+    "reason": "Cero operaciones; la pregunta dijo que sólo llegaron palabras repetidas sin pedido y preguntó qué necesita; crédito con dos variantes aprobadas.",
+    "observation_note": "Turno ordinario: cero operaciones; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "336b35d4060af58473513709c39a4233f62e1ca8f6fcffc5299a4b3bab55aef8",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\results\\case-00\\EXIT.json": "99e16f38968880b4e6e444c9bcb6549bb4dd24984d6626d52306d0c4572c3810",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\results\\case-00\\RESOURCES.json": "76ff7c7392048545514bf00e54d24aee616683fe9b00414315d9472c9e411989",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\profile-owner-00.json": "fed0efa28a5afcdc54fd11390fd4f06a7195753994a2d09aa97cc4d01032cb52",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\results\\case-00\\PREREG.json": "0e7ea8967d065e39a518437215607ba0149d71f5aaa454edfad1270fcb988f4a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-00\\capture\\events.jsonl": "4447f63404c697cef14d6baf5bada04e51b9bcc45fbbc140c101298a95559684",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-00\\turns.jsonl": "022954494d02d1b54e04f0d926629d3aada335948b59f9fa7b08873907e6bf24",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\fixture-00.json": "fc36e98b5b2a784162f9916aae56cc986bbbbdf8aac5e6fc65dfe7fa32bfaa87",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\context-00.json": "8812d870c769cb21a03217f507171d7ef51ce3fb07de718f91ae0c548fe82502",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\context-prelaunch-00.json": "8fd8e325e670eb88bca8ae9b65aaf7659edde2ddea7d4351e33930c8736b0b1d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-00\\case-observations.json": "d2eef32a04d0c5042bb05584a327e57dec0be17fdf703b1cc09adab72508bf46",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-00\\journal-before.json": "de801ae08d666cfaab5ef4924009bbd8ed30bdb36a1cd811d9e8b537722e44df",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-00\\journal-after.json": "962f5557ea815b7a8ddc7a71ee61f661eee579da33ce5b18794a3d3a092f0c2b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "6f27edc5e88e4f46914758b89fde7a32e3f7cd6af4ae5060ca3eaebfad17d466"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "3390fea7-d484-4bae-8198-ad6297e50b86",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "case_id": "conversation1585-dev-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Cero operaciones; la pregunta dijo que sólo llegaron palabras repetidas sin pedido y preguntó qué necesita.",
+    "observation_note": "Turno ordinario: cero operaciones; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "336b35d4060af58473513709c39a4233f62e1ca8f6fcffc5299a4b3bab55aef8",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\results\\case-01\\EXIT.json": "7bb2f5cbb17c95d92c3103ed42d579d3522f5c065712af0be6ce4d9cf299b1b0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\results\\case-01\\RESOURCES.json": "abc2feb827475e54c342f1a2e9f94a51f30c8333cb2e46caf042fb5b9f785845",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\profile-owner-01.json": "6ba2555a5cfb8fa70c2e0181b773d3fcf4caeaa690d459ca7f784eee25431aeb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\results\\case-01\\PREREG.json": "07766ff538241e8337702757093470ff0c08834e6d25fc0089d175b045a281d3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-01\\capture\\events.jsonl": "91c8929f36be4b99c8451fa6cf6f257b945e2a9e48deabffe539d9755700d85d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-01\\turns.jsonl": "8c2803b57c42a166ac7fdcf009cb899e2a908b461daaea288633f5957fa128e6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\fixture-01.json": "2b16833759e9724ef60c7699cbe438d60eae5353373d961c8bf93df53597c8dc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\context-01.json": "09ef76c8ca7fee3b20452dda8ad59446932dd222e79cc68ce5ace6011896a91a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\context-prelaunch-01.json": "795c1f569306250e250e522653cf3d48dd3bfdd70eeaef653c13c89793132fa6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-01\\case-observations.json": "1d1ea0ba3ad4d413d577f8a94bfdec53bb20540f9c50ca81645d9477108ca026",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-01\\journal-before.json": "74ac9c492791faa8f86bdbd691570541a64ef27cfc6c7e67e8bd6840a52d9630",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-01\\journal-after.json": "954cf8a39915f6229cd844ef0cf424f00921bf37b72872c5f683a626fb290c62",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "be9cc0df8ad21497bdbfbdab6bbb88263be5f0094d3b1b666ce83284d7066ac9"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "24c6109a-12a4-4212-a8ac-f0cc44b2e438",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "case_id": "conversation1585-dev-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Cero operaciones; la pregunta dijo que sólo llegaron palabras repetidas sin pedido y preguntó qué necesita.",
+    "observation_note": "Turno ordinario: cero operaciones; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "336b35d4060af58473513709c39a4233f62e1ca8f6fcffc5299a4b3bab55aef8",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\results\\case-02\\EXIT.json": "80e59f9eb290a66538fa1fa3a074ac6adb36897fbfcf83e05b0be3fe456b93b9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\results\\case-02\\RESOURCES.json": "8fea899b15695bbcd8691777e38cf0f96e3941802702c022e7aa5a78667c2eb9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\profile-owner-02.json": "41530f4756278d8e660b132d40f62f0216c74502cbd486d195e969c8862c9069",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\results\\case-02\\PREREG.json": "3b888941cdfdb1c761c70befa6f3364983ba9393b954fd24a3cda2aabdbec2ee",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-02\\capture\\events.jsonl": "1229b03388b979a85f1e5a60b62d1bb8855df9309b8ce29ee64d0ace7b1b5924",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-02\\turns.jsonl": "ffd3cff8b2ce2b1fe2a6f2927a66dee44a736608409b0c1d500e177cf5d08cca",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\fixture-02.json": "e079903fa92a60a9b210496863147aa2284393a5ddfaae6f4477d606556c70d2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\context-02.json": "722a93a1e4db2ab9ed3529df593cc2f6f4fb8d07a349ee9413ae8f20a4b91a22",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\context-prelaunch-02.json": "1d84bc23cfbffe75b79317358702e4ecd88c82c267c7fdde122f57a934f7ef66",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-02\\case-observations.json": "dace55d02a88806b0152e0bdaa954b8e087bf882af005f9bb91dc6092eda274a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-02\\journal-before.json": "a242a6a60ee68374e73a7b3f443b105c3be12a3047541e5238a6008dc2e293a8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-02\\journal-after.json": "c102dec6ec5ca3c04c38d0af652316e6180fac26ca879961d72f3ffde429852d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "57a2e64afb42a6f1c8eaab2881821a47627ea6e144525111b1b648a6cd8ab99a"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "50dca5d7-f8d4-45e8-b1f0-4f923babd881",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "case_id": "conversation1585-boundary-01",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite fallido: cero operaciones, pero la respuesta no fue fiel o útil.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "81c5f59dd1c5ca575459c6a8d10da53ac16bf9ccfbd51e98f3f543d5936ef52f",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\results\\case-03\\EXIT.json": "9b135f7cf93b46b31f9848ba26c37be1f2ee3756b7d9b4f8e87093e0fb27b8bc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\results\\case-03\\RESOURCES.json": "11e6b363cfeffbd1984ed60a56a8e02586597f957b865174273cbbada04d4a12",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\profile-owner-03.json": "5ea0237345903e5c07ca1a931af924a18825193d7f138210e97cadc8f23fbfec",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\results\\case-03\\PREREG.json": "64ac84fd155dccd2bf176898abc632880fae3e41edca805c62730c23039f058b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-03\\capture\\events.jsonl": "3d2cc162ef1746eb7566363608f164e0cf5f9530f0cc70669d827c92bfcd7558",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-03\\turns.jsonl": "703597eaed8fa6333909b2110f031d9ee3460239f8244daeab44a5250e80dfda",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\fixture-03.json": "963a8061c2cd2532887c8afd578b9e6f2d742e5e5523a47a69822a9aed7836ef",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\context-03.json": "7b8f53854e8ecc7128f90e91a37d83139ba59089e62dc0501c1229c92e8421b8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\context-prelaunch-03.json": "63a145039bf4ba4540e1429813b6828d1aec181016913d5d1a5c1ece6c041e18",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-03\\case-observations.json": "091395c9d169ec1a8002643b1aad5a17d76a38aaaf5f993d03bc93feecddb9f7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-03\\journal-before.json": "09854fed4b1363b6c1587330402df3da8a7f3b13c737969a67124acda51221bc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-03\\journal-after.json": "a24ebf31b6c7e7cd0f7e2e3947585a692b06717ec20fc9c82e7d71d4d17feba4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "9d76340d320b551ae96d39b458bbc446f48e7482cb82c2d6e61041137b4c491d"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "f8311726-ae84-44cc-a271-c5ded3113b45",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "case_id": "conversation1585-boundary-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "40965aac2b49ec2fc20f73c2d5ef6973e57aed18d081dda7e1db354b4003b1e5",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\results\\case-04\\EXIT.json": "dcdc70fab019d14905e80d605ec9783f2790a830f8a3746891a51bc70313abd8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\results\\case-04\\RESOURCES.json": "050174b74d4551c5a9d590e22506b6a3368e01de0e40b1481c44ebce05e423f0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\profile-owner-04.json": "e1f4b308f46a4ea688be2719f96cd5b8ac33d62dc4414bbb2901af1de1b9db8a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\results\\case-04\\PREREG.json": "3883293fba1806517fbe9d888ee3a4ae214519c258100950b754e797e17c5808",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-04\\capture\\events.jsonl": "01c03249a3247869263882e3caf14fb4c5d544a2363c1cbef3eb1255bbbea761",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-04\\turns.jsonl": "c833653f01e14d83a024e21ffc4cd5f645aa762f4a95ca28ec30075d0059f7d2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\fixture-04.json": "b56cd8eb1d44e5cd29d7a547fa34ff20aed80d6276066843c7a9dce93a66f467",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\context-04.json": "5972a648edac9a3779dc3ade4b77282143f83eab6a2d852f481dd31c9d58808f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\context-prelaunch-04.json": "25c43cb17676a092980b6581bd3e6e2ef969ea5d2d3c47819538a481e2a7e910",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-04\\case-observations.json": "15c9fee0c3fda79e9fe1671dda601ff004b95109da3ac7be40aff19550603f33",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-04\\journal-before.json": "2c640a843cda5352b220bbddf8772536ed7cc0836609294fbcd49defe9da729e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-04\\journal-after.json": "808bc0cfc789674f51b9d20c7290a0561f0d3df86957e57b171ec940fba6f64a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-conversation1585-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "96839647ce54f32405fe8d56e0563ba26a2885fdd3c3939746f16760dd1639e6"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "7c0273df-db57-4f04-bb0c-19e19221b1fa",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  }
+]

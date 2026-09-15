@@ -816,3 +816,7 @@ Sin cambio: Navegación 5, Cerrar 5, Hora 4 (límites sin marca), Juegos 4 (Stea
 ## Actualización 2026-09-14 (MUSIC1583)
 
 Música pasa de 20/39 a 21/39 con «pon youtube y pon música» preguntando qué música y reproduciéndola desde YouTube (commit 0a6804fb, BUILD1579) (HEAD 0a6804fb): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes preguntaron qué música reproducir en YouTube sin proponer nada; la respuesta guionizada completó el pedido como media.play.youtube revisado, la reproducción se verificó en el reproductor local y el final nombró el título observado completo; ningún navegador se abrió. Las tres fronteras pasaron con cero operaciones; volumen restaurado; ningún reproductor sobrevivió a su caso.
+
+## Actualización 2026-09-14 (CONVERSATION1585)
+
+Conversación social y ayuda general pasa de 28/31 a 29/31 con las palabras repetidas sin pedido dichas y preguntadas (commit d82387e4, BUILD1585) (HEAD d82387e4): 5 ejecutados, 4 aprobados, 1 fallido, 1 créditos. El literal y las dos variantes se leyeron como palabras repetidas sin pedido y respondieron con cero operaciones y una sola pregunta que dice que sólo llegaron palabras repetidas y pregunta qué necesita (los tres finales reproducen la frase de ejemplo de la situación, compuesta por el modelo bajo esa guía, no una respuesta fija). «¿Qué es un estimado?» se explicó sin operar; «Bueno, bueno. Dale, dale.» quedó en una invención social del modelo (sin crédito en juego).

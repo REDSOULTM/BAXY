@@ -1,0 +1,15 @@
+{
+  "schema": "c03-conversation1585-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (InventedVolume judges the sentences before the trailing question when the person's request named the volume; WithoutTrailingQuestion) and src/baxy_mind/effect_intent.py (_negative_action_forms admits «toca»/«touch»).",
+  "patch": "artifacts/comprobaciones/C03/CONVERSATION1585/SOURCE.patch",
+  "commits": [
+    "d82387e4cd8bbbdf431789851e67c05ff8e96b95"
+  ],
+  "build": "BUILD1585 (C03-repairs1585-build/BUILD_READY.json; mente)",
+  "cause_measured": "CONVERSATION1150: «Artiro, artiro. Estimado, estimado.» fue a la conversación de conocimiento y el turno fingió comprensión.",
+  "change": "Clase de entrada sin pedido «echoed_words» con su aclaración; sin respuestas fijas.",
+  "measurement": "CONVERSATION1585: 5 ejecutados, 4 aprobados, 1 fallido; 1 créditos. El literal y las dos variantes se leyeron como palabras repetidas sin pedido y respondieron con cero operaciones y una sola pregunta que dice que sólo llegaron palabras repetidas y pregunta qué necesita (los tres finales reproducen la frase de ejemplo de la situación, compuesta por el modelo bajo esa guía, no una respuesta fija). «¿Qué es un estimado?» se explicó sin operar; «Bueno, bueno. Dale, dale.» quedó en una invención social del modelo (sin crédito en juego).",
+  "credits": 1
+}

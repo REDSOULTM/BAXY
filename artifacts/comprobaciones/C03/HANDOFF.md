@@ -1,3 +1,11 @@
+# CONVERSATION1585 adjudicado — 2026-09-15T17:55:57.641222+00:00
+
+**538/742 cubiertos, 204 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA 49bfb99287d0fc3646a3b11496e0e02019f63220bd813a0f13ea9cf21568edca. Primeras altas 24 h >= 412 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d82387e4 con BUILD1585 (las palabras repetidas sin pedido se dicen y se pregunta qué necesita). Turnos ordinarios sin operaciones.
+
+CONVERSATION1585 («Conversación social y ayuda general», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): 5 ejecutados, 4 aprobados, 1 fallido, 1 créditos. Adjudicación 7739ae615a9afa1445abff85871bc870d7420913ed75f3b2eaf195910b6e0765. El literal y las dos variantes se leyeron como palabras repetidas sin pedido y respondieron con cero operaciones y una sola pregunta que dice que sólo llegaron palabras repetidas y pregunta qué necesita (los tres finales reproducen la frase de ejemplo de la situación, compuesta por el modelo bajo esa guía, no una respuesta fija). «¿Qué es un estimado?» se explicó sin operar; «Bueno, bueno. Dale, dale.» quedó en una invención social del modelo (sin crédito en juego).
+
+---
+
 # MUSIC1583 adjudicado — 2026-09-15T17:47:53.208221+00:00
 
 **537/742 cubiertos, 205 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA be005d95693291d4cd2a7e39fe124ee5154fc4c3375f205490dc5ce0bf5b454c. Primeras altas 24 h >= 411 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 0a6804fb con BUILD1579 (mismos binarios; «pon youtube y pon música» como diálogo de dos turnos). La raíz aprueba sólo una media.play.youtube con una consulta de texto (approve_youtube.py); el reproductor local (mpv) nace en el caso y la raíz lo detiene al terminar; el volumen maestro se preajusta a 12 y se restaura al estado del dueño.

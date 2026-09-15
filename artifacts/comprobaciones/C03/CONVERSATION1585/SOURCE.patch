@@ -1,0 +1,128 @@
+commit d82387e4cd8bbbdf431789851e67c05ff8e96b95
+
+C03: words that only repeat are an unresolved input; the turn says so and asks what the person needs (CONVERSATION1585)
+
+CONVERSATION1150 measured H0410 «Artiro, artiro. Estimado, estimado.» as a knowledge conversation that pretended to understand («el clásico “artiro, artiro”»). `_echoed_words` names the input kind `echoed_words` when every word arrives at least twice and nothing else does (four to twelve words, at most four distinct, no digits or question marks, no assent, negation or greeting words, no request head); `clarify_unresolved_input` composes one short question that says only repeated words arrived without a request and asks what the person needs, and rejects a question that repeats those words, attributes them a meaning or asks nothing (one corrected retry). Screened over the whole private registry: only H0410 takes the new kind.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index ee92f4ca..b63b4671 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -2930,6 +2930,30 @@ def _standalone_deictic_request(objective: str, history: object = None) -> bool:
+     )
+ 
+ 
++def _echoed_words(folded: str) -> bool:
++    """CONVERSATION1150 H0410 «Artiro, artiro. Estimado, estimado.»: every
++    word arrives at least twice and nothing else does; no assent, negation,
++    question or request head. Words alone, however familiar, are not a
++    request; the honest turn says so and asks what the person needs."""
++
++    words = re.findall(r"[a-z]{2,}", folded)
++    if not 4 <= len(words) <= 12 or len(set(words)) > 4:
++        return False
++    if any(words.count(word) < 2 for word in set(words)):
++        return False
++    if re.search(r"\d|[?¿]", folded):
++        return False
++    if any(
++        word in {"si", "no", "dale", "ok", "okay", "bueno", "claro", "vale", "listo",
++                 "yes", "yeah", "nope", "never", "nunca", "jamas", "hola", "hello", "baxy"}
++        for word in words
++    ):
++        return False
++    return not any(
++        effect_intent._head_is(word, effect_intent._COVERAGE_ACTION_HEAD) for word in set(words)
++    )
++
++
+ def _unresolved_input_kind(objective: str) -> str | None:
+     """Name an input that carries no readable request at all.
+ 
+@@ -3016,6 +3040,8 @@ def _unresolved_input_kind(objective: str) -> str | None:
+         return "noise"
+     if _overheard_speech(folded):
+         return "overheard_speech"
++    if _echoed_words(folded):
++        return "echoed_words"
+     if effect_intent.INDETERMINATE_WINDOW_CLAUSE.fullmatch(folded) is not None:
+         # WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá la
+         # mejor»: a window named only by «la otra», «la mejor», «la
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 9bdd70ee..9de5dc0e 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -10858,7 +10858,7 @@ class LlmRuntime:
+         a meaning: the question names what arrived and asks what to do.
+         """
+ 
+-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window"}:
++        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window", "echoed_words"}:
+             raise ValueError("clase de entrada sin pedido inválida")
+         current = str(text).strip()[:2_048]
+         situation = (
+@@ -11000,6 +11000,21 @@ class LlmRuntime:
+                 "no digas que algo falló y no inventes a qué se refiere el no."
+             )
+             if kind == "bare_negation"
++            else (
++                # CONVERSATION1150 H0410 «Artiro, artiro. Estimado, estimado.»:
++                # words that only repeat, with no request in them; the turn
++                # pretended to understand them.
++                "Eres BAXY. Del usuario llegaron sólo palabras repetidas, una "
++                "tras otra, sin ningún pedido, pregunta ni saludo entre ellas. "
++                "Formula una sola pregunta breve, en el idioma del usuario, que "
++                "diga que sólo te llegaron palabras repetidas sin un pedido y "
++                "pregunte qué necesita (por ejemplo: «Sólo me llegaron palabras "
++                "repetidas, sin un pedido: ¿qué necesitás?»). No repitas ni cites "
++                "sus palabras, no les atribuyas un significado, no digas que las "
++                "reconoces, no saludes, no digas que fallaste ni que está fuera "
++                "de lo que haces y no ofrezcas ayuda genérica sin decir lo que llegó."
++            )
++            if kind == "echoed_words"
+             else (
+                 "Eres BAXY. Lo que llegó del usuario no contiene un pedido "
+                 "legible: sólo signos, cifras, una letra suelta, símbolos o "
+@@ -11377,6 +11392,39 @@ class LlmRuntime:
+                     )
+                     continue
+                 raise ValueError("aclaración de comparación con sujeto invertido")
++            if kind == "echoed_words":
++                folded_question = _fold_dialogue_text(question)
++                folded_input = _fold_dialogue_text(current)
++                names_repetition = re.search(
++                    r"\b(?:palabras?\s+repetidas?|repetid[ao]s?|se\s+repiten?|repeated\s+words?|"
++                    r"sin\s+(?:un\s+)?pedido|no\s+(?:veo|encuentro|hay|leo)\s+(?:un\s+|ning[uú]n\s+)?pedido|no\s+request)\b",
++                    folded_question,
++                ) is not None
++                asks_need = re.search(
++                    r"\b(?:que\s+(?:necesit|quer|quier|busc|prefer)|en\s+que\s+(?:te\s+)?(?:puedo|ayud)|what\s+(?:do\s+you\s+)?(?:need|want))",
++                    folded_question,
++                ) is not None
++                echoes = any(
++                    word in folded_question
++                    for word in set(re.findall(r"[a-z]{4,}", folded_input))
++                )
++                if names_repetition and asks_need and not echoes:
++                    return question
++                if attempt == 0:
++                    payload["messages"].insert(
++                        -1,
++                        {
++                            "role": "system",
++                            "content": (
++                                "Corrección: di que sólo te llegaron palabras repetidas sin "
++                                "un pedido y pregunta qué necesita, sin repetir ninguna de "
++                                "sus palabras, por ejemplo: «Sólo me llegaron palabras "
++                                "repetidas, sin un pedido: ¿qué necesitás?»."
++                            ),
++                        },
++                    )
++                    continue
++                raise ValueError("aclaración de palabras repetidas no reconoce lo recibido")
+             if kind != "noise" or _NOISE_ACKNOWLEDGED.search(
+                 _fold_dialogue_text(question)
+             ):
