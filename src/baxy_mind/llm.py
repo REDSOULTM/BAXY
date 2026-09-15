@@ -10343,11 +10343,12 @@ class LlmRuntime:
                 "Eres BAXY. Del usuario llegó sólo el final de una frase, una "
                 "alternativa («o en la de siempre») sin lo que iba antes, y no hay "
                 "ningún pedido anterior que la complete. Formula una sola pregunta "
-                "breve, en el idioma del usuario, que diga que sólo te llegó esa "
-                "parte y pregunte a qué se refiere (por ejemplo: «Sólo me llegó "
-                "“o en la de siempre”: ¿a qué te referís?»). No adivines de qué "
-                "habla, no inventes una acción, no saludes, no digas que no "
-                "entiendes ni que algo falló y no ofrezcas ayuda genérica."
+                "breve, en el idioma del usuario, que diga que sólo te llegó el "
+                "final de la frase y pregunte a qué se refiere (por ejemplo: «Sólo "
+                "me llegó el final de la frase: ¿a qué te referís?»). No repitas ni "
+                "cites sus palabras, no adivines de qué habla, no inventes una "
+                "acción, no saludes, no digas que no entiendes ni que algo falló y "
+                "no ofrezcas ayuda genérica."
             )
             if kind == "dangling_alternative"
             else (
@@ -10662,17 +10663,23 @@ class LlmRuntime:
                     r"\b(?:abrir|abra|abro|poner|ponga|pongo|buscar|busque|busco|cerrar|cierre|cierro|open|play|search|close)\b",
                     folded_question,
                 ) is not None
-                if not says_only_part or not asks_referent or greets or invents:
+                # DIALOGUE1519: the App's reply policy rejects a question that
+                # contains the person's whole text (echoes_request); the tail is
+                # named, never quoted.
+                fragment = _fold_dialogue_text(current).strip(" .!?¿¡,;:")
+                echoes = len(fragment) >= 10 and fragment in folded_question
+                if not says_only_part or not asks_referent or greets or invents or echoes:
                     if attempt == 0:
                         payload["messages"].insert(
                             -1,
                             {
                                 "role": "system",
                                 "content": (
-                                    "Corrección: la pregunta debe decir primero que sólo te llegó esa "
-                                    "parte (con «sólo me llegó…») y después preguntar a qué se refiere, "
-                                    "por ejemplo: «Sólo me llegó “o en la de siempre”: ¿a qué te "
-                                    "referís?». No saludes ni adivines una acción."
+                                    "Corrección: la pregunta debe decir primero que sólo te llegó el "
+                                    "final de la frase (con «sólo me llegó…»), sin repetir ni citar las "
+                                    "palabras del usuario, y después preguntar a qué se refiere, por "
+                                    "ejemplo: «Sólo me llegó el final de la frase: ¿a qué te referís?». "
+                                    "No saludes ni adivines una acción."
                                 ),
                             },
                         )
