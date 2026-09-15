@@ -508,6 +508,20 @@ Lo que queda abierto, por masa, y por qué no se avanza sin el dueño o sin un c
 
 Condición transversal medida hoy: el motor público (Bing RSS) devuelve a veces las páginas de una consulta anterior o páginas ajenas (fotosíntesis → Excel; grafeno → foros); el filtro las rechaza y el producto lo dice con verdad. Las tandas con búsqueda se adjudican con el fallo honesto sellado.
 
+## Estado consolidado 2026-09-15 (madrugada): 494/742 cubiertos, 248 abiertos, 4/35 categorías cerradas
+
+Nueve tandas más desde el cierre de jornada (SCREEN1485, DIALOGUE1487–1491, BROWSER1493, APPS1495–1499): 484 → 494. Reparaciones adoptadas: la orden de captura seguida de «describeme lo que ves» lee la pantalla con el aviso honesto; mirar «lo» sin antecedente pregunta qué mirar (clase propia, validada contra la inversión de papeles); el destino cortado por la transcripción («Ve a portal una.») pregunta a qué portal; browser.control abre una pestaña nueva en el navegador propio del producto (acción new_tab, Kernel+proveedor); el nombre de aplicación aproximado («abres team», «Abre stea,», «abre Steel.») pregunta si abrir la candidata instalada sin abrir nada. Filas que cambian en la tabla anterior:
+
+| Categoría | Abiertos | Condición |
+|---|---:|---|
+| Abrir aplicaciones | 9 | Steam del dueño («Abre Steam», «Abre steam pls», Mortal Kombat en Steam); «Saint Rose» (transcripción de un juego de la biblioteca del dueño); idiomas extranjeros (límites sin marca); «abrime el chrome» abriría el navegador del dueño. |
+| Navegación y búsqueda web | 5 | Descarga de imagen (sin operación); pivigames y «Busca operagx en opera» (Opera GX del dueño); «abre youtube.com en Chrome» (Chrome del dueño); compuesto H0516. |
+| Pantalla | 3 | Diálogos de Steam del dueño (H0285/H0492/H0704); sin proveedor de visión. |
+| Entrada incompleta | 16 | Fragmentos de conversación con palabras (un detector léxico barre pedidos válidos: se descarta); decididos por el modelo. |
+| Agenda | 1 | «qué tengo agendado para hoy» exige la cuenta de Microsoft del dueño (calendar.event.list vía Graph): no se acredita un fallo por cuenta ausente. |
+
+Sin cambio: Música 32, Instalar 31, Vídeo 26, Mensajería 22, Interacción 17, Conocimiento 10, Organizar ventanas 9, Archivos 7, Red 6, Audio 6, Juegos/Correo/Contactos/Desarrollo 22, resto.
+
 ## Actualización 2026-09-14 (WEB1467)
 
 Navegación y búsqueda web pasa de 29/46 a 31/46 con las búsquedas por tema y de páginas de Steam fallidas contadas cuando el final dice la verdad (HEAD 2adb59ef, binarios BUILD1463) (HEAD 2adb59ef): 12/12 ejecutados, una parada del runner; las búsquedas por tema terminaron fallidas por resultados no pertinentes con finales veraces que nombran el tema (pizza, lasaña, Transformers), salvo «Busca Transformers», que esta vez sí encontró cinco páginas pertinentes y las informó con fidelidad; «que es el h2o» dijo la verdad sin nombrar el tema (fallido); las páginas de Steam por búsqueda dijeron la verdad para Marvel Rivals y Stardew Valley, pero la variante de Terraria encontró la tienda y pidió confirmar la navegación, que el transporte ordinario no admite (sin par); los tres límites respondieron con cero búsquedas, 2 créditos. Instrumento de fallo honesto con regla de prefijo (la secuencia permitida puede terminar en la operación fallida con código sellado). Filas abiertas restantes de la categoría: H0618 (nombrar el tema en el final), H0360/H0723 (transporte revisado para la navegación cuando el motor encuentra la página), Portal UNIEJ, Opera GX, «abre youtube.com en Chrome», «abrí una pestaña nueva», compuestos.
