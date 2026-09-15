@@ -1157,6 +1157,40 @@ def _completed_missing_volume_level_request(
     return f"{previous_user_text.strip()}\n{text}"
 
 
+def _completed_missing_music_request(
+    text: str, previous_user_text: str | None, available_operations: Iterable[str],
+) -> str | None:
+    """MUSIC1571 «pon música» → «¿qué música?» → «lofi»: attach the person's
+    answer to the incomplete music request as the music named, so it resolves
+    like «pon música de lofi». Only after a request the resolver itself reads
+    as a music clarification, and only for a short content answer (no request
+    head, no question); the answer keeps its own words."""
+
+    if not previous_user_text:
+        return None
+    prior = resolve_explicit_clarification_intent(previous_user_text, available_operations)
+    if prior is None or prior.operations != ("media.play.query",) or prior.missing_fields != ("query",):
+        return None
+    answer = text.strip().strip("\"'“”«»").strip()
+    folded = _strip_request_envelope(_fold(answer))
+    words = folded.split()
+    if (
+        not folded
+        or len(words) > 8
+        or "?" in answer
+        or _head_is(_request_head(folded), _COVERAGE_ACTION_HEAD)
+        or _negative_action_forms(folded)
+        or re.fullmatch(r"(?:no|nada|ninguna|none|nothing|cancela|cancelar|cancel|olvidalo|dejalo)\b.*", folded)
+    ):
+        return None
+    answer = re.sub(r"^(?:algo\s+de|un\s+poco\s+de|some|something\s+like)\s+", "", answer, flags=re.IGNORECASE).strip(" .!")
+    if not answer:
+        return None
+    if _has(_fold(previous_user_text), r"\bspotify\b"):
+        return f"pon música de {answer} en spotify"
+    return f"pon música de {answer}"
+
+
 def _contextual_output_level_target(
     text: str, previous_user_text: str, available_operations: Iterable[str],
 ) -> bool:
@@ -3223,6 +3257,9 @@ def resolve_explicit_clarification_intent(
     if explicit_non_action_frame(text):
         return None
     folded = _strip_request_envelope(_strip_request_envelope(_fold(text)))
+    # MUSIC1571 H0656 «no me molesta, poné música»: the idiom accepts, it does
+    # not negate the order that follows.
+    folded = re.sub(r"^no\s+me\s+molesta\s*[,;:]?\s+(?=\S)", "", folded, count=1)
     available = frozenset(available_operations)
     alias_plan = exact_catalog_operation_plan(folded)
     if alias_plan is not None and set(alias_plan) <= available:
@@ -4019,21 +4056,31 @@ def resolve_explicit_clarification_intent(
                 "destination_file",
             ),
         )
+    # MUSIC1571: «poneme una canción», «ponme musika», «tengo hambre poné
+    # música», «no me molesta, poné música» are the same incomplete request:
+    # a song or music with nothing named; a spoken preface before the order
+    # («tengo hambre», «no me molesta,») is envelope here.
+    music_folded = re.sub(
+        r"^(?:(?:tengo\s+(?:hambre|sueno|frio|calor)|no\s+me\s+molesta|bueno|dale|che|ya)\s*[,;:]?\s+)+",
+        "",
+        folded,
+        count=1,
+    )
     incomplete_media_clause = any(
-        _head_is(_request_head(clause), r"(?:pon|pone|poneme|reproduce|play)")
-        and _has(clause, r"\b(?:musica|music)\b")
+        _head_is(_request_head(clause), r"(?:pon|pone|poneme|ponme|reproduce|play)")
+        and _has(clause, r"\b(?:musica|music|musika|cancion|canciones|song|songs|tema)\b")
         and _desired_music_query(clause) is None
-        for clause in _request_clauses(folded)
+        for clause in _request_clauses(music_folded)
     )
     if (
         "media.play.query" in available
         and incomplete_media_clause
         and (
             _head_is(
-                _request_head(folded),
-                r"(?:pon|pone|poneme|reproduce|play)",
+                _request_head(music_folded),
+                r"(?:pon|pone|poneme|ponme|reproduce|play)",
             )
-            or (_head_is(_request_head(folded), _OPEN) and _has(folded, r"\bspotify\b"))
+            or (_head_is(_request_head(music_folded), _OPEN) and _has(music_folded, r"\bspotify\b"))
         )
     ):
         return ClarificationIntent(("media.play.query",), ("query",))
@@ -7397,6 +7444,23 @@ def _spoken_radio_station_request(text: str) -> bool:
 
 
 def _desired_music_query(text: str) -> str | None:
+    """Extract a bounded genre, artist or title query without choosing music.
+
+    MUSIC1571: «pon algo de música» names nothing; a query that is only a
+    music noun (with «algo de» in front) is not a query.
+    """
+
+    query = _desired_music_query_raw(text)
+    if query is not None and re.fullmatch(
+        r"(?:(?:algo|un\s+poco|something|some)\s+(?:de\s+|of\s+)?)?"
+        r"(?:musica|music|musika|cancion(?:es)?|song(?:s)?|temas?|videos?)",
+        _fold(query).strip(),
+    ):
+        return None
+    return query
+
+
+def _desired_music_query_raw(text: str) -> str | None:
     """Extract a bounded genre, artist or title query without choosing music."""
 
     folded = _strip_request_envelope(_fold(text))
@@ -15800,6 +15864,13 @@ def resolve_explicit_effects(
     if completed_level_request is not None:
         return resolve_explicit_effects(
             completed_level_request, available, application_names, game_catalog,
+        )
+    completed_music_request = _completed_missing_music_request(
+        text, previous_user_text, available,
+    )
+    if completed_music_request is not None:
+        return resolve_explicit_effects(
+            completed_music_request, available, application_names, game_catalog,
         )
     contextual_read = (
         "system.time" if _nominal_datetime_query(folded) else

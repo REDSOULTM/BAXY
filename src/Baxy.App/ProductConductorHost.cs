@@ -180,6 +180,12 @@ internal static class ProductConductorHost
                 conductor, command, timeout, capture, cancellationToken)
                 .ConfigureAwait(true);
         }
+        if (cmd == "turn.answer-clarification")
+        {
+            return await ExecuteAnswerClarificationAsync(
+                conductor, command, timeout, profileDirectory, capture, cancellationToken)
+                .ConfigureAwait(true);
+        }
         if (cmd == "turn.confirm-if-matches")
         {
             string? caseId = command["caseId"] is JsonValue caseValue
@@ -491,6 +497,70 @@ internal static class ProductConductorHost
     /// to enable the local memory; enabling continues the original save
     /// (MEMORY1245). Nothing is answered when no memory challenge is pending.
     /// </summary>
+    /// <summary>
+    /// MUSIC1571 «pon música»: a two-turn dialogue. The first turn must end in a
+    /// clarification question (emitted as the «request» phase); the scripted
+    /// answer then runs as a reviewed turn, so an operation it needs is proposed
+    /// to the root reviewer exactly like a reviewed case. Nothing is answered
+    /// unless the product asked.
+    /// </summary>
+    private static async Task<bool> ExecuteAnswerClarificationAsync(
+        ProductConductor conductor,
+        JsonObject command,
+        TimeSpan timeout,
+        string profileDirectory,
+        StreamWriter? capture,
+        CancellationToken cancellationToken)
+    {
+        string? caseId = ReviewString(command, "caseId");
+        string? text = ReviewString(command, "text");
+        string? answer = ReviewString(command, "answer");
+        string? directory = ReviewString(command, "reviewDirectory");
+        async Task<bool> RejectAsync(string diagnostic)
+        {
+            await EmitTurnAsync(conductor.RejectConfirmation(diagnostic),
+                capture, cancellationToken, caseId, "final").ConfigureAwait(true);
+            return false;
+        }
+
+        if (command.Count != 5 || string.IsNullOrWhiteSpace(caseId)
+            || string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(answer)
+            || string.IsNullOrWhiteSpace(directory)
+            || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
+        {
+            return await RejectAsync("answer_command_not_admitted").ConfigureAwait(true);
+        }
+
+        ProductTurnResult initial = await conductor.TurnAsync(text, timeout, cancellationToken)
+            .ConfigureAwait(true);
+        bool asked = !initial.TimedOut
+            && initial.Terminal == ProductTurnTerminal.PublishedFinal
+            && initial.Diagnostic is null
+            && !initial.Posterior.HasPendingPlan
+            && !initial.Posterior.IsBusy
+            && (initial.FinalText ?? string.Empty).TrimEnd().EndsWith('?');
+        if (!asked)
+        {
+            // No question: one admission, one final, and nothing is answered.
+            await EmitTurnAsync(initial, capture, cancellationToken, caseId, "final")
+                .ConfigureAwait(true);
+            return false;
+        }
+
+        await EmitTurnAsync(initial, capture, cancellationToken, caseId, "request")
+            .ConfigureAwait(true);
+        var reviewed = new JsonObject
+        {
+            ["cmd"] = "turn.confirm-reviewed",
+            ["text"] = answer,
+            ["caseId"] = caseId,
+            ["reviewDirectory"] = directory,
+        };
+        return await ExecuteReviewedAsync(
+            conductor, reviewed, timeout, profileDirectory, capture, cancellationToken)
+            .ConfigureAwait(true);
+    }
+
     private static async Task<bool> ExecuteMemoryConfirmAsync(
         ProductConductor conductor,
         JsonObject command,
