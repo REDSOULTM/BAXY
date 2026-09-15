@@ -1,0 +1,168 @@
+commit 672421ed5a6aaf35e94ea74e6cf8ad5495f024df
+
+C03: a recall can follow its own save in one case, and «me gusta tomar» saves the favourite drink it recalls (MEMORY1599)
+
+«Como me llamo» and «que me gusta tomar» need a prior save in the same profile, and every case profile is born empty with the private memory disabled. The conductor host gains `turn.memory-then` {cmd,text,caseId,expectedOperation,followup}: the scripted explicit save runs first through the private-memory activation handshake (the save fails memory_disabled, the channel asks to enable, «confirmar» enables and saves; its request and completion are emitted as the two «request» phases), then the scripted recall runs as an ordinary turn whose terminal is the case's final; nothing follows a save that did not complete. `NaturalMemoryRequestParser` learns the favourite-drink save («recuerda que me gusta tomar mate», «… mi bebida favorita es el mate», «remember I like to drink …») under the `favorite_drink` selector that «que me gusta tomar» already recalled — until now that phrase was stored as a generic fact the recall could not find — and the recall forms «qué me gusta tomar», «cuál es mi bebida favorita», «what's my favorite drink».
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/NaturalMemoryRequestParser.cs b/src/Baxy.App/NaturalMemoryRequestParser.cs
+index f9fbab2b..9563bcb6 100644
+--- a/src/Baxy.App/NaturalMemoryRequestParser.cs
++++ b/src/Baxy.App/NaturalMemoryRequestParser.cs
+@@ -865,6 +865,16 @@ internal static partial class NaturalMemoryRequestParser
+             return true;
+         }
+ 
++        // MEMORY1599 «que me gusta tomar» recalls favorite_drink, so «recuerda
++        // que me gusta tomar mate» must save that selector, not a generic fact.
++        match = FavoriteDrinkSavePattern().Match(command);
++        if (match.Success
++            && TrySafeCapturedValue(match.Groups["value"].Value, out string drink))
++        {
++            operation = Save("favorite_drink", drink, "preference", "persistent");
++            return true;
++        }
++
+         match = NameSavePattern().Match(command);
+         if (match.Success
+             && TrySafeCapturedValue(match.Groups["value"].Value, out string name))
+@@ -950,6 +960,12 @@ internal static partial class NaturalMemoryRequestParser
+             return true;
+         }
+ 
++        if (FavoriteDrinkRecallPattern().IsMatch(command))
++        {
++            operation = Recall("exact", "favorite_drink");
++            return true;
++        }
++
+         if (FavoriteColorForgetPattern().IsMatch(command))
+         {
+             operation = Forget("exact", "favorite_color", confirmationRequired: true);
+@@ -1710,6 +1726,11 @@ internal static partial class NaturalMemoryRequestParser
+         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+     private static partial Regex FavoriteColorSavePattern();
+ 
++    [GeneratedRegex(
++        "^(?:(?:recuerda|record[aá]|acordate|acuérdate|guarda|guard[aá]|remember)(?:[ ]+que|[ ]+that)?)[ ]+(?:me[ ]+gusta[ ]+(?:tomar|beber)|mi[ ]+bebida[ ]+favorita[ ]+es|i[ ]+like[ ]+to[ ]+drink|my[ ]+favorite[ ]+drink[ ]+is)[ ]+(?:el[ ]+|la[ ]+|the[ ]+)?(?<value>[\\p{L}][\\p{L} -]{0,39})$",
++        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
++    private static partial Regex FavoriteDrinkSavePattern();
++
+     [GeneratedRegex(
+         // «recordá que me llamo …» (voseo), «acordate que me llamo …» and «quiero que
+         // me recuerdes como …» ask to persist the name as plainly as «recuerda que
+@@ -1825,6 +1846,11 @@ internal static partial class NaturalMemoryRequestParser
+         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+     private static partial Regex FavoriteColorRecallPattern();
+ 
++    [GeneratedRegex(
++        "^(?:(?:decime|dime|sab[eé]s)[ ]+)?(?:qu[eé][ ]+(?:me[ ]+gusta|bebida[ ]+me[ ]+gusta)[ ]+(?:tomar|beber)|cu[aá]l[ ]+es[ ]+mi[ ]+bebida[ ]+favorita|what(?:[ ]+is|'s)[ ]+my[ ]+favorite[ ]+drink|what[ ]+do[ ]+i[ ]+like[ ]+to[ ]+drink)$",
++        RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
++    private static partial Regex FavoriteDrinkRecallPattern();
++
+     [GeneratedRegex(
+         "^(?:borra|olvida|delete|forget)[ ]+(?:mi|my)[ ]+(?:color[ ]+favorito|favorite[ ]+color)$",
+         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)]
+diff --git a/src/Baxy.App/ProductConductorHost.cs b/src/Baxy.App/ProductConductorHost.cs
+index 256f5db3..10c23aae 100644
+--- a/src/Baxy.App/ProductConductorHost.cs
++++ b/src/Baxy.App/ProductConductorHost.cs
+@@ -192,6 +192,12 @@ internal static class ProductConductorHost
+                 conductor, command, timeout, profileDirectory, capture, cancellationToken)
+                 .ConfigureAwait(true);
+         }
++        if (cmd == "turn.memory-then")
++        {
++            return await ExecuteMemoryThenAsync(
++                conductor, command, timeout, capture, cancellationToken)
++                .ConfigureAwait(true);
++        }
+         if (cmd == "turn.confirm-if-matches")
+         {
+             string? caseId = command["caseId"] is JsonValue caseValue
+@@ -643,7 +649,8 @@ internal static class ProductConductorHost
+         JsonObject command,
+         TimeSpan timeout,
+         StreamWriter? capture,
+-        CancellationToken cancellationToken)
++        CancellationToken cancellationToken,
++        string completionPhase = "final")
+     {
+         string? caseId = ReviewString(command, "caseId");
+         string? text = ReviewString(command, "text");
+@@ -686,6 +693,73 @@ internal static class ProductConductorHost
+         // The private channel reads the same closed reply words a person types.
+         ProductTurnResult final = await conductor.TurnAsync("confirmar", timeout, cancellationToken)
+             .ConfigureAwait(true);
++        // MEMORY1599: a save that a recall continues is emitted as an
++        // intermediate «request» phase; the case's final is the recall.
++        await EmitTurnAsync(final, capture, cancellationToken, caseId, completionPhase)
++            .ConfigureAwait(true);
++        return !final.TimedOut
++            && final.Terminal == ProductTurnTerminal.PublishedFinal
++            && !final.Posterior.HasPendingPlan && !final.Posterior.HasCompositionError;
++    }
++
++    /// <summary>
++    /// MEMORY1599 «como me llamo» / «que me gusta tomar»: a recall needs a
++    /// prior save in the same profile. The explicit save runs first through
++    /// the private-memory activation handshake (its request and completion
++    /// emitted as the two «request» phases), then the scripted recall runs as
++    /// an ordinary turn whose terminal is the case's «final». Nothing follows
++    /// a save that did not complete.
++    /// </summary>
++    private static async Task<bool> ExecuteMemoryThenAsync(
++        ProductConductor conductor,
++        JsonObject command,
++        TimeSpan timeout,
++        StreamWriter? capture,
++        CancellationToken cancellationToken)
++    {
++        string? caseId = ReviewString(command, "caseId");
++        string? text = ReviewString(command, "text");
++        string? expectedOperation = ReviewString(command, "expectedOperation");
++        string? followup = ReviewString(command, "followup");
++        async Task<bool> RejectAsync(string diagnostic)
++        {
++            await EmitTurnAsync(conductor.RejectConfirmation(diagnostic),
++                capture, cancellationToken, caseId, "final").ConfigureAwait(true);
++            return false;
++        }
++
++        if (command.Count != 5 || string.IsNullOrWhiteSpace(caseId)
++            || string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(expectedOperation)
++            || string.IsNullOrWhiteSpace(followup)
++            || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
++        {
++            return await RejectAsync("memory_then_command_not_admitted").ConfigureAwait(true);
++        }
++
++        var save = new JsonObject
++        {
++            ["cmd"] = "turn.memory-confirm",
++            ["text"] = text,
++            ["caseId"] = caseId,
++            ["expectedOperation"] = expectedOperation,
++        };
++        var started = System.Diagnostics.Stopwatch.StartNew();
++        bool saved = await ExecuteMemoryConfirmAsync(
++            conductor, save, timeout, capture, cancellationToken, completionPhase: "request")
++            .ConfigureAwait(true);
++        if (!saved || conductor.CapturePosterior() is { HasPendingPlan: true } or { IsBusy: true })
++        {
++            return false;
++        }
++
++        TimeSpan remaining = timeout - started.Elapsed;
++        if (remaining <= TimeSpan.Zero)
++        {
++            return await RejectAsync("memory_then_timed_out").ConfigureAwait(true);
++        }
++
++        ProductTurnResult final = await conductor.TurnAsync(followup, remaining, cancellationToken)
++            .ConfigureAwait(true);
+         await EmitTurnAsync(final, capture, cancellationToken, caseId, "final")
+             .ConfigureAwait(true);
+         return !final.TimedOut

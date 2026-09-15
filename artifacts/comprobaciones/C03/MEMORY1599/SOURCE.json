@@ -1,0 +1,15 @@
+{
+  "schema": "c03-memory1599-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/NaturalMemoryRequestParser.cs (FavoriteDrinkSavePattern / FavoriteDrinkRecallPattern: «recuerda que me gusta tomar mate» saves favorite_drink; «qué me gusta tomar», «cuál es mi bebida favorita» recall it) and src/Baxy.App/ProductConductorHost.cs (turn.memory-then: the scripted explicit save through the activation handshake as two request phases, then the literal recall as the final).",
+  "patch": "artifacts/comprobaciones/C03/MEMORY1599/SOURCE.patch",
+  "commits": [
+    "672421ed5a6aaf35e94ea74e6cf8ad5495f024df"
+  ],
+  "build": "BUILD1599 (C03-repairs1599-build/BUILD_READY.json; App)",
+  "cause_measured": "Los recuerdos exigen un guardado previo en el mismo perfil y el instrumento sólo admitía un turno (o el par guardado+confirmación) por caso; «me gusta tomar X» se guardaba como hecho genérico y no como la bebida que «que me gusta tomar» recuerda.",
+  "change": "Mandato de tres turnos guardado-confirmación-recuerdo; guardado de bebida favorita; sin respuestas fijas.",
+  "measurement": "MEMORY1599: 9 ejecutados, 5 aprobados, 4 fallidos; 0 créditos. Los seis casos guardaron el dato guionizado por el canal de memoria privada (activación confirmada, guardado verificado; «me gusta tomar mate» ya como bebida favorita) y luego recordaron con memory.recall verificada, pero los dos literales y las dos variantes de bebida dijeron el dato en primera persona («Me llamo Valentina.», «Me gusta tomar mate.»), como si fuera de BAXY; las dos variantes de nombre respondieron con el nombre escueto. Las tres fronteras pasaron con cero operaciones. Siguiente: el compositor dice el recuerdo en segunda persona y veta la primera (MEMORY1601).",
+  "credits": 0
+}

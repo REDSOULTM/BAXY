@@ -869,3 +869,7 @@ Siete tandas desde el bloque de la tarde (MUSIC1583, CONVERSATION1585, FILES1587
 | Cerrar aplicaciones y ventanas | 5 | WhatsApp/Discord del dueño; «cerrame todo» tocaría ventanas del dueño. |
 
 Sin cambio: Hora 4 (límites sin marca), Juegos 4 (Steam/Epic del dueño), Conversación 2 (sin marca), Pantalla 3 (diálogos de Steam), Memoria 2 (recuerdos que exigen un guardado previo en el mismo perfil: instrumento de tres turnos pendiente), Documentos 2, Energía 2, resto 1 por categoría.
+
+## Actualización 2026-09-14 (MEMORY1599)
+
+Memoria personal pasa de 8/10 a 8/10 con los recuerdos tras un guardado en el mismo perfil (commit 672421ed, BUILD1599) (HEAD 672421ed): 9 ejecutados, 5 aprobados, 4 fallidos, 0 créditos. Los seis casos guardaron el dato guionizado por el canal de memoria privada (activación confirmada, guardado verificado; «me gusta tomar mate» ya como bebida favorita) y luego recordaron con memory.recall verificada, pero los dos literales y las dos variantes de bebida dijeron el dato en primera persona («Me llamo Valentina.», «Me gusta tomar mate.»), como si fuera de BAXY; las dos variantes de nombre respondieron con el nombre escueto. Las tres fronteras pasaron con cero operaciones. Siguiente: el compositor dice el recuerdo en segunda persona y veta la primera (MEMORY1601).

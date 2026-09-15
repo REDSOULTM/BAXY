@@ -1,3 +1,25 @@
+## MEMORY1599 — estado vigente 2026-09-15T19:26:16.133149+00:00
+
+Parcial: 5 aprobados, 4 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 545/742 | 197 | 0 | >=419 | 5/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 419 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MEMORY1599 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: MEMORY1599: 9 ejecutados, 5 aprobados, 4 fallidos, 0 créditos (índices []); Memoria personal 8/10. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/MEMORY1599/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 165.28 s acumulados; pico GPU 3497.56 MiB; pico RAM 1773.23 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MEMORY1599 precedente. -->
+
 ## MUSIC1597 — estado vigente 2026-09-15T18:57:12.306895+00:00
 
 Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

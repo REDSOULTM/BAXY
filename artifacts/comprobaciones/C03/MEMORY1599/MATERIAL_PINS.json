@@ -1,0 +1,114 @@
+{
+  "schema": "memory1599-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1599-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-memory1599-instrument-v1",
+  "seal_sha256": "81b0950408a179e8abb918c0a91951324d3657910c904deedcb7156da1200c63",
+  "runner_sha256": "270c595579db839daf6c7af6d84b727f74cd081d7f84a2f6affafb612e45f7ab",
+  "transport_seal_sha256": "bbe5053395496285b71083f5e3493232a647899cdbf1641db87ac75dfd3de78e",
+  "files": {
+    "panel.json": "41813f4395dc52d894bfbd7e7ed9ddb744d1f35621512816fca003d098528df9",
+    "turns.jsonl": "d3f45a599028d2e0d35bb60db2f7492d3c2a7921169ca2e9ab3d8b675259e4b1",
+    "case-map.json": "b3e449f9872ca24a1b826e39dfd6be66a74c40bd45800384e5e73d403faa5018",
+    "PLAN.md": "5e6b8d0f1c72820332d3228d290bd4d631af41f1ab44287f566224201fa954b6"
+  },
+  "counts": {
+    "cases": 9,
+    "historical_literals": 2,
+    "original_development_variants": 4,
+    "boundaries": 3,
+    "wire_lines": 18,
+    "session_controls": 9,
+    "ordinary_turns": 3,
+    "reviewed_turns": 6,
+    "maximum_reportable_terminals": 21,
+    "maximum_internal_confirmations": 12
+  },
+  "kind_counts": {
+    "historical_literal": 2,
+    "original_development_variant": 4,
+    "boundary": 3
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0604",
+      "kind": "historical_literal",
+      "group": "name_recall",
+      "credit_behavior": "name_recall",
+      "text_sha256": "d0b834438c644e858256a63a67590486a6b58afacce3a582083efe18d8a50c22",
+      "criterion_sha256": "31f87f65838bc96bfefaadeacda9decd7c3b001fd79bd340973d0821f60cfc55"
+    },
+    {
+      "index": 1,
+      "case_id": "H0173",
+      "kind": "historical_literal",
+      "group": "drink_recall",
+      "credit_behavior": "drink_recall",
+      "text_sha256": "35a064ae1337524fdcd182aa1b6e4a203ecd8a49cda484eb0a3bfbc833377ea1",
+      "criterion_sha256": "6eb47e312a01562cc382fd3b913f46d8251e53729786e974d80ebe259d0114b7"
+    },
+    {
+      "index": 2,
+      "case_id": "memory1599-dev-01",
+      "kind": "original_development_variant",
+      "group": "name_recall",
+      "credit_behavior": "name_recall",
+      "text_sha256": "cdeadfca93127088ed0809b322faeb882e3f9639734126a41201d99aaeb8979a",
+      "criterion_sha256": "31f87f65838bc96bfefaadeacda9decd7c3b001fd79bd340973d0821f60cfc55"
+    },
+    {
+      "index": 3,
+      "case_id": "memory1599-dev-02",
+      "kind": "original_development_variant",
+      "group": "name_recall",
+      "credit_behavior": "name_recall",
+      "text_sha256": "22dfe8e76bb7f396e7ee3d79cdc1ce4c700f22b23348b516ff005a5ee5224f7a",
+      "criterion_sha256": "31f87f65838bc96bfefaadeacda9decd7c3b001fd79bd340973d0821f60cfc55"
+    },
+    {
+      "index": 4,
+      "case_id": "memory1599-dev-03",
+      "kind": "original_development_variant",
+      "group": "drink_recall",
+      "credit_behavior": "drink_recall",
+      "text_sha256": "73d982f1b1733d54a82667ce46b830e52613f50170982666e77babd37dc6f2ee",
+      "criterion_sha256": "6eb47e312a01562cc382fd3b913f46d8251e53729786e974d80ebe259d0114b7"
+    },
+    {
+      "index": 5,
+      "case_id": "memory1599-dev-04",
+      "kind": "original_development_variant",
+      "group": "drink_recall",
+      "credit_behavior": "drink_recall",
+      "text_sha256": "4fca3eea0308b01c5b751f8c85aa57c75e7f35fe4ed3e74808bb13cd8ab79e7d",
+      "criterion_sha256": "6eb47e312a01562cc382fd3b913f46d8251e53729786e974d80ebe259d0114b7"
+    },
+    {
+      "index": 6,
+      "case_id": "memory1599-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "35ab06f9a1f6c2879cdc9052ca9975de6464e6588c511ca0bdc8b48214693137",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 7,
+      "case_id": "memory1599-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "1b0a89613a98a3075be95d1a535c423b03299331c250e0c1c85b152765032beb",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    },
+    {
+      "index": 8,
+      "case_id": "memory1599-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "bc24898c6d653acc0303bda963f8edd69ad552c3e75140829c1ecc5b591f40cc",
+      "criterion_sha256": "50757e30c0886c9c9d6fe25617d31896c91ed2f486ced29f1b243a9954f5945b"
+    }
+  ]
+}
