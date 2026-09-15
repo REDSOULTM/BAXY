@@ -4382,6 +4382,23 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
         and situation.get("verified") is True
         and situation.get("succeeded") is True
     ):
+        if re.search(
+            r"\b(?:instal|install|desinstal|uninstall|descarg|download|baj[aá])",
+            (user_text or "").casefold(),
+        ):
+            # INSTALL1625: an install or uninstall request answered by the
+            # presence read; nothing was installed or removed.
+            bits.append(
+                "The person asked to install or uninstall this application and "
+                "this result only reads its presence: nothing was installed, "
+                "downloaded or removed. If installed is true and installing was "
+                "asked, say it is already installed. If installed is true and "
+                "uninstalling was asked, say it is installed and that removing it "
+                "is done from Windows Settings > Apps, as a fact, without saying "
+                "you cannot or failed. If installed is false, say it is not in "
+                "the Windows Start catalog. One or two sentences, the person's "
+                "language, the application named as they named it."
+            )
         bits.append(
             "This result verifies application presence only, not an opening. "
             "Preserve requestedName and the original purpose of the request. "

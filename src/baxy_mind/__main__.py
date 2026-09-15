@@ -4797,7 +4797,9 @@ def _explicit_arguments_from_evidence(
         return {"label": label} if label is not None else None
 
     if operation == "app.installed":
-        name = resolve_application_installed_name(evidence, application_names)
+        name = effect_intent.installed_catalog_application_name(
+            evidence, application_names,
+        ) or resolve_application_installed_name(evidence, application_names)
         return {"name": name} if name is not None else None
 
     if operation == "game.entitlement.named":

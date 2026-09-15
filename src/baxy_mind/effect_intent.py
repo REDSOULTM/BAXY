@@ -14969,13 +14969,18 @@ def _open_application_spans(text: str) -> tuple[tuple[int, str], ...]:
 _STEAM_LIBRARY_VERB = (
     r"(?:descarga|descargar|descargame|descargate|baja|bajar|bajame|bajate|"
     r"instala|instalar|instalame|instalate|instalaes|install|download|"
-    r"desinstala|desinstalar|desinstalame|desinstalate|uninstall|remove)"
+    r"desinstala|desinstalar|desinstalame|desinstalate|uninstall|remove|"
+    # INSTALL1625 H0083 «lanzá Mortal Kombat en Steam»: launching a game the
+    # library does not hold is answered by the same read.
+    r"lanza|lanzar|lanzame|launch|run|juega|jugar|play|start|abre|abrir|abrime|open)"
 )
 _STEAM_LIBRARY_REQUEST = re.compile(
     r"[¿?¡!\s]*(?:(?:necesito|quiero|quisiera|podes|podrias|puedes|podria|can\s+you|could\s+you|please)\s+(?:que\s+)?)?"
     rf"(?:me\s+)?{_STEAM_LIBRARY_VERB}\s+(?:(?:el|la|the)\s+)?(?:(?:juego|game)\s+)?"
     r"(?P<title>[a-z0-9][a-z0-9 .:'&+-]{0,80}?)"
-    r"\s+(?:en|de|desde|por|from|on|in|via|through)\s+(?:steam|seam|stim|estim)"
+    # INSTALL1625 H0387/H0721 «… en Teams»: the owner's transcriptions write
+    # Steam as «Teams» (H0386/H0522); a game platform, never the meeting app.
+    r"\s+(?:en|de|desde|por|from|on|in|via|through)\s+(?:steam|seam|stim|estim|teams|team)"
     r"(?:\s+(?:por\s+favor|please|ahora|now))?[\s.!?]*"
 )
 
@@ -15007,6 +15012,43 @@ def steam_library_title(text: str) -> str | None:
         if position >= 0:
             return raw[position:position + len(title)]
     return title
+
+
+_CATALOG_INSTALL_VERB = (
+    r"(?:instala|instalar|instalame|instalate|install|descarga|descargar|descargame|download|baja|bajar|bajame|"
+    r"desinstala|desinstalar|desinstalame|desinstalate|uninstall)"
+)
+
+
+def installed_catalog_application_name(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> str | None:
+    """The Start-catalog application an install or uninstall request names.
+
+    INSTALL1625 H0651 «instala Spotify», H0574 «desinstalá Spotify», H0089
+    «desinstalá Discord»: the product installs nothing by name and uninstalls
+    nothing; the truthful turn reads whether the application is present and
+    says so. Only an authenticated catalog name qualifies; anything else stays
+    with the model.
+    """
+
+    folded = _strip_request_envelope(_fold(text)).strip().rstrip(".!?").strip()
+    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(folded):
+        return None
+    match = re.fullmatch(
+        rf"[¿?¡!\s]*(?:(?:necesito|quiero|quisiera|podes|podrias|puedes|can\s+you|could\s+you|please)\s+(?:que\s+)?)?"
+        rf"(?:me\s+)?{_CATALOG_INSTALL_VERB}\s+(?:(?:el|la|the|a)\s+)?(?:(?:app|aplicacion|programa|application)\s+)?"
+        r"(?P<name>[a-z0-9][a-z0-9 .+'&-]{0,60}?)"
+        r"(?:[\s,]+(?:por\s+favor|please|ahora|now|de\s+nuevo|again))?",
+        folded,
+    )
+    if match is None:
+        return None
+    name = match.group("name").strip()
+    if not name:
+        return None
+    return resolve_application_catalog_app_id("abre " + name, application_names)
 
 
 def installed_game_title(text: str) -> str | None:
@@ -16071,12 +16113,24 @@ def resolve_explicit_effects(
         application_names,
     )
     authenticated_games = build_game_catalog_index(game_catalog)
-    if "game.entitlement.named" in available and steam_library_title(text) is not None:
+    if (
+        "game.entitlement.named" in available
+        and steam_library_title(text) is not None
+        # INSTALL1625: a game the local catalog holds is launched, not read.
+        and _authenticated_game_target(folded, authenticated_games) is None
+    ):
         # INSTALL1617: a Steam download, install or uninstall of a named game
         # first reads whether the title is in the person's library and on disk;
         # the install effect itself needs an entitlement and a confirmation,
         # and most such requests name games the library does not hold.
         return EffectIntent(("game.entitlement.named",), (text,))
+    if (
+        "app.installed" in available
+        and installed_catalog_application_name(text, authenticated_applications) is not None
+    ):
+        # INSTALL1625: installing or uninstalling a catalog application is
+        # answered by its presence; nothing is installed or removed.
+        return EffectIntent(("app.installed",), (text,))
     if "browser.control" in available and browser_new_tab_arguments(text) is not None:
         # BROWSER1493 «abrí una pestaña nueva»: one new blank tab in the
         # product's browser, verified by its presence.
