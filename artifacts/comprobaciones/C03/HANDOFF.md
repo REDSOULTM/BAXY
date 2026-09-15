@@ -1,3 +1,11 @@
+# APPS1549 adjudicado — 2026-09-15T05:44:30.081006+00:00
+
+**520/742 cubiertos, 222 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA 28df8129d93b4223985755d049bb3cffe3187fc536367ecd5562c9950c3e44d8. Primeras altas 24 h >= 394 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 37f50e75 con BUILD1549 (el nombre propio que ningún catálogo reclama se lee como presencia y el final lo nombra). Turnos ordinarios de aclaración sin operaciones.
+
+APPS1549 («Abrir aplicaciones», H0249 «Y quema, abre Saint Rose.»): 6 ejecutados, 3 aprobados (los tres límites), 3 fallidos, 0 créditos. Adjudicación 3dc256b25e7418626ed4c0868bb6d92abf1b8e5a6c03fe2d5110c45acc136304. Medido: la mente decidió una app.installed para el literal y las dos variantes (efecto explícito), pero el enlace del argumento name seguía admitiendo sólo el software conocido y el producto preguntó un argumento faltante (programa o acción dentro; consola o computadora; programa o sitio web) sin leer nada; los tres límites pasaron, incluido el acuse de prohibición sin pregunta. Siguiente: el enlace del argumento admite el mismo nombre propio que el resolutor (APPS1551).
+
+---
+
 # SYSTEM1547 adjudicado — 2026-09-15T05:24:02.397221+00:00
 
 **520/742 cubiertos, 222 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA 389233adb6788ca79f89194b8966245da08a95e3a1762c4d0b80ad3b78f3115c. Primeras altas 24 h >= 394 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 58dbad66 con BUILD1547 (la RAM instalada y la utilizable se nombran con su etiqueta; prohibir un medio es una prohibición). Turnos ordinarios de aclaración sin operaciones.

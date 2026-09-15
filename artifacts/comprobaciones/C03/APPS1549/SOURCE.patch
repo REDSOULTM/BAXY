@@ -1,0 +1,108 @@
+commit 37f50e75e02378045a8958afd960601903615d3e
+
+C03: a proper name that no catalog claims is read once as an application presence so the reply can name it (APPS1549)
+
+APPS1535 measured that «Y quema, abre Saint Rose.» (H0249), with the spoken opener stripped, fell into the generic out-of-catalog answer («No puedo hacer eso, está fuera de mi ámbito.») that never names Saint Rose, and that its variants ended with the model asking whether to open a name that exists nowhere. A capitalized bare name (every word capitalized, no article, at most four words) after a plain open verb (abre/abrí/open), claimed by no application or game catalog entry, no near catalog name and no public site, is now read once as an application presence (app.installed); the verified absence lets the reply say it does not find that application, naming it. Registry-wide recogniser diff with the real Start catalog: only H0249 changes (None → app.installed). The constraint acknowledgement prompt now says the acknowledgement is the whole reply (no question or offer of help): SYSTEM1547 measured «No uses Python.» losing its final to a trailing help question and an empty retry.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 8b703d50..f2ae9c3e 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -5143,8 +5143,14 @@ def resolve_application_window_followup_name(
+ def unresolved_application_open_name(
+     text: str,
+     application_names: Iterable[str] | ApplicationCatalogIndex,
++    *,
++    proper_name: bool = False,
+ ) -> str | None:
+-    """Bind a literal app name for a presence read, never an opening fallback."""
++    """Bind a literal app name for a presence read, never an opening fallback.
++
++    ``proper_name`` also admits a capitalized bare name (APPS1549); the caller
++    must first rule out games, near catalog names and public sites.
++    """
+ 
+     folded = _fold(text)
+     if not folded or len(folded) > 16_384:
+@@ -5171,6 +5177,10 @@ def unresolved_application_open_name(
+         r"^(?:(?:el|la|un|una|the|a|an)\s+)?"
+         r"(?:aplicacion|application|app|programa|program)\s+",
+     )
++    # Folding proves grammar only. Recover the original tokens for the read
++    # so the provider receives the person's name, including case and accents.
++    target_words = len(request.group("target").split())
++    raw_target = " ".join(text.split()[-target_words:])
+     if wrapper is None and build_application_catalog_index(application_names).entries:
+         # A bare name is enough when it is software people open by name and a
+         # verified catalog is present to prove it absent; «abrí la puerta»
+@@ -5181,15 +5191,24 @@ def unresolved_application_open_name(
+             r"(?:\s*[,;:]?\s+(?:por favor|please|para mi|for me|ahora|now|"
+             r"dale|porfa|porfi|porfis|pls|plz))?[\s?!.]*$)",
+         )
++    if proper_name and wrapper is None and build_application_catalog_index(application_names).entries:
++        # APPS1549 «abre Saint Rose.»: a proper name (every word capitalized,
++        # no article, at most four words) after an open head is a name the
++        # person expects on this PC; the verified catalog can prove it absent
++        # and the reply can name it. Lowercase common nouns still abstain.
++        proper = _APPLICATION_TRAILING_REQUEST.sub("", raw_target.rstrip(" ?!.")).rstrip()
++        words = proper.split()
++        if (
++            1 <= len(words) <= 4
++            and all(word[:1].isupper() and word[1:] == word[1:].lower() and word.isalpha() for word in words)
++            and not _has(_fold(proper), r"^(?:el|la|los|las|un|una|the|a|an)\b")
++        ):
++            wrapper = _match(request.group("target"), r"^(?=\S)")
+     if (
+         wrapper is None
+         or resolve_application_catalog_app_id(text, application_names) is not None
+     ):
+         return None
+-    # Folding proves grammar only. Recover the original tokens for the read
+-    # so the provider receives the person's name, including case and accents.
+-    target_words = len(request.group("target").split())
+-    raw_target = " ".join(text.split()[-target_words:])
+     raw_name = " ".join(raw_target.split()[len(wrapper.group().split()):])
+     # The explicit application wrapper was consumed above. Strip only its
+     # request suffix, never another article or program word inside the name.
+@@ -15794,6 +15813,24 @@ def resolve_explicit_effects(
+         # Identity is still pending. Read once under the original opening
+         # objective; no app.open step or plan is inferred from this result.
+         return EffectIntent(("app.installed",), (text,))
++    if (
++        "app.installed" in available
++        and resolve_game_catalog_app_id(text, authenticated_games) is None
++        and not near_catalog_application_candidates(text, authenticated_applications)
++        and not near_catalog_game_candidates(text, authenticated_games)
++        and not _has(folded, rf"\b{_NAMED_PUBLIC_SITE}\b")
++        and _symbolic_web_destination(text) is None
++        # Only the plain open verbs: «lanzá X» or «ejecutá X» name a game or a
++        # program run, not a Start-catalog presence to prove.
++        and _has(folded, r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?(?:me\s+)?(?:abre|abri|abris|abrime|abrir|open)\b")
++        and unresolved_application_open_name(
++            text, authenticated_applications, proper_name=True,
++        ) is not None
++    ):
++        # APPS1549 «Y quema, abre Saint Rose.»: a proper name that no catalog,
++        # near name or public site claims is read once as an application
++        # presence; the verified absence lets the reply name it truthfully.
++        return EffectIntent(("app.installed",), (text,))
+     alias_plan = exact_catalog_operation_plan(folded)
+     if alias_plan is not None and set(alias_plan) <= available:
+         return EffectIntent(alias_plan, tuple(folded for _ in alias_plan))
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index fac20934..4e59d82c 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -204,7 +204,8 @@ CONSTRAINT_PRESENTATION_PROMPT = (
+     "intention in first person, preserving the user's time scope without "
+     "adding universal commitments. Do not promise that the device state "
+     "cannot change. Return one short natural sentence in response_language, "
+-    "without JSON or explanation of these instructions."
++    "without JSON or explanation of these instructions. No question and no "
++    "offer of help after it: the acknowledgement is the whole reply."
+ )
+ 
+ OBSERVATION_ACK_PRESENTATION_PROMPT = (

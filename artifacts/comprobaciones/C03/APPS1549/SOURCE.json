@@ -1,0 +1,15 @@
+{
+  "schema": "c03-apps1549-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (unresolved_application_open_name proper_name: un nombre propio —todas las palabras con mayúscula, sin artículo, hasta cuatro palabras— detrás de abre/abrí/open se lee como presencia de aplicación cuando ningún catálogo de aplicaciones o juegos, ningún nombre cercano ni ningún sitio público lo reclama) y src/baxy_mind/llm.py (el acuse de una prohibición no añade pregunta ni oferta de ayuda).",
+  "patch": "artifacts/comprobaciones/C03/APPS1549/SOURCE.patch",
+  "commits": [
+    "37f50e75e02378045a8958afd960601903615d3e"
+  ],
+  "build": "BUILD1549 (C03-repairs1549-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "APPS1549: sin la muletilla, «abre Saint Rose» recibía la respuesta genérica de fuera de catálogo sin nombrar Saint Rose, y las variantes terminaron en el modelo preguntando si abrir un nombre inexistente; SYSTEM1547: el acuse de «No uses Python.» añadió una pregunta y el reintento quedó vacío.",
+  "change": "Nombre propio sin catálogo leído como presencia de aplicación (app.installed) y nombrado en el final; acuse de prohibición sin pregunta; sin respuestas fijas.",
+  "measurement": "APPS1549: 6 ejecutados, 3 aprobados (los tres límites), 3 fallidos; 0 créditos. Medido: la mente decidió una app.installed para el literal y las dos variantes (efecto explícito), pero el enlace del argumento name seguía admitiendo sólo el software conocido y el producto preguntó un argumento faltante (programa o acción dentro; consola o computadora; programa o sitio web) sin leer nada; los tres límites pasaron, incluido el acuse de prohibición sin pregunta. Siguiente: el enlace del argumento admite el mismo nombre propio que el resolutor (APPS1551).",
+  "credits": 0
+}
