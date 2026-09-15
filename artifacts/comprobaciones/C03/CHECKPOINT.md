@@ -1,3 +1,25 @@
+## MUSIC1575 — estado vigente 2026-09-15T16:44:52.371305+00:00
+
+Parcial: 6 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 534/742 | 208 | 0 | >=408 | 5/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 407 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1575 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: MUSIC1575: 7 ejecutados, 6 aprobados, 1 fallidos, 1 créditos (índices [0]); Música 20/39. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1575/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 207.50 s acumulados; pico GPU 3513.33 MiB; pico RAM 2409.55 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 7; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1575 precedente. -->
+
 ## MUSIC1573 — estado vigente 2026-09-15T16:32:29.077702+00:00
 
 Parcial: 10 aprobados, 2 fallidos, 0 sin ejecutar; 5 créditos.

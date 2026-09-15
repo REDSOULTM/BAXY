@@ -1,0 +1,61 @@
+commit 6cd726f777281c9e25e32afdc4b40aef670c3e33
+
+C03: an observed YouTube title is not the reply's vocabulary, a title-only draft lacks the state, and «viendo» states the local playback (MUSIC1575)
+
+MUSIC1573 measured two composer causes on the two-turn music dialogue after the playback itself succeeded. «poneme una canción» → «algo de jazz»: the retry wrote the English title «4K Cozy Coffee Shop with Smooth Piano Jazz Music…» alone and the language veto answered before the state check, so the next hint dropped the title and the third draft named none; a Spanish reply quoting that title could be vetoed the same way. The observed media.play.youtube title now joins the masked observed names (observed_response_literals.py), so vocabulary and language are judged on the reply's own words, and a draft that is only the quoted title is judged missing_state, whose hint carries the state and the whole title. «poné una canción» → «Bad Bunny»: the drafts said «el video de Bad Bunny» without the title, the title alone, then «Estoy viendo el video «…» en YouTube», which the state grammar did not read as playing; for the local YouTube playback, which the product itself announces as a video, «viendo»/«watching» now state the playing state (media.status and media.control keep their grammar).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 6038a026..81511c61 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -5336,6 +5336,11 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+         playback_defect = _youtube_playback_defect(text, playing)
+         if playback_defect:
+             return playback_defect
++        if not re.sub(r'[«"“][^»"”]{1,512}[»"”]', "", text).strip(" .,;:!¡\n\t"):
++            # MUSIC1573 «poneme una canción» → «algo de jazz»: the retry wrote
++            # the English title alone and the language veto answered, so the
++            # next hint dropped the title. The title alone lacks the state.
++            return "missing_state"
+     results_text = _search_results_text(payload)
+     if payload.get("operation") == "web.search" and results_text is None:
+         # WEB1445/002 «va a llover mañana» over a search that returned nothing
+@@ -6843,7 +6848,11 @@ def compose_visible_defect(
+                     r"\b(?:(?P<negative>no|not|nothing|isn't|isn’t|aren't|aren’t)\s+)?"
+                     r"(?:(?:se|est[aá]|est[aá]n|is|are|sigue|still|currently|"
+                     r"hay|nada|ahora|actualmente)\s+)*"
+-                    r"(?:(?P<playing>sonando|suena|reproduci[eé]ndo(?:se)?|reproduce|escuchando|playing)|"
++                    r"(?:(?P<playing>sonando|suena|reproduci[eé]ndo(?:se)?|reproduce|escuchando|playing"
++                    # MUSIC1573 «poné una canción» → «Bad Bunny»: «Estoy viendo el
++                    # video «…» en YouTube» states the playback of the video the
++                    # product itself announced; watching is the playing state here.
++                    + (r"|viendo|watching" if operation == "media.play.youtube" else "") + r")|"
+                     r"(?P<paused>pausad[oa]s?|en\s+pausa|paused)|"
+                     r"(?P<stopped>detenid[oa]s?|parad[oa]s?|stopped))\b",
+                     playback_text,
+diff --git a/src/baxy_mind/observed_response_literals.py b/src/baxy_mind/observed_response_literals.py
+index 64c0974f..036e781d 100644
+--- a/src/baxy_mind/observed_response_literals.py
++++ b/src/baxy_mind/observed_response_literals.py
+@@ -103,6 +103,18 @@ def without_observed_names(text: str, situation: object) -> str:
+                 names.update(line_text.strip() for line in layout_lines if isinstance(line, dict)
+                              and isinstance(line_text := line.get("text"), str)
+                              and 1 < len(line_text.strip()) <= 4096)
++        if (node.get("kind") == "operation" and operation == "media.play.youtube"
++                and node.get("verified") is True and node.get("succeeded") is True
++                and node.get("polarity") == "success"):
++            # MUSIC1573 «poneme una canción» → «algo de jazz»: the observed
++            # YouTube title («4K Cozy Coffee Shop with Smooth Piano Jazz Music…»)
++            # keeps its own language; quoted in a Spanish reply it is observed
++            # data, not the reply's vocabulary.
++            observed = node.get("observed")
++            title = observed.get("title") if isinstance(observed, dict) else None
++            if (isinstance(observed, dict) and observed.get("titleObserved") is True
++                    and isinstance(title, str) and 0 < len(title.strip()) <= 4096):
++                names.add(title.strip())
+         steps = node.get("steps")
+         if isinstance(steps, list):
+             for step in steps:

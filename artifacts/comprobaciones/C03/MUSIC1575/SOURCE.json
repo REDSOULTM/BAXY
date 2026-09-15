@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1575-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/observed_response_literals.py (the observed media.play.youtube title is masked from the vocabulary and language checks) and src/baxy_mind/llm.py (a draft that is only the quoted observed title is missing_state; «viendo»/«watching» are the playing state for media.play.youtube).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1575/SOURCE.patch",
+  "commits": [
+    "6cd726f777281c9e25e32afdc4b40aef670c3e33"
+  ],
+  "build": "BUILD1575 (C03-repairs1575-build/BUILD_READY.json; mente)",
+  "cause_measured": "MUSIC1575: un título observado en inglés hacía vetar por idioma el borrador que sólo lo citaba y una respuesta española que lo citaba; «Estoy viendo el video «…»» no contaba como estado de reproducción.",
+  "change": "Título observado enmascarado del vocabulario; título solo → missing_state; «viendo» como estado de reproducción de YouTube; sin respuestas fijas.",
+  "measurement": "MUSIC1575: 7 ejecutados, 6 aprobados, 1 fallido; 1 créditos. Los dos literales abiertos y las dos variantes preguntaron qué música sin proponer nada; la respuesta guionizada completó el pedido como media.play.youtube revisado. H0405 («Bad Bunny») reprodujo y el final citó el título observado completo («Estoy viendo el video «…» en YouTube», leído ya como estado de reproducción); ambas variantes igual. H0009 («algo de jazz») propuso y se aprobó, pero el primer resultado de «jazz» es hoy un vídeo de 3 h 51 min del que el cliente android sólo ofrece el mp4 muxado (itag 18, m4a omitido por el experimento SABR) y mpv agotó la ventana de 30 s en dos resoluciones; el final informó el fallo con verdad. Las tres fronteras pasaron con cero operaciones; volumen restaurado; ningún reproductor sobrevivió a su caso.",
+  "credits": 1
+}
