@@ -1,0 +1,58 @@
+commit f6ef0b0105b1026c4a71c677399a86355f7edbf2
+
+C03: music named without a provider plays from YouTube in the local player (MUSIC1559)
+
+Five open Música rows name music without saying where («pon música de daft punk», «pon una cancion de michael jackson» twice, «Pon bad de michael jackson», «poneme algo de música tranqui»); the reader sent them to media.play.query, whose only provider is Spotify and whose session does not exist on this PC (owner's decision: skip). With the local YouTube playback demonstrated in MUSIC1557, the resolver sends provider-less named music to media.play.youtube («en Spotify» keeps Spotify) and the argument builder takes the named music in the person's words as the query, dropping a leading «algo de». Registry-wide recogniser diff with the real Start catalog: exactly those five rows change (media.play.query → media.play.youtube).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index a36597b0..21ee0d74 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -4902,6 +4902,14 @@ def _explicit_arguments_from_evidence(
+         # MUSIC1553: the person's own words name what to play; the provider
+         # searches YouTube with them and the receipt carries the title played.
+         youtube_query = effect_intent.youtube_play_query(evidence)
++        if youtube_query is None and not re.search(r"\b(?:youtube|spotify)\b", folded):
++            # MUSIC1559 «pon música de daft punk», «poneme algo de música tranqui»:
++            # the named music, in the person's words, is the YouTube query.
++            named = _explicit_live_media_query_arguments(evidence)
++            if named is not None and isinstance(named.get("query"), str):
++                youtube_query = re.sub(
++                    r"^(?:algo\s+de|something\s+like|some)\s+", "", named["query"].strip(), flags=re.IGNORECASE,
++                ).strip() or None
+         return {"query": youtube_query} if youtube_query is not None else None
+ 
+     if operation == "calendar.event.list":
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index b679ccd6..2c715c95 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -14075,8 +14075,10 @@ def _review_media_and_email_effects(
+         and _has(folded, r"\b(?:reproduce|reproducir|play|pon)\b")
+     )
+     if _explicit_named_music_query(folded) is not None and _desired_music_query(folded) is not None:
++        # MUSIC1559: music named without a provider («pon música de daft punk»)
++        # plays from YouTube in the local player; «en Spotify» keeps Spotify.
+         _append(
+-            matches, folded, "media.play.query",
++            matches, folded, "media.play.query" if spotify else "media.play.youtube",
+             r"\b(?:pon|ponme|poneme|pone|reproduce|reproducir|reproduci|play)\b",
+         )
+     elif _desired_music_query(folded) is not None:
+@@ -16005,6 +16007,13 @@ def resolve_explicit_effects(
+         or _desired_music_query(folded) is not None
+     ):
+         evidence = text if _explicit_named_music_query(text) is not None else folded
++        if (
++            "media.play.youtube" in available
++            and not _has(folded, r"\bspotify\b")
++            and _explicit_named_music_query(folded) is not None
++        ):
++            # MUSIC1559: no provider named → the local YouTube playback.
++            return EffectIntent(("media.play.youtube",), (evidence,))
+         return EffectIntent(("media.play.query",), (evidence,))
+     if "web.search" in available and _public_live_lookup_request(folded):
+         # WEB1445: the evidence keeps the person's accents («mañana»); the
