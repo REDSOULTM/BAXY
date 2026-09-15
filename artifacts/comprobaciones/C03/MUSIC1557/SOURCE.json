@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1557-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (las comprobaciones de nombre del transporte de medios toleran un tramo de espacios por uno; la instrucción pide el título completo; la pista de reintento missing_name de la reproducción de YouTube nombra el título observado completo entre comillas).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1557/SOURCE.patch",
+  "commits": [
+    "e828a755604ca34444ff875a5cdf10130bd80f86"
+  ],
+  "build": "BUILD1557 (C03-repairs1557-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "MUSIC1557: la reproducción se verificó con su título, pero los borradores citaron el título con espacios simples (el observado trae dobles) o sólo un fragmento, y el veto de nombre rechazó los tres intentos: sin final.",
+  "change": "Tolerancia de espacios en las comprobaciones de nombre y pista con el título completo; sin respuestas fijas.",
+  "measurement": "MUSIC1557: 7 ejecutados, 7 aprobados, 0 fallidos; 2 créditos. Medido: las cuatro reproducciones revisadas se propusieron con las palabras de la persona, la raíz las aprobó, yt-dlp (cliente android) resolvió el primer resultado con su título y mpv lo reprodujo verificado por IPC con el volumen preajustado; cada final dijo que se reproduce citando el título observado completo y tal cual, sin otro dato ni pregunta; el volumen se restauró y ningún reproductor sobrevivió a su caso. H0614 y H0560 acreditados con sus dos variantes.",
+  "credits": 2
+}
