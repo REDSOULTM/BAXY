@@ -1,0 +1,38 @@
+commit 7c6164224caacb0b5967c7e6f26d7d5713879512
+
+C03: an unverified YouTube start resolves the stream again and plays once more before failing (MUSIC1565)
+
+MUSIC1563 measured five verified and named playbacks and two that mpv did not verify inside the thirty-second window (youtube_mpv_playback_not_verified) although the same resolved streams play by hand: the start sometimes stalls on the media server the first resolution lands on. When the first playback is not verified, YouTubeMpvAdapter now resolves the query again (a fresh URL, usually another server) and plays once more before reporting the failure; nothing else changes.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs b/src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs
+index 36516a05..06aa5265 100644
+--- a/src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs
+@@ -74,8 +74,22 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
+                     operation, "youtube_stream_not_resolved");
+             effectBoundary.Cross(cancellationToken);
+             StopActivePlayer();
+-            return await StartAndVerifyAsync(operation, query, title, stream, cancellationToken)
+-                .ConfigureAwait(false);
++            ExternalCapabilityReceipt receipt = await StartAndVerifyAsync(
++                operation, query, title, stream, cancellationToken).ConfigureAwait(false);
++            if (!receipt.Verified && _streamResolver is null)
++            {
++                // MUSIC1563: the same query that plays by hand stalled twice inside a
++                // tanda; a fresh resolution lands on another media server. One retry.
++                (Uri? again, string? againTitle) = await ResolveStreamAsync(query, cancellationToken)
++                    .ConfigureAwait(false);
++                if (again is not null)
++                {
++                    StopActivePlayer();
++                    receipt = await StartAndVerifyAsync(
++                        operation, query, againTitle ?? title, again, cancellationToken).ConfigureAwait(false);
++                }
++            }
++            return receipt;
+         }
+         catch (OperationCanceledException) when (
+             cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1565-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/YouTubeMpvAdapter.cs (si la primera reproducción no se verifica, resuelve el flujo de nuevo y reproduce una vez más antes de fallar).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1565/SOURCE.patch",
+  "commits": [
+    "7c6164224caacb0b5967c7e6f26d7d5713879512"
+  ],
+  "build": "BUILD1565 (C03-repairs1565-build/BUILD_READY.json; Providers)",
+  "cause_measured": "MUSIC1565: dos reproducciones no se verificaron en la ventana de treinta segundos aunque los mismos flujos se reproducen a mano; el arranque se atasca a veces en el servidor asignado.",
+  "change": "Segunda resolución y reproducción ante un arranque no verificado; sin respuestas fijas.",
+  "measurement": "MUSIC1565: 10 ejecutados, 4 aprobados (una variante y tres límites), 6 fallidos; 0 créditos. Medido: las siete reproducciones se propusieron y aprobaron, pero seis no llegaron al primer medio segundo en mpv en ninguno de los dos flujos resueltos (youtube_mpv_playback_not_verified); sólo la variante «música alegre» se reprodujo y se nombró; tres finales dijeron el fallo con verdad, uno negó la capacidad y dos se perdieron. Los mismos flujos se reproducen a mano en segundos y el adaptador no deja ver qué hizo el reproductor dentro de la tanda. Siguiente: el reproductor escribe su propio registro junto a los datos locales del producto, reproduce sólo audio (sin superficie de GPU junto al modelo) y toma el flujo de audio pequeño (MUSIC1567).",
+  "credits": 0
+}
