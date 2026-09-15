@@ -1,3 +1,25 @@
+## DIALOGUE1521 — estado vigente 2026-09-15T02:29:37.697381+00:00
+
+Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 508/742 | 234 | 0 | >=382 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 381 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); DIALOGUE1521 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: DIALOGUE1521: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]); Entrada incompleta, ruido y control de diálogo 27/34. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/DIALOGUE1521/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 98.09 s acumulados; pico GPU 3497.56 MiB; pico RAM 1662.98 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque DIALOGUE1521 precedente. -->
+
 ## DIALOGUE1519 — estado vigente 2026-09-15T02:23:47.550193+00:00
 
 Parcial: 3 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.

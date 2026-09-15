@@ -625,3 +625,7 @@ Entrada incompleta, ruido y control de diálogo pasa de 26/34 a 26/34 con la alt
 ## Actualización 2026-09-14 (DIALOGUE1519)
 
 Entrada incompleta, ruido y control de diálogo pasa de 26/34 a 26/34 con la comprobación del referente que casa «referís» (commit 90e983f6, BUILD1519) (HEAD 90e983f6): 6 ejecutados, 3 aprobados (los tres límites), 3 fallidos, 0 créditos. La mente produjo y validó la pregunta requerida para el literal y las dos variantes («Sólo me llegó "…": ¿a qué te referís?», en la auditoría del turno), pero la política de respuestas de la aplicación la rechazó por repetir el texto de la persona (echoes_request: la pregunta cita el fragmento entero) y publicó una pregunta compuesta que adivinó el referente. Los tres límites pasaron. Siguiente: la pregunta nombra el final de la frase sin citarlo (DIALOGUE1521).
+
+## Actualización 2026-09-14 (DIALOGUE1521)
+
+Entrada incompleta, ruido y control de diálogo pasa de 26/34 a 27/34 con la pregunta que nombra el final de la frase sin citarlo (commit ffa35636, BUILD1521) (HEAD ffa35636): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. «o en la de siempre.» y sus dos variantes terminaron con cero operaciones y la pregunta validada «Sólo me llegó el final de la frase: ¿a qué te referís?», que la política de respuestas de la aplicación conservó; los tres límites pasaron. El primer intento del guion raíz del caso 1 abortó antes de la admisión por una salida vacía del paso de ejecución y el caso, sin ejecutar, se ejecutó una sola vez después. Cero violaciones en los seis.

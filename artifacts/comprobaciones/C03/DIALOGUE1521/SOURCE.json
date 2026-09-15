@@ -1,0 +1,15 @@
+{
+  "schema": "c03-dialogue1521-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (clarify_unresolved_input, kind dangling_alternative: la comprobación del referente usa raíces abiertas —«a qué te refer…», «a qué se refier…»— y ya casa «referís»; el resto del validador no cambia).",
+  "patch": "artifacts/comprobaciones/C03/DIALOGUE1521/SOURCE.patch",
+  "commits": [
+    "ffa35636e506d4935ea4e09816b6ded2a51b0b0e"
+  ],
+  "build": "BUILD1521 (C03-repairs1521-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "DIALOGUE1521: el aclarador produjo la pregunta requerida pero el validador la rechazó por un límite de palabra tras «refer» («referís»); el turno cayó en la pregunta genérica, que adivinó el referente.",
+  "change": "Raíces abiertas en la comprobación del referente del validador; sin respuestas fijas.",
+  "measurement": "DIALOGUE1521: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. «o en la de siempre.» y sus dos variantes terminaron con cero operaciones y la pregunta validada «Sólo me llegó el final de la frase: ¿a qué te referís?», que la política de respuestas de la aplicación conservó; los tres límites pasaron. El primer intento del guion raíz del caso 1 abortó antes de la admisión por una salida vacía del paso de ejecución y el caso, sin ejecutar, se ejecutó una sola vez después. Cero violaciones en los seis.",
+  "credits": 1
+}

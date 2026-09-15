@@ -1,3 +1,11 @@
+# DIALOGUE1521 adjudicado — 2026-09-15T02:29:37.697381+00:00
+
+**508/742 cubiertos, 234 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA c8b0d68380ce23fdfccc610a8933417e535052861e428a9a59d0a1806f25aae9. Primeras altas 24 h >= 382 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD ffa35636 con BUILD1521 (la pregunta nombra el final de la frase sin citarlo; DIALOGUE1521/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+DIALOGUE1521 («Entrada incompleta, ruido y control de diálogo», H0205 «o en la de siempre.»): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Adjudicación 538a3ad3530848bea6811f55500a639581de27cf1ba2299854fa04467626e7ff. «o en la de siempre.» y sus dos variantes terminaron con cero operaciones y la pregunta validada «Sólo me llegó el final de la frase: ¿a qué te referís?», que la política de respuestas de la aplicación conservó; los tres límites pasaron. El primer intento del guion raíz del caso 1 abortó antes de la admisión por una salida vacía del paso de ejecución y el caso, sin ejecutar, se ejecutó una sola vez después. Cero violaciones en los seis.
+
+---
+
 # DIALOGUE1519 adjudicado — 2026-09-15T02:23:47.550193+00:00
 
 **507/742 cubiertos, 235 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 264226233c90d3623bf06817be80f917910b66b03e4cef727852925e1e8eb7ed. Primeras altas 24 h >= 381 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 90e983f6 con BUILD1519 (la comprobación del referente casa «referís»; DIALOGUE1519/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
