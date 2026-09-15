@@ -15,7 +15,11 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     IApplicationInventoryProvider,
     IApplicationCatalogProvider
 {
-    private const int VerificationAttempts = 28;
+    // APPS1609 «Abre Steam»: a client that updates itself before showing anything
+    // (Steam's login window at 4.6 s, its main window at 7.9 s after launch) never
+    // fit the earlier 28 polls; the launch is verified as soon as the window shows,
+    // so the longer budget costs nothing to a prompt application.
+    private const int VerificationAttempts = 120;
     private static readonly TimeSpan ObservationDelay = TimeSpan.FromMilliseconds(100);
     private static readonly TimeSpan CatalogLifetime = TimeSpan.FromMinutes(5);
 
