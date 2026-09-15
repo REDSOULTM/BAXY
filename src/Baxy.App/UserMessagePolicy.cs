@@ -2644,6 +2644,7 @@ internal static class UserMessagePolicy
 
         result = WithoutVerifiedEmptyKnownFileFinding(source, result);
         result = WithoutScreenReadingImageScope(source, result);
+        result = WithoutLibraryEntitlementConsequence(source, result);
 
         if (TryReadJson(source, out JsonElement root)
             && root.TryGetProperty("kind", out JsonElement kind) && kind.ValueKind == JsonValueKind.String && kind.GetString() == "operation"
@@ -2688,6 +2689,34 @@ internal static class UserMessagePolicy
         }
 
         return LooksLikeFailure(result);
+    }
+
+    // INSTALL1621 «Install Stardew Valley on Steam»: a verified library read
+    // found the game is not the person's; «it cannot be downloaded or
+    // installed» states that consequence, not a failed read. Only that
+    // predicate is masked; any other failure assertion still counts.
+    private static string WithoutLibraryEntitlementConsequence(string source, string result)
+    {
+        if (!TryReadJson(source, out JsonElement root)
+            || !root.TryGetProperty("operation", out JsonElement operation) || operation.ValueKind != JsonValueKind.String
+            || operation.GetString() != "game.entitlement.named"
+            || !root.TryGetProperty("verified", out JsonElement verified) || verified.ValueKind != JsonValueKind.True
+            || !root.TryGetProperty("succeeded", out JsonElement succeeded) || succeeded.ValueKind != JsonValueKind.True
+            || !root.TryGetProperty("observed", out JsonElement observed) || observed.ValueKind != JsonValueKind.Object
+            || !observed.TryGetProperty("owned", out JsonElement owned) || owned.ValueKind != JsonValueKind.False)
+        {
+            return result;
+        }
+
+        return Regex.Replace(
+            FoldForPolicy(result),
+            @"\b(?:no\s+(?:puedo|puedes|podes|podras|podre|podria|podrias|se\s+puede|es\s+posible|vas\s+a\s+poder|voy\s+a\s+poder)"
+            + @"|(?:it\s+|you\s+|i\s+)?(?:can't|cannot|can\s+not|couldn't|could\s+not|won't\s+be\s+able\s+to|am\s+unable\s+to|is\s+not\s+possible\s+to))"
+            + @"\s+(?:be\s+)?(?:descargar|descargarlo|descargarla|descargarse|bajar|bajarlo|bajarla|instalar|instalarlo|instalarla|instalarse"
+            + @"|desinstalar|desinstalarlo|desinstalarla|desinstalarse|download|downloaded|install|installed|uninstall|uninstalled|remove|removed)"
+            + @"[^.;]{0,80}",
+            " ",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
     }
 
     // SCREEN1417 «qué hay en la pantalla»: no vision provider exists, so a

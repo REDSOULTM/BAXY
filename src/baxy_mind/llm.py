@@ -6578,6 +6578,22 @@ def compose_visible_defect(
             "",
             _accent_folded_with_punctuation(failure_assertions),
         )
+    if (
+        kind == "operation"
+        and situation.get("operation") == "game.entitlement.named"
+        and polarity == "success"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+        and presence.get("owned") is False
+        and re.search(
+            # INSTALL1621 H0345: «Aunque esté en tu lista de posesiones, para
+            # instalarlo necesitas confirmarlo» hints at a licence the read
+            # denies and at a confirmation nobody was offered.
+            r"\b(?:confirm|posesion|posesiones|lo\s+tienes|lo\s+tenes|ya\s+lo\s+tienes|es\s+tuyo|te\s+pertenece|you\s+own|owned\b|in\s+your\s+library,?\s+but)",
+            _accent_folded_with_punctuation(stripped),
+        )
+    ):
+        return "extra_claim"
     if _verified_search_results(situation):
         # WEB1447 «va a llover mañana»: the search verified forecast pages that
         # carry no values, and «No puedo confirmar si va a llover mañana porque
