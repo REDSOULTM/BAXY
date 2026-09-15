@@ -1,0 +1,64 @@
+commit 627cdac0ad468e4deed382e78d601306a517d7af
+
+C03: the dangling-alternative question must say only that part arrived and ask what it refers to (DIALOGUE1517)
+
+DIALOGUE1515 measured that «o en la de siempre.» and its variants asked what the fragment refers to («¿De qué otra cosa estás hablando?») but never said that only that part arrived, which the criterion requires; the validator accepted the referent question alone. It now requires both («sólo me llegó…», «llegó cortado» and the referent question), with a corrected retry that asks for both explicitly; greetings and guessed actions stay rejected.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 0dcf7c3e..3d8e4273 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -10639,10 +10639,20 @@ class LlmRuntime:
+             # One corrected retry.
+             if kind == "dangling_alternative":
+                 folded_question = _fold_dialogue_text(question)
++                # DIALOGUE1515: «¿De qué otra cosa estás hablando?» asked the
++                # referent but never said the part was cut; both are required.
++                says_only_part = re.search(
++                    r"\b(?:solo\s+(?:me\s+)?(?:llego|llega|recibi|recibo|tengo|escuche|escucho)|"
++                    r"(?:me\s+)?llego\s+(?:solo|incompleto|cortado|a\s+medias|una\s+parte|el\s+final)|"
++                    r"(?:parece|quedo|llego)\s+(?:cortad[oa]|incomplet[oa]|a\s+medias)|falta\s+(?:lo\s+que\s+(?:iba|va|venia)\s+antes|el\s+principio|la\s+primera\s+parte)|"
++                    r"no\s+(?:me\s+)?llego\s+(?:lo\s+que\s+(?:iba|va)\s+antes|el\s+principio|la\s+primera\s+parte)|"
++                    r"only\s+(?:got|received|heard)|(?:came|arrived)\s+(?:cut|incomplete))\b",
++                    folded_question,
++                ) is not None
+                 asks_referent = re.search(
+                     r"\b(?:a\s+que\s+te\s+refer|a\s+que\s+se\s+refiere|que\s+quer[eé]s\s+decir|que\s+quieres\s+decir|"
+-                    r"solo\s+(?:me\s+)?llego|solo\s+recib|solo\s+(?:me\s+)?llega|que\s+(?:iba|va|venia|viene)\s+antes|"
+-                    r"de\s+que\s+(?:hablas|hablas|habla|estas\s+hablando)|what\s+do\s+you\s+mean|refer(?:ring)?\s+to)\b",
++                    r"que\s+(?:iba|va|venia|viene)\s+antes|de\s+que\s+(?:hablas|habla|estas\s+hablando)|"
++                    r"what\s+do\s+you\s+mean|refer(?:ring)?\s+to)\b",
+                     folded_question,
+                 ) is not None
+                 greets = re.search(r"\b(?:hola|buenas|buenos\s+dias|hello|hi)\b", folded_question) is not None
+@@ -10650,21 +10660,22 @@ class LlmRuntime:
+                     r"\b(?:abrir|abra|abro|poner|ponga|pongo|buscar|busque|busco|cerrar|cierre|cierro|open|play|search|close)\b",
+                     folded_question,
+                 ) is not None
+-                if not asks_referent or greets or invents:
++                if not says_only_part or not asks_referent or greets or invents:
+                     if attempt == 0:
+                         payload["messages"].insert(
+                             -1,
+                             {
+                                 "role": "system",
+                                 "content": (
+-                                    "Corrección: di que sólo te llegó esa parte y pregunta a qué se "
+-                                    "refiere, por ejemplo: «Sólo me llegó “o en la de siempre”: ¿a "
+-                                    "qué te referís?». No saludes ni adivines una acción."
++                                    "Corrección: la pregunta debe decir primero que sólo te llegó esa "
++                                    "parte (con «sólo me llegó…») y después preguntar a qué se refiere, "
++                                    "por ejemplo: «Sólo me llegó “o en la de siempre”: ¿a qué te "
++                                    "referís?». No saludes ni adivines una acción."
+                                 ),
+                             },
+                         )
+                         continue
+-                    raise ValueError("aclaración de alternativa suelta no pregunta el referente")
++                    raise ValueError("aclaración de alternativa suelta no dice que llegó sólo esa parte")
+             # DIALOGUE1513: the question must say no request was found for
+             # BAXY and ask whether the person needs something; it must not
+             # repeat the talk, answer it or invent an action. One corrected retry.

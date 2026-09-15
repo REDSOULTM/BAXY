@@ -1,0 +1,15 @@
+{
+  "schema": "c03-dialogue1517-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (clarify_unresolved_input, kind dangling_alternative: el validador exige que la pregunta diga que sólo llegó esa parte —«sólo me llegó…», «llegó cortado»— y además pregunte a qué se refiere; el reintento corregido lo pide explícitamente; saludos y acciones inventadas siguen rechazados).",
+  "patch": "artifacts/comprobaciones/C03/DIALOGUE1517/SOURCE.patch",
+  "commits": [
+    "627cdac0ad468e4deed382e78d601306a517d7af"
+  ],
+  "build": "BUILD1517 (C03-repairs1517-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "DIALOGUE1517: «o en la de siempre.» y sus variantes preguntaron a qué se refiere la parte suelta pero nunca dijeron que sólo llegó esa parte; el validador aceptaba la pregunta del referente sola.",
+  "change": "El validador de la alternativa suelta exige las dos partes; sin respuestas fijas.",
+  "measurement": "DIALOGUE1517: 6 ejecutados, 3 aprobados (los tres límites), 3 fallidos; 0 créditos. El aclarador produjo dos veces la pregunta requerida para el literal y las dos variantes («Sólo me llegó \"…\": ¿a qué te referís?», comprobado fuera del instrumento contra el mismo modelo), pero la comprobación del referente del validador terminaba en un límite de palabra tras «refer» y nunca casó «referís»; los tres turnos cayeron en la pregunta genérica de recuperación, que adivinó el referente. Los tres límites pasaron. Siguiente: raíces abiertas en la comprobación del referente (DIALOGUE1519).",
+  "credits": 0
+}

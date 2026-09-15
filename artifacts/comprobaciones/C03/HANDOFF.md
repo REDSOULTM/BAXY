@@ -1,3 +1,11 @@
+# DIALOGUE1517 adjudicado — 2026-09-15T02:16:57.827901+00:00
+
+**507/742 cubiertos, 235 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 742f69c434305020dc6df0f398ef0dae3d8e9934e602b9ef677fdf40bc85caf7. Primeras altas 24 h >= 381 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 627cdac0 con BUILD1517 (la alternativa suelta dice que sólo llegó esa parte y pregunta a qué se refiere; DIALOGUE1517/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+DIALOGUE1517 («Entrada incompleta, ruido y control de diálogo», H0205 «o en la de siempre.»): 6 ejecutados, 3 aprobados (los tres límites), 3 fallidos, 0 créditos. Adjudicación 4dda9a15d7bc764af4f9b8c2c832d2735b17dd8470a90334e774d7a28c46024b. El aclarador produjo dos veces la pregunta requerida para el literal y las dos variantes («Sólo me llegó "…": ¿a qué te referís?», comprobado fuera del instrumento contra el mismo modelo), pero la comprobación del referente del validador terminaba en un límite de palabra tras «refer» y nunca casó «referís»; los tres turnos cayeron en la pregunta genérica de recuperación, que adivinó el referente. Los tres límites pasaron. Siguiente: raíces abiertas en la comprobación del referente (DIALOGUE1519).
+
+---
+
 # DIALOGUE1515 adjudicado — 2026-09-15T02:05:30.494024+00:00
 
 **507/742 cubiertos, 235 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA f23414c27539a25c938fb59451a2701ec7a91f6a02a80b7ff23d79ac5372bc50. Primeras altas 24 h >= 381 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD fed364ff con BUILD1515 (la conformidad sin pendiente y la alternativa suelta reciben su propia pregunta; DIALOGUE1515/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
