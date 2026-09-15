@@ -844,3 +844,28 @@ Música pasa de 24/39 a 25/39 con el título completo del reproductor local en u
 ## Actualización 2026-09-14 (MUSIC1597)
 
 Música pasa de 25/39 a 26/39 con «poneme una canción» contestada con una música cuyo primer resultado arranca (commit ac221c25, BUILD1595) (HEAD ac221c25): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes preguntaron qué poner sin proponer nada; las respuestas guionizadas (fixtures cuyo primer resultado arranca) completaron el pedido como media.play.youtube revisado, la reproducción se verificó en el reproductor local y el final citó el título observado completo. Las tres fronteras pasaron con cero operaciones; ningún reproductor sobrevivió a su caso; volumen restaurado.
+
+## Estado consolidado 2026-09-15 (noche): 545/742 cubiertos, 197 abiertos, 5/35 categorías cerradas
+
+Siete tandas desde el bloque de la tarde (MUSIC1583, CONVERSATION1585, FILES1587–1591, MUSIC1593–1597): 536 → 545. Registro SHA 523124e7994ad47f1b6adb5d6c51fc49dcfb28ef8b1364abb2896891ec91bc2e. Reparaciones adoptadas: «pon youtube y pon música» es un pedido de música sin nombrar que pregunta y reproduce (H0129); las palabras que sólo se repiten (H0410), una ruta de archivo pegada sola (H0299) y un pedido que llega cortado en un artículo (H0426) son entradas sin pedido con su aclaración propia (decir lo que llegó y preguntar; el nombre de archivo pegado no es vocabulario interno); el reproductor local de YouTube responde qué está sonando y se detiene a pedido (media.status/media.control sobre mpv, autoridad local_youtube_player; H0224, H0543, H0580, H0686) con el mandato de dos turnos reproducción-luego-literal; «poneme una canción» se acreditó con una respuesta guionizada cuyo primer resultado arranca (H0009).
+
+| Categoría | Abiertos | Condición |
+|---|---:|---|
+| Instalar y desinstalar software | 31 | Sin cambio (Steam del dueño, desinstalaciones destructivas, Photoshop ×4 en la Store con decisión del dueño pendiente, Spotify ya instalado, pip). |
+| Vídeo y series | 26 | Sesión autenticada del dueño (decisión: omitir). |
+| Mensajería | 22 | Terceros reales (prohibido); lecturas con sesión. |
+| Interacción dentro de aplicaciones | 17 | Clientes del dueño; varias confirmaciones por turno en la Calculadora. |
+| Música | 13 | Once piden Spotify por nombre (sesión ausente; decisión del dueño: omitir); «abrí chrome y poné música» abre el Chrome del dueño; «si tengo spotify abierto pausalo» exige sesión. |
+| Abrir aplicaciones | 8 | Steam/Chrome del dueño; Mortal Kombat en Steam; idiomas extranjeros (límites sin marca). |
+| Entrada incompleta, ruido y control de diálogo | 7 | Fragmentos con palabras que el modelo decide y un teléfono redactado en origen (irreproducible). |
+| Correo | 6 | Terceros reales (prohibido). |
+| Red y Bluetooth | 6 | La conectividad del dueño no se toca; sin escaneo de redes. |
+| Organizar ventanas y pestañas | 6 | Minimizar todo/Opera y Chrome tocan ventanas del dueño. |
+| Archivos y carpetas | 5 | Borrar una carpeta (la papelera sólo mueve archivos), dos compuestos de varios pasos (crear/comprimir/abrir; procesos a archivo), «resumime informe.pdf» (sin lector de PDF), backup a pendrive (sin unidad). |
+| Contactos | 5 | Sin capacidad de contactos. |
+| Desarrollo y ejecución de comandos | 5 | Sin ejecución de comandos; el dueño no quiere Python. |
+| Audio y volumen | 5 | Cuatro límites sin marca en otros idiomas; «subí el volumen de spotify» exige sesión. |
+| Navegación y búsqueda web | 5 | Opera GX/Chrome del dueño; descarga a escritorio y captura compuestas con el navegador del dueño. |
+| Cerrar aplicaciones y ventanas | 5 | WhatsApp/Discord del dueño; «cerrame todo» tocaría ventanas del dueño. |
+
+Sin cambio: Hora 4 (límites sin marca), Juegos 4 (Steam/Epic del dueño), Conversación 2 (sin marca), Pantalla 3 (diálogos de Steam), Memoria 2 (recuerdos que exigen un guardado previo en el mismo perfil: instrumento de tres turnos pendiente), Documentos 2, Energía 2, resto 1 por categoría.
