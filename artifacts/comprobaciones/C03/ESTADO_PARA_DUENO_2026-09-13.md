@@ -1,3 +1,25 @@
+## KNOWLEDGE1507 — estado vigente 2026-09-15T01:29:24.013058+00:00
+
+Parcial: 9 aprobados, 2 fallidos, 0 sin ejecutar; 3 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 498/742 | 244 | 0 | >=372 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 369 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); KNOWLEDGE1507 añade 3. No se cuentan revalidaciones.
+
+Siguiente acción: KNOWLEDGE1507: 11 ejecutados, 9 aprobados, 2 fallidos, 3 créditos (índices [0, 1, 3]); Conocimiento, razonamiento y creatividad verbal 30/37. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/KNOWLEDGE1507/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 220.05 s acumulados; pico GPU 3497.56 MiB; pico RAM 2381.93 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 11; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque KNOWLEDGE1507 precedente. -->
+
 ## KNOWLEDGE1505 — estado vigente 2026-09-15T01:19:22.949182+00:00
 
 Parcial: 3 aprobados, 8 fallidos, 0 sin ejecutar; 0 créditos.

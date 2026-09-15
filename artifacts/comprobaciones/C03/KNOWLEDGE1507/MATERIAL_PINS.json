@@ -1,0 +1,132 @@
+{
+  "schema": "knowledge1507-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-knowledge1507-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-knowledge1507-instrument-v1",
+  "seal_sha256": "d0ebddecf50861e50a8b80d09f3d2463da7b52155c5eb3cd0d3926670020d91a",
+  "runner_sha256": "d8cfc3c804a90aa7123cc4fdee73f1206d5318baf5d83a5ed7162a47055541f3",
+  "transport_seal_sha256": "126deb34f2cc1f9b9b76e965b63c99a567ab1959c3d4a38265ab299b7ac37f58",
+  "files": {
+    "panel.json": "888f27794ef7bc14072d75fc5da27c9aaaf3dd20ed514601433cd7ad4c63b848",
+    "turns.jsonl": "0d02858d4203a9ab7da7715bab2bcd28d9f4c3437c40933544d1ee879b2a47d0",
+    "case-map.json": "8c8923313170bd4c6d3a97c6195d97911a0586a1ec59a301435c703d01f4c143",
+    "PLAN.md": "55d782e888113fc161e07f6e3114f686b5582224d16b2754005804b88e50fb16"
+  },
+  "counts": {
+    "cases": 11,
+    "historical_literals": 4,
+    "original_development_variants": 4,
+    "boundaries": 3,
+    "wire_lines": 22,
+    "session_controls": 11,
+    "ordinary_turns": 11,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 11,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 4,
+    "original_development_variant": 4,
+    "boundary": 3
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0003",
+      "kind": "historical_literal",
+      "group": "grounded_curiosity",
+      "credit_behavior": "grounded_curiosity",
+      "text_sha256": "0060e8ce735cacb1474e841cbcd9925c0ea7078a387e69d7d39088be283131b3",
+      "criterion_sha256": "ce72bdd5e9eef308621dd85b528adb1dd4bd30efbadecd0038fc83aac5fcf3fd"
+    },
+    {
+      "index": 1,
+      "case_id": "H0476",
+      "kind": "historical_literal",
+      "group": "grounded_curiosity",
+      "credit_behavior": "grounded_curiosity",
+      "text_sha256": "a03a0e7fd6c7e93617d12e15b6758ea12297b63a2a048f873bee8563ebbff7eb",
+      "criterion_sha256": "ce72bdd5e9eef308621dd85b528adb1dd4bd30efbadecd0038fc83aac5fcf3fd"
+    },
+    {
+      "index": 2,
+      "case_id": "H0520",
+      "kind": "historical_literal",
+      "group": "grounded_curiosity",
+      "credit_behavior": "grounded_curiosity",
+      "text_sha256": "b635ed63a355725533a6cd99d5f205fabb72fa1f88421688198dd3e94348ddd8",
+      "criterion_sha256": "ce72bdd5e9eef308621dd85b528adb1dd4bd30efbadecd0038fc83aac5fcf3fd"
+    },
+    {
+      "index": 3,
+      "case_id": "H0703",
+      "kind": "historical_literal",
+      "group": "grounded_curiosity",
+      "credit_behavior": "grounded_curiosity",
+      "text_sha256": "f40ceda226d499045ec79b95bbbfb9a70fa342a2dc0653739a5fe8f9ae588069",
+      "criterion_sha256": "ce72bdd5e9eef308621dd85b528adb1dd4bd30efbadecd0038fc83aac5fcf3fd"
+    },
+    {
+      "index": 4,
+      "case_id": "knowledge1507-dev-01",
+      "kind": "original_development_variant",
+      "group": "grounded_curiosity",
+      "credit_behavior": "grounded_curiosity",
+      "text_sha256": "841a50f7e4a30fc83f6d4344ddc0823e331d0f80a3e6b6b285bc72b44a455da9",
+      "criterion_sha256": "ce72bdd5e9eef308621dd85b528adb1dd4bd30efbadecd0038fc83aac5fcf3fd"
+    },
+    {
+      "index": 5,
+      "case_id": "knowledge1507-dev-02",
+      "kind": "original_development_variant",
+      "group": "grounded_curiosity",
+      "credit_behavior": "grounded_curiosity",
+      "text_sha256": "694b6445009b0e7403e9857d4274d5e455b5a21f68880e20c86b73bda456d728",
+      "criterion_sha256": "ce72bdd5e9eef308621dd85b528adb1dd4bd30efbadecd0038fc83aac5fcf3fd"
+    },
+    {
+      "index": 6,
+      "case_id": "knowledge1507-dev-03",
+      "kind": "original_development_variant",
+      "group": "grounded_curiosity",
+      "credit_behavior": "grounded_curiosity",
+      "text_sha256": "0123abe1047cf0ace32e6e705788437691538b007991ea36e7ef965ce557a617",
+      "criterion_sha256": "ce72bdd5e9eef308621dd85b528adb1dd4bd30efbadecd0038fc83aac5fcf3fd"
+    },
+    {
+      "index": 7,
+      "case_id": "knowledge1507-dev-04",
+      "kind": "original_development_variant",
+      "group": "grounded_curiosity",
+      "credit_behavior": "grounded_curiosity",
+      "text_sha256": "08446c2f9b72ce047cac04bd58e8e435843511d87c5f1689c9adc7930f97162c",
+      "criterion_sha256": "ce72bdd5e9eef308621dd85b528adb1dd4bd30efbadecd0038fc83aac5fcf3fd"
+    },
+    {
+      "index": 8,
+      "case_id": "knowledge1507-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "42e2b7df448c7044f6aea5c9078f3627ba2c640d87e2ea6389e1f7a64ff38eec",
+      "criterion_sha256": "92226a93cb676c56582c3cf5f562090da716090c86cf75fc84d68fc49b9f8e54"
+    },
+    {
+      "index": 9,
+      "case_id": "knowledge1507-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "3481f8a4f296f01ed82f414311afbc6b62110697d08d003decca4f8c2df6dc7e",
+      "criterion_sha256": "d3aa2b74b96a89a885b6d8b632cccc84ec394d6eab5f6c2e1a51e94bf3697897"
+    },
+    {
+      "index": 10,
+      "case_id": "knowledge1507-boundary-03",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "0e28f7170917c5ea85e4ae7d34334baccbad3ef55cf6c86c6855b03078e431b6",
+      "criterion_sha256": "b625fca7d2bc0475cfc17803a3b2bf65e268059378732cd92cb360cbcbadde92"
+    }
+  ]
+}

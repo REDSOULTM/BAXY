@@ -1,0 +1,15 @@
+{
+  "schema": "c03-knowledge1507-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_ground_explicit_arguments: cuando el pedido es una curiosidad sin tema y la consulta de web.search es uno de los temas del lector, el aterrizaje la admite con la validación de esquema intacta, igual que «noticias» en la consulta de noticias; nada más cambia).",
+  "patch": "artifacts/comprobaciones/C03/KNOWLEDGE1507/SOURCE.patch",
+  "commits": [
+    "f779b5f1b31e78bb20a859de4b0ccf33dd807b10"
+  ],
+  "build": "BUILD1507 (C03-repairs1507-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "KNOWLEDGE1507: los ocho pedidos de curiosidad se decidieron como web.search con el tema elegido, pero el aterrizaje de argumentos exigió que la consulta apareciera literalmente en el texto y los turnos acabaron en una aclaración invertida sin operaciones.",
+  "change": "Exención de aterrizaje para el tema elegido por el lector de curiosidad; sin respuestas fijas.",
+  "measurement": "KNOWLEDGE1507: 11 ejecutados, 9 aprobados, 2 fallidos; 3 créditos. Seis de los ocho pedidos de curiosidad buscaron un tema elegido por el producto y contaron lo que un fragmento afirma nombrando la página (Wikipedia, Significados, WWF), sin añadir datos ni preguntar («Una curiosidad sobre el pingüino es que, según Wikipedia, son aves marinas que se distribuyen casi exclusivamente en el hemisferio sur…»); dos («decime una curiosidad», «explicame algo curioso») completaron la búsqueda pero acabaron sin final porque el veto de palabra cortada tomó el singular «curiosidad» por un corte del plural «curiosidades» de un título de resultado; los tres límites pasaron. H0003, H0476 y H0703 acreditados con dos pares; H0520 queda para KNOWLEDGE1509 (singular no es corte del plural).",
+  "credits": 3
+}

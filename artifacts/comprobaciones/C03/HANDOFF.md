@@ -1,3 +1,11 @@
+# KNOWLEDGE1507 adjudicado — 2026-09-15T01:29:24.013058+00:00
+
+**498/742 cubiertos, 244 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA b880fae27c7eb6ba8264d4b2ac1297304b01db0986c649106c48454f7a6b2c1b. Primeras altas 24 h >= 372 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f779b5f1 con BUILD1507 (el tema elegido por el lector de curiosidad aterrizado como la consulta de noticias; KNOWLEDGE1507/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+KNOWLEDGE1507 («Conocimiento, razonamiento y creatividad verbal», H0003 «explicame algo interesante», H0476 «contame algo», H0520 «decime una curiosidad», H0703 «estoy aburrido»): 11 ejecutados, 9 aprobados, 2 fallidos, 3 créditos. Adjudicación 8b2e3db33e3ac25b0639d1476ad8f546fe384eb86aabf6c159c444bff584699c. Seis de los ocho pedidos de curiosidad buscaron un tema elegido por el producto y contaron lo que un fragmento afirma nombrando la página (Wikipedia, Significados, WWF), sin añadir datos ni preguntar («Una curiosidad sobre el pingüino es que, según Wikipedia, son aves marinas que se distribuyen casi exclusivamente en el hemisferio sur…»); dos («decime una curiosidad», «explicame algo curioso») completaron la búsqueda pero acabaron sin final porque el veto de palabra cortada tomó el singular «curiosidad» por un corte del plural «curiosidades» de un título de resultado; los tres límites pasaron. H0003, H0476 y H0703 acreditados con dos pares; H0520 queda para KNOWLEDGE1509 (singular no es corte del plural).
+
+---
+
 # KNOWLEDGE1505 adjudicado — 2026-09-15T01:19:22.949182+00:00
 
 **495/742 cubiertos, 247 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA c8b1d3f47f85bbf5231780e7d187f892bdba13e7874fc8ec67d26bdd5de57631. Primeras altas 24 h >= 369 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a5083fe7 con BUILD1505 (la curiosidad sin tema contada desde una página pública sobre un tema elegido; KNOWLEDGE1505/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

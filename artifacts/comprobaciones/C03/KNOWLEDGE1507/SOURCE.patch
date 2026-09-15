@@ -1,0 +1,29 @@
+commit f779b5f1b31e78bb20a859de4b0ccf33dd807b10
+
+C03: the subject the curiosity reader picks is grounded by the reader, like the news query (KNOWLEDGE1507)
+
+KNOWLEDGE1505 measured that every topicless curiosity turn was decided as web.search with the chosen subject, but `_ground_explicit_arguments` requires the query to appear literally in the person's text and only the news query was exempt, so the eight turns asked back («¿Qué curiosidad me puedes contar?») with zero operations. When the request is a topicless curiosity and the query is one of the reader's subjects, the grounding now admits it with the schema validation intact; nothing else changes.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 88bade1b..9f6c46a5 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -5386,6 +5386,15 @@ def _ground_explicit_arguments(
+         # WEB1451 «qué pasó hoy en el mundo»: the news reader supplies the
+         # word «noticias»; the scope words are the person's own.
+         return explicit if validate_json_schema_instance(explicit, schema) else None
++    if (
++        operation == "web.search"
++        and effect_intent.curiosity_request(evidence)
++        and explicit.get("query") in effect_intent._CURIOSITY_TOPICS_ES + effect_intent._CURIOSITY_TOPICS_EN
++    ):
++        # KNOWLEDGE1505/1507 «decime una curiosidad»: the curiosity reader
++        # supplies the subject from its own list; the person named none, so
++        # the literal check would discard every pick and the turn asked back.
++        return explicit if validate_json_schema_instance(explicit, schema) else None
+     if operation == "filesystem.known.list" and explicit.get("folder") in (
+         effect_intent._known_folder_listing_request(evidence),
+         (effect_intent._known_folder_recent_listing(evidence) or (None, None))[0],
