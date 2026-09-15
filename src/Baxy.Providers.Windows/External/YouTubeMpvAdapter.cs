@@ -123,6 +123,10 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
             start.ArgumentList.Add("--js-runtimes");
             start.ArgumentList.Add("node:" + _nodePath);
         }
+        // MUSIC1553: the default (android_vr) client's stream URLs answer 403 to the
+        // player's own HTTP client; the android client's URLs play directly in mpv.
+        start.ArgumentList.Add("--extractor-args");
+        start.ArgumentList.Add("youtube:player_client=android");
         start.ArgumentList.Add("--format");
         start.ArgumentList.Add("18/b[ext=mp4][protocol=https]/b[protocol=https]");
         start.ArgumentList.Add("--print");
