@@ -1,0 +1,51 @@
+commit 6a23daddf57075c6a65caa687420364ed42f2a67
+
+C03: a first-person preference statement is a social turn, not a request (MEMORY1501)
+
+MEMORY1245 measured that «Me gusta tomar café.» was taken as an order and the product asked where to go. `_personal_checkin_statement` now also reads a first-person taste or preference with nothing asked («me gusta/encanta…», «prefiero…», «I like/love/prefer…», without a «que» clause or a request head after it) as a social statement: conversation of the social kind with zero operations, the same route as «my day is going well».
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 72947511..57296b2a 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -3068,7 +3068,7 @@ def _general_factoid_prompt(objective: str) -> bool:
+ 
+ def _personal_checkin_statement(objective: str) -> bool:
+     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
+-    return (
++    if (
+         re.fullmatch(
+             (
+                 r"my\s+day\s+is\s+going\s+(?:well|great|fine|okay|ok)"
+@@ -3078,6 +3078,28 @@ def _personal_checkin_statement(objective: str) -> bool:
+             re.IGNORECASE,
+         )
+         is not None
++    ):
++        return True
++    # MEMORY1501 H0174 «Me gusta tomar café.»: a first-person taste or
++    # preference with nothing asked is a statement to acknowledge, not an
++    # order (MEMORY1245 asked where to go for coffee). No request verb, no
++    # «que» clause, no catalog head may follow the preference.
++    preference = re.fullmatch(
++        r"(?:me\s+(?:gusta|gustan|encanta|encantan|fascina|fascinan)|"
++        r"prefiero|adoro|amo|odio|detesto|no\s+me\s+gusta|no\s+me\s+gustan|"
++        r"i\s+(?:like|love|prefer|hate|enjoy|dislike))\s+"
++        r"(?P<thing>(?!(?:que|si|cuando|porque)\b)[a-z][a-z0-9 '\-]{1,80})[\s.!?]*",
++        folded,
++        re.IGNORECASE,
++    )
++    if preference is None:
++        return False
++    thing = preference.group("thing")
++    return not re.search(
++        r"\b(?:que|abre|abri|abris|pone|pon|poneme|pongas|abras|busca|buscame|cierra|"
++        r"lanza|inicia|reproduce|manda|envia|escribe|crea|guarda|recuerda|recorda|"
++        r"open|play|search|send|close|save|remember|remind)\b",
++        thing,
+     )
+ 
+ 

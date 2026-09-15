@@ -1,3 +1,11 @@
+# MEMORY1501 adjudicado — 2026-09-15T00:45:41.672770+00:00
+
+**494/742 cubiertos, 248 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 344f9cc70fbe6c4d26b5b75a3155fc5486ee617fb289a59ea87e8b3b7cbc6edc. Primeras altas 24 h >= 368 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6a23dadd con BUILD1501 (la afirmación de preferencia se reconoce sin tomarla como pedido; MEMORY1501/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+MEMORY1501 («Memoria personal», H0174 «Me gusta tomar café.»): MEMORY1501: la afirmación de preferencia ya no se toma como pedido, pero la conversación social inventa gustos propios del asistente; sin crédito, 0 créditos. Adjudicación 02ed426619fe108137d144fbcdc3507909a1c909c9ea7877184d7e5f6d42d566. 6/6 ejecutados, 3 aprobados, 3 fallidos, 0 créditos; instrucción social para preferencias (MEMORY1503)
+
+---
+
 # APPS1499 adjudicado — 2026-09-15T00:37:56.835391+00:00
 
 **494/742 cubiertos, 248 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 23987ad55abe004ff8370ebf48d26b8f609fc8b882d41a4ba2f6949387c3f002. Primeras altas 24 h >= 368 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 1dad9bd9 con BUILD1499 (el aclarador nombra las candidatas y no repite el nombre mal escrito; APPS1499/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

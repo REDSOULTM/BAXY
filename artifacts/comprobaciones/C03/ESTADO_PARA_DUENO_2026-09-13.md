@@ -1,3 +1,25 @@
+## MEMORY1501 — estado vigente 2026-09-15T00:45:41.672770+00:00
+
+Parcial: 3 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 494/742 | 248 | 0 | >=368 | 4/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 368 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MEMORY1501 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: MEMORY1501: 6 ejecutados, 3 aprobados, 3 fallidos, 0 créditos (índices []); Memoria personal 7/10. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/MEMORY1501/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 96.00 s acumulados; pico GPU 3497.56 MiB; pico RAM 1663.91 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MEMORY1501 precedente. -->
+
 ## APPS1499 — estado vigente 2026-09-15T00:37:56.835391+00:00
 
 Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 3 créditos.

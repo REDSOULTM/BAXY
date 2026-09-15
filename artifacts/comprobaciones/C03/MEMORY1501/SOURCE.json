@@ -1,0 +1,15 @@
+{
+  "schema": "c03-memory1501-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_personal_checkin_statement: un gusto o preferencia en primera persona sin pedido —«me gusta/encanta…», «prefiero…», «I like…»— es una afirmación social: conversación de tipo social, cero operaciones; se excluyen las cláusulas con «que» y las cabezas de pedido).",
+  "patch": "artifacts/comprobaciones/C03/MEMORY1501/SOURCE.patch",
+  "commits": [
+    "6a23daddf57075c6a65caa687420364ed42f2a67"
+  ],
+  "build": "BUILD1501 (C03-repairs1501-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "MEMORY1245: «Me gusta tomar café.» se tomó como pedido y el producto preguntó un lugar; ningún lector lo tomaba como afirmación.",
+  "change": "Lector de afirmación de preferencia hacia la conversación social; sin respuestas fijas.",
+  "measurement": "MEMORY1501: MEMORY1501: la afirmación de preferencia ya no se toma como pedido, pero la conversación social inventa gustos propios del asistente; sin crédito; 0 créditos. 6/6 ejecutados, 3 aprobados, 3 fallidos, 0 créditos; instrucción social para preferencias (MEMORY1503)",
+  "credits": 0
+}

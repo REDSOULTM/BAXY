@@ -585,3 +585,7 @@ Abrir aplicaciones pasa de 40/54 a 42/54 con los nombres de aplicación aproxima
 ## Actualización 2026-09-14 (APPS1499)
 
 Abrir aplicaciones pasa de 42/54 a 45/54 con los nombres de aplicación aproximados contestados con la pregunta de si abrir la candidata (commit 1dad9bd9, BUILD1499) (HEAD 1dad9bd9): APPS1499: «abres team» pregunta Steam o Microsoft Teams y los «Steel» preguntan Steam; H0521, H0227 y H0398 cubiertos, 3 créditos. 8/8 ejecutados, 8 aprobados, 3 créditos; ninguna aplicación abierta
+
+## Actualización 2026-09-14 (MEMORY1501)
+
+Memoria personal pasa de 7/10 a 7/10 con la afirmación de preferencia reconocida sin tomarla como pedido (commit 6a23dadd, BUILD1501) (HEAD 6a23dadd): MEMORY1501: la afirmación de preferencia ya no se toma como pedido, pero la conversación social inventa gustos propios del asistente; sin crédito, 0 créditos. 6/6 ejecutados, 3 aprobados, 3 fallidos, 0 créditos; instrucción social para preferencias (MEMORY1503)
