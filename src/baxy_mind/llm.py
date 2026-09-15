@@ -6983,6 +6983,14 @@ def compose_visible_defect(
                     and situation.get("verified") is True
                     and situation.get("succeeded") is True
                 )
+                # INSTALL1617: the Steam library read names the game by its
+                # title; «Worms Rumble no está en tu biblioteca» names it
+                # without the word «título».
+                and not (
+                    operation == "game.entitlement.named"
+                    and situation.get("verified") is True
+                    and situation.get("succeeded") is True
+                )
                 and not re.search(r"nota|note|t[íi]tulo|title", folded)
             ):
                 return "missing_name"
