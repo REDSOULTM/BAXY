@@ -1,0 +1,15 @@
+{
+  "schema": "c03-files1591-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (InventedVolume judges the sentences before the trailing question when the person's request named the volume; WithoutTrailingQuestion) and src/baxy_mind/effect_intent.py (_negative_action_forms admits «toca»/«touch»).",
+  "patch": "artifacts/comprobaciones/C03/FILES1591/SOURCE.patch",
+  "commits": [
+    "e2cd0e4f490e4dd8a6d83de520203b224e333a9d"
+  ],
+  "build": "BUILD1591 (C03-repairs1591-build/BUILD_READY.json; mente)",
+  "cause_measured": "H0426 nunca ejecutado: resolvía a filesystem.write.text con un contenido cortado («… el nombre del») que habría inventado el resto o escrito un archivo incompleto.",
+  "change": "Clase de entrada sin pedido «cut_request» con su aclaración; sin respuestas fijas.",
+  "measurement": "FILES1591: 5 ejecutados, 5 aprobados, 0 fallidos; 1 créditos. El literal y las dos variantes se leyeron como pedido cortado y respondieron con cero operaciones y una sola pregunta que dice en qué palabras llegó cortado el mensaje y pregunta cómo sigue, sin completar el pedido por su cuenta. Los dos límites pasaron con cero operaciones.",
+  "credits": 1
+}

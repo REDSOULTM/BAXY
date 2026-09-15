@@ -828,3 +828,7 @@ Archivos y carpetas pasa de 25/32 a 25/32 con la ruta pegada sin pedido nombrada
 ## Actualización 2026-09-14 (FILES1589)
 
 Archivos y carpetas pasa de 25/32 a 26/32 con el nombre del archivo pegado exento del veto de vocabulario interno (commit 990ec215, BUILD1589) (HEAD 990ec215): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes se leyeron como ruta pegada sin pedido y respondieron con cero operaciones y una sola pregunta que nombra el archivo sólo por su nombre, dice que llegó sin pedido y pregunta qué hacer con él, sin repetir la ruta ni abrir nada. Los dos límites pasaron con cero operaciones.
+
+## Actualización 2026-09-14 (FILES1591)
+
+Archivos y carpetas pasa de 26/32 a 27/32 con el pedido cortado dicho y preguntado cómo sigue (commit e2cd0e4f, BUILD1591) (HEAD e2cd0e4f): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes se leyeron como pedido cortado y respondieron con cero operaciones y una sola pregunta que dice en qué palabras llegó cortado el mensaje y pregunta cómo sigue, sin completar el pedido por su cuenta. Los dos límites pasaron con cero operaciones.

@@ -1,3 +1,11 @@
+# FILES1591 adjudicado — 2026-09-15T18:10:13.049752+00:00
+
+**540/742 cubiertos, 202 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA e9e40e18513f3d4c14cdea0042f66e455a43dbcee009bca6c4baa9356620157e. Primeras altas 24 h >= 414 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e2cd0e4f con BUILD1591 (un pedido cortado se dice y se pregunta cómo sigue). Turnos ordinarios sin operaciones.
+
+FILES1591 («Archivos y carpetas», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. Adjudicación db342af968e714edf088f7b47c64a6c163cf022dab0af83decc9fc0b66c651e4. El literal y las dos variantes se leyeron como pedido cortado y respondieron con cero operaciones y una sola pregunta que dice en qué palabras llegó cortado el mensaje y pregunta cómo sigue, sin completar el pedido por su cuenta. Los dos límites pasaron con cero operaciones.
+
+---
+
 # FILES1589 adjudicado — 2026-09-15T18:04:59.719643+00:00
 
 **539/742 cubiertos, 203 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA 08142cbd5f6a1e7ee026cecb013f856c6c5798122920c2719dce6dbe2d94c435. Primeras altas 24 h >= 413 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 990ec215 con BUILD1589 (el nombre del archivo pegado no es vocabulario interno). Turnos ordinarios sin operaciones.

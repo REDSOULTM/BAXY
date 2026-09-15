@@ -1,0 +1,140 @@
+commit e2cd0e4f490e4dd8a6d83de520203b224e333a9d
+
+C03: a request that stops on an article or preposition arrived cut; the turn says where and asks how it continues (FILES1591)
+
+H0426 «Crea un archivo en mi escritorio llamado carter_test.txt que contenga la fecha actual, el nombre del» resolved to a text-file write whose content ends mid-phrase; writing it would have invented the rest or produced an incomplete file. Under the owner's rule for cut messages (understand from context or ask), `cut_request_tail` names the input kind `cut_request` when a request of six or more words ends, without closing punctuation, on an article, preposition or conjunction, and `clarify_unresolved_input` composes one short question that says the message arrived cut at those last words and asks how it continues, doing nothing yet and never completing the request on its own (one corrected retry). Screened over the whole private registry: only H0426 takes the new kind.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 515e8444..b8b80fd7 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -2950,6 +2950,31 @@ def bare_path_file_name(objective: str) -> str | None:
+     return name
+ 
+ 
++_CUT_TAIL_WORDS = frozenset({
++    "del", "de", "la", "el", "los", "las", "un", "una", "unos", "unas", "al",
++    "y", "e", "o", "u", "con", "para", "por", "en", "que", "mi", "mis", "su",
++    "sus", "tu", "tus", "the", "a", "an", "of", "and", "or", "with", "for", "my",
++})
++
++
++def cut_request_tail(objective: str) -> str | None:
++    """FILES H0426 «…que contenga la fecha actual, el nombre del»: a request
++    of six or more words that stops, without closing punctuation, on an
++    article, preposition or conjunction arrived cut there. Returns the last
++    three words (what the person will recognise) or None."""
++
++    text = objective.strip()
++    if not text or text[-1] in ".!?…»\")" or len(text) > 512:
++        return None
++    words = re.findall(r"[^\s]+", text)
++    if len(words) < 6:
++        return None
++    last = effect_intent._fold(words[-1]).strip(",;:")
++    if last not in _CUT_TAIL_WORDS:
++        return None
++    return " ".join(words[-3:])
++
++
+ def _echoed_words(folded: str) -> bool:
+     """CONVERSATION1150 H0410 «Artiro, artiro. Estimado, estimado.»: every
+     word arrives at least twice and nothing else does; no assent, negation,
+@@ -3064,6 +3089,8 @@ def _unresolved_input_kind(objective: str) -> str | None:
+         return "echoed_words"
+     if bare_path_file_name(objective) is not None:
+         return "bare_path"
++    if cut_request_tail(objective) is not None:
++        return "cut_request"
+     if effect_intent.INDETERMINATE_WINDOW_CLAUSE.fullmatch(folded) is not None:
+         # WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá la
+         # mejor»: a window named only by «la otra», «la mejor», «la
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index ae44e5df..78a542e5 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -7398,6 +7398,13 @@ _INVENTED_ACTION_VERB = re.compile(
+ _REFLEXIVE_COMPARISON = re.compile(
+     r"\bte\s+(?:compar|parec|asemej)|\byourself\b|\bcompare\s+you\s+to\b"
+ )
++def _cut_request_tail(text: str) -> str:
++    """The last three words of a request that arrived cut (FILES H0426)."""
++
++    words = re.findall(r"[^\s]+", str(text).strip())
++    return " ".join(words[-3:])
++
++
+ def _bare_path_name(text: str) -> str:
+     """The last segment of a pasted path (FILES H0299); the folders stay unsaid."""
+ 
+@@ -10864,7 +10871,7 @@ class LlmRuntime:
+         a meaning: the question names what arrived and asks what to do.
+         """
+ 
+-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window", "echoed_words", "bare_path"}:
++        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window", "echoed_words", "bare_path", "cut_request"}:
+             raise ValueError("clase de entrada sin pedido inválida")
+         current = str(text).strip()[:2_048]
+         situation = (
+@@ -11035,6 +11042,20 @@ class LlmRuntime:
+                 "ofrezcas ayuda genérica."
+             )
+             if kind == "bare_path"
++            else (
++                # FILES H0426: the request stops on an article or preposition;
++                # the person's message arrived cut and the rest is unknown.
++                "Eres BAXY. El pedido del usuario llegó cortado: termina en «"
++                + str(_cut_request_tail(current)) + "» y no dice cómo sigue, así que "
++                "no sabes qué más quería. Formula una sola pregunta breve, en el "
++                "idioma del usuario, que diga que el mensaje llegó cortado en esas "
++                "palabras y pregunte cómo sigue (por ejemplo: «El mensaje me llegó "
++                "cortado en «" + str(_cut_request_tail(current)) + "»: ¿cómo sigue?»). "
++                "No hagas nada de lo pedido todavía, no completes el pedido por tu "
++                "cuenta, no repitas el mensaje entero, no digas que fallaste y no "
++                "ofrezcas ayuda genérica."
++            )
++            if kind == "cut_request"
+             else (
+                 "Eres BAXY. Lo que llegó del usuario no contiene un pedido "
+                 "legible: sólo signos, cifras, una letra suelta, símbolos o "
+@@ -11416,6 +11437,37 @@ class LlmRuntime:
+                     )
+                     continue
+                 raise ValueError("aclaración de comparación con sujeto invertido")
++            if kind == "cut_request":
++                folded_question = _fold_dialogue_text(question)
++                says_cut = re.search(
++                    r"\b(?:cortad[oa]|incomplet[oa]|a\s+medias|se\s+cort[oó]|lleg[oó]\s+hasta|termina\s+en|cut\s+off|incomplete)\b",
++                    folded_question,
++                ) is not None
++                asks_rest = re.search(
++                    r"\b(?:como\s+(?:sigue|continua|termina|seguia)|que\s+(?:sigue|va|falta|iba|viene)\s|que\s+(?:sigue|falta)\b|how\s+(?:does\s+it\s+)?(?:continue|go\s+on|end)|what\s+(?:comes|follows))",
++                    folded_question,
++                ) is not None
++                whole = _normalized_dialogue_text(current) in _normalized_dialogue_text(question)
++                acted = re.search(
++                    r"\b(?:cre[eé]|guard[eé]|escrib[ií]|hice|abr[ií]|listo,|created|saved|wrote|done)\b",
++                    folded_question,
++                ) is not None
++                if says_cut and asks_rest and not whole and not acted:
++                    return question
++                if attempt == 0:
++                    payload["messages"].insert(
++                        -1,
++                        {
++                            "role": "system",
++                            "content": (
++                                "Corrección: di que el mensaje llegó cortado en «"
++                                + str(_cut_request_tail(current)) + "» y pregunta cómo sigue, "
++                                "sin hacer nada todavía y sin repetir el mensaje entero."
++                            ),
++                        },
++                    )
++                    continue
++                raise ValueError("aclaración de pedido cortado no pregunta cómo sigue")
+             if kind == "bare_path":
+                 folded_question = _fold_dialogue_text(question)
+                 name = _fold_dialogue_text(str(_bare_path_name(current)))

@@ -1,3 +1,25 @@
+## FILES1591 — estado vigente 2026-09-15T18:10:13.049752+00:00
+
+Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 540/742 | 202 | 0 | >=414 | 5/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 413 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); FILES1591 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: FILES1591: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Archivos y carpetas 27/32. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/FILES1591/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 79.64 s acumulados; pico GPU 3497.56 MiB; pico RAM 1565.60 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque FILES1591 precedente. -->
+
 ## FILES1589 — estado vigente 2026-09-15T18:04:59.719643+00:00
 
 Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
