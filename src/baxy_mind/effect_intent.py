@@ -324,6 +324,45 @@ def _youtube_search_query(text: str) -> str | None:
     return query
 
 
+_YOUTUBE_PLAY = re.compile(
+    r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
+    r"(?:pon|poné|pone|ponme|poneme|reproduce|reproducí|reproduci|reproducime|play|put on)\s+"
+    r"(?:(?P<query>.+?)\s+(?:en|on|in|de|from)\s+youtube|(?:en|on|in)\s+youtube\s+(?P<query_after>.+?))"
+    r"(?:\s*[,;:]?\s+(?:por favor|please|porfa|porfi|pls|plz|dale|ahora|now))?\s*[.!?]*$",
+    re.IGNORECASE,
+)
+
+
+def youtube_play_query(text: str) -> str | None:
+    """MUSIC1553 «pon un video de lofi en youtube», «pon una cancion de michael
+    jackson en youtube»: the thing to play, in the person's own words with only
+    a leading article dropped («video de lofi», «cancion de michael jackson»),
+    as the search query for the local YouTube playback; None for any other shape,
+    for a generic «pon youtube» and for a query that names a local thing."""
+
+    match = _YOUTUBE_PLAY.match(text.strip())
+    if match is None:
+        return None
+    query = (match.group("query") or match.group("query_after") or "").strip().strip("\"'“”«»").strip()
+    query = re.sub(
+        r"^(?:un|una|el|la|algun|alguna|algún|some|a|an|the)\s+(?=\S)",
+        "",
+        query,
+        count=1,
+        flags=re.IGNORECASE,
+    ).strip()
+    folded_query = _fold(query)
+    if (
+        not query
+        or len(query.encode("utf-8")) > 512
+        or any(ord(character) < 32 for character in query)
+        or re.fullmatch(r"(?:algo|something|musica|music|videos?|a\s+video|cancion(?:es)?|songs?|temas?|un\s+tema)", folded_query)
+        or _has(folded_query, r"\b(?:archivos?|files?|carpetas?|folders?|notas?|notes?|documentos?|documents?|mi\s+pc|my\s+pc|este\s+equipo)\b")
+    ):
+        return None
+    return query
+
+
 def _public_live_lookup_request(folded: str) -> bool:
     """Recognize live feeds that require a public lookup to answer."""
 
@@ -1786,7 +1825,8 @@ def _curated_domain_is_grounded(
     if operation == "media.play.youtube":
         return (
             _has(folded, r"\byoutube\b")
-            and _has(folded, r"\b(?:reproduce|reproducir|play|pon|poner)\b")
+            # MUSIC1553: the voseo and clitic forms («reproducí», «poné», «poneme»).
+            and _has(folded, r"\b(?:reproduce|reproducir|reproduci|reproducime|play|pon|pone|poneme|ponme|poner)\b")
             and not _has(
                 folded,
                 r"\b(?:primer|primero|first|segundo|second|tercer|third|"

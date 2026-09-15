@@ -63,15 +63,18 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         await _gate.WaitAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            Uri? stream = _streamResolver is null
-                ? await ResolveStreamAsync(query, cancellationToken).ConfigureAwait(false)
-                : await _streamResolver(query, cancellationToken).ConfigureAwait(false);
+            Uri? stream;
+            string? title = null;
+            if (_streamResolver is null)
+                (stream, title) = await ResolveStreamAsync(query, cancellationToken).ConfigureAwait(false);
+            else
+                stream = await _streamResolver(query, cancellationToken).ConfigureAwait(false);
             if (stream is null)
                 return ExternalJson.FailureBeforeEffect(
                     operation, "youtube_stream_not_resolved");
             effectBoundary.Cross(cancellationToken);
             StopActivePlayer();
-            return await StartAndVerifyAsync(operation, query, stream, cancellationToken)
+            return await StartAndVerifyAsync(operation, query, title, stream, cancellationToken)
                 .ConfigureAwait(false);
         }
         catch (OperationCanceledException) when (
@@ -97,7 +100,10 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         finally { _gate.Release(); _gate.Dispose(); }
     }
 
-    private async ValueTask<Uri?> ResolveStreamAsync(
+    // MUSIC1553: the receipt used to carry the query as the title; the reply
+    // then could only echo the request. yt-dlp prints the resolved video's
+    // title before the stream URL, so the reply can name what is playing.
+    private async ValueTask<(Uri? Stream, string? Title)> ResolveStreamAsync(
         string query,
         CancellationToken cancellationToken)
     {
@@ -119,7 +125,10 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         }
         start.ArgumentList.Add("--format");
         start.ArgumentList.Add("18/b[ext=mp4][protocol=https]/b[protocol=https]");
-        start.ArgumentList.Add("--get-url");
+        start.ArgumentList.Add("--print");
+        start.ArgumentList.Add("title");
+        start.ArgumentList.Add("--print");
+        start.ArgumentList.Add("urls");
         start.ArgumentList.Add("ytsearch1:" + query);
         using Process process = Process.Start(start) ?? throw new IOException("yt-dlp did not start.");
         Task<string> outputTask = process.StandardOutput.ReadToEndAsync(cancellationToken);
@@ -129,21 +138,30 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
         await process.WaitForExitAsync(timeout.Token).ConfigureAwait(false);
         string output = await outputTask.ConfigureAwait(false);
         _ = await errorTask.ConfigureAwait(false);
-        if (process.ExitCode != 0) return null;
-        string? line = output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+        if (process.ExitCode != 0) return (null, null);
+        string[] lines = output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
             .Select(static value => value.Trim())
-            .FirstOrDefault();
+            .Where(static value => value.Length > 0)
+            .ToArray();
+        // Printed in argument order: the title line, then the URL line(s).
+        string? line = lines.FirstOrDefault(static value =>
+            value.StartsWith("https://", StringComparison.OrdinalIgnoreCase));
+        string? title = lines.FirstOrDefault(static value =>
+            !value.StartsWith("https://", StringComparison.OrdinalIgnoreCase));
         if (!Uri.TryCreate(line, UriKind.Absolute, out Uri? uri)
             || uri.Scheme != Uri.UriSchemeHttps
             || !(uri.Host.EndsWith("googlevideo.com", StringComparison.OrdinalIgnoreCase)
                 || uri.Host.EndsWith("youtube.com", StringComparison.OrdinalIgnoreCase)))
-            return null;
-        return uri;
+            return (null, null);
+        if (title is not null && Encoding.UTF8.GetByteCount(title) > 512)
+            title = null;
+        return (uri, title);
     }
 
     private async ValueTask<ExternalCapabilityReceipt> StartAndVerifyAsync(
         string operation,
         string query,
+        string? title,
         Uri stream,
         CancellationToken cancellationToken)
     {
@@ -205,7 +223,8 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
                     {
                         json.WriteStartObject(); json.WriteNumber("version", 1);
                         json.WriteString("provider", "youtube"); json.WriteString("query", query);
-                        json.WriteString("title", query); json.WriteString("playbackStatus", "playing");
+                        json.WriteString("title", title ?? query); json.WriteString("playbackStatus", "playing");
+                        json.WriteBoolean("titleObserved", title is not null);
                         json.WriteNumber("processId", player.Id);
                         json.WriteString("authority", "yt_dlp_mpv_ipc_postread");
                         json.WriteEndObject();

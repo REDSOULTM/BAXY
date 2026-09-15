@@ -4065,6 +4065,14 @@ def _compose_situation_payload(
             visible_seen = _project_game_listing(visible_seen, language)
         elif operation == "browser.page.read":
             visible_seen = _project_page_read(visible_seen, language)
+        elif operation == "media.play.youtube":
+            # MUSIC1553: the process id and the IPC authority are not for the
+            # person; the query, the observed title and the state are.
+            visible_seen = {
+                key: visible_seen[key]
+                for key in ("provider", "query", "title", "playbackStatus", "titleObserved")
+                if key in visible_seen
+            }
         elif operation == "notification.list":
             visible_seen = _project_notification_listing(visible_seen, language)
         elif operation == "ocr.read":
@@ -4916,6 +4924,41 @@ def _page_read_in_payload(payload: dict) -> dict | None:
     return None
 
 
+def _youtube_playback_in_payload(payload: dict) -> dict | None:
+    """The projected «seen» of a verified media.play.youtube that is playing."""
+
+    if payload.get("operation") != "media.play.youtube":
+        return None
+    if payload.get("verified") is not True or payload.get("succeeded") is not True:
+        return None
+    seen = payload.get("seen")
+    if not isinstance(seen, dict) or seen.get("playbackStatus") != "playing":
+        return None
+    return seen
+
+
+def _youtube_playback_defect(text: str, seen: dict) -> str:
+    """MUSIC1553: every quoted passage must be the observed title (or the
+    person's own query); a title the receipt did not observe is invented."""
+
+    title = re.sub(r"\s+", " ", _reading_fold(str(seen.get("title") or "")))
+    query = re.sub(r"\s+", " ", _reading_fold(str(seen.get("query") or "")))
+    observed = bool(seen.get("titleObserved"))
+    quoted_any = False
+    for quoted in re.findall(r'[«"“]([^»"”]{1,512})[»"”]', text):
+        quoted_any = True
+        candidate = re.sub(r"\s+", " ", _reading_fold(quoted.strip().rstrip(".,;:…"))).strip()
+        if candidate == query:
+            continue
+        if not observed or candidate != title:
+            return "youtube_unobserved_title"
+    if observed and not quoted_any:
+        return "youtube_title_not_named"
+    if "?" in text:
+        return "youtube_question"
+    return ""
+
+
 def _page_read_quote_defect(text: str, seen: dict) -> str:
     """Every quoted passage must appear in the lead as read; a number must be in it too."""
 
@@ -5287,6 +5330,12 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         page_defect = _page_read_quote_defect(text, page)
         if page_defect:
             return page_defect
+    playing = _youtube_playback_in_payload(payload)
+    if playing is not None:
+        # MUSIC1553: the only title the report may quote is the observed one.
+        playback_defect = _youtube_playback_defect(text, playing)
+        if playback_defect:
+            return playback_defect
     results_text = _search_results_text(payload)
     if payload.get("operation") == "web.search" and results_text is None:
         # WEB1445/002 «va a llover mañana» over a search that returned nothing
@@ -6704,6 +6753,13 @@ def compose_visible_defect(
             and isinstance(observed_dict.get("sourceAppUserModelId"), str)
             and bool(observed_dict["sourceAppUserModelId"].strip())
             and observed_dict.get("playbackStatus") in {"playing", "paused", "stopped"}
+        ) or (
+            # MUSIC1553: the local YouTube playback names what plays by its
+            # observed title; «título» need not be said for the quote to count.
+            operation == "media.play.youtube"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and observed_dict.get("playbackStatus") == "playing"
         )
         scheduled_due = _verified_notification_due(situation)
         title = observed_dict.get("title")
@@ -6754,7 +6810,7 @@ def compose_visible_defect(
                     r"\b(?:(?P<negative>no|not|nothing|isn't|isn’t|aren't|aren’t)\s+)?"
                     r"(?:(?:se|est[aá]|est[aá]n|is|are|sigue|still|currently|"
                     r"hay|nada|ahora|actualmente)\s+)*"
-                    r"(?:(?P<playing>sonando|suena|reproduci[eé]ndo(?:se)?|playing)|"
+                    r"(?:(?P<playing>sonando|suena|reproduci[eé]ndo(?:se)?|reproduce|playing)|"
                     r"(?P<paused>pausad[oa]s?|en\s+pausa|paused)|"
                     r"(?P<stopped>detenid[oa]s?|parad[oa]s?|stopped))\b",
                     playback_text,
@@ -13044,6 +13100,35 @@ class LlmRuntime:
                 "cual, como lo que dice la página; si seen.moreNotShown es verdadero, "
                 "di que la página sigue. Nada más: sin resumen con tus palabras, sin "
                 "datos, nombres ni cifras que no estén en seen.lead, sin pregunta."
+            )
+        elif _youtube_playback_in_payload(visible_situation) is not None:
+            # MUSIC1553 «pon un video de lofi en youtube»: the local player is
+            # playing the first YouTube result for the person's words; the
+            # report names that video by its observed title and nothing more.
+            playing = _youtube_playback_in_payload(visible_situation)
+            instruct(
+                "\nThe first YouTube result for the words in seen.query is now playing "
+                "in the local player; seen.title is its title exactly as YouTube "
+                "names it. Say that it is playing and quote seen.title verbatim inside "
+                "quotation marks as what is playing. Nothing else: do not judge whether "
+                "it fits, do not name any other video, artist or song, no question."
+                if response_language == "en"
+                else "\nEl primer resultado de YouTube para las palabras de seen.query "
+                "ya se está reproduciendo en el reproductor local; seen.title es su "
+                "título tal cual lo nombra YouTube. Di que está sonando o "
+                "reproduciéndose y cita seen.title tal cual, entre comillas, como lo "
+                "que se reproduce. Nada más: no juzgues si encaja, no nombres otro "
+                "video, artista ni canción, sin pregunta."
+                if playing.get("titleObserved") else
+                "\nThe first YouTube result for the words in seen.query is now playing "
+                "in the local player; its title was not observed. Say that a YouTube "
+                "result for those words is playing, without inventing a title, an "
+                "artist or a song; no question."
+                if response_language == "en"
+                else "\nEl primer resultado de YouTube para las palabras de seen.query ya "
+                "se está reproduciendo en el reproductor local; su título no se "
+                "observó. Di que se reproduce un resultado de YouTube para esas "
+                "palabras, sin inventar título, artista ni canción; sin pregunta."
             )
         elif visible_situation.get("operation") == "game.catalog.list" and _known_listing_in_payload(visible_situation) is not None:
             # GAMES1531 «Ver la biblioteca de Steam»: the report is how many

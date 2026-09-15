@@ -358,7 +358,10 @@ internal static class ProductConductorHost
                 or "capture.screenshot" or "capture.active.window"
                 // WEB1539 «resumime esta página»: the privacy-sensitive read of the
                 // page open in the browser session is reviewed the same way.
-                or "browser.page.read"))
+                or "browser.page.read"
+                // MUSIC1553 «pon un video de lofi en youtube»: the external
+                // playback (yt-dlp + local mpv) is confirmed by the root reviewer.
+                or "media.play.youtube"))
         {
             return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
         }

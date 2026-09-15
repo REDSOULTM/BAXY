@@ -4898,6 +4898,12 @@ def _explicit_arguments_from_evidence(
     if operation == "media.play.query":
         return _explicit_live_media_query_arguments(evidence)
 
+    if operation == "media.play.youtube":
+        # MUSIC1553: the person's own words name what to play; the provider
+        # searches YouTube with them and the receipt carries the title played.
+        youtube_query = effect_intent.youtube_play_query(evidence)
+        return {"query": youtube_query} if youtube_query is not None else None
+
     if operation == "calendar.event.list":
         return _explicit_calendar_range_arguments(evidence)
 
@@ -5565,6 +5571,7 @@ def _ground_explicit_arguments(
         "game.launch",
         "media.control",
         "media.play.query",
+        "media.play.youtube",
         "system.process.list",
         "system.settings.adjust",
         "system.settings.set",
