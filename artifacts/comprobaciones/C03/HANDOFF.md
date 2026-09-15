@@ -1,3 +1,11 @@
+# KNOWLEDGE1525 adjudicado — 2026-09-15T02:46:47.854404+00:00
+
+**512/742 cubiertos, 230 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 627402a681be993321fa518d1d5abbd3beae70ad0abb15ba6f664bcf6981cbed. Primeras altas 24 h >= 386 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD ae7c8dc9 con BUILD1525 (quién gana es una opinión declarada y el sarcasmo pedido afirma la verdad; KNOWLEDGE1525/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+KNOWLEDGE1525 («Conocimiento, razonamiento y creatividad verbal», H0582 «Quien gana en batman vs superman», H0596 «El agua moja?, responde con sarcasmo»): 9 ejecutados, 9 aprobados, 0 fallidos, 2 créditos. Adjudicación 8fff5c93daeeaa884893e81384d306fbbb00d1745a7eaa3554d2cb5011a61595. «Quien gana en batman vs superman» y sus variantes dieron una opinión marcada como tal nombrando un contendiente con una razón, sin desenlace afirmado como hecho ni películas, cómics o cifras («En mi opinión, Batman sería el más efectivo en un enfrentamiento de inteligencia y estrategia…»); «El agua moja?, responde con sarcasmo» y sus variantes afirmaron la verdad con un comentario seco, sin contradecirla, insultar, inventar datos ni preguntar («Sí, obviamente el agua moja. Es una de esas cosas tan evidentes que ni siquiera necesitas un experimento para comprobarlo.»); los tres límites pasaron. Cero operaciones y cero violaciones en los nueve.
+
+---
+
 # KNOWLEDGE1523 adjudicado — 2026-09-15T02:37:44.192863+00:00
 
 **510/742 cubiertos, 232 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 82872ae86885470e6c682268bcc20215f6deb69bcfcde9f3731f73fc9fe942ae. Primeras altas 24 h >= 384 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f3bdcfa8 con BUILD1523 (la identidad de alguien sin nombrar se contesta preguntando de quién; KNOWLEDGE1523/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

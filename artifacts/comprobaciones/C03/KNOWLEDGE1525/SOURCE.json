@@ -1,0 +1,15 @@
+{
+  "schema": "c03-knowledge1525-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (formas de presentación versus_opinion —lector versus_contenders, instrucción y contrato: marcador de opinión, nombra un contendiente, sin cifras, películas, cómics ni desenlaces en pasado— y sarcastic_answer —lector sarcasm_question, instrucción y contrato: afirmación, una palabra de la pregunta, sin cifras, insultos ni pregunta—; ambas independientes del tipo de conversación que elija el modelo; 128 tokens).",
+  "patch": "artifacts/comprobaciones/C03/KNOWLEDGE1525/SOURCE.patch",
+  "commits": [
+    "ae7c8dc9030ededf35e409e1090db222689b344d"
+  ],
+  "build": "BUILD1525 (C03-repairs1525-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "KNOWLEDGE1473: «Quien gana en batman vs superman» afirmó un desenlace inventado como hecho; el sarcasmo pedido no tenía forma ni contrato y quedó como calidad del modelo.",
+  "change": "Formas de presentación versus_opinion y sarcastic_answer con contratos validados; sin respuestas fijas.",
+  "measurement": "KNOWLEDGE1525: 9 ejecutados, 9 aprobados, 0 fallidos; 2 créditos. «Quien gana en batman vs superman» y sus variantes dieron una opinión marcada como tal nombrando un contendiente con una razón, sin desenlace afirmado como hecho ni películas, cómics o cifras («En mi opinión, Batman sería el más efectivo en un enfrentamiento de inteligencia y estrategia…»); «El agua moja?, responde con sarcasmo» y sus variantes afirmaron la verdad con un comentario seco, sin contradecirla, insultar, inventar datos ni preguntar («Sí, obviamente el agua moja. Es una de esas cosas tan evidentes que ni siquiera necesitas un experimento para comprobarlo.»); los tres límites pasaron. Cero operaciones y cero violaciones en los nueve.",
+  "credits": 2
+}
