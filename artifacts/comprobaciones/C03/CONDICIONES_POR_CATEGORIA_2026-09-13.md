@@ -656,3 +656,7 @@ Conocimiento, razonamiento y creatividad verbal pasa de 33/37 a 35/37 con quién
 ## Actualización 2026-09-14 (KNOWLEDGE1527)
 
 Conocimiento, razonamiento y creatividad verbal pasa de 35/37 a 35/37 con la oferta a BAXY contestada sin deseos propios (commit 105e47bd, BUILD1527) (HEAD 105e47bd): 6 ejecutados, 4 aprobados, 2 fallidos, 0 créditos. El literal se contestó sin deseos propios nombrando la cosa y ofreciendo hacer algo con eso; los borradores con forma de las dos variantes («No necesito un café… Si tenías en mente algo…, por favor dime») cayeron por un contrato demasiado estricto —sólo dos oraciones, y «por favor» y «gracias. Si…» tomados por aceptación— y se publicaron preguntas de recuperación; comprobado fuera del instrumento contra el mismo modelo. Los tres límites pasaron. Siguiente: tres oraciones y sólo la aceptación real rechazada (KNOWLEDGE1529).
+
+## Actualización 2026-09-14 (KNOWLEDGE1529)
+
+Conocimiento, razonamiento y creatividad verbal pasa de 35/37 a 36/37 con el contrato de la oferta que admite tres oraciones (commit fd5e1b2f, BUILD1529) (HEAD fd5e1b2f): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. El literal y las dos variantes dijeron que BAXY no necesita la cosa, nombrándola, y ofrecieron hacer algo con ella si era la intención, sin aceptar, sin gustos inventados ni pregunta («No necesito un acompañante de Batman, gracias por compartirlo. Si quisieras que haga algo con eso, por favor dime.»); los tres límites pasaron. Cero operaciones y cero violaciones en los seis.

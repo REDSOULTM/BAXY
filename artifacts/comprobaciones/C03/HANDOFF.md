@@ -1,3 +1,11 @@
+# KNOWLEDGE1529 adjudicado — 2026-09-15T02:59:22.655757+00:00
+
+**513/742 cubiertos, 229 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 2359d9989924a4b68bd42128e64b4c6ee205e964eb8127454bbd59d5a870fc96. Primeras altas 24 h >= 387 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD fd5e1b2f con BUILD1529 (el contrato de la oferta admite tres oraciones y sólo rechaza la aceptación real; KNOWLEDGE1529/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.
+
+KNOWLEDGE1529 («Conocimiento, razonamiento y creatividad verbal», H0030 «¿Quieres el acompañante de Batman?»): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Adjudicación 3d12a61c01613506adb9e4dca1305e13802db02c3ca1d38b995c6e6002bf3554. El literal y las dos variantes dijeron que BAXY no necesita la cosa, nombrándola, y ofrecieron hacer algo con ella si era la intención, sin aceptar, sin gustos inventados ni pregunta («No necesito un acompañante de Batman, gracias por compartirlo. Si quisieras que haga algo con eso, por favor dime.»); los tres límites pasaron. Cero operaciones y cero violaciones en los seis.
+
+---
+
 # KNOWLEDGE1527 adjudicado — 2026-09-15T02:54:32.668923+00:00
 
 **512/742 cubiertos, 230 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA aefbf0b2d33d50f0a90fd464e525d2a0bdef6f8b3531f8519737c88240083742. Primeras altas 24 h >= 386 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 105e47bd con BUILD1527 (la oferta a BAXY se contesta sin deseos propios; KNOWLEDGE1527/SOURCE.json|SOURCE.patch). Turnos ordinarios de aclaración sin operaciones.

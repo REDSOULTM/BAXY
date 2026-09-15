@@ -1,0 +1,15 @@
+{
+  "schema": "c03-knowledge1529-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (contrato de assistant_desire: hasta tres oraciones; la aceptación rechazada es sólo la real —«sí, quiero», «me encantaría», «claro que sí»—; «por favor» y «gracias. Si…» ya no cuentan; el resto no cambia).",
+  "patch": "artifacts/comprobaciones/C03/KNOWLEDGE1529/SOURCE.patch",
+  "commits": [
+    "fd5e1b2fee1720e66584160b361642e97a433f95"
+  ],
+  "build": "BUILD1529 (C03-repairs1529-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "KNOWLEDGE1529: los borradores con forma de las variantes cayeron por un contrato demasiado estricto (tres oraciones, «por favor» y «gracias. Si…» tomados por aceptación) y se publicaron preguntas de recuperación.",
+  "change": "Contrato de assistant_desire relajado a lo que el criterio exige; sin respuestas fijas.",
+  "measurement": "KNOWLEDGE1529: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. El literal y las dos variantes dijeron que BAXY no necesita la cosa, nombrándola, y ofrecieron hacer algo con ella si era la intención, sin aceptar, sin gustos inventados ni pregunta («No necesito un acompañante de Batman, gracias por compartirlo. Si quisieras que haga algo con eso, por favor dime.»); los tres límites pasaron. Cero operaciones y cero violaciones en los seis.",
+  "credits": 1
+}
