@@ -11110,7 +11110,11 @@ class LlmRuntime:
                 or question.count("?") != 1
                 or not question.endswith("?")
                 or _normalized_dialogue_text(question) == _normalized_dialogue_text(current)
-                or visible_text_leaks_internal_vocabulary(question)
+                # FILES1587 H0299: the pasted file name («ROADMAP.md») is the
+                # person's own text, not an operation id; the rest still is.
+                or visible_text_leaks_internal_vocabulary(
+                    question.replace(_bare_path_name(current), " ") if kind == "bare_path" else question
+                )
             ):
                 raise ValueError("aclaración de entrada inválida")
             # AUDIO1375 H0439 «Ponlo a 100 ahora» → «¿A qué nivel quieres
