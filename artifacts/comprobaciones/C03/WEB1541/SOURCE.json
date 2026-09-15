@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1541-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/ProductConductorHost.cs (el turno revisado propone browser.page.read al revisor raíz igual que las capturas sensibles; el resto de la lista revisable no cambia).",
+  "patch": "artifacts/comprobaciones/C03/WEB1541/SOURCE.patch",
+  "commits": [
+    "be724dbe4770ecdc6e60276c03c77360f9a7f8ac"
+  ],
+  "build": "BUILD1541 (C03-repairs1541-build/BUILD_READY.json; App)",
+  "cause_measured": "WEB1541: la mente decidió browser.page.read y el producto preparó la operación con confirmación, pero el conductor revisado no la admitía entre las operaciones que propone al revisor y rechazó los turnos (review_pending_not_supported).",
+  "change": "browser.page.read entra en la lista de operaciones revisables del conductor; sin respuestas fijas.",
+  "measurement": "WEB1541: 7 ejecutados, 3 aprobados (los tres límites), 4 fallidos; 0 créditos. El conductor revisado propuso browser.page.read, el revisor raíz la aprobó (sólo esa operación, sin destino) y el producto la ejecutó sobre el fixture raíz, pero el núcleo dio por fallido el recibo: el descriptor exige un efecto observado (valor por defecto de las operaciones sensibles) mientras el adaptador de lectura declara con verdad que no observa ninguno (external_verification_failed / external_effect_unobserved), y los finales informaron un intento fallido. Los tres límites pasaron. Siguiente: los descriptores de lectura declaran que no hay efecto observable, como ocr.read (WEB1543).",
+  "credits": 0
+}

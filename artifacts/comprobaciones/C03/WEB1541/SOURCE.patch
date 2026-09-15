@@ -1,0 +1,25 @@
+commit be724dbe4770ecdc6e60276c03c77360f9a7f8ac
+
+C03: the reviewed conductor proposes the privacy-sensitive page read to the root reviewer (WEB1541)
+
+WEB1539 measured that the mind decided browser.page.read for «resumime esta página» and the product prepared the operation with a confirmation, but the reviewed conductor admitted only navigation, close, clicks, settings, clipboard and captures and rejected the turn (review_pending_not_supported). The page read, privacy-sensitive like the captures, is now proposed to the root reviewer the same way; nothing else in the reviewable list changes.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/ProductConductorHost.cs b/src/Baxy.App/ProductConductorHost.cs
+index 45231e88..6d1d1ec3 100644
+--- a/src/Baxy.App/ProductConductorHost.cs
++++ b/src/Baxy.App/ProductConductorHost.cs
+@@ -355,7 +355,10 @@ internal static class ProductConductorHost
+                 or "system.settings.set" or "clipboard.write.text" or "clipboard.read.text"
+                 // SCREEN1399 «sacá un screenshot»: a privacy-sensitive capture is
+                 // confirmed by the root reviewer like the clipboard operations.
+-                or "capture.screenshot" or "capture.active.window"))
++                or "capture.screenshot" or "capture.active.window"
++                // WEB1539 «resumime esta página»: the privacy-sensitive read of the
++                // page open in the browser session is reviewed the same way.
++                or "browser.page.read"))
+         {
+             return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
+         }

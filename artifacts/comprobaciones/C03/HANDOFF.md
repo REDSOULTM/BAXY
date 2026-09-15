@@ -1,3 +1,11 @@
+# WEB1541 adjudicado — 2026-09-15T04:27:27.034336+00:00
+
+**517/742 cubiertos, 225 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA 63206a4dbc7e9e6cd291a882fee31cb645be910dcf9f1ef48db8815861111cb9. Primeras altas 24 h >= 391 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD be724dbe con BUILD1541 (el conductor revisado propone la lectura de página al revisor raíz). La raíz aprueba sólo una capture.screenshot sin argumentos (approve_capture.py); la captura queda en el directorio privado del perfil y nunca se publica.
+
+WEB1541 («Leer y resumir páginas web», H0561 «resumime esta página», H0738 «resumime la página actual», lectura revisada de la página abierta en la sesión del navegador sobre el fixture raíz): 7 ejecutados, 3 aprobados (los tres límites), 4 fallidos, 0 créditos. Adjudicación 33a6fe440c57733fc1ee80a5b9c5a6c3c9eeac3ddaf7c47efd35552cd119ee54. El conductor revisado propuso browser.page.read, el revisor raíz la aprobó (sólo esa operación, sin destino) y el producto la ejecutó sobre el fixture raíz, pero el núcleo dio por fallido el recibo: el descriptor exige un efecto observado (valor por defecto de las operaciones sensibles) mientras el adaptador de lectura declara con verdad que no observa ninguno (external_verification_failed / external_effect_unobserved), y los finales informaron un intento fallido. Los tres límites pasaron. Siguiente: los descriptores de lectura declaran que no hay efecto observable, como ocr.read (WEB1543).
+
+---
+
 # WEB1539 adjudicado — 2026-09-15T04:05:15.266528+00:00
 
 **517/742 cubiertos, 225 abiertos, 0 NA; 4/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3); C03 formal 3/11. Registro SHA cfb7bdd63b5ee0f440ba92f62c42842976702d59a45d1d0c759859f076212f68. Primeras altas 24 h >= 391 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 2871d4ba con BUILD1539 (resumir esta página es leer la página abierta y citar su comienzo). La raíz aprueba sólo una capture.screenshot sin argumentos (approve_capture.py); la captura queda en el directorio privado del perfil y nunca se publica.
