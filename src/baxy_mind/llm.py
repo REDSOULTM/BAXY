@@ -4059,6 +4059,8 @@ def _compose_situation_payload(
                 visible_seen["writtenText"] = written
         elif operation == "filesystem.known.list":
             visible_seen = _project_known_listing(visible_seen, language)
+        elif operation == "game.catalog.list":
+            visible_seen = _project_game_listing(visible_seen, language)
         elif operation == "notification.list":
             visible_seen = _project_notification_listing(visible_seen, language)
         elif operation == "ocr.read":
@@ -4806,6 +4808,28 @@ def _project_known_listing(observed: dict, language: str) -> dict:
     return projected
 
 
+def _project_game_listing(observed: dict, language: str) -> dict:
+    """GAMES1531 «Ver la biblioteca de Steam»: the receipt carries app ids,
+    manifest hashes and byte counts; the person needs how many games are
+    installed and their names exactly as the manifests name them."""
+
+    entries = observed.get("games")
+    names = [
+        str(entry.get("name")).strip()
+        for entry in (entries if isinstance(entries, list) else [])
+        if isinstance(entry, dict) and isinstance(entry.get("name"), str) and entry.get("name").strip()
+    ]
+    shown = names[:_LISTING_SHOWN_NAMES]
+    count = observed.get("count") if type(observed.get("count")) is int else len(names)
+    return {
+        "library": "Steam",
+        "count": count,
+        "names": shown,
+        "shownNames": len(shown),
+        "moreNotShown": max(count - len(shown), 0),
+    }
+
+
 def _project_notification_listing(observed: dict, language: str) -> dict:
     """AGENDA1435 «listá los timers»: kind, title and next run of each scheduled
     alarm or reminder, plus the count; the task identities stay out."""
@@ -4847,7 +4871,7 @@ def _local_clock_text(iso_utc: str) -> str | None:
 def _known_listing_in_payload(payload: dict) -> dict | None:
     """The projected listing («seen» with names) of a verified known-folder listing."""
 
-    if payload.get("operation") != "filesystem.known.list":
+    if payload.get("operation") not in {"filesystem.known.list", "game.catalog.list"}:
         return None
     seen = payload.get("seen")
     if isinstance(seen, dict) and isinstance(seen.get("names"), list):
@@ -12620,13 +12644,13 @@ class LlmRuntime:
         inventory_entries = (
             inventory_seen.get(
                 "windows" if situation.get("operation") == "window.resolve"
-                else "names" if situation.get("operation") == "filesystem.known.list"
+                else "names" if situation.get("operation") in {"filesystem.known.list", "game.catalog.list"}
                 else "processes"
             )
             if isinstance(inventory_seen, dict) else None
         )
         dense_inventory = (
-            situation.get("operation") in {"window.resolve", "system.process.list", "filesystem.known.list"}
+            situation.get("operation") in {"window.resolve", "system.process.list", "filesystem.known.list", "game.catalog.list"}
             and situation.get("verified") is True
             and situation.get("succeeded") is True
             and isinstance(inventory_entries, list)
@@ -12777,7 +12801,27 @@ class LlmRuntime:
                 "dato que ningún resultado contenga; si los resultados sólo remiten a "
                 "páginas de pronóstico, dilo."
             )
-        if _known_listing_in_payload(visible_situation) is not None:
+        if visible_situation.get("operation") == "game.catalog.list" and _known_listing_in_payload(visible_situation) is not None:
+            # GAMES1531 «Ver la biblioteca de Steam»: the report is how many
+            # games are installed and their names exactly as listed.
+            instruct(
+                "\nseen.names holds the names of the games installed in the person's "
+                "Steam library, exactly as they are named, and seen.count how many "
+                "are installed. Say how many games are installed and name the ones in "
+                "seen.names verbatim, each in its own quotation marks; if "
+                "seen.moreNotShown is greater than zero, say that there are more. "
+                "Steam was not opened. Nothing else: no descriptions, no other "
+                "numbers, no names that are not in seen.names."
+                if response_language == "en"
+                else "\nseen.names trae los nombres de los juegos instalados en la "
+                "biblioteca de Steam de la persona, tal cual se llaman, y seen.count "
+                "cuántos hay instalados. Di cuántos juegos hay instalados y nombra los "
+                "de seen.names tal cual, cada uno entre sus propias comillas; si "
+                "seen.moreNotShown es mayor que cero, di que hay más. Steam no se "
+                "abrió. Nada más: sin descripciones, sin otros números, sin nombres "
+                "que no estén en seen.names."
+            )
+        elif _known_listing_in_payload(visible_situation) is not None:
             # FILES1425 «lista los archivos del escritorio», «qué hay en Descargas»:
             # the report is the count and a few names exactly as listed.
             instruct(

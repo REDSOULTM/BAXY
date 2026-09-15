@@ -15066,8 +15066,11 @@ def _steam_catalog_list_intent(
     request = _match(
         text,
         (
+            # GAMES1531 H0274 «Ver la biblioteca de Steam»: seeing or being shown
+            # the library is the same read-only listing of the local manifests.
             r"^[¿?¡!\s]*(?:(?:primero|first)\s+)?"
-            r"(?:enumera|enumerar|enumerate|lista|listar|list|muestra|show)\b"
+            r"(?:enumera|enumerar|enumerate|lista|listar|list|muestra|show|"
+            r"ver|mirar|mostrame|muestrame|ensename|dame|quiero\s+ver|see|view)\b"
             r"(?P<scope>[^.;!?]{0,100})"
             r"\b(?:catalogo|catalog|biblioteca|library)\b"
             r"[^.;!?]{0,80}\bsteam\b[\s?!.]*$"
