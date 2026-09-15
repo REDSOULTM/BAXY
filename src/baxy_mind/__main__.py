@@ -2930,6 +2930,26 @@ def _standalone_deictic_request(objective: str, history: object = None) -> bool:
     )
 
 
+_BARE_PATH = re.compile(
+    r"^\s*(?:%[A-Za-z_][A-Za-z0-9_]*%|[A-Za-z]:|\\\\[^\\/:*?\"<>|\r\n]+)"
+    r"(?:[\\/][^\\/:*?\"<>|\r\n]+)+\s*$"
+)
+
+
+def bare_path_file_name(objective: str) -> str | None:
+    """FILES H0299 «%USERPROFILE%\\Desktop\\…\\ROADMAP.md»: a file path pasted
+    alone, with no verb, names no request; the honest turn asks what to do
+    with that file. Returns the file name (the last segment) or None."""
+
+    text = objective.strip()
+    if _BARE_PATH.match(text) is None or len(text) > 512:
+        return None
+    name = re.split(r"[\\/]", text.rstrip("\\/"))[-1].strip()
+    if not name or "." not in name.strip(".") or re.search(r"\s{2,}", name):
+        return None
+    return name
+
+
 def _echoed_words(folded: str) -> bool:
     """CONVERSATION1150 H0410 «Artiro, artiro. Estimado, estimado.»: every
     word arrives at least twice and nothing else does; no assent, negation,
@@ -3042,6 +3062,8 @@ def _unresolved_input_kind(objective: str) -> str | None:
         return "overheard_speech"
     if _echoed_words(folded):
         return "echoed_words"
+    if bare_path_file_name(objective) is not None:
+        return "bare_path"
     if effect_intent.INDETERMINATE_WINDOW_CLAUSE.fullmatch(folded) is not None:
         # WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá la
         # mejor»: a window named only by «la otra», «la mejor», «la

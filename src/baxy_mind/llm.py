@@ -7398,6 +7398,12 @@ _INVENTED_ACTION_VERB = re.compile(
 _REFLEXIVE_COMPARISON = re.compile(
     r"\bte\s+(?:compar|parec|asemej)|\byourself\b|\bcompare\s+you\s+to\b"
 )
+def _bare_path_name(text: str) -> str:
+    """The last segment of a pasted path (FILES H0299); the folders stay unsaid."""
+
+    return re.split(r"[\\/]", str(text).strip().rstrip("\\/"))[-1].strip()
+
+
 _NOISE_ACKNOWLEDGED = re.compile(
     r"\b(?:signos?|simbolos?|cifras?|digitos?|numeros?|letras?|emojis?|"
     r"caracter(?:es)?|interrogaci[oó]n|mensaje|escribiste|enviaste|mandaste|"
@@ -10858,7 +10864,7 @@ class LlmRuntime:
         a meaning: the question names what arrived and asks what to do.
         """
 
-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window", "echoed_words"}:
+        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window", "echoed_words", "bare_path"}:
             raise ValueError("clase de entrada sin pedido inválida")
         current = str(text).strip()[:2_048]
         situation = (
@@ -11015,6 +11021,20 @@ class LlmRuntime:
                 "de lo que haces y no ofrezcas ayuda genérica sin decir lo que llegó."
             )
             if kind == "echoed_words"
+            else (
+                # FILES H0299: a file path pasted alone, with no verb.
+                "Eres BAXY. Del usuario llegó sólo la ruta de un archivo llamado «"
+                + str(_bare_path_name(current)) + "», sin ningún pedido: no dijo qué "
+                "hacer con él. Formula una sola pregunta breve, en el idioma del "
+                "usuario, que diga que llegó la ruta de ese archivo sin un pedido y "
+                "pregunte qué quiere que hagas con él (por ejemplo: «Me llegó la ruta "
+                "de «" + str(_bare_path_name(current)) + "» sin un pedido: ¿qué querés "
+                "que haga con ese archivo?»). Nombra el archivo sólo por ese nombre, "
+                "nunca por la ruta completa ni sus carpetas; no abras, leas ni "
+                "resumas nada, no adivines qué contiene, no digas que fallaste y no "
+                "ofrezcas ayuda genérica."
+            )
+            if kind == "bare_path"
             else (
                 "Eres BAXY. Lo que llegó del usuario no contiene un pedido "
                 "legible: sólo signos, cifras, una letra suelta, símbolos o "
@@ -11392,6 +11412,37 @@ class LlmRuntime:
                     )
                     continue
                 raise ValueError("aclaración de comparación con sujeto invertido")
+            if kind == "bare_path":
+                folded_question = _fold_dialogue_text(question)
+                name = _fold_dialogue_text(str(_bare_path_name(current)))
+                names_file = name in folded_question
+                says_path = re.search(r"\b(?:ruta|path|archivo|file)\b", folded_question) is not None
+                asks_what = re.search(
+                    r"\b(?:que\s+(?:quer|quier|hag|hac|deb)|what\s+(?:do\s+you\s+want|should))",
+                    folded_question,
+                ) is not None
+                whole_path = _fold_dialogue_text(current.strip()) in folded_question
+                claims = re.search(
+                    r"\b(?:abri|lei|le[ií]do|resum|contiene|dice|trata\s+de|opened|read|contains)\b",
+                    folded_question,
+                ) is not None
+                if names_file and says_path and asks_what and not whole_path and not claims:
+                    return question
+                if attempt == 0:
+                    payload["messages"].insert(
+                        -1,
+                        {
+                            "role": "system",
+                            "content": (
+                                "Corrección: di que llegó la ruta del archivo «"
+                                + str(_bare_path_name(current)) + "» sin un pedido y pregunta "
+                                "qué quiere que hagas con él; nombra sólo el archivo, no la "
+                                "ruta ni sus carpetas, y no digas qué contiene."
+                            ),
+                        },
+                    )
+                    continue
+                raise ValueError("aclaración de ruta suelta no pregunta qué hacer con el archivo")
             if kind == "echoed_words":
                 folded_question = _fold_dialogue_text(question)
                 folded_input = _fold_dialogue_text(current)
