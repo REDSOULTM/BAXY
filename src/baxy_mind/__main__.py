@@ -5386,6 +5386,15 @@ def _ground_explicit_arguments(
         # WEB1451 «qué pasó hoy en el mundo»: the news reader supplies the
         # word «noticias»; the scope words are the person's own.
         return explicit if validate_json_schema_instance(explicit, schema) else None
+    if (
+        operation == "web.search"
+        and effect_intent.curiosity_request(evidence)
+        and explicit.get("query") in effect_intent._CURIOSITY_TOPICS_ES + effect_intent._CURIOSITY_TOPICS_EN
+    ):
+        # KNOWLEDGE1505/1507 «decime una curiosidad»: the curiosity reader
+        # supplies the subject from its own list; the person named none, so
+        # the literal check would discard every pick and the turn asked back.
+        return explicit if validate_json_schema_instance(explicit, schema) else None
     if operation == "filesystem.known.list" and explicit.get("folder") in (
         effect_intent._known_folder_listing_request(evidence),
         (effect_intent._known_folder_recent_listing(evidence) or (None, None))[0],
