@@ -2548,6 +2548,36 @@ def reassurance_statement(text: str) -> bool:
     return _REASSURANCE_STATEMENT.match(_strip_request_envelope(_fold(text)).strip()) is not None
 
 
+_FIRST_PERSON_PREFERENCE = re.compile(
+    r"(?:me\s+(?:gusta|gustan|encanta|encantan|fascina|fascinan)|"
+    r"prefiero|adoro|amo|odio|detesto|no\s+me\s+gusta|no\s+me\s+gustan|"
+    r"i\s+(?:like|love|prefer|hate|enjoy|dislike))\s+"
+    r"(?P<thing>(?!(?:que|si|cuando|porque)\b)[a-z][a-z0-9 '\-]{1,80})[\s.!?]*",
+    re.IGNORECASE,
+)
+_PREFERENCE_REQUEST_HEAD = re.compile(
+    r"\b(?:que|abre|abri|abris|pone|pon|poneme|pongas|abras|busca|buscame|cierra|"
+    r"lanza|inicia|reproduce|manda|envia|escribe|crea|guarda|recuerda|recorda|"
+    r"open|play|search|send|close|save|remember|remind)\b"
+)
+
+
+def first_person_preference(text: str) -> str | None:
+    """MEMORY1501/1503 H0174 «Me gusta tomar café.»: the thing a first-person taste names, or None.
+
+    A taste or preference with nothing asked is a statement to acknowledge, not an order
+    (MEMORY1245 asked where to go for coffee). No request verb, no «que» clause and no
+    catalog head may follow the preference."""
+
+    match = _FIRST_PERSON_PREFERENCE.fullmatch(_strip_request_envelope(_fold(text)))
+    if match is None:
+        return None
+    thing = match.group("thing").strip()
+    if _PREFERENCE_REQUEST_HEAD.search(thing) is not None:
+        return None
+    return thing
+
+
 _VISUAL_CONTENT_NOUN = re.compile(
     r"\b(?P<noun>meme|memes|imagen|imagenes|foto|fotos|gif|gifs|sticker|stickers|dibujo|dibujos|picture|pictures|image|images|photo|photos)\b"
 )

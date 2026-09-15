@@ -3082,25 +3082,9 @@ def _personal_checkin_statement(objective: str) -> bool:
         return True
     # MEMORY1501 H0174 «Me gusta tomar café.»: a first-person taste or
     # preference with nothing asked is a statement to acknowledge, not an
-    # order (MEMORY1245 asked where to go for coffee). No request verb, no
-    # «que» clause, no catalog head may follow the preference.
-    preference = re.fullmatch(
-        r"(?:me\s+(?:gusta|gustan|encanta|encantan|fascina|fascinan)|"
-        r"prefiero|adoro|amo|odio|detesto|no\s+me\s+gusta|no\s+me\s+gustan|"
-        r"i\s+(?:like|love|prefer|hate|enjoy|dislike))\s+"
-        r"(?P<thing>(?!(?:que|si|cuando|porque)\b)[a-z][a-z0-9 '\-]{1,80})[\s.!?]*",
-        folded,
-        re.IGNORECASE,
-    )
-    if preference is None:
-        return False
-    thing = preference.group("thing")
-    return not re.search(
-        r"\b(?:que|abre|abri|abris|pone|pon|poneme|pongas|abras|busca|buscame|cierra|"
-        r"lanza|inicia|reproduce|manda|envia|escribe|crea|guarda|recuerda|recorda|"
-        r"open|play|search|send|close|save|remember|remind)\b",
-        thing,
-    )
+    # order (MEMORY1245 asked where to go for coffee). The reader is shared
+    # with the preference_ack presentation shape (MEMORY1503).
+    return effect_intent.first_person_preference(objective) is not None
 
 
 def _closed_unsupported_request(objective: str) -> bool:
