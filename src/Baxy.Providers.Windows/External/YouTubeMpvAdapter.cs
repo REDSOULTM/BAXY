@@ -232,6 +232,8 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
 
             double? before = null;
             double? after = null;
+            double? readerBefore = null;
+            double? readerAfter = null;
             bool paused = true;
             // MUSIC1559: a two-hour mix took longer than 50 × 250 ms to reach
             // its first half second; the window is now about thirty seconds.
@@ -243,13 +245,29 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
                     reader, writer, "time-pos", cancellationToken).ConfigureAwait(false);
                 JsonElement pause = await ReadPropertyAsync(
                     reader, writer, "pause", cancellationToken).ConfigureAwait(false);
+                // MUSIC1567: on this laptop the WASAPI clock can stay at zero while
+                // the audio is being consumed (time-pos ≈ 0.0001 for a playing
+                // stream); the demuxer's reader position still advances in real
+                // time, so either clock proves playback.
+                JsonElement cacheState = await ReadPropertyAsync(
+                    reader, writer, "demuxer-cache-state", cancellationToken).ConfigureAwait(false);
                 if (time.ValueKind == JsonValueKind.Number && time.TryGetDouble(out double value))
                 {
                     before ??= value;
                     after = value;
                 }
+                if (cacheState.ValueKind == JsonValueKind.Object
+                    && cacheState.TryGetProperty("reader-pts", out JsonElement readerPts)
+                    && readerPts.ValueKind == JsonValueKind.Number
+                    && readerPts.TryGetDouble(out double readerValue))
+                {
+                    readerBefore ??= readerValue;
+                    readerAfter = readerValue;
+                }
                 paused = pause.ValueKind != JsonValueKind.False;
-                if (before.HasValue && after.HasValue && after.Value - before.Value >= 0.5 && !paused)
+                bool clockAdvanced = before.HasValue && after.HasValue && after.Value - before.Value >= 0.5;
+                bool readerAdvanced = readerBefore.HasValue && readerAfter.HasValue && readerAfter.Value - readerBefore.Value >= 0.5;
+                if ((clockAdvanced || readerAdvanced) && !paused)
                 {
                     _activePlayer = player;
                     return ExternalJson.Success(operation, ExternalJson.Create(json =>
@@ -259,6 +277,7 @@ internal sealed class YouTubeMpvAdapter : IExternalOperationAdapter, IDisposable
                         json.WriteString("title", title ?? query); json.WriteString("playbackStatus", "playing");
                         json.WriteBoolean("titleObserved", title is not null);
                         json.WriteString("playerLog", logFile);
+                        json.WriteString("progressClock", clockAdvanced ? "audio_clock" : "demuxer_reader");
                         json.WriteNumber("processId", player.Id);
                         json.WriteString("authority", "yt_dlp_mpv_ipc_postread");
                         json.WriteEndObject();
