@@ -1,0 +1,28 @@
+commit 3dc076cf8eaab33fa55eb56375f6dcb4eb0a8aaf
+
+C03: the presence-read argument binds the proper name the resolver admitted (APPS1551)
+
+APPS1549 measured that «abre Saint Rose» and its variants were decided as one app.installed read, but resolve_application_installed_name still bound the name only through the known-software path, so the product asked a missing-argument question and read nothing. The argument binding now also tries the proper name (every word capitalized, no article, at most four words) that the resolver admitted after ruling out games, near catalog names and public sites; the name reaches the provider exactly as the person wrote it. Registry-wide recogniser diff: no literal changes.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index f2ae9c3e..c849feb7 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -5235,6 +5235,14 @@ def resolve_application_installed_name(
+     """
+ 
+     opening_name = unresolved_application_open_name(text, application_names)
++    if opening_name is not None:
++        return opening_name
++    # APPS1549: the resolver admits a proper name behind a plain open verb only
++    # after ruling out games, near names and public sites; the argument bound
++    # here is that same name, exactly as the person wrote it.
++    opening_name = unresolved_application_open_name(
++        text, application_names, proper_name=True,
++    )
+     if opening_name is not None:
+         return opening_name
+     catalog = build_application_catalog_index(application_names)

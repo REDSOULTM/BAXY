@@ -1,0 +1,15 @@
+{
+  "schema": "c03-apps1551-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (resolve_application_installed_name prueba también el nombre propio —proper_name— que el resolutor admitió; el argumento name lleva el nombre tal cual lo escribió la persona).",
+  "patch": "artifacts/comprobaciones/C03/APPS1551/SOURCE.patch",
+  "commits": [
+    "3dc076cf8eaab33fa55eb56375f6dcb4eb0a8aaf"
+  ],
+  "build": "BUILD1551 (C03-repairs1551-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "APPS1551: la mente decidió app.installed pero el enlace del argumento name seguía admitiendo sólo el software conocido y el producto preguntó un argumento faltante sin leer nada.",
+  "change": "Enlace del argumento con el nombre propio admitido por el resolutor; sin respuestas fijas.",
+  "measurement": "APPS1551: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. Medido: el literal y sus dos variantes ejecutaron una app.installed verificada cada uno y los finales nombraron el nombre pedido tal cual («Saint Rose», «Saint Row») diciendo que no se encontró en el catálogo de inicio de Windows y no se puede abrir, sin pregunta ni otra aplicación; los tres límites pasaron. H0249 acreditado con sus dos variantes.",
+  "credits": 1
+}

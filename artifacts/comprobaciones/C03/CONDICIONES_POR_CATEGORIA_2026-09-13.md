@@ -713,3 +713,7 @@ Estado de hardware y sistema pasa de 38/40 a 39/40 con las dos cifras de memoria
 ## Actualización 2026-09-14 (APPS1549)
 
 Abrir aplicaciones pasa de 45/54 a 45/54 con el nombre propio sin catálogo leído como presencia de aplicación y nombrado en el final (commit 37f50e75, BUILD1549) (HEAD 37f50e75): 6 ejecutados, 3 aprobados (los tres límites), 3 fallidos, 0 créditos. Medido: la mente decidió una app.installed para el literal y las dos variantes (efecto explícito), pero el enlace del argumento name seguía admitiendo sólo el software conocido y el producto preguntó un argumento faltante (programa o acción dentro; consola o computadora; programa o sitio web) sin leer nada; los tres límites pasaron, incluido el acuse de prohibición sin pregunta. Siguiente: el enlace del argumento admite el mismo nombre propio que el resolutor (APPS1551).
+
+## Actualización 2026-09-14 (APPS1551)
+
+Abrir aplicaciones pasa de 45/54 a 46/54 con el argumento de la lectura de presencia enlazado al nombre propio (commit 3dc076cf, BUILD1551) (HEAD 3dc076cf): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Medido: el literal y sus dos variantes ejecutaron una app.installed verificada cada uno y los finales nombraron el nombre pedido tal cual («Saint Rose», «Saint Row») diciendo que no se encontró en el catálogo de inicio de Windows y no se puede abrir, sin pregunta ni otra aplicación; los tres límites pasaron. H0249 acreditado con sus dos variantes.

@@ -1,3 +1,11 @@
+# APPS1551 adjudicado — 2026-09-15T05:48:55.992636+00:00
+
+**521/742 cubiertos, 221 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA 713951a5c2f4d7603bb8d23d28156530cf155edfcf4201cbea69fb8ab2e57fff. Primeras altas 24 h >= 395 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 3dc076cf con BUILD1551 (el enlace del argumento admite el nombre propio que el resolutor admitió). Turnos ordinarios de aclaración sin operaciones.
+
+APPS1551 («Abrir aplicaciones», H0249 «Y quema, abre Saint Rose.»): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Adjudicación 0c6f4b83b6aec2df25b5555b91dc3fe98d1d80d76bda3bc9261650c5c717e73f. Medido: el literal y sus dos variantes ejecutaron una app.installed verificada cada uno y los finales nombraron el nombre pedido tal cual («Saint Rose», «Saint Row») diciendo que no se encontró en el catálogo de inicio de Windows y no se puede abrir, sin pregunta ni otra aplicación; los tres límites pasaron. H0249 acreditado con sus dos variantes.
+
+---
+
 # APPS1549 adjudicado — 2026-09-15T05:44:30.081006+00:00
 
 **520/742 cubiertos, 222 abiertos, 0 NA; 5/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2); C03 formal 3/11. Registro SHA 28df8129d93b4223985755d049bb3cffe3187fc536367ecd5562c9950c3e44d8. Primeras altas 24 h >= 394 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 37f50e75 con BUILD1549 (el nombre propio que ningún catálogo reclama se lee como presencia y el final lo nombra). Turnos ordinarios de aclaración sin operaciones.
