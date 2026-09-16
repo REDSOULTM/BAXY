@@ -9086,6 +9086,12 @@ class LlmRuntime:
         # subjects already mentioned. Only this generation's context is scoped.
         presentation_history = (
             []
+            # UI1645/UI1647 «No escribas nada en ningún lado.»: with the welcome
+            # greeting in the dialogue, the model answered the greeting («Hola,
+            # todo bien. ¿Cómo va tu día?») instead of the constraint, twice per
+            # turn. The acknowledgement is shaped from user_constraint alone.
+            if presentation_shape == "constraint_ack"
+            else []
             if conversation_kind == "knowledge"
             and presentation_shape is None
             and starts_new_definition_topic(
