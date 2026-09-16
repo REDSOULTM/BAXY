@@ -1188,6 +1188,11 @@ def _completed_missing_music_request(
         return None
     if _has(_fold(previous_user_text), r"\bspotify\b"):
         return f"pon música de {answer} en spotify"
+    if _has(_fold(previous_user_text), r"\bvideos?\b"):
+        # VIDEO1717 «abre youtube y pon un video» → «¿qué video?» → «uno de
+        # gatos»: the answer names the video, played from YouTube.
+        answer = re.sub(r"^(?:(?:uno|una|one)\s+)?(?:de|of|sobre|about)\s+", "", answer, flags=re.IGNORECASE).strip(" .!") or answer
+        return f"pon un video de {answer} en youtube"
     return f"pon música de {answer}"
 
 
@@ -4383,8 +4388,15 @@ def resolve_explicit_clarification_intent(
     )
     incomplete_media_clause = any(
         _head_is(_request_head(clause), r"(?:pon|pone|poneme|ponme|reproduce|play)")
-        and _has(clause, r"\b(?:musica|music|musika|cancion|canciones|song|songs|tema)\b")
+        # VIDEO1717 «abre youtube y pon un video»: a bare video is as
+        # incomplete as a bare song.
+        and _has(clause, r"\b(?:musica|music|musika|cancion|canciones|song|songs|tema|videos?)\b")
         and _desired_music_query(clause) is None
+        # A video that is already named («un video de lofi en youtube») or a
+        # title on a streaming service («The Office en Prime Video») is not bare.
+        and youtube_play_query(clause) is None
+        and not _has(clause, r"\bvideos?\s+(?:de|sobre|of|about)\s+\S")
+        and not _has(clause, r"\b(?:en|on)\s+(?:netflix|disney|prime|hbo|max|crunchyroll|star|paramount|twitch|hulu|peacock|apple)\b")
         for clause in _request_clauses(music_folded)
     )
     if (
@@ -4395,7 +4407,7 @@ def resolve_explicit_clarification_intent(
                 _request_head(music_folded),
                 r"(?:pon|pone|poneme|ponme|reproduce|play)",
             )
-            or (_head_is(_request_head(music_folded), _OPEN) and _has(music_folded, r"\bspotify\b"))
+            or (_head_is(_request_head(music_folded), _OPEN) and _has(music_folded, r"\b(?:spotify|youtube)\b"))
         )
     ):
         return ClarificationIntent(("media.play.query",), ("query",))
