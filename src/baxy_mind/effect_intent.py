@@ -2355,6 +2355,8 @@ def _curated_domain_is_grounded(
         )
     if operation == "window.minimize.all":
         return minimize_all_request(folded)
+    if operation == "document.pdf.read":
+        return _pdf_summary_request(folded) is not None
     if operation in {
         "window.active",
         "window.focus",
@@ -3152,6 +3154,41 @@ _FILE_TRASH_REQUEST = re.compile(
     r"(?:\s*,?\s+(?:por\s+favor|please|porfa))?[\s.!?]*$",
     re.IGNORECASE,
 )
+
+
+# PDF1689 H0666 «resumime informe.pdf», «hazme un resumen de informe.pdf»,
+# «summarize report.pdf»: one named PDF in the known folders is read for its
+# text (document.pdf.read) and the reply presents it; a bare name must be
+# a .pdf file or the request must say «pdf».
+_PDF_SUMMARY_REQUEST = re.compile(
+    r"^[¿?¡!\s]*(?:(?:por\s+favor|please|porfa)\s*[,;:]?\s*)?"
+    r"(?:(?:hac[eé]|hace|hazme|haceme|hac[eé]me|arm[aá]|arm[aá]me|dame|make|give\s+me|write|escrib[ií])(?:me)?\s+"
+    r"(?:(?:un|una|el|a|the)\s+)?(?:resumen|summary)\s+(?:de|del|of)(?:\s+(?:el|la|the))?"
+    r"|(?:resum[ií]|resumime|resum[ií]me|resumeme|resumir|resume|summari[sz]e|sum\s+up)(?:me)?"
+    r"(?:\s+(?:el|la|the))?)\s+"
+    r"(?P<noun>(?:archivo|fichero|file|documento|document|pdf)\s+)?"
+    r"(?:(?:llamad[oa]|named|called)\s+)?"
+    r"(?P<name>\"[^\"]+\"|'[^']+'|[^\s\"']+)"
+    rf"(?:\s+(?:del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}))?"
+    r"(?:\s*,?\s+(?:por\s+favor|please|porfa))?[\s.!?]*$",
+    re.IGNORECASE,
+)
+
+
+def _pdf_summary_request(text: str) -> re.Match[str] | None:
+    """Match one summary or reading request of a named PDF in the known folders."""
+
+    found = _PDF_SUMMARY_REQUEST.match(text.strip())
+    if found is None:
+        return None
+    name = found.group("name").strip("\"'").rstrip(".!?,")
+    if not name or name.lower() in {"todo", "esto", "eso", "this", "that", "it", "pagina", "página", "page"}:
+        return None
+    if re.fullmatch(r"[^\\/:*?\"<>|]+\.pdf", name, re.IGNORECASE) is None:
+        noun = found.group("noun")
+        if noun is None or noun.strip().lower() != "pdf" or "." in name:
+            return None
+    return found
 
 
 def _file_trash_request(text: str) -> re.Match[str] | None:
@@ -16602,6 +16639,14 @@ def resolve_explicit_effects(
     if "filesystem.write.text" in available and _file_creation_request(folded) is not None:
         # A named file with literal content is a write, not a note.
         return EffectIntent(("filesystem.write.text",), (folded,))
+    if (
+        "document.pdf.read" in available
+        and _pdf_summary_request(folded) is not None
+        and not _is_negative_effect_clause(folded)
+        and not _is_meta_or_tool_denial(folded)
+    ):
+        # PDF1689: the named PDF is read once for its text; the reply presents it.
+        return EffectIntent(("document.pdf.read",), (folded,))
     if (
         "filesystem.known.trash.named" in available
         and _file_trash_request(folded) is not None

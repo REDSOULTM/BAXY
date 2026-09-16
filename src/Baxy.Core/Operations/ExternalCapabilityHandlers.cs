@@ -26,6 +26,7 @@ internal static class ExternalCapabilityHandlers
         "clipboard.copy",
         "clipboard.paste",
         "display.status",
+        "document.pdf.read",
         "email.latest.read",
         "email.latest.reply",
         "game.catalog.list",

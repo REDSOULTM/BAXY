@@ -305,6 +305,19 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Lee los monitores conectados (cantidad, resolución y frecuencia de refresco) mediante la API de pantalla de Windows; sin efecto."),
         Descriptor(
+            "document.pdf.read",
+            Schema(
+                [
+                    String("fileName", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
+                    Integer("maximumCharacters", 200, 200_000),
+                ],
+                ["fileName", "folder"]),
+            OperationRisks.ReadOnly,
+            "document.pdf.read.windows.known.pypdf.text.v1",
+            ToolExposure.Public,
+            "Localiza un PDF nombrado de forma única en las carpetas conocidas de Windows y extrae el texto que ya contiene (sin OCR) para resumirlo o citarlo; sin efecto."),
+        Descriptor(
             "email.latest.read",
             EmptySchema(),
             OperationRisks.PrivacySensitive,

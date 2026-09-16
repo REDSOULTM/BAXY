@@ -4096,6 +4096,8 @@ def _compose_situation_payload(
             visible_seen = _project_game_listing(visible_seen, language)
         elif operation == "browser.page.read":
             visible_seen = _project_page_read(visible_seen, language)
+        elif operation == "document.pdf.read":
+            visible_seen = _project_pdf_read(visible_seen, language)
         elif operation == "media.play.youtube":
             # MUSIC1553: the process id and the IPC authority are not for the
             # person; the query, the observed title and the state are.
@@ -4418,7 +4420,8 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             "This result minimized every visible desktop window and verified "
             "each is now minimized: say that all the windows were minimized "
             "(with the count from minimized if it is present), that nothing "
-            "was closed, in one sentence, in the person's language. If "
+            "was closed, in one sentence, in the person's language, calling "
+            "them by the plain noun (ventanas / windows) and no other word. If "
             "minimized is 0, say there was no open window to minimize."
         )
     if (
@@ -5038,6 +5041,90 @@ def _project_page_read(observed: dict, language: str) -> dict:
     return projected
 
 
+_PDF_LEAD_CHARACTERS = 700
+_PDF_HEADINGS = 6
+
+
+def _project_pdf_read(observed: dict, language: str) -> dict:
+    """PDF1689 «resumime informe.pdf»: the receipt carries up to 12 000 characters
+    of extracted text; the composer receives the document name, its page count,
+    its heading-like lines and the beginning of its text exactly as read."""
+
+    text = observed.get("text") if isinstance(observed.get("text"), str) else ""
+    lines = [re.sub(r"[ \t]+", " ", line).strip() for line in text.split("\n")]
+    lines = [line for line in lines if line]
+    headings: list[str] = []
+    for line in lines[1:]:
+        # A heading: short, no sentence end, numbered or capitalised, with words.
+        if (
+            8 <= len(line) <= 72
+            and not line.endswith((".", ",", ";", ":"))
+            and ":" not in line
+            and sum(ch.isalpha() for ch in line) >= 6
+            and (re.match(r"^\d{1,2}[.)]?\s+\S", line) or line[:1].isupper())
+            and len(line.split()) <= 9
+        ):
+            headings.append(line)
+        if len(headings) >= _PDF_HEADINGS:
+            break
+    flat = re.sub(r"\s+", " ", text).strip()
+    lead = flat[:_PDF_LEAD_CHARACTERS]
+    if len(flat) > _PDF_LEAD_CHARACTERS:
+        cut = max(lead.rfind(". "), lead.rfind("! "), lead.rfind("? "))
+        if cut >= 120:
+            lead = lead[: cut + 1]
+    pages = observed.get("pages") if type(observed.get("pages")) is int else None
+    projected: dict = {
+        "document": (observed.get("reviewLabel") if isinstance(observed.get("reviewLabel"), str) else "").strip(),
+        "pages": pages,
+        "hasText": bool(flat),
+        "headings": headings,
+        "lead": lead.strip(),
+        "moreNotShown": len(flat) > len(lead) or observed.get("truncated") is True,
+    }
+    return projected
+
+
+def _pdf_read_in_payload(payload: dict) -> dict | None:
+    """The projected PDF («seen» with a lead) of a verified document.pdf.read."""
+
+    if payload.get("operation") != "document.pdf.read":
+        return None
+    seen = payload.get("seen")
+    if isinstance(seen, dict) and isinstance(seen.get("lead"), str):
+        return seen
+    return None
+
+
+def _pdf_read_quote_defect(text: str, seen: dict) -> str:
+    """Every quoted passage must be in the lead, a heading or the name as read;
+    a number in the prose must be in the lead, a heading or the page count."""
+
+    lead = re.sub(r"\s+", " ", _reading_fold(str(seen.get("lead") or "")))
+    headings = [re.sub(r"\s+", " ", _reading_fold(str(h))) for h in (seen.get("headings") or [])]
+    name = re.sub(r"\s+", " ", _reading_fold(str(seen.get("document") or "")))
+    pages = str(seen.get("pages")) if type(seen.get("pages")) is int else ""
+    if not seen.get("hasText"):
+        return ""
+    quoted_any = False
+    for quoted in re.findall(r'[«"“]([^»"”]{1,4096})[»"”]', text):
+        candidate = re.sub(r"\s+", " ", _reading_fold(quoted.strip().rstrip(".,;:…"))).strip()
+        if not candidate or candidate == name:
+            continue
+        if any(candidate == h or candidate in h for h in headings):
+            continue
+        quoted_any = quoted_any or candidate in lead
+        if candidate not in lead:
+            return "pdf_unquoted_passage"
+    if not quoted_any:
+        return "pdf_missing_quote"
+    prose = re.sub(r'[«"“][^»"”]{1,4096}[»"”]', " ", text)
+    for number in re.findall(r"(?<![\w.-])\d+(?![\w.-])", prose):
+        if number != pages and number not in lead and not any(number in h for h in headings) and number not in name:
+            return "pdf_unread_number"
+    return ""
+
+
 def _page_read_in_payload(payload: dict) -> dict | None:
     """The projected page («seen» with a lead) of a verified browser.page.read."""
 
@@ -5462,6 +5549,13 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         listing_defect = _listing_fact_defect(text, listing)
         if listing_defect:
             return listing_defect
+    pdf = _pdf_read_in_payload(payload)
+    if pdf is not None:
+        # PDF1689: a passage the document did not carry, or a number it did
+        # not carry, is invented; the report quotes the document as read.
+        pdf_defect = _pdf_read_quote_defect(text, pdf)
+        if pdf_defect:
+            return pdf_defect
     page = _page_read_in_payload(payload)
     if page is not None:
         # WEB1539: a passage the page did not show, or a number it did not
@@ -13743,7 +13837,48 @@ class LlmRuntime:
                 "dato que ningún resultado contenga; si los resultados sólo remiten a "
                 "páginas de pronóstico, dilo."
             )
-        if _page_read_in_payload(visible_situation) is not None:
+        if _pdf_read_in_payload(visible_situation) is not None:
+            # PDF1689 «resumime informe.pdf»: the report names the document,
+            # says what it covers by its headings as read and quotes its
+            # opening verbatim; nothing is summarized in the model's own words.
+            pdf_seen = _pdf_read_in_payload(visible_situation) or {}
+            if not pdf_seen.get("hasText"):
+                instruct(
+                    "\nseen.document is the PDF that was found and read; it carries no "
+                    "extractable text (it is probably scanned pages or images). Say that "
+                    "the file was found but has no text to summarize and that no OCR was "
+                    "applied, in one or two sentences; no summary, no question."
+                    if response_language == "en"
+                    else "\nseen.document es el PDF que se encontró y se leyó; no contiene "
+                    "texto extraíble (probablemente son páginas escaneadas o imágenes). "
+                    "Di que el archivo se encontró pero no tiene texto para resumir y que "
+                    "no se aplicó OCR, en una o dos oraciones; sin resumen, sin pregunta."
+                )
+            else:
+                instruct(
+                    "\nseen.document is the name of the PDF that was read, seen.pages its "
+                    "page count, seen.headings its section headings exactly as read and "
+                    "seen.lead the beginning of its text exactly as read. Say which "
+                    "document it is and how many pages it has, say what it covers by "
+                    "naming its headings verbatim (all of seen.headings, in order, if "
+                    "there are any) and quote, inside quotation marks, the first one or "
+                    "two sentences of seen.lead verbatim as what the document says; if "
+                    "seen.moreNotShown is true, say that the document continues. Nothing "
+                    "else: no summary in your own words, no facts, names or numbers that "
+                    "are not in seen.headings or seen.lead, no question."
+                    if response_language == "en"
+                    else "\nseen.document es el nombre del PDF leído, seen.pages su cantidad "
+                    "de páginas, seen.headings los títulos de sus secciones tal cual se "
+                    "leyeron y seen.lead el comienzo de su texto tal cual se leyó. Di qué "
+                    "documento es y cuántas páginas tiene, di de qué trata nombrando sus "
+                    "títulos tal cual (todos los de seen.headings, en orden, si los hay) y "
+                    "cita, entre comillas, la primera o las dos primeras oraciones de "
+                    "seen.lead tal cual, como lo que dice el documento; si "
+                    "seen.moreNotShown es verdadero, di que el documento sigue. Nada más: "
+                    "sin resumen con tus palabras, sin datos, nombres ni cifras que no "
+                    "estén en seen.headings o seen.lead, sin pregunta."
+                )
+        elif _page_read_in_payload(visible_situation) is not None:
             # WEB1539 «resumime esta página»: the report names the page and
             # quotes the beginning of its visible text verbatim; nothing is
             # summarized in the model's own words.

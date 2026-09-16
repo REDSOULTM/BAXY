@@ -4871,6 +4871,28 @@ def _explicit_arguments_from_evidence(
             return {}
         return None
 
+    if operation == "document.pdf.read":
+        # PDF1689 «resumime informe.pdf»: the file name is the person's
+        # literal; the folder is a catalog root, or every known folder when
+        # none is named (the provider refuses an ambiguous name).
+        pdf_match = effect_intent._pdf_summary_request(evidence)
+        if pdf_match is None:
+            return None
+        pdf_name = pdf_match.group("name").strip().strip("\"'").rstrip(".!?,").strip()
+        if (
+            not pdf_name
+            or re.search(r"[\\/:*?\"<>|]", pdf_name)
+            or any(ord(character) < 32 for character in pdf_name)
+            or len(pdf_name.encode("utf-8")) > 512
+        ):
+            return None
+        pdf_folder = pdf_match.group("folder")
+        return {
+            "fileName": pdf_name,
+            "folder": effect_intent._KNOWN_FOLDER_ENUM[effect_intent._fold(pdf_folder)]
+            if pdf_folder else "all_known",
+        }
+
     if operation == "filesystem.known.trash.named":
         # «borra el archivo hola.txt del escritorio»: the file name is the
         # person's literal; the folder is a catalog root, or every known folder
@@ -5684,6 +5706,13 @@ def _ground_explicit_arguments(
     ):
         # The shared positive request grammar owns the known-folder enum;
         # the filename remains literal. Keep the authenticated schema boundary.
+        return explicit if validate_json_schema_instance(explicit, schema) else None
+    if (
+        operation == "document.pdf.read"
+        and effect_intent._pdf_summary_request(evidence) is not None
+    ):
+        # PDF1689: the reader owns the known-folder enum (all_known when no
+        # folder is named); the file name remains the person's literal.
         return explicit if validate_json_schema_instance(explicit, schema) else None
     if (
         operation == "filesystem.known.trash.named"
