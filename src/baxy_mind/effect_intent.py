@@ -3249,6 +3249,43 @@ def _current_directory_file_count(folded: str) -> bool:
     )
 
 
+_MICROPHONE_CLIENT = r"(?:discord|teams|zoom|skype|meet|google\s+meet|whatsapp|slack)"
+
+
+def app_scoped_microphone_mute(folded: str) -> str | None:
+    """Name the voice client of a microphone-mute order scoped to it, or nothing.
+
+    «silencia mi micrófono en discord», «mutea el micrófono en discord», «Sí.
+    Silencia mi micrófono en Discord», «en Discord apretá silenciar»: the
+    person wants to be muted in a client whose controls BAXY does not
+    operate. A bare «silencia mi micrófono» stays the system mute.
+    """
+
+    prefix = r"^[¿?¡!\s]*(?:(?:si|ok|bueno|dale|listo)[.,!]?\s+)?(?:(?:por\s+favor|please)[,]?\s+)?"
+    mute = re.fullmatch(
+        prefix
+        + r"(?:silencia|silenciame|silencialo|mutea|muteame|mutealo|mute|apaga|apagame|desactiva|desactivame|turn\s+off)\s+"
+        + r"(?:(?:mi|el|the|my|mis)\s+)?(?:microfono|micro|mic|microphone)\s+"
+        + r"(?:en|in|on|de|del|of|dentro\s+de)\s+(?:(?:el|la|the)\s+)?(?P<client>" + _MICROPHONE_CLIENT + r")"
+        + r"(?:\s+(?:por\s+favor|please))?[\s.!?]*",
+        folded,
+    )
+    if mute is not None:
+        return mute.group("client")
+    press = re.fullmatch(
+        prefix
+        + r"(?:(?:en|in|on)\s+(?P<client_a>" + _MICROPHONE_CLIENT + r")[,]?\s+)?"
+        + r"(?:apreta|apretale|apretalo|pulsa|pulsale|presiona|presionale|clickea|click|hace\s+clic\s+en|haz\s+clic\s+en|press|hit|toca)\s+"
+        + r"(?:(?:el|la|the|en)\s+)?(?:boton\s+(?:de\s+)?)?(?:silenciar|silencio|silenciarme|mutear|mute|muteo)"
+        + r"(?:\s+(?:el|mi|the|my)\s+(?:microfono|micro|mic|microphone))?"
+        + r"(?:\s+(?:en|in|on)\s+(?P<client_b>" + _MICROPHONE_CLIENT + r"))?[\s.!?]*",
+        folded,
+    )
+    if press is None:
+        return None
+    return press.group("client_a") or press.group("client_b")
+
+
 def resolve_explicit_clarification_intent(
     text: str,
     available_operations: Iterable[str],
@@ -3277,6 +3314,13 @@ def resolve_explicit_clarification_intent(
         # FILES1437 «dime cuántos archivos .py hay en el directorio actual»: BAXY
         # has no working directory; the count needs the person's folder.
         return ClarificationIntent(("filesystem.known.search",), ("folder",))
+    if "audio.microphone.mute" in available and app_scoped_microphone_mute(folded) is not None:
+        # UI1653 H0232 «silencia mi microfono en discord», H0128 «en Discord
+        # apretá silenciar»: BAXY operates the Windows capture endpoint, not
+        # the mute control of a voice client; it asks whether to mute the
+        # system microphone (the client would stop receiving it) instead of
+        # muting it unasked or pretending to press the client button.
+        return ClarificationIntent(("audio.microphone.mute",), ("system_microphone_confirmation",))
     if "input.text.type" in available and re.fullmatch(
         # UI1645 H0265 «escribe en el diálogo el de ChadGBT»: a typing order
         # that names where to write and not what; the text is missing.

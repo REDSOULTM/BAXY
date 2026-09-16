@@ -12421,6 +12421,42 @@ class LlmRuntime:
                         )
                         continue
                     raise ValueError("aclaración explícita propone una alarma no leída")
+            # UI1653 «silencia mi microfono en discord»: BAXY mutes the Windows
+            # capture endpoint, never a client control; the question must offer
+            # the system microphone and claim neither the client button nor a
+            # mute already done. One corrected retry.
+            if missing_fields == ("system_microphone_confirmation",):
+                folded_question = _reading_fold(str(question))
+                names_system_microphone = (
+                    re.search(r"\b(?:microfono|micro|mic|microphone)\b", folded_question) is not None
+                    and re.search(r"\b(?:sistema|system|windows|general|de la pc|del pc|del equipo|of the pc|computer)\b", folded_question) is not None
+                )
+                claims_done_or_client = re.search(
+                    r"\b(?:silencie|silenciado|mutee|muteado|muted|i have muted|i muted|ya esta|already|"
+                    r"no puedo|no se puede|cannot|can't|unable)\b",
+                    folded_question,
+                ) is not None
+                if not names_system_microphone or claims_done_or_client:
+                    if attempt == 0:
+                        payload["messages"].insert(
+                            -1,
+                            {
+                                "role": "system",
+                                "content": (
+                                    "Corrección: BAXY maneja el micrófono del sistema de Windows, no el "
+                                    "botón de silencio de esa aplicación. Pregunta sólo si quiere que "
+                                    "silencies el micrófono del sistema (la aplicación dejaría de captarlo); "
+                                    "no digas que no puedes ni que ya lo silenciaste."
+                                    if response_language != "en"
+                                    else "Correction: BAXY controls the Windows system microphone, not that "
+                                    "application's mute button. Ask only whether to mute the system "
+                                    "microphone (the application would stop receiving it); do not say you "
+                                    "cannot or that it is already muted."
+                                ),
+                            },
+                        )
+                        continue
+                    raise ValueError("aclaración explícita no ofrece el micrófono del sistema")
             # FILES1437 «How many files are in the current directory?» → «How
             # many files are in the folder?»: the folder question restated the
             # count instead of asking which folder. One corrected retry.
