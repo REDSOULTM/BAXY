@@ -951,3 +951,7 @@ Instalar y desinstalar software pasa de 26/31 a 27/31 con la desinstalación de 
 ## Actualización 2026-09-16 (INSTALL1633)
 
 Abrir aplicaciones pasa de 49/54 a 50/54 con el lanzamiento de un juego ausente respondido desde la biblioteca de Steam (commit 7f74e3a8, BUILD1633) (HEAD 7f74e3a8): un literal y dos variantes con lectura de biblioteca completada y verificada y finales fieles, dos límites aprobados, 1 créditos. Medición raíz: el lanzamiento de un juego ausente se responde desde la biblioteca de Steam; el final expresa la consecuencia como descarga/instalación; nada lanzado.
+
+## Actualización 2026-09-16 (UI1635)
+
+Interacción dentro de aplicaciones pasa de 5/22 a 5/22 con el clic en el botón Aceptar de un diálogo propio con una aprobación raíz exacta (commit c466180b, BUILD1633) (HEAD c466180b): tres clics aprobados, completados y verificados sobre el diálogo propio; el literal con final fiel y las dos variantes con finales que narran el control como deshabilitado; dos límites aprobados; sin par de variantes, sin créditos, 0 créditos. Medición raíz: el clic revisado cierra el diálogo y se verifica; el narrador leyó absentOrDisabled del recibo como un fallo en dos finales; siguiente UI1637 con la proyección del recibo y el veto.

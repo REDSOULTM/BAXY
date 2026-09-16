@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1635-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "no source change (the UI1635 binaries reused): root fixture dialog in owned_window.py (VBScript MsgBox «Prueba raiz», wscript.exe, one Aceptar button), ui_case.sh and approve_click.py.",
+  "patch": "artifacts/comprobaciones/C03/UI1635/SOURCE.patch",
+  "commits": [
+    "c466180b76c50223dd67013e6336b3cd7bafd28c"
+  ],
+  "build": "BUILD1633 (C03-repairs1633-build/BUILD_READY.json; mismos binarios)",
+  "cause_measured": "Fila pendiente por falta de fixture (un diálogo con botón Aceptar en primer plano), no por defecto del producto.",
+  "change": "Sin cambio de fuente; fixture raíz de diálogo; sin respuestas fijas.",
+  "measurement": "UI1635: tres clics aprobados, completados y verificados sobre el diálogo propio; el literal con final fiel y las dos variantes con finales que narran el control como deshabilitado; dos límites aprobados; sin par de variantes, sin créditos; 0 créditos. Medición raíz: el clic revisado cierra el diálogo y se verifica; el narrador leyó absentOrDisabled del recibo como un fallo en dos finales; siguiente UI1637 con la proyección del recibo y el veto.",
+  "credits": 0
+}

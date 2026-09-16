@@ -1,3 +1,11 @@
+# UI1635 adjudicado — 2026-09-16T00:41:20.296827+00:00
+
+**580/742 cubiertos, 162 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 8414b417d536b094906c70c49a2b430ea43897cd33b91fd9326092f9beab03de. Primeras altas 24 h >= 454 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c466180b con BUILD1633 (un clic en el botón Aceptar de un diálogo propio de la raíz). Turnos ordinarios sin operaciones.
+
+UI1635 («Interacción dentro de aplicaciones», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): tres clics aprobados, completados y verificados sobre el diálogo propio; el literal con final fiel y las dos variantes con finales que narran el control como deshabilitado; dos límites aprobados; sin par de variantes, sin créditos, 0 créditos. Adjudicación 22b5647cacd9974b3c9b64a8268597bbf56001db2974fa780d7b9608636050ff. Medición raíz: el clic revisado cierra el diálogo y se verifica; el narrador leyó absentOrDisabled del recibo como un fallo en dos finales; siguiente UI1637 con la proyección del recibo y el veto.
+
+---
+
 # INSTALL1633 adjudicado — 2026-09-16T00:31:56.393190+00:00
 
 **580/742 cubiertos, 162 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA fdfbac0ca0a7a94258aca5b54346740a6777cef01012c48ed8796d4c9ca4a436. Primeras altas 24 h >= 454 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7f74e3a8 con BUILD1633 (lanzar un juego que ningún catálogo tiene lee la biblioteca de Steam). Turnos ordinarios sin operaciones.
