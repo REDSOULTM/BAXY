@@ -8027,7 +8027,10 @@ def _explicit_named_music_query(text: str) -> str | None:
         )
     ):
         return None
-    return query
+    # MUSIC1749: «pon michael jackson en spotify» names the provider, not the
+    # music; the query is what precedes it.
+    query = re.sub(r"\s*[,;:]?\s+(?:en|on)\s+spotify\b.*$", "", query, flags=re.IGNORECASE).strip(" ,;:.!?")
+    return query or None
 
 
 def _wake_alarm_request(text: str) -> bool:

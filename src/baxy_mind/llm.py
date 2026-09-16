@@ -6970,6 +6970,21 @@ def compose_visible_defect(
         return "wrong_language"
     failure_assertions = stripped
     presence = _merged_observed(situation)
+    if (
+        situation.get("operation") in {"media.play.youtube", "media.play.query", "media.play.exact"}
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+        and isinstance(presence, dict)
+    ):
+        # MUSIC1749: the observed title is not a statement about the outcome
+        # («… Can't Stop …» is the song, not a failure).
+        for key in ("title", "artist"):
+            value = presence.get(key)
+            if isinstance(value, str) and value.strip():
+                failure_assertions = re.sub(
+                    r"\s+".join(re.escape(part) for part in value.split()),
+                    " ", failure_assertions, flags=re.IGNORECASE,
+                )
     empty_file_query = _verified_empty_known_file_query(situation)
     if empty_file_query is not None:
         # A successful empty search proves a negative finding, not a failed
@@ -7464,6 +7479,17 @@ def compose_visible_defect(
                     r"[\s:,\-–—.]+".join(re.escape(part) for part in _reading_fold(title).split()),
                     _reading_fold(stripped),
                 ) is not None
+            ) or (
+                # MUSIC1749 «pon Bohemian Rhapsody en Spotify»: the client reports
+                # «Queen - Bohemian Rhapsody»; a draft that names every part of
+                # that title («"Bohemian Rhapsody" de Queen») names what plays.
+                operation in {"media.play.query", "media.play.exact"}
+                and " - " in title
+                and all(
+                    re.search(r"\s+".join(re.escape(word) for word in _reading_fold(part).split()), _reading_fold(stripped)) is not None
+                    for part in title.split(" - ")
+                    if _reading_fold(part).split()
+                )
             )
             if not title_named or (
                 operation != "media.status" and not verified_media_transport
@@ -7508,7 +7534,18 @@ def compose_visible_defect(
                         re.escape(part) for part in _reading_fold(name).split()
                     ) + r"(?!\w)"
                     if not re.search(pattern, _reading_fold(stripped), re.IGNORECASE):
-                        return "missing_name"
+                        # MUSIC1749 «pon Bohemian Rhapsody en Spotify»: the client
+                        # reports «Queen - Bohemian Rhapsody»; naming every part
+                        # («"Bohemian Rhapsody" de Queen») names what plays.
+                        parts = [
+                            r"(?<!\w)" + r"\s+".join(re.escape(word) for word in _reading_fold(part).split()) + r"(?!\w)"
+                            for part in name.split(" - ") if _reading_fold(part).split()
+                        ] if operation in {"media.play.query", "media.play.exact"} and " - " in name else []
+                        if not parts or not all(re.search(part, _reading_fold(stripped), re.IGNORECASE) for part in parts):
+                            return "missing_name"
+                        for part in parts:
+                            playback_text = re.sub(part, "", _reading_fold(playback_text), flags=re.IGNORECASE)
+                        continue
                     playback_text = re.sub(pattern, "", _reading_fold(playback_text), flags=re.IGNORECASE)
             playback = observed_dict.get("playbackStatus")
             if playback in {"playing", "paused", "stopped"}:
@@ -7516,7 +7553,7 @@ def compose_visible_defect(
                     r"\b(?:(?P<negative>no|not|nothing|isn't|isn’t|aren't|aren’t)\s+)?"
                     r"(?:(?:se|est[aá]|est[aá]n|is|are|sigue|still|currently|"
                     r"hay|nada|ahora|actualmente)\s+)*"
-                    r"(?:(?P<playing>sonando|suena|reproduci[eé]ndo(?:se)?|reproduce|escuchando|playing"
+                    r"(?:(?P<playing>sonando|suena|reproduci[eé]ndo(?:se)?|reproduce|en\s+reproducci[oó]n|escuchando|playing"
                     # MUSIC1573 «poné una canción» → «Bad Bunny»: «Estoy viendo el
                     # video «…» en YouTube» states the playback of the video the
                     # product itself announced; watching is the playing state here.
@@ -15150,7 +15187,7 @@ class LlmRuntime:
                          else "Di que está sonando o reproduciéndose y cita el título completo: «")
                         + str(_merged_observed(situation).get("title")) + "»"
                     )
-                    if situation.get("operation") == "media.play.youtube"
+                    if situation.get("operation") in {"media.play.youtube", "media.play.query", "media.play.exact"}
                     else "abierto/open, no el imperativo."
                 )
             ),

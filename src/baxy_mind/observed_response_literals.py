@@ -72,6 +72,18 @@ def without_observed_names(text: str, situation: object) -> str:
                 names.update(title.strip() for entry in scheduled if isinstance(entry, dict)
                              and isinstance(title := entry.get("title"), str)
                              and 0 < len(title.strip()) <= 4096)
+        if (node.get("kind") == "operation"
+                and operation in {"media.play.youtube", "media.play.query", "media.play.exact"}
+                and node.get("verified") is True and node.get("succeeded") is True
+                and node.get("polarity") == "success"):
+            # MUSIC1749 «pon michael jackson en spotify»: the observed title («… I
+            # Just Can't Stop Loving You …») is data in its own language.
+            observed = node.get("observed")
+            if isinstance(observed, dict):
+                for key in ("title", "artist"):
+                    value = observed.get(key)
+                    if isinstance(value, str) and 0 < len(value.strip()) <= 4096:
+                        names.add(value.strip())
         if (node.get("kind") == "operation" and operation == "filesystem.known.list"
                 and node.get("verified") is True and node.get("succeeded") is True
                 and node.get("polarity") == "success"):
