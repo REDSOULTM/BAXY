@@ -1,0 +1,15 @@
+{
+  "schema": "c03-limits1665-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (known_unsupported_effect_request: desktop.wallpaper.set, document.presentation.create, contacts.add contracts).",
+  "patch": "artifacts/comprobaciones/C03/LIMITS1665/SOURCE.patch",
+  "commits": [
+    "65ce4acf80a835779a7cffd468faeaabfe875b62"
+  ],
+  "build": "BUILD1665 (C03-repairs1665-build/BUILD_READY.json; mente)",
+  "cause_measured": "Los pedidos sin operación en el catálogo iban al modelo sin lectura ni límite declarado.",
+  "change": "Contratos de efecto conocido sin operación para fondo de pantalla, presentaciones y contactos; sin respuestas fijas.",
+  "measurement": "LIMITS1665: el fondo de pantalla y la presentación con sus dos variantes cada uno como límites dichos llanamente; los contactos sin par porque dos finales repitieron el número excluido por el criterio; dos límites aprobados; 2 créditos. Medición raíz: los contratos de efecto conocido sin operación cierran el turno como límite nombrando el pedido en español e inglés; el criterio de no repetir el número no se cumplió en los dos pedidos que lo traían (siguiente LIMITS1667 con el criterio de contactos revisado: el número del propio pedido puede citarse).",
+  "credits": 2
+}

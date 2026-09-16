@@ -1,3 +1,11 @@
+# LIMITS1665 adjudicado — 2026-09-16T03:54:59.481185+00:00
+
+**596/742 cubiertos, 146 abiertos, 0 NA; 7/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17); C03 formal 3/11. Registro SHA 6670e241151a8798c89aebb0e0190d4130a4e3a3fbb62252af90dcaab853a43c. Primeras altas 24 h >= 470 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 65ce4acf con BUILD1665 (fondo de pantalla, presentaciones y contactos son límites conocidos). Turnos ordinarios sin operaciones.
+
+LIMITS1665 («Brillo y pantalla», el fondo de pantalla, la presentación y el contacto respondidos como límites conocidos): el fondo de pantalla y la presentación con sus dos variantes cada uno como límites dichos llanamente; los contactos sin par porque dos finales repitieron el número excluido por el criterio; dos límites aprobados, 2 créditos. Adjudicación b87200f5f0b877f88f51da22d928f7d1c104de694d90a9cfb8e5c193c5873f57. Medición raíz: los contratos de efecto conocido sin operación cierran el turno como límite nombrando el pedido en español e inglés; el criterio de no repetir el número no se cumplió en los dos pedidos que lo traían (siguiente LIMITS1667 con el criterio de contactos revisado: el número del propio pedido puede citarse).
+
+---
+
 # UI1663 adjudicado — 2026-09-16T03:39:11.455901+00:00
 
 **594/742 cubiertos, 148 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 96ec0519eb81c04044e30b88cea8a358bb735c9564b3a7b60c27900f8454c7a9. Primeras altas 24 h >= 468 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a001f21d con BUILD1663 (el reintento del límite se redacta en prosa llana, no bajo gramática JSON). Turnos ordinarios sin operaciones.

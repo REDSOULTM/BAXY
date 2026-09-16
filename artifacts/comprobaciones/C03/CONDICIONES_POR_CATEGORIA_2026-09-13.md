@@ -1011,3 +1011,7 @@ Interacción dentro de aplicaciones pasa de 14/22 a 14/22 con la navegación den
 ## Actualización 2026-09-16 (UI1663)
 
 Interacción dentro de aplicaciones pasa de 14/22 a 16/22 con la navegación dentro de un cliente de mensajería respondida como límite conocido en ambos idiomas (commit a001f21d, BUILD1663) (HEAD a001f21d): dos literales y dos variantes con cero operaciones y el límite dicho llanamente nombrando el pedido en español e inglés; dos límites aprobados, 2 créditos. Medición raíz: con el reintento en prosa llana, la navegación dentro de un cliente de mensajería se responde como límite conocido en ambos idiomas, sin navegación web.
+
+## Actualización 2026-09-16 (LIMITS1665)
+
+Brillo y pantalla pasa de 16/17 a 17/17, Crear documentos y editar imágenes de 0/2 a 1/2 y Contactos de 0/5 a 0/5 con el fondo de pantalla, la presentación y el contacto respondidos como límites conocidos (commit 65ce4acf, BUILD1665) (HEAD 65ce4acf): el fondo de pantalla y la presentación con sus dos variantes cada uno como límites dichos llanamente; los contactos sin par porque dos finales repitieron el número excluido por el criterio; dos límites aprobados, 2 créditos. Medición raíz: los contratos de efecto conocido sin operación cierran el turno como límite nombrando el pedido en español e inglés; el criterio de no repetir el número no se cumplió en los dos pedidos que lo traían (siguiente LIMITS1667 con el criterio de contactos revisado: el número del propio pedido puede citarse). La categoría queda cerrada.
