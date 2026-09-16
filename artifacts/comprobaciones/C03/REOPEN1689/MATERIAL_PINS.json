@@ -1,0 +1,105 @@
+{
+  "schema": "reopen1689-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-reopen1689-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-reopen1689-instrument-v1",
+  "seal_sha256": "9f1abf4406e37e85ca070f450a6aab845708f0de79da0d66bd4a88703064893d",
+  "runner_sha256": "9d23f40daaf3c530c823efce8a94872e7369ecf76592d4e74aeb7d4f829400f3",
+  "transport_seal_sha256": "29eac75caca5bb0836656fb688f20480f23e3b251244e4c9803ff6ad266c13b1",
+  "files": {
+    "panel.json": "5da6e2f14aada6f0fe5faa7af5412362a94ff164524b36511d710f21983bee04",
+    "turns.jsonl": "8fafbe940f83d5a0cdd44b188014561bc31fdf008bc451e53211bef5848de9a2",
+    "case-map.json": "81b73c1f068b542d373af4a9e554591efed28d3d3a9f6729a88cd6c5dec5aa85",
+    "PLAN.md": "e682b10b5b6cabf142fc94ccd8819a056423faf513f6ec94ad9f5bcfa850b9dd"
+  },
+  "counts": {
+    "cases": 8,
+    "historical_literals": 2,
+    "original_development_variants": 4,
+    "boundaries": 2,
+    "wire_lines": 16,
+    "session_controls": 8,
+    "ordinary_turns": 8,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 8,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 2,
+    "original_development_variant": 4,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0666",
+      "kind": "historical_literal",
+      "group": "pdf_summary",
+      "credit_behavior": "pdf_summary",
+      "text_sha256": "e3bfd39f09e5959906a4ce5de0a672c6944a8e534cba3f393e847cf55448d0ed",
+      "criterion_sha256": "78dbbbe8ce5de8ac3906324ef7d109871f66450e62e6b87abb9d9fc67050b743"
+    },
+    {
+      "index": 1,
+      "case_id": "H0658",
+      "kind": "historical_literal",
+      "group": "minimize_all",
+      "credit_behavior": "minimize_all",
+      "text_sha256": "e0ff4ac1394bf141ec7307318bdfaf03bac6a4fc90d8823850126fbf43dc83a3",
+      "criterion_sha256": "bc6b888ee069f07a62c58f387a989a0adfde01365c035b49dec40c585cf19147"
+    },
+    {
+      "index": 2,
+      "case_id": "reopen1689-dev-01",
+      "kind": "original_development_variant",
+      "group": "pdf_summary",
+      "credit_behavior": "pdf_summary",
+      "text_sha256": "b33698794f67690cab4befdd9e14455c1f8995ef8c1f95ddf8521b80fdbfdc12",
+      "criterion_sha256": "78dbbbe8ce5de8ac3906324ef7d109871f66450e62e6b87abb9d9fc67050b743"
+    },
+    {
+      "index": 3,
+      "case_id": "reopen1689-dev-02",
+      "kind": "original_development_variant",
+      "group": "pdf_summary",
+      "credit_behavior": "pdf_summary",
+      "text_sha256": "94113a5f4e90585297709d8e0b9176252ee1ed58fafd56838878c244e3773fca",
+      "criterion_sha256": "78dbbbe8ce5de8ac3906324ef7d109871f66450e62e6b87abb9d9fc67050b743"
+    },
+    {
+      "index": 4,
+      "case_id": "reopen1689-dev-03",
+      "kind": "original_development_variant",
+      "group": "minimize_all",
+      "credit_behavior": "minimize_all",
+      "text_sha256": "1ecc3703e7a597c71e0c14c32bc3d0a5e4f3c58dbe82c257431d0febc83144d9",
+      "criterion_sha256": "bc6b888ee069f07a62c58f387a989a0adfde01365c035b49dec40c585cf19147"
+    },
+    {
+      "index": 5,
+      "case_id": "reopen1689-dev-04",
+      "kind": "original_development_variant",
+      "group": "minimize_all",
+      "credit_behavior": "minimize_all",
+      "text_sha256": "59f9642710c0a2369578fcb80e1a9866eda68369473a3cb706e377cab55d0d81",
+      "criterion_sha256": "bc6b888ee069f07a62c58f387a989a0adfde01365c035b49dec40c585cf19147"
+    },
+    {
+      "index": 6,
+      "case_id": "reopen1689-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "9782d4a0147b5b726f1cee44fc1e7afa478e95a888027a7c5815813ccc2143d7",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 7,
+      "case_id": "reopen1689-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "312b2957a4a106c651cc7bb7587aed0a88b04b86b2c368e6d0d8d353ccbe9325",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    }
+  ]
+}

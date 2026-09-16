@@ -1,0 +1,15 @@
+{
+  "schema": "c03-reopen1689-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (document.pdf.read), src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs, src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs (ReadPdf, PdfTextExtractor, FindMindPython), WindowsExternalCapabilityProvider.cs and src/baxy_mind (_pdf_summary_request, arguments, projection, vetoes, narration; minimize-all narration noun).",
+  "patch": "artifacts/comprobaciones/C03/REOPEN1689/SOURCE.patch",
+  "commits": [
+    "48719e9192ffb8532b726017198ce7e60882bbc0"
+  ],
+  "build": "BUILD1689 (C03-repairs1689-build/BUILD_READY.json; kernel, núcleo, proveedores y mente)",
+  "cause_measured": "Ninguna operación leía un PDF (el pedido se respondía como límite y el dueño lo declaró capacidad esperada); la narración de minimizar todo dejaba al modelo inventar «ventanales».",
+  "change": "Operación document.pdf.read (texto extraíble con pypdf, sin OCR); lector, proyección, vetos y narración; la narración de window.minimize.all nombra el sustantivo llano; sin respuestas fijas.",
+  "measurement": "REOPEN1689: REOPEN1689: document.pdf.read (nueva operación) leyó el PDF de prueba de la raíz y el final nombró el documento, sus títulos y su comienzo tal cual en los tres casos de PDF, pero la variante inglesa se respondió en español (sin «summarize» en la evidencia de idioma) y H0666 queda abierto sin crédito; window.minimize.all reintentado con el sustantivo llano: H0658 acreditado con dos variantes aprobadas; dos límites aprobados; fixture retirado y ventanas del dueño restauradas por la raíz tras cada caso; 1 créditos. 8 casos ordinarios sobre BUILD1689: 7 aprobados, 1 fallido (variante inglesa de PDF por idioma); 1 crédito",
+  "credits": 1
+}

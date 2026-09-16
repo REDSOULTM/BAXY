@@ -1,0 +1,651 @@
+commit 48719e9192ffb8532b726017198ce7e60882bbc0
+
+C03: document.pdf.read reads the text a named PDF carries, minimize-all narration names the plain noun (REOPEN1689)
+
+The owner declared summarizing a PDF with extractable text an expected capability (DECISIONES_DUENO_2026-09-16.md, no OCR). The new read-only operation document.pdf.read (Kernel descriptor, Core handler list, WindowsKnownFileAdapter.ReadPdf) locates the named PDF once in the known folders (desktop, documents, downloads; an ambiguous name is refused, as for the named trash), runs pypdf inside the registered mind runtime as an inline extractor (python -X utf8 -I -c, bounded characters, 90 s, no OCR, no rendering) and returns the text with its counts and hashes. The mind reads «resumime informe.pdf» / «hazme un resumen de informe.pdf» / «summarize informe.pdf» as that operation (file name literal, folder enum owned by the reader), projects the receipt for the composer as the document name, page count, heading-like lines and the opening of the text exactly as read, instructs the report to name the document, its headings and quote its opening verbatim, and vetoes any quoted passage or number the document does not carry (pdf_unquoted_passage, pdf_missing_quote, pdf_unread_number). The known-unsupported contract for PDF summaries lifts by itself now that the operation exists.
+
+The window.minimize.all narration bit now names the plain noun (ventanas / windows): in MINALL1687 the three drafts for «minimizá todo» said «ventanales» and the invented veto rejected them.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs b/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
+index da83ebb7..1cf5f118 100644
+--- a/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
++++ b/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
+@@ -26,6 +26,7 @@ internal static class ExternalCapabilityHandlers
+         "clipboard.copy",
+         "clipboard.paste",
+         "display.status",
++        "document.pdf.read",
+         "email.latest.read",
+         "email.latest.reply",
+         "game.catalog.list",
+diff --git a/src/Baxy.Kernel/Operations/ProductCatalog.cs b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+index 2ca3705f..8e42b6f9 100644
+--- a/src/Baxy.Kernel/Operations/ProductCatalog.cs
++++ b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+@@ -304,6 +304,19 @@ public static class ProductCatalog
+             "display.status.windows.display.devices.read.v1",
+             ToolExposure.Public,
+             "Lee los monitores conectados (cantidad, resolución y frecuencia de refresco) mediante la API de pantalla de Windows; sin efecto."),
++        Descriptor(
++            "document.pdf.read",
++            Schema(
++                [
++                    String("fileName", maximumUtf8Bytes: 512, nonWhitespace: true),
++                    String("folder", values: ["all_known", "desktop", "documents", "downloads"]),
++                    Integer("maximumCharacters", 200, 200_000),
++                ],
++                ["fileName", "folder"]),
++            OperationRisks.ReadOnly,
++            "document.pdf.read.windows.known.pypdf.text.v1",
++            ToolExposure.Public,
++            "Localiza un PDF nombrado de forma única en las carpetas conocidas de Windows y extrae el texto que ya contiene (sin OCR) para resumirlo o citarlo; sin efecto."),
+         Descriptor(
+             "email.latest.read",
+             EmptySchema(),
+diff --git a/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs b/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
+index 1f07aebb..77f16542 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
+@@ -167,6 +167,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
+                 or "filesystem.known.trash.named" =>
+                 "windows_known_folder_authority_required",
+             "filesystem.path.ensure.absent" => "windows_absolute_path_absence_authority_required",
++            "document.pdf.read" => "windows_known_pdf_text_authority_required",
+             "filesystem.sandbox.append.named" or "filesystem.sandbox.diff.named"
+                 or "filesystem.sandbox.move.named" => "sandbox_named_file_authority_required",
+             "backup.known.create" or "backup.known.list" or "backup.known.restore.latest"
+diff --git a/src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs b/src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs
+index 9b55ad15..bca4193a 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsKnownFileAdapter.cs
+@@ -24,7 +24,8 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
+ 
+     public bool CanHandle(string operation) => operation is
+         "filesystem.known.duplicates" or "filesystem.known.list" or "filesystem.known.search"
+-        or "filesystem.known.trash.named" or "filesystem.path.ensure.absent";
++        or "filesystem.known.trash.named" or "filesystem.path.ensure.absent"
++        or "document.pdf.read";
+ 
+     public ValueTask<ExternalCapabilityReceipt> InvokeAsync(
+         string operation,
+@@ -53,6 +54,7 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
+                 "filesystem.known.search" => Search(operation, roots, arguments),
+                 "filesystem.known.trash.named" => Trash(
+                     operation, roots, arguments, effectBoundary),
++                "document.pdf.read" => ReadPdf(operation, roots, arguments, cancellationToken),
+                 _ => ExternalJson.Failure(operation, "known_file_operation_invalid"),
+             });
+         }
+@@ -380,6 +382,274 @@ internal sealed class WindowsKnownFileAdapter : IExternalOperationAdapter
+         return ExternalJson.Success(operation, result, effectObserved: true);
+     }
+ 
++    // PDF1689 H0666 «resumime informe.pdf»: the named PDF is located once in
++    // the known folders (ambiguity refused) and the text it already carries
++    // is extracted by the mind runtime's pypdf; no OCR, no rendering, no
++    // effect. The receipt carries the bounded text, the counts and its hash.
++    private static ExternalCapabilityReceipt ReadPdf(
++        string operation,
++        IReadOnlyList<(string Label, string Root)> roots,
++        JsonElement arguments,
++        CancellationToken cancellationToken)
++    {
++        string fileName = ExternalJson.RequiredString(arguments, "fileName").Trim();
++        if (fileName != Path.GetFileName(fileName)
++            || fileName.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0
++            || fileName.Contains('*') || fileName.Contains('?'))
++            return ExternalJson.Failure(operation, "known_file_name_invalid");
++        if (!fileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
++            fileName += ".pdf";
++        int maximumCharacters = Math.Clamp(
++            ExternalJson.OptionalInt(arguments, "maximumCharacters", 12_000), 200, 200_000);
++        var matches = Enumerate(roots)
++            .Where(item => string.Equals(
++                Path.GetFileName(item.Path), fileName, StringComparison.OrdinalIgnoreCase))
++            .Take(2)
++            .ToArray();
++        if (matches.Length == 0) return ExternalJson.Failure(operation, "known_file_not_found");
++        if (matches.Length > 1) return ExternalJson.Failure(operation, "known_file_ambiguous");
++        (string label, string source) = matches[0];
++        var file = new FileInfo(source);
++        if (file.Length > MaximumPdfBytes) return ExternalJson.Failure(operation, "known_pdf_too_large");
++        string? python = FindMindPython();
++        if (python is null)
++            return ExternalJson.Failure(operation, "pdf_text_extractor_unavailable");
++        string output;
++        using (var process = new System.Diagnostics.Process())
++        {
++            process.StartInfo = new System.Diagnostics.ProcessStartInfo
++            {
++                FileName = python,
++                UseShellExecute = false,
++                RedirectStandardOutput = true,
++                RedirectStandardError = true,
++                CreateNoWindow = true,
++                StandardOutputEncoding = Encoding.UTF8,
++                StandardErrorEncoding = Encoding.UTF8,
++            };
++            process.StartInfo.ArgumentList.Add("-X");
++            process.StartInfo.ArgumentList.Add("utf8");
++            process.StartInfo.ArgumentList.Add("-I");
++            process.StartInfo.ArgumentList.Add("-c");
++            process.StartInfo.ArgumentList.Add(PdfTextExtractor);
++            process.StartInfo.ArgumentList.Add(file.FullName);
++            process.StartInfo.ArgumentList.Add(maximumCharacters.ToString(
++                System.Globalization.CultureInfo.InvariantCulture));
++            try
++            {
++                if (!process.Start())
++                    return ExternalJson.Failure(operation, "pdf_text_extractor_unavailable");
++                Task<string> stdout = process.StandardOutput.ReadToEndAsync(cancellationToken);
++                Task<string> stderr = process.StandardError.ReadToEndAsync(cancellationToken);
++                if (!process.WaitForExit(PdfExtractionTimeout))
++                {
++                    TryKillTree(process);
++                    return ExternalJson.Failure(operation, "pdf_text_extraction_timeout");
++                }
++                output = stdout.GetAwaiter().GetResult();
++                _ = stderr.GetAwaiter().GetResult();
++                if (process.ExitCode == 3)
++                    return ExternalJson.Failure(operation, "pdf_text_extractor_unavailable");
++            }
++            catch (Exception exception) when (exception is System.ComponentModel.Win32Exception
++                or InvalidOperationException)
++            {
++                return ExternalJson.Failure(operation, "pdf_text_extractor_unavailable");
++            }
++        }
++        if (output.Length > MaximumExtractorOutput)
++            return ExternalJson.Failure(operation, "pdf_text_extraction_overflow");
++        using JsonDocument? document = ParseExtractorOutput(output);
++        if (document is null) return ExternalJson.Failure(operation, "known_pdf_unreadable");
++        JsonElement root = document.RootElement;
++        if (root.TryGetProperty("error", out JsonElement error))
++        {
++            return ExternalJson.Failure(operation, error.GetString() switch
++            {
++                "pdf_encrypted" => "known_pdf_encrypted",
++                "pypdf_missing" => "pdf_text_extractor_unavailable",
++                _ => "known_pdf_unreadable",
++            });
++        }
++        string text = root.TryGetProperty("text", out JsonElement textElement)
++            && textElement.ValueKind == JsonValueKind.String
++            ? textElement.GetString() ?? "" : "";
++        int pages = IntOf(root, "pages");
++        int textPages = IntOf(root, "textPages");
++        bool truncated = root.TryGetProperty("truncated", out JsonElement truncatedElement)
++            && truncatedElement.ValueKind == JsonValueKind.True;
++        JsonElement result = ExternalJson.Create(writer =>
++        {
++            writer.WriteStartObject(); writer.WriteNumber("version", 1);
++            writer.WriteString("reviewLabel", fileName); writer.WriteString("folder", label);
++            writer.WriteNumber("pages", pages); writer.WriteNumber("textPages", textPages);
++            writer.WriteNumber("characters", text.Length);
++            writer.WriteBoolean("hasText", text.Length > 0);
++            writer.WriteBoolean("truncated", truncated);
++            writer.WriteString("text", text);
++            writer.WriteString("textSha256", Convert.ToHexStringLower(
++                SHA256.HashData(Encoding.UTF8.GetBytes(text))));
++            writer.WriteString("fileSha256", Hash(file.FullName));
++            writer.WriteString("authority", "windows_known_pdf_pypdf_text_extraction");
++            writer.WriteEndObject();
++        });
++        return ExternalJson.Success(operation, result, effectObserved: false);
++    }
++
++    // The extractor, run as «python -X utf8 -I -c … <file> <maximumCharacters>»
++    // in the registered mind runtime (the venv that carries pypdf): the text
++    // the PDF already carries, page by page, bounded; no OCR, no rendering.
++    private const string PdfTextExtractor = """
++import json
++import sys
++
++
++def main() -> int:
++    path = sys.argv[1]
++    maximum = max(200, min(int(sys.argv[2]), 200_000))
++    try:
++        from pypdf import PdfReader
++    except ImportError:
++        print(json.dumps({"error": "pypdf_missing"}))
++        return 3
++    try:
++        reader = PdfReader(path, strict=False)
++        encrypted = bool(reader.is_encrypted)
++        if encrypted:
++            # A PDF with an empty user password opens; anything else is unreadable here.
++            try:
++                if reader.decrypt("") == 0:
++                    print(json.dumps({"error": "pdf_encrypted", "encrypted": True}))
++                    return 2
++            except Exception:  # noqa: BLE001 - any decrypt failure is the same fact
++                print(json.dumps({"error": "pdf_encrypted", "encrypted": True}))
++                return 2
++        pages = len(reader.pages)
++        chunks = []
++        text_pages = 0
++        total = 0
++        truncated = False
++        for page in reader.pages:
++            try:
++                text = page.extract_text() or ""
++            except Exception:  # noqa: BLE001 - one damaged page does not void the rest
++                text = ""
++            # Lone surrogates and control bytes from damaged fonts never reach the JSON.
++            text = text.encode("utf-8", "replace").decode("utf-8", "replace")
++            text = "".join(ch for ch in text if ch in "\n\t" or ord(ch) >= 32)
++            text = "\n".join(line.rstrip() for line in text.splitlines()).strip()
++            if text:
++                text_pages += 1
++            if total >= maximum:
++                truncated = truncated or bool(text)
++                continue
++            if text:
++                room = maximum - total
++                if len(text) > room:
++                    text = text[:room]
++                    truncated = True
++                chunks.append(text)
++                total += len(text)
++        print(json.dumps({
++            "pages": pages,
++            "textPages": text_pages,
++            "characters": total,
++            "truncated": truncated,
++            "encrypted": encrypted,
++            "text": "\n\n".join(chunks),
++        }, ensure_ascii=False))
++        return 0
++    except Exception as exception:  # noqa: BLE001 - the provider reports the class, never a trace
++        print(json.dumps({"error": "pdf_unreadable", "detail": type(exception).__name__}))
++        return 2
++
++
++if __name__ == "__main__":
++    sys.exit(main())
++""";
++
++    private const long MaximumPdfBytes = 64L * 1024 * 1024;
++    private const int MaximumExtractorOutput = 1_048_576;
++    private static readonly TimeSpan PdfExtractionTimeout = TimeSpan.FromSeconds(90);
++
++    private static void TryKillTree(System.Diagnostics.Process process)
++    {
++        try
++        {
++            if (!process.HasExited)
++            {
++                process.Kill(entireProcessTree: true);
++            }
++        }
++        catch (InvalidOperationException)
++        {
++        }
++    }
++
++    private static JsonDocument? ParseExtractorOutput(string output)
++    {
++        try
++        {
++            return JsonDocument.Parse(output.Trim());
++        }
++        catch (JsonException)
++        {
++            return null;
++        }
++    }
++
++    private static int IntOf(JsonElement root, string name) =>
++        root.TryGetProperty(name, out JsonElement value)
++        && value.ValueKind == JsonValueKind.Number
++        && value.TryGetInt32(out int number) ? number : 0;
++
++    // The extractor runs in the registered mind runtime (the venv that carries
++    // pypdf): BAXY_MIND_PYTHON, then the registration file, then the
++    // conventional path under the local application data folder.
++    internal static string? FindMindPython()
++    {
++        string? configured = Environment.GetEnvironmentVariable("BAXY_MIND_PYTHON");
++        string localData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
++        string? registered = null;
++        if (!string.IsNullOrWhiteSpace(localData))
++        {
++            string registration = Path.Combine(localData, "BAXYRuntime", "mind-runtime-v1.json");
++            try
++            {
++                if (File.Exists(registration))
++                {
++                    using JsonDocument document = JsonDocument.Parse(File.ReadAllBytes(registration));
++                    if (document.RootElement.ValueKind == JsonValueKind.Object
++                        && document.RootElement.TryGetProperty("python", out JsonElement python)
++                        && python.ValueKind == JsonValueKind.String)
++                        registered = python.GetString();
++                }
++            }
++            catch (Exception exception) when (exception is IOException
++                or UnauthorizedAccessException or JsonException)
++            {
++                registered = null;
++            }
++        }
++        string?[] candidates =
++        [
++            configured,
++            registered,
++            string.IsNullOrWhiteSpace(localData)
++                ? null
++                : Path.Combine(localData, "BAXYRuntime", "python", "mind-runtime-v1", "Scripts", "python.exe"),
++        ];
++        foreach (string? candidate in candidates)
++        {
++            if (string.IsNullOrWhiteSpace(candidate) || !Path.IsPathFullyQualified(candidate))
++                continue;
++            var file = new FileInfo(Path.GetFullPath(candidate));
++            if (file.Exists && file.LinkTarget is null && file.Length > 0)
++                return file.FullName;
++        }
++        return null;
++    }
++
+     // FILES1603: Directory.Move refuses another volume (the redirected Desktop
+     // lives on D:, the private trash under the profile on C:); copy the tree
+     // and remove the source only once every entry arrived.
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 09abea90..1006b343 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -4871,6 +4871,28 @@ def _explicit_arguments_from_evidence(
+             return {}
+         return None
+ 
++    if operation == "document.pdf.read":
++        # PDF1689 «resumime informe.pdf»: the file name is the person's
++        # literal; the folder is a catalog root, or every known folder when
++        # none is named (the provider refuses an ambiguous name).
++        pdf_match = effect_intent._pdf_summary_request(evidence)
++        if pdf_match is None:
++            return None
++        pdf_name = pdf_match.group("name").strip().strip("\"'").rstrip(".!?,").strip()
++        if (
++            not pdf_name
++            or re.search(r"[\\/:*?\"<>|]", pdf_name)
++            or any(ord(character) < 32 for character in pdf_name)
++            or len(pdf_name.encode("utf-8")) > 512
++        ):
++            return None
++        pdf_folder = pdf_match.group("folder")
++        return {
++            "fileName": pdf_name,
++            "folder": effect_intent._KNOWN_FOLDER_ENUM[effect_intent._fold(pdf_folder)]
++            if pdf_folder else "all_known",
++        }
++
+     if operation == "filesystem.known.trash.named":
+         # «borra el archivo hola.txt del escritorio»: the file name is the
+         # person's literal; the folder is a catalog root, or every known folder
+@@ -5685,6 +5707,13 @@ def _ground_explicit_arguments(
+         # The shared positive request grammar owns the known-folder enum;
+         # the filename remains literal. Keep the authenticated schema boundary.
+         return explicit if validate_json_schema_instance(explicit, schema) else None
++    if (
++        operation == "document.pdf.read"
++        and effect_intent._pdf_summary_request(evidence) is not None
++    ):
++        # PDF1689: the reader owns the known-folder enum (all_known when no
++        # folder is named); the file name remains the person's literal.
++        return explicit if validate_json_schema_instance(explicit, schema) else None
+     if (
+         operation == "filesystem.known.trash.named"
+         and effect_intent._file_trash_request(evidence) is not None
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index b06c7511..1528381f 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -2355,6 +2355,8 @@ def _curated_domain_is_grounded(
+         )
+     if operation == "window.minimize.all":
+         return minimize_all_request(folded)
++    if operation == "document.pdf.read":
++        return _pdf_summary_request(folded) is not None
+     if operation in {
+         "window.active",
+         "window.focus",
+@@ -3154,6 +3156,41 @@ _FILE_TRASH_REQUEST = re.compile(
+ )
+ 
+ 
++# PDF1689 H0666 «resumime informe.pdf», «hazme un resumen de informe.pdf»,
++# «summarize report.pdf»: one named PDF in the known folders is read for its
++# text (document.pdf.read) and the reply presents it; a bare name must be
++# a .pdf file or the request must say «pdf».
++_PDF_SUMMARY_REQUEST = re.compile(
++    r"^[¿?¡!\s]*(?:(?:por\s+favor|please|porfa)\s*[,;:]?\s*)?"
++    r"(?:(?:hac[eé]|hace|hazme|haceme|hac[eé]me|arm[aá]|arm[aá]me|dame|make|give\s+me|write|escrib[ií])(?:me)?\s+"
++    r"(?:(?:un|una|el|a|the)\s+)?(?:resumen|summary)\s+(?:de|del|of)(?:\s+(?:el|la|the))?"
++    r"|(?:resum[ií]|resumime|resum[ií]me|resumeme|resumir|resume|summari[sz]e|sum\s+up)(?:me)?"
++    r"(?:\s+(?:el|la|the))?)\s+"
++    r"(?P<noun>(?:archivo|fichero|file|documento|document|pdf)\s+)?"
++    r"(?:(?:llamad[oa]|named|called)\s+)?"
++    r"(?P<name>\"[^\"]+\"|'[^']+'|[^\s\"']+)"
++    rf"(?:\s+(?:del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}))?"
++    r"(?:\s*,?\s+(?:por\s+favor|please|porfa))?[\s.!?]*$",
++    re.IGNORECASE,
++)
++
++
++def _pdf_summary_request(text: str) -> re.Match[str] | None:
++    """Match one summary or reading request of a named PDF in the known folders."""
++
++    found = _PDF_SUMMARY_REQUEST.match(text.strip())
++    if found is None:
++        return None
++    name = found.group("name").strip("\"'").rstrip(".!?,")
++    if not name or name.lower() in {"todo", "esto", "eso", "this", "that", "it", "pagina", "página", "page"}:
++        return None
++    if re.fullmatch(r"[^\\/:*?\"<>|]+\.pdf", name, re.IGNORECASE) is None:
++        noun = found.group("noun")
++        if noun is None or noun.strip().lower() != "pdf" or "." in name:
++            return None
++    return found
++
++
+ def _file_trash_request(text: str) -> re.Match[str] | None:
+     """Match one literal deletion of a named file (or, FILES1603 H0327 «Borra la
+     carpeta CarterTest del escritorio», a named folder) in the person's known folders."""
+@@ -16602,6 +16639,14 @@ def resolve_explicit_effects(
+     if "filesystem.write.text" in available and _file_creation_request(folded) is not None:
+         # A named file with literal content is a write, not a note.
+         return EffectIntent(("filesystem.write.text",), (folded,))
++    if (
++        "document.pdf.read" in available
++        and _pdf_summary_request(folded) is not None
++        and not _is_negative_effect_clause(folded)
++        and not _is_meta_or_tool_denial(folded)
++    ):
++        # PDF1689: the named PDF is read once for its text; the reply presents it.
++        return EffectIntent(("document.pdf.read",), (folded,))
+     if (
+         "filesystem.known.trash.named" in available
+         and _file_trash_request(folded) is not None
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 7c5fc04d..2a2ebbb5 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4096,6 +4096,8 @@ def _compose_situation_payload(
+             visible_seen = _project_game_listing(visible_seen, language)
+         elif operation == "browser.page.read":
+             visible_seen = _project_page_read(visible_seen, language)
++        elif operation == "document.pdf.read":
++            visible_seen = _project_pdf_read(visible_seen, language)
+         elif operation == "media.play.youtube":
+             # MUSIC1553: the process id and the IPC authority are not for the
+             # person; the query, the observed title and the state are.
+@@ -4418,7 +4420,8 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
+             "This result minimized every visible desktop window and verified "
+             "each is now minimized: say that all the windows were minimized "
+             "(with the count from minimized if it is present), that nothing "
+-            "was closed, in one sentence, in the person's language. If "
++            "was closed, in one sentence, in the person's language, calling "
++            "them by the plain noun (ventanas / windows) and no other word. If "
+             "minimized is 0, say there was no open window to minimize."
+         )
+     if (
+@@ -5038,6 +5041,90 @@ def _project_page_read(observed: dict, language: str) -> dict:
+     return projected
+ 
+ 
++_PDF_LEAD_CHARACTERS = 700
++_PDF_HEADINGS = 6
++
++
++def _project_pdf_read(observed: dict, language: str) -> dict:
++    """PDF1689 «resumime informe.pdf»: the receipt carries up to 12 000 characters
++    of extracted text; the composer receives the document name, its page count,
++    its heading-like lines and the beginning of its text exactly as read."""
++
++    text = observed.get("text") if isinstance(observed.get("text"), str) else ""
++    lines = [re.sub(r"[ \t]+", " ", line).strip() for line in text.split("\n")]
++    lines = [line for line in lines if line]
++    headings: list[str] = []
++    for line in lines[1:]:
++        # A heading: short, no sentence end, numbered or capitalised, with words.
++        if (
++            8 <= len(line) <= 72
++            and not line.endswith((".", ",", ";", ":"))
++            and ":" not in line
++            and sum(ch.isalpha() for ch in line) >= 6
++            and (re.match(r"^\d{1,2}[.)]?\s+\S", line) or line[:1].isupper())
++            and len(line.split()) <= 9
++        ):
++            headings.append(line)
++        if len(headings) >= _PDF_HEADINGS:
++            break
++    flat = re.sub(r"\s+", " ", text).strip()
++    lead = flat[:_PDF_LEAD_CHARACTERS]
++    if len(flat) > _PDF_LEAD_CHARACTERS:
++        cut = max(lead.rfind(". "), lead.rfind("! "), lead.rfind("? "))
++        if cut >= 120:
++            lead = lead[: cut + 1]
++    pages = observed.get("pages") if type(observed.get("pages")) is int else None
++    projected: dict = {
++        "document": (observed.get("reviewLabel") if isinstance(observed.get("reviewLabel"), str) else "").strip(),
++        "pages": pages,
++        "hasText": bool(flat),
++        "headings": headings,
++        "lead": lead.strip(),
++        "moreNotShown": len(flat) > len(lead) or observed.get("truncated") is True,
++    }
++    return projected
++
++
++def _pdf_read_in_payload(payload: dict) -> dict | None:
++    """The projected PDF («seen» with a lead) of a verified document.pdf.read."""
++
++    if payload.get("operation") != "document.pdf.read":
++        return None
++    seen = payload.get("seen")
++    if isinstance(seen, dict) and isinstance(seen.get("lead"), str):
++        return seen
++    return None
++
++
++def _pdf_read_quote_defect(text: str, seen: dict) -> str:
++    """Every quoted passage must be in the lead, a heading or the name as read;
++    a number in the prose must be in the lead, a heading or the page count."""
++
++    lead = re.sub(r"\s+", " ", _reading_fold(str(seen.get("lead") or "")))
++    headings = [re.sub(r"\s+", " ", _reading_fold(str(h))) for h in (seen.get("headings") or [])]
++    name = re.sub(r"\s+", " ", _reading_fold(str(seen.get("document") or "")))
++    pages = str(seen.get("pages")) if type(seen.get("pages")) is int else ""
++    if not seen.get("hasText"):
++        return ""
++    quoted_any = False
++    for quoted in re.findall(r'[«"“]([^»"”]{1,4096})[»"”]', text):
++        candidate = re.sub(r"\s+", " ", _reading_fold(quoted.strip().rstrip(".,;:…"))).strip()
++        if not candidate or candidate == name:
++            continue
++        if any(candidate == h or candidate in h for h in headings):
++            continue
++        quoted_any = quoted_any or candidate in lead
++        if candidate not in lead:
++            return "pdf_unquoted_passage"
++    if not quoted_any:
++        return "pdf_missing_quote"
++    prose = re.sub(r'[«"“][^»"”]{1,4096}[»"”]', " ", text)
++    for number in re.findall(r"(?<![\w.-])\d+(?![\w.-])", prose):
++        if number != pages and number not in lead and not any(number in h for h in headings) and number not in name:
++            return "pdf_unread_number"
++    return ""
++
++
+ def _page_read_in_payload(payload: dict) -> dict | None:
+     """The projected page («seen» with a lead) of a verified browser.page.read."""
+ 
+@@ -5462,6 +5549,13 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+         listing_defect = _listing_fact_defect(text, listing)
+         if listing_defect:
+             return listing_defect
++    pdf = _pdf_read_in_payload(payload)
++    if pdf is not None:
++        # PDF1689: a passage the document did not carry, or a number it did
++        # not carry, is invented; the report quotes the document as read.
++        pdf_defect = _pdf_read_quote_defect(text, pdf)
++        if pdf_defect:
++            return pdf_defect
+     page = _page_read_in_payload(payload)
+     if page is not None:
+         # WEB1539: a passage the page did not show, or a number it did not
+@@ -13743,7 +13837,48 @@ class LlmRuntime:
+                 "dato que ningún resultado contenga; si los resultados sólo remiten a "
+                 "páginas de pronóstico, dilo."
+             )
+-        if _page_read_in_payload(visible_situation) is not None:
++        if _pdf_read_in_payload(visible_situation) is not None:
++            # PDF1689 «resumime informe.pdf»: the report names the document,
++            # says what it covers by its headings as read and quotes its
++            # opening verbatim; nothing is summarized in the model's own words.
++            pdf_seen = _pdf_read_in_payload(visible_situation) or {}
++            if not pdf_seen.get("hasText"):
++                instruct(
++                    "\nseen.document is the PDF that was found and read; it carries no "
++                    "extractable text (it is probably scanned pages or images). Say that "
++                    "the file was found but has no text to summarize and that no OCR was "
++                    "applied, in one or two sentences; no summary, no question."
++                    if response_language == "en"
++                    else "\nseen.document es el PDF que se encontró y se leyó; no contiene "
++                    "texto extraíble (probablemente son páginas escaneadas o imágenes). "
++                    "Di que el archivo se encontró pero no tiene texto para resumir y que "
++                    "no se aplicó OCR, en una o dos oraciones; sin resumen, sin pregunta."
++                )
++            else:
++                instruct(
++                    "\nseen.document is the name of the PDF that was read, seen.pages its "
++                    "page count, seen.headings its section headings exactly as read and "
++                    "seen.lead the beginning of its text exactly as read. Say which "
++                    "document it is and how many pages it has, say what it covers by "
++                    "naming its headings verbatim (all of seen.headings, in order, if "
++                    "there are any) and quote, inside quotation marks, the first one or "
++                    "two sentences of seen.lead verbatim as what the document says; if "
++                    "seen.moreNotShown is true, say that the document continues. Nothing "
++                    "else: no summary in your own words, no facts, names or numbers that "
++                    "are not in seen.headings or seen.lead, no question."
++                    if response_language == "en"
++                    else "\nseen.document es el nombre del PDF leído, seen.pages su cantidad "
++                    "de páginas, seen.headings los títulos de sus secciones tal cual se "
++                    "leyeron y seen.lead el comienzo de su texto tal cual se leyó. Di qué "
++                    "documento es y cuántas páginas tiene, di de qué trata nombrando sus "
++                    "títulos tal cual (todos los de seen.headings, en orden, si los hay) y "
++                    "cita, entre comillas, la primera o las dos primeras oraciones de "
++                    "seen.lead tal cual, como lo que dice el documento; si "
++                    "seen.moreNotShown es verdadero, di que el documento sigue. Nada más: "
++                    "sin resumen con tus palabras, sin datos, nombres ni cifras que no "
++                    "estén en seen.headings o seen.lead, sin pregunta."
++                )
++        elif _page_read_in_payload(visible_situation) is not None:
+             # WEB1539 «resumime esta página»: the report names the page and
+             # quotes the beginning of its visible text verbatim; nothing is
+             # summarized in the model's own words.

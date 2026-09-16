@@ -1,3 +1,11 @@
+# REOPEN1689 adjudicado — 2026-09-16T08:21:56.269489+00:00
+
+**607/742 cubiertos, 135 abiertos, 0 NA; 9/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2); C03 formal 3/11. Registro SHA 3f66b863f4082dead93e72e7f9f5ed4992e39f8e673ed12bff6233016e92e483. Primeras altas 24 h >= 491 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 48719e91 con BUILD1689 (resumir un PDF nombrado es una lectura verificada de su texto; minimizar todo reintentado con el sustantivo llano). Turnos ordinarios sin operaciones.
+
+REOPEN1689 («Archivos», resumir un PDF nombrado ejecutado y verificado sobre su texto extraíble): REOPEN1689: document.pdf.read (nueva operación) leyó el PDF de prueba de la raíz y el final nombró el documento, sus títulos y su comienzo tal cual en los tres casos de PDF, pero la variante inglesa se respondió en español (sin «summarize» en la evidencia de idioma) y H0666 queda abierto sin crédito; window.minimize.all reintentado con el sustantivo llano: H0658 acreditado con dos variantes aprobadas; dos límites aprobados; fixture retirado y ventanas del dueño restauradas por la raíz tras cada caso, 1 créditos. Adjudicación 77eee3a1a30a3f2bd611301c8b546031cad76aa4ee3ed8f87138b3ce27eaeb76. 8 casos ordinarios sobre BUILD1689: 7 aprobados, 1 fallido (variante inglesa de PDF por idioma); 1 crédito
+
+---
+
 # MINALL1687 adjudicado — 2026-09-16T07:31:03.108272+00:00
 
 **606/742 cubiertos, 136 abiertos, 0 NA; 9/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2); C03 formal 3/11. Registro SHA 989fc39673537a1c14ca8fe01657037dceaaf4172bb90df90ae5b78e7c20df5f. Primeras altas 24 h >= 490 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 3059f183 con BUILD1687 (minimizar todas las ventanas es una operación verificada del escritorio). Turnos ordinarios sin operaciones.
