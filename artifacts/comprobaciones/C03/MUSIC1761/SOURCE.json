@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1761-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (confirmation and assent words are language-neutral for the composer and its vetoes; the composer recomputes the conversation language; opinion openers are vetoed on verified playback finals), on top of the MUSIC1761 build.",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1761/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1761 (C03-repairs1761-build/BUILD_READY.json; mente)",
+  "cause_measured": "El final de un turno confirmado se componía sobre la palabra de confirmación, que fijaba el español, y una opinión abría el final.",
+  "change": "Palabras de confirmación neutras para el idioma, idioma recalculado por el compositor, veto de opiniones; sin respuestas fijas.",
+  "measurement": "MUSIC1761: 6 aprobados (los tres literales y la variante en español con reproducción aprobada por la raíz y verificada, final que nombra lo que suena; dos límites), 1 variante fallida (pregunta y confirmación en inglés, reproducción verificada, final sin opinión pero en español: la composición del final no recibe los pedidos anteriores); 0 créditos. Siguiente compilación: comprobar y corregir qué pedidos anteriores llegan a la composición de un final revisado; repetición como MUSIC1763.",
+  "credits": 0
+}
