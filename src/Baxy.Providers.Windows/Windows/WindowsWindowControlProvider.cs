@@ -289,6 +289,76 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             false, false, null, WindowControlErrorCodes.VerificationFailed);
     }
 
+    public async ValueTask<WindowMinimizeAllResult> MinimizeAllAsync(CancellationToken cancellationToken)
+    {
+        // MINALL1687 «minimizá todas las ventanas»: every desktop window that is
+        // not already minimized gets the minimize command, and the result is
+        // verified by re-observing each one until it is iconic. Nothing is
+        // closed; a window that refuses to minimize keeps the effect unverified.
+        cancellationToken.ThrowIfCancellationRequested();
+        IReadOnlyList<WindowSnapshot> desktop;
+        try
+        {
+            desktop = _platform.DesktopWindows();
+        }
+        catch (Exception exception) when (exception is Win32Exception
+            or InvalidOperationException or NotSupportedException)
+        {
+            return new WindowMinimizeAllResult(false, false, 0, 0, 0, WindowControlErrorCodes.InventoryFailed);
+        }
+
+        List<WindowSnapshot> targets = desktop.Where(static window => window.State != "minimized").ToList();
+        if (targets.Count == 0)
+        {
+            return new WindowMinimizeAllResult(true, true, desktop.Count, 0, 0, null);
+        }
+
+        foreach (WindowSnapshot target in targets)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                _ = _platform.Execute(target.Identity, WindowControlAction.Minimize);
+            }
+            catch (Exception exception) when (exception is Win32Exception
+                or InvalidOperationException or WindowIdentityChangedException)
+            {
+                // A window that vanished meanwhile is not visible any more.
+            }
+        }
+
+        int remaining = targets.Count;
+        for (int attempt = 0; attempt < StateVerificationAttempts; attempt++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            remaining = 0;
+            foreach (WindowSnapshot target in targets)
+            {
+                try
+                {
+                    if (_platform.Observe(target.Identity).State != "minimized")
+                        remaining++;
+                }
+                catch (Exception exception) when (exception is Win32Exception
+                    or InvalidOperationException or WindowIdentityChangedException)
+                {
+                    // Gone windows are not visible windows.
+                }
+            }
+            if (remaining == 0)
+            {
+                return new WindowMinimizeAllResult(true, true, desktop.Count, targets.Count, 0, null);
+            }
+            if (attempt + 1 < StateVerificationAttempts)
+            {
+                await _platform.DelayAsync(VerificationDelay, cancellationToken).ConfigureAwait(false);
+            }
+        }
+
+        return new WindowMinimizeAllResult(
+            true, false, desktop.Count, targets.Count - remaining, remaining, WindowControlErrorCodes.VerificationFailed);
+    }
+
     public ValueTask<WindowActionResult> SetBoundsAsync(
         string windowId,
         int? x,
@@ -666,6 +736,9 @@ internal interface IWindowControlPlatform
         bool byTitle = false, int offset = 0, bool allWindows = false,
         CancellationToken cancellationToken = default);
     WindowSnapshot Observe(WindowIdentity identity);
+    // MINALL1687: the windows a person sees on the desktop (visible, not cloaked,
+    // not a tool window, root owner, titled), excluding the shell and this process.
+    IReadOnlyList<WindowSnapshot> DesktopWindows() => [];
     bool Execute(WindowIdentity identity, WindowControlAction action);
     bool SetBounds(WindowIdentity identity, WindowBounds bounds);
     bool RequestClose(WindowIdentity identity);
@@ -822,6 +895,59 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
         };
     }
 
+    public IReadOnlyList<WindowSnapshot> DesktopWindows()
+    {
+        // MINALL1687: what the taskbar would show as windows. The shell's own
+        // surfaces (desktop, taskbar), cloaked UWP hosts, tool windows, owned
+        // popups and untitled windows are not windows a person minimizes; the
+        // product's own window is left alone.
+        var found = new List<WindowSnapshot>();
+        int self = Environment.ProcessId;
+        EnumWindowsProc callback = (handle, _) =>
+        {
+            if (!IsWindowVisible(handle) || GetAncestor(handle, GetRootOwner) != handle)
+                return true;
+            long exStyle = GetWindowLongPtr(handle, ExtendedStyleIndex).ToInt64();
+            if ((exStyle & ToolWindowStyle) != 0)
+                return true;
+            if (DwmGetWindowAttribute(handle, CloakedAttribute, out int cloaked, sizeof(int)) == 0 && cloaked != 0)
+                return true;
+            string className = ReadClassName(handle);
+            if (className is "Progman" or "WorkerW" or "Shell_TrayWnd" or "Shell_SecondaryTrayWnd")
+                return true;
+            GetWindowThreadProcessId(handle, out uint owner);
+            if (owner == 0 || owner > int.MaxValue || (int)owner == self)
+                return true;
+            try
+            {
+                using Process process = Process.GetProcessById(checked((int)owner));
+                string title = ReadWindowTitle(handle);
+                if (string.IsNullOrWhiteSpace(title))
+                    return true;
+                var identity = new WindowIdentity(handle, process.Id,
+                    process.StartTime.ToUniversalTime().Ticks, process.ProcessName, UtcNow);
+                found.Add(Observe(identity));
+            }
+            catch (Exception exception) when (exception is Win32Exception
+                or InvalidOperationException or NotSupportedException or ArgumentException)
+            {
+                // A window or its owner can disappear during enumeration.
+            }
+            return true;
+        };
+        if (!EnumWindows(callback, nint.Zero))
+            throw new Win32Exception(Marshal.GetLastWin32Error());
+        return found;
+    }
+
+    private static unsafe string ReadClassName(nint window)
+    {
+        const int capacity = 256;
+        char* buffer = stackalloc char[capacity];
+        int length = GetClassName(window, buffer, capacity);
+        return length <= 0 ? string.Empty : new string(buffer, 0, length);
+    }
+
     internal static bool ExecuteFocus(
         WindowSnapshot snapshot,
         Func<nint, int, bool> showWindowAsync,
@@ -930,4 +1056,21 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
     [LibraryImport("user32.dll", EntryPoint = "PostMessageW")]
     [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool PostMessage(nint windowHandle, uint message, nint wParam, nint lParam);
+
+    private const uint GetRootOwner = 3;
+    private const int ExtendedStyleIndex = -20;
+    private const long ToolWindowStyle = 0x00000080;
+    private const uint CloakedAttribute = 14;
+
+    [LibraryImport("user32.dll")]
+    private static partial nint GetAncestor(nint windowHandle, uint flags);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
+    private static partial nint GetWindowLongPtr(nint windowHandle, int index);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetClassNameW")]
+    private static unsafe partial int GetClassName(nint windowHandle, char* className, int capacity);
+
+    [LibraryImport("dwmapi.dll")]
+    private static partial int DwmGetWindowAttribute(nint windowHandle, uint attribute, out int value, int size);
 }

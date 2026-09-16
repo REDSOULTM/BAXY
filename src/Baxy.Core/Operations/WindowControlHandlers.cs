@@ -94,6 +94,35 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
     }
 }
 
+internal sealed class WindowMinimizeAllHandler(IWindowControlProvider provider) : IOperationHandler
+{
+    public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition("window.minimize.all");
+
+    public async ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken)
+    {
+        WindowMinimizeAllResult result = await provider.MinimizeAllAsync(cancellationToken).ConfigureAwait(false);
+        if (!result.Succeeded || !result.Verified)
+        {
+            return OperationOutcome.Failure(result.ErrorCode ?? "window_minimize_all_failed");
+        }
+
+        var buffer = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteNumber("desktopWindows", result.Found);
+            writer.WriteNumber("minimized", result.Minimized);
+            writer.WriteNumber("remainingVisible", result.Remaining);
+            writer.WriteBoolean("allMinimized", true);
+            writer.WriteString("authority", "win32_desktop_windows_postread");
+            writer.WriteEndObject();
+        }
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return OperationOutcome.Success(document.RootElement.Clone());
+    }
+}
+
 internal sealed class WindowBoundsHandler(string operation, IWindowControlProvider provider)
     : IOperationHandler
 {
@@ -127,6 +156,7 @@ internal static class WindowControlHandlers
         new WindowActionHandler("window.focus", WindowControlAction.Focus, provider),
         new WindowActionHandler("window.maximize", WindowControlAction.Maximize, provider),
         new WindowActionHandler("window.minimize", WindowControlAction.Minimize, provider),
+        new WindowMinimizeAllHandler(provider),
         new WindowBoundsHandler("window.move", provider),
         new WindowBoundsHandler("window.resize", provider),
         new WindowResolveHandler(provider),

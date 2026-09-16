@@ -4408,6 +4408,20 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             "sentences, in the person's language."
         )
     if (
+        situation.get("operation") == "window.minimize.all"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+    ):
+        # MINALL1687 «minimizá todas las ventanas»: the desktop windows were
+        # minimized and re-observed iconic; nothing was closed.
+        bits.append(
+            "This result minimized every visible desktop window and verified "
+            "each is now minimized: say that all the windows were minimized "
+            "(with the count from minimized if it is present), that nothing "
+            "was closed, in one sentence, in the person's language. If "
+            "minimized is 0, say there was no open window to minimize."
+        )
+    if (
         situation.get("operation") == "app.installed"
         and situation.get("verified") is True
         and situation.get("succeeded") is True

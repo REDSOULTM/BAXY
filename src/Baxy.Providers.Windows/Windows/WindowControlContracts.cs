@@ -58,8 +58,22 @@ public sealed record WindowCloseResult(
     int? ProcessId,
     string? ErrorCode);
 
+// MINALL1687 «minimizá todas las ventanas»: the desktop windows found before,
+// how many were minimized and verified iconic, how many stayed visible.
+public sealed record WindowMinimizeAllResult(
+    bool Succeeded,
+    bool Verified,
+    int Found,
+    int Minimized,
+    int Remaining,
+    string? ErrorCode);
+
 public interface IWindowControlProvider
 {
+    ValueTask<WindowMinimizeAllResult> MinimizeAllAsync(CancellationToken cancellationToken) =>
+        ValueTask.FromResult(new WindowMinimizeAllResult(
+            false, false, 0, 0, 0, WindowControlErrorCodes.ActionFailed));
+
     ValueTask<WindowResolveResult> ResolveForegroundAsync(
         CancellationToken cancellationToken);
 

@@ -2353,6 +2353,8 @@ def _curated_domain_is_grounded(
                 r"graba|grabar|record|recording|camara|camera)\b",
             )
         )
+    if operation == "window.minimize.all":
+        return minimize_all_request(folded)
     if operation in {
         "window.active",
         "window.focus",
@@ -8063,6 +8065,22 @@ _OPEN_STATE_CONDITION = (
     r"(?:(?:el|la|the)\s+)?(?P<app>[a-z0-9][a-z0-9 .+-]{1,30}?)\s+"
     r"(?:(?:esta|is)\s+)?(?:abiert[oa]|open|running|corriendo|prendid[oa]|activ[oa])\s*,?\s*"
 )
+
+
+_MINIMIZE_ALL_REQUEST = re.compile(
+    r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
+    r"(?:minimiza|minimizame|minimizar|minimise|minimize)\s+(?:me\s+)?"
+    r"(?:todas\s+(?:las\s+)?(?:ventanas|apps|aplicaciones)|todas|todo|"
+    r"all(?:\s+(?:the|my|of\s+the))?(?:\s+(?:windows|apps|applications))?|everything)"
+    r"(?:\s+(?:abiertas|open))?(?:\s*,?\s*(?:por\s+favor|please))?[\s.!?]*$"
+)
+
+
+def minimize_all_request(folded: str) -> bool:
+    """MINALL1687 «minimizá todas las ventanas», «minimizá todo»: one order
+    over every desktop window, never a named one."""
+
+    return _MINIMIZE_ALL_REQUEST.match(_strip_request_envelope(folded)) is not None
 
 
 def conditional_open_pause_app(
@@ -16512,6 +16530,13 @@ def resolve_explicit_effects(
     if "browser.control" in available and browser_back_arguments(text) is not None:
         # A complete history request is not a destination to search.
         return EffectIntent(("browser.control",), (text,))
+    if (
+        "window.minimize.all" in available
+        and minimize_all_request(folded)
+        and not _is_negative_effect_clause(folded)
+    ):
+        # MINALL1687: every desktop window minimized and verified iconic.
+        return EffectIntent(("window.minimize.all",), (text,))
     if (
         {"window.resolve", "media.control"} <= available
         and conditional_open_pause_app(text, authenticated_applications) is not None

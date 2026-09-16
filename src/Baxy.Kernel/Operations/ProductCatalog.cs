@@ -1630,6 +1630,13 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Minimiza una ventana resuelta previamente y verifica su identidad y estado."),
         Descriptor(
+            "window.minimize.all",
+            EmptySchema(),
+            OperationRisks.LowReversible,
+            "window.minimize.all.desktop.postread.v1",
+            ToolExposure.Public,
+            "Minimiza todas las ventanas visibles del escritorio (salvo la propia) y comprueba que quedaron minimizadas; no cierra nada."),
+        Descriptor(
             "window.move",
             Schema(
                 [
