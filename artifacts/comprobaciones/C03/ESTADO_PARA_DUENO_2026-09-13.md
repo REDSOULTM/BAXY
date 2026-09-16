@@ -1,3 +1,25 @@
+## NETWORK1743 — estado vigente 2026-09-16T20:00:17.364375+00:00
+
+Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 625/742 | 117 | 0 | >=509 | 12/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 509 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); NETWORK1743 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: NETWORK1743: 5 ejecutados, 5 aprobados, 0 fallidos, 0 créditos (índices []); Red y Bluetooth 21/21. Siguiente: WEB1745 (Chrome por nombre) en la misma compilación.
+
+Evidencia: `artifacts/comprobaciones/C03/NETWORK1743/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 107.66 s acumulados; pico GPU 3497.56 MiB; pico RAM 2113.36 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque NETWORK1743 precedente. -->
+
 ## NETWORK1741 — estado vigente 2026-09-16T19:38:45.567688+00:00
 
 Parcial: 2 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.

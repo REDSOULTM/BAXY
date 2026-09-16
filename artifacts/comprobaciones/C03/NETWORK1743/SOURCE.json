@@ -1,0 +1,15 @@
+{
+  "schema": "c03-network1743-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/MainWindowViewModel.cs (ConductorConfirmationShape: reviewed first step followed by one read-only step) on top of the previous builds (wifi radio operations, offer in the failure final, accepted offer as plan evidence, sorted catalog values).",
+  "patch": "artifacts/comprobaciones/C03/NETWORK1743/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1743 (C03-repairs1743-build/BUILD_READY.json; mente (y núcleo/proveedor para WEB1741))",
+  "cause_measured": "La captura del conductor revisado sólo admitía planes de un paso (o captura + OCR), así que la misión encender + escanear nunca llegó a la raíz.",
+  "change": "Forma de confirmación revisada con un paso sensible seguido de una lectura; sin respuestas fijas.",
+  "measurement": "NETWORK1743: 5 aprobados: tres diálogos completos (aviso y oferta con la radio apagada; tras el sí, wifi.radio.set state = true aprobada por la raíz y verificada, wifi.scan completada y verificada, final que nombra las redes observadas, enmascaradas en lo publicado) y dos límites; re-demostración de H0302 sin crédito; 0 créditos. Mecanismo del diálogo wifi demostrado de punta a punta; los nombres de red quedan en recibos privados. Siguiente: WEB1745 (Chrome por nombre) en la misma compilación.",
+  "credits": 0
+}
