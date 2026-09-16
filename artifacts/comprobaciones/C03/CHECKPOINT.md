@@ -1,3 +1,25 @@
+## NETWORK1741 — estado vigente 2026-09-16T19:38:45.567688+00:00
+
+Parcial: 2 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 625/742 | 117 | 0 | >=509 | 12/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 509 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); NETWORK1741 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: NETWORK1741: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos (índices []); Red y Bluetooth 21/21. Siguiente: WEB1741 (Chrome por nombre) en la misma compilación.
+
+Evidencia: `artifacts/comprobaciones/C03/NETWORK1741/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 100.66 s acumulados; pico GPU 3497.56 MiB; pico RAM 2072.93 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque NETWORK1741 precedente. -->
+
 ## NETWORK1739 — estado vigente 2026-09-16T19:06:52.200589+00:00
 
 Parcial: 0 aprobados, 5 fallidos, 0 sin ejecutar; 0 créditos.

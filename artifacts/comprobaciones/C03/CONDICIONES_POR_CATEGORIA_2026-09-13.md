@@ -1254,3 +1254,7 @@ Red y Bluetooth pasa de 20/21 a 21/21 con «apagá el wifi» apagando la radio c
 ## Actualización 2026-09-16 (NETWORK1739)
 
 Red y Bluetooth pasa de 21/21 a 21/21 con el diálogo de «qué redes wifi hay» sin medir: el núcleo de la compilación se detuvo al arrancar y ningún turno se ejecutó (commit 1b25b2ef, BUILD1739) (HEAD 1b25b2ef): 5 fallidos: la App se detuvo al arrancar en todos los casos (núcleo con TypeInitializationException: valores enumerados del argumento browser sin ordenar), ningún turno ni operación, 0 créditos. Compilación corregida a continuación (valores ordenados, comprobación de hello del núcleo en el setup) y repetición del diálogo como NETWORK1741; Chrome por nombre como WEB1743. La categoría queda cerrada.
+
+## Actualización 2026-09-16 (NETWORK1741)
+
+Red y Bluetooth pasa de 21/21 a 21/21 con el diálogo de «qué redes wifi hay» avisando y ofreciendo, con la misión propuesta tras el sí pero rechazada por la forma de confirmación de la App (commit d1582411, BUILD1741) (HEAD d1582411): 3 fallidos del grupo diálogo (primer turno correcto con aviso y oferta; tras el sí la misión wifi.radio.set + wifi.scan se propuso y la App pidió confirmación, pero la captura revisada rechazó la forma de dos pasos y no llegó proposición a la raíz), 2 límites aprobados, 0 créditos. Reparación en la App a continuación: la forma de confirmación revisada admite un paso sensible seguido de la lectura que habilita (NETWORK1743); Chrome por nombre como WEB1745. La categoría queda cerrada.

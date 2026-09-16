@@ -1,0 +1,15 @@
+{
+  "schema": "c03-network1741-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (ordinally sorted browser values) on top of the previous build's plan-handler repair in src/baxy_mind/__main__.py.",
+  "patch": "artifacts/comprobaciones/C03/NETWORK1741/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1741 (C03-repairs1741-build/BUILD_READY.json; mente (y núcleo/proveedor para WEB1741))",
+  "cause_measured": "El núcleo de la compilación anterior se detenía al arrancar por valores enumerados sin ordenar; el manejador de plan fundaba el argumento state de wifi.radio.set sólo en la respuesta «sí».",
+  "change": "Valores del argumento browser ordenados; el manejador de plan reconoce la oferta aceptada como evidencia de los dos pasos; sin respuestas fijas.",
+  "measurement": "NETWORK1741: 3 fallidos del grupo diálogo (primer turno correcto con aviso y oferta; tras el sí la misión wifi.radio.set + wifi.scan se propuso y la App pidió confirmación, pero la captura revisada rechazó la forma de dos pasos y no llegó proposición a la raíz), 2 límites aprobados; 0 créditos. Reparación en la App a continuación: la forma de confirmación revisada admite un paso sensible seguido de la lectura que habilita (NETWORK1743); Chrome por nombre como WEB1745.",
+  "credits": 0
+}
