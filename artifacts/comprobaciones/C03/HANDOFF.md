@@ -1,3 +1,11 @@
+# UI1637 adjudicado — 2026-09-16T00:45:04.744829+00:00
+
+**581/742 cubiertos, 161 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 11bfb345e5848695483e56373316776f15ee8e4b5d5dddde13e318c7f9d5a440. Primeras altas 24 h >= 455 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 8c3186ed con BUILD1637 (un control que desaparece tras el clic no es un control deshabilitado). Turnos ordinarios sin operaciones.
+
+UI1637 («Interacción dentro de aplicaciones», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): tres clics revisados, aprobados una vez, completados y verificados sobre el diálogo propio, con finales fieles; dos límites aprobados, 1 créditos. Adjudicación 0fe650d58d9dcec48b8c14e8c13806623453abb86bb585d63fb35218a95d330b. Medición raíz: el recibo del clic proyectado como control desaparecido tras el clic da finales fieles en español e inglés; nada del dueño tocado.
+
+---
+
 # UI1635 adjudicado — 2026-09-16T00:41:20.296827+00:00
 
 **580/742 cubiertos, 162 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 8414b417d536b094906c70c49a2b430ea43897cd33b91fd9326092f9beab03de. Primeras altas 24 h >= 454 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c466180b con BUILD1633 (un clic en el botón Aceptar de un diálogo propio de la raíz). Turnos ordinarios sin operaciones.

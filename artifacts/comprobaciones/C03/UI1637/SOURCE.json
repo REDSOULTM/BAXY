@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1637-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (input.visible.click projection: clicked/controlGoneAfterClick with a note; reversed_result veto for disabled/unclickable narrations of a verified click).",
+  "patch": "artifacts/comprobaciones/C03/UI1637/SOURCE.patch",
+  "commits": [
+    "8c3186edfdcab4415f0adcced4c55d0a7e638459"
+  ],
+  "build": "BUILD1637 (C03-repairs1637-build/BUILD_READY.json; mente)",
+  "cause_measured": "UI1637: el narrador leyó absentOrDisabled del recibo como control deshabilitado en dos finales de clics verificados.",
+  "change": "Proyección del recibo del clic y veto de la narración de fallo sobre un clic verificado; sin respuestas fijas.",
+  "measurement": "UI1637: tres clics revisados, aprobados una vez, completados y verificados sobre el diálogo propio, con finales fieles; dos límites aprobados; 1 créditos. Medición raíz: el recibo del clic proyectado como control desaparecido tras el clic da finales fieles en español e inglés; nada del dueño tocado.",
+  "credits": 1
+}
