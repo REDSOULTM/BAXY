@@ -5534,7 +5534,10 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         and seen.get("ok") is True
         and re.search(
             r"\b(?:apret\w*|puls\w*|presion\w*|toc\w*|clic|click\w*|clique\w*|"
-            r"press\w*|tap\w*|hit)\b",
+            r"press\w*|tap\w*|hit|"
+            # UI1731 «navegá hasta la biblioteca»: a verified click on a section
+            # label is faithfully told as going there.
+            r"naveg\w*|navigat\w*|fui|entr[eé]|went|entered|abri\s+la\s+seccion)\b",
             folded,
         )
         is None

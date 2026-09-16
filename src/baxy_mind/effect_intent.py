@@ -2827,12 +2827,14 @@ def known_unsupported_effect_request(
         ),
         (
             # LIMITS1683 H0559 «Abre Steam y luego navega por la gui hasta
-            # biblioteca», H0432 «Abre Epic Games y navega hasta la biblioteca»:
-            # the library is read locally; no operation walks a client's interface.
+            # biblioteca», H0432 «Abre Epic Games y navega hasta la biblioteca»
+            # were a known limit; since UI1731 the client's interface is walked
+            # with input.visible.click (UIA, then OCR on the foreground window),
+            # so this contract is inert while that operation exists.
             _has(folded, r"\b(?:navega|navegar|navegame|navigate)\b")
             and _has(folded, r"\b(?:steam|epic(?:\s+games)?|battle\.net|origin|uplay|gog|ubisoft\s+connect)\b")
             and _has(folded, r"\b(?:gui|interfaz|interface|biblioteca|library|tienda|store|menu|menus)\b"),
-            {"client.gui.navigate"},
+            {"input.visible.click"},
         ),
         (
             # LIMITS1683 H0302 «qué redes wifi hay»: saved profiles and the current
@@ -4961,6 +4963,10 @@ _CATALOG_NAME_ALIASES: tuple[tuple[frozenset[str], tuple[str, ...]], ...] = (
     (frozenset({"explorador", "explorador de archivos", "explorador de windows",
                 "file explorer", "files explorer", "explorer", "windows explorer"}),
      ("explorador de archivos", "file explorer")),
+    # UI1731 «Abre Epic Games y navega hasta la biblioteca»: the Start catalog
+    # names the client «Epic Games Launcher»; people say «Epic Games» or «Epic».
+    (frozenset({"epic", "epic games", "epic launcher", "epic games launcher", "launcher de epic"}),
+     ("epic games launcher",)),
 )
 
 
@@ -15860,7 +15866,12 @@ _VISIBLE_CLICK_APP_CONTEXT = (
     r"aplicacion|application|ventana|window|pantalla|screen)"
 )
 _VISIBLE_CLICK_NAVIGATE = (
-    r"(?:ve\s+a|vete\s+a|go\s+to|navega\s+(?:a|hacia)|navigate\s+to)"
+    # UI1731 «Abre Steam y luego navega por la gui hasta biblioteca», «Abre Epic
+    # Games y navega hasta la biblioteca»: walking the open client's interface
+    # to a named section is a verified click on that visible label.
+    r"(?:ve\s+a|vete\s+a|anda\s+a|andate\s+a|entra\s+(?:a|en)|metete\s+en|go\s+to|go\s+into|"
+    r"navega(?:\s+por\s+(?:la\s+|el\s+|los\s+)?(?:gui|interfaz|interface|menu|menus|pantalla|ventana|app|aplicacion))?\s+(?:a|hacia|hasta)|"
+    r"navigate(?:\s+(?:through|via)\s+the\s+(?:gui|interface|menus?))?\s+to)"
 )
 _VISIBLE_CLICK_CONTROL_NOUN = (
     r"(?:boton|button|control|enlace|link|pestana|tab|seccion|section)"
