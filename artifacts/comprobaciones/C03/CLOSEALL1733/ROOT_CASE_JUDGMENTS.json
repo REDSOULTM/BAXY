@@ -1,0 +1,336 @@
+[
+  {
+    "index": 0,
+    "case_id": "H0467",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      2,
+      3
+    ],
+    "reason": "El cierre de todas las ventanas se revisó y aprobó, cada ventana visible salvo Visual Studio Code recibió el cierre cortés, el proveedor verificó y contó el resultado sin forzar procesos, y el final lo dijo con verdad; crédito con dos variantes aprobadas del grupo.",
+    "observation_note": "Turno revisado: window.close.all propuesta sin argumentos, aprobada por la raíz con Visual Studio Code en ejecución, completada y verificada: cada ventana visible del escritorio salvo VS Code, la terminal y el producto recibió el cierre cortés (las ventanas propias de la raíz —Bloc de notas y Calculadora— y las reales del dueño), el proveedor verificó cuáles se cerraron y contó las restantes sin forzar procesos; la raíz registró las ventanas del escritorio antes y después; cero violaciones; pins intactos.",
+    "final_sha256": "d4bdbced9a4e60d80369f37ac236a1ef68c72cb438920140ddadface7e9f9786",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-00\\EXIT.json": "7627c27d909375de6d9efe50a4d9fd7bb957bb1c6d111cf0c1ec07469cc24b34",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-00\\RESOURCES.json": "bd0f0dcd15ed71b3c3fc7783a714cc47762c5c2c664608338f2ba787b74e9f37",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\profile-owner-00.json": "3ef8064211b9c6dd84e9f122cfa8aae5220348c40a972f574c2eebcc37e6a5aa",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-00\\PREREG.json": "af176c2217378918dd973c92169b30be97de7a0348e0b794b7b0c5239a3f816a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-00\\capture\\events.jsonl": "4e916fe54b4ee9c55fa882020c6a5bfb3b6a58d27e3f2537fe05300615cdf4a3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-00\\turns.jsonl": "a3961220a248e8f6c69a7ff461de4c030952c64c0e95ef83d6ee78c7ee12b934",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\fixture-00.json": "21db09a19d4260f97d7cfcefd92a9e36467fe7d57b81fa352c0edadf62215a31",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\context-00.json": "f9ec6ee77fc0be9789ea440ea31e1396ef860de4ac0ab44ae913475c4eb702a7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\context-prelaunch-00.json": "276f11cad5d308662e7c0ff4082f5ad6f2cb8db00298d13ff272db8e2529e1c5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-00\\case-observations.json": "1251c302f84532e6cc966e5b145ed6b0653ea646637c73c8351fe7d19eb87aad",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-00\\journal-before.json": "495f99606eafe046c30a3849fa6f03db2ba6c803055bd3e55f1349ba83daf869",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-00\\journal-after.json": "1568faeb5cc69d93d00be2a66f84ecaa31b982abe764348d58fde8ead5484140",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "40be861c25e92d40b87cb79af7066814245dd320cfbab67f3be0c2384893530f"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "556b8217-2601-40e6-80d6-f83acec76ba6",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "cb9feeca-263b-412c-b3cd-eac2823a4f27",
+        "operation": "window.close.all",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "case_id": "H0484",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      2,
+      3
+    ],
+    "reason": "El cierre de todas las ventanas se revisó y aprobó, cada ventana visible salvo Visual Studio Code recibió el cierre cortés, el proveedor verificó y contó el resultado sin forzar procesos, y el final lo dijo con verdad; crédito con dos variantes aprobadas del grupo.",
+    "observation_note": "Turno revisado: window.close.all propuesta sin argumentos, aprobada por la raíz con Visual Studio Code en ejecución, completada y verificada: cada ventana visible del escritorio salvo VS Code, la terminal y el producto recibió el cierre cortés (las ventanas propias de la raíz —Bloc de notas y Calculadora— y las reales del dueño), el proveedor verificó cuáles se cerraron y contó las restantes sin forzar procesos; la raíz registró las ventanas del escritorio antes y después; cero violaciones; pins intactos.",
+    "final_sha256": "05f1db4c6fd847557bc9622a6adae1947dd84c086e1ba702186773eb2e8f1c11",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-01\\EXIT.json": "074a51d1ffe373d65723aede3dbcf35b81f6bf4a39abfc33a00c505c94877c34",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-01\\RESOURCES.json": "0236e371debd884ac410a73c4399ca8ff6b3b1c96efb05aa41416c834926fa87",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\profile-owner-01.json": "36eeeab2569c33e9c613a74ca867741150baec7ac3a20e1a26b507dae702ec5d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-01\\PREREG.json": "f636a886ff08cd366660005a91404d98a375b0616092ab412c998eaae1d42b75",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-01\\capture\\events.jsonl": "d2b05808dba05819e7044eca5cd57d7d2613b1dbbf4af609354a6c6b5f24657d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-01\\turns.jsonl": "65eadbfe99469dceeee4c882f6c6b8ad9e3b744ad50bb519ca6ed0524c3ab410",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\fixture-01.json": "0f2e84189c0165ba11cd3698564af4f84fef51fc41deae17eca7d84e82788687",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\context-01.json": "d6cbbd7c09383b22842b40117ed97bc51867fbc087e48a0c5d9b1d652ee9527d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\context-prelaunch-01.json": "112c8d9bdbdbd6d836021197660370f10bbcd273ef4afcd44b46673bd57b325c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-01\\case-observations.json": "2841f8528e2cd7faedaf945e44545aaca16ebb8f7f68a136f295de5f90fb6acb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-01\\journal-before.json": "f128b4f984a6f617d88ff6973eafd273280f213884bc9dee29dd9b9a3ec038c7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-01\\journal-after.json": "0819518f161e6132f941900c51a8b96f674cbe326c0e78766179edf971cf6b27",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "f40008732e1b247b44e6114d4ba8402fb97b7ac68e6115bb908e4924cd157b99"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "47101da2-b0ea-4874-8151-daefa38dd0f6",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "3ab19ed4-c8c0-4e48-9edb-ee7ddd38e386",
+        "operation": "window.close.all",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "case_id": "closeall1733-dev-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "El cierre de todas las ventanas se revisó y aprobó, cada ventana visible salvo Visual Studio Code recibió el cierre cortés, el proveedor verificó y contó el resultado sin forzar procesos, y el final lo dijo con verdad.",
+    "observation_note": "Turno revisado: window.close.all propuesta sin argumentos, aprobada por la raíz con Visual Studio Code en ejecución, completada y verificada: cada ventana visible del escritorio salvo VS Code, la terminal y el producto recibió el cierre cortés (las ventanas propias de la raíz —Bloc de notas y Calculadora— y las reales del dueño), el proveedor verificó cuáles se cerraron y contó las restantes sin forzar procesos; la raíz registró las ventanas del escritorio antes y después; cero violaciones; pins intactos.",
+    "final_sha256": "78b491cff114127697d88ecea45458675c7710f193aa52bff7b48a41efa56f4c",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-02\\EXIT.json": "6f46e9a123551c696370156a9aa4eb8efbfafb40d232c009dc386fe778400334",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-02\\RESOURCES.json": "9c614fc02d323f363e1afd604f8b9061b856d2a34e66ae05e4ad27fda3ba0005",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\profile-owner-02.json": "9f3db93758151c80934108cb792ba1b45230292f9a4daef89dd1c5ddf6cd8d44",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-02\\PREREG.json": "9d2fb1f7857f98cec4dad143dcdb0cc72dcbba899a871c2eb300f6fd17061025",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-02\\capture\\events.jsonl": "58c59453640c717b9c4a79180d2bf0b02f651bcf0ada6c38893ab89827e456a9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-02\\turns.jsonl": "2a902b842180686a4f81aec265d4d0c50a1fbf2f0d3165bc1ab6cf12e06b8435",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\fixture-02.json": "98068b778b5e03f23d7b0f2df88d7c904a45f8cf316ac8701fe332c49f0a7405",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\context-02.json": "14d352e9dd77b650baff380202c658b04a40488d9222bcb26a5c91f04a5061a3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\context-prelaunch-02.json": "7c9cb6f3056cf69130ea829e8a3640380a71646352573f1462485b74b0ebbfce",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-02\\case-observations.json": "c5e84a0b590dab97e79b3a1a2bbf5f117360af658bb837fcfeca5b4410bb14c7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-02\\journal-before.json": "e783c17659954b8486ae9d6e3d533b28d92f3cc3e6a9013896edaa6ca4d1d8f1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-02\\journal-after.json": "f943b3493593567eb54a7810afdfedf5c36ee7df92d59b1b1419497538206240",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "6dc7ee39fc1da5d6a82d0e161ab546b67ddd73eb43d5a29337a797872a847c01"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "ae69f653-1c8a-4cd8-b078-75fb629eb4e9",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "7a5e90e8-244a-43c7-911f-07d89987c1c6",
+        "operation": "window.close.all",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "case_id": "closeall1733-dev-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "El cierre de todas las ventanas se revisó y aprobó, cada ventana visible salvo Visual Studio Code recibió el cierre cortés, el proveedor verificó y contó el resultado sin forzar procesos, y el final lo dijo con verdad.",
+    "observation_note": "Turno revisado: window.close.all propuesta sin argumentos, aprobada por la raíz con Visual Studio Code en ejecución, completada y verificada: cada ventana visible del escritorio salvo VS Code, la terminal y el producto recibió el cierre cortés (las ventanas propias de la raíz —Bloc de notas y Calculadora— y las reales del dueño), el proveedor verificó cuáles se cerraron y contó las restantes sin forzar procesos; la raíz registró las ventanas del escritorio antes y después; cero violaciones; pins intactos.",
+    "final_sha256": "117e2000daa458aff278422203dbb6f3168a40d46e53574bcd0b68ab9c3497e4",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-03\\EXIT.json": "011ed3f98fff35cd67dca1539402c5cbab3e4f84ca48e6b457ff8f4f479f36ca",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-03\\RESOURCES.json": "02874e0309e2ee9ecf48d8fd6b7617705d4d588ba122fea97949cbe643980051",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\profile-owner-03.json": "08bb755eeb7e36c1b6a2c6d3c7b3ecf74f553337f98dc2b7e0d2ae8616d974c4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-03\\PREREG.json": "3df404640729560a0739d2ebd995d523f174a6b97cb1911540041c98c60fa12f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-03\\capture\\events.jsonl": "f3469ac5b7981b1851f2ef09f599d1e1a6b73a5573d0870fc9663dd36a2e4dc2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-03\\turns.jsonl": "636e18c257bd6ba6af2cf8dedf7c552fb98236a7654453665d68a7452516d2e3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\fixture-03.json": "ad941ee770c348db1c4490b87b57be5ab38a4e6e562ddae6b815f2ac5b3989a6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\context-03.json": "351f3117b21a2ab5d7999395f0d0b0f5c9d0ff58758b900cfbc1b2e70165d18a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\context-prelaunch-03.json": "e6b7cdc478e2b9ac0b20844ace115ffea8dfa69f3c200beac875b8647ff7ebc7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-03\\case-observations.json": "c8c24269c499526ca3d97bcb933af6b4280c75c5085aa107638d90154bd365e5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-03\\journal-before.json": "f1ffb19e666e506221b641e05297f6f9d416f3adf89daf72c9808a02da482d16",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-03\\journal-after.json": "b9cc008e839cdea0d1591a3968c8178a64980e8b3cb2eb271b5008bada6632c0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "2e127bb9fd16577a188ce6a3d5b27f6df3481d3fd5456a6ef4caafa6629bbe2e"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "ccbee412-0ebd-4282-b5b2-88b1cb1d50f1",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "f163a88a-aef9-4668-9239-09c12a4e6eac",
+        "operation": "window.close.all",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "case_id": "closeall1733-boundary-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "7dbd401724f49b5523cb9e5c0448076bfda28dd32ba01ba25d1a7cbf04c370f8",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-04\\EXIT.json": "88bb89efa52c1e1a46db148746febf9647a5b3bc9ade797a948179fdd3c99527",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-04\\RESOURCES.json": "7bf2bae45630c30eeb1877d566ed8190557a4a2a1d34e44b9e13d8f0ed1a1d4a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\profile-owner-04.json": "79bdd65fec7ac6e1be89591121541892ad9afe9e15aaeecaefa4ef857591072c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-04\\PREREG.json": "43494c4eccc9d86b116bb55de6c9d8f3205534c386d0ed5e6a2209069b134447",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-04\\capture\\events.jsonl": "4b6afbd04ee3bc8289f12abc12053a04b3fc5bb22eaa23b917f242f3d4d88261",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-04\\turns.jsonl": "85748c8c550809cfbeb808d72f359c4fd2ffcc01cd16d372349e57887518a785",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\fixture-04.json": "40a42753adf5feed42b4ab7235c802867530491b24bb33311ea4457225868887",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\context-04.json": "200a36bba8b9a01ba89e7444f95f73cee1a05ce3a287e8139d933fc1eb01b59e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\context-prelaunch-04.json": "9d9c712e691945028d8516135253e44d98ab86c3f7c5c90c1cb37eae2fc11e95",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-04\\case-observations.json": "71ab9dc8160f1a7ad36844fcc9834db9e59c22096caa5f721d5c176b04fb1d00",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-04\\journal-before.json": "db41669d0c65bb3697417256d34cfca703a594332da9b36a345edb35a8a35eae",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-04\\journal-after.json": "2e1894dd7975ca3c2488c58918b2304cd193da112565243fc485058d39ee36a4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "0ce217228301ddab9c30594c09e42edb77c6b118370a73c83aadd59d9b25d9b1"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "87e1b1ec-cfc9-4c9f-8edc-fda37b40e8ef",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 5,
+    "case_id": "closeall1733-boundary-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "538477e8c33e573c8b3b2f904fa5d2fc5f3ece7fe80ba7dcdb2f1664b1e0ca21",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-05\\EXIT.json": "7d2b378eedc54d72c0d9da23b7d224ce3e304e530cfaea2274ad81dab0dd81eb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-05\\RESOURCES.json": "cc733ab28ec6f74dd0ea2826b3706566a55bde3e39d025937246855cd4310d27",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\profile-owner-05.json": "6e808cef636b651e1404718a526ed39b2b089514fd9c67668c360d8c78133944",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\results\\case-05\\PREREG.json": "c19ce1bc68ad7f3f004d8aeae2b2ccf75ecfb40e420b46b5cc294af0d174851f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-05\\capture\\events.jsonl": "f3d56a9a319493871d68edf8d90414f647d699dda1dc049c11db9881ebc90bf5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-05\\turns.jsonl": "78710754253c0d0ac6975c150baf32f5d994af7a7e010ca986cca3aab740b2f8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\fixture-05.json": "b47bcb4fd143bed8cf29b27d8889d577843f08a509958a289260b03a42731f7d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\context-05.json": "365ac5f88fbef703375370c7ff83ed90c931d57f3ceae3caf1399a0424452006",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\context-prelaunch-05.json": "36592ac235b5aa5b92b78ecb7da2423df33b12390dc26e5936aba573ee6d55bf",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-05\\case-observations.json": "a94e757fc0f26948c054640b9b904f77b7dff3bb49aeea1c0b3597e66ff9c10d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-05\\journal-before.json": "a04e001974685438b92baf2df05456742f594887a83462a76e30c09fb588c5e0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-05\\journal-after.json": "af42105acc265123ae23152b9a7a0903c0444eae12bc01177130bd121cbbab52",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-closeall1733-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "d41e66cebded3ad762ed4cf22b6e3f2098e6628269968c163b1159fd646e6032"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "88e1138c-4428-4c3f-adc7-c4880bd0973e",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  }
+]

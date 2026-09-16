@@ -1,3 +1,25 @@
+## CLOSEALL1733 — estado vigente 2026-09-16T17:29:42.070063+00:00
+
+Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 624/742 | 118 | 0 | >=508 | 10/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 506 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); CLOSEALL1733 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: CLOSEALL1733: 6 ejecutados, 6 aprobados, 0 fallidos, 2 créditos (índices [0, 1]); Cerrar aplicaciones y ventanas 20/20. Siguiente: UI1735 (Epic con espera de carga, Discord «ve a Cotele», contexto «en <app>») y el diálogo de encendido del wifi (H0302).
+
+Evidencia: `artifacts/comprobaciones/C03/CLOSEALL1733/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 104.55 s acumulados; pico GPU 3497.56 MiB; pico RAM 1681.84 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque CLOSEALL1733 precedente. -->
+
 ## UI1731 — estado vigente 2026-09-16T16:52:33.757155+00:00
 
 Parcial: 5 aprobados, 3 fallidos, 0 sin ejecutar; 1 créditos.

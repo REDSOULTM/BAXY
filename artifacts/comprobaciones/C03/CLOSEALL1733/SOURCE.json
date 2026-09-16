@@ -1,0 +1,15 @@
+{
+  "schema": "c03-closeall1733-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (window.close.all), src/Baxy.Core/Operations/WindowControlHandlers.cs (WindowCloseAllHandler), src/Baxy.Providers.Windows/Windows/WindowControlContracts.cs and WindowsWindowControlProvider.cs (CloseAllAsync: courteous close of every desktop window except the editor, terminal and product; counts verified), src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs (bounded wait for a label on a loading interface), src/Baxy.App/ProductConductorHost.cs (reviewed allowlist), src/baxy_mind/effect_intent.py (close_all_request, general «en <app>» click context, Opera alias), __main__.py (arguments) and llm.py (composer instruction and vetoes).",
+  "patch": "artifacts/comprobaciones/C03/CLOSEALL1733/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1733 (C03-repairs1733-build/BUILD_READY.json; núcleo, proveedor, App y mente)",
+  "cause_measured": "Ninguna operación cerraba todas las ventanas; el pedido se cerraba como límite conocido.",
+  "change": "Operación window.close.all revisada (cierre cortés de cada ventana salvo VS Code, conteo verificado), lector y compositor; clic visible con espera de carga; contexto «en <app>» general; sin respuestas fijas.",
+  "measurement": "CLOSEALL1733: 6 ejecutados, 6 aprobados: las cuatro window.close.all revisadas fueron aprobadas por la raíz con VS Code en ejecución, pidieron el cierre de cada ventana salvo Visual Studio Code (4, 2, 2 y 2 cerradas, ninguna restante) y los finales dieron la cuenta y dijeron que VS Code quedó abierto a propósito; los dos límites aprobados; 2 créditos. Decisión del dueño 2026-09-16 (cerrar todo menos Visual Studio Code): cierre cortés WM_CLOSE + menú de sistema, verificado y contado sin forzar procesos; las ventanas propias de la raíz sirvieron de fixture y las reales del dueño se cerraron en el primer caso (Steam queda en la bandeja).",
+  "credits": 2
+}
