@@ -1023,3 +1023,27 @@ Contactos pasa de 0/5 a 2/5 con el contacto respondido como límite conocido cit
 ## Actualización 2026-09-16 (AGENDA1669)
 
 Alarmas, recordatorios, tareas y agenda pasa de 37/38 a 38/38 y Archivos y carpetas de 28/32 a 29/32 con lo agendado leído de lo programado por BAXY y el resumen de PDF respondido como límite conocido (commit cfd29303, BUILD1669) (HEAD cfd29303): el literal de agenda y sus dos variantes con una notification.list verificada y finales fieles (nada programado); el literal de PDF y sus dos variantes con cero operaciones y el límite dicho llanamente; dos límites aprobados, 2 créditos. Medición raíz: lo agendado se lee de lo programado por BAXY en español e inglés y el resumen de un PDF se responde como límite conocido; la categoría de agenda queda cerrada. La categoría queda cerrada.
+
+## Estado consolidado 2026-09-16 (tarde): 600/742 cubiertos, 142 abiertos, 8/35 categorías cerradas
+
+Trece tandas desde el bloque de la mañana (INSTALL1631–1633, UI1635–1647, CLOSE1649–1653, UI1655–1663, LIMITS1665–1667, AGENDA1669): 578 → 600. Registro SHA 03062a29d29f1668885ff94131cc04552fd21b652565bf81b0d84711cbbcf125. Reparaciones adoptadas: la desinstalación y el lanzamiento de nombres ausentes se responden por su ausencia (catálogo o biblioteca de Steam); el clic en el botón Aceptar de un diálogo propio se revisa, se verifica y el recibo «control desaparecido tras el clic» se narra como éxito; un clic nombrado por color, una orden de ir cortada en una preposición, un texto para «ponerle» a nada y una orden de escribir con lugar y sin texto preguntan (etiqueta, cómo sigue, dónde, qué texto); la aplicación no cuenta como eco una pregunta que pide el campo declarado por la mente; el acuse de una prohibición se redacta sin el historial del diálogo (con el saludo de bienvenida presente el modelo contestaba al saludo); WhatsApp y Discord ausentes se cierran por su ausencia de ventana y el inventario fuerte ya no aborta cuando un proceso de la instantánea sale durante el recorrido de marcos alojados (sonda raíz 80/80); el narrador veta «Ya cerré …» sobre un fallo; el silencio del micrófono pedido «en Discord» ofrece silenciar el micrófono del sistema (BAXY no maneja el botón del cliente) con la pregunta guiada y validada como oferta; ir a un canal «en Discord» es un límite conocido (no una navegación web), la respuesta de límite validada por la mente ya no se rechaza como lenguaje de fallo y su reintento se redacta en prosa llana (la gramática JSON devolvía vacío); fondo de pantalla, presentaciones, contactos y resumen de PDF son límites conocidos dichos llanamente; lo agendado se lee de lo programado por BAXY. Categorías cerradas: Brillo y pantalla 17/17 y Alarmas, recordatorios, tareas y agenda 38/38 se suman a las seis previas.
+
+| Categoría | Abiertos | Condición |
+|---|---:|---|
+| Vídeo y series | 26 | Sesiones de Netflix/Disney+/Prime ausentes (decisión del dueño: omitir). |
+| Mensajería | 22 | Nunca enviar ni leer mensajes reales; los clientes de mensajería nunca son fixture. |
+| Música | 13 | Sesión de Spotify ausente (decisión del dueño); «abrí chrome y poné música» (Chrome del dueño); «si tengo spotify abierto pausalo» (depende de la sesión del dueño). |
+| Entrada incompleta | 7 | Fragmentos de transcripción sin léxico y el marcador redactado. |
+| Correo | 6 | Nunca enviar; la lectura exige sesión de Outlook. |
+| Interacción dentro de aplicaciones | 6 | Clic en un juego (H0096), «apretá enter/enviar» en Discord/WhatsApp (clientes del dueño; enviar mensajes), «al disco» (transcripción), aritmética en la Calculadora (varias confirmaciones). |
+| Red y Bluetooth | 6 | Conectividad del dueño intocable; escaneo de redes no listable (SSID privados); modo avión sin mecanismo. |
+| Organizar ventanas | 6 | Minimizar todo o a Ópera (ventanas del dueño); Chrome a la izquierda y cerrar sus pestañas (Chrome del dueño; sin operación de ajuste lateral ni de pestañas). |
+| Desarrollo | 5 | Sin shell; regla del dueño H0076; dos límites sin marca. |
+| Navegación y búsqueda web | 5 | Descarga de imagen (sin operación), Opera GX del dueño, «abre youtube.com en Chrome» (Chrome del dueño), compuesto H0516. |
+| Audio y volumen | 5 | Cuatro límites sin marca (idiomas); volumen por aplicación (Spotify) sin operación. |
+| Instalar y desinstalar software | 4 | pip por regla del dueño; diálogo de Steam inexistente; «diin eternal»; Epic sin lectura de licencia. |
+| Reloj / Abrir aplicaciones / Contactos / Conversación / Notas | 4 + 4 + 3 + 2 + 1 | Límites sin marca y negativos: se conservan como límites, nunca se acreditan. |
+| Pantalla | 3 | Diálogos de Steam inexistentes en pantalla. |
+| Archivos | 3 | Contenido dinámico (H0334), zip (H0542), backup a pendrive (H0733): capacidades parciales sin composición segura. |
+| Bibliotecas y fichas de juegos | 3 | Navegar la interfaz de Steam/Epic (clientes del dueño; sin operación); App ID por la API pública (límite sin marca). |
+| Resto (energía 2, cerrar 2, web actual 1, conocimiento 1, hardware 1, documentos 1) | 8 | Apagar/reiniciar (nunca), «cerrame todo» (ventanas del dueño), fallo de WhatsApp en internet (motor), H0297, versión de Python (sin lectura de versiones), edición en Photoshop (ausente; pendiente de lectura). |
