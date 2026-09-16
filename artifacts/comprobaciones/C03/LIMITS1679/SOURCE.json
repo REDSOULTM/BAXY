@@ -1,0 +1,15 @@
+{
+  "schema": "c03-limits1679-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_prepare_turn_result: the catalog verifier and the near-application clarifier yield to known_unsupported_effect_request).",
+  "patch": "artifacts/comprobaciones/C03/LIMITS1679/SOURCE.patch",
+  "commits": [
+    "4d27ea0bcf4b9995461e4545fb5c92dfbc56c9e9"
+  ],
+  "build": "BUILD1679 (C03-repairs1679-build/BUILD_READY.json; mente)",
+  "cause_measured": "El verificador de catálogo retiraba el límite por operaciones cercanas y el aclarador de nombres cercanos lo adelantaba.",
+  "change": "Guardas del verificador y del aclarador de nombres cercanos para los contratos de límite; sin respuestas fijas.",
+  "measurement": "LIMITS1679: cinco literales y ocho variantes con cero operaciones y el límite dicho llanamente nombrando el pedido en español e inglés; prohibición reconocida y definición degenerada; 5 créditos. Medición raíz: con el verificador y el aclarador de nombres cercanos cediendo al contrato, los cuatro límites se responden llanamente en ambos idiomas; la categoría de cierre queda cerrada.",
+  "credits": 5
+}

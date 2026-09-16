@@ -1,3 +1,25 @@
+## LIMITS1679 — estado vigente 2026-09-16T06:10:39.925532+00:00
+
+Parcial: 14 aprobados, 1 fallidos, 0 sin ejecutar; 5 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 611/742 | 131 | 0 | >=485 | 9/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 480 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); LIMITS1679 añade 5. No se cuentan revalidaciones.
+
+Siguiente acción: LIMITS1679: 6 ejecutados, 14 aprobados, -8 fallidos, 5 créditos (índices [0, 1, 2, 3, 4]); Abrir aplicaciones 51/54. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/LIMITS1679/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 276.64 s acumulados; pico GPU 3497.56 MiB; pico RAM 1682.50 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 15; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque LIMITS1679 precedente. -->
+
 ## LIMITS1677 — estado vigente 2026-09-16T05:58:01.908128+00:00
 
 Parcial: 15 aprobados, 9 fallidos, 0 sin ejecutar; 4 créditos.

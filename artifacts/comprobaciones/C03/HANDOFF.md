@@ -1,3 +1,11 @@
+# LIMITS1679 adjudicado — 2026-09-16T06:10:39.925532+00:00
+
+**611/742 cubiertos, 131 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Cerrar aplicaciones y ventanas 20/20); C03 formal 3/11. Registro SHA 51417ee52747a1e25f77053f7acab927bed834de5de6d2b55de29412adcd71c3. Primeras altas 24 h >= 485 (+5).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4d27ea0b con BUILD1679 (un límite conocido no lo retira el verificador ni lo adelanta un nombre cercano). Turnos ordinarios sin operaciones.
+
+LIMITS1679 («Desarrollo y ejecución de comandos», los comandos, cerrar todo, las pestañas y el volumen por aplicación respondidos como límites conocidos sin retiro): cinco literales y ocho variantes con cero operaciones y el límite dicho llanamente nombrando el pedido en español e inglés; prohibición reconocida y definición degenerada, 5 créditos. Adjudicación b1dff65f95e18cf87105873cd3e74a4dc394c39fce58a96ffd10f767cc0ccb61. Medición raíz: con el verificador y el aclarador de nombres cercanos cediendo al contrato, los cuatro límites se responden llanamente en ambos idiomas; la categoría de cierre queda cerrada.
+
+---
+
 # LIMITS1677 adjudicado — 2026-09-16T05:58:01.908128+00:00
 
 **606/742 cubiertos, 136 abiertos, 0 NA; 9/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2); C03 formal 3/11. Registro SHA f4f0216d5371f2de48d0831dda2e800207ec19f9b3978156725f6757e7fb3a9b. Primeras altas 24 h >= 480 (+4).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b0549b66 con BUILD1677 (comandos, código propio, minimizar o cerrar todo, pestañas y volumen por aplicación son límites conocidos). Turnos ordinarios sin operaciones.
