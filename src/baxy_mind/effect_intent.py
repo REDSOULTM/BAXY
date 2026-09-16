@@ -5369,6 +5369,29 @@ def unresolved_application_open_name(
     folded = _fold(text)
     if not folded or len(folded) > 16_384:
         return None
+    # APPS1671 H0322 «quiero editar una foto en photoshop»: wanting to work in
+    # a known program names the program; when the verified catalog does not
+    # hold it, the presence read answers by its absence. Only the use-to-do
+    # frame, only known software, never a catalog application (that stays a
+    # real opening request for the other readers).
+    use = re.fullmatch(
+        r"[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
+        r"(?:quiero|querria|necesito|me\s+gustaria|tengo\s+que|i\s+want\s+to|i\s+need\s+to|i\'?d\s+like\s+to)\s+"
+        r"(?:editar|retocar|usar|trabajar|edit|retouch|use|work)\s+(?:.{0,60}?\s+)?"
+        rf"(?:en|con|in|with|on)\s+(?:(?:el|la|the)\s+)?(?P<name>{_KNOWN_SOFTWARE})"
+        r"(?:\s*,?\s*(?:por\s+favor|please))?[\s.!?]*",
+        folded,
+    )
+    if (
+        use is not None
+        and not proper_name
+        and resolve_application_catalog_app_id(text, application_names) is None
+        and resolve_application_catalog_app_id("abre " + use.group("name"), application_names) is None
+    ):
+        name_words = len(use.group("name").split())
+        trimmed = _APPLICATION_TRAILING_REQUEST.sub("", text.rstrip(" ?!.")).rstrip()
+        raw_name = " ".join(trimmed.split()[-name_words:])
+        return _bounded_application_literal(raw_name)
     source = folded
     request = (
         _application_open_request(folded)
