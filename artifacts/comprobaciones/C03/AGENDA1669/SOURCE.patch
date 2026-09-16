@@ -1,0 +1,56 @@
+commit cfd2930346c9fd0565d8603321536d17fa3b3a34
+
+C03: what is on the agenda lists what BAXY scheduled; summarising a PDF is a known unsupported effect (AGENDA1669)
+
+«qué tengo agendado para hoy» asks for the agenda: what BAXY has on it are the alarms and reminders it scheduled (there is no calendar), so the question joins the notification.list reader sealed in AGENDA1435 (agendado/programado/planeado, for today/tomorrow/this week, in Spanish and English) and the final says what was observed. «resumime informe.pdf» asks for a PDF summary the text reader cannot give; a known_unsupported_effect_request contract (document.pdf.read) closes the turn as a plain limit naming the request.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index dac36314..73423897 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -2799,6 +2799,13 @@ def known_unsupported_effect_request(
+             and not _has(folded, r"\b(?:game|juego|steam)\b"),
+             {"commerce.product.purchase"},
+         ),
++        (
++            # AGENDA1669 H0666 «resumime informe.pdf»: the text reader opens text
++            # files; no operation reads or summarises a PDF.
++            _has(folded, r"\b(?:resumi|resumime|resumeme|resume|resumir|resumen|summari[sz]e|summary|sum\s+up)\b")
++            and _has(folded, r"\.pdf\b|\bpdfs?\b"),
++            {"document.pdf.read"},
++        ),
+         (
+             # LIMITS1665 H0459 «cambiá el fondo de pantalla a azul»: no operation
+             # sets the desktop wallpaper.
+@@ -10076,6 +10083,16 @@ _NOTIFICATION_LISTING = (
+ )
+ 
+ 
++_AGENDA_LISTING = (
++    r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
++    r"(?:(?:que|what)\s+(?:tengo|hay|do i have|have i got|is there|do i have got)|"
++    r"(?:decime|dime|contame|cuentame|tell me|mostrame|muestrame|show me)\s+(?:que\s+(?:tengo|hay)|what\s+(?:i have|there is|is)))\s+"
++    r"(?:(?:agendad[oa]s?|programad[oa]s?|planead[oa]s?|planificad[oa]s?|anotad[oa]s?|scheduled|planned|on\s+(?:my|the)\s+agenda|en\s+(?:la|mi)\s+agenda)"
++    r"(?:\s+(?:para|for)\s+(?:hoy|manana|today|tomorrow|esta\s+semana|this\s+week))?"
++    r"|(?:para|for)\s+(?:hoy|today)\s+(?:agendad[oa]s?|programad[oa]s?|scheduled|planned|en\s+(?:la|mi)\s+agenda))[\s?!.]*$"
++)
++
++
+ def _notification_listing_request(text: str) -> bool:
+     """AGENDA1435 «listá los timers», «qué alarmas tengo»: the scheduled
+     alarms and reminders, never the due ones (those keep notification.list.due)."""
+@@ -10083,6 +10100,11 @@ def _notification_listing_request(text: str) -> bool:
+     folded = _fold(text)
+     if _has(folded, r"\b(?:vencid[oa]s?|due|overdue|expired|pendientes\s+de\s+descartar)\b"):
+         return False
++    if re.match(_AGENDA_LISTING, folded) is not None:
++        # AGENDA1669 H0660 «qué tengo agendado para hoy»: what BAXY has on
++        # the agenda is what it scheduled (alarms, reminders); there is no
++        # calendar, and the listing says so by what it contains.
++        return True
+     return re.match(_NOTIFICATION_LISTING, folded) is not None
+ 
+ 

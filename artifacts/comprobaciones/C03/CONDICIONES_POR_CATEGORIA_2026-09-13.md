@@ -1019,3 +1019,7 @@ Brillo y pantalla pasa de 16/17 a 17/17, Crear documentos y editar imágenes de 
 ## Actualización 2026-09-16 (LIMITS1667)
 
 Contactos pasa de 0/5 a 2/5 con el contacto respondido como límite conocido citando lo que la persona pidió (commit 368a18e3, BUILD1665) (HEAD 368a18e3): dos literales y dos variantes con cero operaciones y el límite dicho llanamente nombrando el pedido; dos límites aprobados, 2 créditos. Medición raíz: guardar un contacto se responde como límite conocido en español e inglés citando lo que la persona escribió; los tres límites negativos de contactos reciben la misma respuesta y siguen sin acreditarse.
+
+## Actualización 2026-09-16 (AGENDA1669)
+
+Alarmas, recordatorios, tareas y agenda pasa de 37/38 a 38/38 y Archivos y carpetas de 28/32 a 29/32 con lo agendado leído de lo programado por BAXY y el resumen de PDF respondido como límite conocido (commit cfd29303, BUILD1669) (HEAD cfd29303): el literal de agenda y sus dos variantes con una notification.list verificada y finales fieles (nada programado); el literal de PDF y sus dos variantes con cero operaciones y el límite dicho llanamente; dos límites aprobados, 2 créditos. Medición raíz: lo agendado se lee de lo programado por BAXY en español e inglés y el resumen de un PDF se responde como límite conocido; la categoría de agenda queda cerrada. La categoría queda cerrada.

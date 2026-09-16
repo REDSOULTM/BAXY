@@ -1,0 +1,15 @@
+{
+  "schema": "c03-agenda1669-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_AGENDA_LISTING in _notification_listing_request; known_unsupported_effect_request contract document.pdf.read).",
+  "patch": "artifacts/comprobaciones/C03/AGENDA1669/SOURCE.patch",
+  "commits": [
+    "cfd2930346c9fd0565d8603321536d17fa3b3a34"
+  ],
+  "build": "BUILD1669 (C03-repairs1669-build/BUILD_READY.json; mente)",
+  "cause_measured": "La pregunta por lo agendado iba al modelo sin lectura; el resumen de PDF sin límite declarado.",
+  "change": "Lectura notification.list para lo agendado; límite conocido para resumir PDF; sin respuestas fijas.",
+  "measurement": "AGENDA1669: el literal de agenda y sus dos variantes con una notification.list verificada y finales fieles (nada programado); el literal de PDF y sus dos variantes con cero operaciones y el límite dicho llanamente; dos límites aprobados; 2 créditos. Medición raíz: lo agendado se lee de lo programado por BAXY en español e inglés y el resumen de un PDF se responde como límite conocido; la categoría de agenda queda cerrada.",
+  "credits": 2
+}

@@ -1,3 +1,11 @@
+# AGENDA1669 adjudicado — 2026-09-16T04:12:17.972552+00:00
+
+**600/742 cubiertos, 142 abiertos, 0 NA; 8/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38); C03 formal 3/11. Registro SHA 03062a29d29f1668885ff94131cc04552fd21b652565bf81b0d84711cbbcf125. Primeras altas 24 h >= 474 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD cfd29303 con BUILD1669 (qué hay agendado se lee de lo programado por BAXY; resumir un PDF es un límite conocido). Turnos ordinarios sin operaciones.
+
+AGENDA1669 («Alarmas, recordatorios, tareas y agenda», lo agendado leído de lo programado por BAXY y el resumen de PDF respondido como límite conocido): el literal de agenda y sus dos variantes con una notification.list verificada y finales fieles (nada programado); el literal de PDF y sus dos variantes con cero operaciones y el límite dicho llanamente; dos límites aprobados, 2 créditos. Adjudicación 7e190cadba2dfbb2379e8afac5644af6e9acf6f4ce80cf8fb4d9de5f1857e302. Medición raíz: lo agendado se lee de lo programado por BAXY en español e inglés y el resumen de un PDF se responde como límite conocido; la categoría de agenda queda cerrada.
+
+---
+
 # LIMITS1667 adjudicado — 2026-09-16T04:01:15.507981+00:00
 
 **598/742 cubiertos, 144 abiertos, 0 NA; 7/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17); C03 formal 3/11. Registro SHA b677ab09d3182e70b2292f9ce2830c58f07d76c3547c1d2368275bce5374f2f9. Primeras altas 24 h >= 472 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 368a18e3 con BUILD1665 (guardar un contacto es un límite conocido que puede citar el nombre y el número pedidos). Turnos ordinarios sin operaciones.

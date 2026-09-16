@@ -1,0 +1,465 @@
+{
+  "schema": "agenda1669-root-adjudication-v2",
+  "decided_at_utc": "2026-09-16T04:12:17.972552+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "cfd2930346c9fd0565d8603321536d17fa3b3a34",
+  "decisions_sha256": "06ec68ee27e887ce0c1977cd9bd2a09df577f3bf00bf094b634ca7d9ccffbdc0",
+  "registry_before_sha256": "b677ab09d3182e70b2292f9ce2830c58f07d76c3547c1d2368275bce5374f2f9",
+  "registry_before_counts": {
+    "covered": 598,
+    "open": 144,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "67419dbb2d3a311aed158b0addf6d02c2658a972ab0745d9f10ec71a8975aaa6",
+  "preparation_sha256": "4664dbe0e530c3b7a7611d646b121487e97e7ea416b8c359582f062aaec2b128",
+  "passed": 8,
+  "failed": 0,
+  "unexecuted": 0,
+  "executed": 8,
+  "segments_started": 8,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [
+    "H0660",
+    "H0666"
+  ],
+  "counters": {
+    "covered": 600,
+    "open": 142,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 472,
+    "categories_total": 35,
+    "categories_closed_after": 7,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 472 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AGENDA1669 añade 2. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 474
+  },
+  "resources": {
+    "seconds_sum": 187.06400000001304,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 2523.88671875
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0660",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        2,
+        3
+      ],
+      "reason": "Lectura notification.list completada y verificada; el final dijo lo observado sin inventar citas; crédito con dos variantes aprobadas del mismo grupo.",
+      "observation_note": "Turno ordinario: exactamente una notification.list de sólo lectura completada y verificada; el final dice lo observado; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "494cee885e9fd095141253ae1df16bef97c00c568604c85670dd75671dc72fb0",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-00\\EXIT.json": "24cfb5e7da5e76341dc818e546f3127fac5a22157d1fb7cc6c050542989fd822",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-00\\RESOURCES.json": "c6c42a85bdc7f9c910383b575d378ea7741469f7044078317ad31ebd71fb7fa7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\profile-owner-00.json": "df68c839d36d869c2e3abdf87b3dbb550ea4973257166a4728d90b4fe3e9b6f4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-00\\PREREG.json": "0b0b6b801a267553093d3410c8491940387e5474c821a4cd4f5d735c4d871729",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-00\\capture\\events.jsonl": "f016eb2be042723f0026aebf20087a0e3dcbcc5d38f845c40b565bcb3deae86c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-00\\turns.jsonl": "6e80d2f6c3c7a5550cee62bc7c12dc562113e9497554f9ccdb64c0f1846fd3af",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\fixture-00.json": "140584624bbc56565fcf0ca5e47744bde9b6349bb118a228314bdf0fc1213fea",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\context-00.json": "a23318fee3d1163379ac96a1d49bacebf5ae734f6421bd486331609acc1b9a6e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\context-prelaunch-00.json": "d40e29bc41126d1a9991ed9580453179f438f584aa21da9849cfcaebed19f927",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-00\\case-observations.json": "9a8e6030544e6efcefe659e464851ab0c42c93019da2263070c474c6d5dca44a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-00\\journal-before.json": "053d96760160bcdedb72e9ecefb88a3dbadad2d912e32bbe90419c04ea5a1d78",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-00\\journal-after.json": "268aa2b36e870ddef3221e2965de280396bc413e828b6ddb14bb9eb2463a41ae",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "9b54b94b984411f7f66c42d0ac0c5675589a52c9f1980ca858f3eeb799560188"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "eaba4f57-d07b-40f2-8fb3-95ae48789906",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "bc76bae3-f1b1-40bd-b929-05d935032702",
+          "operation": "notification.list",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0666",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        4,
+        5
+      ],
+      "reason": "Efecto sin operación en el catálogo: el final dijo llanamente el límite nombrando el pedido, sin operaciones; crédito con dos variantes aprobadas del mismo grupo.",
+      "observation_note": "Turno ordinario: cero operaciones; el final dice llanamente el límite nombrando el pedido; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "75454c92d2675a0c10455511573d2817265fd56d36ee754dfe36faf3940ef0e1",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-01\\EXIT.json": "9fd9dd8c2dba467937baa80eec0dfd328fcbad4a24d675d424ea454bf736b0e2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-01\\RESOURCES.json": "9858ff5321d3f1ce1d902e50b04d10c11cacc2193e080c84bb80eb1a085c9e3c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\profile-owner-01.json": "8f289b8675840f9476fe64eaa6f486e764fe247e818b51e4933715bb5193b28c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-01\\PREREG.json": "975390e13fa36a619f04309fe595906f95e5f11532d1ea848423f77c0004fccc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-01\\capture\\events.jsonl": "7bccfd274bc1de833384cd11069b9ad75d9a9b54bf2819fed53d8fbaa7d79b27",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-01\\turns.jsonl": "472c5985f64e47afde576aa28060a850141407f67f88cada668158adf292a0fe",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\fixture-01.json": "21e6871db333e72e20c8f54fb85d66e56f2cd304b27cf27f81ba40c1b9608a78",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\context-01.json": "3039dfd6f65c112ec896119327a482a09c4cd30c8023aa2ca2c7745e07e8f74a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\context-prelaunch-01.json": "71f82678668e18c2c6d534f3aff074981e0ddc973ef3a5283d710445ea9fba7c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-01\\case-observations.json": "b5c89c426615142adeaabe656344a8232797cb7ef7c5f3b139912688e6cfa414",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-01\\journal-before.json": "3cd3359c7ef67242975af5c95ac23ef28cfa4c094d03767a07a44d7429f86cd3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-01\\journal-after.json": "b62786177ffda62e6a172ad6d4cd2897491e5ec2c5afc9097713997bc1767d33",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "51b8e726d176e3bff4c4ba35b39e74348d38c475f00660d2b186cccf69b6e478"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "327ad08b-c1b8-43d9-b356-b9881196ed66",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "agenda1669-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Lectura notification.list completada y verificada; el final dijo lo observado sin inventar citas.",
+      "observation_note": "Turno ordinario: exactamente una notification.list de sólo lectura completada y verificada; el final dice lo observado; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "494cee885e9fd095141253ae1df16bef97c00c568604c85670dd75671dc72fb0",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-02\\EXIT.json": "d5a1b7a232e4c9098c27d7a8728b7df1157e7d040d3ee4fa9e2ae0b66f26a7a4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-02\\RESOURCES.json": "6b286dcbfdfed71e3e519b25586e3e047fde0916cf54c7c27e11a9fe0a622e92",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\profile-owner-02.json": "ff37c76494140733f6e57f4588671cb2a938a04c14b381f6691c460db55379ec",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-02\\PREREG.json": "e639b3c40ff92e5f527d6b6cf4340fc02d32c0100c9a664308f46716772c5a45",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-02\\capture\\events.jsonl": "70b541e5132c6659d379ad21a3524926968da8852c4bd3fcc15f50e8cc18aeec",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-02\\turns.jsonl": "aa21f731ee503127b9d5bd4cd90d291c3f41ceb58bb511fa0b625c77d31c7773",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\fixture-02.json": "200f23ecb5fa0b0d10f863e5d79c978c140c135353770b7f9a644acf26cb12e5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\context-02.json": "5a786e6012e5311bddcfaf0290a0e6cd7d1696be616aed235c9107f9093cb334",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\context-prelaunch-02.json": "96d9967004c0e3884092078877746f66c2bf221a6fd57347599528215cfdaf4f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-02\\case-observations.json": "f3433708b2211d66351eb2670e4f9478c3af451788cd6c68417b58550d7a8bb8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-02\\journal-before.json": "b4c881e9ef751d721ef37f92712f90117cb077a407fe6a561898674cc0a0aa37",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-02\\journal-after.json": "549d20e4a927cfdac03d1557f9337b2dd2a5b3e9ea8760d1bbcedc851e624a4c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "4a9cb831e66178c1d84898e46b19eecca1c034354786a7575249e61300e472ad"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "cd698b46-6fd5-453b-a308-6b7725635c22",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "7d111a22-cf90-4d6d-90f7-c826592ef153",
+          "operation": "notification.list",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "agenda1669-dev-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Lectura notification.list completada y verificada; el final dijo lo observado sin inventar citas.",
+      "observation_note": "Turno ordinario: exactamente una notification.list de sólo lectura completada y verificada; el final dice lo observado; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "6865e65146f1ed5ee1120a005b66fabaae3a767f7d25b353dadeb387182a8ac1",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-03\\EXIT.json": "72ef960ebec7ad46471c96446b29d89dd9d2846c9629abbd763465ef4f0730bc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-03\\RESOURCES.json": "28bf4f822c195d7be214937923de6d3430485bc373cc61f9eec2122fbf38fd6a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\profile-owner-03.json": "c26355469d8a1ca72540a761102ff19447a5a694f2e62e2169f514923beff549",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-03\\PREREG.json": "e5c4074b058089bf8eb859b15eb10ae4475b3a901c0343a29d40bfaf383aeead",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-03\\capture\\events.jsonl": "7f35bf58b6a95c1ac0c611c9f12a8462eb227e6ecbd0f0eee0992c436a2cc59e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-03\\turns.jsonl": "e4871f63a809d7eb2b32c1f7e9ed65caaf88c13662a60205b1019e42a23ffb82",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\fixture-03.json": "f5f6ea0993d88749fb92ecc1464938bcc82db825ba038c8a7bcb547f3565d9b7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\context-03.json": "3a5c7a26e2dfc84dc32e1d8c15854fbf03cd98eb3967af31d8abd6407ee0aab7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\context-prelaunch-03.json": "7e4a64ea9b1807e44106c25f7cd2e4dbcdc3a9c1e9bfd8ec099856c6035bd043",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-03\\case-observations.json": "c0e8bddf35e6619d2b3583f2ce3c3f56da27b29885f6cf376d05ce6424aa49e3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-03\\journal-before.json": "449df07e83757d9b8bfc43c9e931003388cba176cf7660f38a06ff9a5a37eefa",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-03\\journal-after.json": "b2c01cf9b6bff763a36ad0d6e180f92dd021ba2139d16bf65a621e4411d583aa",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "e055307742f4dd0237c37132235850ee954868c5a9d98971e756f5f160de9915"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "830a0996-e1a3-464a-ba89-d4a0940d98b4",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "940420aa-8410-420e-9b71-a2a158248df2",
+          "operation": "notification.list",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "agenda1669-dev-03",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Efecto sin operación en el catálogo: el final dijo llanamente el límite nombrando el pedido, sin operaciones.",
+      "observation_note": "Turno ordinario: cero operaciones; el final dice llanamente el límite nombrando el pedido; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "39823f1ec654816ef04e5ae07d3d15f05e9326d06030d60cfa2b363688634e63",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-04\\EXIT.json": "4c541e32e3b6b3ac6afa07cdff2e5d811ca3ddaad431b3d02c1fed507c98361b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-04\\RESOURCES.json": "fdd0fc9b854a83167c75bfedf504dd77085d2fc42ad33d576356ae43ea0e4a9e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\profile-owner-04.json": "2e9e507770cc6bffa6d4904cefbabe65a42a4be94f2963f38e1fedbbb3826240",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-04\\PREREG.json": "dc7e6ef03ff6d06a5a5d0b09657c27f0569aa37e9575fe083a37d60b4be95660",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-04\\capture\\events.jsonl": "2b6d6a6427cc125a72a7a34a094c6bf2ed3ac568747ac77bebaa53fed387ea83",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-04\\turns.jsonl": "51d1b841edff06ea79bd19d836736a4a1f4835c7f5249c98ed5b33f2620e0bfc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\fixture-04.json": "644cab47669f0da98b664d4e2b609f88c240fc6e9dd5bf47df049d1ca11d20b2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\context-04.json": "895ddeb4a84c317e1c45663cfb909ddf8dcd2709c119ed2f9e6079da7a9b991d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\context-prelaunch-04.json": "167762db7199e366d28856f4485908b833e792ad6efb83f3239e79aa0b0738e2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-04\\case-observations.json": "2750890b131a8be71a67101f8d5d8a15b972b65bc46fa34f295b5d9c3a3a004c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-04\\journal-before.json": "79ab4488803ac95c4c3cbfe29a101dbaf836e6a05be351e56bca6f7e335ab484",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-04\\journal-after.json": "86cf2aef412b29b1b4e35c50dbff42c821c9aa855b5eb21e133c0a22d7bef664",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "7ebf0b0c831b5282cb8537748d5d6a674f3e3c114c120afde0f19ad562d6cff7"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "d28bee63-b003-465e-920b-995c0eb99da3",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "case_id": "agenda1669-dev-04",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Efecto sin operación en el catálogo: el final dijo llanamente el límite nombrando el pedido, sin operaciones.",
+      "observation_note": "Turno ordinario: cero operaciones; el final dice llanamente el límite nombrando el pedido; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "af311e34537c88525c4935bcf7f473ebc4e8bf2c0ee2b05155e8beceb1efee2e",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-05\\EXIT.json": "58ad7682d99974849b55f333c0a4f608af59df6702145dd7ee8ea9dc49af8ea4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-05\\RESOURCES.json": "3389d63bab31a9f038d75196c3748c67580e0566d05381fd3c9abcd41ba96c84",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\profile-owner-05.json": "85e3fe45baede933a920c808fb049f3c12b8e3f007668f665feada9dcd05fa8c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-05\\PREREG.json": "788d538a7101e0a5b03349fbb40a558eec209181b34add351c8f7a4140d11324",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-05\\capture\\events.jsonl": "25e8ae9cd10a01ac3ff72b38e439ac73461ea4e36b5a891237c1c1667e2768b5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-05\\turns.jsonl": "6f15a2ea130c1e9f1f068a54c1ea02e9af3925476b98205bb1e4986fd6ab9e79",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\fixture-05.json": "70546ba10c5593e85f0e3039b1437b28f482368b438dab1858fcd18b5ac97b2d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\context-05.json": "12e355564bb39b62fc1bc7ab5d5c08c07628b382212729e85a520e404c737788",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\context-prelaunch-05.json": "04def14a09e45d94e1ab5419980f4e4c930a98682999893c20c5ad4f9524a658",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-05\\case-observations.json": "4f5e0667b08d495831f545619fdc7b4a04fbcb0504afd27b8a0afba2dfa804d3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-05\\journal-before.json": "30a34441d3b3514af5e7f640ae82431339dd84ddb187b41ddef19585e83e6f54",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-05\\journal-after.json": "33ce6dc1cf4979b825c942058ac4bfe2810edbe8ab01c6b83121cc16160087d6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "b902bce10ce4916707a6d476c51f33692259a4d5f914bcd9b3b1f249fedc36b7"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "12519dd8-8832-45bc-9f6b-4278aa59a670",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "case_id": "agenda1669-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "a14c2492259506c182e711490b6f0ad643c1bd9445ca03718fab1556921ab52e",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-06\\EXIT.json": "7a1a9b7379b2b6c55626aacb1ca92eec5b8666cc656e66222d35c73287325f2e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-06\\RESOURCES.json": "0bb0c396c2b65689a09733eb7f913f2c43d801fc6d539202d7f4cabe6d5d040c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\profile-owner-06.json": "7ca919856d312dac61ec3a40fdaac8db8d6210326b9e4568a11bcfecb94ccdb8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-06\\PREREG.json": "2706513360eef034ad583cfe85fc105ee3f334a32d60999bbc66b30d80dde8ab",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-06\\capture\\events.jsonl": "055890e35366d66e96772eabbc6d6f196e666f37072e02f412a156d3b4a589e8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-06\\turns.jsonl": "73e33bc16567e3ab50d81142e11fa6b3f97d93d548c0629cb4749248d29064ea",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\fixture-06.json": "db99ed17e935e20a3eb165bec55e2a67c1a9853f5ba996a967df6d9b715c67de",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\context-06.json": "876f6a31460c65346c19c4eb4abcd561b169940e28b9728c7058178de5bb5c26",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\context-prelaunch-06.json": "1512bc0188e7cf62123b0f46132586b86981ab19f077cc07e3b11c89e84d7ede",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-06\\case-observations.json": "a8555bf9c401708b0c32e904fd114ec9624ee8aeafc5c5cdf7cdcae724259bd0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-06\\journal-before.json": "60a0538f0617f7fae895b6075a5a2dfc38c59d9b02c9542373e8d2dd30490a8c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-06\\journal-after.json": "7b8fb27d857122b19a9f8e099c83b394d500e3f1a2f29bb9280ead48c30d7974",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-06\\journal.snapshot.jsonl": "c5a7a40229fdb8ba86eb52bbc46c3ecd9835f4976937176cbe271e873c8e2400"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "4f528ea5-5409-4cf3-87aa-4af47fd20390",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "case_id": "agenda1669-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "7f0298b9cc1bb48c11fb3832b1267bed118bf0a1638b99adcb5ad24f04c6c9ad",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-07\\EXIT.json": "85dc2e26742df16b1d0b6c1fe821f69851045bc0612b2ac877a08239c9cdb134",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-07\\RESOURCES.json": "5c08900c3b44585e7cf4434afbcd04d8aea4f27f06b356e05ff1c7292fdd42cd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\profile-owner-07.json": "125f9272c3f72f322da783d39bbd5b3de98f0138f0624474d270fd3ce8b15e1e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\results\\case-07\\PREREG.json": "5916e3cbf1dbee9daf63e54fe05287100a8efc01fcf1419374a0ffc2385a3e64",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-07\\capture\\events.jsonl": "8255756a1c342744578f1eaf7261bd91ed46b7799c2c95a2a8fe1f01d925e98b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-07\\turns.jsonl": "b1018c8da357ac451acbb8dd130aeb154de12313ea581347520d76c533efa95f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\fixture-07.json": "6702624ec88bdddcfb3b79538ecb42a2888d542b8d1064565ff185d3a8db7a2b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\context-07.json": "2185af5f3531fb9c9529e89bbf8f4edca9284f99205eca7fdffc57c471b9bbdd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\context-prelaunch-07.json": "d5d75bfe773902e84fe84b9e4b0564a95e94b2a2102142b3975d572306889fd5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-07\\case-observations.json": "3ebb7ee348bfc7e84753c3d09bbd865256195824002ab0f479e9e7637bcbda3e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-07\\journal-before.json": "197a705049f93f81bfb1fdcc198e7052dda23c6d621ccebdafe077cd85aa358b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-07\\journal-after.json": "065d2817fb447f05926784124b3c4fe9a0454cdfe7c41cc1d90250a1211d7270",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1\\private\\run-07\\journal.snapshot.jsonl": "49dd2eb85164c67d58ac407460e184bb60e697fc5d8fe0a6ba82ebb0c5648404"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "5dbef240-2b51-492b-b62c-c4e17ef150b9",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "AGENDA1669: 6 ejecutados, 8 aprobados, -2 fallidos, 2 créditos (índices [0, 1]); Abrir aplicaciones 48/54. Siguiente: categoría por masa abierta según CONDICIONES.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

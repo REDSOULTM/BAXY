@@ -1,0 +1,105 @@
+{
+  "schema": "agenda1669-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-agenda1669-instrument-v1",
+  "seal_sha256": "cf761c4e0a244d7bbc3acab68565a199a5cfc6be06f8ec215a670c9dc8b9e836",
+  "runner_sha256": "362a78a94e415a87898b7833dead96ba6133d54ccefba99456a2d168b1450100",
+  "transport_seal_sha256": "921de3916017ef61b72893126dc65470d8cb005c48f76c289901447fa95ac455",
+  "files": {
+    "panel.json": "549cac1c0594373685690527db0c9bacc08a9a83e83677c4ff55c05af03a30a3",
+    "turns.jsonl": "40fb744fea4ea33c76a83890d6fa302af1ab723c5bcc08b40497f33edc8ab7fa",
+    "case-map.json": "b8b47bde85f4a805aef7159e46da866b3270894cc47231d6e924a774b110de37",
+    "PLAN.md": "771bb3b927d8e06c211ca6cde212dd0bff7b5b8866104d42ce06e9617dc82308"
+  },
+  "counts": {
+    "cases": 8,
+    "historical_literals": 2,
+    "original_development_variants": 4,
+    "boundaries": 2,
+    "wire_lines": 16,
+    "session_controls": 8,
+    "ordinary_turns": 8,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 8,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 2,
+    "original_development_variant": 4,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0660",
+      "kind": "historical_literal",
+      "group": "agenda_list",
+      "credit_behavior": "agenda_list",
+      "text_sha256": "e2bd26259ae7bc963cf557706f999b0465234a33858c9fa8b468dc07680a72db",
+      "criterion_sha256": "0de1913650edbd0734066b02597f06929f4489e86c68ee9a153f92d4d3fc31e2"
+    },
+    {
+      "index": 1,
+      "case_id": "H0666",
+      "kind": "historical_literal",
+      "group": "pdf_limit",
+      "credit_behavior": "pdf_limit",
+      "text_sha256": "e3bfd39f09e5959906a4ce5de0a672c6944a8e534cba3f393e847cf55448d0ed",
+      "criterion_sha256": "1c18ee9fa231bcac9ba94c936f547860aad964303566cb1ecc0b3c5fb69db7de"
+    },
+    {
+      "index": 2,
+      "case_id": "agenda1669-dev-01",
+      "kind": "original_development_variant",
+      "group": "agenda_list",
+      "credit_behavior": "agenda_list",
+      "text_sha256": "ba1a2156cf2060765d2cef68072d91ea22770411ddee026a256125ea82db430e",
+      "criterion_sha256": "0de1913650edbd0734066b02597f06929f4489e86c68ee9a153f92d4d3fc31e2"
+    },
+    {
+      "index": 3,
+      "case_id": "agenda1669-dev-02",
+      "kind": "original_development_variant",
+      "group": "agenda_list",
+      "credit_behavior": "agenda_list",
+      "text_sha256": "445ecdafe3189d9fa54777aa1991fab5ded7d3df614fe61947dda32676ee8199",
+      "criterion_sha256": "0de1913650edbd0734066b02597f06929f4489e86c68ee9a153f92d4d3fc31e2"
+    },
+    {
+      "index": 4,
+      "case_id": "agenda1669-dev-03",
+      "kind": "original_development_variant",
+      "group": "pdf_limit",
+      "credit_behavior": "pdf_limit",
+      "text_sha256": "7a06429645db423d35e42d332c9903e3dba5c76a3b6fcfa277d5159d7bb326a1",
+      "criterion_sha256": "1c18ee9fa231bcac9ba94c936f547860aad964303566cb1ecc0b3c5fb69db7de"
+    },
+    {
+      "index": 5,
+      "case_id": "agenda1669-dev-04",
+      "kind": "original_development_variant",
+      "group": "pdf_limit",
+      "credit_behavior": "pdf_limit",
+      "text_sha256": "6f97f14d8e0f3b1efec20b4d756fe13af547cb7829a4743cf1d7fa08971de376",
+      "criterion_sha256": "1c18ee9fa231bcac9ba94c936f547860aad964303566cb1ecc0b3c5fb69db7de"
+    },
+    {
+      "index": 6,
+      "case_id": "agenda1669-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "3cc3b6e2e4aaba255a5c1f596f5d68fd4fbe4f03b190a621aa9be2f75496bcb8",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 7,
+      "case_id": "agenda1669-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "52b3c1b9aefc0eb77f24d30e99eb9fe63fb1cf14a4c6e2ab4d176112e01436cb",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    }
+  ]
+}
