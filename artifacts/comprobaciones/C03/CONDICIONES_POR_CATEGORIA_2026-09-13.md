@@ -1306,3 +1306,7 @@ Música pasa de 32/39 a 35/39 con pedir música en Spotify sin decir cuál, preg
 ## Actualización 2026-09-16 (UI1765)
 
 Bibliotecas y fichas de juegos pasa de 4/6 a 4/6 con abrir Epic Games sin llegar a la biblioteca: el clic visible se rindió a los 2,7 s porque el bucle de espera cortaba ante el código «no encontrado» (commit b4053cae, BUILD1765) (HEAD b4053cae): 3 fallidos (app.open del launcher verificada y clic aprobado, pero input.visible.click terminó no encontrado a los 2,7 s: el bucle de espera cortaba ante el código de la etapa UIA), 2 límites aprobados, 0 créditos. Reparación del bucle de espera del clic visible a continuación (espera mientras la respuesta sea de cascada) y repetición como UI1767.
+
+## Actualización 2026-09-16 (UI1767)
+
+Bibliotecas y fichas de juegos pasa de 4/6 a 4/6 con abrir Epic Games y navegar hasta la biblioteca con un clic verificado por OCR en el literal, sin crédito porque las dos variantes no encontraron la etiqueta tras el cierre forzado del launcher anterior (commit ab6b40a0, BUILD1767) (HEAD ab6b40a0): 1 literal aprobado (app.open del launcher verificada, clic en «Biblioteca» localizado por OCR tras la espera de carga, superficie cambiada, final fiel), 2 variantes fallidas (etiqueta no encontrada tras la espera completa en un launcher reabierto tras un cierre forzado), 2 límites aprobados, 0 créditos. Sondear el segundo arranque del launcher tras el cierre de la raíz y corregir el cierre del instrumento o la elección de superficie; repetición como UI1771.

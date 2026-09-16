@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1767-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs (the label wait keeps looking on a cascade answer instead of breaking on any error code).",
+  "patch": "artifacts/comprobaciones/C03/UI1767/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1767 (C03-repairs1767-build/BUILD_READY.json; proveedor)",
+  "cause_measured": "El bucle de espera del clic visible cortaba ante el código «no encontrado» de la etapa UIA, así que nunca esperó a que la interfaz cargara.",
+  "change": "El bucle espera mientras la respuesta sea de cascada; sin respuestas fijas.",
+  "measurement": "UI1767: 1 literal aprobado (app.open del launcher verificada, clic en «Biblioteca» localizado por OCR tras la espera de carga, superficie cambiada, final fiel), 2 variantes fallidas (etiqueta no encontrada tras la espera completa en un launcher reabierto tras un cierre forzado), 2 límites aprobados; 0 créditos. Sondear el segundo arranque del launcher tras el cierre de la raíz y corregir el cierre del instrumento o la elección de superficie; repetición como UI1771.",
+  "credits": 0
+}
