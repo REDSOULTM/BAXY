@@ -1,3 +1,11 @@
+# UI1661 adjudicado — 2026-09-16T03:35:15.586787+00:00
+
+**592/742 cubiertos, 150 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 21548eeee6c0db5b95f7e86d40ed331230d29551cd407691cc2887d071608fe9. Primeras altas 24 h >= 466 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 75d37016 con BUILD1661 (la respuesta de límite validada por la mente no es lenguaje de fallo para la aplicación). Turnos ordinarios sin operaciones.
+
+UI1661 («Interacción dentro de aplicaciones», la navegación dentro de un cliente de mensajería respondida como límite conocido con la respuesta de la mente publicada): dos literales y la variante en inglés con cero operaciones y el límite dicho nombrando el pedido (la respuesta de la mente ya publicada); la variante en español sin par (reintento acotado vacío bajo la gramática JSON); dos límites aprobados, 0 créditos. Adjudicación e67ea31c222f74a7cc0779f0e062312b72cabcd38952c1b8a22b95637bccc861. Medición raíz: la exención por clase de conversación publica la respuesta de límite de la mente; el reintento acotado bajo gramática JSON devuelve contenido vacío con finish_reason length, reproducido fuera de línea; siguiente UI1663 con el reintento en prosa llana para el límite.
+
+---
+
 # UI1659 adjudicado — 2026-09-16T03:12:19.583778+00:00
 
 **592/742 cubiertos, 150 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 743130a5cd6199a4a02728e129df528075beeb8f9cdd7d3723648aaf9dfb86c9. Primeras altas 24 h >= 466 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b1ce4dc2 con BUILD1659 (ir a un canal «en Discord» es un límite conocido, no una navegación web). Turnos ordinarios sin operaciones.

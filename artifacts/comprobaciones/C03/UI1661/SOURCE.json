@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1661-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (ConversationReplyRejectionReason: unsupportedByMind exempts looks_like_failure) and src/Baxy.App/MainWindowViewModel.cs (passes turn.ConversationKind == unsupported).",
+  "patch": "artifacts/comprobaciones/C03/UI1661/SOURCE.patch",
+  "commits": [
+    "75d37016a9e0cbfcbd4925d91343ffb13e902e3d"
+  ],
+  "build": "BUILD1661 (C03-repairs1661-build/BUILD_READY.json; aplicación)",
+  "cause_measured": "La política de la aplicación rechazaba como lenguaje de fallo la respuesta de límite validada por la mente y publicaba un respaldo genérico.",
+  "change": "Exención del veto de lenguaje de fallo para la clase de conversación no soportada; sin respuestas fijas.",
+  "measurement": "UI1661: dos literales y la variante en inglés con cero operaciones y el límite dicho nombrando el pedido (la respuesta de la mente ya publicada); la variante en español sin par (reintento acotado vacío bajo la gramática JSON); dos límites aprobados; 0 créditos. Medición raíz: la exención por clase de conversación publica la respuesta de límite de la mente; el reintento acotado bajo gramática JSON devuelve contenido vacío con finish_reason length, reproducido fuera de línea; siguiente UI1663 con el reintento en prosa llana para el límite.",
+  "credits": 0
+}

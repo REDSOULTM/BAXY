@@ -1,0 +1,51 @@
+commit 75d37016a9e0cbfcbd4925d91343ffb13e902e3d
+
+C03: a mind-validated unsupported reply is exempt from the App's failure-language veto (UI1661)
+
+UI1659 measured «Go to the announcements channel in Discord.»: the mind closed the turn as a known unsupported effect and its bounded contract validated «I cannot go to the announcements channel in Discord as requested.», but UserMessagePolicy rejected it as failure language — its request-text heuristic (ConversationFallbackIntent) does not see the mind's limit — and the generic fallback was published without the request. The conversation kind now reaches the policy (unsupportedByMind) and exempts that reply from looks_like_failure; every other check still applies.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/MainWindowViewModel.cs b/src/Baxy.App/MainWindowViewModel.cs
+index 751b2e73..e96a1280 100644
+--- a/src/Baxy.App/MainWindowViewModel.cs
++++ b/src/Baxy.App/MainWindowViewModel.cs
+@@ -2274,7 +2274,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
+                     route.Text,
+                     turn.Reply,
+                     turn.ResponseLanguage,
+-                    string.Join(" ", PreviousUserRequests()));
++                    string.Join(" ", PreviousUserRequests()),
++                    unsupportedByMind: string.Equals(turn.ConversationKind, "unsupported", StringComparison.Ordinal));
+             if (LastMindReplyRejection is null)
+             {
+                 AddMessage(
+diff --git a/src/Baxy.App/UserMessagePolicy.cs b/src/Baxy.App/UserMessagePolicy.cs
+index 5224b7a2..9e50f2f2 100644
+--- a/src/Baxy.App/UserMessagePolicy.cs
++++ b/src/Baxy.App/UserMessagePolicy.cs
+@@ -524,7 +524,8 @@ internal static class UserMessagePolicy
+         string? priorUserText = null,
+         bool clarification = false,
+         bool hasRequiredInput = false,
+-        IReadOnlyList<string>? missingFields = null)
++        IReadOnlyList<string>? missingFields = null,
++        bool unsupportedByMind = false)
+     {
+         if (LeakedInternalTerm(reply, userText, priorUserText) is { } leaked)
+         {
+@@ -563,8 +564,13 @@ internal static class UserMessagePolicy
+                 && !AsksForDeclaredText(said, missingFields)),
+             ("greets_out_of_world", GreetsOutOfWorldTarget(said)),
+             ("unverified_connectivity", ClaimsUnverifiedConnectivity(said)),
++            // UI1659 «Go to the announcements channel in Discord.»: the mind
++            // closed the turn as a known unsupported effect and its bounded
++            // contract validated «I cannot go to …»; the request-text heuristic
++            // does not see that limit, so the kind is passed explicitly.
+             ("looks_like_failure",
+                 LooksLikeFailure(reply)
++                && !unsupportedByMind
+                 && !LooksLikeKnowledgeQuestion(user)
+                 && ConversationFallbackIntent(userText) != "out_of_catalog"),
+             ("greeting_not_returned",
