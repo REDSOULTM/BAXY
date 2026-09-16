@@ -1,3 +1,11 @@
+# UI1663 adjudicado — 2026-09-16T03:39:11.455901+00:00
+
+**594/742 cubiertos, 148 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 96ec0519eb81c04044e30b88cea8a358bb735c9564b3a7b60c27900f8454c7a9. Primeras altas 24 h >= 468 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD a001f21d con BUILD1663 (el reintento del límite se redacta en prosa llana, no bajo gramática JSON). Turnos ordinarios sin operaciones.
+
+UI1663 («Interacción dentro de aplicaciones», la navegación dentro de un cliente de mensajería respondida como límite conocido en ambos idiomas): dos literales y dos variantes con cero operaciones y el límite dicho llanamente nombrando el pedido en español e inglés; dos límites aprobados, 2 créditos. Adjudicación e85426d4845031f1ee5b4667daabb17496fc7d3e9a88cc02f15f5352d0daf8e6. Medición raíz: con el reintento en prosa llana, la navegación dentro de un cliente de mensajería se responde como límite conocido en ambos idiomas, sin navegación web.
+
+---
+
 # UI1661 adjudicado — 2026-09-16T03:35:15.586787+00:00
 
 **592/742 cubiertos, 150 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 21548eeee6c0db5b95f7e86d40ed331230d29551cd407691cc2887d071608fe9. Primeras altas 24 h >= 466 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 75d37016 con BUILD1661 (la respuesta de límite validada por la mente no es lenguaje de fallo para la aplicación). Turnos ordinarios sin operaciones.

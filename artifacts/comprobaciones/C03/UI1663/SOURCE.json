@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1663-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (chat: the bounded retry for an unsupported contract failure drops the JSON response_format).",
+  "patch": "artifacts/comprobaciones/C03/UI1663/SOURCE.patch",
+  "commits": [
+    "a001f21d239f06c2d31b429fd39977213222fa4c"
+  ],
+  "build": "BUILD1663 (C03-repairs1663-build/BUILD_READY.json; mente)",
+  "cause_measured": "El reintento acotado bajo gramática JSON devolvía contenido vacío (finish_reason length) y el turno caía a una aclaración.",
+  "change": "Reintento del límite en prosa llana; sin respuestas fijas.",
+  "measurement": "UI1663: dos literales y dos variantes con cero operaciones y el límite dicho llanamente nombrando el pedido en español e inglés; dos límites aprobados; 2 créditos. Medición raíz: con el reintento en prosa llana, la navegación dentro de un cliente de mensajería se responde como límite conocido en ambos idiomas, sin navegación web.",
+  "credits": 2
+}

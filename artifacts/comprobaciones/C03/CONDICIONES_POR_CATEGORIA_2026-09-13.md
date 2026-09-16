@@ -1007,3 +1007,7 @@ Interacción dentro de aplicaciones pasa de 14/22 a 14/22 con la navegación den
 ## Actualización 2026-09-16 (UI1661)
 
 Interacción dentro de aplicaciones pasa de 14/22 a 14/22 con la navegación dentro de un cliente de mensajería respondida como límite conocido con la respuesta de la mente publicada (commit 75d37016, BUILD1661) (HEAD 75d37016): dos literales y la variante en inglés con cero operaciones y el límite dicho nombrando el pedido (la respuesta de la mente ya publicada); la variante en español sin par (reintento acotado vacío bajo la gramática JSON); dos límites aprobados, 0 créditos. Medición raíz: la exención por clase de conversación publica la respuesta de límite de la mente; el reintento acotado bajo gramática JSON devuelve contenido vacío con finish_reason length, reproducido fuera de línea; siguiente UI1663 con el reintento en prosa llana para el límite.
+
+## Actualización 2026-09-16 (UI1663)
+
+Interacción dentro de aplicaciones pasa de 14/22 a 16/22 con la navegación dentro de un cliente de mensajería respondida como límite conocido en ambos idiomas (commit a001f21d, BUILD1663) (HEAD a001f21d): dos literales y dos variantes con cero operaciones y el límite dicho llanamente nombrando el pedido en español e inglés; dos límites aprobados, 2 créditos. Medición raíz: con el reintento en prosa llana, la navegación dentro de un cliente de mensajería se responde como límite conocido en ambos idiomas, sin navegación web.
