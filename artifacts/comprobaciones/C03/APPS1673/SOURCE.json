@@ -1,0 +1,15 @@
+{
+  "schema": "c03-apps1673-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (compose instruction bit for app.installed under a use-to-do request).",
+  "patch": "artifacts/comprobaciones/C03/APPS1673/SOURCE.patch",
+  "commits": [
+    "ec43279379d293de970671badbf006c51f283b09"
+  ],
+  "build": "BUILD1673 (C03-repairs1673-build/BUILD_READY.json; mente)",
+  "cause_measured": "La narración de la ausencia añadía consecuencias de fallo vetadas por el narrador y la aplicación.",
+  "change": "Instrucción del narrador: sólo la ausencia del programa, como hecho; sin respuestas fijas.",
+  "measurement": "APPS1673: un literal y dos variantes con app.installed verificada (ausente), ninguna apertura y finales que dicen sólo la ausencia; dos límites aprobados; 1 créditos. Medición raíz: querer trabajar en un programa ausente se responde por su ausencia del catálogo de inicio en español e inglés; la categoría de documentos e imágenes queda cerrada.",
+  "credits": 1
+}

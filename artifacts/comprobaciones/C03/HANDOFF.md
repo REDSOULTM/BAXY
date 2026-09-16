@@ -1,3 +1,11 @@
+# APPS1673 adjudicado — 2026-09-16T04:38:29.740747+00:00
+
+**601/742 cubiertos, 141 abiertos, 0 NA; 9/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2); C03 formal 3/11. Registro SHA 27e69caef28067f759f643827162e8e2174725a8eeef600636314087c44db23e. Primeras altas 24 h >= 475 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD ec432793 con BUILD1673 (la ausencia del programa se dice sola, sin consecuencias de fallo). Turnos ordinarios sin operaciones.
+
+APPS1673 («Crear documentos y editar imágenes», la foto a editar en Photoshop respondida por la ausencia del programa dicha sola): un literal y dos variantes con app.installed verificada (ausente), ninguna apertura y finales que dicen sólo la ausencia; dos límites aprobados, 1 créditos. Adjudicación e3a165dd78a6292a153ee80f62fa65a09f551e3842c46ac4979d2a2b386c73df. Medición raíz: querer trabajar en un programa ausente se responde por su ausencia del catálogo de inicio en español e inglés; la categoría de documentos e imágenes queda cerrada.
+
+---
+
 # APPS1671 adjudicado — 2026-09-16T04:23:47.833777+00:00
 
 **600/742 cubiertos, 142 abiertos, 0 NA; 8/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38); C03 formal 3/11. Registro SHA 8390585c85257917c09d45909b98427837e6fb11e8bb444dbb47d482084e5ddc. Primeras altas 24 h >= 474 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5360dc63 con BUILD1671 (querer editar una foto en Photoshop se responde por su ausencia). Turnos ordinarios sin operaciones.

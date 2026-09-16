@@ -1051,3 +1051,7 @@ Trece tandas desde el bloque de la mañana (INSTALL1631–1633, UI1635–1647, C
 ## Actualización 2026-09-16 (APPS1671)
 
 Crear documentos y editar imágenes pasa de 1/2 a 1/2 con la foto a editar en Photoshop respondida por la ausencia del programa (commit 5360dc63, BUILD1671) (HEAD 5360dc63): tres lecturas app.installed verificadas (ausente) sin apertura; una variante con final fiel, el literal sin respuesta (tres borradores vetados como afirmación de fallo) y la variante en inglés rechazada por la aplicación («cannot be opened»); dos límites aprobados, 0 créditos. Medición raíz: la lectura de presencia por el marco de uso funciona; la narración añade consecuencias de fallo que el narrador y la aplicación vetan; siguiente APPS1673 con la instrucción de decir sólo la ausencia.
+
+## Actualización 2026-09-16 (APPS1673)
+
+Crear documentos y editar imágenes pasa de 1/2 a 2/2 con la foto a editar en Photoshop respondida por la ausencia del programa dicha sola (commit ec432793, BUILD1673) (HEAD ec432793): un literal y dos variantes con app.installed verificada (ausente), ninguna apertura y finales que dicen sólo la ausencia; dos límites aprobados, 1 créditos. Medición raíz: querer trabajar en un programa ausente se responde por su ausencia del catálogo de inicio en español e inglés; la categoría de documentos e imágenes queda cerrada. La categoría queda cerrada.
