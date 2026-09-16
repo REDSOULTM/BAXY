@@ -6520,7 +6520,9 @@ def _negative_action_forms(folded: str) -> tuple[str, ...]:
         return ()
     verb = found.group("verb")
     if found.group("es"):
-        candidates = {"pongas": "pon", "hagas": "haz", "vayas": "ve"}
+        # SYSTEM1697 «No me digas la versión de Python.»: the irregular
+        # subjunctive of decir projects to its request head.
+        candidates = {"pongas": "pon", "hagas": "haz", "vayas": "ve", "digas": "dime"}
         heads = [candidates.get(verb, "")]
         for ending, replacement in (
             ("es", "a"), ("as", "e"), ("ces", "za"),
