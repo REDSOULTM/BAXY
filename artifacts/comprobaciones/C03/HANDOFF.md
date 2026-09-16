@@ -1,3 +1,11 @@
+# WINDOWS1695 adjudicado — 2026-09-16T08:49:33.129947+00:00
+
+**609/742 cubiertos, 133 abiertos, 0 NA; 9/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2); C03 formal 3/11. Registro SHA a0aae1e9d482435ecd4656f229e042aa08f8288fe9828d04813f57f71369ce58. Primeras altas 24 h >= 493 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 0aa8b142 con BUILD1695 (minimizar una aplicación nombrada es una operación verificada sobre su ventana). Turnos ordinarios sin operaciones.
+
+WINDOWS1695 («Organizar ventanas y pestañas», minimizar una aplicación nombrada ejecutado y verificado sobre su ventana): WINDOWS1695: minimizar una aplicación nombrada (window.resolve por applicationName + window.minimize, turno ordinario) sobre la ventana de Opera del dueño, restaurada por la raíz tras cada caso; H0697 acreditado con dos variantes aprobadas (español e inglés); dos límites aprobados, 1 créditos. Adjudicación bf88e1ae62b18ec1cdd87c846fa4f25b675ad9721435e36c45b98335fb414309. 5 casos ordinarios sobre BUILD1695: 5 aprobados; 1 crédito
+
+---
+
 # PDF1693 adjudicado — 2026-09-16T08:37:42.931218+00:00
 
 **608/742 cubiertos, 134 abiertos, 0 NA; 9/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2); C03 formal 3/11. Registro SHA 1784224e395bab1ee7d65ed016ac9d45b8db264312402e5185c2b36667ccfaaf. Primeras altas 24 h >= 492 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c7e71a8a con BUILD1693 (resumir un PDF nombrado reintentado con la instrucción del compositor en prosa). Turnos ordinarios sin operaciones.

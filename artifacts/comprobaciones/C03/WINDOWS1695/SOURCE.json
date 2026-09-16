@@ -1,0 +1,15 @@
+{
+  "schema": "c03-windows1695-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_authenticated_application_minimize_target, resolve_application_minimize_name, «minimisa» head) and src/baxy_mind/__main__.py (window.resolve applicationName from the minimize target).",
+  "patch": "artifacts/comprobaciones/C03/WINDOWS1695/SOURCE.patch",
+  "commits": [
+    "0aa8b1424aa59dc302b19c793f1f87e83e89a35e"
+  ],
+  "build": "BUILD1695 (C03-repairs1695-build/BUILD_READY.json; mente)",
+  "cause_measured": "El lector de ventanas exigía el sustantivo «ventana» y no admitía la grafía «minimisa»; el pedido no llegaba a ninguna operación.",
+  "change": "Lector de minimizar por nombre de aplicación (con «minimisa»); window.resolve liga la ventana; sin respuestas fijas.",
+  "measurement": "WINDOWS1695: WINDOWS1695: minimizar una aplicación nombrada (window.resolve por applicationName + window.minimize, turno ordinario) sobre la ventana de Opera del dueño, restaurada por la raíz tras cada caso; H0697 acreditado con dos variantes aprobadas (español e inglés); dos límites aprobados; 1 créditos. 5 casos ordinarios sobre BUILD1695: 5 aprobados; 1 crédito",
+  "credits": 1
+}

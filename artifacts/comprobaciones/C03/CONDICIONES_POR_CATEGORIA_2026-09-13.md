@@ -1115,3 +1115,7 @@ Desde el bloque de la tarde (600): APPS1671–1673, MUSIC1675, LIMITS1677–1681
 | Bibliotecas y fichas de juegos | 3 | Navegar la interfaz de Steam/Epic (LIMITS1683, pendiente del dueño); App ID por la API pública (límite sin marca). |
 | Desarrollo | 3 | Sin shell; regla del dueño H0076; límite sin marca. |
 | Resto (energía 2, cerrar 2, web actual 1, conocimiento 1, hardware 1) | 7 | Apagar/reiniciar (nunca); «cerrame todo» y «cerrá todas las ventanas» (H0467, H0484, reabiertos): un cierre real de todas las ventanas cerraría VS Code, que aloja esta sesión raíz, y las aplicaciones en primer plano del dueño — pendiente de una ejecución desde fuera de VS Code o de la aceptación del dueño, sin crédito ni fallo; fallo de WhatsApp en internet (motor), H0297, versión de Python (sin lectura de versiones). |
+
+## Actualización 2026-09-16 (WINDOWS1695)
+
+Organizar ventanas y pestañas pasa de 10/13 a 11/13 con minimizar una aplicación nombrada ejecutado y verificado sobre su ventana (commit 0aa8b142, BUILD1695) (HEAD 0aa8b142): WINDOWS1695: minimizar una aplicación nombrada (window.resolve por applicationName + window.minimize, turno ordinario) sobre la ventana de Opera del dueño, restaurada por la raíz tras cada caso; H0697 acreditado con dos variantes aprobadas (español e inglés); dos límites aprobados, 1 créditos. 5 casos ordinarios sobre BUILD1695: 5 aprobados; 1 crédito

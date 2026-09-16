@@ -1,0 +1,362 @@
+{
+  "schema": "windows1695-root-adjudication-v2",
+  "decided_at_utc": "2026-09-16T08:49:33.129947+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "0aa8b1424aa59dc302b19c793f1f87e83e89a35e",
+  "decisions_sha256": "a9eefa586584f2bfdeb9650a86b7c2d7487818a53f8ae736b0ffe3b53324ff8a",
+  "registry_before_sha256": "1784224e395bab1ee7d65ed016ac9d45b8db264312402e5185c2b36667ccfaaf",
+  "registry_before_counts": {
+    "covered": 608,
+    "open": 134,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "3ff65fc44bbb1bf96f68d1a3ce64da8d122bd9a3d824a993c0af6fe277f046b7",
+  "preparation_sha256": "e7dfa4785162d2860cbb36d50687a3ad4e7371fdb2a11d4a9dc7eebfab5a4f19",
+  "passed": 5,
+  "failed": 0,
+  "unexecuted": 0,
+  "executed": 5,
+  "segments_started": 5,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [
+    "H0697"
+  ],
+  "counters": {
+    "covered": 609,
+    "open": 133,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 492,
+    "categories_total": 35,
+    "categories_closed_after": 9,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 492 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WINDOWS1695 añade 1. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 493
+  },
+  "resources": {
+    "seconds_sum": 92.62300000000687,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1654.01953125
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0697",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        1,
+        2
+      ],
+      "reason": "window.resolve y window.minimize completadas y verificadas sobre la ventana de Opera del dueño, ninguna cerrada; el final dijo que la minimizó; ventana restaurada por la raíz; crédito con dos variantes aprobadas del mismo grupo.",
+      "observation_note": "Turno ordinario: exactamente una window.resolve (Navegador Opera GX) y una window.minimize completadas y verificadas sobre la ventana del dueño, ninguna cerrada; la raíz restauró la ventana; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "a428219e5b86ee5465ed6d144dc936a07797276cf065586674377203af9fce48",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\results\\case-00\\EXIT.json": "70c68094bcb9666e2877b7bde2d1487b7c4c29e3434786e45824709e96880dc9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\results\\case-00\\RESOURCES.json": "f58e5fa8095cd99b86489e82506c165c0291616553dc1777c0b48de6efde167e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\profile-owner-00.json": "3de46a7b7d2c248d7def27f048a24d7df9bf77a9d9fbafcaf474dc260d16ac54",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\results\\case-00\\PREREG.json": "bd650162197e417aaf3213319e94ff994f7edd209241f788de6d15142332d18b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-00\\capture\\events.jsonl": "1cf0dc34cbbc451a8487039c16c948f9c2362667e13479e16bc88cdc60b95720",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-00\\turns.jsonl": "939e6f57c9d32457c19a48b68ac80052d21c748824f5febd5fdf5f281e4599a9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\fixture-00.json": "e70d524e24bce08c8b60c4be0c43a165fa099b3b2efa3b0e2e0f1ae126e109c3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\context-00.json": "883b115ad8d7c2298647a74691e56eb1ae6004afaee869d3710fc78f204b43e7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\context-prelaunch-00.json": "63fb7adf496e3d2e9c06eda39e48a6afe58eb3e9ac6937c703accd1c129e9d9e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-00\\case-observations.json": "ddcd54f6a0d54a377539a712fb3c4a6adfb1b3b06bcad33e830b542512ae300a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-00\\journal-before.json": "62a9d8e79c07e163e8081c7dc9f94fb86a4ecdb6c6e0c747b189bf648a66a12c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-00\\journal-after.json": "20d6b9b8121c3a61f73dbf7c0c77511196daa44ecc8ced40a1d662fa19e04973",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "34981bc989fefa1105f970d1e4c5259c57d8ff9631d8516989c416284dd11139"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "142f4a1b-a902-4afe-bc19-17eaca9ea4c0",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "4080448f-5cf9-45f2-a2da-4b957f28015a",
+          "operation": "window.resolve",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "b2f76f3a-dcec-46c8-beda-91d718b4d6e1",
+          "operation": "window.minimize",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "windows1695-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "window.resolve y window.minimize completadas y verificadas sobre la ventana de Opera del dueño, ninguna cerrada; el final dijo que la minimizó; ventana restaurada por la raíz.",
+      "observation_note": "Turno ordinario: exactamente una window.resolve (Navegador Opera GX) y una window.minimize completadas y verificadas sobre la ventana del dueño, ninguna cerrada; la raíz restauró la ventana; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "47638bcd0072d1ef7c54e39dffa832a7b39a8eb2596f5f14dad7e48f14c0bccc",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\results\\case-01\\EXIT.json": "a3b475db5b080608c22f4cbb66016bdd6811567b466ee40bedc0b695cd5e3f42",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\results\\case-01\\RESOURCES.json": "5b4600a0b509ed6d5e8a685ec4b0448f6ae71f18cb8129fb29230120fa4a91b9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\profile-owner-01.json": "c7d7f35d5ee07c6ff64aff66adc0130ba3151d7202410b8d978c08db69175a32",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\results\\case-01\\PREREG.json": "24000aa3ec4b61d2ab45450d25cb2fa6734c7a65a54d7938ab9045722c7bbbba",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-01\\capture\\events.jsonl": "e86ca93be3919f8b134f25fdcc4da93bd4f98d1f0adcae4b5cf35c5848fe8b03",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-01\\turns.jsonl": "07c37674c55415d16d42469e7d67265eec694416e9fe4bcaae77901762fb51f4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\fixture-01.json": "3734b023e6224be8078342667dfdfd20723b9d3fbfad0035eb32a5aeefe57aee",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\context-01.json": "7d141c34deb77d5f41890b0195889e38795720d25e964a24feffd4d93e701a8d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\context-prelaunch-01.json": "fa4e35617b99b336d8f86e65b790ecde8dfd2170a66e01f9806fa62ba5580ae5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-01\\case-observations.json": "f4b2eec470d3dec696a71afd6f2ba7068a0b50fa34d1def61cc98a4473cf0564",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-01\\journal-before.json": "b4de2c513823f2e0879c0ed5a5367c634fe1f4327110bde748b8b677b00fa094",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-01\\journal-after.json": "1981550c8ee291fc9d880e595382d9856ff67e40c4d0460e0c3973f58f909bb0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "4ad7b790e4a4ff5c99f918f867c18cc0baa4d054d62790a8d886f88062f7ee03"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "c89b1212-1840-461a-a7cb-c6b818f0406b",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "f0dcb992-678a-41cc-bac2-80ef133a9664",
+          "operation": "window.resolve",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "df461093-972a-4339-8ca0-e74a4ea1ec48",
+          "operation": "window.minimize",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "windows1695-dev-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "window.resolve y window.minimize completadas y verificadas sobre la ventana de Opera del dueño, ninguna cerrada; el final dijo que la minimizó; ventana restaurada por la raíz.",
+      "observation_note": "Turno ordinario: exactamente una window.resolve (Navegador Opera GX) y una window.minimize completadas y verificadas sobre la ventana del dueño, ninguna cerrada; la raíz restauró la ventana; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "cb35443c5cda7daf99c08454fe655a9a1c2dd96f38939a29ec63f93589cc5159",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\results\\case-02\\EXIT.json": "42ac0f42491af688014be619a8919132ea1c8b9f26605b288455f0ea05eec3b8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\results\\case-02\\RESOURCES.json": "20c33d1af9689456f56646b5ff45601fde0a5740ccc6bf95e21638f6d7ae572f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\profile-owner-02.json": "cedafb53ac4647fdeb7e6d2746c0218b260d65a7bbd4aa066dc710c7a46d8c4f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\results\\case-02\\PREREG.json": "b4dd01ed0f9d324b417806958fb07fef0b13235758f815352988a515c6e71256",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-02\\capture\\events.jsonl": "a5f907ded01123d7fab6b27c72b86c5880d8bfa5a72c4ac03cce76d618dcb3c0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-02\\turns.jsonl": "c94462b6a367a7f6991e09dc155f7ff1d238dc3d3120c72ed9e9f078155f40ad",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\fixture-02.json": "5ec1200bb304f504353d090fcc762257997b9ab239ad130616781a85de4c9b3e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\context-02.json": "702cbc274b351bd364a102481c0cba30d610967096a2820827203676a403d1ae",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\context-prelaunch-02.json": "598e49ccd8a7a10569c7e6f9ed1ee2956496c60a022dced4c0fa1655cadd625f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-02\\case-observations.json": "52307d8cfdec8c594b83b7185d788b4b3fa4fb9cb2ed75dac7ad015b5c887e72",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-02\\journal-before.json": "c4f941e09291a8f7f8f9615a718911d8289f75f2bd27db5106a14cee4baa0af2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-02\\journal-after.json": "bdf3d9222fd914ad9b2c628f1de3ba3e9d1156754bc91739255a8702ea5498f0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "4597991a09027d770ff252d4484cda297136dd7499881c3f91b346f620404664"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "82753e75-cafe-4458-97ff-d23c9837be4c",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "b202cb09-4441-46bb-a590-52608096c900",
+          "operation": "window.resolve",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "c83cd8ad-126c-4aa5-80f3-65d0d1c3a4b3",
+          "operation": "window.minimize",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "windows1695-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "43e33cf8afb1a275e27846141f4e6dc06b196813184f9b75152bceaac6c6ccbf",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\results\\case-03\\EXIT.json": "b68247e3b760618d70ec16bf3a002c1a189c71209ce7ce12c3665b7a979ba46d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\results\\case-03\\RESOURCES.json": "a3ed2ea2e9fdce9b78d57b0a14dd7b443b27f6dd4a95f5db3038fe7bc8576062",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\profile-owner-03.json": "8ed35085d45735b4798456e12383f6faadf193386016572db1ebf4d14677d8bd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\results\\case-03\\PREREG.json": "6bf0b5fa79bca43e77cef2183ef88528760ad20bd8d99dcf3044fbd7ad7eae28",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-03\\capture\\events.jsonl": "4167f44ebd93f02cd1be4db0f8422603e73d5a63774a6b795927304173551b67",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-03\\turns.jsonl": "93dab70bd13421e2316a57931549fb8abc146c80b883e0c9e52877a65bd92ce0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\fixture-03.json": "fddc026170865fe07f46ee871e3019be88bf4daae9bd3a7a5a06a9a468a1176a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\context-03.json": "64c23375e99c8600981b2be1521f5ee2fa7d05360b15cac2d8fabac8025f8645",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\context-prelaunch-03.json": "7d0d3611c86de185c4033ad6e1df50139db56c2b8bee65e9da545f6d1d0d8ce7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-03\\case-observations.json": "0190b0d95f83ae7d8a5eae494d18b84745d6cb2f8f95092f81635cf0e0d69766",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-03\\journal-before.json": "a0fbac2942b9e111888fb5bb1b17e3ecbb60fe080403821b193ab36fba09b3a5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-03\\journal-after.json": "a1f25667d62ab934dc213db91b2512e6230b7d6133d9641014cd0f462d3448af",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "cd4d5fc8529342e8327b1f1db6ccaff05b6c01d61c89e5252bba27c45ee89958"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "fefad647-dd0b-4aa3-8d0a-3834f4aee452",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "windows1695-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "c2412183ce0df5e0ce35878c4fb26cd2750698a2fbec9332a3e1cfc9a9eb8532",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\results\\case-04\\EXIT.json": "5d42ea36065c5dcce540cd99c25e8a11350f0c56c09ee7bd2f22a1bf315b7b41",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\results\\case-04\\RESOURCES.json": "cb300b20cec032fa5872787355ca8d62cfe62e180c9a9fba28609079990dcdc4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\profile-owner-04.json": "942a61eb9c47a437e3b97d5966c249e87ce0c851889ce04fd3d3456964e1fe7a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\results\\case-04\\PREREG.json": "c2fb1a5103ff4ea47055a16fb332efab03b036bc3431d2b37907bc6579f8d8d6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-04\\capture\\events.jsonl": "e65249cd8e3ebeb4cee2af2ddc2a8a1d1fc8e272ccd0332f9b07a608d4961b4e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-04\\turns.jsonl": "19775626f640b6d5e8645547eff4cd5bc48c9022f003a5a1f36209ecd12bee93",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\fixture-04.json": "5a81c991464bfaf1d054c1d75b39d83ec83ad4f7d2ae089125b1eef0eb2acdf6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\context-04.json": "e34b0baa76f128d106a25118103017408ed8cb8c85ca101da118843814760c23",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\context-prelaunch-04.json": "7ad969daeee7a647a6b78cdc6d3af8d4bb09560877b587d5b89d66ec110f1d85",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-04\\case-observations.json": "d0c4db30ba393e01d094fe2a55e4f8beca53a6533c905e71ad3057f43f20f1f7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-04\\journal-before.json": "b3b3b2002d068c908054a72f63edbb4c8917ab1e4dda3fcaa61313f71506c386",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-04\\journal-after.json": "689cd1c1ffa318c1f5675cdc565f250a92dc7ab54140ab390b92584012701e73",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-windows1695-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "376a9976d2cb1652f3d6a48295b8812752fcdbd566f1efc5b85697f2e08ba8ad"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "5af18ed8-67c8-43c1-bfff-c9621c7a2496",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "WINDOWS1695: 6 ejecutados, 5 aprobados, 1 fallidos, 1 créditos (índices [0]); Abrir aplicaciones 47/54. Siguiente: categoría por masa abierta según CONDICIONES.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}
