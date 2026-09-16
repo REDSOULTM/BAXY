@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1735-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs (bounded wait for a label on a loading interface) and src/baxy_mind/effect_intent.py (general «en <app>» click context, aliases, inert UI1659 contract), both committed in daf80061 (the UI1735 build).",
+  "patch": "artifacts/comprobaciones/C03/UI1735/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1735 (C03-repairs1735-build/BUILD_READY.json; proveedor y mente (compilación de UI1735, commit daf80061))",
+  "cause_measured": "El clic no esperaba a que la interfaz recién abierta dibujara la etiqueta, y la navegación dentro de un cliente de mensajería estaba cerrada como límite.",
+  "change": "Espera acotada de la etiqueta en el clic visible; contexto «en <app>» general en la mente; contrato inerte; sin respuestas fijas.",
+  "measurement": "UI1735: 9 ejecutados, 2 aprobados (los dos límites), 7 fallidos: en los siete casos app.open abrió y verificó el cliente (Epic o Discord) y el clic aprobado terminó visible_button_not_found tras esperar hasta 24 s; los finales lo dijeron como no verificado; 0 créditos. Lectura de la raíz: la cascada captura la ventana en primer plano y ambos clientes reemplazan su ventana de arranque por la principal tras la verificación del foco de app.open, así que la etiqueta se buscó en la superficie equivocada; reparación pendiente: elegir la ventana visible superior que no sea la del producto y traerla al frente antes de buscar (general para cualquier aplicación).",
+  "credits": 0
+}
