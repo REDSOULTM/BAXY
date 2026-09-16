@@ -1,0 +1,21 @@
+commit 248b9184ac41da64e55f153c528415cb019a547f
+
+C03: English request verbs in the language evidence (PDF1691)
+
+In REOPEN1689 the English variant «Summarize informe.pdf.» was answered in Spanish: request_reading._EN_WORDS carried no «summarize», so a short English request whose only other token is a Spanish file name had zero evidence and fell to the Spanish default. The English list gains summarize, summarise, summary, minimize and maximize; the language decision over the 742 registry literals is unchanged.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/request_reading.py b/src/baxy_mind/request_reading.py
+index 93042db0..3da9b905 100644
+--- a/src/baxy_mind/request_reading.py
++++ b/src/baxy_mind/request_reading.py
+@@ -87,6 +87,7 @@ _EN_WORDS = frozenset(
+     unmute until up upon us used very want was way we well were what
+     whatever when where whether which while who why will window with
+     within without would write wrote yes yesterday yet you your yours
++    summarize summarise summary minimize maximize
+     """.split()
+ )
+ 

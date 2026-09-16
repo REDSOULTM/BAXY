@@ -1,3 +1,25 @@
+## PDF1691 — estado vigente 2026-09-16T08:32:43.358878+00:00
+
+Parcial: 4 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 607/742 | 135 | 0 | >=491 | 9/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 491 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); PDF1691 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: PDF1691: 6 ejecutados, 4 aprobados, 2 fallidos, 0 créditos (índices []); Abrir aplicaciones 46/54. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/PDF1691/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 148.53 s acumulados; pico GPU 3497.56 MiB; pico RAM 2396.47 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque PDF1691 precedente. -->
+
 ## REOPEN1689 — estado vigente 2026-09-16T08:21:56.269489+00:00
 
 Parcial: 7 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.

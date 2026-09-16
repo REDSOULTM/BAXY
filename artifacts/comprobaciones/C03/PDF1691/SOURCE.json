@@ -1,0 +1,15 @@
+{
+  "schema": "c03-pdf1691-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/request_reading.py (_EN_WORDS: summarize, summarise, summary, minimize, maximize).",
+  "patch": "artifacts/comprobaciones/C03/PDF1691/SOURCE.patch",
+  "commits": [
+    "248b9184ac41da64e55f153c528415cb019a547f"
+  ],
+  "build": "BUILD1691 (C03-repairs1691-build/BUILD_READY.json; mente)",
+  "cause_measured": "La evidencia de idioma no contenía «summarize»; una petición inglesa corta con un nombre de archivo español caía al español por defecto.",
+  "change": "Cinco verbos de pedido añadidos a la lista inglesa de evidencia de idioma; sin cambios en los 742 literales del registro.",
+  "measurement": "PDF1691: PDF1691: document.pdf.read completada y verificada en los tres casos de PDF; literal y variante española fieles; la variante inglesa, ya leída como inglés, no publicó final (borradores etiqueta: valor en minúscula vetados) y H0666 sigue abierto sin crédito; dos límites aprobados; fixture retirado por la raíz tras cada caso; 0 créditos. 5 casos ordinarios sobre BUILD1691: 4 aprobados, 1 fallido (variante inglesa sin final); 0 créditos",
+  "credits": 0
+}

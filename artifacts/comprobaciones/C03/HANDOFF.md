@@ -1,3 +1,11 @@
+# PDF1691 adjudicado — 2026-09-16T08:32:43.358878+00:00
+
+**607/742 cubiertos, 135 abiertos, 0 NA; 9/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2); C03 formal 3/11. Registro SHA db296ded52a982d36ecce22bd69c253a802824213fdd4fce03342e91f0d4c459. Primeras altas 24 h >= 491 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 248b9184 con BUILD1691 (resumir un PDF nombrado reintentado con la evidencia de idioma reparada). Turnos ordinarios sin operaciones.
+
+PDF1691 («Archivos», resumir un PDF nombrado ejecutado y verificado sobre su texto extraíble, en el idioma del pedido): PDF1691: document.pdf.read completada y verificada en los tres casos de PDF; literal y variante española fieles; la variante inglesa, ya leída como inglés, no publicó final (borradores etiqueta: valor en minúscula vetados) y H0666 sigue abierto sin crédito; dos límites aprobados; fixture retirado por la raíz tras cada caso, 0 créditos. Adjudicación c2fc5cd221e8f94424a29a351819c7d9465df690ff3bafe32baf5eaae3a51a67. 5 casos ordinarios sobre BUILD1691: 4 aprobados, 1 fallido (variante inglesa sin final); 0 créditos
+
+---
+
 # REOPEN1689 adjudicado — 2026-09-16T08:21:56.269489+00:00
 
 **607/742 cubiertos, 135 abiertos, 0 NA; 9/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2); C03 formal 3/11. Registro SHA 3f66b863f4082dead93e72e7f9f5ed4992e39f8e673ed12bff6233016e92e483. Primeras altas 24 h >= 491 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 48719e91 con BUILD1689 (resumir un PDF nombrado es una lectura verificada de su texto; minimizar todo reintentado con el sustantivo llano). Turnos ordinarios sin operaciones.

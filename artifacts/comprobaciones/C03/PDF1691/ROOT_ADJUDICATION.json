@@ -1,0 +1,318 @@
+{
+  "schema": "pdf1691-root-adjudication-v2",
+  "decided_at_utc": "2026-09-16T08:32:43.358878+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "248b9184ac41da64e55f153c528415cb019a547f",
+  "decisions_sha256": "7b941f4959292a860b16bab460f75040ff762e7c179ade730fc8174d4eafcdd7",
+  "registry_before_sha256": "3f66b863f4082dead93e72e7f9f5ed4992e39f8e673ed12bff6233016e92e483",
+  "registry_before_counts": {
+    "covered": 607,
+    "open": 135,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "c221c53d78922d3168e2118eb3ce7c2a544dab91b2044e3e92f707b3e7a1c1eb",
+  "preparation_sha256": "3a92588198a506c3eec9504d7198e2e147394eaf76e5db3cc8acff4f257d4f26",
+  "passed": 4,
+  "failed": 1,
+  "unexecuted": 0,
+  "executed": 5,
+  "segments_started": 5,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [],
+  "counters": {
+    "covered": 607,
+    "open": 135,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 491,
+    "categories_total": 35,
+    "categories_closed_after": 9,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 491 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); PDF1691 añade 0. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 491
+  },
+  "resources": {
+    "seconds_sum": 148.53099999998813,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 2396.46875
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0666",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "document.pdf.read completada y verificada sobre el PDF de prueba de la raíz; el final nombró el documento, sus títulos y su comienzo tal cual, sin inventar; fixture retirado por la raíz.",
+      "observation_note": "Turno ordinario: exactamente una document.pdf.read completada y verificada sobre el PDF de prueba de la raíz (informe.pdf, escritorio, texto extraíble, sin OCR); el final nombró el documento, sus títulos y su comienzo tal cual; la raíz retiró el fixture; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "e6c42711424b0d5a1bb71062729bcf58b8d804c3f6c3b735abf6b5285a53bd99",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\results\\case-00\\EXIT.json": "b7f0ebf108623f556e6ad425be6e6e3e879eea3db362c62c6e46016dacbe3e08",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\results\\case-00\\RESOURCES.json": "09e0e21056f3bec38c4d78dd753a9c1f4ead252b72c6228e9f0e9f74a0b7e817",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\profile-owner-00.json": "8ca9874e260bdabe39930abd93474d004a690776b1c64965811cbcd9607b3644",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\results\\case-00\\PREREG.json": "8a7aeb7c3bc5247dfb49347d05a9286610a680a0cc811d3a8daf804b32d9f22d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-00\\capture\\events.jsonl": "b5bb28d7f68c9e7594267d98a7c3ce940ec917c4dc0757e324a7c9de5932e00d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-00\\turns.jsonl": "472c5985f64e47afde576aa28060a850141407f67f88cada668158adf292a0fe",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\fixture-00.json": "9edc3a7e2f3f514ba54da323b33fa8d69006587a15f96f67b43ed95d94bb7898",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\context-00.json": "7567e7bbcdfa165a1c0d733711655ff44c1f5ff4d1a3c2e90cf714b0b6880d55",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\context-prelaunch-00.json": "0b155c2702fc9d394f7a22edb66294ea21013295d072d8f917d18781169cbe3e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-00\\case-observations.json": "78200bb0cc7ecfd2cca3d4b66844636581a41ad81afd40f55fcf85d962f13b0d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-00\\journal-before.json": "15cd43a298c0bc2e00daec6a35de9fcec6a94acf548e4314e451f4d02291c556",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-00\\journal-after.json": "c2996717b5c6dee092f0378432a831c975bf951ca54b9faf67ecff50561c6f00",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "adfa6ce9e35c55013122f1141459fa4bddb9b8d54ea83aeb5fc48d3586ce7f80"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "94aed60b-b63e-45bf-b57f-651bbfd7f676",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "0513cc62-9cf6-441e-b5bc-e45058eaa638",
+          "operation": "document.pdf.read",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "pdf1691-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "document.pdf.read completada y verificada sobre el PDF de prueba de la raíz; el final nombró el documento, sus títulos y su comienzo tal cual, sin inventar; fixture retirado por la raíz.",
+      "observation_note": "Turno ordinario: exactamente una document.pdf.read completada y verificada sobre el PDF de prueba de la raíz (informe.pdf, escritorio, texto extraíble, sin OCR); el final nombró el documento, sus títulos y su comienzo tal cual; la raíz retiró el fixture; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "e6c42711424b0d5a1bb71062729bcf58b8d804c3f6c3b735abf6b5285a53bd99",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\results\\case-01\\EXIT.json": "1c25bfcf5be312fa1af4501541677121eb08d1a5ad9f1ec1c9d265b02592f4a9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\results\\case-01\\RESOURCES.json": "51fbe9ae9dc57593f6e35cd75a8e0c4a49b11293db29ffe406e3f8eb3047956a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\profile-owner-01.json": "69dc27483019fd8444eaa47a2af375ae8f21851c1aa26144bbdf14a8f1cd534e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\results\\case-01\\PREREG.json": "a630a4af8ac9b0bdf51fc56bdb7c6ccef31fd0a5c624948c5d97346935339535",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-01\\capture\\events.jsonl": "724dc80c62d976d94d36b98246323bd26a69537e0ee15d0b0fd8b37e9d2cde1e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-01\\turns.jsonl": "c3f5127497636287cb5d771a03fc4e1e07983a5051701ff4ab41b32b0bbb1735",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\fixture-01.json": "fd93523bd6691b9646cc18b7519cdc0ba87247d1d627f3f601ed68644f6553b0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\context-01.json": "a71bbf0aca1e046a1a519b30a6f9654208bb5f035d5df8a71e7e99a6044b670f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\context-prelaunch-01.json": "16c06868fc3aacb817783996809e18f2b18d3513fb4cf36782e65e913ebb7ad5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-01\\case-observations.json": "5d20b9bd55cefce5667068e6224379c787a66003f2377ecb711f6ce6b390b8e7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-01\\journal-before.json": "f754f1eba6add2adcf54bad9fd02cde12ee45c3093e4394ce0adb821197977cb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-01\\journal-after.json": "6f30ce5ea417269dcc5cf85795a7fa7082294acc2a4c4eeef267dae382404e78",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "2246bfa4bd725a75831a8d4bcf55f3cc2c9f413718de6f4902cb0138de3cb979"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "9c32eb8b-a1b8-4d70-91b5-7dbf0994ecea",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "7da3b7e5-c2c8-4c7d-a517-fe7180c56e18",
+          "operation": "document.pdf.read",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "pdf1691-dev-02",
+      "verdict": "failed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Falló: la operación no se completó o no se verificó, o el final no fue fiel.",
+      "observation_note": "Turno ordinario: la operación se completó y verificó, cero violaciones, pins intactos; ningún final fue publicado (los borradores ingleses tomaron forma de campos y el veto los rechazó).",
+      "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\results\\case-02\\EXIT.json": "c8663e3c7669115da8039212e0bad3cbe445d7a471b3b7e2907192c57474be35",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\results\\case-02\\RESOURCES.json": "c6882fddad1624509f0aa369949069300dcf9e78ef05da65b11801734f5985ef",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\profile-owner-02.json": "a7f99fababa4d05d46a9ea35d14f1c49bd1b0ee8f2ba2839cce438f0d8bc1dd7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\results\\case-02\\PREREG.json": "491514a29eea1071c4f3d6b917ec3ba512df644e07e1a9dc90255c0e52546358",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-02\\capture\\events.jsonl": "0ade01e3728f998d86ece1991679530dccd54f51f22edcd6a8d7e65331144bd9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-02\\turns.jsonl": "dc45d1875ed39971fc59231d0f6b79252c33da2f30d4050150b8ae1845e27cb6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\fixture-02.json": "83c53fe2b99e1578c5941545e61176fb5fab3d0a65ea6c76582c79c9c509ac9d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\context-02.json": "158bfc646fff11798ecaa2a4dcb35be5acfc521190d106edd817f408da2e4327",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\context-prelaunch-02.json": "aac0168c4dd1e569d2527d407d924b2c525f03b7da12d8936948eb1a1d4feb4e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-02\\case-observations.json": "f059830e0b1af467015d85f705a687d44b46bb4cc5bf4564ac14b0729f8f422d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-02\\journal-before.json": "0c06f9bf2b6938cad0e4f08e94f7f2535f4e3913e7ef860b2dc641d00c93fa19",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-02\\journal-after.json": "c360bc5c6c922aa02fd6b8b269d80efa7750b986984c94f814397721827db624",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "72cd28c471a21b8f3ae5a28955712933396af9df99f261f1c4af1a91709f43d0"
+      },
+      "terminal_kind": "composition_failed",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "67d8234a-3e96-4d96-909c-3c5d632864a6",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "7bcf3f62-84b7-424a-8526-5f1beefa2701",
+          "operation": "document.pdf.read",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "pdf1691-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "08287a45c71993d2efbc2b4d86783a771ebc603f96e4a75cf391612d1e3bb0a1",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\results\\case-03\\EXIT.json": "97e1712185e4e7a8a888dc349581f91f21b9b168967d10a09d2d369ae5eb3e2c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\results\\case-03\\RESOURCES.json": "bae59b3df48a8f5c8d2bb8d83be5d38d45a8f2c4ec072872d606abff1e0301b7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\profile-owner-03.json": "3a912ead5a41c827f8611514d0863e79ee1ff5e79c3de997ad834317bc1a458e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\results\\case-03\\PREREG.json": "b341bf0c23bd231c9c43db130b84c4c9ed4934ef5dc4fe554f65e0456e0049fc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-03\\capture\\events.jsonl": "d481da175b46beffefc6976c331c6524f3e831ea8d3160559e09851546eb3b5f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-03\\turns.jsonl": "3766a80b4bcd86b33ac5b1928bdc7e0242e12c3a5f74f80ecb205077519ad92a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\fixture-03.json": "d05730736f15993a8288e2e96d7d447094bbb35a052d3b06c963fc153db536f3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\context-03.json": "9d758d2b96c0bfa7c25c16f3c61074febb6689503b9f49f9c03124c45cd3b4a2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\context-prelaunch-03.json": "18f8ae28b14a924f547e6f9943e7b28214703120443dbac2120e1dae5b78423f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-03\\case-observations.json": "7a564599becb22610a8304136c0224bfe87d2b3b617ead01c7e3bc74f3136b3a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-03\\journal-before.json": "63b379db5ab8a1412885ba793130817edc6a566ddf37efb60d220b4e2dd85aaa",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-03\\journal-after.json": "7ca76c74858b9f33a2264f06ed80dfde7920527423a531ac6b39ada3848a6ff9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "b55af86b6d5d149ccef70913aafd0111fd5b76fdc5a9dcbc15de77be669f358c"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "ca55d3ff-3dda-45cb-85dc-0277273937ab",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "pdf1691-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "9876acf4e186c86d70b8bf08039bed08700f0ba1b7cad9fe006d52220be14a6d",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\results\\case-04\\EXIT.json": "99c99c868cb9f486c73f3641699e4defe18e63dfe5325cb66b4d3000e83ed5bd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\results\\case-04\\RESOURCES.json": "853cddba8c93deba5e0b649b970ba77ef14c0ebbf097a9943fc2bd47b25212cd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\profile-owner-04.json": "5815ec1e38efb33809e9280e87148aeef3b152a7fba9784efdbeb6bb548914c7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\results\\case-04\\PREREG.json": "b21e41c3f7613edac7e462935824506384ad43fc10a97af9dde903490460af75",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-04\\capture\\events.jsonl": "baba0e5989319c7a5478d72af99025c9ea22d595cfa446e495e83fe02cce9e7c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-04\\turns.jsonl": "75cf85b6102b04a18d8791aa07578b5f96ac81d4f22323c8fdb54e32c89d0262",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\fixture-04.json": "955559d1a6d7ed8bd01f6c3c2bbb8f9652d649eea3d55afada523d0695594177",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\context-04.json": "14c00dc0eafe757b5a6cc9dca142e99c5ee07ae8987412d032ad6057cc6caf03",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\context-prelaunch-04.json": "5b84d6a6a50b1c8bbd04bf31a56a3f0d5986945b5e5d5006b1db7ff98b12b6c9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-04\\case-observations.json": "6cfd0c9bdbca62410e9d140e704fb88896cb178de7e97a226662efd8e515b222",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-04\\journal-before.json": "69962d8008501ee0c223cf0250deb596d5b5f2aca4b4344e975777b06204b188",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-04\\journal-after.json": "720abe4ffbad1bebd6c90b8c61e55a717cd4c1b758e366aa5261daca1f600833",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pdf1691-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "20fcd33964e0d35bbc2ff0a2cbec2c4e669f887b4c3ae718c220e8ef3ac62e3a"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "4801014a-2865-4308-8f44-5c88cd65c00b",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "PDF1691: 6 ejecutados, 4 aprobados, 2 fallidos, 0 créditos (índices []); Abrir aplicaciones 46/54. Siguiente: categoría por masa abierta según CONDICIONES.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}
