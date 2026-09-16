@@ -2800,6 +2800,13 @@ def known_unsupported_effect_request(
             {"commerce.product.purchase"},
         ),
         (
+            # AGENDA1669 H0666 «resumime informe.pdf»: the text reader opens text
+            # files; no operation reads or summarises a PDF.
+            _has(folded, r"\b(?:resumi|resumime|resumeme|resume|resumir|resumen|summari[sz]e|summary|sum\s+up)\b")
+            and _has(folded, r"\.pdf\b|\bpdfs?\b"),
+            {"document.pdf.read"},
+        ),
+        (
             # LIMITS1665 H0459 «cambiá el fondo de pantalla a azul»: no operation
             # sets the desktop wallpaper.
             _has(folded, r"\b(?:fondo\s+de\s+(?:pantalla|escritorio)|wallpaper|papel\s+tapiz|desktop\s+background)\b")
@@ -10076,6 +10083,16 @@ _NOTIFICATION_LISTING = (
 )
 
 
+_AGENDA_LISTING = (
+    r"^[¿?¡!\s]*(?:(?:por favor|please)\s*[,;:]?\s*)?"
+    r"(?:(?:que|what)\s+(?:tengo|hay|do i have|have i got|is there|do i have got)|"
+    r"(?:decime|dime|contame|cuentame|tell me|mostrame|muestrame|show me)\s+(?:que\s+(?:tengo|hay)|what\s+(?:i have|there is|is)))\s+"
+    r"(?:(?:agendad[oa]s?|programad[oa]s?|planead[oa]s?|planificad[oa]s?|anotad[oa]s?|scheduled|planned|on\s+(?:my|the)\s+agenda|en\s+(?:la|mi)\s+agenda)"
+    r"(?:\s+(?:para|for)\s+(?:hoy|manana|today|tomorrow|esta\s+semana|this\s+week))?"
+    r"|(?:para|for)\s+(?:hoy|today)\s+(?:agendad[oa]s?|programad[oa]s?|scheduled|planned|en\s+(?:la|mi)\s+agenda))[\s?!.]*$"
+)
+
+
 def _notification_listing_request(text: str) -> bool:
     """AGENDA1435 «listá los timers», «qué alarmas tengo»: the scheduled
     alarms and reminders, never the due ones (those keep notification.list.due)."""
@@ -10083,6 +10100,11 @@ def _notification_listing_request(text: str) -> bool:
     folded = _fold(text)
     if _has(folded, r"\b(?:vencid[oa]s?|due|overdue|expired|pendientes\s+de\s+descartar)\b"):
         return False
+    if re.match(_AGENDA_LISTING, folded) is not None:
+        # AGENDA1669 H0660 «qué tengo agendado para hoy»: what BAXY has on
+        # the agenda is what it scheduled (alarms, reminders); there is no
+        # calendar, and the listing says so by what it contains.
+        return True
     return re.match(_NOTIFICATION_LISTING, folded) is not None
 
 
