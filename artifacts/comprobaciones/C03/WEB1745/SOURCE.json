@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1745-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (browser values), src/Baxy.Providers.Windows/External/NamedBrowserAdapter.cs (ResolveBrowser, family-named error codes and authority), src/baxy_mind/effect_intent.py (NAMED_CDP_BROWSERS in the named-browser gates) and __main__.py (argument gate). The destination rule of the adapter (canonical www host) and the named public-site branch of effect_intent.py are the files of this build; the rest came with the WEB1745 build.",
+  "patch": "artifacts/comprobaciones/C03/WEB1745/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1745 (C03-repairs1745-build/BUILD_READY.json; proveedor (sobre núcleo y mente de la compilación anterior))",
+  "cause_measured": "browser.navigate.named sólo admitía Opera y Opera GX en el catálogo, en el adaptador CDP y en las puertas de la mente, así que un sitio pedido en Chrome no llegaba a ninguna operación.",
+  "change": "Navegadores Chromium por nombre (chrome, edge, brave) en el catálogo, el resolutor de ejecutables y las puertas de la mente; códigos de error por familia; sin respuestas fijas.",
+  "measurement": "WEB1745: 3 aprobados (H0276 en Chrome, variante en Edge y variante en inglés en Chrome: browser.navigate.named aprobada por la raíz, ejecutable y URL final verificados; finales fieles, dos sin nombrar el navegador), 1 límite fallido por diseño del instrumento (la pregunta de definición se fundó en web.search, no admitida por este transporte), 1 límite aprobado; 1 créditos. Navegación por nombre generalizada a Chrome, Edge y Brave; el límite de definición debe admitir la búsqueda fundada del conocimiento en instrumentos futuros. Siguiente: filas de Spotify (media.play.query) y Discord (navegación por buscador).",
+  "credits": 1
+}
