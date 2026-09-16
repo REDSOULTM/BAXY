@@ -1,3 +1,25 @@
+## SYSTEM1697 — estado vigente 2026-09-16T09:16:06.502788+00:00
+
+Parcial: 4 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 610/742 | 132 | 0 | >=494 | 9/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 493 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SYSTEM1697 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: SYSTEM1697: 6 ejecutados, 4 aprobados, 2 fallidos, 1 créditos (índices [0]); Abrir aplicaciones 47/54. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/SYSTEM1697/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 91.83 s acumulados; pico GPU 3497.56 MiB; pico RAM 1655.39 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SYSTEM1697 precedente. -->
+
 ## WINDOWS1695 — estado vigente 2026-09-16T08:49:33.129947+00:00
 
 Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

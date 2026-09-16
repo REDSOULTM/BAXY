@@ -1,3 +1,11 @@
+# SYSTEM1697 adjudicado — 2026-09-16T09:16:06.502788+00:00
+
+**610/742 cubiertos, 132 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA 305d548d605a5550976cfbab04269022765302deecf92a4b64f8fe35fedc427f. Primeras altas 24 h >= 494 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4f180240 con BUILD1697 (la versión de Python instalada es una lectura verificada del registro de Windows). Turnos ordinarios sin operaciones.
+
+SYSTEM1697 («Estado de hardware y sistema», la versión de Python instalada leída y verificada del registro de Windows): SYSTEM1697: software.python.status (nueva operación de sólo lectura, registro PEP 514, sin ejecutar nada) leyó las tres instalaciones de Python registradas y los finales dieron sus versiones exactas en español e inglés; H0307 acreditado con dos variantes aprobadas; límite de definición aprobado; el límite de prohibición «No me digas la versión de Python.» falló (saludo repetido: «digas» no se proyectaba a «dime», reparado para la próxima tanda), 1 créditos. Adjudicación 4396a58b08771c644d043779548d19c301f59aa89c9134adfefc1959929cf715. 5 casos ordinarios sobre BUILD1697: 4 aprobados, 1 fallido (límite de prohibición); 1 crédito; la categoría Estado de hardware y sistema queda cerrada
+
+---
+
 # WINDOWS1695 adjudicado — 2026-09-16T08:49:33.129947+00:00
 
 **609/742 cubiertos, 133 abiertos, 0 NA; 9/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2); C03 formal 3/11. Registro SHA a0aae1e9d482435ecd4656f229e042aa08f8288fe9828d04813f57f71369ce58. Primeras altas 24 h >= 493 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 0aa8b142 con BUILD1695 (minimizar una aplicación nombrada es una operación verificada sobre su ventana). Turnos ordinarios sin operaciones.

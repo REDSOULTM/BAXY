@@ -1,0 +1,78 @@
+{
+  "schema": "system1697-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-system1697-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-system1697-instrument-v1",
+  "seal_sha256": "2f7a824cae0f0a510adf1cd6c7561d49b1cd900f167588aa0d16e2b2fe8d32f2",
+  "runner_sha256": "96d89158ad2914a8ecf517548e0860a8040db53feedae6735a6ad9c1e6cfb830",
+  "transport_seal_sha256": "46298f9bce8ad239f7fa5bd1fa497509ba30b0e8a097c39a4f4346ff4e61ab21",
+  "files": {
+    "panel.json": "0ab5a52ab7d961caa8a040cd11fa2f931e4c60a474624d0f3f8caf36240fb493",
+    "turns.jsonl": "5c747678a6c9b2da344ff161409ce2e338a038b0185599873dacd23d3d04acc4",
+    "case-map.json": "65a4baa2f8163e8ba0e3b732d9e24d5bac9b90e4e588bf849e62be72b6d9c1b9",
+    "PLAN.md": "9805ea2aa5010d974d6b084f072ab51ebc8f32072a12edd5553a24635a78cdca"
+  },
+  "counts": {
+    "cases": 5,
+    "historical_literals": 1,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 10,
+    "session_controls": 5,
+    "ordinary_turns": 5,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 5,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0307",
+      "kind": "historical_literal",
+      "group": "python_status",
+      "credit_behavior": "python_status",
+      "text_sha256": "6532e455e2057447aa499bb1c78b6ace4b950e983cfa01565417771aeb792f41",
+      "criterion_sha256": "35efa1d732dd8c6e1065a286f3e651de62e4c36538943ac67c11c8f78078ffd4"
+    },
+    {
+      "index": 1,
+      "case_id": "system1697-dev-01",
+      "kind": "original_development_variant",
+      "group": "python_status",
+      "credit_behavior": "python_status",
+      "text_sha256": "0fff8aa01df4cb6fec2ce53c167b7f0e6aa74c54e6f1445858437318e1f0e396",
+      "criterion_sha256": "35efa1d732dd8c6e1065a286f3e651de62e4c36538943ac67c11c8f78078ffd4"
+    },
+    {
+      "index": 2,
+      "case_id": "system1697-dev-02",
+      "kind": "original_development_variant",
+      "group": "python_status",
+      "credit_behavior": "python_status",
+      "text_sha256": "54e5a2a9b9cfb8dc38589bf200f687bf011056e1a243c6ddb9ff81ac8b0c1742",
+      "criterion_sha256": "35efa1d732dd8c6e1065a286f3e651de62e4c36538943ac67c11c8f78078ffd4"
+    },
+    {
+      "index": 3,
+      "case_id": "system1697-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "ac1514a711dbce2bdfb89f4a00a282bdb64654989d7b89efbcdf73c186201fb8",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 4,
+      "case_id": "system1697-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "651763bab0b52255807e66a3222efd04ba0fd0651f6bee0cfd6f93862355fbda",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    }
+  ]
+}

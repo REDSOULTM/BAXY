@@ -1,0 +1,306 @@
+commit 4f180240fec05d268b73d835120787a0d0080e60
+
+C03: software.python.status reads the Python installs registered in Windows (SYSTEM1697)
+
+«dime la versión de Python instalada» (H0307) reached no operation. The new read-only operation software.python.status (Kernel descriptor, Core handler list, WindowsDeviceControlAdapter.PythonStatus) enumerates the PEP 514 registrations under Software\Python of the current user and the machine (WOW6432Node included): company, tag, version, display name and whether the registered executable exists — read from the registry only, no interpreter started. The mind reads the version question (Spanish and English; never install, update, run or pip) as that operation with no arguments, the composer answers with the exact registered version strings, newest first, or says none is registered, and the vetoes reject a version number the registry did not carry or a reply without the version.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs b/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
+index 1cf5f118..76a3a3ff 100644
+--- a/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
++++ b/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
+@@ -26,6 +26,7 @@ internal static class ExternalCapabilityHandlers
+         "clipboard.copy",
+         "clipboard.paste",
+         "display.status",
++        "software.python.status",
+         "document.pdf.read",
+         "email.latest.read",
+         "email.latest.reply",
+diff --git a/src/Baxy.Kernel/Operations/ProductCatalog.cs b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+index 8e42b6f9..ae02c5cf 100644
+--- a/src/Baxy.Kernel/Operations/ProductCatalog.cs
++++ b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+@@ -1303,6 +1303,13 @@ public static class ProductCatalog
+             "routine.set.enabled.local.postread.v1",
+             ToolExposure.Public,
+             "Activa o desactiva metadatos de una rutina bajo CAS sin ejecutarla."),
++        Descriptor(
++            "software.python.status",
++            EmptySchema(),
++            OperationRisks.ReadOnly,
++            "software.python.status.windows.registry.pep514.read.v1",
++            ToolExposure.Public,
++            "Lee las instalaciones de Python registradas en Windows (claves PEP 514 del registro: versión, nombre y ejecutable) sin ejecutar nada; sin efecto."),
+         Descriptor(
+             "streaming.navigate",
+             Schema(
+diff --git a/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs b/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
+index 414d714a..a8ed7812 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
+@@ -269,7 +269,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+     public bool CanHandle(string operation) => operation is
+         "bluetooth.device.list" or "bluetooth.device.pair"
+         or "bluetooth.radio.set" or "bluetooth.radio.status"
+-        or "display.status"
++        or "display.status" or "software.python.status"
+         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
+         or "wifi.profile.list" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
+         or "wifi.ensure.connected" or "wifi.status"
+@@ -292,6 +292,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+                     operation, arguments, effectBoundary, cancellationToken),
+                 "bluetooth.radio.status" => await BluetoothRadioStatusAsync(operation),
+                 "display.status" => DisplayStatus(operation),
++                "software.python.status" => PythonStatus(operation),
+                 "peripheral.list" => await PeripheralListAsync(operation, arguments, cancellationToken),
+                 "peripheral.print" => await PrintAsync(
+                     operation, arguments, effectBoundary, cancellationToken),
+@@ -502,6 +503,93 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+     // SYSTEM1459 «qué resolución tengo», «cuántos monitores tengo», «qué Hz tiene el
+     // monitor»: the desktop's attached display devices and their current mode,
+     // read through the Win32 display API without changing anything.
++    // SYSTEM1697 H0307 «dime la versión de Python instalada»: the installs a
++    // Python distributor registered under Software\Python (PEP 514), read from
++    // the registry only — no interpreter is started, nothing is executed.
++    private static ExternalCapabilityReceipt PythonStatus(string operation)
++    {
++        var installs = new List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)>();
++        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
++        foreach ((Microsoft.Win32.RegistryKey hive, string scope) in new[]
++                 {
++                     (Microsoft.Win32.Registry.CurrentUser, "user"),
++                     (Microsoft.Win32.Registry.LocalMachine, "machine"),
++                 })
++        {
++            foreach (string root in new[] { @"Software\Python", @"Software\WOW6432Node\Python" })
++            {
++                try
++                {
++                    using Microsoft.Win32.RegistryKey? python = hive.OpenSubKey(root, writable: false);
++                    if (python is null)
++                    {
++                        continue;
++                    }
++                    foreach (string company in python.GetSubKeyNames())
++                    {
++                        using Microsoft.Win32.RegistryKey? companyKey = python.OpenSubKey(company, writable: false);
++                        if (companyKey is null)
++                        {
++                            continue;
++                        }
++                        foreach (string tag in companyKey.GetSubKeyNames())
++                        {
++                            using Microsoft.Win32.RegistryKey? tagKey = companyKey.OpenSubKey(tag, writable: false);
++                            if (tagKey is null)
++                            {
++                                continue;
++                            }
++                            string version = (tagKey.GetValue("Version") as string ?? tagKey.GetValue("SysVersion") as string ?? tag).Trim();
++                            string displayName = (tagKey.GetValue("DisplayName") as string ?? $"{company} {tag}").Trim();
++                            string? executable = null;
++                            using (Microsoft.Win32.RegistryKey? installPath = tagKey.OpenSubKey("InstallPath", writable: false))
++                            {
++                                string? path = installPath?.GetValue("ExecutablePath") as string;
++                                if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
++                                {
++                                    executable = Path.GetFullPath(path);
++                                }
++                            }
++                            string identity = executable ?? $"{scope}|{company}|{tag}";
++                            if (seen.Add(identity))
++                            {
++                                installs.Add((company, tag, version, displayName, executable, scope));
++                            }
++                        }
++                    }
++                }
++                catch (Exception exception) when (exception is System.Security.SecurityException
++                    or UnauthorizedAccessException or IOException)
++                {
++                    continue;
++                }
++            }
++        }
++        installs.Sort((left, right) => string.CompareOrdinal(right.Version, left.Version));
++        JsonElement result = ExternalJson.Create(writer =>
++        {
++            writer.WriteStartObject();
++            writer.WriteNumber("version", 1);
++            writer.WriteNumber("pythonCount", installs.Count);
++            writer.WriteStartArray("pythons");
++            foreach ((string company, string tag, string version, string displayName, string? executable, string scope) in installs)
++            {
++                writer.WriteStartObject();
++                writer.WriteString("company", company);
++                writer.WriteString("tag", tag);
++                writer.WriteString("pythonVersion", version);
++                writer.WriteString("displayName", displayName);
++                writer.WriteBoolean("executableFound", executable is not null);
++                writer.WriteString("scope", scope);
++                writer.WriteEndObject();
++            }
++            writer.WriteEndArray();
++            writer.WriteString("authority", "windows_registry_pep514_read");
++            writer.WriteEndObject();
++        });
++        return ExternalJson.Success(operation, result, effectObserved: false);
++    }
++
+     private static ExternalCapabilityReceipt DisplayStatus(string operation)
+     {
+         var monitors = new List<(string Name, bool Primary, uint Width, uint Height, uint Hertz)>();
+diff --git a/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs b/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
+index 77f16542..b3fba6a6 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
+@@ -211,6 +211,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
+             "peripheral.list" or "peripheral.print" or "peripheral.scan" =>
+                 "peripheral_hardware_gate_required",
+             "display.status" => "windows_display_api_required",
++            "software.python.status" => "windows_registry_read_required",
+             "ocr.read" => "windows_ocr_language_pack_gate_required",
+             "package.install.prepare" or "package.install.commit" => "winget_adapter_gate_required",
+             "system.settings.adjust" or "system.settings.set" or "system.settings.status" =>
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 12fad78a..3f1a6511 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -5524,6 +5524,10 @@ def _explicit_arguments_from_evidence(
+         if effect_intent._display_status_question(evidence):
+             return {}
+ 
++    if operation == "software.python.status":
++        if effect_intent._python_status_question(evidence):
++            return {}
++
+     if operation == "filesystem.known.list":
+         recent_listing = effect_intent._known_folder_recent_listing(evidence)
+         if recent_listing is not None:
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 84069083..2b121f87 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -1560,6 +1560,8 @@ def _curated_domain_is_grounded(
+         ):
+             return False
+         return True
++    if operation == "software.python.status":
++        return _has(folded, r"\bpython\b")
+     if operation == "display.status":
+         return _has(folded, r"\b(?:resolucion|monitor(?:es)?|pantallas?|screens?|displays?|hz|hertz|hercios|frecuencia|refresh)\b")
+     if operation == "bluetooth.radio.status":
+@@ -10120,6 +10122,33 @@ _DISPLAY_STATUS_QUESTION = re.compile(
+ )
+ 
+ 
++_PYTHON_STATUS_QUESTION = re.compile(
++    r"^[¿?¡!\s]*(?:"
++    # «dime la versión de Python instalada», «qué versión de python tengo», «cuál es la versión de python»
++    r"(?:(?:dime|decime|di|tell\s+me|say)\s+(?:que|cual|la|the|which|what)\s+|"
++    r"(?:que|cual\s+es\s+la|what|what's|whats|which)\s+)?"
++    r"version\s+(?:de|del|of)\s+python(?:\s+(?:instalada|instalado|tengo|tienes|hay|esta\s+instalada|is\s+installed|do\s+i\s+have|installed))?"
++    # «qué python tengo», «tengo python instalado», «is python installed», «python version»
++    r"|(?:que|cual|what|which)\s+python(?:\s+version)?(?:\s+(?:tengo|hay|esta\s+instalado|is\s+installed|do\s+i\s+have))"
++    r"|(?:tengo|hay|is)\s+python(?:\s+(?:instalado|installed))?"
++    r"|(?:is\s+)?python\s+(?:version|installed)(?:\s+installed)?"
++    r")\b[\s?!.,]*$",
++    re.IGNORECASE,
++)
++
++
++def _python_status_question(text: str) -> bool:
++    """SYSTEM1697 «dime la versión de Python instalada», «qué versión de python
++    tengo», «is Python installed»: a software.python.status read of the registered
++    installs — never an install, an update or a run."""
++
++    folded = _strip_request_envelope(_fold(text)).strip()
++    return (
++        _PYTHON_STATUS_QUESTION.match(folded) is not None
++        and not _has(folded, r"\b(?:instala|instalar|instalame|install|actualiza|actualizar|update|upgrade|desinstala|uninstall|ejecuta|ejecutar|run|corre|pip)\b")
++    )
++
++
+ def _display_status_question(text: str) -> bool:
+     """SYSTEM1459 «qué resolución tengo», «cuántos monitores tengo», «qué Hz tiene el
+     monitor»: a display.status read of the attached monitors — never a change."""
+@@ -10186,6 +10215,7 @@ def _is_direct_request(text: str) -> bool:
+         or _wifi_state_question(text)
+         or _bluetooth_state_question(text)
+         or _display_status_question(text)
++        or _python_status_question(text)
+     ):
+         return True
+     request_head = (
+@@ -10430,6 +10460,8 @@ def _strict_catalog_request(
+         return EffectIntent(("bluetooth.radio.status",), (text,))
+     if "display.status" in available_operations and _display_status_question(text):
+         return EffectIntent(("display.status",), (text,))
++    if "software.python.status" in available_operations and _python_status_question(text):
++        return EffectIntent(("software.python.status",), (text,))
+     if window_inventory_arguments(text) is not None:
+         return (
+             EffectIntent(("window.resolve",), (text,))
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index d8943e1c..805ae03f 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -5612,6 +5612,27 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+             folded,
+         ) is None:
+             return "echo_without_report"
++    if (
++        payload.get("operation") == "software.python.status"
++        and isinstance(seen, dict)
++        and isinstance(seen.get("pythons"), list)
++    ):
++        # SYSTEM1697: every version-like number in the reply must be a
++        # registered one; the count of installs must not be invented.
++        observed_versions = {
++            str(entry.get("pythonVersion")).strip()
++            for entry in seen["pythons"]
++            if isinstance(entry, dict) and isinstance(entry.get("pythonVersion"), str)
++        }
++        observed_versions |= {str(entry.get("tag")).strip() for entry in seen["pythons"] if isinstance(entry, dict) and isinstance(entry.get("tag"), str)}
++        for number in re.findall(r"(?<![\w.])\d+(?:\.\d+)+(?![\w.])", text):
++            if not any(version == number or version.startswith(number + ".") for version in observed_versions):
++                return "invented_number"
++        count = seen.get("pythonCount")
++        if count == 0 and not re.search(r"\b(?:no|ningun|ninguna|none|not|isn't|is not)\b", _reading_fold(text)):
++            return "missing_state"
++        if isinstance(count, int) and count > 0 and not any(version in text for version in observed_versions):
++            return "missing_state"
+     if (
+         payload.get("operation") == "display.status"
+         and isinstance(seen, dict)
+@@ -13743,6 +13764,28 @@ class LlmRuntime:
+                 else "\nseen.radioOn es la radio Bluetooth: true significa encendida, false "
+                 "significa apagada. Di cuál, en una oración corta; no se cambió nada."
+             )
++        if (
++            visible_situation.get("operation") == "software.python.status"
++            and isinstance(visible_situation.get("seen"), dict)
++            and isinstance(visible_situation["seen"].get("pythons"), list)
++        ):
++            # SYSTEM1697: the read lists the Python installs registered in
++            # Windows; answer with their exact version strings, nothing run.
++            instruct(
++                "\nseen.pythons are the Python installs registered in Windows (displayName, "
++                "pythonVersion, tag) and seen.pythonCount their number. Say which Python "
++                "versions are installed using those exact pythonVersion strings (all of "
++                "them, newest first, in one or two short sentences); if seen.pythonCount "
++                "is 0, say that no Python install is registered. No other numbers; "
++                "nothing was run or changed."
++                if response_language == "en"
++                else "\nseen.pythons son las instalaciones de Python registradas en Windows "
++                "(displayName, pythonVersion, tag) y seen.pythonCount su cantidad. Di qué "
++                "versiones de Python están instaladas usando esas cadenas pythonVersion "
++                "exactas (todas, de la más nueva a la más vieja, en una o dos oraciones "
++                "cortas); si seen.pythonCount es 0, di que no hay ninguna instalación de "
++                "Python registrada. Sin otros números; no se ejecutó ni se cambió nada."
++            )
+         if (
+             visible_situation.get("operation") == "display.status"
+             and isinstance(visible_situation.get("seen"), dict)

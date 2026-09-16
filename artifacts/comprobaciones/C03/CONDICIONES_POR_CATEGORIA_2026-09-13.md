@@ -1119,3 +1119,7 @@ Desde el bloque de la tarde (600): APPS1671–1673, MUSIC1675, LIMITS1677–1681
 ## Actualización 2026-09-16 (WINDOWS1695)
 
 Organizar ventanas y pestañas pasa de 10/13 a 11/13 con minimizar una aplicación nombrada ejecutado y verificado sobre su ventana (commit 0aa8b142, BUILD1695) (HEAD 0aa8b142): WINDOWS1695: minimizar una aplicación nombrada (window.resolve por applicationName + window.minimize, turno ordinario) sobre la ventana de Opera del dueño, restaurada por la raíz tras cada caso; H0697 acreditado con dos variantes aprobadas (español e inglés); dos límites aprobados, 1 créditos. 5 casos ordinarios sobre BUILD1695: 5 aprobados; 1 crédito
+
+## Actualización 2026-09-16 (SYSTEM1697)
+
+Estado de hardware y sistema pasa de 39/40 a 40/40 con la versión de Python instalada leída y verificada del registro de Windows (commit 4f180240, BUILD1697) (HEAD 4f180240): SYSTEM1697: software.python.status (nueva operación de sólo lectura, registro PEP 514, sin ejecutar nada) leyó las tres instalaciones de Python registradas y los finales dieron sus versiones exactas en español e inglés; H0307 acreditado con dos variantes aprobadas; límite de definición aprobado; el límite de prohibición «No me digas la versión de Python.» falló (saludo repetido: «digas» no se proyectaba a «dime», reparado para la próxima tanda), 1 créditos. 5 casos ordinarios sobre BUILD1697: 4 aprobados, 1 fallido (límite de prohibición); 1 crédito; la categoría Estado de hardware y sistema queda cerrada La categoría queda cerrada.
