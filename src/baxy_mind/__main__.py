@@ -3077,6 +3077,25 @@ def _unresolved_input_kind(objective: str) -> str | None:
         return "deictic_level"
     if (
         re.fullmatch(
+            # UI1643 H0097 «ponle hola»: a text to put «to it» with nothing
+            # named before it — no window, field, file or chat; the honest
+            # turn asks where to write it.
+            r"[\s¡!¿?]*(?:pon[eé]?le|ponele|pon[eé]?melo|put\s+on\s+it|write\s+on\s+it)\s+"
+            r"(?!(?:a|al|por|para|que|en)\b)(?P<text>[¿?¡!\w][^.!?]{0,60}?)"
+            r"(?:\s+(?:ahora|ya|now|please|por\s+favor|porfa))*[\s.!?]*",
+            folded,
+        )
+        is not None
+        and not re.search(
+            r"\b(?:en|a|al|del|de)\s+(?:el|la|los|las|mi|mis|tu|tus|un|una|the|my|a)?\s*"
+            r"(?:ventana|archivo|nota|chat|grupo|mensaje|correo|mail|documento|campo|titulo|"
+            r"nombre|whatsapp|discord|telegram|window|file|note|chat|message|document|field)\b",
+            folded,
+        )
+    ):
+        return "deictic_text"
+    if (
+        re.fullmatch(
             r"[\s¡!¿?.,]*(?:no|nop|nope|nah|nunca|jamas)"
             r"(?:[\s,.!¡]+(?:no|nop|nope|nah|nunca|jamas))*[\s.!?]*",
             folded,

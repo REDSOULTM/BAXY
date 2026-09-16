@@ -11059,7 +11059,7 @@ class LlmRuntime:
         a meaning: the question names what arrived and asks what to do.
         """
 
-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window", "echoed_words", "bare_path", "cut_request"}:
+        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_text", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window", "echoed_words", "bare_path", "cut_request"}:
             raise ValueError("clase de entrada sin pedido inválida")
         current = str(text).strip()[:2_048]
         situation = (
@@ -11182,6 +11182,19 @@ class LlmRuntime:
                 "entiendes ni que algo falló y no ofrezcas ayuda genérica."
             )
             if kind == "deictic_level"
+            else (
+                # UI1643 H0097 «ponle hola»: a text to write «to it», with no
+                # window, field, file or chat named; ask where to write it.
+                "Eres BAXY. El usuario pidió ponerle o escribirle un texto a "
+                "«algo» («ponle hola») sin decir dónde: no hay ninguna ventana, "
+                "campo, archivo, nota ni chat nombrado antes. Formula una sola "
+                "pregunta breve, en el idioma del usuario, que pregunte DÓNDE "
+                "quiere que escribas ese texto (por ejemplo: «¿Dónde querés que "
+                "ponga «hola»: en qué ventana, archivo o chat?»). No lo escribas "
+                "en ningún lado, no adivines el destino, no digas que no entiendes "
+                "ni que algo falló y no ofrezcas ayuda genérica."
+            )
+            if kind == "deictic_text"
             else (
                 # IDENTITY1323 H0296 «Tú eres como eso»: the referent was never
                 # named and nothing precedes it; asking is the only honest move.
@@ -11330,6 +11343,32 @@ class LlmRuntime:
             # ponerlo a 100?» / «¿A qué nivel quieres poner el volumen?»: the
             # level is already given and the setting was guessed. The question
             # must ask what to set. One corrected retry.
+            if kind == "deictic_text":
+                folded_question = _fold_dialogue_text(question)
+                asks_where = re.search(
+                    r"\b(?:donde|adonde|en\s+que|en\s+cual|where|in\s+which|which\s+(?:window|file|chat|app))\b",
+                    folded_question,
+                ) is not None
+                acted = re.search(
+                    r"\b(?:puse|escrib[ií]|escrito|hecho|listo,|wrote|written|done|put\s+it)\b",
+                    folded_question,
+                ) is not None
+                if asks_where and not acted:
+                    return question
+                if attempt == 0:
+                    payload["messages"].insert(
+                        -1,
+                        {
+                            "role": "system",
+                            "content": (
+                                "Corrección: pregunta DÓNDE quiere que escribas ese texto "
+                                "(«¿dónde…?», «¿en qué ventana, archivo o chat…?»), sin "
+                                "escribirlo en ningún lado ni adivinar el destino."
+                            ),
+                        },
+                    )
+                    continue
+                raise ValueError("aclaración de texto deíctico no pregunta dónde")
             if kind == "deictic_level":
                 folded_question = _fold_dialogue_text(question)
                 asks_level = re.search(
