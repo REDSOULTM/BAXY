@@ -2801,6 +2801,53 @@ def known_unsupported_effect_request(
             {"commerce.product.purchase"},
         ),
         (
+            # LIMITS1677 H0048 «ejecuta pytest», H0245 «ejecuta ls»: no operation
+            # runs a shell command or a program by command line.
+            _has(folded, r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?(?:ejecuta|ejecutame|corre|correme|run|execute|lanza|launch)\s+"
+                         r"(?:(?:el|the|este|this|un|a)\s+)?(?:comando\s+|command\s+)?"
+                         r"(?:pytest|ls|dir|cd|git|npm|npx|pip|pip3|python|python3|node|dotnet|cargo|make|cmd|powershell|bash|sh|"
+                         r"\S+\.(?:py|sh|bat|ps1|cmd|exe\s+/)|comando|command)\b")
+            and not _has(folded, r"\b(?:juego|game|steam|app|aplicacion|application|programa|program)\b"),
+            {"shell.command.run"},
+        ),
+        (
+            # LIMITS1677 H0635 «Puedes ver tu propio código y analizar si hay
+            # alguna falla»: BAXY has no reading of its own source.
+            _has(folded, r"\b(?:tu|tus|your)\s+(?:propio\s+|own\s+)?(?:codigo|code|fuente|source\s+code|programacion)\b")
+            and _has(folded, r"\b(?:ver|leer|analizar|analiza|revisar|revisa|mirar|mira|examinar|examina|see|read|review|analy[sz]e|look|inspect|check)\b"),
+            {"self.source.read"},
+        ),
+        (
+            # LIMITS1677 H0444 «cerrá todas las pestañas de chrome»: the product
+            # opens a tab in its own browser; it closes no tabs anywhere.
+            _has(folded, r"\b(?:cierra|cerra|cerrar|cerrame|cierrame|close)\b")
+            and _has(folded, r"\b(?:pestanas?|tabs?)\b"),
+            {"browser.tab.close"},
+        ),
+        (
+            # LIMITS1677 H0238/H0529 «minimizá todas las ventanas», H0658
+            # «minimizá todo»: windows are minimized one at a time, never all.
+            _has(folded, r"\b(?:minimiza|minimizar|minimizame|minimise|minimize)\b")
+            and _has(folded, r"\b(?:todo|todas(?:\s+las)?(?:\s+ventanas)?|all(?:\s+(?:the|my))?(?:\s+windows)?|everything)\b")
+            and not _has(folded, r"\b(?:pestanas?|tabs?|menos|except|excepto)\b"),
+            {"window.minimize.all"},
+        ),
+        (
+            # LIMITS1677 H0467 «cerrame todo», H0484 «cerrá todas las ventanas»:
+            # applications are closed by name, never all windows at once.
+            _has(folded, r"\b(?:cierra|cerra|cerrar|cerrame|cierrame|close)\s+(?:me\s+)?(?:todo|todas\s+las\s+ventanas|todas\s+las\s+apps|todas\s+las\s+aplicaciones|all\s+(?:the\s+|my\s+)?(?:windows|apps|applications)|everything)\b")
+            and not _has(folded, r"\b(?:pestanas?|tabs?|menos|except|excepto|de\s+\w+$)\b"),
+            {"window.close.all"},
+        ),
+        (
+            # LIMITS1677 H0652 «subí el volumen de spotify»: the volume readers
+            # act on the system endpoint; no operation sets one application's
+            # volume.
+            _has(folded, r"\b(?:volumen|volume)\s+(?:de|del|of)\s+(?:(?:la|el|the)\s+)?(?:app\s+)?(?:spotify|chrome|discord|youtube|steam|zoom|teams|vlc|firefox|opera|edge|whatsapp)\b"
+                         r"|\b(?:spotify|chrome|discord|youtube|steam|zoom|teams|vlc|firefox|opera|edge|whatsapp)(?:\'s)?\s+volume\b"),
+            {"audio.app.volume"},
+        ),
+        (
             # AGENDA1669 H0666 «resumime informe.pdf»: the text reader opens text
             # files; no operation reads or summarises a PDF.
             _has(folded, r"\b(?:resumi|resumime|resumeme|resume|resumir|resumen|summari[sz]e|summary|sum\s+up)\b")
@@ -3372,6 +3419,10 @@ def resolve_explicit_clarification_intent(
         return None
     if _literal_note_payload_request(folded):
         # The subordinate text is note content, not a message recipient/body.
+        return None
+    if known_unsupported_effect_request(text, available):
+        # LIMITS1677 «subí el volumen de spotify»: a known effect with no
+        # operation has no field to clarify; the limit answers it.
         return None
     if "filesystem.known.search" in available and _current_directory_file_count(folded):
         # FILES1437 «dime cuántos archivos .py hay en el directorio actual»: BAXY
@@ -10055,6 +10106,8 @@ def _is_direct_request(text: str) -> bool:
         r"ponme|pone|poneme|pongame|"
         r"activa|activar|desactiva|desactivar|enciende|encender|prende|prender|"
         r"apaga|apagar|arranca|inicia|start|conecta|conectar|conectame|connect|"
+        # LIMITS1677 «Run pytest.», «Execute ls.»: a command run is a request speech act.
+        r"run|execute|"
         r"desconecta|disconnect|cambia|change|"
         r"cancela|cancelar|cancel|"
         rf"{_SCHEDULING_BY_ITSELF}|"
