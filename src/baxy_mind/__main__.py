@@ -4803,6 +4803,8 @@ def _explicit_arguments_from_evidence(
             evidence, application_names,
         ) or effect_intent.resolve_application_focus_name(
             evidence, application_names,
+        ) or effect_intent.resolve_application_minimize_name(
+            evidence, application_names,
         ) or effect_intent.conditional_open_pause_app(
             evidence, application_names,
         )

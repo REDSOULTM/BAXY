@@ -5340,6 +5340,67 @@ def resolve_application_focus_name(
     return next(iter(names)) if len(names) == 1 else None
 
 
+_MINIMIZE_HEAD = r"(?:minimiza|minimizame|minimizar|minimise|minimize|minimisa|minimisame)"
+
+
+def _authenticated_application_minimize_target(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> tuple[int, str] | None:
+    """Recognize one request to minimize an authenticated application by name.
+
+    WINDOWS1695 H0697 «Minimisa ópera.»: a minimize head (the colloquial
+    «minimisa» spelling included) over one exact catalog identity, with no
+    «ventana» noun; window.resolve (the prerequisite) binds the window and an
+    absent one ends there truthfully. «minimizá todo» stays with the desktop
+    reader; a deictic «esta ventana» stays with window.active.
+    """
+    if (
+        not effect_request_is_authoritative(text)
+        or _has_unsupported_deferred_effect(_fold(text))
+        or _other_device_effect_scope(_fold(text))
+    ):
+        return None
+    folded = _strip_request_envelope(_fold(text))
+    request = _match(
+        folded,
+        rf"^[¿?¡!\s]*(?:(?:necesito|quiero|queria|quisiera|podes|podrias|podria|me\s+(?:podes|podrias|podria))\s+(?:que\s+)?)?"
+        rf"{_MINIMIZE_HEAD}\s+(?:(?:me|a)\s+)?(?P<target>.+?)[\s.!?]*$",
+    )
+    if request is None:
+        return None
+    raw_target = request.group("target")
+    if _has(raw_target, r"(?:ventana|ventanas|window|windows|todo|todas|everything|all)"):
+        return None
+    catalog = build_application_catalog_index(application_names)
+    matches: list[tuple[int, str]] = []
+    for target, offset in _close_target_forms(raw_target):
+        suffix = raw_target[offset + len(target):].strip(" ,;:.!?")
+        suffix = re.sub(r"^(?:window|app|application)", "", suffix).strip(" ,;:.!?")
+        if suffix and _APPLICATION_TRAILING_REQUEST.fullmatch(" " + suffix) is None                 and _CLOSE_TRAILING_COURTESY.fullmatch(" " + suffix) is None:
+            continue
+        key = _authenticated_close_key(target, catalog)
+        if key is not None:
+            matches.append((request.start("target") + offset, key))
+    identities = {key for _, key in matches}
+    if len(identities) != 1:
+        return None
+    return min(matches, key=lambda item: item[0])
+
+
+def resolve_application_minimize_name(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> str | None:
+    """Preserve an authenticated minimize target as a catalog display name."""
+    catalog = build_application_catalog_index(application_names)
+    target = _authenticated_application_minimize_target(text, catalog)
+    if target is None:
+        return None
+    names = {name for name, key in catalog.entries if key == target[1]}
+    return next(iter(names)) if len(names) == 1 else None
+
+
 def resolve_application_close_name(
     text: str,
     application_names: Iterable[str] | ApplicationCatalogIndex,
@@ -10183,6 +10244,8 @@ def _is_direct_request(text: str) -> bool:
         r"llevame|anda|andar|andate|"
         r"devuelvele|devuelve|devuelveme|"
         r"maximiza|maximizar|maximize|minimiza|minimizar|minimize|"
+        # WINDOWS1695 «Minimisa ópera.»: the s-for-z spelling is the same order.
+        r"minimisa|minimisame|"
         r"restaura|restaurar|restore|escribe|escribi|escribele|escribile|write|type|"
         r"selecciona|select|copia|copiame|copy|edita|edit|convierte|convert|"
         r"elige|elegir|choose|transforma|arrastra|drag|make|"
@@ -16583,6 +16646,15 @@ def resolve_explicit_effects(
         # the condition; an absent window ends the mission truthfully, a
         # present one pauses that application's session.
         return EffectIntent(("window.resolve", "media.control"), (text, text))
+    if (
+        "window.minimize" in available
+        and resolve_application_minimize_name(text, authenticated_applications) is not None
+        and not _is_negative_effect_clause(folded)
+        and not _is_meta_or_tool_denial(folded)
+    ):
+        # WINDOWS1695 «Minimisa ópera.»: minimizing an authenticated application
+        # by name is window.minimize; window.resolve binds its window.
+        return EffectIntent(("window.minimize",), (folded,))
     if (
         "window.focus" in available
         and resolve_application_focus_name(text, authenticated_applications) is not None
