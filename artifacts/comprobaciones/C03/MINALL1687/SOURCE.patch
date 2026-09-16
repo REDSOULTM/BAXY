@@ -1,0 +1,365 @@
+commit 3059f183b6d3d48666871e27881dc345aebc0acc
+
+C03: window.minimize.all minimizes every desktop window and verifies it (MINALL1687)
+
+The owner declared minimizing all windows an expected capability (DECISIONES_DUENO_2026-09-16.md). The new low-reversible operation window.minimize.all (Kernel descriptor, Core handler, Providers) enumerates the desktop windows a person sees — visible, not cloaked, not tool windows, root owners with a title, excluding the shell surfaces and the product's own process — sends each the minimize command and re-observes them until every one is iconic, closing nothing; the result reports how many were found and minimized. The mind decides it for «minimizá todas las ventanas / todo» (minimize_all_request, empty arguments) and the narration says all the windows were minimized with the count. The known-unsupported contract for this effect lifts by itself now that the operation exists.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Core/Operations/WindowControlHandlers.cs b/src/Baxy.Core/Operations/WindowControlHandlers.cs
+index c6cca9af..f8c8bdf0 100644
+--- a/src/Baxy.Core/Operations/WindowControlHandlers.cs
++++ b/src/Baxy.Core/Operations/WindowControlHandlers.cs
+@@ -94,6 +94,35 @@ internal sealed class AppCloseHandler(IWindowControlProvider provider) : IOperat
+     }
+ }
+ 
++internal sealed class WindowMinimizeAllHandler(IWindowControlProvider provider) : IOperationHandler
++{
++    public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition("window.minimize.all");
++
++    public async ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken)
++    {
++        WindowMinimizeAllResult result = await provider.MinimizeAllAsync(cancellationToken).ConfigureAwait(false);
++        if (!result.Succeeded || !result.Verified)
++        {
++            return OperationOutcome.Failure(result.ErrorCode ?? "window_minimize_all_failed");
++        }
++
++        var buffer = new ArrayBufferWriter<byte>();
++        using (var writer = new Utf8JsonWriter(buffer))
++        {
++            writer.WriteStartObject();
++            writer.WriteNumber("version", 1);
++            writer.WriteNumber("desktopWindows", result.Found);
++            writer.WriteNumber("minimized", result.Minimized);
++            writer.WriteNumber("remainingVisible", result.Remaining);
++            writer.WriteBoolean("allMinimized", true);
++            writer.WriteString("authority", "win32_desktop_windows_postread");
++            writer.WriteEndObject();
++        }
++        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
++        return OperationOutcome.Success(document.RootElement.Clone());
++    }
++}
++
+ internal sealed class WindowBoundsHandler(string operation, IWindowControlProvider provider)
+     : IOperationHandler
+ {
+@@ -127,6 +156,7 @@ internal static class WindowControlHandlers
+         new WindowActionHandler("window.focus", WindowControlAction.Focus, provider),
+         new WindowActionHandler("window.maximize", WindowControlAction.Maximize, provider),
+         new WindowActionHandler("window.minimize", WindowControlAction.Minimize, provider),
++        new WindowMinimizeAllHandler(provider),
+         new WindowBoundsHandler("window.move", provider),
+         new WindowBoundsHandler("window.resize", provider),
+         new WindowResolveHandler(provider),
+diff --git a/src/Baxy.Kernel/Operations/ProductCatalog.cs b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+index d3b6fc3b..2ca3705f 100644
+--- a/src/Baxy.Kernel/Operations/ProductCatalog.cs
++++ b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+@@ -1629,6 +1629,13 @@ public static class ProductCatalog
+             "window.minimize.identity.state.v1",
+             ToolExposure.Public,
+             "Minimiza una ventana resuelta previamente y verifica su identidad y estado."),
++        Descriptor(
++            "window.minimize.all",
++            EmptySchema(),
++            OperationRisks.LowReversible,
++            "window.minimize.all.desktop.postread.v1",
++            ToolExposure.Public,
++            "Minimiza todas las ventanas visibles del escritorio (salvo la propia) y comprueba que quedaron minimizadas; no cierra nada."),
+         Descriptor(
+             "window.move",
+             Schema(
+diff --git a/src/Baxy.Providers.Windows/Windows/WindowControlContracts.cs b/src/Baxy.Providers.Windows/Windows/WindowControlContracts.cs
+index 3785343d..b3a221c5 100644
+--- a/src/Baxy.Providers.Windows/Windows/WindowControlContracts.cs
++++ b/src/Baxy.Providers.Windows/Windows/WindowControlContracts.cs
+@@ -58,8 +58,22 @@ public sealed record WindowCloseResult(
+     int? ProcessId,
+     string? ErrorCode);
+ 
++// MINALL1687 «minimizá todas las ventanas»: the desktop windows found before,
++// how many were minimized and verified iconic, how many stayed visible.
++public sealed record WindowMinimizeAllResult(
++    bool Succeeded,
++    bool Verified,
++    int Found,
++    int Minimized,
++    int Remaining,
++    string? ErrorCode);
++
+ public interface IWindowControlProvider
+ {
++    ValueTask<WindowMinimizeAllResult> MinimizeAllAsync(CancellationToken cancellationToken) =>
++        ValueTask.FromResult(new WindowMinimizeAllResult(
++            false, false, 0, 0, 0, WindowControlErrorCodes.ActionFailed));
++
+     ValueTask<WindowResolveResult> ResolveForegroundAsync(
+         CancellationToken cancellationToken);
+ 
+diff --git a/src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs b/src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs
+index 7dcd78f7..fd10a93e 100644
+--- a/src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs
++++ b/src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs
+@@ -289,6 +289,76 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
+             false, false, null, WindowControlErrorCodes.VerificationFailed);
+     }
+ 
++    public async ValueTask<WindowMinimizeAllResult> MinimizeAllAsync(CancellationToken cancellationToken)
++    {
++        // MINALL1687 «minimizá todas las ventanas»: every desktop window that is
++        // not already minimized gets the minimize command, and the result is
++        // verified by re-observing each one until it is iconic. Nothing is
++        // closed; a window that refuses to minimize keeps the effect unverified.
++        cancellationToken.ThrowIfCancellationRequested();
++        IReadOnlyList<WindowSnapshot> desktop;
++        try
++        {
++            desktop = _platform.DesktopWindows();
++        }
++        catch (Exception exception) when (exception is Win32Exception
++            or InvalidOperationException or NotSupportedException)
++        {
++            return new WindowMinimizeAllResult(false, false, 0, 0, 0, WindowControlErrorCodes.InventoryFailed);
++        }
++
++        List<WindowSnapshot> targets = desktop.Where(static window => window.State != "minimized").ToList();
++        if (targets.Count == 0)
++        {
++            return new WindowMinimizeAllResult(true, true, desktop.Count, 0, 0, null);
++        }
++
++        foreach (WindowSnapshot target in targets)
++        {
++            cancellationToken.ThrowIfCancellationRequested();
++            try
++            {
++                _ = _platform.Execute(target.Identity, WindowControlAction.Minimize);
++            }
++            catch (Exception exception) when (exception is Win32Exception
++                or InvalidOperationException or WindowIdentityChangedException)
++            {
++                // A window that vanished meanwhile is not visible any more.
++            }
++        }
++
++        int remaining = targets.Count;
++        for (int attempt = 0; attempt < StateVerificationAttempts; attempt++)
++        {
++            cancellationToken.ThrowIfCancellationRequested();
++            remaining = 0;
++            foreach (WindowSnapshot target in targets)
++            {
++                try
++                {
++                    if (_platform.Observe(target.Identity).State != "minimized")
++                        remaining++;
++                }
++                catch (Exception exception) when (exception is Win32Exception
++                    or InvalidOperationException or WindowIdentityChangedException)
++                {
++                    // Gone windows are not visible windows.
++                }
++            }
++            if (remaining == 0)
++            {
++                return new WindowMinimizeAllResult(true, true, desktop.Count, targets.Count, 0, null);
++            }
++            if (attempt + 1 < StateVerificationAttempts)
++            {
++                await _platform.DelayAsync(VerificationDelay, cancellationToken).ConfigureAwait(false);
++            }
++        }
++
++        return new WindowMinimizeAllResult(
++            true, false, desktop.Count, targets.Count - remaining, remaining, WindowControlErrorCodes.VerificationFailed);
++    }
++
+     public ValueTask<WindowActionResult> SetBoundsAsync(
+         string windowId,
+         int? x,
+@@ -666,6 +736,9 @@ internal interface IWindowControlPlatform
+         bool byTitle = false, int offset = 0, bool allWindows = false,
+         CancellationToken cancellationToken = default);
+     WindowSnapshot Observe(WindowIdentity identity);
++    // MINALL1687: the windows a person sees on the desktop (visible, not cloaked,
++    // not a tool window, root owner, titled), excluding the shell and this process.
++    IReadOnlyList<WindowSnapshot> DesktopWindows() => [];
+     bool Execute(WindowIdentity identity, WindowControlAction action);
+     bool SetBounds(WindowIdentity identity, WindowBounds bounds);
+     bool RequestClose(WindowIdentity identity);
+@@ -822,6 +895,59 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
+         };
+     }
+ 
++    public IReadOnlyList<WindowSnapshot> DesktopWindows()
++    {
++        // MINALL1687: what the taskbar would show as windows. The shell's own
++        // surfaces (desktop, taskbar), cloaked UWP hosts, tool windows, owned
++        // popups and untitled windows are not windows a person minimizes; the
++        // product's own window is left alone.
++        var found = new List<WindowSnapshot>();
++        int self = Environment.ProcessId;
++        EnumWindowsProc callback = (handle, _) =>
++        {
++            if (!IsWindowVisible(handle) || GetAncestor(handle, GetRootOwner) != handle)
++                return true;
++            long exStyle = GetWindowLongPtr(handle, ExtendedStyleIndex).ToInt64();
++            if ((exStyle & ToolWindowStyle) != 0)
++                return true;
++            if (DwmGetWindowAttribute(handle, CloakedAttribute, out int cloaked, sizeof(int)) == 0 && cloaked != 0)
++                return true;
++            string className = ReadClassName(handle);
++            if (className is "Progman" or "WorkerW" or "Shell_TrayWnd" or "Shell_SecondaryTrayWnd")
++                return true;
++            GetWindowThreadProcessId(handle, out uint owner);
++            if (owner == 0 || owner > int.MaxValue || (int)owner == self)
++                return true;
++            try
++            {
++                using Process process = Process.GetProcessById(checked((int)owner));
++                string title = ReadWindowTitle(handle);
++                if (string.IsNullOrWhiteSpace(title))
++                    return true;
++                var identity = new WindowIdentity(handle, process.Id,
++                    process.StartTime.ToUniversalTime().Ticks, process.ProcessName, UtcNow);
++                found.Add(Observe(identity));
++            }
++            catch (Exception exception) when (exception is Win32Exception
++                or InvalidOperationException or NotSupportedException or ArgumentException)
++            {
++                // A window or its owner can disappear during enumeration.
++            }
++            return true;
++        };
++        if (!EnumWindows(callback, nint.Zero))
++            throw new Win32Exception(Marshal.GetLastWin32Error());
++        return found;
++    }
++
++    private static unsafe string ReadClassName(nint window)
++    {
++        const int capacity = 256;
++        char* buffer = stackalloc char[capacity];
++        int length = GetClassName(window, buffer, capacity);
++        return length <= 0 ? string.Empty : new string(buffer, 0, length);
++    }
++
+     internal static bool ExecuteFocus(
+         WindowSnapshot snapshot,
+         Func<nint, int, bool> showWindowAsync,
+@@ -930,4 +1056,21 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
+     [LibraryImport("user32.dll", EntryPoint = "PostMessageW")]
+     [return: MarshalAs(UnmanagedType.Bool)]
+     private static partial bool PostMessage(nint windowHandle, uint message, nint wParam, nint lParam);
++
++    private const uint GetRootOwner = 3;
++    private const int ExtendedStyleIndex = -20;
++    private const long ToolWindowStyle = 0x00000080;
++    private const uint CloakedAttribute = 14;
++
++    [LibraryImport("user32.dll")]
++    private static partial nint GetAncestor(nint windowHandle, uint flags);
++
++    [LibraryImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
++    private static partial nint GetWindowLongPtr(nint windowHandle, int index);
++
++    [LibraryImport("user32.dll", EntryPoint = "GetClassNameW")]
++    private static unsafe partial int GetClassName(nint windowHandle, char* className, int capacity);
++
++    [LibraryImport("dwmapi.dll")]
++    private static partial int DwmGetWindowAttribute(nint windowHandle, uint attribute, out int value, int size);
+ }
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index e2f5b7e0..09abea90 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -4778,6 +4778,10 @@ def _explicit_arguments_from_evidence(
+         literal = effect_intent.literal_clipboard_write_text(evidence)
+         return {"text": literal} if literal is not None else None
+ 
++    if operation == "window.minimize.all":
++        # MINALL1687: no arguments; the order over every window is the whole request.
++        return {} if effect_intent.minimize_all_request(effect_intent._fold(evidence)) else None
++
+     if operation == "clipboard.read.text":
+         # The read takes no literal; naming the clipboard is the whole request.
+         return {} if re.search(r"\b(?:portapapeles|clipboard)\b", folded) else None
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 0b4573df..b06c7511 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -2353,6 +2353,8 @@ def _curated_domain_is_grounded(
+                 r"graba|grabar|record|recording|camara|camera)\b",
+             )
+         )
++    if operation == "window.minimize.all":
++        return minimize_all_request(folded)
+     if operation in {
+         "window.active",
+         "window.focus",
+@@ -8065,6 +8067,22 @@ _OPEN_STATE_CONDITION = (
+ )
+ 
+ 
++_MINIMIZE_ALL_REQUEST = re.compile(
++    r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
++    r"(?:minimiza|minimizame|minimizar|minimise|minimize)\s+(?:me\s+)?"
++    r"(?:todas\s+(?:las\s+)?(?:ventanas|apps|aplicaciones)|todas|todo|"
++    r"all(?:\s+(?:the|my|of\s+the))?(?:\s+(?:windows|apps|applications))?|everything)"
++    r"(?:\s+(?:abiertas|open))?(?:\s*,?\s*(?:por\s+favor|please))?[\s.!?]*$"
++)
++
++
++def minimize_all_request(folded: str) -> bool:
++    """MINALL1687 «minimizá todas las ventanas», «minimizá todo»: one order
++    over every desktop window, never a named one."""
++
++    return _MINIMIZE_ALL_REQUEST.match(_strip_request_envelope(folded)) is not None
++
++
+ def conditional_open_pause_app(
+     text: str,
+     application_names: Iterable[str] | ApplicationCatalogIndex,
+@@ -16512,6 +16530,13 @@ def resolve_explicit_effects(
+     if "browser.control" in available and browser_back_arguments(text) is not None:
+         # A complete history request is not a destination to search.
+         return EffectIntent(("browser.control",), (text,))
++    if (
++        "window.minimize.all" in available
++        and minimize_all_request(folded)
++        and not _is_negative_effect_clause(folded)
++    ):
++        # MINALL1687: every desktop window minimized and verified iconic.
++        return EffectIntent(("window.minimize.all",), (text,))
+     if (
+         {"window.resolve", "media.control"} <= available
+         and conditional_open_pause_app(text, authenticated_applications) is not None
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index d2c2696e..7c5fc04d 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4407,6 +4407,20 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
+             "installed. Name the game as the person named it, in one or two "
+             "sentences, in the person's language."
+         )
++    if (
++        situation.get("operation") == "window.minimize.all"
++        and situation.get("verified") is True
++        and situation.get("succeeded") is True
++    ):
++        # MINALL1687 «minimizá todas las ventanas»: the desktop windows were
++        # minimized and re-observed iconic; nothing was closed.
++        bits.append(
++            "This result minimized every visible desktop window and verified "
++            "each is now minimized: say that all the windows were minimized "
++            "(with the count from minimized if it is present), that nothing "
++            "was closed, in one sentence, in the person's language. If "
++            "minimized is 0, say there was no open window to minimize."
++        )
+     if (
+         situation.get("operation") == "app.installed"
+         and situation.get("verified") is True

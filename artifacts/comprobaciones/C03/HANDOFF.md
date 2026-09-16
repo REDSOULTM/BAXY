@@ -1,3 +1,11 @@
+# MINALL1687 adjudicado — 2026-09-16T07:31:03.108272+00:00
+
+**606/742 cubiertos, 136 abiertos, 0 NA; 9/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2); C03 formal 3/11. Registro SHA 989fc39673537a1c14ca8fe01657037dceaaf4172bb90df90ae5b78e7c20df5f. Primeras altas 24 h >= 490 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 3059f183 con BUILD1687 (minimizar todas las ventanas es una operación verificada del escritorio). Turnos ordinarios sin operaciones.
+
+MINALL1687 («Organizar ventanas y pestañas», minimizar todas las ventanas ejecutado y verificado sobre el escritorio): MINALL1687: window.minimize.all (nueva operación) minimizó y verificó todas las ventanas del escritorio en seis de siete casos; H0238 y H0529 acreditados con dos variantes aprobadas; H0658 falló sólo por el final (borradores con «ventanales» vetados como inventados); dos límites aprobados; ventanas del dueño restauradas por la raíz tras cada caso, 2 créditos. Adjudicación 9a72ae9a88cfe3a0f9624b74bebf0d0e7ef954aeb80de91b37281f93815d79da. 7 casos ordinarios sobre BUILD1687: 6 aprobados, 1 fallido (H0658, sin final); 2 créditos
+
+---
+
 # REOPEN1685 aplicado — 2026-09-16T06:52:38.384086+00:00
 
 **604/742 cubiertos, 138 abiertos, 0 NA; 9/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2); C03 formal 3/11. Registro SHA afbc64b2c2f284c4f5f35dc37816760b6c703c0127fd660dc2a2b1e8d7316090. Primeras altas 24 h >= 488 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño.

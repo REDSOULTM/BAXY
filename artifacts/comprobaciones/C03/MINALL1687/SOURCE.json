@@ -1,0 +1,15 @@
+{
+  "schema": "c03-minall1687-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (window.minimize.all), src/Baxy.Core/Operations/WindowControlHandlers.cs (WindowMinimizeAllHandler), src/Baxy.Providers.Windows/Windows/WindowControlContracts.cs and WindowsWindowControlProvider.cs (DesktopWindows, MinimizeAllAsync) and src/baxy_mind (minimize_all_request, arguments, narration).",
+  "patch": "artifacts/comprobaciones/C03/MINALL1687/SOURCE.patch",
+  "commits": [
+    "3059f183b6d3d48666871e27881dc345aebc0acc"
+  ],
+  "build": "BUILD1687 (C03-repairs1687-build/BUILD_READY.json; kernel, núcleo, proveedores y mente)",
+  "cause_measured": "Ninguna operación minimizaba todas las ventanas; el pedido se respondía como límite y el dueño lo declaró capacidad esperada.",
+  "change": "Operación window.minimize.all verificada sobre el escritorio; lector y narración; sin respuestas fijas.",
+  "measurement": "MINALL1687: MINALL1687: window.minimize.all (nueva operación) minimizó y verificó todas las ventanas del escritorio en seis de siete casos; H0238 y H0529 acreditados con dos variantes aprobadas; H0658 falló sólo por el final (borradores con «ventanales» vetados como inventados); dos límites aprobados; ventanas del dueño restauradas por la raíz tras cada caso; 2 créditos. 7 casos ordinarios sobre BUILD1687: 6 aprobados, 1 fallido (H0658, sin final); 2 créditos",
+  "credits": 2
+}
