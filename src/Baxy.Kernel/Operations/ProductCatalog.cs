@@ -205,7 +205,7 @@ public static class ProductCatalog
             "browser.navigate.named",
             Schema(
                 [
-                    String("browser", values: ["opera", "opera_gx", "chrome", "edge", "brave"]),
+                    String("browser", values: ["brave", "chrome", "edge", "opera", "opera_gx"]),
                     String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true),
                 ],
                 ["browser", "url"]),
