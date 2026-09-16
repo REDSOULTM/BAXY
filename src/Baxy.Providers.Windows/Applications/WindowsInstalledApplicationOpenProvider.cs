@@ -1085,6 +1085,21 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
         CancellationToken cancellationToken) =>
         Inventory(entry, strongIdentityOnly: true, cancellationToken);
 
+    private static bool ProcessHasExited(Process process)
+    {
+        try
+        {
+            return process.HasExited;
+        }
+        catch (Exception exception) when (exception is InvalidOperationException
+            or System.ComponentModel.Win32Exception
+            or NotSupportedException)
+        {
+            // An unreadable state is not proof of exit; the inventory stays strict.
+            return false;
+        }
+    }
+
     private static List<InstalledApplicationObservation> Inventory(
         InstalledApplicationEntry entry,
         bool strongIdentityOnly,
@@ -1199,7 +1214,11 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                     or System.ComponentModel.Win32Exception
                     or NotSupportedException)
                 {
-                    if (strongIdentityOnly)
+                    // A foreign process that exits between GetProcesses and its
+                    // reads (WhatsApp's background task server respawning,
+                    // CLOSE1649/001) owns no visible window any more; only a
+                    // live process can leave the candidate's inventory incomplete.
+                    if (strongIdentityOnly && !ProcessHasExited(process))
                         throw new ApplicationInventoryException("The visible application inventory was incomplete.");
                 }
             }
