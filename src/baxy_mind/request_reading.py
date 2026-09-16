@@ -87,6 +87,7 @@ _EN_WORDS = frozenset(
     unmute until up upon us used very want was way we well were what
     whatever when where whether which while who why will window with
     within without would write wrote yes yesterday yet you your yours
+    summarize summarise summary minimize maximize
     """.split()
 )
 
