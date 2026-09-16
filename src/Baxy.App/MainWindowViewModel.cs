@@ -652,6 +652,17 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
             return true;
         }
 
+        if (execution.Steps.Count == 2 && execution.NextIndex == 0
+            && execution.Observations.Count == 0 && execution.CompletedMessages.Count == 0
+            && execution.CurrentStep.Operation == "wifi.radio.set"
+            && execution.Steps[1].Operation == "wifi.scan")
+        {
+            // NETWORK1743 «qué redes wifi hay» → «la radio está apagada, ¿la enciendo
+            // y busco redes?» → «sí»: the reviewed switch is the first step; the
+            // read-only scan that follows it needs no confirmation.
+            return true;
+        }
+
         // CompleteStep records completed, verified responses. Failed/uncertain
         // steps retain a boundary or replan; Capture rejects replans separately.
         if (!allowVerifiedReadPrefix
