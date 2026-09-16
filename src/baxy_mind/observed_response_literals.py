@@ -83,6 +83,16 @@ def without_observed_names(text: str, situation: object) -> str:
                 names.update(name.strip() for entry in listed if isinstance(entry, dict)
                              and isinstance(name := entry.get("name"), str)
                              and 0 < len(name.strip()) <= 4096)
+        if (node.get("kind") == "operation" and operation == "filesystem.write.text"
+                and node.get("verified") is True and node.get("succeeded") is True
+                and node.get("polarity") == "success"):
+            # FILES1709 «crea un archivo de texto con los 5 procesos que más
+            # memoria usan»: the name of the file just written («procesos-memoria.txt»)
+            # is observed data the report must say, not a dotted operation name.
+            observed = node.get("observed")
+            written = observed.get("name") if isinstance(observed, dict) else None
+            if isinstance(written, str) and 0 < len(written.strip()) <= 4096:
+                names.add(written.strip())
         if (node.get("kind") == "operation" and operation == "ocr.read"
                 and node.get("verified") is True and node.get("succeeded") is True
                 and node.get("polarity") == "success"):

@@ -853,7 +853,16 @@ def _process_report_file_arguments(
             measure = entry.get("totalProcessorSeconds")
         if isinstance(measure, bool) or not isinstance(measure, (int, float)):
             return None
-        rendered = str(measure) if isinstance(measure, int) else format(measure, 'g')
+        # Rendered exactly as the observation JSON carries it (shortest
+        # round-trip for a float, no exponent), so the line stays evidence.
+        if isinstance(measure, int):
+            rendered = str(measure)
+        elif measure.is_integer():
+            rendered = str(int(measure))
+        else:
+            rendered = repr(measure)
+            if 'e' in rendered or 'E' in rendered:
+                return None
         lines.append(f"{entry['name'].strip()}: {rendered}")
     if not lines:
         return None
