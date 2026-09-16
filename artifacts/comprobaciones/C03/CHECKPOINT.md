@@ -1,3 +1,25 @@
+## NETWORK1723 — estado vigente 2026-09-16T15:38:36.225215+00:00
+
+Parcial: 7 aprobados, 0 fallidos, 0 sin ejecutar; 3 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 617/742 | 125 | 0 | >=501 | 10/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 498 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); NETWORK1723 añade 3. No se cuentan revalidaciones.
+
+Siguiente acción: NETWORK1723: 7 ejecutados, 7 aprobados, 0 fallidos, 3 créditos (índices [0, 1, 2]); Red y Bluetooth 19/21. Siguiente: UI1725 (aritmética en la Calculadora) y LIMITS1727 (H0077).
+
+Evidencia: `artifacts/comprobaciones/C03/NETWORK1723/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 127.41 s acumulados; pico GPU 3497.56 MiB; pico RAM 1698.46 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 7; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque NETWORK1723 precedente. -->
+
 ## NETWORK1721 — estado vigente 2026-09-16T15:08:08.603197+00:00
 
 Parcial: 2 aprobados, 5 fallidos, 0 sin ejecutar; 0 créditos.

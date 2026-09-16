@@ -1,0 +1,15 @@
+{
+  "schema": "c03-network1723-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/MindPlanSession.cs and src/Baxy.App/OperationResponseProjection.cs (a confirmed step that fails hands the mind the operation's own failure facts) and src/baxy_mind/llm.py (wifi_profile_not_found cause fact reworded); the NETWORK1723 readers (commit 99f55d72) unchanged.",
+  "patch": "artifacts/comprobaciones/C03/NETWORK1723/SOURCE.patch",
+  "commits": [
+    "61ae7ab8ef2ad5df5b5047b287be839916589c78"
+  ],
+  "build": "BUILD1723 (C03-repairs1723-build/BUILD_READY.json; App y mente)",
+  "cause_measured": "La rama de confirmación de la App sustituía el hecho de fallo de la operación por confirmed_no_effect y la mente no veía la causa.",
+  "change": "El fallo tipado de una operación confirmada llega al final con sus propios hechos; hecho de causa del perfil ausente reescrito; sin respuestas fijas.",
+  "measurement": "NETWORK1723: 7 ejecutados, 7 aprobados: las cinco wifi.connect.named revisadas fueron aprobadas por la raíz tras comprobar que ningún perfil guardado coincide, terminaron wifi_profile_not_found, la WLAN no cambió y los finales dijeron que no se conectó porque no hay una red guardada con ese nombre; los dos límites aprobados; 3 créditos. Reparación medida: la rama de confirmación de la App pasa el hecho de fallo de la operación al final (antes confirmed_no_effect) y el hecho de causa wifi_profile_not_found evita la palabra «connected» que la lente de palabras truncadas vetaba en inglés.",
+  "credits": 3
+}

@@ -1,0 +1,96 @@
+{
+  "schema": "network1723-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1723-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1723-instrument-v1",
+  "seal_sha256": "fbcf08448cf906e50de721e29d251972244b3ca18706ed718039a6f10faf43a1",
+  "runner_sha256": "58070153dceacfa0b6479c06e078a113ef1fea34fa1d7a60f6138c2cbcbd72d3",
+  "transport_seal_sha256": "4aaf47674e6147399134b9965fde95b3412bc12f893ffaf0721c78a7cd802d62",
+  "files": {
+    "panel.json": "73681e6ba535d04b5d6c0f2da671e211fbaeeb11d9632ad28410e1a827991d43",
+    "turns.jsonl": "c2d6b0fca228a8008128cd9db9b37bfd82078e1ef7b4560a84a69cae7e8793dd",
+    "case-map.json": "8a5645afae5973ac67bdc0658668595e77803e61844844cb2b7d74ff94a7edf3",
+    "PLAN.md": "593d47b79edac5e6183de26d82dea77094d1edc196d949b6e67cffd9b35153b7"
+  },
+  "counts": {
+    "cases": 7,
+    "historical_literals": 3,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 14,
+    "session_controls": 7,
+    "ordinary_turns": 2,
+    "reviewed_turns": 5,
+    "maximum_reportable_terminals": 12,
+    "maximum_internal_confirmations": 5
+  },
+  "kind_counts": {
+    "historical_literal": 3,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0170",
+      "kind": "historical_literal",
+      "group": "wifi_named_absent",
+      "credit_behavior": "wifi_named_absent",
+      "text_sha256": "34e0523e9ac038a993c60b3fdd42a969047820257cce942312cfcaa68171c372",
+      "criterion_sha256": "3f226787cc30307c257c82027145d3be23d51d1622b317f2d91cd80022ccd7e3"
+    },
+    {
+      "index": 1,
+      "case_id": "H0376",
+      "kind": "historical_literal",
+      "group": "wifi_named_absent",
+      "credit_behavior": "wifi_named_absent",
+      "text_sha256": "7d75ba4f45841895f2d9ba1558a6ebdd753825be2deb5630655c79fa302b20f3",
+      "criterion_sha256": "3f226787cc30307c257c82027145d3be23d51d1622b317f2d91cd80022ccd7e3"
+    },
+    {
+      "index": 2,
+      "case_id": "H0739",
+      "kind": "historical_literal",
+      "group": "wifi_named_absent",
+      "credit_behavior": "wifi_named_absent",
+      "text_sha256": "ff06aa400e876dedebbd6e6a6fe9f8a9557ec88bdd55c89bf6fe6095e80c8588",
+      "criterion_sha256": "3f226787cc30307c257c82027145d3be23d51d1622b317f2d91cd80022ccd7e3"
+    },
+    {
+      "index": 3,
+      "case_id": "network1723-dev-01",
+      "kind": "original_development_variant",
+      "group": "wifi_named_absent",
+      "credit_behavior": "wifi_named_absent",
+      "text_sha256": "79998e0168612d9248a714f8550c7e658413a990c12d60b9bb05776ecfd205bb",
+      "criterion_sha256": "3f226787cc30307c257c82027145d3be23d51d1622b317f2d91cd80022ccd7e3"
+    },
+    {
+      "index": 4,
+      "case_id": "network1723-dev-02",
+      "kind": "original_development_variant",
+      "group": "wifi_named_absent",
+      "credit_behavior": "wifi_named_absent",
+      "text_sha256": "80ef2068b1e3b2357fb4d3550e6ef6a4153ea221cb9e21a54f38557530d8f54a",
+      "criterion_sha256": "3f226787cc30307c257c82027145d3be23d51d1622b317f2d91cd80022ccd7e3"
+    },
+    {
+      "index": 5,
+      "case_id": "network1723-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "c153e69c8df08fbdcc24ddfe9a0d60756ffe76687f3106b00442d378ebc85f49",
+      "criterion_sha256": "8ce958e29c2ddf5d5565b20e29fc2fa14b486532a1c04fda8b2ce2f039fbbbb7"
+    },
+    {
+      "index": 6,
+      "case_id": "network1723-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "c5d32e1456976967d6a3c11af61bc7164a857c06a60c4a1e660a3bbedcf38fec",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    }
+  ]
+}
