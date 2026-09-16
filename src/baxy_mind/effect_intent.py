@@ -2801,6 +2801,22 @@ def known_unsupported_effect_request(
             {"commerce.product.purchase"},
         ),
         (
+            # LIMITS1681 H0175 «en Discord apretá enter», H0566 «apretá enviar en
+            # WhatsApp»: a control inside a messaging client is never pressed
+            # by the product (the visible click works on its own windows).
+            _has(folded, r"^[¿?¡!\s]*(?:(?:en|in|on)\s+(?:discord|whatsapp|teams|telegram|slack|skype|zoom|signal|messenger)[,]?\s+)?(?:apreta|apretale|pulsa|pulsale|presiona|presionale|dale\s+a|toca|clickea|click|press|hit)\s+"
+                         r"(?:(?:la|el|the)\s+)?(?:tecla\s+|boton\s+(?:de\s+)?|key\s+|button\s+)?(?:enter|intro|return|enviar|send|escape|esc|espacio|space|tab)\b")
+            and (_has(folded, r"^[¿?¡!\s]*(?:en|in|on)\s+(?:discord|whatsapp|teams|telegram|slack|skype|zoom|signal|messenger)\b") or _has(folded, r"\b(?:en|in|on)\s+(?:discord|whatsapp|teams|telegram|slack|skype|zoom|signal|messenger)[\s.!?]*$")),
+            {"client.control.press"},
+        ),
+        (
+            # LIMITS1681 H0107 «poneme el modo avión»: the radios are switched
+            # one by one; no operation toggles airplane mode.
+            _has(folded, r"\b(?:modo\s+avion|airplane\s+mode|flight\s+mode)\b")
+            and _has(folded, r"\b(?:pon|pone|poneme|poner|activa|activame|activar|prende|prendeme|enciende|apaga|desactiva|quita|saca|turn\s+on|turn\s+off|enable|disable|switch|put|set)\b"),
+            {"network.airplane.mode"},
+        ),
+        (
             # LIMITS1677 H0048 «ejecuta pytest», H0245 «ejecuta ls»: no operation
             # runs a shell command or a program by command line.
             _has(folded, r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?(?:ejecuta|ejecutame|corre|correme|run|execute|lanza|launch)\s+"
@@ -10003,6 +10019,10 @@ def _is_direct_request(text: str) -> bool:
     conditioned = re.sub(_OPEN_STATE_CONDITION, "", text, count=1)
     if conditioned != text and conditioned.strip():
         text = conditioned
+    # LIMITS1681 «en Discord apretá enter»: the client context frames the request.
+    framed = re.sub(r"^[¿?¡!\s]*(?:en|in|on)\s+(?:discord|whatsapp|teams|telegram|slack|skype|zoom|signal|messenger)[,]?\s+", "", text, count=1)
+    if framed != text and framed.strip():
+        text = framed
     if (
         browser_back_arguments(text) is not None
         or browser_new_tab_arguments(text) is not None
@@ -15571,6 +15591,10 @@ def _visible_click_intent(
         evidence = request.group(0).strip(" ,;:-")[:240]
         return EffectIntent(("input.visible.click",), (evidence,))
     if _visible_click_label(text, allow_navigate=allow_navigate) is None:
+        return None
+    if _has(_fold(text), r"\b(?:en|in|on)\s+(?:discord|whatsapp|teams|telegram|slack|skype|zoom|signal|messenger)\b"):
+        # LIMITS1681 «apretá enviar en WhatsApp»: a control inside a messaging
+        # client is a known limit, never a click on the foreground window.
         return None
     evidence = text.strip(" ,;:-")[:240]
     return EffectIntent(("input.visible.click",), (evidence,))
