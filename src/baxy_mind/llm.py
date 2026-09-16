@@ -14704,9 +14704,11 @@ class LlmRuntime:
                 # MUSIC1555: the drafts quoted a fragment («Smooth Criminal»)
                 # of the observed title; the whole title, verbatim, is the name.
                 else (
-                    ("Quote the whole title exactly as observed, inside quotation marks: "
+                    # VIDEO1717: told only to quote the title, the model answered
+                    # with the bare title; the state belongs in the same sentence.
+                    ("Say in one sentence that it is playing and quote the whole title exactly as observed, inside quotation marks: "
                      if response_language == "en"
-                     else "Cita el título completo tal cual se observó, entre comillas: ")
+                     else "Di en una oración que está reproduciéndose y cita el título completo tal cual se observó, entre comillas: ")
                     + "«" + str(_merged_observed(situation).get("title")) + "»"
                 )
                 if _youtube_playback_in_payload({"operation": situation.get("operation"), "verified": situation.get("verified"), "succeeded": situation.get("succeeded"), "seen": _merged_observed(situation)}) is not None
