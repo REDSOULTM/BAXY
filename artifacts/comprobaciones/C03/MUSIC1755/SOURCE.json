@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1755-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/SpotifyDesktopAutomation.ps1 (12 s search-page horizon) and SpotifyDesktopAdapter.cs (comment), src/baxy_mind/llm.py (Spotify cause facts), src/baxy_mind/__main__.py (the answer keeps the language of the request it answers), src/baxy_mind/effect_intent.py (reproducí/tocá as direct play verbs).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1755/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1755 (C03-repairs1755-build/BUILD_READY.json; proveedor y mente)",
+  "cause_measured": "La página de búsqueda del cliente tardaba más que el horizonte del script tras un arranque reciente; el final de fallo no nombraba la causa; la respuesta sin idioma propio se contestaba en español.",
+  "change": "Horizonte de búsqueda de 12 s, hechos de causa de Spotify, idioma heredado del pedido anterior, verbos reproducí/tocá; sin respuestas fijas.",
+  "measurement": "MUSIC1755: 2 aprobados (H0300 y la variante en español: pregunta, respuesta guionizada, media.play.query aprobada por la raíz y verificada, final que nombra lo que suena), 2 literales fallidos en el cliente (reproducir pulsado sin sonar a tiempo; ningún resultado en 12 s) con finales sin causa, 1 variante fallida (reproducción verificada pero final en español para un pedido en inglés, con opinión), 2 límites aprobados; 0 créditos. Siguiente compilación: el compositor prefiere el código de error del cliente cuando tiene hecho de causa y hereda el idioma de los pedidos anteriores; repetición como MUSIC1757.",
+  "credits": 0
+}
