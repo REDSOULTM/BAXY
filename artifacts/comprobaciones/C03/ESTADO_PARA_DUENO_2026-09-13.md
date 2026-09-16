@@ -1,3 +1,25 @@
+## MUSIC1747 — estado vigente 2026-09-16T20:57:15.433211+00:00
+
+Parcial: 2 aprobados, 7 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 626/742 | 116 | 0 | >=510 | 12/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 510 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1747 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: MUSIC1747: 9 ejecutados, 2 aprobados, 7 fallidos, 0 créditos (índices []); Música 27/39. Siguiente: «pon música en spotify» (diálogo) y «poné rock», «tocá una canción» (lectores).
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1747/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 372.16 s acumulados; pico GPU 3497.56 MiB; pico RAM 2529.64 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1747 precedente. -->
+
 ## WEB1745 — estado vigente 2026-09-16T20:23:41.146491+00:00
 
 Parcial: 4 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.

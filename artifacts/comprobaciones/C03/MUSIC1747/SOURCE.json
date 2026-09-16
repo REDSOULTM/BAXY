@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1747-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/ProductConductorHost.cs (media.play.query in the reviewed allowlist) on top of the existing SpotifyDesktopAdapter and the mind readers.",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1747/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1747 (C03-repairs1747-build/BUILD_READY.json; App)",
+  "cause_measured": "media.play.query exigía confirmación y el conductor revisado no la proponía a la raíz, así que ninguna reproducción en Spotify podía medirse.",
+  "change": "media.play.query admitida en el turno revisado; sin respuestas fijas.",
+  "measurement": "MUSIC1747: 7 fallidos del grupo Spotify: reproducción propuesta, aprobada por la raíz, completada y verificada por now-playing en el cliente, pero sin final publicado (todos los borradores que citaban el título vetados como missing_name por el compositor); 2 límites aprobados; 0 créditos. Reparación del compositor a continuación (la reproducción verificada de Spotify nombra el título observado sin la palabra «título») y repetición del panel como MUSIC1749.",
+  "credits": 0
+}
