@@ -1,0 +1,15 @@
+{
+  "schema": "c03-apps1671-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (unresolved_application_open_name: use-to-do frame with known software).",
+  "patch": "artifacts/comprobaciones/C03/APPS1671/SOURCE.patch",
+  "commits": [
+    "5360dc63d5c6ffe1da8222d63c426955176b2f1b"
+  ],
+  "build": "BUILD1671 (C03-repairs1671-build/BUILD_READY.json; mente)",
+  "cause_measured": "Querer trabajar en un programa ausente iba al modelo sin lectura de presencia.",
+  "change": "Marco de uso con programa conocido ligado a la lectura app.installed; sin respuestas fijas.",
+  "measurement": "APPS1671: tres lecturas app.installed verificadas (ausente) sin apertura; una variante con final fiel, el literal sin respuesta (tres borradores vetados como afirmación de fallo) y la variante en inglés rechazada por la aplicación («cannot be opened»); dos límites aprobados; 0 créditos. Medición raíz: la lectura de presencia por el marco de uso funciona; la narración añade consecuencias de fallo que el narrador y la aplicación vetan; siguiente APPS1673 con la instrucción de decir sólo la ausencia.",
+  "credits": 0
+}

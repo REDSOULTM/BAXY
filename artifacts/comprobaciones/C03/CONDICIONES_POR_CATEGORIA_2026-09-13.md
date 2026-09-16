@@ -1047,3 +1047,7 @@ Trece tandas desde el bloque de la mañana (INSTALL1631–1633, UI1635–1647, C
 | Archivos | 3 | Contenido dinámico (H0334), zip (H0542), backup a pendrive (H0733): capacidades parciales sin composición segura. |
 | Bibliotecas y fichas de juegos | 3 | Navegar la interfaz de Steam/Epic (clientes del dueño; sin operación); App ID por la API pública (límite sin marca). |
 | Resto (energía 2, cerrar 2, web actual 1, conocimiento 1, hardware 1, documentos 1) | 8 | Apagar/reiniciar (nunca), «cerrame todo» (ventanas del dueño), fallo de WhatsApp en internet (motor), H0297, versión de Python (sin lectura de versiones), edición en Photoshop (ausente; pendiente de lectura). |
+
+## Actualización 2026-09-16 (APPS1671)
+
+Crear documentos y editar imágenes pasa de 1/2 a 1/2 con la foto a editar en Photoshop respondida por la ausencia del programa (commit 5360dc63, BUILD1671) (HEAD 5360dc63): tres lecturas app.installed verificadas (ausente) sin apertura; una variante con final fiel, el literal sin respuesta (tres borradores vetados como afirmación de fallo) y la variante en inglés rechazada por la aplicación («cannot be opened»); dos límites aprobados, 0 créditos. Medición raíz: la lectura de presencia por el marco de uso funciona; la narración añade consecuencias de fallo que el narrador y la aplicación vetan; siguiente APPS1673 con la instrucción de decir sólo la ausencia.

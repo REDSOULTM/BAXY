@@ -1,3 +1,25 @@
+## APPS1671 — estado vigente 2026-09-16T04:23:47.833777+00:00
+
+Parcial: 3 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 600/742 | 142 | 0 | >=474 | 8/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 474 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); APPS1671 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: APPS1671: 6 ejecutados, 3 aprobados, 3 fallidos, 0 créditos (índices []); Abrir aplicaciones 46/54. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/APPS1671/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 107.92 s acumulados; pico GPU 3497.56 MiB; pico RAM 2284.19 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque APPS1671 precedente. -->
+
 ## AGENDA1669 — estado vigente 2026-09-16T04:12:17.972552+00:00
 
 Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.

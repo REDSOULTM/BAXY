@@ -1,3 +1,11 @@
+# APPS1671 adjudicado — 2026-09-16T04:23:47.833777+00:00
+
+**600/742 cubiertos, 142 abiertos, 0 NA; 8/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38); C03 formal 3/11. Registro SHA 8390585c85257917c09d45909b98427837e6fb11e8bb444dbb47d482084e5ddc. Primeras altas 24 h >= 474 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5360dc63 con BUILD1671 (querer editar una foto en Photoshop se responde por su ausencia). Turnos ordinarios sin operaciones.
+
+APPS1671 («Crear documentos y editar imágenes», la foto a editar en Photoshop respondida por la ausencia del programa): tres lecturas app.installed verificadas (ausente) sin apertura; una variante con final fiel, el literal sin respuesta (tres borradores vetados como afirmación de fallo) y la variante en inglés rechazada por la aplicación («cannot be opened»); dos límites aprobados, 0 créditos. Adjudicación 76efddb72a8658b32ec4435368663aea2397667ffe5517a7d5748cf6701465e2. Medición raíz: la lectura de presencia por el marco de uso funciona; la narración añade consecuencias de fallo que el narrador y la aplicación vetan; siguiente APPS1673 con la instrucción de decir sólo la ausencia.
+
+---
+
 # AGENDA1669 adjudicado — 2026-09-16T04:12:17.972552+00:00
 
 **600/742 cubiertos, 142 abiertos, 0 NA; 8/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38); C03 formal 3/11. Registro SHA 03062a29d29f1668885ff94131cc04552fd21b652565bf81b0d84711cbbcf125. Primeras altas 24 h >= 474 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD cfd29303 con BUILD1669 (qué hay agendado se lee de lo programado por BAXY; resumir un PDF es un límite conocido). Turnos ordinarios sin operaciones.
