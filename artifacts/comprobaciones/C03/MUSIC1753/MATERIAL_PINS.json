@@ -1,0 +1,96 @@
+{
+  "schema": "music1753-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1753-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-music1753-instrument-v1",
+  "seal_sha256": "cc00d897fc415b8963817d6ac9cca8d3991821a4aa84eb0fe181f0fd4910afb2",
+  "runner_sha256": "a7507b96a7a349be113526ad874021f572462e9b2ba430f942e24d0ac71dc195",
+  "transport_seal_sha256": "97c07ef741ad0287a1af795468ff2f68f22992af5780a5aa45bb8fa9c1ff988e",
+  "files": {
+    "panel.json": "04e9696ddece4bd0e77193a8a9d30032ab13972435e0a8117c356115d4155ca7",
+    "turns.jsonl": "44ca751de6a8aaa3e46f9efa3fdd2f50fe97dfc992e14bae286a32d166495abf",
+    "case-map.json": "ad23c54798a9f54971344a212887673efbd5b0cdddaa0c893260cd4c26162ba4",
+    "PLAN.md": "c43cd01ad06a22558d4a94780cbefc09d122d744bdd4eebcb234bda556fb22dd"
+  },
+  "counts": {
+    "cases": 7,
+    "historical_literals": 3,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 14,
+    "session_controls": 7,
+    "ordinary_turns": 2,
+    "reviewed_turns": 5,
+    "maximum_reportable_terminals": 17,
+    "maximum_internal_confirmations": 10
+  },
+  "kind_counts": {
+    "historical_literal": 3,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0022",
+      "kind": "historical_literal",
+      "group": "spotify_generic",
+      "credit_behavior": "spotify_generic",
+      "text_sha256": "0715309674756c0851afc542462159e1c72de671be658f6a35f04701c4d1b4d2",
+      "criterion_sha256": "e9ab1b161df58be18bb9fcf62e8854b76d91d5cda0c11f139a4d68109cbf2992"
+    },
+    {
+      "index": 1,
+      "case_id": "H0300",
+      "kind": "historical_literal",
+      "group": "spotify_generic",
+      "credit_behavior": "spotify_generic",
+      "text_sha256": "6168cc5d4f3d78c82e23e0b64bdca80e438b10c20fd9ab90db0387852ece13f2",
+      "criterion_sha256": "e9ab1b161df58be18bb9fcf62e8854b76d91d5cda0c11f139a4d68109cbf2992"
+    },
+    {
+      "index": 2,
+      "case_id": "H0215",
+      "kind": "historical_literal",
+      "group": "spotify_generic",
+      "credit_behavior": "spotify_generic",
+      "text_sha256": "45271193c9777459b8ab38d23d4ae01da1c27f63aab4ef052197433744587108",
+      "criterion_sha256": "e9ab1b161df58be18bb9fcf62e8854b76d91d5cda0c11f139a4d68109cbf2992"
+    },
+    {
+      "index": 3,
+      "case_id": "music1753-dev-01",
+      "kind": "original_development_variant",
+      "group": "spotify_generic",
+      "credit_behavior": "spotify_generic",
+      "text_sha256": "17e1621a46fc2b5152dc4c72a9485000397a3755f0c30f0ec81a0de277751f26",
+      "criterion_sha256": "e9ab1b161df58be18bb9fcf62e8854b76d91d5cda0c11f139a4d68109cbf2992"
+    },
+    {
+      "index": 4,
+      "case_id": "music1753-dev-02",
+      "kind": "original_development_variant",
+      "group": "spotify_generic",
+      "credit_behavior": "spotify_generic",
+      "text_sha256": "d59c693fa03e34948fff35a257d9dbd75db8d16e129bce9a0f608764c4e2f8e8",
+      "criterion_sha256": "e9ab1b161df58be18bb9fcf62e8854b76d91d5cda0c11f139a4d68109cbf2992"
+    },
+    {
+      "index": 5,
+      "case_id": "music1753-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "bc24898c6d653acc0303bda963f8edd69ad552c3e75140829c1ecc5b591f40cc",
+      "criterion_sha256": "50757e30c0886c9c9d6fe25617d31896c91ed2f486ced29f1b243a9954f5945b"
+    },
+    {
+      "index": 6,
+      "case_id": "music1753-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "e591f2d12f1c4d6281f9ece72b33e656fd1d7b18bf31d14bde1399eab6e7cdab",
+      "criterion_sha256": "b35ec0429967be117381303ac4c12ac43ce4bc8b4450c2d4a9f0a67a33269ce6"
+    }
+  ]
+}

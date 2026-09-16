@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1753-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "No source change: the MUSIC1753 build (media.play.query in the reviewed allowlist, Spotify title lenses, query without the provider phrase) and the existing clarification path of the mind.",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1753/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1753 (C03-repairs1753-build/BUILD_READY.json; sin cambios (compilación de MUSIC1753))",
+  "cause_measured": "Nada por reparar: el pedido genérico ya pregunta qué poner y la respuesta ya funda la consulta; faltaba medirlo con Spotify.",
+  "change": "Ninguno; medición del diálogo existente sobre la compilación de MUSIC1753.",
+  "measurement": "MUSIC1753: 1 variante aprobada (pregunta, respuesta guionizada, media.play.query aprobada por la raíz y verificada, final que nombra lo que suena), 3 literales fallidos (el cliente de Spotify no mostró resultados a tiempo; final sin causa), 1 variante fallida (reproducción verificada pero final en español para un pedido en inglés, con opinión añadida), 2 límites aprobados; 0 créditos. Siguiente compilación: más tiempo para la página de búsqueda del cliente, causas de Spotify en el compositor, idioma de la conversación en el turno de respuesta; repetición como MUSIC1755.",
+  "credits": 0
+}
