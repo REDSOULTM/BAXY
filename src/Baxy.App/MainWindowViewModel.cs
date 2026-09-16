@@ -2274,7 +2274,8 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     route.Text,
                     turn.Reply,
                     turn.ResponseLanguage,
-                    string.Join(" ", PreviousUserRequests()));
+                    string.Join(" ", PreviousUserRequests()),
+                    unsupportedByMind: string.Equals(turn.ConversationKind, "unsupported", StringComparison.Ordinal));
             if (LastMindReplyRejection is null)
             {
                 AddMessage(

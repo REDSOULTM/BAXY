@@ -524,7 +524,8 @@ internal static class UserMessagePolicy
         string? priorUserText = null,
         bool clarification = false,
         bool hasRequiredInput = false,
-        IReadOnlyList<string>? missingFields = null)
+        IReadOnlyList<string>? missingFields = null,
+        bool unsupportedByMind = false)
     {
         if (LeakedInternalTerm(reply, userText, priorUserText) is { } leaked)
         {
@@ -563,8 +564,13 @@ internal static class UserMessagePolicy
                 && !AsksForDeclaredText(said, missingFields)),
             ("greets_out_of_world", GreetsOutOfWorldTarget(said)),
             ("unverified_connectivity", ClaimsUnverifiedConnectivity(said)),
+            // UI1659 «Go to the announcements channel in Discord.»: the mind
+            // closed the turn as a known unsupported effect and its bounded
+            // contract validated «I cannot go to …»; the request-text heuristic
+            // does not see that limit, so the kind is passed explicitly.
             ("looks_like_failure",
                 LooksLikeFailure(reply)
+                && !unsupportedByMind
                 && !LooksLikeKnowledgeQuestion(user)
                 && ConversationFallbackIntent(userText) != "out_of_catalog"),
             ("greeting_not_returned",
