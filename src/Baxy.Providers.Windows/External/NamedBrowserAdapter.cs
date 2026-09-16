@@ -123,6 +123,17 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
     {
         if (string.Equals(requested.AbsoluteUri, observed.AbsoluteUri, StringComparison.Ordinal))
             return true;
+        // WEB1745 «abre youtube.com en Chrome»: a site answers on its canonical host
+        // (youtube.com → www.youtube.com/). Same scheme, the same host modulo a
+        // leading "www.", no user info and the same path is the same destination;
+        // any other host or path (a login page, a redirect elsewhere) is not.
+        static string BareHost(string host) =>
+            host.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ? host[4..] : host;
+        if (requested.Scheme == observed.Scheme
+            && string.Equals(BareHost(requested.Host), BareHost(observed.Host), StringComparison.OrdinalIgnoreCase)
+            && observed.UserInfo.Length == 0
+            && string.Equals(requested.AbsolutePath, observed.AbsolutePath, StringComparison.Ordinal))
+            return true;
         // Search may add presentation parameters, but must retain the exact
         // public query on the same results page, never its first result.
         if (requested.Scheme != "https" || requested.Host != "www.bing.com"

@@ -14772,11 +14772,12 @@ def _review_web_and_browser_effects(
     ):
         # WEB1257: «Abre youtube», «abrí gmail», «andá a github.com» name a public
         # web service, not an installed application; the argument builder owns
-        # the closed canonical destination for each name.
+        # the closed canonical destination for each name. WEB1745 «abre youtube
+        # en Chrome»: when the person names the browser, it is the named navigation.
         _append(
             matches,
             folded,
-            "browser.navigate",
+            "browser.navigate.named" if named_browser else "browser.navigate",
             rf"\b{navigation_verbs}\b",
         )
     browser_page_context = context_browser is not None or _has(
