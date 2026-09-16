@@ -4684,8 +4684,8 @@ def _explicit_media_control_arguments(evidence: str) -> dict[str, object] | None
         "pause": (
             # In a resume request, "en pausa" describes the loaded state.
             # A separate pause verb or leave-in-pause command still conflicts.
-            r"(?<!en )\b(?:pause|pausa|pausar)\b"
-            if resuming else r"\b(?:pause|pausa|pausar)\b",
+            r"(?<!en )\b(?:pause|pausa|pausar|pausalo|pausala|pausame)\b"
+            if resuming else r"\b(?:pause|pausa|pausar|pausalo|pausala|pausame)\b",
             r"\b(?:deja|dejar)\s+en\s+pausa\b",
         ),
         "play": (
@@ -4798,6 +4798,8 @@ def _explicit_arguments_from_evidence(
         application_name = effect_intent.resolve_application_close_name(
             evidence, application_names,
         ) or effect_intent.resolve_application_focus_name(
+            evidence, application_names,
+        ) or effect_intent.conditional_open_pause_app(
             evidence, application_names,
         )
         if application_name is not None:

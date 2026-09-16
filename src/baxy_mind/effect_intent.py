@@ -2367,6 +2367,7 @@ def _curated_domain_is_grounded(
         return (
             _authenticated_application_close_target(folded, application_names) is not None
             or _authenticated_application_focus_target(folded, application_names) is not None
+            or conditional_open_pause_app(folded, application_names) is not None
             or window_inventory_arguments(folded) is not None or _window_domain(folded)
             or _has(folded, r"\b(?:aplicacion|application|proceso|process)\b")
         )
@@ -7956,6 +7957,28 @@ def _media_play_domain(text: str) -> bool:
     )
 
 
+_OPEN_STATE_CONDITION = (
+    r"^[¿?¡!\s]*(?:si|if)\s+(?:(?:tengo|esta|hay|i\s+have|there\s+is|is)\s+)?"
+    r"(?:(?:el|la|the)\s+)?(?P<app>[a-z0-9][a-z0-9 .+-]{1,30}?)\s+"
+    r"(?:(?:esta|is)\s+)?(?:abiert[oa]|open|running|corriendo|prendid[oa]|activ[oa])\s*,?\s*"
+)
+
+
+def conditional_open_pause_app(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> str | None:
+    """«si tengo spotify abierto pausalo»: the catalog display name of the
+    application whose open window conditions a pause, else None."""
+
+    folded = _strip_request_envelope(_fold(text))
+    found = re.match(_OPEN_STATE_CONDITION + r"(?:pausalo|pausala|pausame|pausa|pausar|pause\s+it|pause)[\s.!?]*$", folded)
+    if found is None:
+        return None
+    # The catalog resolver returns the display name the provider expects.
+    return resolve_application_catalog_app_id("abre " + found.group("app"), application_names)
+
+
 def _has_unsupported_deferred_effect(text: str) -> bool:
     """Veto immediate execution when the request actually asks for later."""
 
@@ -8047,6 +8070,10 @@ def _has_unsupported_deferred_effect(text: str) -> bool:
         deferred_scope,
         flags=re.IGNORECASE,
     )
+    # MUSIC1675 H0421 «si tengo spotify abierto pausalo»: a condition on the
+    # present state of an application (open now or not) is checked now by
+    # the window read, not awaited; only future events stay deferred.
+    deferred_scope = re.sub(_OPEN_STATE_CONDITION, " ", deferred_scope, count=1, flags=re.IGNORECASE)
     hard_deferred = _has(
         deferred_scope,
         (
@@ -9920,6 +9947,11 @@ def _is_direct_request(text: str) -> bool:
     if topic is not None:
         text = topic.group("body")
     text = _negative_state_question_body(text) or text
+    # MUSIC1675 «If Spotify is open, pause it.»: the present-state condition
+    # frames the request; the speech act is the clause after it.
+    conditioned = re.sub(_OPEN_STATE_CONDITION, "", text, count=1)
+    if conditioned != text and conditioned.strip():
+        text = conditioned
     if (
         browser_back_arguments(text) is not None
         or browser_new_tab_arguments(text) is not None
@@ -10018,6 +10050,7 @@ def _is_direct_request(text: str) -> bool:
         r"cancelame|cancelamela|cancelala|borrame|borrala|quitame|quitala|"
         r"eliminame|eliminala|"
         r"cierralo|cierrala|cerrala|cerralo|close it|dile|decile|tell|send|message|"
+        r"pausalo|pausala|pausame|pausa|pausar|pause|"
         r"programa|programar|programame|schedule|agenda|agendar|agendame|"
         r"ponme|pone|poneme|pongame|"
         r"activa|activar|desactiva|desactivar|enciende|encender|prende|prender|"
@@ -16358,6 +16391,15 @@ def resolve_explicit_effects(
     if "browser.control" in available and browser_back_arguments(text) is not None:
         # A complete history request is not a destination to search.
         return EffectIntent(("browser.control",), (text,))
+    if (
+        {"window.resolve", "media.control"} <= available
+        and conditional_open_pause_app(text, authenticated_applications) is not None
+        and not _is_negative_effect_clause(folded)
+    ):
+        # MUSIC1675 «si tengo spotify abierto pausalo»: the window read decides
+        # the condition; an absent window ends the mission truthfully, a
+        # present one pauses that application's session.
+        return EffectIntent(("window.resolve", "media.control"), (text, text))
     if (
         "window.focus" in available
         and resolve_application_focus_name(text, authenticated_applications) is not None
