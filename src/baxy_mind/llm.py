@@ -506,6 +506,24 @@ def _message_response_language(text: str) -> str:
     return read_request(text).language
 
 
+def _conversation_response_language(text: str, facts: dict | None) -> str:
+    """MUSIC1755 «Play a song on Spotify.» → «Queen»: an answer with no language
+    evidence of its own keeps the language of the latest prior request that has
+    some; the reading of the current text stays the owner otherwise."""
+
+    reading = read_request(text)
+    if tuple(reading.evidence) != (0, 0) or not isinstance(facts, dict):
+        return reading.language
+    prior_requests = facts.get("priorRequests")
+    if isinstance(prior_requests, list):
+        for prior in reversed(prior_requests):
+            if isinstance(prior, str) and prior.strip():
+                prior_reading = read_request(prior)
+                if tuple(prior_reading.evidence) != (0, 0):
+                    return prior_reading.language
+    return reading.language
+
+
 def _reading_of(user_text: str) -> RequestReading:
     """Lectura del pedido cuando no llega ya hecha desde el shell."""
 
@@ -3459,6 +3477,9 @@ _CAUSE_FACT = {
     "spotify_exact_result_not_found": (
         "the Spotify search showed no result to play for that request, so nothing is playing"
     ),
+    "spotify_play_clicked_not_verified": (
+        "the Spotify play control was pressed but the client did not start playing in time, so nothing verified is playing"
+    ),
     "spotify_exact_play_control_not_found": (
         "the Spotify result had no play control to press, so nothing is playing"
     ),
@@ -3955,6 +3976,16 @@ def _compose_situation_payload(
         and polarity == "failure"
         and isinstance(situation.get("error"), str)
     ):
+        cause_value = situation["error"]
+    if (
+        kind == "operation"
+        and polarity == "failure"
+        and isinstance(situation.get("error"), str)
+        and situation["error"].strip().lower() in _CAUSE_FACT
+    ):
+        # MUSIC1755: a typed client error («spotify_exact_result_not_found»)
+        # says what happened; the generic mission cause
+        # («external_effect_ambiguous») only says it was not verified.
         cause_value = situation["error"]
     cause_key = str(cause_value).strip().lower()
     if cause_key == "mission_completed" and "completedRequest" in situation:
@@ -6965,7 +6996,7 @@ def compose_visible_defect(
         return "invented"
     if re.search(r"\bya terminado\b", folded) and "ha terminado" not in folded:
         return "invented"
-    language = _message_response_language(user_text)
+    language = _conversation_response_language(user_text, facts)
     # El idioma de la respuesta se lee con el mismo owner que fija el del turno,
     # y sólo se veta cuando la evidencia del texto es de un solo idioma: «I will
     # not open any programs.» ante un pedido español pasaba los dos literales de
@@ -13438,6 +13469,9 @@ class LlmRuntime:
         )
         capabilities = facts.get("capabilities")
         response_language = reading.language
+        if tuple(reading.evidence) == (0, 0):
+            # MUSIC1755: a bare answer («Queen») keeps the conversation language.
+            response_language = _conversation_response_language(user_text, facts)
         trace_id = str(facts.get("traceId") or "")[:128]
         previous_answer = str(facts.get("context") or "").strip()[:320]
         situation = _situation_from_facts(facts)
