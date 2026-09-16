@@ -2800,6 +2800,31 @@ def known_unsupported_effect_request(
             {"commerce.product.purchase"},
         ),
         (
+            # LIMITS1665 H0459 «cambiá el fondo de pantalla a azul»: no operation
+            # sets the desktop wallpaper.
+            _has(folded, r"\b(?:fondo\s+de\s+(?:pantalla|escritorio)|wallpaper|papel\s+tapiz|desktop\s+background)\b")
+            and _has(folded, r"\b(?:cambia|cambiar|cambiame|pon|pone|poneme|poner|establece|coloca|usa|change|set|put|use|make)\b"),
+            {"desktop.wallpaper.set"},
+        ),
+        (
+            # LIMITS1665 H0188 «Haz un powerpoint hablando de amor de 6
+            # diapositivas»: no operation creates a slide deck.
+            _has(folded, r"\b(?:powerpoint|power\s+point|presentacion(?:es)?|diapositivas?|slides?|slideshow|slide\s+deck)\b")
+            and _has(folded, r"\b(?:haz|hace|haceme|hazme|crea|creame|crear|arma|armame|armar|genera|generame|generar|prepara|preparame|make|create|build|prepare|put\s+together)\b"),
+            {"document.presentation.create"},
+        ),
+        (
+            # LIMITS1665 H0306 «agregá a Juan a mis contactos», H0138 «guardá el
+            # contacto de Lucía …»: no operation keeps an address book (the
+            # owner ruled a phone number is not something to store on the PC).
+            (
+                _has(folded, r"\b(?:contactos?|contacts?|agenda\s+telefonica|address\s+book|libreta\s+de\s+direcciones)\b")
+                and _has(folded, r"\b(?:agrega|agregar|agregame|anade|anadir|guarda|guardar|guardame|agenda|agendar|agendame|mete|meter|suma|sumar|add|save|store|put)\b")
+            )
+            or _has(folded, r"\b(?:agenda|agendame|guarda|guardame|anota|anotame|save|add)\s+(?:a\s+)?\w+\s+(?:con\s+el|with\s+the)\s+(?:numero|number|telefono|phone)\b"),
+            {"contacts.add"},
+        ),
+        (
             # UI1659 H0290/H0636 «ve a Cotele en Discord»: a channel, server or
             # chat inside a messaging client is navigated by that client, not
             # by the browser; no operation walks a client's interface.
