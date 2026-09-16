@@ -7432,6 +7432,14 @@ def compose_visible_defect(
             and situation.get("verified") is True
             and situation.get("succeeded") is True
             and observed_dict.get("playbackStatus") == "playing"
+        ) or (
+            # MUSIC1747 «pon michael jackson en spotify»: the Spotify client
+            # playback names what plays by its observed title the same way.
+            operation in {"media.play.query", "media.play.exact"}
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and observed_dict.get("playbackStatus") == "playing"
+            and isinstance(observed_dict.get("title"), str)
         )
         scheduled_due = _verified_notification_due(situation)
         title = observed_dict.get("title")

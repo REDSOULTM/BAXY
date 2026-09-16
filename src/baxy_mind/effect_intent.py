@@ -4423,7 +4423,7 @@ def resolve_explicit_clarification_intent(
         and (
             _head_is(
                 _request_head(music_folded),
-                r"(?:pon|pone|poneme|ponme|reproduce|play)",
+                r"(?:pon|pone|poneme|ponme|reproduce|play|toca|tocame|toque)",
             )
             or (_head_is(_request_head(music_folded), _OPEN) and _has(music_folded, r"\b(?:spotify|youtube)\b"))
         )
@@ -7980,7 +7980,7 @@ def _explicit_named_music_query(text: str) -> str | None:
     """Keep the supplied artist/title of one current imperative verbatim."""
 
     named = re.fullmatch(
-        r"(?:pon|ponme|poneme|pone|poné|reproduce|reproducir|reproduc[ií]|play)\s+"
+        r"(?:pon|ponme|poneme|pone|poné|reproduce|reproducir|reproduc[ií]|play|toca|tocá|tocame|tocáme|toque)\s+"
         r"(?:(?P<music>(?:(?:una?|la|las|the|a|some)\s+)?"
         r"(?:m[uú]sica|music|canci[oó]n(?:es)?|songs?|tracks?))\s+"
         r"(?:de|by|from)\s+)?"
@@ -7994,6 +7994,18 @@ def _explicit_named_music_query(text: str) -> str | None:
     if (
         named.group("music") is None
         and not _has(_fold(query), r"\S\s+(?:de|by)\s+\S")
+        # MUSIC1749 «poné rock en spotify»: with the provider named, one word
+        # (a genre, an artist) is the thing to play there; a generic noun
+        # («música», «una canción») still asks what to play.
+        and not (
+            _has(_fold(query), r"\S\s+(?:en|on)\s+spotify\b")
+            and not _has(
+                re.sub(r"\s+(?:en|on)\s+spotify\b.*$", "", _fold(query)).strip(),
+                r"^(?:(?:una?|la|el|los|las|algo\s+de|some|a|the)\s+)?"
+                r"(?:m[uú]sica|music|canci[oó]n(?:es)?|songs?|temas?|tracks?|algo|something|"
+                r"cualquier\s+cosa|anything|lo\s+que\s+sea)$",
+            )
+        )
         # VIDEO1715 «poné Tom and Jerry»: a proper title in the person's own
         # capitals (two capitalised words, connectors allowed) is the thing to
         # play; a single word or a known application name is not.
@@ -14886,7 +14898,7 @@ def _review_media_and_email_effects(
         # plays from YouTube in the local player; «en Spotify» keeps Spotify.
         _append(
             matches, folded, "media.play.query" if spotify else "media.play.youtube",
-            r"\b(?:pon|ponme|poneme|pone|reproduce|reproducir|reproduci|play)\b",
+            r"\b(?:pon|ponme|poneme|pone|reproduce|reproducir|reproduci|play|toca|tocame|toque)\b",
         )
     elif _desired_music_query(folded) is not None:
         _append(
