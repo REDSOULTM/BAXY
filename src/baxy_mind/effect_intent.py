@@ -3277,6 +3277,16 @@ def resolve_explicit_clarification_intent(
         # FILES1437 «dime cuántos archivos .py hay en el directorio actual»: BAXY
         # has no working directory; the count needs the person's folder.
         return ClarificationIntent(("filesystem.known.search",), ("folder",))
+    if "input.visible.click" in available:
+        # UI1639 H0344 «hace click en el boton rojo»: controls are found by
+        # their visible text, never by colour; the label is still missing.
+        click_label = _visible_click_label(folded)
+        if click_label is not None and re.fullmatch(
+            r"(?:(?:de\s+)?color\s+)?(?:rojo|roja|verde|azul|amarillo|amarilla|naranja|gris|negro|negra|blanco|blanca|"
+            r"violeta|morado|morada|rosa|rosado|celeste|red|green|blue|yellow|orange|grey|gray|black|white|purple|pink)",
+            click_label,
+        ):
+            return ClarificationIntent(("input.visible.click",), ("label",))
     hourly_dynamic_notification = (
         re.fullmatch(
             r"(?:get|send|give)\s+(?:me\s+)?(?:an?\s+)?hourly\s+"
