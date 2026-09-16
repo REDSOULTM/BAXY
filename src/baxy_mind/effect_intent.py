@@ -15063,7 +15063,18 @@ def installed_catalog_application_name(
     # INSTALL1629 «instala Photoshop»: known software absent from the catalog
     # is answered by the same presence read, with the name as the person
     # wrote it (the read proves absence; nothing is installed).
-    if re.fullmatch(_KNOWN_SOFTWARE, name) is not None:
+    known = re.fullmatch(_KNOWN_SOFTWARE, name) is not None
+    # INSTALL1631 H0620 «Desinstala Worms Rumble»: uninstalling a name the
+    # catalog does not hold is answered by the same presence read (nothing
+    # can be removed that is not present); a plain name of one to four words.
+    uninstall = _has(folded, r"^[¿?¡!\s]*(?:(?:necesito|quiero|quisiera|podes|podrias|puedes|can\s+you|could\s+you|please)\s+(?:que\s+)?)?(?:me\s+)?(?:desinstal|uninstall)")
+    plain_name = re.fullmatch(r"[a-z0-9][a-z0-9'+-]*(?:\s+[a-z0-9][a-z0-9'+-]*){0,3}", name) is not None and not _has(
+        name,
+        r"^(?:(?:todo|todos|todas|eso|esto|aquello|algo|nada|lo|la|el|ese|esa|este|esta|los|las|"
+        r"un|una|mi|mis|tu|tus|everything|all|it|this|that|them|my|the)\b.*|"
+        r".*\b(?:programas?|aplicaciones?|apps?|juegos?|cosas?|archivos?|programs?|applications?|games?|files?))$",
+    )
+    if known or (uninstall and plain_name):
         raw = str(text)
         folded_raw = _fold(raw)
         position = folded_raw.find(name) if len(folded_raw) == len(raw) else -1
