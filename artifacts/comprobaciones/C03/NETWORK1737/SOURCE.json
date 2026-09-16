@@ -1,0 +1,15 @@
+{
+  "schema": "c03-network1737-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (wifi.radio.set, wifi.radio.status), src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs, src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs (WifiRadioSetAsync / WifiRadioStatusAsync over the Windows Radio API) and WindowsExternalCapabilityProvider.cs (reason), VisibleControlSurface.cs (topmost foreign window as the capture surface), src/Baxy.App/ProductConductorHost.cs (reviewed allowlist), src/baxy_mind/effect_intent.py (wifi_radio_set_request, accepted_wifi_offer), __main__.py (offer hook and arguments) and llm.py (offer in the cause fact, radio narration, scan facts in missions).",
+  "patch": "artifacts/comprobaciones/C03/NETWORK1737/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1737 (C03-repairs1737-build/BUILD_READY.json; núcleo, proveedor, App y mente)",
+  "cause_measured": "Con la radio apagada el escaneo terminaba en un estado honesto sin ofrecer encenderla, y ninguna operación encendía la radio Wi-Fi.",
+  "change": "Operaciones wifi.radio.set/status, oferta en el final de fallo, lectura del asentimiento con historia, misión encender + escanear, superficie de captura ajena; sin respuestas fijas.",
+  "measurement": "NETWORK1737: 3 aprobados del grupo apagar (H0324 y dos variantes: wifi.radio.set state = false revisada, aprobada y verificada; finales en primera persona), 3 fallidos del grupo diálogo (primer turno correcto con aviso y oferta; tras el sí la petición de plan volvió a preguntar el estado en vez de encender y escanear), 2 límites aprobados; 1 créditos. Diálogo pendiente de reparación en la mente: el manejador de plan debe reconocer la oferta aceptada como evidencia del estado (NETWORK1739); Chrome por nombre en la misma compilación (WEB1741).",
+  "credits": 1
+}

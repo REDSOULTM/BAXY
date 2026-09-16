@@ -1,3 +1,25 @@
+## NETWORK1737 — estado vigente 2026-09-16T18:29:15.314155+00:00
+
+Parcial: 5 aprobados, 3 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 625/742 | 117 | 0 | >=509 | 11/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 508 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); NETWORK1737 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: NETWORK1737: 8 ejecutados, 5 aprobados, 3 fallidos, 1 créditos (índices [1]); Red y Bluetooth 21/21. Siguiente: filas de Chrome y Spotify.
+
+Evidencia: `artifacts/comprobaciones/C03/NETWORK1737/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 150.83 s acumulados; pico GPU 3497.56 MiB; pico RAM 1782.09 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque NETWORK1737 precedente. -->
+
 ## UI1735 — estado vigente 2026-09-16T17:37:42.662991+00:00
 
 Parcial: 2 aprobados, 7 fallidos, 0 sin ejecutar; 0 créditos.
