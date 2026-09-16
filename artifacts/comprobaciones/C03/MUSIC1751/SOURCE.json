@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1751-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/observed_response_literals.py and src/baxy_mind/llm.py (observed playback title opaque to the language and failure lenses) and src/baxy_mind/effect_intent.py (query without the provider phrase), on top of the MUSIC1751 build.",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1751/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1751 (C03-repairs1751-build/BUILD_READY.json; mente)",
+  "cause_measured": "El título observado de la reproducción contaba como vocabulario de la respuesta y como afirmación de fallo, y la consulta arrastraba «en spotify».",
+  "change": "Título y artista observados opacos a los vetos de idioma y de fallo; consulta sin la frase del proveedor; sin respuestas fijas.",
+  "measurement": "MUSIC1751: 8 aprobados: cuatro literales (H0237, H0548, H0282, H0579) y dos variantes con media.play.query aprobada por la raíz, verificada por now-playing en el cliente de Spotify y final que nombra lo que suena por su título observado; dos límites; 4 créditos. Reproducción en Spotify demostrada de punta a punta; siguiente: «pon música en spotify» (diálogo que pregunta qué poner), «poné rock», «reproducí…» y «tocá…» (lectores), volumen de Spotify (operación por aplicación).",
+  "credits": 4
+}
