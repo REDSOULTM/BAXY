@@ -1,3 +1,11 @@
+# FILES1711 adjudicado — 2026-09-16T10:40:47.243238+00:00
+
+**611/742 cubiertos, 131 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA 027fa4923dcf9005df3d240565d09b2dbec945f722543ea7df99f0020047e621. Primeras altas 24 h >= 495 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b3326049 con BUILD1711 (un archivo de texto con los procesos que más memoria usan, con el nombre escrito como dato observado). Turnos ordinarios sin operaciones.
+
+FILES1711 («Archivos y carpetas», un archivo de texto con los procesos que más memoria usan ejecutado y verificado): FILES1711: las tres peticiones ejecutaron y verificaron las dos operaciones y escribieron el archivo con los procesos leídos (memoria y CPU, español e inglés), y la mente publicó finales fieles que nombraban el archivo; la política de mensajes de la App los vetó por la forma de código del nombre; sin crédito; dos límites aprobados, 0 créditos. Adjudicación 2b013bd3a9cbfb1a2fdcfc8c301e750f56e0eec448ec0de766c9d4c2fd8d872d. 5 casos ordinarios sobre BUILD1711: 2 aprobados (límites), 3 fallidos (finales vetados por la App); 0 créditos
+
+---
+
 # FILES1709 adjudicado — 2026-09-16T10:35:47.848261+00:00
 
 **611/742 cubiertos, 131 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA 9583048e170e148eeb88b07a680e92ea20b29fda249dfcdd541eb5cc98aee76c. Primeras altas 24 h >= 495 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7d10031e con BUILD1709 (un archivo de texto con los procesos que más memoria usan, con cabecera del pedido y final que nombra el archivo). Turnos ordinarios sin operaciones.

@@ -1143,3 +1143,7 @@ Archivos y carpetas pasa de 29/32 a 29/32 con un archivo de texto con los proces
 ## Actualización 2026-09-16 (FILES1709)
 
 Archivos y carpetas pasa de 29/32 a 29/32 con un archivo de texto con los procesos que más memoria usan ejecutado y verificado (commit 7d10031e, BUILD1709) (HEAD 7d10031e): FILES1709: el literal y la variante inglesa ejecutaron las dos operaciones y escribieron el archivo con los procesos, pero los finales fieles fueron vetados por la forma de código del nombre del archivo; la variante de CPU no groundeó la escritura (medida reformateada); sin crédito; dos límites aprobados, 0 créditos. 5 casos ordinarios sobre BUILD1709: 2 aprobados (límites), 3 fallidos; 0 créditos
+
+## Actualización 2026-09-16 (FILES1711)
+
+Archivos y carpetas pasa de 29/32 a 29/32 con un archivo de texto con los procesos que más memoria usan ejecutado y verificado (commit b3326049, BUILD1711) (HEAD b3326049): FILES1711: las tres peticiones ejecutaron y verificaron las dos operaciones y escribieron el archivo con los procesos leídos (memoria y CPU, español e inglés), y la mente publicó finales fieles que nombraban el archivo; la política de mensajes de la App los vetó por la forma de código del nombre; sin crédito; dos límites aprobados, 0 créditos. 5 casos ordinarios sobre BUILD1711: 2 aprobados (límites), 3 fallidos (finales vetados por la App); 0 créditos

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-files1711-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/observed_response_literals.py (written file name as observed data) and src/baxy_mind/__main__.py (measures rendered as observed).",
+  "patch": "artifacts/comprobaciones/C03/FILES1711/SOURCE.patch",
+  "commits": [
+    "b3326049f373cf16e85e9178f4c90b838e97ac6a"
+  ],
+  "build": "BUILD1711 (C03-repairs1711-build/BUILD_READY.json; mente)",
+  "cause_measured": "El veto de forma de código no conocía el nombre del archivo escrito; la medida de CPU se reformateaba y dejaba de groundear.",
+  "change": "Nombre escrito como dato observado; medidas tal cual la observación; sin respuestas fijas.",
+  "measurement": "FILES1711: FILES1711: las tres peticiones ejecutaron y verificaron las dos operaciones y escribieron el archivo con los procesos leídos (memoria y CPU, español e inglés), y la mente publicó finales fieles que nombraban el archivo; la política de mensajes de la App los vetó por la forma de código del nombre; sin crédito; dos límites aprobados; 0 créditos. 5 casos ordinarios sobre BUILD1711: 2 aprobados (límites), 3 fallidos (finales vetados por la App); 0 créditos",
+  "credits": 0
+}

@@ -1,0 +1,52 @@
+commit b3326049f373cf16e85e9178f4c90b838e97ac6a
+
+C03: the written file name is observed data and measures are written as observed (FILES1711)
+
+In FILES1709 the drafts named the written file correctly and the code-shape veto rejected them because the name returned by filesystem.write.text was not among the observed names it exempts; the CPU variant could not ground its write because the CPU percentage was rendered with six significant digits. The name returned by a verified filesystem.write.text is now observed data for the veto, and every measure in the projected file is rendered exactly as the observation carries it (an integer, or the shortest round-trip of a float; an exponent form abstains).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 8a497fc7..b3045e72 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -853,7 +853,16 @@ def _process_report_file_arguments(
+             measure = entry.get("totalProcessorSeconds")
+         if isinstance(measure, bool) or not isinstance(measure, (int, float)):
+             return None
+-        rendered = str(measure) if isinstance(measure, int) else format(measure, 'g')
++        # Rendered exactly as the observation JSON carries it (shortest
++        # round-trip for a float, no exponent), so the line stays evidence.
++        if isinstance(measure, int):
++            rendered = str(measure)
++        elif measure.is_integer():
++            rendered = str(int(measure))
++        else:
++            rendered = repr(measure)
++            if 'e' in rendered or 'E' in rendered:
++                return None
+         lines.append(f"{entry['name'].strip()}: {rendered}")
+     if not lines:
+         return None
+diff --git a/src/baxy_mind/observed_response_literals.py b/src/baxy_mind/observed_response_literals.py
+index 036e781d..07ba4806 100644
+--- a/src/baxy_mind/observed_response_literals.py
++++ b/src/baxy_mind/observed_response_literals.py
+@@ -83,6 +83,16 @@ def without_observed_names(text: str, situation: object) -> str:
+                 names.update(name.strip() for entry in listed if isinstance(entry, dict)
+                              and isinstance(name := entry.get("name"), str)
+                              and 0 < len(name.strip()) <= 4096)
++        if (node.get("kind") == "operation" and operation == "filesystem.write.text"
++                and node.get("verified") is True and node.get("succeeded") is True
++                and node.get("polarity") == "success"):
++            # FILES1709 «crea un archivo de texto con los 5 procesos que más
++            # memoria usan»: the name of the file just written («procesos-memoria.txt»)
++            # is observed data the report must say, not a dotted operation name.
++            observed = node.get("observed")
++            written = observed.get("name") if isinstance(observed, dict) else None
++            if isinstance(written, str) and 0 < len(written.strip()) <= 4096:
++                names.add(written.strip())
+         if (node.get("kind") == "operation" and operation == "ocr.read"
+                 and node.get("verified") is True and node.get("succeeded") is True
+                 and node.get("polarity") == "success"):
