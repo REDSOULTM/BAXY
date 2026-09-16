@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1749-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (verified Spotify playback names the observed title without the word «título») and src/baxy_mind/effect_intent.py (one-word query with the provider named; toca/tocame play verbs for a named artist), on top of the MUSIC1749 build (media.play.query in the reviewed allowlist).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1749/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1749 (C03-repairs1749-build/BUILD_READY.json; mente)",
+  "cause_measured": "El compositor vetaba como missing_name todo final de una reproducción verificada en Spotify porque no decía la palabra «título», aunque citara el título observado.",
+  "change": "La reproducción verificada de Spotify nombra lo que suena por su título observado; verbos tocá/tocame y consultas de una palabra con proveedor nombrado; sin respuestas fijas.",
+  "measurement": "MUSIC1749: 3 aprobados del grupo Spotify (H0454 y las dos variantes: reproducción aprobada por la raíz, verificada por now-playing y final que nombra lo que suena), 4 fallidos (reproducción verificada pero sin final: título observado contado como idioma o fallo, o título «Artista - Título» exigido entero), 2 límites aprobados; 1 créditos. Reparación del compositor a continuación (título observado opaco a los vetos de idioma y fallo, partes del título aceptadas, consulta sin «en spotify») y repetición como MUSIC1751.",
+  "credits": 1
+}
