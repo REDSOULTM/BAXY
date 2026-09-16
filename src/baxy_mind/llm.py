@@ -4433,6 +4433,24 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
                 "say it is not in the Windows Start catalog. One or two sentences, "
                 "the person's language, the application named as they named it."
             )
+        if re.search(
+            r"\b(?:editar|retocar|usar|trabajar|edit|retouch|use|work)\b",
+            (user_text or "").casefold(),
+        ) and not re.search(r"\b(?:abr[ií]|abre|open)", (user_text or "").casefold()):
+            # APPS1671 «quiero editar una foto en photoshop»: the person wants
+            # to work in a program the presence read did not find. Every
+            # draft that added «no puedo editarte la foto» / «cannot be opened»
+            # was vetoed as an asserted failure or a reversed result; the fact
+            # is the absence, stated on its own.
+            bits.append(
+                "The person wants to work in this program and this result only "
+                "reads its presence. If installed is false, say only that the "
+                "program is not in the Windows Start catalog of this PC, as a "
+                "fact: do not say you cannot, could not or failed, do not say it "
+                "cannot be opened, do not offer to install or search for it, and "
+                "do not mention the photo or task beyond naming it. One sentence, "
+                "the person's language, the program named as they named it."
+            )
         bits.append(
             "This result verifies application presence only, not an opening. "
             "Preserve requestedName and the original purpose of the request. "
