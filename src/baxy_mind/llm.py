@@ -9539,21 +9539,29 @@ class LlmRuntime:
                     retry_payload["max_tokens"],
                     32,
                 )
-            retry_payload["response_format"] = {
-                "type": "json_schema",
-                "json_schema": {
-                    "name": "bounded_chat_answer",
-                    "strict": True,
-                    "schema": {
-                        "type": "object",
-                        "properties": {
-                            "answer": {"type": "string", "minLength": 1},
+            if unsupported_contract_failure:
+                # UI1659/UI1661 «Andá al canal general en Discord.»: under the
+                # JSON grammar the bounded retry spent its whole budget on
+                # whitespace (finish_reason length, empty content) and the turn
+                # fell to a clarification; the limit contract validates the
+                # sentence itself, so this retry stays plain prose.
+                retry_payload.pop("response_format", None)
+            else:
+                retry_payload["response_format"] = {
+                    "type": "json_schema",
+                    "json_schema": {
+                        "name": "bounded_chat_answer",
+                        "strict": True,
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "answer": {"type": "string", "minLength": 1},
+                            },
+                            "required": ["answer"],
+                            "additionalProperties": False,
                         },
-                        "required": ["answer"],
-                        "additionalProperties": False,
                     },
-                },
-            }
+                }
             response = (
                 self._post(retry_payload)
                 if cancellation is None
