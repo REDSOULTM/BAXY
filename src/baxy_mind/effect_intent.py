@@ -3219,11 +3219,11 @@ _PROCESS_REPORT_FILE_REQUEST = re.compile(
     r"(?:(?:un|una|a|el|the)\s+)?(?:(?:text|txt)\s+)?(?:archivo|fichero|file)(?:\s+(?:de\s+texto|txt|text))?"
     r"(?:\s+(?:llamad[oa]|named|called)\s+(?P<name>[^\s\"']+))?\s+"
     r"(?:con|que\s+(?:tenga|liste|contenga|muestre)|with|listing|containing|of)\s+"
-    r"(?:(?:los|las|the|mis|my)\s+)?(?:(?P<n>\d{1,2})\s+)?(?:procesos|processes)\s+"
+    r"(?P<desc>(?:(?:los|las|the|mis|my)\s+)?(?:(?P<n>\d{1,2})\s+)?(?:procesos|processes)\s+"
     r"(?:que\s+mas\s+(?P<res_a>memoria|cpu|procesador|ram)\s+(?:usan|consumen|ocupan|gastan)|"
     r"que\s+(?:usan|consumen|ocupan|gastan)\s+mas\s+(?P<res_b>memoria|cpu|procesador|ram)|"
     r"(?:that\s+)?(?:use|using|consume|consuming)\s+(?:the\s+)?most\s+(?P<res_c>memory|cpu|ram)|"
-    r"with\s+(?:the\s+)?(?:highest|most)\s+(?P<res_d>memory|cpu|ram)(?:\s+usage)?)"
+    r"with\s+(?:the\s+)?(?:highest|most)\s+(?P<res_d>memory|cpu|ram)(?:\s+usage)?))"
     r"(?:\s*,?\s+(?:por\s+favor|please))?[\s.!?]*$",
     re.IGNORECASE,
 )
@@ -3240,7 +3240,7 @@ def process_report_file_request(folded: str) -> dict[str, object] | None:
         "",
     ).lower()
     sort = "cpu" if resource in {"cpu", "procesador"} else "memory"
-    report: dict[str, object] = {"sort": sort}
+    report: dict[str, object] = {"sort": sort, "resource_word": resource}
     if found.group("n"):
         limit = int(found.group("n"))
         if not 1 <= limit <= 50:
@@ -3248,6 +3248,9 @@ def process_report_file_request(folded: str) -> dict[str, object] | None:
         report["limit"] = limit
     if found.group("name"):
         report["name"] = found.group("name")
+    # The file header repeats the request's own description of the listing
+    # («los 5 procesos que mas memoria usan»), so every header token is evidence.
+    report["description"] = " ".join(found.group("desc").split())
     return report
 
 

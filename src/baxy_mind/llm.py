@@ -5129,6 +5129,25 @@ def _pdf_read_quote_defect(text: str, seen: dict) -> str:
     return ""
 
 
+def _written_file_after_listing(payload: dict) -> str | None:
+    """The name of a file written by a completed filesystem.write.text step that
+    followed a system.process.list step (FILES1707), else None."""
+
+    steps = payload.get("completedStepsInOrder")
+    if not isinstance(steps, list) or len(steps) < 2:
+        return None
+    operations = [step.get("operation") for step in steps if isinstance(step, dict)]
+    if "system.process.list" not in operations:
+        return None
+    for step in reversed(steps):
+        if isinstance(step, dict) and step.get("operation") == "filesystem.write.text":
+            result = step.get("resultAtThisStep")
+            seen = result.get("seen") if isinstance(result, dict) else None
+            name = seen.get("name") if isinstance(seen, dict) else None
+            return name.strip() if isinstance(name, str) and name.strip() else None
+    return None
+
+
 def _page_read_in_payload(payload: dict) -> dict | None:
     """The projected page («seen» with a lead) of a verified browser.page.read."""
 
@@ -5467,6 +5486,11 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     ):
         return _contradicted_brightness_extreme(text, seen)
     prior_steps = payload.get("completedStepsInOrder")
+    written = _written_file_after_listing(payload)
+    if written is not None and _reading_fold(written).casefold() not in folded:
+        # FILES1707 H0334: the listing was read and the file was written, and
+        # the final only listed the processes. The file is the request.
+        return "missing_written_file"
     if (
         isinstance(prior_steps, list)
         and any(
@@ -13896,6 +13920,25 @@ class LlmRuntime:
                 "dato que ningún resultado contenga; si los resultados sólo remiten a "
                 "páginas de pronóstico, dilo."
             )
+        if _written_file_after_listing(visible_situation) is not None:
+            # FILES1707 «crea un archivo de texto con los 5 procesos que más
+            # memoria usan»: the listing was read and written to a file; the
+            # report names the file and the processes it lists.
+            instruct(
+                "\nThe steps in completedStepsInOrder read the process listing and "
+                "then wrote it to the file named in the filesystem.write.text step "
+                "(seen.name). Say, in one or two sentences, that you created that "
+                "file (its exact name) with the listed processes, naming them by "
+                "their process names without PIDs and with their observed values; "
+                "nothing else was done."
+                if response_language == "en"
+                else "\nLos pasos de completedStepsInOrder leyeron la lista de procesos y "
+                "luego la escribieron en el archivo nombrado en el paso "
+                "filesystem.write.text (seen.name). Di, en una o dos oraciones, que "
+                "creaste ese archivo (su nombre exacto) con los procesos listados, "
+                "nombrándolos por su nombre de proceso sin PID y con sus valores "
+                "observados; no se hizo nada más."
+            )
         if _pdf_read_in_payload(visible_situation) is not None:
             # PDF1689 «resumime informe.pdf»: the report names the document,
             # says what it covers by its headings as read and quotes its
@@ -14703,6 +14746,11 @@ class LlmRuntime:
                 if response_language == "en"
                 else "El brillo observado no está al mínimo: di el valor observado y "
                 "que no está al mínimo."
+            ),
+            "missing_written_file": (
+                "You also wrote the file named in the filesystem.write.text step: say that you created it, with its exact name, then what it lists."
+                if response_language == "en"
+                else "También escribiste el archivo nombrado en el paso filesystem.write.text: di que lo creaste, con su nombre exacto, y luego qué lista."
             ),
             "missing_prior_open": (
                 "You also opened the application in this turn: say that you opened it, then the rest."

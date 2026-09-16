@@ -857,10 +857,13 @@ def _process_report_file_arguments(
         lines.append(f"{entry['name'].strip()}: {rendered}")
     if not lines:
         return None
-    header = (
-        "procesos que mas memoria usan" if report.get("sort") == "memory" else "procesos que mas cpu usan"
-    )
-    name = str(report.get("name") or ("procesos-memoria.txt" if report.get("sort") == "memory" else "procesos-cpu.txt"))
+    header = str(report.get("description") or "").strip()
+    if not header:
+        return None
+    # The default name is built from the request's own words (its noun and its
+    # resource word) so that it grounds in either language.
+    noun = "processes" if "processes" in header.split() else "procesos"
+    name = str(report.get("name") or f"{noun}-{report.get('resource_word') or 'memoria'}.txt")
     arguments: dict[str, object] = {"relativePath": name, "text": header + "\n" + "\n".join(lines) + "\n"}
     function = tool.get("function")
     schema = function.get("parameters") if isinstance(function, dict) else None
