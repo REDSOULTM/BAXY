@@ -1,3 +1,11 @@
+# UI1657 adjudicado — 2026-09-16T02:59:51.004564+00:00
+
+**592/742 cubiertos, 150 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 54a5a88077f2d7a084ce2d6d0ab30b9134e11f3d8a1a5d39ab5feff2f5001ad8. Primeras altas 24 h >= 466 (+4).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 655c2211 con BUILD1657 (la pregunta por el micrófono del sistema se guía desde el inicio como una oferta). Turnos ordinarios sin operaciones.
+
+UI1657 («Interacción dentro de aplicaciones», el silencio del micrófono pedido en un cliente de voz respondido ofreciendo silenciar el del sistema): cuatro literales y dos variantes con cero operaciones y la pregunta fiel que ofrece silenciar el micrófono del sistema; límite de definición aprobado y acuse de prohibición con «nunca» añadido, 4 créditos. Adjudicación 703d517ed2325adb5657e96d4562ed145fe37956302707f70cacfad0d401aca9. Medición raíz: con la guía inicial del campo y el validador de oferta, el silencio pedido dentro de un cliente de voz se responde ofreciendo el micrófono del sistema en español e inglés, sin operación.
+
+---
+
 # UI1655 adjudicado — 2026-09-16T02:53:20.202475+00:00
 
 **588/742 cubiertos, 154 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 101760dced604ed80144f90aabaea40076911e6923cd4471e9bfd623d9560ed0. Primeras altas 24 h >= 462 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7a6ea17f con BUILD1655 (silenciar el micrófono «en Discord» pregunta si silencia el del sistema). Turnos ordinarios sin operaciones.

@@ -995,3 +995,7 @@ Cerrar aplicaciones y ventanas pasa de 17/20 a 18/20 con el cierre de WhatsApp a
 ## Actualización 2026-09-16 (UI1655)
 
 Interacción dentro de aplicaciones pasa de 10/22 a 10/22 con el silencio del micrófono pedido en un cliente de voz respondido preguntando por el micrófono del sistema (commit 7a6ea17f, BUILD1655) (HEAD 7a6ea17f): cuatro literales y dos variantes con cero operaciones, pero preguntas que piden confirmar un estado o cuál micrófono en vez de ofrecer silenciar el del sistema (una sin respuesta); límite de definición aprobado y acuse de prohibición con «nunca» añadido, 0 créditos. Medición raíz: el lector decide la aclaración en los seis pedidos; la pregunta guiada sólo por el nombre del campo no ofrece el micrófono del sistema y el validador prohibía el subjuntivo «silencie»; siguiente UI1657 con la guía desde el inicio y el validador de oferta.
+
+## Actualización 2026-09-16 (UI1657)
+
+Interacción dentro de aplicaciones pasa de 10/22 a 14/22 con el silencio del micrófono pedido en un cliente de voz respondido ofreciendo silenciar el del sistema (commit 655c2211, BUILD1657) (HEAD 655c2211): cuatro literales y dos variantes con cero operaciones y la pregunta fiel que ofrece silenciar el micrófono del sistema; límite de definición aprobado y acuse de prohibición con «nunca» añadido, 4 créditos. Medición raíz: con la guía inicial del campo y el validador de oferta, el silencio pedido dentro de un cliente de voz se responde ofreciendo el micrófono del sistema en español e inglés, sin operación.

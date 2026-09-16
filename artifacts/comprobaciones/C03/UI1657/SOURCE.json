@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1657-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (formulate_explicit_clarification_question: system_microphone_confirmation guidance message and offer validator).",
+  "patch": "artifacts/comprobaciones/C03/UI1657/SOURCE.patch",
+  "commits": [
+    "655c2211ed00bb422c30ec1306f2bc8ea0ec660c"
+  ],
+  "build": "BUILD1657 (C03-repairs1657-build/BUILD_READY.json; mente)",
+  "cause_measured": "La pregunta guiada sólo por el nombre del campo pedía confirmar estados en vez de ofrecer el micrófono del sistema; el validador prohibía el subjuntivo de la oferta.",
+  "change": "Guía inicial del campo y validador de oferta para la aclaración del micrófono; sin respuestas fijas.",
+  "measurement": "UI1657: cuatro literales y dos variantes con cero operaciones y la pregunta fiel que ofrece silenciar el micrófono del sistema; límite de definición aprobado y acuse de prohibición con «nunca» añadido; 4 créditos. Medición raíz: con la guía inicial del campo y el validador de oferta, el silencio pedido dentro de un cliente de voz se responde ofreciendo el micrófono del sistema en español e inglés, sin operación.",
+  "credits": 4
+}
