@@ -7919,6 +7919,25 @@ def _desired_music_query_raw(text: str) -> str | None:
     return query
 
 
+def _title_case_media_title(query: str) -> bool:
+    """«Tom and Jerry», «Tom y Jerry», «Bad Bunny»: at least two capitalised
+    words in the person's own writing, joined only by connectors; never a
+    single word, a known application name or something with digits."""
+
+    words = query.strip().strip("\"'“”«»").split()
+    if len(words) < 2 or any(re.search(r"\d", word) for word in words):
+        return False
+    connectors = {"y", "and", "&", "the", "of", "de", "del", "la", "el", "los", "las", "a", "en", "in"}
+    capitalised = [word for word in words if word[0].isupper()]
+    if len(capitalised) < 2 or not words[0][0].isupper():
+        return False
+    if any(word[0].islower() and word.lower() not in connectors for word in words):
+        return False
+    if _has(_fold(query), rf"^(?:{_KNOWN_APPLICATION})$"):
+        return False
+    return True
+
+
 def _explicit_named_music_query(text: str) -> str | None:
     """Keep the supplied artist/title of one current imperative verbatim."""
 
@@ -7937,6 +7956,10 @@ def _explicit_named_music_query(text: str) -> str | None:
     if (
         named.group("music") is None
         and not _has(_fold(query), r"\S\s+(?:de|by)\s+\S")
+        # VIDEO1715 «poné Tom and Jerry»: a proper title in the person's own
+        # capitals (two capitalised words, connectors allowed) is the thing to
+        # play; a single word or a known application name is not.
+        and not _title_case_media_title(query)
     ) or (
         not effect_request_is_authoritative(text)
         or _has_unsupported_deferred_effect(folded)
@@ -7947,7 +7970,10 @@ def _explicit_named_music_query(text: str) -> str | None:
             _fold(query),
             r"\b(?:archivo|file|carpeta|folder|pagina|page|fondo|wallpaper|"
             r"portapapeles|clipboard|contrasena|password)\b|"
-            r"\b(?:en|on)\s+(?:youtube|netflix|apple\s+music)\b",
+            # VIDEO1715: a title on a named streaming service is that service's
+            # session, never the local YouTube playback.
+            r"\b(?:en|on)\s+(?:youtube|netflix|apple\s+music|apple\s+tv|disney|prime|hbo|max|"
+            r"crunchyroll|star|paramount|twitch|hulu|peacock)\b",
         )
     ):
         return None
@@ -16923,13 +16949,15 @@ def resolve_explicit_effects(
         return EffectIntent(("calendar.event.list",), (folded,))
     if "media.play.query" in available and (
         _direct_media_discovery_or_play_request(folded)
-        or _desired_music_query(folded) is not None
+        # VIDEO1715: the readers fold the text themselves; the raw text keeps
+        # the capitals that mark a proper title («poné Tom and Jerry»).
+        or _desired_music_query(text) is not None
     ):
         evidence = text if _explicit_named_music_query(text) is not None else folded
         if (
             "media.play.youtube" in available
             and not _has(folded, r"\bspotify\b")
-            and _explicit_named_music_query(folded) is not None
+            and _explicit_named_music_query(text) is not None
         ):
             # MUSIC1559: no provider named → the local YouTube playback.
             return EffectIntent(("media.play.youtube",), (evidence,))
