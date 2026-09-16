@@ -107,7 +107,11 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
                     return vision;
             }
 
-            if (uia.ErrorCode is not null || DateTime.UtcNow >= deadline)
+            // UI1765: a cascade answer («not found yet», no accessible tree)
+            // is worth waiting on; any other error (no surface, no window,
+            // cancelled) ends the wait.
+            if ((uia.ErrorCode is not null && !CascadeAfter.Contains(uia.ErrorCode))
+                || DateTime.UtcNow >= deadline)
                 break;
             await Task.Delay(LabelWaitInterval, cancellationToken).ConfigureAwait(false);
         }
