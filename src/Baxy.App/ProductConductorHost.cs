@@ -383,6 +383,9 @@ internal static class ProductConductorHost
                 // MUSIC1553 «pon un video de lofi en youtube»: the external
                 // playback (yt-dlp + local mpv) is confirmed by the root reviewer.
                 or "media.play.youtube"
+                // MUSIC1747 «pon michael jackson en spotify»: the playback in the
+                // Spotify desktop client is confirmed by the root reviewer.
+                or "media.play.query"
                 // NETWORK1737 «sí, prendelo»: switching the Wi-Fi radio on after the
                 // offer is confirmed by the root reviewer.
                 or "wifi.radio.set"
