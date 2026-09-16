@@ -1392,9 +1392,22 @@ def apply_non_effect_conversation_classification(
     objective: str,
     *,
     retired_catalog_effect: bool = False,
+    available_operations: tuple[str, ...] = (),
 ) -> dict[str, object]:
     """Do not present a non-request observation as a missing capability."""
 
+    if (
+        decision.get("mode") == "conversation"
+        and decision.get("conversation_kind") == "unsupported"
+        and not decision.get("effect_operations")
+        and effect_intent.known_unsupported_effect_request(objective, available_operations)
+    ):
+        # LIMITS1701 «Puedes ver tu propio código y analizar si hay alguna
+        # falla.»: a request the known-unsupported contract closed is a
+        # request, however much its finite verbs read as narration; the
+        # followup mirror answered it as a statement and the model invented
+        # its own nature («opero como un modelo de lenguaje…»).
+        return decision
     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
     request_head = effect_intent._request_head(folded)
     information_question = request_head in {
@@ -7297,6 +7310,7 @@ def _prepare_turn_result(
             (effects_before_information_veto or effects_before_domain_grounding)
             and not decision["effect_operations"]
         ),
+        available_operations=available_operations,
     )
     decision = validate_turn_decision(
         decision,
