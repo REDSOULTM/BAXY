@@ -4405,10 +4405,11 @@ def resolve_explicit_clarification_intent(
         count=1,
     )
     incomplete_media_clause = any(
-        _head_is(_request_head(clause), r"(?:pon|pone|poneme|ponme|reproduce|play)")
+        # MUSIC1767 «tocá una canción en Spotify», «tocame algo»: the same bare request.
+        _head_is(_request_head(clause), r"(?:pon|pone|poneme|ponme|reproduce|reproduci|reproducime|play|toca|tocame|toque)")
         # VIDEO1717 «abre youtube y pon un video»: a bare video is as
         # incomplete as a bare song.
-        and _has(clause, r"\b(?:musica|music|musika|cancion|canciones|song|songs|tema|videos?)\b")
+        and _has(clause, r"\b(?:musica|music|musika|cancion|canciones|song|songs|tema|temas|track|tracks|algo|something|videos?)\b")
         and _desired_music_query(clause) is None
         # A video that is already named («un video de lofi en youtube») or a
         # title on a streaming service («The Office en Prime Video») is not bare.

@@ -153,6 +153,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             return null;
         HashSet<string> needles = Needles(needle);
         List<WordHit> hits = [];
+        List<double> heights = [];
         foreach (OcrLine line in recognized.Lines)
         {
             foreach (OcrWord word in line.Words)
@@ -164,12 +165,31 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                     word.Text,
                     (int)(box.X + box.Width / 2),
                     (int)(box.Y + box.Height / 2)));
+                heights.Add(box.Height);
             }
         }
         if (hits.Count == 1)
             return hits[0];
         if (hits.Count != 0)
-            return null;
+        {
+            // UI1767: the same word printed twice is a control and the page
+            // heading that names the open section («Biblioteca» in the Epic
+            // Games Launcher's navigation and as the library page title). The
+            // clearly smaller print is the control; equal prints stay ambiguous.
+            int smallest = 0;
+            for (int index = 1; index < heights.Count; index++)
+            {
+                if (heights[index] < heights[smallest])
+                    smallest = index;
+            }
+            double next = double.MaxValue;
+            for (int index = 0; index < heights.Count; index++)
+            {
+                if (index != smallest && heights[index] < next)
+                    next = heights[index];
+            }
+            return heights[smallest] <= next * 0.8 ? hits[smallest] : null;
+        }
         foreach (OcrLine line in recognized.Lines)
         {
             if (!needles.Any(item => Fold(line.Text).Contains(item, StringComparison.Ordinal)))
