@@ -1,0 +1,24 @@
+commit 1708f7725c1f1f69ae6848fec69bda34d374f041
+
+C03: the prohibition «no me digas…» projects to its request head (LIMITS1699)
+
+In SYSTEM1697 the boundary «No me digas la versión de Python.» was not read as a negative constraint: _negative_action_forms projects a prohibited subjunctive to its request head by regular endings and the irregular «digas» became «dige», so the turn went to knowledge conversation and the model answered the previous welcome greeting. «digas» now projects to «dime», like «pongas», «hagas» and «vayas». The language decision and the effect readers over the 742 registry literals are unchanged.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 2b121f87..15421824 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -6520,7 +6520,9 @@ def _negative_action_forms(folded: str) -> tuple[str, ...]:
+         return ()
+     verb = found.group("verb")
+     if found.group("es"):
+-        candidates = {"pongas": "pon", "hagas": "haz", "vayas": "ve"}
++        # SYSTEM1697 «No me digas la versión de Python.»: the irregular
++        # subjunctive of decir projects to its request head.
++        candidates = {"pongas": "pon", "hagas": "haz", "vayas": "ve", "digas": "dime"}
+         heads = [candidates.get(verb, "")]
+         for ending, replacement in (
+             ("es", "a"), ("as", "e"), ("ces", "za"),

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-limits1699-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_negative_action_forms: «digas» → «dime»).",
+  "patch": "artifacts/comprobaciones/C03/LIMITS1699/SOURCE.patch",
+  "commits": [
+    "1708f7725c1f1f69ae6848fec69bda34d374f041"
+  ],
+  "build": "BUILD1699 (C03-repairs1699-build/BUILD_READY.json; mente)",
+  "cause_measured": "La prohibición con «digas» no se leía como restricción negativa; el límite de código propio ya estaba reparado por el contrato de efecto no soportado desde LIMITS1679.",
+  "change": "Proyección de «digas» a «dime» en las formas de acción negadas; sin respuestas fijas.",
+  "measurement": "LIMITS1699: LIMITS1699: las dos variantes de H0635 respondieron llanamente el límite de ver su propio código con cero operaciones; el literal terminó de nuevo en una pregunta de aclaración porque el contrato prohibía «no puedo … ni» aunque el pedido coordina dos acciones (reparado para la próxima tanda); sin crédito; dos límites aprobados, incluida la prohibición «No me digas la versión de Python.» ahora reconocida; 0 créditos. 5 casos ordinarios sobre BUILD1699: 4 aprobados, 1 fallido (literal con pregunta de aclaración); 0 créditos",
+  "credits": 0
+}
