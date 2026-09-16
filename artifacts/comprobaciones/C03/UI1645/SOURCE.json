@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1645-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (resolve_explicit_clarification_intent: typing order with a place and no text leaves the text missing).",
+  "patch": "artifacts/comprobaciones/C03/UI1645/SOURCE.patch",
+  "commits": [
+    "5f4cce6313165b8a13b2a027c538dc7d7accd08b"
+  ],
+  "build": "BUILD1645 (C03-repairs1645-build/BUILD_READY.json; mente)",
+  "cause_measured": "La orden de escribir sin texto iba al modelo sin pregunta.",
+  "change": "Aclaración explícita del campo text para órdenes de escribir sin texto; sin respuestas fijas.",
+  "measurement": "UI1645: un literal y una variante con cero operaciones y la pregunta fiel de qué texto escribir; la variante en inglés con la pregunta correcta rechazada por la política de la aplicación como eco del pedido; el límite de definición aprobado y el de prohibición sin acuse (contrato de una oración fallado dos veces); 0 créditos. Medición raíz: la orden de escribir sin texto se responde preguntando qué escribir, sin operación; la política de la aplicación rechaza como eco una pregunta que contiene el pedido corto y el acuse de prohibición en dos oraciones falla su contrato; siguiente UI1647 con la exención del eco para el campo text declarado y el contrato leyendo tras la interjección.",
+  "credits": 0
+}

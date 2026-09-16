@@ -971,3 +971,7 @@ Interacción dentro de aplicaciones pasa de 7/22 a 8/22 con la orden de ir corta
 ## Actualización 2026-09-16 (UI1643)
 
 Interacción dentro de aplicaciones pasa de 8/22 a 9/22 con el texto sin destino respondido con la pregunta de dónde escribirlo (commit 6de63d67, BUILD1643) (HEAD 6de63d67): un literal y dos variantes con cero operaciones y la pregunta fiel de dónde escribir el texto, dos límites aprobados, 1 créditos. Medición raíz: un texto para «ponerle» a nada se responde preguntando dónde escribirlo, sin operación.
+
+## Actualización 2026-09-16 (UI1645)
+
+Interacción dentro de aplicaciones pasa de 9/22 a 9/22 con la orden de escribir sin texto respondida con la pregunta de qué escribir (commit 5f4cce63, BUILD1645) (HEAD 5f4cce63): un literal y una variante con cero operaciones y la pregunta fiel de qué texto escribir; la variante en inglés con la pregunta correcta rechazada por la política de la aplicación como eco del pedido; el límite de definición aprobado y el de prohibición sin acuse (contrato de una oración fallado dos veces), 0 créditos. Medición raíz: la orden de escribir sin texto se responde preguntando qué escribir, sin operación; la política de la aplicación rechaza como eco una pregunta que contiene el pedido corto y el acuse de prohibición en dos oraciones falla su contrato; siguiente UI1647 con la exención del eco para el campo text declarado y el contrato leyendo tras la interjección.
