@@ -27,9 +27,11 @@ internal static class ModelMessageComposer
         // Lo que la persona pidió antes viaja como dato para que la lectura
         // única del pedido resuelva el tema de un seguimiento elíptico. No es
         // un hecho publicable: el compositor lo excluye de los hechos y sólo
-        // lo usa para saber de qué se está hablando.
-        if (priorRequests is { Count: > 0 }
-            && draft.Intent is "conversation" or "clarification")
+        // lo usa para saber de qué se está hablando. MUSIC1757: también decide
+        // el idioma de un final de operación cuando la respuesta de la persona
+        // no tiene idioma propio («Play a song on Spotify.» → «Queen»), así que
+        // viaja con toda composición.
+        if (priorRequests is { Count: > 0 })
         {
             var previousRequests = new JsonArray();
             foreach (string request in priorRequests)
