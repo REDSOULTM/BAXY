@@ -963,3 +963,7 @@ Interacción dentro de aplicaciones pasa de 5/22 a 6/22 con el clic en el botón
 ## Actualización 2026-09-16 (UI1639)
 
 Interacción dentro de aplicaciones pasa de 6/22 a 7/22 con el clic nombrado por color respondido con la pregunta por la etiqueta del botón (commit 312d49c4, BUILD1639) (HEAD 312d49c4): un literal y dos variantes con cero operaciones y pregunta fiel por la etiqueta del botón, dos límites aprobados, 1 créditos. Medición raíz: un clic nombrado por color se responde preguntando el texto del botón, sin operación.
+
+## Actualización 2026-09-16 (UI1641)
+
+Interacción dentro de aplicaciones pasa de 7/22 a 8/22 con la orden de ir cortada respondida con la pregunta de cómo sigue (commit 7892fe01, BUILD1641) (HEAD 7892fe01): un literal y dos variantes con cero operaciones y preguntas fieles (cola cortada citada; qué carpeta), dos límites aprobados, 1 créditos. Medición raíz: una orden de ir cortada en una preposición se responde preguntando cómo sigue, sin navegar.

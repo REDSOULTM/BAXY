@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1641-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (cut_request_tail: four words suffice under a go-to head).",
+  "patch": "artifacts/comprobaciones/C03/UI1641/SOURCE.patch",
+  "commits": [
+    "7892fe014dcd8bf698ee301c32940f229f256124"
+  ],
+  "build": "BUILD1641 (C03-repairs1641-build/BUILD_READY.json; mente)",
+  "cause_measured": "La orden de ir cortada en «en» se leía como navegación web al nombre que la precede.",
+  "change": "Pedido cortado reconocido bajo cabezas de ir desde cuatro palabras; sin respuestas fijas.",
+  "measurement": "UI1641: un literal y dos variantes con cero operaciones y preguntas fieles (cola cortada citada; qué carpeta), dos límites aprobados; 1 créditos. Medición raíz: una orden de ir cortada en una preposición se responde preguntando cómo sigue, sin navegar.",
+  "credits": 1
+}

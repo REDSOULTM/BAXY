@@ -1,0 +1,29 @@
+commit 7892fe014dcd8bf698ee301c32940f229f256124
+
+C03: a go-to order cut on a preposition is a cut request even when short (UI1641)
+
+«Ve a Cotele en» stops on a bare preposition after a go-to head; the cut-request reader (FILES H0426) needed six words, so the mind read the four-word order as a web navigation to the name before the cut. Under a go-to head («ve a», «andá a», «entrá a», «go to», «llevame a») four words now suffice: the turn quotes the cut tail and asks how the message continues, and navigates nowhere.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 882101c6..7db4497c 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -2967,7 +2967,14 @@ def cut_request_tail(objective: str) -> str | None:
+     if not text or text[-1] in ".!?…»\")" or len(text) > 512:
+         return None
+     words = re.findall(r"[^\s]+", text)
+-    if len(words) < 6:
++    # UI1641 H0088 «Ve a Cotele en»: a go-to order whose destination stops on a
++    # bare preposition arrived cut there even when short; four words suffice
++    # under a go-to head, six otherwise (FILES H0426).
++    go_to = re.match(
++        r"^[¿?¡!\s]*(?:ve|anda|andate|entra|entrá|abre|abrí|llevame|llévame|navega|navegá|go|open|take\s+me)\s+(?:a|al|to)\b",
++        effect_intent._fold(text),
++    ) is not None
++    if len(words) < (4 if go_to else 6):
+         return None
+     last = effect_intent._fold(words[-1]).strip(",;:")
+     if last not in _CUT_TAIL_WORDS:
