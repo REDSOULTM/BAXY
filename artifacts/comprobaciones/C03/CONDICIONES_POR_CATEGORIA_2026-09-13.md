@@ -1091,3 +1091,27 @@ Archivos pasa de 28/32 a 28/32 con resumir un PDF nombrado ejecutado y verificad
 ## Actualización 2026-09-16 (PDF1693)
 
 Archivos pasa de 28/32 a 29/32 con resumir un PDF nombrado ejecutado y verificado sobre su texto extraíble, en el idioma del pedido (commit c7e71a8a, BUILD1693) (HEAD c7e71a8a): PDF1693: document.pdf.read (texto extraíble con pypdf, sin OCR) leyó el PDF de prueba de la raíz y los finales nombraron el archivo, sus páginas y sus títulos y citaron su comienzo tal cual, en español y en inglés; H0666 acreditado con dos variantes aprobadas; dos límites aprobados; fixture retirado por la raíz tras cada caso, 1 créditos. 5 casos ordinarios sobre BUILD1693: 5 aprobados; 1 crédito
+
+## Estado consolidado 2026-09-16 (noche): 608/742 cubiertos, 134 abiertos, 9/35 categorías cerradas
+
+Desde el bloque de la tarde (600): APPS1671–1673, MUSIC1675, LIMITS1677–1681 (+14, 614), la reapertura REOPEN1685 por decisión del dueño (−10, 604) y las tandas de capacidades reabiertas MINALL1687, REOPEN1689, PDF1691 y PDF1693 (+4, 608). Registro SHA 1784224e395bab1ee7d65ed016ac9d45b8db264312402e5185c2b36667ccfaaf. Reparaciones adoptadas en este tramo: `window.minimize.all` (minimiza todas las ventanas visibles del escritorio y relee que quedaron minimizadas, sin cerrar nada; H0238, H0529, H0658) y `document.pdf.read` (localiza un PDF nombrado de forma única en escritorio/documentos/descargas y extrae el texto que ya contiene con pypdf en el runtime de la mente, sin OCR; el final nombra el archivo, sus páginas y sus títulos y cita su comienzo tal cual; H0666, en español y en inglés). LIMITS1683 (aritmética en la Calculadora, navegación en la interfaz de Steam/Epic, escaneo de redes, descarga de archivos) sigue ejecutada y sin adjudicar a la espera de la respuesta del dueño sobre si son capacidades esperadas.
+
+| Categoría | Abiertos | Condición |
+|---|---:|---|
+| Vídeo y series | 26 | Sesiones de Netflix/Disney+/Prime ausentes (decisión del dueño: omitir). |
+| Mensajería | 22 | Nunca enviar ni leer mensajes reales; los clientes de mensajería nunca son fixture. Incluye «ve a Cotele en Discord» (H0290, H0636, reabiertos): Discord ausente → punto 7 (diferido), no límite. |
+| Música | 12 | Sesión de Spotify ausente (decisión del dueño); «abrí chrome y poné música» (Chrome del dueño); «si tengo spotify abierto pausalo» (sesión del dueño). |
+| Entrada incompleta | 7 | Fragmentos de transcripción sin léxico y el marcador redactado. |
+| Correo | 6 | Nunca enviar; la lectura exige sesión de Outlook. |
+| Interacción dentro de aplicaciones | 6 | Clic en un juego (H0096), «apretá enter/enviar» en Discord/WhatsApp (clientes del dueño; enviar mensajes), «al disco» (transcripción), aritmética en la Calculadora (LIMITS1683, pendiente del dueño). |
+| Red y Bluetooth | 5 | Conectividad del dueño intocable; escaneo de redes (LIMITS1683, pendiente del dueño); modo avión sin mecanismo. |
+| Navegación y búsqueda web | 5 | Descarga de archivo (LIMITS1683, pendiente del dueño), Opera GX del dueño, «abre youtube.com en Chrome» (Chrome del dueño), compuesto H0516. |
+| Audio y volumen | 5 | Cuatro límites sin marca (idiomas); volumen de Spotify (H0652, reabierto): Spotify ausente (sólo el lanzador de la Store corre) → punto 7 (diferido); una operación de volumen por sesión de audio exigiría además reproducir en la cuenta del dueño. |
+| Instalar y desinstalar software | 4 | pip por regla del dueño; diálogo de Steam inexistente; «diin eternal»; Epic sin lectura de licencia. |
+| Reloj / Abrir aplicaciones / Contactos / Conversación / Notas | 4 + 4 + 3 + 2 + 1 | Límites sin marca y negativos: se conservan como límites, nunca se acreditan. |
+| Archivos | 3 | Contenido dinámico (H0334), zip (H0542), backup a pendrive (H0733): capacidades parciales sin composición segura. |
+| Pantalla | 3 | Diálogos de Steam inexistentes en pantalla. |
+| Organizar ventanas | 3 | Minimizar a Ópera y Chrome a la izquierda (ventanas del dueño; sin operación de ajuste lateral); cerrar las pestañas de Chrome (H0444, reabierto): Chrome instalado pero nunca abierto → punto 7 (diferido). |
+| Bibliotecas y fichas de juegos | 3 | Navegar la interfaz de Steam/Epic (LIMITS1683, pendiente del dueño); App ID por la API pública (límite sin marca). |
+| Desarrollo | 3 | Sin shell; regla del dueño H0076; límite sin marca. |
+| Resto (energía 2, cerrar 2, web actual 1, conocimiento 1, hardware 1) | 7 | Apagar/reiniciar (nunca); «cerrame todo» y «cerrá todas las ventanas» (H0467, H0484, reabiertos): un cierre real de todas las ventanas cerraría VS Code, que aloja esta sesión raíz, y las aplicaciones en primer plano del dueño — pendiente de una ejecución desde fuera de VS Code o de la aceptación del dueño, sin crédito ni fallo; fallo de WhatsApp en internet (motor), H0297, versión de Python (sin lectura de versiones). |

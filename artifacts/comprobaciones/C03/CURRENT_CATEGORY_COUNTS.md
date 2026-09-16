@@ -7,7 +7,7 @@
 | Música | 39 | 27 | 12 |
 | Instalar y desinstalar software | 31 | 27 | 4 |
 | Navegación y búsqueda web | 46 | 41 | 5 |
-| Archivos y carpetas | 32 | 28 | 4 |
+| Archivos y carpetas | 32 | 29 | 3 |
 | Entrada incompleta, ruido y control de diálogo | 34 | 27 | 7 |
 | Vídeo y series | 26 | 0 | 26 |
 | Mensajería | 31 | 9 | 22 |
