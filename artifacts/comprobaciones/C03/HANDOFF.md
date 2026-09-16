@@ -1,3 +1,11 @@
+# FILES1707 adjudicado — 2026-09-16T10:25:26.486168+00:00
+
+**611/742 cubiertos, 131 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA 21aea22f4db303d3b14db282cc9ebd2f7767a725e84552dd70df8608cfd90965. Primeras altas 24 h >= 495 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 1ef6a5ea con BUILD1707 (un archivo de texto con los procesos que más memoria usan es una misión de dos pasos verificada por el límite de planes). Turnos ordinarios sin operaciones.
+
+FILES1707 («Archivos y carpetas», un archivo de texto con los procesos que más memoria usan ejecutado y verificado): FILES1707: el límite de planes aceptó la misión; en el literal las dos operaciones se completaron y verificaron y el archivo quedó escrito con los cinco procesos, pero el final no dijo que creó el archivo; en las variantes la escritura no se pudo groundear (cabecera fija) y los finales lo dijeron honestamente; sin crédito; dos límites aprobados, 0 créditos. Adjudicación 4e552b7783512d6a9dce3cb821bf64c78c56e7050aed313bacd03097bd72e687. 5 casos ordinarios sobre BUILD1707: 2 aprobados (límites), 3 fallidos; 0 créditos
+
+---
+
 # LIMITS1703 adjudicado — 2026-09-16T09:43:20.729297+00:00
 
 **611/742 cubiertos, 131 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA 1648b7656b57a55a30551fab659094778599c3f528cf9e0e9afd6ad3f362d023. Primeras altas 24 h >= 495 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f37d79ea con BUILD1703 (ver su propio código respondido llanamente como límite; el pedido cerrado por contrato conserva su clase). Turnos ordinarios sin operaciones.

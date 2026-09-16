@@ -1135,3 +1135,7 @@ Desarrollo y ejecución de comandos pasa de 2/5 a 2/5 con ver su propio código 
 ## Actualización 2026-09-16 (LIMITS1703)
 
 Desarrollo y ejecución de comandos pasa de 2/5 a 3/5 con ver su propio código respondido llanamente como límite (commit f37d79ea, BUILD1703) (HEAD f37d79ea): LIMITS1703: H0635 respondido llanamente como límite (cero operaciones, nombrando el pedido) en el literal y en las dos variantes; acreditado; dos límites aprobados, 1 créditos. 5 casos ordinarios sobre BUILD1703: 5 aprobados; 1 crédito
+
+## Actualización 2026-09-16 (FILES1707)
+
+Archivos y carpetas pasa de 29/32 a 29/32 con un archivo de texto con los procesos que más memoria usan ejecutado y verificado (commit 1ef6a5ea, BUILD1707) (HEAD 1ef6a5ea): FILES1707: el límite de planes aceptó la misión; en el literal las dos operaciones se completaron y verificaron y el archivo quedó escrito con los cinco procesos, pero el final no dijo que creó el archivo; en las variantes la escritura no se pudo groundear (cabecera fija) y los finales lo dijeron honestamente; sin crédito; dos límites aprobados, 0 créditos. 5 casos ordinarios sobre BUILD1707: 2 aprobados (límites), 3 fallidos; 0 créditos

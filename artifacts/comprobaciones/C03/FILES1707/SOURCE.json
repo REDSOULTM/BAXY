@@ -1,0 +1,15 @@
+{
+  "schema": "c03-files1707-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Planning/MissionPlanProposal.cs (system.process.list as a permitted producer of filesystem.write.text) and src/Baxy.App/PlannerExecutionSupport.cs (process listing projected into plan observations; the write's text verified line by line against it); the mind readers of FILES1705 (commit 6c659ffa) unchanged.",
+  "patch": "artifacts/comprobaciones/C03/FILES1707/SOURCE.patch",
+  "commits": [
+    "1ef6a5ea9c56f566bb13ad90af97554505d20837"
+  ],
+  "build": "BUILD1707 (C03-repairs1707-build/BUILD_READY.json; núcleo y App)",
+  "cause_measured": "El límite de planes no admitía la lista de procesos como productor de la escritura y la App no proyectaba la lista en las observaciones del plan.",
+  "change": "Productor permitido y proyección verificada de la lista de procesos en el límite de planes; misión determinista lectura → escritura; sin respuestas fijas.",
+  "measurement": "FILES1707: FILES1707: el límite de planes aceptó la misión; en el literal las dos operaciones se completaron y verificaron y el archivo quedó escrito con los cinco procesos, pero el final no dijo que creó el archivo; en las variantes la escritura no se pudo groundear (cabecera fija) y los finales lo dijeron honestamente; sin crédito; dos límites aprobados; 0 créditos. 5 casos ordinarios sobre BUILD1707: 2 aprobados (límites), 3 fallidos; 0 créditos",
+  "credits": 0
+}
