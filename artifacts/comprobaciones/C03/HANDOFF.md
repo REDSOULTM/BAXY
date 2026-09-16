@@ -1,3 +1,11 @@
+# UI1725 adjudicado — 2026-09-16T15:47:12.980658+00:00
+
+**619/742 cubiertos, 123 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA b03edee5aec3d4f69da2e0e65a69d9f1a2aa8a7a689014b55e5d2e23455fb61d. Primeras altas 24 h >= 503 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD ae00b3b5 con BUILD1725 (la aritmética pedida se escribe en la Calculadora abierta y su pantalla se lee). Turnos ordinarios sin operaciones.
+
+UI1725 («Interacción dentro de aplicaciones», la aritmética pedida escrita en la Calculadora abierta y leída de su pantalla): 6 ejecutados, 6 aprobados: las cuatro calculator.expression.evaluate se completaron y verificaron sobre la Calculadora abierta y poseída por la raíz (6*7→42, 2+2→4, 10-3→7, 6*7→42, pantalla releída por la raíz tras cada caso) y los finales dijeron la operación y el resultado mostrado; los dos límites aprobados, 2 créditos. Adjudicación 1034ae41b4dbf12f148199c177f52c1ff822ae6dd0da2f57d8a425d2a63b8df4. Mecanismo: la operación trae la Calculadora al frente, escribe la expresión por SendKeys y lee CalculatorResults por UI Automation; la Calculadora del dueño no se tocó (ventana propia de la raíz por caso, cerrada al final).
+
+---
+
 # NETWORK1723 adjudicado — 2026-09-16T15:38:36.225215+00:00
 
 **617/742 cubiertos, 125 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA d99fa87c52dd1b2edc2dea0d20d0e998b6bd853a9fcfd89526506a6c48b45abb. Primeras altas 24 h >= 501 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 61ae7ab8 con BUILD1723 (conectarse al wifi de un nombre sin perfil guardado termina con un fallo honesto revisado que dice su causa). Turnos ordinarios sin operaciones.
