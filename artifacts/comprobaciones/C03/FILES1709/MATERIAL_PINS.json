@@ -1,0 +1,78 @@
+{
+  "schema": "files1709-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1709-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1709-instrument-v1",
+  "seal_sha256": "73ef5d407558e72824e021e621b55db21810fdab1aaebd29e585a7afb7434ab3",
+  "runner_sha256": "08347b78ecf69569ede49947fef02ecb8b91ffcbc2fd81a2ed2e235b71547044",
+  "transport_seal_sha256": "25d19aae347b1d96a1f58e0ba99fd7eb7b478625eb38ad993886a4780c3642f0",
+  "files": {
+    "panel.json": "6b823628b5e8fd1d11168b9f10f03adfc5bd24df3f0544cc5c01752b4fbebc43",
+    "turns.jsonl": "7b1fece4fae461d9b0e064dfbb0d3930631cf1f25a8b47a4c6fd062fd1bb059e",
+    "case-map.json": "a6b87ca3e687b6791348e82ef1e23eddaa1ca28819f6fb3584862ee0a7e577e2",
+    "PLAN.md": "2f33b2a8f38416759fe4257f7e17f5a9a24ce79e8d033495182b4bd569c7e69d"
+  },
+  "counts": {
+    "cases": 5,
+    "historical_literals": 1,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 10,
+    "session_controls": 5,
+    "ordinary_turns": 5,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 5,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0334",
+      "kind": "historical_literal",
+      "group": "process_report_file",
+      "credit_behavior": "process_report_file",
+      "text_sha256": "6dc8b6c1145161ff81092307d54899ecc4caea014ae2db122d06225ca0f47a60",
+      "criterion_sha256": "4a12a29922634b7ac40cf96eb0dd5513359187e7ec1fe2b305e6e1a92f825b8c"
+    },
+    {
+      "index": 1,
+      "case_id": "files1709-dev-01",
+      "kind": "original_development_variant",
+      "group": "process_report_file",
+      "credit_behavior": "process_report_file",
+      "text_sha256": "193d5f1c6d7c49c11d17ff7b4f492ebe9c940e857517ef681a52a473cfc3ae51",
+      "criterion_sha256": "4a12a29922634b7ac40cf96eb0dd5513359187e7ec1fe2b305e6e1a92f825b8c"
+    },
+    {
+      "index": 2,
+      "case_id": "files1709-dev-02",
+      "kind": "original_development_variant",
+      "group": "process_report_file",
+      "credit_behavior": "process_report_file",
+      "text_sha256": "2613aaa0da4192ce30890d6d62b0bb42023018e57e07b3a68623c3b0f3a2d0d7",
+      "criterion_sha256": "4a12a29922634b7ac40cf96eb0dd5513359187e7ec1fe2b305e6e1a92f825b8c"
+    },
+    {
+      "index": 3,
+      "case_id": "files1709-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "357e4504c980fd33d2437eeb8b1a1f0f02f33009b7b3d9ff2d072781b2f380da",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 4,
+      "case_id": "files1709-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "481cf40ce8b4c07f1c2388bb18019cfae513eb191424c2ecf7b7d8621cef097e",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    }
+  ]
+}

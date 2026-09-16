@@ -1,0 +1,148 @@
+commit 7d10031ebcf450174f036b0403cab1a5b5a3e1ab
+
+C03: the processes file carries the request's own description and the final names the file (FILES1709)
+
+In FILES1707 the projected header was a fixed Spanish phrase, so the CPU variant («consumen») and the English variant could not ground the write, and the literal's final listed the processes without saying the file was created. The header now repeats the request's own description of the listing («los 3 procesos que más CPU consumen», «the 5 processes using the most memory»), the default file name is built from the request's noun and resource word (procesos-memoria.txt, procesos-cpu.txt, processes-memory.txt), the composer is told to say it created that file with the listed processes, and a veto (missing_written_file) rejects a final that does not name the written file.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index ad0cfe03..8a497fc7 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -857,10 +857,13 @@ def _process_report_file_arguments(
+         lines.append(f"{entry['name'].strip()}: {rendered}")
+     if not lines:
+         return None
+-    header = (
+-        "procesos que mas memoria usan" if report.get("sort") == "memory" else "procesos que mas cpu usan"
+-    )
+-    name = str(report.get("name") or ("procesos-memoria.txt" if report.get("sort") == "memory" else "procesos-cpu.txt"))
++    header = str(report.get("description") or "").strip()
++    if not header:
++        return None
++    # The default name is built from the request's own words (its noun and its
++    # resource word) so that it grounds in either language.
++    noun = "processes" if "processes" in header.split() else "procesos"
++    name = str(report.get("name") or f"{noun}-{report.get('resource_word') or 'memoria'}.txt")
+     arguments: dict[str, object] = {"relativePath": name, "text": header + "\n" + "\n".join(lines) + "\n"}
+     function = tool.get("function")
+     schema = function.get("parameters") if isinstance(function, dict) else None
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 02182ec0..338568d3 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -3219,11 +3219,11 @@ _PROCESS_REPORT_FILE_REQUEST = re.compile(
+     r"(?:(?:un|una|a|el|the)\s+)?(?:(?:text|txt)\s+)?(?:archivo|fichero|file)(?:\s+(?:de\s+texto|txt|text))?"
+     r"(?:\s+(?:llamad[oa]|named|called)\s+(?P<name>[^\s\"']+))?\s+"
+     r"(?:con|que\s+(?:tenga|liste|contenga|muestre)|with|listing|containing|of)\s+"
+-    r"(?:(?:los|las|the|mis|my)\s+)?(?:(?P<n>\d{1,2})\s+)?(?:procesos|processes)\s+"
++    r"(?P<desc>(?:(?:los|las|the|mis|my)\s+)?(?:(?P<n>\d{1,2})\s+)?(?:procesos|processes)\s+"
+     r"(?:que\s+mas\s+(?P<res_a>memoria|cpu|procesador|ram)\s+(?:usan|consumen|ocupan|gastan)|"
+     r"que\s+(?:usan|consumen|ocupan|gastan)\s+mas\s+(?P<res_b>memoria|cpu|procesador|ram)|"
+     r"(?:that\s+)?(?:use|using|consume|consuming)\s+(?:the\s+)?most\s+(?P<res_c>memory|cpu|ram)|"
+-    r"with\s+(?:the\s+)?(?:highest|most)\s+(?P<res_d>memory|cpu|ram)(?:\s+usage)?)"
++    r"with\s+(?:the\s+)?(?:highest|most)\s+(?P<res_d>memory|cpu|ram)(?:\s+usage)?))"
+     r"(?:\s*,?\s+(?:por\s+favor|please))?[\s.!?]*$",
+     re.IGNORECASE,
+ )
+@@ -3240,7 +3240,7 @@ def process_report_file_request(folded: str) -> dict[str, object] | None:
+         "",
+     ).lower()
+     sort = "cpu" if resource in {"cpu", "procesador"} else "memory"
+-    report: dict[str, object] = {"sort": sort}
++    report: dict[str, object] = {"sort": sort, "resource_word": resource}
+     if found.group("n"):
+         limit = int(found.group("n"))
+         if not 1 <= limit <= 50:
+@@ -3248,6 +3248,9 @@ def process_report_file_request(folded: str) -> dict[str, object] | None:
+         report["limit"] = limit
+     if found.group("name"):
+         report["name"] = found.group("name")
++    # The file header repeats the request's own description of the listing
++    # («los 5 procesos que mas memoria usan»), so every header token is evidence.
++    report["description"] = " ".join(found.group("desc").split())
+     return report
+ 
+ 
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index a0e80d0b..13cbc0e7 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -5129,6 +5129,25 @@ def _pdf_read_quote_defect(text: str, seen: dict) -> str:
+     return ""
+ 
+ 
++def _written_file_after_listing(payload: dict) -> str | None:
++    """The name of a file written by a completed filesystem.write.text step that
++    followed a system.process.list step (FILES1707), else None."""
++
++    steps = payload.get("completedStepsInOrder")
++    if not isinstance(steps, list) or len(steps) < 2:
++        return None
++    operations = [step.get("operation") for step in steps if isinstance(step, dict)]
++    if "system.process.list" not in operations:
++        return None
++    for step in reversed(steps):
++        if isinstance(step, dict) and step.get("operation") == "filesystem.write.text":
++            result = step.get("resultAtThisStep")
++            seen = result.get("seen") if isinstance(result, dict) else None
++            name = seen.get("name") if isinstance(seen, dict) else None
++            return name.strip() if isinstance(name, str) and name.strip() else None
++    return None
++
++
+ def _page_read_in_payload(payload: dict) -> dict | None:
+     """The projected page («seen» with a lead) of a verified browser.page.read."""
+ 
+@@ -5467,6 +5486,11 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+     ):
+         return _contradicted_brightness_extreme(text, seen)
+     prior_steps = payload.get("completedStepsInOrder")
++    written = _written_file_after_listing(payload)
++    if written is not None and _reading_fold(written).casefold() not in folded:
++        # FILES1707 H0334: the listing was read and the file was written, and
++        # the final only listed the processes. The file is the request.
++        return "missing_written_file"
+     if (
+         isinstance(prior_steps, list)
+         and any(
+@@ -13896,6 +13920,25 @@ class LlmRuntime:
+                 "dato que ningún resultado contenga; si los resultados sólo remiten a "
+                 "páginas de pronóstico, dilo."
+             )
++        if _written_file_after_listing(visible_situation) is not None:
++            # FILES1707 «crea un archivo de texto con los 5 procesos que más
++            # memoria usan»: the listing was read and written to a file; the
++            # report names the file and the processes it lists.
++            instruct(
++                "\nThe steps in completedStepsInOrder read the process listing and "
++                "then wrote it to the file named in the filesystem.write.text step "
++                "(seen.name). Say, in one or two sentences, that you created that "
++                "file (its exact name) with the listed processes, naming them by "
++                "their process names without PIDs and with their observed values; "
++                "nothing else was done."
++                if response_language == "en"
++                else "\nLos pasos de completedStepsInOrder leyeron la lista de procesos y "
++                "luego la escribieron en el archivo nombrado en el paso "
++                "filesystem.write.text (seen.name). Di, en una o dos oraciones, que "
++                "creaste ese archivo (su nombre exacto) con los procesos listados, "
++                "nombrándolos por su nombre de proceso sin PID y con sus valores "
++                "observados; no se hizo nada más."
++            )
+         if _pdf_read_in_payload(visible_situation) is not None:
+             # PDF1689 «resumime informe.pdf»: the report names the document,
+             # says what it covers by its headings as read and quotes its
+@@ -14704,6 +14747,11 @@ class LlmRuntime:
+                 else "El brillo observado no está al mínimo: di el valor observado y "
+                 "que no está al mínimo."
+             ),
++            "missing_written_file": (
++                "You also wrote the file named in the filesystem.write.text step: say that you created it, with its exact name, then what it lists."
++                if response_language == "en"
++                else "También escribiste el archivo nombrado en el paso filesystem.write.text: di que lo creaste, con su nombre exacto, y luego qué lista."
++            ),
+             "missing_prior_open": (
+                 "You also opened the application in this turn: say that you opened it, then the rest."
+                 if response_language == "en"

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-files1709-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (description and resource word of the request), src/baxy_mind/__main__.py (header and default name from the request's words) and src/baxy_mind/llm.py (instruction and missing_written_file veto).",
+  "patch": "artifacts/comprobaciones/C03/FILES1709/SOURCE.patch",
+  "commits": [
+    "7d10031ebcf450174f036b0403cab1a5b5a3e1ab"
+  ],
+  "build": "BUILD1709 (C03-repairs1709-build/BUILD_READY.json; mente)",
+  "cause_measured": "La cabecera proyectada era fija y no groundeaba fuera del literal; el compositor omitía el archivo creado.",
+  "change": "Cabecera y nombre del archivo con las palabras del pedido; instrucción y veto que nombran el archivo escrito; sin respuestas fijas.",
+  "measurement": "FILES1709: FILES1709: el literal y la variante inglesa ejecutaron las dos operaciones y escribieron el archivo con los procesos, pero los finales fieles fueron vetados por la forma de código del nombre del archivo; la variante de CPU no groundeó la escritura (medida reformateada); sin crédito; dos límites aprobados; 0 créditos. 5 casos ordinarios sobre BUILD1709: 2 aprobados (límites), 3 fallidos; 0 créditos",
+  "credits": 0
+}

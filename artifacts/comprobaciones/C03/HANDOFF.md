@@ -1,3 +1,11 @@
+# FILES1709 adjudicado — 2026-09-16T10:35:47.848261+00:00
+
+**611/742 cubiertos, 131 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA 9583048e170e148eeb88b07a680e92ea20b29fda249dfcdd541eb5cc98aee76c. Primeras altas 24 h >= 495 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7d10031e con BUILD1709 (un archivo de texto con los procesos que más memoria usan, con cabecera del pedido y final que nombra el archivo). Turnos ordinarios sin operaciones.
+
+FILES1709 («Archivos y carpetas», un archivo de texto con los procesos que más memoria usan ejecutado y verificado): FILES1709: el literal y la variante inglesa ejecutaron las dos operaciones y escribieron el archivo con los procesos, pero los finales fieles fueron vetados por la forma de código del nombre del archivo; la variante de CPU no groundeó la escritura (medida reformateada); sin crédito; dos límites aprobados, 0 créditos. Adjudicación e9338e2344534182197c1607558111dacb792cb5a40f5a366b2883488dde2b06. 5 casos ordinarios sobre BUILD1709: 2 aprobados (límites), 3 fallidos; 0 créditos
+
+---
+
 # FILES1707 adjudicado — 2026-09-16T10:25:26.486168+00:00
 
 **611/742 cubiertos, 131 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA 21aea22f4db303d3b14db282cc9ebd2f7767a725e84552dd70df8608cfd90965. Primeras altas 24 h >= 495 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 1ef6a5ea con BUILD1707 (un archivo de texto con los procesos que más memoria usan es una misión de dos pasos verificada por el límite de planes). Turnos ordinarios sin operaciones.
