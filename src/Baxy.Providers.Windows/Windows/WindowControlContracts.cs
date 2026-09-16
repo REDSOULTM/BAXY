@@ -68,8 +68,26 @@ public sealed record WindowMinimizeAllResult(
     int Remaining,
     string? ErrorCode);
 
+// CLOSEALL1733 «cerrame todo»: the desktop windows found before, how many were
+// verified closed, how many stayed visible, how many were kept on purpose
+// (the editor hosting the person's work and the terminal).
+public sealed record WindowCloseAllResult(
+    bool Succeeded,
+    bool Verified,
+    int Found,
+    int Closed,
+    int Remaining,
+    int Kept,
+    IReadOnlyList<string> KeptProcesses,
+    IReadOnlyList<string> RemainingProcesses,
+    string? ErrorCode);
+
 public interface IWindowControlProvider
 {
+    ValueTask<WindowCloseAllResult> CloseAllAsync(CancellationToken cancellationToken) =>
+        ValueTask.FromResult(new WindowCloseAllResult(
+            false, false, 0, 0, 0, 0, [], [], WindowControlErrorCodes.ActionFailed));
+
     ValueTask<WindowMinimizeAllResult> MinimizeAllAsync(CancellationToken cancellationToken) =>
         ValueTask.FromResult(new WindowMinimizeAllResult(
             false, false, 0, 0, 0, WindowControlErrorCodes.ActionFailed));

@@ -4856,6 +4856,10 @@ def _explicit_arguments_from_evidence(
         literal = effect_intent.literal_clipboard_write_text(evidence)
         return {"text": literal} if literal is not None else None
 
+    if operation == "window.close.all":
+        # CLOSEALL1733: no argument; the order names every window.
+        return {} if effect_intent.close_all_request(effect_intent._fold(evidence)) else None
+
     if operation == "window.minimize.all":
         # MINALL1687: no arguments; the order over every window is the whole request.
         return {} if effect_intent.minimize_all_request(effect_intent._fold(evidence)) else None

@@ -1643,6 +1643,13 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Comprueba por nombre cualquier aplicación del catálogo Inicio y verifica si tiene una ventana visible sin abrirla ni modificarla."),
         Descriptor(
+            "window.close.all",
+            EmptySchema(),
+            OperationRisks.WorkLoss,
+            "window.close.all.desktop.postread.v1",
+            ToolExposure.Public,
+            "Pide el cierre de todas las ventanas visibles del escritorio salvo Visual Studio Code, la terminal y la propia, verifica cuáles se cerraron y cuenta las que siguen abiertas (por ejemplo, las que preguntan si guardar); nunca fuerza un proceso."),
+        Descriptor(
             "window.focus",
             WindowIdSchema(),
             OperationRisks.LowReversible,

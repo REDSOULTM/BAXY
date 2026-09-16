@@ -371,6 +371,8 @@ internal static class ProductConductorHost
             || initial.Diagnostic is not null
             || observed.Prepared.OperationName is not (
                 "browser.navigate" or "browser.navigate.named" or "app.close" or "input.visible.click"
+                // CLOSEALL1733 «cerrame todo»: the whole-desktop close is confirmed by the root reviewer.
+                or "window.close.all"
                 or "system.settings.set" or "clipboard.write.text" or "clipboard.read.text"
                 // SCREEN1399 «sacá un screenshot»: a privacy-sensitive capture is
                 // confirmed by the root reviewer like the clipboard operations.

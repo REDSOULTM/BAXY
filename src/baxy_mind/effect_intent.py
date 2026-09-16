@@ -2368,6 +2368,8 @@ def _curated_domain_is_grounded(
         )
     if operation == "window.minimize.all":
         return minimize_all_request(folded)
+    if operation == "window.close.all":
+        return close_all_request(folded)
     if operation == "document.pdf.read":
         return _pdf_summary_request(folded) is not None
     if operation in {
@@ -2902,8 +2904,10 @@ def known_unsupported_effect_request(
             {"window.minimize.all"},
         ),
         (
-            # LIMITS1677 H0467 «cerrame todo», H0484 «cerrá todas las ventanas»:
-            # applications are closed by name, never all windows at once.
+            # LIMITS1677 H0467 «cerrame todo», H0484 «cerrá todas las ventanas»
+            # were a known limit; since CLOSEALL1733 (owner 2026-09-16: close
+            # everything except Visual Studio Code) window.close.all exists and
+            # this contract is inert.
             _has(folded, r"\b(?:cierra|cerra|cerrar|cerrame|cierrame|close)\s+(?:me\s+)?(?:todo|todas\s+las\s+ventanas|todas\s+las\s+apps|todas\s+las\s+aplicaciones|all\s+(?:the\s+|my\s+)?(?:windows|apps|applications)|everything)\b")
             and not _has(folded, r"\b(?:pestanas?|tabs?|menos|except|excepto|de\s+\w+$)\b"),
             {"window.close.all"},
@@ -2949,11 +2953,11 @@ def known_unsupported_effect_request(
             {"contacts.add"},
         ),
         (
-            # UI1659 H0290/H0636 «ve a Cotele en Discord»: a channel, server or
-            # chat inside a messaging client is navigated by that client, not
-            # by the browser; no operation walks a client's interface.
+            # UI1659 H0290/H0636 «ve a Cotele en Discord» was a known limit; since
+            # UI1735 the client is opened and the channel label clicked on its
+            # interface (input.visible.click), so this contract is inert.
             client_navigation_target(folded) is not None,
-            {"client.channel.navigate"},
+            {"input.visible.click"},
         ),
     )
     return any(
@@ -4967,6 +4971,10 @@ _CATALOG_NAME_ALIASES: tuple[tuple[frozenset[str], tuple[str, ...]], ...] = (
     # names the client «Epic Games Launcher»; people say «Epic Games» or «Epic».
     (frozenset({"epic", "epic games", "epic launcher", "epic games launcher", "launcher de epic"}),
      ("epic games launcher",)),
+    # UI1735 «en Opera hacé clic en …»: the Start catalog names the browser
+    # «Navegador Opera GX»; people say «Opera» or «Opera GX».
+    (frozenset({"opera", "opera gx", "navegador opera", "navegador opera gx", "opera browser"}),
+     ("navegador opera gx", "opera gx", "opera")),
 )
 
 
@@ -8273,6 +8281,22 @@ _MINIMIZE_ALL_REQUEST = re.compile(
 )
 
 
+_CLOSE_ALL_REQUEST = re.compile(
+    r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
+    r"(?:cierra|cerra|cerrar|cerrame|cierrame|close)\s+(?:me\s+)?"
+    r"(?:todas\s+(?:las\s+)?(?:ventanas|apps|aplicaciones|cosas)|todo|todo\s+lo\s+que\s+(?:esta|tengo)\s+abierto|"
+    r"all(?:\s+(?:the|my|of\s+the))?(?:\s+(?:windows|apps|applications))?|everything(?:\s+(?:that\s+is\s+)?open)?)"
+    r"(?:\s+(?:abiertas|abierto|open))?(?:\s*,?\s*(?:por\s+favor|please))?[\s.!?]*$"
+)
+
+
+def close_all_request(folded: str) -> bool:
+    """CLOSEALL1733 «cerrame todo», «cerrá todas las ventanas», «close everything»:
+    one order over every desktop window (never a named one, never tabs)."""
+
+    return _CLOSE_ALL_REQUEST.match(_strip_request_envelope(folded)) is not None
+
+
 def minimize_all_request(folded: str) -> bool:
     """MINALL1687 «minimizá todas las ventanas», «minimizá todo»: one order
     over every desktop window, never a named one."""
@@ -10488,7 +10512,9 @@ def _is_direct_request(text: str) -> bool:
         # «me abrís la calculadora»: the dative clitic precedes a voseo opening.
         r"(?:me\s+(?=(?:abris|abres|abre|abri|abrime|avri)\b))?"
         # «en la calculadora apretá el 5»: the app context frames the request (UI1273).
-        rf"(?:{_VISIBLE_CLICK_APP_CONTEXT}\s+)?"
+        # UI1735 «en Opera hacé clic en …», «en Steam andá a la biblioteca»: any
+        # application named as the frame (owner: general mechanisms).
+        rf"(?:(?:{_VISIBLE_CLICK_APP_CONTEXT}|(?:en|in|on)\s+(?:la\s+|el\s+|the\s+)?[a-z0-9][a-z0-9 .+-]{{1,40}}?)\s*,?\s+)?"
         rf"{request_head}\b",
     )
 
@@ -15036,6 +15062,16 @@ def _resolve_explicit_effects_single(
     )
     if desired_open is not None and "app.open" in available:
         return EffectIntent(("app.open",), (desired_open[1],))
+    in_application = _click_in_application(folded, application_names)
+    if in_application is not None and {"app.open", "input.visible.click"} <= available:
+        # UI1735 «en <app> hacé clic en X», «ve a X en <app>» (owner: general
+        # mechanisms): the application is opened or brought to the front
+        # (app.open reuses a running window) and the visible label is clicked
+        # on it; any Start-catalog application, any label.
+        application, clause = in_application
+        clause_click = _visible_click_intent(clause, available, allow_navigate=True)
+        if clause_click is not None:
+            return EffectIntent(("app.open", "input.visible.click"), (application, clause_click.evidence[0]))
     visible_click = _visible_click_intent(
         folded,
         available,
@@ -15938,6 +15974,56 @@ def _visible_click_label(
     return label[:80]
 
 
+def _click_in_application(
+    folded: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> tuple[str, str] | None:
+    """UI1735: a click or navigation order framed by «en/in/on <catalog app>»
+    at either end of the clause → (catalog key, clause without the frame).
+    Generic frames («en la calculadora», «en la app») keep the UI1273 path."""
+
+    catalog = build_application_catalog_index(application_names)
+    occurrence = catalog.occurrence_pattern
+    if occurrence is None:
+        return None
+    text = folded.strip()
+    for pattern in (
+        r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?(?:en|in|on)\s+(?:la\s+|el\s+|the\s+)?(?P<app>.+?)\s*[,;:]?\s+(?P<clause>(?:ve|vete|anda|andate|entra|metete|navega|apreta|pulsa|presiona|hace|haz|toca|clickea|clica|go|navigate|click|press|tap|open)\b.+)$",
+        r"^(?P<clause>.+?)\s+(?:en|in|on)\s+(?:la\s+|el\s+|the\s+)?(?P<app>[a-z0-9][a-z0-9 .+-]{1,40}?)[\s?!.]*$",
+    ):
+        found = re.match(pattern, text)
+        if found is None:
+            continue
+        candidate = found.group("app").strip(" ,.;:!?")
+        hit = occurrence.fullmatch(candidate)
+        # A catalog name as written, or a bilingual alias of one («Opera» for
+        # «Navegador Opera GX», «Epic Games» for «Epic Games Launcher»).
+        key = _catalog_alias_key(
+            _application_name_key(hit.group("target") if hit is not None else candidate),
+            catalog.keys,
+        )
+        if key is None:
+            continue
+        clause = found.group("clause").strip(" ,;:")
+        if not clause:
+            continue
+        if _MESSAGING_CLIENT_KEY.search(key) is not None and not _has(
+            clause, r"^(?:ve|vete|anda|andate|entra|metete|go|navigate|navega)\b"
+        ):
+            # LIMITS1681 «apretá enviar en WhatsApp», «en Discord apretá enter»,
+            # and the microphone reading of «en Discord apretá silenciar» stay as
+            # they are: inside a messaging client only going to a chat or a
+            # channel is a click on its interface; pressing its controls is not.
+            return None
+        return key, clause
+    return None
+
+
+_MESSAGING_CLIENT_KEY = re.compile(
+    r"\b(?:discord|whatsapp|telegram|teams|slack|skype|zoom|signal|messenger)\b"
+)
+
+
 def _visible_click_intent(
     text: str,
     available_operations: frozenset[str],
@@ -15964,9 +16050,13 @@ def _visible_click_intent(
         return EffectIntent(("input.visible.click",), (evidence,))
     if _visible_click_label(text, allow_navigate=allow_navigate) is None:
         return None
-    if _has(_fold(text), r"\b(?:en|in|on)\s+(?:discord|whatsapp|teams|telegram|slack|skype|zoom|signal|messenger)\b"):
-        # LIMITS1681 «apretá enviar en WhatsApp»: a control inside a messaging
-        # client is a known limit, never a click on the foreground window.
+    if _has(_fold(text), r"\b(?:en|in|on)\s+(?:discord|whatsapp|teams|telegram|slack|skype|zoom|signal|messenger)\b") and _has(
+        _fold(text), r"\b(?:enviar|envia|send|submit|mandar|manda|publicar|post)\b"
+    ):
+        # LIMITS1681 «apretá enviar en WhatsApp»: a send control inside a
+        # messaging client is a known limit (never a real message). Going to
+        # a channel or a chat («ve a Cotele en Discord») is navigation of the
+        # client's interface (UI1735) and stays a click.
         return None
     evidence = text.strip(" ,;:-")[:240]
     return EffectIntent(("input.visible.click",), (evidence,))
@@ -16847,6 +16937,13 @@ def resolve_explicit_effects(
     ):
         # MINALL1687: every desktop window minimized and verified iconic.
         return EffectIntent(("window.minimize.all",), (text,))
+    if (
+        "window.close.all" in available
+        and close_all_request(folded)
+        and not _is_negative_effect_clause(folded)
+    ):
+        # CLOSEALL1733: every desktop window asked to close, except the editor.
+        return EffectIntent(("window.close.all",), (text,))
     if (
         {"window.resolve", "media.control"} <= available
         and conditional_open_pause_app(text, authenticated_applications) is not None

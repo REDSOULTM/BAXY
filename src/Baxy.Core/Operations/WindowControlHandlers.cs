@@ -123,6 +123,43 @@ internal sealed class WindowMinimizeAllHandler(IWindowControlProvider provider) 
     }
 }
 
+internal sealed class WindowCloseAllHandler(IWindowControlProvider provider) : IOperationHandler
+{
+    public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition("window.close.all");
+
+    public async ValueTask<OperationOutcome> ExecuteAsync(OperationInvocation invocation, CancellationToken cancellationToken)
+    {
+        WindowCloseAllResult result = await provider.CloseAllAsync(cancellationToken).ConfigureAwait(false);
+        if (!result.Succeeded || !result.Verified)
+        {
+            return OperationOutcome.Failure(result.ErrorCode ?? "window_close_all_failed");
+        }
+
+        var buffer = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteNumber("desktopWindows", result.Found);
+            writer.WriteNumber("closed", result.Closed);
+            writer.WriteNumber("remainingVisible", result.Remaining);
+            writer.WriteNumber("keptOpen", result.Kept);
+            writer.WriteStartArray("keptProcesses");
+            foreach (string name in result.KeptProcesses) writer.WriteStringValue(name);
+            writer.WriteEndArray();
+            writer.WriteStartArray("remainingProcesses");
+            foreach (string name in result.RemainingProcesses) writer.WriteStringValue(name);
+            writer.WriteEndArray();
+            writer.WriteBoolean("allClosed", result.Remaining == 0);
+            writer.WriteBoolean("editorKeptOpen", result.Kept > 0);
+            writer.WriteString("authority", "win32_desktop_windows_close_postread");
+            writer.WriteEndObject();
+        }
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return OperationOutcome.Success(document.RootElement.Clone());
+    }
+}
+
 internal sealed class WindowBoundsHandler(string operation, IWindowControlProvider provider)
     : IOperationHandler
 {
@@ -157,6 +194,7 @@ internal static class WindowControlHandlers
         new WindowActionHandler("window.maximize", WindowControlAction.Maximize, provider),
         new WindowActionHandler("window.minimize", WindowControlAction.Minimize, provider),
         new WindowMinimizeAllHandler(provider),
+        new WindowCloseAllHandler(provider),
         new WindowBoundsHandler("window.move", provider),
         new WindowBoundsHandler("window.resize", provider),
         new WindowResolveHandler(provider),

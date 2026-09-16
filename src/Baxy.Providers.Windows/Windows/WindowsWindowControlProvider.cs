@@ -359,6 +359,97 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
             true, false, desktop.Count, targets.Count - remaining, remaining, WindowControlErrorCodes.VerificationFailed);
     }
 
+    // CLOSEALL1733 «cerrame todo» (owner 2026-09-16: everything except Visual
+    // Studio Code): every desktop window is asked to close the way a person
+    // would (WM_CLOSE, then the system-menu close) except the editor hosting
+    // the person's work, the terminal and this product; a window that stays —
+    // an application asking whether to save, a client that refuses — is
+    // counted as remaining and never forced, so no document is lost.
+    private static readonly HashSet<string> KeptProcessNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Code", "Code - Insiders", "WindowsTerminal", "baxy-core", "Baxy.App",
+    };
+
+    public async ValueTask<WindowCloseAllResult> CloseAllAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        IReadOnlyList<WindowSnapshot> desktop;
+        try
+        {
+            desktop = _platform.DesktopWindows();
+        }
+        catch (Exception exception) when (exception is Win32Exception
+            or InvalidOperationException or NotSupportedException)
+        {
+            return new WindowCloseAllResult(false, false, 0, 0, 0, 0, [], [], WindowControlErrorCodes.InventoryFailed);
+        }
+
+        List<WindowSnapshot> kept = desktop.Where(static window => KeptProcessNames.Contains(window.Identity.ProcessName)).ToList();
+        List<WindowSnapshot> targets = desktop.Where(static window => !KeptProcessNames.Contains(window.Identity.ProcessName)).ToList();
+        List<string> keptNames = kept.Select(static window => window.Identity.ProcessName).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase).ToList();
+        if (targets.Count == 0)
+        {
+            return new WindowCloseAllResult(true, true, desktop.Count, 0, 0, kept.Count, keptNames, [], null);
+        }
+
+        foreach (WindowSnapshot target in targets)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            try
+            {
+                _ = _platform.RequestClose(target.Identity);
+            }
+            catch (Exception exception) when (exception is Win32Exception
+                or InvalidOperationException or WindowIdentityChangedException)
+            {
+                // A window that vanished meanwhile is closed already.
+            }
+        }
+
+        List<WindowSnapshot> remaining = await RemainingOpenAsync(targets, PrimaryCloseVerificationAttempts, cancellationToken).ConfigureAwait(false);
+        if (remaining.Count > 0)
+        {
+            foreach (WindowSnapshot target in remaining)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                try
+                {
+                    _ = _platform.Observe(target.Identity);
+                    _ = _platform.RequestSystemClose(target.Identity);
+                }
+                catch (Exception exception) when (exception is Win32Exception
+                    or InvalidOperationException or WindowIdentityChangedException)
+                {
+                    // Gone or changed: nothing more to ask.
+                }
+            }
+            remaining = await RemainingOpenAsync(remaining, FallbackCloseVerificationAttempts, cancellationToken).ConfigureAwait(false);
+        }
+
+        List<string> remainingNames = remaining.Select(static window => window.Identity.ProcessName).Distinct(StringComparer.OrdinalIgnoreCase).Order(StringComparer.OrdinalIgnoreCase).ToList();
+        return new WindowCloseAllResult(
+            true, true, desktop.Count, targets.Count - remaining.Count, remaining.Count, kept.Count, keptNames, remainingNames, null);
+    }
+
+    private async ValueTask<List<WindowSnapshot>> RemainingOpenAsync(
+        IReadOnlyList<WindowSnapshot> targets,
+        int attempts,
+        CancellationToken cancellationToken)
+    {
+        List<WindowSnapshot> open = targets.ToList();
+        for (int attempt = 0; attempt < attempts; attempt++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            open = open.Where(window => !_verifier.VerifyClosed(window.Identity)).ToList();
+            if (open.Count == 0 || attempt + 1 >= attempts)
+            {
+                break;
+            }
+            await _platform.DelayAsync(VerificationDelay, cancellationToken).ConfigureAwait(false);
+        }
+        return open;
+    }
+
     public ValueTask<WindowActionResult> SetBoundsAsync(
         string windowId,
         int? x,

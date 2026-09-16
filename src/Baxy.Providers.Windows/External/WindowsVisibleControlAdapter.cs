@@ -75,33 +75,50 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
                 operation, "visible_click_argument_invalid");
         }
 
-        ExternalCapabilityReceipt uia = await InvokeUiaAsync(
-            operation, label, cancellationToken).ConfigureAwait(false);
-        if (ShouldKeep(uia))
-            return uia;
-
-        if (_ocr is not null)
+        // UI1731 → UI1735: an application that was just opened draws its
+        // interface over several seconds (the Epic Games Launcher shows its
+        // navigation about ten seconds after its window exists). A label that
+        // no stage finds yet is looked for again, bounded, before the click is
+        // declared not found — the way a person waits for a screen to load.
+        DateTime deadline = DateTime.UtcNow + LabelWaitBudget;
+        ExternalCapabilityReceipt uia;
+        while (true)
         {
-            ExternalCapabilityReceipt? ocr = await _ocr.TryClickAsync(
+            uia = await InvokeUiaAsync(
                 operation, label, cancellationToken).ConfigureAwait(false);
-            if (ocr is not null && ShouldKeep(ocr))
-                return ocr;
-            if (ocr is not null && !ShouldCascade(ocr))
-                return ocr;
-        }
+            if (ShouldKeep(uia))
+                return uia;
 
-        if (_vision is not null)
-        {
-            ExternalCapabilityReceipt? vision = await _vision.TryClickAsync(
-                operation, label, cancellationToken).ConfigureAwait(false);
-            if (vision is not null)
-                return vision;
+            if (_ocr is not null)
+            {
+                ExternalCapabilityReceipt? ocr = await _ocr.TryClickAsync(
+                    operation, label, cancellationToken).ConfigureAwait(false);
+                if (ocr is not null && ShouldKeep(ocr))
+                    return ocr;
+                if (ocr is not null && !ShouldCascade(ocr))
+                    return ocr;
+            }
+
+            if (_vision is not null)
+            {
+                ExternalCapabilityReceipt? vision = await _vision.TryClickAsync(
+                    operation, label, cancellationToken).ConfigureAwait(false);
+                if (vision is not null)
+                    return vision;
+            }
+
+            if (uia.ErrorCode is not null || DateTime.UtcNow >= deadline)
+                break;
+            await Task.Delay(LabelWaitInterval, cancellationToken).ConfigureAwait(false);
         }
 
         return uia.ErrorCode is null
             ? ExternalJson.Failure(operation, "visible_button_not_found")
             : uia;
     }
+
+    private static readonly TimeSpan LabelWaitBudget = TimeSpan.FromSeconds(24);
+    private static readonly TimeSpan LabelWaitInterval = TimeSpan.FromMilliseconds(1500);
 
     private async ValueTask<ExternalCapabilityReceipt> InvokeUiaAsync(
         string operation,

@@ -4105,6 +4105,28 @@ def _compose_situation_payload(
             if visible_seen.get("surfaceChanged") is True:
                 projected["surfaceChanged"] = True
             visible_seen = projected
+        elif operation == "window.close.all" and isinstance(visible_seen.get("closed"), int):
+            # CLOSEALL1733 «cerrame todo»: the counts are the facts; process names
+            # («Code», «Notepad») are not words for the person — the kept editor
+            # is named as the product it is.
+            remaining_count = visible_seen.get("remainingVisible")
+            projected = {
+                "closedWindows": visible_seen.get("closed"),
+                "windowsStillOpenAfterAsking": remaining_count,
+            }
+            if visible_seen.get("editorKeptOpen") is True:
+                projected["keptOpenOnPurpose"] = "Visual Studio Code"
+            if isinstance(remaining_count, int) and remaining_count > 0:
+                projected["note"] = (
+                    f"{remaining_count} window(s) were asked to close and stayed open (an application may be asking whether to save); this does not count Visual Studio Code, which was kept on purpose"
+                    if language == "en"
+                    else f"{remaining_count} ventana(s) recibieron el pedido de cierre y siguen abiertas (alguna aplicación puede estar preguntando si guardar); no cuenta Visual Studio Code, que se dejó abierto a propósito"
+                )
+            if visible_seen.get("closed") == 0 and remaining_count == 0:
+                projected["note"] = (
+                    "there was no window to close" if language == "en" else "no había ninguna ventana que cerrar"
+                )
+            visible_seen = projected
         elif operation == "filesystem.known.list":
             visible_seen = _project_known_listing(visible_seen, language)
         elif operation == "game.catalog.list":
@@ -4423,6 +4445,26 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             "download started. If installed is true, say it is already "
             "installed. Name the game as the person named it, in one or two "
             "sentences, in the person's language."
+        )
+    if (
+        situation.get("operation") == "window.close.all"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+    ):
+        # CLOSEALL1733 «cerrame todo»: every desktop window was asked to close
+        # except the editor hosting the person's work; the counts are observed.
+        bits.append(
+            "This result asked every visible desktop window to close except the "
+            "editor the person works in and counted the outcome: say how many "
+            "windows were closed (closedWindows, as a digit), that Visual Studio "
+            "Code was kept open on purpose when keptOpenOnPurpose is present, and, "
+            "when windowsStillOpenAfterAsking is above 0, that exactly that many "
+            "other windows stayed open after being asked (as a digit; they were "
+            "asked, not forced, so nothing unsaved was lost) — never say that all "
+            "the windows were closed in that case. One or two sentences, in the "
+            "person's language, plain noun (ventanas / windows), no process names "
+            "other than Visual Studio Code, no other numbers. If closedWindows is 0 "
+            "and windowsStillOpenAfterAsking is 0, say there was no window to close."
         )
     if (
         situation.get("operation") == "window.minimize.all"
@@ -5658,6 +5700,36 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
             folded,
         ) is None:
             return "echo_without_report"
+    if (
+        payload.get("operation") == "window.close.all"
+        and isinstance(seen, dict)
+        and isinstance(seen.get("closed"), int)
+    ):
+        # CLOSEALL1733: every number in the reply is an observed count; a
+        # remaining window must be told, never hidden; nothing was forced.
+        allowed_counts = {str(seen.get(key)) for key in ("closed", "remainingVisible", "keptOpen", "desktopWindows") if isinstance(seen.get(key), int)}
+        for number in re.findall(r"(?<![\w.,])\d+(?![\w.,%])", text):
+            if number not in allowed_counts:
+                return "invented_number"
+        remaining = seen.get("remainingVisible")
+        if isinstance(remaining, int) and remaining > 0:
+            # A window that stayed open must be reported with its count; «cerré
+            # todas» over a remaining window hides it.
+            number_words = {1: ("una", "uno", "one"), 2: ("dos", "two"), 3: ("tres", "three"), 4: ("cuatro", "four"), 5: ("cinco", "five")}
+            spoken = number_words.get(remaining, ())
+            if str(remaining) not in text and not any(re.search(rf"\b{word}\b", _reading_fold(text)) for word in spoken):
+                return "missing_state"
+            if re.search(r"\b(?:todas|todo|all|every|everything)\b", _reading_fold(text)) and not re.search(
+                r"\b(?:menos|salvo|except|pero|but|aunque|although)\b", _reading_fold(text)
+            ):
+                return "extra_claim"
+        if seen.get("closed") == 0 and re.search(r"\b(?:cerr[eé]|closed|cerrad[ao]s)\b", _reading_fold(text)) and not re.search(
+            r"\b(?:ninguna|ningun|nada|no habia|no hay|no window|nothing|none|no had)\b", _reading_fold(text)
+        ):
+            # Nothing was closed: a final that reports a closing invents it.
+            return "reversed_result"
+        if re.search(r"\b(?:forc|mat[eé]|kill|termin[eé])\w*", _reading_fold(text)):
+            return "extra_claim"
     if (
         payload.get("operation") == "wifi.scan"
         and isinstance(seen, dict)
