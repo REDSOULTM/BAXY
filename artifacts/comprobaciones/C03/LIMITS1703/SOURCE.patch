@@ -1,0 +1,44 @@
+commit f37d79ea68913441e071ae0ff98e31657b25895b
+
+C03: a request closed by the known-unsupported contract keeps its kind (LIMITS1703)
+
+In LIMITS1701 the literal «Puedes ver tu propio código y analizar si hay alguna falla.» was decided «unsupported» by the known-unsupported contract, but apply_non_effect_conversation_classification re-read it as narration (a finite verb after the head) and relabelled it «followup» with the observation_ack shape; the model answered it as a statement, inventing its own nature, and the veto left the turn to recover by asking. The classification now keeps the unsupported kind when the contract closed the request; true narrations («El viaje del sábado fue muy tranquilo») still become follow-ups.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 3f1a6511..0cef7f16 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -1392,9 +1392,22 @@ def apply_non_effect_conversation_classification(
+     objective: str,
+     *,
+     retired_catalog_effect: bool = False,
++    available_operations: tuple[str, ...] = (),
+ ) -> dict[str, object]:
+     """Do not present a non-request observation as a missing capability."""
+ 
++    if (
++        decision.get("mode") == "conversation"
++        and decision.get("conversation_kind") == "unsupported"
++        and not decision.get("effect_operations")
++        and effect_intent.known_unsupported_effect_request(objective, available_operations)
++    ):
++        # LIMITS1701 «Puedes ver tu propio código y analizar si hay alguna
++        # falla.»: a request the known-unsupported contract closed is a
++        # request, however much its finite verbs read as narration; the
++        # followup mirror answered it as a statement and the model invented
++        # its own nature («opero como un modelo de lenguaje…»).
++        return decision
+     folded = effect_intent._strip_request_envelope(effect_intent._fold(objective))
+     request_head = effect_intent._request_head(folded)
+     information_question = request_head in {
+@@ -7297,6 +7310,7 @@ def _prepare_turn_result(
+             (effects_before_information_veto or effects_before_domain_grounding)
+             and not decision["effect_operations"]
+         ),
++        available_operations=available_operations,
+     )
+     decision = validate_turn_decision(
+         decision,

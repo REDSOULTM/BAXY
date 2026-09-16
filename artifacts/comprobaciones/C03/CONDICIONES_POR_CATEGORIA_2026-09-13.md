@@ -1131,3 +1131,7 @@ Desarrollo y ejecución de comandos pasa de 2/5 a 2/5 con ver su propio código 
 ## Actualización 2026-09-16 (LIMITS1701)
 
 Desarrollo y ejecución de comandos pasa de 2/5 a 2/5 con ver su propio código respondido llanamente como límite (commit 0fd4413d, BUILD1701) (HEAD 0fd4413d): LIMITS1701: variantes y límites aprobados de nuevo; el literal de H0635 volvió a terminar en pregunta de aclaración por otra causa (la decisión «no soportado» fue releída como narración y pasada a «followup»); sin crédito; reparado para la próxima tanda, 0 créditos. 5 casos ordinarios sobre BUILD1701: 4 aprobados, 1 fallido (literal); 0 créditos
+
+## Actualización 2026-09-16 (LIMITS1703)
+
+Desarrollo y ejecución de comandos pasa de 2/5 a 3/5 con ver su propio código respondido llanamente como límite (commit f37d79ea, BUILD1703) (HEAD f37d79ea): LIMITS1703: H0635 respondido llanamente como límite (cero operaciones, nombrando el pedido) en el literal y en las dos variantes; acreditado; dos límites aprobados, 1 créditos. 5 casos ordinarios sobre BUILD1703: 5 aprobados; 1 crédito

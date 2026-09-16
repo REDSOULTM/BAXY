@@ -1,0 +1,15 @@
+{
+  "schema": "c03-limits1703-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (apply_non_effect_conversation_classification keeps the unsupported kind for a contract-closed request).",
+  "patch": "artifacts/comprobaciones/C03/LIMITS1703/SOURCE.patch",
+  "commits": [
+    "f37d79ea68913441e071ae0ff98e31657b25895b"
+  ],
+  "build": "BUILD1703 (C03-repairs1703-build/BUILD_READY.json; mente)",
+  "cause_measured": "La reclasificación de observaciones releía un pedido cerrado por contrato como narración y lo pasaba a seguimiento; el modelo lo contestaba como charla.",
+  "change": "El pedido cerrado por el contrato de efecto no soportado conserva la clase «no soportado»; sin respuestas fijas.",
+  "measurement": "LIMITS1703: LIMITS1703: H0635 respondido llanamente como límite (cero operaciones, nombrando el pedido) en el literal y en las dos variantes; acreditado; dos límites aprobados; 1 créditos. 5 casos ordinarios sobre BUILD1703: 5 aprobados; 1 crédito",
+  "credits": 1
+}

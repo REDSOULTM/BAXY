@@ -1,3 +1,11 @@
+# LIMITS1703 adjudicado — 2026-09-16T09:43:20.729297+00:00
+
+**611/742 cubiertos, 131 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA 1648b7656b57a55a30551fab659094778599c3f528cf9e0e9afd6ad3f362d023. Primeras altas 24 h >= 495 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f37d79ea con BUILD1703 (ver su propio código respondido llanamente como límite; el pedido cerrado por contrato conserva su clase). Turnos ordinarios sin operaciones.
+
+LIMITS1703 («Desarrollo y ejecución de comandos», ver su propio código respondido llanamente como límite): LIMITS1703: H0635 respondido llanamente como límite (cero operaciones, nombrando el pedido) en el literal y en las dos variantes; acreditado; dos límites aprobados, 1 créditos. Adjudicación 6a225e882b637b98d469830e13e3d863279831dc3de987cc7c9eddb29503b0a3. 5 casos ordinarios sobre BUILD1703: 5 aprobados; 1 crédito
+
+---
+
 # LIMITS1701 adjudicado — 2026-09-16T09:39:10.547023+00:00
 
 **610/742 cubiertos, 132 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA ba70b423954fed207b26f936c3f1fc7c2a967a2e2ffe7145a708031a61f7f47f. Primeras altas 24 h >= 494 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 0fd4413d con BUILD1701 (ver su propio código respondido llanamente como límite, con la negación coordinada admitida). Turnos ordinarios sin operaciones.
