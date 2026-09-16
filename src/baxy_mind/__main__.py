@@ -6571,6 +6571,9 @@ def _prepare_turn_result(
         or explicit_non_action
         or _history_has_pending_clarification(history, message.get("pendingClarification"))
         or _previous_user_request(history, objective) is not None
+        # LIMITS1677 «ejecuta pytest» → «¿Querés que abra Test Patterns?»: a
+        # known unsupported effect names no application to near-match.
+        or known_unsupported_effect_request(objective, available_operations)
         else (
             effect_intent.near_catalog_application_candidates(objective, application_names)
             # GAMES1533 «Ve a Mad de Rivals.»: an installed game almost named
@@ -6823,6 +6826,12 @@ def _prepare_turn_result(
         and non_target_language is None
         and explicit_conversation_decision.get("conversation_kind")
         in {"unsupported", "knowledge"}
+        # LIMITS1677 «cerrá todas las pestañas de chrome», «subí el volumen de
+        # spotify»: a known unsupported contract is the root's finding that no
+        # operation serves the request; the verifier withdrew it for a nearby
+        # operation (browser.tabs.list, app.close, audio.volume.adjust) that
+        # does not, and the model then asked or confirmed.
+        and not known_unsupported_effect_request(objective, available_operations)
     ):
         # This is still interpretation, not an execution milestone. Composing
         # progress here spent the same deadline needed to decide and answer.
