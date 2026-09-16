@@ -987,3 +987,7 @@ Cerrar aplicaciones y ventanas pasa de 15/20 a 17/20 con el cierre de WhatsApp y
 ## Actualización 2026-09-16 (CLOSE1651)
 
 Cerrar aplicaciones y ventanas pasa de 17/20 a 17/20 con el cierre de WhatsApp ausente respondido por su ausencia de ventana pese a un proceso ajeno que termina (commit 8a312490, BUILD1651) (HEAD 8a312490): el literal otra vez con inventory_failed; una variante aprobada por ausencia y otra con un final que afirma el cierre antes de negarlo; el límite de definición detenido por una búsqueda web no autorizada y la prohibición reconocida, 0 créditos. Medición raíz: el proceso ajeno terminado no era la causa del fallo de inventario; queda como sospechoso el recorrido de marcos alojados (ApplicationFrameHost) que lee la identidad de cada proceso hijo; el narrador no veta «Ya cerré» en un fallo; siguiente CLOSE1653 con ambos arreglos y sin pregunta de definición sobre un nombre.
+
+## Actualización 2026-09-16 (CLOSE1653)
+
+Cerrar aplicaciones y ventanas pasa de 17/20 a 18/20 con el cierre de WhatsApp ausente respondido por su ausencia de ventana con el inventario robusto (commit f31d0159, BUILD1653) (HEAD f31d0159): un literal y dos variantes con window.resolve terminada window_not_found, ninguna app.close y finales fieles; dos límites aprobados, 1 créditos. Medición raíz: con el recorrido de marcos alojados tolerante a procesos que salen (sonda 80/80), el cierre de WhatsApp ausente se responde por su ausencia de ventana; nada cerrado.

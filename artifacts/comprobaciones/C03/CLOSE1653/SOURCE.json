@@ -1,0 +1,15 @@
+{
+  "schema": "c03-close1653-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs (AddHostedFrameWindows: exited snapshot process skipped, unreadable hosted identity is not the candidate) and src/baxy_mind/llm.py (failure lens: a claim of having closed is reversed polarity).",
+  "patch": "artifacts/comprobaciones/C03/CLOSE1653/SOURCE.patch",
+  "commits": [
+    "f31d0159828ff956d4032c0c0325327a735290fa"
+  ],
+  "build": "BUILD1653 (C03-repairs1653-build/BUILD_READY.json; proveedores y mente)",
+  "cause_measured": "El recorrido de marcos alojados abortaba al leer un proceso ya terminado (inventory_failed); el narrador no vetaba «Ya cerré» en un fallo.",
+  "change": "Proceso terminado omitido en el recorrido de marcos; veto de la afirmación de cierre en fallos; sin respuestas fijas.",
+  "measurement": "CLOSE1653: un literal y dos variantes con window.resolve terminada window_not_found, ninguna app.close y finales fieles; dos límites aprobados; 1 créditos. Medición raíz: con el recorrido de marcos alojados tolerante a procesos que salen (sonda 80/80), el cierre de WhatsApp ausente se responde por su ausencia de ventana; nada cerrado.",
+  "credits": 1
+}

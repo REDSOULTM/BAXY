@@ -1,0 +1,70 @@
+commit f31d0159828ff956d4032c0c0325327a735290fa
+
+C03: the hosted-frame inventory skips a process that exited, and a closure claim on a failure is vetoed (CLOSE1653)
+
+CLOSE1649 and CLOSE1651 measured «cierra whatsapp» with window.resolve ended inventory_failed. The root probe (invprobe, 12 rounds) reproduced it in 4 rounds: when the packaged candidate has no window, AddHostedFrameWindows walks the process snapshot for ApplicationFrameHost and reading the name of a process that exited meanwhile threw, which the catch turned into "The hosted application inventory was incomplete." A process that has exited is skipped (ProcessHasExited), and a frame whose hosted process identity cannot be opened hosts a foreign application and is skipped; 80 of 80 probe rounds now succeed. In the mind, the failure lens vetoes a final that claims the close it then denies («Ya cerré WhatsApp, pero como no había ninguna ventana abierta…», CLOSE1651 variant).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs b/src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs
+index 96397a0f..2bdf1439 100644
+--- a/src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs
++++ b/src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs
+@@ -1267,8 +1267,21 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
+                 foreach (nint frame in frames)
+                 {
+                     int? hosted = HostedProcessId(frame, host.Id);
+-                    if (hosted is null
+-                        || !string.Equals(entry.AppUserModelId, ReadApplicationUserModelId(hosted.Value), StringComparison.Ordinal))
++                    if (hosted is null)
++                        continue;
++                    string? hostedId;
++                    try
++                    {
++                        hostedId = ReadApplicationUserModelId(hosted.Value);
++                    }
++                    catch (ApplicationInventoryException)
++                    {
++                        // A frame whose hosted process cannot be opened (it exited
++                        // or is protected) hosts a foreign application, never this
++                        // packaged candidate; the candidate's own frames stay strict.
++                        continue;
++                    }
++                    if (!string.Equals(entry.AppUserModelId, hostedId, StringComparison.Ordinal))
+                         continue;
+                     observations.Add(new InstalledApplicationObservation(
+                         host.Id,
+@@ -1284,7 +1297,11 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
+                 or System.ComponentModel.Win32Exception
+                 or NotSupportedException)
+             {
+-                throw new ApplicationInventoryException("The hosted application inventory was incomplete.");
++                // CLOSE1649/CLOSE1651 «cierra whatsapp» (inventory_failed, reproduced
++                // by the root probe in 4 of 12 rounds): a process from the snapshot
++                // that exited before its name was read is not a frame host.
++                if (!ProcessHasExited(host))
++                    throw new ApplicationInventoryException("The hosted application inventory was incomplete.");
+             }
+         }
+     }
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 58f8ddf5..2604e2d9 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -6757,6 +6757,15 @@ def compose_visible_defect(
+             r"\bopened\b|\babrí\b|\babri\b", folded
+         ):
+             return "reversed_polarity"
++        if cause == "mission_failed" and re.search(
++            # CLOSE1651 «Cerrá WhatsApp, por favor.» with no window: «Ya cerré
++            # WhatsApp, pero como no había ninguna ventana abierta…» claims
++            # the close it then denies; a negated «no cerré nada» stays.
++            r"(?<!\bno )(?<!\bnot )(?<!\bnunca )(?:\bya\s+)?\b(?:cerr[eé]|lo\s+cerr[eé]|la\s+cerr[eé]|i\s+closed|closed\s+it|"
++            r"has\s+been\s+closed|qued[oó]\s+cerrad[oa]|ya\s+est[aá]\s+cerrad[oa])\b",
++            folded,
++        ):
++            return "reversed_polarity"
+         if cause in {"mission_failed", "out_of_catalog"} and re.search(
+             r"no respond|didn't respond|did not respond|no respondo", folded
+         ):
