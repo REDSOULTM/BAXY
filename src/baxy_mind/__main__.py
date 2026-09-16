@@ -7544,6 +7544,13 @@ def _prepare_turn_result(
             response_language = str(decision["response_language"])
         else:
             response_language = _decisive_request_language(objective)
+            if response_language is None and isinstance(history, list):
+                # MUSIC1753 «Play a song on Spotify.» → «Queen»: an answer with
+                # no language of its own keeps the language of the request it
+                # answers; a proper name is not Spanish evidence.
+                previous = _previous_user_request(history, objective)
+                if isinstance(previous, str) and previous.strip():
+                    response_language = _decisive_request_language(previous)
             if response_language is not None:
                 # La lectura decide: la inferencia especulativa se retira sin
                 # consumirse, igual que en una ruta sin conversación.

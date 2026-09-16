@@ -137,7 +137,9 @@ try {
     $foldTitle=Fold($title)
     $expectedPlay=Fold('Reproducir '+$title)
     $prefix=Fold(('Est'+[char]0x00E1+'s escuchando:'))
-    $searchPageDeadline=(Get-Date).AddSeconds(6)
+    # MUSIC1753: a client launched seconds earlier renders its search page late;
+    # the bounded wait is 12 s (the adapter budget of 55 s still covers 12.5 + 12 + 12 + 15).
+    $searchPageDeadline=(Get-Date).AddSeconds(12)
     $searchPageReady=$false
     $searchSnapshotReady=$false
     $searchObservationError=$null

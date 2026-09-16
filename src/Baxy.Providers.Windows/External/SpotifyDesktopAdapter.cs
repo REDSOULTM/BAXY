@@ -63,7 +63,7 @@ internal sealed class SpotifyDesktopAdapter : IExternalOperationAdapter
                     ["-NoProfile", "-NonInteractive", "-STA", "-File", _scriptPath,
                         Convert.ToBase64String(Encoding.UTF8.GetBytes(title)),
                         exactSelection ? "exact" : "query"],
-                    // The script has bounded 12 s discovery, 6 s search
+                    // The script has bounded 12 s discovery, 10 s search
                     // convergence, 12 s detail discovery and 15 s playback
                     // postread stages. The process budget must cover that
                     // verified path instead of aborting midway through it.

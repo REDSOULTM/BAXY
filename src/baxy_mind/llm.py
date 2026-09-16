@@ -3455,6 +3455,22 @@ _CAUSE_FACT = {
     "wifi_profile_not_found": (
         "no saved Wi-Fi network has that name, so nothing was done"
     ),
+    # MUSIC1753: the Spotify desktop client did not give a result to play.
+    "spotify_exact_result_not_found": (
+        "the Spotify search showed no result to play for that request, so nothing is playing"
+    ),
+    "spotify_exact_play_control_not_found": (
+        "the Spotify result had no play control to press, so nothing is playing"
+    ),
+    "spotify_client_not_running": (
+        "the Spotify desktop client is not open, so nothing could be played there"
+    ),
+    "spotify_uia_process_failed": (
+        "the Spotify client could not be driven, so nothing is playing"
+    ),
+    "spotify_session_authority_required": (
+        "the Spotify client did not answer, so nothing could be played there"
+    ),
     # NETWORK1729 «qué redes wifi hay» with the radio off: the state is the
     # fact; no scan happened and nothing was changed.
     "wifi_interface_off": (

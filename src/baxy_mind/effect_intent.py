@@ -10549,6 +10549,9 @@ def _is_direct_request(text: str) -> bool:
         r"apreta|apretale|apretalo|apretala|apretar|aprieta|pulsa|pulsale|pulsalo|pulsala|"
         r"presiona|presionale|presionalo|presionala|press|hace(?=\s+clic)|"
         r"recarga|recargar|reload|refresh|reproduce|reproducir|reproduzca|play|tune|"
+        # MUSIC1753: voseo and clitic play verbs («reproducí la sinfonía…»,
+        # «tocá una canción en Spotify», «tocame algo»).
+        r"reproduci|reproducime|reproducila|reproducilo|toca|tocame|tocala|tocalo|toque|"
         r"reanuda|reanudar|resume|pausa|pausar|pause|deten|detener|stop|revisa|revisar|check|review|"
         r"consulta|consultar|comprueba|comprobar|checkea|chequea|averigua|averiguar|"
         r"(?:fijate|fijese)(?=\s+si\b)|"
