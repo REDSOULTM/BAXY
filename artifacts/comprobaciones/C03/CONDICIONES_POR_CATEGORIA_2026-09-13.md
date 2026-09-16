@@ -959,3 +959,7 @@ Interacción dentro de aplicaciones pasa de 5/22 a 5/22 con el clic en el botón
 ## Actualización 2026-09-16 (UI1637)
 
 Interacción dentro de aplicaciones pasa de 5/22 a 6/22 con el clic en el botón Aceptar de un diálogo propio con una aprobación raíz exacta (commit 8c3186ed, BUILD1637) (HEAD 8c3186ed): tres clics revisados, aprobados una vez, completados y verificados sobre el diálogo propio, con finales fieles; dos límites aprobados, 1 créditos. Medición raíz: el recibo del clic proyectado como control desaparecido tras el clic da finales fieles en español e inglés; nada del dueño tocado.
+
+## Actualización 2026-09-16 (UI1639)
+
+Interacción dentro de aplicaciones pasa de 6/22 a 7/22 con el clic nombrado por color respondido con la pregunta por la etiqueta del botón (commit 312d49c4, BUILD1639) (HEAD 312d49c4): un literal y dos variantes con cero operaciones y pregunta fiel por la etiqueta del botón, dos límites aprobados, 1 créditos. Medición raíz: un clic nombrado por color se responde preguntando el texto del botón, sin operación.

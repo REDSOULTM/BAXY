@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1639-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (resolve_explicit_clarification_intent: a colour-only visible-click label leaves the label missing).",
+  "patch": "artifacts/comprobaciones/C03/UI1639/SOURCE.patch",
+  "commits": [
+    "312d49c4450f6dfed96e58e346a77441a7bb155d"
+  ],
+  "build": "BUILD1639 (C03-repairs1639-build/BUILD_READY.json; mente)",
+  "cause_measured": "El clic por color iba a input.visible.click con la etiqueta «rojo», que ningún control tiene.",
+  "change": "Aclaración explícita del campo label para clics nombrados por color; sin respuestas fijas.",
+  "measurement": "UI1639: un literal y dos variantes con cero operaciones y pregunta fiel por la etiqueta del botón, dos límites aprobados; 1 créditos. Medición raíz: un clic nombrado por color se responde preguntando el texto del botón, sin operación.",
+  "credits": 1
+}

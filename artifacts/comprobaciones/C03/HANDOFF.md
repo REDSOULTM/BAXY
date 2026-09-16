@@ -1,3 +1,11 @@
+# UI1639 adjudicado — 2026-09-16T00:50:39.857750+00:00
+
+**582/742 cubiertos, 160 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA b254a46e10f4b2f02a81d26e59887b10c69ec503353f644bffc750d90f755463. Primeras altas 24 h >= 456 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 312d49c4 con BUILD1639 (un color no es la etiqueta de un botón: se pregunta cuál). Turnos ordinarios sin operaciones.
+
+UI1639 («Interacción dentro de aplicaciones», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): un literal y dos variantes con cero operaciones y pregunta fiel por la etiqueta del botón, dos límites aprobados, 1 créditos. Adjudicación dfe4c8456cdf37ff99ad39a2205063b1480ed9140329cfcc5f3d093c1f7c72b1. Medición raíz: un clic nombrado por color se responde preguntando el texto del botón, sin operación.
+
+---
+
 # UI1637 adjudicado — 2026-09-16T00:45:04.744829+00:00
 
 **581/742 cubiertos, 161 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 11bfb345e5848695483e56373316776f15ee8e4b5d5dddde13e318c7f9d5a440. Primeras altas 24 h >= 455 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 8c3186ed con BUILD1637 (un control que desaparece tras el clic no es un control deshabilitado). Turnos ordinarios sin operaciones.
