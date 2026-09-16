@@ -149,6 +149,19 @@ internal static class ObservedResponseLiterals
             }
         }
         if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+            && IsString(node, "operation", "filesystem.write.text")
+            && node.TryGetProperty("verified", out JsonElement writeVerified) && writeVerified.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("succeeded", out JsonElement writeSucceeded) && writeSucceeded.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("observed", out JsonElement written) && written.ValueKind == JsonValueKind.Object
+            && written.TryGetProperty("name", out JsonElement writtenName) && writtenName.ValueKind == JsonValueKind.String
+            && writtenName.GetString() is { Length: > 0 and <= 4096 } writtenText && !string.IsNullOrWhiteSpace(writtenText))
+        {
+            // FILES1711 «crea un archivo de texto con los 5 procesos que más
+            // memoria usan»: the name of the file just written
+            // («procesos-memoria.txt») is observed data the report must say.
+            names.Add(writtenText);
+        }
+        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
             && IsString(node, "operation", "ocr.read")
             && node.TryGetProperty("verified", out JsonElement readVerified) && readVerified.ValueKind == JsonValueKind.True
             && node.TryGetProperty("succeeded", out JsonElement readSucceeded) && readSucceeded.ValueKind == JsonValueKind.True
