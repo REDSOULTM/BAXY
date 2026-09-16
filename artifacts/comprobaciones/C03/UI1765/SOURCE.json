@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1765-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "No source change: src/Baxy.Providers.Windows/External/VisibleControlSurface.cs (topmost foreign window as the capture surface, built with NETWORK1737) measured for the first time on Epic.",
+  "patch": "artifacts/comprobaciones/C03/UI1765/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1765 (C03-repairs1765-build/BUILD_READY.json; sin cambios (compilación de UI1765))",
+  "cause_measured": "La captura de controles visibles seguía la ventana en primer plano y Epic la cambia tras abrirse; la corrección lleva varias compilaciones sin medirse en Epic.",
+  "change": "Ninguno; medición de la superficie de captura ajena sobre la compilación de UI1765.",
+  "measurement": "UI1765: 3 fallidos (app.open del launcher verificada y clic aprobado, pero input.visible.click terminó no encontrado a los 2,7 s: el bucle de espera cortaba ante el código de la etapa UIA), 2 límites aprobados; 0 créditos. Reparación del bucle de espera del clic visible a continuación (espera mientras la respuesta sea de cascada) y repetición como UI1767.",
+  "credits": 0
+}

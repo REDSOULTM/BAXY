@@ -1302,3 +1302,7 @@ Música pasa de 32/39 a 32/39 con el diálogo de «pon música en spotify» preg
 ## Actualización 2026-09-16 (MUSIC1763)
 
 Música pasa de 32/39 a 35/39 con pedir música en Spotify sin decir cuál, preguntar qué poner y reproducir lo contestado con revisión de la raíz (commit dea376fb, BUILD1763) (HEAD dea376fb): 7 aprobados: tres literales y dos variantes (pregunta qué poner, respuesta guionizada, media.play.query aprobada por la raíz y verificada por now-playing, final que nombra lo que suena, en inglés para la conversación en inglés) y dos límites, 3 créditos. Diálogo de Spotify demostrado de punta a punta en los dos idiomas; siguiente: Epic Games hasta la biblioteca (UI1765) y las filas restantes de Música (lectores y volumen por aplicación).
+
+## Actualización 2026-09-16 (UI1765)
+
+Bibliotecas y fichas de juegos pasa de 4/6 a 4/6 con abrir Epic Games sin llegar a la biblioteca: el clic visible se rindió a los 2,7 s porque el bucle de espera cortaba ante el código «no encontrado» (commit b4053cae, BUILD1765) (HEAD b4053cae): 3 fallidos (app.open del launcher verificada y clic aprobado, pero input.visible.click terminó no encontrado a los 2,7 s: el bucle de espera cortaba ante el código de la etapa UIA), 2 límites aprobados, 0 créditos. Reparación del bucle de espera del clic visible a continuación (espera mientras la respuesta sea de cascada) y repetición como UI1767.
