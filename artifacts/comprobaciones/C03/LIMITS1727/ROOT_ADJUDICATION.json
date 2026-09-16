@@ -1,0 +1,284 @@
+{
+  "schema": "limits1727-root-adjudication-v2",
+  "decided_at_utc": "2026-09-16T15:51:50.283427+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "8811f33a95b4dcf5a40aecdc16db69dcf1462fdd",
+  "decisions_sha256": "4a33eb6a094760bf34e4f3821dfae4740a281939ab9444208ef795fb48b9de24",
+  "registry_before_sha256": "b03edee5aec3d4f69da2e0e65a69d9f1a2aa8a7a689014b55e5d2e23455fb61d",
+  "registry_before_counts": {
+    "covered": 619,
+    "open": 123,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "f69110e6ce0b720163d89979611a65374d2bff166de85c34b86031a2f0c1f188",
+  "preparation_sha256": "0fe7f4b0839f6ac06eddde620abd5e86cca279574f8fbdef0425e1c146245dee",
+  "passed": 5,
+  "failed": 0,
+  "unexecuted": 0,
+  "executed": 5,
+  "segments_started": 5,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [
+    "H0077"
+  ],
+  "counters": {
+    "covered": 620,
+    "open": 122,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 503,
+    "categories_total": 35,
+    "categories_closed_after": 10,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 503 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); LIMITS1727 añade 1. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 504
+  },
+  "resources": {
+    "seconds_sum": 85.57700000000477,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1749.80078125
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0077",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        1,
+        2
+      ],
+      "reason": "Efecto sin operación en el catálogo: el final dijo llanamente el límite nombrando el pedido, sin operaciones; crédito con dos variantes aprobadas del mismo grupo.",
+      "observation_note": "Turno ordinario: cero operaciones; el final dice llanamente el límite nombrando el pedido; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "ddcf1752815464cb85d0063486f4e49a05dd7bb810258ee6a4c6a467955bc6e4",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\results\\case-00\\EXIT.json": "568df873032e71cd487418a8314ffb473ed284f17704e0b851213265729fb94a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\results\\case-00\\RESOURCES.json": "0cdec979b75aad7340ed060f2552f223ba21420f84836be255c11424c71371e9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\profile-owner-00.json": "07bf80e488292d2942e3dc2d7ebeea97c685ebe3e1d5b327d08dea02357d4590",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\results\\case-00\\PREREG.json": "c9faf397d1bcee6d7a83a4e26dd1b7f5c2f15b3035503ce15d236d0191024d4a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-00\\capture\\events.jsonl": "5ab749b0204575d51c82f57c48610cdd18aafa934b367ce9a2d2f5f3b201c62b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-00\\turns.jsonl": "2d821085d3268bd876d3cb31c8dae630929d59a617373158e7302c67affd5ead",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\fixture-00.json": "e49a39dbca58b592738894ef909a766b2d44b1ad579593de9291d2cf631b38d5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\context-00.json": "8044b77bd11d2a320ebc343a64bdcd40da10bd4b234e918843364dea717206b4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\context-prelaunch-00.json": "a15e442ce6d1e746a854be3b28a5fee4af41f7402b0b0ecd22d2e55037f54149",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-00\\case-observations.json": "9337323038a88a907acf930e4a2ebe780a06287ab760be8dab69e9df891ea511",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-00\\journal-before.json": "bd06016e51269c713821fb9b49bca9e0c50457b62f9a4588614df78021c08e8d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-00\\journal-after.json": "1e0dff3300a7ac6004c7fce5016411954d0d38123801496fedeb405fc211d9f6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "337ce96e2c98127b66676b42b6756cfe821c3fc44935073d799f9f1fd4643737"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "67031230-368f-4bb5-8b96-61420590ab23",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "limits1727-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Efecto sin operación en el catálogo: el final dijo llanamente el límite nombrando el pedido, sin operaciones.",
+      "observation_note": "Turno ordinario: cero operaciones; el final dice llanamente el límite nombrando el pedido; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "2dfe201a3cb6d498864ddc30b51f95d4a2d3498abec2cd3276b6fcb871b31f56",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\results\\case-01\\EXIT.json": "34fbe93da087ae5c6dc68a4767fcc9bc740d06fef8b5c19efb2b6a0fe5e57eb6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\results\\case-01\\RESOURCES.json": "1f23f7083e6a7de71b973ad35cc4d877bb8695125179b4659752f1678c4754f4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\profile-owner-01.json": "9935c6ac94324382fe364a601df41a4a55f0237bc08eab623f99d1bd428f283b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\results\\case-01\\PREREG.json": "121819c92fccb05cc59aaec95968bc3b8c835a365b8d1d30a9a717a3a725017e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-01\\capture\\events.jsonl": "ba6e04627e06275fb0fdf2f66977b39bf0789e841657c687263072b80b9d865d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-01\\turns.jsonl": "fa9fd04542f4f95b46e59f1b7a048a1ac91f9b164b8b18fbab2752ee681eff17",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\fixture-01.json": "16d1567ebe0c4052575cc02f31a1a230ca4fd5a8d813d195e0f33bd201e85f47",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\context-01.json": "1f78a479011cab18eaca919e7636a728131d9b8850cbd5e5df137a384633af54",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\context-prelaunch-01.json": "877f6e66870c5ed84e4303be5cbb3989e54274fecabd32b9f4a84ab99edbcd0a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-01\\case-observations.json": "7a5bf861c4c300742cf96b6728fb7e52d0f10c985a23bc1af63e2e705b2db1e2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-01\\journal-before.json": "c3212d6112c0abbe495680ddf936498ca445548d914d2cc4f07b1e582840e327",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-01\\journal-after.json": "b6cc6fb2b748984d092cd850127ef5f7f8c1b35ac4f7bd0852507662380bde55",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "e653aaf5442bedf5fd68b40356bcb803c5624e1c5166a9dc4b84932476813880"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "cc5dde01-dae4-4b9d-8313-f1c4b2d52efe",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "limits1727-dev-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Efecto sin operación en el catálogo: el final dijo llanamente el límite nombrando el pedido, sin operaciones.",
+      "observation_note": "Turno ordinario: cero operaciones; el final dice llanamente el límite nombrando el pedido; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "5a723475c3748c339216f038f9bd1af4fc9eb4e55138f32604400357c1828168",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\results\\case-02\\EXIT.json": "a2ce250deca1b8ed389fba89ed3e2912016520cd324f70fab67f750d0c2ddaa3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\results\\case-02\\RESOURCES.json": "5b9aaf9c963e29ac2fb6f411ae7fe169f68343615de6985d126d9b3558e34cc4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\profile-owner-02.json": "e679cd6de3b0e1846a341883f1366e7e261013a49812f83a3b67fea6b1aeb779",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\results\\case-02\\PREREG.json": "b5ce029604df8cce3b90387ecc900e8acc0d4692a22d774c122a2818f9eb35aa",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-02\\capture\\events.jsonl": "8e8c1e485e7a229d073fe5f41f9207ecb443590acf13e9e219b00bf3de35b8c0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-02\\turns.jsonl": "e2bc88bf98233a8102029bc48cd2e96379fc8e601e64fe911287fccfa432ea34",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\fixture-02.json": "dbcbc0be21201e8ae78b9e33a68287f71098f19618591e76dc41f8975404cdc4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\context-02.json": "7586032cc9c4b8fe10dff4d32e8bbddf0a877a248fd6a0e3636fe8688aa5e3e7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\context-prelaunch-02.json": "875868b8b6c78bcb419ce1cdd0abdab5f3809de8288968ab7149e1196d689ee3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-02\\case-observations.json": "54ec940fd516f61a0ae88960bd9eca535c9a98144534c4e74b810379c9387401",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-02\\journal-before.json": "29f864b3eb123450899dc50afec704f60734f18d3819dfc79a30bdf0e0f0a31c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-02\\journal-after.json": "eba27b90d0a4950b4f9ce7dc9635f0c05deb22e41e895bd60541b615a1fc6a91",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "5cc914c10e721000eb4e48097b1c0c18f44d16a7607981739cc1d340f5e5b9b6"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "e8099ee7-692e-4826-bda9-d624d5bc124b",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "limits1727-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "88fe9f027ac319fdd7d3b7b76ec9376568cf20ee93b8400e16e6fe32ce11875e",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\results\\case-03\\EXIT.json": "67e10f0a4534b105b63d9b2c1bca9c8fc183389b2864ce6f9dd53e83b2814a74",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\results\\case-03\\RESOURCES.json": "62e620b2fbb3933f8fa0f6381cad7937ad2a089e9e06493c32f2199e9ee0b249",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\profile-owner-03.json": "9495075a7017f20ca51460a02b664c033bd01b8858258faa71ff39f321dc538f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\results\\case-03\\PREREG.json": "fc8313f99d93c57104b15434d84ad9a4affe821c75d0c90dc9ae6990bd67e906",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-03\\capture\\events.jsonl": "d5bc9613cbfdbcafaab8081caccd10ee1916c10551f01111b0df449c866016ee",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-03\\turns.jsonl": "7e41c0de97a57d32fab0118989612e1693d5a76006b30bfa4131871c911362fd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\fixture-03.json": "8520fe9e3c32a6e8aaa2622e720fad32572141e7c5ee7b10360423d1e8aa673e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\context-03.json": "1d49f40623128fe7c65adc2e61666b745ef1b392b682e97ee6d698a100153d55",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\context-prelaunch-03.json": "b438e1dc67a5e6f211aac62f651ad6c9f83f10599b47f270b8472f6e833f195e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-03\\case-observations.json": "86ed12ab99d9f5db34e7be9e5394c786a623eeee8e9f68f5d0f6cfa654994c1d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-03\\journal-before.json": "2e36a6a8a0fff97b747f9c207d60ce2f8c9dd9b762b00a10c3516b2a4ae3f64e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-03\\journal-after.json": "1a860a803d9cc7d1139737f1ab8b395b06b62c4626ef044146fb9eddaad1931d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "991d67e2ef616742a5a6011da86417816001058a01296e616925ed47c4d7deff"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "3ab6ee4d-1ab9-4990-94ac-f74365337edf",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "limits1727-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "d48ce6dc8e752a97f6edef86cfaac91d36605614fbb82d49b453023118349249",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\results\\case-04\\EXIT.json": "dadf2b97684c08a8917388dc38a0fd9d777148e4f5af98eda384432564c7aec7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\results\\case-04\\RESOURCES.json": "31b2652f8768b66cb38ae7cce44735be3f467d3cfaaf5a0aab1a982d54ae911a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\profile-owner-04.json": "23f6927fdbfe1de67e3b13206c6d5ae10edc14d1f9df364e45ffb27a84e54f10",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\results\\case-04\\PREREG.json": "7eeedc87466831c6b991f6f8627648deb4575209f3155f2657da0b8993a83d6f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-04\\capture\\events.jsonl": "16f95839a0fb38414499d43a6af4c4b7a508d1f2d97dcb8698ca7ff5e8a2fb8d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-04\\turns.jsonl": "d6775e511d10b5e937c31de4eaca32d69480f0896b536332d399de1a63a48613",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\fixture-04.json": "c398e5f2a839b777e0218178a4bdac8629b0cccf10b9cd8d735248b517bfa9c0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\context-04.json": "41c9cf20aa85afe784367b28048fb439c6d8794e8f69b7767ca3a97f22b7dd23",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\context-prelaunch-04.json": "9e07be0895021429cf61be72b25d16a5358a223d5ce4c3ca32ecf8a39be80937",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-04\\case-observations.json": "98dfecc3cbc2601afb3c2346e4790319ac57faa72c43eb4c14ff9f45559864dc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-04\\journal-before.json": "a3968eba66f8d5cd6f0402a1020753b77994d9263e39f2b9b309553a55b3b91a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-04\\journal-after.json": "bb15c96235390669dd96aa6e80bdc07c68244280d8c7a36473576bf6e7de7e30",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1727-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "bd6034edc3df24268bbac3a651265928f524e0c60ea6ba3297a44fd878966650"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "d32e3a86-c0a9-4d35-b77d-e86b87e221d2",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "LIMITS1727: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Navegación y búsqueda web 42/46. Siguiente: wifi.scan (H0302) y la respuesta del dueño sobre Steam/Epic.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

@@ -1,3 +1,11 @@
+# LIMITS1727 adjudicado — 2026-09-16T15:51:50.283427+00:00
+
+**620/742 cubiertos, 122 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA a7c15e3a5313c661edf047977cee24935c521481d452992cdccaa41bedaf1192. Primeras altas 24 h >= 504 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 8811f33a con BUILD1727 (descargar una imagen de la web al escritorio se responde como límite conocido). Turnos ordinarios sin operaciones.
+
+LIMITS1727 («Navegación y búsqueda web», descargar una imagen de la web al escritorio respondido como límite conocido): 5 ejecutados, 5 aprobados: el literal y sus dos variantes terminaron con cero operaciones y un final que dice llanamente que no descarga la imagen de wikipedia.org al escritorio nombrando el pedido; los dos límites aprobados, 1 créditos. Adjudicación aca100a58863e0dec72e1fdfb5f609d20cbe5f66b5610c9107f15724423df59d. Límite legítimo por decisión del dueño (2026-09-16); sin cambios de código: el contrato browser.download.file de LIMITS1683 (commit 48c183b0) medido sobre la compilación vigente.
+
+---
+
 # UI1725 adjudicado — 2026-09-16T15:47:12.980658+00:00
 
 **619/742 cubiertos, 123 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA b03edee5aec3d4f69da2e0e65a69d9f1a2aa8a7a689014b55e5d2e23455fb61d. Primeras altas 24 h >= 503 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD ae00b3b5 con BUILD1725 (la aritmética pedida se escribe en la Calculadora abierta y su pantalla se lee). Turnos ordinarios sin operaciones.

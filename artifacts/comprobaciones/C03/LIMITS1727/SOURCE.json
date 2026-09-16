@@ -1,0 +1,15 @@
+{
+  "schema": "c03-limits1727-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (browser.download.file known-unsupported contract, commit 48c183b0 LIMITS1683); no source changed for this tanda.",
+  "patch": "artifacts/comprobaciones/C03/LIMITS1727/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1727 (C03-repairs1727-build/BUILD_READY.json; mente, sin cambios)",
+  "cause_measured": "Ninguna operación del catálogo descarga un archivo desde la web; el contrato de límite existía desde LIMITS1683 sin adjudicar.",
+  "change": "Sin cambios de código: re-ejecución del límite conocido sobre la compilación vigente; sin respuestas fijas.",
+  "measurement": "LIMITS1727: 5 ejecutados, 5 aprobados: el literal y sus dos variantes terminaron con cero operaciones y un final que dice llanamente que no descarga la imagen de wikipedia.org al escritorio nombrando el pedido; los dos límites aprobados; 1 créditos. Límite legítimo por decisión del dueño (2026-09-16); sin cambios de código: el contrato browser.download.file de LIMITS1683 (commit 48c183b0) medido sobre la compilación vigente.",
+  "credits": 1
+}

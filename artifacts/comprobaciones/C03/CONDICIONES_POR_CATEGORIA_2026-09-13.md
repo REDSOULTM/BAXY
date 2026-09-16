@@ -1199,3 +1199,7 @@ Red y Bluetooth pasa de 16/21 a 19/21 con conectarse al wifi de un nombre sin pe
 ## Actualización 2026-09-16 (UI1725)
 
 Interacción dentro de aplicaciones pasa de 16/22 a 18/22 con la aritmética pedida escrita en la Calculadora abierta y leída de su pantalla (commit ae00b3b5, BUILD1725) (HEAD ae00b3b5): 6 ejecutados, 6 aprobados: las cuatro calculator.expression.evaluate se completaron y verificaron sobre la Calculadora abierta y poseída por la raíz (6*7→42, 2+2→4, 10-3→7, 6*7→42, pantalla releída por la raíz tras cada caso) y los finales dijeron la operación y el resultado mostrado; los dos límites aprobados, 2 créditos. Mecanismo: la operación trae la Calculadora al frente, escribe la expresión por SendKeys y lee CalculatorResults por UI Automation; la Calculadora del dueño no se tocó (ventana propia de la raíz por caso, cerrada al final).
+
+## Actualización 2026-09-16 (LIMITS1727)
+
+Navegación y búsqueda web pasa de 41/46 a 42/46 con descargar una imagen de la web al escritorio respondido como límite conocido (commit 8811f33a, BUILD1727) (HEAD 8811f33a): 5 ejecutados, 5 aprobados: el literal y sus dos variantes terminaron con cero operaciones y un final que dice llanamente que no descarga la imagen de wikipedia.org al escritorio nombrando el pedido; los dos límites aprobados, 1 créditos. Límite legítimo por decisión del dueño (2026-09-16); sin cambios de código: el contrato browser.download.file de LIMITS1683 (commit 48c183b0) medido sobre la compilación vigente.
