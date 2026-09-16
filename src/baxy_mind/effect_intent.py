@@ -3277,6 +3277,16 @@ def resolve_explicit_clarification_intent(
         # FILES1437 «dime cuántos archivos .py hay en el directorio actual»: BAXY
         # has no working directory; the count needs the person's folder.
         return ClarificationIntent(("filesystem.known.search",), ("folder",))
+    if "input.text.type" in available and re.fullmatch(
+        # UI1645 H0265 «escribe en el diálogo el de ChadGBT»: a typing order
+        # that names where to write and not what; the text is missing.
+        r"[¿?¡!\s]*(?:escribe|escribi|escribime|tipea|tipeame|teclea|type|write)\s+"
+        r"(?:en|in|into|on)\s+(?:(?:el|la|los|las|the)\s+)?"
+        r"(?:dialogo|chat|campo|cuadro|casilla|buscador|barra|caja|input|box|field|dialog|prompt)\b"
+        r"(?:\s+box)?(?:\s+(?:de\s+(?:texto|busqueda|chat)|of\s+\w+))?(?:\s+(?:el|la|the)\s+de\s+\S+|\s+(?:de|of)\s+\S+)?[\s.!?]*",
+        folded,
+    ) is not None and not re.search(r"[\"'«»“”]", folded):
+        return ClarificationIntent(("input.text.type",), ("text",))
     if "input.visible.click" in available:
         # UI1639 H0344 «hace click en el boton rojo»: controls are found by
         # their visible text, never by colour; the label is still missing.
