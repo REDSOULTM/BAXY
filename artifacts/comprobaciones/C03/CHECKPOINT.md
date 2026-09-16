@@ -1,3 +1,25 @@
+## LIMITS1681 — estado vigente 2026-09-16T06:27:53.695996+00:00
+
+Parcial: 9 aprobados, 0 fallidos, 0 sin ejecutar; 3 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 614/742 | 128 | 0 | >=488 | 10/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 485 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); LIMITS1681 añade 3. No se cuentan revalidaciones.
+
+Siguiente acción: LIMITS1681: 6 ejecutados, 9 aprobados, -3 fallidos, 3 créditos (índices [0, 1, 2]); Abrir aplicaciones 49/54. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/LIMITS1681/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 159.87 s acumulados; pico GPU 3497.56 MiB; pico RAM 1690.93 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque LIMITS1681 precedente. -->
+
 ## LIMITS1679 — estado vigente 2026-09-16T06:10:39.925532+00:00
 
 Parcial: 14 aprobados, 1 fallidos, 0 sin ejecutar; 5 créditos.

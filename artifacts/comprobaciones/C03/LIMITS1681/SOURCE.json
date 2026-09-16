@@ -1,0 +1,15 @@
+{
+  "schema": "c03-limits1681-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (known_unsupported_effect_request contracts client.control.press and network.airplane.mode; _visible_click_intent and _is_direct_request see the client context).",
+  "patch": "artifacts/comprobaciones/C03/LIMITS1681/SOURCE.patch",
+  "commits": [
+    "8e9e59ddc0c37ae686ec9c308c5d4ee383c6cdc1"
+  ],
+  "build": "BUILD1681 (C03-repairs1681-build/BUILD_READY.json; mente)",
+  "cause_measured": "Un control dentro de un cliente de mensajería se leía como clic en la ventana en primer plano y el modo avión iba al modelo sin límite declarado.",
+  "change": "Contratos de límite para controles de clientes de mensajería y modo avión; sin respuestas fijas.",
+  "measurement": "LIMITS1681: tres literales y cuatro variantes con cero operaciones y el límite dicho llanamente nombrando el pedido en español e inglés; dos límites aprobados; 3 créditos. Medición raíz: pulsar un control dentro de Discord o WhatsApp y el modo avión se responden como límites conocidos en ambos idiomas, sin tocar clientes ni radios.",
+  "credits": 3
+}

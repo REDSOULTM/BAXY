@@ -1,3 +1,11 @@
+# LIMITS1681 adjudicado — 2026-09-16T06:27:53.695996+00:00
+
+**614/742 cubiertos, 128 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Cerrar aplicaciones y ventanas 20/20); C03 formal 3/11. Registro SHA 92f6938aae0a198d6cc56fcd4117f0a257c8995232fc64572b434d8bc40fbc0d. Primeras altas 24 h >= 488 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 8e9e59dd con BUILD1681 (pulsar un control dentro de un cliente de mensajería y el modo avión son límites conocidos). Turnos ordinarios sin operaciones.
+
+LIMITS1681 («Interacción dentro de aplicaciones», los controles dentro de clientes de mensajería y el modo avión respondidos como límites conocidos): tres literales y cuatro variantes con cero operaciones y el límite dicho llanamente nombrando el pedido en español e inglés; dos límites aprobados, 3 créditos. Adjudicación 4dbbc8fafd88475a009b826f5a6e84ff63cdf60f3ff8940f7d73eaa0fbdf450f. Medición raíz: pulsar un control dentro de Discord o WhatsApp y el modo avión se responden como límites conocidos en ambos idiomas, sin tocar clientes ni radios.
+
+---
+
 # LIMITS1679 adjudicado — 2026-09-16T06:10:39.925532+00:00
 
 **611/742 cubiertos, 131 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Cerrar aplicaciones y ventanas 20/20); C03 formal 3/11. Registro SHA 51417ee52747a1e25f77053f7acab927bed834de5de6d2b55de29412adcd71c3. Primeras altas 24 h >= 485 (+5).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4d27ea0b con BUILD1679 (un límite conocido no lo retira el verificador ni lo adelanta un nombre cercano). Turnos ordinarios sin operaciones.

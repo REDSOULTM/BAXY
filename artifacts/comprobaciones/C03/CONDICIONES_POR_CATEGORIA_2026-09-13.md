@@ -1067,3 +1067,7 @@ Desarrollo y ejecución de comandos pasa de 0/5 a 1/5, Organizar ventanas y pest
 ## Actualización 2026-09-16 (LIMITS1679)
 
 Desarrollo y ejecución de comandos pasa de 1/5 a 2/5, Organizar ventanas y pestañas de 10/13 a 11/13, Cerrar aplicaciones y ventanas de 18/20 a 20/20 y Audio y volumen de 46/51 a 47/51 con los comandos, cerrar todo, las pestañas y el volumen por aplicación respondidos como límites conocidos sin retiro (commit 4d27ea0b, BUILD1679) (HEAD 4d27ea0b): cinco literales y ocho variantes con cero operaciones y el límite dicho llanamente nombrando el pedido en español e inglés; prohibición reconocida y definición degenerada, 5 créditos. Medición raíz: con el verificador y el aclarador de nombres cercanos cediendo al contrato, los cuatro límites se responden llanamente en ambos idiomas; la categoría de cierre queda cerrada.
+
+## Actualización 2026-09-16 (LIMITS1681)
+
+Interacción dentro de aplicaciones pasa de 16/22 a 18/22 y Red y Bluetooth de 15/21 a 16/21 con los controles dentro de clientes de mensajería y el modo avión respondidos como límites conocidos (commit 8e9e59dd, BUILD1681) (HEAD 8e9e59dd): tres literales y cuatro variantes con cero operaciones y el límite dicho llanamente nombrando el pedido en español e inglés; dos límites aprobados, 3 créditos. Medición raíz: pulsar un control dentro de Discord o WhatsApp y el modo avión se responden como límites conocidos en ambos idiomas, sin tocar clientes ni radios.
