@@ -271,7 +271,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         or "bluetooth.radio.set" or "bluetooth.radio.status"
         or "display.status" or "software.python.status" or "calculator.expression.evaluate"
         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
-        or "wifi.profile.list" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
+        or "wifi.profile.list" or "wifi.scan" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
         or "wifi.ensure.connected" or "wifi.status"
         or "system.settings.adjust" or "system.settings.status" or "system.settings.set";
 
@@ -309,6 +309,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                     operation, effectBoundary, cancellationToken),
                 "wifi.ensure.connected" => await WifiEnsureConnectedAsync(operation, cancellationToken),
                 "wifi.status" => await WifiConnectionStatusAsync(operation, cancellationToken),
+                "wifi.scan" => await WifiScanAsync(operation, cancellationToken),
                 "system.settings.adjust" => await SettingAdjustAsync(
                     operation, arguments, effectBoundary, cancellationToken),
                 "system.settings.status" => await SettingStatusAsync(operation, arguments, cancellationToken),
@@ -1100,6 +1101,77 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         string id = Opaque("wifi", profile);
         _wifi[id] = profile;
         return ExternalJson.Success(operation, WifiResult(id, true), false);
+    }
+
+    // NETWORK1729 «qué redes wifi hay»: the networks the adapter sees right now.
+    // A powered-down radio is a typed state (wifi_interface_off), never a scan.
+    private const string WifiScanScript = """
+        $text=@(netsh wlan show networks mode=bssid);$joined=($text -join "`n")
+        if($joined -match '(?i)apagada|powered down|is not running|no se está ejecutando|no está en ejecución'){[pscustomobject]@{ok=$false;error='wifi_interface_off'}|ConvertTo-Json -Compress;exit 0}
+        if($joined -match '(?i)no hay ninguna interfaz|there is no wireless interface|no wireless interface'){[pscustomobject]@{ok=$false;error='wifi_interface_unavailable'}|ConvertTo-Json -Compress;exit 0}
+        $networks=@();$current=$null
+        foreach($line in $text){
+          if($line -match '^\s*SSID\s+\d+\s*:\s*(.*?)\s*$'){if($current){$networks+=$current};$current=[ordered]@{ssid=$Matches[1];authentication='';signalPercent=$null};continue}
+          if($null -eq $current){continue}
+          if($line -match '^\s*(?:Authentication|Autenticación)\s*:\s*(.+?)\s*$' -and -not $current.authentication){$current.authentication=$Matches[1];continue}
+          if($line -match '^\s*(?:Signal|Señal)\s*:\s*(\d+)\s*%' -and $null -eq $current.signalPercent){$current.signalPercent=[int]$Matches[1];continue}
+        }
+        if($current){$networks+=$current}
+        [pscustomobject]@{ok=$true;networks=@($networks|ForEach-Object {[pscustomobject]$_})}|ConvertTo-Json -Compress -Depth 4
+        """;
+
+    private async ValueTask<ExternalCapabilityReceipt> WifiScanAsync(
+        string operation,
+        CancellationToken token)
+    {
+        ExternalProcessResult process = await RunPowerShellAsync(WifiScanScript, [], token);
+        using JsonDocument document = ParseLastJson(process.Output);
+        JsonElement root = document.RootElement;
+        if (root.ValueKind != JsonValueKind.Object)
+        {
+            return ExternalJson.Failure(operation, "wifi_scan_not_read");
+        }
+        if (!Bool(root, "ok"))
+        {
+            string code = String(root, "error");
+            return ExternalJson.Failure(operation, string.IsNullOrWhiteSpace(code) ? "wifi_scan_not_read" : code);
+        }
+        var networks = new List<(string Ssid, string Authentication, int? Signal)>();
+        if (root.TryGetProperty("networks", out JsonElement list) && list.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement item in list.EnumerateArray())
+            {
+                if (item.ValueKind != JsonValueKind.Object) continue;
+                string ssid = String(item, "ssid");
+                int? signal = item.TryGetProperty("signalPercent", out JsonElement signalElement)
+                    && signalElement.ValueKind == JsonValueKind.Number
+                    && signalElement.TryGetInt32(out int parsed)
+                        ? parsed
+                        : null;
+                networks.Add((ssid, String(item, "authentication"), signal));
+                if (networks.Count >= 50) break;
+            }
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteNumber("networkCount", networks.Count);
+            writer.WriteStartArray("networks");
+            foreach ((string ssid, string authentication, int? signal) in networks)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("ssid", string.IsNullOrWhiteSpace(ssid) ? "(oculta)" : ssid);
+                writer.WriteBoolean("hidden", string.IsNullOrWhiteSpace(ssid));
+                writer.WriteString("authentication", authentication);
+                if (signal is int value) writer.WriteNumber("signalPercent", value); else writer.WriteNull("signalPercent");
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteString("authority", "netsh_wlan_show_networks_bssid");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
     private async ValueTask<ExternalCapabilityReceipt> WifiConnectionStatusAsync(

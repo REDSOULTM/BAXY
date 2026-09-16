@@ -162,6 +162,25 @@ internal static class ObservedResponseLiterals
             names.Add(writtenText);
         }
         if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+            && IsString(node, "operation", "wifi.scan")
+            && node.TryGetProperty("verified", out JsonElement scanVerified) && scanVerified.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("succeeded", out JsonElement scanSucceeded) && scanSucceeded.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("observed", out JsonElement scanned) && scanned.ValueKind == JsonValueKind.Object
+            && scanned.TryGetProperty("networks", out JsonElement networks) && networks.ValueKind == JsonValueKind.Array)
+        {
+            // NETWORK1729 «qué redes wifi hay»: a visible network name («Fibertel-2.4GHz»)
+            // is observed data, dots included, not vocabulary about BAXY.
+            foreach (JsonElement network in networks.EnumerateArray())
+            {
+                if (network.ValueKind == JsonValueKind.Object
+                    && network.TryGetProperty("ssid", out JsonElement ssid) && ssid.ValueKind == JsonValueKind.String
+                    && ssid.GetString() is { Length: > 0 and <= 4096 } ssidText && !string.IsNullOrWhiteSpace(ssidText))
+                {
+                    names.Add(ssidText);
+                }
+            }
+        }
+        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
             && IsString(node, "operation", "ocr.read")
             && node.TryGetProperty("verified", out JsonElement readVerified) && readVerified.ValueKind == JsonValueKind.True
             && node.TryGetProperty("succeeded", out JsonElement readSucceeded) && readSucceeded.ValueKind == JsonValueKind.True

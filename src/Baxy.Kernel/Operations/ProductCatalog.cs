@@ -1615,6 +1615,13 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Enumera perfiles WLAN guardados mediante identidades opacas sin exponer credenciales."),
         Descriptor(
+            "wifi.scan",
+            EmptySchema(),
+            OperationRisks.ReadOnly,
+            "wifi.scan.netsh.wlan.networks.bssid.v1",
+            ToolExposure.Public,
+            "Lista las redes Wi-Fi visibles ahora para el adaptador WLAN (nombre, autenticación y señal) mediante netsh; si la radio está apagada devuelve ese estado sin cambiar nada."),
+        Descriptor(
             "wifi.status",
             EmptySchema(),
             OperationRisks.ReadOnly,

@@ -3455,6 +3455,14 @@ _CAUSE_FACT = {
     "wifi_profile_not_found": (
         "no saved Wi-Fi network has that name, so nothing was done"
     ),
+    # NETWORK1729 «qué redes wifi hay» with the radio off: the state is the
+    # fact; no scan happened and nothing was changed.
+    "wifi_interface_off": (
+        "the Wi-Fi radio of this PC is switched off, so the networks could not be scanned; nothing was changed"
+    ),
+    "wifi_interface_unavailable": (
+        "this PC has no usable Wi-Fi adapter right now, so no network can be seen"
+    ),
     "mission_failed": "mission unfinished",
     "acting": "still working",
     "ambiguous_request": "unclear request",
@@ -5421,6 +5429,10 @@ def _claims_declined_means(text: str) -> bool:
     return re.search(r"\b" + _MEANS_WORDS + r"\b", folded) is not None
 
 
+# NETWORK1729: a network name the reply quotes, in guillemets, curly or straight quotes.
+_QUOTED_NAME = re.compile("[" + chr(171) + chr(8220) + chr(34) + "]([^" + chr(187) + chr(8221) + chr(34) + "]{1,64})[" + chr(187) + chr(8221) + chr(34) + "]")
+
+
 def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     """El texto público conserva los hechos que el payload le dio.
 
@@ -5643,6 +5655,34 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
             folded,
         ) is None:
             return "echo_without_report"
+    if (
+        payload.get("operation") == "wifi.scan"
+        and isinstance(seen, dict)
+        and isinstance(seen.get("networks"), list)
+    ):
+        # NETWORK1729: every quoted network name is an observed SSID and the
+        # count is the observed one; nothing was connected.
+        observed_names = {str(entry.get("ssid")).strip().casefold() for entry in seen["networks"] if isinstance(entry, dict) and isinstance(entry.get("ssid"), str)}
+        for quoted in re.findall(_QUOTED_NAME, text):
+            if quoted.strip().casefold() not in observed_names:
+                return "invented"
+        count = seen.get("networkCount")
+        if isinstance(count, int) and not isinstance(count, bool):
+            # Observed names may carry digits («Vecino 24»); only the free
+            # numbers of the prose are judged, and signal percentages are
+            # observed data.
+            prose = text
+            for entry in seen["networks"]:
+                if isinstance(entry, dict) and isinstance(entry.get("ssid"), str) and entry["ssid"].strip():
+                    prose = prose.replace(entry["ssid"].strip(), " ")
+            prose = re.sub(r"\d+\s*(?:%|por\s*ciento|percent)", " ", prose)
+            for number in re.findall(r"(?<![\w.,])\d+(?![\w.,%])", prose):
+                if int(number) != count and int(number) != 0:
+                    return "invented_number"
+            if count == 0 and not re.search(r"\b(?:ninguna|no \w+ ninguna|none|no networks|no wi-?fi)\b", _reading_fold(text)):
+                return "missing_state"
+        if re.search(r"\b(?:conect[eé]|me conect[eé]|connected to|joined)\b", _reading_fold(text)):
+            return "extra_claim"
     if (
         payload.get("operation") == "calculator.expression.evaluate"
         and isinstance(seen, dict)
@@ -13823,6 +13863,28 @@ class LlmRuntime:
                 if response_language == "en"
                 else "\nseen.radioOn es la radio Bluetooth: true significa encendida, false "
                 "significa apagada. Di cuál, en una oración corta; no se cambió nada."
+            )
+        if (
+            visible_situation.get("operation") == "wifi.scan"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("networks"), list)
+        ):
+            # NETWORK1729: the read lists the networks the adapter sees now;
+            # name them exactly as observed, nothing connected or changed.
+            instruct(
+                "\nseen.networks are the Wi-Fi networks this PC's adapter sees right now "
+                "(ssid, authentication, signalPercent) and seen.networkCount their number. "
+                "Say which networks are visible quoting each ssid exactly as observed, "
+                "strongest first, in one or two short sentences; if seen.networkCount is 0, "
+                "say that no network is visible. No other numbers except signal "
+                "percentages as observed; nothing was connected or changed."
+                if response_language == "en"
+                else "\nseen.networks son las redes Wi-Fi que el adaptador de este PC ve ahora "
+                "(ssid, authentication, signalPercent) y seen.networkCount su cantidad. Di "
+                "qué redes se ven citando cada ssid exactamente como se observó, de la de "
+                "mejor señal a la de peor, en una o dos oraciones cortas; si seen.networkCount "
+                "es 0, di que no se ve ninguna red. Sin otros números salvo los porcentajes "
+                "de señal observados; no se conectó ni se cambió nada."
             )
         if (
             visible_situation.get("operation") == "calculator.expression.evaluate"

@@ -2058,12 +2058,16 @@ def _curated_domain_is_grounded(
         "wifi.disconnect",
         "wifi.ensure.connected",
         "wifi.profile.list",
+        "wifi.scan",
         "wifi.status",
     }:
         wifi_domain = _has(
             folded,
             r"\b(?:wi[\s-]?fi|red\s+inalambrica|wireless)\b",
         )
+        if operation == "wifi.scan":
+            # «qué redes hay» names the domain through «redes» alone.
+            return _wifi_scan_question(folded)
         if not wifi_domain:
             return False
         if operation == "wifi.disconnect":
@@ -10300,6 +10304,26 @@ def _bluetooth_state_question(text: str) -> bool:
     )
 
 
+_WIFI_SCAN_QUESTION = re.compile(
+    r"(?:^|\b)(?:que|cuales|cuantas|what|which|how many)\s+(?:(?:wifi|wi[\s-]*fi|wireless)\s+)?(?:redes|networks)(?:\s+(?:wifi|wi[\s-]*fi|inalambricas|wireless))?\s+(?:are\s+)?(?:hay|existen|veo|ves|detectas|encontras|encuentras|alcanzas|disponibles|cerca|cercanas|around|nearby|available|there|can you see|do you see)\b"
+    r"|\b(?:escanea|escaneame|escanear|scan|busca|buscame|buscar|search for|list|lista|listame|listar|mostrame|muestrame|show)\b.{0,24}\b(?:redes|networks)(?:\s+(?:wifi|wi[\s-]*fi|inalambricas|wireless))?\b"
+    r"|\b(?:redes|networks)\s+(?:wifi|wi[\s-]*fi|inalambricas|wireless)\s+(?:disponibles|cercanas|visibles|available|nearby|visible|around)\b"
+)
+
+
+def _wifi_scan_question(text: str) -> bool:
+    """NETWORK1729 «qué redes wifi hay», «escaneá las redes wifi», «what wifi networks
+    are there»: a wifi.scan read of the networks the adapter sees — never a
+    connection, a change of the radio, nor the saved-profile listing."""
+
+    folded = _strip_request_envelope(_fold(text)).strip()
+    return (
+        _WIFI_SCAN_QUESTION.search(folded) is not None
+        and _has(folded, r"\b(?:wifi|wi[\s-]*fi|inalambric\w*|wireless|redes|networks)\b")
+        and not _has(folded, r"\b(?:conecta\w*|desconecta\w*|connect|apaga\w*|prende\w*|enciende\w*|turn|guardad\w*|saved|perfiles?|profiles?|olvida\w*|forget|borra\w*|delete)\b")
+    )
+
+
 def _wifi_state_question(text: str) -> bool:
     """«decime si el wifi está prendido», «¿el wifi está encendido?»: a wifi.status read."""
 
@@ -10342,6 +10366,7 @@ def _is_direct_request(text: str) -> bool:
         # NETWORK1293: «¿el wifi está encendido?» is a read request without a
         # verb head; the state question itself is the speech act.
         or _wifi_state_question(text)
+        or _wifi_scan_question(text)
         or _bluetooth_state_question(text)
         or _display_status_question(text)
         or _python_status_question(text)
@@ -10591,6 +10616,9 @@ def _strict_catalog_request(
         return EffectIntent(("display.status",), (text,))
     if "software.python.status" in available_operations and _python_status_question(text):
         return EffectIntent(("software.python.status",), (text,))
+    if "wifi.scan" in available_operations and _wifi_scan_question(text):
+        # NETWORK1729: the networks around the PC are read from the adapter.
+        return EffectIntent(("wifi.scan",), (text,))
     if (
         "calculator.expression.evaluate" in available_operations
         and calculator_expression_request(text) is not None

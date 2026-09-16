@@ -5606,6 +5606,10 @@ def _explicit_arguments_from_evidence(
         if effect_intent._python_status_question(evidence):
             return {}
 
+    if operation == "wifi.scan":
+        if effect_intent._wifi_scan_question(evidence):
+            return {}
+
     if operation == "calculator.expression.evaluate":
         expression = effect_intent.calculator_expression_request(evidence)
         return {"expression": expression} if expression is not None else None

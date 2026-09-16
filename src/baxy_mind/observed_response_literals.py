@@ -93,6 +93,17 @@ def without_observed_names(text: str, situation: object) -> str:
             written = observed.get("name") if isinstance(observed, dict) else None
             if isinstance(written, str) and 0 < len(written.strip()) <= 4096:
                 names.add(written.strip())
+        if (node.get("kind") == "operation" and operation == "wifi.scan"
+                and node.get("verified") is True and node.get("succeeded") is True
+                and node.get("polarity") == "success"):
+            # NETWORK1729 «qué redes wifi hay»: a visible network name
+            # («Fibertel-2.4GHz») is observed data, dots included.
+            observed = node.get("observed")
+            networks = observed.get("networks") if isinstance(observed, dict) else None
+            if isinstance(networks, list):
+                names.update(ssid.strip() for network in networks if isinstance(network, dict)
+                             and isinstance(ssid := network.get("ssid"), str)
+                             and 0 < len(ssid.strip()) <= 4096)
         if (node.get("kind") == "operation" and operation == "ocr.read"
                 and node.get("verified") is True and node.get("succeeded") is True
                 and node.get("polarity") == "success"):
