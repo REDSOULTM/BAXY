@@ -1,3 +1,11 @@
+# MUSIC1675 adjudicado — 2026-09-16T04:58:46.205386+00:00
+
+**602/742 cubiertos, 140 abiertos, 0 NA; 9/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2); C03 formal 3/11. Registro SHA 0da062fe9bd6a4d78b0fa94933e562052df15cb758b96a76832a644b630131ef. Primeras altas 24 h >= 476 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 25a64393 con BUILD1675 (pausar Spotify si está abierto se decide leyendo su ventana). Turnos ordinarios sin operaciones.
+
+MUSIC1675 («Música», la pausa condicionada a Spotify abierto respondida por su ventana ausente): un literal y dos variantes con window.resolve terminada window_not_found, ninguna media.control y finales fieles; límite de definición aprobado y prohibición respondida con una pregunta, 1 créditos. Adjudicación ed85a7b868a4fcc1f765818f123ca543446073917196cb4806a5196eec7701f0. Medición raíz: la pausa condicionada a Spotify abierto se decide leyendo la ventana y, con Spotify ausente, no pausa nada y lo dice en español e inglés.
+
+---
+
 # APPS1673 adjudicado — 2026-09-16T04:38:29.740747+00:00
 
 **601/742 cubiertos, 141 abiertos, 0 NA; 9/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2); C03 formal 3/11. Registro SHA 27e69caef28067f759f643827162e8e2174725a8eeef600636314087c44db23e. Primeras altas 24 h >= 475 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD ec432793 con BUILD1673 (la ausencia del programa se dice sola, sin consecuencias de fallo). Turnos ordinarios sin operaciones.

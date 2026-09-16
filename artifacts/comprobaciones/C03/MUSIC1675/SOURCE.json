@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1675-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_OPEN_STATE_CONDITION, conditional_open_pause_app; the deferred-effect and direct-request gates see through the condition) and src/baxy_mind/__main__.py (window.resolve argument from the condition; pause clitics).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1675/SOURCE.patch",
+  "commits": [
+    "25a64393e7e58a5570f142e87b17331adf8d7d15"
+  ],
+  "build": "BUILD1675 (C03-repairs1675-build/BUILD_READY.json; mente)",
+  "cause_measured": "La condición «si tengo X abierto» se leía como efecto diferido y el pedido quedaba sin decisión.",
+  "change": "Condición de estado presente leída con window.resolve y pausa condicionada; sin respuestas fijas.",
+  "measurement": "MUSIC1675: un literal y dos variantes con window.resolve terminada window_not_found, ninguna media.control y finales fieles; límite de definición aprobado y prohibición respondida con una pregunta; 1 créditos. Medición raíz: la pausa condicionada a Spotify abierto se decide leyendo la ventana y, con Spotify ausente, no pausa nada y lo dice en español e inglés.",
+  "credits": 1
+}

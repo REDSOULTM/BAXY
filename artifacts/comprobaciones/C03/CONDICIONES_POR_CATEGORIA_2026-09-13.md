@@ -1055,3 +1055,7 @@ Crear documentos y editar imágenes pasa de 1/2 a 1/2 con la foto a editar en Ph
 ## Actualización 2026-09-16 (APPS1673)
 
 Crear documentos y editar imágenes pasa de 1/2 a 2/2 con la foto a editar en Photoshop respondida por la ausencia del programa dicha sola (commit ec432793, BUILD1673) (HEAD ec432793): un literal y dos variantes con app.installed verificada (ausente), ninguna apertura y finales que dicen sólo la ausencia; dos límites aprobados, 1 créditos. Medición raíz: querer trabajar en un programa ausente se responde por su ausencia del catálogo de inicio en español e inglés; la categoría de documentos e imágenes queda cerrada. La categoría queda cerrada.
+
+## Actualización 2026-09-16 (MUSIC1675)
+
+Música pasa de 26/39 a 27/39 con la pausa condicionada a Spotify abierto respondida por su ventana ausente (commit 25a64393, BUILD1675) (HEAD 25a64393): un literal y dos variantes con window.resolve terminada window_not_found, ninguna media.control y finales fieles; límite de definición aprobado y prohibición respondida con una pregunta, 1 créditos. Medición raíz: la pausa condicionada a Spotify abierto se decide leyendo la ventana y, con Spotify ausente, no pausa nada y lo dice en español e inglés.
