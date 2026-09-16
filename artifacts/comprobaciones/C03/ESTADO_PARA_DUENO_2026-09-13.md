@@ -1,3 +1,25 @@
+## MUSIC1763 — estado vigente 2026-09-16T23:00:16.619368+00:00
+
+Parcial: 7 aprobados, 0 fallidos, 0 sin ejecutar; 3 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 634/742 | 108 | 0 | >=518 | 12/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 515 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1763 añade 3. No se cuentan revalidaciones.
+
+Siguiente acción: MUSIC1763: 7 ejecutados, 7 aprobados, 0 fallidos, 3 créditos (índices [0, 1, 2]); Música 35/39. Siguiente: «poné rock», «reproducí…», «tocá…» (lectores) y volumen de Spotify (operación por aplicación).
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1763/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 226.03 s acumulados; pico GPU 3497.56 MiB; pico RAM 2544.57 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 7; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1763 precedente. -->
+
 ## MUSIC1761 — estado vigente 2026-09-16T22:50:52.833350+00:00
 
 Parcial: 6 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.

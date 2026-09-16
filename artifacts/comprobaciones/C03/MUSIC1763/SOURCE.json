@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1763-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (confirmation and assent words are no language evidence among the prior requests either), on top of the MUSIC1763 build.",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1763/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1763 (C03-repairs1763-build/BUILD_READY.json; mente)",
+  "cause_measured": "La palabra de confirmación tecleada antes contaba como evidencia de español entre los pedidos anteriores.",
+  "change": "Palabras de confirmación neutras también entre los pedidos anteriores; sin respuestas fijas.",
+  "measurement": "MUSIC1763: 7 aprobados: tres literales y dos variantes (pregunta qué poner, respuesta guionizada, media.play.query aprobada por la raíz y verificada por now-playing, final que nombra lo que suena, en inglés para la conversación en inglés) y dos límites; 3 créditos. Diálogo de Spotify demostrado de punta a punta en los dos idiomas; siguiente: Epic Games hasta la biblioteca (UI1765) y las filas restantes de Música (lectores y volumen por aplicación).",
+  "credits": 3
+}
