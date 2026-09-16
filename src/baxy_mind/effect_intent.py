@@ -2087,7 +2087,7 @@ def _curated_domain_is_grounded(
             )
         return _has(
             folded,
-            r"\b(?:conecta|conectar|conectame|connect|cambia|change|enciende|turn\s+on)\b",
+            r"\b(?:conecta|conectar|conectame|conectate|connect|cambia|change|enciende|turn\s+on)\b",
         )
     if operation == "memory.status":
         return _has(
@@ -10392,7 +10392,7 @@ def _is_direct_request(text: str) -> bool:
         r"programa|programar|programame|schedule|agenda|agendar|agendame|"
         r"ponme|pone|poneme|pongame|"
         r"activa|activar|desactiva|desactivar|enciende|encender|prende|prender|"
-        r"apaga|apagar|arranca|inicia|start|conecta|conectar|conectame|connect|"
+        r"apaga|apagar|arranca|inicia|start|conecta|conectar|conectame|conectate|connect|"
         # LIMITS1677 «Run pytest.», «Execute ls.»: a command run is a request speech act.
         r"run|execute|"
         # LIMITS1683: downloads, arithmetic and scans are request speech acts too.
@@ -12733,16 +12733,18 @@ def _review_system_and_network_effects(
             )
         elif _head_is(
             head,
-            r"(?:conecta|conectar|conectame|cambia|change|connect)",
+            # NETWORK1721 «conectate al wifi de casa»: the voseo reflexive is
+            # the same order, and «al» is «a» + «el».
+            r"(?:conecta|conectar|conectame|conectate|cambia|change|connect)",
         ) and _has(
             folded,
-            r"\b(?:conecta|conectar|conectame|cambia|change|connect)\b",
+            r"\b(?:conecta|conectar|conectame|conectate|cambia|change|connect)\b",
         ):
             named_profile = _has(
                 folded,
                 r"\b(?:cambia|change)\s+(?:el\s+|la\s+)?wi[\s-]?fi\s+"
                 r"(?:a|to)\s+\S|"
-                r"\b(?:conecta|conectame|connect)\s+(?:a|to)\s+"
+                r"\b(?:conecta|conectame|conectate|connect)\s+(?:a|al|to)\s+"
                 r"(?:la\s+|the\s+)?(?:red\s+|network\s+)?wi[\s-]?fi\s+"
                 r"(?:de|llamad[oa]|named|called)\s+\S|"
                 r"\bconnect\s+to\s+(?:the\s+)?wi[\s-]?fi\s+network\s+"
@@ -12752,7 +12754,7 @@ def _review_system_and_network_effects(
                 matches,
                 folded,
                 "wifi.connect.named" if named_profile else "wifi.ensure.connected",
-                r"\b(?:conecta|conectar|conectame|cambia|change|connect)\b",
+                r"\b(?:conecta|conectar|conectame|conectate|cambia|change|connect)\b",
             )
 
 

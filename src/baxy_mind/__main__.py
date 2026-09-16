@@ -4431,7 +4431,7 @@ def _explicit_wifi_profile_arguments(evidence: str) -> dict[str, object] | None:
             r"(?P<profile>.+?)[\s?!.]*$"
         ),
         (
-            r"^[ż?Ą!\s]*(?:conecta|conectar|conectame|connect)\s+"
+            r"^[ż?Ą!\s]*(?:conecta|conectar|conectame|con[eé]ctate|connect)\s+"
             r"(?:(?:al|a la|to|to the)\s+)?"
             r"(?:(?:red|network)\s+)?wi[\s-]?fi"
             r"(?:\s+(?:network|red))?\s+"

@@ -3448,6 +3448,11 @@ _CAUSE_FACT = {
         "that application has no open window right now, so it is not open; "
         "nothing was done to it"
     ),
+    # NETWORK1721 «conectate al wifi de casa» with no saved network of that
+    # name: the fact is the absence; nothing was connected or changed.
+    "wifi_profile_not_found": (
+        "no saved Wi-Fi network has that name, so nothing was connected or changed"
+    ),
     "mission_failed": "mission unfinished",
     "acting": "still working",
     "ambiguous_request": "unclear request",

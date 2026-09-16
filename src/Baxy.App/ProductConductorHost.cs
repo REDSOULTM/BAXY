@@ -380,7 +380,10 @@ internal static class ProductConductorHost
                 or "browser.page.read"
                 // MUSIC1553 «pon un video de lofi en youtube»: the external
                 // playback (yt-dlp + local mpv) is confirmed by the root reviewer.
-                or "media.play.youtube"))
+                or "media.play.youtube"
+                // NETWORK1721 «conectate al wifi de casa»: the sensitive
+                // connection to a saved profile is confirmed by the root reviewer.
+                or "wifi.connect.named"))
         {
             return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
         }
