@@ -1,0 +1,15 @@
+{
+  "schema": "c03-files1713-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/ObservedResponseLiterals.cs (written file name as observed data for the message policy).",
+  "patch": "artifacts/comprobaciones/C03/FILES1713/SOURCE.patch",
+  "commits": [
+    "4ceb23d51c26b3e4a0703a519da4a66769db8630"
+  ],
+  "build": "BUILD1713 (C03-repairs1713-build/BUILD_READY.json; App)",
+  "cause_measured": "La máscara de nombres observados de la App no conocía el nombre del archivo escrito y la política vetaba el final fiel.",
+  "change": "El nombre devuelto por filesystem.write.text es dato observado para la App; sin respuestas fijas.",
+  "measurement": "FILES1713: FILES1713: la misión lectura de procesos → escritura de archivo se ejecutó y verificó en el literal y en las dos variantes (memoria y CPU, español e inglés), con el archivo escrito con los procesos leídos y finales que nombran el archivo y los procesos con sus valores observados; H0334 acreditado; dos límites aprobados; 1 créditos. 5 casos ordinarios sobre BUILD1713: 5 aprobados; 1 crédito",
+  "credits": 1
+}

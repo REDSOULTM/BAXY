@@ -1,0 +1,313 @@
+[
+  {
+    "index": 0,
+    "case_id": "H0334",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      1,
+      2
+    ],
+    "reason": "system.process.list y filesystem.write.text completadas y verificadas; el archivo del sandbox lista los procesos leídos; el final nombró el archivo y los procesos sin inventar; crédito con dos variantes aprobadas del mismo grupo.",
+    "observation_note": "Turno ordinario: exactamente una system.process.list y una filesystem.write.text completadas y verificadas; el archivo del sandbox lista los procesos leídos (relectura de la raíz); cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "0490924d4f6133c74fd4746b0a79ee8b0b71758d3aafecd2089c3fe0201584bc",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\results\\case-00\\EXIT.json": "3193ce865299227e942190f73992138b8eaad2ac931ad2d8abc581ec8680f257",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\results\\case-00\\RESOURCES.json": "9fcb11fb2f8f5d5282e86cc2c1aa661f0394cec85405bba8a1366d84ca407da2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\profile-owner-00.json": "2db1d7d9089460eb143e826ef9febffee24317adc6196fcbdd87909582ad397e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\results\\case-00\\PREREG.json": "185466601c9c9ddd5c36249724e1abcf829938e946f08fbe65cbe70161b56cae",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-00\\capture\\events.jsonl": "756b5c3858be940290375d129d73f11cf6f0a44b9d3acd5060615fd91f5f96e1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-00\\turns.jsonl": "331eee2a52e75caab353b651f7e329efd6b98bd46d1d33082cb8caf1d7693e46",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\fixture-00.json": "a0561cc596bd3f4ed1049240aecc851090f34c5951b3c836fe7bafd70e4b23b6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\context-00.json": "4323c9d569f26dc1b6918a6b9cfbec97f26ba96bad2cc697a3c4d820aeacfdc9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\context-prelaunch-00.json": "38580b3e34a05818ecefeb283f1bb13c6dbf214ae1a562286224b680e7808270",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-00\\case-observations.json": "4eacca43f719d5b34bcffdb73e82a8baf4c3c233b240bc97947ecbdc2451fe8a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-00\\journal-before.json": "3ab00fd932152e1cfe6f054afd4cc54d4b0d87351aa4159cf156f1699419235b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-00\\journal-after.json": "3bc639ea512cb8e10b4f77ba81a4c5d8b6e21721f4124347c581b6af176b8427",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "df6626c262589592cfd229ee9da72ac585a4a0614838faffacf9846fd6d62341"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "100113d7-af3a-4410-b1c9-d3371471c2ae",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "892eaff8-91f0-4720-8f4d-0b94404f13a6",
+        "operation": "system.process.list",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "732fe24e-c054-40d1-94fc-c11fbc1be1ec",
+        "operation": "filesystem.write.text",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "case_id": "files1713-dev-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "system.process.list y filesystem.write.text completadas y verificadas; el archivo del sandbox lista los procesos leídos; el final nombró el archivo y los procesos sin inventar.",
+    "observation_note": "Turno ordinario: exactamente una system.process.list y una filesystem.write.text completadas y verificadas; el archivo del sandbox lista los procesos leídos (relectura de la raíz); cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "1555d4169785eadbdad1866b160bb2294046eb71012fbf637a5bda0764811625",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\results\\case-01\\EXIT.json": "6658868d5a41f52a5086fe97ba78acc39dbbc9f0ff432d4fe05056e817c86169",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\results\\case-01\\RESOURCES.json": "bbb55e0856e2e35dc11b7779c0f9dca6492eb638e50825e5608d170b07f647de",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\profile-owner-01.json": "38224c9e6b9cec8a75aa08237e4d705d80d9422ca67bfbef1aa71b741311ced8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\results\\case-01\\PREREG.json": "d69269ddbeff9a2c42006f9152387ac58db1df18b6aa6aefb600de77b1fa7628",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-01\\capture\\events.jsonl": "6155754fdde6954437820592501d09f146c48b981243ea2868876f82d83f6083",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-01\\turns.jsonl": "3b3e9653e942d8b3e2a6a0bbffa11cd5d903826bf01b48d7756e1f95240f4eec",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\fixture-01.json": "8fe3a2c64bd560f1944c37d42f9e21014ac7942158624336fd23b22c7438c7cd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\context-01.json": "75cad392db9e94cb4f063b6dc06cc6e80b947f8383a54f960d1ab5c6435ea87f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\context-prelaunch-01.json": "87d55f7a9d5e65f7137c73431bc4c59ee00bc883fe99ec1c4791f97d56870e49",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-01\\case-observations.json": "74e5ef5650fc62c648d79783b21120194d45685c128a540954b957a7fca36fa3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-01\\journal-before.json": "21df7b9e460a13925983f8facb70e0b2841f739c2441cc893f68f8a0f73b6474",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-01\\journal-after.json": "db526d2845c0473d14f291593c218a0cbffbda2fec481bf253c4f23c6c78be6c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "6b936e21102b95e5254f2dddee06b50e5a9ea054d0a9ad02a851ce5e9c4e26dc"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "66103a2d-b6dc-452a-9eb5-c9be6999da8f",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "09bff92f-749c-4515-b525-b73808ee6701",
+        "operation": "system.process.list",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "fa72953b-6d83-4a84-b5a5-8f3c1a7c109a",
+        "operation": "filesystem.write.text",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "case_id": "files1713-dev-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "system.process.list y filesystem.write.text completadas y verificadas; el archivo del sandbox lista los procesos leídos; el final nombró el archivo y los procesos sin inventar.",
+    "observation_note": "Turno ordinario: exactamente una system.process.list y una filesystem.write.text completadas y verificadas; el archivo del sandbox lista los procesos leídos (relectura de la raíz); cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "03ea252c4ae01bdfd07e7a295f1fdb50a38d668ba7decc9e8a48288ba861f33d",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\results\\case-02\\EXIT.json": "e4aabc264c01c8f12df3be0207c6817341d688345b9534267eb85345ae134531",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\results\\case-02\\RESOURCES.json": "8403cb7ded987b1a0225afa4374310963fef727395d446f23acb14854b3cbe52",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\profile-owner-02.json": "6868bd4f02f6d46dc7920d1c9a946d7f37fd7f1fd96ced9915bf36d688abc1b2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\results\\case-02\\PREREG.json": "8eab97ee140faa998a0dea58ff40c099d68a2235618e8bae62203fb88685c25a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-02\\capture\\events.jsonl": "fcbc21255f1a691c9ea946c695cf6575a3e9a7e94ccca25dc2eec323cd2eb225",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-02\\turns.jsonl": "65e1ea87921b379d6abb9eb7ed66b095e2274e3ba8bd0170752270cac018dbb8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\fixture-02.json": "b746bf71a1e0abd1d30e92a1391b024da7d4a63774c3f0190e4e21fa7084a26c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\context-02.json": "610b9031a4ed1a61f39a45025c154e5d9435460ddcdb7ff51db81f0b12a62ca3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\context-prelaunch-02.json": "3141c14c2537130520e0e793086e35db0817c0cc0f2c8b4bbd5a6d77d3f6be66",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-02\\case-observations.json": "6b4bdd9a9cf4ae35bac7a272ba6772b9c2c4a3086c2ace80cd3410c84847690d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-02\\journal-before.json": "cc5293cd984e3a57653fe5d20f0f609f55b0bbd5d631b086fe52f4b91fed09c5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-02\\journal-after.json": "b681de899ea9f3ca1d5f67c6592b5c05582f7085faa9baaaeeb07b7eab36c512",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "3a96a33dd52bd0d3325bfc16de19391b360eaf40a3442742dee1b56030cb2ded"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "6ffbf6fa-73b1-4d4b-94b7-a0e43f7e6f1d",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "e59a31c3-8540-42cb-b637-bf9166cb94f4",
+        "operation": "system.process.list",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "1e761674-75ae-4dd8-b589-d49c9d80363e",
+        "operation": "filesystem.write.text",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "case_id": "files1713-boundary-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "2bedcea488a7edc6741f59e869f2c13c28a544e07669ff1145b48cd00cdb4b69",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\results\\case-03\\EXIT.json": "703ec72476fb389b13591ca26ce8f490080f6fb9fa5d761c586a0b33b2da0853",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\results\\case-03\\RESOURCES.json": "b123db46b255dccdd8c1afb47741a037cfdc47a3d776bf3861c51a35f874c6d3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\profile-owner-03.json": "292759896ba063e74722ecc3d433394d8fb6dcb93ec86e4999a255789fae9eb9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\results\\case-03\\PREREG.json": "23d0a9b40d896107f2d08a04b598fbeccfcc804ba98d0f7e76fe0d9f00273d2f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-03\\capture\\events.jsonl": "2f7c27e80327cb44422c1814c6686662f33c2b20a834421977212b4a0d8eef5c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-03\\turns.jsonl": "43a1b71604b0811d048d11e0b632631687df3d38e6ceb4a9b86167623d6f68a9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\fixture-03.json": "43f502b7c1eed8c8d817cecd386365fb06be4d57f5294fedfa727a45477cca1e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\context-03.json": "673c0081044992a042ab27308b76aff50d216db04c52991ac0adfbc03a0f18b8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\context-prelaunch-03.json": "01ac6e8fa026e5db4adb23e423d051ce3bcd78682d893453041b8d24b2cc04cd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-03\\case-observations.json": "1cea404fa8ba72dc032ecb3796a7223909819f4739826e31890798b1bbe7ba72",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-03\\journal-before.json": "88629dc0413cabd2e722ddaf6f00fa1537ca8d3004934c256ca9db86295cd126",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-03\\journal-after.json": "fc39a53e32bedf55c0b75d05b8a5901e6b4e6126195c5c5f6bc6ecdcf8007788",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "bf23620b5c229c6e99415f661e7609a179726eb6a986c32e24a88c62f4cb069b"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "398ef015-b866-44f8-9f5b-9c8b928fc633",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "case_id": "files1713-boundary-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "e200f85b3c6f10eaf5b98e117b408a65aafd76f9b25dfdbe717d35ed827955b4",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\results\\case-04\\EXIT.json": "80b670f0248d38871e526602e5de7bb7d368ae9e4c68c03cbf055e107eee78a8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\results\\case-04\\RESOURCES.json": "007d7968a32d34b43024f596ab92dd5671fc741ea3b402a9d365b9bd385c3bf6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\profile-owner-04.json": "d4bb5eed642e63dbb0f89e9d670d543ed0b77f2efc8ce5a395f4a81b26c45e27",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\results\\case-04\\PREREG.json": "146544c38965ed25d2b86593e4f847e83471361427f750f73c1689d93b3adc3e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-04\\capture\\events.jsonl": "1a2f18597ea63838529344ca47dd7c77325352ce268ab757e223ac4fab4b8570",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-04\\turns.jsonl": "609f27ffa065a7ddd0d5901b45a838353515b08aeca493c4dab287a28c26d9bd",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\fixture-04.json": "2171e0e90b48034da0cb657816a5b8742b95ad318b6bfd2aa89e522abf064e89",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\context-04.json": "f2b50d5e5e2417b126227814948525079c027eb09e1b4a0d3669c920142bd630",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\context-prelaunch-04.json": "dd1bb70477fc6357923b4d0c1f0f367e04a2afdf1a21f7b93238d7a56e21f8c7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-04\\case-observations.json": "766811ba8dec88abb149d899ea3a153f99369002bd9125dcdc1722578e08214b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-04\\journal-before.json": "7a8aafc631867250c21243a7ee70b76352c3a7e71d13cb9ba9cf218c0aebab65",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-04\\journal-after.json": "8f8384718b7954e851056593298b81e425e0cbcf8abad6a43a6287849a70d599",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-files1713-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "5fd6983676c617310905e48a612f1dde28f399f864efe6306e9f4bcf49a350f3"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "7e0c878f-d0d1-4d40-884a-b65f18855c69",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  }
+]

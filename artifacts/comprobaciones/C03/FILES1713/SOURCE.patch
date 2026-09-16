@@ -1,0 +1,33 @@
+commit 4ceb23d51c26b3e4a0703a519da4a66769db8630
+
+C03: the App treats the written file name as observed data (FILES1713)
+
+In FILES1711 the mind published faithful finals naming the file it had just written («Creé el archivo llamado procesos-memoria.txt con …») and the App's message policy vetoed them as internal_code: its observed-name mask did not know the name returned by filesystem.write.text, so the dotted file name read as an operation identifier. The name returned by a verified filesystem.write.text is now observed data for the App's mask, as it already was for the mind.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/ObservedResponseLiterals.cs b/src/Baxy.App/ObservedResponseLiterals.cs
+index 2f8a7cac..8e8d5523 100644
+--- a/src/Baxy.App/ObservedResponseLiterals.cs
++++ b/src/Baxy.App/ObservedResponseLiterals.cs
+@@ -148,6 +148,19 @@ internal static class ObservedResponseLiterals
+                 }
+             }
+         }
++        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
++            && IsString(node, "operation", "filesystem.write.text")
++            && node.TryGetProperty("verified", out JsonElement writeVerified) && writeVerified.ValueKind == JsonValueKind.True
++            && node.TryGetProperty("succeeded", out JsonElement writeSucceeded) && writeSucceeded.ValueKind == JsonValueKind.True
++            && node.TryGetProperty("observed", out JsonElement written) && written.ValueKind == JsonValueKind.Object
++            && written.TryGetProperty("name", out JsonElement writtenName) && writtenName.ValueKind == JsonValueKind.String
++            && writtenName.GetString() is { Length: > 0 and <= 4096 } writtenText && !string.IsNullOrWhiteSpace(writtenText))
++        {
++            // FILES1711 «crea un archivo de texto con los 5 procesos que más
++            // memoria usan»: the name of the file just written
++            // («procesos-memoria.txt») is observed data the report must say.
++            names.Add(writtenText);
++        }
+         if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+             && IsString(node, "operation", "ocr.read")
+             && node.TryGetProperty("verified", out JsonElement readVerified) && readVerified.ValueKind == JsonValueKind.True

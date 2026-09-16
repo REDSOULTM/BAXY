@@ -1,3 +1,11 @@
+# FILES1713 adjudicado — 2026-09-16T11:02:19.622773+00:00
+
+**612/742 cubiertos, 130 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA 5a728318db1e8b63b02c92e46127aa4cc7a9472dbf22a72d7907db1a4110ebba. Primeras altas 24 h >= 496 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4ceb23d5 con BUILD1713 (un archivo de texto con los procesos que más memoria usan, con el nombre escrito admitido por la App). Turnos ordinarios sin operaciones.
+
+FILES1713 («Archivos y carpetas», un archivo de texto con los procesos que más memoria usan ejecutado y verificado): FILES1713: la misión lectura de procesos → escritura de archivo se ejecutó y verificó en el literal y en las dos variantes (memoria y CPU, español e inglés), con el archivo escrito con los procesos leídos y finales que nombran el archivo y los procesos con sus valores observados; H0334 acreditado; dos límites aprobados, 1 créditos. Adjudicación 0589d42c5f5eead0a56f84a58b15e95ec6bc5cb051720f80f2ea9b98d10f985d. 5 casos ordinarios sobre BUILD1713: 5 aprobados; 1 crédito
+
+---
+
 # FILES1711 adjudicado — 2026-09-16T10:40:47.243238+00:00
 
 **611/742 cubiertos, 131 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA 027fa4923dcf9005df3d240565d09b2dbec945f722543ea7df99f0020047e621. Primeras altas 24 h >= 495 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b3326049 con BUILD1711 (un archivo de texto con los procesos que más memoria usan, con el nombre escrito como dato observado). Turnos ordinarios sin operaciones.
