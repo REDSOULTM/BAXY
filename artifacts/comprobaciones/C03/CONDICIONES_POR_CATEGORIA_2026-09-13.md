@@ -932,4 +932,8 @@ Instalar y desinstalar software pasa de 15/31 a 20/31 con las instalaciones y de
 
 ## Actualización 2026-09-14 (INSTALL1627)
 
-Instalar y desinstalar software pasa de 20/31 a 23/31 con el lanzamiento y las instalaciones instruidas en Steam respondidas desde la biblioteca del dueño (commit 0b7aae34, BUILD1627) (HEAD 0b7aae34): tres literales y dos variantes con lectura de biblioteca completada y verificada y finales fieles, dos límites aprobados, 3 créditos. Medición raíz: la lectura de biblioteca responde el lanzamiento y las instalaciones instruidas con AppID/URL sin seguir las instrucciones ni abrir diálogos; nada descargado ni lanzado.
+Instalar y desinstalar software pasa de 20/31 a 22/31 (y Abrir aplicaciones de 48/54 a 49/54, H0083) con el lanzamiento y las instalaciones instruidas en Steam respondidas desde la biblioteca del dueño (commit 0b7aae34, BUILD1627) (HEAD 0b7aae34): tres literales y dos variantes con lectura de biblioteca completada y verificada y finales fieles, dos límites aprobados, 3 créditos. Medición raíz: la lectura de biblioteca responde el lanzamiento y las instalaciones instruidas con AppID/URL sin seguir las instrucciones ni abrir diálogos; nada descargado ni lanzado.
+
+## Actualización 2026-09-16 (INSTALL1629)
+
+Instalar y desinstalar software pasa de 22/31 a 26/31 con las peticiones de instalar Photoshop respondidas por su ausencia del catálogo y la vía de instalación (commit 1b5525b4, BUILD1629) (HEAD 1b5525b4): cuatro literales y dos variantes con lectura app.installed completada y verificada (ausente) y finales fieles, dos límites aprobados, 4 créditos. Medición raíz: la petición de instalar un software conocido ausente se responde por su ausencia del catálogo y la vía de instalación del fabricante; los finales de los literales omiten el nombre pedido, que el contexto deja claro; nada instalado ni descargado.

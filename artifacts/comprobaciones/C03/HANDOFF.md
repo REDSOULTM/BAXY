@@ -1,3 +1,11 @@
+# INSTALL1629 adjudicado — 2026-09-16T00:12:21.399572+00:00
+
+**578/742 cubiertos, 164 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 447f2f9c3596688a1ae9a3696031a589c274e4d9485179a79e31486be8b6144f. Primeras altas 24 h >= 452 (+4).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 1b5525b4 con BUILD1629 (instalar un software conocido ausente del catálogo se responde por su ausencia). Turnos ordinarios sin operaciones.
+
+INSTALL1629 («Instalar y desinstalar software», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): cuatro literales y dos variantes con lectura app.installed completada y verificada (ausente) y finales fieles, dos límites aprobados, 4 créditos. Adjudicación e0a260a7cd0367c08524ab3a450eee885c4d63ed4f7d569dea138344c7df484d. Medición raíz: la petición de instalar un software conocido ausente se responde por su ausencia del catálogo y la vía de instalación del fabricante; los finales de los literales omiten el nombre pedido, que el contexto deja claro; nada instalado ni descargado.
+
+---
+
 # INSTALL1627 adjudicado — 2026-09-16T00:02:24.573337+00:00
 
 **574/742 cubiertos, 168 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 4ebea330d54cfb1488ba3e5ea0e6369357731ae19ac5c72310b8fa0e9ab640fc. Primeras altas 24 h >= 448 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 0b7aae34 con BUILD1627 (un lanzamiento en Steam y una instalación con instrucciones de AppID leen la biblioteca). Turnos ordinarios sin operaciones.

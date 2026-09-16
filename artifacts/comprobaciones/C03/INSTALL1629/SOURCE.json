@@ -1,0 +1,15 @@
+{
+  "schema": "c03-install1629-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (installed_catalog_application_name admits known software absent from the catalog, name as written) and src/baxy_mind/llm.py (instruction: absent and installed with the vendor installer, no denial, no download offer).",
+  "patch": "artifacts/comprobaciones/C03/INSTALL1629/SOURCE.patch",
+  "commits": [
+    "1b5525b454b3dcd9f8371dc4c1326bae69b8cf4f"
+  ],
+  "build": "BUILD1629 (C03-repairs1629-build/BUILD_READY.json; mente)",
+  "cause_measured": "Las peticiones de instalar Photoshop iban al modelo sin lectura; el producto no instala software de Adobe por nombre.",
+  "change": "app.installed para instalar software conocido ausente del catálogo; compositor con la ausencia y la vía de instalación; sin respuestas fijas.",
+  "measurement": "INSTALL1629: cuatro literales y dos variantes con lectura app.installed completada y verificada (ausente) y finales fieles, dos límites aprobados; 4 créditos. Medición raíz: la petición de instalar un software conocido ausente se responde por su ausencia del catálogo y la vía de instalación del fabricante; los finales de los literales omiten el nombre pedido, que el contexto deja claro; nada instalado ni descargado.",
+  "credits": 4
+}

@@ -1,0 +1,54 @@
+commit 1b5525b454b3dcd9f8371dc4c1326bae69b8cf4f
+
+C03: installing known software absent from the Start catalog is answered by its absence (INSTALL1629)
+
+Four open rows ask BAXY to install Photoshop. The product installs no Adobe software by name: there is no winget package and the installation needs the vendor's installer and account. Such a request now reads app.installed with the name as the person wrote it — the known-software list already lets an opening of absent software be answered by the same read — and the composer says the application is not in the Windows Start catalog and that installing it is done with the vendor's own installer, as a fact, without denying a capability or offering a download. Registry-wide diff: the four Photoshop literals; nothing else changes.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index ef46737d..1df55507 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -15057,7 +15057,18 @@ def installed_catalog_application_name(
+     name = match.group("name").strip()
+     if not name:
+         return None
+-    return resolve_application_catalog_app_id("abre " + name, application_names)
++    catalog_name = resolve_application_catalog_app_id("abre " + name, application_names)
++    if catalog_name is not None:
++        return catalog_name
++    # INSTALL1629 «instala Photoshop»: known software absent from the catalog
++    # is answered by the same presence read, with the name as the person
++    # wrote it (the read proves absence; nothing is installed).
++    if re.fullmatch(_KNOWN_SOFTWARE, name) is not None:
++        raw = str(text)
++        folded_raw = _fold(raw)
++        position = folded_raw.find(name) if len(folded_raw) == len(raw) else -1
++        return raw[position:position + len(name)] if position >= 0 else name
++    return None
+ 
+ 
+ def installed_game_title(text: str) -> str | None:
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index f8aeb346..d1611950 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4395,9 +4395,13 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
+                 "asked, say it is already installed. If installed is true and "
+                 "uninstalling was asked, say it is installed and that removing it "
+                 "is done from Windows Settings > Apps, as a fact, without saying "
+-                "you cannot or failed. If installed is false, say it is not in "
+-                "the Windows Start catalog. One or two sentences, the person's "
+-                "language, the application named as they named it."
++                "you cannot or failed. If installed is false and installing was "
++                "asked, say it is not in the Windows Start catalog and that "
++                "installing it is done with the vendor's own installer, as a "
++                "fact, without saying you cannot or failed and without offering "
++                "to download it. If installed is false and uninstalling was asked, "
++                "say it is not in the Windows Start catalog. One or two sentences, "
++                "the person's language, the application named as they named it."
+             )
+         bits.append(
+             "This result verifies application presence only, not an opening. "
