@@ -1,0 +1,15 @@
+{
+  "schema": "c03-limits1677-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (known_unsupported_effect_request contracts; the clarification resolver yields to a known limit; run/execute request heads).",
+  "patch": "artifacts/comprobaciones/C03/LIMITS1677/SOURCE.patch",
+  "commits": [
+    "b0549b66a2d3f596d3c791d761f94376ca693ab5"
+  ],
+  "build": "BUILD1677 (C03-repairs1677-build/BUILD_READY.json; mente)",
+  "cause_measured": "Diez pedidos sin operación en el catálogo iban al modelo sin límite declarado (uno preguntaba la cantidad ignorando la aplicación).",
+  "change": "Seis contratos de efecto conocido sin operación; la aclaración cede al límite; sin respuestas fijas.",
+  "measurement": "LIMITS1677: el comando ls y las tres órdenes de minimizar todo con sus variantes como límites dichos llanamente; cerrar todo con la variante inglesa perdida; nueve casos fallidos por el retiro del límite por el verificador de catálogo (pestañas, cerrar todo en inglés, volumen por aplicación), el aclarador de nombres cercanos y la pregunta de capacidad como charla; dos límites aprobados; 4 créditos. Medición raíz: los contratos de límite funcionan cuando nada los retira; el verificador de catálogo retira el límite por operaciones cercanas que no sirven el pedido y el aclarador de nombres cercanos lo adelanta; siguiente LIMITS1679 con ambos guardados.",
+  "credits": 4
+}

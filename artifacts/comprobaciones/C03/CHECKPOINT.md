@@ -1,3 +1,25 @@
+## LIMITS1677 — estado vigente 2026-09-16T05:58:01.908128+00:00
+
+Parcial: 15 aprobados, 9 fallidos, 0 sin ejecutar; 4 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 606/742 | 136 | 0 | >=480 | 9/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 476 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); LIMITS1677 añade 4. No se cuentan revalidaciones.
+
+Siguiente acción: LIMITS1677: 6 ejecutados, 15 aprobados, -9 fallidos, 4 créditos (índices [1, 3, 4, 5]); Abrir aplicaciones 50/54. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/LIMITS1677/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 455.45 s acumulados; pico GPU 3497.56 MiB; pico RAM 1712.89 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 24; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque LIMITS1677 precedente. -->
+
 ## MUSIC1675 — estado vigente 2026-09-16T04:58:46.205386+00:00
 
 Parcial: 4 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.
