@@ -1,0 +1,15 @@
+{
+  "schema": "c03-pdf1693-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (document.pdf.read composer instruction in prose, _PDF_LEAD_CHARACTERS 450, sentence cut).",
+  "patch": "artifacts/comprobaciones/C03/PDF1693/SOURCE.patch",
+  "commits": [
+    "c7e71a8aa75039e9c9a4231443b4b12d1295b2e8"
+  ],
+  "build": "BUILD1693 (C03-repairs1693-build/BUILD_READY.json; mente)",
+  "cause_measured": "La instrucción inglesa del compositor hacía eco de los nombres de campo y el modelo respondía con líneas etiqueta: valor en minúscula, vetadas.",
+  "change": "Instrucción del compositor en prosa (ambos idiomas), comienzo proyectado de 450 caracteres cortado en fin de oración; sin respuestas fijas.",
+  "measurement": "PDF1693: PDF1693: document.pdf.read (texto extraíble con pypdf, sin OCR) leyó el PDF de prueba de la raíz y los finales nombraron el archivo, sus páginas y sus títulos y citaron su comienzo tal cual, en español y en inglés; H0666 acreditado con dos variantes aprobadas; dos límites aprobados; fixture retirado por la raíz tras cada caso; 1 créditos. 5 casos ordinarios sobre BUILD1693: 5 aprobados; 1 crédito",
+  "credits": 1
+}

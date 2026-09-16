@@ -1087,3 +1087,7 @@ Archivos pasa de 28/32 a 28/32, Organizar ventanas y pestañas de 9/13 a 10/13, 
 ## Actualización 2026-09-16 (PDF1691)
 
 Archivos pasa de 28/32 a 28/32 con resumir un PDF nombrado ejecutado y verificado sobre su texto extraíble, en el idioma del pedido (commit 248b9184, BUILD1691) (HEAD 248b9184): PDF1691: document.pdf.read completada y verificada en los tres casos de PDF; literal y variante española fieles; la variante inglesa, ya leída como inglés, no publicó final (borradores etiqueta: valor en minúscula vetados) y H0666 sigue abierto sin crédito; dos límites aprobados; fixture retirado por la raíz tras cada caso, 0 créditos. 5 casos ordinarios sobre BUILD1691: 4 aprobados, 1 fallido (variante inglesa sin final); 0 créditos
+
+## Actualización 2026-09-16 (PDF1693)
+
+Archivos pasa de 28/32 a 29/32 con resumir un PDF nombrado ejecutado y verificado sobre su texto extraíble, en el idioma del pedido (commit c7e71a8a, BUILD1693) (HEAD c7e71a8a): PDF1693: document.pdf.read (texto extraíble con pypdf, sin OCR) leyó el PDF de prueba de la raíz y los finales nombraron el archivo, sus páginas y sus títulos y citaron su comienzo tal cual, en español y en inglés; H0666 acreditado con dos variantes aprobadas; dos límites aprobados; fixture retirado por la raíz tras cada caso, 1 créditos. 5 casos ordinarios sobre BUILD1693: 5 aprobados; 1 crédito

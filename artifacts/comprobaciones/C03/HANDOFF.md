@@ -1,3 +1,11 @@
+# PDF1693 adjudicado — 2026-09-16T08:37:42.931218+00:00
+
+**608/742 cubiertos, 134 abiertos, 0 NA; 9/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2); C03 formal 3/11. Registro SHA 1784224e395bab1ee7d65ed016ac9d45b8db264312402e5185c2b36667ccfaaf. Primeras altas 24 h >= 492 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD c7e71a8a con BUILD1693 (resumir un PDF nombrado reintentado con la instrucción del compositor en prosa). Turnos ordinarios sin operaciones.
+
+PDF1693 («Archivos», resumir un PDF nombrado ejecutado y verificado sobre su texto extraíble, en el idioma del pedido): PDF1693: document.pdf.read (texto extraíble con pypdf, sin OCR) leyó el PDF de prueba de la raíz y los finales nombraron el archivo, sus páginas y sus títulos y citaron su comienzo tal cual, en español y en inglés; H0666 acreditado con dos variantes aprobadas; dos límites aprobados; fixture retirado por la raíz tras cada caso, 1 créditos. Adjudicación a64ac72bb6c5ff21c5477c8a6ee460fb57924d9474b0b308cbe502a81800c04d. 5 casos ordinarios sobre BUILD1693: 5 aprobados; 1 crédito
+
+---
+
 # PDF1691 adjudicado — 2026-09-16T08:32:43.358878+00:00
 
 **607/742 cubiertos, 135 abiertos, 0 NA; 9/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2); C03 formal 3/11. Registro SHA db296ded52a982d36ecce22bd69c253a802824213fdd4fce03342e91f0d4c459. Primeras altas 24 h >= 491 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 248b9184 con BUILD1691 (resumir un PDF nombrado reintentado con la evidencia de idioma reparada). Turnos ordinarios sin operaciones.

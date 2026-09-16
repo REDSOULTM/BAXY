@@ -1,0 +1,70 @@
+commit c7e71a8aa75039e9c9a4231443b4b12d1295b2e8
+
+C03: PDF composer instruction in plain prose, shorter opening (PDF1693)
+
+In PDF1691 the English drafts for «Summarize informe.pdf.» came out as lowercase «key: value» lines («document: informe.pdf, pages: 2 / headings: …»), echoing the field names of the composer instruction, and the lowercase veto rejected all three. Both language instructions now ask for two or three plain sentences of prose starting with a capital letter, with no labels, no key: value lines and no list, naming the file of seen.document, its page count, each heading inside quotation marks and the opening of the text exactly as read; the projected opening is cut to 450 characters at a sentence end, never at the dot of a numbered heading. Offline composer probe over the real receipt: faithful English and Spanish finals.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 2a2ebbb5..d8943e1c 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -5041,7 +5041,9 @@ def _project_page_read(observed: dict, language: str) -> dict:
+     return projected
+ 
+ 
+-_PDF_LEAD_CHARACTERS = 700
++# 450 characters cut at a sentence end: the model quotes the whole lead, so
++# the lead itself is kept to the opening of the text.
++_PDF_LEAD_CHARACTERS = 450
+ _PDF_HEADINGS = 6
+ 
+ 
+@@ -5070,7 +5072,9 @@ def _project_pdf_read(observed: dict, language: str) -> dict:
+     flat = re.sub(r"\s+", " ", text).strip()
+     lead = flat[:_PDF_LEAD_CHARACTERS]
+     if len(flat) > _PDF_LEAD_CHARACTERS:
+-        cut = max(lead.rfind(". "), lead.rfind("! "), lead.rfind("? "))
++        # A sentence end, never the dot of a numbered heading («2. Agua y riego»).
++        ends = [m.end() - 1 for m in re.finditer(r"(?<!\d)[.!?] ", lead)]
++        cut = ends[-1] if ends else -1
+         if cut >= 120:
+             lead = lead[: cut + 1]
+     pages = observed.get("pages") if type(observed.get("pages")) is int else None
+@@ -13858,19 +13862,24 @@ class LlmRuntime:
+                 instruct(
+                     "\nseen.document is the name of the PDF that was read, seen.pages its "
+                     "page count, seen.headings its section headings exactly as read and "
+-                    "seen.lead the beginning of its text exactly as read. Say which "
+-                    "document it is and how many pages it has, say what it covers by "
+-                    "naming its headings verbatim (all of seen.headings, in order, if "
+-                    "there are any) and quote, inside quotation marks, the first one or "
+-                    "two sentences of seen.lead verbatim as what the document says; if "
+-                    "seen.moreNotShown is true, say that the document continues. Nothing "
+-                    "else: no summary in your own words, no facts, names or numbers that "
+-                    "are not in seen.headings or seen.lead, no question."
++                    "seen.lead the beginning of its text exactly as read. Write two or "
++                    "three plain sentences of prose, starting with a capital letter, with "
++                    "no labels, no key: value lines and no list: say that the file named "
++                    "in seen.document was read and how many pages it has, say what it "
++                    "covers by naming each heading of seen.headings, in order, inside "
++                    "quotation marks, and then quote, inside quotation marks, the first "
++                    "one or two sentences of seen.lead exactly as they are, as what the "
++                    "document says; if seen.moreNotShown is true, say that the document "
++                    "continues. Nothing else: no summary "
++                    "in your own words, no facts, names or numbers that are not in "
++                    "seen.headings or seen.lead, no question."
+                     if response_language == "en"
+                     else "\nseen.document es el nombre del PDF leído, seen.pages su cantidad "
+                     "de páginas, seen.headings los títulos de sus secciones tal cual se "
+-                    "leyeron y seen.lead el comienzo de su texto tal cual se leyó. Di qué "
+-                    "documento es y cuántas páginas tiene, di de qué trata nombrando sus "
++                    "leyeron y seen.lead el comienzo de su texto tal cual se leyó. Escribe "
++                    "dos o tres oraciones llanas en prosa, empezando con mayúscula, sin "
++                    "etiquetas, sin líneas clave: valor y sin lista: di qué documento se "
++                    "leyó y cuántas páginas tiene, di de qué trata nombrando sus "
+                     "títulos tal cual (todos los de seen.headings, en orden, si los hay) y "
+                     "cita, entre comillas, la primera o las dos primeras oraciones de "
+                     "seen.lead tal cual, como lo que dice el documento; si "
