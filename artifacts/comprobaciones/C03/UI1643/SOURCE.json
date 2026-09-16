@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1643-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_unresolved_input_kind: deictic_text) and src/baxy_mind/llm.py (its situation and validator: the question must ask where).",
+  "patch": "artifacts/comprobaciones/C03/UI1643/SOURCE.patch",
+  "commits": [
+    "6de63d677011ee1e11c10cb0ae3a417c85a0666c"
+  ],
+  "build": "BUILD1643 (C03-repairs1643-build/BUILD_READY.json; mente)",
+  "cause_measured": "Un texto para «ponerle» a nada iba al modelo sin lectura ni pregunta.",
+  "change": "Clase deictic_text con pregunta de dónde escribir; sin respuestas fijas.",
+  "measurement": "UI1643: un literal y dos variantes con cero operaciones y la pregunta fiel de dónde escribir el texto, dos límites aprobados; 1 créditos. Medición raíz: un texto para «ponerle» a nada se responde preguntando dónde escribirlo, sin operación.",
+  "credits": 1
+}

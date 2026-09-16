@@ -967,3 +967,7 @@ Interacción dentro de aplicaciones pasa de 6/22 a 7/22 con el clic nombrado por
 ## Actualización 2026-09-16 (UI1641)
 
 Interacción dentro de aplicaciones pasa de 7/22 a 8/22 con la orden de ir cortada respondida con la pregunta de cómo sigue (commit 7892fe01, BUILD1641) (HEAD 7892fe01): un literal y dos variantes con cero operaciones y preguntas fieles (cola cortada citada; qué carpeta), dos límites aprobados, 1 créditos. Medición raíz: una orden de ir cortada en una preposición se responde preguntando cómo sigue, sin navegar.
+
+## Actualización 2026-09-16 (UI1643)
+
+Interacción dentro de aplicaciones pasa de 8/22 a 9/22 con el texto sin destino respondido con la pregunta de dónde escribirlo (commit 6de63d67, BUILD1643) (HEAD 6de63d67): un literal y dos variantes con cero operaciones y la pregunta fiel de dónde escribir el texto, dos límites aprobados, 1 créditos. Medición raíz: un texto para «ponerle» a nada se responde preguntando dónde escribirlo, sin operación.

@@ -1,3 +1,11 @@
+# UI1643 adjudicado — 2026-09-16T01:02:35.652358+00:00
+
+**584/742 cubiertos, 158 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 9c1ed3d2b337df6def9130d3cb4622446c29ca9504de845363ef41e09ed31d6c. Primeras altas 24 h >= 458 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 6de63d67 con BUILD1643 (un texto para «ponerle» a nada pregunta dónde). Turnos ordinarios sin operaciones.
+
+UI1643 («Interacción dentro de aplicaciones», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): un literal y dos variantes con cero operaciones y la pregunta fiel de dónde escribir el texto, dos límites aprobados, 1 créditos. Adjudicación 1a7005b3f896af8a3bf3227f82e46398620a8d443652b4e98c4b2dab25335389. Medición raíz: un texto para «ponerle» a nada se responde preguntando dónde escribirlo, sin operación.
+
+---
+
 # UI1641 adjudicado — 2026-09-16T00:57:14.942115+00:00
 
 **583/742 cubiertos, 159 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA d98de876367dea673e6b0503b536e77073142e5923658e9fd82f23d11b341662. Primeras altas 24 h >= 457 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7892fe01 con BUILD1641 (una orden de ir cortada en una preposición pregunta cómo sigue). Turnos ordinarios sin operaciones.
