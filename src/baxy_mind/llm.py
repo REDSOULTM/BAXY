@@ -12376,6 +12376,29 @@ class LlmRuntime:
                         else "Responde exclusivamente en español."
                     ),
                 },
+                *(
+                    [{
+                        "role": "system",
+                        "content": (
+                            # UI1657: the field is a yes/no offer, not a datum.
+                            "system_microphone_confirmation significa: BAXY no maneja el "
+                            "botón de silencio de esa aplicación; sólo puede silenciar el "
+                            "micrófono del sistema de Windows, y entonces la aplicación "
+                            "dejaría de captarlo. La pregunta ofrece eso: pregunta si quiere "
+                            "que silencies el micrófono del sistema. No pidas confirmar "
+                            "estados, no preguntes cuál micrófono, no digas que no puedes."
+                            if response_language != "en"
+                            else "system_microphone_confirmation means: BAXY does not operate "
+                            "that application's mute button; it can only mute the Windows "
+                            "system microphone, and the application would then stop "
+                            "receiving it. The question offers exactly that: ask whether "
+                            "they want you to mute the system microphone. Do not ask them to "
+                            "confirm a state, do not ask which microphone, do not say you cannot."
+                        ),
+                    }]
+                    if missing_fields == ("system_microphone_confirmation",)
+                    else []
+                ),
                 {"role": "user", "content": context_json},
             ],
             "response_format": {
@@ -12431,12 +12454,20 @@ class LlmRuntime:
                     re.search(r"\b(?:microfono|micro|mic|microphone)\b", folded_question) is not None
                     and re.search(r"\b(?:sistema|system|windows|general|de la pc|del pc|del equipo|of the pc|computer)\b", folded_question) is not None
                 )
+                offers_mute = re.search(
+                    r"\b(?:quer[ée]s|quieres|deseas|te gustar[ií]a|prefer[ií]s|prefieres|"
+                    r"would you like|do you want|want me to|should i|shall i)\b.{0,60}"
+                    r"\b(?:silenci\w*|mute\w*|apag\w*|desactiv\w*|turn off)\b",
+                    folded_question,
+                ) is not None
                 claims_done_or_client = re.search(
-                    r"\b(?:silencie|silenciado|mutee|muteado|muted|i have muted|i muted|ya esta|already|"
+                    r"\b(?:ya (?:lo |la )?silenci[ée]|he silenciado|silenciado|ya (?:lo |la )?mute[ée]|muteado|muted it|i muted|i have muted|"
+                    r"ya est[aá]|already|est[aá]s? segur[oa]|has confirmado|are you sure|confirm that|"
+                    r"cu[aá]l micr[oó]fono|which microphone|which mic|"
                     r"no puedo|no se puede|cannot|can't|unable)\b",
                     folded_question,
                 ) is not None
-                if not names_system_microphone or claims_done_or_client:
+                if not names_system_microphone or not offers_mute or claims_done_or_client:
                     if attempt == 0:
                         payload["messages"].insert(
                             -1,
