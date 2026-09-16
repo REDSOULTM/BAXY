@@ -3449,9 +3449,11 @@ _CAUSE_FACT = {
         "nothing was done to it"
     ),
     # NETWORK1721 «conectate al wifi de casa» with no saved network of that
-    # name: the fact is the absence; nothing was connected or changed.
+    # name: the fact is the absence; nothing was done. Not «connected»: the
+    # truncated-word lens read the draft's «connect» as a cut of it
+    # (NETWORK1723 probe) and every English final died.
     "wifi_profile_not_found": (
-        "no saved Wi-Fi network has that name, so nothing was connected or changed"
+        "no saved Wi-Fi network has that name, so nothing was done"
     ),
     "mission_failed": "mission unfinished",
     "acting": "still working",

@@ -394,9 +394,18 @@ internal sealed class MindPlanSession
 
                     _ = _host.TryMarkResolved(registry, confirmation.Prepared);
                     execution.PendingOperation = null;
+                    // NETWORK1721 «conectate al wifi de casa» confirmed and ended
+                    // wifi_profile_not_found: the generic confirmed_no_effect reason
+                    // hid the operation's own failure facts, so the final said «no
+                    // hubo efecto» instead of the cause. A confirmed step that fails
+                    // with a typed error carries the same facts as an ordinary step.
                     FinishWithFailure(
                         execution,
-                        TurnVisibleFacts.Failure("confirmed_no_effect"));
+                        string.Equals(response.Status, OperationStatuses.Failed, StringComparison.Ordinal)
+                        && !string.IsNullOrWhiteSpace(response.ErrorCode)
+                        && OperationResponseProjection.CarriesOperationFacts(response.Message)
+                            ? response.Message
+                            : TurnVisibleFacts.Failure("confirmed_no_effect"));
                     return;
                 default:
                     throw new InvalidDataException("La respuesta de confirmación no es válida.");

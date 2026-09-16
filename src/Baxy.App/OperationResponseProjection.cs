@@ -61,6 +61,44 @@ internal sealed record OperationResponseProjection(string Message)
                     response.ErrorCode)));
     }
 
+    // NETWORK1721: a confirmed step that fails hands the mind the operation's
+    // own typed facts (kind operation, polarity failure, error) exactly as an
+    // ordinary step does, so the cause reaches the final; anything else keeps
+    // the generic confirmed_no_effect reason.
+    internal static bool CarriesOperationFacts(string? message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return false;
+        }
+
+        string trimmed = message.Trim();
+        if (!trimmed.StartsWith('{') || trimmed.Length > MaximumMessageLength)
+        {
+            return false;
+        }
+
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(trimmed);
+            JsonElement root = document.RootElement;
+            return root.ValueKind == JsonValueKind.Object
+                && root.TryGetProperty("kind", out JsonElement kind)
+                && kind.ValueKind == JsonValueKind.String
+                && kind.GetString() == "operation"
+                && root.TryGetProperty("polarity", out JsonElement polarity)
+                && polarity.ValueKind == JsonValueKind.String
+                && polarity.GetString() == "failure"
+                && root.TryGetProperty("error", out JsonElement error)
+                && error.ValueKind == JsonValueKind.String
+                && !string.IsNullOrWhiteSpace(error.GetString());
+        }
+        catch (JsonException)
+        {
+            return false;
+        }
+    }
+
     private static string TruncateMessage(
         string value,
         string suffix = "… [respuesta truncada]",
