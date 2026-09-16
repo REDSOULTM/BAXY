@@ -2967,7 +2967,14 @@ def cut_request_tail(objective: str) -> str | None:
     if not text or text[-1] in ".!?…»\")" or len(text) > 512:
         return None
     words = re.findall(r"[^\s]+", text)
-    if len(words) < 6:
+    # UI1641 H0088 «Ve a Cotele en»: a go-to order whose destination stops on a
+    # bare preposition arrived cut there even when short; four words suffice
+    # under a go-to head, six otherwise (FILES H0426).
+    go_to = re.match(
+        r"^[¿?¡!\s]*(?:ve|anda|andate|entra|entrá|abre|abrí|llevame|llévame|navega|navegá|go|open|take\s+me)\s+(?:a|al|to)\b",
+        effect_intent._fold(text),
+    ) is not None
+    if len(words) < (4 if go_to else 6):
         return None
     last = effect_intent._fold(words[-1]).strip(",;:")
     if last not in _CUT_TAIL_WORDS:
