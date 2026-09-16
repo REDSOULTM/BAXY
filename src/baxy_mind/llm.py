@@ -4060,6 +4060,24 @@ def _compose_situation_payload(
                 and situation.get("succeeded") is True
             ):
                 visible_seen["writtenText"] = written
+        elif operation == "input.visible.click" and visible_seen.get("ok") is True:
+            # UI1635 «clic en el botón Aceptar»: the receipt's absentOrDisabled
+            # is a post-read — the control was gone after the click because
+            # its dialog closed — but the narrator read it as «disabled» and
+            # published a failure over a verified click. Say what it means.
+            projected = {"name": visible_seen.get("name"), "clicked": True}
+            if visible_seen.get("absentOrDisabled") is True:
+                projected["controlGoneAfterClick"] = True
+                projected["note"] = (
+                    "the control disappeared after the click (its dialog or view closed); the click succeeded"
+                    if language == "en"
+                    else "el control desapareció tras el clic (su diálogo o vista se cerró); el clic se hizo"
+                )
+            if visible_seen.get("selected") is True:
+                projected["selected"] = True
+            if visible_seen.get("surfaceChanged") is True:
+                projected["surfaceChanged"] = True
+            visible_seen = projected
         elif operation == "filesystem.known.list":
             visible_seen = _project_known_listing(visible_seen, language)
         elif operation == "game.catalog.list":
@@ -5347,6 +5365,20 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         # verified click was narrated with a wrong verb. Say the button was
         # pressed; the label stays whatever the person said.
         return "missing_click_verb"
+    if (
+        payload.get("operation") == "input.visible.click"
+        and isinstance(seen, dict)
+        and (seen.get("ok") is True or seen.get("clicked") is True)
+        and re.search(
+            r"\b(?:deshabilitad\w*|desactivad\w*|inhabilitad\w*|disabled|not\s+clickable|no\s+(?:era|estaba|es|esta)\s+(?:clicable|clickeable|pulsable)|"
+            r"no\s+se\s+(?:pudo|pudieron)|couldn'?t|could\s+not|no\s+pude|no\s+encontr\w*|ausente|absent|was\s+not\s+(?:found|present))\b",
+            folded,
+        )
+        is not None
+    ):
+        # UI1635: a verified click narrated as a failure because the control
+        # was gone afterwards (its dialog closed).
+        return "reversed_result"
     if (
         payload.get("operation") in ("capture.screenshot", "capture.active.window")
         and isinstance(seen, dict)
