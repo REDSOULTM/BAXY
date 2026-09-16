@@ -1,0 +1,15 @@
+{
+  "schema": "c03-network1739-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (plan handler: the accepted Wi-Fi offer is the evidence of the two-step mission), together with the Chrome named-navigation files of the same build (src/Baxy.Kernel/Operations/ProductCatalog.cs, src/Baxy.Providers.Windows/External/NamedBrowserAdapter.cs, src/baxy_mind/effect_intent.py).",
+  "patch": "artifacts/comprobaciones/C03/NETWORK1739/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1739 (C03-repairs1739-build/BUILD_READY.json; mente (y núcleo/proveedor para WEB1741))",
+  "cause_measured": "El manejador de plan fundaba el argumento state de wifi.radio.set sólo en la respuesta «sí», sin la oferta aceptada, y pedía aclaración en vez de encender y escanear.",
+  "change": "El manejador de plan reconoce la oferta aceptada como evidencia de los dos pasos; navegación por nombre a Chrome, Edge y Brave en la misma compilación; sin respuestas fijas.",
+  "measurement": "NETWORK1739: 5 fallidos: la App se detuvo al arrancar en todos los casos (núcleo con TypeInitializationException: valores enumerados del argumento browser sin ordenar), ningún turno ni operación; 0 créditos. Compilación corregida a continuación (valores ordenados, comprobación de hello del núcleo en el setup) y repetición del diálogo como NETWORK1741; Chrome por nombre como WEB1743.",
+  "credits": 0
+}
