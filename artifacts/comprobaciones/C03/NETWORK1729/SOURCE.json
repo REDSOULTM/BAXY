@@ -1,0 +1,15 @@
+{
+  "schema": "c03-network1729-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (wifi.scan descriptor), src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs, src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs (WifiScanAsync over netsh wlan show networks mode=bssid) and WindowsExternalCapabilityProvider.cs (reason), src/Baxy.App/ObservedResponseLiterals.cs and src/baxy_mind/observed_response_literals.py (scanned names as observed literals), src/baxy_mind/effect_intent.py (_wifi_scan_question), __main__.py (arguments) and llm.py (cause facts, composer instruction and vetoes).",
+  "patch": "artifacts/comprobaciones/C03/NETWORK1729/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1729 (C03-repairs1729-build/BUILD_READY.json; núcleo, proveedor, App y mente)",
+  "cause_measured": "Ninguna operación listaba las redes visibles; el pedido se cerraba como límite conocido.",
+  "change": "Operación wifi.scan (netsh, estados tipados de radio apagada), lector y argumento en la mente, compositor con vetos de nombres y números; sin respuestas fijas.",
+  "measurement": "NETWORK1729: 5 ejecutados, 5 aprobados: el literal y sus dos variantes corrieron wifi.scan de sólo lectura, que terminó con el código sellado wifi_interface_off porque la radio WLAN de este PC está apagada (estado de la interfaz sin cambios), y los finales lo dijeron con verdad sin inventar redes; los dos límites aprobados; 1 créditos. Mecanismo: wifi.scan ejecuta netsh wlan show networks mode=bssid y devuelve las redes visibles o el estado tipado de la radio; la raíz no enciende la WLAN del dueño, así que el camino con redes visibles queda verificado por el analizador incrustado y la sonda offline del compositor.",
+  "credits": 1
+}

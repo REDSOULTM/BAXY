@@ -1,3 +1,25 @@
+## NETWORK1729 — estado vigente 2026-09-16T16:22:43.556030+00:00
+
+Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 621/742 | 121 | 0 | >=505 | 10/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 504 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); NETWORK1729 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: NETWORK1729: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Red y Bluetooth 20/21. Siguiente: la respuesta del dueño sobre Steam/Epic (H0559/H0432) y las filas diferidas.
+
+Evidencia: `artifacts/comprobaciones/C03/NETWORK1729/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 91.03 s acumulados; pico GPU 3497.56 MiB; pico RAM 1690.12 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque NETWORK1729 precedente. -->
+
 ## LIMITS1727 — estado vigente 2026-09-16T15:51:50.283427+00:00
 
 Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

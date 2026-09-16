@@ -1,0 +1,323 @@
+{
+  "schema": "network1729-root-adjudication-v2",
+  "decided_at_utc": "2026-09-16T16:22:43.556030+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "382f2aa6295c54931a13541a1f1fe9e385fe75cd",
+  "decisions_sha256": "fd36ac13da4132688d5d812dd94bd36207dc96852ed784d88a5e9418fe08d54e",
+  "registry_before_sha256": "a7c15e3a5313c661edf047977cee24935c521481d452992cdccaa41bedaf1192",
+  "registry_before_counts": {
+    "covered": 620,
+    "open": 122,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "52da2689e9f4152e64de9bbfa94a849eb7615fa10a0349f7652a404583914019",
+  "preparation_sha256": "ce13578c7f9fc82e20df5261aba15f4af49b2d62a2b12484d412a4893488f98f",
+  "passed": 5,
+  "failed": 0,
+  "unexecuted": 0,
+  "executed": 5,
+  "segments_started": 5,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [
+    "H0302"
+  ],
+  "counters": {
+    "covered": 621,
+    "open": 121,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 504,
+    "categories_total": 35,
+    "categories_closed_after": 10,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 504 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); NETWORK1729 añade 1. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 505
+  },
+  "resources": {
+    "seconds_sum": 91.03200000003562,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1690.1171875
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0302",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        1,
+        2
+      ],
+      "reason": "La lectura de redes wifi corrió y terminó con el código sellado wifi_interface_off porque la radio WLAN de este PC está apagada, y el final lo dijo con verdad sin inventar redes ni cambiar nada; crédito con dos variantes aprobadas del grupo (estado honesto sellado).",
+      "observation_note": "Turno ordinario: wifi.scan de sólo lectura terminada con el código sellado wifi_interface_off porque la radio WLAN de este PC está apagada (la raíz registró el estado de la interfaz antes y después: sin cambios); cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "a000472ad4bdfb6030d8d7a4e907cbde28deb3b1791100eb4601cffa606397ca",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\results\\case-00\\EXIT.json": "893492c3422c525dbc1ac522dbe29c624f35702e0edee5cc03a40621d0f98ab5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\results\\case-00\\RESOURCES.json": "8b790de5095ddfe171c77d2c954cb555e89d0d100bf1f281345d3ada69c411fb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\profile-owner-00.json": "3247ee65cbb5047c00920b353869d37543426cd9a819cd017c2b1a763851775d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\results\\case-00\\PREREG.json": "c0fa855d4c2e3a6367d8b50dba340ec9bba019aa166b9982fe5dda950c9b473d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-00\\capture\\events.jsonl": "130e13d4ce2f4530cf669bbcdcc59ac2eac2e9627e57793e2b9e9cd52b8886ea",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-00\\turns.jsonl": "cf38b8f15147c197546245e6deddb287463f8f10982b57c3dd9e9b032e99c7cd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\fixture-00.json": "05baeb41f9530a34af853af589e5e25558c074feb42e1e7fd79ada59a423f9e2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\context-00.json": "61201cf37db821866040dd41f240ea56587c1fd94c2f655925fe5f04da5ea6fb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\context-prelaunch-00.json": "bcac71059ea21ab261dfb6db4cf1d515e82947410d2059776d1e56f71e9a3779",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-00\\case-observations.json": "5127c92132e30418174076ece9bd7bd4050fca6b5fde87a3a362decec3335496",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-00\\journal-before.json": "dedb87d803f032fa1c38e36f2a50b7f4c704d35f94fd1ed84dca15ed402e4cb8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-00\\journal-after.json": "505f0bb1493323d28ce2b210ec02a947e3f486153ed061a6bd9f3690369fa631",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "dbf246b87c9b6532054163b2e83af84594b8ee505924b21d8ca10ce576fac05c"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "75a311df-edc8-4aac-b187-91274047aa0a",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "f04c54ca-fa63-47ef-8cc4-9215a7bef18e",
+          "operation": "wifi.scan",
+          "status": "failed",
+          "verified": false,
+          "error_code": "wifi_interface_off",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "network1729-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "La lectura de redes wifi corrió y terminó con el código sellado wifi_interface_off porque la radio WLAN de este PC está apagada, y el final lo dijo con verdad sin inventar redes ni cambiar nada.",
+      "observation_note": "Turno ordinario: wifi.scan de sólo lectura terminada con el código sellado wifi_interface_off porque la radio WLAN de este PC está apagada (la raíz registró el estado de la interfaz antes y después: sin cambios); cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "73f80e6203a0fc4dd3e80a75cabc61002c46d56a5f8967a059a0c416e909033a",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\results\\case-01\\EXIT.json": "aa0105e9c0c0ec6b802babfff351a5c5741cdd34d75174798fb28dfeefd19693",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\results\\case-01\\RESOURCES.json": "017e5a74a18072c06fcfe1c76be490a862343b4201033d292205b929507f5e90",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\profile-owner-01.json": "f57a8099e87d8e7a02465a0974c5a13bfe39512725e61db9d72ff46dd7e72a23",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\results\\case-01\\PREREG.json": "3efa1c8d935b77357c3ca74bdd60e0ccc01c7008cdc80f87f0968a4443ef0495",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-01\\capture\\events.jsonl": "214d04db571dbd8c9563c2a5fc31a3b00d823644776e02343102b90759773610",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-01\\turns.jsonl": "f11626679187b512503d3424f1f3e33a7b790fefb07c037ed2e6da0a51e0c84c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\fixture-01.json": "d885ad46fce23af12d7b23098305e73634f052ac322b55f94df09986b13c2cad",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\context-01.json": "98f1450c0981df97c6b10865d3ca81c8ea4c5525800a564b2cb6fde6ee6ed73e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\context-prelaunch-01.json": "e22d878336f6c2b24db16c6fa61b1c8a120b0ded4c19052b426ee4e905657cd8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-01\\case-observations.json": "93fac12086938f365e3b02fc95d3b123ee3434652b4343c73a293167653a4a05",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-01\\journal-before.json": "f90250bbc249b30a026f07f0d7b09952da79ae9bb4c1a1d78e6126dbea0d4e78",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-01\\journal-after.json": "acd2868825edb621f1e919c6fe702a54f92e0690d96f73b6174b23f84af6c4b1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "c910b54619d285ef3b61e78ffb17666f3a0f6aaf06a5c630e2ee7759b1caa1aa"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "6bfa26cf-ea08-4c78-9fd9-66be8fe6db5b",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "e1ea99a0-3b35-423d-87eb-9503ea7a83c4",
+          "operation": "wifi.scan",
+          "status": "failed",
+          "verified": false,
+          "error_code": "wifi_interface_off",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "network1729-dev-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "La lectura de redes wifi corrió y terminó con el código sellado wifi_interface_off porque la radio WLAN de este PC está apagada, y el final lo dijo con verdad sin inventar redes ni cambiar nada.",
+      "observation_note": "Turno ordinario: wifi.scan de sólo lectura terminada con el código sellado wifi_interface_off porque la radio WLAN de este PC está apagada (la raíz registró el estado de la interfaz antes y después: sin cambios); cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "8da5e8af40e338f16472aed63627ddc1e85d3ebbfa0f72d1247ff34f09c9ec9a",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\results\\case-02\\EXIT.json": "2c8383fe099b050c1732603a0bf81bab8ce52b31afc60400bbd159da08168257",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\results\\case-02\\RESOURCES.json": "d0f1e34d208795abae7acc40e4aeff0b2e059c3654f494ac83ee9dd823fc4cbb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\profile-owner-02.json": "1be592d1a7f723bf171454fff4f1ea926fc91f844078fdabef0f152e05f932f8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\results\\case-02\\PREREG.json": "86c93eac99994c8c3906c19eea4837b9fa14432c3f06a5b95e9b5b74aa1881c4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-02\\capture\\events.jsonl": "94ec58a7e1d32e035c75d18012d31b096a97d649e72776590650d50d39a6e711",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-02\\turns.jsonl": "4968557be7981f4a054aee637a9042fd47c9f145b1117ac71dd858baba127a8c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\fixture-02.json": "fb3ec3e6608312bff1fcb2ac278b84934a490db93dd0de5849375293867ce906",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\context-02.json": "757379f74da09d19bf13e21a9153812319fce618f087a85985124921bba82361",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\context-prelaunch-02.json": "ae584a945cc8b5994172026ffb2f519512ac484190d062fcc7790b0966a66451",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-02\\case-observations.json": "6382bac47a40fea52bf80db9bcad18ed40499c406fbbab8de63f4c4e49ff53e2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-02\\journal-before.json": "32a0d061b680794855e6c79edd3bd76318bee93d257eeabe4e449bcabd2c168e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-02\\journal-after.json": "2844dba69c6dd52fd80901595c9d275e128cd74196ec1dcc47897f1383bfcaa4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "9baeba7ffab972ab38e3c921ad1d80f0c08651838fad6a143be1cba12d186312"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "76459936-3921-4d1d-81d4-4522fd458cd4",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "e4c1a0a5-1ff1-4754-8834-ba2ac106a2ba",
+          "operation": "wifi.scan",
+          "status": "failed",
+          "verified": false,
+          "error_code": "wifi_interface_off",
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "network1729-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "079dcf48422f7225c0ad7f30281d5b657a327dfc9f3968b0804512bcf49cb73d",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\results\\case-03\\EXIT.json": "649c1792d74ad34e3daf97ceaca392584c3681adbca5fc692fb99efa498ee9e4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\results\\case-03\\RESOURCES.json": "ae625064ddb19eb24f4cfe2f41913b4e939fdecb3a5a4c4685d8791de07292f5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\profile-owner-03.json": "90b750cee4abfd32de69884a8d0b11a31735c41c71febf44d88cf323f1027969",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\results\\case-03\\PREREG.json": "2582bfcb613dcc9de0b23526d9e7e74544671b15b5e25ee5bb8e482f4f996b6c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-03\\capture\\events.jsonl": "51dbc9e305a59e83e854f653ca53a0ccb229a973fcc8707d6b6593f5a64adaeb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-03\\turns.jsonl": "fe6c145f3542349fabd0ffca6e7bd25e5c5a288ac73ea6083a82b2b0276a21fd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\fixture-03.json": "7ff1dc8fc0aad76365b56be9a5d5c8eabf870dc114f0f17e743fa178db2457c4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\context-03.json": "56b7755ec782de1070ebd8c7d9da25d328cd0dba2a7acbeef228c0f859a3a562",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\context-prelaunch-03.json": "a0efb908c84a5cf6f2e5154843a2aca5aff48dd5623fb9266b48019b0751acab",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-03\\case-observations.json": "bbefeeffaaa410dce72177a923f192adcff32d9d6ca6ea7d3f0fd8e2e736f30a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-03\\journal-before.json": "9dbc03f8bb5329e1ecafa1b9950a80afe9c2e5ee05f90cf1a25b55760dbc1ba9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-03\\journal-after.json": "11a9c2e6a2605f3f7b896c5ddfd882f289db0233ae164c429fb01fc2a48fa716",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "a09ee0cfd492d549cd66c4903fdd4889506cd7029086002dec14bbdfc0a5ecb5"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "4ac8a4d2-a6ff-4e06-90bf-e4d9fcb03020",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "network1729-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "eaa62e0433f0e24df8fa0aefcd0983faf9854f82430c64ae546ab9665b78080b",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\results\\case-04\\EXIT.json": "dafa7dc8694066f233a6ae7b1cd4865c42557e96ec4fcf6e680316b63f6a7c4f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\results\\case-04\\RESOURCES.json": "3fb2c5f4b74ef868884279568436ddea70be70d2dc6df40407aae9530b8329cf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\profile-owner-04.json": "5ad32303f75d29400b1025d3ebaaa9d612fbd84dbe50eeacfb1f88b796f750f0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\results\\case-04\\PREREG.json": "8f7feaaa8a52e59738e9c8f909bf9097614965c694cb1cd8881d13e3ed687b7b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-04\\capture\\events.jsonl": "e10ef47d0c4211ce0ce3fdee3d10702a5809a3f2b86e8b11b39079f6c92758b1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-04\\turns.jsonl": "74363b2c91199a3ebab59e8cc6f0008670dbb96c94b0c239dd0e6ba8d8d07dcc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\fixture-04.json": "a89d545d7250d812e84b303c4f80fe8f31e790b7d0c8fa2d0c6f72234aff68ba",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\context-04.json": "a7267e5d99a89c6222e95a0d08d2832d415d6dd460a55140b51349c81f47b837",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\context-prelaunch-04.json": "2308de622ad244435679d3e1cd2afd4e8766cb36c7dd3d8461309da3f6d67cb3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-04\\case-observations.json": "0e99efd3cbf5ae0a610fb6b5d280656ad69e6977b7cca423f4f7795e4c2bd984",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-04\\journal-before.json": "1a6077d865651bc56495fe9b00e590ef5caa599609a78178507e3d465ef07de8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-04\\journal-after.json": "fc5a7e0b1871ab71c4c58ff2d7d45e6a386900a81668f432c4d6dff642f202a9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-network1729-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "63adf918b116c191cd35eff5b1f0119fdc7043de138e14e4cce083c3f33d74a7"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "224452f3-cae5-4279-a93c-0adc84eb8cff",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "NETWORK1729: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Red y Bluetooth 20/21. Siguiente: la respuesta del dueño sobre Steam/Epic (H0559/H0432) y las filas diferidas.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

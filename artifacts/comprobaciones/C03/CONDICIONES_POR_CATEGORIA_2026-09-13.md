@@ -1203,3 +1203,7 @@ Interacción dentro de aplicaciones pasa de 16/22 a 18/22 con la aritmética ped
 ## Actualización 2026-09-16 (LIMITS1727)
 
 Navegación y búsqueda web pasa de 41/46 a 42/46 con descargar una imagen de la web al escritorio respondido como límite conocido (commit 8811f33a, BUILD1727) (HEAD 8811f33a): 5 ejecutados, 5 aprobados: el literal y sus dos variantes terminaron con cero operaciones y un final que dice llanamente que no descarga la imagen de wikipedia.org al escritorio nombrando el pedido; los dos límites aprobados, 1 créditos. Límite legítimo por decisión del dueño (2026-09-16); sin cambios de código: el contrato browser.download.file de LIMITS1683 (commit 48c183b0) medido sobre la compilación vigente.
+
+## Actualización 2026-09-16 (NETWORK1729)
+
+Red y Bluetooth pasa de 19/21 a 20/21 con qué redes wifi hay leído del adaptador o respondido con la radio apagada dicha con verdad (commit 382f2aa6, BUILD1729) (HEAD 382f2aa6): 5 ejecutados, 5 aprobados: el literal y sus dos variantes corrieron wifi.scan de sólo lectura, que terminó con el código sellado wifi_interface_off porque la radio WLAN de este PC está apagada (estado de la interfaz sin cambios), y los finales lo dijeron con verdad sin inventar redes; los dos límites aprobados, 1 créditos. Mecanismo: wifi.scan ejecuta netsh wlan show networks mode=bssid y devuelve las redes visibles o el estado tipado de la radio; la raíz no enciende la WLAN del dueño, así que el camino con redes visibles queda verificado por el analizador incrustado y la sonda offline del compositor.
