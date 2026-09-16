@@ -5644,6 +5644,23 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         ) is None:
             return "echo_without_report"
     if (
+        payload.get("operation") == "calculator.expression.evaluate"
+        and isinstance(seen, dict)
+        and isinstance(seen.get("value"), str)
+    ):
+        # UI1725: every number in the reply is an operand of the typed
+        # expression or the value the Calculator showed; the value must appear.
+        allowed_numbers = set(re.findall(r"\d+(?:[.,]\d+)?", str(seen.get("expression") or "")))
+        shown_value = str(seen["value"]).strip()
+        allowed_numbers.add(shown_value)
+        allowed_numbers.add(shown_value.replace(",", "."))
+        allowed_numbers.add(shown_value.replace(".", ","))
+        for number in re.findall(r"\d+(?:[.,]\d+)?", text):
+            if number not in allowed_numbers:
+                return "invented_number"
+        if shown_value and shown_value not in text and shown_value.replace(".", ",") not in text and shown_value.replace(",", ".") not in text:
+            return "missing_state"
+    if (
         payload.get("operation") == "software.python.status"
         and isinstance(seen, dict)
         and isinstance(seen.get("pythons"), list)
@@ -13806,6 +13823,26 @@ class LlmRuntime:
                 if response_language == "en"
                 else "\nseen.radioOn es la radio Bluetooth: true significa encendida, false "
                 "significa apagada. Di cuál, en una oración corta; no se cambió nada."
+            )
+        if (
+            visible_situation.get("operation") == "calculator.expression.evaluate"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("value"), str)
+        ):
+            # UI1725: the expression was typed into the open Calculator and its
+            # display read back; the report states the operation and the result.
+            instruct(
+                "\nseen.expression is the arithmetic typed into the open Windows Calculator "
+                "and seen.value is exactly what its display shows now. Say, in one "
+                "sentence, the operation and its result as shown (for example that six "
+                "times seven gives 42 in the Calculator), using only those numbers; "
+                "nothing else was done."
+                if response_language == "en"
+                else "\nseen.expression es la operación escrita en la Calculadora de Windows "
+                "abierta y seen.value es exactamente lo que muestra su pantalla ahora. Di, "
+                "en una oración, la operación y su resultado tal como se muestra (por "
+                "ejemplo que seis por siete da 42 en la Calculadora), usando sólo esos "
+                "números; no se hizo nada más."
             )
         if (
             visible_situation.get("operation") == "software.python.status"

@@ -5606,6 +5606,10 @@ def _explicit_arguments_from_evidence(
         if effect_intent._python_status_question(evidence):
             return {}
 
+    if operation == "calculator.expression.evaluate":
+        expression = effect_intent.calculator_expression_request(evidence)
+        return {"expression": expression} if expression is not None else None
+
     if operation == "filesystem.known.list":
         recent_listing = effect_intent._known_folder_recent_listing(evidence)
         if recent_listing is not None:
@@ -5790,6 +5794,13 @@ def _ground_explicit_arguments(
     ):
         # The shared positive request grammar owns the known-folder enum;
         # the filename remains literal. Keep the authenticated schema boundary.
+        return explicit if validate_json_schema_instance(explicit, schema) else None
+    if (
+        operation == "calculator.expression.evaluate"
+        and effect_intent.calculator_expression_request(evidence) == explicit.get("expression")
+    ):
+        # UI1725: the expression is composed from the person's own numbers and
+        # operator word («6 por 7» -> 6*7); the symbol is not a literal token.
         return explicit if validate_json_schema_instance(explicit, schema) else None
     if (
         operation == "document.pdf.read"

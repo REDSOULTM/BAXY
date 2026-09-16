@@ -269,7 +269,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     public bool CanHandle(string operation) => operation is
         "bluetooth.device.list" or "bluetooth.device.pair"
         or "bluetooth.radio.set" or "bluetooth.radio.status"
-        or "display.status" or "software.python.status"
+        or "display.status" or "software.python.status" or "calculator.expression.evaluate"
         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
         or "wifi.profile.list" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
         or "wifi.ensure.connected" or "wifi.status"
@@ -293,6 +293,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 "bluetooth.radio.status" => await BluetoothRadioStatusAsync(operation),
                 "display.status" => DisplayStatus(operation),
                 "software.python.status" => PythonStatus(operation),
+                "calculator.expression.evaluate" => await CalculatorEvaluateAsync(
+                    operation, arguments, effectBoundary, cancellationToken),
                 "peripheral.list" => await PeripheralListAsync(operation, arguments, cancellationToken),
                 "peripheral.print" => await PrintAsync(
                     operation, arguments, effectBoundary, cancellationToken),
@@ -506,6 +508,93 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     // SYSTEM1697 H0307 «dime la versión de Python instalada»: the installs a
     // Python distributor registered under Software\Python (PEP 514), read from
     // the registry only — no interpreter is started, nothing is executed.
+    // UI1725 «multiplicá 6 por 7 en la calc»: the expression is typed into the
+    // Windows Calculator that is already open — brought to the foreground and
+    // verified there, otherwise nothing is typed — and the display is read
+    // back through UI Automation (CalculatorResults / CalculatorExpression).
+    private const string CalculatorScript = """
+        $ErrorActionPreference='Stop';$expr=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]))
+        Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes;Add-Type -AssemblyName System.Windows.Forms
+        $sig='using System;using System.Runtime.InteropServices;public static class BaxyCalcWin{[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();}'
+        if(-not ([System.Management.Automation.PSTypeName]'BaxyCalcWin').Type){Add-Type -TypeDefinition $sig}
+        $root=[System.Windows.Automation.AutomationElement]::RootElement
+        $cond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ClassNameProperty,'ApplicationFrameWindow')
+        $calc=$null;foreach($f in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){if($f.Current.Name -match '^(Calculadora|Calculator)$'){$calc=$f;break}}
+        if($null -eq $calc){[pscustomobject]@{ok=$false;error='calculator_window_not_found'}|ConvertTo-Json -Compress;exit 2}
+        $h=[IntPtr]$calc.Current.NativeWindowHandle;[void][BaxyCalcWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 300
+        if([BaxyCalcWin]::GetForegroundWindow() -ne $h){[pscustomobject]@{ok=$false;error='calculator_not_foreground'}|ConvertTo-Json -Compress;exit 3}
+        $keys=($expr -replace '[^0-9+\-*/().]','')
+        if($keys.Length -eq 0){[pscustomobject]@{ok=$false;error='calculator_expression_invalid'}|ConvertTo-Json -Compress;exit 4}
+        [System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 150
+        foreach($ch in $keys.ToCharArray()){$k=switch($ch){'+'{'{+}'} '('{'{(}'} ')'{'{)}'} default{[string]$ch}};[System.Windows.Forms.SendKeys]::SendWait($k);Start-Sleep -Milliseconds 40}
+        [System.Windows.Forms.SendKeys]::SendWait('=');Start-Sleep -Milliseconds 400
+        $idCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'CalculatorResults')
+        $display=$calc.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$idCond)
+        $exprCond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::AutomationIdProperty,'CalculatorExpression')
+        $shown=$calc.FindFirst([System.Windows.Automation.TreeScope]::Descendants,$exprCond)
+        if($null -eq $display){[pscustomobject]@{ok=$false;error='calculator_display_not_read'}|ConvertTo-Json -Compress;exit 5}
+        $name=[string]$display.Current.Name;$exprName=if($shown){[string]$shown.Current.Name}else{''}
+        $value=($name -replace '^[^0-9\-]*','').Trim()
+        [pscustomobject]@{ok=$true;typed=$keys;displayName=$name;expressionName=$exprName;value=$value}|ConvertTo-Json -Compress
+        """;
+
+    private static readonly Regex CalculatorExpression = new(
+        @"^\s*\d{1,12}(?:[.,]\d{1,6})?(?:\s*[-+*/×÷xX]\s*\d{1,12}(?:[.,]\d{1,6})?){1,8}\s*$",
+        RegexOptions.CultureInvariant);
+
+    private async ValueTask<ExternalCapabilityReceipt> CalculatorEvaluateAsync(
+        string operation,
+        JsonElement arguments,
+        ExternalEffectBoundary effectBoundary,
+        CancellationToken token)
+    {
+        string expression = ExternalJson.RequiredString(arguments, "expression").Trim();
+        if (!CalculatorExpression.IsMatch(expression))
+        {
+            return ExternalJson.Failure(operation, "calculator_expression_invalid");
+        }
+        string normalized = expression
+            .Replace("×", "*", StringComparison.Ordinal)
+            .Replace("÷", "/", StringComparison.Ordinal)
+            .Replace("x", "*", StringComparison.OrdinalIgnoreCase)
+            .Replace(",", ".", StringComparison.Ordinal)
+            .Replace(" ", string.Empty, StringComparison.Ordinal);
+        effectBoundary.Cross(token);
+        ExternalProcessResult process = await RunPowerShellAsync(CalculatorScript, [Encode(normalized)], token);
+        using JsonDocument document = ParseLastJson(process.Output);
+        JsonElement root = document.RootElement;
+        if (root.ValueKind != JsonValueKind.Object)
+        {
+            return ExternalJson.Failure(operation, "calculator_display_not_read", true);
+        }
+        if (!Bool(root, "ok"))
+        {
+            string code = root.TryGetProperty("error", out JsonElement error) && error.ValueKind == JsonValueKind.String
+                ? error.GetString() ?? "calculator_display_not_read"
+                : "calculator_display_not_read";
+            return ExternalJson.Failure(operation, code, code is "calculator_display_not_read");
+        }
+        string value = root.TryGetProperty("value", out JsonElement valueElement) && valueElement.ValueKind == JsonValueKind.String
+            ? valueElement.GetString() ?? string.Empty
+            : string.Empty;
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return ExternalJson.Failure(operation, "calculator_display_not_read", true);
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("expression", normalized);
+            writer.WriteString("shownExpression", root.TryGetProperty("expressionName", out JsonElement shown) && shown.ValueKind == JsonValueKind.String ? shown.GetString() ?? string.Empty : string.Empty);
+            writer.WriteString("display", root.TryGetProperty("displayName", out JsonElement display) && display.ValueKind == JsonValueKind.String ? display.GetString() ?? string.Empty : string.Empty);
+            writer.WriteString("value", value);
+            writer.WriteString("authority", "windows_calculator_uia_display");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: true);
+    }
+
     private static ExternalCapabilityReceipt PythonStatus(string operation)
     {
         var installs = new List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)>();

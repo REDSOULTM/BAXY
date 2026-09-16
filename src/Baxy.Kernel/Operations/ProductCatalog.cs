@@ -244,6 +244,13 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Crea un evento en una cuenta de calendario autenticada y verifica su identidad remota."),
         Descriptor(
+            "calculator.expression.evaluate",
+            Schema([String("expression", maximumLength: 64, nonWhitespace: true)], ["expression"]),
+            OperationRisks.LowReversible,
+            "calculator.expression.evaluate.windows.calculator.uia.display.v1",
+            ToolExposure.Public,
+            "Escribe una expresión aritmética simple en la Calculadora de Windows abierta (en primer plano, verificada) y lee el resultado que muestra su pantalla mediante UI Automation; sin efecto fuera de la Calculadora."),
+        Descriptor(
             "calendar.event.list",
             Schema(
                 [

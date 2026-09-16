@@ -1567,6 +1567,8 @@ def _curated_domain_is_grounded(
         return True
     if operation == "software.python.status":
         return _has(folded, r"\bpython\b")
+    if operation == "calculator.expression.evaluate":
+        return calculator_expression_request(folded) is not None
     if operation == "display.status":
         return _has(folded, r"\b(?:resolucion|monitor(?:es)?|pantallas?|screens?|displays?|hz|hertz|hercios|frecuencia|refresh)\b")
     if operation == "bluetooth.radio.status":
@@ -10222,6 +10224,48 @@ _PYTHON_STATUS_QUESTION = re.compile(
 )
 
 
+_CALC_NUMBER = r"\d{1,12}(?:[.,]\d{1,6})?"
+_CALC_MENTION = r"\b(?:calc|calcu|calculadora|calculator)\b"
+_CALC_VERB_OPERATORS = (
+    (r"(?:multiplic[aá]|multiplicame|multiplicar|multiply)", r"(?:por|x|×|\*|by|times)", "*"),
+    (r"(?:sum[aá]|sumame|sumar|add)", r"(?:m[aá]s|mas|y|\+|and|plus|to)", "+"),
+    (r"(?:rest[aá]|restame|restar|subtract)", r"(?:menos|-|minus|from)", "-"),
+    (r"(?:divid[ií]|divideme|dividir|divide)", r"(?:entre|por|÷|/|by)", "/"),
+)
+_CALC_INFIX = {"por": "*", "x": "*", "×": "*", "*": "*", "mas": "+", "más": "+", "+": "+", "menos": "-", "-": "-", "entre": "/", "÷": "/", "/": "/", "times": "*", "plus": "+", "minus": "-"}
+
+
+def calculator_expression_request(text: str) -> str | None:
+    """UI1725 «multiplicá 6 por 7 en la calc», «Suma 2 más 2 en la Calculadora»,
+    «cuánto es 6 por 7 en la calculadora»: the arithmetic the person wants typed
+    into the open Calculator, as an expression over the person's own numbers;
+    None without a Calculator mention or a readable binary operation."""
+
+    folded = _strip_request_envelope(_fold(text)).strip()
+    if not _has(folded, _CALC_MENTION) or _has(folded, r"\b(?:abre|abrir|abri|cierra|cerra|open|close)\b"):
+        return None
+    for verb, operator, symbol in _CALC_VERB_OPERATORS:
+        found = re.search(
+            rf"\b{verb}\s+(?P<a>{_CALC_NUMBER})\s*{operator}\s*(?P<b>{_CALC_NUMBER})\b",
+            folded,
+        )
+        if found is not None:
+            a, b = found.group("a"), found.group("b")
+            if symbol == "-" and re.search(r"\bfrom\b", found.group(0)):
+                a, b = b, a
+            return f"{a}{symbol}{b}"
+    infix = re.search(
+        rf"(?P<a>{_CALC_NUMBER})\s*(?P<op>por|x|×|\*|mas|\+|menos|-|entre|÷|/|times|plus|minus)\s*(?P<b>{_CALC_NUMBER})\b",
+        folded,
+    )
+    if infix is not None and (
+        _head_is(_request_head(folded), r"(?:calcula|calculame|calcular|calculate|compute|cuanto|cuanto|resolve|resolvé|resolver)")
+        or _has(folded, r"^[¿?¡!\s]*(?:cuanto|cuánto|what)\s+(?:es|is|da|sale)\b")
+    ):
+        return f"{infix.group('a')}{_CALC_INFIX[infix.group('op')]}{infix.group('b')}"
+    return None
+
+
 def _python_status_question(text: str) -> bool:
     """SYSTEM1697 «dime la versión de Python instalada», «qué versión de python
     tengo», «is Python installed»: a software.python.status read of the registered
@@ -10547,6 +10591,14 @@ def _strict_catalog_request(
         return EffectIntent(("display.status",), (text,))
     if "software.python.status" in available_operations and _python_status_question(text):
         return EffectIntent(("software.python.status",), (text,))
+    if (
+        "calculator.expression.evaluate" in available_operations
+        and calculator_expression_request(text) is not None
+        and not _is_negative_effect_clause(_fold(text))
+    ):
+        # UI1725: the arithmetic is typed into the open Calculator and its
+        # display is read back.
+        return EffectIntent(("calculator.expression.evaluate",), (text,))
     if window_inventory_arguments(text) is not None:
         return (
             EffectIntent(("window.resolve",), (text,))

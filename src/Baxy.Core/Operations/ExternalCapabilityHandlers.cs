@@ -22,6 +22,7 @@ internal static class ExternalCapabilityHandlers
         "browser.page.read",
         "browser.tabs.list",
         "calendar.event.create",
+        "calculator.expression.evaluate",
         "calendar.event.list",
         "clipboard.copy",
         "clipboard.paste",
