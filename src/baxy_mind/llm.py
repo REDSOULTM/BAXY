@@ -4395,9 +4395,13 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
                 "asked, say it is already installed. If installed is true and "
                 "uninstalling was asked, say it is installed and that removing it "
                 "is done from Windows Settings > Apps, as a fact, without saying "
-                "you cannot or failed. If installed is false, say it is not in "
-                "the Windows Start catalog. One or two sentences, the person's "
-                "language, the application named as they named it."
+                "you cannot or failed. If installed is false and installing was "
+                "asked, say it is not in the Windows Start catalog and that "
+                "installing it is done with the vendor's own installer, as a "
+                "fact, without saying you cannot or failed and without offering "
+                "to download it. If installed is false and uninstalling was asked, "
+                "say it is not in the Windows Start catalog. One or two sentences, "
+                "the person's language, the application named as they named it."
             )
         bits.append(
             "This result verifies application presence only, not an opening. "

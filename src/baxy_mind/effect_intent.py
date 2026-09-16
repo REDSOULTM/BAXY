@@ -15057,7 +15057,18 @@ def installed_catalog_application_name(
     name = match.group("name").strip()
     if not name:
         return None
-    return resolve_application_catalog_app_id("abre " + name, application_names)
+    catalog_name = resolve_application_catalog_app_id("abre " + name, application_names)
+    if catalog_name is not None:
+        return catalog_name
+    # INSTALL1629 «instala Photoshop»: known software absent from the catalog
+    # is answered by the same presence read, with the name as the person
+    # wrote it (the read proves absence; nothing is installed).
+    if re.fullmatch(_KNOWN_SOFTWARE, name) is not None:
+        raw = str(text)
+        folded_raw = _fold(raw)
+        position = folded_raw.find(name) if len(folded_raw) == len(raw) else -1
+        return raw[position:position + len(name)] if position >= 0 else name
+    return None
 
 
 def installed_game_title(text: str) -> str | None:
