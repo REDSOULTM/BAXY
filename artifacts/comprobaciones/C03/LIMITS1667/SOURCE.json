@@ -1,0 +1,15 @@
+{
+  "schema": "c03-limits1667-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "no source change (the LIMITS1667 binaries reused): contacts.add known-unsupported contract; group criterion revised.",
+  "patch": "artifacts/comprobaciones/C03/LIMITS1667/SOURCE.patch",
+  "commits": [
+    "368a18e36562e1e4f88a37c9b6088d02bcc343cc"
+  ],
+  "build": "BUILD1665 (C03-repairs1665-build/BUILD_READY.json; mismos binarios)",
+  "cause_measured": "Criterio sellado más estricto que la verdad que protege (no repetir un número que la propia persona escribió).",
+  "change": "Sin cambio de fuente; criterio del grupo revisado; sin respuestas fijas.",
+  "measurement": "LIMITS1667: dos literales y dos variantes con cero operaciones y el límite dicho llanamente nombrando el pedido; dos límites aprobados; 2 créditos. Medición raíz: guardar un contacto se responde como límite conocido en español e inglés citando lo que la persona escribió; los tres límites negativos de contactos reciben la misma respuesta y siguen sin acreditarse.",
+  "credits": 2
+}

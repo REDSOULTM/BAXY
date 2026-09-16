@@ -1,3 +1,11 @@
+# LIMITS1667 adjudicado — 2026-09-16T04:01:15.507981+00:00
+
+**598/742 cubiertos, 144 abiertos, 0 NA; 7/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17); C03 formal 3/11. Registro SHA b677ab09d3182e70b2292f9ce2830c58f07d76c3547c1d2368275bce5374f2f9. Primeras altas 24 h >= 472 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 368a18e3 con BUILD1665 (guardar un contacto es un límite conocido que puede citar el nombre y el número pedidos). Turnos ordinarios sin operaciones.
+
+LIMITS1667 («Contactos», el contacto respondido como límite conocido citando lo que la persona pidió): dos literales y dos variantes con cero operaciones y el límite dicho llanamente nombrando el pedido; dos límites aprobados, 2 créditos. Adjudicación e6668b92cc09bc69727b64062a7ec47c6bd9840a44f7d7e6286f3cb38a8ad86a. Medición raíz: guardar un contacto se responde como límite conocido en español e inglés citando lo que la persona escribió; los tres límites negativos de contactos reciben la misma respuesta y siguen sin acreditarse.
+
+---
+
 # LIMITS1665 adjudicado — 2026-09-16T03:54:59.481185+00:00
 
 **596/742 cubiertos, 146 abiertos, 0 NA; 7/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17); C03 formal 3/11. Registro SHA 6670e241151a8798c89aebb0e0190d4130a4e3a3fbb62252af90dcaab853a43c. Primeras altas 24 h >= 470 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 65ce4acf con BUILD1665 (fondo de pantalla, presentaciones y contactos son límites conocidos). Turnos ordinarios sin operaciones.

@@ -1015,3 +1015,7 @@ Interacción dentro de aplicaciones pasa de 14/22 a 16/22 con la navegación den
 ## Actualización 2026-09-16 (LIMITS1665)
 
 Brillo y pantalla pasa de 16/17 a 17/17, Crear documentos y editar imágenes de 0/2 a 1/2 y Contactos de 0/5 a 0/5 con el fondo de pantalla, la presentación y el contacto respondidos como límites conocidos (commit 65ce4acf, BUILD1665) (HEAD 65ce4acf): el fondo de pantalla y la presentación con sus dos variantes cada uno como límites dichos llanamente; los contactos sin par porque dos finales repitieron el número excluido por el criterio; dos límites aprobados, 2 créditos. Medición raíz: los contratos de efecto conocido sin operación cierran el turno como límite nombrando el pedido en español e inglés; el criterio de no repetir el número no se cumplió en los dos pedidos que lo traían (siguiente LIMITS1667 con el criterio de contactos revisado: el número del propio pedido puede citarse). La categoría queda cerrada.
+
+## Actualización 2026-09-16 (LIMITS1667)
+
+Contactos pasa de 0/5 a 2/5 con el contacto respondido como límite conocido citando lo que la persona pidió (commit 368a18e3, BUILD1665) (HEAD 368a18e3): dos literales y dos variantes con cero operaciones y el límite dicho llanamente nombrando el pedido; dos límites aprobados, 2 créditos. Medición raíz: guardar un contacto se responde como límite conocido en español e inglés citando lo que la persona escribió; los tres límites negativos de contactos reciben la misma respuesta y siguen sin acreditarse.
