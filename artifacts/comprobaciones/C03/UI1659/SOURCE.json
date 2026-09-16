@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1659-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (client_navigation_target; known_unsupported_effect_request contract client.channel.navigate; _symbolic_web_destination yields to it).",
+  "patch": "artifacts/comprobaciones/C03/UI1659/SOURCE.patch",
+  "commits": [
+    "b1ce4dc2b9ef5c7af7227f8a37062765ad3629cb"
+  ],
+  "build": "BUILD1659 (C03-repairs1659-build/BUILD_READY.json; mente)",
+  "cause_measured": "La orden de ir a un canal dentro de Discord se leía como navegación web al nombre del canal.",
+  "change": "Límite conocido para la navegación dentro de clientes de mensajería; el destino web cede; sin respuestas fijas.",
+  "measurement": "UI1659: dos literales con cero operaciones y el límite dicho nombrando el pedido; las variantes sin par (aclaración tras borradores rechazados; respaldo genérico de la aplicación sobre la respuesta válida de la mente); dos límites aprobados; 0 créditos. Medición raíz: la navegación dentro de Discord ya no se lee como destino web y el turno cierra como límite; la política de la aplicación rechaza la respuesta de límite validada por la mente como lenguaje de fallo; siguiente UI1661 con la exención por clase de conversación.",
+  "credits": 0
+}

@@ -1,3 +1,25 @@
+## UI1659 — estado vigente 2026-09-16T03:12:19.583778+00:00
+
+Parcial: 4 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 592/742 | 150 | 0 | >=466 | 6/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 466 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); UI1659 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: UI1659: 6 ejecutados, 4 aprobados, 2 fallidos, 0 créditos (índices []); Abrir aplicaciones 46/54. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/UI1659/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 107.08 s acumulados; pico GPU 3497.56 MiB; pico RAM 1680.08 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque UI1659 precedente. -->
+
 ## UI1657 — estado vigente 2026-09-16T02:59:51.004564+00:00
 
 Parcial: 7 aprobados, 1 fallidos, 0 sin ejecutar; 4 créditos.

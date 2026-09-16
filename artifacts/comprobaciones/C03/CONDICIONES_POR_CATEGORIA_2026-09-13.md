@@ -999,3 +999,7 @@ Interacción dentro de aplicaciones pasa de 10/22 a 10/22 con el silencio del mi
 ## Actualización 2026-09-16 (UI1657)
 
 Interacción dentro de aplicaciones pasa de 10/22 a 14/22 con el silencio del micrófono pedido en un cliente de voz respondido ofreciendo silenciar el del sistema (commit 655c2211, BUILD1657) (HEAD 655c2211): cuatro literales y dos variantes con cero operaciones y la pregunta fiel que ofrece silenciar el micrófono del sistema; límite de definición aprobado y acuse de prohibición con «nunca» añadido, 4 créditos. Medición raíz: con la guía inicial del campo y el validador de oferta, el silencio pedido dentro de un cliente de voz se responde ofreciendo el micrófono del sistema en español e inglés, sin operación.
+
+## Actualización 2026-09-16 (UI1659)
+
+Interacción dentro de aplicaciones pasa de 14/22 a 14/22 con la navegación dentro de un cliente de mensajería respondida como límite conocido (commit b1ce4dc2, BUILD1659) (HEAD b1ce4dc2): dos literales con cero operaciones y el límite dicho nombrando el pedido; las variantes sin par (aclaración tras borradores rechazados; respaldo genérico de la aplicación sobre la respuesta válida de la mente); dos límites aprobados, 0 créditos. Medición raíz: la navegación dentro de Discord ya no se lee como destino web y el turno cierra como límite; la política de la aplicación rechaza la respuesta de límite validada por la mente como lenguaje de fallo; siguiente UI1661 con la exención por clase de conversación.

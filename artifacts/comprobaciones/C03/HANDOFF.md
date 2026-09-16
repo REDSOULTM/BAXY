@@ -1,3 +1,11 @@
+# UI1659 adjudicado — 2026-09-16T03:12:19.583778+00:00
+
+**592/742 cubiertos, 150 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 743130a5cd6199a4a02728e129df528075beeb8f9cdd7d3723648aaf9dfb86c9. Primeras altas 24 h >= 466 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b1ce4dc2 con BUILD1659 (ir a un canal «en Discord» es un límite conocido, no una navegación web). Turnos ordinarios sin operaciones.
+
+UI1659 («Interacción dentro de aplicaciones», la navegación dentro de un cliente de mensajería respondida como límite conocido): dos literales con cero operaciones y el límite dicho nombrando el pedido; las variantes sin par (aclaración tras borradores rechazados; respaldo genérico de la aplicación sobre la respuesta válida de la mente); dos límites aprobados, 0 créditos. Adjudicación 9f82a3da0bad86bb661187aca93e51a2d70f125f7f3f56984311d95421cdecc1. Medición raíz: la navegación dentro de Discord ya no se lee como destino web y el turno cierra como límite; la política de la aplicación rechaza la respuesta de límite validada por la mente como lenguaje de fallo; siguiente UI1661 con la exención por clase de conversación.
+
+---
+
 # UI1657 adjudicado — 2026-09-16T02:59:51.004564+00:00
 
 **592/742 cubiertos, 150 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 54a5a88077f2d7a084ce2d6d0ab30b9134e11f3d8a1a5d39ab5feff2f5001ad8. Primeras altas 24 h >= 466 (+4).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 655c2211 con BUILD1657 (la pregunta por el micrófono del sistema se guía desde el inicio como una oferta). Turnos ordinarios sin operaciones.
