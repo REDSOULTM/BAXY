@@ -1155,3 +1155,7 @@ Archivos y carpetas pasa de 29/32 a 30/32 con un archivo de texto con los proces
 ## Actualización 2026-09-16 (VIDEO1715)
 
 Vídeo y series pasa de 0/26 a 1/26 con un título propio sin proveedor reproducido en YouTube en el reproductor local (commit 0ac3648f, BUILD1715) (HEAD 0ac3648f): VIDEO1715: un título propio sin proveedor («poné Tom and Jerry») se leyó como reproducción en YouTube, la raíz aprobó sólo media.play.youtube con las palabras de la persona, la reproducción se verificó en el reproductor local y los finales citaron tal cual el título observado; H0486 acreditado con dos variantes aprobadas (español e inglés); dos límites aprobados; reproductor detenido y volumen restaurado por la raíz, 1 créditos. 5 casos sobre BUILD1715 (3 revisados, 2 ordinarios): 5 aprobados; 1 crédito
+
+## Actualización 2026-09-16 (VIDEO1717)
+
+Vídeo y series pasa de 1/26 a 1/26 con abrir YouTube y poner un video sin decir cuál preguntado y reproducido tras la respuesta (commit 8241a616, BUILD1717) (HEAD 8241a616): VIDEO1717: los tres casos de diálogo preguntaron qué video poner sin operar, tomaron la respuesta guionizada de la raíz y reprodujeron con revisión en el reproductor local; las variantes citaron tal cual el título observado; el literal quedó sin final (borradores vetados); sin crédito; dos límites aprobados, 0 créditos. 5 casos sobre BUILD1717 (3 de diálogo con revisión, 2 ordinarios): 4 aprobados, 1 fallido (literal sin final); 0 créditos

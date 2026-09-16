@@ -1,0 +1,15 @@
+{
+  "schema": "c03-video1717-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (incomplete media clause with videos and the YouTube open head; _completed_missing_music_request for videos).",
+  "patch": "artifacts/comprobaciones/C03/VIDEO1717/SOURCE.patch",
+  "commits": [
+    "8241a6166ed492a8509aea72bd5cfa48b08b84f1"
+  ],
+  "build": "BUILD1717 (C03-repairs1717-build/BUILD_READY.json; mente)",
+  "cause_measured": "La aclaración de medios incompletos no admitía videos ni el compuesto «abre youtube y pon …»; el pedido no llegaba a nada.",
+  "change": "Video sin nombre leído como aclaración y su respuesta como reproducción en YouTube; sin respuestas fijas.",
+  "measurement": "VIDEO1717: VIDEO1717: los tres casos de diálogo preguntaron qué video poner sin operar, tomaron la respuesta guionizada de la raíz y reprodujeron con revisión en el reproductor local; las variantes citaron tal cual el título observado; el literal quedó sin final (borradores vetados); sin crédito; dos límites aprobados; 0 créditos. 5 casos sobre BUILD1717 (3 de diálogo con revisión, 2 ordinarios): 4 aprobados, 1 fallido (literal sin final); 0 créditos",
+  "credits": 0
+}

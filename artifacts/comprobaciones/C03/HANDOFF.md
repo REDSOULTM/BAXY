@@ -1,3 +1,11 @@
+# VIDEO1717 adjudicado — 2026-09-16T11:48:59.463904+00:00
+
+**613/742 cubiertos, 129 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA d961a2f8a87f296fa57a9dd02fe3368723acb353cfaf7bd6a233032ae0623a3e. Primeras altas 24 h >= 497 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 8241a616 con BUILD1717 (abrir YouTube y poner un video sin decir cuál pregunta qué video y lo reproduce). Turnos ordinarios sin operaciones.
+
+VIDEO1717 («Vídeo y series», abrir YouTube y poner un video sin decir cuál preguntado y reproducido tras la respuesta): VIDEO1717: los tres casos de diálogo preguntaron qué video poner sin operar, tomaron la respuesta guionizada de la raíz y reprodujeron con revisión en el reproductor local; las variantes citaron tal cual el título observado; el literal quedó sin final (borradores vetados); sin crédito; dos límites aprobados, 0 créditos. Adjudicación 76a3413ed1e941f63f05f3d1ebb6727bfcad70faec0291c5c264fc94207f8a28. 5 casos sobre BUILD1717 (3 de diálogo con revisión, 2 ordinarios): 4 aprobados, 1 fallido (literal sin final); 0 créditos
+
+---
+
 # VIDEO1715 adjudicado — 2026-09-16T11:32:12.132325+00:00
 
 **613/742 cubiertos, 129 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA c156d7b4ba37c6c2945cd49506fe0ceddbf99dc80df62f5b8df89a6b2f0fb6c2. Primeras altas 24 h >= 497 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 0ac3648f con BUILD1715 (un título propio pedido sin proveedor se reproduce en YouTube en el reproductor local). Turnos ordinarios sin operaciones.
