@@ -1,0 +1,65 @@
+commit 4c04e486c202c196e6c1bafb2c6da511ec5d2566
+
+C03: a clarification asking the declared missing text is not an echo; the acknowledgement contract reads past a bare interjection (UI1647)
+
+UI1645 measured «Type in the chat box.» answered with the right question («What text would you like me to type in the chat box?»), which UserMessagePolicy rejected as echoes_request because the short request is contained in it. When the mind declares text as the missing field and the question asks for the text, repeating the place the person named is the frame of the question, not the request handed back. In the mind, the constraint_ack contract now reads the sentence after a bare interjection («Entendido. No escribiré nada en ningún lado.»), which failed the one-sentence contract twice and turned a prohibition into a question.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/UserMessagePolicy.cs b/src/Baxy.App/UserMessagePolicy.cs
+index 893c6f98..5224b7a2 100644
+--- a/src/Baxy.App/UserMessagePolicy.cs
++++ b/src/Baxy.App/UserMessagePolicy.cs
+@@ -554,8 +554,13 @@ internal static class UserMessagePolicy
+             ("punctuation_only", IsPunctuationOnly(reply)),
+             ("too_thin", IsTooThin(reply)),
+             ("asks_to_invent_clock", AsksToInventClock(said)),
++            // UI1647 «Type in the chat box.»: when the mind declares the text
++            // as the missing field, the question names the place the person
++            // named; repeating that place is the frame of the question, not a
++            // request echoed back as a yes/no.
+             ("echoes_request",
+-                !IsGreetingRequest(userText) && EchoesRequestAsQuestion(userText, reply)),
++                !IsGreetingRequest(userText) && EchoesRequestAsQuestion(userText, reply)
++                && !AsksForDeclaredText(said, missingFields)),
+             ("greets_out_of_world", GreetsOutOfWorldTarget(said)),
+             ("unverified_connectivity", ClaimsUnverifiedConnectivity(said)),
+             ("looks_like_failure",
+@@ -1022,6 +1027,13 @@ internal static class UserMessagePolicy
+         && Regex.IsMatch(folded, @"\b(?:carpeta|directorio|folder|directory)\b",
+             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+ 
++    private static bool AsksForDeclaredText(string folded, IReadOnlyList<string>? missingFields) =>
++        missingFields is not null
++        && missingFields.Contains("text")
++        && (folded.Contains('?', StringComparison.Ordinal) || folded.Contains('¿', StringComparison.Ordinal))
++        && Regex.IsMatch(folded, @"\b(?:texto|text|mensaje|message|palabras|words)\b",
++            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
++
+     private static bool LooksLikeMachineSlotAsk(string folded) =>
+         (folded.Contains('?', StringComparison.Ordinal)
+             || folded.Contains('¿', StringComparison.Ordinal)
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 51b60e7b..46b13f02 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -2592,6 +2592,18 @@ def _shaped_conversation_answer_violates_contract(
+                 folded_content,
+             ) is not None
+         )
++    if shape == "constraint_ack":
++        # UI1647 «No escribas nada en ningún lado.»: «Entendido. No escribiré
++        # nada en ningún lado.» is the one-sentence acknowledgement behind a
++        # bare interjection; the contract reads the sentence that follows it.
++        content = re.sub(
++            r"^(?:entendido|entendida|de acuerdo|ok|okay|vale|perfecto|claro|listo|bien|"
++            r"est[aá] bien|got it|understood|sure|alright|all right|okay then|fine)[.!…]\s+",
++            "",
++            content,
++            count=1,
++            flags=re.IGNORECASE,
++        )
+     if (
+         not content
+         or "\n" in content

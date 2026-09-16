@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1647-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (echoes_request exempt when the mind declares text missing and the question asks for the text) and src/baxy_mind/llm.py (constraint_ack contract reads the sentence after a bare interjection).",
+  "patch": "artifacts/comprobaciones/C03/UI1647/SOURCE.patch",
+  "commits": [
+    "4c04e486c202c196e6c1bafb2c6da511ec5d2566"
+  ],
+  "build": "BUILD1647 (C03-repairs1647-build/BUILD_READY.json; aplicación y mente)",
+  "cause_measured": "La pregunta por el texto que contenía el pedido corto se rechazaba como eco; el acuse tras una interjección suelta fallaba el contrato de una oración.",
+  "change": "Exención del eco para la aclaración del campo text declarado; contrato del acuse leyendo tras la interjección; sin respuestas fijas.",
+  "measurement": "UI1647: un literal y dos variantes con cero operaciones y la pregunta fiel de qué texto escribir (la pregunta en inglés ya aceptada); los dos límites fallidos: la definición describió un diálogo entre personas y la prohibición no recibió acuse (los borradores contestaron al saludo de bienvenida del historial); 1 créditos. Medición raíz: la orden de escribir sin texto se responde preguntando qué escribir en español e inglés, sin operación; la interjección no era la causa del acuse fallido: el modelo contesta al saludo de bienvenida presente en el historial; siguiente tanda con constraint_ack sin historial.",
+  "credits": 1
+}

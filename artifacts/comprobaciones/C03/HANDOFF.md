@@ -1,3 +1,11 @@
+# UI1647 adjudicado — 2026-09-16T01:41:53.072484+00:00
+
+**585/742 cubiertos, 157 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA cbf6a358071df80dea32a1ada06337733821e8962446f31210b355fc86d38920. Primeras altas 24 h >= 459 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4c04e486 con BUILD1647 (la pregunta por el texto que nombra el lugar pedido no es un eco). Turnos ordinarios sin operaciones.
+
+UI1647 («Interacción dentro de aplicaciones», la pregunta por el texto aceptada aunque nombre el lugar pedido): un literal y dos variantes con cero operaciones y la pregunta fiel de qué texto escribir (la pregunta en inglés ya aceptada); los dos límites fallidos: la definición describió un diálogo entre personas y la prohibición no recibió acuse (los borradores contestaron al saludo de bienvenida del historial), 1 créditos. Adjudicación 3eafef45cee2124fe4d5832d27f6a690372465fcbdf2537550e6712cb22587c5. Medición raíz: la orden de escribir sin texto se responde preguntando qué escribir en español e inglés, sin operación; la interjección no era la causa del acuse fallido: el modelo contesta al saludo de bienvenida presente en el historial; siguiente tanda con constraint_ack sin historial.
+
+---
+
 # UI1645 adjudicado — 2026-09-16T01:20:14.206956+00:00
 
 **584/742 cubiertos, 158 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA b63fac35d7d2bcb503adec7da64a3f64808d7e76f4e2d854b9ee3b402a16016c. Primeras altas 24 h >= 458 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5f4cce63 con BUILD1645 (una orden de escribir que no dice qué pregunta el texto). Turnos ordinarios sin operaciones.
