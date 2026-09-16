@@ -1,3 +1,11 @@
+# NETWORK1721 adjudicado — 2026-09-16T15:08:08.603197+00:00
+
+**614/742 cubiertos, 128 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA 543b3915afd40a8a77d074a74a50babd244634691465b7cc43c075ca6e9df46e. Primeras altas 24 h >= 498 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7a294a33 con BUILD1721 (conectarse al wifi de un nombre sin perfil guardado termina con un fallo honesto revisado). Turnos ordinarios sin operaciones.
+
+NETWORK1721 («Red y Bluetooth», conectarse al wifi de un nombre sin perfil guardado respondido con un fallo honesto revisado): 7 ejecutados, 2 aprobados (los dos límites), 5 fallidos: las cinco wifi.connect.named revisadas fueron aprobadas por la raíz, terminaron wifi_profile_not_found y la WLAN no cambió, pero los finales dijeron «no hubo efecto» sin la causa sellada (ninguna red guardada con ese nombre), 0 créditos. Adjudicación 25154bd9a3a8f51d37f5c56b9dc38b4bbb72f4e4bda8e5dd6c300be5764ec5b9. Causa: la rama de confirmación de la App sustituye el hecho de fallo de la operación por confirmed_no_effect, así que la mente nunca vio el código; reparación pendiente en MindPlanSession.cs y repetición del panel.
+
+---
+
 # VIDEO1719 adjudicado — 2026-09-16T11:53:47.134989+00:00
 
 **614/742 cubiertos, 128 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA 846b090c8f16151e07e7f079875aa9f80d9fde29c489228912a99b242a50c0c4. Primeras altas 24 h >= 498 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 595b2a5a con BUILD1719 (abrir YouTube y poner un video sin decir cuál: la reintentativa nombra el estado junto al título). Turnos ordinarios sin operaciones.

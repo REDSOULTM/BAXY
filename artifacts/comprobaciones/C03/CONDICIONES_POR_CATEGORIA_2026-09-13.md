@@ -1187,3 +1187,7 @@ Desde el bloque de la noche (608): WINDOWS1695 (+1, minimizar Opera por nombre),
 | Organizar ventanas | 2 | Chrome a la izquierda (Chrome ausente, sin operación de ajuste lateral); cerrar las pestañas de Chrome (H0444, reabierto): Chrome nunca abierto → punto 7 (diferido). |
 | Desarrollo | 2 | Sin shell; dos límites sin marca. |
 | Resto (energía 2, cerrar 2, web actual 1, conocimiento 1) | 6 | Apagar/reiniciar (nunca); «cerrame todo» y «cerrá todas las ventanas» (H0467, H0484, reabiertos): cerraría VS Code, que aloja esta sesión raíz — pendiente del dueño; fallo de WhatsApp en internet (motor); H0297 (fragmento libre: las variantes inventan hechos). |
+
+## Actualización 2026-09-16 (NETWORK1721)
+
+Red y Bluetooth pasa de 16/21 a 16/21 con conectarse al wifi de un nombre sin perfil guardado respondido con un fallo honesto revisado (commit 7a294a33, BUILD1721) (HEAD 7a294a33): 7 ejecutados, 2 aprobados (los dos límites), 5 fallidos: las cinco wifi.connect.named revisadas fueron aprobadas por la raíz, terminaron wifi_profile_not_found y la WLAN no cambió, pero los finales dijeron «no hubo efecto» sin la causa sellada (ninguna red guardada con ese nombre), 0 créditos. Causa: la rama de confirmación de la App sustituye el hecho de fallo de la operación por confirmed_no_effect, así que la mente nunca vio el código; reparación pendiente en MindPlanSession.cs y repetición del panel.

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-network1721-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/ProductConductorHost.cs (wifi.connect.named reviewable), src/baxy_mind/effect_intent.py and __main__.py («conectate al wifi de X» readers) and src/baxy_mind/llm.py (wifi_profile_not_found cause fact).",
+  "patch": "artifacts/comprobaciones/C03/NETWORK1721/SOURCE.patch",
+  "commits": [
+    "7a294a33718bff2ca50d2e69905f2046539da626"
+  ],
+  "build": "BUILD1721 (C03-repairs1721-build/BUILD_READY.json; App y mente)",
+  "cause_measured": "Los lectores de wifi no admitían «conectate» ni «al», y el turno revisado no admitía wifi.connect.named.",
+  "change": "Lectores de conexión wifi por nombre con «conectate al»; wifi.connect.named revisable; hecho de causa del perfil ausente; sin respuestas fijas.",
+  "measurement": "NETWORK1721: 7 ejecutados, 2 aprobados (los dos límites), 5 fallidos: las cinco wifi.connect.named revisadas fueron aprobadas por la raíz, terminaron wifi_profile_not_found y la WLAN no cambió, pero los finales dijeron «no hubo efecto» sin la causa sellada (ninguna red guardada con ese nombre); 0 créditos. Causa: la rama de confirmación de la App sustituye el hecho de fallo de la operación por confirmed_no_effect, así que la mente nunca vio el código; reparación pendiente en MindPlanSession.cs y repetición del panel.",
+  "credits": 0
+}
