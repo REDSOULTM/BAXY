@@ -1163,3 +1163,27 @@ Vídeo y series pasa de 1/26 a 1/26 con abrir YouTube y poner un video sin decir
 ## Actualización 2026-09-16 (VIDEO1719)
 
 Vídeo y series pasa de 1/26 a 2/26 con abrir YouTube y poner un video sin decir cuál preguntado y reproducido tras la respuesta (commit 595b2a5a, BUILD1719) (HEAD 595b2a5a): VIDEO1719: «abre youtube y pon un video» preguntó qué video sin operar, tomó la respuesta guionizada de la raíz, reprodujo con revisión en el reproductor local y el final citó tal cual el título observado diciendo que se reproduce; H0141 acreditado con dos variantes aprobadas (español e inglés); dos límites aprobados; reproductor detenido y volumen restaurado por la raíz, 1 créditos. 5 casos sobre BUILD1719 (3 de diálogo con revisión, 2 ordinarios): 5 aprobados; 1 crédito
+
+## Estado consolidado 2026-09-16 (madrugada del 17): 614/742 cubiertos, 128 abiertos, 10/35 categorías cerradas
+
+Desde el bloque de la noche (608): WINDOWS1695 (+1, minimizar Opera por nombre), SYSTEM1697 (+1, versión de Python por el registro PEP 514; cierra «Estado de hardware y sistema» 40/40), LIMITS1699–1703 (+1, ver su propio código como límite llano tras tres causas: regla «ni» sobre pedido coordinado, reclasificación a seguimiento, subjuntivo «digas»), FILES1705–1713 (+1, archivo de texto con los procesos que más memoria usan: misión lectura → escritura con texto proyectado y verificado por el límite de planes; FILES1705 no pudo adjudicarse porque la raíz recompiló antes de adjudicar), VIDEO1715 (+1, «poné Tom and Jerry» reproducido en YouTube en el reproductor local) y VIDEO1717–1719 (+1, «abre youtube y pon un video» preguntado y reproducido tras la respuesta). Registro SHA 846b090c8f16151e07e7f079875aa9f80d9fde29c489228912a99b242a50c0c4. NETWORK1721 (conectarse al wifi de un nombre sin perfil guardado, fallo honesto revisado) en ejecución.
+
+| Categoría | Abiertos | Condición |
+|---|---:|---|
+| Vídeo y series | 24 | Sesiones de Netflix/Disney+/Prime ausentes (decisión del dueño: omitir); los dos pedidos sin servicio (H0486, H0141) ya se cubren con el reproductor local de YouTube. |
+| Mensajería | 22 | Nunca enviar ni leer mensajes reales; los clientes de mensajería nunca son fixture. «Ve a Cotele en Discord» (H0290, H0636, reabiertos): Discord ausente → punto 7 (diferido). |
+| Música | 12 | Sesión de Spotify ausente (decisión del dueño); «abrí chrome y poné música» (Chrome del dueño); «si tengo spotify abierto pausalo» (sesión del dueño). |
+| Entrada incompleta | 7 | Fragmentos de transcripción sin léxico y el marcador redactado. |
+| Correo | 6 | Nunca enviar; la lectura exige sesión de Outlook. |
+| Interacción dentro de aplicaciones | 6 | Clic en un juego (H0096), «apretá enter/enviar» en Discord/WhatsApp, «al disco» (transcripción), aritmética en la Calculadora (LIMITS1683, pendiente del dueño). |
+| Red y Bluetooth | 5 | Conectividad del dueño intocable; escaneo de redes (LIMITS1683, pendiente del dueño); modo avión sin mecanismo; «conectate al wifi de casa / de la luna» (H0170, H0376, H0739) en NETWORK1721 como fallo honesto revisado (ningún perfil guardado lleva ese nombre; la raíz lo comprueba antes de aprobar). |
+| Navegación y búsqueda web | 5 | Descarga de archivo (LIMITS1683, pendiente del dueño), Opera GX del dueño, «abre youtube.com en Chrome» (Chrome del dueño), compuesto H0516. |
+| Audio y volumen | 5 | Cuatro límites sin marca (idiomas); volumen de Spotify (H0652, reabierto): Spotify ausente → punto 7 (diferido). |
+| Instalar y desinstalar software | 4 | pip por regla del dueño; diálogo de Steam inexistente; «diin eternal»; Epic sin lectura de licencia. |
+| Reloj / Abrir aplicaciones / Contactos / Conversación / Notas | 4 + 4 + 3 + 2 + 1 | Límites sin marca y negativos: se conservan como límites, nunca se acreditan. |
+| Pantalla | 3 | Diálogos de Steam inexistentes en pantalla. |
+| Bibliotecas y fichas de juegos | 3 | Navegar la interfaz de Steam/Epic (LIMITS1683, pendiente del dueño); App ID por la API pública (límite sin marca). |
+| Archivos | 2 | Carpeta + txt + zip + abrir el zip (H0542, composición de cuatro pasos sin nombres), backup a pendrive (H0733, sin pendrive). |
+| Organizar ventanas | 2 | Chrome a la izquierda (Chrome ausente, sin operación de ajuste lateral); cerrar las pestañas de Chrome (H0444, reabierto): Chrome nunca abierto → punto 7 (diferido). |
+| Desarrollo | 2 | Sin shell; dos límites sin marca. |
+| Resto (energía 2, cerrar 2, web actual 1, conocimiento 1) | 6 | Apagar/reiniciar (nunca); «cerrame todo» y «cerrá todas las ventanas» (H0467, H0484, reabiertos): cerraría VS Code, que aloja esta sesión raíz — pendiente del dueño; fallo de WhatsApp en internet (motor); H0297 (fragmento libre: las variantes inventan hechos). |
