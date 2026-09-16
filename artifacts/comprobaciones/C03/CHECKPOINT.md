@@ -1,3 +1,25 @@
+## CLOSE1649 — estado vigente 2026-09-16T01:50:49.671657+00:00
+
+Parcial: 8 aprobados, 1 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 587/742 | 155 | 0 | >=461 | 6/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 459 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); CLOSE1649 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: CLOSE1649: 6 ejecutados, 8 aprobados, -2 fallidos, 2 créditos (índices [0, 2]); Abrir aplicaciones 48/54. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/CLOSE1649/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 199.94 s acumulados; pico GPU 3497.56 MiB; pico RAM 1884.22 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque CLOSE1649 precedente. -->
+
 ## UI1647 — estado vigente 2026-09-16T01:41:53.072484+00:00
 
 Parcial: 3 aprobados, 2 fallidos, 0 sin ejecutar; 1 créditos.

@@ -1,0 +1,26 @@
+commit d987071f50c98ad788ca1c1f1dbde196fbd20aeb
+
+C03: a constraint acknowledgement is shaped without the dialogue history (CLOSE1649)
+
+UI1645 and UI1647 measured «No escribas nada en ningún lado.» twice: the raw drafts of the constraint_ack shape answered the welcome greeting kept in the dialogue («Hola, todo bien. ¿Cómo va tu día?», then «{"answer": "ok"}») instead of the constraint, and the turn fell back to a semantic clarification. The acknowledgement is generated from user_constraint alone; readers, audit and topic scoping keep the stored dialogue.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 46b13f02..58f8ddf5 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -9086,6 +9086,12 @@ class LlmRuntime:
+         # subjects already mentioned. Only this generation's context is scoped.
+         presentation_history = (
+             []
++            # UI1645/UI1647 «No escribas nada en ningún lado.»: with the welcome
++            # greeting in the dialogue, the model answered the greeting («Hola,
++            # todo bien. ¿Cómo va tu día?») instead of the constraint, twice per
++            # turn. The acknowledgement is shaped from user_constraint alone.
++            if presentation_shape == "constraint_ack"
++            else []
+             if conversation_kind == "knowledge"
+             and presentation_shape is None
+             and starts_new_definition_topic(

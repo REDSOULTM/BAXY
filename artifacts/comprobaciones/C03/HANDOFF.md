@@ -1,3 +1,11 @@
+# CLOSE1649 adjudicado — 2026-09-16T01:50:49.671657+00:00
+
+**587/742 cubiertos, 155 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 13ad6fa0842c30e7ae809e6e720454b4faa98f972f426fb835703935c44dd403. Primeras altas 24 h >= 461 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d987071f con BUILD1649 (cerrar WhatsApp o Discord cuando no están abiertos). Turnos ordinarios sin operaciones.
+
+CLOSE1649 («Cerrar aplicaciones y ventanas», el cierre de WhatsApp y Discord ausentes respondido por su ausencia de ventana): dos literales y cuatro variantes con window.resolve terminada window_not_found, ninguna app.close y finales fieles; «cierra whatsapp» fallido por inventory_failed (un proceso ajeno terminó durante el inventario fuerte); dos límites aprobados, con la prohibición reconocida, 2 créditos. Adjudicación 2ac6e23fd29d7da8c2503703f10784323a76f00560bb1f571e52c6269160641d. Medición raíz: el cierre de un cliente de mensajería ausente se responde por su ausencia de ventana en español e inglés; el acuse de prohibición sin historial funciona; el inventario fuerte aborta cuando un proceso ajeno sale durante la enumeración (siguiente CLOSE1651 con la reparación del proveedor).
+
+---
+
 # UI1647 adjudicado — 2026-09-16T01:41:53.072484+00:00
 
 **585/742 cubiertos, 157 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA cbf6a358071df80dea32a1ada06337733821e8962446f31210b355fc86d38920. Primeras altas 24 h >= 459 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4c04e486 con BUILD1647 (la pregunta por el texto que nombra el lugar pedido no es un eco). Turnos ordinarios sin operaciones.
