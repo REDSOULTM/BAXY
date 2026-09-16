@@ -5613,6 +5613,27 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         ) is None:
             return "echo_without_report"
     if (
+        payload.get("operation") == "software.python.status"
+        and isinstance(seen, dict)
+        and isinstance(seen.get("pythons"), list)
+    ):
+        # SYSTEM1697: every version-like number in the reply must be a
+        # registered one; the count of installs must not be invented.
+        observed_versions = {
+            str(entry.get("pythonVersion")).strip()
+            for entry in seen["pythons"]
+            if isinstance(entry, dict) and isinstance(entry.get("pythonVersion"), str)
+        }
+        observed_versions |= {str(entry.get("tag")).strip() for entry in seen["pythons"] if isinstance(entry, dict) and isinstance(entry.get("tag"), str)}
+        for number in re.findall(r"(?<![\w.])\d+(?:\.\d+)+(?![\w.])", text):
+            if not any(version == number or version.startswith(number + ".") for version in observed_versions):
+                return "invented_number"
+        count = seen.get("pythonCount")
+        if count == 0 and not re.search(r"\b(?:no|ningun|ninguna|none|not|isn't|is not)\b", _reading_fold(text)):
+            return "missing_state"
+        if isinstance(count, int) and count > 0 and not any(version in text for version in observed_versions):
+            return "missing_state"
+    if (
         payload.get("operation") == "display.status"
         and isinstance(seen, dict)
         and isinstance(seen.get("monitors"), list)
@@ -13742,6 +13763,28 @@ class LlmRuntime:
                 if response_language == "en"
                 else "\nseen.radioOn es la radio Bluetooth: true significa encendida, false "
                 "significa apagada. Di cuál, en una oración corta; no se cambió nada."
+            )
+        if (
+            visible_situation.get("operation") == "software.python.status"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("pythons"), list)
+        ):
+            # SYSTEM1697: the read lists the Python installs registered in
+            # Windows; answer with their exact version strings, nothing run.
+            instruct(
+                "\nseen.pythons are the Python installs registered in Windows (displayName, "
+                "pythonVersion, tag) and seen.pythonCount their number. Say which Python "
+                "versions are installed using those exact pythonVersion strings (all of "
+                "them, newest first, in one or two short sentences); if seen.pythonCount "
+                "is 0, say that no Python install is registered. No other numbers; "
+                "nothing was run or changed."
+                if response_language == "en"
+                else "\nseen.pythons son las instalaciones de Python registradas en Windows "
+                "(displayName, pythonVersion, tag) y seen.pythonCount su cantidad. Di qué "
+                "versiones de Python están instaladas usando esas cadenas pythonVersion "
+                "exactas (todas, de la más nueva a la más vieja, en una o dos oraciones "
+                "cortas); si seen.pythonCount es 0, di que no hay ninguna instalación de "
+                "Python registrada. Sin otros números; no se ejecutó ni se cambió nada."
             )
         if (
             visible_situation.get("operation") == "display.status"

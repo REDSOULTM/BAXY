@@ -1304,6 +1304,13 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Activa o desactiva metadatos de una rutina bajo CAS sin ejecutarla."),
         Descriptor(
+            "software.python.status",
+            EmptySchema(),
+            OperationRisks.ReadOnly,
+            "software.python.status.windows.registry.pep514.read.v1",
+            ToolExposure.Public,
+            "Lee las instalaciones de Python registradas en Windows (claves PEP 514 del registro: versión, nombre y ejecutable) sin ejecutar nada; sin efecto."),
+        Descriptor(
             "streaming.navigate",
             Schema(
                 [

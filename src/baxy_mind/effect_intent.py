@@ -1560,6 +1560,8 @@ def _curated_domain_is_grounded(
         ):
             return False
         return True
+    if operation == "software.python.status":
+        return _has(folded, r"\bpython\b")
     if operation == "display.status":
         return _has(folded, r"\b(?:resolucion|monitor(?:es)?|pantallas?|screens?|displays?|hz|hertz|hercios|frecuencia|refresh)\b")
     if operation == "bluetooth.radio.status":
@@ -10120,6 +10122,33 @@ _DISPLAY_STATUS_QUESTION = re.compile(
 )
 
 
+_PYTHON_STATUS_QUESTION = re.compile(
+    r"^[¿?¡!\s]*(?:"
+    # «dime la versión de Python instalada», «qué versión de python tengo», «cuál es la versión de python»
+    r"(?:(?:dime|decime|di|tell\s+me|say)\s+(?:que|cual|la|the|which|what)\s+|"
+    r"(?:que|cual\s+es\s+la|what|what's|whats|which)\s+)?"
+    r"version\s+(?:de|del|of)\s+python(?:\s+(?:instalada|instalado|tengo|tienes|hay|esta\s+instalada|is\s+installed|do\s+i\s+have|installed))?"
+    # «qué python tengo», «tengo python instalado», «is python installed», «python version»
+    r"|(?:que|cual|what|which)\s+python(?:\s+version)?(?:\s+(?:tengo|hay|esta\s+instalado|is\s+installed|do\s+i\s+have))"
+    r"|(?:tengo|hay|is)\s+python(?:\s+(?:instalado|installed))?"
+    r"|(?:is\s+)?python\s+(?:version|installed)(?:\s+installed)?"
+    r")\b[\s?!.,]*$",
+    re.IGNORECASE,
+)
+
+
+def _python_status_question(text: str) -> bool:
+    """SYSTEM1697 «dime la versión de Python instalada», «qué versión de python
+    tengo», «is Python installed»: a software.python.status read of the registered
+    installs — never an install, an update or a run."""
+
+    folded = _strip_request_envelope(_fold(text)).strip()
+    return (
+        _PYTHON_STATUS_QUESTION.match(folded) is not None
+        and not _has(folded, r"\b(?:instala|instalar|instalame|install|actualiza|actualizar|update|upgrade|desinstala|uninstall|ejecuta|ejecutar|run|corre|pip)\b")
+    )
+
+
 def _display_status_question(text: str) -> bool:
     """SYSTEM1459 «qué resolución tengo», «cuántos monitores tengo», «qué Hz tiene el
     monitor»: a display.status read of the attached monitors — never a change."""
@@ -10186,6 +10215,7 @@ def _is_direct_request(text: str) -> bool:
         or _wifi_state_question(text)
         or _bluetooth_state_question(text)
         or _display_status_question(text)
+        or _python_status_question(text)
     ):
         return True
     request_head = (
@@ -10430,6 +10460,8 @@ def _strict_catalog_request(
         return EffectIntent(("bluetooth.radio.status",), (text,))
     if "display.status" in available_operations and _display_status_question(text):
         return EffectIntent(("display.status",), (text,))
+    if "software.python.status" in available_operations and _python_status_question(text):
+        return EffectIntent(("software.python.status",), (text,))
     if window_inventory_arguments(text) is not None:
         return (
             EffectIntent(("window.resolve",), (text,))

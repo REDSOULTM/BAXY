@@ -269,7 +269,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     public bool CanHandle(string operation) => operation is
         "bluetooth.device.list" or "bluetooth.device.pair"
         or "bluetooth.radio.set" or "bluetooth.radio.status"
-        or "display.status"
+        or "display.status" or "software.python.status"
         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
         or "wifi.profile.list" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
         or "wifi.ensure.connected" or "wifi.status"
@@ -292,6 +292,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                     operation, arguments, effectBoundary, cancellationToken),
                 "bluetooth.radio.status" => await BluetoothRadioStatusAsync(operation),
                 "display.status" => DisplayStatus(operation),
+                "software.python.status" => PythonStatus(operation),
                 "peripheral.list" => await PeripheralListAsync(operation, arguments, cancellationToken),
                 "peripheral.print" => await PrintAsync(
                     operation, arguments, effectBoundary, cancellationToken),
@@ -502,6 +503,93 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     // SYSTEM1459 «qué resolución tengo», «cuántos monitores tengo», «qué Hz tiene el
     // monitor»: the desktop's attached display devices and their current mode,
     // read through the Win32 display API without changing anything.
+    // SYSTEM1697 H0307 «dime la versión de Python instalada»: the installs a
+    // Python distributor registered under Software\Python (PEP 514), read from
+    // the registry only — no interpreter is started, nothing is executed.
+    private static ExternalCapabilityReceipt PythonStatus(string operation)
+    {
+        var installs = new List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)>();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach ((Microsoft.Win32.RegistryKey hive, string scope) in new[]
+                 {
+                     (Microsoft.Win32.Registry.CurrentUser, "user"),
+                     (Microsoft.Win32.Registry.LocalMachine, "machine"),
+                 })
+        {
+            foreach (string root in new[] { @"Software\Python", @"Software\WOW6432Node\Python" })
+            {
+                try
+                {
+                    using Microsoft.Win32.RegistryKey? python = hive.OpenSubKey(root, writable: false);
+                    if (python is null)
+                    {
+                        continue;
+                    }
+                    foreach (string company in python.GetSubKeyNames())
+                    {
+                        using Microsoft.Win32.RegistryKey? companyKey = python.OpenSubKey(company, writable: false);
+                        if (companyKey is null)
+                        {
+                            continue;
+                        }
+                        foreach (string tag in companyKey.GetSubKeyNames())
+                        {
+                            using Microsoft.Win32.RegistryKey? tagKey = companyKey.OpenSubKey(tag, writable: false);
+                            if (tagKey is null)
+                            {
+                                continue;
+                            }
+                            string version = (tagKey.GetValue("Version") as string ?? tagKey.GetValue("SysVersion") as string ?? tag).Trim();
+                            string displayName = (tagKey.GetValue("DisplayName") as string ?? $"{company} {tag}").Trim();
+                            string? executable = null;
+                            using (Microsoft.Win32.RegistryKey? installPath = tagKey.OpenSubKey("InstallPath", writable: false))
+                            {
+                                string? path = installPath?.GetValue("ExecutablePath") as string;
+                                if (!string.IsNullOrWhiteSpace(path) && File.Exists(path))
+                                {
+                                    executable = Path.GetFullPath(path);
+                                }
+                            }
+                            string identity = executable ?? $"{scope}|{company}|{tag}";
+                            if (seen.Add(identity))
+                            {
+                                installs.Add((company, tag, version, displayName, executable, scope));
+                            }
+                        }
+                    }
+                }
+                catch (Exception exception) when (exception is System.Security.SecurityException
+                    or UnauthorizedAccessException or IOException)
+                {
+                    continue;
+                }
+            }
+        }
+        installs.Sort((left, right) => string.CompareOrdinal(right.Version, left.Version));
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteNumber("pythonCount", installs.Count);
+            writer.WriteStartArray("pythons");
+            foreach ((string company, string tag, string version, string displayName, string? executable, string scope) in installs)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("company", company);
+                writer.WriteString("tag", tag);
+                writer.WriteString("pythonVersion", version);
+                writer.WriteString("displayName", displayName);
+                writer.WriteBoolean("executableFound", executable is not null);
+                writer.WriteString("scope", scope);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteString("authority", "windows_registry_pep514_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
     private static ExternalCapabilityReceipt DisplayStatus(string operation)
     {
         var monitors = new List<(string Name, bool Primary, uint Width, uint Height, uint Hertz)>();
