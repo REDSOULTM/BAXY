@@ -1207,3 +1207,30 @@ Navegación y búsqueda web pasa de 41/46 a 42/46 con descargar una imagen de la
 ## Actualización 2026-09-16 (NETWORK1729)
 
 Red y Bluetooth pasa de 19/21 a 20/21 con qué redes wifi hay leído del adaptador o respondido con la radio apagada dicha con verdad (commit 382f2aa6, BUILD1729) (HEAD 382f2aa6): 5 ejecutados, 5 aprobados: el literal y sus dos variantes corrieron wifi.scan de sólo lectura, que terminó con el código sellado wifi_interface_off porque la radio WLAN de este PC está apagada (estado de la interfaz sin cambios), y los finales lo dijeron con verdad sin inventar redes; los dos límites aprobados, 1 créditos. Mecanismo: wifi.scan ejecuta netsh wlan show networks mode=bssid y devuelve las redes visibles o el estado tipado de la radio; la raíz no enciende la WLAN del dueño, así que el camino con redes visibles queda verificado por el analizador incrustado y la sonda offline del compositor.
+
+## Estado consolidado 2026-09-16 (tarde del 17, tras NETWORK1729): 621/742 cubiertos, 121 abiertos, 10/35 categorías cerradas
+
+Desde el bloque de la madrugada (614): NETWORK1721 (0, los finales no decían la causa) → NETWORK1723 (+3, «conectate al wifi de casa / de la luna» como fallo honesto revisado con causa: la rama de confirmación de la App ahora pasa el hecho de fallo de la operación al final), UI1725 (+2, «multiplicá 6 por 7 en la calc» y «Suma 2 más 2 en la Calculadora»: calculator.expression.evaluate escribe la expresión en la Calculadora abierta y lee su pantalla por UI Automation; ventana propia de la raíz por caso), LIMITS1727 (+1, descargar una imagen de wikipedia.org al escritorio como límite legítimo por decisión del dueño), NETWORK1729 (+1, «qué redes wifi hay»: wifi.scan por netsh; en este PC la radio WLAN está apagada y el panel mide el estado honesto wifi_interface_off). Respuestas del dueño 2026-09-16 (sección 2 de DECISIONES_DUENO_2026-09-16.md) aplicadas: aritmética, escaneo y wifi por nombre como capacidades; descarga como límite; ventanas reales del dueño admitidas en tandas de minimizar/cerrar; «cerrame todo» diferido.
+
+| Categoría | Abiertos | Condición |
+|---|---:|---|
+| Vídeo y series | 24 | Sesiones de Netflix/Disney+/Prime ausentes (decisión del dueño: omitir). |
+| Mensajería | 22 | Nunca enviar ni leer mensajes reales; los clientes de mensajería nunca son fixture. «Ve a Cotele en Discord» (H0290, H0636): Discord ausente → punto 7 (diferido). |
+| Música | 12 | Sesión de Spotify ausente (decisión del dueño); «abrí chrome y poné música» (Chrome del dueño); «si tengo spotify abierto pausalo» (sesión del dueño). |
+| Entrada incompleta | 7 | Fragmentos de transcripción sin léxico y el marcador redactado. |
+| Correo | 6 | Nunca enviar; la lectura exige sesión de Outlook. |
+| Interacción dentro de aplicaciones | 4 | Clic en un juego (H0096), «apretá enter/enviar» en Discord/WhatsApp, «al disco» (transcripción). |
+| Navegación y búsqueda web | 4 | Opera GX del dueño, «abre youtube.com en Chrome» (Chrome del dueño), compuesto H0516, un límite sin marca. |
+| Instalar y desinstalar software | 4 | pip por regla del dueño; diálogo de Steam inexistente; «diin eternal»; Epic sin lectura de licencia. |
+| Contactos / Pantalla | 3 + 3 | Límites sin marca; diálogos de Steam inexistentes en pantalla. |
+| Red y Bluetooth | 1 | Modo avión sin mecanismo que no toque la conectividad del dueño; el escaneo (H0302) quedó cubierto como estado honesto con la radio apagada — si el dueño enciende la WLAN puede medirse el escaneo real. |
+| Bibliotecas y fichas de juegos | 2 | Navegar la interfaz de Steam/Epic (H0559, H0432): Steam es una ventana SDL/CEF sin árbol de accesibilidad y la vista no puede verificarse desde fuera; pregunta abierta al dueño (despacho con final honesto, captura+OCR, o dejar abiertas). |
+| Archivos | 2 | Carpeta + txt + zip + abrir el zip (H0542, composición de cuatro pasos sin nombres), backup a pendrive (H0733, sin pendrive). |
+| Organizar ventanas | 2 | Chrome a la izquierda (Chrome ausente, sin operación de ajuste lateral); cerrar las pestañas de Chrome (H0444): Chrome nunca abierto → punto 7 (diferido). |
+| Cerrar aplicaciones | 2 | «cerrame todo» y «cerrá todas las ventanas» (H0467, H0484): un cierre real cerraría VS Code, que aloja esta sesión raíz — diferido (nunca desde una tarea desprendida; el dueño decide si se mide fuera de VS Code). |
+| Energía | 2 | Apagar/reiniciar: nunca. |
+| Audio y volumen | 1 | Volumen de Spotify (H0652): Spotify ausente → punto 7 (diferido). |
+| Web actual / Conocimiento | 1 + 1 | Fallo de WhatsApp en internet (motor); H0297 (fragmento libre: las variantes inventan hechos). |
+| Sin marca del dueño | 18 | Nunca se acreditan (regla del dueño); repartidos en las categorías anteriores según CURRENT_CATEGORY_COUNTS. |
+
+Techo con las reglas vigentes: los 18 sin marca y los bloques de sesiones ausentes, mensajes y correo (71 filas) no se acreditan sin una decisión nueva del dueño; el resto (≈33) depende de mecanismos verificables (Steam/Epic), de fixtures ausentes (pendrive, Chrome) o de límites sin marca.
