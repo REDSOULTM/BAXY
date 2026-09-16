@@ -1,0 +1,33 @@
+commit e900207b9710f8e1b801e9ebbb022a697d87e40b
+
+C03: uninstalling a plain name absent from the Start catalog is answered by its absence (INSTALL1631)
+
+«Desinstala Worms Rumble» names no platform and nothing the Start catalog holds; the product removes nothing, and nothing can be removed that is not present. An uninstall of a plain one-to-four-word name outside the catalog now reads app.installed with the name as written — generic objects («todo», «esa app», «todos los juegos») stay with the model — and the composer says the name is not in the Windows Start catalog.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 1df55507..832d54d9 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -15063,7 +15063,18 @@ def installed_catalog_application_name(
+     # INSTALL1629 «instala Photoshop»: known software absent from the catalog
+     # is answered by the same presence read, with the name as the person
+     # wrote it (the read proves absence; nothing is installed).
+-    if re.fullmatch(_KNOWN_SOFTWARE, name) is not None:
++    known = re.fullmatch(_KNOWN_SOFTWARE, name) is not None
++    # INSTALL1631 H0620 «Desinstala Worms Rumble»: uninstalling a name the
++    # catalog does not hold is answered by the same presence read (nothing
++    # can be removed that is not present); a plain name of one to four words.
++    uninstall = _has(folded, r"^[¿?¡!\s]*(?:(?:necesito|quiero|quisiera|podes|podrias|puedes|can\s+you|could\s+you|please)\s+(?:que\s+)?)?(?:me\s+)?(?:desinstal|uninstall)")
++    plain_name = re.fullmatch(r"[a-z0-9][a-z0-9'+-]*(?:\s+[a-z0-9][a-z0-9'+-]*){0,3}", name) is not None and not _has(
++        name,
++        r"^(?:(?:todo|todos|todas|eso|esto|aquello|algo|nada|lo|la|el|ese|esa|este|esta|los|las|"
++        r"un|una|mi|mis|tu|tus|everything|all|it|this|that|them|my|the)\b.*|"
++        r".*\b(?:programas?|aplicaciones?|apps?|juegos?|cosas?|archivos?|programs?|applications?|games?|files?))$",
++    )
++    if known or (uninstall and plain_name):
+         raw = str(text)
+         folded_raw = _fold(raw)
+         position = folded_raw.find(name) if len(folded_raw) == len(raw) else -1

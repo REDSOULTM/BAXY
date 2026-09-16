@@ -1,0 +1,24 @@
+{
+  "index": 2,
+  "case_id": "install1631-dev-02",
+  "terminal_kind": "published_final",
+  "final_sha256": "bb5d22f8b0d23fa7efe4ed9343648961768e694c14524f9d568fa160572f3a96",
+  "clients_absent_before": true,
+  "verdict": "passed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 16.5,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1521.671875,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-install1631-instrument-v1\\results\\case-02\\EXIT.json": "a8c10646bb23b927e7851f71682f2315c9cf4729ce6b79e8d4146c9468c5dbd2",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-install1631-instrument-v1\\results\\case-02\\RESOURCES.json": "6bf4bacd15f48ad7ea7a4ebcb5e16d73770fedda42b2167d55b3590b052c82c1",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-install1631-instrument-v1\\private\\run-02\\case-observations.json": "bf5cd876378743ac8e08a89008878bef6035832f0fe44677ed754bdf83e79438"
+  }
+}

@@ -1,3 +1,11 @@
+# INSTALL1631 adjudicado — 2026-09-16T00:23:36.209166+00:00
+
+**579/742 cubiertos, 163 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA ce3e9a2a1f2dcd3ed37e02fda57788b2f9cd859a7027d421e926fcf5ae69dd00. Primeras altas 24 h >= 453 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e900207b con BUILD1631 (desinstalar un nombre ausente del catálogo se responde por su ausencia). Turnos ordinarios sin operaciones.
+
+INSTALL1631 («Instalar y desinstalar software», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): un literal y dos variantes con lectura app.installed completada y verificada (ausente) y finales fieles, dos límites aprobados, 1 créditos. Adjudicación 3264f08f5ccb93c232e1fd741c9b04e4b22736e180e7954494969dac66d28068. Medición raíz: desinstalar un nombre ausente del catálogo se responde por su ausencia; nada quitado.
+
+---
+
 # INSTALL1629 adjudicado — 2026-09-16T00:12:21.399572+00:00
 
 **578/742 cubiertos, 164 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 447f2f9c3596688a1ae9a3696031a589c274e4d9485179a79e31486be8b6144f. Primeras altas 24 h >= 452 (+4).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 1b5525b4 con BUILD1629 (instalar un software conocido ausente del catálogo se responde por su ausencia). Turnos ordinarios sin operaciones.

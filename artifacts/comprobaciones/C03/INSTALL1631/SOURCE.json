@@ -1,0 +1,15 @@
+{
+  "schema": "c03-install1631-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (installed_catalog_application_name: an uninstall of a plain one-to-four-word name outside the catalog reads its presence; generic objects excluded).",
+  "patch": "artifacts/comprobaciones/C03/INSTALL1631/SOURCE.patch",
+  "commits": [
+    "e900207b9710f8e1b801e9ebbb022a697d87e40b"
+  ],
+  "build": "BUILD1631 (C03-repairs1631-build/BUILD_READY.json; mente)",
+  "cause_measured": "La desinstalación de un nombre sin plataforma ni catálogo iba al modelo sin lectura.",
+  "change": "app.installed para desinstalar nombres llanos ausentes del catálogo; sin respuestas fijas.",
+  "measurement": "INSTALL1631: un literal y dos variantes con lectura app.installed completada y verificada (ausente) y finales fieles, dos límites aprobados; 1 créditos. Medición raíz: desinstalar un nombre ausente del catálogo se responde por su ausencia; nada quitado.",
+  "credits": 1
+}
