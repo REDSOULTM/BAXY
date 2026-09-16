@@ -1267,8 +1267,21 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                 foreach (nint frame in frames)
                 {
                     int? hosted = HostedProcessId(frame, host.Id);
-                    if (hosted is null
-                        || !string.Equals(entry.AppUserModelId, ReadApplicationUserModelId(hosted.Value), StringComparison.Ordinal))
+                    if (hosted is null)
+                        continue;
+                    string? hostedId;
+                    try
+                    {
+                        hostedId = ReadApplicationUserModelId(hosted.Value);
+                    }
+                    catch (ApplicationInventoryException)
+                    {
+                        // A frame whose hosted process cannot be opened (it exited
+                        // or is protected) hosts a foreign application, never this
+                        // packaged candidate; the candidate's own frames stay strict.
+                        continue;
+                    }
+                    if (!string.Equals(entry.AppUserModelId, hostedId, StringComparison.Ordinal))
                         continue;
                     observations.Add(new InstalledApplicationObservation(
                         host.Id,
@@ -1284,7 +1297,11 @@ internal sealed partial class WindowsInstalledApplicationPlatform : IInstalledAp
                 or System.ComponentModel.Win32Exception
                 or NotSupportedException)
             {
-                throw new ApplicationInventoryException("The hosted application inventory was incomplete.");
+                // CLOSE1649/CLOSE1651 «cierra whatsapp» (inventory_failed, reproduced
+                // by the root probe in 4 of 12 rounds): a process from the snapshot
+                // that exited before its name was read is not a frame host.
+                if (!ProcessHasExited(host))
+                    throw new ApplicationInventoryException("The hosted application inventory was incomplete.");
             }
         }
     }

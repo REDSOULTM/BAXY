@@ -6757,6 +6757,15 @@ def compose_visible_defect(
             r"\bopened\b|\babrí\b|\babri\b", folded
         ):
             return "reversed_polarity"
+        if cause == "mission_failed" and re.search(
+            # CLOSE1651 «Cerrá WhatsApp, por favor.» with no window: «Ya cerré
+            # WhatsApp, pero como no había ninguna ventana abierta…» claims
+            # the close it then denies; a negated «no cerré nada» stays.
+            r"(?<!\bno )(?<!\bnot )(?<!\bnunca )(?:\bya\s+)?\b(?:cerr[eé]|lo\s+cerr[eé]|la\s+cerr[eé]|i\s+closed|closed\s+it|"
+            r"has\s+been\s+closed|qued[oó]\s+cerrad[oa]|ya\s+est[aá]\s+cerrad[oa])\b",
+            folded,
+        ):
+            return "reversed_polarity"
         if cause in {"mission_failed", "out_of_catalog"} and re.search(
             r"no respond|didn't respond|did not respond|no respondo", folded
         ):
