@@ -512,23 +512,29 @@ def _conversation_response_language(text: str, facts: dict | None) -> str:
     some; the reading of the current text stays the owner otherwise."""
 
     reading = read_request(text)
-    neutral_word = re.fullmatch(
-        # MUSIC1759: the final of a confirmed turn is composed on the
-        # confirmation word; «confirmar» is not a choice of Spanish.
-        r"[¿?¡!\s]*(?:confirmar|confirm|confirmo|confirmed|cancelar|cancel|continuar|continue|"
-        r"s[ií]|yes|yep|no|nope|ok|okay|dale|vale|bueno|listo|adelante|go\s+ahead)[\s.!?]*",
-        text or "", re.IGNORECASE,
-    ) is not None
-    if (tuple(reading.evidence) != (0, 0) and not neutral_word) or not isinstance(facts, dict):
+    if (tuple(reading.evidence) != (0, 0) and not _language_neutral_reply(text)) or not isinstance(facts, dict):
         return reading.language
     prior_requests = facts.get("priorRequests")
     if isinstance(prior_requests, list):
         for prior in reversed(prior_requests):
-            if isinstance(prior, str) and prior.strip():
+            # MUSIC1761: the confirmation word the person typed before is
+            # no evidence either («Play a song…», «Queen», «confirmar»).
+            if isinstance(prior, str) and prior.strip() and not _language_neutral_reply(prior):
                 prior_reading = read_request(prior)
                 if tuple(prior_reading.evidence) != (0, 0):
                     return prior_reading.language
     return reading.language
+
+
+def _language_neutral_reply(text: str) -> bool:
+    """MUSIC1759: a confirmation, cancellation or assent word answers a
+    challenge in either language; it is not a choice of Spanish or English."""
+
+    return re.fullmatch(
+        r"[¿?¡!\s]*(?:confirmar|confirm|confirmo|confirmed|cancelar|cancel|continuar|continue|"
+        r"s[ií]|yes|yep|no|nope|ok|okay|dale|vale|bueno|listo|adelante|go\s+ahead)[\s.!?]*",
+        text or "", re.IGNORECASE,
+    ) is not None
 
 
 def _reading_of(user_text: str) -> RequestReading:
