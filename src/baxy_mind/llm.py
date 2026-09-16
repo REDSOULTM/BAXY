@@ -7592,11 +7592,25 @@ def _unsupported_answer_contract_failure(
     if visible_reply_is_a_fixed_stall(content):
         return "unsupported_fixed_stall"
     normalized = _policy_guard_text(content)
+    # LIMITS1699 «Puedes ver tu propio código y analizar si hay alguna
+    # falla.»: when the request itself coordinates two actions with «y»/«and»,
+    # a denial that mirrors them («no puedo ver ni analizar…») is one plain
+    # limit, not a list of partial refusals; the «ni»/«nor» rule steps aside.
+    request_coordinates = (
+        re.search(r"\b(?:y|e|and)\b", _policy_guard_text(str(request or "")))
+        is not None
+    )
+    coordinated_denial = (
+        ""
+        if request_coordinates
+        else r"no puedo\b.{1,160}\bni\b|i cannot\b.{1,160}\b(?:nor|or)\b|"
+    )
     forbidden = (
         re.search(
             (
                 r"\b(?:"
-                r"si (?:tienes|necesitas|quieres|deseas)\b|"
+                + coordinated_denial
+                + r"si (?:tienes|necesitas|quieres|deseas)\b|"
                 r"no dudes en\b|puedo ayudar(?:te)?\b|estoy aqui para\b|"
                 r"avisame\b|avísame\b|"
                 r"puedes intentar\b|podrias intentar\b|"
@@ -7617,8 +7631,6 @@ def _unsupported_answer_contract_failure(
                 r"(?:mis|my) (?:funciones|functions|capacidades|capabilities) "
                 r"(?:estan|are) (?:limitadas|limited)\b|"
                 r"(?:solo|only) (?:puedo|can) (?:conversar|chat|ayudar con escritura)\b|"
-                r"no puedo\b.{1,160}\bni\b|"
-                r"i cannot\b.{1,160}\b(?:nor|or)\b|"
                 r"no puedo\b.{1,160}\bno puedo\b|"
                 r"i cannot\b.{1,160}\bi cannot\b|"
                 r"manualmente\b|manual(?:ly)?\b|you (?:ll|will) need to\b|"
