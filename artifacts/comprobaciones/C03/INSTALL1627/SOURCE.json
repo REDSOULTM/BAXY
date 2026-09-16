@@ -1,0 +1,15 @@
+{
+  "schema": "c03-install1627-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (steam_library_title: the first sentence is the request when the rest names an AppID, a steam:// URL or the store page and no other effect).",
+  "patch": "artifacts/comprobaciones/C03/INSTALL1627/SOURCE.patch",
+  "commits": [
+    "0b7aae3480b0de238d9fc5cdcf4af12bfba2ee7a"
+  ],
+  "build": "BUILD1627 (C03-repairs1627-build/BUILD_READY.json; mente)",
+  "cause_measured": "H0396/H0456: las instrucciones que siguen a la petición (AppID, steam://) dejaban la lectura sin decidir; H0083 pide lanzar un juego que la biblioteca no tiene.",
+  "change": "Lectura de biblioteca con instrucciones de instalación a continuación; sin respuestas fijas.",
+  "measurement": "INSTALL1627: tres literales y dos variantes con lectura de biblioteca completada y verificada y finales fieles, dos límites aprobados; 3 créditos. Medición raíz: la lectura de biblioteca responde el lanzamiento y las instalaciones instruidas con AppID/URL sin seguir las instrucciones ni abrir diálogos; nada descargado ni lanzado.",
+  "credits": 3
+}

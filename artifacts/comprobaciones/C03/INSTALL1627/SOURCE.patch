@@ -1,0 +1,31 @@
+commit 0b7aae3480b0de238d9fc5cdcf4af12bfba2ee7a
+
+C03: a Steam install request followed by AppID or URL instructions still reads the library (INSTALL1627)
+
+Two open rows attach instructions to the request («Instala Doom Eternal en Steam. El AppID es 782330. Usa steam://install/782330 …»; «Descarga Worms Rumble en Steam. IMPORTANTE: primero busca el AppID via https://store.steampowered.co…»). The library reader now takes the first sentence as the request when the rest names an AppID, a steam:// URL or the store page and no other effect (no «luego», «cierra», «y abre …»): the person's instructions concern the same install, and the read tells whether the game is theirs before anything else. «lanzá <juego> en Steam» already reaches the same read (INSTALL1625) when the game is not in the local catalog.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 8e62aa16..ef46737d 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -15001,7 +15001,16 @@ def steam_library_title(text: str) -> str | None:
+         return None
+     match = _STEAM_LIBRARY_REQUEST.fullmatch(folded.rstrip(".!?").strip())
+     if match is None:
+-        return None
++        # INSTALL1627 H0396/H0456: the request is followed by instructions
++        # about the same install (an AppID, a steam:// URL, the store page);
++        # the first sentence is the request, the rest names no other effect.
++        head, separator, rest = folded.partition(". ")
++        if separator and _has(rest, r"\bapp\s*id\b|steam://|store\.steampowered\.com") and not _has(
++            rest, r"\b(?:luego|despues|then|y\s+(?:abre|lanza|abri|ejecuta|open|launch|run)|cierra|close)\b",
++        ):
++            match = _STEAM_LIBRARY_REQUEST.fullmatch(head.rstrip(".!?").strip())
++        if match is None:
++            return None
+     title = match.group("title").strip(" .")
+     if not title or _has(title, r"^(?:el|la|the|un|una|a|an|juego|game|algo|something)$"):
+         return None

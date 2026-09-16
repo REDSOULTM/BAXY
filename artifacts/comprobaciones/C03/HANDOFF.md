@@ -1,3 +1,11 @@
+# INSTALL1627 adjudicado — 2026-09-16T00:02:24.573337+00:00
+
+**574/742 cubiertos, 168 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 4ebea330d54cfb1488ba3e5ea0e6369357731ae19ac5c72310b8fa0e9ab640fc. Primeras altas 24 h >= 448 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 0b7aae34 con BUILD1627 (un lanzamiento en Steam y una instalación con instrucciones de AppID leen la biblioteca). Turnos ordinarios sin operaciones.
+
+INSTALL1627 («Instalar y desinstalar software», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): tres literales y dos variantes con lectura de biblioteca completada y verificada y finales fieles, dos límites aprobados, 3 créditos. Adjudicación 6ab72ea6227ffeeab8525eb7457cd1f48e6186ea6f8bd44f9a5c2ccc84109449. Medición raíz: la lectura de biblioteca responde el lanzamiento y las instalaciones instruidas con AppID/URL sin seguir las instrucciones ni abrir diálogos; nada descargado ni lanzado.
+
+---
+
 # INSTALL1625 adjudicado — 2026-09-15T23:54:06.360412+00:00
 
 **571/742 cubiertos, 171 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 112546e9cf33521cd27010ffc8556cf67c25e9b35cf2185ac84f0c51e3863a4d. Primeras altas 24 h >= 445 (+5).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b6f8fc12 con BUILD1625 (instalar o desinstalar una aplicación del catálogo se responde por su presencia; «en Teams» es Steam). Turnos ordinarios sin operaciones.
