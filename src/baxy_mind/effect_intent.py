@@ -2799,10 +2799,40 @@ def known_unsupported_effect_request(
             and not _has(folded, r"\b(?:game|juego|steam)\b"),
             {"commerce.product.purchase"},
         ),
+        (
+            # UI1659 H0290/H0636 «ve a Cotele en Discord»: a channel, server or
+            # chat inside a messaging client is navigated by that client, not
+            # by the browser; no operation walks a client's interface.
+            client_navigation_target(folded) is not None,
+            {"client.channel.navigate"},
+        ),
     )
     return any(
         matched and not supported & available for matched, supported in contracts
     )
+
+
+_NAVIGATION_CLIENT = r"(?:discord|whatsapp|teams|telegram|slack|skype|zoom|signal|messenger)"
+
+
+def client_navigation_target(folded: str) -> str | None:
+    """Name the messaging client of a go-to-a-place order scoped to it, or nothing."""
+
+    found = re.fullmatch(
+        r"[¿?¡!\s]*(?:(?:por\s+favor|please)[,]?\s+)?"
+        r"(?:(?:en|in|on)\s+(?P<client_a>" + _NAVIGATION_CLIENT + r")[,]?\s+)?"
+        r"(?:ve|anda|andate|entra|entrale|metete|navega|llevame|go|navigate|switch|cambia|cambiate|take\s+me)\s+"
+        r"(?:a(?:l)?|to|hacia|into)\s+(?P<place>\S.{0,60}?)"
+        r"(?:\s+(?:en|in|on|de|del|of)\s+(?:el\s+)?(?P<client_b>" + _NAVIGATION_CLIENT + r"))?"
+        r"(?:\s+(?:por\s+favor|please))?[\s.!?]*",
+        folded,
+    )
+    if found is None:
+        return None
+    client = found.group("client_a") or found.group("client_b")
+    if client is None or _has(found.group("place"), r"https?://|\b(?:[a-z0-9-]+\.)+[a-z]{2,63}\b"):
+        return None
+    return client
 
 
 def resolve_explicit_clarification(
@@ -13694,6 +13724,7 @@ def _symbolic_web_destination(text: str) -> str | None:
         or _has_contradictory_correction(folded)
         or len(_request_clauses(folded)) != 1
         or _named_browser(folded) is not None
+        or client_navigation_target(folded) is not None
         or _has(folded, r"https?://|\b(?:[a-z0-9-]+\.)+[a-z]{2,63}\b")
         or _has(folded, r"\b(?:archivos?|files?|carpetas?|folders?|documentos?|"
                 r"documents?|descargas|downloads?|escritorio|desktop|notas?|notes?|"
