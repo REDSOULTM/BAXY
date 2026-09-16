@@ -991,3 +991,7 @@ Cerrar aplicaciones y ventanas pasa de 17/20 a 17/20 con el cierre de WhatsApp a
 ## Actualización 2026-09-16 (CLOSE1653)
 
 Cerrar aplicaciones y ventanas pasa de 17/20 a 18/20 con el cierre de WhatsApp ausente respondido por su ausencia de ventana con el inventario robusto (commit f31d0159, BUILD1653) (HEAD f31d0159): un literal y dos variantes con window.resolve terminada window_not_found, ninguna app.close y finales fieles; dos límites aprobados, 1 créditos. Medición raíz: con el recorrido de marcos alojados tolerante a procesos que salen (sonda 80/80), el cierre de WhatsApp ausente se responde por su ausencia de ventana; nada cerrado.
+
+## Actualización 2026-09-16 (UI1655)
+
+Interacción dentro de aplicaciones pasa de 10/22 a 10/22 con el silencio del micrófono pedido en un cliente de voz respondido preguntando por el micrófono del sistema (commit 7a6ea17f, BUILD1655) (HEAD 7a6ea17f): cuatro literales y dos variantes con cero operaciones, pero preguntas que piden confirmar un estado o cuál micrófono en vez de ofrecer silenciar el del sistema (una sin respuesta); límite de definición aprobado y acuse de prohibición con «nunca» añadido, 0 créditos. Medición raíz: el lector decide la aclaración en los seis pedidos; la pregunta guiada sólo por el nombre del campo no ofrece el micrófono del sistema y el validador prohibía el subjuntivo «silencie»; siguiente UI1657 con la guía desde el inicio y el validador de oferta.

@@ -1,0 +1,118 @@
+commit 7a6ea17f9d52f73be5f53fab365dd9e8075d6631
+
+C03: a microphone mute scoped to a voice client asks whether to mute the system microphone (UI1655)
+
+«silencia mi microfono en discord», «mutea el micrófono en discord», «Sí. Silencia mi micrófono en Discord» and «en Discord apretá silenciar» ask to be muted inside a voice client. BAXY operates the Windows capture endpoint, not the client's mute control; the microphone reader excludes the client scope on purpose, so the order went to the model. It now decides an explicit clarification of audio.microphone.mute (system_microphone_confirmation, zero operations) whose question offers the system microphone (the application would stop receiving it), validated to name it and to claim neither the client button nor a mute already done; a bare «silencia mi micrófono» stays the system mute.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 17de7117..400df23a 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -3249,6 +3249,43 @@ def _current_directory_file_count(folded: str) -> bool:
+     )
+ 
+ 
++_MICROPHONE_CLIENT = r"(?:discord|teams|zoom|skype|meet|google\s+meet|whatsapp|slack)"
++
++
++def app_scoped_microphone_mute(folded: str) -> str | None:
++    """Name the voice client of a microphone-mute order scoped to it, or nothing.
++
++    «silencia mi micrófono en discord», «mutea el micrófono en discord», «Sí.
++    Silencia mi micrófono en Discord», «en Discord apretá silenciar»: the
++    person wants to be muted in a client whose controls BAXY does not
++    operate. A bare «silencia mi micrófono» stays the system mute.
++    """
++
++    prefix = r"^[¿?¡!\s]*(?:(?:si|ok|bueno|dale|listo)[.,!]?\s+)?(?:(?:por\s+favor|please)[,]?\s+)?"
++    mute = re.fullmatch(
++        prefix
++        + r"(?:silencia|silenciame|silencialo|mutea|muteame|mutealo|mute|apaga|apagame|desactiva|desactivame|turn\s+off)\s+"
++        + r"(?:(?:mi|el|the|my|mis)\s+)?(?:microfono|micro|mic|microphone)\s+"
++        + r"(?:en|in|on|de|del|of|dentro\s+de)\s+(?:(?:el|la|the)\s+)?(?P<client>" + _MICROPHONE_CLIENT + r")"
++        + r"(?:\s+(?:por\s+favor|please))?[\s.!?]*",
++        folded,
++    )
++    if mute is not None:
++        return mute.group("client")
++    press = re.fullmatch(
++        prefix
++        + r"(?:(?:en|in|on)\s+(?P<client_a>" + _MICROPHONE_CLIENT + r")[,]?\s+)?"
++        + r"(?:apreta|apretale|apretalo|pulsa|pulsale|presiona|presionale|clickea|click|hace\s+clic\s+en|haz\s+clic\s+en|press|hit|toca)\s+"
++        + r"(?:(?:el|la|the|en)\s+)?(?:boton\s+(?:de\s+)?)?(?:silenciar|silencio|silenciarme|mutear|mute|muteo)"
++        + r"(?:\s+(?:el|mi|the|my)\s+(?:microfono|micro|mic|microphone))?"
++        + r"(?:\s+(?:en|in|on)\s+(?P<client_b>" + _MICROPHONE_CLIENT + r"))?[\s.!?]*",
++        folded,
++    )
++    if press is None:
++        return None
++    return press.group("client_a") or press.group("client_b")
++
++
+ def resolve_explicit_clarification_intent(
+     text: str,
+     available_operations: Iterable[str],
+@@ -3277,6 +3314,13 @@ def resolve_explicit_clarification_intent(
+         # FILES1437 «dime cuántos archivos .py hay en el directorio actual»: BAXY
+         # has no working directory; the count needs the person's folder.
+         return ClarificationIntent(("filesystem.known.search",), ("folder",))
++    if "audio.microphone.mute" in available and app_scoped_microphone_mute(folded) is not None:
++        # UI1653 H0232 «silencia mi microfono en discord», H0128 «en Discord
++        # apretá silenciar»: BAXY operates the Windows capture endpoint, not
++        # the mute control of a voice client; it asks whether to mute the
++        # system microphone (the client would stop receiving it) instead of
++        # muting it unasked or pretending to press the client button.
++        return ClarificationIntent(("audio.microphone.mute",), ("system_microphone_confirmation",))
+     if "input.text.type" in available and re.fullmatch(
+         # UI1645 H0265 «escribe en el diálogo el de ChadGBT»: a typing order
+         # that names where to write and not what; the text is missing.
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 2604e2d9..41fbe8c2 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -12421,6 +12421,42 @@ class LlmRuntime:
+                         )
+                         continue
+                     raise ValueError("aclaración explícita propone una alarma no leída")
++            # UI1653 «silencia mi microfono en discord»: BAXY mutes the Windows
++            # capture endpoint, never a client control; the question must offer
++            # the system microphone and claim neither the client button nor a
++            # mute already done. One corrected retry.
++            if missing_fields == ("system_microphone_confirmation",):
++                folded_question = _reading_fold(str(question))
++                names_system_microphone = (
++                    re.search(r"\b(?:microfono|micro|mic|microphone)\b", folded_question) is not None
++                    and re.search(r"\b(?:sistema|system|windows|general|de la pc|del pc|del equipo|of the pc|computer)\b", folded_question) is not None
++                )
++                claims_done_or_client = re.search(
++                    r"\b(?:silencie|silenciado|mutee|muteado|muted|i have muted|i muted|ya esta|already|"
++                    r"no puedo|no se puede|cannot|can't|unable)\b",
++                    folded_question,
++                ) is not None
++                if not names_system_microphone or claims_done_or_client:
++                    if attempt == 0:
++                        payload["messages"].insert(
++                            -1,
++                            {
++                                "role": "system",
++                                "content": (
++                                    "Corrección: BAXY maneja el micrófono del sistema de Windows, no el "
++                                    "botón de silencio de esa aplicación. Pregunta sólo si quiere que "
++                                    "silencies el micrófono del sistema (la aplicación dejaría de captarlo); "
++                                    "no digas que no puedes ni que ya lo silenciaste."
++                                    if response_language != "en"
++                                    else "Correction: BAXY controls the Windows system microphone, not that "
++                                    "application's mute button. Ask only whether to mute the system "
++                                    "microphone (the application would stop receiving it); do not say you "
++                                    "cannot or that it is already muted."
++                                ),
++                            },
++                        )
++                        continue
++                    raise ValueError("aclaración explícita no ofrece el micrófono del sistema")
+             # FILES1437 «How many files are in the current directory?» → «How
+             # many files are in the folder?»: the folder question restated the
+             # count instead of asking which folder. One corrected retry.

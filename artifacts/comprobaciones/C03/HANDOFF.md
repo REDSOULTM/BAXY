@@ -1,3 +1,11 @@
+# UI1655 adjudicado — 2026-09-16T02:53:20.202475+00:00
+
+**588/742 cubiertos, 154 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 101760dced604ed80144f90aabaea40076911e6923cd4471e9bfd623d9560ed0. Primeras altas 24 h >= 462 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7a6ea17f con BUILD1655 (silenciar el micrófono «en Discord» pregunta si silencia el del sistema). Turnos ordinarios sin operaciones.
+
+UI1655 («Interacción dentro de aplicaciones», el silencio del micrófono pedido en un cliente de voz respondido preguntando por el micrófono del sistema): cuatro literales y dos variantes con cero operaciones, pero preguntas que piden confirmar un estado o cuál micrófono en vez de ofrecer silenciar el del sistema (una sin respuesta); límite de definición aprobado y acuse de prohibición con «nunca» añadido, 0 créditos. Adjudicación 4a56eeddf5211c32453c86d056dde9541caec34401be9a079b77b31bab5b30f3. Medición raíz: el lector decide la aclaración en los seis pedidos; la pregunta guiada sólo por el nombre del campo no ofrece el micrófono del sistema y el validador prohibía el subjuntivo «silencie»; siguiente UI1657 con la guía desde el inicio y el validador de oferta.
+
+---
+
 # CLOSE1653 adjudicado — 2026-09-16T02:43:42.282739+00:00
 
 **588/742 cubiertos, 154 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 8d3d427b45cf5834461a21afca7ebf4b22e95e1f1569c92833560898a46bd2dd. Primeras altas 24 h >= 462 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f31d0159 con BUILD1653 (un proceso que sale durante el recorrido de marcos alojados no impide leer la ausencia). Turnos ordinarios sin operaciones.

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1655-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (app_scoped_microphone_mute, resolve_explicit_clarification_intent) and src/baxy_mind/llm.py (system_microphone_confirmation question validator).",
+  "patch": "artifacts/comprobaciones/C03/UI1655/SOURCE.patch",
+  "commits": [
+    "7a6ea17f9d52f73be5f53fab365dd9e8075d6631"
+  ],
+  "build": "BUILD1655 (C03-repairs1655-build/BUILD_READY.json; mente)",
+  "cause_measured": "La orden de silencio con alcance de cliente iba al modelo sin lectura ni pregunta (el lector del micrófono la excluye a propósito).",
+  "change": "Aclaración explícita que ofrece el micrófono del sistema para el silencio pedido en un cliente de voz; sin respuestas fijas.",
+  "measurement": "UI1655: cuatro literales y dos variantes con cero operaciones, pero preguntas que piden confirmar un estado o cuál micrófono en vez de ofrecer silenciar el del sistema (una sin respuesta); límite de definición aprobado y acuse de prohibición con «nunca» añadido; 0 créditos. Medición raíz: el lector decide la aclaración en los seis pedidos; la pregunta guiada sólo por el nombre del campo no ofrece el micrófono del sistema y el validador prohibía el subjuntivo «silencie»; siguiente UI1657 con la guía desde el inicio y el validador de oferta.",
+  "credits": 0
+}
