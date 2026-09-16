@@ -1,3 +1,11 @@
+# CLOSE1651 adjudicado — 2026-09-16T02:15:02.613582+00:00
+
+**587/742 cubiertos, 155 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 43ac079f93817575d8535ebbc5c56201e1552a6ab8e4455931c359c76507b48e. Primeras altas 24 h >= 461 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 8a312490 con BUILD1651 (un proceso ajeno que termina durante el inventario no impide leer la ausencia). Turnos ordinarios sin operaciones.
+
+CLOSE1651 («Cerrar aplicaciones y ventanas», el cierre de WhatsApp ausente respondido por su ausencia de ventana pese a un proceso ajeno que termina): el literal otra vez con inventory_failed; una variante aprobada por ausencia y otra con un final que afirma el cierre antes de negarlo; el límite de definición detenido por una búsqueda web no autorizada y la prohibición reconocida, 0 créditos. Adjudicación 327fcbc28d3bd873e4e865d87af773d132aadcaef29b0b6315913f9cabb2f3e2. Medición raíz: el proceso ajeno terminado no era la causa del fallo de inventario; queda como sospechoso el recorrido de marcos alojados (ApplicationFrameHost) que lee la identidad de cada proceso hijo; el narrador no veta «Ya cerré» en un fallo; siguiente CLOSE1653 con ambos arreglos y sin pregunta de definición sobre un nombre.
+
+---
+
 # CLOSE1649 adjudicado — 2026-09-16T01:50:49.671657+00:00
 
 **587/742 cubiertos, 155 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA 13ad6fa0842c30e7ae809e6e720454b4faa98f972f426fb835703935c44dd403. Primeras altas 24 h >= 461 (+2).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD d987071f con BUILD1649 (cerrar WhatsApp o Discord cuando no están abiertos). Turnos ordinarios sin operaciones.

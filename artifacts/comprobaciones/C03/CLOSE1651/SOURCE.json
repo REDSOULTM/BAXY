@@ -1,0 +1,15 @@
+{
+  "schema": "c03-close1651-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs (Inventory: an exited foreign process is skipped; ProcessHasExited).",
+  "patch": "artifacts/comprobaciones/C03/CLOSE1651/SOURCE.patch",
+  "commits": [
+    "8a31249052f94a43854c097fc410602afe116006"
+  ],
+  "build": "BUILD1651 (C03-repairs1651-build/BUILD_READY.json; proveedores)",
+  "cause_measured": "El inventario fuerte abortaba (inventory_failed) cuando un proceso ajeno terminaba durante la enumeración.",
+  "change": "Proceso terminado omitido en el inventario fuerte; sin respuestas fijas.",
+  "measurement": "CLOSE1651: el literal otra vez con inventory_failed; una variante aprobada por ausencia y otra con un final que afirma el cierre antes de negarlo; el límite de definición detenido por una búsqueda web no autorizada y la prohibición reconocida; 0 créditos. Medición raíz: el proceso ajeno terminado no era la causa del fallo de inventario; queda como sospechoso el recorrido de marcos alojados (ApplicationFrameHost) que lee la identidad de cada proceso hijo; el narrador no veta «Ya cerré» en un fallo; siguiente CLOSE1653 con ambos arreglos y sin pregunta de definición sobre un nombre.",
+  "credits": 0
+}
