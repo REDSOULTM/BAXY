@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1731-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_VISIBLE_CLICK_NAVIGATE heads, the inert LIMITS1683 contract, Epic Games alias in the compound opening) and src/baxy_mind/llm.py (navigation verbs accepted for a verified click); the product's input.visible.click cascade (UIA → OCR → vision) unchanged.",
+  "patch": "artifacts/comprobaciones/C03/UI1731/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1731 (C03-repairs1731-build/BUILD_READY.json; mente)",
+  "cause_measured": "Las cabezas de navegación no leían «navega por la gui hasta»; el contrato de límite conocido cerraba el pedido; «Epic Games» no autenticaba su entrada del catálogo en la forma compuesta.",
+  "change": "Lectores de navegación por la interfaz como clic verificado tras la apertura; contrato inerte; alias de Epic Games; verbos de navegación en el final; sin respuestas fijas.",
+  "measurement": "UI1731: 8 ejecutados, 5 aprobados, 3 fallidos: los tres casos de Steam abrieron el cliente del dueño (reutilizado) y el clic sobre «BIBLIOTECA» localizado por OCR se verificó por cambio de superficie, con la raíz aprobando sólo esa etiqueta; los tres de Epic abrieron el launcher pero el clic terminó visible_button_not_found y los finales lo dijeron con verdad; los dos límites aprobados; 1 créditos. Uso real del computador según la decisión del dueño (sin atajos steam://): app.open + input.visible.click (UIA → OCR) en turno revisado. Epic queda abierto: la etiqueta no se localiza en la ventana recién lanzada (pendiente de sondeo de tiempos/idioma del launcher).",
+  "credits": 1
+}

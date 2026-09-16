@@ -1,0 +1,105 @@
+{
+  "schema": "ui1731-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ui1731-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-ui1731-instrument-v1",
+  "seal_sha256": "ff4f211f592aee9891ba1db5a9b4a517e4438c9420776b9eded7086c7a55691d",
+  "runner_sha256": "681571fc9479610128abd7f1c99e236a52226fc086703ffcdbf93f9b5ea79ced",
+  "transport_seal_sha256": "ebe50084c83d037a07f56d35d8b29e1250712eb806f7f53cd5e97650d91583d9",
+  "files": {
+    "panel.json": "40405f4c5e83a5b9a0157366e261d56bb05f1a9dede491e5ec1177ec70e9ff4b",
+    "turns.jsonl": "3f69fecf51b4d50392ba4b33a94e58fa745fa5ef37d5400fc34830cbed2d58fe",
+    "case-map.json": "11c4d0245ef5fdc753fca6d140ec1cd73a37dce75a15d79f92901635f9522d51",
+    "PLAN.md": "8faf9b680e0bd90b42d0e0718730259dc17f80350c9c9b4504bfc7d6bd1571e0"
+  },
+  "counts": {
+    "cases": 8,
+    "historical_literals": 2,
+    "original_development_variants": 4,
+    "boundaries": 2,
+    "wire_lines": 16,
+    "session_controls": 8,
+    "ordinary_turns": 2,
+    "reviewed_turns": 6,
+    "maximum_reportable_terminals": 14,
+    "maximum_internal_confirmations": 6
+  },
+  "kind_counts": {
+    "historical_literal": 2,
+    "original_development_variant": 4,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0559",
+      "kind": "historical_literal",
+      "group": "steam_library",
+      "credit_behavior": "steam_library",
+      "text_sha256": "c570a5d9c4ae520dbff5f41c9a223278b766d7463e48a683c38a7f8fbd982247",
+      "criterion_sha256": "6d93ce1a0cbe4f4885f538e4a3857421d6912fc0c53588fcb2392292b78b8d96"
+    },
+    {
+      "index": 1,
+      "case_id": "H0432",
+      "kind": "historical_literal",
+      "group": "epic_library",
+      "credit_behavior": "epic_library",
+      "text_sha256": "92efdca3656d3aded9acde802cdecf2112a5290e7decd781333cbed7bfe1bcc2",
+      "criterion_sha256": "23169db5772a3b4fb9e3753e9e431739f9e8efc0bcefcc9aec525bf977888eb2"
+    },
+    {
+      "index": 2,
+      "case_id": "ui1731-dev-01",
+      "kind": "original_development_variant",
+      "group": "steam_library",
+      "credit_behavior": "steam_library",
+      "text_sha256": "e6818a4391fab6f2670e6b33785625b1619c8338c08c01794fd8efab180f8e3d",
+      "criterion_sha256": "6d93ce1a0cbe4f4885f538e4a3857421d6912fc0c53588fcb2392292b78b8d96"
+    },
+    {
+      "index": 3,
+      "case_id": "ui1731-dev-02",
+      "kind": "original_development_variant",
+      "group": "steam_library",
+      "credit_behavior": "steam_library",
+      "text_sha256": "ace30a32ea245a6f983969fd87475de7e709870e7be55ee05133c0c465e4cf6c",
+      "criterion_sha256": "6d93ce1a0cbe4f4885f538e4a3857421d6912fc0c53588fcb2392292b78b8d96"
+    },
+    {
+      "index": 4,
+      "case_id": "ui1731-dev-03",
+      "kind": "original_development_variant",
+      "group": "epic_library",
+      "credit_behavior": "epic_library",
+      "text_sha256": "a83bb1c48162571c4cca20109d98a5cbc24a3c9fbe38f4c63c2c3c0d97913bab",
+      "criterion_sha256": "23169db5772a3b4fb9e3753e9e431739f9e8efc0bcefcc9aec525bf977888eb2"
+    },
+    {
+      "index": 5,
+      "case_id": "ui1731-dev-04",
+      "kind": "original_development_variant",
+      "group": "epic_library",
+      "credit_behavior": "epic_library",
+      "text_sha256": "6f944b6c806379a2bf253c88a9413dba8bc0862e72c3786ca15abec910487cd5",
+      "criterion_sha256": "23169db5772a3b4fb9e3753e9e431739f9e8efc0bcefcc9aec525bf977888eb2"
+    },
+    {
+      "index": 6,
+      "case_id": "ui1731-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "abe087ae186b094d4fdab28cac7c6d2b3e4cb7faf004cd97e912345df19052dc",
+      "criterion_sha256": "ed7208e19b3370b3fca8788c900903e5c6fae0b5599356822e2ffb1a201a4da4"
+    },
+    {
+      "index": 7,
+      "case_id": "ui1731-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "7376aa1e9ded057008d49fa30a9b89c559b34fd95e3bc815d9041a9d2683ef28",
+      "criterion_sha256": "bec947bbe828161081c264458fb74781bbc0ed4f8363082cfe4611edc6344d70"
+    }
+  ]
+}

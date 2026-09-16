@@ -1234,3 +1234,7 @@ Desde el bloque de la madrugada (614): NETWORK1721 (0, los finales no decían la
 | Sin marca del dueño | 18 | Nunca se acreditan (regla del dueño); repartidos en las categorías anteriores según CURRENT_CATEGORY_COUNTS. |
 
 Techo con las reglas vigentes: los 18 sin marca y los bloques de sesiones ausentes, mensajes y correo (71 filas) no se acreditan sin una decisión nueva del dueño; el resto (≈33) depende de mecanismos verificables (Steam/Epic), de fixtures ausentes (pendrive, Chrome) o de límites sin marca.
+
+## Actualización 2026-09-16 (UI1731)
+
+Bibliotecas y fichas de juegos pasa de 3/6 a 4/6 con abrir Steam o Epic Games y navegar por su interfaz hasta la biblioteca con un clic verificado (commit b0d66326, BUILD1731) (HEAD b0d66326): 8 ejecutados, 5 aprobados, 3 fallidos: los tres casos de Steam abrieron el cliente del dueño (reutilizado) y el clic sobre «BIBLIOTECA» localizado por OCR se verificó por cambio de superficie, con la raíz aprobando sólo esa etiqueta; los tres de Epic abrieron el launcher pero el clic terminó visible_button_not_found y los finales lo dijeron con verdad; los dos límites aprobados, 1 créditos. Uso real del computador según la decisión del dueño (sin atajos steam://): app.open + input.visible.click (UIA → OCR) en turno revisado. Epic queda abierto: la etiqueta no se localiza en la ventana recién lanzada (pendiente de sondeo de tiempos/idioma del launcher).
