@@ -1,0 +1,15 @@
+{
+  "schema": "c03-limits1701-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_unsupported_answer_contract_failure: coordinated request, coordinated denial).",
+  "patch": "artifacts/comprobaciones/C03/LIMITS1701/SOURCE.patch",
+  "commits": [
+    "0fd4413ddf24103b38950a7bda12cd421f0f5f38"
+  ],
+  "build": "BUILD1701 (C03-repairs1701-build/BUILD_READY.json; mente)",
+  "cause_measured": "El contrato prohibía «no puedo … ni» aunque el pedido coordinaba dos acciones; los borradores fieles se rechazaban y el turno recuperaba preguntando.",
+  "change": "La regla «ni»/«nor» del contrato no soportado cede cuando el pedido coordina dos acciones con «y»/«and»; sin respuestas fijas.",
+  "measurement": "LIMITS1701: LIMITS1701: variantes y límites aprobados de nuevo; el literal de H0635 volvió a terminar en pregunta de aclaración por otra causa (la decisión «no soportado» fue releída como narración y pasada a «followup»); sin crédito; reparado para la próxima tanda; 0 créditos. 5 casos ordinarios sobre BUILD1701: 4 aprobados, 1 fallido (literal); 0 créditos",
+  "credits": 0
+}

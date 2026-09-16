@@ -1127,3 +1127,7 @@ Estado de hardware y sistema pasa de 39/40 a 40/40 con la versión de Python ins
 ## Actualización 2026-09-16 (LIMITS1699)
 
 Desarrollo y ejecución de comandos pasa de 2/5 a 2/5 con ver su propio código respondido llanamente como límite (commit 1708f772, BUILD1699) (HEAD 1708f772): LIMITS1699: las dos variantes de H0635 respondieron llanamente el límite de ver su propio código con cero operaciones; el literal terminó de nuevo en una pregunta de aclaración porque el contrato prohibía «no puedo … ni» aunque el pedido coordina dos acciones (reparado para la próxima tanda); sin crédito; dos límites aprobados, incluida la prohibición «No me digas la versión de Python.» ahora reconocida, 0 créditos. 5 casos ordinarios sobre BUILD1699: 4 aprobados, 1 fallido (literal con pregunta de aclaración); 0 créditos
+
+## Actualización 2026-09-16 (LIMITS1701)
+
+Desarrollo y ejecución de comandos pasa de 2/5 a 2/5 con ver su propio código respondido llanamente como límite (commit 0fd4413d, BUILD1701) (HEAD 0fd4413d): LIMITS1701: variantes y límites aprobados de nuevo; el literal de H0635 volvió a terminar en pregunta de aclaración por otra causa (la decisión «no soportado» fue releída como narración y pasada a «followup»); sin crédito; reparado para la próxima tanda, 0 créditos. 5 casos ordinarios sobre BUILD1701: 4 aprobados, 1 fallido (literal); 0 créditos
