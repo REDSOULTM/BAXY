@@ -1,3 +1,11 @@
+# REOPEN1685 aplicado — 2026-09-16T06:52:38.384086+00:00
+
+**604/742 cubiertos, 138 abiertos, 0 NA; 9/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2); C03 formal 3/11. Registro SHA afbc64b2c2f284c4f5f35dc37816760b6c703c0127fd660dc2a2b1e8d7316090. Primeras altas 24 h >= 488 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño.
+
+REOPEN1685 (reapertura por decisión del dueño, DECISIONES_DUENO_2026-09-16.md): H0238, H0290, H0444, H0467, H0484, H0529, H0636, H0652, H0658, H0666 vuelven a abiertos con causa «acreditado como límite; el dueño lo declara capacidad esperada 2026-09-16»; la evidencia de UI1663, AGENDA1669, LIMITS1677 y LIMITS1679 se conserva como medición. Cerrar aplicaciones y ventanas 18/20 (deja de estar cerrada), Organizar ventanas y pestañas 7/13, Interacción dentro de aplicaciones 16/22, Archivos y carpetas 28/32, Audio y volumen 46/51.
+
+---
+
 # LIMITS1681 adjudicado — 2026-09-16T06:27:53.695996+00:00
 
 **614/742 cubiertos, 128 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Cerrar aplicaciones y ventanas 20/20); C03 formal 3/11. Registro SHA 92f6938aae0a198d6cc56fcd4117f0a257c8995232fc64572b434d8bc40fbc0d. Primeras altas 24 h >= 488 (+3).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 8e9e59dd con BUILD1681 (pulsar un control dentro de un cliente de mensajería y el modo avión son límites conocidos). Turnos ordinarios sin operaciones.

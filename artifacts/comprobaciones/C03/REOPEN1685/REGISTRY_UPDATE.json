@@ -1,0 +1,41 @@
+{
+  "schema": "c03-registry-reopen-v1",
+  "campaign": "REOPEN1685",
+  "utc": "2026-09-16T06:52:38.384086+00:00",
+  "writer": "root (Claude Fable 5.1), único escritor del registro",
+  "decision": "artifacts/comprobaciones/C03/DECISIONES_DUENO_2026-09-16.md",
+  "cause": "acreditado como límite; el dueño lo declara capacidad esperada 2026-09-16",
+  "reopened_case_ids": [
+    "H0238",
+    "H0290",
+    "H0444",
+    "H0467",
+    "H0484",
+    "H0529",
+    "H0636",
+    "H0652",
+    "H0658",
+    "H0666"
+  ],
+  "credited_by": {
+    "H0666": "AGENDA1669",
+    "H0238": "LIMITS1677",
+    "H0529": "LIMITS1677",
+    "H0658": "LIMITS1677",
+    "H0467": "LIMITS1679",
+    "H0484": "LIMITS1679",
+    "H0444": "LIMITS1679",
+    "H0290": "UI1663",
+    "H0636": "UI1663",
+    "H0652": "LIMITS1679"
+  },
+  "registry_before_sha256": "92f6938aae0a198d6cc56fcd4117f0a257c8995232fc64572b434d8bc40fbc0d",
+  "registry_after_sha256": "afbc64b2c2f284c4f5f35dc37816760b6c703c0127fd660dc2a2b1e8d7316090",
+  "counters": {
+    "covered": 604,
+    "open": 138,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "note": "Los créditos de esas tandas por estos literales dejan de contar; las variantes y límites conservan su valor de medición. Las categorías afectadas vuelven a abrirse (Cerrar aplicaciones y ventanas deja de estar cerrada)."
+}

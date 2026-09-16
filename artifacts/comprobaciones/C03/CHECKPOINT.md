@@ -1,3 +1,15 @@
+## REOPEN1685 — estado vigente 2026-09-16T06:52:38.384086+00:00
+
+Reapertura por decisión del dueño (DECISIONES_DUENO_2026-09-16.md): diez casos acreditados como «límite conocido» son capacidades esperadas y vuelven a abiertos: H0238, H0290, H0444, H0467, H0484, H0529, H0636, H0652, H0658, H0666. Ningún crédito nuevo.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 604/742 | 138 | 0 | >=488 | 9/35 |
+
+Procedencia de primeras altas: sin cambio (las altas ya otorgadas no se descuentan); la cobertura sí baja en 10. Cerrar aplicaciones y ventanas vuelve a 18/20 y deja de estar cerrada.
+
+Siguiente acción: medir los diez reabiertos con el mecanismo que corresponda (minimizar/cerrar todo y pestañas con permisos totales; resumen de PDF por texto extraíble; canal de Discord y volumen de Spotify con el cliente presente o aplazados por el punto 7). LIMITS1683 (aritmética en la Calculadora, interfaz de Steam/Epic, escaneo de redes, descarga) ejecutada y pendiente de adjudicar hasta conocer si el dueño las considera capacidades esperadas.
+
 ## LIMITS1681 — estado vigente 2026-09-16T06:27:53.695996+00:00
 
 Parcial: 9 aprobados, 0 fallidos, 0 sin ejecutar; 3 créditos.
