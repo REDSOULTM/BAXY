@@ -2058,6 +2058,8 @@ def _curated_domain_is_grounded(
         "wifi.disconnect",
         "wifi.ensure.connected",
         "wifi.profile.list",
+        "wifi.radio.set",
+        "wifi.radio.status",
         "wifi.scan",
         "wifi.status",
     }:
@@ -2068,6 +2070,10 @@ def _curated_domain_is_grounded(
         if operation == "wifi.scan":
             # «qué redes hay» names the domain through «redes» alone.
             return _wifi_scan_question(folded)
+        if operation == "wifi.radio.set":
+            return wifi_domain and wifi_radio_set_request(folded) is not None
+        if operation == "wifi.radio.status":
+            return wifi_domain
         if not wifi_domain:
             return False
         if operation == "wifi.disconnect":
@@ -10341,6 +10347,66 @@ _WIFI_SCAN_QUESTION = re.compile(
 )
 
 
+_WIFI_RADIO_SET_REQUEST = re.compile(
+    r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
+    r"(?P<verb>prende|prendeme|prender|encende|encendeme|encender|enciende|activa|activame|activar|turn\s+on|switch\s+on|enable|"
+    r"apaga|apagame|apagar|desactiva|desactivame|desactivar|turn\s+off|switch\s+off|disable)\s+"
+    r"(?:me\s+)?(?:el\s+|la\s+|the\s+)?(?:radio\s+)?(?:wifi|wi[\s-]*fi|wireless|red\s+inalambrica)"
+    r"(?:\s+(?:del\s+|de\s+la\s+|of\s+the\s+)?(?:pc|computadora|compu|equipo|laptop|notebook|computer))?[\s.!?]*$"
+)
+
+
+_WIFI_OFF_OFFER = re.compile(
+    r"(?:wifi|wi[\s-]*fi|radio|antena).{0,80}(?:apagad|off).{0,160}\?|(?:apagad|off).{0,80}(?:wifi|wi[\s-]*fi).{0,160}\?"
+)
+_ASSENT_TO_OFFER = re.compile(
+    r"^[¿?¡!\s]*(?:si|sí|dale|ok|okey|okay|bueno|claro|obvio|por\s+favor|yes|yeah|yep|sure|please|go\s+ahead|do\s+it|hacelo|hazlo|prendelo|encendelo|enciendelo|prende|encende|turn\s+it\s+on)"
+    r"(?:[,\s]+(?:si|sí|dale|por\s+favor|please|hacelo|hazlo|prendelo|encendelo|enciendelo|y\s+busca|y\s+escanea|and\s+scan|prende\s+el\s+wifi|encende\s+el\s+wifi|turn\s+it\s+on|turn\s+on\s+the\s+wifi))*[\s.!?]*$"
+)
+_ACCEPTED_WIFI_OFFER_EVIDENCE = "encender el wifi y buscar redes (oferta aceptada)"
+
+
+def _accepted_wifi_offer_evidence(evidence: str) -> bool:
+    return evidence == _ACCEPTED_WIFI_OFFER_EVIDENCE
+
+
+def accepted_wifi_offer(
+    text: str,
+    history: object,
+    available_operations: Iterable[str],
+) -> EffectIntent | None:
+    """NETWORK1737: the person asked which networks there are, the assistant said the
+    Wi-Fi radio is off and offered to turn it on, and the person now assents
+    → turn the radio on (confirmed) and scan. Nothing else reads an assent."""
+
+    available = frozenset(available_operations)
+    if not {"wifi.radio.set", "wifi.scan"} <= available or not isinstance(history, list):
+        return None
+    if _ASSENT_TO_OFFER.match(_strip_request_envelope(_fold(text)).strip()) is None:
+        return None
+    items = [item for item in history if isinstance(item, dict)]
+    if items and items[-1].get("role") == "user" and items[-1].get("content") == text:
+        items = items[:-1]
+    assistant = next((str(item.get("content") or "") for item in reversed(items) if item.get("role") == "assistant"), "")
+    previous = next((str(item.get("content") or "") for item in reversed(items) if item.get("role") == "user"), "")
+    if not assistant or not previous:
+        return None
+    if _WIFI_OFF_OFFER.search(_fold(assistant)) is None or not _wifi_scan_question(previous):
+        return None
+    return EffectIntent(("wifi.radio.set", "wifi.scan"), (_ACCEPTED_WIFI_OFFER_EVIDENCE, _ACCEPTED_WIFI_OFFER_EVIDENCE))
+
+
+def wifi_radio_set_request(text: str) -> bool | None:
+    """NETWORK1737 «prendé el wifi», «apagá el wifi», «turn on the wifi»: the desired
+    radio state, or None when the text is not that order."""
+
+    folded = _strip_request_envelope(_fold(text)).strip()
+    found = _WIFI_RADIO_SET_REQUEST.match(folded)
+    if found is None:
+        return None
+    return not _has(found.group("verb"), r"^(?:apaga|apagame|apagar|desactiva|desactivame|desactivar|turn\s+off|switch\s+off|disable)$")
+
+
 def _wifi_scan_question(text: str) -> bool:
     """NETWORK1729 «qué redes wifi hay», «escaneá las redes wifi», «what wifi networks
     are there»: a wifi.scan read of the networks the adapter sees — never a
@@ -10651,6 +10717,13 @@ def _strict_catalog_request(
     if "wifi.scan" in available_operations and _wifi_scan_question(text):
         # NETWORK1729: the networks around the PC are read from the adapter.
         return EffectIntent(("wifi.scan",), (text,))
+    if (
+        "wifi.radio.set" in available_operations
+        and wifi_radio_set_request(text) is not None
+        and not _is_negative_effect_clause(_fold(text))
+    ):
+        # NETWORK1737 «prendé el wifi» / «apagá el wifi»: the radio state, confirmed.
+        return EffectIntent(("wifi.radio.set",), (text,))
     if (
         "calculator.expression.evaluate" in available_operations
         and calculator_expression_request(text) is not None

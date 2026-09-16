@@ -3458,7 +3458,8 @@ _CAUSE_FACT = {
     # NETWORK1729 «qué redes wifi hay» with the radio off: the state is the
     # fact; no scan happened and nothing was changed.
     "wifi_interface_off": (
-        "the Wi-Fi radio of this PC is switched off, so the networks could not be scanned; nothing was changed"
+        "the Wi-Fi radio of this PC is switched off, so the networks could not be scanned; nothing was changed. "
+        "Offer, as the last sentence and as a question, to switch the radio on and look for networks"
     ),
     "wifi_interface_unavailable": (
         "this PC has no usable Wi-Fi adapter right now, so no network can be seen"
@@ -4208,6 +4209,10 @@ def _compose_situation_payload(
                     if isinstance(monitor, dict) else monitor
                     for monitor in visible_seen["monitors"]
                 ]
+        if operation in {"wifi.radio.set", "wifi.radio.status"} and isinstance(visible_seen.get("state"), bool):
+            # NETWORK1737: «state» is removed below as an internal status field,
+            # but the radio's read-back state is the fact of these operations.
+            visible_seen["wifiRadioOn"] = visible_seen["state"]
         if (
             situation.get("verified") is True
             and situation.get("succeeded") is True
@@ -5340,6 +5345,31 @@ def _listing_fact_defect(text: str, seen: dict) -> str:
     return ""
 
 
+def _wifi_scan_networks_in_situation(situation: dict) -> dict | None:
+    """NETWORK1737: the verified wifi.scan observation of a situation, single-step
+    or mission-shaped (radio switched on, then scanned)."""
+
+    def from_node(node: object) -> dict | None:
+        if isinstance(node, str):
+            try:
+                node = json.loads(node)
+            except (ValueError, TypeError):
+                return None
+        if not isinstance(node, dict):
+            return None
+        if node.get("operation") == "wifi.scan" and node.get("verified") is True and node.get("succeeded") is True:
+            observed = node.get("observed")
+            if isinstance(observed, dict) and isinstance(observed.get("networks"), list):
+                return observed
+        for step in node.get("steps") or []:
+            found = from_node(step)
+            if found:
+                return found
+        return None
+
+    return from_node(situation)
+
+
 def _recognized_screen_text_in_situation(situation: dict) -> str | None:
     """The verified OCR text in a situation, single-step or mission-shaped."""
 
@@ -5730,13 +5760,12 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
             return "reversed_result"
         if re.search(r"\b(?:forc|mat[eé]|kill|termin[eé])\w*", _reading_fold(text)):
             return "extra_claim"
-    if (
-        payload.get("operation") == "wifi.scan"
-        and isinstance(seen, dict)
-        and isinstance(seen.get("networks"), list)
-    ):
+    scanned = seen if (payload.get("operation") == "wifi.scan" and isinstance(seen, dict) and isinstance(seen.get("networks"), list)) else _wifi_scan_networks_in_situation(payload)
+    if isinstance(scanned, dict) and isinstance(scanned.get("networks"), list):
         # NETWORK1729: every quoted network name is an observed SSID and the
-        # count is the observed one; nothing was connected.
+        # count is the observed one; nothing was connected. NETWORK1737: the
+        # same over the mission «radio on, then scan».
+        seen = scanned
         observed_names = {str(entry.get("ssid")).strip().casefold() for entry in seen["networks"] if isinstance(entry, dict) and isinstance(entry.get("ssid"), str)}
         for quoted in re.findall(_QUOTED_NAME, text):
             if quoted.strip().casefold() not in observed_names:
@@ -5854,6 +5883,29 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
             return "missing_state"
         if re.search(r"\b(?:encendi|apague|active|desactive|prendi|lo\s+puse|turned|switched)\b", folded):
             return "extra_claim"
+    if (
+        payload.get("operation") in {"wifi.radio.set", "wifi.radio.status"}
+        and isinstance(seen, dict)
+        and isinstance(seen.get("wifiRadioOn"), bool)
+    ):
+        # NETWORK1737 «apagá el wifi»: the post-read state is the fact. The
+        # reply must carry it with the right polarity, and «Ya apagó el wifi»
+        # (third person) is not the assistant speaking.
+        on_words = r"\b(?:encendid[oa]|prendid[oa]|activad[oa]|encendi|prendi|active|encendio|prendio|activo|on|enabled|turned\s+on|switched\s+on)\b"
+        off_words = r"\b(?:apagad[oa]|desactivad[oa]|apague|desactive|apago|desactivo|off|disabled|turned\s+off|switched\s+off)\b"
+        negated = r"\bno\s+(?:\w+\s+){0,3}?"
+        says_on = re.search(on_words, folded) is not None and re.search(negated + on_words, folded) is None
+        says_off = re.search(off_words, folded) is not None and re.search(negated + off_words, folded) is None
+        if seen["wifiRadioOn"] is True and says_off and not says_on:
+            return "reversed_result"
+        if seen["wifiRadioOn"] is False and says_on and not says_off:
+            return "reversed_result"
+        if not says_on and not says_off:
+            return "missing_state"
+        if re.search(r"\b(?:apago|encendio|prendio|activo|desactivo|ha\s+(?:apagado|encendido)|he\s+has|she\s+has|it\s+turned)\b", folded) and not re.search(
+            r"\b(?:quedo|esta|queda|is|is\s+now)\b[^.;]{0,20}\b(?:apagad|encendid|prendid|activad|desactivad|on|off)", folded
+        ):
+            return "third_person"
     if (
         payload.get("operation") == "wifi.status"
         and isinstance(seen, dict)
@@ -7058,6 +7110,14 @@ def compose_visible_defect(
     if is_failure:
         if _SUCCESS_OPENERS.match(stripped) is not None:
             return "reversed_polarity"
+        if re.match(
+            # NETWORK1737 «qué redes wifi hay» with the radio off: «La causa del
+            # fallo es que la radio…» narrates the composer instruction; the
+            # person is told the state, not the anatomy of the failure.
+            r"(?:la|el|the)\s+(?:causa|motivo|razon|cause|reason)\s+(?:del?|of|for)\b",
+            folded,
+        ):
+            return "metadiscourse"
         if re.search(r"abiert|\bis open\b", folded) and not re.search(
             # CLOSE1371 «cierra steam» with no Steam window: «no tiene ninguna
             # ventana abierta» / «no está abierto» state the absence, they do
@@ -7069,6 +7129,15 @@ def compose_visible_defect(
             return "reversed_polarity"
         if cause == "mission_failed" and re.search(
             r"\bopened\b|\babrí\b|\babri\b", folded
+        ):
+            return "reversed_polarity"
+        if cause == "mission_failed" and re.search(
+            # UI1735 «ve a Cotele en Discord» with the click failed: «Ya anduve
+            # a Cotele en Discord, pero no pude verificar…» claims the navigation
+            # it then denies; a negated «no fui» stays.
+            r"(?<!\bno )(?<!\bnot )(?<!\bnunca )(?:\bya\s+)?\b(?:anduve|fui|entr[eé]|navegu[eé]|hice\s+clic|puls[eé]|apret[eé]|"
+            r"i\s+went|i\s+navigated|i\s+clicked|i\s+entered|i\s+reached|reached)\b",
+            folded,
         ):
             return "reversed_polarity"
         if cause == "mission_failed" and re.search(
@@ -13940,10 +14009,27 @@ class LlmRuntime:
                 "significa apagada. Di cuál, en una oración corta; no se cambió nada."
             )
         if (
+            visible_situation.get("operation") == "wifi.radio.set"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("wifiRadioOn"), bool)
+        ):
+            # NETWORK1737: the Wi-Fi radio was switched and read back.
+            instruct(
+                "\nseen.wifiRadioOn is the Wi-Fi radio state now (true = on, false = off) after the "
+                "person confirmed the change; seen.changed says whether it had to be switched. "
+                "Say in one short sentence, in first person, that you switched the Wi-Fi off or on "
+                "(«I turned the Wi-Fi off»); nothing else was done."
+                if response_language == "en"
+                else "\nseen.wifiRadioOn es el estado de la radio Wi-Fi ahora (true = encendida, false = "
+                "apagada) tras la confirmación de la persona; seen.changed dice si hubo que "
+                "cambiarla. Di en una oración corta y en primera persona que apagaste o encendiste "
+                "el wifi («Apagué el wifi»); no se hizo nada más."
+            )
+        if (
             visible_situation.get("operation") == "wifi.scan"
             and isinstance(visible_situation.get("seen"), dict)
             and isinstance(visible_situation["seen"].get("networks"), list)
-        ):
+        ) or _wifi_scan_networks_in_situation(visible_situation) is not None:
             # NETWORK1729: the read lists the networks the adapter sees now;
             # name them exactly as observed, nothing connected or changed.
             instruct(

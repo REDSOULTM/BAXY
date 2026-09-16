@@ -29,6 +29,25 @@ internal static partial class VisibleControlSurface
             if (largest != 0)
                 hwnd = largest;
         }
+        // UI1735: the Epic Games Launcher and Discord replace their start-up
+        // window with their main window a few seconds after app.open verified
+        // the focus, and the foreground fell back to this product's own window
+        // (or to a window with no surface); the label was then searched on the
+        // wrong surface for the whole budget. The surface a person acts on is
+        // the topmost window that is not BAXY: when the foreground is ours or
+        // has no usable surface, take that window and bring it to the front,
+        // because the click lands on whatever is on top.
+        _ = GetWindowThreadProcessId(hwnd, out uint foregroundProcess);
+        if (foregroundProcess == unchecked((uint)Environment.ProcessId) || !HasUsableSurface(hwnd))
+        {
+            nint candidate = TopmostForeignWindow();
+            if (candidate != 0)
+            {
+                _ = SetForegroundWindow(candidate);
+                await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+                hwnd = candidate;
+            }
+        }
         if (!TryBounds(hwnd, out int left, out int top, out _, out _))
             return null;
         string directory = Path.Combine(Path.GetTempPath(), "baxy-visible-control");
@@ -107,8 +126,58 @@ internal static partial class VisibleControlSurface
         return best;
     }
 
+    private static bool HasUsableSurface(nint window)
+    {
+        if (!IsWindowVisible(window) || GetWindowTextLengthW(window) == 0)
+            return false;
+        if (DwmGetWindowAttribute(window, 14, out int cloaked, sizeof(int)) == 0 && cloaked != 0)
+            return false;
+        if (!TryBounds(window, out int left, out int top, out int right, out int bottom))
+            return false;
+        return right - left >= 200 && bottom - top >= 150;
+    }
+
+    // EnumWindows walks top-level windows from the top of the Z order down:
+    // the first visible, titled, uncloaked, non-tool window of another
+    // process with a real surface is what the person sees in front.
+    private static nint TopmostForeignWindow()
+    {
+        nint found = 0;
+        uint self = unchecked((uint)Environment.ProcessId);
+        EnumWindowsProc callback = (window, _) =>
+        {
+            if (!IsWindowVisible(window) || GetAncestor(window, 3) != window)
+                return true;
+            if ((GetWindowLongPtrW(window, -20).ToInt64() & 0x80) != 0)
+                return true;
+            GetWindowThreadProcessId(window, out uint owner);
+            if (owner == 0 || owner == self)
+                return true;
+            if (!HasUsableSurface(window))
+                return true;
+            found = window;
+            return false;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        return found;
+    }
+
     [UnmanagedFunctionPointer(CallingConvention.Winapi)]
     private delegate bool EnumWindowsProc(nint window, nint lParam);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool SetForegroundWindow(nint hwnd);
+
+    [LibraryImport("user32.dll")]
+    private static partial int GetWindowTextLengthW(nint hwnd);
+
+    [LibraryImport("user32.dll")]
+    private static partial nint GetWindowLongPtrW(nint hwnd, int index);
+
+    [LibraryImport("dwmapi.dll")]
+    private static partial int DwmGetWindowAttribute(
+        nint hwnd, int attribute, out int value, int size);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]

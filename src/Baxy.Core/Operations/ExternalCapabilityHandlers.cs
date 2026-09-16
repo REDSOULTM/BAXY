@@ -98,6 +98,8 @@ internal static class ExternalCapabilityHandlers
         "wifi.disconnect",
         "wifi.ensure.connected",
         "wifi.profile.list",
+        "wifi.radio.set",
+        "wifi.radio.status",
         "wifi.scan",
         "wifi.status",
     ];

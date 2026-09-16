@@ -1615,6 +1615,20 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Enumera perfiles WLAN guardados mediante identidades opacas sin exponer credenciales."),
         Descriptor(
+            "wifi.radio.set",
+            Schema([Boolean("state")], ["state"]),
+            OperationRisks.PrivacySensitive,
+            "wifi.radio.set.windows.radio.postread.v1",
+            ToolExposure.Public,
+            "Enciende o apaga la radio Wi-Fi mediante la API oficial de Windows, con confirmación de la persona, y verifica su estado final."),
+        Descriptor(
+            "wifi.radio.status",
+            EmptySchema(),
+            OperationRisks.ReadOnly,
+            "wifi.radio.status.windows.radio.read.v1",
+            ToolExposure.Public,
+            "Lee si la radio Wi-Fi está encendida mediante la API oficial de Windows sin cambiar nada."),
+        Descriptor(
             "wifi.scan",
             EmptySchema(),
             OperationRisks.ReadOnly,

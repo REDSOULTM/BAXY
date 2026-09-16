@@ -222,7 +222,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             "system.process.terminate.named" => "windows_process_termination_authority_required",
             "system.recyclebin.empty" => "windows_recycle_bin_authority_required",
             "wifi.connect" or "wifi.connect.named" or "wifi.disconnect" or "wifi.ensure.connected"
-                or "wifi.profile.list" or "wifi.scan" or "wifi.status" =>
+                or "wifi.profile.list" or "wifi.radio.set" or "wifi.radio.status" or "wifi.scan" or "wifi.status" =>
                 "wlan_profile_hardware_gate_required",
             _ => "external_operation_not_supported",
         };

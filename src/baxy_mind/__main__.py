@@ -5611,8 +5611,16 @@ def _explicit_arguments_from_evidence(
             return {}
 
     if operation == "wifi.scan":
-        if effect_intent._wifi_scan_question(evidence):
+        if effect_intent._wifi_scan_question(evidence) or effect_intent._accepted_wifi_offer_evidence(evidence):
             return {}
+
+    if operation == "wifi.radio.set":
+        # NETWORK1737: the desired state comes from the order («prendé» / «apagá»)
+        # or from the accepted offer to turn the radio on and scan.
+        desired = effect_intent.wifi_radio_set_request(evidence)
+        if desired is None and effect_intent._accepted_wifi_offer_evidence(evidence):
+            desired = True
+        return {"state": desired} if desired is not None else None
 
     if operation == "calculator.expression.evaluate":
         expression = effect_intent.calculator_expression_request(evidence)
@@ -6860,10 +6868,14 @@ def _prepare_turn_result(
         )
         else None
     )
+    accepted_wifi_offer = effect_intent.accepted_wifi_offer(
+        objective, history, available_operations
+    )
     explicit_intent = (
         None
         if non_target_language is not None or stable_no_effect_is_closed
-        else live_public_intent
+        else accepted_wifi_offer
+        or live_public_intent
         or resolve_explicit_effects(
             objective,
             available_operations,

@@ -383,6 +383,9 @@ internal static class ProductConductorHost
                 // MUSIC1553 «pon un video de lofi en youtube»: the external
                 // playback (yt-dlp + local mpv) is confirmed by the root reviewer.
                 or "media.play.youtube"
+                // NETWORK1737 «sí, prendelo»: switching the Wi-Fi radio on after the
+                // offer is confirmed by the root reviewer.
+                or "wifi.radio.set"
                 // NETWORK1721 «conectate al wifi de casa»: the sensitive
                 // connection to a saved profile is confirmed by the root reviewer.
                 or "wifi.connect.named"))

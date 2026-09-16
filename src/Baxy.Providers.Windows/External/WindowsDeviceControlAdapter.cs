@@ -271,7 +271,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         or "bluetooth.radio.set" or "bluetooth.radio.status"
         or "display.status" or "software.python.status" or "calculator.expression.evaluate"
         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
-        or "wifi.profile.list" or "wifi.scan" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
+        or "wifi.profile.list" or "wifi.radio.set" or "wifi.radio.status" or "wifi.scan" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
         or "wifi.ensure.connected" or "wifi.status"
         or "system.settings.adjust" or "system.settings.status" or "system.settings.set";
 
@@ -310,6 +310,8 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 "wifi.ensure.connected" => await WifiEnsureConnectedAsync(operation, cancellationToken),
                 "wifi.status" => await WifiConnectionStatusAsync(operation, cancellationToken),
                 "wifi.scan" => await WifiScanAsync(operation, cancellationToken),
+                "wifi.radio.set" => await WifiRadioSetAsync(operation, arguments, effectBoundary, cancellationToken),
+                "wifi.radio.status" => await WifiRadioStatusAsync(operation),
                 "system.settings.adjust" => await SettingAdjustAsync(
                     operation, arguments, effectBoundary, cancellationToken),
                 "system.settings.status" => await SettingStatusAsync(operation, arguments, cancellationToken),
@@ -404,6 +406,98 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         writer.WriteString("name", name); writer.WriteBoolean("paired", true);
         writer.WriteString("authority", "windows_device_pairing_postread"); writer.WriteEndObject();
     });
+
+    // NETWORK1737 «qué redes wifi hay» → «sí, prendelo»: the Wi-Fi radio is
+    // switched through the same official Radio API as Bluetooth, with the
+    // person's confirmation, and the state is read back; a read-only status
+    // answers «¿el wifi está prendido?» without touching it.
+    private static async ValueTask<ExternalCapabilityReceipt> WifiRadioSetAsync(
+        string operation,
+        JsonElement arguments,
+        ExternalEffectBoundary effectBoundary,
+        CancellationToken cancellationToken)
+    {
+        if (!arguments.TryGetProperty("state", out JsonElement stateElement)
+            || stateElement.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
+        {
+            return ExternalJson.Failure(operation, "wifi_radio_state_invalid");
+        }
+        bool requested = stateElement.GetBoolean();
+        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        if (access != RadioAccessStatus.Allowed)
+        {
+            return ExternalJson.Failure(operation, "wifi_radio_access_denied");
+        }
+        Radio[] radios = (await Radio.GetRadiosAsync())
+            .Where(radio => radio.Kind == RadioKind.WiFi)
+            .ToArray();
+        if (radios.Length == 0)
+        {
+            return ExternalJson.Failure(operation, "wifi_radio_not_found");
+        }
+        RadioState desired = requested ? RadioState.On : RadioState.Off;
+        bool effectObserved = false;
+        foreach (Radio radio in radios)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (radio.State == desired)
+            {
+                continue;
+            }
+            effectBoundary.Cross(cancellationToken);
+            RadioAccessStatus changed = await radio.SetStateAsync(desired);
+            effectObserved = true;
+            if (changed != RadioAccessStatus.Allowed)
+            {
+                return effectBoundary.Failure(operation, "wifi_radio_change_rejected", effectObserved);
+            }
+        }
+        Radio[] observed = (await Radio.GetRadiosAsync())
+            .Where(radio => radio.Kind == RadioKind.WiFi)
+            .ToArray();
+        if (observed.Length == 0 || observed.Any(radio => radio.State != desired))
+        {
+            return effectBoundary.Failure(operation, "wifi_radio_postread_failed", effectObserved);
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteBoolean("state", requested);
+            writer.WriteBoolean("changed", effectObserved);
+            writer.WriteNumber("radioCount", observed.Length);
+            writer.WriteString("authority", "windows_radio_api_postread");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved);
+    }
+
+    private static async ValueTask<ExternalCapabilityReceipt> WifiRadioStatusAsync(string operation)
+    {
+        RadioAccessStatus access = await Radio.RequestAccessAsync();
+        if (access != RadioAccessStatus.Allowed)
+        {
+            return ExternalJson.Failure(operation, "wifi_radio_access_denied");
+        }
+        Radio[] radios = (await Radio.GetRadiosAsync())
+            .Where(radio => radio.Kind == RadioKind.WiFi)
+            .ToArray();
+        if (radios.Length == 0)
+        {
+            return ExternalJson.Failure(operation, "wifi_radio_not_found");
+        }
+        bool on = radios.Any(radio => radio.State == RadioState.On);
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteBoolean("radioOn", on);
+            writer.WriteNumber("radioCount", radios.Length);
+            writer.WriteString("authority", "windows_radio_api_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
 
     private static async ValueTask<ExternalCapabilityReceipt> BluetoothRadioSetAsync(
         string operation,
