@@ -2592,6 +2592,18 @@ def _shaped_conversation_answer_violates_contract(
                 folded_content,
             ) is not None
         )
+    if shape == "constraint_ack":
+        # UI1647 «No escribas nada en ningún lado.»: «Entendido. No escribiré
+        # nada en ningún lado.» is the one-sentence acknowledgement behind a
+        # bare interjection; the contract reads the sentence that follows it.
+        content = re.sub(
+            r"^(?:entendido|entendida|de acuerdo|ok|okay|vale|perfecto|claro|listo|bien|"
+            r"est[aá] bien|got it|understood|sure|alright|all right|okay then|fine)[.!…]\s+",
+            "",
+            content,
+            count=1,
+            flags=re.IGNORECASE,
+        )
     if (
         not content
         or "\n" in content

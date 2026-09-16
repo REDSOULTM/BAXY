@@ -554,8 +554,13 @@ internal static class UserMessagePolicy
             ("punctuation_only", IsPunctuationOnly(reply)),
             ("too_thin", IsTooThin(reply)),
             ("asks_to_invent_clock", AsksToInventClock(said)),
+            // UI1647 «Type in the chat box.»: when the mind declares the text
+            // as the missing field, the question names the place the person
+            // named; repeating that place is the frame of the question, not a
+            // request echoed back as a yes/no.
             ("echoes_request",
-                !IsGreetingRequest(userText) && EchoesRequestAsQuestion(userText, reply)),
+                !IsGreetingRequest(userText) && EchoesRequestAsQuestion(userText, reply)
+                && !AsksForDeclaredText(said, missingFields)),
             ("greets_out_of_world", GreetsOutOfWorldTarget(said)),
             ("unverified_connectivity", ClaimsUnverifiedConnectivity(said)),
             ("looks_like_failure",
@@ -1020,6 +1025,13 @@ internal static class UserMessagePolicy
         missingFields is not null
         && missingFields.Contains("folder")
         && Regex.IsMatch(folded, @"\b(?:carpeta|directorio|folder|directory)\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+
+    private static bool AsksForDeclaredText(string folded, IReadOnlyList<string>? missingFields) =>
+        missingFields is not null
+        && missingFields.Contains("text")
+        && (folded.Contains('?', StringComparison.Ordinal) || folded.Contains('¿', StringComparison.Ordinal))
+        && Regex.IsMatch(folded, @"\b(?:texto|text|mensaje|message|palabras|words)\b",
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
 
     private static bool LooksLikeMachineSlotAsk(string folded) =>
