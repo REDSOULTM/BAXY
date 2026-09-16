@@ -1,3 +1,11 @@
+# INSTALL1633 adjudicado — 2026-09-16T00:31:56.393190+00:00
+
+**580/742 cubiertos, 162 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA fdfbac0ca0a7a94258aca5b54346740a6777cef01012c48ed8796d4c9ca4a436. Primeras altas 24 h >= 454 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 7f74e3a8 con BUILD1633 (lanzar un juego que ningún catálogo tiene lee la biblioteca de Steam). Turnos ordinarios sin operaciones.
+
+INSTALL1633 («Abrir aplicaciones», H0066 «pon música», H0526 «poné música», H0405 «poné una canción», H0009 «poneme una canción», H0601 «ponme musika», H0656 «no me molesta, poné música», H0740 «tengo hambre poné música»: pregunta qué música, respuesta guionizada por la raíz y reproducción revisada en el reproductor local): un literal y dos variantes con lectura de biblioteca completada y verificada y finales fieles, dos límites aprobados, 1 créditos. Adjudicación bfd209523035b69caa3478f51fa7db360f60b941f501240dbd43af1d1a3a5778. Medición raíz: el lanzamiento de un juego ausente se responde desde la biblioteca de Steam; el final expresa la consecuencia como descarga/instalación; nada lanzado.
+
+---
+
 # INSTALL1631 adjudicado — 2026-09-16T00:23:36.209166+00:00
 
 **579/742 cubiertos, 163 abiertos, 0 NA; 6/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10); C03 formal 3/11. Registro SHA ce3e9a2a1f2dcd3ed37e02fda57788b2f9cd859a7027d421e926fcf5ae69dd00. Primeras altas 24 h >= 453 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD e900207b con BUILD1631 (desinstalar un nombre ausente del catálogo se responde por su ausencia). Turnos ordinarios sin operaciones.

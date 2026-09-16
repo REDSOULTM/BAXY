@@ -947,3 +947,7 @@ Condiciones que siguen: Vídeo 26 (sesiones de Netflix/Disney+/Prime ausentes, p
 ## Actualización 2026-09-16 (INSTALL1631)
 
 Instalar y desinstalar software pasa de 26/31 a 27/31 con la desinstalación de un nombre ausente respondida por su ausencia del catálogo (commit e900207b, BUILD1631) (HEAD e900207b): un literal y dos variantes con lectura app.installed completada y verificada (ausente) y finales fieles, dos límites aprobados, 1 créditos. Medición raíz: desinstalar un nombre ausente del catálogo se responde por su ausencia; nada quitado.
+
+## Actualización 2026-09-16 (INSTALL1633)
+
+Abrir aplicaciones pasa de 49/54 a 50/54 con el lanzamiento de un juego ausente respondido desde la biblioteca de Steam (commit 7f74e3a8, BUILD1633) (HEAD 7f74e3a8): un literal y dos variantes con lectura de biblioteca completada y verificada y finales fieles, dos límites aprobados, 1 créditos. Medición raíz: el lanzamiento de un juego ausente se responde desde la biblioteca de Steam; el final expresa la consecuencia como descarga/instalación; nada lanzado.

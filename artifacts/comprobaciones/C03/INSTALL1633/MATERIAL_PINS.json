@@ -1,0 +1,78 @@
+{
+  "schema": "install1633-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-install1633-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-install1633-instrument-v1",
+  "seal_sha256": "512029047711c6c5d67400014da8b3418d2c5520bc89c40bdc684de0d8c8168d",
+  "runner_sha256": "2893cffa18cfa6986f4bd6d58f671b680fa5f0f0f536b05cab5c52c7246ce0b9",
+  "transport_seal_sha256": "98a41f067437b14b519b0d98a661240eec08ce6cbe4ae6312d886456544397b7",
+  "files": {
+    "panel.json": "e38a0b77ef6cf6a2f440bcfda8ccfacfb6f74e5129b5e116ce7fcfd8d2be4196",
+    "turns.jsonl": "efee26f5cb44bb9bdff9799ef66eb13c72b295158e15e0d06f2ef33d80305924",
+    "case-map.json": "54a3a4ab5dffa4e0ec4b127cb96b1d545b05c44ab02ab19f2f5d0a099cc709f5",
+    "PLAN.md": "d49e4fa4834b0799a598b655667ae43c11ed4ceb2b6e775ac39e42a9b91ab99f"
+  },
+  "counts": {
+    "cases": 5,
+    "historical_literals": 1,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 10,
+    "session_controls": 5,
+    "ordinary_turns": 5,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 5,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0608",
+      "kind": "historical_literal",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "d2244aa1eb0379618b41acb1410d0f7e2d38dbc0fbc12e8a8474ac09461d5805",
+      "criterion_sha256": "13620d402a88d8c27f789ab5e6f289762d02af7209110b974306cb1558944783"
+    },
+    {
+      "index": 1,
+      "case_id": "install1633-dev-01",
+      "kind": "original_development_variant",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "0940d29bd22b36439d04d683d625965bcd9b9f3f04826f464aa173e55f7690a5",
+      "criterion_sha256": "13620d402a88d8c27f789ab5e6f289762d02af7209110b974306cb1558944783"
+    },
+    {
+      "index": 2,
+      "case_id": "install1633-dev-02",
+      "kind": "original_development_variant",
+      "group": "steam_library_read",
+      "credit_behavior": "steam_library_read",
+      "text_sha256": "ef06382700555b0dfc06735387071f3ea1ab27d89bdaca30eeca6e7400f67d02",
+      "criterion_sha256": "13620d402a88d8c27f789ab5e6f289762d02af7209110b974306cb1558944783"
+    },
+    {
+      "index": 3,
+      "case_id": "install1633-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "0c7b26e9403b59e60bc14f7a44c133377e1472cc955acf4186fe0aaaa8c5bd1e",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 4,
+      "case_id": "install1633-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "19f402db24b919d67897b89bfafba8f7e8b8effba6782ed713815f23ece2ae92",
+      "criterion_sha256": "831f0df2b36cc9e410ada27a826588f4729e4066dedae941035c26b8c5f76636"
+    }
+  ]
+}

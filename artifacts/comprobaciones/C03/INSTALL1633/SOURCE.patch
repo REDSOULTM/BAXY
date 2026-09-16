@@ -1,0 +1,51 @@
+commit 7f74e3a8020b9179a670aa820cf900915d8fb4d1
+
+C03: a bare launch of a game no catalog holds reads the Steam library (INSTALL1633)
+
+«lanzá Mortal Kombat» names no platform, and neither the installed-game catalog nor the Start catalog holds the name; the launch path had nothing to launch and the request reached the model. Games are launched from Steam on this PC, so a launch («lanzá», «jugá», «launch») of a plain one-to-four-word name now reads game.entitlement.named — after installed games, near names and catalog applications keep their own paths — and the composer says the game is not in the person's Steam library, so it cannot be launched. «corré git status» stays outside (no launch verb).
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 832d54d9..9a695b9c 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -15009,6 +15009,25 @@ def steam_library_title(text: str) -> str | None:
+             rest, r"\b(?:luego|despues|then|y\s+(?:abre|lanza|abri|ejecuta|open|launch|run)|cierra|close)\b",
+         ):
+             match = _STEAM_LIBRARY_REQUEST.fullmatch(head.rstrip(".!?").strip())
++        if match is None:
++            # INSTALL1633 H0608 «lanzá Mortal Kombat»: a launch of a bare name
++            # with no platform; games are launched from Steam here, so the
++            # library read answers when no installed game or catalog entry
++            # claims the name (the caller checks those before reading).
++            match = re.fullmatch(
++                r"[¿?¡!\s]*(?:(?:necesito|quiero|quisiera|podes|podrias|puedes|can\s+you|could\s+you|please)\s+(?:que\s+)?)?"
++                r"(?:me\s+)?(?:lanza|lanzame|lanzar|launch|juega|juga|jugar|jugame|jugemos)\s+"
++                r"(?:(?:el|la|the|a|al)\s+)?(?:(?:juego|game)\s+)?"
++                r"(?P<title>[a-z0-9][a-z0-9'&+-]*(?:\s+[a-z0-9][a-z0-9'&+-]*){0,3})"
++                r"(?:[\s,]+(?:por\s+favor|please|ahora|now))?",
++                folded.rstrip(".!?").strip(),
++            )
++            if match is not None and _has(
++                match.group("title"),
++                r"^(?:todo|todos|todas|eso|esto|aquello|algo|nada|lo|la|el|ese|esa|este|esta|los|las|un|una|mi|mis|"
++                r"it|this|that|them|my|the|something|anything|un\s+juego|a\s+game|algun\s+juego|any\s+game)$",
++            ):
++                match = None
+         if match is None:
+             return None
+     title = match.group("title").strip(" .")
+@@ -16149,6 +16168,11 @@ def resolve_explicit_effects(
+         and steam_library_title(text) is not None
+         # INSTALL1625: a game the local catalog holds is launched, not read.
+         and _authenticated_game_target(folded, authenticated_games) is None
++        # INSTALL1633: a near miss of an installed game or catalog application,
++        # or a catalog application itself, keeps its own path (clarifier, open).
++        and not near_catalog_game_candidates(text, authenticated_games)
++        and not near_catalog_application_candidates(text, authenticated_applications)
++        and resolve_application_catalog_app_id(text, authenticated_applications) is None
+     ):
+         # INSTALL1617: a Steam download, install or uninstall of a named game
+         # first reads whether the title is in the person's library and on disk;

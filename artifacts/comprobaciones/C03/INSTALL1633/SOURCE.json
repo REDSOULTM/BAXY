@@ -1,0 +1,15 @@
+{
+  "schema": "c03-install1633-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (steam_library_title: bare launch verbs with a plain name; the resolver hook defers to installed games, near names and catalog applications).",
+  "patch": "artifacts/comprobaciones/C03/INSTALL1633/SOURCE.patch",
+  "commits": [
+    "7f74e3a8020b9179a670aa820cf900915d8fb4d1"
+  ],
+  "build": "BUILD1633 (C03-repairs1633-build/BUILD_READY.json; mente)",
+  "cause_measured": "El lanzamiento sin plataforma de un juego ausente iba al modelo sin lectura.",
+  "change": "Lectura de biblioteca para lanzamientos de nombres llanos sin plataforma; sin respuestas fijas.",
+  "measurement": "INSTALL1633: un literal y dos variantes con lectura de biblioteca completada y verificada y finales fieles, dos límites aprobados; 1 créditos. Medición raíz: el lanzamiento de un juego ausente se responde desde la biblioteca de Steam; el final expresa la consecuencia como descarga/instalación; nada lanzado.",
+  "credits": 1
+}
