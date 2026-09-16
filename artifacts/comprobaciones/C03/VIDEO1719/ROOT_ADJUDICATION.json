@@ -1,0 +1,323 @@
+{
+  "schema": "video1719-root-adjudication-v2",
+  "decided_at_utc": "2026-09-16T11:53:47.134989+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "595b2a5a528a21050a6262ce830382a383c0919b",
+  "decisions_sha256": "3129f0f027a292adb33fbe668acf768d541e771e6196f5b3b3fc7a44202b98a7",
+  "registry_before_sha256": "d961a2f8a87f296fa57a9dd02fe3368723acb353cfaf7bd6a233032ae0623a3e",
+  "registry_before_counts": {
+    "covered": 613,
+    "open": 129,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "9066d41b946643dc43a1ef71feb6b55f637ec0d262ca34c102414bf961e72181",
+  "preparation_sha256": "b58f873ebf0a22177e568d984fa732f8011ffa49c43f8117bc855fb9b8f6a9e5",
+  "passed": 5,
+  "failed": 0,
+  "unexecuted": 0,
+  "executed": 5,
+  "segments_started": 5,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [
+    "H0141"
+  ],
+  "counters": {
+    "covered": 614,
+    "open": 128,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 497,
+    "categories_total": 35,
+    "categories_closed_after": 10,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 497 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); VIDEO1719 añade 1. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 498
+  },
+  "resources": {
+    "seconds_sum": 129.8589999999822,
+    "gpu_peak_mib": 3513.328125,
+    "ram_peak_mib": 2382.93359375
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0141",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        1,
+        2
+      ],
+      "reason": "Preguntó qué música poner, reprodujo con revisión lo contestado desde YouTube en el reproductor local y lo nombró por su título observado; crédito con dos variantes aprobadas.",
+      "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos.",
+      "final_sha256": "8458a89c7ce4b91ba8351716608593792e262ea3108d3d631cfc927fd5bc6e6a",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\results\\case-00\\EXIT.json": "c2f09521a6169073031ab0c542f78d0fd78c7deef101986bab318e4e76f8798f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\results\\case-00\\RESOURCES.json": "7f29f112c214a13e5b613e0c98cd01b74ad028318838d268da502697fb37a13c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\profile-owner-00.json": "9003bc79f3811b873ad012d3adedcc47b426929b6df60fff4a85726c328b19d7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\results\\case-00\\PREREG.json": "8c479e0c49ccae3609424c6956ed23f60fd811ea41847705ce3043e194bb9ecf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-00\\capture\\events.jsonl": "e1cff5cd9a4f843654757a9be4006f091c88b50ce84eafb57dbe34ccdbe7cb06",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-00\\turns.jsonl": "b9d1ddc8fe9e34b57910a1e006f75e3ea6dd6baee4bbb9ce12a7d16b076f314d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\fixture-00.json": "32a54d54075269dafb57035b8201757aa275b22ab50879bb99a7af788a7d1f8f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\context-00.json": "7e43e9dc30d6e4ebe21fea2ad502d0619352671a0789073f8dadc2f5406ce3e5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\context-prelaunch-00.json": "cb60ae19488ac4c95d6b5a3d4882f8abdc9b725d38bcb6690bd7aaf31f0a8320",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-00\\case-observations.json": "b960f09516fe515b231a5ab1545ccf320bdf0cf99bc3e4356d14df5fe6fe0037",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-00\\journal-before.json": "84da81bbe25d2a850ced6be04a2bfc1f5e7e8cd5dd802d24e6512a910e33bc37",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-00\\journal-after.json": "48133146e49baed12de2d1f7ac8fea274d4e76f1cb40db6cfcbc9280d378d68a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "d0c2c0452d810e4ae1c7c6021bd9d5b3ae4d8db1a5d7c9b7607c179fdbfc5061"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "bba7cbfe-cbc2-4b6e-9e91-7602d398c8a8",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "0375c27d-db08-451e-97ed-dcf30ba7ff86",
+          "operation": "media.play.youtube",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "video1719-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Preguntó qué música poner y reprodujo con revisión lo contestado, nombrándolo por su título observado; variante o literal sin dos pares aprobados.",
+      "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos.",
+      "final_sha256": "50acb43871f26d55523d8ae4e49aa63a522c30ba8d7251c30ee410eabb4272b0",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\results\\case-01\\EXIT.json": "b70e5cb374f8832d20916dcd8e1441049261a194dcfed53ba35d28540e5cc49b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\results\\case-01\\RESOURCES.json": "9477a291d0e0cdd1b0ffd5866265349c2dddf5f37626dfcd2c34d8745b87ceed",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\profile-owner-01.json": "39c650535d65cb0bf2a52975935abf014ff25d4c20f4c8fd05aa42d94ad3e8c6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\results\\case-01\\PREREG.json": "64c86f70cce0375ca19627b197e67ed0467649f84fd43c33934bff63182522d5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-01\\capture\\events.jsonl": "563985f4dfb091aeefd8959418735fbd3df96bbc880399098b96e07c46ba2fff",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-01\\turns.jsonl": "9317cb02c0e5bb0b7a5cf4dbd39b395783088d53221bbc8d92630eff5c1990ba",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\fixture-01.json": "876c6350c1afb87c330a56410eae5f37ac980c1ff2bd836d9d81c5251edb1207",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\context-01.json": "f48fb48309771fa8c92c1a41bd4e7c7587d91cc152a6249abdf28cc5e8e22bd9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\context-prelaunch-01.json": "025cf6ffb29d721d0815db8d546904a57e0119857beb8eff4a61242b1586e782",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-01\\case-observations.json": "8f0392c961d11129503679580fb9b7237faec5711413995a7d6fdc85c8451c27",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-01\\journal-before.json": "b33212ee514a05d2c254e3be79a569f76a8d065e9ade3f776a695e45dfd62af8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-01\\journal-after.json": "d772f5f5c659a07def4e86046dcf322af3443838dd7d4ca2b6337fdbfd8fcc27",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "91c2840d3c6e6c92964d55b746c671bc0347e73b5138cb8ad66ad0e18e2db707"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "f603771f-32b0-4bf0-bb89-4468bb68f604",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "94454bec-e344-43a4-97ae-c298a9c2fb0f",
+          "operation": "media.play.youtube",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "video1719-dev-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Preguntó qué música poner y reprodujo con revisión lo contestado, nombrándolo por su título observado; variante o literal sin dos pares aprobados.",
+      "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz, media.play.youtube propuesta con la música contestada, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz; volumen preajustado y restaurado); dos envíos tras el primero; cero violaciones; pins intactos.",
+      "final_sha256": "b0532375283b473881a915158586807b94900056f33976daf8ac3c71fecbcb2c",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\results\\case-02\\EXIT.json": "f906521f45896c7fac6aefac603e132c8df5c904a9a9550acfbb2e8509dbc783",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\results\\case-02\\RESOURCES.json": "4ee57a01927455a755ecce35a0717ab3386684c5cbd51d9aa48e85b9621767a4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\profile-owner-02.json": "57a22b6862952c5befd9687a3839b2738b6325bb1ea5de12f653a34d62d08c05",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\results\\case-02\\PREREG.json": "f5242fde9b8b67dc5a364cf84aa6626ed1024bdb55caa8be4e433e6015c810b6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-02\\capture\\events.jsonl": "becde0b629d1320621dad972bbc9d66506c26811504fe4a3a9ec71a3841a52a1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-02\\turns.jsonl": "bcfc463da78e00ebbba3cc7969dea8a77cb462f2f100f41767ff68561f968ad3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\fixture-02.json": "ea114726e277289bcac0de0937765e76ea19bdbe34b6c74f9aa7f53770145a74",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\context-02.json": "d5cfe62c0cd129768e59d004f8adeffa9aad5da68843d1b41c92cc78a121d705",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\context-prelaunch-02.json": "c6cd35151eabb74d95d694fddb3a5598941deeeb2ba9bd0687d0a703a4daac90",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-02\\case-observations.json": "cc7714e94f40df8dfd29bb16bf2a2ed17b788f63e4a182098930c872ed1a3b39",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-02\\journal-before.json": "aaa66a2467e483f27d705433ff300e6fba4310cdd0dfca4449e5472e0006dc73",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-02\\journal-after.json": "e97195b4613c33ded4e74e9f98db47967fdc5d7e4c636ea0d64ee3827fa509f9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "60a05acefb13acb39c58995e9fa64a7a8db331afb14b65293f46fdf14a9ea6db"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "ab086a47-2e23-4b9f-be8e-7ff602adf705",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "e14e3fcd-d0a2-41ba-8095-239d1582ffde",
+          "operation": "media.play.youtube",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "video1719-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "94a53ade4199b3bc73e3e3d0eb73b1e555cc4f92bc72c0b264e05679c51d9c26",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\results\\case-03\\EXIT.json": "f003b43a4e9a339729bf5be3e70840ae35918cf4692b9b41b1dac43337f191e3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\results\\case-03\\RESOURCES.json": "adea5f41ed0b5adef5e9272dc4310b6f77821bc94690faf188482a5eada1a1e8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\profile-owner-03.json": "013c99663fe987b220e03ff6626487a53f28656e4fe60aa56c7fcca074e2ed01",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\results\\case-03\\PREREG.json": "3aac08dd25decd594ec0c24327732de14026a5edc25aaf415e917ca04897d144",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-03\\capture\\events.jsonl": "cb63a5f303fcc4d388efdedd26294616a5e3145805cbd87b731e83139574c4ad",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-03\\turns.jsonl": "fc55a053a6d6ef2482261f951a54eb594404e1e72260797372396b7af1da20fc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\fixture-03.json": "4b7f51f626e5b82864a146ca54d23ac6dcd39603a9247401e3450056d6e98250",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\context-03.json": "063208d33220a906f547b5fc042b9a4f32d24e3a20df75f006f5d38c8b27a357",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\context-prelaunch-03.json": "20965a09c54d52e459a1c15377c43f73f2e2b55be63e34485b68c68b9fdf2c8b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-03\\case-observations.json": "3f76b7be54222980515a10b1d326ad5d64730dee6bbedff2632d8408534d8f0a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-03\\journal-before.json": "44e2d9d8d12d552e995f852d46ead4fe9e7615542673d700f03d7139baab6999",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-03\\journal-after.json": "ff03ed5557e435f5d09db3ff9f1ae913592d9f7f6a646b9478db53c9be115c10",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "00fc5c527aceac2aa48eeb600c876861570b5ff7d34590156ee59855c8d3df98"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "1c029a74-dbda-4dd8-847c-6e2e2b6c4f30",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "video1719-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "503bb5f56694733b8e9e9b59e18496bb3836fa30a86e4fcadde57d26e69de904",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\results\\case-04\\EXIT.json": "f7983bdf6bfa686c30943f4e46e7fd90f0e171596e0b528b39efb48633db81f3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\results\\case-04\\RESOURCES.json": "4e7968b6e4877ef7b2004774eefc1334b295ce31e3f832ac2720284795b0d03f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\profile-owner-04.json": "4a61ae2db31d9130d5d4be4578ad4a0f7539b76f23354b5027a61659658128c2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\results\\case-04\\PREREG.json": "7120602e98967efc8ab6109f492f0b8fd678639577d2701560b150a5acaff338",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-04\\capture\\events.jsonl": "a4f47ea5e31ba36cf7edd5ffcc2f8b5fee8a3315c731861cfe5cd9ef819b61d1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-04\\turns.jsonl": "a7e5305f0608ca3859995c620fea933dbbe973089804a8d4f623431bb3b46580",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\fixture-04.json": "981b800fc7a593052b654853a72e426d07b314c5c1c510748668598d30174424",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\context-04.json": "d90e1b9d4959bea9cde9bc0510cd4067e010cf20fab62fb7731d2c8242fa4872",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\context-prelaunch-04.json": "c17edc55ffb67c0521f1d4f1d82a0da2dab3c79a93b9918640997ba392d2c8c8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-04\\case-observations.json": "31de78032aea36a620117a27a655dfe4ead5fda81ddfe731cb9b4e59c5e8e628",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-04\\journal-before.json": "0aa608b98a63ce16c4b8adc72db11fa950969dfc3254146f0e1306ea2c0ac7f3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-04\\journal-after.json": "392ab60f80a9ac07f9eff26544be697b213656108ae91233a90c8d11e558dea1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1719-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "11ebfda23ce9aca6efd0138f5ffb4bf7c8a78476e4acd42f91180cad6028c9c4"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "39617eb6-4287-4445-b37d-6b1f4362f9fd",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "VIDEO1719: 12 ejecutados, 5 aprobados, 7 fallidos, 1 créditos (índices [0]); Música 15/39. Siguiente: categoría por masa abierta según CONDICIONES.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

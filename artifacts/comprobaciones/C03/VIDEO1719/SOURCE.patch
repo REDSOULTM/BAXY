@@ -1,0 +1,27 @@
+commit 595b2a5a528a21050a6262ce830382a383c0919b
+
+C03: the missing-name retry hint for a YouTube playback carries the playing state (VIDEO1719)
+
+In VIDEO1717 the literal «abre youtube y pon un video» → «uno de gatos» played and verified, but its finals were vetoed: the first draft translated the title, and the retry hint («Cita el título completo tal cual se observó, entre comillas: «…»») produced the bare quoted title, which the state veto rejected before the third draft digressed. The hint now asks, in one sentence, to say that it is playing and to quote the whole title exactly as observed.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 13cbc0e7..22cb1ae4 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -14704,9 +14704,11 @@ class LlmRuntime:
+                 # MUSIC1555: the drafts quoted a fragment («Smooth Criminal»)
+                 # of the observed title; the whole title, verbatim, is the name.
+                 else (
+-                    ("Quote the whole title exactly as observed, inside quotation marks: "
++                    # VIDEO1717: told only to quote the title, the model answered
++                    # with the bare title; the state belongs in the same sentence.
++                    ("Say in one sentence that it is playing and quote the whole title exactly as observed, inside quotation marks: "
+                      if response_language == "en"
+-                     else "Cita el título completo tal cual se observó, entre comillas: ")
++                     else "Di en una oración que está reproduciéndose y cita el título completo tal cual se observó, entre comillas: ")
+                     + "«" + str(_merged_observed(situation).get("title")) + "»"
+                 )
+                 if _youtube_playback_in_payload({"operation": situation.get("operation"), "verified": situation.get("verified"), "succeeded": situation.get("succeeded"), "seen": _merged_observed(situation)}) is not None

@@ -1159,3 +1159,7 @@ Vídeo y series pasa de 0/26 a 1/26 con un título propio sin proveedor reproduc
 ## Actualización 2026-09-16 (VIDEO1717)
 
 Vídeo y series pasa de 1/26 a 1/26 con abrir YouTube y poner un video sin decir cuál preguntado y reproducido tras la respuesta (commit 8241a616, BUILD1717) (HEAD 8241a616): VIDEO1717: los tres casos de diálogo preguntaron qué video poner sin operar, tomaron la respuesta guionizada de la raíz y reprodujeron con revisión en el reproductor local; las variantes citaron tal cual el título observado; el literal quedó sin final (borradores vetados); sin crédito; dos límites aprobados, 0 créditos. 5 casos sobre BUILD1717 (3 de diálogo con revisión, 2 ordinarios): 4 aprobados, 1 fallido (literal sin final); 0 créditos
+
+## Actualización 2026-09-16 (VIDEO1719)
+
+Vídeo y series pasa de 1/26 a 2/26 con abrir YouTube y poner un video sin decir cuál preguntado y reproducido tras la respuesta (commit 595b2a5a, BUILD1719) (HEAD 595b2a5a): VIDEO1719: «abre youtube y pon un video» preguntó qué video sin operar, tomó la respuesta guionizada de la raíz, reprodujo con revisión en el reproductor local y el final citó tal cual el título observado diciendo que se reproduce; H0141 acreditado con dos variantes aprobadas (español e inglés); dos límites aprobados; reproductor detenido y volumen restaurado por la raíz, 1 créditos. 5 casos sobre BUILD1719 (3 de diálogo con revisión, 2 ordinarios): 5 aprobados; 1 crédito

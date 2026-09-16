@@ -1,3 +1,11 @@
+# VIDEO1719 adjudicado — 2026-09-16T11:53:47.134989+00:00
+
+**614/742 cubiertos, 128 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA 846b090c8f16151e07e7f079875aa9f80d9fde29c489228912a99b242a50c0c4. Primeras altas 24 h >= 498 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 595b2a5a con BUILD1719 (abrir YouTube y poner un video sin decir cuál: la reintentativa nombra el estado junto al título). Turnos ordinarios sin operaciones.
+
+VIDEO1719 («Vídeo y series», abrir YouTube y poner un video sin decir cuál preguntado y reproducido tras la respuesta): VIDEO1719: «abre youtube y pon un video» preguntó qué video sin operar, tomó la respuesta guionizada de la raíz, reprodujo con revisión en el reproductor local y el final citó tal cual el título observado diciendo que se reproduce; H0141 acreditado con dos variantes aprobadas (español e inglés); dos límites aprobados; reproductor detenido y volumen restaurado por la raíz, 1 créditos. Adjudicación f5ac4327081983c3e142e7ab0b6dde329c4212faa0dce24f48933a175e94e821. 5 casos sobre BUILD1719 (3 de diálogo con revisión, 2 ordinarios): 5 aprobados; 1 crédito
+
+---
+
 # VIDEO1717 adjudicado — 2026-09-16T11:48:59.463904+00:00
 
 **613/742 cubiertos, 129 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA d961a2f8a87f296fa57a9dd02fe3368723acb353cfaf7bd6a233032ae0623a3e. Primeras altas 24 h >= 497 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 8241a616 con BUILD1717 (abrir YouTube y poner un video sin decir cuál pregunta qué video y lo reproduce). Turnos ordinarios sin operaciones.

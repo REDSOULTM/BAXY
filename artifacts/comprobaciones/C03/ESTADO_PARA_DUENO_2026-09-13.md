@@ -1,3 +1,25 @@
+## VIDEO1719 — estado vigente 2026-09-16T11:53:47.134989+00:00
+
+Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 614/742 | 128 | 0 | >=498 | 10/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 497 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); VIDEO1719 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: VIDEO1719: 12 ejecutados, 5 aprobados, 7 fallidos, 1 créditos (índices [0]); Música 15/39. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/VIDEO1719/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 129.86 s acumulados; pico GPU 3513.33 MiB; pico RAM 2382.93 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque VIDEO1719 precedente. -->
+
 ## VIDEO1717 — estado vigente 2026-09-16T11:48:59.463904+00:00
 
 Parcial: 4 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.

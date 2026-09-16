@@ -1,0 +1,15 @@
+{
+  "schema": "c03-video1719-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (missing_name retry hint for a YouTube playback carries the playing state).",
+  "patch": "artifacts/comprobaciones/C03/VIDEO1719/SOURCE.patch",
+  "commits": [
+    "595b2a5a528a21050a6262ce830382a383c0919b"
+  ],
+  "build": "BUILD1719 (C03-repairs1719-build/BUILD_READY.json; mente)",
+  "cause_measured": "La pista de reintento tras un título traducido pedía sólo el título y el modelo devolvía el título solo; la tercera tentativa divagaba.",
+  "change": "La pista de missing_name para YouTube pide estado y título en una oración; sin respuestas fijas.",
+  "measurement": "VIDEO1719: VIDEO1719: «abre youtube y pon un video» preguntó qué video sin operar, tomó la respuesta guionizada de la raíz, reprodujo con revisión en el reproductor local y el final citó tal cual el título observado diciendo que se reproduce; H0141 acreditado con dos variantes aprobadas (español e inglés); dos límites aprobados; reproductor detenido y volumen restaurado por la raíz; 1 créditos. 5 casos sobre BUILD1719 (3 de diálogo con revisión, 2 ordinarios): 5 aprobados; 1 crédito",
+  "credits": 1
+}
