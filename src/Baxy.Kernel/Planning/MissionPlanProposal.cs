@@ -186,6 +186,10 @@ public static class MissionPlanValidator
             "browser.navigate" or "browser.navigate.named" => ["web.search"],
             "note.read" => ["note.create"],
             "office.document.read" => ["office.document.create"],
+            // FILES1705 «crea un archivo de texto con los 5 procesos que más
+            // memoria usan»: the file's text is projected from the verified
+            // process listing, so the write may defer its arguments to it.
+            "filesystem.write.text" => ["system.process.list"],
             _ => [],
         };
     }

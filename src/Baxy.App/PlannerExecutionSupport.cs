@@ -398,6 +398,11 @@ internal static class PlanObservationProjector
                 { "kind", "name" },
             ["reminder.resolve.exact"] = new(StringComparer.Ordinal)
                 { "expectedVersion", "reviewLabel" },
+            // FILES1705 «crea un archivo de texto con los 5 procesos que más
+            // memoria usan»: the write that follows projects its text from
+            // the listing's names and measures.
+            ["system.process.list"] = new(StringComparer.Ordinal)
+                { "cpuUsagePercent", "name", "processes", "sort", "totalProcessorSeconds", "workingSetBytes" },
             ["web.search"] = new(StringComparer.Ordinal)
                 { "url" },
             ["wifi.profile.list"] = new(StringComparer.Ordinal)
@@ -626,6 +631,11 @@ internal static class PlanObservationProjector
         ArgumentException.ThrowIfNullOrWhiteSpace(operation);
         ArgumentNullException.ThrowIfNull(arguments);
         ArgumentNullException.ThrowIfNull(observations);
+        if (string.Equals(operation, "filesystem.write.text", StringComparison.Ordinal))
+        {
+            return TextIsProjectedFromProcessListing(arguments, observations);
+        }
+
         string[] authorityFields = MissionPlanValidator
             .DependencyAuthorityFields(operation);
         if (authorityFields.Length == 0)
@@ -639,6 +649,55 @@ internal static class PlanObservationProjector
             HashSet<string> observedValues = CollectFieldValues(observations, field);
             if (argumentValues.Count == 0
                 || !argumentValues.IsSubsetOf(observedValues))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // FILES1705: a deferred write carries no identity to copy; its authority is
+    // that every listed line is an observed process name with one of that
+    // listing's observed measures, exactly as the verified producer returned them.
+    private static bool TextIsProjectedFromProcessListing(
+        JsonObject arguments,
+        JsonArray observations)
+    {
+        if (arguments["text"] is not JsonValue textValue
+            || !textValue.TryGetValue<string>(out string? text)
+            || string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        HashSet<string> names = CollectFieldValues(observations, "name");
+        var measures = new HashSet<string>(StringComparer.Ordinal);
+        foreach (string field in new[] { "workingSetBytes", "cpuUsagePercent", "totalProcessorSeconds" })
+        {
+            measures.UnionWith(CollectFieldValues(observations, field));
+        }
+
+        string[] lines = text.Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(static line => line.TrimEnd('\r'))
+            .Where(static line => line.Length > 0)
+            .ToArray();
+        if (lines.Length < 2 || names.Count == 0 || measures.Count == 0)
+        {
+            return false;
+        }
+
+        foreach (string line in lines.Skip(1))
+        {
+            int separator = line.LastIndexOf(": ", StringComparison.Ordinal);
+            if (separator <= 0)
+            {
+                return false;
+            }
+
+            string name = JsonValue.Create(line[..separator]).ToJsonString();
+            string measure = line[(separator + 2)..].Trim();
+            if (!names.Contains(name) || !measures.Contains(measure))
             {
                 return false;
             }
