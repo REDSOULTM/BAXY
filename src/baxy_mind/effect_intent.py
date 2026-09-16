@@ -3209,6 +3209,48 @@ def _file_trash_request(text: str) -> re.Match[str] | None:
     return found
 
 
+# FILES1705 H0334 «crea un archivo de texto con los 5 procesos que mas memoria
+# usan»: a text file whose content is a process listing read from this
+# machine — system.process.list (limit, sort) then filesystem.write.text
+# with the listing projected deterministically from the verified result.
+_PROCESS_REPORT_FILE_REQUEST = re.compile(
+    r"^[¿?¡!\s]*(?:crea|crear|creame|genera|generame|generar|guarda|guardame|guardar|"
+    r"escribe|escribime|escribir|arma|armame|make|create|save|write|generate)(?:me)?\s+"
+    r"(?:(?:un|una|a|el|the)\s+)?(?:(?:text|txt)\s+)?(?:archivo|fichero|file)(?:\s+(?:de\s+texto|txt|text))?"
+    r"(?:\s+(?:llamad[oa]|named|called)\s+(?P<name>[^\s\"']+))?\s+"
+    r"(?:con|que\s+(?:tenga|liste|contenga|muestre)|with|listing|containing|of)\s+"
+    r"(?:(?:los|las|the|mis|my)\s+)?(?:(?P<n>\d{1,2})\s+)?(?:procesos|processes)\s+"
+    r"(?:que\s+mas\s+(?P<res_a>memoria|cpu|procesador|ram)\s+(?:usan|consumen|ocupan|gastan)|"
+    r"que\s+(?:usan|consumen|ocupan|gastan)\s+mas\s+(?P<res_b>memoria|cpu|procesador|ram)|"
+    r"(?:that\s+)?(?:use|using|consume|consuming)\s+(?:the\s+)?most\s+(?P<res_c>memory|cpu|ram)|"
+    r"with\s+(?:the\s+)?(?:highest|most)\s+(?P<res_d>memory|cpu|ram)(?:\s+usage)?)"
+    r"(?:\s*,?\s+(?:por\s+favor|please))?[\s.!?]*$",
+    re.IGNORECASE,
+)
+
+
+def process_report_file_request(folded: str) -> dict[str, object] | None:
+    """Read one request for a text file listing the top processes by memory or CPU."""
+
+    found = _PROCESS_REPORT_FILE_REQUEST.match(_strip_request_envelope(folded).strip())
+    if found is None:
+        return None
+    resource = next(
+        (found.group(key) for key in ("res_a", "res_b", "res_c", "res_d") if found.group(key)),
+        "",
+    ).lower()
+    sort = "cpu" if resource in {"cpu", "procesador"} else "memory"
+    report: dict[str, object] = {"sort": sort}
+    if found.group("n"):
+        limit = int(found.group("n"))
+        if not 1 <= limit <= 50:
+            return None
+        report["limit"] = limit
+    if found.group("name"):
+        report["name"] = found.group("name")
+    return report
+
+
 def _file_creation_request(text: str) -> re.Match[str] | None:
     """Match one literal file creation with a name and its content."""
 
@@ -16742,6 +16784,14 @@ def resolve_explicit_effects(
     alias_plan = exact_catalog_operation_plan(folded)
     if alias_plan is not None and set(alias_plan) <= available:
         return EffectIntent(alias_plan, tuple(folded for _ in alias_plan))
+    if (
+        {"system.process.list", "filesystem.write.text"} <= available
+        and process_report_file_request(folded) is not None
+        and not _is_negative_effect_clause(folded)
+        and not _is_meta_or_tool_denial(folded)
+    ):
+        # FILES1705: the listing is read first; the file carries what was read.
+        return EffectIntent(("system.process.list", "filesystem.write.text"), (folded, folded))
     if "filesystem.write.text" in available and _file_creation_request(folded) is not None:
         # A named file with literal content is a write, not a note.
         return EffectIntent(("filesystem.write.text",), (folded,))

@@ -21,7 +21,12 @@ import unicodedata
 from dataclasses import dataclass
 from typing import Any, Callable, Iterable, Sequence
 
-from .effect_intent import enumerated_note_dependency_order, has_named_window_target
+from .effect_intent import (
+    _fold,
+    enumerated_note_dependency_order,
+    has_named_window_target,
+    process_report_file_request,
+)
 
 MAX_PLAN_STEPS = 16
 # Cuántas operaciones ve el decisor. El ranking es por operación: no hay ventana
@@ -227,6 +232,14 @@ def conditional_predecessors(
     """Return optional identity producers unless the user supplied the ID."""
 
     predecessors = _CONDITIONAL_IDENTITY_PREDECESSORS.get(operation, ())
+    if (
+        operation == "filesystem.write.text"
+        and objective
+        and process_report_file_request(_fold(objective)) is not None
+    ):
+        # FILES1705: the file carries the process listing; the listing
+        # must be observed before the write can be grounded.
+        return ("system.process.list",)
     opaque_evidence = _OPAQUE_ID_EVIDENCE.get(operation)
     if (
         predecessors
@@ -1094,6 +1107,14 @@ def _value_is_grounded(
             _OPAQUE_ID.fullmatch(value) is not None
             and value.casefold() in source.casefold()
         )
+    if (
+        property_name == "relativePath"
+        and value.lower().endswith(".txt")
+        and re.search(r"\b(?:texto|text|txt)\b", identity_text(source)) is not None
+    ):
+        # FILES1705 «un archivo de texto»: the extension is what the words
+        # «de texto» / «text file» mean; the name itself still grounds.
+        value = value[:-4]
     value_key = identity_text(value)
     source_key = identity_text(source)
     if not value_key:

@@ -781,6 +781,10 @@ def _verified_dependency_identity_arguments(
 
     if not isinstance(observations, list):
         return None
+    if operation == "filesystem.write.text":
+        report = effect_intent.process_report_file_request(effect_intent._fold(objective))
+        if report is not None:
+            return _process_report_file_arguments(report, observations, tool)
     fields = _DETERMINISTIC_DEPENDENCY_FIELDS.get(operation, ())
     producers = set(required_predecessors(operation)) | set(
         conditional_predecessors(operation, objective)
@@ -812,6 +816,55 @@ def _verified_dependency_identity_arguments(
     if not isinstance(schema, dict) or not validate_json_schema_instance(
         arguments, schema
     ):
+        return None
+    return arguments
+
+
+def _process_report_file_arguments(
+    report: dict[str, object],
+    observations: list[object],
+    tool: dict[str, object],
+) -> dict[str, object] | None:
+    """FILES1705: project the verified process listing into the file text.
+
+    Every token of the text is evidence: the header repeats the request's
+    own words and each line is the observed process name with its observed
+    working-set bytes, so the grounding contract holds without a model.
+    """
+
+    listings = [
+        observation["result"]
+        for observation in observations
+        if isinstance(observation, dict)
+        and observation.get("operation") == "system.process.list"
+        and observation.get("verified") is True
+        and observation.get("status") == "completed"
+        and isinstance(observation.get("result"), dict)
+        and isinstance(observation["result"].get("processes"), list)
+    ]
+    if len(listings) != 1:
+        return None
+    lines: list[str] = []
+    for entry in listings[0]["processes"]:
+        if not isinstance(entry, dict) or not isinstance(entry.get("name"), str):
+            return None
+        measure = entry.get("workingSetBytes") if report.get("sort") == "memory" else entry.get("cpuUsagePercent")
+        if measure is None:
+            measure = entry.get("totalProcessorSeconds")
+        if isinstance(measure, bool) or not isinstance(measure, (int, float)):
+            return None
+        rendered = str(measure) if isinstance(measure, int) else format(measure, 'g')
+        lines.append(f"{entry['name'].strip()}: {rendered}")
+    if not lines:
+        return None
+    header = (
+        "procesos que mas memoria usan" if report.get("sort") == "memory" else "procesos que mas cpu usan"
+    )
+    name = str(report.get("name") or ("procesos-memoria.txt" if report.get("sort") == "memory" else "procesos-cpu.txt"))
+    arguments: dict[str, object] = {"relativePath": name, "text": header + "\n" + "\n".join(lines) + "\n"}
+    function = tool.get("function")
+    schema = function.get("parameters") if isinstance(function, dict) else None
+    if not isinstance(schema, dict) or not validate_json_schema_instance(arguments, schema):
         return None
     return arguments
 
