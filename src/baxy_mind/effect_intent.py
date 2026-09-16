@@ -5455,13 +5455,13 @@ def _authenticated_application_minimize_target(
     if request is None:
         return None
     raw_target = request.group("target")
-    if _has(raw_target, r"(?:ventana|ventanas|window|windows|todo|todas|everything|all)"):
+    if _has(raw_target, r"\b(?:ventana|ventanas|window|windows|todo|todas|everything|all)\b"):
         return None
     catalog = build_application_catalog_index(application_names)
     matches: list[tuple[int, str]] = []
     for target, offset in _close_target_forms(raw_target):
         suffix = raw_target[offset + len(target):].strip(" ,;:.!?")
-        suffix = re.sub(r"^(?:window|app|application)", "", suffix).strip(" ,;:.!?")
+        suffix = re.sub(r"^(?:window|app|application)\b", "", suffix).strip(" ,;:.!?")
         if suffix and _APPLICATION_TRAILING_REQUEST.fullmatch(" " + suffix) is None                 and _CLOSE_TRAILING_COURTESY.fullmatch(" " + suffix) is None:
             continue
         key = _authenticated_close_key(target, catalog)
@@ -14493,7 +14493,7 @@ def _named_browser_search(text: str) -> tuple[str, str] | None:
             ):
                 return None
     if (
-        browser not in {"opera", "opera_gx"}
+        browser not in NAMED_CDP_BROWSERS
         or not query
         or _fold(query) in {"it", "them", "that", "eso", "esto"}
         or len(query.encode("utf-8")) > 512
@@ -14587,7 +14587,7 @@ def _review_web_and_browser_effects(
         return
     if _explicit_google_search_query(folded) is not None:
         browser = _named_browser(folded) or context_browser
-        if browser is None or browser in {"opera", "opera_gx"}:
+        if browser is None or browser in NAMED_CDP_BROWSERS:
             if _append(
                 matches,
                 folded,
@@ -14666,7 +14666,7 @@ def _review_web_and_browser_effects(
                 folded,
                 (
                     "browser.navigate.named"
-                    if context_browser in {"opera", "opera_gx"}
+                    if context_browser in NAMED_CDP_BROWSERS
                     else "browser.navigate"
                 ),
                 rf"\b{_SEARCH}\b",
@@ -15894,8 +15894,13 @@ def _opened_applications(text: str) -> tuple[str, ...]:
     return tuple(applications)
 
 
+# WEB1739: the browsers browser.navigate.named can drive over CDP (Chromium family). Firefox is
+# recognised as a name but has no CDP endpoint, so it never becomes a named navigation.
+NAMED_CDP_BROWSERS = frozenset({"opera", "opera_gx", "chrome", "edge", "brave"})
+
+
 def _named_browser_match(text: str) -> re.Match[str] | None:
-    browser = r"(?:opera gx|opera|google chrome|chrome|microsoft edge|edge|firefox)"
+    browser = r"(?:opera gx|opera|google chrome|chrome|microsoft edge|edge|brave|firefox)"
     return _match(
         text,
         (

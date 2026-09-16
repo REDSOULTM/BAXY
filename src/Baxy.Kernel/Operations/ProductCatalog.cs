@@ -205,14 +205,14 @@ public static class ProductCatalog
             "browser.navigate.named",
             Schema(
                 [
-                    String("browser", values: ["opera", "opera_gx"]),
+                    String("browser", values: ["opera", "opera_gx", "chrome", "edge", "brave"]),
                     String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true),
                 ],
                 ["browser", "url"]),
             OperationRisks.ExternalCommunication,
             "browser.navigate.named.cdp.url.postread.v1",
             ToolExposure.Public,
-            "Navega la edición indicada de Opera u Opera GX mediante un perfil CDP privado y verifica ejecutable y URL final."),
+            "Navega el navegador Chromium indicado (Opera, Opera GX, Chrome, Edge o Brave) mediante un perfil CDP privado y verifica ejecutable y URL final."),
         Descriptor(
             "browser.page.read",
             Schema([Integer("maximumCharacters", 256, 32_768)], []),

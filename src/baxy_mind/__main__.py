@@ -4415,7 +4415,7 @@ def _explicit_browser_navigation_arguments(
     arguments: dict[str, object] = {"url": destinations[0]}
     if operation == "browser.navigate.named":
         browser = effect_intent._named_browser(folded)
-        if browser not in {"opera", "opera_gx"}:
+        if browser not in effect_intent.NAMED_CDP_BROWSERS:
             return None
         arguments["browser"] = browser
     return arguments
@@ -8807,6 +8807,20 @@ def _run_sidecar(
                     if expected_operations
                     else None
                 )
+                if (
+                    recognized_expected is None
+                    and expected_operations == ("wifi.radio.set", "wifi.scan")
+                ):
+                    # NETWORK1737 «qué redes wifi hay» → «la radio está apagada,
+                    # ¿la enciendo y busco redes?» → «sí»: the answer alone names no
+                    # effect; the accepted offer (read from the history the App
+                    # sends) is the evidence of both steps, so the radio state is
+                    # grounded from it instead of being asked again.
+                    recognized_expected = effect_intent.accepted_wifi_offer(
+                        objective,
+                        history,
+                        (tool.name for tool in planner_catalog.tools),
+                    )
                 expected_evidence = (
                     (objective,)
                     if len(expected_operations) == 1

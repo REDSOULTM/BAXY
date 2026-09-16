@@ -41,13 +41,16 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         {
             return ExternalJson.FailureBeforeEffect(operation, "named_browser_invalid");
         }
-        if (browser is not ("opera" or "opera_gx"))
+        if (browser is not ("opera" or "opera_gx" or "chrome" or "edge" or "brave"))
             return ExternalJson.Failure(operation, "named_browser_invalid");
+        // WEB1739: error codes and the post-read authority name the browser family
+        // («chrome_not_installed», «edge_cdp_url_postread»), never Opera for another browser.
+        string family = browser is "opera" or "opera_gx" ? "opera" : browser;
         if (!_browsers.TryGetValue(browser, out CdpBrowserSession? session))
         {
-            string? executable = ResolveOpera(browser);
+            string? executable = ResolveBrowser(browser);
             if (executable is null)
-                return ExternalJson.Failure(operation, "opera_not_installed");
+                return ExternalJson.Failure(operation, family + "_not_installed");
             session = new CdpBrowserSession(
                 Path.Combine(_dataRoot, browser + "-browser-profile"), executable);
             _browsers.Add(browser, session);
@@ -74,16 +77,16 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         catch (OperationCanceledException) when (
             cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
         {
-            return effectBoundary.Failure(operation, "opera_cdp_unavailable");
+            return effectBoundary.Failure(operation, family + "_cdp_unavailable");
         }
         catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
         {
-            return effectBoundary.Failure(operation, "opera_cdp_timeout");
+            return effectBoundary.Failure(operation, family + "_cdp_timeout");
         }
         catch (Exception exception) when (exception is IOException or HttpRequestException
             or TimeoutException)
         {
-            return effectBoundary.Failure(operation, "opera_cdp_unavailable");
+            return effectBoundary.Failure(operation, family + "_cdp_unavailable");
         }
         if (!navigation.Verified)
             return effectBoundary.Failure(
@@ -101,7 +104,7 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
             writer.WriteString("executablePath", executablePath);
             writer.WriteString("finalUrl", navigation.FinalUrl);
             writer.WriteString("targetId", navigation.TargetId);
-            writer.WriteString("authority", "opera_cdp_url_postread");
+            writer.WriteString("authority", family + "_cdp_url_postread");
             writer.WriteEndObject();
         }), navigation.EffectObserved);
     }
@@ -135,6 +138,41 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         return expected.Count == 1 && expectedQuery is { Length: 1 }
             && actualQuery is { Length: 1 }
             && string.Equals(expectedQuery[0], actualQuery[0], StringComparison.Ordinal);
+    }
+
+    private static string? ResolveBrowser(string browser)
+    {
+        if (browser is "opera" or "opera_gx")
+            return ResolveOpera(browser);
+        string local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        string programFiles = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
+        string programFilesX86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+        (string relative, string exe) = browser switch
+        {
+            "chrome" => (Path.Combine("Google", "Chrome", "Application"), "chrome.exe"),
+            "edge" => (Path.Combine("Microsoft", "Edge", "Application"), "msedge.exe"),
+            "brave" => (Path.Combine("BraveSoftware", "Brave-Browser", "Application"), "brave.exe"),
+            _ => (string.Empty, string.Empty),
+        };
+        if (exe.Length == 0)
+            return null;
+        // The install locations Windows itself uses for these browsers (per-machine
+        // Program Files editions and the per-user edition), the real binary only:
+        // no launcher, no link.
+        foreach (string directory in new[]
+        {
+            Path.Combine(programFiles, relative),
+            Path.Combine(programFilesX86, relative),
+            Path.Combine(local, relative),
+        }.Distinct(StringComparer.OrdinalIgnoreCase))
+        {
+            if (!Directory.Exists(directory) || new DirectoryInfo(directory).LinkTarget is not null)
+                continue;
+            string direct = Path.Combine(directory, exe);
+            if (File.Exists(direct) && new FileInfo(direct).LinkTarget is null)
+                return direct;
+        }
+        return null;
     }
 
     private static string? ResolveOpera(string browser)
