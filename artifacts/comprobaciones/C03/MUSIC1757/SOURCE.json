@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1757-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (typed client error preferred over the generic mission cause when it has a cause fact; spotify_play_clicked_not_verified; the composer and its vetoes inherit the language of the prior requests for a bare answer), on top of the MUSIC1757 build.",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1757/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1757 (C03-repairs1757-build/BUILD_READY.json; mente)",
+  "cause_measured": "El compositor proyectaba la causa genérica en vez del código del cliente y decidía el idioma sólo por la respuesta sin evidencia.",
+  "change": "Código de error con hecho de causa preferido; idioma heredado de los pedidos anteriores en la composición y los vetos; sin respuestas fijas.",
+  "measurement": "MUSIC1757: 6 aprobados (los tres literales y la variante en español: pregunta, respuesta guionizada, media.play.query aprobada por la raíz y verificada, final que nombra lo que suena; dos límites), 1 variante fallida (reproducción verificada pero final en español para un pedido en inglés, con opinión: la App no adjunta los pedidos anteriores a la composición de un final de operación); 0 créditos. Siguiente compilación: la App adjunta los pedidos anteriores a toda composición; repetición como MUSIC1759.",
+  "credits": 0
+}
