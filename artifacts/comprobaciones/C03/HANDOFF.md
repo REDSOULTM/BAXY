@@ -1,3 +1,11 @@
+# VIDEO1715 adjudicado — 2026-09-16T11:32:12.132325+00:00
+
+**613/742 cubiertos, 129 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA c156d7b4ba37c6c2945cd49506fe0ceddbf99dc80df62f5b8df89a6b2f0fb6c2. Primeras altas 24 h >= 497 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 0ac3648f con BUILD1715 (un título propio pedido sin proveedor se reproduce en YouTube en el reproductor local). Turnos ordinarios sin operaciones.
+
+VIDEO1715 («Vídeo y series», un título propio sin proveedor reproducido en YouTube en el reproductor local): VIDEO1715: un título propio sin proveedor («poné Tom and Jerry») se leyó como reproducción en YouTube, la raíz aprobó sólo media.play.youtube con las palabras de la persona, la reproducción se verificó en el reproductor local y los finales citaron tal cual el título observado; H0486 acreditado con dos variantes aprobadas (español e inglés); dos límites aprobados; reproductor detenido y volumen restaurado por la raíz, 1 créditos. Adjudicación d3ee20784802aab3010b166ee4ffa8d36d9ebecd2b5caab05efeb14ce04800a1. 5 casos sobre BUILD1715 (3 revisados, 2 ordinarios): 5 aprobados; 1 crédito
+
+---
+
 # FILES1713 adjudicado — 2026-09-16T11:02:19.622773+00:00
 
 **612/742 cubiertos, 130 abiertos, 0 NA; 10/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40); C03 formal 3/11. Registro SHA 5a728318db1e8b63b02c92e46127aa4cc7a9472dbf22a72d7907db1a4110ebba. Primeras altas 24 h >= 496 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 4ceb23d5 con BUILD1713 (un archivo de texto con los procesos que más memoria usan, con el nombre escrito admitido por la App). Turnos ordinarios sin operaciones.

@@ -1,3 +1,25 @@
+## VIDEO1715 — estado vigente 2026-09-16T11:32:12.132325+00:00
+
+Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 613/742 | 129 | 0 | >=497 | 10/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 496 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); VIDEO1715 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: VIDEO1715: 7 ejecutados, 5 aprobados, 2 fallidos, 1 créditos (índices [0]); Leer y resumir páginas web 1/2. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/VIDEO1715/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 152.09 s acumulados; pico GPU 3513.33 MiB; pico RAM 2423.15 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque VIDEO1715 precedente. -->
+
 ## FILES1713 — estado vigente 2026-09-16T11:02:19.622773+00:00
 
 Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

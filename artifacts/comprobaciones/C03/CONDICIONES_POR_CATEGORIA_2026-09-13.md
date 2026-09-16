@@ -1151,3 +1151,7 @@ Archivos y carpetas pasa de 29/32 a 29/32 con un archivo de texto con los proces
 ## Actualización 2026-09-16 (FILES1713)
 
 Archivos y carpetas pasa de 29/32 a 30/32 con un archivo de texto con los procesos que más memoria usan ejecutado y verificado (commit 4ceb23d5, BUILD1713) (HEAD 4ceb23d5): FILES1713: la misión lectura de procesos → escritura de archivo se ejecutó y verificó en el literal y en las dos variantes (memoria y CPU, español e inglés), con el archivo escrito con los procesos leídos y finales que nombran el archivo y los procesos con sus valores observados; H0334 acreditado; dos límites aprobados, 1 créditos. 5 casos ordinarios sobre BUILD1713: 5 aprobados; 1 crédito
+
+## Actualización 2026-09-16 (VIDEO1715)
+
+Vídeo y series pasa de 0/26 a 1/26 con un título propio sin proveedor reproducido en YouTube en el reproductor local (commit 0ac3648f, BUILD1715) (HEAD 0ac3648f): VIDEO1715: un título propio sin proveedor («poné Tom and Jerry») se leyó como reproducción en YouTube, la raíz aprobó sólo media.play.youtube con las palabras de la persona, la reproducción se verificó en el reproductor local y los finales citaron tal cual el título observado; H0486 acreditado con dos variantes aprobadas (español e inglés); dos límites aprobados; reproductor detenido y volumen restaurado por la raíz, 1 créditos. 5 casos sobre BUILD1715 (3 revisados, 2 ordinarios): 5 aprobados; 1 crédito

@@ -1,0 +1,274 @@
+[
+  {
+    "index": 0,
+    "case_id": "H0486",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      1,
+      2
+    ],
+    "reason": "Reprodujo con revisión el primer resultado de YouTube para las palabras pedidas en el reproductor local y lo nombró por su título observado; crédito con dos variantes aprobadas.",
+    "observation_note": "Turno revisado: media.play.youtube propuesta con la consulta de la persona, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz al terminar; volumen preajustado y restaurado); una confirmación; cero violaciones; pins intactos.",
+    "final_sha256": "769445ecb3cf01afe12da630b01e34f9c9618859f3293f159f3436515590f90e",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\results\\case-00\\EXIT.json": "8c08d15640763c6f45cc1436c41aa99c82ba391d0d43bc4f06ecddc5970981c6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\results\\case-00\\RESOURCES.json": "aea7b5bc62dbe92272d312010f74a2a66a545fa74bdbe30219725a478d71993b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\profile-owner-00.json": "aafee3333af51442b8e260493e05e3c9ceabc2826b8db906910fb1727ba1e482",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\results\\case-00\\PREREG.json": "9bbbee51b200d7112a9fe11c4638c9b41a50f76b73d5fba3f269bd27333d610e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-00\\capture\\events.jsonl": "a32835d88149b6ce61cbc111dd3fe528da29d09fba8ae47ecd885c2909944db3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-00\\turns.jsonl": "3fe08b1961836b8168736e3909985a2f8baf923c3c39ff4a5f9aea3ad0407791",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\fixture-00.json": "61f2faf7977c368fe0da27a95b4741dba4ce79390299937bb7074c87f4cf6e39",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\context-00.json": "7cb6a4fb9b5a6014053182972d9c0577d3792b1e522fa9047a0cc9a1c49ab578",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\context-prelaunch-00.json": "125a5d04c8196b8f0e2705cd96b3b2bf30f3f88e46869c8dce917f19fbcb30b2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-00\\case-observations.json": "162bcc06a746e133475e089f2f1ec331047b9367c143a9d80af042ff8f11c585",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-00\\journal-before.json": "1f317765234d537ee35d75be0559de6c0c1d7dcbc2adc3ec7402f05d298cf9ad",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-00\\journal-after.json": "0d33adf1e74027d0b997df7840777a7d630b4f70b32ba1769dc0c5be93495caf",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "958d529556b78c090625a3a0bef1cb6440fb655d546fcc2dacb393871b7f1f36"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "369796d7-1ecd-4af8-8581-4edec85bea1e",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "157c1583-b34b-4da0-b1bd-6e24e7df6a9a",
+        "operation": "media.play.youtube",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "case_id": "video1715-dev-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Reprodujo con revisión el primer resultado de YouTube en el reproductor local y lo nombró por su título observado; variante o literal sin dos pares aprobados.",
+    "observation_note": "Turno revisado: media.play.youtube propuesta con la consulta de la persona, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz al terminar; volumen preajustado y restaurado); una confirmación; cero violaciones; pins intactos.",
+    "final_sha256": "3da614b0581f64e71bcafbaef3540b27bf0358051a743ebe80cab66217bf508d",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\results\\case-01\\EXIT.json": "d9719a56d8bdb975ccfcd4479dcad879e267506c35906d6018fb446737ea0dcb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\results\\case-01\\RESOURCES.json": "d04680c3107d077fd95b36426c58b36a4eb200369cc275b3a683cd5c6d3377ce",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\profile-owner-01.json": "833ee269104e05cbd212be6d9b7281b68dff288776feff60254daa8b316e0c59",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\results\\case-01\\PREREG.json": "46a7b87ce04278f9725dc03be71726bcd7a60e305f188e4f4f7d1d3fa7a959cf",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-01\\capture\\events.jsonl": "c9ce9baa9ab7a7e33453056eace8bd1c043c0958f1a79e296ef5a92d9d22e2ea",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-01\\turns.jsonl": "acee1c920809053e32a4bdc85bbae9332e3e2d68bde4148eb94f40f3a283264b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\fixture-01.json": "dda46c95e2d2542cbe698bc4975e79f133256f8dc1df919686913e3025ac0f97",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\context-01.json": "7751020dd14aace6df58b64b15a623b6b4dd034fd2ca12f106c085fd86f15955",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\context-prelaunch-01.json": "aef0dc9884c3e526f523095c79b0cea145b0dc198e54afde6af0b4312624f313",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-01\\case-observations.json": "95d368304968ea66c6c063063627a8c944df1869342582e85dc49e73a3bc4d70",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-01\\journal-before.json": "739b2ba19ec9f04f635f78eddfc9d01fce971318411cf448d13113ff52147b98",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-01\\journal-after.json": "ff01497d2f024af1251a7076c5b5eb378e98b415eb40928f8bd0dadf40150df1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "9496b1edece812cd02cd53e1cc0c70dc48dd7d6f6f4b5a8e4c1a5aceba2594c0"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "fe026f1a-4767-4111-aad0-540d7a5867c8",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "f3a39227-7872-4675-a6a2-99e895971ea6",
+        "operation": "media.play.youtube",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "case_id": "video1715-dev-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Reprodujo con revisión el primer resultado de YouTube en el reproductor local y lo nombró por su título observado; variante o literal sin dos pares aprobados.",
+    "observation_note": "Turno revisado: media.play.youtube propuesta con la consulta de la persona, aprobada por la raíz, reproducción verificada en el reproductor local (mpv, detenido por la raíz al terminar; volumen preajustado y restaurado); una confirmación; cero violaciones; pins intactos.",
+    "final_sha256": "ebe369743ec47d7c3a0d4503ab1d63108d04f77ae53a77c15e6f481ce4c05586",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\results\\case-02\\EXIT.json": "590cad57b3751b488b284289adeaac31d66c8a5efdd7246bf4ca9c0224641f30",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\results\\case-02\\RESOURCES.json": "25be34d4f34ffc80ba147d4f70ce92806a30475a9943d162e318b95b70eb6dff",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\profile-owner-02.json": "6ac53ab159b099586614c723898c61141bea18d92587b885d25f3e598cd74f87",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\results\\case-02\\PREREG.json": "68d763c7d2a33708c45233758d0159eb6fb7543f8819316931f2a63890b523ac",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-02\\capture\\events.jsonl": "e49a96f83f5d98fb29bd97d2b19de8d27efd4246e10a916e47e486ae94bc7d4b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-02\\turns.jsonl": "ee905361d76bfa33f0f78cc0b571b7fdf2a1e59cc189830467165680509ab5c9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\fixture-02.json": "a6976a2cd470f97d1a201775134324a0af9beb7784e5088de85bc4e295c5c9ff",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\context-02.json": "fb1b856d688ec97b4e966261097105e44fecd04edcccf538129813cbf5385be4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\context-prelaunch-02.json": "0ef32412fb3388f95fa39b14c2e77beb1db1ce3cb84ba5434faf2c8d92f886c6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-02\\case-observations.json": "edfe22d0932df72c38f7d3aa57c0baae00ef345b08f4cefd02cb65af8a253ff9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-02\\journal-before.json": "ed5b6776ecd26fb6d442e6d8228a5f1ffe6b494f7ded4ae48b53af75b8b18602",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-02\\journal-after.json": "92bd22bf81cb380317a32b646a00a1f60034ddb1e08211cf963ec9a79fdcb132",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "b25efb65d31e585e4876d6441bd2bcc132c0a717ae01b4d7f78dfe72d1222c11"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "f0583308-e90d-4ad4-b12a-9b1d7eecf4e4",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "47072b12-45fd-4c6b-8855-8c8a0a097a22",
+        "operation": "media.play.youtube",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "case_id": "video1715-boundary-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "94a53ade4199b3bc73e3e3d0eb73b1e555cc4f92bc72c0b264e05679c51d9c26",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\results\\case-03\\EXIT.json": "f8da794ab2addd1b022c7b850e9d19e2a8dff9825c2ba5e735c86c403e282df0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\results\\case-03\\RESOURCES.json": "61be4134f75d7d6452528ad3cddba4e88255b84d48b6705bc2574090d533aa2a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\profile-owner-03.json": "d98ead71ea30cfce907ba96f17d0c7dd072a4f4ebe4fb8cf694d3b87382e853e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\results\\case-03\\PREREG.json": "81e568001c801b8c2648d7a51de70765a6efe4ef3697c0633936d187796377a8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-03\\capture\\events.jsonl": "4d1c3fcd9572673274010e7f4a637ce1f7206b52cf6aa8f394f81f4653b78b67",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-03\\turns.jsonl": "fc55a053a6d6ef2482261f951a54eb594404e1e72260797372396b7af1da20fc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\fixture-03.json": "2b912ed7a105fa1ab1f834c01dc589675eb6a67211ad81c28c63595f4527b20a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\context-03.json": "3617132c8ba396a93f15107c69391badc889a66f24724de34360035d4d511ba1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\context-prelaunch-03.json": "8fe84883fe2c3821291fd8c05dae198b004502cde06649a4f0173e70401c4406",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-03\\case-observations.json": "32d5d210451a8835401f2cb835cb29e6c392a1f1b8b4e1b48e401a51f594875e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-03\\journal-before.json": "ff38d7f961ae5f2f7cbec1da30e596fccc3aa638362491906a72017d5a9b2eee",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-03\\journal-after.json": "78c895445a7aeedc557d266d84bdbe1945ebc683b35edcdf9a017608737352b9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "19d375ba1eba87ba1cf3124437c234072304f4faa6897ab1e44789a012d54986"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "6165dd09-3e9e-4eec-9ba8-c2e87f8a16d4",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "case_id": "video1715-boundary-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "503bb5f56694733b8e9e9b59e18496bb3836fa30a86e4fcadde57d26e69de904",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\results\\case-04\\EXIT.json": "7e6c80ebcc719ef67a92f774236af6426b6f18e8830980685cc863aaa56fe0ec",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\results\\case-04\\RESOURCES.json": "252899c8117e1db0db77e0ef66b8a1169ea7afc484c3c68bf437de16bf95512a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\profile-owner-04.json": "1f9bda6fd922cd57ae9d609fbff188cbe03c62ad7a842388c4be05be679c7139",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\results\\case-04\\PREREG.json": "1430a55d063a22f8c6395c0538d6dec05990b37e5ebeef9219f5ca61b1d871c2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-04\\capture\\events.jsonl": "ca5cd2a9a360e85c1df69087d96925f2185312e8ff1bd83b0690d9975c9c85a5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-04\\turns.jsonl": "a7e5305f0608ca3859995c620fea933dbbe973089804a8d4f623431bb3b46580",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\fixture-04.json": "15697a1edbe47cbd9066eb65dd250808e4510c9f37e281efa9d35bb13d63e390",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\context-04.json": "ae2cf74b49ee889094790d0ffcd086ba6ce1893484e0092890f496768a47c8ad",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\context-prelaunch-04.json": "3d436c91d1537efee98cfaf39d5125ee16bb9c72fb6cae0745116d1db06d33d9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-04\\case-observations.json": "535c05febc1968c5fef6f27150054c1f35a69f93aa628a7c8edddf907ede4f90",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-04\\journal-before.json": "97d25a9c73a3367dbbb1133b718d03d5bd4fc621afcc7f7e08f8e51ab69c9e36",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-04\\journal-after.json": "e06943f0e4914e92ace9c1afa79edc5d10a5445420ed3e8d8a7b305ed805e728",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1715-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "c6b337b3a8f18a3bd64704d23c5f76be7c998d546dd9e4e2d854f366e80ec7a4"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "a4eeb3a7-1246-4c15-adfe-6082041316e5",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  }
+]

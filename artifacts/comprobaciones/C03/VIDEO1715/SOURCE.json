@@ -1,0 +1,15 @@
+{
+  "schema": "c03-video1715-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (_title_case_media_title, _explicit_named_music_query, the resolver's raw-text music readers, the streaming-service exclusion).",
+  "patch": "artifacts/comprobaciones/C03/VIDEO1715/SOURCE.patch",
+  "commits": [
+    "0ac3648fcc0a3ef1dd3e45ab29c9eccf2662e720"
+  ],
+  "build": "BUILD1715 (C03-repairs1715-build/BUILD_READY.json; mente)",
+  "cause_measured": "Un título propio sin sustantivo de música ni «X de Y» no llegaba a ningún lector; el pedido no producía operación.",
+  "change": "Título en mayúsculas propias tras poné/pon/play leído como reproducción en YouTube sin proveedor; exclusión de servicios de streaming nombrados; sin respuestas fijas.",
+  "measurement": "VIDEO1715: VIDEO1715: un título propio sin proveedor («poné Tom and Jerry») se leyó como reproducción en YouTube, la raíz aprobó sólo media.play.youtube con las palabras de la persona, la reproducción se verificó en el reproductor local y los finales citaron tal cual el título observado; H0486 acreditado con dos variantes aprobadas (español e inglés); dos límites aprobados; reproductor detenido y volumen restaurado por la raíz; 1 créditos. 5 casos sobre BUILD1715 (3 revisados, 2 ordinarios): 5 aprobados; 1 crédito",
+  "credits": 1
+}
