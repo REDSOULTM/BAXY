@@ -1,3 +1,25 @@
+## MUSIC1759 — estado vigente 2026-09-16T22:40:52.231885+00:00
+
+Parcial: 6 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 631/742 | 111 | 0 | >=515 | 12/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 515 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1759 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: MUSIC1759: 7 ejecutados, 6 aprobados, 1 fallidos, 0 créditos (índices []); Música 32/39. Siguiente: «poné rock», «reproducí…», «tocá…» (lectores) y volumen de Spotify (operación por aplicación).
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1759/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 227.86 s acumulados; pico GPU 3497.56 MiB; pico RAM 2535.56 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 7; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1759 precedente. -->
+
 ## MUSIC1757 — estado vigente 2026-09-16T22:15:45.919109+00:00
 
 Parcial: 6 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.

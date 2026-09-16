@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1759-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/ModelMessageComposer.cs (prior requests attached to every composition), on top of the MUSIC1759 build (mind: typed error cause, conversation language for bare answers).",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1759/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1759 (C03-repairs1759-build/BUILD_READY.json; App)",
+  "cause_measured": "La App no adjuntaba los pedidos anteriores a la composición de un final de operación, así que la respuesta «Queen» se contestaba en español.",
+  "change": "priorRequests en toda composición; sin respuestas fijas.",
+  "measurement": "MUSIC1759: 6 aprobados (los tres literales y la variante en español con reproducción aprobada por la raíz y verificada, final que nombra lo que suena; dos límites), 1 variante fallida (pregunta y confirmación en inglés, reproducción verificada, pero final en español con opinión: el final se compone sobre la palabra de confirmación); 0 créditos. Siguiente compilación: la palabra de confirmación no fija el idioma (cae al de los pedidos anteriores) y los finales de operación no abren con opiniones; repetición como MUSIC1761.",
+  "credits": 0
+}
