@@ -512,7 +512,14 @@ def _conversation_response_language(text: str, facts: dict | None) -> str:
     some; the reading of the current text stays the owner otherwise."""
 
     reading = read_request(text)
-    if tuple(reading.evidence) != (0, 0) or not isinstance(facts, dict):
+    neutral_word = re.fullmatch(
+        # MUSIC1759: the final of a confirmed turn is composed on the
+        # confirmation word; «confirmar» is not a choice of Spanish.
+        r"[¿?¡!\s]*(?:confirmar|confirm|confirmo|confirmed|cancelar|cancel|continuar|continue|"
+        r"s[ií]|yes|yep|no|nope|ok|okay|dale|vale|bueno|listo|adelante|go\s+ahead)[\s.!?]*",
+        text or "", re.IGNORECASE,
+    ) is not None
+    if (tuple(reading.evidence) != (0, 0) and not neutral_word) or not isinstance(facts, dict):
         return reading.language
     prior_requests = facts.get("priorRequests")
     if isinstance(prior_requests, list):
@@ -7567,6 +7574,15 @@ def compose_visible_defect(
                 re.IGNORECASE,
             ):
                 return "copied_instruction"
+        if verified_media_transport and re.match(
+            # MUSIC1759 «¡Ah, qué buena canción! Estoy escuchando…»: an opinion is
+            # not an observed fact of the playback.
+            r"[¡!\s]*(?:ah|oh|uy|uf|wow|genial|excelente|perfecto|great|awesome|nice|"
+            r"qu[eé]\s+buen[ao]|what\s+a\s+(?:great|good|nice))\b",
+            stripped,
+            re.IGNORECASE,
+        ):
+            return "extra_claim"
         if operation == "media.status" or verified_media_transport:
             # Metadata names are literal facts, not assertions of playback.
             # Verified controls use the same names/state checks; a music title
@@ -13469,7 +13485,7 @@ class LlmRuntime:
         )
         capabilities = facts.get("capabilities")
         response_language = reading.language
-        if tuple(reading.evidence) == (0, 0):
+        if tuple(reading.evidence) == (0, 0) or _conversation_response_language(user_text, facts) != reading.language:
             # MUSIC1755: a bare answer («Queen») keeps the conversation language.
             response_language = _conversation_response_language(user_text, facts)
         trace_id = str(facts.get("traceId") or "")[:128]
