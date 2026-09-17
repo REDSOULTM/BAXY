@@ -4973,6 +4973,11 @@ def _explicit_arguments_from_evidence(
         ) or resolve_application_installed_name(evidence, application_names)
         return {"name": name} if name is not None else None
 
+    if operation == "software.python.package.status":
+        # PIP1817: the package is the person's literal from the request.
+        package = effect_intent._python_package_request(evidence)
+        return {"package": package} if package is not None else None
+
     if operation == "game.entitlement.named":
         # INSTALL1617: the title is the person's literal from the request.
         title = effect_intent.steam_library_title(evidence)

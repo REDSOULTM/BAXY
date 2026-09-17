@@ -27,6 +27,7 @@ internal static class ExternalCapabilityHandlers
         "clipboard.copy",
         "clipboard.paste",
         "display.status",
+        "software.python.package.status",
         "software.python.status",
         "document.pdf.read",
         "email.latest.read",

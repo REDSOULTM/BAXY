@@ -1567,6 +1567,8 @@ def _curated_domain_is_grounded(
         return True
     if operation == "software.python.status":
         return _has(folded, r"\bpython\b")
+    if operation == "software.python.package.status":
+        return _python_package_request(folded) is not None
     if operation == "calculator.expression.evaluate":
         return calculator_expression_request(folded) is not None
     if operation == "display.status":
@@ -10507,6 +10509,37 @@ def calculator_expression_request(text: str) -> str | None:
     return None
 
 
+_PYTHON_PACKAGE_REQUEST = re.compile(
+    r"^[¿?¡!\s]*(?:"
+    # «instala requests con pip», «instalá numpy usando pip», «install pandas with pip»
+    r"(?:instala(?:me|r|la|lo)?|install|agrega(?:me)?|anade|pone(?:me)?|pon|add)\s+(?:el\s+|la\s+|the\s+)?"
+    r"(?:paquete\s+|package\s+|modulo\s+|module\s+|libreria\s+|library\s+)?(?P<a>[a-z0-9][a-z0-9._-]{0,60})"
+    r"(?:\s+(?:de|of|for)\s+python)?\s+(?:con|via|usando|mediante|with|using|through)\s+pip\b"
+    # «pip install requests»
+    r"|pip3?\s+install\s+(?:-u\s+|--upgrade\s+)?(?P<b>[a-z0-9][a-z0-9._-]{0,60})\b"
+    # «instala el paquete requests», «install the python module numpy»
+    r"|(?:instala(?:me|r)?|install)\s+(?:el\s+|la\s+|the\s+)?(?:python\s+)?(?:paquete|package|modulo|module|libreria|library)\s+(?:de\s+python\s+)?(?P<c>[a-z0-9][a-z0-9._-]{0,60})\b"
+    # «tengo requests instalado en python», «is numpy installed in python»
+    r"|(?:tengo|esta|is|do\s+i\s+have)\s+(?:instalad[oa]\s+)?(?:el\s+|la\s+|the\s+)?(?:paquete\s+|package\s+|modulo\s+|module\s+)?(?P<d>[a-z0-9][a-z0-9._-]{0,60})\s+(?:instalad[oa]\s+|installed\s+)?(?:en|in|para|for)\s+python\b"
+    r")",
+)
+
+
+def _python_package_request(text: str) -> str | None:
+    """PIP1817 «instala requests con pip»: the package named in an install-with-pip
+    or is-it-installed request, answered by a software.python.package.status read
+    (pip show in every registered Python) — never an install."""
+
+    folded = _strip_request_envelope(_fold(text)).strip()
+    match = _PYTHON_PACKAGE_REQUEST.match(folded)
+    if match is None:
+        return None
+    name = next((value for value in match.groups() if value), None)
+    if name is None or name in {"python", "pip", "pip3", "el", "la", "the", "un", "una", "a", "an"}:
+        return None
+    return name
+
+
 def _python_status_question(text: str) -> bool:
     """SYSTEM1697 «dime la versión de Python instalada», «qué versión de python
     tengo», «is Python installed»: a software.python.status read of the registered
@@ -10669,6 +10702,7 @@ def _is_direct_request(text: str) -> bool:
         or _bluetooth_state_question(text)
         or _display_status_question(text)
         or _python_status_question(text)
+        or _python_package_request(text) is not None
     ):
         return True
     request_head = (
@@ -17225,6 +17259,10 @@ def resolve_explicit_effects(
         application_names,
     )
     authenticated_games = build_game_catalog_index(game_catalog)
+    if "software.python.package.status" in available and _python_package_request(text) is not None:
+        # PIP1817: installing a Python package with pip is answered by whether
+        # it is already installed in the registered Pythons; nothing is installed.
+        return EffectIntent(("software.python.package.status",), (text,))
     if (
         "game.entitlement.named" in available
         and steam_library_title(text) is not None

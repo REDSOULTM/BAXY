@@ -5927,6 +5927,22 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         if shown_value and shown_value not in text and shown_value.replace(".", ",") not in text and shown_value.replace(",", ".") not in text:
             return "missing_state"
     if (
+        payload.get("operation") == "software.python.package.status"
+        and isinstance(seen, dict)
+        and isinstance(seen.get("pythons"), list)
+    ):
+        # PIP1817: every version-like number must be a registered Python version
+        # or the observed package version.
+        observed_versions: set[str] = set()
+        for entry in seen["pythons"]:
+            if isinstance(entry, dict):
+                for key in ("pythonVersion", "packageVersion", "tag"):
+                    if isinstance(entry.get(key), str):
+                        observed_versions.add(entry[key].strip())
+        for number in re.findall(r"(?<![\w.])\d+(?:\.\d+)+(?![\w.])", text):
+            if not any(version == number or version.startswith(number + ".") for version in observed_versions):
+                return "invented_number"
+    if (
         payload.get("operation") == "software.python.status"
         and isinstance(seen, dict)
         and isinstance(seen.get("pythons"), list)
@@ -14312,6 +14328,32 @@ class LlmRuntime:
                 "en una oración, la operación y su resultado tal como se muestra (por "
                 "ejemplo que seis por siete da 42 en la Calculadora), usando sólo esos "
                 "números; no se hizo nada más."
+            )
+        if (
+            visible_situation.get("operation") == "software.python.package.status"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("pythons"), list)
+        ):
+            # PIP1817: the read says whether the package is installed in each
+            # registered Python; nothing was installed.
+            instruct(
+                "\nseen.package is the Python package asked about; seen.pythons are the "
+                "Python installs registered in Windows (displayName, pythonVersion, installed "
+                "true/false, packageVersion when installed, pipAvailable) and "
+                "seen.installedCount how many of them have it. Say whether the package is "
+                "already installed and in which Python versions (exact pythonVersion strings, "
+                "with its packageVersion), or that it is not installed in any of them; if some "
+                "Python has pipAvailable false, say pip is not available there. Nothing was "
+                "installed or changed. No other numbers."
+                if response_language == "en"
+                else "\nseen.package es el paquete de Python consultado; seen.pythons son las "
+                "instalaciones de Python registradas en Windows (displayName, pythonVersion, "
+                "installed true/false, packageVersion si está instalado, pipAvailable) y "
+                "seen.installedCount cuántas lo tienen. Di si el paquete ya está instalado y "
+                "en qué versiones de Python (cadenas pythonVersion exactas, con su "
+                "packageVersion), o que no está instalado en ninguna; si en alguna "
+                "pipAvailable es false, di que ahí no hay pip. No se instaló ni se cambió "
+                "nada. Sin otros números."
             )
         if (
             visible_situation.get("operation") == "software.python.status"

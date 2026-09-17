@@ -269,7 +269,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     public bool CanHandle(string operation) => operation is
         "bluetooth.device.list" or "bluetooth.device.pair"
         or "bluetooth.radio.set" or "bluetooth.radio.status"
-        or "display.status" or "software.python.status" or "calculator.expression.evaluate"
+        or "display.status" or "software.python.status" or "software.python.package.status" or "calculator.expression.evaluate"
         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
         or "wifi.profile.list" or "wifi.radio.set" or "wifi.radio.status" or "wifi.scan" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
         or "wifi.ensure.connected" or "wifi.status"
@@ -293,6 +293,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 "bluetooth.radio.status" => await BluetoothRadioStatusAsync(operation),
                 "display.status" => DisplayStatus(operation),
                 "software.python.status" => PythonStatus(operation),
+                "software.python.package.status" => await PythonPackageStatusAsync(operation, arguments, cancellationToken),
                 "calculator.expression.evaluate" => await CalculatorEvaluateAsync(
                     operation, arguments, effectBoundary, cancellationToken),
                 "peripheral.list" => await PeripheralListAsync(operation, arguments, cancellationToken),
@@ -690,7 +691,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         return ExternalJson.Success(operation, result, effectObserved: true);
     }
 
-    private static ExternalCapabilityReceipt PythonStatus(string operation)
+    private static List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)> EnumerateRegisteredPythons()
     {
         var installs = new List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)>();
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -750,6 +751,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             }
         }
         installs.Sort((left, right) => string.CompareOrdinal(right.Version, left.Version));
+        return installs;
+    }
+
+    private static ExternalCapabilityReceipt PythonStatus(string operation)
+    {
+        List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)> installs = EnumerateRegisteredPythons();
         JsonElement result = ExternalJson.Create(writer =>
         {
             writer.WriteStartObject();
@@ -769,6 +776,95 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             }
             writer.WriteEndArray();
             writer.WriteString("authority", "windows_registry_pep514_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    // PIP1817 «instala requests con pip»: whether a package is installed is read
+    // with pip show in every registered Python; nothing is installed or changed.
+    private const string PipShowScript = """
+        $ErrorActionPreference='Continue';$exe=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]));$pkg=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[1]))
+        $out = & $exe -m pip show $pkg 2>&1 | Out-String
+        [pscustomobject]@{ok=$true;exit=$LASTEXITCODE;output=$out}|ConvertTo-Json -Compress
+        """;
+
+    private static readonly Regex PythonPackageName = new(
+        @"^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,99})$",
+        RegexOptions.CultureInvariant);
+
+    private static string NormalizePythonPackage(string name) =>
+        name.Replace('_', '-').Replace('.', '-').ToLowerInvariant();
+
+    private async ValueTask<ExternalCapabilityReceipt> PythonPackageStatusAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken token)
+    {
+        string package = ExternalJson.RequiredString(arguments, "package").Trim();
+        if (!PythonPackageName.IsMatch(package))
+        {
+            return ExternalJson.Failure(operation, "python_package_name_invalid");
+        }
+        List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)> installs = EnumerateRegisteredPythons();
+        var rows = new List<(string DisplayName, string Version, bool PipAvailable, bool Installed, string? PackageVersion)>();
+        foreach ((string _, string _, string version, string displayName, string? executable, string _) in installs)
+        {
+            if (executable is null)
+            {
+                rows.Add((displayName, version, false, false, null));
+                continue;
+            }
+            ExternalProcessResult process = await RunPowerShellAsync(PipShowScript, [Encode(executable), Encode(package)], token);
+            string output = process.Output ?? string.Empty;
+            int exit = -1;
+            if (output.Contains('{', StringComparison.Ordinal))
+            {
+                try
+                {
+                    using JsonDocument document = ParseLastJson(output);
+                    JsonElement root = document.RootElement;
+                    if (root.ValueKind == JsonValueKind.Object)
+                    {
+                        output = root.TryGetProperty("output", out JsonElement text) && text.ValueKind == JsonValueKind.String ? text.GetString() ?? string.Empty : string.Empty;
+                        exit = root.TryGetProperty("exit", out JsonElement code) && code.ValueKind == JsonValueKind.Number ? code.GetInt32() : -1;
+                    }
+                }
+                catch (JsonException)
+                {
+                    exit = -1;
+                }
+            }
+            bool pipAvailable = !output.Contains("No module named pip", StringComparison.OrdinalIgnoreCase);
+            Match name = Regex.Match(output, @"(?im)^Name:\s*(\S+)\s*$");
+            Match packageVersion = Regex.Match(output, @"(?im)^Version:\s*(\S+)\s*$");
+            bool installed = pipAvailable && exit == 0 && name.Success
+                && string.Equals(NormalizePythonPackage(name.Groups[1].Value), NormalizePythonPackage(package), StringComparison.Ordinal);
+            rows.Add((displayName, version, pipAvailable, installed, installed && packageVersion.Success ? packageVersion.Groups[1].Value : null));
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("package", package);
+            writer.WriteNumber("pythonCount", rows.Count);
+            writer.WriteNumber("installedCount", rows.Count(row => row.Installed));
+            writer.WriteStartArray("pythons");
+            foreach ((string displayName, string version, bool pipAvailable, bool installed, string? packageVersion) in rows)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("displayName", displayName);
+                writer.WriteString("pythonVersion", version);
+                writer.WriteBoolean("pipAvailable", pipAvailable);
+                writer.WriteBoolean("installed", installed);
+                if (packageVersion is not null)
+                {
+                    writer.WriteString("packageVersion", packageVersion);
+                }
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteString("authority", "python_pip_show_read");
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);

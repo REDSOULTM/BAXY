@@ -1324,6 +1324,13 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Activa o desactiva metadatos de una rutina bajo CAS sin ejecutarla."),
         Descriptor(
+            "software.python.package.status",
+            Schema([String("package")], ["package"]),
+            OperationRisks.ReadOnly,
+            "software.python.package.status.pip.show.read.v1",
+            ToolExposure.Public,
+            "Lee si un paquete de Python está instalado en cada instalación de Python registrada en Windows (pip show por instalación: instalada o no, versión del paquete, pip disponible) sin instalar ni cambiar nada; sin efecto."),
+        Descriptor(
             "software.python.status",
             EmptySchema(),
             OperationRisks.ReadOnly,
