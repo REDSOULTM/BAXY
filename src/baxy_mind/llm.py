@@ -4749,6 +4749,10 @@ def _strip_think_tags(text: str) -> str:
 
 def _strip_prompt_labels(text: str) -> str:
     cleaned = _strip_think_tags(text)
+    # MUSIC1777: a draft that quotes a title carrying its own quotation marks
+    # («Op. 125 "Choral"») escaped them as backslash-quote; in prose the
+    # backslash is never meant.
+    cleaned = re.sub(r"\\+(?=[\"\'\u00ab\u00bb\u201c\u201d\u2018\u2019])", "", cleaned)
     cleaned = re.sub(r"^#+\s*", "", cleaned).strip()
     cleaned = re.sub(
         r"^(?:el )?estado observable(?: es)?:\s*",
