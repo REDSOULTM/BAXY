@@ -1217,6 +1217,67 @@ def _completed_missing_volume_level_request(
     return f"{previous_user_text.strip()}\n{text}"
 
 
+_MSG_VERB = r"(?:m[aá]nd[aá](?:le|me|les)?|env[ií]a(?:le|me|les)?|envi[aá](?:le|me|les)?|escrib[ií](?:le|me)?|escr[ií]be(?:le|me)?|send|write|text|message)"
+_MSG_OBJECT = r"(?:(?:un|una|el|a|an|the)\s+)?(?:mensaje|message|texto|text)"
+_MSG_OBJECT_CHANNEL = r"(?:(?:un|una|el|a|an|the)\s+)?(?P<och>whatsapp|wsp|discord)(?:\s+(?:mensaje|message))?"
+_MSG_CHANNEL = r"(?P<ch>whatsapp|wsp|discord)"
+_MSG_TO = r"(?:a|al\s+grupo|al|para|to|en\s+el\s+grupo|en)"
+_MSG_ON = r"(?:en|por|via|v[ií]a|on|through)"
+_MSG_SEP = r"(?:que\s+diga|que\s+dice|diciendo(?:le)?|dici[eé]ndole|saying|that\s+says|:)"
+_MSG_REC = r"(?P<rec>[^\s,:;][^,:;]{0,60}?)"
+_MSG_BODY = r"(?P<body>.+?)"
+_MSG_END = r"\s*[.!?]*$"
+_MSG_DRAFT_PATTERNS = tuple(
+    re.compile(pattern, re.IGNORECASE)
+    for pattern in (
+        # «manda un mensaje a Musica en whatsapp que diga hola», «Write to Musica on WhatsApp saying test»
+        rf"^\s*{_MSG_VERB}\s+(?:{_MSG_OBJECT}\s+)?{_MSG_TO}\s+{_MSG_REC}\s+{_MSG_ON}\s+{_MSG_CHANNEL}\s+{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
+        # «mándale un mensaje por discord a ShooterCock que diga hola»
+        rf"^\s*{_MSG_VERB}\s+(?:{_MSG_OBJECT}\s+)?{_MSG_ON}\s+{_MSG_CHANNEL}\s+{_MSG_TO}\s+{_MSG_REC}\s+{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
+        # «manda un mensaje a whatsapp a amor diciendo te amo»
+        rf"^\s*{_MSG_VERB}\s+(?:{_MSG_OBJECT}\s+)?(?:a|to)\s+{_MSG_CHANNEL}\s+{_MSG_TO}\s+{_MSG_REC}\s+{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
+        # «mandale un whatsapp a mamá diciendo que ya voy», «Send a WhatsApp message to Musica saying test»
+        rf"^\s*{_MSG_VERB}\s+{_MSG_OBJECT_CHANNEL}\s+{_MSG_TO}\s+{_MSG_REC}\s+{_MSG_SEP}\s*{_MSG_BODY}{_MSG_END}",
+        # «Escribe hola a musica en whatsapp», «mandale hola a Lucas por whatsapp», «Escribe hola en musica en whatsapp»
+        rf"^\s*{_MSG_VERB}\s+{_MSG_BODY}\s+{_MSG_TO}\s+{_MSG_REC}\s+{_MSG_ON}\s+{_MSG_CHANNEL}{_MSG_END}",
+        # «escribele a shootercock hola en discord»
+        rf"^\s*{_MSG_VERB}\s+(?:a|to)\s+(?P<rec>[^\s,:;]+)\s+{_MSG_BODY}\s+{_MSG_ON}\s+{_MSG_CHANNEL}{_MSG_END}",
+        # «Escribe hola en whatsapp en el grupo musica»
+        rf"^\s*{_MSG_VERB}\s+{_MSG_BODY}\s+{_MSG_ON}\s+{_MSG_CHANNEL}\s+{_MSG_TO}\s+{_MSG_REC}{_MSG_END}",
+    )
+)
+
+
+def message_draft_request(text: str) -> tuple[str, str, str] | None:
+    """MSG1837 (owner decision 2026-09-17): a message for a named chat in a named
+    desktop client (WhatsApp or Discord) is LEFT WRITTEN in the client's composer
+    and never sent. Returns (channel, recipient, body) in the person's own words;
+    None without a channel (the existing clarification asks it), a recipient or
+    a body."""
+
+    raw = _strip_request_envelope(text).strip()
+    if not raw or len(raw.encode("utf-8")) > 2048:
+        return None
+    for pattern in _MSG_DRAFT_PATTERNS:
+        match = pattern.match(raw)
+        if match is None:
+            continue
+        groups = match.groupdict()
+        channel = (groups.get("ch") or groups.get("och") or "").casefold()
+        channel = "whatsapp" if channel in {"whatsapp", "wsp"} else channel
+        recipient = re.sub(r"^(?:el\s+grupo|la\s+|el\s+|the\s+group|the\s+)\s*", "", (groups.get("rec") or "").strip(), flags=re.IGNORECASE).strip(" .")
+        body = re.sub(r"^(?:que\s+)", "", (groups.get("body") or "").strip(), flags=re.IGNORECASE).strip()
+        body = body.rstrip(" .!?") if len(body) > 1 else body
+        if channel not in {"whatsapp", "discord"} or not recipient or not body:
+            continue
+        if re.search(r"\b(?:whatsapp|wsp|discord)\b", _fold(recipient)) or _fold(recipient) in {"mensaje", "message"}:
+            continue
+        if len(recipient.encode("utf-8")) > 512 or len(body.encode("utf-8")) > 16_384:
+            continue
+        return channel, recipient, body
+    return None
+
+
 _MUSIC_BROWSER = r"(?:opera gx|opera|google chrome|chrome|microsoft edge|edge|brave)"
 _MUSIC_PLAY_HEAD = r"(?:pone|poneme|pon|ponme|reproduci|reproduce|play|toca|tocame)"
 _MUSIC_BROWSER_REQUEST = (
@@ -4321,7 +4382,7 @@ def resolve_explicit_clarification_intent(
             ("message.send",),
             ("recipient", "message_text"),
         )
-    if "message.send" in available and incomplete_message_shape:
+    if "message.send" in available and incomplete_message_shape and message_draft_request(text) is None:
         supported_channel = _has(
             folded,
             r"\b(?:whatsapp|wsp|discord)\b",
@@ -10844,6 +10905,7 @@ def _is_direct_request(text: str) -> bool:
         or _python_package_request(text) is not None
         or _removable_storage_request(text)
         or _research_question_query(text) is not None
+        or message_draft_request(text) is not None
     ):
         return True
     request_head = (
@@ -17405,6 +17467,9 @@ def resolve_explicit_effects(
         # MUSIC1827 «open Edge and play some music»: which music is asked first
         # (clarification), not an open-and-play mission with «some music».
         return None
+    if "message.draft" in available and message_draft_request(text) is not None:
+        # MSG1837: the message is left written in the named client, never sent.
+        return EffectIntent(("message.draft",), (text,))
     if "web.search" in available and _research_question_query(text) is not None:
         # WEB1831: a research order carrying a question is the public search
         # for that question, in the person's words.

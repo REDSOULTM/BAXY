@@ -917,6 +917,19 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Informa el estado y los límites de la memoria local."),
         Descriptor(
+            "message.draft",
+            Schema(
+                [
+                    String("channel", values: ["discord", "whatsapp"]),
+                    String("recipient", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("text", maximumUtf8Bytes: 16_384, nonWhitespace: true),
+                ],
+                ["channel", "recipient", "text"]),
+            OperationRisks.PrivacySensitive,
+            "message.draft.client.composer.visible.postread.v1",
+            ToolExposure.Public,
+            "Abre el chat del destinatario en el cliente de escritorio nombrado (WhatsApp o Discord), deja el mensaje escrito en el cuadro de redacción, lo corrobora en pantalla y se detiene sin enviarlo: la persona lo envía."),
+        Descriptor(
             "message.recipient.resolve",
             Schema(
                 [

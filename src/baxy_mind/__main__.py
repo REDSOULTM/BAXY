@@ -4983,6 +4983,11 @@ def _explicit_arguments_from_evidence(
         ) or resolve_application_installed_name(evidence, application_names)
         return {"name": name} if name is not None else None
 
+    if operation == "message.draft":
+        # MSG1837: channel, recipient and text are the person's literal.
+        draft = effect_intent.message_draft_request(evidence)
+        return {"channel": draft[0], "recipient": draft[1], "text": draft[2]} if draft is not None else None
+
     if operation == "storage.removable.list":
         if effect_intent._removable_storage_request(evidence):
             return {}
@@ -5978,6 +5983,7 @@ def _ground_explicit_arguments(
         "browser.navigate",
         "browser.navigate.named",
         "calendar.event.list",
+        "message.draft",
         "game.launch",
         "media.control",
         "media.play.query",

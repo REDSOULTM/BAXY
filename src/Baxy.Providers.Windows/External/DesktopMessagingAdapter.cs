@@ -25,7 +25,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         _automation = automation ?? throw new ArgumentNullException(nameof(automation));
 
     public bool CanHandle(string operation) =>
-        operation is "message.recipient.resolve" or "message.send";
+        operation is "message.recipient.resolve" or "message.send" or "message.draft";
 
     public void Dispose() => _interaction.Dispose();
 
@@ -42,6 +42,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 "message.recipient.resolve" => await ResolveAsync(arguments, cancellationToken)
                     .ConfigureAwait(false),
                 "message.send" => await SendAsync(arguments, cancellationToken)
+                    .ConfigureAwait(false),
+                "message.draft" => await DraftAsync(arguments, cancellationToken)
                     .ConfigureAwait(false),
                 _ => Failure(operation, "external_operation_not_supported"),
             };
@@ -124,6 +126,58 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 ("contentSha256", Convert.ToHexStringLower(SHA256.HashData(
                     Encoding.UTF8.GetBytes(text)))),
                 ("delivery", "visible_postcondition")));
+    }
+
+    private async ValueTask<ExternalCapabilityReceipt> DraftAsync(
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        // MSG1837 (owner decision 2026-09-17): the message is left written in
+        // the client's composer and never sent; the person presses send.
+        string channel = RequiredString(arguments, "channel");
+        string recipient = RequiredString(arguments, "recipient");
+        string text = RequiredString(arguments, "text");
+        DesktopRecipientObservation observation = await _automation.ResolveAsync(
+            channel,
+            recipient,
+            cancellationToken).ConfigureAwait(false);
+        if (!observation.Verified)
+        {
+            return Failure(
+                "message.draft",
+                observation.ErrorCode ?? "recipient_identity_not_verified",
+                observation.EffectObserved);
+        }
+
+        var resolved = new ResolvedRecipient(
+            "draft_" + Guid.NewGuid().ToString("N"),
+            channel,
+            recipient,
+            observation.WindowHandle,
+            observation.ProcessId);
+        DesktopMessageObservation draft = await _automation.DraftAsync(
+            resolved,
+            text,
+            cancellationToken).ConfigureAwait(false);
+        if (!draft.Verified)
+        {
+            return Failure(
+                "message.draft",
+                draft.ErrorCode ?? "message_draft_not_verified",
+                draft.EffectObserved);
+        }
+
+        return Success(
+            "message.draft",
+            JsonObject(
+                ("version", 1),
+                ("channel", channel),
+                ("displayName", recipient),
+                ("text", text),
+                ("draftVisible", true),
+                ("sent", false),
+                ("evidenceHash", draft.EvidenceHash),
+                ("authority", "desktop_client_composer_ocr_postread")));
     }
 
     private static string RequiredString(
@@ -228,6 +282,12 @@ internal interface IDesktopMessagingAutomation
         ResolvedRecipient recipient,
         string text,
         CancellationToken cancellationToken);
+
+    ValueTask<DesktopMessageObservation> DraftAsync(
+        ResolvedRecipient recipient,
+        string text,
+        CancellationToken cancellationToken) =>
+        throw new NotSupportedException("message drafts are not supported by this automation");
 }
 
 internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessagingAutomation
@@ -375,6 +435,77 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             true,
             afterHash,
             changed && visible && stillTarget ? null : "message_delivery_not_verified");
+    }
+
+    public async ValueTask<DesktopMessageObservation> DraftAsync(
+        ResolvedRecipient recipient,
+        string text,
+        CancellationToken cancellationToken)
+    {
+        // MSG1837: the same path as a send up to the verified draft, then stop.
+        if (!ProcessStillOwnsWindow(recipient.WindowHandle, recipient.ProcessId)
+            || !Focus(recipient.WindowHandle))
+        {
+            return new(false, false, string.Empty, "messaging_focus_not_verified");
+        }
+
+        bool targetVerified = string.Equals(
+            recipient.Channel,
+            "discord",
+            StringComparison.Ordinal)
+                ? Fold(WindowTitle(recipient.WindowHandle)).Contains(
+                    Fold(recipient.DisplayName),
+                    StringComparison.Ordinal)
+                : await HeaderContainsAsync(
+                    recipient.WindowHandle,
+                    recipient.DisplayName,
+                    cancellationToken).ConfigureAwait(false);
+        if (!targetVerified)
+        {
+            return new(false, false, string.Empty, "recipient_identity_changed");
+        }
+
+        if (!FocusComposer(recipient.WindowHandle))
+        {
+            return new(false, false, string.Empty, "message_composer_not_focused");
+        }
+
+        await Task.Delay(200, cancellationToken).ConfigureAwait(false);
+        SendChord(VirtualKeyControl, VirtualKeyA);
+        SendKey(VirtualKeyBack);
+        await Task.Delay(150, cancellationToken).ConfigureAwait(false);
+        byte[] before = CaptureRegion(recipient.WindowHandle, headerOnly: false);
+        SendText(text);
+
+        async ValueTask<MessageVisualObservation> ObserveDraftAsync(CancellationToken token)
+        {
+            byte[] bitmap = CaptureRegion(recipient.WindowHandle, headerOnly: false);
+            bool changed = !CryptographicOperations.FixedTimeEquals(
+                SHA256.HashData(before),
+                SHA256.HashData(bitmap));
+            string observedText = changed
+                ? await ReadTextAsync(bitmap, token).ConfigureAwait(false)
+                : string.Empty;
+            return new(bitmap, changed && ContainsPhrase(observedText, text));
+        }
+
+        MessageVisualObservation draftObservation = await ObserveNowOrAtDeadlineAsync(
+            ObserveDraftAsync,
+            static observation => observation.Verified,
+            TimeSpan.FromMilliseconds(1200),
+            cancellationToken).ConfigureAwait(false);
+        if (!draftObservation.Verified)
+        {
+            SendChord(VirtualKeyControl, VirtualKeyA);
+            SendKey(VirtualKeyBack);
+            return new(false, true, string.Empty, "message_draft_not_verified");
+        }
+
+        return new(
+            true,
+            true,
+            Convert.ToHexStringLower(SHA256.HashData(draftObservation.Bitmap)),
+            null);
     }
 
     internal static async ValueTask<T> ObserveNowOrAtDeadlineAsync<T>(

@@ -59,6 +59,7 @@ internal static class ExternalCapabilityHandlers
         "media.play.query",
         "media.play.youtube",
         "media.status",
+        "message.draft",
         "message.recipient.resolve",
         "message.send",
         "notification.cancel.at",

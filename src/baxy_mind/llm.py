@@ -4509,6 +4509,22 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             "Explain the finding briefly and naturally in the person's language."
         )
     if (
+        situation.get("operation") == "message.draft"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+    ):
+        # MSG1837: the message was left written in the composer and NOT sent.
+        bits.append(
+            "This result left the message written in the desktop client's message "
+            "box and did NOT send it: seen.channel is the client, seen.displayName "
+            "the chat that was opened, seen.text the message left written, "
+            "seen.sent is false. Say in one or two sentences, in the person's "
+            "language, that you left that message (quote seen.text exactly, in its "
+            "own quotation marks) written in the chat with displayName in that "
+            "client and did not send it, so the person can send it when they want. "
+            "Never say it was sent or delivered; no other claims."
+        )
+    if (
         situation.get("operation") == "game.entitlement.named"
         and situation.get("verified") is True
         and situation.get("succeeded") is True
@@ -7283,6 +7299,23 @@ def compose_visible_defect(
         failure_assertions = re.sub(
             finding_predicate, "", _accent_folded_with_punctuation(stripped),
         )
+    if (
+        kind == "operation"
+        and situation.get("operation") == "message.draft"
+        and polarity == "success"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+    ):
+        # MSG1837: the draft was never sent; a final that says it was sent or
+        # delivered invents the delivery.
+        folded_reply = _accent_folded_with_punctuation(stripped)
+        claims_sent = re.search(r"\b(?:envie|enviado|enviada|sent|delivered|entregado|entregue)\b", folded_reply)
+        negated_send = re.search(
+            r"\b(?:no|sin|not|didn't|did\s+not|never|nunca|without)\s+(?:\w+\s+){0,2}(?:envie|enviar\w*|enviad\w*|send\w*|sent|mand\w*|entreg\w*)\b",
+            folded_reply,
+        )
+        if claims_sent is not None and negated_send is None:
+            return "draft_claimed_sent"
     if (
         kind == "operation"
         and situation.get("operation") == "game.entitlement.named"
@@ -15348,6 +15381,11 @@ class LlmRuntime:
                 f"{', '.join(required_words) or 'confirmar, cancelar'}."
             ),
             "wrong_language": "Same language as the request.",
+            "draft_claimed_sent": (
+                "The message was only left written in the chat and was NOT sent: say you left it written and did not send it, so the person can send it; never say it was sent or delivered."
+                if response_language == "en"
+                else "El mensaje sólo quedó escrito en el chat y NO se envió: di que lo dejaste escrito y que no lo enviaste, para que la persona lo envíe; nunca digas que se envió o se entregó."
+            ),
             "extra_claim": (
                 "Answer what you will not do, in your own words."
                 if _looks_like_refuse_question(user_text)
