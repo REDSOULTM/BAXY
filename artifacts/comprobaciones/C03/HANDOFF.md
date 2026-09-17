@@ -1,3 +1,11 @@
+# WEB1805 adjudicado — 2026-09-17T04:29:47.021293+00:00
+
+**641/742 cubiertos, 101 abiertos, 0 NA; 13/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40, Cerrar aplicaciones y ventanas 20/20, Red y Bluetooth 21/21, Música 39/39); C03 formal 3/11. Registro SHA 3964ca586df12029cd8b0b1b0e85c77ba744de3c42784f47af31542913bf701a. Primeras altas 24 h >= 525 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 3679379d con BUILD1805 (busca en la web en el navegador que la persona nombra, con la familia Opera corriendo en la edición instalada). Turnos ordinarios sin operaciones.
+
+WEB1805 («Navegación y búsqueda web», buscar en la web en el navegador nombrado, con la familia Opera corriendo en la Opera GX instalada y la URL de búsqueda verificada; literal y dos variantes aprobados): WEB1805: 5 ejecutados, 5 aprobados, 1 crédito (H0094 con dos variantes): la búsqueda en el navegador nombrado corre en la Opera GX instalada con la URL verificada, 1 créditos. Adjudicación 8ac5969d4ace1834bef7a2f8abed8381c8e4cd4f1e1dc463576bff9fa5e67219. WEB1805 sobre BUILD1803: 1 literal, 2 variantes (1 en inglés), 2 límites; 5/5 aprobados
+
+---
+
 # WEB1803 adjudicado — 2026-09-17T04:25:07.771621+00:00
 
 **640/742 cubiertos, 102 abiertos, 0 NA; 13/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40, Cerrar aplicaciones y ventanas 20/20, Red y Bluetooth 21/21, Música 39/39); C03 formal 3/11. Registro SHA 4d6b886cfea061cad0fb7c36fe8c6f92b4cb2d5ac020f7d11ca4c5cd6df384a3. Primeras altas 24 h >= 524 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 697c53ab con BUILD1803 (busca en la web en el navegador que la persona nombra, con la familia Opera corriendo en la edición instalada). Turnos ordinarios sin operaciones.

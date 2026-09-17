@@ -1382,3 +1382,7 @@ Música pasa de 38/39 a 39/39 con subir o bajar el volumen propio de una aplicac
 ## Actualización 2026-09-17 (WEB1803)
 
 Navegación y búsqueda web pasa de 43/46 a 43/46 con buscar en la web en el navegador nombrado con la familia Opera corriendo en Opera GX: literal y variante en castellano aprobados; la variante en inglés (clima) y el límite de definición derivaron a web.search; sin crédito por falta del segundo par (commit 697c53ab, BUILD1803) (HEAD 697c53ab): WEB1803: 5 ejecutados, 3 aprobados, 2 fallidos, 0 créditos; literal y variante en castellano verificados en Opera GX (familia Opera); la variante en inglés (clima) y el límite de definición derivaron a web.search, 0 créditos. WEB1803 sobre BUILD1803: 1 literal, 2 variantes (1 en inglés), 2 límites; 3/5 aprobados; sin segundo par
+
+## Actualización 2026-09-17 (WEB1805)
+
+Navegación y búsqueda web pasa de 43/46 a 44/46 con buscar en la web en el navegador nombrado, con la familia Opera corriendo en la Opera GX instalada y la URL de búsqueda verificada; literal y dos variantes aprobados (commit 3679379d, BUILD1805) (HEAD 3679379d): WEB1805: 5 ejecutados, 5 aprobados, 1 crédito (H0094 con dos variantes): la búsqueda en el navegador nombrado corre en la Opera GX instalada con la URL verificada, 1 créditos. WEB1805 sobre BUILD1803: 1 literal, 2 variantes (1 en inglés), 2 límites; 5/5 aprobados

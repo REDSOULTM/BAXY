@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1805-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "No source change: src/Baxy.Providers.Windows/External/NamedBrowserAdapter.cs (Opera family fallback), built with WEB1805, measured again.",
+  "patch": "artifacts/comprobaciones/C03/WEB1805/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1805 (C03-repairs1805-build/BUILD_READY.json; sin cambios (compilación de WEB1805))",
+  "cause_measured": "La variante en inglés sobre el clima y el límite de definición derivaron a web.search; elección de textos de la raíz.",
+  "change": "Ninguno; textos de variante y límite sin derivas conocidas.",
+  "measurement": "WEB1805: WEB1805: 5 ejecutados, 5 aprobados, 1 crédito (H0094 con dos variantes): la búsqueda en el navegador nombrado corre en la Opera GX instalada con la URL verificada; 1 créditos. WEB1805 sobre BUILD1803: 1 literal, 2 variantes (1 en inglés), 2 límites; 5/5 aprobados",
+  "credits": 1
+}
