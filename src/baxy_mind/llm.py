@@ -8107,7 +8107,13 @@ def compose_visible_defect(
         if "?" in question_text or "¿" in question_text:
             return "extra_claim"
         closed_request = re.search(r"\bcierr|\bclose\b", (user_text or "").casefold())
-        if closed_request and not (isinstance(app_name, str) and app_name.strip()):
+        if (
+            closed_request
+            and operation != "browser.control"
+            and not (isinstance(app_name, str) and app_name.strip())
+        ):
+            # BROWSER1841 «close all tabs»: closing tabs names «pestañas»/«tabs»,
+            # not a window; the close_all narration is guarded by its own lens.
             if "ventana" not in folded and "window" not in folded:
                 return "missing_name"
             if not re.search(r"cerrad|closed", folded):
