@@ -1,0 +1,15 @@
+{
+  "schema": "c03-steam1825-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "No source change: src/Baxy.Providers.Windows/External/SteamLocalAdapter.cs (existing game.entitlement.named with the known-title aliases), built with STEAM1825, measured for this row.",
+  "patch": "artifacts/comprobaciones/C03/STEAM1825/SOURCE.patch",
+  "commits": [
+    "8f33d2f85ac5cfa406be2b6cd55c86203ded6465"
+  ],
+  "build": "BUILD1825 (C03-repairs1825-build/BUILD_READY.json; sin cambios (compilación de STEAM1825))",
+  "cause_measured": "La fila nunca se había ejecutado: el título dictado con error resuelve por alias del catálogo conocido y la lectura de biblioteca existente responde su estado.",
+  "change": "Ninguno; medición de game.entitlement.named con el alias del título dictado.",
+  "measurement": "STEAM1825: cinco casos en la compilación de USB1823 (tres turnos ordinarios de biblioteca de Steam, dos límites ordinarios), todos aprobados: el literal (dictado de un juego que el dueño posee y no tiene instalado, resuelto por el alias del catálogo conocido) y las dos variantes ejecutaron game.entitlement.named sobre la biblioteca autenticada con recibo verificado y dijeron el estado leído nombrando el juego como la persona lo nombró (en la biblioteca y no instalado con la confirmación pendiente, o ya instalado), sin descargar, comprar ni abrir nada; los límites explicaron y reconocieron sin leer; títulos en recibos privados; 1 créditos. Medido: la lectura de biblioteca existente responde el título dictado con error; H0571 acreditado con ambas variantes; «Instalar y desinstalar software» 29/31 (quedan H0578 Epic sin lectura de licencia y una fila más). Siguiente: categoría por masa abierta según CONDICIONES (abrí chrome y poné música H0352; zip H0542).",
+  "credits": 1
+}
