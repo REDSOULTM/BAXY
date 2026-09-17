@@ -1326,3 +1326,7 @@ Música pasa de 37/39 a 37/39 con reproducir una obra nombrada en Spotify con re
 ## Actualización 2026-09-17 (UI1775)
 
 Bibliotecas y fichas de juegos pasa de 4/6 a 5/6 con abrir Epic Games y navegar por su interfaz hasta la biblioteca con un clic visible verificado por OCR: la etiqueta duplicada se resuelve por la impresión menor con margen del 5 % y app.open espera la ventana lenta; literal y dos variantes aprobados (commit bb9c8540, BUILD1775) (HEAD bb9c8540): UI1775: 5 ejecutados, 5 aprobados, 1 crédito (H0432 con dos variantes): la etiqueta duplicada se resuelve por la impresión menor con margen del 5 % y app.open espera la ventana lenta del launcher, 1 créditos. UI1775 sobre BUILD1773: 1 literal, 2 variantes, 2 límites; 5/5 aprobados; clic OCR verificado sobre la navegación del launcher (14 px frente a 17 px)
+
+## Actualización 2026-09-17 (MUSIC1777)
+
+Música pasa de 37/39 a 37/39 con reproducir una obra nombrada en Spotify con revisión de la raíz citando el título observado: con la pista el modelo ya cita el título entero, pero escapó las comillas interiores con barra invertida y el literal sigue sin final; las variantes lo citan (commit 8efa9596, BUILD1777) (HEAD 8efa9596): MUSIC1777: 5 ejecutados, 4 aprobados, 1 fallido, 0 créditos; la pista hace citar el título entero pero el modelo escapó las comillas interiores con barra invertida y la lente no lo reconoció, 0 créditos. MUSIC1777 sobre BUILD1777: 1 literal, 2 variantes (1 en inglés), 2 límites; 4/5 aprobados; literal sin final (comillas escapadas)

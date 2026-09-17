@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1777-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (missing_name hint with the observed title for any verified media playback; quote-blind title lens), on top of the MUSIC1773 build.",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1777/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1777 (C03-repairs1777-build/BUILD_READY.json; mente)",
+  "cause_measured": "La pista de reintento de missing_name entregaba el título a citar sólo para YouTube y el reproductor local, así que los borradores de Spotify parafraseaban el pedido en cada reintento.",
+  "change": "Pista de missing_name con el título observado para toda reproducción verificada con título; lente del título ciega a las comillas; sin respuestas fijas.",
+  "measurement": "MUSIC1777: MUSIC1777: 5 ejecutados, 4 aprobados, 1 fallido, 0 créditos; la pista hace citar el título entero pero el modelo escapó las comillas interiores con barra invertida y la lente no lo reconoció; 0 créditos. MUSIC1777 sobre BUILD1777: 1 literal, 2 variantes (1 en inglés), 2 límites; 4/5 aprobados; literal sin final (comillas escapadas)",
+  "credits": 0
+}
