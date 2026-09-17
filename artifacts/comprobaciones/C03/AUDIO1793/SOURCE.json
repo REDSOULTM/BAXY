@@ -1,0 +1,15 @@
+{
+  "schema": "c03-audio1793-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_ground_explicit_arguments completes the application volume request from the previous user request or the resumed objective; the reader-owned identity is trusted), on top of the AUDIO1793 build.",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1793/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1793 (C03-repairs1793-build/BUILD_READY.json; mente)",
+  "cause_measured": "El paso de argumentos leía sólo la respuesta suelta y no el pedido completado que la decisión ya había leído.",
+  "change": "Argumentos desde el pedido completado y literales canónicos del lector confiados; sin respuestas fijas.",
+  "measurement": "AUDIO1793: AUDIO1793: 5 ejecutados, 2 aprobados (límites), 3 fallidos, 0 créditos; el ajuste de las sesiones de Spotify se ejecutó y verificó (100 → 85, 85 → 95) pero los finales afirmaron de más (cerrado, sin sonido, abierto) o faltaron (sesión ya al máximo); 0 créditos. AUDIO1793 sobre BUILD1793: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 aprobados",
+  "credits": 0
+}

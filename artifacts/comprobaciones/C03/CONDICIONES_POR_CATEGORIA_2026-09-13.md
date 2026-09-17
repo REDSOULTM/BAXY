@@ -1358,3 +1358,7 @@ Música pasa de 38/39 a 38/39 con subir o bajar el volumen propio de una aplicac
 ## Actualización 2026-09-17 (AUDIO1791)
 
 Música pasa de 38/39 a 38/39 con subir o bajar el volumen propio de una aplicación nombrada: la respuesta numérica ya se decide como el ajuste, pero el paso de argumentos no la completa desde el pedido anterior y vuelve a preguntar; sin crédito (commit a009f052, BUILD1791) (HEAD a009f052): AUDIO1791: 5 ejecutados, 2 aprobados (límites), 3 fallidos, 0 créditos; la respuesta ya se decide como el ajuste pero los argumentos no se completan desde el pedido anterior y la App vuelve a preguntar, 0 créditos. AUDIO1791 sobre BUILD1791: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 aprobados
+
+## Actualización 2026-09-17 (AUDIO1793)
+
+Música pasa de 38/39 a 38/39 con subir o bajar el volumen propio de una aplicación nombrada: el ajuste de las sesiones de Spotify se ejecutó y verificó por primera vez (100 → 85, 85 → 95), pero los finales afirmaron de más (cerrado, sin sonido, abierto) o faltaron; sin crédito (commit 0056b057, BUILD1793) (HEAD 0056b057): AUDIO1793: 5 ejecutados, 2 aprobados (límites), 3 fallidos, 0 créditos; el ajuste de las sesiones de Spotify se ejecutó y verificó (100 → 85, 85 → 95) pero los finales afirmaron de más (cerrado, sin sonido, abierto) o faltaron (sesión ya al máximo), 0 créditos. AUDIO1793 sobre BUILD1793: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 aprobados
