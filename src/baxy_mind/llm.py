@@ -6506,6 +6506,27 @@ def _local_player_session(situation: dict) -> bool:
     )
 
 
+def _quote_blind(text: str) -> str:
+    """MUSIC1773: the text without quotation marks of any typography."""
+
+    return re.sub(r"[\"\u00ab\u00bb\u201c\u201d\u2018\u2019']", "", text or "")
+
+
+def _verified_media_playing_title(situation: dict) -> bool:
+    """MUSIC1773: a verified media.play.query/exact/youtube that is playing with an observed title."""
+
+    observed = _merged_observed(situation) if isinstance(situation, dict) else {}
+    return (
+        situation.get("operation") in {"media.play.query", "media.play.exact", "media.play.youtube"}
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+        and isinstance(observed, dict)
+        and observed.get("playbackStatus") == "playing"
+        and isinstance(observed.get("title"), str)
+        and bool(observed["title"].strip())
+    )
+
+
 def _bracket_is_observed(bracketed: str, facts: dict) -> bool:
     """MUSIC1571: «[11.Larga Vida al Rey]» inside a quoted YouTube title is
     observed text, not a template hole left unfilled."""
@@ -7528,8 +7549,10 @@ def compose_visible_defect(
         if isinstance(title, str) and title.strip():
             # MUSIC1555: a YouTube title with doubled spaces is still named
             # when the draft writes it with single ones.
+            # MUSIC1773: quotation marks inside the title («Op. 125 "Choral"») are
+            # typography; the draft may write them straight or curly.
             title_named = title.casefold() in folded or re.search(
-                r"\s+".join(re.escape(part) for part in _reading_fold(title).split()), _reading_fold(stripped)
+                r"\s+".join(re.escape(part) for part in _reading_fold(_quote_blind(title)).split()), _reading_fold(_quote_blind(stripped))
             ) is not None or (
                 # INSTALL1619: the model wrote «Batman: Arkham Knight» for the
                 # library title «batman arkham knight»; punctuation between the
@@ -7546,9 +7569,9 @@ def compose_visible_defect(
                 operation in {"media.play.query", "media.play.exact"}
                 and " - " in title
                 and all(
-                    re.search(r"\s+".join(re.escape(word) for word in _reading_fold(part).split()), _reading_fold(stripped)) is not None
+                    re.search(r"\s+".join(re.escape(word) for word in _reading_fold(_quote_blind(part)).split()), _reading_fold(_quote_blind(stripped))) is not None
                     for part in title.split(" - ")
-                    if _reading_fold(part).split()
+                    if _reading_fold(_quote_blind(part)).split()
                 )
             )
             if not title_named or (
@@ -7599,23 +7622,25 @@ def compose_visible_defect(
                 if isinstance(name, str) and name.strip():
                     # MUSIC1555: YouTube titles carry doubled spaces («Lofi  Study»)
                     # that the draft collapses; any whitespace run matches one.
+                    # MUSIC1773: quotation marks inside a title («Op. 125 "Choral"»)
+                    # are typography, straight or curly; the words are the name.
                     pattern = r"(?<!\w)" + r"\s+".join(
-                        re.escape(part) for part in _reading_fold(name).split()
+                        re.escape(part) for part in _reading_fold(_quote_blind(name)).split()
                     ) + r"(?!\w)"
-                    if not re.search(pattern, _reading_fold(stripped), re.IGNORECASE):
+                    if not re.search(pattern, _reading_fold(_quote_blind(stripped)), re.IGNORECASE):
                         # MUSIC1749 «pon Bohemian Rhapsody en Spotify»: the client
                         # reports «Queen - Bohemian Rhapsody»; naming every part
                         # («"Bohemian Rhapsody" de Queen») names what plays.
                         parts = [
-                            r"(?<!\w)" + r"\s+".join(re.escape(word) for word in _reading_fold(part).split()) + r"(?!\w)"
-                            for part in name.split(" - ") if _reading_fold(part).split()
+                            r"(?<!\w)" + r"\s+".join(re.escape(word) for word in _reading_fold(_quote_blind(part)).split()) + r"(?!\w)"
+                            for part in name.split(" - ") if _reading_fold(_quote_blind(part)).split()
                         ] if operation in {"media.play.query", "media.play.exact"} and " - " in name else []
-                        if not parts or not all(re.search(part, _reading_fold(stripped), re.IGNORECASE) for part in parts):
+                        if not parts or not all(re.search(part, _reading_fold(_quote_blind(stripped)), re.IGNORECASE) for part in parts):
                             return "missing_name"
                         for part in parts:
-                            playback_text = re.sub(part, "", _reading_fold(playback_text), flags=re.IGNORECASE)
+                            playback_text = re.sub(part, "", _reading_fold(_quote_blind(playback_text)), flags=re.IGNORECASE)
                         continue
-                    playback_text = re.sub(pattern, "", _reading_fold(playback_text), flags=re.IGNORECASE)
+                    playback_text = re.sub(pattern, "", _reading_fold(_quote_blind(playback_text)), flags=re.IGNORECASE)
             playback = observed_dict.get("playbackStatus")
             if playback in {"playing", "paused", "stopped"}:
                 assertions = list(re.finditer(
@@ -15100,6 +15125,10 @@ class LlmRuntime:
                 # draft quoted «Greatest Hits (2)» and then translated the bracketed
                 # duration; the whole observed title, verbatim, is the name here too.
                 or _local_player_session(situation)
+                # MUSIC1773 H0163: a Spotify query with a long classical title was
+                # paraphrased as the request on every retry; any verified playback
+                # with an observed title gets the title to quote.
+                or _verified_media_playing_title(situation)
                 else "Include names and numbers from seen."
             ),
             "promised_effect": (
