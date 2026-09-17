@@ -1,3 +1,25 @@
+## MUSIC1779 — estado vigente 2026-09-17T01:28:51.331088+00:00
+
+Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 638/742 | 104 | 0 | >=522 | 12/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 521 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1779 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: MUSIC1779: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Música 38/39. Siguiente: volumen de Spotify (operación por aplicación) y filas de Steam con diálogo.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1779/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 163.00 s acumulados; pico GPU 3497.56 MiB; pico RAM 2530.48 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1779 precedente. -->
+
 ## MUSIC1777 — estado vigente 2026-09-17T01:22:07.312717+00:00
 
 Parcial: 4 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.

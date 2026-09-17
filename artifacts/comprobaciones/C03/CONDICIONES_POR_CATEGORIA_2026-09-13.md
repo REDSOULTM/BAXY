@@ -1330,3 +1330,7 @@ Bibliotecas y fichas de juegos pasa de 4/6 a 5/6 con abrir Epic Games y navegar 
 ## Actualización 2026-09-17 (MUSIC1777)
 
 Música pasa de 37/39 a 37/39 con reproducir una obra nombrada en Spotify con revisión de la raíz citando el título observado: con la pista el modelo ya cita el título entero, pero escapó las comillas interiores con barra invertida y el literal sigue sin final; las variantes lo citan (commit 8efa9596, BUILD1777) (HEAD 8efa9596): MUSIC1777: 5 ejecutados, 4 aprobados, 1 fallido, 0 créditos; la pista hace citar el título entero pero el modelo escapó las comillas interiores con barra invertida y la lente no lo reconoció, 0 créditos. MUSIC1777 sobre BUILD1777: 1 literal, 2 variantes (1 en inglés), 2 límites; 4/5 aprobados; literal sin final (comillas escapadas)
+
+## Actualización 2026-09-17 (MUSIC1779)
+
+Música pasa de 37/39 a 38/39 con reproducir una obra nombrada en Spotify con revisión de la raíz citando el título observado entero aunque sea largo y lleve comillas interiores; literal y dos variantes aprobados (commit eacdfa6a, BUILD1779) (HEAD eacdfa6a): MUSIC1779: 5 ejecutados, 5 aprobados, 1 crédito (H0163 con dos variantes): el final cita el título observado entero, con sus comillas interiores y sin barras invertidas, 1 créditos. MUSIC1779 sobre BUILD1779: 1 literal, 2 variantes (1 en inglés), 2 límites; 5/5 aprobados

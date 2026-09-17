@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1779-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (_strip_prompt_labels drops a backslash before a quotation mark), on top of the MUSIC1779 build.",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1779/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1779 (C03-repairs1779-build/BUILD_READY.json; mente)",
+  "cause_measured": "El modelo escapó con barra invertida las comillas interiores del título citado y la lente no reconoció el título observado.",
+  "change": "Barra invertida antes de una comilla eliminada en la entrada de todo borrador; sin respuestas fijas.",
+  "measurement": "MUSIC1779: MUSIC1779: 5 ejecutados, 5 aprobados, 1 crédito (H0163 con dos variantes): el final cita el título observado entero, con sus comillas interiores y sin barras invertidas; 1 créditos. MUSIC1779 sobre BUILD1779: 1 literal, 2 variantes (1 en inglés), 2 límites; 5/5 aprobados",
+  "credits": 1
+}

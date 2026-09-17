@@ -1,3 +1,11 @@
+# MUSIC1779 adjudicado — 2026-09-17T01:28:51.331088+00:00
+
+**638/742 cubiertos, 104 abiertos, 0 NA; 12/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40, Cerrar aplicaciones y ventanas 20/20, Red y Bluetooth 21/21); C03 formal 3/11. Registro SHA e36029230bc3d67f5fd5ed9f2a49e81bd469a423434527523f09a72cc85a9965. Primeras altas 24 h >= 522 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD eacdfa6a con BUILD1779 (reproduce obras nombradas en Spotify con revisión de la raíz y cita el título observado aunque lleve comillas interiores). Turnos ordinarios sin operaciones.
+
+MUSIC1779 («Música», reproducir una obra nombrada en Spotify con revisión de la raíz citando el título observado entero aunque sea largo y lleve comillas interiores; literal y dos variantes aprobados): MUSIC1779: 5 ejecutados, 5 aprobados, 1 crédito (H0163 con dos variantes): el final cita el título observado entero, con sus comillas interiores y sin barras invertidas, 1 créditos. Adjudicación b68360107d037d517e3fe074b0becea05708a7c58d42c1719b8b9e8aede44d02. MUSIC1779 sobre BUILD1779: 1 literal, 2 variantes (1 en inglés), 2 límites; 5/5 aprobados
+
+---
+
 # MUSIC1777 adjudicado — 2026-09-17T01:22:07.312717+00:00
 
 **637/742 cubiertos, 105 abiertos, 0 NA; 12/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40, Cerrar aplicaciones y ventanas 20/20, Red y Bluetooth 21/21); C03 formal 3/11. Registro SHA 627aa681042ebe8c918ebe8a2be35e8a1b311f492ada51339c29f877153a3248. Primeras altas 24 h >= 521 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 8efa9596 con BUILD1777 (reproduce obras nombradas en Spotify con revisión de la raíz y cita el título observado aunque sea largo y lleve comillas). Turnos ordinarios sin operaciones.
