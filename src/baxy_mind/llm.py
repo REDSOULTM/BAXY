@@ -7708,7 +7708,7 @@ def compose_visible_defect(
                 return "missing_name"
             if re.search(
                 r"\b(?:cerrad[oa]s?|closed|abiert[oa]s?|is open|no\s+hay\s+sonido|sin\s+sonido|no\s+sound|"
-                r"silenciad[oa]s?|silenced|en\s+silencio|mute[d]?|muteado|activ[oa]|active|sonando|playing|reproduciendo)\b",
+                r"silenciad[oa]s?|silenced|en\s+silencio|mute[d]?|muteado)\b",
                 folded,
             ) and observed_dict.get("muted") is not True:
                 return "extra_claim"
