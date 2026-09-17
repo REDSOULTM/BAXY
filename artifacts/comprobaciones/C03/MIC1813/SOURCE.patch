@@ -1,0 +1,109 @@
+commit 96d284ef0cb7e495c2e4de8d8067664ff055daae
+
+BAXY — punto de partida
+
+Continuación del intento más avanzado de este asistente, no una página en blanco.
+Trae el código, las pruebas, los programas de experimento, la documentación y la
+evidencia viva: el ledger, las auditorías y los sellos ciegos sin consumir.
+
+Deja fuera a propósito lo que un script puede reconstruir o un enlace descargar:
+binarios de compilación, modelos GGUF, corpus regenerables y el historial de
+sesiones de agentes. De 22 GB a 376 MB sin perder una fuente ni una medición viva.
+
+El trabajo está en once sprints en documentacion/sprints/, uno por prompt,
+escritos para GPT-5.6 Sol a effort high: permisos totales, criterio único (lo
+mejor para BAXY como producto final), sólo se arregla lo que bloquea, y un sprint
+11 que recoge lo aplazado y cierra el producto.
+
+Los seis invariantes de arquitectura no se re-derivan. Todo lo demás sí.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/WindowsMicrophoneAdapter.cs b/src/Baxy.Providers.Windows/External/WindowsMicrophoneAdapter.cs
+new file mode 100644
+index 00000000..6573f942
+--- /dev/null
++++ b/src/Baxy.Providers.Windows/External/WindowsMicrophoneAdapter.cs
+@@ -0,0 +1,81 @@
++using System.Runtime.InteropServices;
++using System.Security;
++using System.Text.Json;
++using Baxy.Providers.Windows.Audio;
++
++namespace Baxy.Providers.Windows.External;
++
++internal sealed class WindowsMicrophoneAdapter : IExternalOperationAdapter
++{
++    private readonly Func<IWindowsAudioEndpoint> _openDefaultInput;
++
++    internal WindowsMicrophoneAdapter()
++    {
++        _openDefaultInput = WindowsCoreAudioPlatform.OpenDefaultInput;
++    }
++
++    internal WindowsMicrophoneAdapter(Func<IWindowsAudioEndpoint> openDefaultInput) =>
++        _openDefaultInput = openDefaultInput
++            ?? throw new ArgumentNullException(nameof(openDefaultInput));
++
++    public bool CanHandle(string operation) => operation == "audio.microphone.mute";
++
++    public ValueTask<ExternalCapabilityReceipt> InvokeAsync(
++        string operation,
++        JsonElement arguments,
++        CancellationToken cancellationToken)
++    {
++        cancellationToken.ThrowIfCancellationRequested();
++        if (!arguments.TryGetProperty("state", out JsonElement stateValue)
++            || stateValue.ValueKind is not (JsonValueKind.True or JsonValueKind.False))
++        {
++            return ValueTask.FromResult(ExternalJson.Failure(
++                operation, "microphone_state_invalid"));
++        }
++
++        bool requested = stateValue.GetBoolean();
++        var effectBoundary = new ExternalEffectBoundary();
++        try
++        {
++            using IWindowsAudioEndpoint endpoint = _openDefaultInput();
++            bool baseline = endpoint.ReadMuted();
++            effectBoundary.Cross(cancellationToken);
++            endpoint.SetMuted(requested, Guid.NewGuid());
++            bool observed = endpoint.ReadMuted();
++            if (observed != requested)
++            {
++                return ValueTask.FromResult(effectBoundary.Failure(
++                    operation, "microphone_mute_postread_mismatch", baseline != observed));
++            }
++            JsonElement result = ExternalJson.Create(writer =>
++            {
++                writer.WriteStartObject();
++                writer.WriteNumber("version", 1);
++                writer.WriteBoolean("baselineMuted", baseline);
++                writer.WriteBoolean("muted", observed);
++                writer.WriteString("endpointIdHash", AudioEndpointIdentity.Hash(endpoint.EndpointId));
++                writer.WriteString("authority", "windows_core_audio_capture_endpoint_postread");
++                writer.WriteEndObject();
++            });
++            return ValueTask.FromResult(ExternalJson.Success(
++                operation, result, effectObserved: baseline != observed));
++        }
++        catch (OperationCanceledException) when (
++            cancellationToken.IsCancellationRequested && effectBoundary.WasCrossed)
++        {
++            return ValueTask.FromResult(effectBoundary.Failure(
++                operation, "microphone_endpoint_unavailable"));
++        }
++        catch (AudioPlatformException exception)
++        {
++            return ValueTask.FromResult(effectBoundary.Failure(operation, exception.ErrorCode));
++        }
++        catch (Exception exception) when (exception is COMException
++            or InvalidComObjectException or UnauthorizedAccessException
++            or SecurityException or ObjectDisposedException)
++        {
++            return ValueTask.FromResult(effectBoundary.Failure(
++                operation, "microphone_endpoint_unavailable"));
++        }
++    }
++}

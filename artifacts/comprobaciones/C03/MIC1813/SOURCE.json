@@ -1,0 +1,15 @@
+{
+  "schema": "c03-mic1813-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "No source change: src/Baxy.Providers.Windows/External/WindowsMicrophoneAdapter.cs (existing audio.microphone.mute adapter), built with MIC1813, measured for the first time.",
+  "patch": "artifacts/comprobaciones/C03/MIC1813/SOURCE.patch",
+  "commits": [
+    "96d284ef0cb7e495c2e4de8d8067664ff055daae"
+  ],
+  "build": "BUILD1813 (C03-repairs1813-build/BUILD_READY.json; sin cambios (compilación de MIC1813))",
+  "cause_measured": "La fila nunca se había ejecutado: dictado deformado sin cliente reconocible; la operación existente no se había medido en ninguna tanda.",
+  "change": "Ninguno; medición de audio.microphone.mute con preajuste y restauración del micrófono por la raíz.",
+  "measurement": "MIC1813: cinco casos en la compilación de SCREEN1811 (tres turnos ordinarios de micrófono con preajuste, medición y restauración por la raíz; dos límites ordinarios): tres aprobados (la variante en inglés «The microphone is muted.» y los dos límites) y dos fallidos (el literal y la variante en castellano no recibieron final: audio.microphone.mute se completó y verificó y la raíz midió el micrófono silenciado, pero los borradores verdaderos «El micrófono está silenciado.» fueron vetados tres veces como reversed_mute porque el patrón «no esta silenci» del compositor casa dentro de «micrófono está silenciado»); 0 créditos. Causa medida: patrón de estado sin silenciar del compositor sin límite de palabra (casa dentro de micrófono). Sin crédito: una sola variante aprobada. Siguiente: repetir con el patrón corregido.",
+  "credits": 0
+}
