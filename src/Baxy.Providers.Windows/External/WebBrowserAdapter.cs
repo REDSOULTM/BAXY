@@ -799,10 +799,62 @@ internal class CdpBrowserSession : IDisposable
         string action,
         CancellationToken cancellationToken)
     {
-        if (action is not ("back" or "close" or "fullscreen_video" or "new_tab" or "reload"
+        if (action is not ("back" or "close" or "close_all" or "fullscreen_video" or "new_tab" or "reload"
             or "scroll_down" or "scroll_up"))
             return new(false, false, action, string.Empty, string.Empty, "browser_control_action_invalid");
         Uri endpoint = await EnsureEndpointAsync(cancellationToken).ConfigureAwait(false);
+        if (action == "close_all")
+        {
+            // H0444 «cerrá todas las pestañas»: every open page target in the
+            // product's own CDP browser is closed. The product never attaches to
+            // the owner's browser sessions, so only the tabs it opened are closed.
+            // The post-read verifies that no page target remains; when closing the
+            // last tab ends the browser, the loss of its endpoint is that absence.
+            IReadOnlyList<string> pageTargets = await CollectPageTargetIdsAsync(
+                endpoint, cancellationToken).ConfigureAwait(false);
+            int closed = 0;
+            foreach (string id in pageTargets)
+            {
+                try
+                {
+                    using HttpResponseMessage response = await _http.GetAsync(
+                        new Uri(endpoint, "json/close/" + Uri.EscapeDataString(id)), cancellationToken)
+                        .ConfigureAwait(false);
+                    if (response.IsSuccessStatusCode)
+                        closed++;
+                }
+                catch (Exception exception) when (
+                    IsEndpointLossAfterClose(exception, cancellationToken))
+                {
+                    if (OwnsEndpoint)
+                        _endpoint = null;
+                    return new(true, true, action, string.Empty,
+                        "tabs_closed:" + closed.ToString(CultureInfo.InvariantCulture) + ":endpoint_closed",
+                        string.Empty);
+                }
+            }
+            for (int attempt = 0; attempt < 20; attempt++)
+            {
+                try
+                {
+                    if ((await CollectPageTargetIdsAsync(endpoint, cancellationToken)
+                            .ConfigureAwait(false)).Count == 0)
+                        return new(true, true, action, string.Empty,
+                            "tabs_closed:" + closed.ToString(CultureInfo.InvariantCulture), string.Empty);
+                }
+                catch (Exception exception) when (
+                    IsEndpointLossAfterClose(exception, cancellationToken))
+                {
+                    if (OwnsEndpoint)
+                        _endpoint = null;
+                    return new(true, true, action, string.Empty,
+                        "tabs_closed:" + closed.ToString(CultureInfo.InvariantCulture) + ":endpoint_closed",
+                        string.Empty);
+                }
+                await Task.Delay(100, cancellationToken).ConfigureAwait(false);
+            }
+            return new(false, true, action, string.Empty, string.Empty, "cdp_close_all_not_verified");
+        }
         if (action == "new_tab")
         {
             // BROWSER1493 «abrí una pestaña nueva»: a new blank page target in
@@ -1404,6 +1456,28 @@ internal class CdpBrowserSession : IDisposable
             }
         }
         throw new IOException("CDP session has no page target.");
+    }
+
+    private async ValueTask<IReadOnlyList<string>> CollectPageTargetIdsAsync(
+        Uri endpoint,
+        CancellationToken cancellationToken)
+    {
+        using Stream stream = await _http.GetStreamAsync(new Uri(endpoint, "json/list"), cancellationToken)
+            .ConfigureAwait(false);
+        using JsonDocument targets = await JsonDocument.ParseAsync(
+            stream, cancellationToken: cancellationToken).ConfigureAwait(false);
+        var ids = new List<string>();
+        foreach (JsonElement target in targets.RootElement.EnumerateArray())
+        {
+            if (target.TryGetProperty("type", out JsonElement type)
+                && type.GetString() == "page"
+                && target.TryGetProperty("id", out JsonElement id)
+                && id.GetString() is { Length: > 0 } value)
+            {
+                ids.Add(value);
+            }
+        }
+        return ids;
     }
 
     private async ValueTask<bool> TargetExistsAsync(

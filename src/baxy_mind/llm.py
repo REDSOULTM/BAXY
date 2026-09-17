@@ -4704,6 +4704,23 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
                 "in their language."
             )
         if (
+            situation.get("operation") == "browser.control"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and _merged_observed(situation).get("action") == "close_all"
+        ):
+            # BROWSER1841 «cerrá todas las pestañas»: every open tab in the
+            # browser is gone now; say so in the past, nothing else.
+            bits.append(
+                "You have just closed every open tab in the browser and their "
+                "absence was verified: say that in the past in one short sentence "
+                "(for example «Cerré todas las pestañas del navegador»). Do not "
+                "give a number, mention identifiers, states or codes, do not "
+                "promise anything, and never say the tabs are still open or that "
+                "you could not close them. Address the person naturally in their "
+                "language."
+            )
+        if (
             situation.get("operation") in {"note.create", "task.create"}
             and situation.get("verified") is True
             and situation.get("succeeded") is True

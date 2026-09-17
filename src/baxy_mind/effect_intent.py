@@ -3090,10 +3090,13 @@ def known_unsupported_effect_request(
             {"self.source.read"},
         ),
         (
-            # LIMITS1677 H0444 «cerrá todas las pestañas de chrome»: the product
-            # opens a tab in its own browser; it closes no tabs anywhere.
+            # LIMITS1677 H0444 «cerrá todas las pestañas de chrome»: since
+            # BROWSER1841 «cerrá todas las pestañas» closes every open tab in the
+            # product's own browser (browser.control close_all); a single-tab or
+            # partial close still has no operation and stays a plain limit.
             _has(folded, r"\b(?:cierra|cerra|cerrar|cerrame|cierrame|close)\b")
-            and _has(folded, r"\b(?:pestanas?|tabs?)\b"),
+            and _has(folded, r"\b(?:pestanas?|tabs?)\b")
+            and browser_close_all_tabs_arguments(text) is None,
             {"browser.tab.close"},
         ),
         (
@@ -7972,6 +7975,34 @@ def browser_new_tab_arguments(text: str) -> dict[str, str] | None:
     return {"action": "new_tab"}
 
 
+def browser_close_all_tabs_arguments(text: str) -> dict[str, str] | None:
+    """H0444 «cerrá todas las pestañas de chrome», «close all tabs»: close every
+    open tab in the product's own browser (owner decision 2026-09-17: on the tabs
+    the tanda itself opened, never the owner's own sessions).  None for a single
+    tab, for closing the browser application, for a prohibition or a quoted
+    literal; the named browser is the person's word, the product uses its own
+    controlled browser."""
+
+    if not text or len(text) > 16_384:
+        return None
+    folded = _fold(text).strip(" ¿?¡!. ")
+    if _has(folded, r"\bno\b|\bnunca\b|\bjamas\b|\bnever\b|don't|do\s+not"):
+        return None
+    prefix = r"(?:(?:por\s+favor|please)\s*[,;:]?\s+)?(?:(?:podes|puedes|podrias|can\s+you|could\s+you)\s+)?"
+    courtesy = r"(?:\s*,?\s*(?:por\s+favor|please|porfa))?"
+    named = r"(?:\s+(?:de|del|of|in)\s+(?:el\s+|the\s+|mi\s+|my\s+)?(?:navegador|browser|chrome|opera(?:\s*gx)?|edge|brave|firefox))?"
+    spanish = (
+        r"(?:cierra|cierre|cerra|cerrame|cierrame|cerrar)\s+"
+        r"(?:todas\s+)?(?:las\s+)?pestanas(?:\s+abiertas)?" + named
+    )
+    english = (
+        r"close\s+(?:all\s+)?(?:the\s+|my\s+)?(?:open\s+)?tabs" + named
+    )
+    if re.fullmatch(rf"{prefix}(?:{spanish}|{english}){courtesy}", folded) is None:
+        return None
+    return {"action": "close_all"}
+
+
 def explicit_window_title(text: str) -> str | None:
     """Copy one explicitly named window title; never infer a process or HWND."""
     matches = tuple(
@@ -10918,6 +10949,7 @@ def _is_direct_request(text: str) -> bool:
     if (
         browser_back_arguments(text) is not None
         or browser_new_tab_arguments(text) is not None
+        or browser_close_all_tabs_arguments(text) is not None
         or _direct_process_inventory_request(text)
         or _explicit_google_search_query(text) is not None
         or _resume_existing_media(text)
@@ -17541,6 +17573,10 @@ def resolve_explicit_effects(
     if "browser.control" in available and browser_new_tab_arguments(text) is not None:
         # BROWSER1493 «abrí una pestaña nueva»: one new blank tab in the
         # product's browser, verified by its presence.
+        return EffectIntent(("browser.control",), (text,))
+    if "browser.control" in available and browser_close_all_tabs_arguments(text) is not None:
+        # BROWSER1841 «cerrá todas las pestañas»: close every open tab in the
+        # product's own browser, verified by their absence.
         return EffectIntent(("browser.control",), (text,))
     if "browser.control" in available and browser_back_arguments(text) is not None:
         # A complete history request is not a destination to search.
