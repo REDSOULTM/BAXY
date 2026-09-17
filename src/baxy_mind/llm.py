@@ -7348,6 +7348,22 @@ def compose_visible_defect(
             return "joined_claimed"
     if (
         kind == "operation"
+        and situation.get("operation") == "browser.control"
+        and _merged_observed(situation).get("action") == "close_all"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+        and re.search(
+            # BROWSER1841: the tabs were closed just now, in this turn; a final
+            # that places the action at a specific past time («yesterday», «ayer»,
+            # «last week») invents when it happened.
+            r"\b(?:ayer|anoche|antier|anteayer|antes\s+de\s+ayer|la\s+semana\s+pasada|el\s+otro\s+dia|hace\s+(?:un|unos|varios|dos|tres)\s+(?:dia|dias|semana|semanas|hora|horas)|"
+            r"yesterday|last\s+night|last\s+week|the\s+other\s+day|days?\s+ago|hours?\s+ago|weeks?\s+ago)\b",
+            _accent_folded_with_punctuation(stripped),
+        )
+    ):
+        return "extra_claim"
+    if (
+        kind == "operation"
         and situation.get("operation") == "message.draft"
         and polarity == "success"
         and situation.get("verified") is True
