@@ -4239,6 +4239,10 @@ def _compose_situation_payload(
                 if visible_seen.get(key) is not None:
                     projected[key] = visible_seen[key]
             visible_seen = projected
+        elif operation == "software.python.package.status":
+            # PIP1817: the per-Python list (installed true/false per entry) was
+            # generalized from its first entry; the model gets the split lists.
+            visible_seen = _project_python_package_status(visible_seen)
         elif operation == "browser.control":
             # BROWSER1493 «abrí una pestaña nueva»: the target id is an
             # internal identifier; the person needs the action and its state.
@@ -5081,6 +5085,69 @@ def _screen_text_excerpt(recognized: str, lines: int = 3, width: int = 120) -> l
         flat = " ".join(recognized.split())
         chosen = [flat[:width].rstrip() + ("…" if len(flat) > width else "")] if flat else []
     return chosen
+
+
+def _project_python_package_status(seen: dict) -> dict:
+    """PIP1819: installedIn (with the package version), notInstalledIn and noPipIn
+    as exact Python version strings, instead of the per-Python entries."""
+
+    entries = seen.get("pythons") if isinstance(seen.get("pythons"), list) else []
+    installed_in: list[str] = []
+    not_installed_in: list[str] = []
+    no_pip_in: list[str] = []
+    for entry in entries:
+        if not isinstance(entry, dict):
+            continue
+        label = str(entry.get("pythonVersion") or entry.get("displayName") or "").strip()
+        if not label:
+            continue
+        if entry.get("pipAvailable") is False:
+            no_pip_in.append(label)
+        elif entry.get("installed") is True:
+            package_version = entry.get("packageVersion")
+            installed_in.append(
+                f"{label} ({package_version})" if isinstance(package_version, str) and package_version else label
+            )
+        else:
+            not_installed_in.append(label)
+    return {
+        "package": seen.get("package"),
+        "installedIn": installed_in,
+        "notInstalledIn": not_installed_in,
+        "noPipIn": no_pip_in,
+        "installedCount": len(installed_in),
+    }
+
+
+def _python_package_state_defect(text: str, seen: dict) -> str:
+    """PIP1817: «numpy no está instalado en ninguna versión» with two installs in the
+    receipt, «Pandas is not installed. It is available in…»: the overall state said
+    must be the observed one."""
+
+    if isinstance(seen.get("installedIn"), list):
+        installed = [str(x) for x in seen["installedIn"]]
+    else:
+        installed = [
+            str(entry.get("pythonVersion") or "")
+            for entry in (seen.get("pythons") or [])
+            if isinstance(entry, dict) and entry.get("installed") is True
+        ]
+    folded = _reading_fold(text)
+    denies = re.search(
+        r"\bno esta instalad[oa] en ning|\bnot installed in any|\bno esta en ning|"
+        r"(?:^|[.;:!?]\s*)[^.;:!?]*?\b(?:no esta|no se encuentra) instalad[oa]\s*(?:[.;!]|$)|"
+        r"(?:^|[.;:!?]\s*)[^.;:!?]*?\b(?:is not|isn't|is n't) installed\s*(?:[.;!]|$)",
+        folded,
+    )
+    affirms = re.search(
+        r"(?<!no )(?<!not )\b(?:ya esta|esta|is|is already|already) instal(?:ado|ada|led)\b",
+        folded,
+    )
+    if installed and denies is not None:
+        return "package_state_reversed"
+    if not installed and affirms is not None and denies is None:
+        return "package_state_reversed"
+    return ""
 
 
 def _screen_line_count(payload: dict) -> int | None:
@@ -5929,16 +5996,22 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     if (
         payload.get("operation") == "software.python.package.status"
         and isinstance(seen, dict)
-        and isinstance(seen.get("pythons"), list)
+        and (isinstance(seen.get("pythons"), list) or isinstance(seen.get("installedIn"), list))
     ):
         # PIP1817: every version-like number must be a registered Python version
-        # or the observed package version.
+        # or the observed package version; PIP1819: the state said is the observed one.
+        state_defect = _python_package_state_defect(text, seen)
+        if state_defect:
+            return state_defect
         observed_versions: set[str] = set()
-        for entry in seen["pythons"]:
+        for entry in seen.get("pythons") or []:
             if isinstance(entry, dict):
                 for key in ("pythonVersion", "packageVersion", "tag"):
                     if isinstance(entry.get(key), str):
                         observed_versions.add(entry[key].strip())
+        for key in ("installedIn", "notInstalledIn", "noPipIn"):
+            for label in seen.get(key) or []:
+                observed_versions.update(re.findall(r"\d+(?:\.\d+)+", str(label)))
         for number in re.findall(r"(?<![\w.])\d+(?:\.\d+)+(?![\w.])", text):
             if not any(version == number or version.startswith(number + ".") for version in observed_versions):
                 return "invented_number"
@@ -14332,28 +14405,29 @@ class LlmRuntime:
         if (
             visible_situation.get("operation") == "software.python.package.status"
             and isinstance(visible_situation.get("seen"), dict)
-            and isinstance(visible_situation["seen"].get("pythons"), list)
+            and isinstance(visible_situation["seen"].get("installedIn"), list)
         ):
-            # PIP1817: the read says whether the package is installed in each
-            # registered Python; nothing was installed.
+            # PIP1819: the split lists say where the package is installed;
+            # nothing was installed.
             instruct(
-                "\nseen.package is the Python package asked about; seen.pythons are the "
-                "Python installs registered in Windows (displayName, pythonVersion, installed "
-                "true/false, packageVersion when installed, pipAvailable) and "
-                "seen.installedCount how many of them have it. Say whether the package is "
-                "already installed and in which Python versions (exact pythonVersion strings, "
-                "with its packageVersion), or that it is not installed in any of them; if some "
-                "Python has pipAvailable false, say pip is not available there. Nothing was "
-                "installed or changed. No other numbers."
+                "\nseen.package is the Python package asked about. seen.installedIn lists the "
+                "Python versions where it IS installed (each string exactly as given, with the "
+                "package version in parentheses), seen.notInstalledIn the Python versions where "
+                "it is NOT installed, and seen.noPipIn the Python versions without pip. Say, in "
+                "one or two sentences, that the package is already installed in each Python of "
+                "seen.installedIn (copy those strings), that it is not installed in those of "
+                "seen.notInstalledIn, and that pip is not available in those of seen.noPipIn; "
+                "if seen.installedIn is empty, say it is not installed in any of them. Nothing "
+                "was installed or changed. No other numbers."
                 if response_language == "en"
-                else "\nseen.package es el paquete de Python consultado; seen.pythons son las "
-                "instalaciones de Python registradas en Windows (displayName, pythonVersion, "
-                "installed true/false, packageVersion si está instalado, pipAvailable) y "
-                "seen.installedCount cuántas lo tienen. Di si el paquete ya está instalado y "
-                "en qué versiones de Python (cadenas pythonVersion exactas, con su "
-                "packageVersion), o que no está instalado en ninguna; si en alguna "
-                "pipAvailable es false, di que ahí no hay pip. No se instaló ni se cambió "
-                "nada. Sin otros números."
+                else "\nseen.package es el paquete de Python consultado. seen.installedIn lista las "
+                "versiones de Python donde SÍ está instalado (cada cadena tal cual, con la versión "
+                "del paquete entre paréntesis), seen.notInstalledIn las versiones de Python donde "
+                "NO está instalado y seen.noPipIn las versiones de Python sin pip. Di, en una o "
+                "dos oraciones, que el paquete ya está instalado en cada Python de seen.installedIn "
+                "(copiá esas cadenas), que no está instalado en los de seen.notInstalledIn y que "
+                "en los de seen.noPipIn no hay pip; si seen.installedIn está vacío, di que no está "
+                "instalado en ninguno. No se instaló ni se cambió nada. Sin otros números."
             )
         if (
             visible_situation.get("operation") == "software.python.status"
@@ -15358,6 +15432,11 @@ class LlmRuntime:
                 # UI1373 H0555: corrected drafts read «Aprié el botón 5», a
                 # conjugation the model cannot get right; steer to verbs it can.
                 else "Apretaste el botón: dilo con «Hice clic en el …» o «Pulsé el …» y la etiqueta que pidió la persona; no conjugues «apretar»."
+            ),
+            "package_state_reversed": (
+                "seen.installedIn are the Pythons where the package IS installed and seen.notInstalledIn where it is not: state exactly that, without denying an install listed in seen.installedIn or asserting one that is not there."
+                if response_language == "en"
+                else "seen.installedIn son los Python donde el paquete SÍ está instalado y seen.notInstalledIn donde no: di exactamente eso, sin negar una instalación de seen.installedIn ni afirmar una que no esté."
             ),
             "screen_wrong_count": (
                 "The screen shows seen.lineCount lines: that is the only number you may state; seen.lines are only some of those lines, so do not count them."
