@@ -272,7 +272,7 @@ Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
 
 Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 523 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1801 añade 1. No se cuentan revalidaciones.
 
-Siguiente acción: AUDIO1801: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Música 38/39. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
+Siguiente acción: AUDIO1801: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Audio y volumen 47/51. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
 
 Evidencia: `artifacts/comprobaciones/C03/AUDIO1801/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
 
@@ -294,7 +294,7 @@ Parcial: 4 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.
 
 Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 523 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1799 añade 0. No se cuentan revalidaciones.
 
-Siguiente acción: AUDIO1799: 5 ejecutados, 4 aprobados, 1 fallidos, 0 créditos (índices []); Música 37/39. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
+Siguiente acción: AUDIO1799: 5 ejecutados, 4 aprobados, 1 fallidos, 0 créditos (índices []); Audio y volumen 46/51. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
 
 Evidencia: `artifacts/comprobaciones/C03/AUDIO1799/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
 
@@ -316,7 +316,7 @@ Parcial: 2 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.
 
 Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 523 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1797 añade 0. No se cuentan revalidaciones.
 
-Siguiente acción: AUDIO1797: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos (índices []); Música 37/39. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
+Siguiente acción: AUDIO1797: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos (índices []); Audio y volumen 46/51. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
 
 Evidencia: `artifacts/comprobaciones/C03/AUDIO1797/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
 
@@ -338,7 +338,7 @@ Parcial: 2 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.
 
 Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 523 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1795 añade 0. No se cuentan revalidaciones.
 
-Siguiente acción: AUDIO1795: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos (índices []); Música 37/39. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
+Siguiente acción: AUDIO1795: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos (índices []); Audio y volumen 46/51. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
 
 Evidencia: `artifacts/comprobaciones/C03/AUDIO1795/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
 
@@ -360,7 +360,7 @@ Parcial: 2 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.
 
 Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 523 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1793 añade 0. No se cuentan revalidaciones.
 
-Siguiente acción: AUDIO1793: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos (índices []); Música 37/39. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
+Siguiente acción: AUDIO1793: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos (índices []); Audio y volumen 46/51. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
 
 Evidencia: `artifacts/comprobaciones/C03/AUDIO1793/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
 
@@ -382,7 +382,7 @@ Parcial: 2 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.
 
 Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 523 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1791 añade 0. No se cuentan revalidaciones.
 
-Siguiente acción: AUDIO1791: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos (índices []); Música 37/39. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
+Siguiente acción: AUDIO1791: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos (índices []); Audio y volumen 46/51. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
 
 Evidencia: `artifacts/comprobaciones/C03/AUDIO1791/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
 
@@ -404,7 +404,7 @@ Parcial: 2 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.
 
 Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 523 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1789 añade 0. No se cuentan revalidaciones.
 
-Siguiente acción: AUDIO1789: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos (índices []); Música 37/39. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
+Siguiente acción: AUDIO1789: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos (índices []); Audio y volumen 46/51. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
 
 Evidencia: `artifacts/comprobaciones/C03/AUDIO1789/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
 
@@ -426,7 +426,7 @@ Parcial: 2 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.
 
 Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 523 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1787 añade 0. No se cuentan revalidaciones.
 
-Siguiente acción: AUDIO1787: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos (índices []); Música 37/39. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
+Siguiente acción: AUDIO1787: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos (índices []); Audio y volumen 46/51. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
 
 Evidencia: `artifacts/comprobaciones/C03/AUDIO1787/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
 
