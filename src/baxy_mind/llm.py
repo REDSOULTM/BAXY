@@ -7486,7 +7486,9 @@ def compose_visible_defect(
         return "lowercase"
     if re.search(r"\bla volumen\b", folded):
         return "wrong_gender"
-    app_name = observed_dict.get("app")
+    # AUDIO1793: the application of a volume adjustment is the audio target,
+    # not an opened application whose open/closed state the final must state.
+    app_name = None if operation == "audio.app.volume.adjust" else observed_dict.get("app")
     if isinstance(app_name, str) and app_name.strip():
         feminine = _app_is_feminine(app_name)
         if (
@@ -7681,6 +7683,29 @@ def compose_visible_defect(
                         names_observed_state = True
                 if not names_observed_state:
                     return "missing_state"
+        if (
+            operation == "audio.app.volume.adjust"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+        ):
+            # AUDIO1793 «bajá el volumen de Spotify» → «Spotify está cerrado. El
+            # volumen es de 85. No hay sonido.»: the application volume final
+            # names the application and its observed level and claims nothing
+            # about the application being closed, open or silent.
+            app_label = str(observed_dict.get("app") or "").strip()
+            if app_label and _reading_fold(app_label) not in _reading_fold(stripped):
+                return "missing_name"
+            level_value = observed_dict.get("level")
+            if isinstance(level_value, int) and not re.search(
+                rf"(?<![\d.,]){level_value}(?!\d|[.,]\d)", stripped
+            ):
+                return "missing_name"
+            if re.search(
+                r"\b(?:cerrad[oa]s?|closed|abiert[oa]s?|is open|no\s+hay\s+sonido|sin\s+sonido|no\s+sound|"
+                r"silenciad[oa]s?|silenced|en\s+silencio|mute[d]?|muteado)\b",
+                folded,
+            ) and observed_dict.get("muted") is not True:
+                return "extra_claim"
         if "level" in observed_dict and not re.search(
             r"volumen|volume|\bnivel\b|\blevel\b", folded
         ):
@@ -15116,6 +15141,21 @@ class LlmRuntime:
             "too_many_sentences": "Una sola frase.",
             "wrong_gender": "Masculine abierto/cerrado. Feminine abierta/cerrada.",
             "missing_name": (
+                # AUDIO1793: the application volume final names the app and the
+                # level the sessions now have.
+                (
+                    ("Say that you turned " + str(_merged_observed(situation).get("app")) + "'s own volume "
+                     + ("up" if _merged_observed(situation).get("direction") == "up" else "down")
+                     + " and that it is now at " + str(_merged_observed(situation).get("level")) + "; nothing about it being closed or silent.")
+                    if response_language == "en"
+                    else ("Di que " + ("subiste" if _merged_observed(situation).get("direction") == "up" else "bajaste")
+                          + " el volumen propio de " + str(_merged_observed(situation).get("app"))
+                          + " y que ahora está en " + str(_merged_observed(situation).get("level")) + "; nada sobre que esté cerrado o sin sonido.")
+                )
+                if situation.get("operation") == "audio.app.volume.adjust"
+                and situation.get("verified") is True
+                and isinstance(_merged_observed(situation), dict)
+                else
                 "Name the clock and mute or volume."
                 if _merged_observed(situation)
                 and (
