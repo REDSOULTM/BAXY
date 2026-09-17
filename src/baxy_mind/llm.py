@@ -5087,6 +5087,25 @@ def _screen_text_excerpt(recognized: str, lines: int = 3, width: int = 120) -> l
     return chosen
 
 
+def _opens_with_observed_identifier(lead: str, situation: dict) -> bool:
+    """PIP1819: «requests ya está instalado…» opens with the package identifier as
+    observed (seen.package); an identifier keeps its spelling, lowercase included."""
+
+    for source in (situation.get("seen"), situation.get("observed")):
+        if not isinstance(source, dict):
+            continue
+        for key in ("package", "name", "title", "query"):
+            value = source.get(key)
+            if not isinstance(value, str) or not value.strip():
+                continue
+            value = value.strip()
+            if value[0].isalpha() and value[0].islower() and lead.startswith(value) and (
+                len(lead) == len(value) or not lead[len(value)].isalnum()
+            ):
+                return True
+    return False
+
+
 def _project_python_package_status(seen: dict) -> dict:
     """PIP1819: installedIn (with the package version), notInstalledIn and noPipIn
     as exact Python version strings, instead of the per-Python entries."""
@@ -7630,7 +7649,7 @@ def compose_visible_defect(
     ):
         return "welcome_repeat"
     lead = vocabulary_text.lstrip("¿¡\"'")
-    if lead and lead[0].isalpha() and lead[0].islower():
+    if lead and lead[0].isalpha() and lead[0].islower() and not _opens_with_observed_identifier(lead, situation):
         return "lowercase"
     if re.search(r"\bla volumen\b", folded):
         return "wrong_gender"
