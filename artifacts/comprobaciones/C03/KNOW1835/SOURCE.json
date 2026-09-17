@@ -1,0 +1,15 @@
+{
+  "schema": "c03-know1835-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/UserMessagePolicy.cs (a long declarative statement is not an unanswered knowledge question), on top of the KNOW1835 build.",
+  "patch": "artifacts/comprobaciones/C03/KNOW1835/SOURCE.patch",
+  "commits": [
+    "7b49c215b661906b76964c522421bc26b3c025c8"
+  ],
+  "build": "BUILD1835 (C03-repairs1835-build/BUILD_READY.json; App)",
+  "cause_measured": "La regla knowledge_not_answered de la App tomaba «that is why» y «what they told me» por una pregunta de conocimiento y rechazaba la aclaración de habla ajena en inglés.",
+  "change": "Una afirmación larga sin signo de pregunta cuyas palabras de pregunta no encabezan cláusula no activa la regla; sin respuestas fijas.",
+  "measurement": "KNOW1835: cinco casos en BUILD1835 (tres turnos ordinarios sin operaciones, dos límites ordinarios): cuatro aprobados (el literal y las dos variantes de afirmación larga recibieron la aclaración de habla ajena, en castellano y en inglés, sin operar ni responder lo dicho; el límite de significado explicó) y un límite fallido (el pedido de no contestar recibió «no pude entender», que no es verdad); 1 créditos. Medido: la App ya no toma una afirmación larga por pregunta de conocimiento sin responder; H0297 acreditado con ambas variantes; «Conocimiento, razonamiento y creatividad verbal» 37/37 cerrada, 15/35 categorías cerradas. Siguiente: el resto abierto depende de decisiones del dueño (mensajería, correo, vídeo, Discord, energía, pestañas), de condiciones externas (motor de búsqueda) o son filas sin marca y negativas nunca acreditables.",
+  "credits": 1
+}

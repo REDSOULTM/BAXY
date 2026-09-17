@@ -1,3 +1,25 @@
+## KNOW1835 — estado vigente 2026-09-17T07:44:04.355971+00:00
+
+Parcial: 4 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 650/742 | 92 | 0 | >=534 | 13/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 533 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); KNOW1835 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: KNOW1835: 5 ejecutados, 4 aprobados, 1 fallidos, 1 créditos (índices [0]); Conocimiento, razonamiento y creatividad verbal 37/37. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/KNOW1835/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 90.33 s acumulados; pico GPU 3497.56 MiB; pico RAM 1723.93 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque KNOW1835 precedente. -->
+
 ## KNOW1833 — estado vigente 2026-09-17T07:34:59.793317+00:00
 
 Parcial: 3 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.
