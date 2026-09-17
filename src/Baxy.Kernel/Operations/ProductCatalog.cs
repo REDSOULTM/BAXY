@@ -47,6 +47,19 @@ public static class ProductCatalog
             ToolExposure.Internal,
             "Checks that the local core is available and lists its operations."),
         Descriptor(
+            "audio.app.volume.adjust",
+            Schema(
+                [
+                    Integer("amount", 1, 100),
+                    String("app", maximumUtf8Bytes: 256, nonWhitespace: true),
+                    String("direction", values: ["down", "up"]),
+                ],
+                ["amount", "app", "direction"]),
+            OperationRisks.LowReversible,
+            "audio.app.volume.adjust.session.postread.v1",
+            ToolExposure.Public,
+            "Sube o baja el volumen propio de una aplicación (sus sesiones de audio en la salida predeterminada, el control por aplicación del mezclador) una cantidad acotada desde su nivel observado y verifica la postlectura; no toca el volumen del sistema."),
+        Descriptor(
             "audio.microphone.mute",
             Schema([Boolean("state")], ["state"]),
             OperationRisks.LowReversible,

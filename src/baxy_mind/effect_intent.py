@@ -2378,6 +2378,8 @@ def _curated_domain_is_grounded(
         return close_all_request(folded)
     if operation == "document.pdf.read":
         return _pdf_summary_request(folded) is not None
+    if operation == "audio.app.volume.adjust":
+        return app_volume_request(folded, application_names) is not None
     if operation == "window.snap":
         return _authenticated_application_snap_target(folded, application_names) is not None
     if operation in {
@@ -2927,7 +2929,7 @@ def known_unsupported_effect_request(
             # volume.
             _has(folded, r"\b(?:volumen|volume)\s+(?:de|del|of)\s+(?:(?:la|el|the)\s+)?(?:app\s+)?(?:spotify|chrome|discord|youtube|steam|zoom|teams|vlc|firefox|opera|edge|whatsapp)\b"
                          r"|\b(?:spotify|chrome|discord|youtube|steam|zoom|teams|vlc|firefox|opera|edge|whatsapp)(?:\'s)?\s+volume\b"),
-            {"audio.app.volume"},
+            {"audio.app.volume.adjust"},
         ),
         (
             # AGENDA1669 H0666 «resumime informe.pdf»: the text reader opens text
@@ -3561,6 +3563,7 @@ def app_scoped_microphone_mute(folded: str) -> str | None:
 def resolve_explicit_clarification_intent(
     text: str,
     available_operations: Iterable[str],
+    application_names: Iterable[str] | ApplicationCatalogIndex = (),
 ) -> ClarificationIntent | None:
     """Preserve the operation identity of a recognized incomplete effect."""
 
@@ -4450,6 +4453,12 @@ def resolve_explicit_clarification_intent(
         # A trailing value preposition still supplies no level. Full matching
         # preserves supplied values, other targets and subsequent clauses.
         return ClarificationIntent(("audio.volume",), ("level",))
+    if "audio.app.volume.adjust" in available:
+        app_volume = app_volume_request(text, application_names)
+        if app_volume is not None and app_volume[2] is None:
+            # AUDIO1787 «subí el volumen de spotify»: the application volume
+            # keeps its direction and asks how much (owner rule on H0027).
+            return ClarificationIntent(("audio.app.volume.adjust",), ("amount",))
     if (
         "audio.volume.adjust" in available
         and (
@@ -7461,6 +7470,102 @@ _SET_VOLUME_VERB = (
 )
 _VOLUME_UP_VERB = r"(?:sube(?:lo|la)?|subi|suvi|subir|aumenta|aumentar|incrementa|incrementar|increase|raise|up)"
 _VOLUME_DOWN_VERB = r"(?:baja(?:lo|la)?|bajar|reduce|reducir|decrease|lower|down)"
+
+
+_APP_VOLUME_AMOUNT = (
+    r"(?:\s+(?:en|by|a|al|to)\s+(?P<amount>\d{1,3})\s*(?:%|por\s+ciento|percent|puntos?|points?)?"
+    r"|\s+(?P<amount2>\d{1,3})\s*(?:%|por\s+ciento|percent|puntos?|points?))?"
+)
+_APP_VOLUME_SPANISH = re.compile(
+    rf"^[¿?¡!\s]*(?:(?:necesito|quiero|queria|quisiera|podes|podrias|podria|me\s+(?:podes|podrias|podria))\s+(?:que\s+)?)?"
+    rf"(?P<verb>{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB})\s+(?:me\s+)?(?:un\s+poco\s+|un\s+toque\s+|a\s+little\s+)?"
+    r"(?:el\s+|la\s+|the\s+)?(?:volumen|volume|sonido|sound|audio)\s+(?:de|del|of|en|in|on)\s+(?:la\s+|el\s+|the\s+)?(?:app\s+|aplicacion\s+|application\s+)?"
+    rf"(?P<app>[a-z0-9][a-z0-9 .+_-]{{0,60}}?)(?:\s+(?:un\s+poco|un\s+toque|un\s+poquito|a\s+bit|a\s+little))?{_APP_VOLUME_AMOUNT}(?:\s*,?\s*(?:please|por\s+favor|porfa))?[\s.!?]*$",
+)
+_APP_VOLUME_ENGLISH = re.compile(
+    r"^[¿?¡!\s]*(?:(?:please|can\s+you|could\s+you|i\s+need\s+you\s+to|i\s+want\s+you\s+to)\s+)?"
+    r"(?P<verb>turn\s+up|turn\s+down|raise|lower|increase|decrease|bump\s+up|crank\s+up)\s+(?:the\s+)?"
+    rf"(?P<app>[a-z0-9][a-z0-9 .+_-]{{0,60}}?)(?:'s)?\s+(?:volume|audio|sound)(?:\s+(?:level|a\s+bit|a\s+little))?{_APP_VOLUME_AMOUNT}(?:\s*,?\s*please)?[\s.!?]*$",
+)
+
+_APP_VOLUME_ENGLISH_SPLIT = re.compile(
+    r"^[¿?¡!\s]*(?:(?:please|can\s+you|could\s+you)\s+)?turn\s+(?:the\s+)?"
+    rf"(?P<app>[a-z0-9][a-z0-9 .+_-]{{0,60}}?)(?:'s)?\s+(?:volume|audio|sound)\s+(?P<verb>up|down)(?:\s+(?:a\s+bit|a\s+little))?{_APP_VOLUME_AMOUNT}(?:\s*,?\s*please)?[\s.!?]*$",
+)
+
+
+def app_volume_request(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> tuple[str, str, int | None] | None:
+    """AUDIO1787 «subí el volumen de spotify»: (catalog display name, direction, amount or None).
+
+    A relative volume verb whose object is one authenticated application's
+    volume, in Spanish (volumen de X) or English (X's volume / turn up X
+    volume); the amount is optional and, when absent, asked (owner rule on
+    relative volume without a quantity). The system volume readers keep
+    every request that names no application.
+    """
+    if (
+        not effect_request_is_authoritative(text)
+        or _other_device_effect_scope(_fold(text))
+        or _is_negative_effect_clause(_fold(text))
+    ):
+        return None
+    folded = _strip_request_envelope(_fold(text))
+    if _has(folded, r"\b(?:o|or)\b") or len(_request_clauses(folded)) != 1:
+        return None
+    match = _APP_VOLUME_SPANISH.match(folded) or _APP_VOLUME_ENGLISH.match(folded) or _APP_VOLUME_ENGLISH_SPLIT.match(folded)
+    if match is None:
+        return None
+    verb = match.group("verb")
+    if re.fullmatch(rf"{_VOLUME_UP_VERB}|turn\s+up|raise|increase|bump\s+up|crank\s+up|up", verb):
+        direction = "up"
+    elif re.fullmatch(rf"{_VOLUME_DOWN_VERB}|turn\s+down|lower|decrease|down", verb):
+        direction = "down"
+    else:
+        return None
+    raw_app = match.group("app").strip(" ,;:")
+    if _has(raw_app, r"\b(?:sistema|equipo|pc|computador(?:a)?|ordenador|system|computer|windows|todo|everything|musica|music)\b"):
+        return None
+    catalog = build_application_catalog_index(application_names)
+    keys = {_authenticated_close_key(form, catalog) for form, _ in _application_target_forms(raw_app)}
+    keys.discard(None)
+    if len(keys) != 1:
+        return None
+    key = next(iter(keys))
+    names = {name for name, entry_key in catalog.entries if entry_key == key}
+    if len(names) != 1:
+        return None
+    raw_amount = match.group("amount") or match.group("amount2")
+    amount = int(raw_amount) if raw_amount is not None else None
+    if amount is not None and not 1 <= amount <= 100:
+        return None
+    return (next(iter(names)), direction, amount)
+
+
+def _completed_missing_app_volume_request(
+    text: str, previous_user_text: str | None, available_operations: Iterable[str],
+    application_names: Iterable[str] | ApplicationCatalogIndex = (),
+) -> str | None:
+    """AUDIO1787 «subí el volumen de spotify» → «¿cuánto?» → «20»: the bare amount
+    answer completes the application volume request as «… en 20»."""
+
+    if not previous_user_text:
+        return None
+    answer = _strip_request_envelope(_fold(text)).strip()
+    found = re.fullmatch(
+        r"(?:(?:en|by|a|al|to|unos|unas|about)\s+)?(?P<amount>\d{1,3})\s*(?:%|por\s+ciento|percent|puntos?|points?)?[\s.!?]*",
+        answer,
+    )
+    if found is None:
+        return None
+    prior = resolve_explicit_clarification_intent(previous_user_text, available_operations, application_names)
+    if prior is None or prior.operations != ("audio.app.volume.adjust",) or prior.missing_fields != ("amount",):
+        return None
+    previous_folded = _strip_request_envelope(_fold(previous_user_text))
+    joiner = " by " if (_APP_VOLUME_ENGLISH.match(previous_folded) or _APP_VOLUME_ENGLISH_SPLIT.match(previous_folded)) else " en "
+    return previous_user_text.strip().rstrip(" .!?") + joiner + found.group("amount")
 
 # Señales de que se pregunta por el nivel actual de audio, no por cambiarlo.
 _AUDIO_LEVEL_CUE = (
@@ -16970,7 +17075,7 @@ def _deferred_clause_kind(clause: str, available: frozenset[str]) -> str | None:
     asked = resolve_explicit_clarification_intent(clause, available)
     if (
         asked is not None
-        and asked.operations == ("audio.volume.adjust",)
+        and asked.operations in {("audio.volume.adjust",), ("audio.app.volume.adjust",)}
         and asked.missing_fields == ("amount",)
     ):
         return "volume_amount"
@@ -17047,6 +17152,13 @@ def resolve_explicit_effects(
     if completed_level_request is not None:
         return resolve_explicit_effects(
             completed_level_request, available, application_names, game_catalog,
+        )
+    completed_app_volume_request = _completed_missing_app_volume_request(
+        text, previous_user_text, available, application_names,
+    )
+    if completed_app_volume_request is not None:
+        return resolve_explicit_effects(
+            completed_app_volume_request, available, application_names, game_catalog,
         )
     completed_music_request = _completed_missing_music_request(
         text, previous_user_text, available,
@@ -17893,6 +18005,12 @@ def resolve_explicit_effects(
         )
     ):
         return EffectIntent(("system.power",), (folded,))
+    if "audio.app.volume.adjust" in available:
+        app_volume = app_volume_request(text, authenticated_applications)
+        if app_volume is not None and app_volume[2] is not None:
+            # AUDIO1787 «subí el volumen de spotify en 20»: the application
+            # volume with its authored amount is one verified adjustment.
+            return EffectIntent(("audio.app.volume.adjust",), (folded,))
     if (
         len(clauses) <= 2
         and "audio.volume.adjust" in available

@@ -5719,6 +5719,13 @@ def _explicit_arguments_from_evidence(
     if operation == "audio.volume.adjust":
         return effect_intent._literal_volume_adjustment(folded)
 
+    if operation == "audio.app.volume.adjust":
+        # AUDIO1787: the application, direction and amount are the person's literal.
+        app_volume = effect_intent.app_volume_request(evidence, application_names)
+        if app_volume is None or app_volume[2] is None:
+            return None
+        return {"app": app_volume[0], "amount": app_volume[2], "direction": app_volume[1]}
+
     if operation == "audio.mute":
         false_pattern = (
             rf"\b(?:{effect_intent._UNMUTE_VERB}|reactiva|reactivar)\b|"
@@ -6710,6 +6717,7 @@ def _prepare_turn_result(
         else resolve_explicit_clarification_intent(
             objective,
             authenticated_operations,
+            application_names,
         )
     )
     missing_open_referent = (

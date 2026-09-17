@@ -683,6 +683,10 @@ _NATIVE_SELECTION_DESCRIPTION_SUFFIXES = {
         "Increase or decrease from the current output level by a relative "
         "amount; never use for an absolute target level."
     ),
+    "audio.app.volume.adjust": (
+        "Increase or decrease one application's own volume (its audio "
+        "sessions) by a relative amount; never the system volume."
+    ),
     "filesystem.sandbox.append.named": (
         "Append only to an existing file; never create or replace a file."
     ),
@@ -3489,6 +3493,9 @@ _CAUSE_FACT = {
     # MUSIC1753: the Spotify desktop client did not give a result to play.
     "spotify_exact_result_not_found": (
         "the Spotify search showed no result to play for that request, so nothing is playing"
+    ),
+    "app_audio_session_not_found": (
+        "the application has no audio session on the default output right now (it is not playing sound), so its volume could not be changed"
     ),
     "spotify_play_clicked_not_verified": (
         "the Spotify play control was pressed but the client did not start playing in time, so nothing verified is playing"
@@ -6409,6 +6416,7 @@ def _claims_the_target_was_open_before(folded: str) -> bool:
 # the composer re-reads the person's text with this closed set only.
 _DEFERRED_COMPOSE_OPERATIONS = (
     "system.time", "window.resolve", "audio.volume.adjust", "audio.volume",
+    "audio.app.volume.adjust",
 )
 _DEFERRED_QUESTION_WORDS = {
     "volume_amount": re.compile(
