@@ -1,0 +1,15 @@
+{
+  "schema": "c03-audio1791-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_completes_previous_request keeps such answers out of the unresolved-input clarifier) and src/baxy_mind/effect_intent.py (resumed objective with the trusted clarification prefix read as request plus answer), on top of the AUDIO1791 build.",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1791/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1791 (C03-repairs1791-build/BUILD_READY.json; mente)",
+  "cause_measured": "La App consume el objetivo pendiente antes de llamar a la mente y el número solo se clasificaba como ruido.",
+  "change": "Las respuestas que completan el pedido anterior no son entrada no resuelta; el objetivo reanudado se lee como pedido y respuesta; sin respuestas fijas.",
+  "measurement": "AUDIO1791: AUDIO1791: 5 ejecutados, 2 aprobados (límites), 3 fallidos, 0 créditos; la respuesta ya se decide como el ajuste pero los argumentos no se completan desde el pedido anterior y la App vuelve a preguntar; 0 créditos. AUDIO1791 sobre BUILD1791: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 aprobados",
+  "credits": 0
+}
