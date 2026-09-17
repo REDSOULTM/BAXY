@@ -7509,9 +7509,11 @@ def compose_visible_defect(
         return "extra_claim"
     if "muted" in observed_dict:
         muted = observed_dict.get("muted") is True
+        # MIC1813: «micrófono está silenciado» contains «no esta silenci»; the
+        # negation is a word, not the tail of «micrófono».
         unmuted_ok = re.search(
-            r"reactiv|unmuted|ya no está silenci|ya no esta silenci|"
-            r"no está silenci|no esta silenci|\bfalse\b|not muted|"
+            r"reactiv|unmuted|\bya no est[aá] silenci|"
+            r"\bno est[aá] silenci|\bfalse\b|not muted|"
             r"isn't muted|is not muted",
             folded,
         )
