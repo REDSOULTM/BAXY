@@ -1,0 +1,15 @@
+{
+  "schema": "c03-know1833-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "No source change: src/baxy_mind/__main__.py (overheard_speech clarification, DIALOGUE1513), built with KNOW1833, measured for this row.",
+  "patch": "artifacts/comprobaciones/C03/KNOW1833/SOURCE.patch",
+  "commits": [
+    "f3216caa18114d00e36462d151c2040c5aacbb21"
+  ],
+  "build": "BUILD1833 (C03-repairs1833-build/BUILD_READY.json; sin cambios (compilación de KNOW1833))",
+  "cause_measured": "La fila sólo tuvo pares de otra forma; la aclaración de habla ajena existente nunca se midió con variantes de su misma forma.",
+  "change": "Ninguno; medición de la aclaración de habla ajena con dos afirmaciones largas como variantes.",
+  "measurement": "KNOW1833: cinco casos en la compilación de WEB1831 (tres turnos ordinarios sin operaciones, dos límites ordinarios): tres aprobados (el literal y la variante en castellano recibieron la aclaración de habla ajena diseñada, «En eso no encuentro un pedido para mí; ¿necesitás algo?», sin operar ni responder lo dicho; el límite de significado) y dos fallidos (la variante en inglés repitió la afirmación en vez de la aclaración; el límite de no contestar dijo no haber entendido); 0 créditos. Causa medida: la aclaración de habla ajena no se produce en inglés (eco del habla admitido por el validador) y el pedido de no contestar se lee como incomprensión. Sin crédito: una sola variante aprobada. Siguiente: repetir con la aclaración en inglés reparada.",
+  "credits": 0
+}
