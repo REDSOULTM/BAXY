@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1771-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "No source change: src/Baxy.Providers.Windows/External/WindowsVisibleOcrLocator.cs (smaller print among duplicate labels, built with UI1771) measured on Epic.",
+  "patch": "artifacts/comprobaciones/C03/UI1771/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1771 (C03-repairs1771-build/BUILD_READY.json; sin cambios (compilación de UI1771))",
+  "cause_measured": "Con el launcher reabierto en la biblioteca, la etiqueta aparecía dos veces y el localizador OCR la declaraba no encontrada.",
+  "change": "Ninguno; medición de la regla de impresión menor sobre la compilación de UI1771.",
+  "measurement": "UI1771: UI1771: 5 ejecutados, 2 aprobados (límites), 3 fallidos, 0 créditos; causa medida: etiqueta duplicada con 14 px frente a 17 px fuera del umbral del 80 % y relanzamiento lento tras cierre forzado; 0 créditos. UI1771 sobre BUILD1769: 1 literal, 2 variantes, 2 límites; 2/5 aprobados; sonda OCR de la raíz: «Biblioteca» a 14 px y 17 px (0,82)",
+  "credits": 0
+}

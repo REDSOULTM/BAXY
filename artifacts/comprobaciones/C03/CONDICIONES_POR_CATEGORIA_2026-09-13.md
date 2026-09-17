@@ -1314,3 +1314,7 @@ Bibliotecas y fichas de juegos pasa de 4/6 a 4/6 con abrir Epic Games y navegar 
 ## Actualización 2026-09-17 (MUSIC1769)
 
 Música pasa de 35/39 a 37/39 con tocar una canción sin decir cuál (pregunta y reproducción de lo contestado) y poner un género en Spotify con revisión de la raíz; la obra clásica se reprodujo verificada pero su título largo no cupo en el final (commit 57f5250a, BUILD1769) (HEAD 57f5250a): MUSIC1769: 9 ejecutados, 8 aprobados, 1 fallido, 2 créditos (H0178 diálogo, H0552 género); H0163 reprodujo la sinfonía 1 verificada pero el compositor no citó el título largo (missing_name), 2 créditos. MUSIC1769 sobre BUILD1769: 3 literales, 4 variantes (2 en inglés), 2 límites; 8/9 aprobados; H0178 y H0552 con dos variantes aprobadas cada uno; H0163 fallido por final ausente
+
+## Actualización 2026-09-17 (UI1771)
+
+Bibliotecas y fichas de juegos pasa de 4/6 a 4/6 con abrir Epic Games y navegar hasta la biblioteca con un clic visible revisado: sin crédito, el launcher abre ya en la biblioteca y la etiqueta duplicada (14 px frente a 17 px) queda fuera del umbral del 80 %; relanzamiento tras cierre forzado más lento que la verificación de app.open (commit 20dc0889, BUILD1771) (HEAD 20dc0889): UI1771: 5 ejecutados, 2 aprobados (límites), 3 fallidos, 0 créditos; causa medida: etiqueta duplicada con 14 px frente a 17 px fuera del umbral del 80 % y relanzamiento lento tras cierre forzado, 0 créditos. UI1771 sobre BUILD1769: 1 literal, 2 variantes, 2 límites; 2/5 aprobados; sonda OCR de la raíz: «Biblioteca» a 14 px y 17 px (0,82)
