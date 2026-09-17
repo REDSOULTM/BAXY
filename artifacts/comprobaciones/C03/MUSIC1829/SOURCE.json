@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1829-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "No source change: src/baxy_mind/effect_intent.py and src/baxy_mind/__main__.py (named-browser music), built with MUSIC1829, measured again with the corrected allowed list.",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1829/SOURCE.patch",
+  "commits": [
+    "8cbf90a7130e2f49bf21bf8c1e22fa5a8b718f04"
+  ],
+  "build": "BUILD1829 (C03-repairs1829-build/BUILD_READY.json; sin cambios (compilación de MUSIC1829))",
+  "cause_measured": "La lista sellada de operaciones permitidas de MUSIC1829 incluyó la operación nominal de la aclaración, nunca ejecutada, y el adjudicador sellado no admitió los diálogos aprobados.",
+  "change": "Ninguno en el producto; lista permitida corregida en el instrumento.",
+  "measurement": "MUSIC1829: cinco casos en la compilación de MUSIC1827 con la lista permitida corregida (tres diálogos revisados en los perfiles propios de Chrome y Edge del producto, dos límites ordinarios), todos aprobados: el literal y las dos variantes preguntaron qué música sin operar y, con las respuestas guionizadas de la raíz (rock, jazz, lofi), propusieron browser.navigate.named al navegador nombrado con la URL de resultados de YouTube, la raíz la aprobó, la navegación se completó y se verificó por la postlectura CDP y los finales dijeron que abrieron esa búsqueda; los límites explicaron y reconocieron sin navegar; 1 créditos. Medido: aclaración de música en navegador nombrado y navegación revisada a los resultados de YouTube; H0352 acreditado con ambas variantes; «Música» 39/39 cerrada, 14/35 categorías cerradas. Siguiente: categoría por masa abierta según CONDICIONES (mensajería y vídeo pendientes de decisión del dueño; zip H0542; Epic H0578).",
+  "credits": 1
+}
