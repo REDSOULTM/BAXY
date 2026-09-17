@@ -1,3 +1,25 @@
+## ARRANGE1783 — estado vigente 2026-09-17T02:15:06.236421+00:00
+
+Parcial: 2 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 638/742 | 104 | 0 | >=522 | 12/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 522 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); ARRANGE1783 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: ARRANGE1783: 6 ejecutados, 2 aprobados, 4 fallidos, 0 créditos (índices []); Abrir aplicaciones 46/54. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/ARRANGE1783/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 85.45 s acumulados; pico GPU 3497.56 MiB; pico RAM 1666.90 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque ARRANGE1783 precedente. -->
+
 ## ARRANGE1781 — estado vigente 2026-09-17T02:08:15.486828+00:00
 
 Parcial: 2 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.

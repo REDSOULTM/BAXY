@@ -1,0 +1,15 @@
+{
+  "schema": "c03-arrange1783-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (_verified_dependency_identity_arguments merges the explicit literal arguments when the identity alone does not satisfy the schema), on top of the ARRANGE1783 build.",
+  "patch": "artifacts/comprobaciones/C03/ARRANGE1783/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1783 (C03-repairs1783-build/BUILD_READY.json; mente)",
+  "cause_measured": "El proyector determinista del paso copiaba sólo windowId y el modelo no producía el lado en castellano.",
+  "change": "El proyector completa los campos literales desde el lector de efectos antes de la extracción por modelo; sin respuestas fijas.",
+  "measurement": "ARRANGE1783: ARRANGE1783: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos; el proyector ya entrega el lado pero la tabla de alias de evidencia de enumeraciones no reconocía izquierda/derecha como left/right; 0 créditos. ARRANGE1783 sobre BUILD1783: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 aprobados",
+  "credits": 0
+}

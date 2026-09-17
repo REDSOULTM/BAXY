@@ -1338,3 +1338,7 @@ Música pasa de 37/39 a 38/39 con reproducir una obra nombrada en Spotify con re
 ## Actualización 2026-09-17 (ARRANGE1781)
 
 Organizar ventanas y pestañas pasa de 11/13 a 11/13 con colocar una aplicación nombrada en una mitad de la pantalla: la operación window.snap existe y se verificó en la variante en inglés, pero en castellano el paso quedó sin argumentos (el proyector determinista no copia el lado literal); sin crédito (commit 4b0cc30d, BUILD1781) (HEAD 4b0cc30d): ARRANGE1781: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos; window.snap verificada en la variante en inglés; en castellano el paso quedó sin argumentos (step_data_missing: el proyector determinista no copia el lado literal), 0 créditos. ARRANGE1781 sobre BUILD1781: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 aprobados
+
+## Actualización 2026-09-17 (ARRANGE1783)
+
+Organizar ventanas y pestañas pasa de 11/13 a 11/13 con colocar una aplicación nombrada en una mitad de la pantalla: el proyector ya entrega el lado, pero la validación de evidencia de enumeraciones no reconocía «izquierda»/«derecha» como left/right; verificado sólo en inglés; sin crédito (commit b8074ef4, BUILD1783) (HEAD b8074ef4): ARRANGE1783: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos; el proyector ya entrega el lado pero la tabla de alias de evidencia de enumeraciones no reconocía izquierda/derecha como left/right, 0 créditos. ARRANGE1783 sobre BUILD1783: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 aprobados
