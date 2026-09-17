@@ -1,3 +1,11 @@
+# ARRANGE1785 adjudicado — 2026-09-17T02:19:50.351585+00:00
+
+**639/742 cubiertos, 103 abiertos, 0 NA; 12/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40, Cerrar aplicaciones y ventanas 20/20, Red y Bluetooth 21/21); C03 formal 3/11. Registro SHA 592c4896373bcfc268fa67f874ad2ff6859e619300f5fd679c1283f09166bb25. Primeras altas 24 h >= 523 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 8dee706b con BUILD1785 (colocar una aplicación nombrada en una mitad de la pantalla es una operación verificada sobre su ventana). Turnos ordinarios sin operaciones.
+
+ARRANGE1785 («Organizar ventanas y pestañas», colocar una aplicación nombrada en una mitad de la pantalla ejecutado y verificado sobre su ventana (window.snap con lado literal en ambos idiomas); literal y dos variantes aprobados): ARRANGE1785: 5 ejecutados, 4 aprobados, 1 crédito (H0268 con dos variantes): window.snap coloca la ventana de Chrome en la mitad pedida con límites verificados; el límite de definición derivó a ventanas de edificios, 1 créditos. Adjudicación 4d3436d436a320db8fbec871cf0c5fc8aca8f419ab5f92d6666665c00b9aaeec. ARRANGE1785 sobre BUILD1785: 1 literal, 2 variantes (1 en inglés), 2 límites; 4/5 aprobados
+
+---
+
 # ARRANGE1783 adjudicado — 2026-09-17T02:15:06.236421+00:00
 
 **638/742 cubiertos, 104 abiertos, 0 NA; 12/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40, Cerrar aplicaciones y ventanas 20/20, Red y Bluetooth 21/21); C03 formal 3/11. Registro SHA 71d9cf3a2fa5b9086e41c16a1ade98b187af3a56f9ad807d9af3288a8bfba559. Primeras altas 24 h >= 522 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD b8074ef4 con BUILD1783 (colocar una aplicación nombrada en una mitad de la pantalla es una operación verificada sobre su ventana). Turnos ordinarios sin operaciones.

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-arrange1785-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/planner.py (_ENUM_EVIDENCE_ALIASES left/right with izquierda/derecha), on top of the ARRANGE1785 build.",
+  "patch": "artifacts/comprobaciones/C03/ARRANGE1785/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1785 (C03-repairs1785-build/BUILD_READY.json; mente)",
+  "cause_measured": "La tabla de alias de evidencia de enumeraciones no reconocía izquierda/derecha como left/right y el paso perdía sus argumentos en castellano.",
+  "change": "Alias de evidencia left/right en ambos idiomas; sin respuestas fijas.",
+  "measurement": "ARRANGE1785: ARRANGE1785: 5 ejecutados, 4 aprobados, 1 crédito (H0268 con dos variantes): window.snap coloca la ventana de Chrome en la mitad pedida con límites verificados; el límite de definición derivó a ventanas de edificios; 1 créditos. ARRANGE1785 sobre BUILD1785: 1 literal, 2 variantes (1 en inglés), 2 límites; 4/5 aprobados",
+  "credits": 1
+}

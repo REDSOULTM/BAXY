@@ -1342,3 +1342,7 @@ Organizar ventanas y pestañas pasa de 11/13 a 11/13 con colocar una aplicación
 ## Actualización 2026-09-17 (ARRANGE1783)
 
 Organizar ventanas y pestañas pasa de 11/13 a 11/13 con colocar una aplicación nombrada en una mitad de la pantalla: el proyector ya entrega el lado, pero la validación de evidencia de enumeraciones no reconocía «izquierda»/«derecha» como left/right; verificado sólo en inglés; sin crédito (commit b8074ef4, BUILD1783) (HEAD b8074ef4): ARRANGE1783: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos; el proyector ya entrega el lado pero la tabla de alias de evidencia de enumeraciones no reconocía izquierda/derecha como left/right, 0 créditos. ARRANGE1783 sobre BUILD1783: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 aprobados
+
+## Actualización 2026-09-17 (ARRANGE1785)
+
+Organizar ventanas y pestañas pasa de 11/13 a 12/13 con colocar una aplicación nombrada en una mitad de la pantalla ejecutado y verificado sobre su ventana (window.snap con lado literal en ambos idiomas); literal y dos variantes aprobados (commit 8dee706b, BUILD1785) (HEAD 8dee706b): ARRANGE1785: 5 ejecutados, 4 aprobados, 1 crédito (H0268 con dos variantes): window.snap coloca la ventana de Chrome en la mitad pedida con límites verificados; el límite de definición derivó a ventanas de edificios, 1 créditos. ARRANGE1785 sobre BUILD1785: 1 literal, 2 variantes (1 en inglés), 2 límites; 4/5 aprobados
