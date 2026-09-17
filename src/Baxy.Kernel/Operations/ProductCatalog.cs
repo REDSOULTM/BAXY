@@ -300,7 +300,10 @@ public static class ProductCatalog
             OperationRisks.LowReversible,
             "client.channel.locate.quick.switcher.uia.postread.v1",
             ToolExposure.Public,
-            "Busca un canal o chat por nombre en el buscador rápido del cliente de escritorio (Discord: Ctrl+K), lee las coincidencias por UI Automation y cierra el buscador sin unirse ni abrir nada; sin efecto."),
+            "Busca un canal o chat por nombre en el buscador rápido del cliente de escritorio (Discord: Ctrl+K), lee las coincidencias por UI Automation y cierra el buscador sin unirse ni abrir nada; sin efecto.",
+            // The locate is a post-read: it joins and opens nothing, so it verifies by its result
+            // (the matches read from the switcher), not by an observed external mutation.
+            requiresObservedEffect: false),
         Descriptor(
             "clipboard.copy",
             EmptySchema(),

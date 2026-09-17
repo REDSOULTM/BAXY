@@ -930,15 +930,26 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
         $cond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ClassNameProperty,'Chrome_WidgetWin_1')
         $w=$null;foreach($c in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){if($c.Current.Name -match 'Discord'){$w=$c;break}}
         if($null -eq $w){[pscustomobject]@{ok=$false;error='client_window_not_found'}|ConvertTo-Json -Compress;exit 2}
-        $h=[IntPtr]$w.Current.NativeWindowHandle;[void][BaxyClientWin]::ShowWindow($h,9);[void][BaxyClientWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 800
-        if([BaxyClientWin]::GetForegroundWindow() -ne $h){[pscustomobject]@{ok=$false;error='client_not_foreground'}|ConvertTo-Json -Compress;exit 3}
-        [System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 300
-        [System.Windows.Forms.SendKeys]::SendWait('^k');Start-Sleep -Milliseconds 1500
-        $escaped=[regex]::Replace($label,'([+^%~(){}\[\]])','{$1}')
-        [System.Windows.Forms.SendKeys]::SendWait($escaped);Start-Sleep -Milliseconds 3500
-        $items=@();$needle=$label.ToLowerInvariant()
-        foreach($e in $w.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)){$n=$e.Current.Name;if($n -and $e.Current.ControlType.ProgrammaticName -eq 'ControlType.ListItem' -and $n.ToLowerInvariant().Contains($needle)){$items+=$n.Substring(0,[Math]::Min(160,$n.Length))}}
-        [System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 400
+        $h=[IntPtr]$w.Current.NativeWindowHandle;[void][BaxyClientWin]::ShowWindow($h,9)
+        $escaped=[regex]::Replace($label,'([+^%~(){}\[\]])','{$1}');$needle=$label.ToLowerInvariant()
+        function Read-Items {param($win,$nd) $r=@();foreach($e in $win.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)){if($e.Current.ControlType.ProgrammaticName -eq 'ControlType.ListItem'){$n=$e.Current.Name;if($n -and $n.ToLowerInvariant().Contains($nd)){$r+=$n.Substring(0,[Math]::Min(160,$n.Length))}}};,$r}
+        # The product and its console compete for the foreground while this runs; a lost focus can drop the
+        # keystrokes. Retry the whole focus+switcher+type+read sequence, re-asserting the foreground each round
+        # and confirming it held, until the switcher shows matches; nothing is joined or opened.
+        $items=@();$foreground=$false
+        for($round=0;$round -lt 5 -and $items.Count -eq 0;$round++){
+          [void][BaxyClientWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 500
+          if([BaxyClientWin]::GetForegroundWindow() -ne $h){Start-Sleep -Milliseconds 400;continue}
+          $foreground=$true
+          [System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 250
+          [void][BaxyClientWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 150
+          [System.Windows.Forms.SendKeys]::SendWait('^k');Start-Sleep -Milliseconds 1400
+          if([BaxyClientWin]::GetForegroundWindow() -ne $h){[System.Windows.Forms.SendKeys]::SendWait('{ESC}');continue}
+          [System.Windows.Forms.SendKeys]::SendWait($escaped);Start-Sleep -Milliseconds 900
+          for($poll=0;$poll -lt 10 -and $items.Count -eq 0;$poll++){$items=Read-Items $w $needle;if($items.Count -gt 0){break};Start-Sleep -Milliseconds 500}
+          [System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 300
+        }
+        if(-not $foreground){[pscustomobject]@{ok=$false;error='client_not_foreground'}|ConvertTo-Json -Compress;exit 3}
         [pscustomobject]@{ok=$true;window=$w.Current.Name;items=@($items)}|ConvertTo-Json -Compress
         """;
 
