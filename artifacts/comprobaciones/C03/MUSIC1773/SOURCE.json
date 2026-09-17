@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1773-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/SpotifyDesktopAutomation.ps1 (console output encoding UTF-8 before emitting the JSON), src/Baxy.Providers.Windows/External/WindowsVisibleOcrLocator.cs (the smaller print wins among duplicate labels with a 5 % margin) and src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs (app.open waits up to 30 s for the launched window), on top of the MUSIC1773 build.",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1773/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1773 (C03-repairs1773-build/BUILD_READY.json; proveedor)",
+  "cause_measured": "El script de Spotify emitía la página de códigos de la consola mientras el adaptador decodifica UTF-8: los títulos con tildes llegaban corruptos y ningún final podía citarlos.",
+  "change": "Codificación de salida UTF-8 en el script de automatización de Spotify; margen del 5 % entre impresiones duplicadas en el OCR; espera de hasta 30 s de la ventana en app.open; sin cambios en la mente ni respuestas fijas.",
+  "measurement": "MUSIC1773: MUSIC1773: 5 ejecutados, 4 aprobados, 1 fallido, 0 créditos; el título llega íntegro (UTF-8) y las variantes lo citan; el literal sigue sin final porque la pista de reintento no entrega el título a las consultas de Spotify; tres casos reejecutados tras un rechazo de RAM del runner; 0 créditos. MUSIC1773 sobre BUILD1773: 1 literal, 2 variantes (1 en inglés), 2 límites; 4/5 aprobados; literal sin final (missing_name en cada reintento)",
+  "credits": 0
+}
