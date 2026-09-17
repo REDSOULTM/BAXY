@@ -30,7 +30,7 @@ Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
 
 Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 529 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); PIP1821 añade 1. No se cuentan revalidaciones.
 
-Siguiente acción: PIP1821: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Abrir aplicaciones 51/54. Siguiente: categoría por masa abierta según CONDICIONES.
+Siguiente acción: PIP1821: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Instalar y desinstalar software 28/31. Siguiente: categoría por masa abierta según CONDICIONES.
 
 Evidencia: `artifacts/comprobaciones/C03/PIP1821/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
 
@@ -52,7 +52,7 @@ Parcial: 4 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.
 
 Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 529 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); PIP1819 añade 0. No se cuentan revalidaciones.
 
-Siguiente acción: PIP1819: 5 ejecutados, 4 aprobados, 1 fallidos, 0 créditos (índices []); Abrir aplicaciones 50/54. Siguiente: categoría por masa abierta según CONDICIONES.
+Siguiente acción: PIP1819: 5 ejecutados, 4 aprobados, 1 fallidos, 0 créditos (índices []); Instalar y desinstalar software 27/31. Siguiente: categoría por masa abierta según CONDICIONES.
 
 Evidencia: `artifacts/comprobaciones/C03/PIP1819/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
 
@@ -74,7 +74,7 @@ Parcial: 3 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.
 
 Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 529 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); PIP1817 añade 0. No se cuentan revalidaciones.
 
-Siguiente acción: PIP1817: 5 ejecutados, 3 aprobados, 2 fallidos, 0 créditos (índices []); Abrir aplicaciones 50/54. Siguiente: categoría por masa abierta según CONDICIONES.
+Siguiente acción: PIP1817: 5 ejecutados, 3 aprobados, 2 fallidos, 0 créditos (índices []); Instalar y desinstalar software 27/31. Siguiente: categoría por masa abierta según CONDICIONES.
 
 Evidencia: `artifacts/comprobaciones/C03/PIP1817/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
 
