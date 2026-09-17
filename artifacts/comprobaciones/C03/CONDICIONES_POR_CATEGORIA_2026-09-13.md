@@ -1350,3 +1350,7 @@ Organizar ventanas y pestañas pasa de 11/13 a 12/13 con colocar una aplicación
 ## Actualización 2026-09-17 (AUDIO1787)
 
 Música pasa de 38/39 a 38/39 con subir o bajar el volumen propio de una aplicación nombrada: la operación y la pregunta existen, pero la respuesta numérica sola es rechazada por la App antes de la mente (guardia de selección de nota sin contexto); sin crédito (commit ce9f3909, BUILD1787) (HEAD ce9f3909): AUDIO1787: 5 ejecutados, 2 aprobados (límites), 3 fallidos, 0 créditos; las tres preguntas se publicaron y la App rechazó la respuesta numérica sola antes de la mente (guardia de selección de nota sin contexto), 0 créditos. AUDIO1787 sobre BUILD1787: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 aprobados
+
+## Actualización 2026-09-17 (AUDIO1789)
+
+Música pasa de 38/39 a 38/39 con subir o bajar el volumen propio de una aplicación nombrada: la respuesta numérica ya llega a la mente, pero se clasifica como entrada no resuelta porque la App consumió su objetivo pendiente antes de la llamada; sin crédito (commit 2cf20459, BUILD1789) (HEAD 2cf20459): AUDIO1789: 5 ejecutados, 2 aprobados (límites), 3 fallidos, 0 créditos; el número llega a la mente pero se clasifica como entrada no resuelta porque la App consumió su objetivo pendiente (pendingClarification=false) antes de la llamada, 0 créditos. AUDIO1789 sobre BUILD1789: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 aprobados

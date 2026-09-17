@@ -1,0 +1,15 @@
+{
+  "schema": "c03-audio1789-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/MainWindowViewModel.cs (a bare numeric reply is contextless only when no mind clarification is pending), on top of the AUDIO1789 build.",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1789/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1789 (C03-repairs1789-build/BUILD_READY.json; App)",
+  "cause_measured": "La App trataba la respuesta numérica sola como una selección de nota sin contexto y la rechazaba antes de la mente.",
+  "change": "Un número solo responde a la aclaración pendiente de la mente; sin respuestas fijas.",
+  "measurement": "AUDIO1789: AUDIO1789: 5 ejecutados, 2 aprobados (límites), 3 fallidos, 0 créditos; el número llega a la mente pero se clasifica como entrada no resuelta porque la App consumió su objetivo pendiente (pendingClarification=false) antes de la llamada; 0 créditos. AUDIO1789 sobre BUILD1789: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 aprobados",
+  "credits": 0
+}
