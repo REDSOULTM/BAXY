@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1827-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (named-browser music reader, clarification guard, answer completion, resolver hook) and src/baxy_mind/__main__.py (YouTube results URL and answer-turn argument binding), on top of the MUSIC1827 build.",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1827/SOURCE.patch",
+  "commits": [
+    "8cbf90a7130e2f49bf21bf8c1e22fa5a8b718f04"
+  ],
+  "build": "BUILD1827 (C03-repairs1827-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "Ningún lector resolvía abrir un navegador y poner música sin título; la forma en inglés caía en una misión abrir + reproducir con la palabra música como consulta.",
+  "change": "Aclaración de música para el navegador nombrado, respuesta completada como música en ese navegador y navegación revisada a los resultados de YouTube; sin respuestas fijas.",
+  "measurement": "MUSIC1827: cinco casos en BUILD1827 (tres diálogos revisados en los perfiles propios de Chrome y Edge del producto, dos límites ordinarios): el producto se comportó como se esperaba en los tres diálogos (preguntó qué música; con rock, jazz y lofi propuso browser.navigate.named al navegador nombrado con la URL de resultados de YouTube, la raíz la aprobó, la navegación se completó y se verificó por la postlectura CDP y los finales lo dijeron), pero la lista sellada de operaciones permitidas incluyó media.play.query (operación nominal de la aclaración, nunca ejecutada) y el adjudicador sellado sólo admite un diálogo aprobado que ejecute exactamente todas las permitidas: los tres se registran como fallidos por instrumento; los dos límites aprobados; 0 créditos. Causa medida: instrumento sellado con una operación permitida excedente; el producto es correcto. Sin crédito. Siguiente: MUSIC1829 sobre la misma compilación con la lista permitida corregida (memory.status y browser.navigate.named).",
+  "credits": 0
+}

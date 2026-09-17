@@ -1,3 +1,25 @@
+## MUSIC1827 — estado vigente 2026-09-17T07:11:26.282520+00:00
+
+Parcial: 2 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 648/742 | 94 | 0 | >=532 | 13/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 532 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1827 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: MUSIC1827: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos (índices []); Música 38/39. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1827/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 107.55 s acumulados; pico GPU 3497.56 MiB; pico RAM 2573.22 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1827 precedente. -->
+
 ## STEAM1825 — estado vigente 2026-09-17T06:44:12.477082+00:00
 
 Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
