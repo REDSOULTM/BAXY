@@ -1,0 +1,15 @@
+{
+  "schema": "c03-arrange1781-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (window.snap descriptor), src/Baxy.Providers.Windows/Windows/WindowsWindowControlProvider.cs and WindowControlContracts.cs (SnapAsync, monitor work area), src/Baxy.Core/Operations/WindowControlHandlers.cs (handler), src/Baxy.Kernel/Planning/MissionPlanProposal.cs and src/Baxy.App/PlannerExecutionSupport.cs (dependency lists), src/baxy_mind/effect_intent.py (_authenticated_application_snap_target, resolve_application_snap), src/baxy_mind/__main__.py (arguments) and src/baxy_mind/planner.py (prerequisites), on top of the ARRANGE1781 build.",
+  "patch": "artifacts/comprobaciones/C03/ARRANGE1781/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1781 (C03-repairs1781-build/BUILD_READY.json; producto y mente)",
+  "cause_measured": "No existía una operación que colocara una ventana en una mitad de la pantalla ni un lector que leyera «a la izquierda» sobre una aplicación nombrada.",
+  "change": "Operación window.snap (mitad izquierda o derecha del área de trabajo, límites verificados) y lector de colocar por nombre de aplicación; sin respuestas fijas.",
+  "measurement": "ARRANGE1781: ARRANGE1781: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos; window.snap verificada en la variante en inglés; en castellano el paso quedó sin argumentos (step_data_missing: el proyector determinista no copia el lado literal); 0 créditos. ARRANGE1781 sobre BUILD1781: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 aprobados",
+  "credits": 0
+}

@@ -1334,3 +1334,7 @@ Música pasa de 37/39 a 37/39 con reproducir una obra nombrada en Spotify con re
 ## Actualización 2026-09-17 (MUSIC1779)
 
 Música pasa de 37/39 a 38/39 con reproducir una obra nombrada en Spotify con revisión de la raíz citando el título observado entero aunque sea largo y lleve comillas interiores; literal y dos variantes aprobados (commit eacdfa6a, BUILD1779) (HEAD eacdfa6a): MUSIC1779: 5 ejecutados, 5 aprobados, 1 crédito (H0163 con dos variantes): el final cita el título observado entero, con sus comillas interiores y sin barras invertidas, 1 créditos. MUSIC1779 sobre BUILD1779: 1 literal, 2 variantes (1 en inglés), 2 límites; 5/5 aprobados
+
+## Actualización 2026-09-17 (ARRANGE1781)
+
+Organizar ventanas y pestañas pasa de 11/13 a 11/13 con colocar una aplicación nombrada en una mitad de la pantalla: la operación window.snap existe y se verificó en la variante en inglés, pero en castellano el paso quedó sin argumentos (el proyector determinista no copia el lado literal); sin crédito (commit 4b0cc30d, BUILD1781) (HEAD 4b0cc30d): ARRANGE1781: 5 ejecutados, 2 aprobados, 3 fallidos, 0 créditos; window.snap verificada en la variante en inglés; en castellano el paso quedó sin argumentos (step_data_missing: el proyector determinista no copia el lado literal), 0 créditos. ARRANGE1781 sobre BUILD1781: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 aprobados
