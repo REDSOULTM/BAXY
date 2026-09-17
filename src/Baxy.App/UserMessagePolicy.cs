@@ -604,6 +604,11 @@ internal static class UserMessagePolicy
             // en el saludo sí lo es.
             ("knowledge_not_answered",
                 !hasRequiredInput && LooksLikeKnowledgeQuestion(user)
+                // KNOW1833: a long declarative statement («…, that is why pipes
+                // burst in winter, at least that is what they told me.») carries
+                // ask words that lead no clause; the mind's overheard-speech
+                // clarification asks, and that question is not an unanswered ask.
+                && !IsLongDeclarativeStatement(user)
                 && (IsGreetingOnly(reply)
                     || (StartsWithGreeting(reply) && GreetingRemainder(userText) is null)
                     || reply.Contains('?', StringComparison.Ordinal)
@@ -1102,6 +1107,45 @@ internal static class UserMessagePolicy
 
     private static bool LooksLikeKnowledgeQuestion(string user) =>
         ContainsAny(user, UserMessagePhrases.KnowledgeAsks);
+
+    /// <summary>
+    /// A long statement with no question mark whose knowledge-ask words never
+    /// lead a clause («that is why…», «what they told me»): overheard or thought
+    /// aloud, not a question to answer.
+    /// </summary>
+    private static bool IsLongDeclarativeStatement(string user)
+    {
+        if (user.Contains('?', StringComparison.Ordinal) || user.Contains('¿', StringComparison.Ordinal))
+        {
+            return false;
+        }
+        int words = user.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
+        if (words < 15)
+        {
+            return false;
+        }
+        foreach (string ask in UserMessagePhrases.KnowledgeAsks)
+        {
+            int index = user.IndexOf(ask, StringComparison.Ordinal);
+            while (index >= 0)
+            {
+                string before = user[..index].TrimEnd();
+                if (before.Length == 0 || ".,;:!(".Contains(before[^1]))
+                {
+                    return false;
+                }
+                int space = before.LastIndexOf(' ');
+                string lead = space >= 0 ? before[(space + 1)..] : before;
+                if (lead is "y" or "e" or "o" or "pero" or "and" or "or" or "but" or "decime" or "dime" or "contame"
+                    or "cuentame" or "explicame" or "explica" or "sabes" or "sabe" or "explain" or "know" or "baxy" or "me")
+                {
+                    return false;
+                }
+                index = user.IndexOf(ask, index + 1, StringComparison.Ordinal);
+            }
+        }
+        return true;
+    }
 
     /// <summary>
     /// Greeting heads recognized on both sides of the boundary. The Python
