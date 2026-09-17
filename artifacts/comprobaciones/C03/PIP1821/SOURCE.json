@@ -1,0 +1,15 @@
+{
+  "schema": "c03-pip1821-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (observed identifier exempt from the initial-capital rule), on top of the PIP1821 build.",
+  "patch": "artifacts/comprobaciones/C03/PIP1821/SOURCE.patch",
+  "commits": [
+    "b4cbfc205362a73eaadf340683c7f027eaf42493"
+  ],
+  "build": "BUILD1821 (C03-repairs1821-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "La regla de mayúscula inicial vetaba un final verdadero que empieza con el identificador del paquete observado.",
+  "change": "Exención del identificador observado al inicio del final; sin respuestas fijas.",
+  "measurement": "PIP1821: cinco casos en BUILD1821 (tres turnos ordinarios de paquete con pip, dos límites ordinarios), todos aprobados: el literal y las dos variantes ejecutaron software.python.package.status (pip show en los tres Python registrados, nada instalado) con recibo verificado y los finales dijeron, desde las listas partidas, en qué Python está instalado el paquete con su versión, en cuál no y en cuál no hay pip; el final puede empezar con el nombre del paquete tal cual; los límites explicaron y reconocieron sin leer; 1 créditos. Medido: proyección partida, comprobación de estado y exención del identificador observado efectivas; H0052 acreditado con ambas variantes; «Abrir aplicaciones» 51/54. Siguiente: categoría por masa abierta según CONDICIONES (título aproximado de Steam H0571; pendrive H0733; abrí chrome y poné música H0352).",
+  "credits": 1
+}
