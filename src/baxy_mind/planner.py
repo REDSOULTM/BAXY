@@ -99,6 +99,10 @@ _ENUM_EVIDENCE_ALIASES = {
         "archivos",
         "carpetas conocidas",
     ),
+    # ARRANGE1783 «poné chrome a la izquierda»: the side of window.snap is the
+    # person's word in either language.
+    "left": ("left", "izquierda", "izquierdo"),
+    "right": ("right", "derecha", "derecho"),
     "desktop": ("desktop", "escritorio"),
     "documents": ("documents", "documentos"),
     "downloads": (
