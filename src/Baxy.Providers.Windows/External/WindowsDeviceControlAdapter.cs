@@ -269,7 +269,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     public bool CanHandle(string operation) => operation is
         "bluetooth.device.list" or "bluetooth.device.pair"
         or "bluetooth.radio.set" or "bluetooth.radio.status"
-        or "display.status" or "software.python.status" or "software.python.package.status" or "storage.removable.list" or "calculator.expression.evaluate"
+        or "display.status" or "software.python.status" or "software.python.package.status" or "storage.removable.list" or "client.channel.locate" or "calculator.expression.evaluate"
         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
         or "wifi.profile.list" or "wifi.radio.set" or "wifi.radio.status" or "wifi.scan" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
         or "wifi.ensure.connected" or "wifi.status"
@@ -294,6 +294,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 "display.status" => DisplayStatus(operation),
                 "software.python.status" => PythonStatus(operation),
                 "storage.removable.list" => RemovableStorageList(operation),
+                "client.channel.locate" => await ClientChannelLocateAsync(operation, arguments, cancellationToken),
                 "software.python.package.status" => await PythonPackageStatusAsync(operation, arguments, cancellationToken),
                 "calculator.expression.evaluate" => await CalculatorEvaluateAsync(
                     operation, arguments, effectBoundary, cancellationToken),
@@ -912,6 +913,103 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             }
             writer.WriteEndArray();
             writer.WriteString("authority", "windows_driveinfo_removable_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    // DISCORD1839 «ve a Cotele en Discord»: the channel is looked up in the
+    // client's quick switcher (Ctrl+K), its matches read by UI Automation and
+    // the switcher closed with Escape; nothing is joined or opened.
+    private const string ClientChannelLocateScript = """
+        $ErrorActionPreference='Stop';$label=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]))
+        Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes;Add-Type -AssemblyName System.Windows.Forms
+        $sig='using System;using System.Runtime.InteropServices;public static class BaxyClientWin{[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h,int c);}'
+        if(-not ([System.Management.Automation.PSTypeName]'BaxyClientWin').Type){Add-Type -TypeDefinition $sig}
+        $root=[System.Windows.Automation.AutomationElement]::RootElement
+        $cond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ClassNameProperty,'Chrome_WidgetWin_1')
+        $w=$null;foreach($c in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){if($c.Current.Name -match 'Discord'){$w=$c;break}}
+        if($null -eq $w){[pscustomobject]@{ok=$false;error='client_window_not_found'}|ConvertTo-Json -Compress;exit 2}
+        $h=[IntPtr]$w.Current.NativeWindowHandle;[void][BaxyClientWin]::ShowWindow($h,9);[void][BaxyClientWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 800
+        if([BaxyClientWin]::GetForegroundWindow() -ne $h){[pscustomobject]@{ok=$false;error='client_not_foreground'}|ConvertTo-Json -Compress;exit 3}
+        [System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 300
+        [System.Windows.Forms.SendKeys]::SendWait('^k');Start-Sleep -Milliseconds 1500
+        $escaped=[regex]::Replace($label,'([+^%~(){}\[\]])','{$1}')
+        [System.Windows.Forms.SendKeys]::SendWait($escaped);Start-Sleep -Milliseconds 3500
+        $items=@();$needle=$label.ToLowerInvariant()
+        foreach($e in $w.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)){$n=$e.Current.Name;if($n -and $e.Current.ControlType.ProgrammaticName -eq 'ControlType.ListItem' -and $n.ToLowerInvariant().Contains($needle)){$items+=$n.Substring(0,[Math]::Min(160,$n.Length))}}
+        [System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 400
+        [pscustomobject]@{ok=$true;window=$w.Current.Name;items=@($items)}|ConvertTo-Json -Compress
+        """;
+
+    private static readonly Regex ClientChannelName = new(
+        @"^[\p{L}\p{N} ._'!?#&-]{1,120}$",
+        RegexOptions.CultureInvariant);
+
+    private async ValueTask<ExternalCapabilityReceipt> ClientChannelLocateAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken token)
+    {
+        string client = ExternalJson.RequiredString(arguments, "client").Trim();
+        string name = ExternalJson.RequiredString(arguments, "name").Trim();
+        if (client != "discord")
+        {
+            return ExternalJson.Failure(operation, "client_not_supported");
+        }
+        if (!ClientChannelName.IsMatch(name))
+        {
+            return ExternalJson.Failure(operation, "channel_name_invalid");
+        }
+        ExternalProcessResult process = await RunPowerShellAsync(ClientChannelLocateScript, [Encode(name)], token);
+        using JsonDocument document = ParseLastJson(process.Output);
+        JsonElement root = document.RootElement;
+        if (root.ValueKind != JsonValueKind.Object)
+        {
+            return ExternalJson.Failure(operation, "client_quick_switcher_not_read", true);
+        }
+        if (!Bool(root, "ok"))
+        {
+            string code = root.TryGetProperty("error", out JsonElement error) && error.ValueKind == JsonValueKind.String
+                ? error.GetString() ?? "client_quick_switcher_not_read"
+                : "client_quick_switcher_not_read";
+            return ExternalJson.Failure(operation, code, code == "client_quick_switcher_not_read");
+        }
+        var items = new List<string>();
+        if (root.TryGetProperty("items", out JsonElement itemsElement) && itemsElement.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement item in itemsElement.EnumerateArray())
+            {
+                if (item.ValueKind == JsonValueKind.String && !string.IsNullOrWhiteSpace(item.GetString()))
+                {
+                    items.Add(item.GetString()!);
+                }
+            }
+        }
+        string channelName = string.Empty, channelKind = string.Empty, server = string.Empty;
+        if (items.Count > 0)
+        {
+            string[] parts = items[0].Split(", ", StringSplitOptions.TrimEntries);
+            channelName = parts[0];
+            string kind = parts.Length > 1 ? parts[1].ToLowerInvariant() : string.Empty;
+            channelKind = kind.Contains("voz", StringComparison.Ordinal) || kind.Contains("voice", StringComparison.Ordinal) ? "voice"
+                : kind.Contains("texto", StringComparison.Ordinal) || kind.Contains("text", StringComparison.Ordinal) ? "text"
+                : kind.Length > 0 ? kind : "unknown";
+            server = parts.Length > 2 ? parts[2] : string.Empty;
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("client", client);
+            writer.WriteString("query", name);
+            writer.WriteBoolean("found", items.Count > 0);
+            writer.WriteNumber("matchCount", items.Count);
+            writer.WriteString("channelName", channelName);
+            writer.WriteString("channelKind", channelKind);
+            writer.WriteString("server", server);
+            writer.WriteBoolean("joined", false);
+            writer.WriteString("authority", "client_quick_switcher_uia_read");
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);

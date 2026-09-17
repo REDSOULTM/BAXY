@@ -4509,6 +4509,23 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             "Explain the finding briefly and naturally in the person's language."
         )
     if (
+        situation.get("operation") == "client.channel.locate"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+    ):
+        # DISCORD1839: the channel was located in the client's quick switcher and
+        # NOT joined; the person decides.
+        bits.append(
+            "This result looked the place up in the desktop client's quick switcher and "
+            "did NOT join or open it: seen.found says whether a match exists, "
+            "seen.channelName its exact name, seen.channelKind voice or text, seen.server "
+            "the server it belongs to, seen.joined is false. If seen.found is true, say in "
+            "one or two sentences, in the person's language, that you found that channel "
+            "(exact name, kind, server) in the client and ASK whether they want you to join "
+            "it; you did not join. If seen.found is false, say you did not find a channel or "
+            "chat with that name in the client. Never say you joined, entered or opened it."
+        )
+    if (
         situation.get("operation") == "message.draft"
         and situation.get("verified") is True
         and situation.get("succeeded") is True
@@ -7299,6 +7316,19 @@ def compose_visible_defect(
         failure_assertions = re.sub(
             finding_predicate, "", _accent_folded_with_punctuation(stripped),
         )
+    if (
+        kind == "operation"
+        and situation.get("operation") == "client.channel.locate"
+        and polarity == "success"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+    ):
+        # DISCORD1839: nothing was joined; a final that says it joined invents it.
+        folded_reply = _accent_folded_with_punctuation(stripped)
+        claims_joined = re.search(r"\b(?:me\s+uni|me\s+he\s+unido|nos\s+unimos|joined|entre\s+(?:a|al)\b|estoy\s+en\s+el\s+canal|ya\s+estoy|te\s+uni)\b", folded_reply)
+        negated_join = re.search(r"\b(?:no|not|sin|didn't|did\s+not|without|todavia\s+no|aun\s+no)\s+(?:\w+\s+){0,2}(?:uni\w*|unir\w*|join\w*|entr\w*)\b", folded_reply)
+        if claims_joined is not None and negated_join is None:
+            return "joined_claimed"
     if (
         kind == "operation"
         and situation.get("operation") == "message.draft"
@@ -15381,6 +15411,11 @@ class LlmRuntime:
                 f"{', '.join(required_words) or 'confirmar, cancelar'}."
             ),
             "wrong_language": "Same language as the request.",
+            "joined_claimed": (
+                "You did NOT join or open the channel: say you found it and ask whether the person wants you to join; never say you joined or entered."
+                if response_language == "en"
+                else "NO te uniste ni abriste el canal: di que lo encontraste y pregunta si la persona quiere que te unas; nunca digas que te uniste o entraste."
+            ),
             "draft_claimed_sent": (
                 "The message was only left written in the chat and was NOT sent: say you left it written and did not send it, so the person can send it; never say it was sent or delivered."
                 if response_language == "en"

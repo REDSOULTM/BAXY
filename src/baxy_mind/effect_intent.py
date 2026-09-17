@@ -1248,6 +1248,34 @@ _MSG_DRAFT_PATTERNS = tuple(
 )
 
 
+def client_channel_request(text: str) -> tuple[str, str] | None:
+    """DISCORD1839 «ve a Cotele en Discord», «Go to Cotele in Discord», «Andá al canal
+    Cotele en Discord»: the client and the place named by a go-to order scoped to a
+    messaging client; the channel is located and the person asked before joining."""
+
+    folded = _strip_request_envelope(_fold(text)).strip()
+    found = re.fullmatch(
+        r"[¿?¡!\s]*(?:(?:por\s+favor|please)[,]?\s+)?"
+        r"(?:(?:en|in|on)\s+(?P<client_a>" + _NAVIGATION_CLIENT + r")[,]?\s+)?"
+        r"(?:ve|anda|andate|entra|entrale|metete|navega|llevame|go|navigate|switch|cambia|cambiate|take\s+me)\s+"
+        r"(?:a(?:l)?|to|hacia|into)\s+(?:(?:el|la|the)\s+)?(?:(?:canal|channel|chat|sala|room)\s+(?:de\s+(?:voz|texto)\s+)?(?:de\s+)?)?"
+        r"(?P<place>\S.{0,60}?)"
+        r"(?:\s+(?:en|in|on|de|del|of)\s+(?:el\s+)?(?P<client_b>" + _NAVIGATION_CLIENT + r"))?"
+        r"(?:\s+(?:por\s+favor|please))?[\s.!?]*",
+        folded,
+    )
+    if found is None:
+        return None
+    client = found.group("client_a") or found.group("client_b")
+    place = found.group("place").strip(" \"'«»")
+    if client is None or not place or _has(place, r"https?://|\b(?:[a-z0-9-]+\.)+[a-z]{2,63}\b"):
+        return None
+    raw = _strip_request_envelope(text).strip()
+    start = _fold(raw).find(place)
+    literal = raw[start:start + len(place)] if start >= 0 and len(_fold(raw)) == len(raw) else place
+    return client, literal.strip(" \"'«».!?")
+
+
 def message_draft_request(text: str) -> tuple[str, str, str] | None:
     """MSG1837 (owner decision 2026-09-17): a message for a named chat in a named
     desktop client (WhatsApp or Discord) is LEFT WRITTEN in the client's composer
@@ -10906,6 +10934,7 @@ def _is_direct_request(text: str) -> bool:
         or _removable_storage_request(text)
         or _research_question_query(text) is not None
         or message_draft_request(text) is not None
+        or client_channel_request(text) is not None
     ):
         return True
     request_head = (
@@ -17467,6 +17496,10 @@ def resolve_explicit_effects(
         # MUSIC1827 «open Edge and play some music»: which music is asked first
         # (clarification), not an open-and-play mission with «some music».
         return None
+    channel_request = client_channel_request(text)
+    if "client.channel.locate" in available and channel_request is not None and channel_request[0] == "discord":
+        # DISCORD1839: the channel is located and the person asked before any join.
+        return EffectIntent(("client.channel.locate",), (text,))
     if "message.draft" in available and message_draft_request(text) is not None:
         # MSG1837: the message is left written in the named client, never sent.
         return EffectIntent(("message.draft",), (text,))

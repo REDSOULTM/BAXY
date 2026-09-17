@@ -290,6 +290,18 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Captura el escritorio virtual en un BMP privado y devuelve solo identidad, dimensiones y hash."),
         Descriptor(
+            "client.channel.locate",
+            Schema(
+                [
+                    String("client", values: ["discord"]),
+                    String("name", maximumUtf8Bytes: 256, nonWhitespace: true),
+                ],
+                ["client", "name"]),
+            OperationRisks.LowReversible,
+            "client.channel.locate.quick.switcher.uia.postread.v1",
+            ToolExposure.Public,
+            "Busca un canal o chat por nombre en el buscador rápido del cliente de escritorio (Discord: Ctrl+K), lee las coincidencias por UI Automation y cierra el buscador sin unirse ni abrir nada; sin efecto."),
+        Descriptor(
             "clipboard.copy",
             EmptySchema(),
             OperationRisks.PrivacySensitive,

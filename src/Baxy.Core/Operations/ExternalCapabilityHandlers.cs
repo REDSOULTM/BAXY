@@ -24,6 +24,7 @@ internal static class ExternalCapabilityHandlers
         "calculator.expression.evaluate",
         "calendar.event.create",
         "calendar.event.list",
+        "client.channel.locate",
         "clipboard.copy",
         "clipboard.paste",
         "display.status",

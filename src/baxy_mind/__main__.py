@@ -4983,6 +4983,11 @@ def _explicit_arguments_from_evidence(
         ) or resolve_application_installed_name(evidence, application_names)
         return {"name": name} if name is not None else None
 
+    if operation == "client.channel.locate":
+        # DISCORD1839: the client and the place are the person's literal.
+        located = effect_intent.client_channel_request(evidence)
+        return {"client": located[0], "name": located[1]} if located is not None else None
+
     if operation == "message.draft":
         # MSG1837: channel, recipient and text are the person's literal.
         draft = effect_intent.message_draft_request(evidence)
@@ -5983,6 +5988,7 @@ def _ground_explicit_arguments(
         "browser.navigate",
         "browser.navigate.named",
         "calendar.event.list",
+        "client.channel.locate",
         "message.draft",
         "game.launch",
         "media.control",
