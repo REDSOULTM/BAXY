@@ -1,0 +1,15 @@
+{
+  "schema": "c03-chrometabs1843-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs, src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs (browser.control close_all: close every page target of the product own CDP browser, verify none remain), src/baxy_mind/effect_intent.py (reader, resolver hook, gate, narrowed limit), src/baxy_mind/__main__.py (argument binding), src/baxy_mind/llm.py (past-tense lens), on top of the KNOW1835 build.",
+  "patch": "artifacts/comprobaciones/C03/CHROMETABS1843/SOURCE.patch",
+  "commits": [
+    "42b69b0e2524c57831bb8f7a505bab5c17fdff81"
+  ],
+  "build": "BUILD1843 (C03-repairs1843-build/BUILD_READY.json; Kernel, proveedor y mente)",
+  "cause_measured": "Ningun camino cerraba todas las pestanas: el catalogo solo cerraba la pagina CDP actual (close) y el pedido de todas las pestanas era un limite.",
+  "change": "Nueva accion close_all de browser.control con lector, argumentos y lente; cierra todas las pestanas del navegador propio; sin respuestas fijas.",
+  "measurement": "CHROMETABS1843: 5 ejecutados, 5 aprobados (1 literal H0444, 2 variantes, 2 limites), 0 fallidos; 1 créditos. El literal y las dos variantes cerraron todas las pestanas del navegador propio del producto (un navegador de utillaje con tres pestanas expuesto por el extremo CDP) y lo dijeron en pasado sin numero; los limites explicaron que una sola pestana no tiene operacion y reconocieron la prohibicion de responder.",
+  "credits": 1
+}

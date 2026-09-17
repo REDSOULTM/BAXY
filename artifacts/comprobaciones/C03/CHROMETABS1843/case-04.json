@@ -1,0 +1,24 @@
+{
+  "index": 4,
+  "case_id": "chrometabs1843-boundary-02",
+  "terminal_kind": "published_final",
+  "final_sha256": "de1c7f8c3f40c990c012a8a068528d1a2e51ce07fb2b71cb53f2fe0500ee408e",
+  "clients_absent_before": true,
+  "verdict": "passed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 15.844000000011874,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1575.4921875,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-04\\EXIT.json": "ae2fa3199224a32d86f1ae5f64200a25594dd31a92d217e31daff071c219a830",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-04\\RESOURCES.json": "c4bfc5d1ed3d912f8982df6813e219907237a748e9f7bd95df051a1ba7d400bd",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-04\\case-observations.json": "30ed2bcb4d680db3ce5fd8b677c0096d745946f241f21e915c2f0c44316a5b24"
+  }
+}

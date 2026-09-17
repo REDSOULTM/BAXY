@@ -1,0 +1,34 @@
+commit 42b69b0e2524c57831bb8f7a505bab5c17fdff81
+
+C03: a just-completed close_all narration that places the action at a false past time («I closed all the tabs yesterday») invents when it happened and is rejected (CHROMETABS1843 truthfulness guard)
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index df2c34b3..e97a0c05 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -7346,6 +7346,22 @@ def compose_visible_defect(
+         negated_join = re.search(r"\b(?:no|not|sin|didn't|did\s+not|without|todavia\s+no|aun\s+no)\s+(?:\w+\s+){0,2}(?:uni\w*|unir\w*|join\w*|entr\w*)\b", folded_reply)
+         if claims_joined is not None and negated_join is None:
+             return "joined_claimed"
++    if (
++        kind == "operation"
++        and situation.get("operation") == "browser.control"
++        and _merged_observed(situation).get("action") == "close_all"
++        and situation.get("verified") is True
++        and situation.get("succeeded") is True
++        and re.search(
++            # BROWSER1841: the tabs were closed just now, in this turn; a final
++            # that places the action at a specific past time («yesterday», «ayer»,
++            # «last week») invents when it happened.
++            r"\b(?:ayer|anoche|antier|anteayer|antes\s+de\s+ayer|la\s+semana\s+pasada|el\s+otro\s+dia|hace\s+(?:un|unos|varios|dos|tres)\s+(?:dia|dias|semana|semanas|hora|horas)|"
++            r"yesterday|last\s+night|last\s+week|the\s+other\s+day|days?\s+ago|hours?\s+ago|weeks?\s+ago)\b",
++            _accent_folded_with_punctuation(stripped),
++        )
++    ):
++        return "extra_claim"
+     if (
+         kind == "operation"
+         and situation.get("operation") == "message.draft"

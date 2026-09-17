@@ -1,0 +1,323 @@
+{
+  "schema": "chrometabs1843-root-adjudication-v2",
+  "decided_at_utc": "2026-09-17T17:17:27.887528+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "42b69b0e2524c57831bb8f7a505bab5c17fdff81",
+  "decisions_sha256": "b172e76b656fc970f6f7a423eea3ae3611a592cff77e28db6495404b7f5887c0",
+  "registry_before_sha256": "ba2f84e520bff4c7cbb950c6d25fc3e2d3e27e002e377cbf0c0ba15dd5ded026",
+  "registry_before_counts": {
+    "covered": 652,
+    "open": 90,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "9096df3eefb3fc3bbd13e9334851ad5aa7149cc6937ffa46d20464ec98500229",
+  "preparation_sha256": "5672005f6b73848e07e6a69ace87ec23807f549d4c953d3205547a19cdac2670",
+  "passed": 5,
+  "failed": 0,
+  "unexecuted": 0,
+  "executed": 5,
+  "segments_started": 5,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [
+    "H0444"
+  ],
+  "counters": {
+    "covered": 653,
+    "open": 89,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 536,
+    "categories_total": 35,
+    "categories_closed_after": 13,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 536 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); CHROMETABS1843 añade 1. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 537
+  },
+  "resources": {
+    "seconds_sum": 84.03200000003562,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1610.5859375
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0444",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        1,
+        2
+      ],
+      "reason": "browser.control con close_all completada y verificada (todas las pestanas del navegador propio cerradas, ninguna queda); el final dijo que cerro todas las pestanas del navegador; crédito con dos variantes aprobadas del mismo grupo.",
+      "observation_note": "Turno ordinario: exactamente una browser.control con accion close_all completada y verificada (todas las pestanas del navegador CDP propio cerradas, ninguna queda); el final dijo en pasado que cerro todas las pestanas del navegador; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "dd9c324197cc41289a085542ca50cb1d209ff2753922e0dbc14691b177933b18",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-00\\EXIT.json": "e561920f7950b0f0d889caa468f24fe58652b0b2f6b80451b48127b1e3c9fbbc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-00\\RESOURCES.json": "60ab09ea82937f3c1f8fc6728d47615789719e243d4083399e68cc20783d8a48",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\profile-owner-00.json": "e36f5643cbf6eb383993b16c8baa52a7622c8430bb4189aa27216979da6f97db",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-00\\PREREG.json": "a1326d490b44b1051e0778c3949e90c40b2a8eeb06fc5de19b730fdfd2f2ce0b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-00\\capture\\events.jsonl": "40df42c776ab6d1723f8414d827f8154e387cecec24332e3c921efea882f1303",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-00\\turns.jsonl": "d5b1a1c840f6953b0545855bde0ea4ad7634e13dd5b8937897a3b6e9f28cf989",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\fixture-00.json": "2b1eb90f52ae446aee9c91dc385fe58f4e6749b7cfa0162d5ae4df5a3570a73e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\context-00.json": "60a00146b16bda4804b71eae4fbb9d1ad7b7c7a4a39fa7784ff6e29b13d18824",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\context-prelaunch-00.json": "cf5a8630f88064e23c766e670e268782559b81907d14b9c2d621b8bbf88f1ecc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-00\\case-observations.json": "c0a0e23d3da654a6cdf7c58fa66390dd00a22dc300c80a4155573390ea56a18d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-00\\journal-before.json": "4e8625bc412e410222b8fdd3c818c29db7c0c92a0ab3c1eca994223a48c1854a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-00\\journal-after.json": "d10d0850f31e426743d2dc9048eaaadc8a88869afcdac11b4dde6aeeaa4ec094",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "5248c70436e22fb1a0b8c809cf48cf94f8053fe1af36e470e07db60df27a22ae"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "db206fb1-157a-473c-b762-ca06a66bf58e",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "a7131f6c-625b-4f15-bf1a-fb43739164e0",
+          "operation": "browser.control",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "chrometabs1843-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "browser.control con close_all completada y verificada (todas las pestanas del navegador propio cerradas, ninguna queda); el final dijo que cerro todas las pestanas del navegador.",
+      "observation_note": "Turno ordinario: exactamente una browser.control con accion close_all completada y verificada (todas las pestanas del navegador CDP propio cerradas, ninguna queda); el final dijo en pasado que cerro todas las pestanas del navegador; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "2a5b1a03445a015522ba8917e15a274efae9394fb5d69c5b52881b9043df0df3",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-01\\EXIT.json": "0c2e17cd810f739d9677941e3564b896f08c7311493a1707bb840f8206bfde0f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-01\\RESOURCES.json": "1bb6907f90ce830f16dfc9f259b1a298b42de2b418151141e7f53fd701af57e8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\profile-owner-01.json": "3d82403f5f237c99d18f3e5717cdbea1f513f6de608189d925a113190610fe0b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-01\\PREREG.json": "3c5d06c6d8bfc00885a5d34df21b584810e0858bac3af8b435fe6b6988b5edd5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-01\\capture\\events.jsonl": "e302c2e2ea8332228dfa5f1b7023c006f0fd60acb6b4420812599a6e0ca23303",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-01\\turns.jsonl": "50c3283f9d52c7022ef772667b487ed4693839b68d6c3f18fe303658a01add16",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\fixture-01.json": "ac85f3c7a7ec302f9a742f8d743f18ccbd7e50686f4baa97824089c316d52f7a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\context-01.json": "f97ab87475950c7db98f4e6291d2165c37df84c466dfa360cf36b5cafadab89d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\context-prelaunch-01.json": "47a9ed14b402462e33cd37e54b552d8f3da028c9744ef3f5168b97acf222c961",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-01\\case-observations.json": "44cdc086759c2b5d87a0e5bf7ac5ad8fb304717b0c20838793d4e5850b56fc78",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-01\\journal-before.json": "0f675a5e6a6642d89c9b0bf5ac4a04de7cec2cfb8d1ef2f84e897c62a87fd4b5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-01\\journal-after.json": "fcfb7f43e772394bb0db4a8b027a7f8c854802111e4de7a1176bad7943f28027",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "fdadcb797b1d8954bb404183c0505431df4a4a3080511081bec6bc0285dd5e3c"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "9c243d2a-2370-4b3d-ab58-7843729ba42e",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "89546afa-c769-45cb-ab5f-468841a3236a",
+          "operation": "browser.control",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "chrometabs1843-dev-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "browser.control con close_all completada y verificada (todas las pestanas del navegador propio cerradas, ninguna queda); el final dijo que cerro todas las pestanas del navegador.",
+      "observation_note": "Turno ordinario: exactamente una browser.control con accion close_all completada y verificada (todas las pestanas del navegador CDP propio cerradas, ninguna queda); el final dijo en pasado que cerro todas las pestanas del navegador; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "2e362348ba21a8470dc7e715948758516371309ad963595b4761dc328628c4b3",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-02\\EXIT.json": "2cbdeb4112e2c185a6c90a1c9688ab21df05280c14b5b547bc96908d636ba8a6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-02\\RESOURCES.json": "6e46df857518172cd6404e5ae7204d920ba167e304339b600fa642a60e15ebbc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\profile-owner-02.json": "ac0b19c31c887c7f864470c8aa4fb6ec4368bb0a7d1ab784f24759a0730be8da",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-02\\PREREG.json": "94260d07f1d3097a0a96fd96a176e376473269dbdbd0f756e0a912920471523d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-02\\capture\\events.jsonl": "34f5b9af88e572a5ada3697a7c1caa085f26cff766efd8eb1f39261d38095c33",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-02\\turns.jsonl": "052d59f5065b496a0468686753d6cb4a36189991f103a8bb755e4e0d01183e14",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\fixture-02.json": "bc9b92ad0cc71a35e59e717b5311e8414cd7cdc99b27797ad66b4b134407c1bd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\context-02.json": "47f78b3ff7f166a64c77f50d7dcc19a74e6d34e50561696093c2ddf1140e88a1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\context-prelaunch-02.json": "4016c58bb93c112b84ecf0a2c2259bafb9db2ec396b0f0fc9ee7cf51b1024864",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-02\\case-observations.json": "c574d4cc01814456c786f112aa112ce93bf89b9a8cfd46c198c97e2586012af6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-02\\journal-before.json": "6ef700a1694616fea9389675e16dde94f1138b0faaa9792dfe5771ae58b0dcc2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-02\\journal-after.json": "f2f8d8f097b3af252141b47ba17e28e0cc9dd0b636c61d3e45a4aba7c809ab88",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "a3a6cbc06cfcb04f07fa69f644b12532b3e8ee43da29d38a64b2bb0c3451b625"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "380fed7f-b2ad-4c48-913b-b388f976ce53",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "a3469a1d-b997-40f7-baf2-97a0b12bee46",
+          "operation": "browser.control",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "chrometabs1843-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "02f56c37180ec7b6ff3c224a54a459794b46f750753b62ae98ee03df88863a6a",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-03\\EXIT.json": "9ed7cfc4b98cc15c198da4c4061687b95dec45e8db36b1c96c92022796c08ffe",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-03\\RESOURCES.json": "d93207986150474242597727921e31412ee990bc0a67931f92841bd1e37f71de",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\profile-owner-03.json": "a0f3f02e0944e4d71c4933a1cae183c44054c8fc1b971f995f4bc97a36db14c2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-03\\PREREG.json": "250b20036842241821678f71a31f59a2d9c59ed1793a1b0d1f2b1a144876b14a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-03\\capture\\events.jsonl": "ec1da8141180d8fe71506c4189d52b43291ac7dc60f7c5fdf1913cdb96cb2010",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-03\\turns.jsonl": "8b22e487ebd9c08201fd61fb58d8ee1fcc4f17739b03a69e9df0dae37fd14f56",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\fixture-03.json": "917892b3acf806aa6bf759e862cfb577c2991a6e105499405e5c8a1da7ae216f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\context-03.json": "2c7ffcc5c5e48e17d795b3a0e0568a0648c7745da3782641cc2dcf1a7d716ee2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\context-prelaunch-03.json": "1d8612a731ab5bd4551c53a839161d38b33fa607bcd115756234eaf7db7ba5a7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-03\\case-observations.json": "db7692f835769aac5dfd7fe5569b125ce0b60f2af99125c24ed03d30f8724491",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-03\\journal-before.json": "afb9a69a2118f627a436eb70a609a4963e4437c24e2adfd8534485d6585e8e67",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-03\\journal-after.json": "3c2a5838d973fdfffdba7ec9387301df1fd9e0525515266f85d9101ad80f8cb7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "73e01e15bfdf00984c2cb85adc5164b4ca962f5bbd70b53f993b491715559e33"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "9bc0556c-efd4-4906-9048-10e53d81006e",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "chrometabs1843-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "de1c7f8c3f40c990c012a8a068528d1a2e51ce07fb2b71cb53f2fe0500ee408e",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-04\\EXIT.json": "ae2fa3199224a32d86f1ae5f64200a25594dd31a92d217e31daff071c219a830",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-04\\RESOURCES.json": "c4bfc5d1ed3d912f8982df6813e219907237a748e9f7bd95df051a1ba7d400bd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\profile-owner-04.json": "ee2cd25d2802b7fdeb7a6bb5a09c2e1537ee0f2b97b8a2324e57c8527b524ec4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\results\\case-04\\PREREG.json": "17ad8d3685098681f5fc25781927dee46d66884c567ce49f8889afe5fcb6b262",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-04\\capture\\events.jsonl": "ced50a23b0ed791d40b7e1c28949c9d57390333d6ff6cba273515b03e03e3714",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-04\\turns.jsonl": "cc0b05420e779c2d6b33fe347ba5e0682dca236bf9eb1adfed78a9db5d1665e9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\fixture-04.json": "ed13e35091bcb510f6f2c63a9f0a0680bff43d2929e0eda189dc2fa21e7d9c01",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\context-04.json": "68e4f5c95d62e6252a4c85512dd9a2d279eb29db7b4c1fd1a6e88c99cfc30cfa",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\context-prelaunch-04.json": "2602e4ec0a74615783559f9a6eae0d1043a7d012c70e3333f7065f8c9eaac95d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-04\\case-observations.json": "30ed2bcb4d680db3ce5fd8b677c0096d745946f241f21e915c2f0c44316a5b24",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-04\\journal-before.json": "ec7b2dd477c3fa1efd7809492ea74602e26f533f881246c57ed4c3bd1d58e819",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-04\\journal-after.json": "60230840f3443b42fae325f8b2699e4a939f494729178d03bca9036dcf3dfca0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-chrometabs1843-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "ab485c256b8cbc017b00ce7410c4c68e36a6f113ecaf9aebf561ba822b3e2a51"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "c45c7cf8-6d06-4669-92da-2aee39c09ce2",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "CHROMETABS1843: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Organizar ventanas y pestañas 13/13. Siguiente: categoría por masa abierta según CONDICIONES.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}
