@@ -1,0 +1,34 @@
+commit 84e7428d30c8ee4799e8aa2a88eb7f4160bad76b
+
+C03: a located channel whose observed name contains «?»/«!» (Cotele!!!??) and the finding's trailing join question are not the assistant asking an unsolicited question, so the verified locate answer is no longer vetoed as extra_claim (DISCORD1839 composer fix)
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index fbd31e95..3d10620d 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -8088,6 +8088,22 @@ def compose_visible_defect(
+             # «Tiempo en Santiago mañana — ¿Va a llover? | tiempo.cl» is an
+             # observed name, not a question the assistant asks.
+             question_text = without_observed_names(question_text, situation)
++        if (
++            operation == "client.channel.locate"
++            and situation.get("verified") is True
++            and situation.get("succeeded") is True
++        ):
++            # DISCORD1839: the observed channel name may itself contain «?»/«!»
++            # («Cotele!!!??»), and the finding legitimately ends by asking
++            # whether to join. Neither is the assistant asking an unsolicited
++            # question: remove the observed names and the one trailing question
++            # before the check. The joined_claimed veto still guards a false
++            # claim of having joined.
++            for _key in ("channelName", "server", "query"):
++                _value = observed_dict.get(_key) if isinstance(observed_dict, dict) else None
++                if isinstance(_value, str) and _value.strip():
++                    question_text = question_text.replace(_value, " ")
++            question_text = re.sub(r"[¿?][^?¿]*\??\s*$", "", question_text).strip()
+         if "?" in question_text or "¿" in question_text:
+             return "extra_claim"
+         closed_request = re.search(r"\bcierr|\bclose\b", (user_text or "").casefold())

@@ -1,0 +1,340 @@
+{
+  "schema": "discord1839-root-adjudication-v2",
+  "decided_at_utc": "2026-09-17T16:48:52.940667+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "84e7428d30c8ee4799e8aa2a88eb7f4160bad76b",
+  "decisions_sha256": "365caefb2ecfe87175bf1e09d4f185132db0654656d38d082dd93f955437ac4a",
+  "registry_before_sha256": "8b35c84089a6b445a322b0e2664fd7c4636596d3281b1ca24321a0251f018efe",
+  "registry_before_counts": {
+    "covered": 650,
+    "open": 92,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "8fc6124a56f206fcb5fe9f184ecec6611cf5e9ab4c82b9229c72a3919f73fdcd",
+  "preparation_sha256": "482b8ec627ad8eb5cba0f67a26c72c7fefe1fed9a039622636923041cc5dee8f",
+  "passed": 5,
+  "failed": 0,
+  "unexecuted": 0,
+  "executed": 5,
+  "segments_started": 5,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [
+    "H0290",
+    "H0636"
+  ],
+  "counters": {
+    "covered": 652,
+    "open": 90,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 534,
+    "categories_total": 35,
+    "categories_closed_after": 13,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 534 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); DISCORD1839 añade 2. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 536
+  },
+  "resources": {
+    "seconds_sum": 102.125,
+    "gpu_peak_mib": 3497.55859375,
+    "ram_peak_mib": 1770.5703125
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0290",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        2,
+        3
+      ],
+      "reason": "client.channel.locate completada y verificada (buscador rápido del cliente leído y cerrado, nada unido); el final dijo que encontró el canal y preguntó antes de unirse; crédito con dos variantes aprobadas del mismo grupo.",
+      "observation_note": "Turno ordinario: exactamente una client.channel.locate completada y verificada (buscador rápido del cliente leído por UI Automation y cerrado; nada unido ni abierto); el final dijo que encontró el canal con su tipo y servidor y preguntó si se une; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "4331eb6183cce97ae88d0b99c4afe8b0dea8a32da1f4285626fc2309ca165d74",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\results\\case-00\\EXIT.json": "945b05f54a0f830a99046b544179e772e37face6fc31c9f060bd807df7d20425",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\results\\case-00\\RESOURCES.json": "1fa05fd5c687c3f469dfe21e4805db9f0d6d6651a03ca479d708056f8784f566",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\profile-owner-00.json": "fbb7254fcb3bd27512c253e2781efbe89fd88b2f30e9b3efdad3312644364c7e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\results\\case-00\\PREREG.json": "f8d0654187835076a6bd3387ce2ac95418050c20fcb5eca321b5a0207ef51f62",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-00\\capture\\events.jsonl": "fc958c4341161164eb591b40b7ef29be42515049bbe7abe9b44836fd1ce6e55e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-00\\turns.jsonl": "6ec383465c7949b949c37e67e695421afb48c9237784aa8e1347970aba26e6a4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\fixture-00.json": "80da61f2c911544758b1cb6a86a1e04dcefe5ed45614556a1b233cf09dc29e58",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\context-00.json": "7a68ab9a47bf9273791fd7e2fb1c5999b933b5b16c1e361b7514081f215c9835",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\context-prelaunch-00.json": "4ef31f6d28e39acb36f9216e49d61de49ab8befa47cbfe73f2104173c1164397",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-00\\case-observations.json": "db5f97958738dce878848e649a8515475d8360123b04f937767c6f9d8d4f1cd3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-00\\journal-before.json": "656186b0872bed27bd80227ef5e75a4414496f6729ca34973a82bf5ce7b8547b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-00\\journal-after.json": "a548622bdcc2125164b1c7e44e4f0343902c60892a46ff1c1d3144e21d4d82d0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "73e4a0beabdaeb9dff0ed13b3ad34facf138649a5d7b787b09cdb8fc7264b7db"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "04727ebf-d512-4baa-9e9a-705160d69249",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "cb262e89-ce70-4821-bc2b-01366cec8320",
+          "operation": "client.channel.locate",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "H0636",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        2,
+        3
+      ],
+      "reason": "client.channel.locate completada y verificada (buscador rápido del cliente leído y cerrado, nada unido); el final dijo que encontró el canal y preguntó antes de unirse; crédito con dos variantes aprobadas del mismo grupo.",
+      "observation_note": "Turno ordinario: exactamente una client.channel.locate completada y verificada (buscador rápido del cliente leído por UI Automation y cerrado; nada unido ni abierto); el final dijo que encontró el canal con su tipo y servidor y preguntó si se une; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "4331eb6183cce97ae88d0b99c4afe8b0dea8a32da1f4285626fc2309ca165d74",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\results\\case-01\\EXIT.json": "f79edf8884f633a53d73ebeaca968de9e172fa42f3819e27003eaee42de7bbe1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\results\\case-01\\RESOURCES.json": "56a706f5df98c0faba13fa0925336de041faf40fd8fcaf6e6da6d47aac379704",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\profile-owner-01.json": "11ca6090c9b69ecc06242318e1dc16afc4daae017a978459c177a6bbd3b9ce0a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\results\\case-01\\PREREG.json": "6a08a07e7da920bb29a533b8e25d5d2fd513bd242fb61bea5929216515ecfef4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-01\\capture\\events.jsonl": "ab9ac343d2742d700bf768e068c2838d80fb5505772b4df2227e500558a47931",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-01\\turns.jsonl": "d875473608b46a0e253edbfe5d9b14cd41312d8190a00b149b817d8ddb71cfde",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\fixture-01.json": "20deefd002f8b1d9c2847580213bd327f4e4b777364d73b40e0b3a6c1e7d439a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\context-01.json": "5ded44bbe6f704bbebe5d126aa693bdc3ab37db27ee86a933b57ced0684f0701",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\context-prelaunch-01.json": "ae296f42a1fe618985e231c07cbbbca2a4c8faa59e26aa116cc081cbb204939e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-01\\case-observations.json": "77d59fb05480293c572573e70b088ebb44c5d87671df8790a94fdfa75bdefc79",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-01\\journal-before.json": "ef81a1068674f8408c30858e3ab4be26e029e618e91f98d2db8986d2cfadc0a9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-01\\journal-after.json": "aa4bcdc96914d9a372e01e2d52d0d0c4c4f92062c40b1fdaf7c69c586f6e631d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "09ab22f71e7514077832ec93868b4aff7bc6f6b1d8cd8afdf6374151a7dc51fb"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "497d7b96-a466-44fc-9771-b4ca14214a5e",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "a8cceb59-8012-4968-9410-75f651d339bc",
+          "operation": "client.channel.locate",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "discord1839-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "client.channel.locate completada y verificada (buscador rápido del cliente leído y cerrado, nada unido); el final dijo que encontró el canal y preguntó antes de unirse.",
+      "observation_note": "Turno ordinario: exactamente una client.channel.locate completada y verificada (buscador rápido del cliente leído por UI Automation y cerrado; nada unido ni abierto); el final dijo que encontró el canal con su tipo y servidor y preguntó si se une; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "e687d323b8fcc15c6242d19bc48e865893fcc5c789dc3986cc51fd7c5656dec2",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\results\\case-02\\EXIT.json": "fb361a5b0bcbe75eed01f98b792e869abbb980dd7cd2b347d39d826254d8af7b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\results\\case-02\\RESOURCES.json": "fbb65ae94c25f6f6267637812ac4e5f3c2e62e62b25f9ab429459da5413371f9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\profile-owner-02.json": "a343c9fed23b6492451b6797b6441a6cbe8f87f1a4916c69fc00c62b12292259",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\results\\case-02\\PREREG.json": "fac202d91f3a5ff7796c665f62127fbd50b957879d883ff9696c496b73b075af",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-02\\capture\\events.jsonl": "4a9d39280dc945b0da2744575badd1e294b718f2803e5ee6f8d861c32c067d52",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-02\\turns.jsonl": "f3a580b3a2f2a470b758368c66c27558c6563909667cfc088df0d93562b85737",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\fixture-02.json": "803ce4d3d7202ba678811f21ed1c943a31c028e8c0f8871164e4fb343675a851",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\context-02.json": "5c5eb0e5573ebe319aa39ce9eb0a4daa18970d02b7aa7d3911d55bbb5f8ee229",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\context-prelaunch-02.json": "e614cd06c812957ba01a1cc77ff222683dfeb1cfd0c9db8bc3a2bf059d2d7d04",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-02\\case-observations.json": "9b6ea034d11e5b269267345aa645dcc76a311de26f6046b8fed3972c19c2db9b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-02\\journal-before.json": "753fe40e07fa5d6be9876a3f5b96035c14a84bba629bd7195f04e7b803964adc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-02\\journal-after.json": "7e97f2093d0109a5153965258701c5e46da11d544f06294efafdcc9c1c77a05d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "353748d60eeafbae38e626f153ec2b14e8c9a63ee79cd655d96e3c6087337690"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "f8c07e9c-3695-4a7c-9f2a-5fc14c7a22f9",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "6b1d28dd-d872-41aa-813e-e1efb205009b",
+          "operation": "client.channel.locate",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "discord1839-dev-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "client.channel.locate completada y verificada (buscador rápido del cliente leído y cerrado, nada unido); el final dijo que encontró el canal y preguntó antes de unirse.",
+      "observation_note": "Turno ordinario: exactamente una client.channel.locate completada y verificada (buscador rápido del cliente leído por UI Automation y cerrado; nada unido ni abierto); el final dijo que encontró el canal con su tipo y servidor y preguntó si se une; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "f86aa5078a75653dfc8dc1b991a21f81fdae407f31fdafa824d93114b259d270",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\results\\case-03\\EXIT.json": "65cc7847cc2dfe22e810b76263080f18e40d2b8b77932e515451afc2401f626d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\results\\case-03\\RESOURCES.json": "b04092eb06beba3594cb58a608b689269d36288b4514db9d5ad8e6be24ca5fe6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\profile-owner-03.json": "0acb2c223981aeffc296142d3b0f9d13aa00a3b4df810094a7a5dc22d4c23323",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\results\\case-03\\PREREG.json": "843e378ed59c320c9fe1e64cb95433db976e2cc75a3d8025e6f364e0c8e58a72",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-03\\capture\\events.jsonl": "0966a24f7c03ea347e354f3e23a8b28bb20490d387743ba8788112fc881f17c0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-03\\turns.jsonl": "eecc0eec665a432aab15ad3f7a2ab7cfe5de616a8a73ff463911a75fb2a32d0c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\fixture-03.json": "64859e83edd55784e78a42ef76fab3e1d428595b794950a770069525db7cc271",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\context-03.json": "22227fbdd29d534c7f33369dc097abe577637335eaee092c8d5963a9afd1a84b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\context-prelaunch-03.json": "6535367d62db2474002da4c4452b3dc592c7b444dde6c95de881d9e8d49996e9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-03\\case-observations.json": "a1cb74d354bf3c2929a19a5dc7cc974f5ba65d00b265f99221a5bf1e7eb6d440",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-03\\journal-before.json": "5d700901af7a6f0fca6b5ff6dd77ed841a21503e41508969c79b125729982690",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-03\\journal-after.json": "c66a6ccb74886a63e4283aefa8ddc53bd7980238123110059d5b0cd4c8a11ac3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "064749b9ca4138533b6d451ea5bf2bb7a79216f7990c42515bb81a4bf9915642"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "457a1d0b-1543-40bf-ba91-970a022e8c61",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "e35b1740-2812-4fde-9bb2-f6e9b639733f",
+          "operation": "client.channel.locate",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "discord1839-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "cc969a8dc634b691505d198736f2690bdc69a4f2f9faa43506e40c09b590ae42",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\results\\case-04\\EXIT.json": "5ee835208542894b27a46c4f8dda60e2f644d80ec2bce48c3676ee07e4e69c55",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\results\\case-04\\RESOURCES.json": "85af88cc44c347b2d6062ad177e781af555610d33276eb49edb7f0e4db5bfa3c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\profile-owner-04.json": "4e33e5022e7c6eef59305bb344bd81d7146a4b3aa8c3b197a995fd623765cb36",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\results\\case-04\\PREREG.json": "967397db5f58c3132b456279df90a6d25ca05ef71f34c6ff2753307b9f6408f5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-04\\capture\\events.jsonl": "18145a3caafaab5cfcfd5c56551e5b51f8a5c981a09b57ef0baab2acce0be41c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-04\\turns.jsonl": "0e8517464977e603884f0f0179877c1a649a8c722a22024dccd5ce064cbb26d9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\fixture-04.json": "c7a6cebdd1f6e02aed4fcade133dc5247a0e8ff9bf810b95138a7ff6bfd9b35e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\context-04.json": "8c75c566c70a763b472ad4b864937912812f4f469d244b9de10d60ede17ca7c5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\context-prelaunch-04.json": "b9507e13c90e5796b551dc754eb6a50472290c5fb992459487cb65649284e71a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-04\\case-observations.json": "46ba5185912f100e04db6376c4ceb711cef2698406deccd96f379a2d8a211234",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-04\\journal-before.json": "b1e11de70fb06dd7010c0fb1da2e604d0bdde7ca70e00caf91df70cde46207e4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-04\\journal-after.json": "6d87cd4cac820d735dfeff82bb3f05001ae209267538310c7dd888a0a0ef3b69",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1839-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "9c0f773da1573070bfb5c7b571a91cb2ab488468c303ad56129c090f29818f68"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "8985c18e-cb78-489e-93f1-ecf97b37c334",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "DISCORD1839: 5 ejecutados, 5 aprobados, 0 fallidos, 2 créditos (índices [0, 1]); Interacción dentro de aplicaciones 21/22. Siguiente: categoría por masa abierta según CONDICIONES.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

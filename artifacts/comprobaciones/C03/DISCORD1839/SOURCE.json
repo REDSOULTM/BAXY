@@ -1,0 +1,15 @@
+{
+  "schema": "c03-discord1839-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs, src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs, src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs, src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs (client.channel.locate: quick switcher read by UI Automation, Escape, no join), src/baxy_mind/effect_intent.py (reader, resolver hook, gate), src/baxy_mind/__main__.py (argument binding, reader-trusted set), src/baxy_mind/llm.py (lens and joined-claim veto), on top of the DISCORD1839 build.",
+  "patch": "artifacts/comprobaciones/C03/DISCORD1839/SOURCE.patch",
+  "commits": [
+    "84e7428d30c8ee4799e8aa2a88eb7f4160bad76b"
+  ],
+  "build": "BUILD1839 (C03-repairs1839-build/BUILD_READY.json; Kernel, Core, proveedor y mente)",
+  "cause_measured": "Las filas resolvían una unión al canal de voz por clic; el dueño pide la parada honesta: localizar, verificar y preguntar antes de unirse, sin unirse en la tanda.",
+  "change": "Nueva lectura client.channel.locate con lector, argumentos y lente; el final pregunta antes de unirse; sin respuestas fijas.",
+  "measurement": "DISCORD1839: 5 ejecutados, 5 aprobados (2 literales H0290 y H0636, 2 variantes, 1 limite), 0 fallidos; 2 créditos. Los cuatro pedidos de ir a Cotele localizaron el canal de voz en el servidor del dueno por el buscador rapido del cliente y preguntaron antes de unirse, sin unirse; el limite explico que es un canal de voz.",
+  "credits": 2
+}
