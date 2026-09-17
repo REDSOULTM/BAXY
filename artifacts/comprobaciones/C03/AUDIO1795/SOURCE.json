@@ -1,0 +1,15 @@
+{
+  "schema": "c03-audio1795-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (audio.app.volume.adjust final lens and missing_name hint), on top of the AUDIO1795 build.",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1795/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1795 (C03-repairs1795-build/BUILD_READY.json; mente)",
+  "cause_measured": "Los finales del ajuste verificado afirmaban estados no observados (cerrado, sin sonido, abierto) u omitían la acción; el literal pedía subir una sesión ya al máximo.",
+  "change": "Lente y pista del final de volumen de aplicación; preajuste de la sesión por la raíz; sin respuestas fijas.",
+  "measurement": "AUDIO1795: AUDIO1795: 5 ejecutados, 2 aprobados (límites), 3 fallidos, 0 créditos; el literal y la variante en inglés ejecutaron y verificaron el ajuste de Spotify (40 → 60, 40 → 50) con finales fieles pero el adjudicador sellado sólo admite diálogos revisados; la variante en castellano bajó a 25 sin final; 0 créditos. AUDIO1795 sobre BUILD1795: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 registrados como aprobados",
+  "credits": 0
+}
