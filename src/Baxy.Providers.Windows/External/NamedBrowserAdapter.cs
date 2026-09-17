@@ -46,6 +46,12 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         // WEB1739: error codes and the post-read authority name the browser family
         // («chrome_not_installed», «edge_cdp_url_postread»), never Opera for another browser.
         string family = browser is "opera" or "opera_gx" ? "opera" : browser;
+        string requestedBrowser = browser;
+        // WEB1797 «busca operagx en opera»: the person names the Opera family;
+        // when plain Opera is absent and Opera GX is installed, the navigation
+        // runs in Opera GX and the receipt names the browser actually used.
+        if (browser == "opera" && ResolveBrowser("opera") is null && ResolveBrowser("opera_gx") is not null)
+            browser = "opera_gx";
         if (!_browsers.TryGetValue(browser, out CdpBrowserSession? session))
         {
             string? executable = ResolveBrowser(browser);
@@ -101,6 +107,7 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
             writer.WriteString("browser", browser);
+            writer.WriteString("requestedBrowser", requestedBrowser);
             writer.WriteString("executablePath", executablePath);
             writer.WriteString("finalUrl", navigation.FinalUrl);
             writer.WriteString("targetId", navigation.TargetId);
