@@ -4276,6 +4276,12 @@ def _compose_situation_payload(
                     if isinstance(monitor, dict) else monitor
                     for monitor in visible_seen["monitors"]
                 ]
+        if operation == "audio.app.volume.adjust":
+            # AUDIO1795: the application's volume fact is the app, the direction,
+            # the amount and the levels; the sessions' mute flag, process name and
+            # session count invited claims about silence and open/closed state.
+            for key in ("muted", "processName", "sessionCount", "authority", "endpointIdHash"):
+                visible_seen.pop(key, None)
         if operation in {"wifi.radio.set", "wifi.radio.status"} and isinstance(visible_seen.get("state"), bool):
             # NETWORK1737: «state» is removed below as an internal status field,
             # but the radio's read-back state is the fact of these operations.
@@ -7702,7 +7708,7 @@ def compose_visible_defect(
                 return "missing_name"
             if re.search(
                 r"\b(?:cerrad[oa]s?|closed|abiert[oa]s?|is open|no\s+hay\s+sonido|sin\s+sonido|no\s+sound|"
-                r"silenciad[oa]s?|silenced|en\s+silencio|mute[d]?|muteado)\b",
+                r"silenciad[oa]s?|silenced|en\s+silencio|mute[d]?|muteado|activ[oa]|active|sonando|playing|reproduciendo)\b",
                 folded,
             ) and observed_dict.get("muted") is not True:
                 return "extra_claim"
