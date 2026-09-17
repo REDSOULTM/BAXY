@@ -1,0 +1,78 @@
+commit 48c183b0432b7f12a0885ecaed0bfc861d4d4b58
+
+C03: calculator arithmetic, client GUI navigation, network scans and file downloads are known unsupported effects (LIMITS1683)
+
+«multiplicá 6 por 7 en la calc» and «Suma 2 más 2 en la Calculadora» ask to chain controls the product presses one at a time with a confirmation; «Abre Steam y luego navega por la gui hasta biblioteca» and «Abre Epic Games y navega hasta la biblioteca» ask to walk a game client's interface; «qué redes wifi hay» asks for a scan (the status reader read it as wifi.status, the state of the PC's own radio); «descarga la imagen de portada de wikipedia.org y guardala en el escritorio» asks for a download. No operation serves them: four known_unsupported_effect_request contracts (calculator.expression.evaluate, client.gui.navigate, wifi.scan, browser.download.file) close the turn as a plain limit naming the request; the network listing is excluded from the wifi.status domain; downloads, arithmetic and scans are request heads.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 12272a95..0b4573df 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -2800,6 +2800,40 @@ def known_unsupported_effect_request(
+             and not _has(folded, r"\b(?:game|juego|steam)\b"),
+             {"commerce.product.purchase"},
+         ),
++        (
++            # LIMITS1683 H0621 «multiplicá 6 por 7 en la calc», H0705 «Suma 2 más 2
++            # en la Calculadora»: one control per confirmed click; no operation
++            # evaluates an expression in the Calculator.
++            _has(folded, r"\b(?:multiplica|multiplicar|multiplicame|suma|sumar|sumame|resta|restar|restame|divide|dividir|divideme|calcula|calcular|calculame|multiply|add|subtract|divide|calculate|compute)\b")
++            and _has(folded, r"\b(?:calc|calculadora|calculator)\b"),
++            {"calculator.expression.evaluate"},
++        ),
++        (
++            # LIMITS1683 H0559 «Abre Steam y luego navega por la gui hasta
++            # biblioteca», H0432 «Abre Epic Games y navega hasta la biblioteca»:
++            # the library is read locally; no operation walks a client's interface.
++            _has(folded, r"\b(?:navega|navegar|navegame|navigate)\b")
++            and _has(folded, r"\b(?:steam|epic(?:\s+games)?|battle\.net|origin|uplay|gog|ubisoft\s+connect)\b")
++            and _has(folded, r"\b(?:gui|interfaz|interface|biblioteca|library|tienda|store|menu|menus)\b"),
++            {"client.gui.navigate"},
++        ),
++        (
++            # LIMITS1683 H0302 «qué redes wifi hay»: saved profiles and the current
++            # state are read; no operation scans the networks around the PC.
++            _has(folded, r"\b(?:que|cuales|what|which)\s+redes(?:\s+(?:wifi|wi\s*fi|inalambricas))?\s+(?:hay|disponibles|cerca|detectas|ves|encontras)\b"
++                         r"|\b(?:escanea|escanear|scan)\b.{0,24}\b(?:wifi|redes|networks)\b"
++                         r"|\b(?:what|which)\s+(?:wifi\s+)?networks\s+(?:are\s+(?:there|available|nearby|around)|can\s+you\s+see|do\s+you\s+see)\b"),
++            {"wifi.scan"},
++        ),
++        (
++            # LIMITS1683 H0077 «descarga la imagen de portada de wikipedia.org y
++            # guardala en el escritorio»: the browser navigates; no operation
++            # downloads a file from the web.
++            _has(folded, r"\b(?:descarga|descargar|descargame|baja|bajar|bajame|download)\b")
++            and _has(folded, r"\b(?:imagen|imagenes|foto|fotos|image|images|picture|pictures|photo|photos|archivo|archivos|file|files|video|videos|pdf)\b")
++            and not _has(folded, r"\b(?:steam|epic|juego|game)\b"),
++            {"browser.download.file"},
++        ),
+         (
+             # LIMITS1681 H0175 «en Discord apretá enter», H0566 «apretá enviar en
+             # WhatsApp»: a control inside a messaging client is never pressed
+@@ -10128,6 +10162,8 @@ def _is_direct_request(text: str) -> bool:
+         r"apaga|apagar|arranca|inicia|start|conecta|conectar|conectame|connect|"
+         # LIMITS1677 «Run pytest.», «Execute ls.»: a command run is a request speech act.
+         r"run|execute|"
++        # LIMITS1683: downloads, arithmetic and scans are request speech acts too.
++        r"descarga|descargar|descargame|download|multiplica|multiplicame|suma|sumame|resta|restame|divide|divideme|calcula|calculame|multiply|subtract|calculate|compute|escanea|scan|"
+         r"desconecta|disconnect|cambia|change|"
+         r"cancela|cancelar|cancel|"
+         rf"{_SCHEDULING_BY_ITSELF}|"
+@@ -11060,6 +11096,14 @@ def _strict_catalog_request(
+             r"(?:[,;]|\by\b|\band\b|$))",
+         ):
+             found_domains = [item for item in found_domains if item[1] != "task.list"]
++        if any(operation == "wifi.status" for _, operation in found_domains) and _has(
++            text,
++            r"\b(?:que|cuales|what|which)\s+redes\b|\bredes\s+(?:wifi\s+)?(?:hay|disponibles|cerca)\b|"
++            r"\b(?:escanea|escanear|scan)\b|\bnetworks\s+(?:are\s+(?:there|available|nearby|around)|can\s+you\s+see)\b",
++        ):
++            # LIMITS1683 «qué redes wifi hay»: the networks around the PC are not
++            # the state of its own Wi-Fi; that listing is a known limit.
++            found_domains = [item for item in found_domains if item[1] != "wifi.status"]
+         if any(
+             operation == "wifi.status" for _, operation in found_domains
+         ) and not _has(

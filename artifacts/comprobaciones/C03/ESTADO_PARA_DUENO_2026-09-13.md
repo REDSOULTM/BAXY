@@ -1,3 +1,25 @@
+## MUSIC1769 — estado vigente 2026-09-17T00:02:01.832320+00:00
+
+Parcial: 8 aprobados, 1 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 636/742 | 106 | 0 | >=520 | 12/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 518 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MUSIC1769 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: MUSIC1769: 9 ejecutados, 8 aprobados, 1 fallidos, 2 créditos (índices [0, 2]); Música 37/39. Siguiente: volumen de Spotify (operación por aplicación) y las filas de Steam con diálogo abierto.
+
+Evidencia: `artifacts/comprobaciones/C03/MUSIC1769/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 329.51 s acumulados; pico GPU 3497.56 MiB; pico RAM 2507.80 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 9; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MUSIC1769 precedente. -->
+
 ## UI1767 — estado vigente 2026-09-16T23:27:34.367844+00:00
 
 Parcial: 3 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.

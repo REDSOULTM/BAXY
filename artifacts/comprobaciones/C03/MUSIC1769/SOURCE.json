@@ -1,0 +1,15 @@
+{
+  "schema": "c03-music1769-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (toca/tocame heads and tema/track/algo nouns in the incomplete music clause) and src/Baxy.Providers.Windows/External/WindowsVisibleOcrLocator.cs (the clearly smaller print wins among duplicate label hits), on top of the MUSIC1769 build.",
+  "patch": "artifacts/comprobaciones/C03/MUSIC1769/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1769 (C03-repairs1769-build/BUILD_READY.json; mente y proveedor)",
+  "cause_measured": "La cláusula de música sin nombrar sólo admitía pon/reproduce/play, así que «tocá una canción» no preguntaba qué poner.",
+  "change": "Verbos tocá/tocame y sustantivos tema/track/algo en la cláusula de música sin nombrar; impresión menor entre etiquetas duplicadas en el OCR; sin respuestas fijas.",
+  "measurement": "MUSIC1769: MUSIC1769: 9 ejecutados, 8 aprobados, 1 fallido, 2 créditos (H0178 diálogo, H0552 género); H0163 reprodujo la sinfonía 1 verificada pero el compositor no citó el título largo (missing_name); 2 créditos. MUSIC1769 sobre BUILD1769: 3 literales, 4 variantes (2 en inglés), 2 límites; 8/9 aprobados; H0178 y H0552 con dos variantes aprobadas cada uno; H0163 fallido por final ausente",
+  "credits": 2
+}
