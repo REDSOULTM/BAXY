@@ -2750,7 +2750,9 @@ internal static class UserMessagePolicy
         return Regex.Replace(
             FoldForPolicy(result),
             @"\b(?:no\s+(?:puedo|podia|podria)|(?:i\s+)?(?:can't|cannot|can\s+not|couldn't|could\s+not|am\s+unable\s+to|am\s+not\s+able\s+to))"
-            + @"\s+(?:describir|describirte|ver|describe|see)\s+(?:las\s+|the\s+)?(?:imagenes?|images?|pictures?|graficos?|graphics|visuales?|visuals)"
+            // SCREEN1809 «identificá el botón»: the scope said about buttons too.
+            + @"\s+(?:describir|describirte|ver|identificar|reconocer|describe|see|identify|recognize|recognise)"
+            + @"\s+(?:las\s+|los\s+|the\s+)?(?:imagenes?|images?|pictures?|graficos?|graphics|visuales?|visuals|botones?|buttons?)"
             + @"[^.;]{0,80}",
             " ",
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);

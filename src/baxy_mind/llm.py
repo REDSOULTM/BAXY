@@ -5083,6 +5083,37 @@ def _screen_text_excerpt(recognized: str, lines: int = 3, width: int = 120) -> l
     return chosen
 
 
+def _screen_line_count(payload: dict) -> int | None:
+    """The recognized line count of a verified OCR read, single-step or mission-shaped."""
+
+    seen = payload.get("seen")
+    if payload.get("operation") == "ocr.read" and isinstance(seen, dict) and type(seen.get("lineCount")) is int:
+        return seen["lineCount"]
+    for step in payload.get("completedStepsInOrder") or []:
+        if isinstance(step, dict) and step.get("operation") == "ocr.read":
+            result = step.get("resultAtThisStep")
+            step_seen = result.get("seen") if isinstance(result, dict) else None
+            if isinstance(step_seen, dict) and type(step_seen.get("lineCount")) is int:
+                return step_seen["lineCount"]
+    return None
+
+
+def _screen_count_defect(text: str, payload: dict, user_text: str) -> str:
+    """SCREEN1809: «The screen shows 3 lines» counted the excerpt; the only count
+    a screen reading may state is seen.lineCount (quoted lines keep their own numbers)."""
+
+    line_count = _screen_line_count(payload)
+    if line_count is None:
+        return ""
+    prose = re.sub(r'[«"“][^»"”]{1,4096}[»"”]', " ", text)
+    prose = re.sub(r"'[^']{1,4096}'", " ", prose)
+    allowed = {str(line_count)} | set(re.findall(r"\d+", user_text or ""))
+    for number in re.findall(r"(?<![\w.,-])\d+(?![\w.,-])", prose):
+        if number not in allowed:
+            return "screen_wrong_count"
+    return ""
+
+
 def _recognized_screen_text(payload: dict) -> str | None:
     """The verified OCR text in a compose payload, single-step or mission-shaped."""
 
@@ -5752,6 +5783,9 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         # about reading a screen are the only allowance.
         if _ocr_unsupported_terms(text, recognized, user_text):
             return "ocr_unsupported_terms"
+        count_defect = _screen_count_defect(text, payload, user_text)
+        if count_defect:
+            return count_defect
     listing = _known_listing_in_payload(payload)
     if listing is not None:
         # FILES1425: the person asked what the folder holds; a name that is not
@@ -7030,7 +7064,8 @@ def compose_visible_defect(
         r"^muted\.?$|^unmuted\.?$|wait ended|mission unfinished|"
         # SCREEN1807: the screen-text lens sentence copied as the reply.
         r"cita cada una de esas l[ií]neas|quote each of those lines|"
-        r"escribe a continuaci[oó]n las l[ií]neas|write the lines of seen|l[ií]neas de seen\.lines",
+        r"escribe a continuaci[oó]n las l[ií]neas|write the lines of seen|l[ií]neas de seen\.lines|"
+        r"l[ií]neas y escribe:|lines and (?:then )?writes?:",
         folded,
     )
     if (
@@ -7173,7 +7208,9 @@ def compose_visible_defect(
         # only that predicate in the failure lens.
         failure_assertions = re.sub(
             r"\b(?:no\s+(?:puedo|podia|podria)|(?:i\s+)?(?:can't|cannot|can\s+not|couldn't|could\s+not|am\s+unable\s+to|am\s+not\s+able\s+to))"
-            r"\s+(?:describir|describirte|ver|describe|see)\s+(?:las\s+|the\s+)?(?:imagenes?|images?|pictures?|graficos?|graphics|visuales?|visuals)"
+            # SCREEN1809 «identificá el botón»: the scope said about buttons too.
+            r"\s+(?:describir|describirte|ver|identificar|reconocer|describe|see|identify|recognize|recognise)"
+            r"\s+(?:las\s+|los\s+|the\s+)?(?:imagenes?|images?|pictures?|graficos?|graphics|visuales?|visuals|botones?|buttons?)"
             r"[^.;]{0,80}",
             "",
             _accent_folded_with_punctuation(failure_assertions),
@@ -15277,6 +15314,11 @@ class LlmRuntime:
                 # UI1373 H0555: corrected drafts read «Aprié el botón 5», a
                 # conjugation the model cannot get right; steer to verbs it can.
                 else "Apretaste el botón: dilo con «Hice clic en el …» o «Pulsé el …» y la etiqueta que pidió la persona; no conjugues «apretar»."
+            ),
+            "screen_wrong_count": (
+                "The screen shows seen.lineCount lines: that is the only number you may state; seen.lines are only some of those lines, so do not count them."
+                if response_language == "en"
+                else "La pantalla muestra seen.lineCount líneas: ese es el único número que puedes decir; seen.lines son sólo algunas de esas líneas, no las cuentes."
             ),
             "ocr_unsupported_terms": (
                 "Use only words that appear in the recognized text: quote two or three of its lines exactly as they are, say how many lines were recognized, and add no interpretation, purpose or warning."
