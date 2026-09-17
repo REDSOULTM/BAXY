@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1803-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/NamedBrowserAdapter.cs (Opera family fallback to Opera GX, requestedBrowser in the receipt), on top of the WEB1803 build.",
+  "patch": "artifacts/comprobaciones/C03/WEB1803/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1803 (C03-repairs1803-build/BUILD_READY.json; proveedor)",
+  "cause_measured": "Sólo Opera GX está instalada y «en opera» resolvía la edición simple ausente: opera_not_installed.",
+  "change": "La familia Opera corre en Opera GX cuando la edición simple no está y el recibo nombra el navegador usado; sin respuestas fijas.",
+  "measurement": "WEB1803: WEB1803: 5 ejecutados, 3 aprobados, 2 fallidos, 0 créditos; literal y variante en castellano verificados en Opera GX (familia Opera); la variante en inglés (clima) y el límite de definición derivaron a web.search; 0 créditos. WEB1803 sobre BUILD1803: 1 literal, 2 variantes (1 en inglés), 2 límites; 3/5 aprobados; sin segundo par",
+  "credits": 0
+}
