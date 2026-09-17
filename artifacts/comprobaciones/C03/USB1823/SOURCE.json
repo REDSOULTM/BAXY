@@ -1,0 +1,15 @@
+{
+  "schema": "c03-usb1823-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs, src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs, src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs, src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs (storage.removable.list: DriveInfo removable drives), src/baxy_mind/effect_intent.py (reader, contract, gate, resolver hook), src/baxy_mind/__main__.py (empty arguments), src/baxy_mind/llm.py (lens and checks), on top of the USB1823 build.",
+  "patch": "artifacts/comprobaciones/C03/USB1823/SOURCE.patch",
+  "commits": [
+    "15e259feb08891dfa13956e63d930a53940aea7c"
+  ],
+  "build": "BUILD1823 (C03-repairs1823-build/BUILD_READY.json; Kernel, Core, proveedor y mente)",
+  "cause_measured": "Ningún lector resolvía el respaldo a un pendrive; copiar los documentos es un efecto sin operación, pero leer qué unidades extraíbles hay conectadas sí es posible y es el primer paso verificable.",
+  "change": "Nueva lectura storage.removable.list (DriveInfo, unidades extraíbles listas) con lector, argumentos y lente; nada se copia; sin respuestas fijas.",
+  "measurement": "USB1823: cinco casos en BUILD1823 (tres turnos ordinarios de unidad extraíble, dos límites ordinarios), todos aprobados: el literal y las dos variantes ejecutaron la nueva storage.removable.list (DriveInfo; ninguna unidad extraíble conectada en este PC) con recibo verificado y dijeron que ahora no hay ningún pendrive ni disco USB conectado, que no se copió nada y que puede conectar uno y pedirlo de nuevo; los límites explicaron y reconocieron sin leer; 1 créditos. Medido: lectura de unidades extraíbles con respuesta honesta de ausencia; H0733 acreditado con ambas variantes; «Archivos y carpetas» 31/32 (queda H0542 zip). Siguiente: categoría por masa abierta según CONDICIONES (título aproximado de Steam H0571; abrí chrome y poné música H0352; zip H0542).",
+  "credits": 1
+}

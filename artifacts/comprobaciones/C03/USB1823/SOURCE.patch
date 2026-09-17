@@ -1,0 +1,271 @@
+commit 15e259feb08891dfa13956e63d930a53940aea7c
+
+C03: a backup or copy to a pendrive first reads which removable drives are connected, and says truthfully when there is none (USB1823)
+
+New read-only operation storage.removable.list: the removable drives ready right now through DriveInfo (letter, label, format, free and total GiB); nothing is copied. The mind reads «hacé un backup / copiá / guardá … a un pendrive / usb / disco externo» and «qué pendrives hay conectados» as that read (never formatting, deleting or ejecting), and the composer says that no pendrive or USB drive is connected, that nothing was copied and that the person can plug one in and ask again, or names the drives with their free space; numbers and invented copies are checked.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs b/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
+index 2394a719..75a0f1c2 100644
+--- a/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
++++ b/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
+@@ -29,6 +29,7 @@ internal static class ExternalCapabilityHandlers
+         "display.status",
+         "software.python.package.status",
+         "software.python.status",
++        "storage.removable.list",
+         "document.pdf.read",
+         "email.latest.read",
+         "email.latest.reply",
+diff --git a/src/Baxy.Kernel/Operations/ProductCatalog.cs b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+index 044902e2..63c947ce 100644
+--- a/src/Baxy.Kernel/Operations/ProductCatalog.cs
++++ b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+@@ -1337,6 +1337,13 @@ public static class ProductCatalog
+             "software.python.status.windows.registry.pep514.read.v1",
+             ToolExposure.Public,
+             "Lee las instalaciones de Python registradas en Windows (claves PEP 514 del registro: versión, nombre y ejecutable) sin ejecutar nada; sin efecto."),
++        Descriptor(
++            "storage.removable.list",
++            EmptySchema(),
++            OperationRisks.ReadOnly,
++            "storage.removable.list.driveinfo.read.v1",
++            ToolExposure.Public,
++            "Lee las unidades extraíbles conectadas ahora (pendrives, discos USB: letra, etiqueta, espacio libre y total) sin copiar ni cambiar nada; sin efecto."),
+         Descriptor(
+             "streaming.navigate",
+             Schema(
+diff --git a/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs b/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
+index 04e3ec64..17be9165 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
+@@ -269,7 +269,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+     public bool CanHandle(string operation) => operation is
+         "bluetooth.device.list" or "bluetooth.device.pair"
+         or "bluetooth.radio.set" or "bluetooth.radio.status"
+-        or "display.status" or "software.python.status" or "software.python.package.status" or "calculator.expression.evaluate"
++        or "display.status" or "software.python.status" or "software.python.package.status" or "storage.removable.list" or "calculator.expression.evaluate"
+         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
+         or "wifi.profile.list" or "wifi.radio.set" or "wifi.radio.status" or "wifi.scan" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
+         or "wifi.ensure.connected" or "wifi.status"
+@@ -293,6 +293,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+                 "bluetooth.radio.status" => await BluetoothRadioStatusAsync(operation),
+                 "display.status" => DisplayStatus(operation),
+                 "software.python.status" => PythonStatus(operation),
++                "storage.removable.list" => RemovableStorageList(operation),
+                 "software.python.package.status" => await PythonPackageStatusAsync(operation, arguments, cancellationToken),
+                 "calculator.expression.evaluate" => await CalculatorEvaluateAsync(
+                     operation, arguments, effectBoundary, cancellationToken),
+@@ -870,6 +871,52 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+         return ExternalJson.Success(operation, result, effectObserved: false);
+     }
+ 
++    // USB1823 «hace un backup de mis documentos a un pendrive»: the removable
++    // drives connected right now, read through DriveInfo; nothing is copied.
++    private static ExternalCapabilityReceipt RemovableStorageList(string operation)
++    {
++        var drives = new List<(string Letter, string Label, string Format, double FreeGiB, double TotalGiB)>();
++        foreach (DriveInfo drive in DriveInfo.GetDrives())
++        {
++            try
++            {
++                if (drive.DriveType != DriveType.Removable || !drive.IsReady)
++                {
++                    continue;
++                }
++                string letter = drive.Name.TrimEnd('\\', '/');
++                double free = Math.Round(drive.AvailableFreeSpace / 1073741824d, 1);
++                double total = Math.Round(drive.TotalSize / 1073741824d, 1);
++                drives.Add((letter, drive.VolumeLabel ?? string.Empty, drive.DriveFormat ?? string.Empty, free, total));
++            }
++            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
++            {
++                continue;
++            }
++        }
++        JsonElement result = ExternalJson.Create(writer =>
++        {
++            writer.WriteStartObject();
++            writer.WriteNumber("version", 1);
++            writer.WriteNumber("driveCount", drives.Count);
++            writer.WriteStartArray("drives");
++            foreach ((string letter, string label, string format, double free, double total) in drives)
++            {
++                writer.WriteStartObject();
++                writer.WriteString("letter", letter);
++                writer.WriteString("label", label);
++                writer.WriteString("format", format);
++                writer.WriteNumber("freeGiB", free);
++                writer.WriteNumber("totalGiB", total);
++                writer.WriteEndObject();
++            }
++            writer.WriteEndArray();
++            writer.WriteString("authority", "windows_driveinfo_removable_read");
++            writer.WriteEndObject();
++        });
++        return ExternalJson.Success(operation, result, effectObserved: false);
++    }
++
+     private static ExternalCapabilityReceipt DisplayStatus(string operation)
+     {
+         var monitors = new List<(string Name, bool Primary, uint Width, uint Height, uint Hertz)>();
+diff --git a/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs b/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
+index 4fff3fff..719d86e0 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
+@@ -215,6 +215,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
+             "calculator.expression.evaluate" => "windows_calculator_uia_required",
+             "software.python.status" => "windows_registry_read_required",
+             "software.python.package.status" => "python_pip_read_required",
++            "storage.removable.list" => "windows_driveinfo_read_required",
+             "ocr.read" => "windows_ocr_language_pack_gate_required",
+             "package.install.prepare" or "package.install.commit" => "winget_adapter_gate_required",
+             "system.settings.adjust" or "system.settings.set" or "system.settings.status" =>
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 160bc342..d39a2ab3 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -4973,6 +4973,10 @@ def _explicit_arguments_from_evidence(
+         ) or resolve_application_installed_name(evidence, application_names)
+         return {"name": name} if name is not None else None
+ 
++    if operation == "storage.removable.list":
++        if effect_intent._removable_storage_request(evidence):
++            return {}
++
+     if operation == "software.python.package.status":
+         # PIP1817: the package is the person's literal from the request.
+         package = effect_intent._python_package_request(evidence)
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index e5925670..471a975e 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -1569,6 +1569,8 @@ def _curated_domain_is_grounded(
+         return _has(folded, r"\bpython\b")
+     if operation == "software.python.package.status":
+         return _python_package_request(folded) is not None
++    if operation == "storage.removable.list":
++        return _has(folded, r"\b(?:pendrive|pen|usb|externo|externa|external|removable|flash|stick)\b")
+     if operation == "calculator.expression.evaluate":
+         return calculator_expression_request(folded) is not None
+     if operation == "display.status":
+@@ -10525,6 +10527,34 @@ _PYTHON_PACKAGE_REQUEST = re.compile(
+ )
+ 
+ 
++_REMOVABLE_MEDIA = (
++    r"(?:pendrive|pen\s+drive|pen|usb|memoria\s+usb|memoria\s+externa|disco\s+externo|disco\s+usb|"
++    r"unidad\s+externa|unidad\s+usb|usb\s+stick|flash\s+drive|thumb\s+drive|external\s+(?:drive|disk)|"
++    r"removable\s+(?:drive|disk)|memory\s+stick)"
++)
++_REMOVABLE_STORAGE_REQUEST = re.compile(
++    r"^[¿?¡!\s]*(?:"
++    # «hacé un backup de mis documentos a un pendrive», «copiá mis fotos al usb», «back up my documents to a USB stick»
++    r"(?:hace(?:me)?|haz|hazme|make|do|copia(?:me)?|copy|guarda(?:me)?|save|pasa(?:me)?|move|mueve|respalda|back\s*up|backup|exporta|export)\b"
++    r"[^.;]{0,80}?\b(?:a|al|en|hacia|to|onto|on|into)\s+(?:un|una|el|la|mi|mis|a|an|the|my)?\s*" + _REMOVABLE_MEDIA + r"s?\b"
++    # «qué pendrives hay conectados», «hay algún usb conectado», «is there a flash drive connected»
++    r"|(?:que|cuales|cuantos|hay|tengo|is\s+there|are\s+there|which|what|do\s+i\s+have)\b[^.;]{0,40}?\b" + _REMOVABLE_MEDIA + r"s?\b"
++    r"[^.;]{0,40}?\b(?:conectad\w*|enchufad\w*|puest\w*|hay|tengo|connected|plugged|attached|available)\b"
++    r")",
++)
++
++
++def _removable_storage_request(text: str) -> bool:
++    """USB1823 «hace un backup de mis documentos a un pendrive», «qué pendrives hay
++    conectados»: a storage.removable.list read of the removable drives connected
++    now — nothing is copied; the copy itself is a separate confirmed step."""
++
++    folded = _strip_request_envelope(_fold(text)).strip()
++    return _REMOVABLE_STORAGE_REQUEST.match(folded) is not None and not _has(
++        folded, r"\b(?:formatea|formatear|format|borra|borrar|elimina|delete|wipe|expulsa|eject|desconecta)\b"
++    )
++
++
+ def _python_package_request(text: str) -> str | None:
+     """PIP1817 «instala requests con pip»: the package named in an install-with-pip
+     or is-it-installed request, answered by a software.python.package.status read
+@@ -10703,6 +10733,7 @@ def _is_direct_request(text: str) -> bool:
+         or _display_status_question(text)
+         or _python_status_question(text)
+         or _python_package_request(text) is not None
++        or _removable_storage_request(text)
+     ):
+         return True
+     request_head = (
+@@ -17259,6 +17290,10 @@ def resolve_explicit_effects(
+         application_names,
+     )
+     authenticated_games = build_game_catalog_index(game_catalog)
++    if "storage.removable.list" in available and _removable_storage_request(text):
++        # USB1823: a backup or copy to a pendrive first reads which removable
++        # drives are connected; nothing is copied.
++        return EffectIntent(("storage.removable.list",), (text,))
+     if "software.python.package.status" in available and _python_package_request(text) is not None:
+         # PIP1817: installing a Python package with pip is answered by whether
+         # it is already installed in the registered Pythons; nothing is installed.
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index bc19e967..51bbe04a 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -6012,6 +6012,30 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+                 return "invented_number"
+         if shown_value and shown_value not in text and shown_value.replace(".", ",") not in text and shown_value.replace(",", ".") not in text:
+             return "missing_state"
++    if (
++        payload.get("operation") == "storage.removable.list"
++        and isinstance(seen, dict)
++        and isinstance(seen.get("drives"), list)
++    ):
++        # USB1823: with no removable drive, a drive named or a copy claimed is
++        # invented; numbers must be the observed sizes or count.
++        folded_text = _reading_fold(text)
++        if not seen["drives"]:
++            if re.search(r"\b(?:copi[eé]|copiad[oa]s?|respald[eé]|hice (?:el|un|la) (?:backup|respaldo|copia)|backed up|copied|saved)\b", folded_text) and not re.search(r"\bno (?:se )?copi|\bnothing (?:was )?copied|\bnot (?:been )?copied|\bno (?:se )?respald|\bno hice\b", folded_text):
++                return "extra_claim"
++            if re.search(r"\b(?:unidad|drive|disco|pendrive|usb)\s+[a-z]:", folded_text):
++                return "extra_claim"
++        observed_numbers = {str(seen.get("driveCount"))}
++        for drive in seen["drives"]:
++            if isinstance(drive, dict):
++                for key in ("freeGiB", "totalGiB"):
++                    if isinstance(drive.get(key), (int, float)):
++                        value = drive[key]
++                        observed_numbers.update({str(value), str(value).replace(".", ","), str(int(value)) if float(value).is_integer() else str(value)})
++        prose = re.sub(r"[«\"“][^»\"”]{1,4096}[»\"”]", " ", text)
++        for number in re.findall(r"(?<![\w.,:-])\d+(?:[.,]\d+)?(?![\w.,:-])", prose):
++            if number not in observed_numbers:
++                return "invented_number"
+     if (
+         payload.get("operation") == "software.python.package.status"
+         and isinstance(seen, dict)
+@@ -14421,6 +14445,28 @@ class LlmRuntime:
+                 "ejemplo que seis por siete da 42 en la Calculadora), usando sólo esos "
+                 "números; no se hizo nada más."
+             )
++        if (
++            visible_situation.get("operation") == "storage.removable.list"
++            and isinstance(visible_situation.get("seen"), dict)
++            and isinstance(visible_situation["seen"].get("drives"), list)
++        ):
++            # USB1823: the read lists the removable drives connected now; the
++            # backup or copy itself was not done.
++            instruct(
++                "\nseen.drives are the removable drives (pendrives, USB disks) connected right "
++                "now (letter, label, freeGiB, totalGiB) and seen.driveCount their number. If "
++                "seen.driveCount is 0, say that no pendrive or USB drive is connected right now, "
++                "that nothing was copied, and that the person can plug one in and ask again. "
++                "Otherwise name each drive with its letter and label and its free space, and say "
++                "nothing was copied yet. No other numbers; nothing was changed."
++                if response_language == "en"
++                else "\nseen.drives son las unidades extraíbles (pendrives, discos USB) conectadas "
++                "ahora (letter, label, freeGiB, totalGiB) y seen.driveCount su cantidad. Si "
++                "seen.driveCount es 0, di que ahora no hay ningún pendrive ni disco USB conectado, "
++                "que no se copió nada y que la persona puede conectar uno y pedirlo de nuevo. Si "
++                "no, nombra cada unidad con su letra, su etiqueta y su espacio libre, y di que "
++                "todavía no se copió nada. Sin otros números; no se cambió nada."
++            )
+         if (
+             visible_situation.get("operation") == "software.python.package.status"
+             and isinstance(visible_situation.get("seen"), dict)
