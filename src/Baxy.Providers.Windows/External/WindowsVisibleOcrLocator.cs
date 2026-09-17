@@ -176,6 +176,9 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             // heading that names the open section («Biblioteca» in the Epic
             // Games Launcher's navigation and as the library page title). The
             // clearly smaller print is the control; equal prints stay ambiguous.
+            // UI1771: the launcher's heading is only a fifth larger than its
+            // navigation entry (17 px against 14 px), so any print smaller by
+            // more than OCR jitter (5 %) is the control.
             int smallest = 0;
             for (int index = 1; index < heights.Count; index++)
             {
@@ -188,7 +191,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                 if (index != smallest && heights[index] < next)
                     next = heights[index];
             }
-            return heights[smallest] <= next * 0.8 ? hits[smallest] : null;
+            return heights[smallest] <= next * 0.95 ? hits[smallest] : null;
         }
         foreach (OcrLine line in recognized.Lines)
         {

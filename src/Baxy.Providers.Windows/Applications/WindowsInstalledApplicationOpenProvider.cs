@@ -19,7 +19,11 @@ public sealed class WindowsInstalledApplicationOpenProvider :
     // (Steam's login window at 4.6 s, its main window at 7.9 s after launch) never
     // fit the earlier 28 polls; the launch is verified as soon as the window shows,
     // so the longer budget costs nothing to a prompt application.
-    private const int VerificationAttempts = 120;
+    // UI1771: a launcher restarted right after an unclean exit (the Epic Games
+    // Launcher) draws its first window well after 12 s; a launch whose window
+    // is still to come is waited on for up to 30 s before it is declared
+    // unverified, the way a person waits for a heavy program to appear.
+    private const int VerificationAttempts = 300;
     private static readonly TimeSpan ObservationDelay = TimeSpan.FromMilliseconds(100);
     private static readonly TimeSpan CatalogLifetime = TimeSpan.FromMinutes(5);
 

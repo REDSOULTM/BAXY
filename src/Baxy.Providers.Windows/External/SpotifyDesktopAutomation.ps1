@@ -3,6 +3,9 @@ param(
     [ValidateSet('exact','query')][string]$Mode='exact'
 )
 $ErrorActionPreference='Stop'
+# MUSIC1769: the adapter decodes stdout as UTF-8; PowerShell 5.1 otherwise writes the console code page and
+# non-ASCII titles arrive as U+FFFD.
+[Console]::OutputEncoding=[Text.Encoding]::UTF8
 Add-Type -AssemblyName UIAutomationClient
 $nativeSource=@'
 using System;
