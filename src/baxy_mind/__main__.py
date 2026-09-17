@@ -773,6 +773,8 @@ def _verified_dependency_identity_arguments(
     objective: str,
     observations: object,
     tool: dict[str, object],
+    application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
+    game_catalog: GameCatalogIndex | None = None,
 ) -> dict[str, object] | None:
     """Copy a complete unique identity from permitted verified producers.
 
@@ -815,10 +817,25 @@ def _verified_dependency_identity_arguments(
             arguments[field] = next(iter(unique.values()))
     function = tool.get("function")
     schema = function.get("parameters") if isinstance(function, dict) else None
-    if not isinstance(schema, dict) or not validate_json_schema_instance(
-        arguments, schema
-    ):
+    if not isinstance(schema, dict):
         return None
+    if not validate_json_schema_instance(arguments, schema):
+        # ARRANGE1781 «poné chrome a la izquierda»: the identity alone did
+        # not satisfy window.snap (side missing) and the model extraction
+        # produced nothing in Spanish; the fields the person authored come
+        # from the effect reader, never from the model.
+        explicit = _explicit_arguments_from_evidence(
+            operation,
+            objective,
+            application_names if isinstance(application_names, tuple) else (),
+            game_catalog if game_catalog is not None else GameCatalogIndex(),
+        )
+        if not isinstance(explicit, dict):
+            return None
+        merged = {**explicit, **arguments}
+        if not validate_json_schema_instance(merged, schema):
+            return None
+        return merged
     return arguments
 
 
@@ -9073,6 +9090,8 @@ def _run_sidecar(
                         objective,
                         observations,
                         tool,
+                        application_names,
+                        game_catalog,
                     )
                     or llm.ground_plan_arguments(
                         objective,
