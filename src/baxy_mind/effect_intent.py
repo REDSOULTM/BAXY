@@ -17153,6 +17153,16 @@ def resolve_explicit_effects(
         return resolve_explicit_effects(
             completed_level_request, available, application_names, game_catalog,
         )
+    # AUDIO1789: the shell may resume a pending objective as «<request>
+    # <trusted clarification prefix> <answer>»; the two halves are read as
+    # the previous request and its answer.
+    if previous_user_text is None and "aclaracion confiable del usuario:" in _fold(text):
+        prior, _, answer = _fold(text).partition("aclaracion confiable del usuario:")
+        if prior.strip() and answer.strip():
+            return resolve_explicit_effects(
+                answer.strip(), available, application_names, game_catalog,
+                previous_user_text=prior.strip(),
+            )
     completed_app_volume_request = _completed_missing_app_volume_request(
         text, previous_user_text, available, application_names,
     )

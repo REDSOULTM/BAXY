@@ -2829,6 +2829,35 @@ def _window_query_reference_name(
     )
 
 
+def _completes_previous_request(
+    objective: str,
+    history: object,
+    available_operations: tuple[str, ...],
+    application_names: tuple[str, ...] | ApplicationCatalogIndex = (),
+    game_catalog: GameCatalogIndex = GameCatalogIndex(),
+) -> bool:
+    """AUDIO1789: the text answers the previous incomplete request (an amount, a
+    level, the music asked for) so the readers resolve it as that request."""
+
+    if not isinstance(history, list):
+        return False
+    previous = _previous_user_request(history, objective)
+    if not previous:
+        return False
+    try:
+        return effect_intent.resolve_explicit_effects(
+            objective,
+            available_operations,
+            application_names,
+            game_catalog,
+            previous_user_text=previous,
+        ) is not None and effect_intent.resolve_explicit_effects(
+            objective, available_operations, application_names, game_catalog,
+        ) is None
+    except (ValueError, TypeError):
+        return False
+
+
 def _history_has_pending_clarification(
     history: object,
     pending_clarification: bool | None = None,
@@ -6736,6 +6765,13 @@ def _prepare_turn_result(
         or deferred_clarification is not None
         or missing_open_referent
         or _history_has_pending_clarification(history, message.get("pendingClarification"))
+        # AUDIO1789 «subí el volumen de spotify» → «¿cuánto?» → «20»: the shell
+        # consumes its pending objective before this call, so the flag is
+        # false; an answer the readers complete against the previous request
+        # is that request, never noise.
+        or _completes_previous_request(
+            objective, history, authenticated_operations, application_names, game_catalog,
+        )
         else _unresolved_input_kind(objective)
     )
     # APPS1495 «abres team», «Abre stea,»: an open order naming a near miss of
