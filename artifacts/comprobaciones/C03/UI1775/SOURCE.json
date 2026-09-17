@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1775-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "No source change: src/Baxy.Providers.Windows/External/WindowsVisibleOcrLocator.cs (5 % margin among duplicate labels) and src/Baxy.Providers.Windows/Applications/WindowsInstalledApplicationOpenProvider.cs (30 s window wait), built with UI1775, measured on Epic.",
+  "patch": "artifacts/comprobaciones/C03/UI1775/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1775 (C03-repairs1775-build/BUILD_READY.json; sin cambios (compilación de UI1775))",
+  "cause_measured": "La etiqueta duplicada del launcher (14 px frente a 17 px) quedaba fuera del umbral del 80 % y el relanzamiento tras un cierre forzado superaba los 12 s de verificación.",
+  "change": "Ninguno en esta tanda; medición del margen del 5 % y de la espera de 30 s sobre la compilación de UI1775.",
+  "measurement": "UI1775: UI1775: 5 ejecutados, 5 aprobados, 1 crédito (H0432 con dos variantes): la etiqueta duplicada se resuelve por la impresión menor con margen del 5 % y app.open espera la ventana lenta del launcher; 1 créditos. UI1775 sobre BUILD1773: 1 literal, 2 variantes, 2 límites; 5/5 aprobados; clic OCR verificado sobre la navegación del launcher (14 px frente a 17 px)",
+  "credits": 1
+}
