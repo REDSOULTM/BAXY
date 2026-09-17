@@ -1,3 +1,25 @@
+## PIP1817 — estado vigente 2026-09-17T06:13:39.917773+00:00
+
+Parcial: 3 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 645/742 | 97 | 0 | >=529 | 14/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 529 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); PIP1817 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: PIP1817: 5 ejecutados, 3 aprobados, 2 fallidos, 0 créditos (índices []); Abrir aplicaciones 50/54. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/PIP1817/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 100.11 s acumulados; pico GPU 3497.56 MiB; pico RAM 1824.19 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque PIP1817 precedente. -->
+
 ## MIC1815 — estado vigente 2026-09-17T05:52:16.211952+00:00
 
 Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

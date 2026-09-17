@@ -1,0 +1,15 @@
+{
+  "schema": "c03-pip1817-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs, src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs, src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs, src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs (software.python.package.status: PEP 514 enumeration factored out, pip show per registered Python), src/baxy_mind/effect_intent.py (reader, contract, gate, resolver hook), src/baxy_mind/__main__.py (package argument), src/baxy_mind/llm.py (lens and number check), on top of the PIP1817 build.",
+  "patch": "artifacts/comprobaciones/C03/PIP1817/SOURCE.patch",
+  "commits": [
+    "6d3220afaa7958357f889e64c827ff27fa36e476"
+  ],
+  "build": "BUILD1817 (C03-repairs1817-build/BUILD_READY.json; Kernel, Core, proveedor y mente)",
+  "cause_measured": "Ningún lector resolvía instalar un paquete con pip; instalar cambia el Python del dueño y no es una capacidad del catálogo, pero leer si ya está instalado sí es posible con verdad.",
+  "change": "Nueva lectura software.python.package.status (pip show en cada Python registrado) con lector, argumento y lente; nada se instala; sin respuestas fijas.",
+  "measurement": "PIP1817: cinco casos en BUILD1817 (tres turnos ordinarios de paquete con pip, dos límites ordinarios): tres aprobados (el literal: requests instalado en Python 3.12.10 y 3.10.0 con las cadenas exactas del recibo y sin pip en 3.13.3; los dos límites) y dos fallidos (la variante numpy negó una instalación que el recibo muestra en dos Python; la variante pandas se contradijo y atribuyó el paquete a un Python que no lo tiene: el modelo generalizó la primera entrada de la lista, la del Python sin pip); 0 créditos. Causa medida: la lista por Python (installed true/false por entrada) se le entrega cruda al modelo de 4B, que generaliza la primera entrada. Sin crédito. Siguiente: repetir con la proyección partida (instalado en / no instalado en / sin pip en) y una comprobación de estado del final.",
+  "credits": 0
+}

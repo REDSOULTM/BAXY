@@ -1,0 +1,336 @@
+commit 6d3220afaa7958357f889e64c827ff27fa36e476
+
+C03: installing a Python package with pip is answered by a read of whether it is installed in each registered Python (PIP1817)
+
+New read-only operation software.python.package.status(package): the PEP 514 enumeration of software.python.status is factored out and pip show runs in every registered Python with an executable (installed, package version, pip available per Python); nothing is installed. The mind reads «instalá X con/usando pip», «pip install X», «instalá el paquete X» and «tengo X instalado en python» as that read, binds the package name, and the composer states in which Python versions the package is installed with the exact version strings.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs b/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
+index 06034d64..2394a719 100644
+--- a/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
++++ b/src/Baxy.Core/Operations/ExternalCapabilityHandlers.cs
+@@ -27,6 +27,7 @@ internal static class ExternalCapabilityHandlers
+         "clipboard.copy",
+         "clipboard.paste",
+         "display.status",
++        "software.python.package.status",
+         "software.python.status",
+         "document.pdf.read",
+         "email.latest.read",
+diff --git a/src/Baxy.Kernel/Operations/ProductCatalog.cs b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+index 0577c91c..044902e2 100644
+--- a/src/Baxy.Kernel/Operations/ProductCatalog.cs
++++ b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+@@ -1323,6 +1323,13 @@ public static class ProductCatalog
+             "routine.set.enabled.local.postread.v1",
+             ToolExposure.Public,
+             "Activa o desactiva metadatos de una rutina bajo CAS sin ejecutarla."),
++        Descriptor(
++            "software.python.package.status",
++            Schema([String("package")], ["package"]),
++            OperationRisks.ReadOnly,
++            "software.python.package.status.pip.show.read.v1",
++            ToolExposure.Public,
++            "Lee si un paquete de Python está instalado en cada instalación de Python registrada en Windows (pip show por instalación: instalada o no, versión del paquete, pip disponible) sin instalar ni cambiar nada; sin efecto."),
+         Descriptor(
+             "software.python.status",
+             EmptySchema(),
+diff --git a/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs b/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
+index 9c799f22..04e3ec64 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsDeviceControlAdapter.cs
+@@ -269,7 +269,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+     public bool CanHandle(string operation) => operation is
+         "bluetooth.device.list" or "bluetooth.device.pair"
+         or "bluetooth.radio.set" or "bluetooth.radio.status"
+-        or "display.status" or "software.python.status" or "calculator.expression.evaluate"
++        or "display.status" or "software.python.status" or "software.python.package.status" or "calculator.expression.evaluate"
+         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
+         or "wifi.profile.list" or "wifi.radio.set" or "wifi.radio.status" or "wifi.scan" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
+         or "wifi.ensure.connected" or "wifi.status"
+@@ -293,6 +293,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+                 "bluetooth.radio.status" => await BluetoothRadioStatusAsync(operation),
+                 "display.status" => DisplayStatus(operation),
+                 "software.python.status" => PythonStatus(operation),
++                "software.python.package.status" => await PythonPackageStatusAsync(operation, arguments, cancellationToken),
+                 "calculator.expression.evaluate" => await CalculatorEvaluateAsync(
+                     operation, arguments, effectBoundary, cancellationToken),
+                 "peripheral.list" => await PeripheralListAsync(operation, arguments, cancellationToken),
+@@ -690,7 +691,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+         return ExternalJson.Success(operation, result, effectObserved: true);
+     }
+ 
+-    private static ExternalCapabilityReceipt PythonStatus(string operation)
++    private static List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)> EnumerateRegisteredPythons()
+     {
+         var installs = new List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)>();
+         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+@@ -750,6 +751,12 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+             }
+         }
+         installs.Sort((left, right) => string.CompareOrdinal(right.Version, left.Version));
++        return installs;
++    }
++
++    private static ExternalCapabilityReceipt PythonStatus(string operation)
++    {
++        List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)> installs = EnumerateRegisteredPythons();
+         JsonElement result = ExternalJson.Create(writer =>
+         {
+             writer.WriteStartObject();
+@@ -774,6 +781,95 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
+         return ExternalJson.Success(operation, result, effectObserved: false);
+     }
+ 
++    // PIP1817 «instala requests con pip»: whether a package is installed is read
++    // with pip show in every registered Python; nothing is installed or changed.
++    private const string PipShowScript = """
++        $ErrorActionPreference='Continue';$exe=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]));$pkg=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[1]))
++        $out = & $exe -m pip show $pkg 2>&1 | Out-String
++        [pscustomobject]@{ok=$true;exit=$LASTEXITCODE;output=$out}|ConvertTo-Json -Compress
++        """;
++
++    private static readonly Regex PythonPackageName = new(
++        @"^[A-Za-z0-9](?:[A-Za-z0-9._-]{0,99})$",
++        RegexOptions.CultureInvariant);
++
++    private static string NormalizePythonPackage(string name) =>
++        name.Replace('_', '-').Replace('.', '-').ToLowerInvariant();
++
++    private async ValueTask<ExternalCapabilityReceipt> PythonPackageStatusAsync(
++        string operation,
++        JsonElement arguments,
++        CancellationToken token)
++    {
++        string package = ExternalJson.RequiredString(arguments, "package").Trim();
++        if (!PythonPackageName.IsMatch(package))
++        {
++            return ExternalJson.Failure(operation, "python_package_name_invalid");
++        }
++        List<(string Company, string Tag, string Version, string DisplayName, string? Executable, string Scope)> installs = EnumerateRegisteredPythons();
++        var rows = new List<(string DisplayName, string Version, bool PipAvailable, bool Installed, string? PackageVersion)>();
++        foreach ((string _, string _, string version, string displayName, string? executable, string _) in installs)
++        {
++            if (executable is null)
++            {
++                rows.Add((displayName, version, false, false, null));
++                continue;
++            }
++            ExternalProcessResult process = await RunPowerShellAsync(PipShowScript, [Encode(executable), Encode(package)], token);
++            string output = process.Output ?? string.Empty;
++            int exit = -1;
++            if (output.Contains('{', StringComparison.Ordinal))
++            {
++                try
++                {
++                    using JsonDocument document = ParseLastJson(output);
++                    JsonElement root = document.RootElement;
++                    if (root.ValueKind == JsonValueKind.Object)
++                    {
++                        output = root.TryGetProperty("output", out JsonElement text) && text.ValueKind == JsonValueKind.String ? text.GetString() ?? string.Empty : string.Empty;
++                        exit = root.TryGetProperty("exit", out JsonElement code) && code.ValueKind == JsonValueKind.Number ? code.GetInt32() : -1;
++                    }
++                }
++                catch (JsonException)
++                {
++                    exit = -1;
++                }
++            }
++            bool pipAvailable = !output.Contains("No module named pip", StringComparison.OrdinalIgnoreCase);
++            Match name = Regex.Match(output, @"(?im)^Name:\s*(\S+)\s*$");
++            Match packageVersion = Regex.Match(output, @"(?im)^Version:\s*(\S+)\s*$");
++            bool installed = pipAvailable && exit == 0 && name.Success
++                && string.Equals(NormalizePythonPackage(name.Groups[1].Value), NormalizePythonPackage(package), StringComparison.Ordinal);
++            rows.Add((displayName, version, pipAvailable, installed, installed && packageVersion.Success ? packageVersion.Groups[1].Value : null));
++        }
++        JsonElement result = ExternalJson.Create(writer =>
++        {
++            writer.WriteStartObject();
++            writer.WriteNumber("version", 1);
++            writer.WriteString("package", package);
++            writer.WriteNumber("pythonCount", rows.Count);
++            writer.WriteNumber("installedCount", rows.Count(row => row.Installed));
++            writer.WriteStartArray("pythons");
++            foreach ((string displayName, string version, bool pipAvailable, bool installed, string? packageVersion) in rows)
++            {
++                writer.WriteStartObject();
++                writer.WriteString("displayName", displayName);
++                writer.WriteString("pythonVersion", version);
++                writer.WriteBoolean("pipAvailable", pipAvailable);
++                writer.WriteBoolean("installed", installed);
++                if (packageVersion is not null)
++                {
++                    writer.WriteString("packageVersion", packageVersion);
++                }
++                writer.WriteEndObject();
++            }
++            writer.WriteEndArray();
++            writer.WriteString("authority", "python_pip_show_read");
++            writer.WriteEndObject();
++        });
++        return ExternalJson.Success(operation, result, effectObserved: false);
++    }
++
+     private static ExternalCapabilityReceipt DisplayStatus(string operation)
+     {
+         var monitors = new List<(string Name, bool Primary, uint Width, uint Height, uint Hertz)>();
+diff --git a/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs b/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
+index 081afc38..4fff3fff 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsExternalCapabilityProvider.cs
+@@ -214,6 +214,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
+             "display.status" => "windows_display_api_required",
+             "calculator.expression.evaluate" => "windows_calculator_uia_required",
+             "software.python.status" => "windows_registry_read_required",
++            "software.python.package.status" => "python_pip_read_required",
+             "ocr.read" => "windows_ocr_language_pack_gate_required",
+             "package.install.prepare" or "package.install.commit" => "winget_adapter_gate_required",
+             "system.settings.adjust" or "system.settings.set" or "system.settings.status" =>
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 52199185..160bc342 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -4973,6 +4973,11 @@ def _explicit_arguments_from_evidence(
+         ) or resolve_application_installed_name(evidence, application_names)
+         return {"name": name} if name is not None else None
+ 
++    if operation == "software.python.package.status":
++        # PIP1817: the package is the person's literal from the request.
++        package = effect_intent._python_package_request(evidence)
++        return {"package": package} if package is not None else None
++
+     if operation == "game.entitlement.named":
+         # INSTALL1617: the title is the person's literal from the request.
+         title = effect_intent.steam_library_title(evidence)
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index b4231a72..e5925670 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -1567,6 +1567,8 @@ def _curated_domain_is_grounded(
+         return True
+     if operation == "software.python.status":
+         return _has(folded, r"\bpython\b")
++    if operation == "software.python.package.status":
++        return _python_package_request(folded) is not None
+     if operation == "calculator.expression.evaluate":
+         return calculator_expression_request(folded) is not None
+     if operation == "display.status":
+@@ -10507,6 +10509,37 @@ def calculator_expression_request(text: str) -> str | None:
+     return None
+ 
+ 
++_PYTHON_PACKAGE_REQUEST = re.compile(
++    r"^[¿?¡!\s]*(?:"
++    # «instala requests con pip», «instalá numpy usando pip», «install pandas with pip»
++    r"(?:instala(?:me|r|la|lo)?|install|agrega(?:me)?|anade|pone(?:me)?|pon|add)\s+(?:el\s+|la\s+|the\s+)?"
++    r"(?:paquete\s+|package\s+|modulo\s+|module\s+|libreria\s+|library\s+)?(?P<a>[a-z0-9][a-z0-9._-]{0,60})"
++    r"(?:\s+(?:de|of|for)\s+python)?\s+(?:con|via|usando|mediante|with|using|through)\s+pip\b"
++    # «pip install requests»
++    r"|pip3?\s+install\s+(?:-u\s+|--upgrade\s+)?(?P<b>[a-z0-9][a-z0-9._-]{0,60})\b"
++    # «instala el paquete requests», «install the python module numpy»
++    r"|(?:instala(?:me|r)?|install)\s+(?:el\s+|la\s+|the\s+)?(?:python\s+)?(?:paquete|package|modulo|module|libreria|library)\s+(?:de\s+python\s+)?(?P<c>[a-z0-9][a-z0-9._-]{0,60})\b"
++    # «tengo requests instalado en python», «is numpy installed in python»
++    r"|(?:tengo|esta|is|do\s+i\s+have)\s+(?:instalad[oa]\s+)?(?:el\s+|la\s+|the\s+)?(?:paquete\s+|package\s+|modulo\s+|module\s+)?(?P<d>[a-z0-9][a-z0-9._-]{0,60})\s+(?:instalad[oa]\s+|installed\s+)?(?:en|in|para|for)\s+python\b"
++    r")",
++)
++
++
++def _python_package_request(text: str) -> str | None:
++    """PIP1817 «instala requests con pip»: the package named in an install-with-pip
++    or is-it-installed request, answered by a software.python.package.status read
++    (pip show in every registered Python) — never an install."""
++
++    folded = _strip_request_envelope(_fold(text)).strip()
++    match = _PYTHON_PACKAGE_REQUEST.match(folded)
++    if match is None:
++        return None
++    name = next((value for value in match.groups() if value), None)
++    if name is None or name in {"python", "pip", "pip3", "el", "la", "the", "un", "una", "a", "an"}:
++        return None
++    return name
++
++
+ def _python_status_question(text: str) -> bool:
+     """SYSTEM1697 «dime la versión de Python instalada», «qué versión de python
+     tengo», «is Python installed»: a software.python.status read of the registered
+@@ -10669,6 +10702,7 @@ def _is_direct_request(text: str) -> bool:
+         or _bluetooth_state_question(text)
+         or _display_status_question(text)
+         or _python_status_question(text)
++        or _python_package_request(text) is not None
+     ):
+         return True
+     request_head = (
+@@ -17225,6 +17259,10 @@ def resolve_explicit_effects(
+         application_names,
+     )
+     authenticated_games = build_game_catalog_index(game_catalog)
++    if "software.python.package.status" in available and _python_package_request(text) is not None:
++        # PIP1817: installing a Python package with pip is answered by whether
++        # it is already installed in the registered Pythons; nothing is installed.
++        return EffectIntent(("software.python.package.status",), (text,))
+     if (
+         "game.entitlement.named" in available
+         and steam_library_title(text) is not None
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 9f8ca906..2494b89c 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -5926,6 +5926,22 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+                 return "invented_number"
+         if shown_value and shown_value not in text and shown_value.replace(".", ",") not in text and shown_value.replace(",", ".") not in text:
+             return "missing_state"
++    if (
++        payload.get("operation") == "software.python.package.status"
++        and isinstance(seen, dict)
++        and isinstance(seen.get("pythons"), list)
++    ):
++        # PIP1817: every version-like number must be a registered Python version
++        # or the observed package version.
++        observed_versions: set[str] = set()
++        for entry in seen["pythons"]:
++            if isinstance(entry, dict):
++                for key in ("pythonVersion", "packageVersion", "tag"):
++                    if isinstance(entry.get(key), str):
++                        observed_versions.add(entry[key].strip())
++        for number in re.findall(r"(?<![\w.])\d+(?:\.\d+)+(?![\w.])", text):
++            if not any(version == number or version.startswith(number + ".") for version in observed_versions):
++                return "invented_number"
+     if (
+         payload.get("operation") == "software.python.status"
+         and isinstance(seen, dict)
+@@ -14313,6 +14329,32 @@ class LlmRuntime:
+                 "ejemplo que seis por siete da 42 en la Calculadora), usando sólo esos "
+                 "números; no se hizo nada más."
+             )
++        if (
++            visible_situation.get("operation") == "software.python.package.status"
++            and isinstance(visible_situation.get("seen"), dict)
++            and isinstance(visible_situation["seen"].get("pythons"), list)
++        ):
++            # PIP1817: the read says whether the package is installed in each
++            # registered Python; nothing was installed.
++            instruct(
++                "\nseen.package is the Python package asked about; seen.pythons are the "
++                "Python installs registered in Windows (displayName, pythonVersion, installed "
++                "true/false, packageVersion when installed, pipAvailable) and "
++                "seen.installedCount how many of them have it. Say whether the package is "
++                "already installed and in which Python versions (exact pythonVersion strings, "
++                "with its packageVersion), or that it is not installed in any of them; if some "
++                "Python has pipAvailable false, say pip is not available there. Nothing was "
++                "installed or changed. No other numbers."
++                if response_language == "en"
++                else "\nseen.package es el paquete de Python consultado; seen.pythons son las "
++                "instalaciones de Python registradas en Windows (displayName, pythonVersion, "
++                "installed true/false, packageVersion si está instalado, pipAvailable) y "
++                "seen.installedCount cuántas lo tienen. Di si el paquete ya está instalado y "
++                "en qué versiones de Python (cadenas pythonVersion exactas, con su "
++                "packageVersion), o que no está instalado en ninguna; si en alguna "
++                "pipAvailable es false, di que ahí no hay pip. No se instaló ni se cambió "
++                "nada. Sin otros números."
++            )
+         if (
+             visible_situation.get("operation") == "software.python.status"
+             and isinstance(visible_situation.get("seen"), dict)
