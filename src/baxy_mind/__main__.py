@@ -5205,6 +5205,11 @@ def _explicit_arguments_from_evidence(
         return _explicit_media_control_arguments(evidence)
 
     if operation == "web.search":
+        research_question = effect_intent._research_question_query(evidence)
+        if research_question is not None:
+            # WEB1831: the engine answers the question in the person's words
+            # (the lead-in supplies the subject when the question names none).
+            return {"query": research_question}
         destination = effect_intent._symbolic_web_destination(evidence)
         if destination is not None:
             return {"query": destination}
