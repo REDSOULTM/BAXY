@@ -2092,8 +2092,12 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         // disambiguation is pending. Pending choices are handled before this
         // method, so a number reaching this point must never wait for or enter
         // the neural path.
+        // AUDIO1787 «subí el volumen de spotify» → «¿cuánto?» → «20»: while a
+        // mind clarification is pending, a bare number is the answer it asked
+        // for (an amount, a level), not a contextless selection.
         bool isContextlessSelection =
-            NoteChoiceReplyParser.Parse(route.Text).Kind
+            pendingClarificationObjective is null
+            && NoteChoiceReplyParser.Parse(route.Text).Kind
             == NoteChoiceReplyKind.Select;
         if (isContextlessSelection)
         {
