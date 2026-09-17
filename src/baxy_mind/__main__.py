@@ -3878,9 +3878,11 @@ def _explicit_stable_no_effect_turn_decision(
         and (
             not any(separator in folded for separator in (",", ";"))
             or re.match(
-                r"^\s*(?:(?:que\s+)?(?:lo|la|los|las|me|te)\s+)?"
-                r"(?:estoy|estamos|esta|estan|sigo|seguimos|necesito|necesitamos|"
-                r"i'?m|i\s+am|it'?s|we'?re|they'?re|porque|because|ya\s+que)\b",
+                # KNOW1835 «No me contestes nada, solo estaba pensando en voz alta.»:
+                # a past-tense or «just …» explanation is the same justification.
+                r"^\s*(?:(?:solo|just)\s+)?(?:(?:que\s+)?(?:lo|la|los|las|me|te)\s+)?"
+                r"(?:estoy|estamos|esta|estan|estaba|estabamos|era|sigo|seguimos|necesito|necesitamos|"
+                r"i'?m|i\s+am|i\s+was|we\s+were|it'?s|it\s+was|we'?re|they'?re|porque|because|ya\s+que)\b",
                 re.split(r"[,;]", folded, 1)[1],
                 re.IGNORECASE,
             )
