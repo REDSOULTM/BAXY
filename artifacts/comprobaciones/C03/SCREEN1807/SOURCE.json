@@ -1,0 +1,15 @@
+{
+  "schema": "c03-screen1807-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (a leading statement of what is open on the screen frames the request; «ve qué hay en pantalla», «para ver la pantalla» and «identificá el botón» after a capture are the screen text read), on top of the SCREEN1807 build.",
+  "patch": "artifacts/comprobaciones/C03/SCREEN1807/SOURCE.patch",
+  "commits": [
+    "0bb6e9a13cf18c3f1217aadf260d2d3553103a39"
+  ],
+  "build": "BUILD1807 (C03-repairs1807-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "El lector estricto no resolvía las tres filas: la afirmación inicial de lo que está abierto no es el acto de habla y ver qué hay en pantalla, ver la pantalla o identificar el botón tras la captura no estaban entre las formas de la lectura de pantalla.",
+  "change": "Prefacio de estado de pantalla descartado antes de leer el pedido (rama estricta y puerta de autoridad) y tres formas nuevas de la lectura de captura + texto reconocido; sin respuestas fijas.",
+  "measurement": "SCREEN1807: seis casos en BUILD1807 (cinco turnos revisados de captura con el diálogo de instalación de Steam abierto y cerrado por la raíz, nada instalado; un límite ordinario): tres aprobados (el literal que pide ver qué hay en pantalla, con aviso honesto de alcance, 25 líneas y tres citas textuales; la variante en castellano; el límite) y tres fallidos (los literales «para ver la pantalla» e «identificá el botón» copiaron la instrucción interna «y cita cada una de esas líneas tal cual» como frase propia y no dijeron que sólo leen el texto; la variante en inglés afirmó 3 líneas, la cuenta del extracto, y envolvió toda la respuesta entre comillas); 0 créditos. Causa medida: el aviso honesto de alcance sólo se pide cuando el pedido dice ver/describir/hay en; el compositor expone excerptLines junto a lineCount y la instrucción «cita cada una de esas líneas tal cual» es copiable como frase. Sin crédito: una sola variante aprobada. Siguiente: repetir con la reparación del compositor (aviso para «para ver la pantalla», «identificá el botón»; sin excerptLines; eco de la instrucción vetado).",
+  "credits": 0
+}

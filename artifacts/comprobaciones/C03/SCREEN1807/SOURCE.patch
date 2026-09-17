@@ -1,0 +1,68 @@
+commit 0bb6e9a13cf18c3f1217aadf260d2d3553103a39
+
+C03: a leading statement of what is open on the screen frames the request, and «ve qué hay en pantalla», «para ver la pantalla» and «identificá el botón» after a capture are the screen text read (SCREEN1807)
+
+The strict reader now discards a screen-state preface («hay un diálogo de Steam abierto para instalar X, …», «there is a Steam dialog open; …») before reading the request, in the strict branch and in the authority gate, and the describe branch of the capture read accepts «ve qué hay en pantalla», «para ver la pantalla» and «identificá el botón»: the capture followed by ocr.read is the only faithful screen read on this PC (no vision provider).
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index be2a6acb..b4231a72 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -10648,6 +10648,8 @@ def _is_direct_request(text: str) -> bool:
+     conditioned = re.sub(_OPEN_STATE_CONDITION, "", text, count=1)
+     if conditioned != text and conditioned.strip():
+         text = conditioned
++    # SCREEN1807: a leading statement of what is open on the screen frames the request.
++    text = _without_screen_state_preface(text)
+     # LIMITS1681 «en Discord apretá enter»: the client context frames the request.
+     framed = re.sub(r"^[¿?¡!\s]*(?:en|in|on)\s+(?:discord|whatsapp|teams|telegram|slack|skype|zoom|signal|messenger)[,]?\s+", "", text, count=1)
+     if framed != text and framed.strip():
+@@ -10888,6 +10890,22 @@ def _known_folder_listing_request(text: str) -> str | None:
+     return _KNOWN_FOLDER_ENUM.get(match.group("folder"))
+ 
+ 
++def _without_screen_state_preface(text: str) -> str:
++    """SCREEN1807: «hay un diálogo de Steam abierto para instalar X, toca …» /
++    «there is a Steam dialog open; take …»: the leading statement of what is
++    open frames the request; the clause after it is the speech act."""
++
++    stripped = re.sub(
++        r"^[¿?¡!\s]*(?:hay|there\s+is|there's|tengo|i\s+have)\s+(?:un|una|unos|unas|el|la|a|an|the)\b"
++        r"[^,.;]*?\b(?:abiert[oa]s?|open)\b[^,.;]*[,.;]\s*",
++        "",
++        text,
++        count=1,
++        flags=re.IGNORECASE,
++    ).strip()
++    return stripped or text
++
++
+ def _strict_catalog_request(
+     text: str,
+     available_operations: frozenset[str],
+@@ -10905,6 +10923,7 @@ def _strict_catalog_request(
+     # (``Baxy, por favor: ...``).  The outer resolver removes one layer; peel
+     # at most one remaining non-semantic layer for surface invariance.
+     text = _strip_request_envelope(text).strip().rstrip(".!?").rstrip()
++    text = _without_screen_state_preface(text)
+     if "filesystem.known.list" in available_operations and (
+         _known_folder_listing_request(text) is not None
+         or _known_folder_recent_listing(text) is not None
+@@ -12113,7 +12132,13 @@ def _strict_catalog_request(
+         ) and _has(
+             text,
+             r"\b(?:describ\w*|decime|dime|contame|cuentame|tell\s+me)\s+"
+-            r"(?:lo\s+que\s+ves|que\s+ves|what\s+you\s+see)\b",
++            r"(?:lo\s+que\s+ves|que\s+ves|what\s+you\s+see|que\s+dice|what\s+it\s+says|"
++            r"que\s+hay(?:\s+en\s+(?:la\s+)?pantal\w*)?|what\s+is\s+on\s+(?:the\s+)?screen)\b|"
++            # SCREEN1807: «ve qué hay en pantalla», «para ver la pantalla»,
++            # «identificá el botón» after a capture are the screen text read.
++            r"\b(?:ve|mira|fijate|chequea|revisa|see|check|look)\s+(?:que|lo\s+que|what)\s+(?:hay|there\s+is)\b|"
++            r"\b(?:para|to)\s+(?:ver|see)\s+(?:la\s+|the\s+)?(?:pantalla|screen)\b|"
++            r"\b(?:identifica\w*|identify|ubica|localiza|find)\s+(?:el\s+|los\s+|the\s+)?(?:boton\w*|button\w*)\b",
+         ) and not _has(
+             text,
+             r"\b(?:pantalla|screen)\s+(?:del|de mi|of my)\s+"
