@@ -1,0 +1,15 @@
+{
+  "schema": "c03-audio1787-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (audio.app.volume.adjust descriptor), src/Baxy.Providers.Windows/Audio/WindowsCoreAudioSessions.cs and External/WindowsAppVolumeAdapter.cs (session adjustment and adapter), src/Baxy.Core/Program.cs and WindowsExternalCapabilityProvider.cs (registration), src/baxy_mind/effect_intent.py (app_volume_request, clarification, answer completion), src/baxy_mind/__main__.py (arguments, catalog for the clarification resolver) and src/baxy_mind/llm.py (deferred compose set, description, cause fact), on top of the AUDIO1787 build.",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1787/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1787 (C03-repairs1787-build/BUILD_READY.json; producto y mente)",
+  "cause_measured": "No existía una operación sobre el volumen propio de una aplicación y el pedido estaba contratado como límite conocido.",
+  "change": "Operación audio.app.volume.adjust (sesiones de audio de la aplicación, postlectura verificada) y lectores con pregunta de cantidad; sin respuestas fijas.",
+  "measurement": "AUDIO1787: AUDIO1787: 5 ejecutados, 2 aprobados (límites), 3 fallidos, 0 créditos; las tres preguntas se publicaron y la App rechazó la respuesta numérica sola antes de la mente (guardia de selección de nota sin contexto); 0 créditos. AUDIO1787 sobre BUILD1787: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 aprobados",
+  "credits": 0
+}

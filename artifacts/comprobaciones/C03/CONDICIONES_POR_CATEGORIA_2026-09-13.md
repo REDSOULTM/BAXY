@@ -1346,3 +1346,7 @@ Organizar ventanas y pestañas pasa de 11/13 a 11/13 con colocar una aplicación
 ## Actualización 2026-09-17 (ARRANGE1785)
 
 Organizar ventanas y pestañas pasa de 11/13 a 12/13 con colocar una aplicación nombrada en una mitad de la pantalla ejecutado y verificado sobre su ventana (window.snap con lado literal en ambos idiomas); literal y dos variantes aprobados (commit 8dee706b, BUILD1785) (HEAD 8dee706b): ARRANGE1785: 5 ejecutados, 4 aprobados, 1 crédito (H0268 con dos variantes): window.snap coloca la ventana de Chrome en la mitad pedida con límites verificados; el límite de definición derivó a ventanas de edificios, 1 créditos. ARRANGE1785 sobre BUILD1785: 1 literal, 2 variantes (1 en inglés), 2 límites; 4/5 aprobados
+
+## Actualización 2026-09-17 (AUDIO1787)
+
+Música pasa de 38/39 a 38/39 con subir o bajar el volumen propio de una aplicación nombrada: la operación y la pregunta existen, pero la respuesta numérica sola es rechazada por la App antes de la mente (guardia de selección de nota sin contexto); sin crédito (commit ce9f3909, BUILD1787) (HEAD ce9f3909): AUDIO1787: 5 ejecutados, 2 aprobados (límites), 3 fallidos, 0 créditos; las tres preguntas se publicaron y la App rechazó la respuesta numérica sola antes de la mente (guardia de selección de nota sin contexto), 0 créditos. AUDIO1787 sobre BUILD1787: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 aprobados
