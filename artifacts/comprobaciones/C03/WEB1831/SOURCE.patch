@@ -1,0 +1,115 @@
+commit d7d2272c409fce659855a7970b9c3c730bb11e94
+
+C03: a research order that carries a question is the public search for that question in the person's words, and a conversational lead-in supplies its subject (WEB1831)
+
+The mind reads «…, puedes investigar en internet porqué suele fallar», «Investigá en internet por qué falla WhatsApp» and «Search the internet for why WhatsApp keeps failing» as web.search with the question as the query (a who/what question keeps its subject lookup); when the question names no subject, the statement before the request («me falla mucho whatsapp») is prepended; the resolver, the authoritative gate and the argument binding use the same reader.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 4c3192fd..305a0082 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -5205,6 +5205,11 @@ def _explicit_arguments_from_evidence(
+         return _explicit_media_control_arguments(evidence)
+ 
+     if operation == "web.search":
++        research_question = effect_intent._research_question_query(evidence)
++        if research_question is not None:
++            # WEB1831: the engine answers the question in the person's words
++            # (the lead-in supplies the subject when the question names none).
++            return {"query": research_question}
+         destination = effect_intent._symbolic_web_destination(evidence)
+         if destination is not None:
+             return {"query": destination}
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index ce6773ff..d86a057a 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -208,6 +208,66 @@ def _topic_research_query(text: str) -> str | None:
+     return topic
+ 
+ 
++_RESEARCH_VERBS = (
++    r"(?:investiga(?:r|me)?|research|look\s+(?:into|up)|busca(?:r|me)?|search|averigua(?:r|me)?|find\s+out)"
++)
++_RESEARCH_LEAD_IN = re.compile(
++    r"^[¿?¡!\s]*(?:(?:muy\s+bien|bueno|buenas|mira|sabes|oye|oime|che|hola|ok|okay|escucha|a\s+ver)[,.!\s]+)*"
++    r"(?P<lead>[^,.;?!]{3,140}?)\s*[,.;]\s*"
++    r"(?:(?:me\s+|te\s+)?(?:puedes|podes|podrias|can\s+you|could\s+you|would\s+you|please)\s+)?"
++    rf"(?P<request>{_RESEARCH_VERBS}\b.*)$",
++    re.IGNORECASE,
++)
++_RESEARCH_QUESTION = re.compile(
++    r"^[¿?¡!\s]*(?:(?:me\s+|te\s+)?(?:puedes|podes|podrias|can\s+you|could\s+you|would\s+you|please)\s+)?"
++    rf"{_RESEARCH_VERBS}\s+"
++    r"(?:(?:en\s+internet|en\s+la\s+web|en\s+google|online|on\s+the\s+internet|on\s+the\s+web|the\s+internet|the\s+web)\s+)?"
++    r"(?:(?:for|sobre|acerca\s+de|about)\s+)?"
++    r"(?P<question>(?:por\s*que|porq\w*|why|como|how|que|what|cual(?:es)?|which|donde|where|cuando|when|quien(?:es)?|who)\b.+?)\s*[.!?]*$",
++    re.IGNORECASE,
++)
++_RESEARCH_FUNCTION_WORDS = (
++    r"\b(?:por\s*que|porq\w*|why|como|how|que|what|cual|cuales|which|donde|where|cuando|when|quien|quienes|who|"
++    r"suele|suelen|se|me|te|le|nos|lo|la|los|las|el|un|una|de|del|a|al|en|y|o|falla|fallar|fallan|cae|caer|pasa|pasar|"
++    r"funciona|funcionar|anda|andar|no|si|es|esta|estan|hay|tanto|tan|mucho|siempre|does|do|is|are|it|keeps|keep|"
++    r"failing|fails|fail|crashing|crashes|crash|working|work|the|so|much|always|often)\b"
++)
++
++
++def _research_question_query(text: str) -> str | None:
++    """WEB1831 «me falla mucho whatsapp, puedes investigar en internet porqeu suele
++    fallar», «Investigá en internet por qué falla WhatsApp.»: the question the person
++    wants researched, in their own words, as the public search query; a
++    conversational lead-in supplies the subject when the question names none.
++    None for a who/what question (its subject is looked up instead) or a local thing."""
++
++    raw = _strip_request_envelope(text).strip()
++    lead = None
++    opened = _RESEARCH_LEAD_IN.match(_fold(raw))
++    if opened is not None:
++        lead = opened.group("lead").strip()
++        raw = raw[len(raw) - len(opened.group("request")):] if len(opened.group("request")) <= len(raw) else raw
++    question_match = _RESEARCH_QUESTION.match(_fold(raw))
++    if question_match is None or _research_question_subject(raw) is not None:
++        return None
++    folded_question = question_match.group("question").strip(" .!?,;")
++    if not folded_question or len(folded_question.encode("utf-8")) > 300:
++        return None
++    if _has(folded_question, r"\b(?:archivos?|files?|carpetas?|folders?|documentos?|documents?|notas?|notes?|mi\s+pc|my\s+pc|este\s+equipo)\b"):
++        return None
++    # The person's own spelling: the question as written in the request.
++    start = _fold(raw).find(folded_question)
++    question = raw[start:start + len(folded_question)].strip(" .!?,;") if start >= 0 and len(_fold(raw)) == len(raw) else folded_question
++    content = re.sub(_RESEARCH_FUNCTION_WORDS, " ", folded_question)
++    if lead is not None and not re.search(r"\b[a-z0-9]{3,}\b", content):
++        # «me falla mucho whatsapp, … porqeu suele fallar»: the question names
++        # no subject; the lead-in states it, in the person's words.
++        lead_start = _fold(text).find(lead)
++        lead_text = text[lead_start:lead_start + len(lead)] if lead_start >= 0 and len(_fold(text)) == len(text) else lead
++        return f"{lead_text.strip()} {question}".strip()
++    return question
++
++
+ _ENTITY_LOOKUP = re.compile(
+     r"^[¿?¡!\s]*(?:"
+     r"(?:quien|quién|quienes|quiénes|who)\s+(?:es|fue|era|son|fueron|eran|is|was|are|were)|"
+@@ -10781,6 +10841,7 @@ def _is_direct_request(text: str) -> bool:
+         or _python_status_question(text)
+         or _python_package_request(text) is not None
+         or _removable_storage_request(text)
++        or _research_question_query(text) is not None
+     ):
+         return True
+     request_head = (
+@@ -17342,6 +17403,10 @@ def resolve_explicit_effects(
+         # MUSIC1827 «open Edge and play some music»: which music is asked first
+         # (clarification), not an open-and-play mission with «some music».
+         return None
++    if "web.search" in available and _research_question_query(text) is not None:
++        # WEB1831: a research order carrying a question is the public search
++        # for that question, in the person's words.
++        return EffectIntent(("web.search",), (text,))
+     if "storage.removable.list" in available and _removable_storage_request(text):
+         # USB1823: a backup or copy to a pendrive first reads which removable
+         # drives are connected; nothing is copied.

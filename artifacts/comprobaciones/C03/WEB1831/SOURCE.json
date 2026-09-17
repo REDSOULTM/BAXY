@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1831-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (research question reader with lead-in, resolver hook, authoritative gate) and src/baxy_mind/__main__.py (query binding), on top of the WEB1831 build.",
+  "patch": "artifacts/comprobaciones/C03/WEB1831/SOURCE.patch",
+  "commits": [
+    "d7d2272c409fce659855a7970b9c3c730bb11e94"
+  ],
+  "build": "BUILD1831 (C03-repairs1831-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "El preámbulo conversacional bloqueaba al lector de investigación y la consulta enlazada para una pregunta investigada era la oración entera o un fragmento roto.",
+  "change": "Lector de pregunta investigada con preámbulo y enlace de la consulta con las palabras de la persona; sin respuestas fijas.",
+  "measurement": "WEB1831: cinco casos en BUILD1831 (tres turnos ordinarios de búsqueda, dos límites ordinarios): la mente leyó el literal pese al preámbulo conversacional y enlazó las palabras de la persona como consulta, y las variantes directas enlazaron su pregunta, pero las tres web.search terminaron web_search_results_irrelevant (el RSS de Bing devuelve páginas ajenas para una consulta con forma de pregunta y la puerta de pertinencia no admitió ninguna); los finales dijeron con verdad que no pudieron investigar; los dos límites aprobados; 0 créditos. Causa medida: el motor público no responde consultas con forma de pregunta y la puerta de pertinencia exige todas las palabras de la consulta. Sin crédito. Siguiente: consulta de palabras de contenido (sujeto y verbo de la persona) y pertinencia tolerante a flexiones.",
+  "credits": 0
+}
