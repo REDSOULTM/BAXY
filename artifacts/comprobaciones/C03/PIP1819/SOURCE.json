@@ -1,0 +1,15 @@
+{
+  "schema": "c03-pip1819-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (package-status projection as split lists, lens, package_state_reversed check and hint), on top of the PIP1819 build.",
+  "patch": "artifacts/comprobaciones/C03/PIP1819/SOURCE.patch",
+  "commits": [
+    "42d449d152d5c8925c47983c3ea814be85e55a93"
+  ],
+  "build": "BUILD1819 (C03-repairs1819-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "La lista por Python con installed true/false por entrada se entregaba cruda y el modelo generalizó la primera entrada, negando instalaciones que el recibo muestra.",
+  "change": "Proyección partida (installedIn, notInstalledIn, noPipIn), lente sobre esas listas y comprobación de estado del final; sin respuestas fijas.",
+  "measurement": "PIP1819: cinco casos en BUILD1819 (tres turnos ordinarios de paquete con pip, dos límites ordinarios): cuatro aprobados (las dos variantes con las listas partidas: numpy instalado en Python 3.12.10 y 3.10.0 con sus versiones y sin pip en 3.13.3; pandas instalado sólo en 3.12.10; los dos límites) y uno fallido (el literal no recibió final: sus tres borradores verdaderos empiezan con el nombre del paquete tal cual lo escribió la persona y la regla de mayúscula inicial del compositor los vetó); 0 créditos. Causa medida: la regla de mayúscula inicial veta un final que empieza con el identificador del paquete observado. Sin crédito. Siguiente: repetir con la exención del identificador observado al inicio.",
+  "credits": 0
+}

@@ -1,0 +1,271 @@
+[
+  {
+    "index": 0,
+    "case_id": "H0052",
+    "verdict": "failed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Falló: la operación no se completó o no se verificó, o el final no fue fiel.",
+    "observation_note": "Turno ordinario: software.python.package.status completada y verificada; ningún final llegó a la persona: los borradores verdaderos fueron vetados por la regla de mayúscula inicial al empezar con el nombre del paquete.",
+    "final_sha256": "b2b148f30140319b38c1af556fd0d989c59a15bc709e49bc71041af81573cfbd",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\results\\case-00\\EXIT.json": "6fa7009e52b39137bcc83ee482453c6baccf7759baf55a336058411fbc94ebaa",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\results\\case-00\\RESOURCES.json": "cc3000a5a47bf3038d0f13417509b51adbbcaba3bba6c730ce7c44f1562e4001",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\profile-owner-00.json": "d1c257510a6c4192a5b171a817f42586a9dd7b353b8b888d131987d4f09f432e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\results\\case-00\\PREREG.json": "234031466b2621317b1dce7ba8d83db237da9efb1ff2ff6dac5c1782d268e7d9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-00\\capture\\events.jsonl": "ea0c31ed2a382394059df9f49aefbd0271c0254229670abf4d89e275cffef696",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-00\\turns.jsonl": "0f492a58c0b5a35a359341e9e7bd6280ab2a713fc528e15cc0e57f58b3d1d03e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\fixture-00.json": "6e235514921ebdccdef1ae669710039b227022419aefbde56b1652aa96822386",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\context-00.json": "d2fcde255d8de87505081071fcfc76ee92a8b33f47e25c3350a8e9989570117a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\context-prelaunch-00.json": "12c5ac116d2c92211130293e7b5ba979bf5d56a78996f9b8bef8df8993f8a158",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-00\\case-observations.json": "7cc76b72e8d57cbbb7a41c207d725e43166edfcfddcd4bbcd527ba0173013b95",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-00\\journal-before.json": "aa1c182f67dce94eac5e36f9be087942fffab04c23d2a6efa92c3e257b0c1b3d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-00\\journal-after.json": "a1616e8530b37476cd771a533446704582d0060c20b22c4632b9f074842e2796",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "acca8f5cc75fd95f398fb7ea0fa2689cf0cf52f55d7670300dbe394a37bdb3eb"
+    },
+    "terminal_kind": "composition_failed",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "0f9ee3a1-0f25-43d6-b4af-1094877d55c9",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "fb7c105c-4b37-43bb-b677-30244c2e8546",
+        "operation": "software.python.package.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "case_id": "pip1819-dev-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "software.python.package.status completada y verificada (pip show en cada Python registrado, nada instalado); el final dijo si el paquete ya está instalado y en qué versiones de Python con sus cadenas exactas.",
+    "observation_note": "Turno ordinario: exactamente una software.python.package.status completada y verificada (pip show en cada Python registrado en Windows, nada instalado); el final dijo si el paquete está instalado y en qué versiones de Python con sus cadenas exactas; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "1672b6531bc4e10bc054fc0a62f3096a2a770bee90b14b14dec2bbe8d3b83b48",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\results\\case-01\\EXIT.json": "4aa452fbdb32cc721d581a20f94dbc673b707129e6b6a5b8909b79425199f104",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\results\\case-01\\RESOURCES.json": "cf4269e9e5fcd3423e16b715a47a390ee570574be8813eab317bc379bb92cf7a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\profile-owner-01.json": "8770e1e03843ed845c4a7f84bd503ad91d1cc71b212c083ba9734e585eda3f04",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\results\\case-01\\PREREG.json": "bf3eb283f34aefa08531a3f03b22cf88d87425701d857db77b7810c71cc8c7b4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-01\\capture\\events.jsonl": "fbd979abc6ce2f1f6b15eb5639a689fc3baf1087ea5f06afc5769aefe4e94641",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-01\\turns.jsonl": "df966d44da3dccafa39c477606663bea3d9af60beb83742c248c128e457bf34e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\fixture-01.json": "8e8ac1643157accb85da19866bc82f264ae76dd7362727cf09f1e9f99eb7cb74",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\context-01.json": "ac2dafb939b179f72e211820fed16cfa8a0195fc258b34cf16327a316886cc79",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\context-prelaunch-01.json": "301d94b5c06773fcb54071f1ea41ff2a8fc61e35c25f95ec3509fa2caaf29bc0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-01\\case-observations.json": "e45ab67399a9e7dd9951d143aab715b5ebc15edba03a74afc521832d539539ea",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-01\\journal-before.json": "379de0cde79c7af41903ce1eaa74bbfc470a6c6f271e1dff0a8b3eaa637587f0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-01\\journal-after.json": "1e48a9ae057aea24eaebfbae82744ca78c53953a7c7a70a18668594c5c18d8c4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "11aa7ae4e7abfe887618684d0457041f73c492de2ccde10e557e31a6f95e0653"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "b91cbf20-643c-4d7c-a865-a05f62a1e824",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "9c920d81-276c-4ec4-9889-15d856085bdc",
+        "operation": "software.python.package.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "case_id": "pip1819-dev-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "software.python.package.status completada y verificada (pip show en cada Python registrado, nada instalado); el final dijo si el paquete ya está instalado y en qué versiones de Python con sus cadenas exactas.",
+    "observation_note": "Turno ordinario: exactamente una software.python.package.status completada y verificada (pip show en cada Python registrado en Windows, nada instalado); el final dijo si el paquete está instalado y en qué versiones de Python con sus cadenas exactas; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "bc80ffe9e9588b5adacc4fc6162934e474f98affbfb9c2012133b733062c284c",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\results\\case-02\\EXIT.json": "b3736f9658d24fa969ad4aab7804c0f30ff58f458d1615ebca6090e18f128a55",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\results\\case-02\\RESOURCES.json": "da7f5021f396263f16b6bc194eaf3bad7892ce8125cd42edc7d15c07ee01daf4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\profile-owner-02.json": "ce009fe0552e533af90a1340fbdcafd3f51ee457dc394b94533deec0af320e0f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\results\\case-02\\PREREG.json": "a1fa919f369ccf99d135670677f22284decb61d9ed8f6ea410ba57fdd8e2667b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-02\\capture\\events.jsonl": "a8705c10177d23e0c5032f9437d3f5f90ed70e0252309c7d44fb267d4885df59",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-02\\turns.jsonl": "3841489f3d6470a8575a950cf585a18d104a9fc89b68c7a917ecceadbf2aa419",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\fixture-02.json": "9b1c92e02dad7b175f9e09d65dce4afd04853d25b534aff52feff4c7e01805c1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\context-02.json": "f0ee866774d655bb1eca42334dc33af8c2619652f4afd4aa27d6b7cce1bbb756",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\context-prelaunch-02.json": "e42dd548b706e31015dddad9fe379c840601a289d7f59f85c063f795d39164d4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-02\\case-observations.json": "504341e221aa93492796528e1ae63888b5fe10b3e9ad4dda80f312087bbcd5ad",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-02\\journal-before.json": "299bd0feac7c3260bc69b1ee7183239b9ee78e23c7097f03a3441caa53fa4df0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-02\\journal-after.json": "65318d2414e38f283d1c235273e95f3ec8f6f4f3d67e8e1b5446e45d6ec30fdc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "6ca4054632f964394ebb8fde69a5e369e49b7a02b341fcc8f08eb37539cc8e64"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "4c6f5774-e5f7-4219-8beb-da47411c29bd",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "3b3e2c55-9954-46a6-8e6a-3b45d335437e",
+        "operation": "software.python.package.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "case_id": "pip1819-boundary-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "539c6210606fa578f001a45598e7e8de5f4deab5c72cae473de0aa723636597b",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\results\\case-03\\EXIT.json": "c7004cf2493df1cc949643a41893da5296dfe1216734ee178f315524b662c475",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\results\\case-03\\RESOURCES.json": "68a95a7f38abab73774fbb9f30e922106aaacc08f05fb0053d33f76e0d948355",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\profile-owner-03.json": "e65d52c646acd8ae6eed311d59e6a0aa1c6fdd31996e46170c92977f58634605",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\results\\case-03\\PREREG.json": "40ae7b7111f9248dec3a5d853386db874a3307bd80e82fd05b7e2d274947ed96",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-03\\capture\\events.jsonl": "5c2da8da438f25cb23154f757aa960af2e27c408abb65a5a032cc8afae7c80fe",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-03\\turns.jsonl": "09ac0cc28f30553ae2a984cf08e5e16bfaa69078ecfeb2584ac668c0a63703dc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\fixture-03.json": "a7ea05f45cd3a34ab189c5cd7bc4c858815625940107f0e71e990a16b3862184",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\context-03.json": "2e16f845daaa150eba8b23123da979ff7273dbae717293b4bd964a8a670542f0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\context-prelaunch-03.json": "b8469f653ff8c293ecb4734c487309285b7b8e427a3d8414805790ebc6e59790",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-03\\case-observations.json": "eae0f5dd7399516b9c21b74efc1e6edc2c5cc263ce05f14edb346651af56a0d7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-03\\journal-before.json": "7ab4a6dcfb3ffb46e42025af402b121f6163f019051befcc153dcff96da63313",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-03\\journal-after.json": "81aa9e330d08cfde70a8efa318b4a42e9d98f232e84a57377b89188b7f10a992",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "c816d0adb7f8705ab3c2b4bfb6a39bbed15ff55fc366fbb810000b235f136940"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "88bebcad-b377-44fd-b78d-f2484e89efc7",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "case_id": "pip1819-boundary-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "ff1117df60b068ddf1f0ec13ef5a0b9b076f743fabbf64f03241d0d3e542c151",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\results\\case-04\\EXIT.json": "9fdb98b6cd141e95c9cff8708c4459b684cfdc3e841b7ab69f013b52d1fa5ad1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\results\\case-04\\RESOURCES.json": "7d0b195a095cc0b9949f753a1c7d7cb809149d8bb40adfa3fd423cebc3a80ce9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\profile-owner-04.json": "5bafeed4dec3915d23521b96f28512ab429d8160fa59c47c729c95ecde97e4d2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\results\\case-04\\PREREG.json": "b7bd26a0924420c66e53e6fcd88af7560effe25f9a76dc0b0ba60a4a3457132a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-04\\capture\\events.jsonl": "0461bf4d3f7440417020ff00e5cb7a8d7bd19abeb22753c9585826785c103f65",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-04\\turns.jsonl": "bfd8f78c25b9c7c69ef694f35066f2b9c0c25f3593dbf57d6ce6740fe7c2300b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\fixture-04.json": "695c1463c5762eb1d499a470b6d9f1f74f71cb2cc8f5e9c0537fdc9abf6379f9",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\context-04.json": "be891b9617b7810d4392431a7207050162f713c2f93d63766795e734f7bfcdd0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\context-prelaunch-04.json": "96213449b02896303ab8b2f0d93b1d347c00b33bf447486032b08b98d7e921f5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-04\\case-observations.json": "f5ad49061046d67140d00c0373af570726f856d56f05c1afb33cdd37bc9c42fb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-04\\journal-before.json": "5d86babd0686445bca2c952217ec889af9b0def809b712a38799ba7dea77a4c4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-04\\journal-after.json": "1c19de6c745d26453471a1f7779e9adc1184b13c91685902287274a4ef4983a0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-pip1819-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "002c13729b8ed5acaae23b6412b52806cef9afd64bf8601ad0522180428ae567"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "91b24d87-41b8-4b8f-aa58-4a596eaef578",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  }
+]
