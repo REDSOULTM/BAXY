@@ -4387,6 +4387,14 @@ def _explicit_browser_navigation_arguments(
         # The closed public names below (youtube, gmail, github, chatgpt) are the
         # one exception the effect reader already relies on (WEB1257/1259).
         return None
+    browser_music = effect_intent._named_browser_music_request(evidence)
+    if browser_music is not None and browser_music[1] is not None:
+        # MUSIC1827: YouTube's own results page with the person's literal
+        # music words, confirmed as a complete URL in the named browser.
+        if operation != "browser.navigate.named":
+            return None
+        browser, query = browser_music
+        return {"browser": browser, "url": "https://www.youtube.com/results?" + urlencode({"search_query": query})}
     named_search = effect_intent._named_browser_search(evidence)
     if named_search is not None:
         if operation != "browser.navigate.named":
@@ -5829,6 +5837,22 @@ def _ground_explicit_arguments(
             # listing selector), the other clause is asked in the final.
             explicit = _explicit_arguments_from_evidence(
                 operation, deferred.read_text, application_names, game_catalog,
+            )
+    if explicit is None and operation == "browser.navigate.named":
+        # MUSIC1827 «abrí chrome y poné música» → «¿qué música?» → «rock»: the
+        # decision read the answer as the completed browser music request;
+        # the arguments read that same surface (history or resumed objective).
+        previous = _previous_user_request(history, evidence) if isinstance(history, list) else None
+        answer = evidence
+        folded_evidence = effect_intent._fold(evidence)
+        if previous is None and "aclaracion confiable del usuario:" in folded_evidence:
+            previous, _, answer = folded_evidence.partition("aclaracion confiable del usuario:")
+        completed = effect_intent._completed_missing_music_request(
+            answer.strip(), (previous or "").strip() or None, (operation, "media.play.query"),
+        )
+        if completed is not None and effect_intent._named_browser_music_request(completed) is not None:
+            explicit = _explicit_arguments_from_evidence(
+                operation, completed, application_names, game_catalog,
             )
     if (
         explicit is None

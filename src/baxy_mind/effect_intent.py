@@ -1157,6 +1157,37 @@ def _completed_missing_volume_level_request(
     return f"{previous_user_text.strip()}\n{text}"
 
 
+_MUSIC_BROWSER = r"(?:opera gx|opera|google chrome|chrome|microsoft edge|edge|brave)"
+_MUSIC_PLAY_HEAD = r"(?:pone|poneme|pon|ponme|reproduci|reproduce|play|toca|tocame)"
+_MUSIC_BROWSER_REQUEST = (
+    re.compile(
+        rf"^(?:abri|abre|abrime|open)\s+(?:el\s+|the\s+)?(?P<b>{_MUSIC_BROWSER})\s+(?:y|and)\s+{_MUSIC_PLAY_HEAD}\s+(?P<q>.+)$"
+    ),
+    re.compile(
+        rf"^{_MUSIC_PLAY_HEAD}\s+(?P<q>.+?)\s+(?:en|in|usando|using|with|con)\s+(?:el\s+|the\s+)?(?P<b>{_MUSIC_BROWSER})$"
+    ),
+)
+
+
+def _named_browser_music_request(text: str) -> tuple[str, str | None] | None:
+    """MUSIC1827 «abrí chrome y poné música», «pon música de rock en chrome», «open
+    Edge and play some music»: music asked of a named browser. Returns the
+    browser and the music named (None when only «música» was said)."""
+
+    folded = _strip_request_envelope(_fold(text)).strip(" .!?¿¡")
+    match = next((m for m in (p.match(folded) for p in _MUSIC_BROWSER_REQUEST) if m is not None), None)
+    if match is None:
+        return None
+    browser = {"opera gx": "opera_gx", "google chrome": "chrome", "microsoft edge": "edge"}.get(match.group("b"), match.group("b"))
+    query = re.sub(r"^(?:algo\s+de\s+|un\s+poco\s+de\s+|some\s+|something\s+)", "", match.group("q").strip())
+    if re.fullmatch(r"(?:musica|music|una\s+cancion|a\s+song|canciones|songs|algo|something)", query):
+        return browser, None
+    query = re.sub(r"^(?:musica\s+de|music\s+(?:by|of|from)|una\s+cancion\s+de|a\s+song\s+by)\s+", "", query).strip()
+    if not query or len(query.encode("utf-8")) > 200 or "?" in query:
+        return None
+    return browser, query
+
+
 def _completed_missing_music_request(
     text: str, previous_user_text: str | None, available_operations: Iterable[str],
 ) -> str | None:
@@ -1186,6 +1217,12 @@ def _completed_missing_music_request(
     answer = re.sub(r"^(?:algo\s+de|un\s+poco\s+de|some|something\s+like)\s+", "", answer, flags=re.IGNORECASE).strip(" .!")
     if not answer:
         return None
+    browser_music = _named_browser_music_request(previous_user_text)
+    if browser_music is not None and browser_music[1] is None:
+        # MUSIC1827 «abrí chrome y poné música» → «¿qué música?» → «rock»: the
+        # answer names the music, played from YouTube in that browser.
+        label = {"opera_gx": "opera gx"}.get(browser_music[0], browser_music[0])
+        return f"pon música de {answer} en {label}"
     if _has(_fold(previous_user_text), r"\bspotify\b"):
         return f"pon música de {answer} en spotify"
     if _has(_fold(previous_user_text), r"\bvideos?\b"):
@@ -4428,6 +4465,16 @@ def resolve_explicit_clarification_intent(
         and not _has(clause, r"\b(?:en|on)\s+(?:netflix|disney|prime|hbo|max|crunchyroll|star|paramount|twitch|hulu|peacock|apple)\b")
         for clause in _request_clauses(music_folded)
     )
+    browser_music = _named_browser_music_request(text)
+    if (
+        "media.play.query" in available
+        and "browser.navigate.named" in available
+        and browser_music is not None
+        and browser_music[1] is None
+    ):
+        # MUSIC1827 «abrí chrome y poné música»: which music is asked first;
+        # the answer opens YouTube's results in that browser.
+        return ClarificationIntent(("media.play.query",), ("query",))
     if (
         "media.play.query" in available
         and incomplete_media_clause
@@ -17290,6 +17337,11 @@ def resolve_explicit_effects(
         application_names,
     )
     authenticated_games = build_game_catalog_index(game_catalog)
+    browser_music = _named_browser_music_request(text)
+    if "browser.navigate.named" in available and browser_music is not None and browser_music[1] is None:
+        # MUSIC1827 «open Edge and play some music»: which music is asked first
+        # (clarification), not an open-and-play mission with «some music».
+        return None
     if "storage.removable.list" in available and _removable_storage_request(text):
         # USB1823: a backup or copy to a pendrive first reads which removable
         # drives are connected; nothing is copied.
@@ -17393,6 +17445,11 @@ def resolve_explicit_effects(
         and _repeated_application_target(text, authenticated_applications) is not None
     ):
         return EffectIntent(("app.open",), (text,))
+    browser_music = _named_browser_music_request(text)
+    if "browser.navigate.named" in available and browser_music is not None and browser_music[1] is not None:
+        # MUSIC1827 «pon música de rock en chrome»: YouTube's results page for
+        # the person's words, in the named browser, after the root review.
+        return EffectIntent(("browser.navigate.named",), (text,))
     if "browser.navigate.named" in available and _named_browser_search(text) is not None:
         return EffectIntent(("browser.navigate.named",), (text,))
     if (
