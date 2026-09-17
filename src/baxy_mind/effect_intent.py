@@ -6823,7 +6823,9 @@ def _negative_action_forms(folded: str) -> tuple[str, ...]:
         # prohibition to acknowledge, although «usa» heads no request.
         # AUDIO1577 «No toques el volumen.»: forbidding to touch something is
         # the same prohibition as forbidding to change it.
-        if re.fullmatch(_COVERAGE_ACTION_HEAD, head) or head in {"usa", "utiliza", "emplea", "use", "toca", "touch"}
+        # KNOW1835 «No me contestes nada, solo estaba pensando en voz alta.»,
+        # «Don't answer»: forbidding a reply is a prohibition to acknowledge.
+        if re.fullmatch(_COVERAGE_ACTION_HEAD, head) or head in {"usa", "utiliza", "emplea", "use", "toca", "touch", "contesta", "habla", "answer", "reply", "talk", "speak", "say"}
     )
 
 
