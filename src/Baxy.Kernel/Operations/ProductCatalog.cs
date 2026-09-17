@@ -1705,18 +1705,6 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Mueve una ventana resuelta a coordenadas de escritorio y verifica sus límites exactos."),
         Descriptor(
-            "window.snap",
-            Schema(
-                [
-                    String("side", values: ["left", "right"]),
-                    String("windowId", maximumLength: 36, nonWhitespace: true),
-                ],
-                ["side", "windowId"]),
-            OperationRisks.LowReversible,
-            "window.snap.identity.bounds.v1",
-            ToolExposure.Public,
-            "Coloca una ventana resuelta en la mitad izquierda o derecha del área de trabajo de su monitor (la restaura antes si estaba maximizada o minimizada) y verifica sus límites exactos."),
-        Descriptor(
             "window.resize",
             Schema(
                 [
@@ -1751,6 +1739,18 @@ public static class ProductCatalog
             "window.restore.identity.state.v1",
             ToolExposure.Public,
             "Restaura una ventana resuelta previamente y verifica su identidad y estado."),
+        Descriptor(
+            "window.snap",
+            Schema(
+                [
+                    String("side", values: ["left", "right"]),
+                    String("windowId", maximumLength: 36, nonWhitespace: true),
+                ],
+                ["side", "windowId"]),
+            OperationRisks.LowReversible,
+            "window.snap.identity.bounds.v1",
+            ToolExposure.Public,
+            "Coloca una ventana resuelta en la mitad izquierda o derecha del área de trabajo de su monitor (la restaura antes si estaba maximizada o minimizada) y verifica sus límites exactos."),
     ];
 
     private static readonly IReadOnlyList<ProductOperationDescriptor> ReadOnlyCatalog =
