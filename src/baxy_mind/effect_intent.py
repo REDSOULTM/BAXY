@@ -2378,6 +2378,8 @@ def _curated_domain_is_grounded(
         return close_all_request(folded)
     if operation == "document.pdf.read":
         return _pdf_summary_request(folded) is not None
+    if operation == "window.snap":
+        return _authenticated_application_snap_target(folded, application_names) is not None
     if operation in {
         "window.active",
         "window.focus",
@@ -2390,7 +2392,8 @@ def _curated_domain_is_grounded(
         return _window_domain(folded) or (operation == "window.active" and deictic_close_request(folded))
     if operation == "window.resolve":
         return (
-            _authenticated_application_close_target(folded, application_names) is not None
+            _authenticated_application_snap_target(folded, application_names) is not None
+            or _authenticated_application_close_target(folded, application_names) is not None
             or _authenticated_application_focus_target(folded, application_names) is not None
             or conditional_open_pause_app(folded, application_names) is not None
             or window_inventory_arguments(folded) is not None or _window_domain(folded)
@@ -5485,6 +5488,83 @@ def resolve_application_minimize_name(
         return None
     names = {name for name, key in catalog.entries if key == target[1]}
     return next(iter(names)) if len(names) == 1 else None
+
+
+_SNAP_HEAD = (
+    r"(?:pon|pone|poneme|poner|ponla|ponlo|mueve|mover|moveme|muevela|muevelo|lleva|llevame|llevar|"
+    r"coloca|colocame|colocar|acomoda|acomodame|acomodar|arrastra|arrastrame|arrastrar|"
+    r"put|move|snap|dock|place|drag)"
+)
+_SNAP_SIDE = (
+    r"(?P<side>(?:a|hacia|en|para)\s+(?:la\s+)?(?:mitad\s+)?(?:izquierda|derecha)(?:\s+de\s+la\s+pantalla)?|"
+    r"(?:on|to|at)\s+the\s+(?:left|right)(?:\s+(?:side|half))?(?:\s+of\s+the\s+screen)?|"
+    r"(?:left|right))"
+)
+
+
+def _authenticated_application_snap_target(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> tuple[int, str, str] | None:
+    """Recognize one request to dock an authenticated application on a side.
+
+    ARRANGE1781 H0268 «poné chrome a la izquierda»: a placing head over one
+    exact catalog identity followed by a side («a la izquierda/derecha»,
+    «to the left/right»); window.resolve binds the window and window.snap
+    docks it on that half of its monitor. «la ventana de chrome» names the
+    same window; «esta ventana» stays with window.active.
+    """
+    if (
+        not effect_request_is_authoritative(text)
+        or _has_unsupported_deferred_effect(_fold(text))
+        or _other_device_effect_scope(_fold(text))
+    ):
+        return None
+    folded = _strip_request_envelope(_fold(text))
+    request = _match(
+        folded,
+        rf"^[¿?¡!\s]*(?:(?:necesito|quiero|queria|quisiera|podes|podrias|podria|me\s+(?:podes|podrias|podria))\s+(?:que\s+)?)?"
+        rf"{_SNAP_HEAD}\s+(?:(?:me|a)\s+)?(?P<target>.+?)\s+{_SNAP_SIDE}[\s.!?]*$",
+    )
+    if request is None:
+        return None
+    raw_target = request.group("target")
+    if _has(raw_target, r"\b(?:esta|this|esa|that|todo|todas|everything|all|activa|active|actual|current)\b"):
+        return None
+    side = "left" if _has(request.group("side"), r"\b(?:izquierda|left)\b") else "right"
+    catalog = build_application_catalog_index(application_names)
+    matches: list[tuple[int, str]] = []
+    for target, offset in _close_target_forms(raw_target):
+        key = _authenticated_close_key(target, catalog)
+        if key is not None:
+            matches.append((request.start("target") + offset, key))
+    identities = {key for _, key in matches}
+    if len(identities) != 1:
+        return None
+    offset, key = min(matches, key=lambda item: item[0])
+    return (offset, key, side)
+
+
+def resolve_application_snap(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> tuple[str, str] | None:
+    """The authenticated snap target as (catalog display name, side)."""
+    catalog = build_application_catalog_index(application_names)
+    target = _authenticated_application_snap_target(text, catalog)
+    if target is None:
+        return None
+    names = {name for name, key in catalog.entries if key == target[1]}
+    return (next(iter(names)), target[2]) if len(names) == 1 else None
+
+
+def resolve_application_snap_name(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> str | None:
+    """Preserve an authenticated snap target as a catalog display name."""
+    resolved = resolve_application_snap(text, application_names)
+    return resolved[0] if resolved is not None else None
 
 
 def resolve_application_close_name(
@@ -17051,6 +17131,16 @@ def resolve_explicit_effects(
         # the condition; an absent window ends the mission truthfully, a
         # present one pauses that application's session.
         return EffectIntent(("window.resolve", "media.control"), (text, text))
+    if (
+        "window.snap" in available
+        and resolve_application_snap(text, authenticated_applications) is not None
+        and not _is_negative_effect_clause(folded)
+        and not _is_meta_or_tool_denial(folded)
+    ):
+        # ARRANGE1781 «poné chrome a la izquierda»: docking an authenticated
+        # application on one half of the screen is window.snap; window.resolve
+        # (its prerequisite) binds the window.
+        return EffectIntent(("window.snap",), (folded,))
     if (
         "window.minimize" in available
         and resolve_application_minimize_name(text, authenticated_applications) is not None

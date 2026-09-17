@@ -184,6 +184,24 @@ internal sealed class WindowBoundsHandler(string operation, IWindowControlProvid
     }
 }
 
+internal sealed class WindowSnapHandler(IWindowControlProvider provider) : IOperationHandler
+{
+    public OperationDefinition Definition { get; } = ProductCatalog.CreateDefinition("window.snap");
+
+    public async ValueTask<OperationOutcome> ExecuteAsync(
+        OperationInvocation invocation,
+        CancellationToken cancellationToken)
+    {
+        string windowId = invocation.Arguments.GetProperty("windowId").GetString()!;
+        string side = invocation.Arguments.GetProperty("side").GetString()!;
+        WindowActionResult result = await provider.SnapAsync(
+            windowId, side, cancellationToken).ConfigureAwait(false);
+        return result.Succeeded && result.Verified && result.Window is not null
+            ? OperationOutcome.Success(WindowControlResultJson.Serialize(result.Window, side))
+            : OperationOutcome.Failure(result.ErrorCode ?? "window_bounds_failed");
+    }
+}
+
 internal static class WindowControlHandlers
 {
     public static IOperationHandler[] Create(IWindowControlProvider provider) =>
@@ -197,6 +215,7 @@ internal static class WindowControlHandlers
         new WindowCloseAllHandler(provider),
         new WindowBoundsHandler("window.move", provider),
         new WindowBoundsHandler("window.resize", provider),
+        new WindowSnapHandler(provider),
         new WindowResolveHandler(provider),
         new WindowActionHandler("window.restore", WindowControlAction.Restore, provider),
     ];
@@ -230,6 +249,22 @@ internal static class WindowControlResultJson
                 writer.WriteString("observationScope", "visible_top_level_windows");
                 writer.WriteString("pageConsistency", "fresh_enumeration_per_request");
             }
+            writer.WriteEndObject();
+        }
+        using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);
+        return document.RootElement.Clone();
+    }
+
+    public static JsonElement Serialize(WindowCandidate window, string side)
+    {
+        var buffer = new ArrayBufferWriter<byte>();
+        using (var writer = new Utf8JsonWriter(buffer))
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteString("side", side);
+            writer.WritePropertyName("window");
+            WriteCandidate(writer, window);
             writer.WriteEndObject();
         }
         using JsonDocument document = JsonDocument.Parse(buffer.WrittenMemory);

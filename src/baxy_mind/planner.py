@@ -1025,6 +1025,7 @@ def _required_predecessors(operation: str) -> tuple[str, ...]:
         "window.move": ("window.resolve", "window.active"),
         "window.resize": ("window.resolve", "window.active"),
         "window.restore": ("window.resolve", "window.active"),
+        "window.snap": ("window.resolve", "window.active"),
         "wifi.connect": ("wifi.profile.list",),
     }.get(operation, ())
 

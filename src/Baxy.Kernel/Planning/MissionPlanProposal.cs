@@ -162,7 +162,8 @@ public static class MissionPlanValidator
             "reminder.delete" => ["reminder.resolve.exact"],
             "vision.describe" => ["capture.screenshot"],
             "window.focus" or "window.maximize" or "window.minimize"
-                or "window.move" or "window.resize" or "window.restore" =>
+                or "window.move" or "window.resize" or "window.restore"
+                or "window.snap" =>
                 ["window.resolve", "window.active"],
             "wifi.connect" => ["wifi.profile.list"],
             _ => [],
@@ -203,7 +204,7 @@ public static class MissionPlanValidator
         {
             "app.close" or "window.focus" or "window.maximize"
                 or "window.minimize" or "window.move" or "window.resize"
-                or "window.restore" => ["windowId"],
+                or "window.restore" or "window.snap" => ["windowId"],
             "bluetooth.device.pair" or "peripheral.print"
                 or "peripheral.scan" => ["deviceId"],
             "browser.navigate" or "browser.navigate.named" => ["url"],

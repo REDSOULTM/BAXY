@@ -529,6 +529,112 @@ public sealed class WindowsWindowControlProvider : IWindowControlProvider
         return ValueTask.FromResult(new WindowActionResult(true, true, candidate, null));
     }
 
+    public async ValueTask<WindowActionResult> SnapAsync(
+        string windowId,
+        string side,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        bool left = string.Equals(side, "left", StringComparison.Ordinal);
+        if (!left && !string.Equals(side, "right", StringComparison.Ordinal))
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.InvalidSelector);
+        }
+        if (!TryConsume(windowId, out WindowIdentity? identity))
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.InvalidOrExpiredWindowId);
+        }
+
+        WindowSnapshot before;
+        WindowBounds? workArea;
+        try
+        {
+            before = _platform.Observe(identity!);
+            workArea = _platform.WorkArea(before.Identity);
+        }
+        catch (WindowIdentityChangedException)
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.WindowIdentityChanged);
+        }
+        catch (Exception exception) when (exception is Win32Exception or InvalidOperationException)
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.InventoryFailed);
+        }
+        if (workArea is null || workArea.Width < 2 || workArea.Height < 1)
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.InventoryFailed);
+        }
+
+        // A maximized or minimized window keeps no bounds of its own: it is
+        // restored first, the way the desktop does before docking it.
+        if (!string.Equals(before.State, "normal", StringComparison.Ordinal))
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            if (!_platform.Execute(before.Identity, WindowControlAction.Restore))
+            {
+                return new WindowActionResult(
+                    false, false, null, WindowControlErrorCodes.ActionFailed);
+            }
+            await _platform.DelayAsync(VerificationDelay, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        int half = workArea.Width / 2;
+        var expected = new WindowBounds(
+            left ? workArea.X : workArea.X + half,
+            workArea.Y,
+            left ? half : workArea.Width - half,
+            workArea.Height);
+        cancellationToken.ThrowIfCancellationRequested();
+        if (!_platform.SetBounds(before.Identity, expected))
+        {
+            return new WindowActionResult(
+                false, false, null, WindowControlErrorCodes.ActionFailed);
+        }
+
+        for (int attempt = 0; attempt < StateVerificationAttempts; attempt++)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            WindowSnapshot after;
+            try
+            {
+                after = _platform.Observe(before.Identity);
+            }
+            catch (Exception exception) when (exception is Win32Exception
+                or InvalidOperationException
+                or WindowIdentityChangedException)
+            {
+                return new WindowActionResult(
+                    false, false, null, WindowControlErrorCodes.VerificationFailed);
+            }
+            if (after.Bounds == expected && string.Equals(after.State, "normal", StringComparison.Ordinal))
+            {
+                string refreshedId = Issue(after.Identity);
+                WindowCandidate candidate = ToCandidate(after, refreshedId);
+                if (_verifier.Verify(after.Identity, candidate, expectedAction: null))
+                {
+                    return new WindowActionResult(true, true, candidate, null);
+                }
+                Revoke(refreshedId);
+                return new WindowActionResult(
+                    false, false, null, WindowControlErrorCodes.VerificationFailed);
+            }
+            if (attempt + 1 < StateVerificationAttempts)
+            {
+                await _platform.DelayAsync(VerificationDelay, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+        }
+
+        return new WindowActionResult(
+            false, false, null, WindowControlErrorCodes.VerificationFailed);
+    }
+
     public async ValueTask<WindowCloseResult> CloseAsync(
         string windowId,
         CancellationToken cancellationToken)
@@ -832,6 +938,9 @@ internal interface IWindowControlPlatform
     IReadOnlyList<WindowSnapshot> DesktopWindows() => [];
     bool Execute(WindowIdentity identity, WindowControlAction action);
     bool SetBounds(WindowIdentity identity, WindowBounds bounds);
+    // ARRANGE1781: the work area (desktop minus taskbar) of the monitor
+    // that shows the window; null when the platform cannot tell.
+    WindowBounds? WorkArea(WindowIdentity identity) => null;
     bool RequestClose(WindowIdentity identity);
     bool RequestSystemClose(WindowIdentity identity);
     ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken);
@@ -1061,6 +1170,26 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
     public ValueTask DelayAsync(TimeSpan delay, CancellationToken cancellationToken) =>
         new(Task.Delay(delay, cancellationToken));
 
+    public WindowBounds? WorkArea(WindowIdentity identity)
+    {
+        _ = Observe(identity);
+        nint monitor = MonitorFromWindow(identity.Handle, MonitorDefaultToNearest);
+        if (monitor == nint.Zero)
+        {
+            return null;
+        }
+        var info = new NativeMonitorInfo { Size = (uint)Marshal.SizeOf<NativeMonitorInfo>() };
+        if (!GetMonitorInfo(monitor, ref info))
+        {
+            return null;
+        }
+        return new WindowBounds(
+            info.Work.Left,
+            info.Work.Top,
+            info.Work.Right - info.Work.Left,
+            info.Work.Bottom - info.Work.Top);
+    }
+
     public bool SetBounds(WindowIdentity identity, WindowBounds bounds)
     {
         _ = Observe(identity);
@@ -1164,4 +1293,22 @@ internal sealed partial class Win32WindowControlPlatform : IWindowControlPlatfor
 
     [LibraryImport("dwmapi.dll")]
     private static partial int DwmGetWindowAttribute(nint windowHandle, uint attribute, out int value, int size);
+
+    private const uint MonitorDefaultToNearest = 2;
+
+    [LibraryImport("user32.dll")]
+    private static partial nint MonitorFromWindow(nint windowHandle, uint flags);
+
+    [LibraryImport("user32.dll", EntryPoint = "GetMonitorInfoW", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool GetMonitorInfo(nint monitor, ref NativeMonitorInfo info);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct NativeMonitorInfo
+    {
+        public uint Size;
+        public NativeRect Monitor;
+        public NativeRect Work;
+        public uint Flags;
+    }
 }

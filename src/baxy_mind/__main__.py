@@ -211,6 +211,7 @@ _IDENTITY_CONSUMERS = frozenset(
         "window.move",
         "window.resize",
         "window.restore",
+        "window.snap",
         "wifi.connect",
     }
 )
@@ -731,6 +732,7 @@ _DETERMINISTIC_DEPENDENCY_FIELDS = {
     "window.move": ("windowId",),
     "window.resize": ("windowId",),
     "window.restore": ("windowId",),
+    "window.snap": ("windowId",),
     "bluetooth.device.pair": ("deviceId",),
     "peripheral.scan": ("deviceId",),
     "filesystem.read.text": ("resourceId",),
@@ -4880,8 +4882,15 @@ def _explicit_arguments_from_evidence(
         level = effect_intent._literal_brightness_level(evidence)
         return {"setting": "brightness", "value": level} if level is not None else None
 
+    if operation == "window.snap":
+        # ARRANGE1781: the side is the person's literal; windowId comes from window.resolve.
+        snap = effect_intent.resolve_application_snap(evidence, application_names)
+        return {"side": snap[1]} if snap is not None else None
+
     if operation == "window.resolve":
-        application_name = effect_intent.resolve_application_close_name(
+        application_name = effect_intent.resolve_application_snap_name(
+            evidence, application_names,
+        ) or effect_intent.resolve_application_close_name(
             evidence, application_names,
         ) or effect_intent.resolve_application_focus_name(
             evidence, application_names,

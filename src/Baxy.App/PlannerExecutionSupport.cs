@@ -567,7 +567,7 @@ internal static class PlanObservationProjector
         {
             "app.close" or "window.focus" or "window.maximize"
                 or "window.minimize" or "window.move" or "window.resize"
-                or "window.restore" => ["windowId"],
+                or "window.restore" or "window.snap" => ["windowId"],
             "bluetooth.device.pair" or "peripheral.scan" => ["deviceId"],
             "filesystem.read.text" => ["resourceId"],
             "game.install.commit" or "package.install.commit" =>

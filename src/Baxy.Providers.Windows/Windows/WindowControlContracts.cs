@@ -122,6 +122,15 @@ public interface IWindowControlProvider
         int? height,
         CancellationToken cancellationToken);
 
+    // ARRANGE1781: the window takes the left or right half of its monitor's
+    // work area («poné chrome a la izquierda»); exact bounds verified.
+    ValueTask<WindowActionResult> SnapAsync(
+        string windowId,
+        string side,
+        CancellationToken cancellationToken) =>
+        ValueTask.FromResult(new WindowActionResult(
+            false, false, null, WindowControlErrorCodes.InvalidSelector));
+
     ValueTask<WindowCloseResult> CloseAsync(
         string windowId,
         CancellationToken cancellationToken);

@@ -1705,6 +1705,18 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Mueve una ventana resuelta a coordenadas de escritorio y verifica sus límites exactos."),
         Descriptor(
+            "window.snap",
+            Schema(
+                [
+                    String("side", values: ["left", "right"]),
+                    String("windowId", maximumLength: 36, nonWhitespace: true),
+                ],
+                ["side", "windowId"]),
+            OperationRisks.LowReversible,
+            "window.snap.identity.bounds.v1",
+            ToolExposure.Public,
+            "Coloca una ventana resuelta en la mitad izquierda o derecha del área de trabajo de su monitor (la restaura antes si estaba maximizada o minimizada) y verifica sus límites exactos."),
+        Descriptor(
             "window.resize",
             Schema(
                 [
