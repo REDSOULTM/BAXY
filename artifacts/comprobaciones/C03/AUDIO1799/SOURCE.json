@@ -1,0 +1,15 @@
+{
+  "schema": "c03-audio1799-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (audio.app.volume.adjust final veto narrowed to closed, open, silenced, no sound), on top of the AUDIO1799 build.",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1799/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1799 (C03-repairs1799-build/BUILD_READY.json; mente)",
+  "cause_measured": "El veto ampliado descartaba las frases sobre el sonido activo y ningún final sobrevivía.",
+  "change": "Veto reducido a los estados inventados; sin respuestas fijas.",
+  "measurement": "AUDIO1799: AUDIO1799: 5 ejecutados, 4 aprobados, 1 fallido, 0 créditos; literal y variante en castellano verificados con finales fieles (40 → 60, 40 → 25); la variante en inglés subió a 50 pero el veto no distinguió «not silenced»; 0 créditos. AUDIO1799 sobre BUILD1799: 1 literal, 2 variantes (1 en inglés), 2 límites; 4/5 aprobados; sin segundo par",
+  "credits": 0
+}
