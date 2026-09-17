@@ -1,3 +1,25 @@
+## AUDIO1801 — estado vigente 2026-09-17T04:01:32.693298+00:00
+
+Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 640/742 | 102 | 0 | >=524 | 12/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 523 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); AUDIO1801 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: AUDIO1801: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Música 38/39. Siguiente: UI1775 (Epic) sobre la misma compilación y el volumen de Spotify.
+
+Evidencia: `artifacts/comprobaciones/C03/AUDIO1801/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 111.94 s acumulados; pico GPU 3497.56 MiB; pico RAM 1680.86 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque AUDIO1801 precedente. -->
+
 ## AUDIO1799 — estado vigente 2026-09-17T03:55:02.030210+00:00
 
 Parcial: 4 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.

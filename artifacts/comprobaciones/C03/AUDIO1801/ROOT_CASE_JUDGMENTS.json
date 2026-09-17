@@ -1,0 +1,274 @@
+[
+  {
+    "index": 0,
+    "case_id": "H0652",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      1,
+      2
+    ],
+    "reason": "Preguntó cuánto y ajustó el volumen propio de Spotify en la cantidad contestada, verificado por postlectura; crédito con dos variantes aprobadas.",
+    "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz (una cantidad), audio.app.volume.adjust completada y verificada por la postlectura de las sesiones de audio del cliente de Spotify (abierto y reproduciendo por la raíz antes del caso, pausado y cerrado después; volumen maestro preajustado y restaurado); un envío tras el primero; cero violaciones; pins intactos.",
+    "final_sha256": "7b863334d3ba776fa82b7f51981084b553f90073e3d51fe1b6bd224191cf3724",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\results\\case-00\\EXIT.json": "2d15a2e3ac05c8f6385fc0b416a2eabaddac2a405d31a87e388ee6da4b1e29b2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\results\\case-00\\RESOURCES.json": "057eef807456f8a6f190e71ff999f4cc4fa9e68b2378e8931534ceb358a08b95",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\profile-owner-00.json": "b2400c95053f32b582f3749c7f5c9e3ef6335e111ca718ecba3cf68f91c74017",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\results\\case-00\\PREREG.json": "0c154b539262fe01f2ec4c9090725eca90adc3c9dde72a85b1aec9302f37c7ac",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-00\\capture\\events.jsonl": "e2a9c5b1b5698ac29ae432e12da5c37a449e9287c70917394591f9f5e1904e5f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-00\\turns.jsonl": "d5279a85a119139eb86882389d6dce0a9e2187b8a976d25bafc79183fef9c9bf",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\fixture-00.json": "b320a9d9916b60ee06118d63b92f18e238450631f3b107bc0819e12a5332974d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\context-00.json": "c0860d8769384016b532205182418f3d2de400a2c3430175708abe8e450be0ee",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\context-prelaunch-00.json": "05fe4844036c86cb4a8e6909f02136869840fe28f0da3e684138b1699c4d9b89",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-00\\case-observations.json": "51b3b55d01067ae9415cc983c0768ab4d7bb25dbbe0b26796e685ce3a5991ee1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-00\\journal-before.json": "00776c2594b6aac3e107a1de04788bc990d3603563ee91509607cfe3fb84eac4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-00\\journal-after.json": "badd42ab362cff9a4452dadcd33dcb9d8cc2df1688a7b845a7e459c4fff62117",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "4cf03d26485e42e7b8d01864a556316f3d1abf3cf4e8255238938f2bc91d294e"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "73b0635a-0595-447b-a549-d9b4641975ba",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "1a3115d1-2920-4c07-9f04-aa5ad5fbb4fe",
+        "operation": "audio.app.volume.adjust",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "case_id": "audio1801-dev-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Preguntó cuánto y ajustó el volumen propio de Spotify en la cantidad contestada, verificado por postlectura; variante o literal sin dos pares aprobados.",
+    "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz (una cantidad), audio.app.volume.adjust completada y verificada por la postlectura de las sesiones de audio del cliente de Spotify (abierto y reproduciendo por la raíz antes del caso, pausado y cerrado después; volumen maestro preajustado y restaurado); un envío tras el primero; cero violaciones; pins intactos.",
+    "final_sha256": "f618388c730fc95b60f1038c1566ac1b549ab4f1353f63a6382a6910b695197a",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\results\\case-01\\EXIT.json": "55e87c351d38a2d7d3744a96859f8219884374f82fee91a459ae8b02689eb99a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\results\\case-01\\RESOURCES.json": "8438d1d6268c5f2f0172ba0443c2e03b7886f142ce60be83420bd3c4d6a560c7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\profile-owner-01.json": "cc903893bad8a022454d1f2e7815c3b99e3a5bde25173337f737933629b28e35",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\results\\case-01\\PREREG.json": "3ff71ae0a92434a280df8030188defca2c90af5521583da5f2f2579d648ffa94",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-01\\capture\\events.jsonl": "d39bda6d942729ed61e477a56a49f85c80732b61242186d1abc165c0271f142f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-01\\turns.jsonl": "7754a33ff4c7001d1127d7eb2dd2c8b9168b184f76bc6563f9d85e0124a9a0f3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\fixture-01.json": "5ffc7aa8f424468e800b77634b1ea908c6f0f1dd0a4338dc03f95e795ecd33a2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\context-01.json": "fa10ecc60b2681ea24f8cc3a5eaf934e6424eaf11e30295d9c4d5d5436ffff47",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\context-prelaunch-01.json": "6a3fd770268b72dec17865e8eafa72ddfab38963181a69fc3cdd66a1967e3b40",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-01\\case-observations.json": "00e71010875c4b7c90dd1d98dcd0848d63f850b7d20e318e2ad8a9cee2833a84",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-01\\journal-before.json": "e42ce7ff3a173c55a6dc5f47edfab7e5ec6be993d35513aac9bb23328514a5ee",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-01\\journal-after.json": "067c84cfc70e7693892e2a4bc13431ddb27d779ef0eeeed48ec27e5b1ab9fa95",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "ac3526eac5c557caaf79fc643a0066b2996aa6eafeef39464f57e63bd68b2c91"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "bdf01a3c-5613-4812-95b5-cbcc66b287a5",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "9b0f021f-87a1-420d-8da7-3ecf4365ede4",
+        "operation": "audio.app.volume.adjust",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "case_id": "audio1801-dev-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Preguntó cuánto y ajustó el volumen propio de Spotify en la cantidad contestada, verificado por postlectura; variante o literal sin dos pares aprobados.",
+    "observation_note": "Caso de diálogo: primer turno con pregunta sin operar, respuesta guionizada por la raíz (una cantidad), audio.app.volume.adjust completada y verificada por la postlectura de las sesiones de audio del cliente de Spotify (abierto y reproduciendo por la raíz antes del caso, pausado y cerrado después; volumen maestro preajustado y restaurado); un envío tras el primero; cero violaciones; pins intactos.",
+    "final_sha256": "231433d4df09d92ab742f3207204c090ba5fbac50102aab7eeff92ad7ab88012",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\results\\case-02\\EXIT.json": "c9acc2d3fcefcc64d4185a17c9f29f44b846be31eaaf12da5a5b2ae304931cdf",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\results\\case-02\\RESOURCES.json": "a0dda3ff697543c6fc2bf6b87106165400ec5a3897807e997cd099f1c80e6a8e",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\profile-owner-02.json": "b37e48f52c8b48d9313c16ba2e09ba9ce01a9f286c83d3163cd7a72d7a65e357",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\results\\case-02\\PREREG.json": "f4aa0b48d9d7bebf1401ca13d694b05d749a22b634381ec09ac2fb808fd7dea3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-02\\capture\\events.jsonl": "71f2ab7e8522aad63d900042b93bc9fee58f3896e870e0f4b342cd63b3a184c7",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-02\\turns.jsonl": "996d0d195f38d0eb9b36fc3d1754e4c8af690ac1513f7027d2f18dccccd6b768",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\fixture-02.json": "7b77b14dc52b0d6852a16557c123fe2db82460f2401e2cd3e26d0d116e743184",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\context-02.json": "9dd2e681ea82166f8acf3b259ef15d824d1be3eac6a87966969d07073c7d3abf",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\context-prelaunch-02.json": "c7a7200a89990bc1e73c5030097e8f50d5958c6e963c7436c8099bfd1556cdb1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-02\\case-observations.json": "3a320ee62fd99e844cb0713a4a26d10aac5af19769f272d91fb19df54dc032b2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-02\\journal-before.json": "15d62ba19a0dd024e6dae9d9c6f4470bbff61c57c3fc09e9d2583f7331f906df",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-02\\journal-after.json": "0f3b83780a040d2b159a86e229a4c11f725789c5d6ddff479dbff1cea45356cf",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "2b0c0cc9243f8dd9889bc433ada0adb00f2edd0965e83a621d18f6921d336229"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "7b5f955b-2785-4a1b-ade3-a7a81da1c57e",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "b42a7f21-0c0b-4319-a9fc-76ad768360a7",
+        "operation": "audio.app.volume.adjust",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "case_id": "audio1801-boundary-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "1026f757f1610d2f691d8ffb319a6e43c2133298c7bd7dbdfd8903317098a76c",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\results\\case-03\\EXIT.json": "1fc01517b303644e3b21c9fdcd42179521baeffadd6a2c6872dc2a419752ff21",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\results\\case-03\\RESOURCES.json": "41854feb9a6fcdecf3e35ae980bbcf77cddddff279c072eccf5451e07aebe370",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\profile-owner-03.json": "9093fd9e63011f4aba3e2716527e542f995751b80604c19ae6aff7623efb571d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\results\\case-03\\PREREG.json": "f373f0c0a4919cf4c39cddd91b66a1677ca447ad8e3db02ff6051060c4b5f79c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-03\\capture\\events.jsonl": "c7c92b4acc0c577f2783b93c8b66176162fab37ae0c61e6a3204b455565bde8c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-03\\turns.jsonl": "a3e7cea01c6f2c5eddc3b9c346c3799b44d9f626bb8e139ed3b55912f1cae3fb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\fixture-03.json": "b115b4771565eb7ca3d2110015d8c72aea27519760213d3931108efb1d3133e0",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\context-03.json": "1a701ddaed0963bfb6019717e7e94bc1fd1ff824dd4090211d192940d8921d98",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\context-prelaunch-03.json": "615e9bc544eb62bd73ee03f075e41be01e3e657a20c03f5148090d7374116f2c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-03\\case-observations.json": "b49929e190a32c6f1ce740ea38ab336e1ac23216a2e4d81c734845fe6493476f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-03\\journal-before.json": "c03e2d7f3928cc3e22722b2c8a77bdf193803cc56a60350a2c2098ba852796d3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-03\\journal-after.json": "22680159c7727dede45abaf41c5252a0a24ac85a6becfa38961b1bd7e0dfe524",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "15e352d77d918fe285afff4d8a6f521969705abec5e8661a3bec5df8fa560aec"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "cca97267-1b08-4f75-81cc-b63231e92275",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "case_id": "audio1801-boundary-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "8725da83df64b366a524ecd6ca19fb30039bb55e0f54f70a5046f7a96ee1c4e0",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\results\\case-04\\EXIT.json": "1eb9d0e64502eb1bde8d0926b63ccfd2be68e441b19279178130a4286bc73e10",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\results\\case-04\\RESOURCES.json": "74174b30d98457395af7bf4265807d3ebb9d1164d8ac504e3cb993c47309c45a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\profile-owner-04.json": "b829569aad70e958096fe95fd542cd9f080fcf5659d4c662985a71592a618f77",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\results\\case-04\\PREREG.json": "aa70cebfd190ab8d0975d1a25f6348eb56139c44144c4b1965c4b1799808a2de",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-04\\capture\\events.jsonl": "fd8df205b62cac43c4750e0e27b4ae9011700085586284f1525ca423219bbe51",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-04\\turns.jsonl": "8f856afc07aad1fc29d00898356dd23ca45325d25e7a281f75a9b8eb3c3f0c89",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\fixture-04.json": "40d8587e92ca56c060acb188d3ba9b6b0ab3de59d3c2a010f01184db9451f8a4",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\context-04.json": "f866bd79dc573df668094220cd7568a1083a7fe827e5d8bcac6490f1fdfb1ea6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\context-prelaunch-04.json": "3c4b0347b11164c1f791a18b9442e4084b2ef512c2da0815f71e91daddd20649",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-04\\case-observations.json": "67198c18d2d9caefce2928be7efdef2db032fcbfa107b3b2228c96c96434f112",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-04\\journal-before.json": "51259821ad3669ff8b66b8748729bd3b342e1ebd42519eb725ebe05dbec9f830",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-04\\journal-after.json": "5047b381fb81bc2e1753a9c83fe0f6077e5b1311b5c0e3db5223ddc8f490622a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-audio1801-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "d2382fc64c36b84363dd26b6f997cb07f4fd17b1a8fda595f86c9760d2ae16b8"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "635b77ea-0c31-46dc-8646-b3a5a3248700",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  }
+]

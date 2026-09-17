@@ -1374,3 +1374,7 @@ Música pasa de 38/39 a 38/39 con subir o bajar el volumen propio de una aplicac
 ## Actualización 2026-09-17 (AUDIO1799)
 
 Música pasa de 38/39 a 38/39 con subir o bajar el volumen propio de una aplicación nombrada: literal y variante en castellano aprobados con niveles verificados (40 → 60, 40 → 25) y finales fieles; la variante en inglés subió a 50 pero el veto no distinguió la negación «not silenced»; sin crédito por falta del segundo par (commit 64567559, BUILD1799) (HEAD 64567559): AUDIO1799: 5 ejecutados, 4 aprobados, 1 fallido, 0 créditos; literal y variante en castellano verificados con finales fieles (40 → 60, 40 → 25); la variante en inglés subió a 50 pero el veto no distinguió «not silenced», 0 créditos. AUDIO1799 sobre BUILD1799: 1 literal, 2 variantes (1 en inglés), 2 límites; 4/5 aprobados; sin segundo par
+
+## Actualización 2026-09-17 (AUDIO1801)
+
+Música pasa de 38/39 a 39/39 con subir o bajar el volumen propio de una aplicación nombrada preguntando la cantidad y verificando la postlectura de sus sesiones de audio (Spotify 40 → 60, 40 → 25, 40 → 50); literal y dos variantes aprobados (commit e02aa8c3, BUILD1801) (HEAD e02aa8c3): AUDIO1801: 5 ejecutados, 5 aprobados, 1 crédito (H0652 con dos variantes): pregunta la cantidad y ajusta las sesiones de Spotify a niveles verificados (40 → 60, 40 → 25, 40 → 50) sin tocar el volumen del sistema; Música 39/39, 1 créditos. AUDIO1801 sobre BUILD1801: 1 literal, 2 variantes (1 en inglés), 2 límites; 5/5 aprobados La categoría queda cerrada.

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-audio1801-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (negated silence removed before the invented-state veto of audio.app.volume.adjust), on top of the AUDIO1801 build.",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1801/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1801 (C03-repairs1801-build/BUILD_READY.json; mente)",
+  "cause_measured": "El veto de estados inventados no distinguía la negación del silencio y descartaba los finales en inglés.",
+  "change": "Menciones negadas del silencio retiradas antes del veto; sin respuestas fijas.",
+  "measurement": "AUDIO1801: AUDIO1801: 5 ejecutados, 5 aprobados, 1 crédito (H0652 con dos variantes): pregunta la cantidad y ajusta las sesiones de Spotify a niveles verificados (40 → 60, 40 → 25, 40 → 50) sin tocar el volumen del sistema; Música 39/39; 1 créditos. AUDIO1801 sobre BUILD1801: 1 literal, 2 variantes (1 en inglés), 2 límites; 5/5 aprobados",
+  "credits": 1
+}
