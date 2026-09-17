@@ -1,0 +1,15 @@
+{
+  "schema": "c03-audio1797-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (audio.app.volume.adjust visible payload projection and state veto), on top of the AUDIO1797 build.",
+  "patch": "artifacts/comprobaciones/C03/AUDIO1797/SOURCE.patch",
+  "commits": [
+    "48c183b0432b7f12a0885ecaed0bfc861d4d4b58"
+  ],
+  "build": "BUILD1797 (C03-repairs1797-build/BUILD_READY.json; mente)",
+  "cause_measured": "La carga visible mostraba el silencio de las sesiones y el modelo afirmaba estados de sonido; el instrumento sellado sólo conocía diálogos revisados.",
+  "change": "Carga visible reducida a aplicación, dirección, cantidad y niveles; instrumento sellado con diálogo ordinario; sin respuestas fijas.",
+  "measurement": "AUDIO1797: AUDIO1797: 5 ejecutados, 2 aprobados (límites), 3 fallidos, 0 créditos; los tres ajustes de Spotify se verificaron (40 → 60, 40 → 25, 40 → 50) sobre el instrumento de diálogo ordinario, pero el veto ampliado descartó todos los finales por la frase sobre el sonido activo; 0 créditos. AUDIO1797 sobre BUILD1797: 1 literal, 2 variantes (1 en inglés), 2 límites; 2/5 aprobados",
+  "credits": 0
+}
