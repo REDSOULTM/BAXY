@@ -152,10 +152,10 @@
     "modelBlockerResolvedEarlier": true
   },
   "goalStatus": "active",
-  "workStatus": "SCREEN1807 adjudicado: 3 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.",
+  "workStatus": "SCREEN1809 adjudicado: 4 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.",
   "executionPausedByOwner": false,
   "branch": "codex/kiro-goal-c03",
-  "checkpoint": "641/742 cubiertos, 101 abiertos, 0 no aplican. SCREEN1807: 0 créditos explícitos de raíz.",
+  "checkpoint": "641/742 cubiertos, 101 abiertos, 0 no aplican. SCREEN1809: 0 créditos explícitos de raíz.",
   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
   "surveyVerificationCounts": {
@@ -164,14 +164,14 @@
     "not_applicable": 0,
     "total": 742
   },
-  "surveyRegistrySha256": "1b9b95b96e5797849fee0641a3d761a22b63fe4cec30688101b1a30c2ca81094",
+  "surveyRegistrySha256": "c8f84b44b9cc922513cef85fe150d7cd42a79e92497189efdd4cca4fe5110367",
   "surveyRegistryPresentOnDestination": true,
   "surveyCategories": {
     "closed": 13,
     "total": 35
   },
   "surveyCoverageLast24h": 525,
-  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–14 septiembre: 525 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SCREEN1807 añade 0. No se cuentan revalidaciones.",
+  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–14 septiembre: 525 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SCREEN1809 añade 0. No se cuentan revalidaciones.",
   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
   "testsRun": false,
   "testsOmittedByOwner": true,
@@ -196,7 +196,7 @@
     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
     "agenda1024": "parche recibido y revisado, sin integrar"
   },
-  "utcUpdated": "2026-09-17T05:02:12.368102+00:00",
+  "utcUpdated": "2026-09-17T05:11:21.507178+00:00",
   "batchesThisSession": [
     {
       "batch": 1029,
@@ -621,7 +621,7 @@
     "freeze_ended_at": "2026-09-12T13:33:18.245252-03:00",
     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
   },
-  "updatedAtUtc": "2026-09-17T05:02:12.368102+00:00",
+  "updatedAtUtc": "2026-09-17T05:11:21.507178+00:00",
   "currentContinuation1065": {
     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
     "quality": {
@@ -2298,10 +2298,10 @@
     "next": "FILES1205 completa: 19 ejecutados, 19 aprobados, 12 créditos (8 archivos en escritorio/Documentos, 3 carpetas en el escritorio, 1 carpeta en el sandbox), cada uno con dos pares aprobados. El proveedor de carpetas conocidas (BUILD1205) y los lectores de creación se demuestran: 18 creaciones verificadas por el producto y comprobadas en disco por raíz (existencia, tipo y hash del contenido literal), ninguna preexistente, todas eliminadas tras la postlectura. Archivos queda 15/32; restan borrados (fixtures en carpetas personales), listados del escritorio, contenido dinámico («que contenga la fecha», procesos), rutas absolutas, comprimir/abrir, resumir PDF y copia a pendrive."
   },
   "currentContinuation1207": {
-    "head": "0bb6e9a13cf18c3f1217aadf260d2d3553103a39",
+    "head": "5513768e7d9919e8705bb3bcbf2ce366d6af8fea",
     "quality": {
-      "passed": 3,
-      "failed": 3,
+      "passed": 4,
+      "failed": 2,
       "executed": 6,
       "not_executed": 0,
       "sealed_total": 8,
@@ -2310,15 +2310,15 @@
     },
     "new_credits": 0,
     "credited_ids": [],
-    "registry_sha256": "1b9b95b96e5797849fee0641a3d761a22b63fe4cec30688101b1a30c2ca81094",
+    "registry_sha256": "c8f84b44b9cc922513cef85fe150d7cd42a79e92497189efdd4cca4fe5110367",
     "survey": 641,
-    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\SCREEN1807\\ROOT_ADJUDICATION.json",
+    "adjudication": "D:\\Perfil\\Escritorio\\ETC\\Programacion\\BAXY DEFINITIVO\\artifacts\\comprobaciones\\C03\\SCREEN1809\\ROOT_ADJUDICATION.json",
     "resources": {
-      "seconds_sum": 105.18799999996554,
+      "seconds_sum": 125.82799999997951,
       "gpu_peak_mib": 3497.55859375,
-      "ram_peak_mib": 1674.30859375
+      "ram_peak_mib": 2392.09375
     },
-    "next": "SCREEN1807: 6 ejecutados, 3 aprobados, 3 fallidos, 0 créditos (índices []); Pantalla, captura e interpretación visual 16/19. Siguiente: categoría por masa abierta según CONDICIONES."
+    "next": "SCREEN1809: 6 ejecutados, 4 aprobados, 2 fallidos, 0 créditos (índices []); Pantalla, captura e interpretación visual 16/19. Siguiente: categoría por masa abierta según CONDICIONES."
   },
   "currentContinuation1685": {
     "registry_sha256": "afbc64b2c2f284c4f5f35dc37816760b6c703c0127fd660dc2a2b1e8d7316090",

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-screen1809-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (screen-text final: scope statement for see/identify/button wordings, no excerpt count, lens echo vetoed, fully quoted reply unwrapped), on top of the SCREEN1809 build.",
+  "patch": "artifacts/comprobaciones/C03/SCREEN1809/SOURCE.patch",
+  "commits": [
+    "5513768e7d9919e8705bb3bcbf2ce366d6af8fea"
+  ],
+  "build": "BUILD1809 (C03-repairs1809-build/BUILD_READY.json; sólo mente)",
+  "cause_measured": "El aviso honesto de alcance sólo se pedía para ver/describir/hay en; excerptLines se exponía junto a lineCount; la frase de la lente era copiable como respuesta y una respuesta entera entre comillas pasaba tal cual.",
+  "change": "Aviso de alcance también para ver/identificar/botón, sólo lineCount proyectado, lente reformulada y su eco vetado, comillas envolventes quitadas; sin respuestas fijas.",
+  "measurement": "SCREEN1809: seis casos en BUILD1809 (cinco turnos revisados de captura con el diálogo de instalación de Steam abierto y cerrado por la raíz, nada instalado; un límite ordinario): cuatro aprobados (los literales que piden ver qué hay en pantalla y ver la pantalla, con aviso honesto de alcance, 25 líneas y tres citas textuales verificadas; la variante en castellano; el límite) y dos fallidos (el literal que pide identificar el botón no recibió final: sus seis borradores fieles fueron vetados por la lente de fallo del compositor como asserted_failure porque la exención de alcance no cubre «identificar botones»; la variante en inglés dijo 3 líneas, las del extracto, en vez de 25); 0 créditos. Causa medida: la exención de alcance de la lente de fallo (mente y App) sólo cubre describir/ver imágenes; el compositor no contrasta la cuenta de líneas dicha con lineCount. Sin crédito: una sola variante aprobada. Siguiente: repetir con la exención para identificar botones y una comprobación de la cuenta de líneas.",
+  "credits": 0
+}

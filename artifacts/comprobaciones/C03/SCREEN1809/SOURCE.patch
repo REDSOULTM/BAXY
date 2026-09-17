@@ -1,0 +1,124 @@
+commit 5513768e7d9919e8705bb3bcbf2ce366d6af8fea
+
+C03: the screen-text final states its scope for see/identify/button requests, exposes no excerpt count, vetoes the echoed lens sentence and unwraps a fully quoted reply (SCREEN1809)
+
+SCREEN1807 measured: «tomá un screenshot para ver la pantalla» and «identificá el botón» got no honest scope statement (only see/describe wordings asked for it) and copied the lens sentence «y cita cada una de esas líneas tal cual» as the reply; the English variant said «3 lines» from the exposed excerptLines and wrapped the whole reply in quotation marks. The composer now asks the scope statement for ver/identificar/botón wordings (naming buttons when a button was asked), projects only lineCount, phrases the lens so the lines follow the count, treats the lens sentence in a draft as a copied instruction, and strips one pair of quotation marks wrapping the whole reply.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 5985e945..4e0843da 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4235,7 +4235,6 @@ def _compose_situation_payload(
+                 # JSON newline escapes into the quotation; a list quotes cleanly.
+                 projected["lines"] = excerpt
+                 projected["text"] = "\n".join(excerpt)
+-                projected["excerptLines"] = len(excerpt)
+             for key in ("lineCount", "language"):
+                 if visible_seen.get(key) is not None:
+                     projected[key] = visible_seen[key]
+@@ -4767,6 +4766,18 @@ def _strip_prompt_labels(text: str) -> str:
+     # backslash is never meant.
+     cleaned = re.sub(r"\\+(?=[\"\'\u00ab\u00bb\u201c\u201d\u2018\u2019])", "", cleaned)
+     cleaned = re.sub(r"^#+\s*", "", cleaned).strip()
++    # SCREEN1807: the whole reply wrapped in one pair of quotation marks
++    # («"The screen shows … lines are: '…'."») is the reply, not a quotation.
++    for opening, closing in (("\"", "\""), ("\u201c", "\u201d"), ("\u00ab", "\u00bb")):
++        if (
++            len(cleaned) > 2
++            and cleaned.startswith(opening)
++            and cleaned.endswith(closing)
++            and opening not in cleaned[1:-1]
++            and closing not in cleaned[1:-1]
++        ):
++            cleaned = cleaned[1:-1].strip()
++            break
+     cleaned = re.sub(
+         r"^(?:el )?estado observable(?: es)?:\s*",
+         "",
+@@ -7016,7 +7027,10 @@ def compose_visible_defect(
+         r"understand the facts|name the local clock|^name the |"
+         r"do not introduce yourself|do not describe presence|"
+         r"observed\.muted|state muted matching|^progreso\.?$|"
+-        r"^muted\.?$|^unmuted\.?$|wait ended|mission unfinished",
++        r"^muted\.?$|^unmuted\.?$|wait ended|mission unfinished|"
++        # SCREEN1807: the screen-text lens sentence copied as the reply.
++        r"cita cada una de esas l[ií]neas|quote each of those lines|"
++        r"escribe a continuaci[oó]n las l[ií]neas|write the lines of seen|l[ií]neas de seen\.lines",
+         folded,
+     )
+     if (
+@@ -14542,35 +14556,54 @@ class LlmRuntime:
+             instruct(
+                 "\nseen.lines holds a few lines read from the screen, exactly as "
+                 "recognized, and seen.lineCount the total number of lines. Say "
+-                "that the screen shows lineCount lines and quote each of those "
+-                "lines verbatim, each in its own quotation marks, nothing else: no "
++                "that the screen shows lineCount lines and then write the lines of "
++                "seen.lines exactly as read, each in its own quotation marks, nothing else: no "
+                 "purpose, no interpretation, no warnings, no words that are not in "
+                 "seen.lines or in the request."
+                 if response_language == "en"
+                 else "\nseen.lines trae unas pocas líneas leídas de la pantalla, tal "
+                 "cual se reconocieron, y seen.lineCount el total de líneas. Di que "
+-                "la pantalla muestra lineCount líneas y cita cada una de esas líneas "
+-                "tal cual, cada una entre sus propias comillas, nada más: sin "
++                "la pantalla muestra lineCount líneas y escribe a continuación las "
++                "líneas de seen.lines tal cual se leyeron, cada una entre sus propias "
++                "comillas, nada más: sin "
+                 "propósito, sin interpretación, sin avisos, sin palabras que no "
+                 "estén en seen.lines o en el pedido."
+             )
+-            if re.search(
+-                r"\b(?:describ\w*|ves|viendo|see|seeing|hay en|is on|what'?s on)\b",
+-                _reading_fold(user_text),
++            folded_ask = _reading_fold(user_text)
++            # SCREEN1807 «tomá un screenshot, identificá el botón»: a button asked
++            # of a capture is the same scope limit, said about buttons.
++            button_ask = re.search(r"\b(?:boton\w*|button\w*)\b", folded_ask) is not None
++            if button_ask or re.search(
++                # SCREEN1807: «para ver la pantalla», «identificá …» ask to see too.
++                r"\b(?:describ\w*|ves|ver|viendo|see|seeing|hay en|is on|what'?s on|"
++                r"identific\w*|identify)\b",
++                folded_ask,
+             ):
+                 # SCREEN1417 «qué hay en la pantalla», «describime la pantalla»:
+                 # no vision provider is configured, so the honest scope is the
+                 # text this reading recognized, said before the lines.
+-                instruct(
+-                    "\nThe person asked what is on the screen or to describe it. "
+-                    "Say first that you cannot describe images, only read the text "
+-                    "on the screen, and then report the lines as above."
+-                    if response_language == "en"
+-                    else "\nLa persona preguntó qué hay en la pantalla o pidió "
+-                    "describirla. Di primero que no puedes describir imágenes, sólo "
+-                    "leer el texto de la pantalla, y después informa las líneas como "
+-                    "arriba."
+-                )
++                if button_ask:
++                    instruct(
++                        "\nThe person asked to identify a button in the capture. "
++                        "Say first that you cannot identify buttons in images, only "
++                        "read the text on the screen, and then report the lines as above."
++                        if response_language == "en"
++                        else "\nLa persona pidió identificar un botón en la captura. "
++                        "Di primero que no puedes identificar botones en imágenes, sólo "
++                        "leer el texto de la pantalla, y después informa las líneas como "
++                        "arriba."
++                    )
++                else:
++                    instruct(
++                        "\nThe person asked what is on the screen or to describe it. "
++                        "Say first that you cannot describe images, only read the text "
++                        "on the screen, and then report the lines as above."
++                        if response_language == "en"
++                        else "\nLa persona preguntó qué hay en la pantalla o pidió "
++                        "describirla. Di primero que no puedes describir imágenes, sólo "
++                        "leer el texto de la pantalla, y después informa las líneas como "
++                        "arriba."
++                    )
+         if dense_fact_contract:
+             instruct(
+                 "\nEste resultado contiene muchos hechos obligatorios. Usa una "

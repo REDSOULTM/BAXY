@@ -1,3 +1,25 @@
+## SCREEN1809 — estado vigente 2026-09-17T05:11:21.507178+00:00
+
+Parcial: 4 aprobados, 2 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 641/742 | 101 | 0 | >=525 | 13/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 525 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SCREEN1809 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: SCREEN1809: 6 ejecutados, 4 aprobados, 2 fallidos, 0 créditos (índices []); Pantalla, captura e interpretación visual 16/19. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/SCREEN1809/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 125.83 s acumulados; pico GPU 3497.56 MiB; pico RAM 2392.09 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SCREEN1809 precedente. -->
+
 ## SCREEN1807 — estado vigente 2026-09-17T05:02:12.368102+00:00
 
 Parcial: 3 aprobados, 3 fallidos, 0 sin ejecutar; 0 créditos.
