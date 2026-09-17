@@ -1,0 +1,274 @@
+[
+  {
+    "index": 0,
+    "case_id": "H0420",
+    "verdict": "passed",
+    "credit": true,
+    "pair_indices": [
+      1,
+      2
+    ],
+    "reason": "audio.microphone.mute completada y verificada por la postlectura del endpoint de captura; la raíz midió el micrófono silenciado después; el final dijo lo hecho; crédito con dos variantes aprobadas del mismo grupo.",
+    "observation_note": "Turno ordinario: audio.microphone.mute con state true completada y verificada por la postlectura del endpoint de captura; la raíz midió el micrófono silenciado después y restauró el estado previo; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "29a349f60a816b1594082672b496aed12760b0ec86b2dab1d2f3c0f8ba55a7f2",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\results\\case-00\\EXIT.json": "e4b3b9e7a6bf6c4b81304d17b3a3acc0dd1f698f75ff6c02e087979fcc6864ad",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\results\\case-00\\RESOURCES.json": "a2e5b59b21ff28e4f5991d5640281d943934dde80bb07308d9839de8a57433ff",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\profile-owner-00.json": "b0d1aff6547bda2aa9653213ab8e34efd950d8523cb9a007e3541e6fd1d05b51",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\results\\case-00\\PREREG.json": "3989676cb531746d7fe3f427fa82f21544c805ad25ad8337d38911562daa1ec8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-00\\capture\\events.jsonl": "5c8b682a951cb07add2091b044fea35daa7d0e67f2714f23faef92dd1d8db379",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-00\\turns.jsonl": "1d58bf1313f94197c497d21d93ebf119ce99922fa972179cee743d01e978d789",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\fixture-00.json": "8749924c67a7bc6f283ea7b7b2b030635fa367ee5e997fab3e65483af61d2932",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\context-00.json": "8abb582e44b39dcdb9aa60e6ba7f3e3b2b0589dca10bd62633043f15d894f89a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\context-prelaunch-00.json": "cd53e54088174af0e3c1793ead306f7f15ff0b6c92f4cf32a0fc7f4ef2af2126",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-00\\case-observations.json": "8b6d5133070fc4f463c182ea5930ed7e41e169136c4a3f6785dad6911fad17be",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-00\\journal-before.json": "9fd05955659fdabe1027ebac4fc0a0c8b078a691d44933b8df70da5ef4575b06",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-00\\journal-after.json": "bfcf0060140bb0355b606388ddd5fb501c9659e6b6e1077d7e2bfb90aac4dd5a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "f096dcfe2a8c91268461c5a288e44ede9ab7dc34ad2af34faa2a2ba029f8e781"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "55cb572f-885e-4344-85a0-39cf1beb9a56",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "27b121d9-0909-4108-8257-51b2ded8d305",
+        "operation": "audio.microphone.mute",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 1,
+    "case_id": "mic1815-dev-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "audio.microphone.mute completada y verificada por la postlectura del endpoint de captura; la raíz midió el micrófono silenciado después; el final dijo lo hecho.",
+    "observation_note": "Turno ordinario: audio.microphone.mute con state true completada y verificada por la postlectura del endpoint de captura; la raíz midió el micrófono silenciado después y restauró el estado previo; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "29a349f60a816b1594082672b496aed12760b0ec86b2dab1d2f3c0f8ba55a7f2",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\results\\case-01\\EXIT.json": "b9a7bbeb65c14df7e7875f94f7506d10d02960a672a8afc23352ffd38f44df3b",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\results\\case-01\\RESOURCES.json": "0b9951c55c2014be9311a167f718327082a683a6fa3190ba3b29444bd7f00111",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\profile-owner-01.json": "f63fe7cefac694eb09ad0720d1a33599f4a7b34d00d34c292f16ead99e8649ea",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\results\\case-01\\PREREG.json": "4056c56b00683f074d9df9e0372224cb4bad558ee4737d3c68deeee361486e16",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-01\\capture\\events.jsonl": "e3a8a7d44b2f23de2c6847d6dfe686bdfcae441117fa0a63dba598c28e0b7bc3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-01\\turns.jsonl": "3a1b1d812a5cb43051768bc4d9c72df23d9a91f608bb789b392e5753f5181972",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\fixture-01.json": "fc1d53020a48799d58c55e145b4713684929a012c55023039087a99f033b003a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\context-01.json": "35ced33dc1919a44130c926ca41225f25f180a5eefb4fbc312ab873de32713fb",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\context-prelaunch-01.json": "19577dd1482327982e665ae22492d93bc34d54117aa48de9318c0b64bdaf046c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-01\\case-observations.json": "33819ff85d0e1c67717e769f3c9e99524a1b3cdc0e1d39f6a8844a4248ddd274",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-01\\journal-before.json": "65f29a1dea4317f670dc0b7ad6990a490d58916cfbca2bfaab5dba87eda5d255",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-01\\journal-after.json": "7a9b0d9cb7127ecae3b514ca37db35882cdbb4ae14fdea116f324e6f20971eaf",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "4816f943090f7e2fda483cc0efe22160ec570b232fe06bf6f222ad0fc7c7c0aa"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "783ab85d-f2d3-4c67-8203-0de88f18f178",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "09513109-3443-4ba2-a25d-ced3fafd94f5",
+        "operation": "audio.microphone.mute",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 2,
+    "case_id": "mic1815-dev-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "audio.microphone.mute completada y verificada por la postlectura del endpoint de captura; la raíz midió el micrófono silenciado después; el final dijo lo hecho.",
+    "observation_note": "Turno ordinario: audio.microphone.mute con state true completada y verificada por la postlectura del endpoint de captura; la raíz midió el micrófono silenciado después y restauró el estado previo; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "d4c144f7ee7ef4767e78c4d07f34e18ef6bc10351da6ff53ba0d03199f0e37ca",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\results\\case-02\\EXIT.json": "1d4ee005c9478c91d168e81ca2af60e2cf4fbabb5bd72e93bcd4ef7b3ed67bca",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\results\\case-02\\RESOURCES.json": "098ca4f653b77a28e456ebb93cb83154e82fcf708179ba83cb52293a90191a08",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\profile-owner-02.json": "e1e04423066c91569d6862c4ce6954058475f4a145ef62dc26093188e0a86b9f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\results\\case-02\\PREREG.json": "ffa53ddb6d36c50f2996f9c0bcb2d214f0cfb9a923eb2ba76ec3616a55ff13f8",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-02\\capture\\events.jsonl": "82a7be436b12d2c5f4a8069c7186e8201225f1b9205ee4673c78df5bb425e3d3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-02\\turns.jsonl": "728dc7fe7264605bff68f50744090cfa7f6ccb8fdb5a133a613dbb00b953c69d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\fixture-02.json": "1a60c64bdd34b6545d5fa32d73412a63945e39f4694d8933f6ad068f51e335bc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\context-02.json": "6159808626f2347324b6bcee67bda98d0ef4f6ec036f0368a060b6ef5cd17462",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\context-prelaunch-02.json": "771de9c60c4d3a9c740dd8fbf101e09d34b5684acb11d73fc4211e0a73687637",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-02\\case-observations.json": "6e6be4ba72f9613cc2f054d7b1dcfa16e712ecfc48fe6b82d533897d3da3073f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-02\\journal-before.json": "d2d575c6af3f8117fd842777748c771728b6dd852945230c28e447542335c0a5",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-02\\journal-after.json": "050accfc66f80ecaa15ea4bf0fc4480969b86f27e377e1207c121b066b51c635",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "2050fa0bde12a2c78624bcc84a7d94892d7ae35afc800a3b5c4acdf37da64967"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "310599dc-1a78-47e6-a5df-e8b9cdb4e4e6",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      },
+      {
+        "invocation_id": "a77ed02b-cf68-4be1-a844-edc14da659d6",
+        "operation": "audio.microphone.mute",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 3,
+    "case_id": "mic1815-boundary-01",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "6928b1d412cc19f1097bdc782980ed57526f9c5feced00b2b281a39b0feb2a70",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\results\\case-03\\EXIT.json": "2e0fc50a56713a6991e389244837575acbf1945efc9ab22f6fa8f253e2b1ab10",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\results\\case-03\\RESOURCES.json": "3cc63e6f9f8b5e81b1ae961a8d67cb8817eb82911cbac222215aac6db59be8f3",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\profile-owner-03.json": "9ec743a290c982f1d1ec9cb3ccb67c5e14c3776890501fd7348ce29143304791",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\results\\case-03\\PREREG.json": "d289bd327abfc95cb0f237df31727e3e1e33513a05011979f920e3eacd88fe53",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-03\\capture\\events.jsonl": "fdfbfcd41611857f5fe8b8a2c4f82d8fb70daa1a87f8857377dc2cfa6a78f68a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-03\\turns.jsonl": "1cde3886e6ca92155d6676198d3f574f383e285c0cc34d43e3c15dcb50ae8f8c",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\fixture-03.json": "08e9dc4094697044952ee70e8cd0444c4aa0c2acaf7ca5e276cb2d9e7bb99725",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\context-03.json": "0c8201ad367651c1a24790911358e46be12e565dca44e73cd05227739a509e6d",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\context-prelaunch-03.json": "1ffd3bcb9452cf8515350ae8877f2bccf4789f2ef8c7f7be3b63001f5dcea9fa",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-03\\case-observations.json": "39cf1ed5ce946eb6231d2c9beff09dd8b16abf674ee7bef83c804b5e7a19186f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-03\\journal-before.json": "18be68bb0f21dc78c34f1902bd9ae2186a262cc8ba115fddb5e4dd4cf9f6475f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-03\\journal-after.json": "169b17a022ee6d578413565254d6f929c377c499f369ddbb226c4dd566efeba2",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "6cb05ef40e4392069cfa40cdb3f078a959875f22da37c0081f193a76f3f0847c"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "25228cf1-e9cd-4086-b48d-d3dabb53adce",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  },
+  {
+    "index": 4,
+    "case_id": "mic1815-boundary-02",
+    "verdict": "passed",
+    "credit": false,
+    "pair_indices": [],
+    "reason": "Límite aprobado.",
+    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+    "final_sha256": "ded5746971dc84f96680e138411c1e2016b53e9d4e392edc8a6c5ccff0dc7db7",
+    "evidence_pins": {
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\results\\case-04\\EXIT.json": "f1c12eb8af4dd962ac71b77055a1a567114d17d62353a37ef1a22b711bcef8a1",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\results\\case-04\\RESOURCES.json": "87faf4bec9b1d412218562406c86a6cbd4e9447a281afc89724acdbb6693564a",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\profile-owner-04.json": "d53c14088a9f70b8a3cb24565e2851c3077965de13b7eb6d63e8c5a64abf3780",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\results\\case-04\\PREREG.json": "756bf4060f1c23fbf59abd97a1ff45b65aefd2d5a935e05b3a816399f0fb9edf",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-04\\capture\\events.jsonl": "448c3cb8a065e7d900786bd64be0047f05e10e98bbdf2ce082f3d0b103376bb6",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-04\\turns.jsonl": "81f7878e261ad789a38f02262e4ef91a4cd175438d67c0e5c2c39025d5010f57",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\fixture-04.json": "8bf000d3c67c07cdb40296323defc3fc5f4d0ea85c75aa449efcc7b8ea774517",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\context-04.json": "9e571e7ef2ccbb3f5b43327a61786ee1e68afa7d4f7c569a658eec896577a6df",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\context-prelaunch-04.json": "d94226b91263910287bcc3a7c4d9cdbe84eca25061703bc966e1e21d573964dc",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-04\\case-observations.json": "b45820b9d7fa7dd3939c3a17c049e360ef1f787eaf9411ed87e33fa70c169985",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-04\\journal-before.json": "31a9890a51c31498976e7daa3e7f3b64998d2cd4520667ce267aeac3eca0c532",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-04\\journal-after.json": "5620b60bfa3390b93b0619ca0b4eecf215255ab30acde798107f5aca21b3883f",
+      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mic1815-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "f906c20593d75688cc83a606122be754eb45de5d96a57a398cd17fe9812a80ec"
+    },
+    "terminal_kind": "published_final",
+    "clients_absent_before": true,
+    "aborted_before_admission": false,
+    "remaining_execution_uncertain_after_stop": false,
+    "cause_kind": null,
+    "violations": [],
+    "new_invocations": [
+      {
+        "invocation_id": "bbd0e6b5-8091-49b9-bc3b-d2d61a960eff",
+        "operation": "memory.status",
+        "status": "completed",
+        "verified": true,
+        "error_code": null,
+        "effect_may_have_occurred": null,
+        "phases": [
+          "started",
+          "completed"
+        ],
+        "replayed": false
+      }
+    ]
+  }
+]

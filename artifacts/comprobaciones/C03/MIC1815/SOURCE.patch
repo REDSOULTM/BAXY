@@ -1,0 +1,27 @@
+commit dfb0f2ec702ce44127817508162e31fab0a123ba
+
+C03: the reversed-mute check no longer reads the tail of «micrófono» as a negation (MIC1815)
+
+MIC1813 measured: audio.microphone.mute completed and verified, but the composer vetoed the true Spanish draft «El micrófono está silenciado.» three times as reversed_mute, because its unmuted pattern «no esta silenci» matched inside «micrófono está silenciado». The negations now require a word boundary.
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 021ac38b..9f8ca906 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -7509,9 +7509,11 @@ def compose_visible_defect(
+         return "extra_claim"
+     if "muted" in observed_dict:
+         muted = observed_dict.get("muted") is True
++        # MIC1813: «micrófono está silenciado» contains «no esta silenci»; the
++        # negation is a word, not the tail of «micrófono».
+         unmuted_ok = re.search(
+-            r"reactiv|unmuted|ya no está silenci|ya no esta silenci|"
+-            r"no está silenci|no esta silenci|\bfalse\b|not muted|"
++            r"reactiv|unmuted|\bya no est[aá] silenci|"
++            r"\bno est[aá] silenci|\bfalse\b|not muted|"
+             r"isn't muted|is not muted",
+             folded,
+         )
