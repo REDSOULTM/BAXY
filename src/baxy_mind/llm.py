@@ -7706,10 +7706,18 @@ def compose_visible_defect(
                 rf"(?<![\d.,]){level_value}(?!\d|[.,]\d)", stripped
             ):
                 return "missing_name"
+            # AUDIO1799: «not silenced» / «no está silenciado» reads the unmuted
+            # sessions truthfully; only an affirmed silence is invented.
+            unnegated = re.sub(
+                r"\b(?:not|isn't|is\s+not|no|no\s+est[aá]n?|no\s+quedo|no\s+quedan?)\s+"
+                r"(?:silenciad[oa]s?|silenced|en\s+silencio|mute[d]?|muteado)\b",
+                " ",
+                folded,
+            )
             if re.search(
                 r"\b(?:cerrad[oa]s?|closed|abiert[oa]s?|is open|no\s+hay\s+sonido|sin\s+sonido|no\s+sound|"
                 r"silenciad[oa]s?|silenced|en\s+silencio|mute[d]?|muteado)\b",
-                folded,
+                unnegated,
             ) and observed_dict.get("muted") is not True:
                 return "extra_claim"
         if "level" in observed_dict and not re.search(
