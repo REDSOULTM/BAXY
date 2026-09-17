@@ -6013,6 +6013,30 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         if shown_value and shown_value not in text and shown_value.replace(".", ",") not in text and shown_value.replace(",", ".") not in text:
             return "missing_state"
     if (
+        payload.get("operation") == "storage.removable.list"
+        and isinstance(seen, dict)
+        and isinstance(seen.get("drives"), list)
+    ):
+        # USB1823: with no removable drive, a drive named or a copy claimed is
+        # invented; numbers must be the observed sizes or count.
+        folded_text = _reading_fold(text)
+        if not seen["drives"]:
+            if re.search(r"\b(?:copi[eé]|copiad[oa]s?|respald[eé]|hice (?:el|un|la) (?:backup|respaldo|copia)|backed up|copied|saved)\b", folded_text) and not re.search(r"\bno (?:se )?copi|\bnothing (?:was )?copied|\bnot (?:been )?copied|\bno (?:se )?respald|\bno hice\b", folded_text):
+                return "extra_claim"
+            if re.search(r"\b(?:unidad|drive|disco|pendrive|usb)\s+[a-z]:", folded_text):
+                return "extra_claim"
+        observed_numbers = {str(seen.get("driveCount"))}
+        for drive in seen["drives"]:
+            if isinstance(drive, dict):
+                for key in ("freeGiB", "totalGiB"):
+                    if isinstance(drive.get(key), (int, float)):
+                        value = drive[key]
+                        observed_numbers.update({str(value), str(value).replace(".", ","), str(int(value)) if float(value).is_integer() else str(value)})
+        prose = re.sub(r"[«\"“][^»\"”]{1,4096}[»\"”]", " ", text)
+        for number in re.findall(r"(?<![\w.,:-])\d+(?:[.,]\d+)?(?![\w.,:-])", prose):
+            if number not in observed_numbers:
+                return "invented_number"
+    if (
         payload.get("operation") == "software.python.package.status"
         and isinstance(seen, dict)
         and (isinstance(seen.get("pythons"), list) or isinstance(seen.get("installedIn"), list))
@@ -14420,6 +14444,28 @@ class LlmRuntime:
                 "en una oración, la operación y su resultado tal como se muestra (por "
                 "ejemplo que seis por siete da 42 en la Calculadora), usando sólo esos "
                 "números; no se hizo nada más."
+            )
+        if (
+            visible_situation.get("operation") == "storage.removable.list"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("drives"), list)
+        ):
+            # USB1823: the read lists the removable drives connected now; the
+            # backup or copy itself was not done.
+            instruct(
+                "\nseen.drives are the removable drives (pendrives, USB disks) connected right "
+                "now (letter, label, freeGiB, totalGiB) and seen.driveCount their number. If "
+                "seen.driveCount is 0, say that no pendrive or USB drive is connected right now, "
+                "that nothing was copied, and that the person can plug one in and ask again. "
+                "Otherwise name each drive with its letter and label and its free space, and say "
+                "nothing was copied yet. No other numbers; nothing was changed."
+                if response_language == "en"
+                else "\nseen.drives son las unidades extraíbles (pendrives, discos USB) conectadas "
+                "ahora (letter, label, freeGiB, totalGiB) y seen.driveCount su cantidad. Si "
+                "seen.driveCount es 0, di que ahora no hay ningún pendrive ni disco USB conectado, "
+                "que no se copió nada y que la persona puede conectar uno y pedirlo de nuevo. Si "
+                "no, nombra cada unidad con su letra, su etiqueta y su espacio libre, y di que "
+                "todavía no se copió nada. Sin otros números; no se cambió nada."
             )
         if (
             visible_situation.get("operation") == "software.python.package.status"

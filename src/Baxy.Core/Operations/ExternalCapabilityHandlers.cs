@@ -29,6 +29,7 @@ internal static class ExternalCapabilityHandlers
         "display.status",
         "software.python.package.status",
         "software.python.status",
+        "storage.removable.list",
         "document.pdf.read",
         "email.latest.read",
         "email.latest.reply",

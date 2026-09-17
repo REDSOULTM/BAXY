@@ -4973,6 +4973,10 @@ def _explicit_arguments_from_evidence(
         ) or resolve_application_installed_name(evidence, application_names)
         return {"name": name} if name is not None else None
 
+    if operation == "storage.removable.list":
+        if effect_intent._removable_storage_request(evidence):
+            return {}
+
     if operation == "software.python.package.status":
         # PIP1817: the package is the person's literal from the request.
         package = effect_intent._python_package_request(evidence)

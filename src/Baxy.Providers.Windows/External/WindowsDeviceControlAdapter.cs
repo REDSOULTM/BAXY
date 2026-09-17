@@ -269,7 +269,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
     public bool CanHandle(string operation) => operation is
         "bluetooth.device.list" or "bluetooth.device.pair"
         or "bluetooth.radio.set" or "bluetooth.radio.status"
-        or "display.status" or "software.python.status" or "software.python.package.status" or "calculator.expression.evaluate"
+        or "display.status" or "software.python.status" or "software.python.package.status" or "storage.removable.list" or "calculator.expression.evaluate"
         or "peripheral.list" or "peripheral.print" or "peripheral.scan"
         or "wifi.profile.list" or "wifi.radio.set" or "wifi.radio.status" or "wifi.scan" or "wifi.connect" or "wifi.connect.named" or "wifi.disconnect"
         or "wifi.ensure.connected" or "wifi.status"
@@ -293,6 +293,7 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
                 "bluetooth.radio.status" => await BluetoothRadioStatusAsync(operation),
                 "display.status" => DisplayStatus(operation),
                 "software.python.status" => PythonStatus(operation),
+                "storage.removable.list" => RemovableStorageList(operation),
                 "software.python.package.status" => await PythonPackageStatusAsync(operation, arguments, cancellationToken),
                 "calculator.expression.evaluate" => await CalculatorEvaluateAsync(
                     operation, arguments, effectBoundary, cancellationToken),
@@ -865,6 +866,52 @@ internal sealed partial class WindowsDeviceControlAdapter : IExternalOperationAd
             }
             writer.WriteEndArray();
             writer.WriteString("authority", "python_pip_show_read");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
+    }
+
+    // USB1823 «hace un backup de mis documentos a un pendrive»: the removable
+    // drives connected right now, read through DriveInfo; nothing is copied.
+    private static ExternalCapabilityReceipt RemovableStorageList(string operation)
+    {
+        var drives = new List<(string Letter, string Label, string Format, double FreeGiB, double TotalGiB)>();
+        foreach (DriveInfo drive in DriveInfo.GetDrives())
+        {
+            try
+            {
+                if (drive.DriveType != DriveType.Removable || !drive.IsReady)
+                {
+                    continue;
+                }
+                string letter = drive.Name.TrimEnd('\\', '/');
+                double free = Math.Round(drive.AvailableFreeSpace / 1073741824d, 1);
+                double total = Math.Round(drive.TotalSize / 1073741824d, 1);
+                drives.Add((letter, drive.VolumeLabel ?? string.Empty, drive.DriveFormat ?? string.Empty, free, total));
+            }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                continue;
+            }
+        }
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject();
+            writer.WriteNumber("version", 1);
+            writer.WriteNumber("driveCount", drives.Count);
+            writer.WriteStartArray("drives");
+            foreach ((string letter, string label, string format, double free, double total) in drives)
+            {
+                writer.WriteStartObject();
+                writer.WriteString("letter", letter);
+                writer.WriteString("label", label);
+                writer.WriteString("format", format);
+                writer.WriteNumber("freeGiB", free);
+                writer.WriteNumber("totalGiB", total);
+                writer.WriteEndObject();
+            }
+            writer.WriteEndArray();
+            writer.WriteString("authority", "windows_driveinfo_removable_read");
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);

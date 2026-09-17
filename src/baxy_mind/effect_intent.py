@@ -1569,6 +1569,8 @@ def _curated_domain_is_grounded(
         return _has(folded, r"\bpython\b")
     if operation == "software.python.package.status":
         return _python_package_request(folded) is not None
+    if operation == "storage.removable.list":
+        return _has(folded, r"\b(?:pendrive|pen|usb|externo|externa|external|removable|flash|stick)\b")
     if operation == "calculator.expression.evaluate":
         return calculator_expression_request(folded) is not None
     if operation == "display.status":
@@ -10525,6 +10527,34 @@ _PYTHON_PACKAGE_REQUEST = re.compile(
 )
 
 
+_REMOVABLE_MEDIA = (
+    r"(?:pendrive|pen\s+drive|pen|usb|memoria\s+usb|memoria\s+externa|disco\s+externo|disco\s+usb|"
+    r"unidad\s+externa|unidad\s+usb|usb\s+stick|flash\s+drive|thumb\s+drive|external\s+(?:drive|disk)|"
+    r"removable\s+(?:drive|disk)|memory\s+stick)"
+)
+_REMOVABLE_STORAGE_REQUEST = re.compile(
+    r"^[¿?¡!\s]*(?:"
+    # «hacé un backup de mis documentos a un pendrive», «copiá mis fotos al usb», «back up my documents to a USB stick»
+    r"(?:hace(?:me)?|haz|hazme|make|do|copia(?:me)?|copy|guarda(?:me)?|save|pasa(?:me)?|move|mueve|respalda|back\s*up|backup|exporta|export)\b"
+    r"[^.;]{0,80}?\b(?:a|al|en|hacia|to|onto|on|into)\s+(?:un|una|el|la|mi|mis|a|an|the|my)?\s*" + _REMOVABLE_MEDIA + r"s?\b"
+    # «qué pendrives hay conectados», «hay algún usb conectado», «is there a flash drive connected»
+    r"|(?:que|cuales|cuantos|hay|tengo|is\s+there|are\s+there|which|what|do\s+i\s+have)\b[^.;]{0,40}?\b" + _REMOVABLE_MEDIA + r"s?\b"
+    r"[^.;]{0,40}?\b(?:conectad\w*|enchufad\w*|puest\w*|hay|tengo|connected|plugged|attached|available)\b"
+    r")",
+)
+
+
+def _removable_storage_request(text: str) -> bool:
+    """USB1823 «hace un backup de mis documentos a un pendrive», «qué pendrives hay
+    conectados»: a storage.removable.list read of the removable drives connected
+    now — nothing is copied; the copy itself is a separate confirmed step."""
+
+    folded = _strip_request_envelope(_fold(text)).strip()
+    return _REMOVABLE_STORAGE_REQUEST.match(folded) is not None and not _has(
+        folded, r"\b(?:formatea|formatear|format|borra|borrar|elimina|delete|wipe|expulsa|eject|desconecta)\b"
+    )
+
+
 def _python_package_request(text: str) -> str | None:
     """PIP1817 «instala requests con pip»: the package named in an install-with-pip
     or is-it-installed request, answered by a software.python.package.status read
@@ -10703,6 +10733,7 @@ def _is_direct_request(text: str) -> bool:
         or _display_status_question(text)
         or _python_status_question(text)
         or _python_package_request(text) is not None
+        or _removable_storage_request(text)
     ):
         return True
     request_head = (
@@ -17259,6 +17290,10 @@ def resolve_explicit_effects(
         application_names,
     )
     authenticated_games = build_game_catalog_index(game_catalog)
+    if "storage.removable.list" in available and _removable_storage_request(text):
+        # USB1823: a backup or copy to a pendrive first reads which removable
+        # drives are connected; nothing is copied.
+        return EffectIntent(("storage.removable.list",), (text,))
     if "software.python.package.status" in available and _python_package_request(text) is not None:
         # PIP1817: installing a Python package with pip is answered by whether
         # it is already installed in the registered Pythons; nothing is installed.

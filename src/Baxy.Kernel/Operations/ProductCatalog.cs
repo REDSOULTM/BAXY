@@ -1338,6 +1338,13 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Lee las instalaciones de Python registradas en Windows (claves PEP 514 del registro: versión, nombre y ejecutable) sin ejecutar nada; sin efecto."),
         Descriptor(
+            "storage.removable.list",
+            EmptySchema(),
+            OperationRisks.ReadOnly,
+            "storage.removable.list.driveinfo.read.v1",
+            ToolExposure.Public,
+            "Lee las unidades extraíbles conectadas ahora (pendrives, discos USB: letra, etiqueta, espacio libre y total) sin copiar ni cambiar nada; sin efecto."),
+        Descriptor(
             "streaming.navigate",
             Schema(
                 [

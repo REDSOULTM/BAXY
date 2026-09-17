@@ -215,6 +215,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             "calculator.expression.evaluate" => "windows_calculator_uia_required",
             "software.python.status" => "windows_registry_read_required",
             "software.python.package.status" => "python_pip_read_required",
+            "storage.removable.list" => "windows_driveinfo_read_required",
             "ocr.read" => "windows_ocr_language_pack_gate_required",
             "package.install.prepare" or "package.install.commit" => "winget_adapter_gate_required",
             "system.settings.adjust" or "system.settings.set" or "system.settings.status" =>
