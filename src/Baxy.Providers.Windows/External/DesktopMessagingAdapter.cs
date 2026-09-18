@@ -646,12 +646,44 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
         // A dark theme draws light text on a dark background, which Tesseract
         // reads as nothing (MSGSEND1845: «hola» typed in the WhatsApp composer
-        // came back empty); the inverted copy reads it, so both readings count.
-        string direct = await RunTesseractAsync(executable, bitmap, cancellationToken)
-            .ConfigureAwait(false);
-        string inverted = await RunTesseractAsync(executable, InvertPixels(bitmap), cancellationToken)
-            .ConfigureAwait(false);
-        return string.Concat(direct, "\n", inverted);
+        // came back empty) while the inverted copy reads it; and the header
+        // title at native size read «Misica» where the 2x copy reads «Musica»,
+        // while the composer band reads only at native size. Every reading
+        // counts, so the four passes are joined.
+        byte[] doubled = Upscale2x(bitmap);
+        var readings = new string[4];
+        int index = 0;
+        foreach (byte[] candidate in new[] { bitmap, InvertPixels(bitmap), doubled, InvertPixels(doubled) })
+        {
+            readings[index++] = await RunTesseractAsync(executable, candidate, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        return string.Join('\n', readings);
+    }
+
+    private static byte[] Upscale2x(byte[] bitmap)
+    {
+        const int header = 54;
+        int width = BinaryPrimitives.ReadInt32LittleEndian(bitmap.AsSpan(18));
+        int height = BinaryPrimitives.ReadInt32LittleEndian(bitmap.AsSpan(22));
+        int stride = width * 4;
+        byte[] pixels = new byte[checked(stride * 2 * height * 2)];
+        for (int row = 0; row < height; row++)
+        {
+            ReadOnlySpan<byte> source = bitmap.AsSpan(header + row * stride, stride);
+            Span<byte> target = pixels.AsSpan(row * 2 * stride * 2, stride * 2);
+            for (int column = 0; column < width; column++)
+            {
+                ReadOnlySpan<byte> pixel = source.Slice(column * 4, 4);
+                pixel.CopyTo(target.Slice(column * 8, 4));
+                pixel.CopyTo(target.Slice(column * 8 + 4, 4));
+            }
+
+            target.CopyTo(pixels.AsSpan((row * 2 + 1) * stride * 2, stride * 2));
+        }
+
+        return EncodeBmp(width * 2, height * 2, pixels);
     }
 
     private static byte[] InvertPixels(byte[] bitmap)
