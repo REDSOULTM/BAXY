@@ -371,6 +371,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private const ushort VirtualKeyReturn = 0x0D;
     private const ushort VirtualKeyA = 0x41;
     private const ushort VirtualKeyBack = 0x08;
+    private const ushort VirtualKeyEscape = 0x1B;
     private const uint KeyUp = 0x0002;
     private const uint Unicode = 0x0004;
 
@@ -391,15 +392,26 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
 
         await NormalizeWindowAsync(channel, handle, cancellationToken).ConfigureAwait(false);
+        // Escape closes any search panel left open in the client (an in-conversation
+        // search opened by Ctrl+F while the composer had focus hides the header),
+        // and the header is read twice because the first frame after a resize or
+        // focus change may still be transitional.
+        SendKey(VirtualKeyEscape);
+        await Task.Delay(250, cancellationToken).ConfigureAwait(false);
 
         ValueTask<bool> ObserveRecipientAsync(CancellationToken token) =>
             string.Equals(channel, "discord", StringComparison.Ordinal)
                 ? ValueTask.FromResult(
                     Fold(WindowTitle(handle)).Contains(Fold(recipient), StringComparison.Ordinal))
                 : HeaderContainsAsync(handle, recipient, token);
-        if (await ObserveRecipientAsync(cancellationToken).ConfigureAwait(false))
+        for (int attempt = 0; attempt < 2; attempt++)
         {
-            return new(true, false, handle, processId, null);
+            if (await ObserveRecipientAsync(cancellationToken).ConfigureAwait(false))
+            {
+                return new(true, false, handle, processId, null);
+            }
+
+            await Task.Delay(500, cancellationToken).ConfigureAwait(false);
         }
 
         SendChord(
@@ -662,7 +674,33 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                 .ConfigureAwait(false);
         }
 
-        return string.Join('\n', readings);
+        string text = string.Join('\n', readings);
+        AuditReading(bitmap, text);
+        return text;
+    }
+
+    // Opt-in evidence of what the OCR saw (crop and the joined readings), like
+    // the mind's compose audit: set BAXY_MESSAGING_OCR_AUDIT_DIR to a directory.
+    private static void AuditReading(byte[] bitmap, string text)
+    {
+        string? directory = Environment.GetEnvironmentVariable("BAXY_MESSAGING_OCR_AUDIT_DIR");
+        if (string.IsNullOrWhiteSpace(directory) || !Directory.Exists(directory))
+        {
+            return;
+        }
+
+        try
+        {
+            string stem = Path.Combine(
+                directory,
+                $"{DateTime.UtcNow:yyyyMMdd-HHmmss-fff}-{Environment.ProcessId}");
+            File.WriteAllBytes(stem + ".bmp", bitmap);
+            File.WriteAllText(stem + ".txt", text, Encoding.UTF8);
+        }
+        catch (IOException)
+        {
+            // The audit never changes delivery evidence.
+        }
     }
 
     private static byte[] Upscale2x(byte[] bitmap)
