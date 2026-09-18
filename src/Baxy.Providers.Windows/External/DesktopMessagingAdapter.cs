@@ -513,7 +513,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             string observedText = changed
                 ? await ReadTextAsync(bitmap, token).ConfigureAwait(false)
                 : string.Empty;
-            return new(bitmap, changed && (ContainsPhrase(observedText, text) || HeaderMatches(observedText, text)));
+            return new(bitmap, changed && (ContainsPhrase(observedText, text) || DeliveryMatches(observedText, text)));
         }
 
         MessageVisualObservation draftObservation = await ObserveNowOrAtDeadlineAsync(
@@ -612,7 +612,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             string observedText = changed
                 ? await ReadTextAsync(bitmap, token).ConfigureAwait(false)
                 : string.Empty;
-            return new(bitmap, changed && (ContainsPhrase(observedText, text) || HeaderMatches(observedText, text)));
+            return new(bitmap, changed && (ContainsPhrase(observedText, text) || DeliveryMatches(observedText, text)));
         }
 
         MessageVisualObservation draftObservation = await ObserveNowOrAtDeadlineAsync(
@@ -686,8 +686,51 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // its short words («1», «de», «ya») take the most OCR noise, so the delivery
     // read requires every word of four or more letters (one edit tolerated from
     // five) and nothing else; a text without such a word needs the exact phrase.
+    // Tesseract merges the words of a short typed line at this size («Hola test»
+    // read as «Holatest», every single-word draft read fine), so the typed or
+    // sent text is also accepted with all spaces removed, one edit tolerated
+    // from five letters; the band changed and the header names the destination.
+    internal static bool SpacelessMatches(string observed, string target)
+    {
+        string folded = Fold(target).Replace(" ", string.Empty);
+        if (folded.Length == 0)
+        {
+            return false;
+        }
+
+        string haystack = Fold(observed).Replace(" ", string.Empty);
+        if (haystack.Contains(folded, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        if (folded.Length < 5)
+        {
+            return false;
+        }
+
+        for (int start = 0; start + folded.Length - 1 <= haystack.Length; start++)
+        {
+            for (int length = folded.Length - 1; length <= folded.Length + 1; length++)
+            {
+                if (length > 0 && start + length <= haystack.Length
+                    && WithinOneEdit(haystack.Substring(start, length), folded))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     internal static bool DeliveryMatches(string observed, string target)
     {
+        if (SpacelessMatches(observed, target))
+        {
+            return true;
+        }
+
         string[] words = Fold(observed).Split(' ', StringSplitOptions.RemoveEmptyEntries);
         string[] tokens = Fold(target).Split(' ', StringSplitOptions.RemoveEmptyEntries);
         bool anyLong = false;
