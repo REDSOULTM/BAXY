@@ -14,7 +14,7 @@ Corrección 2026-09-17 (raíz): H0052 «instala requests con pip» es software_i
 | Archivos y carpetas | 32 | 31 | 1 |
 | Entrada incompleta, ruido y control de diálogo | 34 | 27 | 7 |
 | Vídeo y series | 26 | 2 | 24 |
-| Mensajería | 31 | 9 | 22 |
+| Mensajería | 31 | 26 | 5 |
 | Abrir aplicaciones | 54 | 50 | 4 |
 | Audio y volumen | 51 | 47 | 4 |
 | Alarmas, recordatorios, tareas y agenda | 38 | 38 | 0 |
