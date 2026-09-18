@@ -5903,6 +5903,23 @@ def _ground_explicit_arguments(
                 application_names,
                 game_catalog,
             )
+    if explicit is None and operation in ("message.send.test", "message.draft"):
+        # MSGCLAR1851 «mandale al grupo Musica: prueba 1 …» → «¿en qué canal?»
+        # → «por WhatsApp»: the decision read the answer as the completed
+        # message request; the arguments read that same surface (from the
+        # history, or from the resumed objective with the trusted prefix).
+        previous = _previous_user_request(history, evidence) if isinstance(history, list) else None
+        answer = evidence
+        folded_evidence = effect_intent._fold(evidence)
+        if previous is None and "aclaracion confiable del usuario:" in folded_evidence:
+            previous, _, answer = folded_evidence.partition("aclaracion confiable del usuario:")
+        completed = effect_intent._completed_missing_message_channel_request(
+            answer.strip(), (previous or "").strip() or None, ("message.send", operation),
+        )
+        if completed is not None:
+            explicit = _explicit_arguments_from_evidence(
+                operation, completed, application_names, game_catalog,
+            )
     if explicit is None and operation == "audio.app.volume.adjust":
         # AUDIO1791 «subí el volumen de spotify» → «¿cuánto?» → «20»: the
         # decision read the answer as the completed request; the arguments

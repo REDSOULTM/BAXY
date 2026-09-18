@@ -1329,6 +1329,11 @@ def message_draft_request(text: str) -> tuple[str, str, str] | None:
     raw = _strip_request_envelope(text).strip()
     if not raw or len(raw.encode("utf-8")) > 2048:
         return None
+    if "aclaracion confiable del usuario:" in _fold(raw):
+        # MSGCLAR1851: a resumed objective «<request> <trusted prefix> <answer>»
+        # is read as request plus answer by the completion, never as one draft
+        # whose text would swallow the prefix.
+        return None
     for pattern in _MSG_DRAFT_PATTERNS:
         match = pattern.match(raw)
         if match is None:
