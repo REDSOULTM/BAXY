@@ -1,0 +1,17 @@
+{
+  "schema": "c03-msgclar1851-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py and src/baxy_mind/__main__.py (dictation colon and bare que as separators; channel judged outside the dictated text; the channel answer completes the previous request for the plan and for the arguments) and src/Baxy.Providers.Windows/External/DesktopMessagingAdapter.cs (the delivery read widens the newest-bubble band for a long message), on top of the MSGSEND1849 build.",
+  "patch": "artifacts/comprobaciones/C03/MSGCLAR1851/SOURCE.patch",
+  "commits": [
+    "528e26a58",
+    "1cabda20d",
+    "07d4f4505"
+  ],
+  "build": "BUILD1851 (C03-repairs1851-build/BUILD_READY.json; mente)",
+  "cause_measured": "Un pedido de mensaje sin cliente nombrado no se reconocia (dos puntos de dictado) o se quedaba en la pregunta, y la respuesta con el cliente no completaba el pedido.",
+  "change": "La mente lee el texto dictado tras dos puntos o un que simple, no toma como canal un cliente nombrado dentro del texto, pregunta el cliente y completa el pedido con la respuesta de una palabra.",
+  "measurement": "MSGCLAR1851: 8 ejecutados, 8 aprobados (4 literales, 2 variantes, 2 límites), 0 fallidos; 4 créditos. Medición raíz en el PC principal: los cuatro literales sin cliente nombrado (tres al grupo Música, uno a un tercero) se resolvieron como diálogos: BAXY preguntó «¿En qué canal deseas que se envíe el mensaje?», la raíz respondió «por WhatsApp» (respuesta guionizada), la mente completó el pedido de la persona con ese cliente (plan y argumentos), la propuesta message.send.test fue revisada y aprobada por la raíz, el envío llegó de verdad al grupo de pruebas Música (destino forzado por construcción, escritura y entrega leídas por OCR, recibo sent true) y los finales nombraron el grupo («Envié \"prueba 2, todo OK\" a Música.»; para el tercero: «Envié \"llego tarde\" al canal de prueba «Música», pero no llegó a Lucas.»). Tres arreglos generales: el texto dictado tras dos puntos o un «que» simple, el cliente nombrado dentro del texto no cuenta como canal, la respuesta de una palabra completa el pedido; y la lectura de entrega ensancha la banda de la burbuja para mensajes largos. Ambas variantes pasaron y los límites explicaron y reconocieron la prohibición sin operar. Mensajería 26/31; quedan Discord H0318/H0340/H0394 a Valeria, la lectura H0720 y los seis de correo.",
+  "credits": 4
+}

@@ -1,0 +1,266 @@
+commit 528e26a58a724c46e09876b5923d69472f2a81fb
+
+C03: a message request without a client asks which one and the answer completes it (MSGSEND1847 left H0198/H0231/H0536/H0024 open): a dictation colon after the addressee or a bare «que» carries the text, a client named inside the dictated text is not the channel, and a one-word channel answer («por WhatsApp», «wsp», «Discord») rebuilds the person's request with that client so the ordinary send reader accepts it; «que diga:» and «diciendo que» prefixes are stripped from the text
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 068e974c7..591ee7983 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -1217,13 +1217,56 @@ def _completed_missing_volume_level_request(
+     return f"{previous_user_text.strip()}\n{text}"
+ 
+ 
++_MSG_DICTATION_SEPARATOR = re.compile(
++    r"\s*(?::|\b(?:que\s+diga|que\s+dice|diciendo(?:le)?|dici[eé]ndole|saying|that\s+says|que|that)\b)",
++    re.IGNORECASE,
++)
++
++
++def _completed_missing_message_channel_request(
++    text: str, previous_user_text: str | None, available_operations: Iterable[str],
++) -> str | None:
++    """MSGCLAR «mandale al grupo Musica: prueba 1 …» → «¿por WhatsApp o por
++    Discord?» → «por WhatsApp»: the answered client completes the previous
++    message request whose only missing field was the channel. The completed
++    request is the person's own words with «por <client>» before the dictated
++    text, and the ordinary draft reader still has to accept it."""
++
++    if not previous_user_text:
++        return None
++    answer = _strip_request_envelope(_fold(text)).strip()
++    found = re.fullmatch(
++        r"[¿?¡!\s]*(?:(?:por|en|via|on|in|through|by|usando|using|con|with)\s+)?"
++        r"(?:(?:el|la|the)\s+)?(?:(?:app|aplicacion|application)\s+(?:de\s+|of\s+)?)?"
++        r"(?P<ch>whatsapp|wsp|discord)"
++        r"(?:\s+(?:por\s+favor|please|mejor|nomas))?[\s.!?]*",
++        answer,
++    )
++    if found is None:
++        return None
++    prior = resolve_explicit_clarification_intent(previous_user_text, available_operations)
++    if prior is None or prior.operations != ("message.send",) or prior.missing_fields != ("channel",):
++        return None
++    channel = "whatsapp" if found.group("ch") in {"whatsapp", "wsp"} else "discord"
++    previous = _strip_request_envelope(previous_user_text.strip()).strip()
++    separator = _MSG_DICTATION_SEPARATOR.search(previous)
++    if separator is None:
++        return None
++    joiner = " on " if _has(
++        _fold(previous), r"^[^\w]*(?:send|write|text|message|tell|ask|let)\b",
++    ) else " por "
++    rest = previous[separator.start():]
++    completed = previous[:separator.start()].rstrip() + joiner + channel + (" " if rest.startswith(":") else "") + rest
++    return completed if message_draft_request(completed) is not None else None
++
++
+ _MSG_VERB = r"(?:m[aá]nd[aá](?:le|me|les)?|env[ií]a(?:le|me|les)?|envi[aá](?:le|me|les)?|escrib[ií](?:le|me)?|escr[ií]be(?:le|me)?|send|write|text|message)"
+ _MSG_OBJECT = r"(?:(?:un|una|el|a|an|the)\s+)?(?:mensaje|message|texto|text)"
+ _MSG_OBJECT_CHANNEL = r"(?:(?:un|una|el|a|an|the)\s+)?(?P<och>whatsapp|wsp|discord)(?:\s+(?:mensaje|message))?"
+ _MSG_CHANNEL = r"(?P<ch>whatsapp|wsp|discord)"
+ _MSG_TO = r"(?:a|al\s+grupo|al|para|to|en\s+el\s+grupo|en)"
+ _MSG_ON = r"(?:en|por|via|v[ií]a|on|through)"
+-_MSG_SEP = r"(?:que\s+diga|que\s+dice|diciendo(?:le)?|dici[eé]ndole|saying|that\s+says|:)"
++_MSG_SEP = r"(?:que\s+diga|que\s+dice|diciendo(?:le)?|dici[eé]ndole|saying|that\s+says|que|that|:)"
+ _MSG_REC = r"(?P<rec>[^\s,:;][^,:;]{0,60}?)"
+ _MSG_BODY = r"(?P<body>.+?)"
+ _MSG_END = r"\s*[.!?]*$"
+@@ -1294,7 +1337,13 @@ def message_draft_request(text: str) -> tuple[str, str, str] | None:
+         channel = (groups.get("ch") or groups.get("och") or "").casefold()
+         channel = "whatsapp" if channel in {"whatsapp", "wsp"} else channel
+         recipient = re.sub(r"^(?:el\s+grupo|la\s+|el\s+|the\s+group|the\s+)\s*", "", (groups.get("rec") or "").strip(), flags=re.IGNORECASE).strip(" .")
+-        body = re.sub(r"^(?:que\s+)", "", (groups.get("body") or "").strip(), flags=re.IGNORECASE).strip()
++        # MSGCLAR «que diga: prueba 2, todo OK»: the dictation colon after the
++        # separator is punctuation, never part of the text.
++        body = (groups.get("body") or "").strip().lstrip(":").strip()
++        body = re.sub(
++            r"^(?:que\s+diga\s+|que\s+dice\s+|diciendo(?:le)?\s+(?:que\s+)?|dici[eé]ndole\s+(?:que\s+)?|saying\s+|that\s+says\s+|que\s+|that\s+)",
++            "", body, flags=re.IGNORECASE,
++        ).strip()
+         body = body.rstrip(" .!?") if len(body) > 1 else body
+         if channel not in {"whatsapp", "discord"} or not recipient or not body:
+             continue
+@@ -4253,6 +4302,10 @@ def resolve_explicit_clarification_intent(
+             r"^[^\w]*tell\s+[a-z0-9][a-z0-9 _-]{0,80}?\s+that\b|"
+             rf"^[^\w]*{message_speech_act}\s+(?:a\s+)?"
+             r"[a-z0-9][a-z0-9 ._-]{0,80}?\s+(?:que|el\s+texto|el\s+mensaje)\b|"
++            # MSGCLAR «mandale al grupo Musica: prueba 1 …»: a dictation colon
++            # after the addressee carries the text.
++            rf"^[^\w]*{message_speech_act}\s+(?:a\s+|al\s+(?:grupo\s+)?|para\s+)?"
++            r"[a-z0-9][a-z0-9 ._-]{0,80}?\s*:\s*\S|"
+             r"^[^\w]*let\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+know\s+that\b|"
+             r"^[^\w]*write\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+"
+             r"(?:that|the\s+message)\b|"
+@@ -4414,9 +4467,21 @@ def resolve_explicit_clarification_intent(
+             ("recipient", "message_text"),
+         )
+     if "message.send" in available and incomplete_message_shape and message_draft_request(text) is None:
++        # MSGCLAR «mandale al grupo Musica: prueba 1 de WhatsApp, ya funciona
++        # de nuevo»: a client named inside the dictated text is part of the
++        # message, not the channel; the channel counts in the instruction
++        # before the dictation or as a trailing «por whatsapp».
++        instruction_part = re.split(
++            r":|\bque\s+diga\b|\bque\s+dice\b|\bdiciendo\b|\bsaying\b|\bthat\s+says\b",
++            folded,
++            maxsplit=1,
++        )[0]
+         supported_channel = _has(
+-            folded,
++            instruction_part,
+             r"\b(?:whatsapp|wsp|discord)\b",
++        ) or _has(
++            folded,
++            r"\b(?:por|en|via|on|in|through|by)\s+(?:whatsapp|wsp|discord)[\s.!?]*$",
+         )
+         literal_recipient = _has(
+             folded,
+@@ -4429,6 +4494,8 @@ def resolve_explicit_clarification_intent(
+                 rf"^[^\w]*{message_speech_act}\s+"
+                 r"(?:a\s+)?"
+                 r"[a-z0-9][a-z0-9 ._-]{0,80}?\s+(?:que|el\s+texto|el\s+mensaje)\b|"
++                rf"^[^\w]*{message_speech_act}\s+(?:a\s+|al\s+(?:grupo\s+)?|para\s+)?"
++                r"[a-z0-9][a-z0-9 ._-]{0,80}?\s*:\s*\S|"
+                 r"^[^\w]*let\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+know\s+that\b|"
+                 r"^[^\w]*write\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+"
+                 r"(?:that|the\s+message)\b|"
+@@ -4455,6 +4522,7 @@ def resolve_explicit_clarification_intent(
+                 rf"^[^\w]*{message_speech_act}\s+"
+                 r"(?:a\s+)?"
+                 r".+?\s+(?:que|el\s+texto|el\s+mensaje)\s+\S|"
++                rf"^[^\w]*{message_speech_act}\s+.+?:\s*\S|"
+                 r"^[^\w]*let\s+.+?\s+know\s+that\s+\S|"
+                 r"^[^\w]*write\s+.+?\s+(?:that|the\s+message)\s+\S|"
+                 r"^[^\w]*preguntale\s+a\s+.+?\s+(?:si|que|a que)\s+\S|"
+@@ -17476,6 +17544,14 @@ def resolve_explicit_effects(
+         return resolve_explicit_effects(
+             completed_level_request, available, application_names, game_catalog,
+         )
++    completed_message_request = _completed_missing_message_channel_request(
++        text, previous_user_text, available,
++    )
++    if completed_message_request is not None:
++        # MSGCLAR: the answered client completes the previous message request.
++        return resolve_explicit_effects(
++            completed_message_request, available, application_names, game_catalog,
++        )
+     # AUDIO1789: the shell may resume a pending objective as «<request>
+     # <trusted clarification prefix> <answer>»; the two halves are read as
+     # the previous request and its answer.
+commit 1cabda20d77a75276783ff10ff7dad6355a22461
+
+C03: the arguments of a message send decided from a channel answer are read from the same completed request (MSGCLAR1851 case 0: the plan after «por WhatsApp» was message.send.test but the arguments reader saw only the answer, asked for the slot and was vetoed as machine_slot_ask); a resumed objective with the trusted clarification prefix is never read as one draft
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index d41c9eaab..f48b1960f 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -5903,6 +5903,23 @@ def _ground_explicit_arguments(
+                 application_names,
+                 game_catalog,
+             )
++    if explicit is None and operation in ("message.send.test", "message.draft"):
++        # MSGCLAR1851 «mandale al grupo Musica: prueba 1 …» → «¿en qué canal?»
++        # → «por WhatsApp»: the decision read the answer as the completed
++        # message request; the arguments read that same surface (from the
++        # history, or from the resumed objective with the trusted prefix).
++        previous = _previous_user_request(history, evidence) if isinstance(history, list) else None
++        answer = evidence
++        folded_evidence = effect_intent._fold(evidence)
++        if previous is None and "aclaracion confiable del usuario:" in folded_evidence:
++            previous, _, answer = folded_evidence.partition("aclaracion confiable del usuario:")
++        completed = effect_intent._completed_missing_message_channel_request(
++            answer.strip(), (previous or "").strip() or None, ("message.send", operation),
++        )
++        if completed is not None:
++            explicit = _explicit_arguments_from_evidence(
++                operation, completed, application_names, game_catalog,
++            )
+     if explicit is None and operation == "audio.app.volume.adjust":
+         # AUDIO1791 «subí el volumen de spotify» → «¿cuánto?» → «20»: the
+         # decision read the answer as the completed request; the arguments
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 591ee7983..358a7d462 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -1329,6 +1329,11 @@ def message_draft_request(text: str) -> tuple[str, str, str] | None:
+     raw = _strip_request_envelope(text).strip()
+     if not raw or len(raw.encode("utf-8")) > 2048:
+         return None
++    if "aclaracion confiable del usuario:" in _fold(raw):
++        # MSGCLAR1851: a resumed objective «<request> <trusted prefix> <answer>»
++        # is read as request plus answer by the completion, never as one draft
++        # whose text would swallow the prefix.
++        return None
+     for pattern in _MSG_DRAFT_PATTERNS:
+         match = pattern.match(raw)
+         if match is None:
+commit 07d4f4505c7b0daf0b6d9f3d1bcd340d24b46474
+
+C03: the delivery read widens the newest-bubble band when the narrow right-end band does not show the sent text (MSGCLAR1851 case 0: «prueba 1 de WhatsApp, ya funciona de nuevo» really sent to Música, its bubble wider than 320 px, read as «atsApp, ya funciona de nuevo» and refused as message_delivery_not_verified); the narrow band stays first because a short bubble drowned in the wallpaper over the full band
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/DesktopMessagingAdapter.cs b/src/Baxy.Providers.Windows/External/DesktopMessagingAdapter.cs
+index a7ae33f8e..d18e42fa1 100644
+--- a/src/Baxy.Providers.Windows/External/DesktopMessagingAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/DesktopMessagingAdapter.cs
+@@ -545,6 +545,28 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
+         // applies here too; the band changed and the header still names the
+         // destination, which no other chat's text can satisfy at once.
+         bool visible = ContainsPhrase(afterText, text) || DeliveryMatches(afterText, text);
++        if (!visible)
++        {
++            // A long message's bubble is wider than the narrow right-end band
++            // (MSGCLAR1851: «prueba 1 de WhatsApp, ya funciona de nuevo» sent and
++            // read as «atsApp, ya funciona de nuevo»): the same newest-bubble rows
++            // are read again over a wider band, then over the whole pane. The
++            // narrow band stays first because over the full band a short bubble
++            // drowned in the wallpaper.
++            foreach (int bandWidth in new[] { OutgoingBubbleBandWidthAt96Dpi * 2, 0 })
++            {
++                byte[] wider = CaptureRegion(
++                    recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel, bandWidth);
++                string widerText = await ReadTextAsync(wider, cancellationToken).ConfigureAwait(false);
++                if (ContainsPhrase(widerText, text) || DeliveryMatches(widerText, text))
++                {
++                    visible = true;
++                    afterHash = Convert.ToHexStringLower(SHA256.HashData(wider));
++                    break;
++                }
++            }
++        }
++
+         bool stillTarget = string.Equals(recipient.Channel, "discord", StringComparison.Ordinal)
+             ? Fold(WindowTitle(recipient.WindowHandle)).Contains(
+                 Fold(recipient.DisplayName),
+@@ -1314,7 +1336,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
+         LastMessages,
+     }
+ 
+-    private static byte[] CaptureRegion(nint handle, CaptureArea area, string channel)
++    private static byte[] CaptureRegion(
++        nint handle,
++        CaptureArea area,
++        string channel,
++        int outgoingBandWidthAt96Dpi = OutgoingBubbleBandWidthAt96Dpi)
+     {
+         nint previousDpi = SetThreadDpiAwarenessContext((nint)(-4));
+         try
+@@ -1332,9 +1358,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
+                     Math.Max(0, windowWidth - 1),
+                     (int)(WhatsAppConversationPaneOffsetAt96Dpi * scale))
+                 : (int)(windowWidth * 0.42);
+-            if (area == CaptureArea.LastMessages)
++            if (area == CaptureArea.LastMessages && outgoingBandWidthAt96Dpi > 0)
+             {
+-                sourceX = Math.Max(sourceX, windowWidth - (int)(OutgoingBubbleBandWidthAt96Dpi * scale));
++                sourceX = Math.Max(sourceX, windowWidth - (int)(outgoingBandWidthAt96Dpi * scale));
+             }
+ 
+             int composerBand = Math.Min(windowHeight, (int)(ComposerBandHeightAt96Dpi * scale));

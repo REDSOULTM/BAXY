@@ -1,0 +1,24 @@
+{
+  "index": 4,
+  "case_id": "msgclar1851-dev-01",
+  "terminal_kind": "published_final",
+  "final_sha256": "9fd22f54f4396d5e801a2b19987020a7afbd70c9eae8498d53e8490504af6fa6",
+  "clients_absent_before": true,
+  "verdict": "passed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 24.57800000000134,
+    "gpu_peak_mib": 3492.9296875,
+    "ram_peak_mib": 2420.00390625,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-msgclar1851-instrument-v1\\results\\case-04\\EXIT.json": "6d09e8cb703df18cbd05425fee1dd858440cd240ad1bc5c087b5b27537352383",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-msgclar1851-instrument-v1\\results\\case-04\\RESOURCES.json": "e3e909ecd2d2dbeba1953b16276d0fc61cc3bdb206e008bcc5be1a4af4e5a02a",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-msgclar1851-instrument-v1\\private\\run-04\\case-observations.json": "3f4aae5b94510f7022843c5ff829ad8d3bec2f6f081ac0f81bc254ae14a58bfd"
+  }
+}
