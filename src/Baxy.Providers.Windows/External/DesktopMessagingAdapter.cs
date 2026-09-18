@@ -410,18 +410,47 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             await Task.Delay(500, cancellationToken).ConfigureAwait(false);
         }
 
-        SendChord(
-            VirtualKeyControl,
-            string.Equals(channel, "whatsapp", StringComparison.Ordinal)
-                ? (ushort)0x46
-                : VirtualKeyK);
-        await Task.Delay(250, cancellationToken).ConfigureAwait(false);
-        SendChord(VirtualKeyControl, VirtualKeyA);
-        await Task.Delay(100, cancellationToken).ConfigureAwait(false);
-        SendKey(VirtualKeyBack);
-        SendText(recipient);
-        await Task.Delay(350, cancellationToken).ConfigureAwait(false);
-        SendKey(VirtualKeyReturn);
+        if (string.Equals(channel, "whatsapp", StringComparison.Ordinal))
+        {
+            // The chat search is focused by position in the normalized window (the
+            // «Chats» sidebar icon first, so an archived or other view cannot hide
+            // it), and Enter is pressed only if the open conversation's composer
+            // did not change while the name was typed: with the archived view open,
+            // Ctrl+F focused nothing and «Música» + Enter went into the open chat
+            // as a message (MSGSEND1845, owner's deliberate test).
+            ClickAt(handle, SidebarChatsLogicalX, SidebarChatsLogicalY);
+            await Task.Delay(300, cancellationToken).ConfigureAwait(false);
+            ClickAt(handle, ChatSearchLogicalX, ChatSearchLogicalY);
+            await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+            byte[] composerBefore = CaptureRegion(handle, CaptureArea.Composer, channel);
+            SendChord(VirtualKeyControl, VirtualKeyA);
+            await Task.Delay(100, cancellationToken).ConfigureAwait(false);
+            SendKey(VirtualKeyBack);
+            SendText(recipient);
+            await Task.Delay(350, cancellationToken).ConfigureAwait(false);
+            byte[] composerAfter = CaptureRegion(handle, CaptureArea.Composer, channel);
+            if (!CryptographicOperations.FixedTimeEquals(
+                    SHA256.HashData(composerBefore),
+                    SHA256.HashData(composerAfter)))
+            {
+                SendChord(VirtualKeyControl, VirtualKeyA);
+                SendKey(VirtualKeyBack);
+                return new(false, true, handle, processId, "search_focus_not_verified");
+            }
+
+            SendKey(VirtualKeyReturn);
+        }
+        else
+        {
+            SendChord(VirtualKeyControl, VirtualKeyK);
+            await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+            SendChord(VirtualKeyControl, VirtualKeyA);
+            await Task.Delay(100, cancellationToken).ConfigureAwait(false);
+            SendKey(VirtualKeyBack);
+            SendText(recipient);
+            await Task.Delay(350, cancellationToken).ConfigureAwait(false);
+            SendKey(VirtualKeyReturn);
+        }
 
         await Task.Delay(900, cancellationToken).ConfigureAwait(false);
         bool verified = await ObserveRecipientAsync(cancellationToken).ConfigureAwait(false);
@@ -1276,6 +1305,44 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             {
                 _ = SetThreadDpiAwarenessContext(previousDpi);
             }
+        }
+    }
+
+    // Positions in the normalized WhatsApp window (logical px from its top-left):
+    // the «Chats» sidebar icon and the chat search box.
+    private const int SidebarChatsLogicalX = 40;
+    private const int SidebarChatsLogicalY = 70;
+    private const int ChatSearchLogicalX = 190;
+    private const int ChatSearchLogicalY = 124;
+
+    private static void ClickAt(nint handle, int logicalX, int logicalY)
+    {
+        nint previousDpi = SetThreadDpiAwarenessContext((nint)(-4));
+        try
+        {
+            if (!GetWindowRect(handle, out Rect rectangle))
+            {
+                return;
+            }
+
+            double scale = GetDpiForWindow(handle) / 96.0;
+            if (!SetCursorPos(
+                    rectangle.Left + (int)(logicalX * scale),
+                    rectangle.Top + (int)(logicalY * scale)))
+            {
+                return;
+            }
+
+            Input[] inputs =
+            [
+                MouseInput(0x0002),
+                MouseInput(0x0004),
+            ];
+            _ = SendInput((uint)inputs.Length, inputs, Marshal.SizeOf<Input>());
+        }
+        finally
+        {
+            _ = SetThreadDpiAwarenessContext(previousDpi);
         }
     }
 
