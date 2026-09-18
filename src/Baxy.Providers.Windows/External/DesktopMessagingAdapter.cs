@@ -544,7 +544,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         // header title («probanda» for «probando»), so the tolerant word match
         // applies here too; the band changed and the header still names the
         // destination, which no other chat's text can satisfy at once.
-        bool visible = ContainsPhrase(afterText, text) || HeaderMatches(afterText, text);
+        bool visible = ContainsPhrase(afterText, text) || DeliveryMatches(afterText, text);
         bool stillTarget = string.Equals(recipient.Channel, "discord", StringComparison.Ordinal)
             ? Fold(WindowTitle(recipient.WindowHandle)).Contains(
                 Fold(recipient.DisplayName),
@@ -682,6 +682,42 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // chat name in it is the open conversation's; Tesseract still misreads one
     // letter of it now and then («Misica» for «Música»), so a word of five or
     // more letters is accepted at one edit of distance.
+    // A sent bubble may wrap («prueba 1 de WhatsApp, ya funciona de nuevo») and
+    // its short words («1», «de», «ya») take the most OCR noise, so the delivery
+    // read requires every word of four or more letters (one edit tolerated from
+    // five) and nothing else; a text without such a word needs the exact phrase.
+    internal static bool DeliveryMatches(string observed, string target)
+    {
+        string[] words = Fold(observed).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        string[] tokens = Fold(target).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        bool anyLong = false;
+        foreach (string token in tokens)
+        {
+            if (token.Length < 4)
+            {
+                continue;
+            }
+
+            anyLong = true;
+            bool matched = false;
+            foreach (string word in words)
+            {
+                if (word == token || (token.Length >= 5 && WithinOneEdit(word, token)))
+                {
+                    matched = true;
+                    break;
+                }
+            }
+
+            if (!matched)
+            {
+                return false;
+            }
+        }
+
+        return anyLong;
+    }
+
     internal static bool HeaderMatches(string observed, string target)
     {
         string foldedObserved = Fold(observed);
@@ -1223,7 +1259,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // Only the newest bubble's line: over a taller band the older bubbles' small
     // text drowned the new one (MSGSEND1845 audit: «probando.» read as «Breer»,
     // «test» read as «TES» with the bubble above still in the band).
-    private const int LastMessagesBandHeightAt96Dpi = 50;
+    // 80 px: the newest bubble plus a wrapped second line, still below the older
+    // bubbles' bulk (a one-line bubble is about 40 px, two lines about 60 px).
+    private const int LastMessagesBandHeightAt96Dpi = 80;
 
     private enum CaptureArea
     {
