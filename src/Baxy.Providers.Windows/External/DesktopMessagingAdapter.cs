@@ -540,7 +540,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         bool changed = !CryptographicOperations.FixedTimeEquals(
             SHA256.HashData(beforeSend),
             SHA256.HashData(after));
-        bool visible = ContainsPhrase(afterText, text);
+        // The bubble's small text takes the same one-letter OCR noise as the
+        // header title («probanda» for «probando»), so the tolerant word match
+        // applies here too; the band changed and the header still names the
+        // destination, which no other chat's text can satisfy at once.
+        bool visible = ContainsPhrase(afterText, text) || HeaderMatches(afterText, text);
         bool stillTarget = string.Equals(recipient.Channel, "discord", StringComparison.Ordinal)
             ? Fold(WindowTitle(recipient.WindowHandle)).Contains(
                 Fold(recipient.DisplayName),
@@ -1170,7 +1174,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // doodle wallpaper (MSGSEND1845: «hola» read as «tt i>)» in the pane, as
     // «hola» in the band).
     private const int ComposerBandHeightAt96Dpi = 90;
-    private const int LastMessagesBandHeightAt96Dpi = 200;
+    // Only the newest bubble: over a taller band the older bubbles' small text
+    // drowned the new one (MSGSEND1845 audit: «probando.» read as «Breer»).
+    private const int LastMessagesBandHeightAt96Dpi = 90;
 
     private enum CaptureArea
     {
