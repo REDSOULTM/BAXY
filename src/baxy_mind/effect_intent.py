@@ -1238,7 +1238,7 @@ def _completed_missing_message_channel_request(
     found = re.fullmatch(
         r"[¿?¡!\s]*(?:(?:por|en|via|on|in|through|by|usando|using|con|with)\s+)?"
         r"(?:(?:el|la|the)\s+)?(?:(?:app|aplicacion|application)\s+(?:de\s+|of\s+)?)?"
-        r"(?P<ch>whatsapp|wsp|discord|correo(?:\s+electronico)?|(?:e-?)?mail)"
+        r"(?P<ch>whatsapp|wsp|discord)"
         r"(?:\s+(?:por\s+favor|please|mejor|nomas))?[\s.!?]*",
         answer,
     )
@@ -1248,7 +1248,6 @@ def _completed_missing_message_channel_request(
     if prior is None or prior.operations != ("message.send",) or prior.missing_fields != ("channel",):
         return None
     channel = _message_channel_name(found.group("ch"))
-    channel = "correo" if channel == "email" else channel
     previous = _strip_request_envelope(previous_user_text.strip()).strip()
     separator = _MSG_DICTATION_SEPARATOR.search(previous)
     if separator is None:
@@ -1264,12 +1263,11 @@ def _completed_missing_message_channel_request(
 def _completed_missing_message_text_request(
     text: str, previous_user_text: str | None, available_operations: Iterable[str],
 ) -> str | None:
-    """MAIL «escribile un mail a juan@hotmail.com» → «¿qué querés que diga?» →
-    «que llego tarde», or «enviá un correo» → «¿a quién y qué querés que
-    diga?» → «a juan que diga que llego tarde»: the answer supplies the text
-    (and the addressee) that the previous message request lacked. The completed
-    request is the person's own words joined, and the ordinary draft reader
-    still has to accept it."""
+    """MESSAGING «mandale un whatsapp a Ana» → «¿qué querés que diga?» → «que
+    llego tarde»: the answer supplies the text (and, when the question asked for
+    it, the addressee: «a Ana que diga que llego tarde») that the previous
+    message request lacked. The completed request is the person's own words
+    joined, and the ordinary draft reader still has to accept it."""
 
     if not previous_user_text:
         return None
@@ -1302,21 +1300,17 @@ def _completed_missing_message_text_request(
 
 _MSG_VERB = r"(?:m[aá]nd[aá](?:le|me|les)?|env[ií]a(?:le|me|les)?|envi[aá](?:le|me|les)?|escrib[ií](?:le|me)?|escr[ií]be(?:le|me)?|send|write|text|message)"
 _MSG_OBJECT = r"(?:(?:un|una|el|a|an|the)\s+)?(?:mensaje|message|texto|text)"
-_MSG_OBJECT_CHANNEL = r"(?:(?:un|una|el|a|an|the)\s+)?(?P<och>whatsapp|wsp|discord|correo(?:\s+electr[oó]nico)?|(?:e-?)?mail)(?:\s+(?:mensaje|message))?"
-_MSG_CHANNEL = r"(?P<ch>whatsapp|wsp|discord|correo(?:\s+electr[oó]nico)?|(?:e-?)?mail)"
-_MSG_CHANNEL_WORDS = r"(?:whatsapp|wsp|discord|correo|(?:e-?)?mail)"
+_MSG_OBJECT_CHANNEL = r"(?:(?:un|una|el|a|an|the)\s+)?(?P<och>whatsapp|wsp|discord)(?:\s+(?:mensaje|message))?"
+_MSG_CHANNEL = r"(?P<ch>whatsapp|wsp|discord)"
+_MSG_CHANNEL_WORDS = r"(?:whatsapp|wsp|discord)"
 
 
 def _message_channel_name(word: str) -> str:
-    """The catalog channel for a client word: WhatsApp, Discord or email (owner
-    decision 2026-09-18 §3: «correo», «mail», «email»)."""
+    """The catalog channel for a client word: WhatsApp or Discord (owner decision
+    2026-09-18, night: mail sending stays out of BAXY)."""
 
     folded = _fold(word)
-    if folded in {"whatsapp", "wsp"}:
-        return "whatsapp"
-    if folded.startswith(("correo", "mail", "email", "e-mail")):
-        return "email"
-    return folded
+    return "whatsapp" if folded in {"whatsapp", "wsp"} else folded
 _MSG_TO = r"(?:a|al\s+grupo|al|para|to|en\s+el\s+grupo|en)"
 _MSG_ON = r"(?:en|por|via|v[ií]a|on|through)"
 _MSG_SEP = r"(?:que\s+diga|que\s+dice|diciendo(?:le)?|dici[eé]ndole|saying|that\s+says|que|that|:)"
@@ -1402,7 +1396,7 @@ def message_draft_request(text: str) -> tuple[str, str, str] | None:
             "", body, flags=re.IGNORECASE,
         ).strip()
         body = body.rstrip(" .!?") if len(body) > 1 else body
-        if channel not in {"whatsapp", "discord", "email"} or not recipient or not body:
+        if channel not in {"whatsapp", "discord"} or not recipient or not body:
             continue
         if re.search(r"\b" + _MSG_CHANNEL_WORDS + r"\b", _fold(recipient)) or _fold(recipient) in {"mensaje", "message"}:
             continue
@@ -4326,14 +4320,7 @@ def resolve_explicit_clarification_intent(
             r"(?:(?:a|to)\s+)?[a-z0-9][a-z0-9._-]{0,40}\s+(?:por|en|via|on)\s+"
             r"(?:whatsapp|wsp|discord)|"
             r"(?:un|una|a)\s+(?:whatsapp|wsp|discord)\s+(?:a|to)\s+"
-            r"[a-z0-9][a-z0-9._-]{0,40}(?:\s+[a-z0-9][a-z0-9._-]{0,40})?|"
-            # MAIL (owner decision 2026-09-18 §3) «escribile un mail a
-            # juan@hotmail.com», «enviá un correo a juan»: an address or a name
-            # (a bracketed placeholder counts as an addressee) and nothing to say.
-            r"(?:(?:un|una|a|an)\s+)?(?:correo(?:\s+electronico)?|(?:e-?)?mail)\s+(?:a|para|to)\s+"
-            r"[a-z0-9\[][a-z0-9._@\[\]-]{0,60}(?:\s+[a-z0-9][a-z0-9._-]{0,40})?|"
-            r"(?:por|via|by)\s+(?:correo(?:\s+electronico)?|(?:e-?)?mail)\s+(?:a|to)\s+"
-            r"[a-z0-9\[][a-z0-9._@\[\]-]{0,60}(?:\s+[a-z0-9][a-z0-9._-]{0,40})?)[\s.!?]*$"
+            r"[a-z0-9][a-z0-9._-]{0,40}(?:\s+[a-z0-9][a-z0-9._-]{0,40})?)[\s.!?]*$"
         ),
     ) and not _has(folded, r"\b(?:que|that|diciendo|saying)\b|[:\"«»“”]")
     if "message.send" in available and addressed_without_content:
@@ -4370,10 +4357,6 @@ def resolve_explicit_clarification_intent(
             # after the addressee carries the text.
             rf"^[^\w]*{message_speech_act}\s+(?:a\s+|al\s+(?:grupo\s+)?|para\s+)?"
             r"[a-z0-9][a-z0-9 ._-]{0,80}?\s*:\s*\S|"
-            # MAIL (owner decision 2026-09-18 §3) «enviá un correo»: a mail order
-            # is a message request even with nobody and nothing named yet.
-            r"^[^\w]*(?:envia|enviale|enviar|manda|mandale|mandar|escrib[ei]|escrib[ei]le|send|write)\b"
-            r".{0,160}\b(?:correo|(?:e-?)?mail)\b|"
             r"^[^\w]*let\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+know\s+that\b|"
             r"^[^\w]*write\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+"
             r"(?:that|the\s+message)\b|"

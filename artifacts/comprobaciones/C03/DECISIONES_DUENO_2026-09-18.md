@@ -33,3 +33,14 @@ búsqueda (commit 9eabbb1e) impide que se pulse Enter fuera del buscador.
 ## 3. Correo de pruebas
 
 Casilla de pruebas del dueño para las 6 filas de Correo: autor@example.com.
+
+## 4. Correo: fuera de BAXY (noche, ~20:50)
+
+Texto del dueño: «Espera tiempo fuera, quiero dejar el enviar correos fuera de BAXY, sácalo».
+
+Efecto: el envío de correo se retira del producto y de la mente (commit de retiro en esta rama).
+Se había construido y medido un mecanismo (message.send.test con canal «email», destino forzado a
+la casilla del §3 por el Outlook clásico del dueño, copia en Elementos enviados): MAIL1853 ejecutó
+12 casos en 9b6aec45f (6 aprobados, 6 correos reales de prueba a la casilla del §3) y NO se adjudica.
+Las 6 filas de Correo (H0018, H0279, H0440, H0554, H0609, H0638) quedan abiertas a la espera de la
+clasificación del dueño: «no aplica» (capacidad fuera de alcance) o límite honesto sin crédito.

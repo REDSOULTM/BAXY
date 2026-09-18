@@ -38,47 +38,7 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         {
             ["whatsapp"] = "Música",
             ["discord"] = "Valeria",
-            // Owner decision 2026-09-18 (DECISIONES_DUENO_2026-09-18 §3): the mail
-            // test destination is the owner's own test mailbox; the send goes out
-            // through the owner's classic Outlook profile and is verified by the
-            // copy in Sent Items.
-            ["email"] = "autor@example.com",
         };
-
-    private static readonly ExternalProcessRunner MailRunner = new();
-
-    private const string OutlookTestSendScript = """
-        $ErrorActionPreference='Stop'
-        $input=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]))|ConvertFrom-Json
-        $effect=$false
-        try {
-          $outlook=New-Object -ComObject Outlook.Application
-          $session=$outlook.GetNamespace('MAPI')
-          $to=[string]$input.to;$text=[string]$input.text;$subject=[string]$input.subject
-          $baseline=[DateTime]::UtcNow
-          $mail=$outlook.CreateItem(0)
-          $mail.To=$to;$mail.Subject=$subject;$mail.Body=$text
-          $mail.Send();$effect=$true
-          $sentFolder=$session.GetDefaultFolder(5)
-          $sent=$null
-          for($attempt=0;$attempt -lt 40 -and $null -eq $sent;$attempt++){
-            Start-Sleep -Milliseconds 500
-            $sentItems=$sentFolder.Items;$sentItems.Sort('[SentOn]',$true);$seen=0
-            foreach($candidate in $sentItems){
-              if($seen++ -ge 50){break}
-              try {
-                $sentOn=([DateTime]$candidate.SentOn).ToUniversalTime()
-                if($sentOn -ge $baseline.AddMinutes(-2) -and ([string]$candidate.To).ToLowerInvariant().Contains($to.ToLowerInvariant()) -and ([string]$candidate.Body).StartsWith($text,[StringComparison]::Ordinal)){$sent=$candidate;break}
-              }catch{}
-            }
-          }
-          if($null -eq $sent){throw 'outlook_sent_postread_missing'}
-          [pscustomobject]@{ok=$true;effectObserved=$true;sentEntryId=[string]$sent.EntryID;sentUtc=([DateTime]$sent.SentOn).ToUniversalTime().ToString('O');sentTo=[string]$sent.To}|ConvertTo-Json -Compress
-        } catch {
-          [pscustomobject]@{ok=$false;effectObserved=$effect;error='outlook_mail_failed'}|ConvertTo-Json -Compress
-          exit 2
-        }
-        """;
 
     public void Dispose() => _interaction.Dispose();
 
@@ -251,12 +211,6 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
             return Failure("message.send.test", "channel_not_a_test_channel");
         }
 
-        if (string.Equals(channel, "email", StringComparison.Ordinal))
-        {
-            return await SendTestMailAsync(requestedRecipient, forced, text, cancellationToken)
-                .ConfigureAwait(false);
-        }
-
         DesktopRecipientObservation observation = await _automation.ResolveAsync(
             channel,
             forced,
@@ -298,69 +252,6 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 ("sent", true),
                 ("evidenceHash", sent.EvidenceHash),
                 ("authority", "desktop_client_send_ocr_postread")));
-    }
-
-    // Owner decision 2026-09-18 §3: a mail request is really sent from the owner's
-    // classic Outlook profile, always to the owner's own test mailbox; the copy in
-    // Sent Items (recipient, text, time) is the delivery evidence.
-    private static async ValueTask<ExternalCapabilityReceipt> SendTestMailAsync(
-        string requestedRecipient,
-        string forced,
-        string text,
-        CancellationToken cancellationToken)
-    {
-        string subject = text.Length <= 78 ? text : text[..75] + "…";
-        string input = JsonObject(("to", forced), ("subject", subject), ("text", text)).GetRawText();
-        ExternalProcessResult process = await MailRunner.RunAsync(
-            "powershell.exe",
-            ["-NoProfile", "-NonInteractive", "-Command", "& {\n" + OutlookTestSendScript + "\n}",
-                Convert.ToBase64String(Encoding.UTF8.GetBytes(input))],
-            TimeSpan.FromSeconds(90),
-            cancellationToken).ConfigureAwait(false);
-        string[] lines = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
-        string line = lines.Length > 0 ? lines[^1] : "{}";
-        bool effect = false;
-        string? sentEntryId = null;
-        string? sentUtc = null;
-        try
-        {
-            using JsonDocument response = JsonDocument.Parse(line);
-            JsonElement root = response.RootElement;
-            effect = root.TryGetProperty("effectObserved", out JsonElement observed)
-                && observed.ValueKind == JsonValueKind.True;
-            if (root.TryGetProperty("ok", out JsonElement ok) && ok.ValueKind == JsonValueKind.True
-                && root.TryGetProperty("sentEntryId", out JsonElement id) && id.ValueKind == JsonValueKind.String
-                && root.TryGetProperty("sentUtc", out JsonElement at) && at.ValueKind == JsonValueKind.String)
-            {
-                sentEntryId = id.GetString();
-                sentUtc = at.GetString();
-            }
-        }
-        catch (JsonException)
-        {
-        }
-
-        if (string.IsNullOrEmpty(sentEntryId) || string.IsNullOrEmpty(sentUtc))
-        {
-            return Failure(
-                "message.send.test",
-                effect ? "message_delivery_not_verified" : "outlook_mail_send_failed",
-                effect);
-        }
-
-        string evidence = Convert.ToHexStringLower(
-            SHA256.HashData(Encoding.UTF8.GetBytes(sentEntryId + "|" + sentUtc + "|" + text)));
-        return Success(
-            "message.send.test",
-            JsonObject(
-                ("version", 1),
-                ("channel", "email"),
-                ("requestedRecipient", requestedRecipient),
-                ("forcedDestination", forced),
-                ("text", text),
-                ("sent", true),
-                ("evidenceHash", evidence),
-                ("authority", "outlook_sent_postread")));
     }
 
     private static string RequiredString(
