@@ -491,14 +491,17 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             return new(false, false, string.Empty, "message_draft_not_verified");
         }
 
-        byte[] draft = draftObservation.Bitmap;
+        // The delivery is read from the band of last messages just above the
+        // composer, where the new outgoing bubble appears; the whole pane never
+        // reads it (MSGSEND1845: «hola» sent and visible, pane OCR without it).
+        byte[] beforeSend = CaptureRegion(recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel);
         SendKey(VirtualKeyReturn);
         await Task.Delay(900, cancellationToken).ConfigureAwait(false);
-        byte[] after = CaptureRegion(recipient.WindowHandle, CaptureArea.Body, recipient.Channel);
+        byte[] after = CaptureRegion(recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel);
         string afterText = await ReadTextAsync(after, cancellationToken).ConfigureAwait(false);
         string afterHash = Convert.ToHexStringLower(SHA256.HashData(after));
         bool changed = !CryptographicOperations.FixedTimeEquals(
-            SHA256.HashData(draft),
+            SHA256.HashData(beforeSend),
             SHA256.HashData(after));
         bool visible = ContainsPhrase(afterText, text);
         bool stillTarget = string.Equals(recipient.Channel, "discord", StringComparison.Ordinal)
@@ -1008,12 +1011,14 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // doodle wallpaper (MSGSEND1845: «hola» read as «tt i>)» in the pane, as
     // «hola» in the band).
     private const int ComposerBandHeightAt96Dpi = 90;
+    private const int LastMessagesBandHeightAt96Dpi = 200;
 
     private enum CaptureArea
     {
         Header,
         Body,
         Composer,
+        LastMessages,
     }
 
     private static byte[] CaptureRegion(nint handle, CaptureArea area, string channel)
@@ -1035,10 +1040,14 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                     (int)(WhatsAppConversationPaneOffsetAt96Dpi * scale))
                 : (int)(windowWidth * 0.42);
             int composerBand = Math.Min(windowHeight, (int)(ComposerBandHeightAt96Dpi * scale));
+            int lastMessagesBand = Math.Min(
+                windowHeight - composerBand,
+                (int)(LastMessagesBandHeightAt96Dpi * scale));
             int sourceY = area switch
             {
                 CaptureArea.Header => 0,
                 CaptureArea.Composer => windowHeight - composerBand,
+                CaptureArea.LastMessages => windowHeight - composerBand - lastMessagesBand,
                 _ => Math.Min(80, windowHeight / 8),
             };
             int width = Math.Max(1, windowWidth - sourceX);
@@ -1046,6 +1055,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             {
                 CaptureArea.Header => Math.Max(1, Math.Min(150, windowHeight / 4)),
                 CaptureArea.Composer => Math.Max(1, composerBand),
+                CaptureArea.LastMessages => Math.Max(1, lastMessagesBand),
                 _ => Math.Max(1, windowHeight - sourceY),
             };
             nint screenDc = GetDC(0);
