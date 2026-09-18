@@ -371,8 +371,68 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private const ushort VirtualKeyReturn = 0x0D;
     private const ushort VirtualKeyA = 0x41;
     private const ushort VirtualKeyBack = 0x08;
+    private const ushort VirtualKeyEscape = 0x1B;
+    private const ushort VirtualKeyDown = 0x28;
     private const uint KeyUp = 0x0002;
     private const uint Unicode = 0x0004;
+
+    // DISCORD1839 (client.channel.locate) inherited: the quick switcher's rows are
+    // read through UI Automation until one names the recipient. Enter is pressed
+    // only on that row; while the list still shows the previous chats a fuzzy
+    // neighbour opens instead («Pedro» for «Valeria», owner's probe 2026-09-18).
+    private static readonly ExternalProcessRunner SwitcherRunner = new();
+
+    private const string QuickSwitcherItemsScript = """
+        $ErrorActionPreference='Stop';$needle=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0])).ToLowerInvariant()
+        Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes
+        $root=[System.Windows.Automation.AutomationElement]::RootElement
+        $cond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ClassNameProperty,'Chrome_WidgetWin_1')
+        $w=$null;foreach($c in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){if($c.Current.Name -match 'Discord'){$w=$c;break}}
+        if($null -eq $w){[pscustomobject]@{ok=$false;error='client_window_not_found'}|ConvertTo-Json -Compress;exit 2}
+        function Read-Items {param($win) $r=@();foreach($e in $win.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)){if($e.Current.ControlType.ProgrammaticName -eq 'ControlType.ListItem'){$n=$e.Current.Name;if($n){$r+=$n.Substring(0,[Math]::Min(160,$n.Length))}}};,$r}
+        $items=@()
+        for($poll=0;$poll -lt 12;$poll++){$items=Read-Items $w;if(($items | Where-Object { $_.ToLowerInvariant().Contains($needle) }).Count -gt 0){break};Start-Sleep -Milliseconds 400}
+        [pscustomobject]@{ok=$true;items=@($items)}|ConvertTo-Json -Compress
+        """;
+
+    /// <summary>The index of the first quick-switcher row naming the recipient, or -1.</summary>
+    private static async ValueTask<int> QuickSwitcherRowAsync(string recipient, CancellationToken cancellationToken)
+    {
+        ExternalProcessResult process = await SwitcherRunner.RunAsync(
+            "powershell.exe",
+            ["-NoProfile", "-NonInteractive", "-Command", "& {\n" + QuickSwitcherItemsScript + "\n}",
+                Convert.ToBase64String(Encoding.UTF8.GetBytes(recipient))],
+            TimeSpan.FromSeconds(30),
+            cancellationToken).ConfigureAwait(false);
+        string[] lines = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+        string line = lines.Length > 0 ? lines[^1] : "{}";
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(line);
+            if (!document.RootElement.TryGetProperty("items", out JsonElement items) || items.ValueKind != JsonValueKind.Array)
+            {
+                return -1;
+            }
+
+            string needle = Fold(recipient);
+            int index = 0;
+            foreach (JsonElement item in items.EnumerateArray())
+            {
+                if (item.ValueKind == JsonValueKind.String
+                    && Fold(item.GetString() ?? string.Empty).Contains(needle, StringComparison.Ordinal))
+                {
+                    return index;
+                }
+
+                index++;
+            }
+        }
+        catch (JsonException)
+        {
+        }
+
+        return -1;
+    }
 
     public async ValueTask<DesktopRecipientObservation> ResolveAsync(
         string channel,
@@ -442,13 +502,30 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
         else
         {
+            // DISCORD1839 inherited: the switcher needs about 1.4 s to open and its
+            // rows are read by UI Automation before Enter; the row that names the
+            // recipient is selected with Down, and nothing is opened when no row
+            // names it.
             SendChord(VirtualKeyControl, VirtualKeyK);
-            await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+            await Task.Delay(1400, cancellationToken).ConfigureAwait(false);
             SendChord(VirtualKeyControl, VirtualKeyA);
             await Task.Delay(100, cancellationToken).ConfigureAwait(false);
             SendKey(VirtualKeyBack);
             SendText(recipient);
-            await Task.Delay(350, cancellationToken).ConfigureAwait(false);
+            await Task.Delay(900, cancellationToken).ConfigureAwait(false);
+            int row = await QuickSwitcherRowAsync(recipient, cancellationToken).ConfigureAwait(false);
+            if (row < 0)
+            {
+                SendKey(VirtualKeyEscape);
+                return new(false, true, handle, processId, "recipient_not_in_quick_switcher");
+            }
+
+            for (int step = 0; step < row; step++)
+            {
+                SendKey(VirtualKeyDown);
+                await Task.Delay(120, cancellationToken).ConfigureAwait(false);
+            }
+
             SendKey(VirtualKeyReturn);
         }
 
@@ -1265,6 +1342,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // 400 rather than the 430 midpoint: right after a send the list narrowed by
     // about 35 px and the title, clipped at the crop's left edge, read as noise.
     private const int WhatsAppConversationPaneOffsetAt96Dpi = 400;
+    private const int DiscordConversationPaneOffsetAt96Dpi = 320;
 
     // Outgoing bubbles are right-aligned, so the delivery is read from the right
     // end of the last-messages band alone: over the full band the doodle
@@ -1353,11 +1431,14 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             int windowWidth = rectangle.Right - rectangle.Left;
             int windowHeight = rectangle.Bottom - rectangle.Top;
             double scale = GetDpiForWindow(handle) / 96.0;
+            // Discord: the server column (72 px) and the DM list (240 px) sit left of
+            // the conversation at 100 % zoom; a 42 % crop of a wide window started
+            // past the composer's text and the newest message's start.
             int sourceX = string.Equals(channel, "whatsapp", StringComparison.Ordinal)
                 ? Math.Min(
                     Math.Max(0, windowWidth - 1),
                     (int)(WhatsAppConversationPaneOffsetAt96Dpi * scale))
-                : (int)(windowWidth * 0.42);
+                : Math.Min(Math.Max(0, windowWidth - 1), (int)(DiscordConversationPaneOffsetAt96Dpi * scale));
             if (area == CaptureArea.LastMessages && outgoingBandWidthAt96Dpi > 0)
             {
                 sourceX = Math.Max(sourceX, windowWidth - (int)(outgoingBandWidthAt96Dpi * scale));
