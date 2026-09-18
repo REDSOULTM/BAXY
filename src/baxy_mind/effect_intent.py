@@ -1217,13 +1217,56 @@ def _completed_missing_volume_level_request(
     return f"{previous_user_text.strip()}\n{text}"
 
 
+_MSG_DICTATION_SEPARATOR = re.compile(
+    r"\s*(?::|\b(?:que\s+diga|que\s+dice|diciendo(?:le)?|dici[eé]ndole|saying|that\s+says|que|that)\b)",
+    re.IGNORECASE,
+)
+
+
+def _completed_missing_message_channel_request(
+    text: str, previous_user_text: str | None, available_operations: Iterable[str],
+) -> str | None:
+    """MSGCLAR «mandale al grupo Musica: prueba 1 …» → «¿por WhatsApp o por
+    Discord?» → «por WhatsApp»: the answered client completes the previous
+    message request whose only missing field was the channel. The completed
+    request is the person's own words with «por <client>» before the dictated
+    text, and the ordinary draft reader still has to accept it."""
+
+    if not previous_user_text:
+        return None
+    answer = _strip_request_envelope(_fold(text)).strip()
+    found = re.fullmatch(
+        r"[¿?¡!\s]*(?:(?:por|en|via|on|in|through|by|usando|using|con|with)\s+)?"
+        r"(?:(?:el|la|the)\s+)?(?:(?:app|aplicacion|application)\s+(?:de\s+|of\s+)?)?"
+        r"(?P<ch>whatsapp|wsp|discord)"
+        r"(?:\s+(?:por\s+favor|please|mejor|nomas))?[\s.!?]*",
+        answer,
+    )
+    if found is None:
+        return None
+    prior = resolve_explicit_clarification_intent(previous_user_text, available_operations)
+    if prior is None or prior.operations != ("message.send",) or prior.missing_fields != ("channel",):
+        return None
+    channel = "whatsapp" if found.group("ch") in {"whatsapp", "wsp"} else "discord"
+    previous = _strip_request_envelope(previous_user_text.strip()).strip()
+    separator = _MSG_DICTATION_SEPARATOR.search(previous)
+    if separator is None:
+        return None
+    joiner = " on " if _has(
+        _fold(previous), r"^[^\w]*(?:send|write|text|message|tell|ask|let)\b",
+    ) else " por "
+    rest = previous[separator.start():]
+    completed = previous[:separator.start()].rstrip() + joiner + channel + (" " if rest.startswith(":") else "") + rest
+    return completed if message_draft_request(completed) is not None else None
+
+
 _MSG_VERB = r"(?:m[aá]nd[aá](?:le|me|les)?|env[ií]a(?:le|me|les)?|envi[aá](?:le|me|les)?|escrib[ií](?:le|me)?|escr[ií]be(?:le|me)?|send|write|text|message)"
 _MSG_OBJECT = r"(?:(?:un|una|el|a|an|the)\s+)?(?:mensaje|message|texto|text)"
 _MSG_OBJECT_CHANNEL = r"(?:(?:un|una|el|a|an|the)\s+)?(?P<och>whatsapp|wsp|discord)(?:\s+(?:mensaje|message))?"
 _MSG_CHANNEL = r"(?P<ch>whatsapp|wsp|discord)"
 _MSG_TO = r"(?:a|al\s+grupo|al|para|to|en\s+el\s+grupo|en)"
 _MSG_ON = r"(?:en|por|via|v[ií]a|on|through)"
-_MSG_SEP = r"(?:que\s+diga|que\s+dice|diciendo(?:le)?|dici[eé]ndole|saying|that\s+says|:)"
+_MSG_SEP = r"(?:que\s+diga|que\s+dice|diciendo(?:le)?|dici[eé]ndole|saying|that\s+says|que|that|:)"
 _MSG_REC = r"(?P<rec>[^\s,:;][^,:;]{0,60}?)"
 _MSG_BODY = r"(?P<body>.+?)"
 _MSG_END = r"\s*[.!?]*$"
@@ -1294,7 +1337,13 @@ def message_draft_request(text: str) -> tuple[str, str, str] | None:
         channel = (groups.get("ch") or groups.get("och") or "").casefold()
         channel = "whatsapp" if channel in {"whatsapp", "wsp"} else channel
         recipient = re.sub(r"^(?:el\s+grupo|la\s+|el\s+|the\s+group|the\s+)\s*", "", (groups.get("rec") or "").strip(), flags=re.IGNORECASE).strip(" .")
-        body = re.sub(r"^(?:que\s+)", "", (groups.get("body") or "").strip(), flags=re.IGNORECASE).strip()
+        # MSGCLAR «que diga: prueba 2, todo OK»: the dictation colon after the
+        # separator is punctuation, never part of the text.
+        body = (groups.get("body") or "").strip().lstrip(":").strip()
+        body = re.sub(
+            r"^(?:que\s+diga\s+|que\s+dice\s+|diciendo(?:le)?\s+(?:que\s+)?|dici[eé]ndole\s+(?:que\s+)?|saying\s+|that\s+says\s+|que\s+|that\s+)",
+            "", body, flags=re.IGNORECASE,
+        ).strip()
         body = body.rstrip(" .!?") if len(body) > 1 else body
         if channel not in {"whatsapp", "discord"} or not recipient or not body:
             continue
@@ -4253,6 +4302,10 @@ def resolve_explicit_clarification_intent(
             r"^[^\w]*tell\s+[a-z0-9][a-z0-9 _-]{0,80}?\s+that\b|"
             rf"^[^\w]*{message_speech_act}\s+(?:a\s+)?"
             r"[a-z0-9][a-z0-9 ._-]{0,80}?\s+(?:que|el\s+texto|el\s+mensaje)\b|"
+            # MSGCLAR «mandale al grupo Musica: prueba 1 …»: a dictation colon
+            # after the addressee carries the text.
+            rf"^[^\w]*{message_speech_act}\s+(?:a\s+|al\s+(?:grupo\s+)?|para\s+)?"
+            r"[a-z0-9][a-z0-9 ._-]{0,80}?\s*:\s*\S|"
             r"^[^\w]*let\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+know\s+that\b|"
             r"^[^\w]*write\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+"
             r"(?:that|the\s+message)\b|"
@@ -4414,9 +4467,21 @@ def resolve_explicit_clarification_intent(
             ("recipient", "message_text"),
         )
     if "message.send" in available and incomplete_message_shape and message_draft_request(text) is None:
-        supported_channel = _has(
+        # MSGCLAR «mandale al grupo Musica: prueba 1 de WhatsApp, ya funciona
+        # de nuevo»: a client named inside the dictated text is part of the
+        # message, not the channel; the channel counts in the instruction
+        # before the dictation or as a trailing «por whatsapp».
+        instruction_part = re.split(
+            r":|\bque\s+diga\b|\bque\s+dice\b|\bdiciendo\b|\bsaying\b|\bthat\s+says\b",
             folded,
+            maxsplit=1,
+        )[0]
+        supported_channel = _has(
+            instruction_part,
             r"\b(?:whatsapp|wsp|discord)\b",
+        ) or _has(
+            folded,
+            r"\b(?:por|en|via|on|in|through|by)\s+(?:whatsapp|wsp|discord)[\s.!?]*$",
         )
         literal_recipient = _has(
             folded,
@@ -4429,6 +4494,8 @@ def resolve_explicit_clarification_intent(
                 rf"^[^\w]*{message_speech_act}\s+"
                 r"(?:a\s+)?"
                 r"[a-z0-9][a-z0-9 ._-]{0,80}?\s+(?:que|el\s+texto|el\s+mensaje)\b|"
+                rf"^[^\w]*{message_speech_act}\s+(?:a\s+|al\s+(?:grupo\s+)?|para\s+)?"
+                r"[a-z0-9][a-z0-9 ._-]{0,80}?\s*:\s*\S|"
                 r"^[^\w]*let\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+know\s+that\b|"
                 r"^[^\w]*write\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+"
                 r"(?:that|the\s+message)\b|"
@@ -4455,6 +4522,7 @@ def resolve_explicit_clarification_intent(
                 rf"^[^\w]*{message_speech_act}\s+"
                 r"(?:a\s+)?"
                 r".+?\s+(?:que|el\s+texto|el\s+mensaje)\s+\S|"
+                rf"^[^\w]*{message_speech_act}\s+.+?:\s*\S|"
                 r"^[^\w]*let\s+.+?\s+know\s+that\s+\S|"
                 r"^[^\w]*write\s+.+?\s+(?:that|the\s+message)\s+\S|"
                 r"^[^\w]*preguntale\s+a\s+.+?\s+(?:si|que|a que)\s+\S|"
@@ -17475,6 +17543,14 @@ def resolve_explicit_effects(
     if completed_level_request is not None:
         return resolve_explicit_effects(
             completed_level_request, available, application_names, game_catalog,
+        )
+    completed_message_request = _completed_missing_message_channel_request(
+        text, previous_user_text, available,
+    )
+    if completed_message_request is not None:
+        # MSGCLAR: the answered client completes the previous message request.
+        return resolve_explicit_effects(
+            completed_message_request, available, application_names, game_catalog,
         )
     # AUDIO1789: the shell may resume a pending objective as «<request>
     # <trusted clarification prefix> <answer>»; the two halves are read as
