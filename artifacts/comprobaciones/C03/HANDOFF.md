@@ -1,3 +1,17 @@
+# REANUDACIÓN 2026-09-18 (PC principal REDPC — Fable 5.1, escritor raíz; estado privado pendiente de transferencia)
+
+**653/742 cubiertos, 89 abiertos, 16/35 categorías cerradas según el último registro publicado (SHA fffae5b5…, CHROMETABS1843). C03 formal 3/11. Rama `codex/kiro-goal-c03`, HEAD == origin.** En este PC no se ha medido ni adjudicado nada todavía: el estado privado fuera de git es del 2026-09-12.
+
+- **Rama.** La `codex/kiro-goal-c03` local no compartía historia con la de origin (historial reescrito en el otro PC); era el linaje Kiro del 12-09 a 154/742. Se renombró a `backup/kiro-lineage-local-2026-09-12` (nada perdido) y se trajo la rama de origin. HEAD compila en este PC (`dotnet build src/Baxy.App/Baxy.App.csproj`: 0 avisos, 0 errores).
+- **Presente y compatible aquí:** runtime `mind-runtime-v1.json` con Qwen3-4B-Instruct-2507 Q4_K_M (gguf 3605803b…), llama-server 38a9d28e…, Tesseract, WhatsApp Desktop (Store) y Discord instalados, dotnet 10.0.100, Python 3.12.10, RTX 4060 Ti. Permisos de la sesión: bypass activo (el bloqueo de permisos del 17-09 no aplica aquí).
+- **Falta (no está en git por privacidad; aquí está la versión del 12-09):** `BASE/C03-survey-requirements336-private/requirements.jsonl` (aquí 154 cubiertos, SHA 58986cb8…), el utillaje raíz (`root_prepare.py`, `root_adjudicate_from_decisions.py`, `root_publish_from_adjudication.py`, `next_tanda.py`, drivers `n_case.sh`/`msgsend_case.sh`), los `C03-*-tooling` (msgsend1845, chrometabs1843, discord1839, msg1837), los instrumentos sellados `C03-*-instrument-v1`, los builds `C03-repairs*-build` y la memoria de la campaña. Lista exacta y prompt para el otro PC: [TRANSFERENCIA_PC_PRINCIPAL_2026-09-18.md](TRANSFERENCIA_PC_PRINCIPAL_2026-09-18.md). Carpeta de entrega esperada: `C:/Users/usuario/Desktop/C03-transfer/`.
+- **Regla al recibirlo:** verificar el manifiesto y que `requirements.jsonl` dé SHA fffae5b5ecce86296d61b1070cd518ac8f6d9b6528fec5861cf9faa1baec83e4 antes de sellar nada. No se reconstruye el registro desde los `REGISTRY_UPDATE.json` del repo (sólo traen ids y contadores, no filas): sería inventar cobertura.
+- **Acción inmediata tras la transferencia:** el bloque del 17-09 de abajo sin cambios: build oficial `C03-repairs1845-build`, sellar MSGSEND1845, prueba supervisada caso 0 a «Música», casos 1–4, adjudicar, publicar, commit+push.
+- **Correo (6 filas):** sigue sin mecanismo porque no existe un destino de prueba propio del dueño equivalente a «Música»/«Valeria»; se pide al dueño una casilla de prueba (o se adjudica como límite honesto por su decisión). No se construye un envío de correo sin ese destino.
+- **Goal formal C03 (3/11):** las 8 filas abiertas son los tres ceros sobre población abierta con texto auditado a mano (G03.08, G03C.09, G04.01), cien respuestas leídas a mano (G06.01), cero palabras inventadas (G06.02), cero constantes en pantalla (G06.03) y «candidato validado y publicado» (G04.06, G06.06). Las dos últimas exigen dueñas y Full verdes, incompatibles con la orden vigente «no ejecutar tests»: contradicción que resuelve el dueño, no la raíz. La reserva de cien (`cien-v18.turns.jsonl`) tampoco está en este PC.
+
+---
+
 # REANUDACIÓN 2026-09-17 (el dueño reconfigura permisos y reinicia la sesión raíz)
 
 **653/742 cubiertos, 89 abiertos, 16/35 categorías cerradas. Rama `codex/kiro-goal-c03`, HEAD == origin. Registro y árbol limpios; nada sellado a medias; DISCORD1839 y CHROMETABS1843 adjudicados y publicados.**
