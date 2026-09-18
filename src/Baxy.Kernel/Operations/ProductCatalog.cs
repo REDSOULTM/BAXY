@@ -969,6 +969,19 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Envía un mensaje a un destinatario resuelto y exige recibo del provider oficial."),
         Descriptor(
+            "message.send.test",
+            Schema(
+                [
+                    String("channel", values: ["discord", "whatsapp"]),
+                    String("requestedRecipient", maximumUtf8Bytes: 512, nonWhitespace: true),
+                    String("text", maximumUtf8Bytes: 16_384, nonWhitespace: true),
+                ],
+                ["channel", "requestedRecipient", "text"]),
+            OperationRisks.ExternalCommunication,
+            "message.send.test.forced.destination.ocr.postread.v1",
+            ToolExposure.Public,
+            "Decisión del dueño §6: envío real a sus canales de prueba. El destino se fuerza SIEMPRE al canal seguro del dueño (WhatsApp grupo Música, Discord usuario Valeria), nunca al destinatario nombrado; escribe el texto, pulsa enviar y verifica la entrega por OCR; el recibo guarda el destinatario pedido y el destino real forzado."),
+        Descriptor(
             "network.dns.status",
             EmptySchema(),
             OperationRisks.ReadOnly,

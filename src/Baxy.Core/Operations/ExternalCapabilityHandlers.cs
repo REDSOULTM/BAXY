@@ -63,6 +63,7 @@ internal static class ExternalCapabilityHandlers
         "message.draft",
         "message.recipient.resolve",
         "message.send",
+        "message.send.test",
         "notification.cancel.at",
         "notification.cancel.latest",
         "notification.diagnose",

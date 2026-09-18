@@ -4995,6 +4995,13 @@ def _explicit_arguments_from_evidence(
         draft = effect_intent.message_draft_request(evidence)
         return {"channel": draft[0], "recipient": draft[1], "text": draft[2]} if draft is not None else None
 
+    if operation == "message.send.test":
+        # MSG §6: channel, the requested recipient and text are the person's
+        # literal; the adapter forces the real destination to the owner's test
+        # channel, so the requested recipient is recorded but never targeted.
+        draft = effect_intent.message_draft_request(evidence)
+        return {"channel": draft[0], "requestedRecipient": draft[1], "text": draft[2]} if draft is not None else None
+
     if operation == "storage.removable.list":
         if effect_intent._removable_storage_request(evidence):
             return {}
@@ -5992,6 +5999,7 @@ def _ground_explicit_arguments(
         "calendar.event.list",
         "client.channel.locate",
         "message.draft",
+        "message.send.test",
         "game.launch",
         "media.control",
         "media.play.query",

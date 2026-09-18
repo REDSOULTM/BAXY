@@ -4542,6 +4542,25 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             "Never say it was sent or delivered; no other claims."
         )
     if (
+        situation.get("operation") == "message.send.test"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+    ):
+        # MSG §6: the message was really SENT, but the destination was forced to
+        # the owner's own test channel, not the requested recipient.
+        bits.append(
+            "This result really SENT the message, but only to the owner's own test "
+            "channel, not to the person's requested recipient: seen.channel is the "
+            "client, seen.forcedDestination is the test channel it actually went to "
+            "(the WhatsApp group «Música» or the Discord user «Valeria»), "
+            "seen.requestedRecipient is who the person named, seen.text is the message, "
+            "seen.sent is true. Say in one or two sentences, in the person's language, "
+            "that you sent «seen.text» (quote it exactly) to seen.forcedDestination, the "
+            "owner's test channel. If seen.requestedRecipient is a different name, make "
+            "clear it did NOT go to that person. Never say it went to "
+            "seen.requestedRecipient, and never say it was only drafted or not sent."
+        )
+    if (
         situation.get("operation") == "game.entitlement.named"
         and situation.get("verified") is True
         and situation.get("succeeded") is True
@@ -7379,6 +7398,36 @@ def compose_visible_defect(
         )
         if claims_sent is not None and negated_send is None:
             return "draft_claimed_sent"
+    if (
+        kind == "operation"
+        and situation.get("operation") == "message.send.test"
+        and polarity == "success"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+    ):
+        # MSG §6: the message went to the owner's test channel, not the requested
+        # recipient. The reply must name the real destination; if it names only the
+        # requested recipient (different from the destination) it hides where it went.
+        seen_send = _merged_observed(situation)
+        forced_dest = str(seen_send.get("forcedDestination") or "").strip()
+        requested = str(seen_send.get("requestedRecipient") or "").strip()
+        folded_reply = _accent_folded_with_punctuation(stripped)
+        if forced_dest and _accent_folded_with_punctuation(forced_dest) not in folded_reply:
+            return "sent_wrong_destination"
+        if (
+            requested
+            and _accent_folded_with_punctuation(requested) != _accent_folded_with_punctuation(forced_dest)
+            and re.search(
+                r"\b(?:a|al|to)\s+" + re.escape(_accent_folded_with_punctuation(requested)),
+                folded_reply,
+            )
+            and re.search(
+                r"\b(?:envie|envio|mande|mando|sent|send|entregue|le\s+(?:envie|mande))\b[^.;]{0,40}\b"
+                + re.escape(_accent_folded_with_punctuation(requested)),
+                folded_reply,
+            )
+        ):
+            return "sent_wrong_destination"
     if (
         kind == "operation"
         and situation.get("operation") == "game.entitlement.named"
@@ -15475,6 +15524,11 @@ class LlmRuntime:
                 "The message was only left written in the chat and was NOT sent: say you left it written and did not send it, so the person can send it; never say it was sent or delivered."
                 if response_language == "en"
                 else "El mensaje sólo quedó escrito en el chat y NO se envió: di que lo dejaste escrito y que no lo enviaste, para que la persona lo envíe; nunca digas que se envió o se entregó."
+            ),
+            "sent_wrong_destination": (
+                "The message was really sent, but only to the owner's own test channel, not to the requested recipient: name that real test destination and make clear it did not go to the requested person."
+                if response_language == "en"
+                else "El mensaje se envió de verdad, pero sólo al canal de pruebas propio del dueño, no al destinatario pedido: nombra ese destino de prueba real y deja claro que no fue a la persona pedida."
             ),
             "extra_claim": (
                 "Answer what you will not do, in your own words."

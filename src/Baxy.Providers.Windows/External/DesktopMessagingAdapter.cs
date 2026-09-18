@@ -25,7 +25,20 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         _automation = automation ?? throw new ArgumentNullException(nameof(automation));
 
     public bool CanHandle(string operation) =>
-        operation is "message.recipient.resolve" or "message.send" or "message.draft";
+        operation is "message.recipient.resolve" or "message.send" or "message.draft"
+            or "message.send.test";
+
+    // MSG §6 (owner decision 2026-09-17): real sends are allowed ONLY to the
+    // owner's own two test channels. message.send.test forces the destination to
+    // these by construction; the requested recipient is recorded for a truthful
+    // reply but is NEVER used as the send target, so no real third party can be
+    // messaged.
+    private static readonly Dictionary<string, string> ForcedTestDestination =
+        new(StringComparer.Ordinal)
+        {
+            ["whatsapp"] = "Música",
+            ["discord"] = "Valeria",
+        };
 
     public void Dispose() => _interaction.Dispose();
 
@@ -42,6 +55,8 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 "message.recipient.resolve" => await ResolveAsync(arguments, cancellationToken)
                     .ConfigureAwait(false),
                 "message.send" => await SendAsync(arguments, cancellationToken)
+                    .ConfigureAwait(false),
+                "message.send.test" => await SendTestAsync(arguments, cancellationToken)
                     .ConfigureAwait(false),
                 "message.draft" => await DraftAsync(arguments, cancellationToken)
                     .ConfigureAwait(false),
@@ -178,6 +193,65 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
                 ("sent", false),
                 ("evidenceHash", draft.EvidenceHash),
                 ("authority", "desktop_client_composer_ocr_postread")));
+    }
+
+    private async ValueTask<ExternalCapabilityReceipt> SendTestAsync(
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        // MSG §6: a real, verified send whose destination is ALWAYS one of the
+        // owner's two test channels. The requested recipient is recorded only so
+        // the reply can say the truth («I sent it to your test group Música, not
+        // to Lucas»); it is never used as the target, so no third party is sent to.
+        string channel = RequiredString(arguments, "channel");
+        string requestedRecipient = RequiredString(arguments, "requestedRecipient");
+        string text = RequiredString(arguments, "text");
+        if (!ForcedTestDestination.TryGetValue(channel, out string? forced))
+        {
+            return Failure("message.send.test", "channel_not_a_test_channel");
+        }
+
+        DesktopRecipientObservation observation = await _automation.ResolveAsync(
+            channel,
+            forced,
+            cancellationToken).ConfigureAwait(false);
+        if (!observation.Verified)
+        {
+            return Failure(
+                "message.send.test",
+                observation.ErrorCode ?? "recipient_identity_not_verified",
+                observation.EffectObserved);
+        }
+
+        var resolved = new ResolvedRecipient(
+            "sendtest_" + Guid.NewGuid().ToString("N"),
+            channel,
+            forced,
+            observation.WindowHandle,
+            observation.ProcessId);
+        DesktopMessageObservation sent = await _automation.SendAsync(
+            resolved,
+            text,
+            cancellationToken).ConfigureAwait(false);
+        if (!sent.Verified)
+        {
+            return Failure(
+                "message.send.test",
+                sent.ErrorCode ?? "message_delivery_not_verified",
+                sent.EffectObserved);
+        }
+
+        return Success(
+            "message.send.test",
+            JsonObject(
+                ("version", 1),
+                ("channel", channel),
+                ("requestedRecipient", requestedRecipient),
+                ("forcedDestination", forced),
+                ("text", text),
+                ("sent", true),
+                ("evidenceHash", sent.EvidenceHash),
+                ("authority", "desktop_client_send_ocr_postread")));
     }
 
     private static string RequiredString(

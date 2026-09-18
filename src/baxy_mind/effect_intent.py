@@ -17532,6 +17532,11 @@ def resolve_explicit_effects(
     if "client.channel.locate" in available and channel_request is not None and channel_request[0] == "discord":
         # DISCORD1839: the channel is located and the person asked before any join.
         return EffectIntent(("client.channel.locate",), (text,))
+    if "message.send.test" in available and message_draft_request(text) is not None:
+        # MSG §6 (owner decision 2026-09-17): a messaging request is sent for real,
+        # but the destination is forced to the owner's own test channel; the final
+        # says the truth about where it went.
+        return EffectIntent(("message.send.test",), (text,))
     if "message.draft" in available and message_draft_request(text) is not None:
         # MSG1837: the message is left written in the named client, never sent.
         return EffectIntent(("message.draft",), (text,))
