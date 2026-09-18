@@ -545,6 +545,28 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         // applies here too; the band changed and the header still names the
         // destination, which no other chat's text can satisfy at once.
         bool visible = ContainsPhrase(afterText, text) || DeliveryMatches(afterText, text);
+        if (!visible)
+        {
+            // A long message's bubble is wider than the narrow right-end band
+            // (MSGCLAR1851: «prueba 1 de WhatsApp, ya funciona de nuevo» sent and
+            // read as «atsApp, ya funciona de nuevo»): the same newest-bubble rows
+            // are read again over a wider band, then over the whole pane. The
+            // narrow band stays first because over the full band a short bubble
+            // drowned in the wallpaper.
+            foreach (int bandWidth in new[] { OutgoingBubbleBandWidthAt96Dpi * 2, 0 })
+            {
+                byte[] wider = CaptureRegion(
+                    recipient.WindowHandle, CaptureArea.LastMessages, recipient.Channel, bandWidth);
+                string widerText = await ReadTextAsync(wider, cancellationToken).ConfigureAwait(false);
+                if (ContainsPhrase(widerText, text) || DeliveryMatches(widerText, text))
+                {
+                    visible = true;
+                    afterHash = Convert.ToHexStringLower(SHA256.HashData(wider));
+                    break;
+                }
+            }
+        }
+
         bool stillTarget = string.Equals(recipient.Channel, "discord", StringComparison.Ordinal)
             ? Fold(WindowTitle(recipient.WindowHandle)).Contains(
                 Fold(recipient.DisplayName),
@@ -1314,7 +1336,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         LastMessages,
     }
 
-    private static byte[] CaptureRegion(nint handle, CaptureArea area, string channel)
+    private static byte[] CaptureRegion(
+        nint handle,
+        CaptureArea area,
+        string channel,
+        int outgoingBandWidthAt96Dpi = OutgoingBubbleBandWidthAt96Dpi)
     {
         nint previousDpi = SetThreadDpiAwarenessContext((nint)(-4));
         try
@@ -1332,9 +1358,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                     Math.Max(0, windowWidth - 1),
                     (int)(WhatsAppConversationPaneOffsetAt96Dpi * scale))
                 : (int)(windowWidth * 0.42);
-            if (area == CaptureArea.LastMessages)
+            if (area == CaptureArea.LastMessages && outgoingBandWidthAt96Dpi > 0)
             {
-                sourceX = Math.Max(sourceX, windowWidth - (int)(OutgoingBubbleBandWidthAt96Dpi * scale));
+                sourceX = Math.Max(sourceX, windowWidth - (int)(outgoingBandWidthAt96Dpi * scale));
             }
 
             int composerBand = Math.Min(windowHeight, (int)(ComposerBandHeightAt96Dpi * scale));
