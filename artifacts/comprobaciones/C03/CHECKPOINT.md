@@ -1,3 +1,25 @@
+## MSGSEND1849 — estado vigente 2026-09-18T22:28:46.566302+00:00
+
+Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 666/742 | 76 | 0 | >=550 | 13/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 548 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MSGSEND1849 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: MSGSEND1849: 6 ejecutados, 6 aprobados, 0 fallidos, 2 créditos (índices [0, 1]); Mensajería 22/31. Siguiente: panel grande de mensajería (Musica y Valeria) sobre el mismo mecanismo.
+
+Evidencia: `artifacts/comprobaciones/C03/MSGSEND1849/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 132.31 s acumulados; pico GPU 3492.93 MiB; pico RAM 2087.50 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MSGSEND1849 precedente. -->
+
 ## MSGSEND1847 — estado vigente 2026-09-18T22:12:42.833246+00:00
 
 Parcial: 14 aprobados, 2 fallidos, 0 sin ejecutar; 10 créditos.
