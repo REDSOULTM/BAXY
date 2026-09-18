@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -1902,12 +1903,10 @@ public sealed class ExternalAdaptersTests
     [Test]
     public async Task StructuredWebSearchRejectsDtdAndReturnsBoundedHttpsResults()
     {
-        const string rss = """
-            <rss><channel><item><title>Example</title><link>https://example.com/</link><description>Result</description></item></channel></rss>
-            """;
+        string page = SearchResultsPage(("Example", "https://example.com/", "Result"));
         using TemporaryDirectory temporary = new();
         using var browser = new StubBrowserSession(temporary.Path, new(false, false, "", "", "", "unused"));
-        using var http = new HttpClient(new StubHttpHandler(rss));
+        using var http = new HttpClient(new StubHttpHandler(page));
         using var adapter = new WebBrowserAdapter(browser, http);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -1926,13 +1925,12 @@ public sealed class ExternalAdaptersTests
     [Test]
     public async Task StructuredWebSearchRejectsAValidButUnrelatedFeed()
     {
-        const string rss = """
-            <rss><channel><item><title>Soldier Field</title><link>https://example.com/stadium</link><description>Sports venue in Chicago</description></item></channel></rss>
-            """;
+        string page = SearchResultsPage(
+            ("Soldier Field", "https://example.com/stadium", "Sports venue in Chicago"));
         using TemporaryDirectory temporary = new();
         using var browser = new StubBrowserSession(
             temporary.Path, new(false, false, "", "", "", "unused"));
-        using var http = new HttpClient(new StubHttpHandler(rss));
+        using var http = new HttpClient(new StubHttpHandler(page));
         using var adapter = new WebBrowserAdapter(browser, http);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -1952,16 +1950,14 @@ public sealed class ExternalAdaptersTests
     [Test]
     public async Task StructuredWebSearchReturnsOnlyResultsRelatedToTheQuery()
     {
-        const string rss = """
-            <rss><channel>
-              <item><title>Unrelated marketplace</title><link>https://example.com/shop</link><description>Discount products</description></item>
-              <item><title>Windows 11 Calculator help</title><link>https://support.example.com/windows/calculator</link><description>Use Calculator on Windows 11</description></item>
-            </channel></rss>
-            """;
+        string page = SearchResultsPage(
+            ("Unrelated marketplace", "https://example.com/shop", "Discount products"),
+            ("Windows 11 Calculator help", "https://support.example.com/windows/calculator",
+                "Use Calculator on Windows 11"));
         using TemporaryDirectory temporary = new();
         using var browser = new StubBrowserSession(
             temporary.Path, new(false, false, "", "", "", "unused"));
-        using var http = new HttpClient(new StubHttpHandler(rss));
+        using var http = new HttpClient(new StubHttpHandler(page));
         using var adapter = new WebBrowserAdapter(browser, http);
 
         ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
@@ -1977,6 +1973,110 @@ public sealed class ExternalAdaptersTests
                 .GetProperty("title").GetString(), Does.Contain("Calculator"));
             Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("marketplace"));
         });
+    }
+
+    [Test]
+    public async Task StructuredWebSearchAcceptsAQuestionWhosePageConjugatesItsVerbs()
+    {
+        // H0060: the mind binds the person's own words, typo included («me falla mucho
+        // whatsapp porqeu suele fallar»). No page repeats «porqeu», «mucho» or «suele»,
+        // so those terms are unverifiable on this page; «whatsapp» and «fallar»→«falla»
+        // are, and a page that shares half of the verifiable terms is pertinent.
+        string page = SearchResultsPage(
+            ("Problemas con WhatsApp y sus soluciones",
+                "https://example.net/whatsapp/razones-fallos/",
+                "Son muchas las razones por las que WhatsApp falla; recopilamos los fallos habituales."),
+            ("Recetas de cocina", "https://example.org/recetas", "Pizza casera paso a paso"));
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(
+            temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(new StubHttpHandler(page));
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search",
+            Json("""{"query":"me falla mucho whatsapp porqeu suele fallar","limit":5}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.True);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.Result?.GetProperty("count").GetInt32(), Is.EqualTo(1));
+            Assert.That(receipt.Result?.GetProperty("results")[0].GetProperty("url").GetString(),
+                Is.EqualTo("https://example.net/whatsapp/razones-fallos/"));
+            Assert.That(receipt.Result?.GetProperty("results")[0].GetProperty("snippet").GetString(),
+                Does.Not.Contain("<strong>"));
+            Assert.That(receipt.Result?.GetProperty("authority").GetString(),
+                Is.EqualTo("bing_html_https"));
+            Assert.That(receipt.Result?.GetRawText(), Does.Not.Contain("recetas"));
+        });
+    }
+
+    [Test]
+    public async Task StructuredWebSearchReportsABlockPageAsUnavailableNotAsNoResults()
+    {
+        using TemporaryDirectory temporary = new();
+        using var browser = new StubBrowserSession(
+            temporary.Path, new(false, false, "", "", "", "unused"));
+        using var http = new HttpClient(new StubHttpHandler(
+            "<html><body><form>Please verify you are a human</form></body></html>"));
+        using var adapter = new WebBrowserAdapter(browser, http);
+
+        ExternalCapabilityReceipt receipt = await adapter.InvokeAsync(
+            "web.search",
+            Json("""{"query":"Windows 11 calculator","limit":5}"""),
+            CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(receipt.Verified, Is.False);
+            Assert.That(receipt.EffectObserved, Is.False);
+            Assert.That(receipt.ErrorCode, Is.EqualTo("web_search_engine_unavailable"));
+            Assert.That(receipt.Result, Is.Null);
+        });
+    }
+
+    [Test]
+    public void StructuredWebSearchDecodesTheEngineRedirectAndFollowsThePersonCulture()
+    {
+        string redirect = "https://www.bing.com/ck/a?!&&p=abc&u=a1"
+            + Convert.ToBase64String(Encoding.UTF8.GetBytes("https://example.net/whatsapp/razones-fallos/"))
+                .TrimEnd('=').Replace('+', '-').Replace('/', '_')
+            + "&ntb=1";
+        Assert.Multiple(() =>
+        {
+            Assert.That(WebBrowserAdapter.ResolveSearchLink(redirect),
+                Is.EqualTo("https://example.net/whatsapp/razones-fallos/"));
+            Assert.That(WebBrowserAdapter.ResolveSearchLink("https://example.com/direct"),
+                Is.EqualTo("https://example.com/direct"));
+            Assert.That(WebBrowserAdapter.SearchMarket(new CultureInfo("es-AR")), Is.EqualTo("&setlang=es&cc=AR"));
+            Assert.That(WebBrowserAdapter.SearchMarket(new CultureInfo("en")), Is.EqualTo("&setlang=en"));
+            Assert.That(WebBrowserAdapter.SearchMarket(CultureInfo.InvariantCulture), Is.EqualTo(string.Empty));
+        });
+    }
+
+    // The engine's results page shape the adapter parses: an «ol#b_results» list of
+    // «b_algo» items, each with a heading anchor whose href is the engine's redirect
+    // (real target base64 in «u», prefixed «a1») and a clamped snippet paragraph.
+    private static string SearchResultsPage(params (string Title, string Url, string Snippet)[] results)
+    {
+        var page = new StringBuilder("<html><body><ol id=\"b_results\" class=\"\">");
+        foreach ((string title, string url, string snippet) in results)
+        {
+            string encoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(url))
+                .TrimEnd('=').Replace('+', '-').Replace('/', '_');
+            page.Append("<li class=\"b_algo\"><div class=\"b_tpcn\"><a class=\"tilk\" href=\"")
+                .Append(url)
+                .Append("\">site</a></div><h2><a href=\"https://www.bing.com/ck/a?!&amp;&amp;p=x&amp;u=a1")
+                .Append(encoded)
+                .Append("&amp;ntb=1\" h=\"ID=SERP,1\">")
+                .Append(title)
+                .Append("</a></h2><div class=\"b_caption\"><p class=\"b_lineclamp2\">")
+                .Append(snippet.Replace("WhatsApp", "<strong>WhatsApp</strong>"))
+                .Append("</p></div></li>");
+        }
+        return page.Append("</ol></body></html>").ToString();
     }
 
     [Test]

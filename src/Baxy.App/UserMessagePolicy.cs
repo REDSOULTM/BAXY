@@ -2707,6 +2707,7 @@ internal static class UserMessagePolicy
         result = WithoutVerifiedEmptyKnownFileFinding(source, result);
         result = WithoutScreenReadingImageScope(source, result);
         result = WithoutLibraryEntitlementConsequence(source, result);
+        result = WithoutWebSearchObservedVocabulary(source, result);
 
         if (TryReadJson(source, out JsonElement root)
             && root.TryGetProperty("kind", out JsonElement kind) && kind.ValueKind == JsonValueKind.String && kind.GetString() == "operation"
@@ -2784,6 +2785,88 @@ internal static class UserMessagePolicy
     // SCREEN1417 «qué hay en la pantalla»: no vision provider exists, so a
     // verified screen reading says it cannot describe images and reads the
     // text. That clause states the reading's scope, not a failed mission.
+    // H0060 «me falla mucho whatsapp … porqué suele fallar»: a verified web
+    // search about failures returns titles and snippets that say «fallos»,
+    // «no funciona», «cortes»; a reply that repeats them reports what was
+    // found, not a failed search. Only words the results carry are masked,
+    // word by word, so «no pude» and the other markers of an own failure
+    // still count. Same lens as the mind's _without_observed_search_vocabulary.
+    private static string WithoutWebSearchObservedVocabulary(string source, string result)
+    {
+        var vocabulary = new HashSet<string>(StringComparer.Ordinal);
+        CollectWebSearchVocabulary(source, vocabulary, 0);
+        if (vocabulary.Count == 0)
+        {
+            return result;
+        }
+
+        return Regex.Replace(
+            FoldForPolicy(result),
+            @"(?<![a-z0-9])[a-z0-9]{3,}(?![a-z0-9])",
+            match => vocabulary.Contains(match.Value) ? " " : match.Value,
+            RegexOptions.CultureInvariant);
+    }
+
+    private static void CollectWebSearchVocabulary(string source, HashSet<string> vocabulary, int depth)
+    {
+        if (depth > 8 || !TryReadJson(source, out JsonElement root) || root.ValueKind != JsonValueKind.Object)
+        {
+            return;
+        }
+
+        if (root.TryGetProperty("operation", out JsonElement operation) && operation.ValueKind == JsonValueKind.String
+            && operation.GetString() == "web.search"
+            && root.TryGetProperty("verified", out JsonElement verified) && verified.ValueKind == JsonValueKind.True
+            && root.TryGetProperty("succeeded", out JsonElement succeeded) && succeeded.ValueKind == JsonValueKind.True
+            && root.TryGetProperty("observed", out JsonElement observed) && observed.ValueKind == JsonValueKind.Object
+            && observed.TryGetProperty("results", out JsonElement results) && results.ValueKind == JsonValueKind.Array)
+        {
+            if (observed.TryGetProperty("query", out JsonElement query))
+            {
+                CollectPolicyWords(query, vocabulary);
+            }
+            foreach (JsonElement entry in results.EnumerateArray())
+            {
+                if (entry.ValueKind != JsonValueKind.Object)
+                {
+                    continue;
+                }
+                if (entry.TryGetProperty("title", out JsonElement title))
+                {
+                    CollectPolicyWords(title, vocabulary);
+                }
+                if (entry.TryGetProperty("snippet", out JsonElement snippet))
+                {
+                    CollectPolicyWords(snippet, vocabulary);
+                }
+            }
+        }
+
+        if (root.TryGetProperty("steps", out JsonElement steps) && steps.ValueKind == JsonValueKind.Array)
+        {
+            foreach (JsonElement step in steps.EnumerateArray())
+            {
+                if (step.ValueKind == JsonValueKind.String)
+                {
+                    CollectWebSearchVocabulary(step.GetString()!, vocabulary, depth + 1);
+                }
+            }
+        }
+    }
+
+    private static void CollectPolicyWords(JsonElement value, HashSet<string> vocabulary)
+    {
+        if (value.ValueKind != JsonValueKind.String)
+        {
+            return;
+        }
+        foreach (Match word in Regex.Matches(
+            FoldForPolicy(value.GetString()!), @"[a-z0-9]{3,}", RegexOptions.CultureInvariant))
+        {
+            vocabulary.Add(word.Value);
+        }
+    }
+
     private static string WithoutScreenReadingImageScope(string source, string result)
     {
         if (!HasVerifiedScreenReading(source, 0))

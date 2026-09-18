@@ -1,3 +1,9 @@
+# H0060 diagnosticado y reparado en fuente (sin adjudicar) — 2026-09-18 (REDPC)
+
+**Cobertura sin cambio: 653/742.** Mientras el estado privado viaja desde el otro PC, se midió la condición de H0060 / WEB1831 con el conductor sin ventana: **el canal RSS del motor público devolvía páginas ajenas para cualquier consulta (Gmail, portadas de WhatsApp); la página HTML del mismo motor devuelve diez resultados orgánicos pertinentes con el User-Agent propio del producto.** Reparado en esta rama: proveedor `web.search` sobre la página HTML (redirect decodificado, página de bloqueo distinguida de «sin resultados»), puerta de pertinencia informada por la página (una palabra que ningún resultado repite no cuenta; mitad de las verificables; flexión tolerada), lente de fallo que enmascara el vocabulario observado de la búsqueda en mente y App (el borrador fiel «páginas que mencionan fallos…» se vetaba como `asserted_failure` y el turno moría `composition_failed`), e instrucción de composición que prohíbe causas y consejos que ningún resultado contenga. Sexta sonda: final publicado, útil y fiel a los fragmentos. Evidencia y hashes: `H0060_WEBSEARCH_DIAG_2026-09-18/DIAG.md`. DuckDuckGo se descartó: bloquea la IP tras una docena de consultas. **Pendiente**: tanda sellada de H0060 y revalidación de dos literales acreditados de «Información web actual» como regresión, al llegar el registro. Compilado Release (App, Core publish, tests de proveedores); sin tests ejecutados por orden del dueño.
+
+---
+
 # REANUDACIÓN 2026-09-18 (PC principal REDPC — Fable 5.1, escritor raíz; estado privado pendiente de transferencia)
 
 **653/742 cubiertos, 89 abiertos, 16/35 categorías cerradas según el último registro publicado (SHA fffae5b5…, CHROMETABS1843). C03 formal 3/11. Rama `codex/kiro-goal-c03`, HEAD == origin.** En este PC no se ha medido ni adjudicado nada todavía: el estado privado fuera de git es del 2026-09-12.

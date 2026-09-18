@@ -328,6 +328,14 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         return ExternalJson.Success(operation, result, playback.EffectObserved);
     }
 
+    // WEB1831 / H0060: Bing's RSS feed answered a Spanish question («por qué suele
+    // fallar whatsapp») with navigational pages that share no word with it (measured
+    // 2026-09-18 on REDPC: Gmail, WhatsApp home pages, unrelated feeds), so every
+    // honest search ended web_search_results_irrelevant. The same engine's HTML page,
+    // asked with the product's own User-Agent, lists ten organic results that answer
+    // the question, so the provider reads that page; the pertinence gate stays.
+    private const string SearchEndpoint = "https://www.bing.com/search";
+
     private async ValueTask<ExternalCapabilityReceipt> SearchAsync(
         string operation,
         JsonElement arguments,
@@ -340,59 +348,47 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             throw new InvalidDataException("The search query has no verifiable terms.");
         }
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 5), 1, 20);
-        Uri endpoint = new("https://www.bing.com/search?format=rss&q=" + Uri.EscapeDataString(query));
-        using Stream stream = await _http.GetStreamAsync(endpoint, cancellationToken)
+        Uri endpoint = new(SearchEndpoint + "?q=" + Uri.EscapeDataString(query)
+            + SearchMarket(CultureInfo.CurrentCulture));
+        using HttpResponseMessage response = await _http.GetAsync(
+            endpoint, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
             .ConfigureAwait(false);
-        var settings = new XmlReaderSettings
-        {
-            Async = true,
-            DtdProcessing = DtdProcessing.Prohibit,
-            XmlResolver = null,
-            MaxCharactersInDocument = 2_000_000,
-        };
-        using XmlReader reader = XmlReader.Create(stream, settings);
-        var results = new List<(string Title, string Url, string Snippet)>();
-        var rejected = new List<(string Title, Uri Url, string Snippet)>();
-        int structurallyValidItems = 0;
-        var xml = new XmlDocument { XmlResolver = null };
-        xml.Load(reader);
-        XmlNodeList items = xml.GetElementsByTagName("item");
-        foreach (XmlNode item in items)
+        string page = await ReadBoundedTextAsync(response, 4_000_000, cancellationToken)
+            .ConfigureAwait(false);
+        var candidates = new List<SearchCandidate>();
+        foreach ((string title, string url, string snippet) in ParseSearchPage(page))
         {
             cancellationToken.ThrowIfCancellationRequested();
-            if (results.Count >= limit) break;
-            string title = string.Empty;
-            string url = string.Empty;
-            string snippet = string.Empty;
-            foreach (XmlNode child in item.ChildNodes)
-            {
-                if (child.LocalName == "title")
-                {
-                    title = child.InnerText;
-                }
-                else if (child.LocalName == "link")
-                {
-                    url = child.InnerText;
-                }
-                else if (child.LocalName == "description")
-                {
-                    snippet = child.InnerText;
-                }
-            }
             if (Uri.TryCreate(url, UriKind.Absolute, out Uri? parsed)
                 && parsed.Scheme is "http" or "https"
+                && !parsed.Host.EndsWith("bing.com", StringComparison.OrdinalIgnoreCase)
                 && title.Length is > 0 and <= 4_096
                 && snippet.Length <= 16_384)
             {
-                structurallyValidItems++;
-                if (IsSearchResultRelevant(queryTokens, title, parsed, snippet))
-                {
-                    results.Add((title, parsed.AbsoluteUri, snippet));
-                }
-                else if (_searchDiagnosticPath is not null && rejected.Count < 20)
-                {
-                    rejected.Add((title, parsed, snippet));
-                }
+                candidates.Add(new SearchCandidate(title, parsed, snippet, ObservedSearchTokens(title, parsed, snippet)));
+            }
+        }
+        int structurallyValidItems = candidates.Count;
+        if (structurallyValidItems == 0 && !IsSearchResultsPage(response, page))
+        {
+            // The engine answered with something other than a results page (a block,
+            // a captcha, an error): nothing was searched, and the reply must not
+            // pretend the web had no answer.
+            return ExternalJson.FailureBeforeEffect(operation, "web_search_engine_unavailable");
+        }
+        string[] verifiableTerms = VerifiableSearchTerms(queryTokens, candidates);
+        var results = new List<(string Title, string Url, string Snippet)>();
+        var rejected = new List<(string Title, Uri Url, string Snippet)>();
+        foreach (SearchCandidate candidate in candidates)
+        {
+            if (results.Count >= limit) break;
+            if (IsSearchResultRelevant(verifiableTerms, candidate.Observed))
+            {
+                results.Add((candidate.Title, candidate.Url.AbsoluteUri, candidate.Snippet));
+            }
+            else if (_searchDiagnosticPath is not null && rejected.Count < 20)
+            {
+                rejected.Add((candidate.Title, candidate.Url, candidate.Snippet));
             }
         }
         if (structurallyValidItems > 0 && results.Count == 0)
@@ -417,11 +413,148 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 writer.WriteEndObject();
             }
             writer.WriteEndArray();
-            writer.WriteString("authority", "bing_rss_https");
+            writer.WriteString("authority", "bing_html_https");
             writer.WriteEndObject();
         });
         return ExternalJson.Success(operation, result, effectObserved: false);
     }
+
+    private static async Task<string> ReadBoundedTextAsync(
+        HttpResponseMessage response,
+        int maximumBytes,
+        CancellationToken cancellationToken)
+    {
+        using Stream stream = await response.Content.ReadAsStreamAsync(cancellationToken)
+            .ConfigureAwait(false);
+        using var buffer = new MemoryStream();
+        byte[] chunk = ArrayPool<byte>.Shared.Rent(16 * 1024);
+        try
+        {
+            int read;
+            while ((read = await stream.ReadAsync(chunk, cancellationToken).ConfigureAwait(false)) > 0)
+            {
+                if (buffer.Length + read > maximumBytes) break;
+                buffer.Write(chunk, 0, read);
+            }
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(chunk);
+        }
+        return Encoding.UTF8.GetString(buffer.GetBuffer(), 0, (int)buffer.Length);
+    }
+
+    // The person's culture chooses the engine's language and country («setlang=es»,
+    // «cc=AR»), so a Spanish question gets Spanish pages; an invariant culture adds
+    // nothing and the engine decides.
+    internal static string SearchMarket(CultureInfo culture)
+    {
+        string language = culture.TwoLetterISOLanguageName.ToLowerInvariant();
+        if (language.Length != 2 || culture.Equals(CultureInfo.InvariantCulture)) return string.Empty;
+        string market = "&setlang=" + language;
+        try
+        {
+            if (!culture.IsNeutralCulture && culture.Name.Length >= 5)
+            {
+                string region = new RegionInfo(culture.Name).TwoLetterISORegionName.ToUpperInvariant();
+                if (region.Length == 2) market += "&cc=" + region;
+            }
+        }
+        catch (ArgumentException)
+        {
+        }
+        return market;
+    }
+
+    private static readonly Regex SearchResultEntry = new(
+        "<li class=\"b_algo\"",
+        RegexOptions.CultureInvariant,
+        TimeSpan.FromSeconds(2));
+
+    private static readonly Regex SearchResultHeading = new(
+        "<h2[^>]*>\\s*<a\\b[^>]*href=\"([^\"]+)\"[^>]*>(.*?)</a>",
+        RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant,
+        TimeSpan.FromSeconds(2));
+
+    private static readonly Regex SearchResultSnippet = new(
+        "<p\\b[^>]*class=\"b_lineclamp[^\"]*\"[^>]*>(.*?)</p>|<div class=\"b_caption\"[^>]*>.*?<p\\b[^>]*>(.*?)</p>|</h2>.*?<p\\b[^>]*>(.*?)</p>",
+        RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant,
+        TimeSpan.FromSeconds(2));
+
+    private static readonly Regex HtmlTag = new(
+        "<[^>]+>",
+        RegexOptions.Singleline | RegexOptions.CultureInvariant,
+        TimeSpan.FromSeconds(2));
+
+    // Each organic result is a «b_algo» list item whose heading anchor carries the
+    // engine's click redirect; the real target travels base64-encoded in its «u»
+    // parameter (prefixed «a1»). Advertising and engine-internal links keep the
+    // engine's host and are discarded by the caller.
+    internal static IEnumerable<(string Title, string Url, string Snippet)> ParseSearchPage(string page)
+    {
+        MatchCollection entries = SearchResultEntry.Matches(page);
+        for (int index = 0; index < entries.Count; index++)
+        {
+            int blockStart = entries[index].Index;
+            int blockEnd = index + 1 < entries.Count ? entries[index + 1].Index : page.Length;
+            string block = page.Substring(blockStart, blockEnd - blockStart);
+            Match heading = SearchResultHeading.Match(block);
+            if (!heading.Success) continue;
+            Match snippet = SearchResultSnippet.Match(block);
+            string rawSnippet = snippet.Success
+                ? (snippet.Groups[1].Success ? snippet.Groups[1].Value
+                    : snippet.Groups[2].Success ? snippet.Groups[2].Value
+                    : snippet.Groups[3].Value)
+                : string.Empty;
+            yield return (
+                HtmlText(heading.Groups[2].Value),
+                ResolveSearchLink(System.Net.WebUtility.HtmlDecode(heading.Groups[1].Value)),
+                HtmlText(rawSnippet));
+        }
+    }
+
+    private static string HtmlText(string fragment)
+    {
+        string text = System.Net.WebUtility.HtmlDecode(HtmlTag.Replace(fragment, " "));
+        return string.Join(' ', text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+    }
+
+    internal static string ResolveSearchLink(string href)
+    {
+        string absolute = href.StartsWith("//", StringComparison.Ordinal) ? "https:" + href
+            : href.StartsWith('/') ? "https://www.bing.com" + href
+            : href;
+        if (!Uri.TryCreate(absolute, UriKind.Absolute, out Uri? uri)) return absolute;
+        if (!uri.Host.EndsWith("bing.com", StringComparison.OrdinalIgnoreCase)) return absolute;
+        foreach (string pair in uri.Query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
+        {
+            int separator = pair.IndexOf('=');
+            if (separator <= 0 || pair[..separator] != "u") continue;
+            string encoded = pair[(separator + 1)..];
+            if (encoded.StartsWith("a1", StringComparison.Ordinal)) encoded = encoded[2..];
+            encoded = encoded.Replace('-', '+').Replace('_', '/');
+            encoded += new string('=', (4 - encoded.Length % 4) % 4);
+            try
+            {
+                string decoded = Encoding.UTF8.GetString(Convert.FromBase64String(encoded));
+                if (Uri.TryCreate(decoded, UriKind.Absolute, out Uri? target)
+                    && target.Scheme is "http" or "https")
+                {
+                    return target.AbsoluteUri;
+                }
+            }
+            catch (FormatException)
+            {
+            }
+        }
+        return absolute;
+    }
+
+    // A genuine answer carries the engine's result list container even when it is
+    // empty; a block, a captcha or an error page does not.
+    private static bool IsSearchResultsPage(HttpResponseMessage response, string page) =>
+        response.IsSuccessStatusCode
+        && page.Contains("id=\"b_results\"", StringComparison.Ordinal);
 
     private void RecordSearchRejection(
         string query,
@@ -448,9 +581,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 writer.WriteStartArray("rejectedItems");
                 foreach ((string title, Uri url, string snippet) in rejected)
                 {
-                    var observed = new HashSet<string>(SearchTokens(string.Concat(
-                        title, " ", url.Host, " ", SafeUnescapedPath(url), " ", snippet)),
-                        StringComparer.Ordinal);
+                    HashSet<string> observed = ObservedSearchTokens(title, url, snippet);
                     writer.WriteStartObject();
                     writer.WriteString("title", title);
                     writer.WriteString("url", url.AbsoluteUri[..Math.Min(url.AbsoluteUri.Length, 4096)]);
@@ -458,7 +589,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                     writer.WriteBoolean("textTruncated", url.AbsoluteUri.Length > 4096 || snippet.Length > 4096);
                     writer.WriteStartArray("missingTerms");
                     foreach (string term in queryTokens)
-                        if (!observed.Contains(term)) writer.WriteStringValue(term);
+                        if (!MatchesSearchTerm(term, observed)) writer.WriteStringValue(term);
                     writer.WriteEndArray();
                     writer.WriteEndObject();
                 }
@@ -527,28 +658,60 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             .ToArray();
     }
 
-    private static bool IsSearchResultRelevant(
-        string[] queryTokens,
-        string title,
-        Uri uri,
-        string snippet)
+    private readonly record struct SearchCandidate(
+        string Title,
+        Uri Url,
+        string Snippet,
+        HashSet<string> Observed);
+
+    private static HashSet<string> ObservedSearchTokens(string title, Uri uri, string snippet) =>
+        new(SearchTokens(string.Concat(
+            title, " ", uri.Host, " ", SafeUnescapedPath(uri), " ", snippet)), StringComparer.Ordinal);
+
+    // The person's words reach the engine as typed («porqeu», «suele», «mucho»); a
+    // term that no result on the page repeats, even inflected, cannot be verified
+    // against that page and does not count against any result. The terms that at
+    // least one result repeats are the ones a result is judged by.
+    private static string[] VerifiableSearchTerms(string[] queryTokens, List<SearchCandidate> candidates) =>
+        queryTokens
+            .Where(token => candidates.Any(candidate => MatchesSearchTerm(token, candidate.Observed)))
+            .ToArray();
+
+    // A result is pertinent when it repeats at least half (rounded up) of the
+    // verifiable terms; with no verifiable term at all, every result is rejected,
+    // because nothing on the page shares a content word with the request.
+    private static bool IsSearchResultRelevant(string[] verifiableTerms, HashSet<string> observed)
     {
-        string[] resultTokens = SearchTokens(string.Concat(
-            title,
-            " ",
-            uri.Host,
-            " ",
-            SafeUnescapedPath(uri),
-            " ",
-            snippet));
-        if (resultTokens.Length == 0)
+        if (verifiableTerms.Length == 0)
         {
             return false;
         }
 
-        var observed = new HashSet<string>(resultTokens, StringComparer.Ordinal);
-        return queryTokens.All(token => observed.Contains(token)
-            || WeatherSynonyms.Any(family => family.Contains(token) && family.Any(observed.Contains)));
+        int matched = verifiableTerms.Count(term => MatchesSearchTerm(term, observed));
+        return matched >= (verifiableTerms.Length + 1) / 2;
+    }
+
+    private static bool MatchesSearchTerm(string token, HashSet<string> observed) =>
+        observed.Contains(token)
+        || WeatherSynonyms.Any(family => family.Contains(token) && family.Any(observed.Contains))
+        || SharesInflectedStem(token, observed);
+
+    // «fallar» and «fallas» share the stem «fall»; «suele» and «suelen» share «suel».
+    // Only words of five letters or more take part, and the shared prefix must keep
+    // all but the last two letters of the query word, so «casa» never matches «caso».
+    private static bool SharesInflectedStem(string queryToken, HashSet<string> observed)
+    {
+        if (queryToken.Length < 5) return false;
+        string stem = queryToken[..(queryToken.Length - 2)];
+        if (stem.Length < 4) return false;
+        foreach (string candidate in observed)
+        {
+            if (candidate.Length >= 4 && candidate.StartsWith(stem, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     // WEB1445 «qué clima hace hoy»: the engine's local forecast says «tiempo» or
@@ -581,7 +744,19 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         // WEB1267: «hoy»/«today» name the moment of the request, not a word the
         // result must repeat («noticias de hoy» found nothing; «today's news»
         // matched the TV show TODAY).
-        or "hoy" or "today" or "ahora" or "now" or "todays";
+        or "hoy" or "today" or "ahora" or "now" or "todays"
+        // H0060: a question asked in the person's words carries interrogatives and
+        // auxiliaries («por qué suele fallar», «why does it fail») that name the
+        // question, not the answer; the page is judged by its content words.
+        or "que" or "porque" or "como" or "cual" or "cuales" or "cuando" or "donde"
+        or "quien" or "quienes" or "es" or "son" or "esta" or "estan" or "hay" or "se"
+        or "me" or "mi" or "mis" or "tu" or "su" or "sus" or "lo" or "le" or "les"
+        or "al" or "con" or "sin" or "sobre" or "si" or "no" or "ya" or "muy" or "mas"
+        or "why" or "how" or "what" or "which" or "when" or "where" or "who" or "whom"
+        or "is" or "are" or "was" or "were" or "do" or "does" or "did" or "can" or "could"
+        or "should" or "would" or "will" or "it" or "its" or "my" or "your" or "this"
+        or "that" or "with" or "without" or "about" or "at" or "by" or "or" or "not"
+        or "so" or "very" or "more" or "please";
 
     private static JsonElement NavigationResult(CdpNavigationResult value, string authority) =>
         ExternalJson.Create(writer =>

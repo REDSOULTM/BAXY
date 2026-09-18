@@ -3711,6 +3711,38 @@ def _merged_observed(situation: dict) -> dict:
     return merged
 
 
+def _without_observed_search_vocabulary(text: str, observed: dict) -> str:
+    """Mask, word by word, what a verified web search observed.
+
+    The query, the titles and the snippets are data the reply may repeat; a
+    word of three letters or more that any of them carries is blanked before
+    the failure lens reads the draft, so «fallos recurrentes en WhatsApp» is
+    judged as a report of the pages, while «no pude» keeps its two words.
+    """
+
+    parts: list[object] = [observed.get("query")]
+    for entry in observed.get("results") or []:
+        if isinstance(entry, dict):
+            parts.extend((entry.get("title"), entry.get("snippet")))
+    words: set[str] = set()
+    for part in parts:
+        if isinstance(part, str) and part.strip():
+            words.update(
+                re.findall(
+                    r"[a-z0-9]{3,}",
+                    _accent_folded_with_punctuation(part).casefold(),
+                )
+            )
+    if not words:
+        return text
+    return re.sub(
+        r"(?<![a-z0-9])[a-z0-9]{3,}(?![a-z0-9])",
+        lambda match: " " if match.group(0).casefold() in words else match.group(0),
+        _accent_folded_with_punctuation(text),
+        flags=re.IGNORECASE,
+    )
+
+
 def _verified_empty_known_file_query(situation: dict) -> str | None:
     """A completed bounded name search is not a failed read or global absence."""
     if (
@@ -7334,6 +7366,21 @@ def compose_visible_defect(
                     r"\s+".join(re.escape(part) for part in value.split()),
                     " ", failure_assertions, flags=re.IGNORECASE,
                 )
+    if (
+        situation.get("operation") == "web.search"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+        and isinstance(presence, dict)
+        and isinstance(presence.get("results"), list)
+    ):
+        # H0060 «me falla mucho whatsapp … porqué suele fallar»: the pages found
+        # are about failures, so the words they carry («fallos», «no funciona»,
+        # «cortes») are observed data when the reply repeats them, not a
+        # statement about the search. Only words the results carry are masked;
+        # «no pude» and the other markers of an own failure stay in the lens.
+        failure_assertions = _without_observed_search_vocabulary(
+            failure_assertions, presence
+        )
     empty_file_query = _verified_empty_known_file_query(situation)
     if empty_file_query is not None:
         # A successful empty search proves a negative finding, not a failed
@@ -14765,21 +14812,27 @@ class LlmRuntime:
         elif _search_results_text(visible_situation) is not None:
             # WEB1445: the person asked a live question; the results are pages,
             # not the answer itself. Say what was found, never what it might say.
+            # H0060 «investigá por qué suele fallar whatsapp»: asked for causes,
+            # the model answered from its own memory (connection, servers,
+            # «restart the device») and dropped the pages; a research request is
+            # reported the same way, each fact with the page that states it.
             instruct(
                 "\nseen.results are the pages the public search returned (title, url, "
                 "snippet). Report what was found in at most three sentences: name at "
                 "most three pages by title and site and, if a snippet states a fact, "
-                "you may repeat it with its words. Never state a temperature, forecast, "
-                "condition or any fact that no result contains; if the results only "
-                "point to forecast pages, say that."
+                "you may repeat it with its words, saying which page states it. Never "
+                "state a temperature, forecast, condition, cause, explanation, advice or "
+                "any fact that no result contains, even if you know it; if the results "
+                "only point to forecast pages, say that."
                 if response_language == "en"
                 else "\nseen.results son las páginas que devolvió la búsqueda pública "
                 "(título, url, fragmento). Informa lo encontrado en tres oraciones como "
                 "máximo: nombra como máximo tres páginas por título y sitio y, si un "
-                "fragmento afirma un dato, puedes repetirlo con sus palabras. Nunca "
-                "afirmes una temperatura, un pronóstico, un estado del tiempo ni ningún "
-                "dato que ningún resultado contenga; si los resultados sólo remiten a "
-                "páginas de pronóstico, dilo."
+                "fragmento afirma un dato, puedes repetirlo con sus palabras diciendo "
+                "qué página lo afirma. Nunca afirmes una temperatura, un pronóstico, un "
+                "estado del tiempo, una causa, una explicación, un consejo ni ningún "
+                "dato que ningún resultado contenga, aunque lo sepas; si los resultados "
+                "sólo remiten a páginas de pronóstico, dilo."
             )
         if _written_file_after_listing(visible_situation) is not None:
             # FILES1707 «crea un archivo de texto con los 5 procesos que más
