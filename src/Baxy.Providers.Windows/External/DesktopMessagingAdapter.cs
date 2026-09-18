@@ -464,12 +464,12 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         SendChord(VirtualKeyControl, VirtualKeyA);
         SendKey(VirtualKeyBack);
         await Task.Delay(150, cancellationToken).ConfigureAwait(false);
-        byte[] before = CaptureRegion(recipient.WindowHandle, headerOnly: false, recipient.Channel);
+        byte[] before = CaptureRegion(recipient.WindowHandle, CaptureArea.Composer, recipient.Channel);
         SendText(text);
 
         async ValueTask<MessageVisualObservation> ObserveDraftAsync(CancellationToken token)
         {
-            byte[] bitmap = CaptureRegion(recipient.WindowHandle, headerOnly: false, recipient.Channel);
+            byte[] bitmap = CaptureRegion(recipient.WindowHandle, CaptureArea.Composer, recipient.Channel);
             bool changed = !CryptographicOperations.FixedTimeEquals(
                 SHA256.HashData(before),
                 SHA256.HashData(bitmap));
@@ -494,7 +494,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         byte[] draft = draftObservation.Bitmap;
         SendKey(VirtualKeyReturn);
         await Task.Delay(900, cancellationToken).ConfigureAwait(false);
-        byte[] after = CaptureRegion(recipient.WindowHandle, headerOnly: false, recipient.Channel);
+        byte[] after = CaptureRegion(recipient.WindowHandle, CaptureArea.Body, recipient.Channel);
         string afterText = await ReadTextAsync(after, cancellationToken).ConfigureAwait(false);
         string afterHash = Convert.ToHexStringLower(SHA256.HashData(after));
         bool changed = !CryptographicOperations.FixedTimeEquals(
@@ -556,12 +556,12 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         SendChord(VirtualKeyControl, VirtualKeyA);
         SendKey(VirtualKeyBack);
         await Task.Delay(150, cancellationToken).ConfigureAwait(false);
-        byte[] before = CaptureRegion(recipient.WindowHandle, headerOnly: false, recipient.Channel);
+        byte[] before = CaptureRegion(recipient.WindowHandle, CaptureArea.Composer, recipient.Channel);
         SendText(text);
 
         async ValueTask<MessageVisualObservation> ObserveDraftAsync(CancellationToken token)
         {
-            byte[] bitmap = CaptureRegion(recipient.WindowHandle, headerOnly: false, recipient.Channel);
+            byte[] bitmap = CaptureRegion(recipient.WindowHandle, CaptureArea.Composer, recipient.Channel);
             bool changed = !CryptographicOperations.FixedTimeEquals(
                 SHA256.HashData(before),
                 SHA256.HashData(bitmap));
@@ -629,7 +629,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         string target,
         CancellationToken cancellationToken)
     {
-        byte[] header = CaptureRegion(handle, headerOnly: true, "whatsapp");
+        byte[] header = CaptureRegion(handle, CaptureArea.Header, "whatsapp");
         string text = await ReadTextAsync(header, cancellationToken).ConfigureAwait(false);
         return Fold(text).Contains(Fold(target), StringComparison.Ordinal);
     }
@@ -1003,7 +1003,20 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         await Task.Delay(400, cancellationToken).ConfigureAwait(false);
     }
 
-    private static byte[] CaptureRegion(nint handle, bool headerOnly, string channel)
+    // The typed draft is read from the composer band alone: Tesseract does not
+    // segment that single line out of the whole conversation pane over the
+    // doodle wallpaper (MSGSEND1845: «hola» read as «tt i>)» in the pane, as
+    // «hola» in the band).
+    private const int ComposerBandHeightAt96Dpi = 90;
+
+    private enum CaptureArea
+    {
+        Header,
+        Body,
+        Composer,
+    }
+
+    private static byte[] CaptureRegion(nint handle, CaptureArea area, string channel)
     {
         nint previousDpi = SetThreadDpiAwarenessContext((nint)(-4));
         try
@@ -1015,16 +1028,26 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
             int windowWidth = rectangle.Right - rectangle.Left;
             int windowHeight = rectangle.Bottom - rectangle.Top;
+            double scale = GetDpiForWindow(handle) / 96.0;
             int sourceX = string.Equals(channel, "whatsapp", StringComparison.Ordinal)
                 ? Math.Min(
                     Math.Max(0, windowWidth - 1),
-                    (int)(WhatsAppConversationPaneOffsetAt96Dpi * GetDpiForWindow(handle) / 96.0))
+                    (int)(WhatsAppConversationPaneOffsetAt96Dpi * scale))
                 : (int)(windowWidth * 0.42);
-            int sourceY = headerOnly ? 0 : Math.Min(80, windowHeight / 8);
+            int composerBand = Math.Min(windowHeight, (int)(ComposerBandHeightAt96Dpi * scale));
+            int sourceY = area switch
+            {
+                CaptureArea.Header => 0,
+                CaptureArea.Composer => windowHeight - composerBand,
+                _ => Math.Min(80, windowHeight / 8),
+            };
             int width = Math.Max(1, windowWidth - sourceX);
-            int height = headerOnly
-                ? Math.Max(1, Math.Min(150, windowHeight / 4))
-                : Math.Max(1, windowHeight - sourceY);
+            int height = area switch
+            {
+                CaptureArea.Header => Math.Max(1, Math.Min(150, windowHeight / 4)),
+                CaptureArea.Composer => Math.Max(1, composerBand),
+                _ => Math.Max(1, windowHeight - sourceY),
+            };
             nint screenDc = GetDC(0);
             if (screenDc == 0)
             {
