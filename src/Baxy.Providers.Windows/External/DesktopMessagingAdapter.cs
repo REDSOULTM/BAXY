@@ -881,13 +881,16 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
     }
 
-    // WhatsApp Desktop keeps its sidebar and chat list at a fixed logical width
-    // (about 530 px); the conversation header and composer start right after
-    // them. A fraction of the window width cut into the chat name once the
-    // window was maximized at 125 % (MSGSEND1845: 1938 px wide, 42 % = 813 px,
-    // «Música» spanning 771–852 px, OCR read «ica»), so the WhatsApp crop starts
-    // at a DPI-scaled logical offset just past the chat list instead.
-    private const int WhatsAppConversationPaneLogicalOffset = 560;
+    // WhatsApp Desktop keeps its sidebar and chat list at a fixed width (the
+    // conversation pane starts at about 492 px, its header title at about
+    // 580 px) and lays itself out at the SYSTEM scale: on a 125 % secondary
+    // monitor with a 100 % primary it still draws at 100 %, so the offset is
+    // scaled by the system DPI, not by the window's monitor DPI. A fraction of
+    // the window width cut into the chat name once the window was maximized
+    // (MSGSEND1845: 1938 px wide, 42 % = 813 px, OCR read «ica»), so the
+    // WhatsApp crop starts just past the chat list instead: it excludes the
+    // search box and the list item that both show the searched name.
+    private const int WhatsAppConversationPaneOffsetAt96Dpi = 520;
 
     private static byte[] CaptureRegion(nint handle, bool headerOnly, string channel)
     {
@@ -904,7 +907,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             int sourceX = string.Equals(channel, "whatsapp", StringComparison.Ordinal)
                 ? Math.Min(
                     Math.Max(0, windowWidth - 1),
-                    (int)(WhatsAppConversationPaneLogicalOffset * GetDpiForWindow(handle) / 96.0))
+                    (int)(WhatsAppConversationPaneOffsetAt96Dpi * GetDpiForSystem() / 96.0))
                 : (int)(windowWidth * 0.42);
             int sourceY = headerOnly ? 0 : Math.Min(80, windowHeight / 8);
             int width = Math.Max(1, windowWidth - sourceX);
@@ -1162,7 +1165,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private static partial nint SetThreadDpiAwarenessContext(nint context);
 
     [LibraryImport("user32.dll")]
-    private static partial uint GetDpiForWindow(nint handle);
+    private static partial uint GetDpiForSystem();
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
