@@ -1091,6 +1091,12 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // wallpaper drowned the bubble («hola 15:32» read as «era»).
     private const int OutgoingBubbleBandWidthAt96Dpi = 320;
 
+    // The conversation header's title row in the normalized window: below the
+    // window's own title bar, left of the header icons.
+    private const int HeaderRowTopAt96Dpi = 38;
+    private const int HeaderRowHeightAt96Dpi = 62;
+    private const int HeaderRowWidthAt96Dpi = 420;
+
     // Distance from the window's bottom edge to the middle of the composer input
     // (WhatsApp bar ≈ 48 px high with an 8 px margin; Discord's box sits within
     // the same band), scaled by the window's DPI like the pane offset.
@@ -1174,15 +1180,24 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                 (int)(LastMessagesBandHeightAt96Dpi * scale));
             int sourceY = area switch
             {
-                CaptureArea.Header => 0,
+                CaptureArea.Header => Math.Min(windowHeight - 1, (int)(HeaderRowTopAt96Dpi * scale)),
                 CaptureArea.Composer => windowHeight - composerBand,
                 CaptureArea.LastMessages => windowHeight - composerBand - lastMessagesBand,
                 _ => Math.Min(80, windowHeight / 8),
             };
             int width = Math.Max(1, windowWidth - sourceX);
+            if (area == CaptureArea.Header)
+            {
+                // The title row alone: with the window's own title bar, the avatar
+                // and the header icons in the crop, Tesseract read the open chat's
+                // name as «po y» or dropped it (MSGSEND1845 audit); the row reads
+                // «Musica» in every mode.
+                width = Math.Min(width, (int)(HeaderRowWidthAt96Dpi * scale));
+            }
+
             int height = area switch
             {
-                CaptureArea.Header => Math.Max(1, Math.Min(150, windowHeight / 4)),
+                CaptureArea.Header => Math.Max(1, Math.Min(windowHeight - sourceY, (int)(HeaderRowHeightAt96Dpi * scale))),
                 CaptureArea.Composer => Math.Max(1, composerBand),
                 CaptureArea.LastMessages => Math.Max(1, lastMessagesBand),
                 _ => Math.Max(1, windowHeight - sourceY),
