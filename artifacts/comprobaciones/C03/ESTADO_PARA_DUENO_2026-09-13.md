@@ -1,3 +1,25 @@
+## MSGSEND1845 — estado vigente 2026-09-18T19:56:10.087399+00:00
+
+Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 654/742 | 88 | 0 | >=538 | 13/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 537 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MSGSEND1845 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: MSGSEND1845: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Mensajería 10/31. Siguiente: panel grande de mensajería (Musica y Valeria) sobre el mismo mecanismo.
+
+Evidencia: `artifacts/comprobaciones/C03/MSGSEND1845/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 125.02 s acumulados; pico GPU 3492.93 MiB; pico RAM 2450.71 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MSGSEND1845 precedente. -->
+
 ## CHROMETABS1843 — estado vigente 2026-09-17T17:17:27.887528+00:00
 
 Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
