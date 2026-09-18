@@ -7478,6 +7478,16 @@ def compose_visible_defect(
         if forced_dest and _accent_folded_with_punctuation(forced_dest) not in folded_reply:
             return "sent_wrong_destination"
         if (
+            re.search(
+                r"\b(?:envie|envio|enviado|enviada|mande|mando|mandado|sent|delivered|entregue|entregado)\b",
+                folded_reply,
+            )
+            is None
+        ):
+            # A verified send that the reply does not state (MSGSEND1845: «Hola
+            # Música.») hides the delivery the person asked for.
+            return "send_not_stated"
+        if (
             requested
             and _accent_folded_with_punctuation(requested) == _accent_folded_with_punctuation(forced_dest)
             and re.search(
@@ -15609,6 +15619,11 @@ class LlmRuntime:
                 "The message was really sent, but only to the owner's own test channel, not to the requested recipient: name that real test destination and make clear it did not go to the requested person."
                 if response_language == "en"
                 else "El mensaje se envió de verdad, pero sólo al canal de pruebas propio del dueño, no al destinatario pedido: nombra ese destino de prueba real y deja claro que no fue a la persona pedida."
+            ),
+            "send_not_stated": (
+                "The message was really sent to the owner's test channel: say that you sent it («quote the text») to that channel; a greeting alone hides the delivery."
+                if response_language == "en"
+                else "El mensaje se envió de verdad al canal de pruebas del dueño: di que lo enviaste (cita el texto) a ese canal; un saludo solo oculta el envío."
             ),
             "denied_test_destination": (
                 "The recipient the person named IS the owner's test channel and the message really went there: say you sent it to that channel and do not say it was not sent to anyone."
