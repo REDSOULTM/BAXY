@@ -391,7 +391,11 @@ internal static class ProductConductorHost
                 or "wifi.radio.set"
                 // NETWORK1721 «conectate al wifi de casa»: the sensitive
                 // connection to a saved profile is confirmed by the root reviewer.
-                or "wifi.connect.named"))
+                or "wifi.connect.named"
+                // MSGSEND1845 «manda un mensaje a Musica en whatsapp que diga hola»: the
+                // real send, forced by construction to the owner's test channel, is
+                // confirmed by the root reviewer (owner decision, section 6).
+                or "message.send.test"))
         {
             return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
         }
