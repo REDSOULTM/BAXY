@@ -7491,12 +7491,15 @@ def compose_visible_defect(
             requested
             and _accent_folded_with_punctuation(requested) == _accent_folded_with_punctuation(forced_dest)
             and re.search(
-                r"\b(?:no|not|never|nunca|tampoco)\b[^.;]{0,40}\b(?:envi\w*|mand\w*|sent|send|entreg\w*|fue|went)\b",
+                r"\b(?:no|not|never|nunca|tampoco)\b[^.;]{0,40}\b(?:envi\w*|mand\w*|sent|send|entreg\w*|fue|went|lleg\w*"
+                r"|destinatari\w*|persona|recipient|solicitad\w*|pedid\w*|indicad\w*|nombrad\w*|named|requested)\b",
                 folded_reply,
             )
         ):
             # The person named the test channel itself: a reply that denies a send
-            # to anyone withholds a delivery that really happened where asked.
+            # to anyone, or that says it did not go to «the requested recipient»,
+            # withholds or contradicts a delivery that happened exactly where asked
+            # (MSGSEND1847: «no al destinatario solicitado» for «ya voy» to Música).
             return "denied_test_destination"
         if (
             requested
