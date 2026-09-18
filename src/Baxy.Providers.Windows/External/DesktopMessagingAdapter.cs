@@ -371,7 +371,6 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private const ushort VirtualKeyReturn = 0x0D;
     private const ushort VirtualKeyA = 0x41;
     private const ushort VirtualKeyBack = 0x08;
-    private const ushort VirtualKeyEscape = 0x1B;
     private const uint KeyUp = 0x0002;
     private const uint Unicode = 0x0004;
 
@@ -392,12 +391,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
 
         await NormalizeWindowAsync(channel, handle, cancellationToken).ConfigureAwait(false);
-        // Escape closes any search panel left open in the client (an in-conversation
-        // search opened by Ctrl+F while the composer had focus hides the header),
-        // and the header is read twice because the first frame after a resize or
-        // focus change may still be transitional.
-        SendKey(VirtualKeyEscape);
-        await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+        // The header is read twice because the first frame after a resize or
+        // focus change may still be transitional. (Escape must not be sent here:
+        // in WhatsApp it closes the open conversation.)
 
         ValueTask<bool> ObserveRecipientAsync(CancellationToken token) =>
             string.Equals(channel, "discord", StringComparison.Ordinal)
@@ -646,7 +642,90 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     {
         byte[] header = CaptureRegion(handle, CaptureArea.Header, "whatsapp");
         string text = await ReadTextAsync(header, cancellationToken).ConfigureAwait(false);
-        return Fold(text).Contains(Fold(target), StringComparison.Ordinal);
+        return HeaderMatches(text, target);
+    }
+
+    // The header crop excludes the search box and the chat list, so the only
+    // chat name in it is the open conversation's; Tesseract still misreads one
+    // letter of it now and then («Misica» for «Música»), so a word of five or
+    // more letters is accepted at one edit of distance.
+    internal static bool HeaderMatches(string observed, string target)
+    {
+        string foldedObserved = Fold(observed);
+        string foldedTarget = Fold(target);
+        if (foldedTarget.Length == 0)
+        {
+            return false;
+        }
+
+        if (foldedObserved.Contains(foldedTarget, StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        string[] words = foldedObserved.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        foreach (string token in foldedTarget.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+        {
+            bool matched = false;
+            foreach (string word in words)
+            {
+                if (word == token || (token.Length >= 5 && WithinOneEdit(word, token)))
+                {
+                    matched = true;
+                    break;
+                }
+            }
+
+            if (!matched)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static bool WithinOneEdit(string left, string right)
+    {
+        if (Math.Abs(left.Length - right.Length) > 1)
+        {
+            return false;
+        }
+
+        int i = 0;
+        int j = 0;
+        int edits = 0;
+        while (i < left.Length && j < right.Length)
+        {
+            if (left[i] == right[j])
+            {
+                i++;
+                j++;
+                continue;
+            }
+
+            if (++edits > 1)
+            {
+                return false;
+            }
+
+            if (left.Length > right.Length)
+            {
+                i++;
+            }
+            else if (left.Length < right.Length)
+            {
+                j++;
+            }
+            else
+            {
+                i++;
+                j++;
+            }
+        }
+
+        edits += (left.Length - i) + (right.Length - j);
+        return edits <= 1;
     }
 
     private static async ValueTask<string> ReadTextAsync(
