@@ -20,6 +20,17 @@ MSGSEND1845 («Mensajeria», enviar de verdad el mensaje al canal de prueba forz
 
 ---
 
+# REANUDACIÓN 2026-09-18 noche (REDPC — Fable 5.1, escritor raíz): 664/742, MSGSEND1847 adjudicada
+
+**664/742 cubiertos, 78 abiertos, 16/35 categorías cerradas (Mensajería 20/31). Registro SHA en `MSGSEND1847/REGISTRY_UPDATE.json`. HEAD == origin tras dd7d066c0.**
+
+- **MSGSEND1847** (panel de 16: 12 literales de WhatsApp con cliente nombrado, 6 a «Música» y 6 a terceros con destino forzado; 2 variantes; 2 límites): 14/16, **+10**. Necesitó cinco corridas: la primera invalidada por una edición de `src` durante la corrida (nunca más), la segunda y la tercera sin adjudicar/publicar por sobrantes del generador («5 casos» fijos en adjudicador y publicador; ahora `make_1847.py`/`resize_1847.py` cubren todas las formas y `c03-campaign-pitfalls` lo documenta), la cuarta con tres abortos seguros de la guardia de búsqueda porque el dueño usaba otro chat. Se adjudicó la quinta.
+- **Decisión del dueño 18-09** (`DECISIONES_DUENO_2026-09-18.md`): los literales a terceros se acreditan cuando el envío fue al canal de pruebas y el final lo dice. Aplicada.
+- **Abiertos de mensajería (11)**: H0425/H0719 «ya voy» a Música (el envío es real; la mente no produce un final válido cuando el destinatario pedido ES el canal de pruebas: sonda con auditoría de composición en curso); H0198/H0231/H0536/H0024 sin cliente nombrado (tanda con aclaración y envío, forma `turn.answer-clarification` como AUDIO1787); Discord H0318/H0340/H0394 → «Valeria» (mismo mecanismo, canal discord); lectura H0720 (límite). Correo (6): casilla autor@example.com, mecanismo por construir.
+- **Regla operativa**: durante los casos el dueño no toca WhatsApp; la guardia aborta sin enviar si el compositor del chat abierto cambia (`search_focus_not_verified`), y eso cuesta la variante y con ella los créditos de la tanda.
+
+---
+
 # REANUDACIÓN 2026-09-18 tarde (PC principal REDPC — Fable 5.1, escritor raíz; transferencia hecha, MSGSEND1845 adjudicada aquí)
 
 **654/742 cubiertos, 88 abiertos, 16/35 categorías cerradas (Mensajería 10/31). C03 formal 3/11. Registro SHA c1e68b28… (MSGSEND1845). Rama `codex/kiro-goal-c03`, HEAD == origin.** Lo que sigue es el estado real de este PC tras la transferencia; el bloque de mediodía de abajo queda como historia.
