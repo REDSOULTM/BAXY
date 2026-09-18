@@ -37,15 +37,31 @@ falla, dilo con la evidencia; si algo quedó fuera, dilo y por qué.
   computador principal, el HANDOFF y `CONDICIONES_*` bastan para continuar, pero conviene
   traerla.
 
-### 2. Verifica las dependencias privadas (NO están en git, por privacidad)
-Necesitas presente en el computador principal, bajo `C:/Users/<user>/AppData/Local/BAXY/`:
-- `C03-survey-requirements336-private/requirements.jsonl` — **el registro de 742 filas**
-  (fuente de verdad de cobertura). Sin esto no puedes medir ni adjudicar.
-- Los instrumentos sellados `C03-*-instrument-v1`, el utillaje `C03-*-tooling`, los builds
-  oficiales `C03-repairs*-build` y el runtime del producto `BAXYRuntime` (producto + mente
-  + inferencia GPU) y Tesseract para OCR.
-- Si falta algo, tráelo desde la máquina anterior (o pídeselo al dueño). No inventes el
-  registro ni la cobertura.
+### 2. Restaura el estado privado (NO está en git, por privacidad)
+El dueño trae tres zips desde la máquina anterior. Sus rutas internas son **relativas a
+`C:\Users\usuario\`** y no se solapan; extráelos sobre esa carpeta:
+
+```powershell
+Expand-Archive C03-transfer-core-part1.zip    -DestinationPath C:\Users\usuario\ -Force
+Expand-Archive C03-transfer-history-part1.zip -DestinationPath C:\Users\usuario\ -Force
+Expand-Archive C03-transfer-history-part2.zip -DestinationPath C:\Users\usuario\ -Force
+```
+
+- `core` (78,3 MB, sha256 `d221d453f776e8bb0ebdb6c80f364b6bdfbaa2aa2d4e6af2a1ccc822e2c99e9f`)
+  es **suficiente para reanudar**: el registro privado, el scratchpad con todo el método de
+  tanda, los `C03-*-tooling`, todos los `C03-repairs*-build`, la lineage base
+  (`C03-knowledge1144-*`, `C03-notes1142-*`), las plantillas (`C03-web1745-*`,
+  `C03-pip1821-*`), los instrumentos recientes y la memoria de la campaña.
+- `history` part1/part2 es la lineage histórica (instrumentos y proposals antiguos), útil si
+  una tanda futura reusa otra plantilla. Se excluyeron a propósito ~5,9 GB de perfiles de
+  navegador por caso: son cachés desechables.
+- **Verifica el registro antes de medir nada**:
+  `Get-FileHash C:\Users\usuario\AppData\Local\BAXY\C03-survey-requirements336-private\requirements.jsonl -Algorithm SHA256`
+  debe dar `fffae5b5ecce86296d61b1070cd518ac8f6d9b6528fec5861cf9faa1baec83e4` (653/742).
+  Los ficheros `TRANSFER_MANIFEST-*.txt` traen ruta, bytes y sha256 de cada fichero.
+- Debe existir además el runtime `AppData\Local\BAXYRuntime` (producto + mente + GPU) y
+  Tesseract para el OCR; eso ya está en el PC principal. **No inventes el registro ni la
+  cobertura**: si algo falta, dilo y pídeselo al dueño.
 
 ### 3. Acción inmediata: MSGSEND1845 (envío real de mensajería, decisión §6)
 Ya está **construido y armado** (falta sólo sellar y correr). Fuente comprometida en
