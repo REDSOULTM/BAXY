@@ -892,6 +892,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // search box and the list item that both show the searched name.
     private const int WhatsAppConversationPaneOffsetAt96Dpi = 520;
 
+    // Distance from the window's bottom edge to the middle of the composer input
+    // (WhatsApp bar ≈ 48 px high with an 8 px margin; Discord's box sits within
+    // the same band), scaled by the system DPI like the pane offset.
+    private const int ComposerBottomOffsetAt96Dpi = 56;
+
     private static byte[] CaptureRegion(nint handle, bool headerOnly, string channel)
     {
         nint previousDpi = SetThreadDpiAwarenessContext((nint)(-4));
@@ -1002,10 +1007,14 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             }
 
             int width = rectangle.Right - rectangle.Left;
-            int height = rectangle.Bottom - rectangle.Top;
+            // The composer bar has a constant height at the bottom of the window,
+            // so its input is a fixed distance above the bottom edge; a fraction of
+            // the window height landed on the bar's top edge once the window was
+            // tall (MSGSEND1845: 944 px, 92 % = 868 px, input centred at 888 px,
+            // «hola» typed into nothing, message_draft_not_verified).
             if (!SetCursorPos(
                     rectangle.Left + (int)(width * 0.76),
-                    rectangle.Top + (int)(height * 0.92)))
+                    rectangle.Bottom - (int)(ComposerBottomOffsetAt96Dpi * GetDpiForSystem() / 96.0)))
             {
                 return false;
             }
