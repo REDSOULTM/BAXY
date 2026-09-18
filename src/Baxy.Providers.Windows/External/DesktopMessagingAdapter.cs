@@ -1003,7 +1003,14 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // the list item that both show the searched name.
     private const int WhatsAppWindowLogicalWidth = 1280;
     private const int WhatsAppWindowLogicalHeight = 800;
-    private const int WhatsAppConversationPaneOffsetAt96Dpi = 430;
+    // 400 rather than the 430 midpoint: right after a send the list narrowed by
+    // about 35 px and the title, clipped at the crop's left edge, read as noise.
+    private const int WhatsAppConversationPaneOffsetAt96Dpi = 400;
+
+    // Outgoing bubbles are right-aligned, so the delivery is read from the right
+    // end of the last-messages band alone: over the full band the doodle
+    // wallpaper drowned the bubble («hola 15:32» read as «era»).
+    private const int OutgoingBubbleBandWidthAt96Dpi = 320;
 
     // Distance from the window's bottom edge to the middle of the composer input
     // (WhatsApp bar ≈ 48 px high with an 8 px margin; Discord's box sits within
@@ -1077,6 +1084,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                     Math.Max(0, windowWidth - 1),
                     (int)(WhatsAppConversationPaneOffsetAt96Dpi * scale))
                 : (int)(windowWidth * 0.42);
+            if (area == CaptureArea.LastMessages)
+            {
+                sourceX = Math.Max(sourceX, windowWidth - (int)(OutgoingBubbleBandWidthAt96Dpi * scale));
+            }
+
             int composerBand = Math.Min(windowHeight, (int)(ComposerBandHeightAt96Dpi * scale));
             int lastMessagesBand = Math.Min(
                 windowHeight - composerBand,
