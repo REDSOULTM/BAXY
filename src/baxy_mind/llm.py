@@ -15588,6 +15588,19 @@ class LlmRuntime:
 
         observed_playback = _merged_observed(situation).get("playbackStatus")
         deferred_for_hint = _deferred_clarification_for(user_text, situation)
+        # MSGSEND1847: when the person named the test channel itself, the retry
+        # hint must not ask the reply to contrast the requested person with the
+        # destination (the audit shows «Ya voy» → hint → «…no al destinatario
+        # solicitado» → veto, three times, no final).
+        seen_send_for_hint = (
+            _merged_observed(situation)
+            if situation.get("operation") == "message.send.test"
+            else {}
+        )
+        same_target_send = bool(seen_send_for_hint) and (
+            _accent_folded_with_punctuation(str(seen_send_for_hint.get("requestedRecipient") or ""))
+            == _accent_folded_with_punctuation(str(seen_send_for_hint.get("forcedDestination") or ""))
+        )
         retry_hint = {
             "recalled_as_own": (
                 "The record is about the person: say it in the second person («your name is …», «you like …»)."
@@ -15619,9 +15632,17 @@ class LlmRuntime:
                 else "El mensaje sólo quedó escrito en el chat y NO se envió: di que lo dejaste escrito y que no lo enviaste, para que la persona lo envíe; nunca digas que se envió o se entregó."
             ),
             "sent_wrong_destination": (
-                "The message was really sent, but only to the owner's own test channel, not to the requested recipient: name that real test destination and make clear it did not go to the requested person."
-                if response_language == "en"
-                else "El mensaje se envió de verdad, pero sólo al canal de pruebas propio del dueño, no al destinatario pedido: nombra ese destino de prueba real y deja claro que no fue a la persona pedida."
+                (
+                    "The message really went to the owner's test channel, exactly where the person asked: say that you sent the text (quote it) to that channel by its name, and mention no other recipient."
+                    if response_language == "en"
+                    else "El mensaje llegó de verdad al canal de pruebas del dueño, justo donde la persona pidió: di que enviaste el texto (cítalo) a ese canal por su nombre, y no menciones a ningún otro destinatario."
+                )
+                if same_target_send
+                else (
+                    "The message was really sent, but only to the owner's own test channel, not to the requested recipient: name that real test destination and make clear it did not go to the requested person."
+                    if response_language == "en"
+                    else "El mensaje se envió de verdad, pero sólo al canal de pruebas propio del dueño, no al destinatario pedido: nombra ese destino de prueba real y deja claro que no fue a la persona pedida."
+                )
             ),
             "send_not_stated": (
                 "The message was really sent to the owner's test channel: say that you sent it («quote the text») to that channel; a greeting alone hides the delivery."
