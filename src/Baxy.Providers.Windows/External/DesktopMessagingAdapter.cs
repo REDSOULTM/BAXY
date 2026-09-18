@@ -636,6 +636,35 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             return string.Empty;
         }
 
+        // A dark theme draws light text on a dark background, which Tesseract
+        // reads as nothing (MSGSEND1845: «hola» typed in the WhatsApp composer
+        // came back empty); the inverted copy reads it, so both readings count.
+        string direct = await RunTesseractAsync(executable, bitmap, cancellationToken)
+            .ConfigureAwait(false);
+        string inverted = await RunTesseractAsync(executable, InvertPixels(bitmap), cancellationToken)
+            .ConfigureAwait(false);
+        return string.Concat(direct, "\n", inverted);
+    }
+
+    private static byte[] InvertPixels(byte[] bitmap)
+    {
+        const int header = 54;
+        byte[] result = (byte[])bitmap.Clone();
+        for (int index = header; index + 2 < result.Length; index += 4)
+        {
+            result[index] = (byte)~result[index];
+            result[index + 1] = (byte)~result[index + 1];
+            result[index + 2] = (byte)~result[index + 2];
+        }
+
+        return result;
+    }
+
+    private static async ValueTask<string> RunTesseractAsync(
+        string executable,
+        byte[] bitmap,
+        CancellationToken cancellationToken)
+    {
         string path = Path.Combine(Path.GetTempPath(), $"baxy-ocr-{Guid.NewGuid():N}.bmp");
         try
         {
