@@ -459,12 +459,12 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         SendChord(VirtualKeyControl, VirtualKeyA);
         SendKey(VirtualKeyBack);
         await Task.Delay(150, cancellationToken).ConfigureAwait(false);
-        byte[] before = CaptureRegion(recipient.WindowHandle, headerOnly: false);
+        byte[] before = CaptureRegion(recipient.WindowHandle, headerOnly: false, recipient.Channel);
         SendText(text);
 
         async ValueTask<MessageVisualObservation> ObserveDraftAsync(CancellationToken token)
         {
-            byte[] bitmap = CaptureRegion(recipient.WindowHandle, headerOnly: false);
+            byte[] bitmap = CaptureRegion(recipient.WindowHandle, headerOnly: false, recipient.Channel);
             bool changed = !CryptographicOperations.FixedTimeEquals(
                 SHA256.HashData(before),
                 SHA256.HashData(bitmap));
@@ -489,7 +489,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         byte[] draft = draftObservation.Bitmap;
         SendKey(VirtualKeyReturn);
         await Task.Delay(900, cancellationToken).ConfigureAwait(false);
-        byte[] after = CaptureRegion(recipient.WindowHandle, headerOnly: false);
+        byte[] after = CaptureRegion(recipient.WindowHandle, headerOnly: false, recipient.Channel);
         string afterText = await ReadTextAsync(after, cancellationToken).ConfigureAwait(false);
         string afterHash = Convert.ToHexStringLower(SHA256.HashData(after));
         bool changed = !CryptographicOperations.FixedTimeEquals(
@@ -548,12 +548,12 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         SendChord(VirtualKeyControl, VirtualKeyA);
         SendKey(VirtualKeyBack);
         await Task.Delay(150, cancellationToken).ConfigureAwait(false);
-        byte[] before = CaptureRegion(recipient.WindowHandle, headerOnly: false);
+        byte[] before = CaptureRegion(recipient.WindowHandle, headerOnly: false, recipient.Channel);
         SendText(text);
 
         async ValueTask<MessageVisualObservation> ObserveDraftAsync(CancellationToken token)
         {
-            byte[] bitmap = CaptureRegion(recipient.WindowHandle, headerOnly: false);
+            byte[] bitmap = CaptureRegion(recipient.WindowHandle, headerOnly: false, recipient.Channel);
             bool changed = !CryptographicOperations.FixedTimeEquals(
                 SHA256.HashData(before),
                 SHA256.HashData(bitmap));
@@ -621,7 +621,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         string target,
         CancellationToken cancellationToken)
     {
-        byte[] header = CaptureRegion(handle, headerOnly: true);
+        byte[] header = CaptureRegion(handle, headerOnly: true, "whatsapp");
         string text = await ReadTextAsync(header, cancellationToken).ConfigureAwait(false);
         return Fold(text).Contains(Fold(target), StringComparison.Ordinal);
     }
@@ -881,7 +881,15 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
     }
 
-    private static byte[] CaptureRegion(nint handle, bool headerOnly)
+    // WhatsApp Desktop keeps its sidebar and chat list at a fixed logical width
+    // (about 530 px); the conversation header and composer start right after
+    // them. A fraction of the window width cut into the chat name once the
+    // window was maximized at 125 % (MSGSEND1845: 1938 px wide, 42 % = 813 px,
+    // «Música» spanning 771–852 px, OCR read «ica»), so the WhatsApp crop starts
+    // at a DPI-scaled logical offset just past the chat list instead.
+    private const int WhatsAppConversationPaneLogicalOffset = 560;
+
+    private static byte[] CaptureRegion(nint handle, bool headerOnly, string channel)
     {
         nint previousDpi = SetThreadDpiAwarenessContext((nint)(-4));
         try
@@ -893,7 +901,11 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
             int windowWidth = rectangle.Right - rectangle.Left;
             int windowHeight = rectangle.Bottom - rectangle.Top;
-            int sourceX = (int)(windowWidth * 0.42);
+            int sourceX = string.Equals(channel, "whatsapp", StringComparison.Ordinal)
+                ? Math.Min(
+                    Math.Max(0, windowWidth - 1),
+                    (int)(WhatsAppConversationPaneLogicalOffset * GetDpiForWindow(handle) / 96.0))
+                : (int)(windowWidth * 0.42);
             int sourceY = headerOnly ? 0 : Math.Min(80, windowHeight / 8);
             int width = Math.Max(1, windowWidth - sourceX);
             int height = headerOnly
@@ -1148,6 +1160,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
 
     [LibraryImport("user32.dll")]
     private static partial nint SetThreadDpiAwarenessContext(nint context);
+
+    [LibraryImport("user32.dll")]
+    private static partial uint GetDpiForWindow(nint handle);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
