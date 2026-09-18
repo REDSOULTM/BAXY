@@ -5915,6 +5915,8 @@ def _ground_explicit_arguments(
             previous, _, answer = folded_evidence.partition("aclaracion confiable del usuario:")
         completed = effect_intent._completed_missing_message_channel_request(
             answer.strip(), (previous or "").strip() or None, ("message.send", operation),
+        ) or effect_intent._completed_missing_message_text_request(
+            answer.strip(), (previous or "").strip() or None, ("message.send", operation),
         )
         if completed is not None:
             explicit = _explicit_arguments_from_evidence(

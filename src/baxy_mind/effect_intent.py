@@ -1238,7 +1238,7 @@ def _completed_missing_message_channel_request(
     found = re.fullmatch(
         r"[¿?¡!\s]*(?:(?:por|en|via|on|in|through|by|usando|using|con|with)\s+)?"
         r"(?:(?:el|la|the)\s+)?(?:(?:app|aplicacion|application)\s+(?:de\s+|of\s+)?)?"
-        r"(?P<ch>whatsapp|wsp|discord)"
+        r"(?P<ch>whatsapp|wsp|discord|correo(?:\s+electronico)?|(?:e-?)?mail)"
         r"(?:\s+(?:por\s+favor|please|mejor|nomas))?[\s.!?]*",
         answer,
     )
@@ -1247,7 +1247,8 @@ def _completed_missing_message_channel_request(
     prior = resolve_explicit_clarification_intent(previous_user_text, available_operations)
     if prior is None or prior.operations != ("message.send",) or prior.missing_fields != ("channel",):
         return None
-    channel = "whatsapp" if found.group("ch") in {"whatsapp", "wsp"} else "discord"
+    channel = _message_channel_name(found.group("ch"))
+    channel = "correo" if channel == "email" else channel
     previous = _strip_request_envelope(previous_user_text.strip()).strip()
     separator = _MSG_DICTATION_SEPARATOR.search(previous)
     if separator is None:
@@ -1260,10 +1261,62 @@ def _completed_missing_message_channel_request(
     return completed if message_draft_request(completed) is not None else None
 
 
+def _completed_missing_message_text_request(
+    text: str, previous_user_text: str | None, available_operations: Iterable[str],
+) -> str | None:
+    """MAIL «escribile un mail a juan@hotmail.com» → «¿qué querés que diga?» →
+    «que llego tarde», or «enviá un correo» → «¿a quién y qué querés que
+    diga?» → «a juan que diga que llego tarde»: the answer supplies the text
+    (and the addressee) that the previous message request lacked. The completed
+    request is the person's own words joined, and the ordinary draft reader
+    still has to accept it."""
+
+    if not previous_user_text:
+        return None
+    answer = _strip_request_envelope(text.strip()).strip().strip("¿?¡!")
+    if not answer or len(answer.encode("utf-8")) > 16_384 or explicit_non_action_frame(text):
+        return None
+    prior = resolve_explicit_clarification_intent(previous_user_text, available_operations)
+    if (
+        prior is None
+        or prior.operations != ("message.send",)
+        or "message_text" not in prior.missing_fields
+        or "channel" in prior.missing_fields
+    ):
+        return None
+    previous = _strip_request_envelope(previous_user_text.strip()).strip().rstrip(" .!?")
+    if "recipient" in prior.missing_fields:
+        if not _has(_fold(answer), r"^(?:a|al|para|to)\s+\S"):
+            return None
+        completed = previous + " " + answer
+    else:
+        folded_answer = _fold(answer)
+        english = _has(_fold(previous), r"^[^\w]*(?:send|write|email|text|message|tell)\b")
+        if english:
+            joiner = " saying " if _has(folded_answer, r"^that\s+\S") else " saying: "
+        else:
+            joiner = " que diga " if _has(folded_answer, r"^que\s+\S") else " que diga: "
+        completed = previous + joiner + answer
+    return completed if message_draft_request(completed) is not None else None
+
+
 _MSG_VERB = r"(?:m[aá]nd[aá](?:le|me|les)?|env[ií]a(?:le|me|les)?|envi[aá](?:le|me|les)?|escrib[ií](?:le|me)?|escr[ií]be(?:le|me)?|send|write|text|message)"
 _MSG_OBJECT = r"(?:(?:un|una|el|a|an|the)\s+)?(?:mensaje|message|texto|text)"
-_MSG_OBJECT_CHANNEL = r"(?:(?:un|una|el|a|an|the)\s+)?(?P<och>whatsapp|wsp|discord)(?:\s+(?:mensaje|message))?"
-_MSG_CHANNEL = r"(?P<ch>whatsapp|wsp|discord)"
+_MSG_OBJECT_CHANNEL = r"(?:(?:un|una|el|a|an|the)\s+)?(?P<och>whatsapp|wsp|discord|correo(?:\s+electr[oó]nico)?|(?:e-?)?mail)(?:\s+(?:mensaje|message))?"
+_MSG_CHANNEL = r"(?P<ch>whatsapp|wsp|discord|correo(?:\s+electr[oó]nico)?|(?:e-?)?mail)"
+_MSG_CHANNEL_WORDS = r"(?:whatsapp|wsp|discord|correo|(?:e-?)?mail)"
+
+
+def _message_channel_name(word: str) -> str:
+    """The catalog channel for a client word: WhatsApp, Discord or email (owner
+    decision 2026-09-18 §3: «correo», «mail», «email»)."""
+
+    folded = _fold(word)
+    if folded in {"whatsapp", "wsp"}:
+        return "whatsapp"
+    if folded.startswith(("correo", "mail", "email", "e-mail")):
+        return "email"
+    return folded
 _MSG_TO = r"(?:a|al\s+grupo|al|para|to|en\s+el\s+grupo|en)"
 _MSG_ON = r"(?:en|por|via|v[ií]a|on|through)"
 _MSG_SEP = r"(?:que\s+diga|que\s+dice|diciendo(?:le)?|dici[eé]ndole|saying|that\s+says|que|that|:)"
@@ -1339,8 +1392,7 @@ def message_draft_request(text: str) -> tuple[str, str, str] | None:
         if match is None:
             continue
         groups = match.groupdict()
-        channel = (groups.get("ch") or groups.get("och") or "").casefold()
-        channel = "whatsapp" if channel in {"whatsapp", "wsp"} else channel
+        channel = _message_channel_name(groups.get("ch") or groups.get("och") or "")
         recipient = re.sub(r"^(?:el\s+grupo|la\s+|el\s+|the\s+group|the\s+)\s*", "", (groups.get("rec") or "").strip(), flags=re.IGNORECASE).strip(" .")
         # MSGCLAR «que diga: prueba 2, todo OK»: the dictation colon after the
         # separator is punctuation, never part of the text.
@@ -1350,9 +1402,9 @@ def message_draft_request(text: str) -> tuple[str, str, str] | None:
             "", body, flags=re.IGNORECASE,
         ).strip()
         body = body.rstrip(" .!?") if len(body) > 1 else body
-        if channel not in {"whatsapp", "discord"} or not recipient or not body:
+        if channel not in {"whatsapp", "discord", "email"} or not recipient or not body:
             continue
-        if re.search(r"\b(?:whatsapp|wsp|discord)\b", _fold(recipient)) or _fold(recipient) in {"mensaje", "message"}:
+        if re.search(r"\b" + _MSG_CHANNEL_WORDS + r"\b", _fold(recipient)) or _fold(recipient) in {"mensaje", "message"}:
             continue
         if len(recipient.encode("utf-8")) > 512 or len(body.encode("utf-8")) > 16_384:
             continue
@@ -4274,7 +4326,14 @@ def resolve_explicit_clarification_intent(
             r"(?:(?:a|to)\s+)?[a-z0-9][a-z0-9._-]{0,40}\s+(?:por|en|via|on)\s+"
             r"(?:whatsapp|wsp|discord)|"
             r"(?:un|una|a)\s+(?:whatsapp|wsp|discord)\s+(?:a|to)\s+"
-            r"[a-z0-9][a-z0-9._-]{0,40}(?:\s+[a-z0-9][a-z0-9._-]{0,40})?)[\s.!?]*$"
+            r"[a-z0-9][a-z0-9._-]{0,40}(?:\s+[a-z0-9][a-z0-9._-]{0,40})?|"
+            # MAIL (owner decision 2026-09-18 §3) «escribile un mail a
+            # juan@hotmail.com», «enviá un correo a juan»: an address or a name
+            # (a bracketed placeholder counts as an addressee) and nothing to say.
+            r"(?:(?:un|una|a|an)\s+)?(?:correo(?:\s+electronico)?|(?:e-?)?mail)\s+(?:a|para|to)\s+"
+            r"[a-z0-9\[][a-z0-9._@\[\]-]{0,60}(?:\s+[a-z0-9][a-z0-9._-]{0,40})?|"
+            r"(?:por|via|by)\s+(?:correo(?:\s+electronico)?|(?:e-?)?mail)\s+(?:a|to)\s+"
+            r"[a-z0-9\[][a-z0-9._@\[\]-]{0,60}(?:\s+[a-z0-9][a-z0-9._-]{0,40})?)[\s.!?]*$"
         ),
     ) and not _has(folded, r"\b(?:que|that|diciendo|saying)\b|[:\"«»“”]")
     if "message.send" in available and addressed_without_content:
@@ -4311,6 +4370,10 @@ def resolve_explicit_clarification_intent(
             # after the addressee carries the text.
             rf"^[^\w]*{message_speech_act}\s+(?:a\s+|al\s+(?:grupo\s+)?|para\s+)?"
             r"[a-z0-9][a-z0-9 ._-]{0,80}?\s*:\s*\S|"
+            # MAIL (owner decision 2026-09-18 §3) «enviá un correo»: a mail order
+            # is a message request even with nobody and nothing named yet.
+            r"^[^\w]*(?:envia|enviale|enviar|manda|mandale|mandar|escrib[ei]|escrib[ei]le|send|write)\b"
+            r".{0,160}\b(?:correo|(?:e-?)?mail)\b|"
             r"^[^\w]*let\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+know\s+that\b|"
             r"^[^\w]*write\s+[a-z0-9][a-z0-9 ._-]{0,80}?\s+"
             r"(?:that|the\s+message)\b|"
@@ -4483,10 +4546,10 @@ def resolve_explicit_clarification_intent(
         )[0]
         supported_channel = _has(
             instruction_part,
-            r"\b(?:whatsapp|wsp|discord)\b",
+            r"\b" + _MSG_CHANNEL_WORDS + r"\b",
         ) or _has(
             folded,
-            r"\b(?:por|en|via|on|in|through|by)\s+(?:whatsapp|wsp|discord)[\s.!?]*$",
+            r"\b(?:por|en|via|on|in|through|by)\s+" + _MSG_CHANNEL_WORDS + r"[\s.!?]*$",
         )
         literal_recipient = _has(
             folded,
@@ -17551,9 +17614,10 @@ def resolve_explicit_effects(
         )
     completed_message_request = _completed_missing_message_channel_request(
         text, previous_user_text, available,
-    )
+    ) or _completed_missing_message_text_request(text, previous_user_text, available)
     if completed_message_request is not None:
-        # MSGCLAR: the answered client completes the previous message request.
+        # MSGCLAR: the answered client (or the answered text and addressee)
+        # completes the previous message request.
         return resolve_explicit_effects(
             completed_message_request, available, application_names, game_catalog,
         )
