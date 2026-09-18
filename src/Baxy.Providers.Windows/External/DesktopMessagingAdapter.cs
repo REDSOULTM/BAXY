@@ -390,6 +390,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             return new(false, false, handle, processId, "messaging_focus_not_verified");
         }
 
+        await NormalizeWindowAsync(channel, handle, cancellationToken).ConfigureAwait(false);
+
         ValueTask<bool> ObserveRecipientAsync(CancellationToken token) =>
             string.Equals(channel, "discord", StringComparison.Ordinal)
                 ? ValueTask.FromResult(
@@ -433,6 +435,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         {
             return new(false, false, string.Empty, "messaging_focus_not_verified");
         }
+
+        await NormalizeWindowAsync(recipient.Channel, recipient.WindowHandle, cancellationToken)
+            .ConfigureAwait(false);
 
         bool targetVerified = string.Equals(
             recipient.Channel,
@@ -522,6 +527,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         {
             return new(false, false, string.Empty, "messaging_focus_not_verified");
         }
+
+        await NormalizeWindowAsync(recipient.Channel, recipient.WindowHandle, cancellationToken)
+            .ConfigureAwait(false);
 
         bool targetVerified = string.Equals(
             recipient.Channel,
@@ -910,21 +918,58 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
     }
 
-    // WhatsApp Desktop keeps its sidebar and chat list at a fixed width (the
-    // conversation pane starts at about 492 px, its header title at about
-    // 580 px) and lays itself out at the SYSTEM scale: on a 125 % secondary
-    // monitor with a 100 % primary it still draws at 100 %, so the offset is
-    // scaled by the system DPI, not by the window's monitor DPI. A fraction of
-    // the window width cut into the chat name once the window was maximized
-    // (MSGSEND1845: 1938 px wide, 42 % = 813 px, OCR read «ica»), so the
-    // WhatsApp crop starts just past the chat list instead: it excludes the
-    // search box and the list item that both show the searched name.
-    private const int WhatsAppConversationPaneOffsetAt96Dpi = 520;
+    // WhatsApp Desktop is per-monitor DPI aware and widens its chat list at
+    // large window widths (responsive breakpoints: the conversation header title
+    // sat at 465 logical px in a 1425 px window and at 617 px maximized at
+    // 1550 px), so no crop offset holds across sizes. The window is therefore
+    // normalized to a fixed logical size below the breakpoint before any read
+    // (MSGSEND1845: a 42 % cut read «ica», a fixed offset then missed the title
+    // once the owner moved the window), which makes the layout deterministic:
+    // the chat list ends at about 395 px and the header title starts at about
+    // 465 px, so the crop starts between them and excludes the search box and
+    // the list item that both show the searched name.
+    private const int WhatsAppWindowLogicalWidth = 1280;
+    private const int WhatsAppWindowLogicalHeight = 800;
+    private const int WhatsAppConversationPaneOffsetAt96Dpi = 430;
 
     // Distance from the window's bottom edge to the middle of the composer input
     // (WhatsApp bar ≈ 48 px high with an 8 px margin; Discord's box sits within
-    // the same band), scaled by the system DPI like the pane offset.
+    // the same band), scaled by the window's DPI like the pane offset.
     private const int ComposerBottomOffsetAt96Dpi = 56;
+
+    private static async ValueTask NormalizeWindowAsync(
+        string channel,
+        nint handle,
+        CancellationToken cancellationToken)
+    {
+        if (!string.Equals(channel, "whatsapp", StringComparison.Ordinal))
+        {
+            return;
+        }
+
+        nint previousDpi = SetThreadDpiAwarenessContext((nint)(-4));
+        try
+        {
+            double scale = GetDpiForWindow(handle) / 96.0;
+            int width = (int)(WhatsAppWindowLogicalWidth * scale);
+            int height = (int)(WhatsAppWindowLogicalHeight * scale);
+            if (GetWindowRect(handle, out Rect rectangle)
+                && rectangle.Right - rectangle.Left == width
+                && rectangle.Bottom - rectangle.Top == height)
+            {
+                return;
+            }
+
+            // SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE: only the size changes.
+            _ = SetWindowPos(handle, 0, 0, 0, width, height, 0x0002 | 0x0004 | 0x0010);
+        }
+        finally
+        {
+            _ = SetThreadDpiAwarenessContext(previousDpi);
+        }
+
+        await Task.Delay(400, cancellationToken).ConfigureAwait(false);
+    }
 
     private static byte[] CaptureRegion(nint handle, bool headerOnly, string channel)
     {
@@ -941,7 +986,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             int sourceX = string.Equals(channel, "whatsapp", StringComparison.Ordinal)
                 ? Math.Min(
                     Math.Max(0, windowWidth - 1),
-                    (int)(WhatsAppConversationPaneOffsetAt96Dpi * GetDpiForSystem() / 96.0))
+                    (int)(WhatsAppConversationPaneOffsetAt96Dpi * GetDpiForWindow(handle) / 96.0))
                 : (int)(windowWidth * 0.42);
             int sourceY = headerOnly ? 0 : Math.Min(80, windowHeight / 8);
             int width = Math.Max(1, windowWidth - sourceX);
@@ -1043,7 +1088,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // «hola» typed into nothing, message_draft_not_verified).
             if (!SetCursorPos(
                     rectangle.Left + (int)(width * 0.76),
-                    rectangle.Bottom - (int)(ComposerBottomOffsetAt96Dpi * GetDpiForSystem() / 96.0)))
+                    rectangle.Bottom - (int)(ComposerBottomOffsetAt96Dpi * GetDpiForWindow(handle) / 96.0)))
             {
                 return false;
             }
@@ -1203,7 +1248,18 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private static partial nint SetThreadDpiAwarenessContext(nint context);
 
     [LibraryImport("user32.dll")]
-    private static partial uint GetDpiForSystem();
+    private static partial uint GetDpiForWindow(nint handle);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool SetWindowPos(
+        nint handle,
+        nint insertAfter,
+        int x,
+        int y,
+        int width,
+        int height,
+        uint flags);
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
