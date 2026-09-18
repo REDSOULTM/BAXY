@@ -815,25 +815,38 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
     }
 
+    // Bilinear, not nearest-neighbour: the blocky glyphs of a replicated pixel
+    // read «TES»/«St eazy» for a sent «test» while the smooth copy reads «test».
     private static byte[] Upscale2x(byte[] bitmap)
     {
         const int header = 54;
         int width = BinaryPrimitives.ReadInt32LittleEndian(bitmap.AsSpan(18));
         int height = BinaryPrimitives.ReadInt32LittleEndian(bitmap.AsSpan(22));
         int stride = width * 4;
-        byte[] pixels = new byte[checked(stride * 2 * height * 2)];
-        for (int row = 0; row < height; row++)
+        int targetStride = stride * 2;
+        byte[] pixels = new byte[checked(targetStride * height * 2)];
+        for (int targetRow = 0; targetRow < height * 2; targetRow++)
         {
-            ReadOnlySpan<byte> source = bitmap.AsSpan(header + row * stride, stride);
-            Span<byte> target = pixels.AsSpan(row * 2 * stride * 2, stride * 2);
-            for (int column = 0; column < width; column++)
+            int row = targetRow / 2;
+            int nextRow = Math.Clamp(targetRow % 2 == 0 ? row - 1 : row + 1, 0, height - 1);
+            ReadOnlySpan<byte> line = bitmap.AsSpan(header + row * stride, stride);
+            ReadOnlySpan<byte> nextLine = bitmap.AsSpan(header + nextRow * stride, stride);
+            Span<byte> target = pixels.AsSpan(targetRow * targetStride, targetStride);
+            for (int targetColumn = 0; targetColumn < width * 2; targetColumn++)
             {
-                ReadOnlySpan<byte> pixel = source.Slice(column * 4, 4);
-                pixel.CopyTo(target.Slice(column * 8, 4));
-                pixel.CopyTo(target.Slice(column * 8 + 4, 4));
+                int column = targetColumn / 2;
+                int nextColumn = Math.Clamp(targetColumn % 2 == 0 ? column - 1 : column + 1, 0, width - 1);
+                for (int channel = 0; channel < 4; channel++)
+                {
+                    // Weights 9/3/3/1 over the pixel, its horizontal and vertical
+                    // neighbours and the diagonal: the half-pixel bilinear sample.
+                    int value = 9 * line[column * 4 + channel]
+                        + 3 * line[nextColumn * 4 + channel]
+                        + 3 * nextLine[column * 4 + channel]
+                        + nextLine[nextColumn * 4 + channel];
+                    target[targetColumn * 4 + channel] = (byte)((value + 8) / 16);
+                }
             }
-
-            target.CopyTo(pixels.AsSpan((row * 2 + 1) * stride * 2, stride * 2));
         }
 
         return EncodeBmp(width * 2, height * 2, pixels);
@@ -1174,9 +1187,10 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // doodle wallpaper (MSGSEND1845: «hola» read as «tt i>)» in the pane, as
     // «hola» in the band).
     private const int ComposerBandHeightAt96Dpi = 90;
-    // Only the newest bubble: over a taller band the older bubbles' small text
-    // drowned the new one (MSGSEND1845 audit: «probando.» read as «Breer»).
-    private const int LastMessagesBandHeightAt96Dpi = 90;
+    // Only the newest bubble's line: over a taller band the older bubbles' small
+    // text drowned the new one (MSGSEND1845 audit: «probando.» read as «Breer»,
+    // «test» read as «TES» with the bubble above still in the band).
+    private const int LastMessagesBandHeightAt96Dpi = 50;
 
     private enum CaptureArea
     {
