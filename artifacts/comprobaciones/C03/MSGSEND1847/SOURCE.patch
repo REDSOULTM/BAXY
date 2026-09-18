@@ -1,0 +1,184 @@
+commit e05807cf56846bd11fa7ca09177c79a051ec3bbe
+
+C03: the delivery read requires every word of four or more letters of the sent text in the newest bubble (80 px, one wrapped line allowed), so a long message that wraps or whose short words take OCR noise still verifies; owner decision 2026-09-18 recorded (third-party literals credited when the send went to the test channel and the reply says so)
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/DesktopMessagingAdapter.cs b/src/Baxy.Providers.Windows/External/DesktopMessagingAdapter.cs
+index db17602b1..7054b92f4 100644
+--- a/src/Baxy.Providers.Windows/External/DesktopMessagingAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/DesktopMessagingAdapter.cs
+@@ -544,7 +544,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
+         // header title («probanda» for «probando»), so the tolerant word match
+         // applies here too; the band changed and the header still names the
+         // destination, which no other chat's text can satisfy at once.
+-        bool visible = ContainsPhrase(afterText, text) || HeaderMatches(afterText, text);
++        bool visible = ContainsPhrase(afterText, text) || DeliveryMatches(afterText, text);
+         bool stillTarget = string.Equals(recipient.Channel, "discord", StringComparison.Ordinal)
+             ? Fold(WindowTitle(recipient.WindowHandle)).Contains(
+                 Fold(recipient.DisplayName),
+@@ -682,6 +682,42 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
+     // chat name in it is the open conversation's; Tesseract still misreads one
+     // letter of it now and then («Misica» for «Música»), so a word of five or
+     // more letters is accepted at one edit of distance.
++    // A sent bubble may wrap («prueba 1 de WhatsApp, ya funciona de nuevo») and
++    // its short words («1», «de», «ya») take the most OCR noise, so the delivery
++    // read requires every word of four or more letters (one edit tolerated from
++    // five) and nothing else; a text without such a word needs the exact phrase.
++    internal static bool DeliveryMatches(string observed, string target)
++    {
++        string[] words = Fold(observed).Split(' ', StringSplitOptions.RemoveEmptyEntries);
++        string[] tokens = Fold(target).Split(' ', StringSplitOptions.RemoveEmptyEntries);
++        bool anyLong = false;
++        foreach (string token in tokens)
++        {
++            if (token.Length < 4)
++            {
++                continue;
++            }
++
++            anyLong = true;
++            bool matched = false;
++            foreach (string word in words)
++            {
++                if (word == token || (token.Length >= 5 && WithinOneEdit(word, token)))
++                {
++                    matched = true;
++                    break;
++                }
++            }
++
++            if (!matched)
++            {
++                return false;
++            }
++        }
++
++        return anyLong;
++    }
++
+     internal static bool HeaderMatches(string observed, string target)
+     {
+         string foldedObserved = Fold(observed);
+@@ -1223,7 +1259,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
+     // Only the newest bubble's line: over a taller band the older bubbles' small
+     // text drowned the new one (MSGSEND1845 audit: «probando.» read as «Breer»,
+     // «test» read as «TES» with the bubble above still in the band).
+-    private const int LastMessagesBandHeightAt96Dpi = 50;
++    // 80 px: the newest bubble plus a wrapped second line, still below the older
++    // bubbles' bulk (a one-line bubble is about 40 px, two lines about 60 px).
++    private const int LastMessagesBandHeightAt96Dpi = 80;
+ 
+     private enum CaptureArea
+     {
+commit ae0883a35ba369161a78d6822cded479f5ab21e2
+
+C03: the typed draft and the sent bubble are also matched with all spaces removed (Tesseract merges the words of a short line: «Hola test» read as «Holatest», so in MSGSEND1847 every multi-word draft was refused as message_draft_not_verified while every single-word one passed)
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/DesktopMessagingAdapter.cs b/src/Baxy.Providers.Windows/External/DesktopMessagingAdapter.cs
+index 7054b92f4..a7ae33f8e 100644
+--- a/src/Baxy.Providers.Windows/External/DesktopMessagingAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/DesktopMessagingAdapter.cs
+@@ -513,7 +513,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
+             string observedText = changed
+                 ? await ReadTextAsync(bitmap, token).ConfigureAwait(false)
+                 : string.Empty;
+-            return new(bitmap, changed && (ContainsPhrase(observedText, text) || HeaderMatches(observedText, text)));
++            return new(bitmap, changed && (ContainsPhrase(observedText, text) || DeliveryMatches(observedText, text)));
+         }
+ 
+         MessageVisualObservation draftObservation = await ObserveNowOrAtDeadlineAsync(
+@@ -612,7 +612,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
+             string observedText = changed
+                 ? await ReadTextAsync(bitmap, token).ConfigureAwait(false)
+                 : string.Empty;
+-            return new(bitmap, changed && (ContainsPhrase(observedText, text) || HeaderMatches(observedText, text)));
++            return new(bitmap, changed && (ContainsPhrase(observedText, text) || DeliveryMatches(observedText, text)));
+         }
+ 
+         MessageVisualObservation draftObservation = await ObserveNowOrAtDeadlineAsync(
+@@ -686,8 +686,51 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
+     // its short words («1», «de», «ya») take the most OCR noise, so the delivery
+     // read requires every word of four or more letters (one edit tolerated from
+     // five) and nothing else; a text without such a word needs the exact phrase.
++    // Tesseract merges the words of a short typed line at this size («Hola test»
++    // read as «Holatest», every single-word draft read fine), so the typed or
++    // sent text is also accepted with all spaces removed, one edit tolerated
++    // from five letters; the band changed and the header names the destination.
++    internal static bool SpacelessMatches(string observed, string target)
++    {
++        string folded = Fold(target).Replace(" ", string.Empty);
++        if (folded.Length == 0)
++        {
++            return false;
++        }
++
++        string haystack = Fold(observed).Replace(" ", string.Empty);
++        if (haystack.Contains(folded, StringComparison.Ordinal))
++        {
++            return true;
++        }
++
++        if (folded.Length < 5)
++        {
++            return false;
++        }
++
++        for (int start = 0; start + folded.Length - 1 <= haystack.Length; start++)
++        {
++            for (int length = folded.Length - 1; length <= folded.Length + 1; length++)
++            {
++                if (length > 0 && start + length <= haystack.Length
++                    && WithinOneEdit(haystack.Substring(start, length), folded))
++                {
++                    return true;
++                }
++            }
++        }
++
++        return false;
++    }
++
+     internal static bool DeliveryMatches(string observed, string target)
+     {
++        if (SpacelessMatches(observed, target))
++        {
++            return true;
++        }
++
+         string[] words = Fold(observed).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+         string[] tokens = Fold(target).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+         bool anyLong = false;
+commit 2d8cf5f7d83424a0a4472ca8a18caf160473cc7c
+
+C03: when the person named the test channel itself, a reply that says the message did not go to «the requested recipient» is vetoed too (MSGSEND1847: «Se envió "ya voy" al canal de prueba propio de Música, no al destinatario solicitado» for a request to Música)
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 98e45535f..6dd023432 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -7491,12 +7491,15 @@ def compose_visible_defect(
+             requested
+             and _accent_folded_with_punctuation(requested) == _accent_folded_with_punctuation(forced_dest)
+             and re.search(
+-                r"\b(?:no|not|never|nunca|tampoco)\b[^.;]{0,40}\b(?:envi\w*|mand\w*|sent|send|entreg\w*|fue|went)\b",
++                r"\b(?:no|not|never|nunca|tampoco)\b[^.;]{0,40}\b(?:envi\w*|mand\w*|sent|send|entreg\w*|fue|went|lleg\w*"
++                r"|destinatari\w*|persona|recipient|solicitad\w*|pedid\w*|indicad\w*|nombrad\w*|named|requested)\b",
+                 folded_reply,
+             )
+         ):
+             # The person named the test channel itself: a reply that denies a send
+-            # to anyone withholds a delivery that really happened where asked.
++            # to anyone, or that says it did not go to «the requested recipient»,
++            # withholds or contradicts a delivery that happened exactly where asked
++            # (MSGSEND1847: «no al destinatario solicitado» for «ya voy» to Música).
+             return "denied_test_destination"
+         if (
+             requested

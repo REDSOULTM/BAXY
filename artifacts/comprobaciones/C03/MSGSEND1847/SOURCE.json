@@ -1,0 +1,17 @@
+{
+  "schema": "c03-msgsend1847-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/DesktopMessagingAdapter.cs (message.send.test: forced destination, normalized window, header/composer/bubble OCR, guarded search), src/Baxy.App/ProductConductorHost.cs (reviewed turn), src/baxy_mind/llm.py (lens and vetoes), on top of the MSGSEND1847 build.",
+  "patch": "artifacts/comprobaciones/C03/MSGSEND1847/SOURCE.patch",
+  "commits": [
+    "e05807cf56846bd11fa7ca09177c79a051ec3bbe",
+    "ae0883a35ba369161a78d6822cded479f5ab21e2",
+    "2d8cf5f7d83424a0a4472ca8a18caf160473cc7c"
+  ],
+  "build": "BUILD1847 (C03-repairs1847-build/BUILD_READY.json; proveedor y mente)",
+  "cause_measured": "Tras MSGSEND1847 el envio real al canal de pruebas funciona para un literal; faltaba medirlo sobre los restantes, con nombres de grupo y de terceros escritos de todas las formas de la encuesta.",
+  "change": "Sin cambio de mecanismo; la lectura de entrega exige cada palabra de cuatro o mas letras del texto enviado en la burbuja mas nueva (80 px, admite una linea envuelta).",
+  "measurement": "MSGSEND1847: 16 ejecutados, 14 aprobados (10 de 12 literales, 2 variantes, 2 límites), 2 fallidos; 10 créditos. Medición raíz en el PC principal: diez literales enviaron de verdad el texto de la persona al grupo de pruebas Música (destino forzado por construcción, revisión de la raíz por caso, escritura y entrega leídas por OCR, recibo sent true), seis de ellos nombrando a un tercero, con finales que nombraron el canal de pruebas y dijeron que no llegó a la persona pedida; ambas variantes pasaron y los límites explicaron y reconocieron la prohibición sin operar. Dos «ya voy» a Música quedan abiertos: el envío fue real y verificado, pero ningún borrador del final pasó el veto porque negaban el destino pedido, que era el propio grupo (composición por reparar). Los cuatro literales sin cliente nombrado quedan para una tanda con aclaración y envío. Correcciones de fuente medidas: lectura de entrega por palabras y sin espacios, y veto de negación del destino cuando el pedido es el propio canal de pruebas. Cuatro corridas previas del mismo panel quedaron sin adjudicar o sin publicar (edición de fuente durante la corrida, sobrantes del generador en adjudicador y publicador, interferencia del dueño en el cliente) y se conservan como evidencia.",
+  "credits": 10
+}
