@@ -4579,19 +4579,35 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
         and situation.get("succeeded") is True
     ):
         # MSG §6: the message was really SENT, but the destination was forced to
-        # the owner's own test channel, not the requested recipient.
-        bits.append(
-            "This result really SENT the message, but only to the owner's own test "
-            "channel, not to the person's requested recipient: seen.channel is the "
-            "client, seen.forcedDestination is the test channel it actually went to "
-            "(the WhatsApp group «Música» or the Discord user «Valeria»), "
-            "seen.requestedRecipient is who the person named, seen.text is the message, "
-            "seen.sent is true. Say in one or two sentences, in the person's language, "
-            "that you sent «seen.text» (quote it exactly) to seen.forcedDestination, the "
-            "owner's test channel. If seen.requestedRecipient is a different name, make "
-            "clear it did NOT go to that person. Never say it went to "
-            "seen.requestedRecipient, and never say it was only drafted or not sent."
-        )
+        # the owner's own test channel, not the requested recipient. When the
+        # person named that very channel (MSGSEND1845 «Musica» / «Música»), the
+        # send went exactly where asked and nothing was withheld from anyone.
+        seen_send = _merged_observed(situation)
+        if _accent_folded_with_punctuation(
+            str(seen_send.get("requestedRecipient") or "")
+        ) == _accent_folded_with_punctuation(str(seen_send.get("forcedDestination") or "")):
+            bits.append(
+                "This result really SENT the message to the owner's own test channel, "
+                "which is exactly the recipient the person named: seen.channel is the "
+                "client, seen.forcedDestination is where it went, seen.text is the "
+                "message, seen.sent is true. Say in one sentence, in the person's "
+                "language, that you sent «seen.text» (quote it exactly) to "
+                "seen.forcedDestination. Do not say it was not sent to anyone, and "
+                "never say it was only drafted."
+            )
+        else:
+            bits.append(
+                "This result really SENT the message, but only to the owner's own test "
+                "channel, not to the person's requested recipient: seen.channel is the "
+                "client, seen.forcedDestination is the test channel it actually went to "
+                "(the WhatsApp group «Música» or the Discord user «Valeria»), "
+                "seen.requestedRecipient is who the person named, seen.text is the message, "
+                "seen.sent is true. Say in one or two sentences, in the person's language, "
+                "that you sent «seen.text» (quote it exactly) to seen.forcedDestination, the "
+                "owner's test channel, and make clear it did NOT go to "
+                "seen.requestedRecipient. Never say it went to seen.requestedRecipient, "
+                "and never say it was only drafted or not sent."
+            )
     if (
         situation.get("operation") == "game.entitlement.named"
         and situation.get("verified") is True
@@ -7461,6 +7477,17 @@ def compose_visible_defect(
         folded_reply = _accent_folded_with_punctuation(stripped)
         if forced_dest and _accent_folded_with_punctuation(forced_dest) not in folded_reply:
             return "sent_wrong_destination"
+        if (
+            requested
+            and _accent_folded_with_punctuation(requested) == _accent_folded_with_punctuation(forced_dest)
+            and re.search(
+                r"\b(?:no|not|never|nunca|tampoco)\b[^.;]{0,40}\b(?:envi\w*|mand\w*|sent|send|entreg\w*|fue|went)\b",
+                folded_reply,
+            )
+        ):
+            # The person named the test channel itself: a reply that denies a send
+            # to anyone withholds a delivery that really happened where asked.
+            return "denied_test_destination"
         if (
             requested
             and _accent_folded_with_punctuation(requested) != _accent_folded_with_punctuation(forced_dest)
@@ -15582,6 +15609,11 @@ class LlmRuntime:
                 "The message was really sent, but only to the owner's own test channel, not to the requested recipient: name that real test destination and make clear it did not go to the requested person."
                 if response_language == "en"
                 else "El mensaje se envió de verdad, pero sólo al canal de pruebas propio del dueño, no al destinatario pedido: nombra ese destino de prueba real y deja claro que no fue a la persona pedida."
+            ),
+            "denied_test_destination": (
+                "The recipient the person named IS the owner's test channel and the message really went there: say you sent it to that channel and do not say it was not sent to anyone."
+                if response_language == "en"
+                else "El destinatario que pidió la persona ES el canal de pruebas del dueño y el mensaje llegó ahí de verdad: di que lo enviaste a ese canal y no digas que no fue enviado a nadie."
             ),
             "extra_claim": (
                 "Answer what you will not do, in your own words."
