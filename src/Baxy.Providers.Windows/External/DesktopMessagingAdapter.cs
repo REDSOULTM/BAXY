@@ -513,7 +513,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             string observedText = changed
                 ? await ReadTextAsync(bitmap, token).ConfigureAwait(false)
                 : string.Empty;
-            return new(bitmap, changed && ContainsPhrase(observedText, text));
+            return new(bitmap, changed && (ContainsPhrase(observedText, text) || HeaderMatches(observedText, text)));
         }
 
         MessageVisualObservation draftObservation = await ObserveNowOrAtDeadlineAsync(
@@ -612,7 +612,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             string observedText = changed
                 ? await ReadTextAsync(bitmap, token).ConfigureAwait(false)
                 : string.Empty;
-            return new(bitmap, changed && ContainsPhrase(observedText, text));
+            return new(bitmap, changed && (ContainsPhrase(observedText, text) || HeaderMatches(observedText, text)));
         }
 
         MessageVisualObservation draftObservation = await ObserveNowOrAtDeadlineAsync(
@@ -777,10 +777,19 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         // title at native size read «Misica» where the 2x copy reads «Musica»,
         // while the composer band reads only at native size. Every reading
         // counts, so the four passes are joined.
-        byte[] doubled = Upscale2x(bitmap);
-        var readings = new string[4];
+        // Both 2x copies: the blocky one reads the composer's typed text («hola»,
+        // «probando») where the smooth one reads «hold», «probanda»; the smooth one
+        // reads the sent bubble («test») where the blocky one reads «TES».
+        byte[] blocky = Upscale2xNearest(bitmap);
+        byte[] smooth = Upscale2x(bitmap);
+        var readings = new string[6];
         int index = 0;
-        foreach (byte[] candidate in new[] { bitmap, InvertPixels(bitmap), doubled, InvertPixels(doubled) })
+        foreach (byte[] candidate in new[]
+                 {
+                     bitmap, InvertPixels(bitmap),
+                     blocky, InvertPixels(blocky),
+                     smooth, InvertPixels(smooth),
+                 })
         {
             readings[index++] = await RunTesseractAsync(executable, candidate, cancellationToken)
                 .ConfigureAwait(false);
@@ -815,8 +824,32 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         }
     }
 
-    // Bilinear, not nearest-neighbour: the blocky glyphs of a replicated pixel
-    // read «TES»/«St eazy» for a sent «test» while the smooth copy reads «test».
+    private static byte[] Upscale2xNearest(byte[] bitmap)
+    {
+        const int header = 54;
+        int width = BinaryPrimitives.ReadInt32LittleEndian(bitmap.AsSpan(18));
+        int height = BinaryPrimitives.ReadInt32LittleEndian(bitmap.AsSpan(22));
+        int stride = width * 4;
+        byte[] pixels = new byte[checked(stride * 2 * height * 2)];
+        for (int row = 0; row < height; row++)
+        {
+            ReadOnlySpan<byte> source = bitmap.AsSpan(header + row * stride, stride);
+            Span<byte> target = pixels.AsSpan(row * 2 * stride * 2, stride * 2);
+            for (int column = 0; column < width; column++)
+            {
+                ReadOnlySpan<byte> pixel = source.Slice(column * 4, 4);
+                pixel.CopyTo(target.Slice(column * 8, 4));
+                pixel.CopyTo(target.Slice(column * 8 + 4, 4));
+            }
+
+            target.CopyTo(pixels.AsSpan((row * 2 + 1) * stride * 2, stride * 2));
+        }
+
+        return EncodeBmp(width * 2, height * 2, pixels);
+    }
+
+    // Bilinear: the blocky glyphs of a replicated pixel read «TES»/«St eazy» for
+    // a sent «test» while the smooth copy reads «test».
     private static byte[] Upscale2x(byte[] bitmap)
     {
         const int header = 54;
