@@ -972,7 +972,7 @@ public static class ProductCatalog
             "message.send.test",
             Schema(
                 [
-                    String("channel", values: ["discord", "whatsapp", "email"]),
+                    String("channel", values: ["discord", "email", "whatsapp"]),
                     String("requestedRecipient", maximumUtf8Bytes: 512, nonWhitespace: true),
                     String("text", maximumUtf8Bytes: 16_384, nonWhitespace: true),
                 ],
