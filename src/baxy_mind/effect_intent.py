@@ -7014,6 +7014,28 @@ def explicit_non_action_body(text: str) -> str | None:
     return found.group("body") if found is not None else None
 
 
+# H0401 «reinicié la PC»: la persona cuenta lo que hizo ella. No es una
+# orden y contestarle que no se puede niega algo que nadie pidió. La
+# terminación lo decide sin ambigüedad: en rioplatense el imperativo es
+# «reiniciá», «apagá», «cerrá», y «reinicié», «apagué», «cerré» sólo
+# pueden ser primera persona del pasado.
+_FIRST_PERSON_REPORT = re.compile(
+    r"^[\s¿?¡!]*(?:ya\s+|recién\s+|justo\s+)?"
+    r"(?:reinici|apagu|encend|cerr|abr|instal|desinstal|guard|borr|elimin|"
+    r"actualic|descargu|configur|conect|desconect|mov|copi|pegu|silenci)é\b",
+    re.IGNORECASE,
+)
+
+
+def first_person_past_report(text: str) -> bool:
+    """La persona cuenta una acción que hizo ella, no pide ninguna."""
+
+    body = _strip_request_envelope(str(text or ""))
+    if _has(_fold(body), r"\b(?:por\s+favor|please|puedes|pod[eé]s|can\s+you)\b"):
+        return False
+    return _FIRST_PERSON_REPORT.match(body) is not None
+
+
 def explicit_non_action_frame(text: str) -> bool:
     """Recognize an explicit conversation-only boundary without granting effects."""
 

@@ -1431,6 +1431,11 @@ def apply_conversation_effect_presentation(
         audit.append({"name": "conversation_effect_shape", "effect_state": state})
     if state not in {"complete", "not_complete"}:
         return decision
+    # H0401: un informe en pasado de lo que hizo la persona no es un pedido,
+    # y marcarlo como no soportado publicaba «No puedo reiniciar la PC tal como
+    # fue pedido», negando algo que nadie pidió.
+    if effect_intent.first_person_past_report(objective):
+        return decision
     # Incompleteness is not a capability verdict. Only a fresh, zero-effect
     # knowledge turn can use this path; retired observations and previously
     # selected unsupported decisions retain their existing boundary.
