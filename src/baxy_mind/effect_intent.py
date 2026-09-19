@@ -2285,11 +2285,17 @@ def _curated_domain_is_grounded(
         )
     if operation == "streaming.play.named":
         return (
-            _has(folded, r"\bnetflix\b")
+            _has(folded, r"\b" + _NETFLIX_SPELLED + r"\b")
             and _has(
                 folded,
+                # VIDEO1921: «ver» encabeza el pedido igual que los demás, y
+                # dejarla sólo en la rama que resuelve la habría partido en dos.
+                # «watch» viaja con ella por simetría, pero hoy no resuelve: en
+                # inglés es también el reloj inteligente y los lectores de
+                # dispositivos la reclaman antes. No acompañar una palabra
+                # ambigua es lo seguro; ninguna fila abierta la necesita.
                 r"\b(?:reproduce|play|pon|busca|find|encuentra|encuentras|"
-                r"arranca|arrancala|start)\b",
+                r"arranca|arrancala|start|ver|watch)\b",
             )
             and not _has(folded, r"\b(?:como|how|tutorial|ejemplo|example)\b")
         )
@@ -5046,6 +5052,13 @@ def _match(text: str, pattern: str) -> re.Match[str] | None:
 
 def _has(text: str, pattern: str) -> bool:
     return _match(text, pattern) is not None
+
+
+# VIDEO1921 H0737: el nombre del servicio se escribe mal —o lo escribe mal el
+# oído de BAXY, que es lo más probable— y eso no lo convierte en otro servicio.
+# Alternancia corta y cerrada, no distancia de edición: el catálogo de servicios
+# es cerrado y una tolerancia genérica leería «Netflix» donde se dijo otra cosa.
+_NETFLIX_SPELLED = r"(?:netflix|nerflix|netlix|netfix|netflis|neflix)"
 
 
 def _entity_key(value: str) -> str:
@@ -12175,7 +12188,7 @@ def _strict_catalog_request(
                 r"\b(?:stage|staged|prepare|prepared|preparado|alista|install|"
                 r"installation|instalar|instalarse|ready|listo)\b",
             ),
-            ("streaming.play.named", r"\bnetflix\b"),
+            ("streaming.play.named", r"\b" + _NETFLIX_SPELLED + r"\b"),
         )
         found_domains: list[tuple[int, str]] = []
         for operation, pattern in domain_patterns:
@@ -12464,7 +12477,7 @@ def _strict_catalog_request(
             ),
             "streaming.play.named": (
                 r"\b(?:pon|put|play|start|reproduce|ver|watch|find|encuentra|encuentras)\b"
-                r".{0,120}\bnetflix\b|\bnetflix\b.{0,120}"
+                r".{0,120}\b" + _NETFLIX_SPELLED + r"\b|\b" + _NETFLIX_SPELLED + r"\b.{0,120}"
                 r"\b(?:pon|put|play|start|reproduce|ver|watch)\b"
             ),
         }
@@ -12570,7 +12583,7 @@ def _strict_catalog_request(
             or bounded_calendar_read
             or (
                 found_operation_set == {"streaming.play.named"}
-                and _has(text, r"\bnetflix\b")
+                and _has(text, r"\b" + _NETFLIX_SPELLED + r"\b")
             )
         )
         generic_surface_safe = not (
@@ -13500,17 +13513,26 @@ def _strict_catalog_request(
         r"localiza|locate)\s+wednesday\s+(?:en|in|on|desde|from|through|"
         r"usando|using)\s+netflix\b",
     )
+    # VIDEO1921 H0737 «quiero ver stranger things en nerflix»: el servicio se
+    # escribe mal —o lo escribe mal el oído de BAXY, que es lo más probable— y
+    # eso no lo convierte en otro servicio. Alternancia corta y cerrada, no
+    # distancia de edición: el catálogo de servicios es cerrado y una tolerancia
+    # genérica acabaría leyendo «Netflix» donde la persona dijo otra cosa.
     if (
         (not deferred_effect or netflix_weekday_title)
-        and _has(text, r"\bnetflix\b")
+        and _has(text, r"\b" + _NETFLIX_SPELLED + r"\b")
         and _has(
             text,
+            # VIDEO1921 H0411 «ver stranger things en netflix»: la firma de esta
+            # misma operación ya daba «ver» y «watch» por formas legítimas de
+            # pedirla, y esta cabeza las rechazaba. La asimetría entre las dos
+            # listas era el defecto; «quiero ver …» resolvía por otro camino.
             r"^(?:reproduce|play|pon|pone|put\s+on|busca|find|inicia|start|encuentra|encuentras|"
-            r"localiza|locate)\b",
+            r"localiza|locate|ver|watch)\b",
         )
         and _has(
             text,
-            r"\b(?:en|in|on|desde|from|through|usando|using)\s+netflix\b",
+            r"\b(?:en|in|on|desde|from|through|usando|using)\s+" + _NETFLIX_SPELLED + r"\b",
         )
     ):
         resolved = intent("streaming.play.named")

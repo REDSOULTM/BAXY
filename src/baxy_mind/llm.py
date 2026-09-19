@@ -8445,7 +8445,18 @@ def compose_visible_defect(
         if (
             operation == "streaming.play.named"
             and isinstance(observed_dict.get("observedProgressSeconds"), (int, float))
-            and re.search(r"\d[\d.,]*\s*(?:segundos?|seconds?|secs?\b)", folded)
+            and re.search(
+                r"\d[\d.,]*\s*(?:segundos?|seconds?|secs?\b)"
+                # VIDEO1919 H0155: el veto de los dígitos dejaba abierta la puerta
+                # de al lado, y por ahí se publicó «se está reproduciendo desde el
+                # momento cero». El recibo trae el avance medido ENTRE DOS
+                # LECTURAS, no la posición en el vídeo: decir por dónde va es
+                # afirmar sin verificar, y aquel acierto fue casualidad.
+                r"|\bdesde\s+(?:el\s+)?(?:momento\s+)?(?:cero|principio|comienzo|inicio)\b"
+                r"|\bfrom\s+the\s+(?:very\s+)?(?:beginning|start)\b"
+                r"|\bdesde\s+el\s+minuto\b",
+                folded,
+            )
         ):
             # Los segundos observados son la prueba de que el vídeo avanza, no un
             # hecho que contarle a la persona: un borrador los leyó como suyos
@@ -16401,9 +16412,9 @@ class LlmRuntime:
                 else "seen.installedIn son los Python donde el paquete SÍ está instalado y seen.notInstalledIn donde no: di exactamente eso, sin negar una instalación de seen.installedIn ni afirmar una que no esté."
             ),
             "playback_progress_stated": (
-                "Say only that it is playing and what is playing; do not state any number of seconds: the observed progress is how you checked, not something the person did."
+                "Say only that it is playing and what is playing; do not state any number of seconds and do not say where in the video it is: the observed progress is how you checked, not a position and not something the person did."
                 if response_language == "en"
-                else "Di sólo que está reproduciéndose y qué se reproduce; no digas ningún número de segundos: el avance observado es cómo lo comprobaste, no algo que haya hecho la persona."
+                else "Di sólo que está reproduciéndose y qué se reproduce; no digas ningún número de segundos ni por dónde va el vídeo: el avance observado es cómo lo comprobaste, no una posición ni algo que haya hecho la persona."
             ),
             "screen_wrong_count": (
                 "The screen shows seen.lineCount lines: that is the only number you may state; seen.lines are only some of those lines, so do not count them."

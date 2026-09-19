@@ -300,7 +300,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
-            writer.WriteString("service", service); writer.WriteString("title", title);
+            writer.WriteString("service", service);
+            writer.WriteString("title", playback.Title);
             writer.WriteString("finalUrl", playback.FinalUrl);
             writer.WriteString("pageTitle", playback.PageTitle);
             writer.WriteString("targetId", playback.TargetId);
@@ -330,6 +331,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 writer.WriteString("error", playback.ErrorCode);
                 writer.WriteString("lastUrl", playback.FinalUrl);
                 writer.WriteString("lastPageTitle", playback.PageTitle);
+                writer.WriteString("lastObserved", playback.LastObserved);
                 writer.WriteEndObject();
             }).GetRawText();
             File.AppendAllText(path, line + Environment.NewLine, Encoding.UTF8);
@@ -1011,12 +1013,18 @@ internal sealed record CdpMediaPlaybackResult(
 internal sealed record CdpStreamingPlaybackResult(
     bool Verified,
     bool EffectObserved,
-    string RequestedTitle,
+    // En una reproducción verificada es el nombre de la ficha que el buscador del
+    // servicio eligió: lo que de verdad se puso, que no tiene por qué escribirse
+    // como se pidió. En los caminos que no llegan a elegir nada es el pedido.
+    string Title,
     string FinalUrl,
     string PageTitle,
     string TargetId,
     double ObservedProgressSeconds,
-    string ErrorCode);
+    string ErrorCode,
+    // La última lectura de la sonda, tal cual, para que un rechazo diga en qué
+    // condición se quedó en vez de obligar a una corrida por hipótesis.
+    string LastObserved = "");
 
 internal sealed class CdpBrowserSessionContext
 {
@@ -1609,6 +1617,9 @@ internal class CdpBrowserSession : IDisposable
         double? baseline = null;
         string lastUrl = navigation.FinalUrl;
         string lastPageTitle = string.Empty;
+        string chosenId = string.Empty;
+        string lastObserved = string.Empty;
+        string chosenName = string.Empty;
         string failure = "netflix_title_or_play_control_not_found";
         // Con la sesión iniciada el camino es más largo de lo que era: elegir perfil,
         // volver a la búsqueda, abrir el título y esperar al reproductor son tres
@@ -1624,6 +1635,7 @@ internal class CdpBrowserSession : IDisposable
             string observed = await EvaluateStringAsync(
                 socket,
                 "(()=>{const wanted=" + titleLiteral + ".toLowerCase();"
+                + "let chosenId='',chosenName='';"
                 + "const body=(document.body?.innerText||'').toLowerCase();"
                 + "const auth=location.pathname.includes('/login')||body.includes('sign in')||"
                 + "body.includes('iniciar sesión')||body.includes('inicia sesión');let action='none';"
@@ -1635,13 +1647,13 @@ internal class CdpBrowserSession : IDisposable
                 + "const tile=document.querySelector('[data-uia^=\"profile-selector+tile-\"]')"
                 + "||document.querySelector('[data-uia=\"profile-selector\"] a,[data-uia=\"profile-selector\"] li');"
                 + "if(tile){tile.click();action='profile_clicked';"
-                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action].join('\\u001f');}}"
+                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action,chosenId,chosenName].join('\\u001f');}}"
                 // Elegido el perfil, Netflix lleva a la portada: hay que volver a la
                 // búsqueda, que es donde estaba el título que se pidió.
                 + "if(!auth&&!location.pathname.startsWith('/search')&&!location.pathname.includes('/watch/')"
                 + "&&!document.querySelector('[data-uia=\"profile-gate-screen\"]')){"
                 + "location.href=" + searchLiteral + ";action='search_again';"
-                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action].join('\\u001f');}"
+                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action,chosenId,chosenName].join('\\u001f');}"
                 // La búsqueda de Netflix ya no da enlaces «/title/»: cada resultado es
                 // un «standard-card», un <a> cuyo href lleva «jbv=<id del vídeo>».
                 // Medido contra la página real: buscando sólo «/title/» lo único que
@@ -1649,12 +1661,12 @@ internal class CdpBrowserSession : IDisposable
                 // se va al reproductor, que es a donde lleva pulsarlo.
                 + "if(!auth&&location.pathname.startsWith('/search')){"
                 + "const cards=[...document.querySelectorAll('a[data-uia=\"standard-card\"],a[href*=\"jbv=\"]')];"
-                + "const named=cards.map(a=>({a,t:((a.innerText||'')+' '+(a.getAttribute('aria-label')||'')).trim().toLowerCase()}));"
-                + "const hit=named.find(x=>x.t===wanted)||named.find(x=>x.t.startsWith(wanted))||named.find(x=>x.t.includes(wanted));"
-                + "if(hit){const id=(hit.a.getAttribute('href')||'').match(/jbv=(\\d+)/);"
-                + "if(id){location.href='https://www.netflix.com/watch/'+id[1];action='watch_nav';}"
+                + "const named=cards.map(a=>({a,t:((a.innerText||'')+' '+(a.getAttribute('aria-label')||'')).trim().toLowerCase(),n:((a.getAttribute('aria-label')||a.innerText||'').trim())}));"
+                + "const hit=named.find(x=>x.t===wanted)||named.find(x=>x.t.startsWith(wanted))||named.find(x=>x.t.includes(wanted))||named[0];"
+                + "if(hit){chosenName=hit.n;const id=(hit.a.getAttribute('href')||'').match(/jbv=(\\d+)/);"
+                + "if(id){chosenId=id[1];location.href='https://www.netflix.com/watch/'+id[1];action='watch_nav';}"
                 + "else{hit.a.click();action='result_clicked';}"
-                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action].join('\\u001f');}"
+                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action,chosenId,chosenName].join('\\u001f');}"
                 + "const links=[...document.querySelectorAll('a[href*=\"/title/\"]')];"
                 + "const link=links.find(a=>((a.closest('[data-uia],.title-card,.slider-item')?.innerText||a.innerText||'').toLowerCase()).includes(wanted));"
                 + "if(link){link.click();action='result_clicked';}}"
@@ -1665,31 +1677,52 @@ internal class CdpBrowserSession : IDisposable
                 + "const v=document.querySelector('video');if(v&&v.paused){v.play().catch(()=>{});}"
                 + "const matched=(document.title.toLowerCase()+' '+body).includes(wanted);"
                 + "return [location.href,document.title,auth?'auth':'ok',matched?'matched':'unmatched',"
-                + "v?v.readyState:-1,v?(v.paused?'paused':'playing'):'missing',v?v.currentTime:0,action].join('\\u001f');})()",
+                + "v?v.readyState:-1,v?(v.paused?'paused':'playing'):'missing',v?v.currentTime:0,action,chosenId,chosenName].join('\\u001f');})()",
                 cancellationToken,
                 userGesture: true).ConfigureAwait(false);
+            lastObserved = observed;
             string[] fields = observed.Split('\u001f');
-            if (fields.Length != 8) continue;
+            if (fields.Length != 10) continue;
             lastUrl = fields[0]; lastPageTitle = fields[1];
             if (fields[2] == "auth")
                 return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
                     "netflix_authentication_required");
+            // La ficha elegida en la búsqueda se recuerda entre vueltas: el guion
+            // vuelve a empezar en cada evaluación y para entonces ya está en la
+            // página del reproductor, donde no quedan tarjetas que mirar.
+            if (fields[8].Length > 0) chosenId = fields[8];
+            if (fields[9].Length > 0) chosenName = fields[9];
             bool watch = lastUrl.Contains("netflix.com/watch/", StringComparison.OrdinalIgnoreCase);
             bool ready = int.TryParse(fields[4], NumberStyles.Integer,
                 CultureInfo.InvariantCulture, out int readyState) && readyState >= 2;
             bool progressing = double.TryParse(fields[6], NumberStyles.Float,
                 CultureInfo.InvariantCulture, out double currentTime);
-            if (watch && fields[3] == "matched" && ready
+            // Lo que prueba que se abrió lo pedido es la ficha que se eligió, no que
+            // la página repita el nombre. Exigir lo segundo descartaba un título
+            // traducido —«Wednesday» se llama «Merlina» en este perfil— con el vídeo
+            // delante, y tiraba la corrección que el buscador de Netflix acababa de
+            // dar a un título mal escrito. Sin ficha elegida (navegación directa) se
+            // conserva la comprobación del texto.
+            // Medido: la ficha de «Stranger Things» es la 80057281 y el reproductor
+            // acaba en /watch/80077368, porque la primera es la serie y la segunda el
+            // episodio al que Netflix redirige. Exigir que la URL lleve el id elegido
+            // rechazaba una reproducción correcta. Basta con haber elegido la ficha y
+            // estar en un reproductor: la redirección es suya, no nuestra.
+            bool opened = chosenId.Length > 0 || fields[3] == "matched";
+            if (watch && opened && ready
                 && fields[5] == "playing" && progressing)
             {
                 if (baseline is not null && currentTime >= baseline.Value + 0.5)
-                    return new(true, true, title, lastUrl, lastPageTitle, targetId,
+                    return new(true, true,
+                        chosenName.Length > 0 ? chosenName : title,
+                        lastUrl, lastPageTitle, targetId,
                         currentTime - baseline.Value, string.Empty);
                 baseline ??= currentTime;
                 failure = "netflix_video_progress_not_observed";
             }
         }
-        return new(false, true, title, lastUrl, lastPageTitle, targetId, 0, failure);
+        return new(false, true, title, lastUrl, lastPageTitle, targetId, 0, failure,
+            lastObserved + "|remembered=" + chosenId + "/" + chosenName);
     }
 
     public virtual void Dispose()
