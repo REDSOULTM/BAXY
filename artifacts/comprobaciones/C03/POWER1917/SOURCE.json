@@ -1,0 +1,15 @@
+{
+  "schema": "c03-power1917-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (restart is a request speech act and a power transition), src/baxy_mind/llm.py (the refusal fact fits one clause, and a refusal is a failure assertion), src/Baxy.App/UserMessagePolicy.cs (its twin list learns the same) and src/Baxy.Providers.Windows/External/WindowsPowerTransitionAdapter.cs (a transition Windows did not accept never crossed the effect boundary), on top of the LIMITS1915 build.",
+  "patch": "artifacts/comprobaciones/C03/POWER1917/SOURCE.patch",
+  "commits": [
+    "2a6b58ca4fa1fc71f9394a3440236ca695e51eeb"
+  ],
+  "build": "BUILD1917 (C03-repairs1917-build/BUILD_READY.json; mente, App y Providers)",
+  "cause_measured": "Reiniciar no se leia como orden; un rechazo de Windows se contaba como efecto posible y salia como resultado sin confirmar; el hecho de la causa era tan largo que se recitaba o mataba la redaccion; y ninguna de las dos listas gemelas reconocia «no acepto» como una afirmacion de fallo.",
+  "change": "Reiniciar es una orden y una transicion de energia; un rechazo es un fallo antes del efecto, con un hecho de una sola clausula; y las dos listas gemelas reconocen el rechazo como fallo.",
+  "measurement": "POWER1917: 6 ejecutados, 6 aprobados, 0 fallidos; 2 créditos. Los cuatro del grupo llamaron de verdad a system.power con la acción pedida y terminaron en rechazo de Windows; el final dijo que el equipo sigue encendido; la PC no se apagó ni se reinició; cien-63 100/100 con cero agotes.",
+  "credits": 2
+}

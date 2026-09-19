@@ -1614,3 +1614,7 @@ Abrir aplicaciones pasa de 50/54 a 51/54 con abrir la aplicacion que se nombra y
 ## Actualización 2026-09-19 (LIMITS1915)
 
 Archivos y carpetas pasa de 31/32 a 32/32 con decir llanamente que no se puede comprimir ni abrir un zip, nombrando lo que se pidio (commit 84912e9f, BUILD1915) (HEAD 84912e9f): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Los cuatro del grupo terminaron con cero operaciones y un final que dice el límite nombrando lo que se pidió; cien-62 100/100 con cero agotes. La categoría queda cerrada.
+
+## Actualización 2026-09-19 (POWER1917)
+
+Energía del sistema pasa de 1/3 a 3/3 con llamar de verdad a la transicion pedida y decir que Windows no la acepto y que el equipo sigue encendido (commit 2a6b58ca, BUILD1917) (HEAD 2a6b58ca): 6 ejecutados, 6 aprobados, 0 fallidos, 2 créditos. Los cuatro del grupo llamaron de verdad a system.power con la acción pedida y terminaron en rechazo de Windows; el final dijo que el equipo sigue encendido; la PC no se apagó ni se reinició; cien-63 100/100 con cero agotes. La categoría queda cerrada.

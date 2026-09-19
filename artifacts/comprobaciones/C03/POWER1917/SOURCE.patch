@@ -1,0 +1,160 @@
+commit 2a6b58ca4fa1fc71f9394a3440236ca695e51eeb
+
+C03: que Windows rechace el apagado se sabe, y decirlo es la respuesta
+
+Las dos filas de energía que el dueño dejó para el final, H0401 «reiniciá la
+PC» y H0714 «apagá la computadora». Cuatro cosas, cada una medida sobre la
+anterior.
+
+Reiniciar no existía. Apagar era un acto de habla y reiniciar no, así que
+«reiniciá la PC» no resolvía ninguna operación y el turno contestaba «No
+puedo reiniciar la PC» sin haberlo intentado siquiera. Es la misma transición
+con otra acción. El nombre del equipo, que ya se exigía, es lo que deja fuera
+«reiniciá el router» y «reiniciá la canción».
+
+El rechazo no es una duda. La frontera de efecto se cruza antes de
+preguntarle a Windows, de modo que un rechazo salía como «pudo haber
+ocurrido» y el turno publicaba «no pude confirmar si la acción se realizó».
+Pero Windows devolvió que no la inicia: no se apagó ni se reinició nada, y
+eso se sabe. Ahora es un fallo antes del efecto y la causa tipada llega
+entera al redactor.
+
+El hecho era demasiado largo. Enumeraba las cuatro transiciones; un borrador
+lo recitaba entero y dos de cuatro morían. Dice lo mismo en una cláusula:
+Windows no la aceptó y el equipo sigue encendido.
+
+Y el fallo no se reconocía escrito así. «Windows no aceptó la solicitud de
+apagado, por lo que el PC sigue encendido» es un fallo dicho entero y bien,
+pero ningún marcador lo veía: primero murió en missing_failure, y cuando la
+mente lo aceptó, la App lo leyó como si invirtiera el resultado. Que algo no
+se acepte o se rechace es afirmar que no ocurrió; las dos listas gemelas
+—_FAILURE_MARKERS y UserMessagePolicy.LooksLikeFailure— lo aprenden juntas.
+
+Medido, cada uno en su perfil limpio:
+  reiniciá la PC         → No se pudo reiniciar la PC porque Windows no aceptó
+                           la solicitud de energía. El equipo sigue encendido.
+  apagá la computadora   → No pude apagar la computadora, Windows no aceptó la
+                           solicitud de apagado y el equipo sigue encendido.
+  apagá la compu         → …y sigue encendida.
+  reiniciá la computadora→ …y el equipo sigue encendido.
+  No apagues nada.       → Entendido, no apagaré nada.
+La PC no se apagó ni se reinició en ninguna de las corridas.
+
+cien-63: 100/100, cero agotes; frente a cien-62 sólo cambian la hora y tres
+frases distintas e igual de ciertas.
+
+APLAZADOS: una oración sin sujeto tras un punto se publica tal cual; medido,
+no bloquea ninguna fila.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/UserMessagePolicy.cs b/src/Baxy.App/UserMessagePolicy.cs
+index 83840d948..9a2dea266 100644
+--- a/src/Baxy.App/UserMessagePolicy.cs
++++ b/src/Baxy.App/UserMessagePolicy.cs
+@@ -1892,7 +1892,19 @@ internal static class UserMessagePolicy
+         // must hear as such («the results were irrelevant», «sin resultados»).
+         || Regex.IsMatch(normalized,
+             @"\b(?:irrelevant|irrelevantes?|no\s+useful\s+results|nothing\s+useful|no\s+results|sin\s+resultados|no\s+(?:hubo|hay)\s+resultados)\b",
+-            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
++            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
++        // H0714 «apagá la computadora», H0401 «reiniciá la PC»: «Windows no
++        // aceptó la solicitud de apagado, por lo que el PC sigue encendido» es
++        // un fallo dicho entero y bien. Como ningún marcador lo reconocía, la
++        // respuesta fiel se leía como si invirtiera el resultado y el turno
++        // moría sin publicar nada. Que algo no se acepte o se rechace es
++        // afirmar que no ocurrió. El gemelo de esta lista vive en
++        // _FAILURE_MARKERS de la mente y cambia con ella.
++        || Regex.IsMatch(
++            normalized,
++            @"\b(?:no\s+(?:la\s+|lo\s+)?acepto|no\s+fue\s+aceptad[ao]|rechazo|rechazad[ao]|refused|rejected)\b"
++            + @"|\b(?:did\s*not|didn[’']?t|does\s*not|doesn[’']?t|was\s+not|wasn[’']?t)\s+accept(?:ed)?\b",
++            RegexOptions.CultureInvariant);
+     }
+ 
+     private static bool AttributesBaxyActionToUser(string source, string result)
+diff --git a/src/Baxy.Providers.Windows/External/WindowsPowerTransitionAdapter.cs b/src/Baxy.Providers.Windows/External/WindowsPowerTransitionAdapter.cs
+index 0fe6bc822..28f554e96 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsPowerTransitionAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsPowerTransitionAdapter.cs
+@@ -107,7 +107,14 @@ internal sealed class WindowsPowerTransitionAdapter : IExternalOperationAdapter
+             WindowsPowerTransitionResult transition = _platform.Request(action);
+             if (!transition.Accepted)
+             {
+-                return ValueTask.FromResult(effectBoundary.Failure(
++                // H0714 «apagá la computadora», H0401 «reiniciá la PC»: que la
++                // transición no fuera aceptada no es una duda, es un hecho.
++                // Windows devolvió que no la inicia, de modo que no se apagó ni
++                // se reinició nada. Contarlo como efecto posible —sólo porque la
++                // frontera se cruza antes de preguntar— hacía que el turno
++                // publicara «no pude confirmar si la acción se realizó» en vez
++                // de lo único que sí se sabe.
++                return ValueTask.FromResult(ExternalJson.FailureBeforeEffect(
+                     operation, "power_transition_not_accepted"));
+             }
+ 
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 261e46830..dbfd5c587 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -11388,6 +11388,10 @@ def _is_direct_request(text: str) -> bool:
+         r"ponme|pone|poneme|pongame|"
+         r"activa|activar|desactiva|desactivar|enciende|encender|prende|prender|"
+         r"apaga|apagar|arranca|inicia|start|conecta|conectar|conectame|conectate|connect|"
++        # H0401 «reiniciá la PC»: apagar era un acto de habla y reiniciar no, de
++        # modo que el pedido ni llegaba a resolverse y el turno decía «No puedo
++        # reiniciar la PC» sin haberlo intentado. Es la misma orden.
++        r"reinicia|reiniciar|reiniciame|reboot|restart|"
+         # LIMITS1677 «Run pytest.», «Execute ls.»: a command run is a request speech act.
+         r"run|execute|"
+         # LIMITS1683: downloads, arithmetic and scans are request speech acts too.
+@@ -18802,7 +18806,14 @@ def resolve_explicit_effects(
+         and "system.power" in available
+         and _has(
+             folded,
+-            r"^(?:apaga|apagame|shutdown|shut\s+down)\b",
++            # H0401 «reiniciá la PC»: el apagado estaba y el reinicio no, de modo
++            # que el pedido no resolvía ninguna operación y el turno contestaba
++            # «No puedo reiniciar la PC» sin haberlo intentado siquiera. Es la
++            # misma transición, con otra acción. El nombre del equipo, que se
++            # exige más abajo, es lo que impide que «reiniciá el router» entre
++            # por aquí.
++            r"^(?:apaga|apagame|shutdown|shut\s+down|"
++            r"reinicia|reiniciame|reiniciar|reboot|restart)\b",
+         )
+         and _has(
+             folded,
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index ed8f3c745..6741a2675 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3468,6 +3468,13 @@ _FAILURE_MARKERS = re.compile(
+     r"eso no lo hago|i don't do that|i do not do that|"
+     r"no la encontré|no lo encontré|no pude encontr|"
+     r"no responde|se agotó|"
++    # H0714/H0401: «Windows no aceptó la solicitud de apagado, por lo que el PC
++    # sigue encendido» es un fallo dicho entero y bien, pero ningún marcador lo
++    # reconocía y el turno moría en missing_failure tras tres borradores. Que
++    # algo no se acepte o se rechace es afirmar que no ocurrió.
++    r"no acept[oó]|no fue aceptad[ao]|no la acept[oó]|no lo acept[oó]|"
++    r"(?:did\s*n[o']t|does\s*n[o']t|was\s+not)\s+accept(?:ed)?|"
++    r"rechaz[oó]|rechazad[ao]|refused|rejected|"
+     r"didn't find|did not find|didn't respond|did not respond|"
+     r"time ran out|not found|"
+     r"irrelevant|irrelevantes?|no useful results|nothing useful|"
+@@ -3507,9 +3514,12 @@ _CAUSE_FACT = {
+     # vez de hablarle a la persona: «El fallo se debe a que el resultado no fue
+     # verificado». El hecho que si se sabe es que el paso se envio y no se pudo
+     # confirmar, de modo que no se afirma que haya pasado.
++    # El hecho largo —que enumeraba las cuatro transiciones— se recitaba entero
++    # en un caso y mataba la redacción en dos de cuatro. Dice lo mismo en una
++    # cláusula: Windows no la aceptó y el equipo sigue encendido.
+     "power_transition_not_accepted": (
+-        "Windows did not accept the power request, so nothing changed: the PC was "
+-        "not shut down, restarted, locked or signed out"
++        "Windows did not accept the power request, so nothing changed and the PC "
++        "is still on"
+     ),
+     "result_unverified": (
+         "the step was sent and its result could not be confirmed, so nothing is "
