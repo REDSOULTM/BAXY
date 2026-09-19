@@ -3010,10 +3010,14 @@ def _deictic_open_request(objective: str) -> bool:
     if opening is None:
         return re.fullmatch(
             r"[¿?¡!\s]*(?:abre|abri)(?:lo|la|los|las)"
-            r"(?:\s*,?\s*por favor)?[.!?\s]*", folded,
+            r"(?:\s*,?\s*(?:por favor|please|porfa|porfi|porfis|plis|pls|plz))?[.!?\s]*", folded,
         ) is not None
     target = re.sub(
-        r"\s*,?\s*(?:por favor|please|for me)[.!?\s]*$", "",
+        # cien-36 096 «ábreme eso porfa»: the colloquial politeness word was not
+        # in this list, so the request stopped being a bare deictic and went to
+        # the unsupported-effect contract, which answered that it could not
+        # understand instead of asking what to open, as «ábreme eso» does.
+        r"\s*,?\s*(?:por favor|please|for me|porfa|porfi|porfis|plis|pls|plz)[.!?\s]*$", "",
         opening.group("target"),
     ).strip(" .!?\t\r\n")
     return re.fullmatch(

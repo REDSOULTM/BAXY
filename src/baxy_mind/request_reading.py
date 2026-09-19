@@ -482,8 +482,13 @@ def _read_intents(ask: str) -> frozenset[str]:
         intents.add(INTENT_REFUSE)
     if _contains_any(folded, _TRANSLATION_TOKENS):
         intents.add(INTENT_TRANSLATION)
+    # cien-36 096 «ábreme eso porfa»: only the two formal politeness phrases
+    # were stripped here, so the colloquial one left the request out of the
+    # ambiguous-action reading and the turn answered that it could not
+    # understand, where «ábreme eso» asks what to open.
+    _POLITENESS = r"(?:por favor|please|porfa|porfis?|plis|pls|plz)"
     bare_request = re.sub(
-        r"^(?:por favor|please)\s*,?\s+|\s*,?\s*(?:por favor|please)$",
+        rf"^{_POLITENESS}\s*,?\s+|\s*,?\s*{_POLITENESS}$",
         "",
         folded.strip(_ASK_TRIM),
     )
