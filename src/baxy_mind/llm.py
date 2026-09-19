@@ -7033,8 +7033,17 @@ def _claims_a_relaunch(folded: str) -> bool:
     # As with opening claims and failure assertions, keep polarity scoped to
     # each clause. An affirmative subject/verb head cannot skip over a denial;
     # a later independent affirmative clause must still be checked.
+    # H0461 «che, abrime el chrome» con Chrome ya corriendo: «Ya estaba
+    # corriendo, así que solo lo abrí de nuevo» decía justo lo que el recibo
+    # niega, y pasaba porque el ancla sólo miraba el punto, el «pero» y la «y».
+    # Una consecutiva —«así que», «entonces»— y una coma encabezan cláusula
+    # igual; «sólo» y «just» delante no cambian lo que se afirma. Una cláusula
+    # que empieza negando sigue fuera.
     return re.search(
-        r"(?:^|[.;]\s*|\b(?:pero|but)\s+|\b(?:y|and)\s+(?=(?:yo|i)\b))"
+        r"(?:^|[.;,]\s*|\b(?:pero|but)\s+|\b(?:as[ií]\s+que|entonces|so|then)\s+"
+        r"|\b(?:y|and)\s+(?=(?:yo|i)\b))"
+        r"(?!no\b|not\b|nunca\b|never\b)"
+        r"(?:s[oó]lo\s+|solamente\s+|just\s+|only\s+)*"
         r"(?:ya\s+|yo\s+|i\s+|i've\s+|i\s+have\s+)*(?:(?:lo|la)\s+)?"
         r"(?:volv[ií]\s+a\s+(?:abrir|lanzar)|"
         r"(?:abrí|abri|abro|lancé|lance)\s+(?:de\s+nuevo|otra\s+vez|igual)|"

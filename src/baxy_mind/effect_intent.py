@@ -17854,6 +17854,17 @@ def resolve_explicit_effects(
     if explicit_non_action_frame(text):
         return None
     folded = _strip_request_envelope(_fold(re.sub(r"[\r\n]+", " . ", text)))
+    # H0461 «che, abrime el navegador chrome»: «navegador» delante de un
+    # navegador con nombre es una aposición, no un destino. Sin quitarla el
+    # pedido no resolvía nada y el turno acababa preguntando qué URL abrir,
+    # cuando lo que se pidió fue abrir la aplicación. «abrí el navegador», sin
+    # nombre detrás, sigue intacto.
+    folded = re.sub(
+        r"\b(?:navegador|browser)\s+"
+        r"(?=(?:chrome|opera(?:\s*gx)?|edge|brave|firefox|safari)\b)",
+        "",
+        folded,
+    )
     available = frozenset(available_operations)
     if (
         "filesystem.known.list" in available
