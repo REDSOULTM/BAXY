@@ -8200,6 +8200,17 @@ def _recover_failed_turn(
                 "preserveObjective": False,
                 "question": "",
                 "reply": text,
+                # cien-38 060 «ship a piano to Charon»: the recovery composed
+                # «I can't ship a piano to Charon—that's outside what I do»
+                # and the App refused it as looks_like_failure, because the
+                # boundary did not travel with the reply, then published its
+                # own «I couldn't understand the request properly», which is
+                # false. A limit is a limit also when it is recovered.
+                "conversationKind": (
+                    "unsupported"
+                    if effect_intent.out_of_world_request(objective)
+                    else None
+                ),
                 "turn_attempts": max(0, attempts),
                 "turn_recovery": "protocol_fallback",
                 "recovery_attempts": 1,
