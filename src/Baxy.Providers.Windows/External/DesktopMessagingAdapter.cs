@@ -406,6 +406,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             cancellationToken).ConfigureAwait(false);
         string[] lines = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
         string line = lines.Length > 0 ? lines[^1] : "{}";
+        AuditReading([], $"quick switcher read (exit {process.ExitCode}): {line}\n{process.Error}");
         try
         {
             using JsonDocument document = JsonDocument.Parse(line);
@@ -510,6 +511,12 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // typed name would land in the open chat's composer (the owner had
             // the switcher open on «viol» on 2026-09-18). The open chat's composer
             // band must not change while the name is typed, as in WhatsApp.
+            // A click on the window's own title bar gives Discord the keyboard
+            // focus the way the WhatsApp path's sidebar click does; a foreground
+            // window without keyboard focus swallowed Ctrl+K (DISCORD1857 run a:
+            // no switcher row, the DM list untouched).
+            ClickAt(handle, DiscordTitleBarClickLogicalX, DiscordTitleBarClickLogicalY);
+            await Task.Delay(250, cancellationToken).ConfigureAwait(false);
             SendKey(VirtualKeyEscape);
             await Task.Delay(250, cancellationToken).ConfigureAwait(false);
             byte[] composerBefore = CaptureRegion(handle, CaptureArea.Composer, channel);
@@ -521,6 +528,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             SendText(recipient);
             await Task.Delay(900, cancellationToken).ConfigureAwait(false);
             int row = await QuickSwitcherRowAsync(recipient, cancellationToken).ConfigureAwait(false);
+            AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), $"quick switcher row for «{recipient}»: {row}");
             if (row < 0)
             {
                 // No row names the recipient: close the switcher; if the name landed
@@ -1364,6 +1372,10 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     // about 35 px and the title, clipped at the crop's left edge, read as noise.
     private const int WhatsAppConversationPaneOffsetAt96Dpi = 400;
     private const int DiscordConversationPaneOffsetAt96Dpi = 320;
+    // Discord's own title bar (a thin band above the header row): an empty spot
+    // right of the navigation arrows, left of the centered title.
+    private const int DiscordTitleBarClickLogicalX = 600;
+    private const int DiscordTitleBarClickLogicalY = 14;
 
     // Outgoing bubbles are right-aligned, so the delivery is read from the right
     // end of the last-messages band alone: over the full band the doodle
