@@ -14502,9 +14502,16 @@ class LlmRuntime:
                     "introduce yourself."
                 )
             elif _looks_like_negative_constraint(user_text):
+                # cien-36 047 «keep chatting without opening apps» →
+                # «…let us call it "ChatFlow."»: ordered to name the app when
+                # the constraint named none, the model invented one. 067 said
+                # «la app que mencionas» with nobody having mentioned any.
                 instruct(
-                    "\nName the app. Say you will not open it. "
-                    "Do not refuse the person. One short sentence."
+                    "\nIf the person named an application, name that one and say "
+                    "you will not open it. If they named none, name no "
+                    "application at all and never invent one: say you will keep "
+                    "talking and open nothing. Do not refuse the person. One "
+                    "short sentence."
                 )
             elif _looks_like_identity_question(user_text):
                 instruct(
@@ -14528,9 +14535,15 @@ class LlmRuntime:
                     "Do not greet. Do not configure or set. Do not restate the request."
                 )
             elif _looks_like_continue_constraint(user_text):
+                # cien-36 047 «keep chatting without opening apps» →
+                # «…let us call it "ChatFlow."»: this constraint names no
+                # application, ever, so ordering one to be named made the
+                # model invent it; 067 answered «la app que mencionas» with
+                # nobody having mentioned any.
                 instruct(
-                    "\nName the app. Say you will not open it. "
-                    "Do not refuse the person. One short sentence."
+                    "\nName no application at all and never invent one: say "
+                    "you will keep talking and open nothing. Do not refuse "
+                    "the person. One short sentence."
                 )
             elif _looks_like_ambiguous_action(user_text):
                 instruct(
