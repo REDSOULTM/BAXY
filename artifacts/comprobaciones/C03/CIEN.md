@@ -24,6 +24,53 @@
 | cien-34 | **v17 fresca** Granite 4.2-3B **registrado**, sin override | no: 12 agotes espontáneos + publicados infieles; ver abajo |
 | cien-35 | **v18 fresca** Granite 4.2-3B **registrado**, sin override | no: 7 agotes espontáneos + publicados infieles; ver abajo |
 
+## cien-41 a cien-44 (leídas, v18, Qwen3-4B registrado, 2026-09-19)
+
+Misma población congelada `cien-v18.turns.jsonl` y mismo runtime. Capturas
+`cien-41/events.jsonl` `cd6a7e9b58a591d2aeb604545a8e024253a2a7d43e8ff11c2e3d662eb8d00f38`,
+`cien-42/events.jsonl` `4b5ab0e4071f563f7cef5251d866a43dbe6388c928cb9fd63509cc5e7f4a061a`,
+`cien-43/events.jsonl` `85f68ce3daebeca49d0551337befd12578c785dec0a342a60ad711199a5f2f55` y
+`cien-44/events.jsonl` `16b7b5e17c64df40150fdbf15c92bc1e8a0b67e09a82abe603ac13506475ed38`.
+
+| Corrida | Publicadas | Agotes | Limpias | Qué la separó de la anterior |
+|---|---:|---:|---:|---|
+| cien-41 | 99 | 1 | 97 | el pedido de traducción llega al traductor y las fórmulas fijas se dan hechas: 007 y 028 quedan bien |
+| cien-42 | **100** | **0** | 98 | 027 «open that» deja de morir cuando la recuperación llega vacía y pregunta qué quiere la persona |
+| cien-43 | **100** | **0** | 99 | 003 define qué es un SSD en vez de afirmar de qué está hecho el disco tradicional |
+| cien-44 | **100** | **0** | **100** | 038 contesta que no lo hizo |
+
+### cien-44: las cien limpias
+
+Primera corrida de cien en la que las cien respuestas son publicadas, veraces, en el
+idioma del mensaje y útiles para lo que se pidió. Leídas una por una. Los relojes van
+de 03:55 a 03:57 sin saltos y los dos turnos de audio (006 y 046) concuerdan entre sí
+y con el estado del equipo.
+
+Los seis defectos que traían las corridas anteriores, tal como quedan aquí:
+
+| # | Pedido | Antes | Ahora |
+|---|---|---|---|
+| 003 | explícame qué es un SSD | «en lugar de placas de circuito como en los discos tradicionales» | «almacena datos usando chips de memoria, no partes móviles» |
+| 007 | traduce 'good evening' | «Buenas tardes» | «buenas noches» |
+| 027 | open that | agote espontáneo | «What specifically do you want me to open for you?» |
+| 028 | traduce 'see you' | «Te veo» | «nos vemos» |
+| 038 | if it didn't happen, say so | «No lanzaría Steam.» / «If it didn't happen, then it didn't happen.» | «I didn't do that.» |
+| 072 | de qué te ocupas | «Me ocupó de…» | «Me ocupo de…» |
+
+Tres de los seis eran asimetrías entre idiomas: la ruta en español pasaba y la misma
+en inglés fallaba. Por eso el vocabulario de los guardas se dejó simétrico en los dos.
+
+**Lo que costó 038.** Dos intentos medidos y revertidos antes del que quedó. Una forma
+de presentación propia hay que registrarla en siete sitios, y la omisión de uno hacía
+que el turno publicara «I couldn't understand the request properly», que es falso.
+Mapearla a secas al reconocimiento de restricción daba «If it didn't happen, I'll say
+so», que es una promesa, no la respuesta a una pregunta sobre el pasado. Lo que
+funciona es la misma forma con una frase añadida al prompt cuando la pregunta pide
+confirmar el no-suceso.
+
+Una corrida limpia no sella G06.01 por sí sola: el sello pide además revalidación, y
+esa es la comprobación que viene.
+
 ## cien-38 a cien-40 (leídas, v18, Qwen3-4B registrado, 2026-09-19)
 
 Misma población congelada y mismo runtime. Capturas
