@@ -3,8 +3,8 @@
 Continúa y completa íntegramente C03 — respuesta veraz de BAXY — lo más rápido posible sin perder calidad. El dueño detuvo Codex para entregarte este goal. Asume el relevo como único escritor: no esperes otro prompt ni reinicies la investigación o la campaña. Este documento incorpora las últimas órdenes del dueño; prevalecen sobre instrucciones históricas incompatibles.
 
 ## Ubicación y arranque
-
-Repositorio actual: `D:/Perfil/Escritorio/ETC/Programacion/BAXY DEFINITIVO`. Rama de continuación: `codex/kiro-goal-c03`; preserva `main`. Remoto: `https://github.com/REDSOULTM/baxy-definitivo.git`. Último commit de producto/evidencia antes del relevo: `9aafd2fdf2c1f575f4f1748047f968c787e7fd22`, publicado. El commit posterior de relevo sólo añade documentación/estado.
+Repositorio actual esta anclado al pc , en este pc es REDPC, este pc no tiene las mismas rutas que este informe lo mas probable
+Repositorio actual en REDPC (esta máquina, desde el traspaso del 18-09): `C:/Users/usuario/Desktop/ETC/Programacion/BAXY Definitivo`. La ruta `D:/Perfil/Escritorio/ETC/Programacion/BAXY DEFINITIVO` existe aquí sólo como unión de directorio del otro PC y `Path.resolve()` devuelve la forma `C:`; los guiones de instrumento la remapean. Rama de continuación: `codex/kiro-goal-c03`; preserva `main`. Remoto configurado: `https://github.com/REDSOULTM/baxy-definitivo.git`, que GitHub redirige a `https://github.com/REDSOULTM/baxy-assistant.git` (el push funciona con el redirect; cambiar la URL es decisión del dueño). Último commit de producto/evidencia antes del relevo: `9aafd2fdf2c1f575f4f1748047f968c787e7fd22`, publicado. El commit posterior de relevo sólo añade documentación/estado.
 
 Confirma raíz mediante `git rev-parse --show-toplevel` y presencia de `Baxy.slnx`, `main.py`, `AGENTS.md`. No trabajes en el repositorio vecino `BAXY`. Comprueba `git status --short --branch`, el HEAD y ausencia de otro escritor/procesos de campaña antes de ejecutar. Codex detuvo sus ejecuciones y sus dos subagentes terminaron. Registra tu identidad real de sesión en RELEVO_ACTIVO.json conservando el historial; no inventes un threadId.
 
@@ -15,7 +15,7 @@ Si estás en un PC desactualizado, primero `git fetch origin`; examina divergenc
 BASE significa `C:/Users/usuario/AppData/Local/BAXY`; C03 significa `artifacts/comprobaciones/C03/` dentro del repositorio.
 
 Lee en este orden: C03/FABLE_PAUSE_STATE.json, C03/HANDOFF.md, C03/RELEVO_ACTIVO.json, cabecera y tres últimos tramos de C03/CHECKPOINT.md, C03/CURRENT_CATEGORY_COUNTS.md, C03/ESTADO_PARA_DUENO_2026-09-08.md. Después lee `documentacion/00_IDENTIDAD.md`, `documentacion/sprints/Sprints comprobación/C03_ASTRA_AUTORIDAD.md`, `documentacion/sprints/Sprints comprobación/C03_RESPUESTA_VERAZ.md` y el contrato de campaña que referencian. Localiza y lee sólo las filas C03 de `03_MATRIZ_DE_CRITERIOS.md`. Consulta `docs/AI_CONTEXT_MAP.md` antes de explorar código. Usa la skill `.agents/skills/evidencia-baxy/SKILL.md` para evidencia histórica; no recorras biblioteca/artifacts a ciegas ni abras ficheros enormes completos.
-
+(probablemente esten desactualizados estos md. si es el caso actualizalos)
 Los viejos puntos de partida 28/95/126/154 cubiertos, tramo802 y rama Goal-c03 son históricos: NO reiniciar desde ellos. Tampoco repetir el relevo Kiro ya validado.
 
 ## Órdenes vigentes del dueño
@@ -30,7 +30,7 @@ Los viejos puntos de partida 28/95/126/154 cubiertos, tramo802 y rama Goal-c03 s
 - Simplicidad: sustituir capas defectuosas si hace falta, no acumular reglas/parches a frases. Catálogo tipado único; mente propone, kernel autoriza, provider ejecuta; nada se afirma sin verificación; terminales honestos; confirmación vinculada a invocación exacta; cero respuestas visibles fijas; modelo local y contenido privado.
 - No enviar mensajes reales a terceros por una prueba de encuesta. Permiso previo de cerrar aplicaciones no autoriza perder documentos ni cancelar tareas ajenas. Mantener BAXY cerrado para uso manual; mediciones ocultas autorizadas.
 
-## Estado comprobado al relevo
+## Estado comprobado al relevo (desactualizado)
 
 **203 cubiertos /742, 539 abiertos, 0 no aplican; 0/35 categorías cerradas; C03 formal 3/11.** Última alta H0137 en AGENDA1121. Hasta el relevo, >=77 primeras altas documentadas en las 24h precedentes (28 Kiro +49 retorno); recalcula la ventana al continuar, no arrastres esta cifra indefinidamente.
 
@@ -40,7 +40,7 @@ Modelo decidido: Qwen3-4B-Instruct-2507 Q4_K_M; no abrir otra campaña. Runtime 
 
 Guardas: RAM libre inicial4000MiB/mínima768MiB; parada GPU3800MiB y techo4096MiB; tanda900s/turno120000ms. Una sola tanda; apagar build servers antes. Nunca rebajar guardas para forzar un resultado.
 
-## Último resultado y siguiente acción concreta
+## Último resultado y siguiente acción concreta (histórico del relevo Kiro; el estado vigente está en el anexo final y en C03/HANDOFF.md)
 
 TIME1134 v6 índice10 ya fue ejecutado: **no repetirlo con el mismo candidato**. Respuesta útil: “Alarm scheduled for 01:00 UTC.” Pero dueUtc `2026-09-13T01:00:44.270822Z` frente a NextRunUtc `2026-09-13T01:00:44Z`; StartBoundary también perdió fracciones. Root decidió FAIL por el criterio estricto sellado, no fallo de composición. 1 ejecutado/0 aprobados/1 fallido/24 sin ejecutar/0 créditos. La única tarea propia fue cancelada exactamente y su ausencia verificada, EXIT0; ninguna limpieza pendiente. Datos y hashes en FABLE_PAUSE_STATE.json. Falta sólo trasladar ese juicio a los artefactos habituales de adjudicación: no ejecutar para completar el papeleo.
 

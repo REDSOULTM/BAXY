@@ -1,3 +1,32 @@
+# Handoff C03 — REANUDACIÓN 2026-09-19 (REDPC, Opus 5)
+
+**683/742 cubiertos, 59 abiertos, 0 NA; 16/35 categorías cerradas; C03 formal 3/11.**
+Rutas de esta máquina: repositorio en `C:/Users/usuario/Desktop/ETC/Programacion/BAXY Definitivo`
+(la forma `D:/Perfil/...` es una unión de directorio del otro PC y se remapea en la derivación).
+
+- **Tandas de esta jornada:** UNRES1875 (+1, H0639: el guardia de ruido llevaba en inglés la mitad
+  del vocabulario que tenía en español), WEB1877/1879/1881 (H0060: el motor de búsqueda volvió a
+  degradarse y el proveedor consulta ahora un segundo motor; el informe ya nombra sus páginas; la
+  regla más estricta se midió y se descartó porque dejaba el turno sin respuesta), WEB1883/1885
+  (H0081: el preámbulo que cede el control del PC y el verbo «entrar» que faltaba hacían que el
+  producto negara una capacidad que tiene; con el arreglo las dos variantes abren de verdad).
+- **Corrida de cien (evidencia formal G06.01):** cien-36, misma población congelada v18 con el
+  runtime registrado de esta máquina (Qwen3-4B, no el Granite de cien-34/35) y el HEAD del día.
+  96 publicadas, 4 agotes, 13 publicados infieles leídos uno a uno: 83/100 limpias. Clases de
+  defecto por masa en CIEN.md. Primera clase reparada: «qué no haces» decía que el PC le da
+  órdenes y en inglés agotaba; ahora contesta «Sólo hago lo que me pides, nada más».
+- **Hallazgo al reproducir:** los pedidos fuera de catálogo aciertan los cinco en sesión limpia;
+  sus fallos en la corrida venían del contexto del bloque, no del pedido. Antes de reparar una
+  clase de la corrida, reprodúcela aislada.
+- **Filas abiertas, realidad:** de las 59, 24 de vídeo y 2 de energía están aplazadas por el dueño
+  y 18 límites sin marcar + 3 negativos no son acreditables por regla; quedan 12 abordables
+  (H0060, H0081, H0096, H0101, H0160, H0210, H0404, H0510, H0516, H0542, H0578, H0720).
+- **Siguiente:** (1) las clases 3 y 4 de cien-36 (deíctico sin referente, «sigue sin abrir apps»);
+  (2) H0060 necesita que un destino sin dominio se resuelva como búsqueda en el navegador nombrado;
+  (3) G04.06/G06.06 siguen esperando la decisión del dueño sobre tests.
+
+---
+
 # WEB1885 adjudicado — 2026-09-19T05:10:09.946792+00:00
 
 **683/742 cubiertos, 59 abiertos, 0 NA; 16/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40, Cerrar aplicaciones y ventanas 20/20, Red y Bluetooth 21/21, Pantalla, captura e interpretación visual 19/19, Música 39/39, Conocimiento, razonamiento y creatividad verbal 37/37, Organizar ventanas y pestañas 13/13); C03 formal 3/11. Registro SHA 5c6defd73334e836a42d488fb4ded66060889f0ae187ccd7a50337e10606d1f2. Primeras altas 24 h >= 567 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD f815ec5a con BUILD1885 (la mente lee la mision que sigue a la cesion de control y reconoce el verbo entrar). Turnos ordinarios sin operaciones.
@@ -211,7 +240,7 @@ MSGSEND1845 («Mensajeria», enviar de verdad el mensaje al canal de prueba forz
 - **Regla al recibirlo:** verificar el manifiesto y que `requirements.jsonl` dé SHA fffae5b5ecce86296d61b1070cd518ac8f6d9b6528fec5861cf9faa1baec83e4 antes de sellar nada. No se reconstruye el registro desde los `REGISTRY_UPDATE.json` del repo (sólo traen ids y contadores, no filas): sería inventar cobertura.
 - **Acción inmediata tras la transferencia:** el bloque del 17-09 de abajo sin cambios: build oficial `C03-repairs1845-build`, sellar MSGSEND1845, prueba supervisada caso 0 a «Música», casos 1–4, adjudicar, publicar, commit+push.
 - **Correo (6 filas):** sigue sin mecanismo porque no existe un destino de prueba propio del dueño equivalente a «Música»/«Valeria»; se pide al dueño una casilla de prueba (o se adjudica como límite honesto por su decisión). No se construye un envío de correo sin ese destino.
-- **Goal formal C03 (3/11):** las 8 filas abiertas son los tres ceros sobre población abierta con texto auditado a mano (G03.08, G03C.09, G04.01), cien respuestas leídas a mano (G06.01), cero palabras inventadas (G06.02), cero constantes en pantalla (G06.03) y «candidato validado y publicado» (G04.06, G06.06). Las dos últimas exigen dueñas y Full verdes, incompatibles con la orden vigente «no ejecutar tests»: contradicción que resuelve el dueño, no la raíz. La reserva de cien (`cien-v18.turns.jsonl`) tampoco está en este PC.
+- **Goal formal C03 (3/11):** las 8 filas abiertas son los tres ceros sobre población abierta con texto auditado a mano (G03.08, G03C.09, G04.01), cien respuestas leídas a mano (G06.01), cero palabras inventadas (G06.02), cero constantes en pantalla (G06.03) y «candidato validado y publicado» (G04.06, G06.06). Las dos últimas exigen dueñas y Full verdes, incompatibles con la orden vigente «no ejecutar tests»: contradicción que resuelve el dueño, no la raíz. **Corrección 2026-09-19 (REDPC):** la reserva de cien **sí** está en este PC (`artifacts/comprobaciones/C03/cien-v18.turns.jsonl`, sello `5565d6da…` intacto) y ya se corrió: ver cien-36 en CIEN.md. La frase anterior, escrita antes del traspaso, era falsa aquí.
 
 ---
 
