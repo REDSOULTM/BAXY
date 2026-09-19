@@ -1471,6 +1471,46 @@ def apply_conversation_effect_presentation(
     return unsupported
 
 
+def apply_out_of_world_boundary(
+    decision: dict[str, object],
+    objective: str,
+    *,
+    audit: list[dict[str, object]] | None = None,
+) -> dict[str, object]:
+    """Keep the boundary of an unreachable place, whatever the history.
+
+    cien-37 030/040: in a clean session «send flowers to Deimos» answers «I
+    cannot send flowers to Deimos as requested»; with a block of turns in
+    front the model proposed a send with a recipient it judged missing and the
+    turn became «Who specifically should receive the flowers?», a question
+    about the very thing that cannot be done. Nothing was executed in either
+    case, so only a turn with no effect is closed here.
+    """
+
+    if (
+        not effect_intent.out_of_world_request(objective)
+        or decision.get("effect_operations")
+        or decision.get("conversation_kind") == "unsupported"
+    ):
+        return decision
+    bounded = dict(decision)
+    bounded.update(
+        mode="conversation",
+        conversation_kind="unsupported",
+        operation=None,
+        question=None,
+        intent_operations=[],
+        effect_operations=[],
+        effect_count="zero",
+        effect_verification="not_applicable",
+    )
+    if audit is not None:
+        audit.append(
+            {"name": "out_of_world_boundary", "mode": "conversation", "operation": None}
+        )
+    return bounded
+
+
 def apply_non_effect_conversation_classification(
     decision: dict[str, object],
     objective: str,
@@ -7592,6 +7632,11 @@ def _prepare_turn_result(
     decision = validate_turn_decision(
         decision,
         {tool.name for tool in shortlist},
+    )
+    # After the non-effect classification, which rewrites the kind of a
+    # question or an observation and would otherwise undo this boundary.
+    decision = apply_out_of_world_boundary(
+        decision, objective, audit=turn_audit["stages"],
     )
     turn_audit["stages"].append(
         _turn_audit_stage("conversation_presentation", decision)

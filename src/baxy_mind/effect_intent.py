@@ -279,6 +279,37 @@ _ENTITY_LOOKUP = re.compile(
 )
 
 
+# cien-37 030 «send flowers to Deimos», 040 «hire a guide on Ceres», 060 «ship a
+# piano to Charon», 090 «rent a studio on Haumea»: no operation of this PC
+# reaches these places, and the App has said so since the first hundred runs
+# (UserMessagePolicy.LooksLikeOutOfWorldRequest). Without the same knowledge
+# here, a block of history turned the boundary into a question about the very
+# thing that cannot be done. Only unambiguous names are listed: «Europa»,
+# «Io», «Titán» and «luna» also name things one may legitimately talk about,
+# and those requests already answer with their boundary.
+_OUT_OF_WORLD_PLACES = (
+    "deimos", "fobos", "phobos", "ceres", "vesta", "palas", "pallas",
+    "caronte", "charon", "haumea", "sedna", "makemake", "eris", "quaoar",
+    "triton", "nereida", "nereid", "oberon", "titania", "umbriel", "ariel",
+    "miranda", "encelado", "enceladus", "mimas", "japeto", "iapetus",
+    "ganimedes", "ganymede", "calisto", "callisto", "pluton", "plutao",
+    "neptuno", "urano", "uranus", "mercurio", "marte",
+)
+
+_OUT_OF_WORLD_DESTINATION = re.compile(
+    r"\b(?:a|al|to|on|en|hacia|para|from|desde)\s+(?:la\s+|el\s+|the\s+)?(?:"
+    + "|".join(_OUT_OF_WORLD_PLACES)
+    + r")\b",
+    re.IGNORECASE,
+)
+
+
+def out_of_world_request(text: str) -> bool:
+    """The request points at a place no operation of this PC can reach."""
+
+    return _OUT_OF_WORLD_DESTINATION.search(_fold(text)) is not None
+
+
 def _entity_lookup_query(text: str) -> str | None:
     """KNOWLEDGE1473 «¿Quién es Daredevil?», «Que es doom eternal=», «Hablame
     un poco de Marvel vs. Capcom.»: the named thing the person asks about, with
