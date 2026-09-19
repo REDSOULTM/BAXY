@@ -692,7 +692,13 @@ public static class ProductCatalog
             Schema([String("key", values:
                 [
                     "alt_tab", "arrow_down", "arrow_left", "arrow_right", "arrow_up",
-                    "backspace", "context_menu", "control", "ctrl_shift_escape", "ctrl_v",
+                    // ctrl_l enfoca la barra de direcciones de cualquier navegador.
+                    // Hace falta para el vídeo: el árbol de accesibilidad de Chrome
+                    // devuelve un solo nodo y el OCR sólo ve la URL escrita, de modo
+                    // que no hay etiqueta que pulsar. Con ella, ir a una dirección es
+                    // encadenar lo que ya existe —enfocar, escribir, Enter— en vez de
+                    // añadir una herramienta.
+                    "backspace", "context_menu", "control", "ctrl_l", "ctrl_shift_escape", "ctrl_v",
                     "delete", "end", "enter", "escape", "home", "page_down", "page_up",
                     "shift", "space", "tab", "win",
                 ])], ["key"]),

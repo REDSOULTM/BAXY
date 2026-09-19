@@ -24,6 +24,17 @@ public static class BaxyVisibleClickNative {
   [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hwnd, out RECT rect);
   [StructLayout(LayoutKind.Sequential)] public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
   public static IntPtr LargestVisible(IntPtr hwnd) {
+    // H0050 y las demas de video: esta regla cambiaba la ventana de delante
+    // por la mas grande del mismo proceso. Con un navegador de varias
+    // ventanas eso lee la equivocada —medido: con Netflix delante devolvia
+    // la de YouTube, por ser mayor—. La ventana de delante es la que la
+    // persona esta mirando; la regla del area sigue para cuando esa ventana
+    // no sirve como raiz: un marco degenerado o sin superficie.
+    RECT self;
+    if (GetWindowRect(hwnd, out self)) {
+      long own = (long)Math.Max(0, self.Right - self.Left) * Math.Max(0, self.Bottom - self.Top);
+      if (own >= 200 * 200) return hwnd;
+    }
     // Windows PowerShell 5.1 compiles Add-Type with C# 5: no inline out declarations (UI1273).
     uint procId; GetWindowThreadProcessId(hwnd, out procId);
     IntPtr best=hwnd; long bestArea=0;

@@ -1,7 +1,7 @@
 [CmdletBinding(DefaultParameterSetName='Key')]
 param(
     [Parameter(Mandatory=$true,ParameterSetName='Key',Position=0)]
-    [ValidateSet('alt_tab','arrow_down','arrow_left','arrow_right','arrow_up','backspace','context_menu','control','ctrl_shift_escape','ctrl_v','delete','end','enter','escape','home','page_down','page_up','shift','space','tab','win')]
+    [ValidateSet('alt_tab','arrow_down','arrow_left','arrow_right','arrow_up','backspace','context_menu','control','ctrl_l','ctrl_shift_escape','ctrl_v','delete','end','enter','escape','home','page_down','page_up','shift','space','tab','win')]
     [string]$Key,
     [Parameter(Mandatory=$true,ParameterSetName='Pointer')]
     [ValidateSet('click','move_center','scroll_down')]
@@ -231,6 +231,8 @@ public static class BaxyKeyInput {
     if($PSCmdlet.ParameterSetName -eq 'Key') {
         $chords=@{
             alt_tab=[uint16[]]@(0x12,0x09)
+            # ctrl_l enfoca la barra de direcciones del navegador de delante.
+            ctrl_l=[uint16[]]@(0x11,0x4C)
             ctrl_shift_escape=[uint16[]]@(0x11,0x10,0x1B)
             ctrl_v=[uint16[]]@(0x11,0x56)
         }
