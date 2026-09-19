@@ -750,6 +750,13 @@ public static class ProductCatalog
             ToolExposure.Public,
             "Invoca un único control visible por etiqueta en la ventana en primer plano (UIA, luego OCR, luego visión) y exige postlectura: seleccionado, desaparecido o superficie cambiada."),
         Descriptor(
+            "input.visible.controls",
+            Schema([Integer("limit", 1, 60)], []),
+            OperationRisks.ReadOnly,
+            "input.visible.controls.windows.uia.snapshot.v1",
+            ToolExposure.Public,
+            "Nombra los controles visibles y habilitados de la ventana en primer plano, los accionables primero, sin tocar ninguno; lectura para saber qué hay antes de pulsar."),
+        Descriptor(
             "media.control",
             Schema(
                 [

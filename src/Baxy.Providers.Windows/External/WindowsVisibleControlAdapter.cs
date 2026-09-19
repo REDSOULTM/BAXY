@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -38,6 +39,13 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
     {
     }
 
+    // Nombrar un control para pulsarlo exige saber como se llama. Esta lectura
+    // dice que hay delante, y con ella un pedido sobre algo que no esta en la
+    // pantalla se contesta diciendolo en vez de intentando un clic a ciegas.
+    private string ListScript =>
+        Path.Combine(Path.GetDirectoryName(_script) ?? AppContext.BaseDirectory,
+            "DesktopListVisible.ps1");
+
     internal WindowsVisibleControlAdapter(IExternalProcessRunner runner, string script)
         : this(runner, script, ocr: null, vision: null)
     {
@@ -55,13 +63,16 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
         _vision = vision;
     }
 
-    public bool CanHandle(string operation) => operation == "input.visible.click";
+    public bool CanHandle(string operation) =>
+        operation is "input.visible.click" or "input.visible.controls";
 
     public async ValueTask<ExternalCapabilityReceipt> InvokeAsync(
         string operation,
         JsonElement arguments,
         CancellationToken cancellationToken)
     {
+        if (operation == "input.visible.controls")
+            return await ListAsync(operation, arguments, cancellationToken).ConfigureAwait(false);
         if (!File.Exists(_script))
             return ExternalJson.Failure(operation, "visible_click_script_missing");
         string label;
@@ -123,6 +134,62 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
 
     private static readonly TimeSpan LabelWaitBudget = TimeSpan.FromSeconds(24);
     private static readonly TimeSpan LabelWaitInterval = TimeSpan.FromMilliseconds(1500);
+
+    // Lectura: nombra los controles de la ventana en primer plano, los que se
+    // pueden accionar primero. No toca nada, de modo que no cruza frontera de
+    // efecto y cabe en un turno ordinario.
+    private async ValueTask<ExternalCapabilityReceipt> ListAsync(
+        string operation,
+        JsonElement arguments,
+        CancellationToken cancellationToken)
+    {
+        string script = ListScript;
+        if (!File.Exists(script))
+            return ExternalJson.Failure(operation, "visible_controls_script_missing");
+        int limit = 40;
+        if (arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("limit", out JsonElement requested)
+            && requested.ValueKind == JsonValueKind.Number
+            && requested.TryGetInt32(out int value))
+        {
+            limit = Math.Clamp(value, 1, 60);
+        }
+
+        try
+        {
+            ExternalProcessResult process = await _runner.RunAsync(
+                "powershell.exe",
+                [
+                    "-NoProfile", "-NonInteractive", "-STA", "-File", script,
+                    "-Limit", limit.ToString(CultureInfo.InvariantCulture),
+                ],
+                TimeSpan.FromSeconds(20), cancellationToken).ConfigureAwait(false);
+            string? line = process.Output
+                .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+                .LastOrDefault();
+            if (line is null)
+                return ExternalJson.Failure(operation, "visible_controls_no_receipt");
+            using JsonDocument document = JsonDocument.Parse(line);
+            JsonElement root = document.RootElement;
+            if (!root.TryGetProperty("ok", out JsonElement ok)
+                || ok.ValueKind != JsonValueKind.True)
+            {
+                string code = root.TryGetProperty("error", out JsonElement error)
+                    && error.ValueKind == JsonValueKind.String
+                    && error.GetString() is { Length: > 0 } text
+                        ? text
+                        : "visible_controls_unavailable";
+                return ExternalJson.Failure(operation, code);
+            }
+
+            return ExternalJson.Success(operation, root.Clone(), false);
+        }
+        catch (Exception exception) when (exception is IOException or JsonException
+            or TimeoutException or OperationCanceledException)
+        {
+            return ExternalJson.Failure(operation, "visible_controls_receipt_invalid");
+        }
+    }
 
     private async ValueTask<ExternalCapabilityReceipt> InvokeUiaAsync(
         string operation,

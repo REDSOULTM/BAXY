@@ -184,6 +184,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             "input.select.all" => "focused_uia_control_required",
             "input.text.type" => "focused_window_text_input_required",
             "input.visible.click" => "visible_uia_control_required",
+            "input.visible.controls" => "visible_uia_control_required",
             "streaming.navigate" or "streaming.play.named" =>
                 "streaming_authenticated_session_required",
             "web.search" => "web_search_provider_not_configured",

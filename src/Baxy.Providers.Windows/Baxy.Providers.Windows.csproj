@@ -33,6 +33,9 @@
     <None Include="External\DesktopClickVisible.ps1"
             CopyToOutputDirectory="PreserveNewest"
             TargetPath="DesktopClickVisible.ps1" />
+    <None Include="External\DesktopListVisible.ps1"
+            CopyToOutputDirectory="PreserveNewest"
+            TargetPath="DesktopListVisible.ps1" />
     <None Include="External\WindowsScheduledNotification.ps1"
             CopyToOutputDirectory="PreserveNewest"
             TargetPath="WindowsScheduledNotification.ps1" />

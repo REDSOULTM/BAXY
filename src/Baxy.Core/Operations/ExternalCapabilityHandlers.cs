@@ -54,6 +54,7 @@ internal static class ExternalCapabilityHandlers
         "input.select.all",
         "input.text.type",
         "input.visible.click",
+        "input.visible.controls",
         "media.control",
         "media.seek.relative",
         "media.play.exact",

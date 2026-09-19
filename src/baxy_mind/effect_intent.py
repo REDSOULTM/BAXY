@@ -8233,6 +8233,37 @@ def has_named_window_target(text: str) -> bool:
     return explicit_window_title(text) is not None
 
 
+# Los ojos del computer use: preguntar que hay en la pantalla. Sin esta lectura
+# el modelo tiene que adivinar como se llama exactamente el control que quiere
+# pulsar, que es justo donde fallan los agentes de interfaz.
+_SCREEN_INVENTORY = re.compile(
+    r"^[\s¿?¡!]*(?:(?:que|cuales|cuantos|what|which|how\s+many)\s+"
+    r"(?:cosas\s+|elementos?\s+|controles?\s+|botones?\s+|opciones?\s+|"
+    r"things\s+|elements?\s+|controls?\s+|buttons?\s+|options?\s+)?"
+    r"(?:hay|tengo|ves|se\s+ven|aparecen|puedo\s+(?:pulsar|apretar|tocar)|"
+    r"are\s+there|do\s+you\s+see|can\s+i\s+(?:click|press))"
+    r"\s+(?:en\s+|on\s+|in\s+)?(?:la\s+|the\s+)?"
+    r"(?:pantalla|ventana|screen|window)"
+    r"|^[\s¿?¡!]*(?:mira|mirate|revisa|lee|leeme|dime|decime|look\s+at|read|tell\s+me)"
+    r"\s+(?:(?:lo\s+)?que\s+(?:hay|ves|se\s+ve)\s+en\s+|what\s?s?\s+(?:is\s+)?on\s+)?"
+    r"(?:la\s+|the\s+)?(?:pantalla|ventana|screen|window)"
+    # «what's on the screen» sin verbo delante es como la persona lo dice de
+    # verdad; el plegado conserva el apostrofo, asi que va escrito.
+    r"|^[\s¿?¡!]*what(?:'s)?\s+(?:is\s+)?on\s+(?:the\s+)?(?:screen|window)"
+    r")\b",
+    re.IGNORECASE,
+)
+
+
+def screen_inventory_request(text: str) -> bool:
+    """La persona pregunta que hay delante, no pide tocar nada."""
+
+    folded = _fold(_strip_request_envelope(str(text or "")))
+    if _has(folded, r"\b(?:archivo|file|carpeta|folder|nota|note|tarea|task)\b"):
+        return False
+    return _SCREEN_INVENTORY.search(folded) is not None
+
+
 def window_inventory_arguments(text: str) -> dict[str, object] | None:
     """Project an explicit global window inventory into the existing selector.
 
@@ -11472,6 +11503,12 @@ def _strict_catalog_request(
         # UI1725: the arithmetic is typed into the open Calculator and its
         # display is read back.
         return EffectIntent(("calculator.expression.evaluate",), (text,))
+    if screen_inventory_request(text):
+        # Lo que hay en la ventana de delante se mira; no se toca nada.
+        return (
+            EffectIntent(("input.visible.controls",), (text,))
+            if "input.visible.controls" in available_operations else None
+        )
     if window_inventory_arguments(text) is not None:
         return (
             EffectIntent(("window.resolve",), (text,))
