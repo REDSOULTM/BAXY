@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1877-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs (a second search engine answers when the first one leaves no pertinent result; the pertinence gate is the same for both), on top of the WEB1877 HEAD.",
+  "patch": "artifacts/comprobaciones/C03/WEB1877/SOURCE.patch",
+  "commits": [
+    "00678916d87e59529cd4544bf575caf41b669dc8"
+  ],
+  "build": "BUILD1877 (C03-repairs1877-build/BUILD_READY.json; Providers)",
+  "cause_measured": "El unico canal de busqueda del producto empezo a devolver paginas sin relacion con la consulta, de modo que toda busqueda honesta terminaba en resultados no pertinentes.",
+  "change": "El proveedor consulta un segundo motor cuando el primero no deja ningun resultado pertinente y el recibo nombra el motor que respondio.",
+  "measurement": "WEB1877: 4 de 5 casos aprobados (2 variantes, 2 límites); el literal falló por no nombrar las páginas; 0 créditos. Con el segundo motor las tres investigaciones completaron y verificaron exactamente una web.search con las palabras de la persona y obtuvieron páginas pertinentes; las dos variantes nombraron sitios y títulos y el literal no nombró ninguno, de modo que la condición externa queda levantada y lo que falta es la atribución en el informe.",
+  "credits": 0
+}

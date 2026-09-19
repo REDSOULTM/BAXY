@@ -1538,3 +1538,7 @@ Entrada incompleta, ruido y control de diálogo pasa de 27/34 a 30/34 con respon
 ## Actualización 2026-09-19 (UNRES1875)
 
 Entrada incompleta, ruido y control de diálogo pasa de 30/34 a 31/34 con responder a un marcador sin texto diciendo que ahi no se ve un pedido y preguntando que hacer, sin operar (commit c8fe9a28, BUILD1875) (HEAD c8fe9a28): 5 de 5 casos aprobados (1 literal, 2 variantes, 2 límites), 1 créditos. El guardia de ruido, con el mismo vocabulario en los dos idiomas, aceptó al primer intento la pregunta veraz: el marcador sin texto y las dos variantes de la misma forma recibieron una pregunta que dice que ahí no hay un pedido legible y pregunta qué hacer, con cero operaciones y cero violaciones.
+
+## Actualización 2026-09-19 (WEB1877)
+
+Información web actual pasa de 16/17 a 16/17 con investigar en internet la pregunta de la persona y decir que paginas la contestan, sin afirmar una causa que ningun resultado sostiene (commit 00678916, BUILD1877) (HEAD 00678916): 4 de 5 casos aprobados (2 variantes, 2 límites); el literal falló por no nombrar las páginas, 0 créditos. Con el segundo motor las tres investigaciones completaron y verificaron exactamente una web.search con las palabras de la persona y obtuvieron páginas pertinentes; las dos variantes nombraron sitios y títulos y el literal no nombró ninguno, de modo que la condición externa queda levantada y lo que falta es la atribución en el informe.
