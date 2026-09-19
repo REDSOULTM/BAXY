@@ -1521,7 +1521,12 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
                     Math.Max(0, windowWidth - 1),
                     (int)(WhatsAppConversationPaneOffsetAt96Dpi * scale))
                 : Math.Min(Math.Max(0, windowWidth - 1), (int)(DiscordConversationPaneOffsetAt96Dpi * scale));
-            if (area == CaptureArea.LastMessages && outgoingBandWidthAt96Dpi > 0)
+            // Only WhatsApp right-aligns the outgoing bubble: narrowing the band to
+            // the right end is what makes it readable there. Discord's messages run
+            // from the left of the conversation pane, so the band keeps its width
+            // (DISCORD1869: «hola» was really sent and the narrow band read nothing).
+            if (area == CaptureArea.LastMessages && outgoingBandWidthAt96Dpi > 0
+                && string.Equals(channel, "whatsapp", StringComparison.Ordinal))
             {
                 sourceX = Math.Max(sourceX, windowWidth - (int)(outgoingBandWidthAt96Dpi * scale));
             }
