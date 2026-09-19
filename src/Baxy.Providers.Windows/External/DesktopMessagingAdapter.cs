@@ -499,9 +499,13 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes;Add-Type -AssemblyName System.Windows.Forms
         $sig='using System;using System.Runtime.InteropServices;public static class BaxyDmWin{[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h,int c);[DllImport("user32.dll")] public static extern bool SetCursorPos(int x,int y);[DllImport("user32.dll")] public static extern void mouse_event(uint f,int dx,int dy,uint d,int e);}'
         if(-not ([System.Management.Automation.PSTypeName]'BaxyDmWin').Type){Add-Type -TypeDefinition $sig}
+        # The window is picked by its PROCESS, never by its title: any window whose
+        # title merely contains «discord» (an editor with a file named after it)
+        # matched the old name test and received the keystrokes.
+        $pids=@(Get-Process -Name Discord -ErrorAction SilentlyContinue | ForEach-Object { $_.Id })
         $root=[System.Windows.Automation.AutomationElement]::RootElement
         $cond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ClassNameProperty,'Chrome_WidgetWin_1')
-        $w=$null;foreach($c in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){if($c.Current.Name -match 'Discord'){$w=$c;break}}
+        $w=$null;foreach($c in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){if(($pids -contains $c.Current.ProcessId) -and $c.Current.Name){$w=$c;break}}
         if($null -eq $w){[pscustomobject]@{ok=$false;error='client_window_not_found'}|ConvertTo-Json -Compress;exit 2}
         $h=[IntPtr]$w.Current.NativeWindowHandle;[void][BaxyDmWin]::ShowWindow($h,9)
         $escaped=[regex]::Replace($label,'([+^%~(){}\[\]])','{$1}')
