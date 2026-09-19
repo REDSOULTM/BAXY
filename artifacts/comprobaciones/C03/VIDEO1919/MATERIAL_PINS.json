@@ -1,0 +1,159 @@
+{
+  "schema": "video1919-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1919-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1919-instrument-v1",
+  "seal_sha256": "2240c9f3b96d7117c014e5d78fc35adf236e586c9223b67d74cad7d8015cff81",
+  "runner_sha256": "e3d55a17db1fe07d4e0f40d54a3524ef27ea96274456627f70df3aba87d68dd7",
+  "transport_seal_sha256": "78b9a1eb504ba80ef57018e8e58b38191deef063372dcf45428a0a38aae5e5da",
+  "files": {
+    "panel.json": "6e3e39ee17d1fb44a8fa39dd31e9118c4ea5c3feb3708c9d1937568b787c8893",
+    "turns.jsonl": "0fbd4bc2fb9366aad812ce87614cc558774b13d58d44610d1242b44e1dbcc1a5",
+    "case-map.json": "edf5495584be19163fb65f59b9607a97aa16a1b4483dbb1ad32174553a1fa01f",
+    "PLAN.md": "b964979492234f27901a49f27936ed5c16397e2199ed97d18a73a6b0a2ff1fd9"
+  },
+  "counts": {
+    "cases": 14,
+    "historical_literals": 10,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 28,
+    "session_controls": 14,
+    "ordinary_turns": 2,
+    "reviewed_turns": 12,
+    "maximum_reportable_terminals": 26,
+    "maximum_internal_confirmations": 12
+  },
+  "kind_counts": {
+    "historical_literal": 10,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0050",
+      "kind": "historical_literal",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "0edccc6a1045daf7c96a10577243589799cce81bd8ff06f1b51a46f969d329ac",
+      "criterion_sha256": "0e09cd287f75ebc197d1e8821ee10fed5bf05c72c351ae197977283c7fb88768"
+    },
+    {
+      "index": 1,
+      "case_id": "H0105",
+      "kind": "historical_literal",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "206545fd6a807d623f51df4033dc9c560f6804103a3c978deb111c481c338bbb",
+      "criterion_sha256": "0e09cd287f75ebc197d1e8821ee10fed5bf05c72c351ae197977283c7fb88768"
+    },
+    {
+      "index": 2,
+      "case_id": "H0155",
+      "kind": "historical_literal",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "31186f9dc8d269033e1044d7604b8338ba7088c16db39ce733672b9d299bcf0a",
+      "criterion_sha256": "0e09cd287f75ebc197d1e8821ee10fed5bf05c72c351ae197977283c7fb88768"
+    },
+    {
+      "index": 3,
+      "case_id": "H0355",
+      "kind": "historical_literal",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "73c0fd2107988c91c4dee24f32d4aa2f5c19cc9030410f59cba2220bfbef39f2",
+      "criterion_sha256": "0e09cd287f75ebc197d1e8821ee10fed5bf05c72c351ae197977283c7fb88768"
+    },
+    {
+      "index": 4,
+      "case_id": "H0377",
+      "kind": "historical_literal",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "7d8395996f3a126cfd7bbb9488b7463ec73705a098e0db9bda42c436c85f7b1d",
+      "criterion_sha256": "0e09cd287f75ebc197d1e8821ee10fed5bf05c72c351ae197977283c7fb88768"
+    },
+    {
+      "index": 5,
+      "case_id": "H0412",
+      "kind": "historical_literal",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "8bda771a9bc1bea4b29cb5e264d73338072dc5b1742231e15ffa31aca9886d11",
+      "criterion_sha256": "0e09cd287f75ebc197d1e8821ee10fed5bf05c72c351ae197977283c7fb88768"
+    },
+    {
+      "index": 6,
+      "case_id": "H0551",
+      "kind": "historical_literal",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "c265a7d192946d204ba4284ab9d62d65c68b0e510d2d474cfedc7c6cf576d328",
+      "criterion_sha256": "0e09cd287f75ebc197d1e8821ee10fed5bf05c72c351ae197977283c7fb88768"
+    },
+    {
+      "index": 7,
+      "case_id": "H0613",
+      "kind": "historical_literal",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "d346ef04aaeef30febda79743147965ef20acc5b06cd54dc012b87db7c0402cd",
+      "criterion_sha256": "0e09cd287f75ebc197d1e8821ee10fed5bf05c72c351ae197977283c7fb88768"
+    },
+    {
+      "index": 8,
+      "case_id": "H0624",
+      "kind": "historical_literal",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "d75a7d53c6be638b4a63c37085ec7928beb846dfe4f2e338cd132d535997f658",
+      "criterion_sha256": "0e09cd287f75ebc197d1e8821ee10fed5bf05c72c351ae197977283c7fb88768"
+    },
+    {
+      "index": 9,
+      "case_id": "H0654",
+      "kind": "historical_literal",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "dfb63b4f133dc4b345080ff52abfa07801f7f7af0548138eae215f878452f306",
+      "criterion_sha256": "0e09cd287f75ebc197d1e8821ee10fed5bf05c72c351ae197977283c7fb88768"
+    },
+    {
+      "index": 10,
+      "case_id": "video1919-dev-01",
+      "kind": "original_development_variant",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "f0db7b6fe4b9d60692ed147966a9f3d597ac8002547a25b686ef9be8619b3847",
+      "criterion_sha256": "0e09cd287f75ebc197d1e8821ee10fed5bf05c72c351ae197977283c7fb88768"
+    },
+    {
+      "index": 11,
+      "case_id": "video1919-dev-02",
+      "kind": "original_development_variant",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "828d285ba7ab5f531d50e5ee8a67f0aeaa0725233e87842d52951d4e06e87d13",
+      "criterion_sha256": "0e09cd287f75ebc197d1e8821ee10fed5bf05c72c351ae197977283c7fb88768"
+    },
+    {
+      "index": 12,
+      "case_id": "video1919-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "a08744964ba0843fd1bc23d959af801082f2500cf7a864f2cb4668789b2104fc",
+      "criterion_sha256": "031153cb155d4fd6216825f753dc315529c6a33cdc1329a8ed51b2593af70750"
+    },
+    {
+      "index": 13,
+      "case_id": "video1919-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "bc24898c6d653acc0303bda963f8edd69ad552c3e75140829c1ecc5b591f40cc",
+      "criterion_sha256": "50757e30c0886c9c9d6fe25617d31896c91ed2f486ced29f1b243a9954f5945b"
+    }
+  ]
+}

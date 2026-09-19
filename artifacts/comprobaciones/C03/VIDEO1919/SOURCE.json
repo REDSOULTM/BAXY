@@ -1,0 +1,19 @@
+{
+  "schema": "c03-video1919-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs (the browser session belongs to the machine, not to the turn, so the owner's streaming login survives; and a rejected playback records the last page it saw), src/baxy_mind/llm.py (a verified streaming playback may name what it plays, and may not state how many seconds it has run), src/Baxy.App/ProductConductorHost.cs (streaming playback is reviewable), plus the eyes and the catalog changes already built, on top of the POWER1917 build.",
+  "patch": "artifacts/comprobaciones/C03/VIDEO1919/SOURCE.patch",
+  "commits": [
+    "b672d23c26f5162cba810f8bfe1007ba7ffcde55",
+    "345cbc7be56298b611ac9d51e2bbbca015fa20e7",
+    "7d681e00902967eb3e9dca7240c2de7b14bc8dd0",
+    "5f43658ae23b6f5bd9dd5cc5418e216f94e76523",
+    "5648ab9ddd5ee0678cba8e4a510f1d985d5a2b0d"
+  ],
+  "build": "BUILD1919 (C03-repairs1919-build/BUILD_READY.json; mente, App y Providers)",
+  "cause_measured": "El perfil del navegador se creaba y se borraba con el turno, de modo que Netflix siempre veía a un desconocido y el camino terminaba en la pantalla de entrar; y una vez resuelto eso, la reproducción verificada no se podía contar porque el guardián del nombre no admitía esta operación entre las de transporte de medios.",
+  "change": "La sesión del navegador es del equipo y persiste entre turnos; una reproducción verificada nombra el título que observa, y no dice cuántos segundos lleva.",
+  "measurement": "VIDEO1919: 14 ejecutados, 11 aprobados, 3 fallidos; 7 créditos. Nueve reproducciones aprobadas por la raiz, completadas y verificadas contra el avance observado del video; un final falla por afirmar la posicion del video, que el recibo no da, y dos turnos quedan detenidos sin efecto porque el revisor de la raiz llevaba un unico titulo fijado.",
+  "credits": 7
+}

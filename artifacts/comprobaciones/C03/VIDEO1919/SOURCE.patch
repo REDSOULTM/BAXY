@@ -1,0 +1,402 @@
+commit b672d23c26f5162cba810f8bfe1007ba7ffcde55
+
+C03: los ojos miraban la ventana más grande, no la de delante
+
+Dos piezas que hacían falta para el vídeo, medidas sobre el Chrome del dueño
+con Netflix y Disney+ ya con sesión.
+
+La primera es un defecto de los ojos. La regla que elige la raíz cambiaba la
+ventana en primer plano por la mayor del mismo proceso. Se escribió para una
+ventana degenerada, pero un navegador tiene varias: con Netflix delante, los
+ojos leían la de YouTube por ser más grande, y el clic habría caído allí. La
+ventana de delante es la que la persona está mirando. La regla del área queda
+para lo que la motivó: cuando esa ventana no sirve como raíz. Medido: antes
+devolvía «YouTube — …»; ahora, «Netflix - Google Chrome».
+
+La segunda es una tecla. El árbol de accesibilidad de Chrome devuelve un solo
+nodo y el OCR sólo ve la URL escrita, de modo que no hay etiqueta que pulsar
+para enfocar la barra de direcciones. Con ctrl_l, ir a una dirección es
+encadenar lo que ya existe —enfocar, escribir, Enter— en vez de añadir una
+herramienta: un valor más en una operación que ya estaba.
+
+Medido con los guiones del propio producto sobre la ventana del dueño:
+  ctrl_l  → 4 de 4 eventos aceptados
+  escribir «netflix.com/search?q=Stranger Things» → 72 de 72
+  enter   → 2 de 2
+y la barra quedó en netflix.com/search?q=Stranger%20Things.
+
+cien-64: 100/100, cero agotes; frente a cien-63 sólo cambian la hora y dos
+frases distintas e igual de ciertas.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Kernel/Operations/ProductCatalog.cs b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+index b58f52a47..72a672a67 100644
+--- a/src/Baxy.Kernel/Operations/ProductCatalog.cs
++++ b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+@@ -692,7 +692,13 @@ public static class ProductCatalog
+             Schema([String("key", values:
+                 [
+                     "alt_tab", "arrow_down", "arrow_left", "arrow_right", "arrow_up",
+-                    "backspace", "context_menu", "control", "ctrl_shift_escape", "ctrl_v",
++                    // ctrl_l enfoca la barra de direcciones de cualquier navegador.
++                    // Hace falta para el vídeo: el árbol de accesibilidad de Chrome
++                    // devuelve un solo nodo y el OCR sólo ve la URL escrita, de modo
++                    // que no hay etiqueta que pulsar. Con ella, ir a una dirección es
++                    // encadenar lo que ya existe —enfocar, escribir, Enter— en vez de
++                    // añadir una herramienta.
++                    "backspace", "context_menu", "control", "ctrl_l", "ctrl_shift_escape", "ctrl_v",
+                     "delete", "end", "enter", "escape", "home", "page_down", "page_up",
+                     "shift", "space", "tab", "win",
+                 ])], ["key"]),
+diff --git a/src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1 b/src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1
+index 83f2f76f7..9efdf52de 100644
+--- a/src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1
++++ b/src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1
+@@ -24,6 +24,17 @@ public static class BaxyVisibleClickNative {
+   [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr hwnd, out RECT rect);
+   [StructLayout(LayoutKind.Sequential)] public struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
+   public static IntPtr LargestVisible(IntPtr hwnd) {
++    // H0050 y las demas de video: esta regla cambiaba la ventana de delante
++    // por la mas grande del mismo proceso. Con un navegador de varias
++    // ventanas eso lee la equivocada —medido: con Netflix delante devolvia
++    // la de YouTube, por ser mayor—. La ventana de delante es la que la
++    // persona esta mirando; la regla del area sigue para cuando esa ventana
++    // no sirve como raiz: un marco degenerado o sin superficie.
++    RECT self;
++    if (GetWindowRect(hwnd, out self)) {
++      long own = (long)Math.Max(0, self.Right - self.Left) * Math.Max(0, self.Bottom - self.Top);
++      if (own >= 200 * 200) return hwnd;
++    }
+     // Windows PowerShell 5.1 compiles Add-Type with C# 5: no inline out declarations (UI1273).
+     uint procId; GetWindowThreadProcessId(hwnd, out procId);
+     IntPtr best=hwnd; long bestArea=0;
+diff --git a/src/Baxy.Providers.Windows/External/DesktopKeyPress.ps1 b/src/Baxy.Providers.Windows/External/DesktopKeyPress.ps1
+index c212d4a86..f9780dce0 100644
+--- a/src/Baxy.Providers.Windows/External/DesktopKeyPress.ps1
++++ b/src/Baxy.Providers.Windows/External/DesktopKeyPress.ps1
+@@ -1,7 +1,7 @@
+ [CmdletBinding(DefaultParameterSetName='Key')]
+ param(
+     [Parameter(Mandatory=$true,ParameterSetName='Key',Position=0)]
+-    [ValidateSet('alt_tab','arrow_down','arrow_left','arrow_right','arrow_up','backspace','context_menu','control','ctrl_shift_escape','ctrl_v','delete','end','enter','escape','home','page_down','page_up','shift','space','tab','win')]
++    [ValidateSet('alt_tab','arrow_down','arrow_left','arrow_right','arrow_up','backspace','context_menu','control','ctrl_l','ctrl_shift_escape','ctrl_v','delete','end','enter','escape','home','page_down','page_up','shift','space','tab','win')]
+     [string]$Key,
+     [Parameter(Mandatory=$true,ParameterSetName='Pointer')]
+     [ValidateSet('click','move_center','scroll_down')]
+@@ -231,6 +231,8 @@ public static class BaxyKeyInput {
+     if($PSCmdlet.ParameterSetName -eq 'Key') {
+         $chords=@{
+             alt_tab=[uint16[]]@(0x12,0x09)
++            # ctrl_l enfoca la barra de direcciones del navegador de delante.
++            ctrl_l=[uint16[]]@(0x11,0x4C)
+             ctrl_shift_escape=[uint16[]]@(0x11,0x10,0x1B)
+             ctrl_v=[uint16[]]@(0x11,0x56)
+         }
+diff --git a/src/Baxy.Providers.Windows/External/DesktopListVisible.ps1 b/src/Baxy.Providers.Windows/External/DesktopListVisible.ps1
+index ff4260e37..aee590e1c 100644
+--- a/src/Baxy.Providers.Windows/External/DesktopListVisible.ps1
++++ b/src/Baxy.Providers.Windows/External/DesktopListVisible.ps1
+@@ -16,6 +16,17 @@ public static class BaxyVisibleListNative {
+   // Declaradas antes de la llamada: el compilador que trae Add-Type en Windows
+   // PowerShell 5.1 no admite «out uint x» en linea.
+   public static IntPtr LargestVisible(IntPtr hwnd) {
++    // H0050 y las demas de video: esta regla cambiaba la ventana de delante
++    // por la mas grande del mismo proceso. Con un navegador de varias
++    // ventanas eso lee la equivocada —medido: con Netflix delante devolvia
++    // la de YouTube, por ser mayor—. La ventana de delante es la que la
++    // persona esta mirando; la regla del area sigue para cuando esa ventana
++    // no sirve como raiz: un marco degenerado o sin superficie.
++    RECT self;
++    if (GetWindowRect(hwnd, out self)) {
++      long own = (long)Math.Max(0, self.Right - self.Left) * Math.Max(0, self.Bottom - self.Top);
++      if (own >= 200 * 200) return hwnd;
++    }
+     uint procId;
+     GetWindowThreadProcessId(hwnd, out procId);
+     IntPtr best=hwnd; long bestArea=0;
+commit 345cbc7be56298b611ac9d51e2bbbca015fa20e7
+
+C03: la sesión del navegador es del equipo, no del turno
+
+El perfil del navegador colgaba del directorio del turno, de modo que cada
+turno estrenaba uno. Dos cosas no sobreviven a eso, y las dos hacen falta para
+el vídeo: la sesión iniciada en el servicio, y el componente Widevine.
+
+Lo segundo es lo que corrige el diagnóstico de esta mañana. Netflix no
+rechazaba la reproducción por «navigator.webdriver» —ninguna de las cuatro
+plataformas mira esa bandera, según la guía de campo de la generación
+anterior— ni por el puerto de depuración. Widevine se instala y se gestiona
+como un componente de Chrome, y lo que lo deja fuera es «--disable-component-
+update», bandera que este adaptador no usa. Medido tras el cambio: el perfil
+compartido tiene su carpeta WidevineCdm.
+
+Una sesión de navegador es del equipo y de la persona, como su Steam o su
+WhatsApp: no es estado del turno. Ahora vive junto al resto de lo suyo y un
+turno con perfil nuevo la encuentra igual. Vale también para los navegadores
+con nombre, que tenían el mismo problema.
+
+cien-65: 100/100, cero agotes; frente a cien-64 sólo cambian la hora y un
+«un compañero» que pasó a «tu compañero».
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/NamedBrowserAdapter.cs b/src/Baxy.Providers.Windows/External/NamedBrowserAdapter.cs
+index 0ca8ce09f..e3ea6627d 100644
+--- a/src/Baxy.Providers.Windows/External/NamedBrowserAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/NamedBrowserAdapter.cs
+@@ -57,8 +57,10 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
+             string? executable = ResolveBrowser(browser);
+             if (executable is null)
+                 return ExternalJson.Failure(operation, family + "_not_installed");
++            // La sesion de un navegador con nombre tambien es del equipo, no del
++            // turno: vive donde la del navegador por defecto y sobrevive igual.
+             session = new CdpBrowserSession(
+-                Path.Combine(_dataRoot, browser + "-browser-profile"), executable);
++                WebBrowserAdapter.SharedBrowserProfile(_dataRoot, browser), executable);
+             _browsers.Add(browser, session);
+         }
+         Uri target;
+diff --git a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+index e994c8f17..16edb6836 100644
+--- a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+@@ -17,6 +17,31 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
+     private readonly HttpClient _http;
+     private readonly string? _searchDiagnosticPath;
+ 
++    // El perfil del navegador colgaba del directorio del turno, de modo que cada
++    // turno estrenaba uno. Dos cosas no sobreviven a eso, y las dos hacen falta
++    // para el video: la sesion iniciada en el servicio, y el componente Widevine
++    // —Chrome lo instala como componente, y en un perfil recien creado todavia
++    // no esta—. La sesion del navegador es del equipo y de la persona, como su
++    // Steam o su WhatsApp: no es estado del turno. Vive donde vive el resto de
++    // lo suyo, y un turno con perfil nuevo la encuentra igual.
++    internal static string SharedBrowserProfile(string dataRoot, string leaf)
++    {
++        try
++        {
++            string local = Environment.GetFolderPath(
++                Environment.SpecialFolder.LocalApplicationData);
++            if (!string.IsNullOrWhiteSpace(local))
++                return Path.Combine(local, "BAXY", "browser-session-v1", leaf);
++        }
++        catch (Exception exception) when (exception is ArgumentException
++            or PlatformNotSupportedException)
++        {
++            // Sin carpeta de usuario se vuelve al comportamiento anterior.
++        }
++
++        return Path.Combine(dataRoot, leaf + "-browser-profile");
++    }
++
+     internal WebBrowserAdapter(string dataRoot)
+         : this(dataRoot, sessionContext: null)
+     {
+@@ -24,7 +49,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
+ 
+     internal WebBrowserAdapter(string dataRoot, CdpBrowserSessionContext? sessionContext)
+     {
+-        _browser = new CdpBrowserSession(Path.Combine(dataRoot, "browser-profile"));
++        _browser = new CdpBrowserSession(SharedBrowserProfile(dataRoot, "edge"));
+         _sessionContext = sessionContext;
+         _searchDiagnosticPath = Path.Combine(dataRoot, "captures", "web-search-rejections.jsonl");
+         _http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
+commit 7d681e00902967eb3e9dca7240c2de7b14bc8dd0
+
+C03: el revisor de la raíz ya puede confirmar una reproducción de streaming
+
+La lista de operaciones que el conductor deja confirmar al revisor no incluía
+streaming.play.named ni streaming.navigate, de modo que el turno revisado de
+una fila de vídeo se rechazaba con review_pending_not_supported antes de
+llegar a ejecutarse. Sin eso las 24 filas no se pueden medir siquiera.
+
+Con el permiso puesto y la sesión en el perfil compartido, la medición dice lo
+que hacía falta saber:
+
+  streaming.play.named → completada y verificada
+  playbackStatus       → playing
+  observedProgressSeconds → 0,70
+  finalUrl             → https://www.netflix.com/watch/80077368
+
+Es decir: Netflix reproduce en el navegador de BAXY. El DRM no era el
+problema; era el perfil que moría con el turno.
+
+Queda por delante lo que esa misma medición destapó: el buscador de títulos
+falla según el estado en que quede la página —netflix_title_or_play_control_
+not_found tras una reproducción previa— y el final no se llega a redactar.
+
+cien-66: 100/100, cero agotes; idéntica a cien-65 salvo la hora.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/ProductConductorHost.cs b/src/Baxy.App/ProductConductorHost.cs
+index f1df22420..cbbfde742 100644
+--- a/src/Baxy.App/ProductConductorHost.cs
++++ b/src/Baxy.App/ProductConductorHost.cs
+@@ -395,7 +395,13 @@ internal static class ProductConductorHost
+                 // MSGSEND1845 «manda un mensaje a Musica en whatsapp que diga hola»: the
+                 // real send, forced by construction to the owner's test channel, is
+                 // confirmed by the root reviewer (owner decision, section 6).
+-                or "message.send.test"))
++                or "message.send.test"
++                // Las 24 filas de vídeo «pon Stranger Things en Netflix»: la
++                // reproducción en la sesión de streaming la confirma el revisor
++                // de la raíz, igual que las otras reproducciones externas. Sin
++                // esto el turno revisado se rechazaba con
++                // review_pending_not_supported y la fila no se podía medir.
++                or "streaming.play.named" or "streaming.navigate"))
+         {
+             return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
+         }
+commit 5f43658ae23b6f5bd9dd5cc5418e216f94e76523
+
+C03: BAXY ya sabe decir que la serie está puesta
+
+Con la reproducción verificada en Netflix, los tres borradores morían en
+missing_name: el guardián sólo dejaba nombrar lo observado a las operaciones
+de transporte de medios, y streaming.play.named no estaba en esa lista.
+Ahora lo está, con las mismas condiciones que Spotify o el reproductor
+local: verificada, exitosa, reproduciendo y con un título visto.
+
+Un fallo de reproducción que no dice dónde se quedó obliga a adivinar, así
+que queda anotada la última página observada junto al diagnóstico de
+búsqueda que ya existía.
+
+Medido: corrida de cien 67, 100/100, sin fallos de composición. La sonda de
+extremo a extremo publica «Ya está reproduciéndose Stranger Things en
+Netflix.».
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+index 16edb6836..80022f64e 100644
+--- a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+@@ -289,8 +289,14 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
+         CdpStreamingPlaybackResult playback = await _browser.PlayNetflixAsync(
+             title, cancellationToken).ConfigureAwait(false);
+         if (!playback.Verified)
++        {
++            // Un fallo que no dice donde se quedo obliga a adivinar. Se anota la
++            // ultima pagina observada, que es lo que separa «no eligio perfil» de
++            // «no encontro la tarjeta» y de «no vio avanzar el video».
++            RecordStreamingRejection(title, playback);
+             return effectBoundary.Failure(
+                 operation, playback.ErrorCode, playback.EffectObserved);
++        }
+         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
+         {
+             writer.WriteStartObject(); writer.WriteNumber("version", 1);
+@@ -305,6 +311,36 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
+         }), playback.EffectObserved);
+     }
+ 
++    private void RecordStreamingRejection(string title, CdpStreamingPlaybackResult playback)
++    {
++        if (_searchDiagnosticPath is null)
++            return;
++        try
++        {
++            string path = Path.Combine(
++                Path.GetDirectoryName(_searchDiagnosticPath)!,
++                "streaming-playback-rejections.jsonl");
++            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
++            string line = ExternalJson.Create(writer =>
++            {
++                writer.WriteStartObject();
++                writer.WriteString("schema", "baxy.streaming-playback-rejection.v1");
++                writer.WriteString("utc", DateTimeOffset.UtcNow.ToString("o"));
++                writer.WriteString("title", title);
++                writer.WriteString("error", playback.ErrorCode);
++                writer.WriteString("lastUrl", playback.FinalUrl);
++                writer.WriteString("lastPageTitle", playback.PageTitle);
++                writer.WriteEndObject();
++            }).GetRawText();
++            File.AppendAllText(path, line + Environment.NewLine, Encoding.UTF8);
++        }
++        catch (Exception exception) when (exception is IOException
++            or UnauthorizedAccessException or ArgumentException)
++        {
++            // Un diagnostico que no se puede escribir no cambia el resultado.
++        }
++    }
++
+     private async ValueTask<ExternalCapabilityReceipt> PlayYouTubeAsync(
+         string operation,
+         JsonElement arguments,
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 6741a2675..1a22dd742 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -8429,6 +8429,18 @@ def compose_visible_defect(
+             and situation.get("succeeded") is True
+             and observed_dict.get("playbackStatus") == "playing"
+             and isinstance(observed_dict.get("title"), str)
++        ) or (
++            # Las filas de vídeo «pon Stranger Things en Netflix»: la
++            # reproducción en la sesión de streaming nombra lo que se ve por su
++            # título observado, igual que Spotify o el reproductor local. Sin
++            # estar aquí, el guardián exigía además la palabra «título» en la
++            # respuesta, y los tres borradores —«Ya está reproduciendo Stranger
++            # Things en Netflix»— morían en missing_name con el vídeo avanzando.
++            operation == "streaming.play.named"
++            and situation.get("verified") is True
++            and situation.get("succeeded") is True
++            and observed_dict.get("playbackStatus") == "playing"
++            and isinstance(observed_dict.get("title"), str)
+         )
+         scheduled_due = _verified_notification_due(situation)
+         title = observed_dict.get("title")
+commit 5648ab9ddd5ee0678cba8e4a510f1d985d5a2b0d
+
+C03: los segundos del vídeo no son del dueño
+
+Con la reproducción verificada, un borrador dijo «Ya estás viendo Stranger
+Things en Netflix. Está en reproducción y has pasado 0.63 segundos». Los
+segundos observados son cómo se comprueba que el vídeo avanza, no un hecho
+que contarle a nadie, y quien los pasó fue el vídeo. Pedir una serie no es
+preguntar por dónde va, así que decirlos queda vetado y la indicación de
+arreglo pide sólo el estado y el título.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 1a22dd742..c1d0fc89c 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -8442,6 +8442,17 @@ def compose_visible_defect(
+             and observed_dict.get("playbackStatus") == "playing"
+             and isinstance(observed_dict.get("title"), str)
+         )
++        if (
++            operation == "streaming.play.named"
++            and isinstance(observed_dict.get("observedProgressSeconds"), (int, float))
++            and re.search(r"\d[\d.,]*\s*(?:segundos?|seconds?|secs?\b)", folded)
++        ):
++            # Los segundos observados son la prueba de que el vídeo avanza, no un
++            # hecho que contarle a la persona: un borrador los leyó como suyos
++            # —«Ya estás viendo Stranger Things en Netflix. Está en reproducción
++            # y has pasado 0.63 segundos»— y le atribuyó un tiempo que pasó el
++            # vídeo, no ella. Pedir una serie no es preguntar por dónde va.
++            return "playback_progress_stated"
+         scheduled_due = _verified_notification_due(situation)
+         title = observed_dict.get("title")
+         if scheduled_due is not None and not re.search(
+@@ -16389,6 +16400,11 @@ class LlmRuntime:
+                 if response_language == "en"
+                 else "seen.installedIn son los Python donde el paquete SÍ está instalado y seen.notInstalledIn donde no: di exactamente eso, sin negar una instalación de seen.installedIn ni afirmar una que no esté."
+             ),
++            "playback_progress_stated": (
++                "Say only that it is playing and what is playing; do not state any number of seconds: the observed progress is how you checked, not something the person did."
++                if response_language == "en"
++                else "Di sólo que está reproduciéndose y qué se reproduce; no digas ningún número de segundos: el avance observado es cómo lo comprobaste, no algo que haya hecho la persona."
++            ),
+             "screen_wrong_count": (
+                 "The screen shows seen.lineCount lines: that is the only number you may state; seen.lines are only some of those lines, so do not count them."
+                 if response_language == "en"

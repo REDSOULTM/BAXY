@@ -1618,3 +1618,7 @@ Archivos y carpetas pasa de 31/32 a 32/32 con decir llanamente que no se puede c
 ## Actualización 2026-09-19 (POWER1917)
 
 Energía del sistema pasa de 1/3 a 3/3 con llamar de verdad a la transicion pedida y decir que Windows no la acepto y que el equipo sigue encendido (commit 2a6b58ca, BUILD1917) (HEAD 2a6b58ca): 6 ejecutados, 6 aprobados, 0 fallidos, 2 créditos. Los cuatro del grupo llamaron de verdad a system.power con la acción pedida y terminaron en rechazo de Windows; el final dijo que el equipo sigue encendido; la PC no se apagó ni se reinició; cien-63 100/100 con cero agotes. La categoría queda cerrada.
+
+## Actualización 2026-09-19 (VIDEO1919)
+
+Vídeo y series pasa de 2/26 a 9/26 con poner la serie que se nombra en el servicio que se nombra, y decir que se esta reproduciendo solo cuando se ha visto avanzar (commit 5648ab9d, BUILD1919) (HEAD 5648ab9d): 14 ejecutados, 11 aprobados, 3 fallidos, 7 créditos. Nueve reproducciones aprobadas por la raiz, completadas y verificadas contra el avance observado del video; un final falla por afirmar la posicion del video, que el recibo no da, y dos turnos quedan detenidos sin efecto porque el revisor de la raiz llevaba un unico titulo fijado.
