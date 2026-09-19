@@ -37,7 +37,14 @@ internal sealed class DesktopMessagingAdapter : IExternalOperationAdapter, IDisp
         new(StringComparer.Ordinal)
         {
             ["whatsapp"] = "Música",
-            ["discord"] = "Valeria",
+            // DISCORD1869: measured on the owner's client, Discord refuses to open a
+            // direct message with «Valeria» (no conversation exists with that user and
+            // every activation — Enter, a click on the row, a UI Automation Invoke —
+            // only dismisses the switcher), while the identical flow opens a chat that
+            // already exists. The forced destination is therefore the owner's own
+            // group of one member, which reaches nobody else, until that direct
+            // message exists.
+            ["discord"] = "Grupo de RED",
             // Owner decision 2026-09-18 (DECISIONES_DUENO_2026-09-18 §3): the mail
             // test destination is the owner's own test mailbox; the send goes out
             // through the owner's classic Outlook profile and is verified by the
