@@ -3243,6 +3243,15 @@ def known_unsupported_effect_request(
             {"shell.command.run"},
         ),
         (
+            # H0475 «PS C:\\Users\\usuario\\Desktop...> python carter_core.py»: una linea de
+            # consola pegada con su prompt es un comando, aunque no traiga verbo
+            # delante. Sin esto la del prompt de PowerShell acababa preguntando si
+            # la persona queria ayuda para entender el script, mientras que la misma
+            # linea sin el «PS» ya decia el limite.
+            _has(folded, r"^\s*(?:ps\s+)?[a-z]:\\[^>]*>\s*\S"),
+            {"shell.command.run"},
+        ),
+        (
             # LIMITS1677 H0635 «Puedes ver tu propio código y analizar si hay
             # alguna falla»: BAXY has no reading of its own source.
             _has(folded, r"\b(?:tu|tus|your)\s+(?:propio\s+|own\s+)?(?:codigo|code|fuente|source\s+code|programacion)\b")
@@ -11118,9 +11127,24 @@ def _wifi_state_question(text: str) -> bool:
     )
 
 
+# H0475: una linea de consola pegada con su prompt —«PS C:\\...> python x.py»,
+# «C:\\...> dir»— es una orden escrita como se escribe en una consola. No trae
+# verbo de peticion, asi que sin esto no contaba como pedido directo y el turno
+# acababa preguntando por el script en vez de decir que no ejecuta comandos.
+_CONSOLE_PROMPT_LINE = re.compile(r"^\s*(?:ps\s+)?[a-z]:\\[^>]*>\s*\S", re.IGNORECASE)
+
+
+def console_prompt_command(text: str) -> bool:
+    """El mensaje entero es una linea de consola con su prompt delante."""
+
+    return _CONSOLE_PROMPT_LINE.match(_fold(text)) is not None
+
+
 def _is_direct_request(text: str) -> bool:
     """Require a request speech act before granting deterministic authority."""
 
+    if console_prompt_command(text):
+        return True
     topic = _machine_status_topic(text)
     if topic is not None:
         text = topic.group("body")
