@@ -1,0 +1,13 @@
+{
+  "schema": "c03-unres1873-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "no source change (measurement of the current behaviour on the HEAD after the mail withdrawal).",
+  "patch": "artifacts/comprobaciones/C03/UNRES1873/SOURCE.patch",
+  "commits": [],
+  "build": "BUILD1873 (C03-repairs1873-build/BUILD_READY.json; sin cambio de codigo)",
+  "cause_measured": "Las variantes de UNRES1855 no eran del mismo tipo que los literales fieles y una fallo, de modo que ningun literal pudo acreditar.",
+  "change": "Ninguno en el codigo: se repite la medicion con variantes de la misma forma.",
+  "measurement": "UNRES1873: 8 ejecutados, 7 aprobados (3 de 4 literales, 2 variantes, 2 límites), 1 fallido; 3 créditos. Medición raíz en el PC principal, sin cambio de código: las cuatro entradas se ejecutaron como turnos ordinarios con cero operaciones. Tres literales respondieron con honestidad: «That's it. Get this spiderbell.» recibió «I couldn't understand the request properly.», «Vean con teléfono.» una pregunta que pide precisar entre dos lecturas, y el tramo largo de habla ajena que no está dirigido a BAXY recibió que no está seguro de la frase y una pregunta. Las dos variantes de habla ajena, en castellano y en inglés, recibieron «En eso no encuentro un pedido para mí; ¿necesitás algo?» y su equivalente inglés, así que los tres literales acreditan. El marcador sin texto falló: se clasifica como ruido pero el final preguntó de qué quiere hablar, en inglés, sin decir que no llegó nada legible. Entrada incompleta, ruido y control de diálogo 30/34.",
+  "credits": 3
+}
