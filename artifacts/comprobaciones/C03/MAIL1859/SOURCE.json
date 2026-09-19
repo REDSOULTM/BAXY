@@ -1,0 +1,15 @@
+{
+  "schema": "c03-mail1859-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py and src/baxy_mind/observed_response_literals.py (the send receipt literals are observed data, a bracket the person wrote is not a template hole, the retry hint quotes both destinations), on top of the mail mechanism restored by the owner decision of 18-09 section 5.",
+  "patch": "artifacts/comprobaciones/C03/MAIL1859/SOURCE.patch",
+  "commits": [
+    "9fad6c662"
+  ],
+  "build": "BUILD1859 (C03-repairs1859-build/BUILD_READY.json; mente)",
+  "cause_measured": "MAIL1853 midio el mecanismo: los seis envios salieron de verdad, pero tres vetos del compositor tumbaron finales veraces (la direccion del destino leida como codigo interno, el marcador entre corchetes del propio literal leido como hueco de plantilla, y la pista de reintento sin citar el destino).",
+  "change": "Los literales del recibo de envio son datos observados, un corchete escrito por la persona no es un hueco de plantilla y la pista de reintento cita el destino real y el pedido.",
+  "measurement": "MAIL1859: 12 ejecutados, 6 aprobados (1 literal, 3 variantes, 2 límites), 6 fallidos; 1 créditos. Medición raíz en el PC principal: los diez casos de envío salieron de verdad a la casilla de pruebas del dueño (destino forzado por construcción, envío por su Outlook clásico, copia leída en Elementos enviados, recibo sent true); cuatro de ellos como diálogos que preguntaron el texto o el destinatario que faltaba y lo completaron con la respuesta. H0554 «mandale un correo a ana@gmail.com diciendo que llego tarde» recibió un final veraz que nombró la dirección real y dijo que no llegó a la pedida, y las dos variantes de envío pasaron, así que acredita. Los cinco fallidos enviaron igual pero ningún borrador del final nombró la dirección real: el compositor la llamó «canal de prueba» o la escribió con otras mayúsculas, y el que sí la nombró usó «le dije», que el veto de envío no reconoce como decir que se envió. Correo 1/6.",
+  "credits": 1
+}

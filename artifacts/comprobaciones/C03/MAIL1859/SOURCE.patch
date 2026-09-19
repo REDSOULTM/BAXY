@@ -1,0 +1,43 @@
+commit 9fad6c6626304b60f8ae20d885f69b3ffd5c2ccd
+
+C03: the finals of a real test send may name the destination and the person's own words (MAIL1853 measured three vetoes on truthful replies): the send receipt's forced destination, requested recipient and text are observed literals, so an address is no longer read as an internal code; a bracket the person wrote themselves is not a template hole; and the retry hint quotes both destinations so the model copies them instead of paraphrasing («el canal de prueba de Emmanuel»)
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 7a27296b5..27a26793d 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -6920,7 +6920,15 @@ def compose_visible_defect(
+     # actual en español].» (conocimiento-3/t3).
+     placeholder = re.search(r"\[[^\]]{3,}\]|\{[^}]{3,}\}|<[a-z ]{3,}>", stripped)
+     if placeholder is not None and not _bracket_is_observed(placeholder.group(0), facts):
+-        return "copied_instruction"
++        # MAIL1853 «escribile un mail a [EMAIL_REDACTED]»: a bracket the person
++        # wrote themselves, in this turn or in an earlier request of the same
++        # dialogue, is their own word, not a template hole left unfilled.
++        bracket = placeholder.group(0).casefold()
++        if not any(
++            isinstance(source, str) and bracket in source.casefold()
++            for source in identifier_sources
++        ):
++            return "copied_instruction"
+     # `can` es lo que hace BAXY. Atribuírselo a la persona invierte el actor:
+     # «Puedes abrir y cerrar programas…» ante «qué puedes hacer en este PC».
+     if _looks_like_capability_question(user_text) and re.match(
+@@ -15639,9 +15647,12 @@ class LlmRuntime:
+                 )
+                 if same_target_send
+                 else (
+-                    "The message was really sent, but only to the owner's own test channel, not to the requested recipient: name that real test destination and make clear it did not go to the requested person."
++                    # MAIL1853: the test destination can be a long address the model
++                    # paraphrased («el canal de prueba de Emmanuel»); both literals
++                    # are quoted so the reply copies them.
++                    f"The message was really sent, but only to the owner's own test channel «{seen_send_for_hint.get('forcedDestination') or ''}», not to the requested recipient «{seen_send_for_hint.get('requestedRecipient') or ''}»: write that exact destination as it is and make clear it did not go to the requested one."
+                     if response_language == "en"
+-                    else "El mensaje se envió de verdad, pero sólo al canal de pruebas propio del dueño, no al destinatario pedido: nombra ese destino de prueba real y deja claro que no fue a la persona pedida."
++                    else f"El mensaje se envió de verdad, pero sólo al canal de pruebas propio del dueño «{seen_send_for_hint.get('forcedDestination') or ''}», no al destinatario pedido «{seen_send_for_hint.get('requestedRecipient') or ''}»: escribe ese destino real tal cual y deja claro que no fue al pedido."
+                 )
+             ),
+             "send_not_stated": (

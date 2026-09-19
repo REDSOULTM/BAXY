@@ -1,3 +1,25 @@
+## MAIL1859 — estado vigente 2026-09-19T01:22:38.510677+00:00
+
+Parcial: 6 aprobados, 6 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 671/742 | 71 | 0 | >=555 | 13/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 554 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MAIL1859 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: MAIL1859: 12 ejecutados, 6 aprobados, 6 fallidos, 1 créditos (índices [0]); Correo 1/6. Siguiente: panel grande de mensajería (Musica y Valeria) sobre el mismo mecanismo.
+
+Evidencia: `artifacts/comprobaciones/C03/MAIL1859/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 338.17 s acumulados; pico GPU 3492.93 MiB; pico RAM 2495.96 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 12; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MAIL1859 precedente. -->
+
 ## UNRES1855 — estado vigente 2026-09-19T00:53:28.698409+00:00
 
 Parcial: 6 aprobados, 5 fallidos, 0 sin ejecutar; 0 créditos.
