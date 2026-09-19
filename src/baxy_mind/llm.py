@@ -133,6 +133,16 @@ CONVERSATION_FACT_PROVENANCE_PROMPT = (
     "que dijiste, no verificación de esos datos."
 )
 
+# cien-42 003 «explícame qué es un SSD, una frase» → «…en lugar de placas de
+# circuito como en los discos tradicionales»: lo que se define está bien y lo
+# falso es el contraste, que nadie pidió. El disco tradicional usa platos
+# magnéticos. En una definición el dato sin comprobar entra siempre por ahí.
+DEFINITION_CONTRAST_PROMPT = (
+    "Si te preguntan qué es algo, di qué es esa cosa. No expliques por "
+    "contraste cómo funciona otra que nadie nombró ni afirmes de qué está "
+    "hecha: si no te consta, no lo digas."
+)
+
 MIXED_RESPONSE_LANGUAGE_POLICY = (
     "La petición mezcla español e inglés (spanglish). Puedes responder con "
     "naturalidad en español; no es obligatorio alternar idiomas. Conserva los "
@@ -10517,6 +10527,7 @@ class LlmRuntime:
                         }.get(conversation_kind, SYSTEM_PROMPT),
                     ) + (
                         " " + CONVERSATION_FACT_PROVENANCE_PROMPT
+                        + " " + DEFINITION_CONTRAST_PROMPT
                         if direct_knowledge else ""
                     ) + (
                         " El equivalente fijo de «" + _set_phrase[0]
