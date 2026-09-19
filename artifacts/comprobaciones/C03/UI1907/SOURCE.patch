@@ -1,0 +1,179 @@
+commit 186bdf91102775c4f0c3c80126c0aece8d6a06ad
+
+C03: buscar algo y no encontrarlo no es un fallo, es una respuesta
+
+Cuatro piezas de la misma frase, para H0096 «aprieta en Among Us», que el
+dueño decidió así: que lo busque y, si no lo encuentra, que diga que no está.
+Cada una salió de medir la anterior, con la Calculadora que abre la raíz como
+utilería: ninguna de las etiquetas pedidas está en esa ventana.
+
+La lectura de los controles visibles ya iba por delante del clic, pero lo que
+veía no salía del paso: la proyección filtra los campos por operación y ni
+«controls» ni «controlCount» estaban en la lista, así que los 47 controles
+que los ojos leían llegaban al paso siguiente como nada. Ahora salen.
+
+El conductor sólo captura la confirmación de un clic revisado con formas que
+ya conoce, y la lectura previa no era una de ellas; sin admitirla ningún caso
+revisado de clic podía volver a ejecutarse. Se admite con las condiciones de
+la apertura que ya la precedía: lectura completada y verificada, y el revisor
+viendo el mismo argumento único de etiqueta.
+
+Una etiqueta buscada y no encontrada se contaba como efecto posible, porque
+la frontera de efecto se cruza al arrancar el script. Pero el script sólo
+emite «no la encontré» después de recorrer el árbol de accesibilidad y los
+botones nativos, antes de tocar nada: no pulsó. Contado como duda, el turno
+terminaba en «no se pudo confirmar el resultado» en vez de decir lo que sí se
+sabía.
+
+Y una respuesta que empieza explicando «el fallo» habla del desperfecto, no
+con la persona. El dueño lo rechazó escrito así en español en H0714; medido
+ahora, el mismo molde salía en inglés aun con el hecho correcto detrás —«The
+failure occurred because…»—. Se veta sólo la apertura.
+
+Medido, con la raíz aprobando el clic contra su propia ventana:
+  «aprieta en Among Us»   → No hay un elemento en la pantalla con ese nombre,
+                            así que no se pudo hacer clic.
+  «hacé clic en Fortnite» → No pude hacer clic en Fortnite porque no hay nada
+                            en la pantalla con ese nombre.
+  «apretá en Spotify»     → No pude apretar en Spotify porque no hay nada en
+                            la pantalla con ese nombre.
+  «click on Among Us»     → The screen does not contain a clickable element
+                            named "Among Us," so clicking it failed. (3 de 3)
+
+cien-58: 100/100, cero agotes; frente a cien-57 sólo cambian la hora y tres
+frases distintas e igual de ciertas.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/MainWindowViewModel.cs b/src/Baxy.App/MainWindowViewModel.cs
+index b7ca6da43..adcab146e 100644
+--- a/src/Baxy.App/MainWindowViewModel.cs
++++ b/src/Baxy.App/MainWindowViewModel.cs
+@@ -702,6 +702,25 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
+                 && openedProcessId > 0;
+         }
+ 
++        if (execution.Steps[0].Operation == "input.visible.controls")
++        {
++            // H0096 «aprieta en Among Us»: mirar antes de pulsar. Leer los
++            // controles visibles es de sólo lectura y no cruza frontera de
++            // efecto; el clic que la sigue sigue siendo revisado y el revisor ve
++            // el mismo argumento único de etiqueta que vería sin la lectura.
++            return execution.CurrentStep.Operation == "input.visible.click"
++                && execution.PendingOperation is { } looked
++                && looked.Arguments.ValueKind == JsonValueKind.Object
++                && looked.Arguments.EnumerateObject().Count() == 1
++                && looked.Arguments.TryGetProperty("label", out JsonElement looking)
++                && looking.ValueKind == JsonValueKind.String
++                && !string.IsNullOrWhiteSpace(looking.GetString())
++                && result["controls"] is JsonArray { Count: > 0 } listed
++                && result["controlCount"] is JsonValue listedCountValue
++                && listedCountValue.TryGetValue(out int listedCount)
++                && listedCount >= listed.Count;
++        }
++
+         if (execution.Steps[0].Operation is not ("window.resolve" or "window.active")
+             || execution.CurrentStep.Operation != "app.close"
+             || execution.PendingOperation is not { } prepared
+diff --git a/src/Baxy.App/PlannerExecutionSupport.cs b/src/Baxy.App/PlannerExecutionSupport.cs
+index 543c98782..14c5a7864 100644
+--- a/src/Baxy.App/PlannerExecutionSupport.cs
++++ b/src/Baxy.App/PlannerExecutionSupport.cs
+@@ -394,6 +394,12 @@ internal static class PlanObservationProjector
+                 { "games", "name" },
+             ["game.purchase.prepare"] = new(StringComparer.Ordinal)
+                 { "expectedPriceCents" },
++            // H0096 «aprieta en Among Us»: el clic mira la pantalla antes de
++            // pulsar, y lo que ve sólo sirve si sale del paso. Sin estos
++            // campos la observación proyectada llegaba vacía: los ojos leían
++            // 47 controles de la ventana y el paso siguiente no veía ninguno.
++            ["input.visible.controls"] = new(StringComparer.Ordinal)
++                { "authority", "controlCount", "controls", "kind", "name", "window" },
+             ["peripheral.list"] = new(StringComparer.Ordinal)
+                 { "kind", "name" },
+             ["reminder.resolve.exact"] = new(StringComparer.Ordinal)
+diff --git a/src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs b/src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs
+index 697cc68fe..c3830eaa5 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs
+@@ -25,6 +25,17 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
+         "active_window_not_found",
+     };
+ 
++    // H0096 «aprieta en Among Us»: el script sólo emite este código después de
++    // recorrer el árbol y los botones nativos y no encontrar nada con ese
++    // nombre, es decir, antes de tocar nada. Marcarlo como «pudo haber efecto»
++    // sólo porque la frontera se cruza al arrancar convertía una ausencia
++    // medida en una duda, y el turno la contaba como un resultado sin
++    // confirmar en vez de decir que ahí no había nada así.
++    private static readonly HashSet<string> BeforeAnyPress = new(StringComparer.Ordinal)
++    {
++        "visible_button_not_found",
++    };
++
+     private readonly IExternalProcessRunner _runner;
+     private readonly string _script;
+     private readonly IVisibleControlLocator? _ocr;
+@@ -334,7 +345,9 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
+             string error = root.TryGetProperty("error", out JsonElement errorValue)
+                 ? errorValue.GetString() ?? "visible_click_failed"
+                 : "visible_click_failed";
+-            return effectBoundary.Failure(operation, error, effect);
++            return !effect && BeforeAnyPress.Contains(error)
++                ? ExternalJson.FailureBeforeEffect(operation, error)
++                : effectBoundary.Failure(operation, error, effect);
+         }
+         if (!effect || !PostreadHolds(root))
+             return effectBoundary.Failure(
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 1f8ec25f2..9b98b6fb9 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -3525,6 +3525,14 @@ _CAUSE_FACT = {
+         "that application has no open window right now, so it is not open; "
+         "nothing was done to it"
+     ),
++    # H0096 «aprieta en Among Us» con Among Us sin instalar: ahora BAXY mira la
++    # pantalla antes de pulsar, de modo que la ausencia es algo medido y no una
++    # suposicion. El hecho es la ausencia, no el fallo. Sin hecho detras, la
++    # causa se proyectaba tal cual —«visible button not found»—, que es jerga y
++    # no una respuesta, el mismo defecto que el dueno rechazo en H0714.
++    "visible_button_not_found": (
++        "nothing on the screen is called that, so nothing was pressed"
++    ),
+     # NETWORK1721 «conectate al wifi de casa» with no saved network of that
+     # name: the fact is the absence; nothing was done. Not «connected»: the
+     # truncated-word lens read the draft's «connect» as a cut of it
+@@ -6777,6 +6785,22 @@ _TASK_METADISCOURSE = re.compile(
+     re.IGNORECASE,
+ )
+ 
++# H0714 y H0096: una respuesta que empieza explicando «el fallo» habla del
++# desperfecto interno, no con la persona. El dueno lo rechazo escrito asi en
++# espanol —«El fallo se debe a que el resultado no fue verificado»— y el mismo
++# molde salia en ingles —«The failure occurred because no element on the screen
++# matches...»— aun con el hecho correcto detras. Se veta solo la apertura, de
++# modo que contar lo que paso sigue siendo posible en cualquier otro lugar de
++# la frase.
++_FAILURE_AS_TOPIC = re.compile(
++    r"^\s*(?:el|la)\s+(?:fallo|falla|error)\s+"
++    r"(?:se\s+deb[eií]|fue\s+(?:porque|debido)|ocurri[oó]|sucedi[oó]|"
++    r"se\s+produjo|consisti[oó])"
++    r"|^\s*the\s+(?:failure|error)\s+"
++    r"(?:occurred|happened|arose|stems|resulted|is\s+due|was\s+(?:because|due|caused))",
++    re.IGNORECASE,
++)
++
+ _SCOPE_MARKERS = (
+     "not listed",
+     "outside",
+@@ -7259,6 +7283,8 @@ def compose_visible_defect(
+         return "copied_instruction"
+     if _TASK_METADISCOURSE.search(stripped) is not None:
+         return "copied_instruction"
++    if _FAILURE_AS_TOPIC.match(stripped) is not None:
++        return "failure_as_topic"
+     # cien-39 072 «de qué te ocupas en este PC» → «Me ocupó abrir y cerrar
+     # programas…»: tercera persona del pretérito donde va la primera del
+     # presente. Dice que algo le ocupó a BAXY, no de qué se ocupa.

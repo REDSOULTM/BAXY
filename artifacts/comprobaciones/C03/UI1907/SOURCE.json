@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1907-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (the absent visible button is told as an absence, and a reply that opens by explaining the failure is vetoed in both languages), src/Baxy.App/MainWindowViewModel.cs (the conductor admits the verified read that precedes the reviewed click), src/Baxy.App/PlannerExecutionSupport.cs (what the read sees leaves the step) and src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs (a label that was searched for and not found never crossed the effect boundary), on top of the LIMITS1903 build.",
+  "patch": "artifacts/comprobaciones/C03/UI1907/SOURCE.patch",
+  "commits": [
+    "186bdf91102775c4f0c3c80126c0aece8d6a06ad"
+  ],
+  "build": "BUILD1907 (C03-repairs1907-build/BUILD_READY.json; mente, App y Providers)",
+  "cause_measured": "El clic se proponia a ciegas; la lectura de la pantalla no llegaba al paso siguiente porque la proyeccion la filtraba entera; una etiqueta buscada y no encontrada se contaba como efecto posible, de modo que el turno terminaba en un resultado sin confirmar; y la causa se publicaba como jerga del fallo interno.",
+  "change": "La lectura de los controles visibles precede al clic y lo que ve sale del paso; la etiqueta ausente no cruza frontera de efecto y tiene un hecho detras que contar; y ninguna respuesta empieza explicando el fallo.",
+  "measurement": "UI1907: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. Los cuatro turnos con clic leyeron los controles de la ventana que abrió la raíz antes de pulsar y, al no haber nada con esa etiqueta, lo dijeron sin afirmar que hubieran pulsado; cien-58 100/100 con cero agotes.",
+  "credits": 1
+}
