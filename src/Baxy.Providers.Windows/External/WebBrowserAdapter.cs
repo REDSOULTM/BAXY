@@ -1544,11 +1544,16 @@ internal class CdpBrowserSession : IDisposable
         using var socket = new ClientWebSocket();
         await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
         string titleLiteral = "\"" + JsonEncodedText.Encode(title).ToString() + "\"";
+        string searchLiteral = "\"" + JsonEncodedText.Encode(searchUri.AbsoluteUri).ToString() + "\"";
         double? baseline = null;
         string lastUrl = navigation.FinalUrl;
         string lastPageTitle = string.Empty;
         string failure = "netflix_title_or_play_control_not_found";
-        for (int attempt = 0; attempt <= 120; attempt++)
+        // Con la sesión iniciada el camino es más largo de lo que era: elegir perfil,
+        // volver a la búsqueda, abrir el título y esperar al reproductor son tres
+        // navegaciones. A 250 ms por vuelta, 120 daban treinta segundos y se agotaban
+        // antes de llegar; 240 dan un minuto y caben en el turno, que tiene dos.
+        for (int attempt = 0; attempt <= 240; attempt++)
         {
             if (attempt > 0)
             {
@@ -1561,7 +1566,35 @@ internal class CdpBrowserSession : IDisposable
                 + "const body=(document.body?.innerText||'').toLowerCase();"
                 + "const auth=location.pathname.includes('/login')||body.includes('sign in')||"
                 + "body.includes('iniciar sesión')||body.includes('inicia sesión');let action='none';"
-                + "if(!auth&&location.pathname.startsWith('/search')){const links=[...document.querySelectorAll('a[href*=\"/title/\"]')];"
+                // Con la sesión iniciada, Netflix enseña primero «¿Quién está viendo?»:
+                // la búsqueda no existe hasta elegir perfil, y sin este paso el título
+                // no se encontraba nunca (medido: data-uia profile-gate-screen con cinco
+                // tiles). Una persona pulsa un perfil; esto pulsa el primero.
+                + "if(!auth&&document.querySelector('[data-uia=\"profile-gate-screen\"]')){"
+                + "const tile=document.querySelector('[data-uia^=\"profile-selector+tile-\"]')"
+                + "||document.querySelector('[data-uia=\"profile-selector\"] a,[data-uia=\"profile-selector\"] li');"
+                + "if(tile){tile.click();action='profile_clicked';"
+                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action].join('\\u001f');}}"
+                // Elegido el perfil, Netflix lleva a la portada: hay que volver a la
+                // búsqueda, que es donde estaba el título que se pidió.
+                + "if(!auth&&!location.pathname.startsWith('/search')&&!location.pathname.includes('/watch/')"
+                + "&&!document.querySelector('[data-uia=\"profile-gate-screen\"]')){"
+                + "location.href=" + searchLiteral + ";action='search_again';"
+                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action].join('\\u001f');}"
+                // La búsqueda de Netflix ya no da enlaces «/title/»: cada resultado es
+                // un «standard-card», un <a> cuyo href lleva «jbv=<id del vídeo>».
+                // Medido contra la página real: buscando sólo «/title/» lo único que
+                // aparecía eran las notificaciones del menú. Del card se saca el id y
+                // se va al reproductor, que es a donde lleva pulsarlo.
+                + "if(!auth&&location.pathname.startsWith('/search')){"
+                + "const cards=[...document.querySelectorAll('a[data-uia=\"standard-card\"],a[href*=\"jbv=\"]')];"
+                + "const named=cards.map(a=>({a,t:((a.innerText||'')+' '+(a.getAttribute('aria-label')||'')).trim().toLowerCase()}));"
+                + "const hit=named.find(x=>x.t===wanted)||named.find(x=>x.t.startsWith(wanted))||named.find(x=>x.t.includes(wanted));"
+                + "if(hit){const id=(hit.a.getAttribute('href')||'').match(/jbv=(\\d+)/);"
+                + "if(id){location.href='https://www.netflix.com/watch/'+id[1];action='watch_nav';}"
+                + "else{hit.a.click();action='result_clicked';}"
+                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action].join('\\u001f');}"
+                + "const links=[...document.querySelectorAll('a[href*=\"/title/\"]')];"
                 + "const link=links.find(a=>((a.closest('[data-uia],.title-card,.slider-item')?.innerText||a.innerText||'').toLowerCase()).includes(wanted));"
                 + "if(link){link.click();action='result_clicked';}}"
                 + "if(!auth&&!location.pathname.includes('/watch/')){const controls=[...document.querySelectorAll('[data-uia=\"play-button\"],button,a')];"

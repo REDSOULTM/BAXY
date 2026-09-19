@@ -101,6 +101,38 @@ De aquí salen dos consecuencias para el bucle:
   verdad exige elegir antes otra unidad. La fila que dice «completalo haciendo click en
   instalar» no se cumple con un clic, y el criterio tiene que decirlo.
 
+## 4c. Medido en Netflix: un navegador conducido no puede reproducir DRM
+
+Con la sesión del dueño sembrada en el perfil de BAXY, se condujo el navegador por CDP
+paso a paso. El camino entero quedó a la vista:
+
+1. Netflix enseña **«¿Quién está viendo ahora?»** con los cinco perfiles de la casa. Sin
+   elegir uno no hay búsqueda. Pulsar el primero funciona.
+2. La búsqueda **ya no da enlaces `/title/`**: cada resultado es un `<a data-uia=
+   "standard-card">` cuyo href lleva `jbv=<id del vídeo>`. Buscando sólo `/title/`, lo
+   único que aparecía eran las notificaciones del menú, que es exactamente por qué el
+   contrato decía «título no encontrado».
+3. Con el id se llega al reproductor, y ahí se acaba el camino: **la página del
+   reproductor no crea ningún elemento `<video>`**, ni en el documento ni en ningún shadow
+   root. Lo único que queda en pantalla es el botón «Regresar a Explorar», que es la
+   página de error de Netflix.
+
+La causa está medida, no supuesta: **`navigator.webdriver` vale `true`**. Un navegador
+abierto con puerto de depuración se declara automatizado, y las plataformas con DRM se
+niegan a reproducir en esa condición. No es el `--disable-gpu` —aunque ése también deja la
+página en blanco y hay que quitarlo para streaming—, ni la sesión, ni el título.
+
+**Consecuencia para las 24 filas de vídeo.** El contrato por CDP puede iniciar sesión,
+elegir perfil, buscar y llegar al reproductor, pero **nunca podrá verificar que el vídeo
+avanza**, porque el vídeo no va a empezar. La única vía que queda es la que pidió el
+dueño: computer use sobre una ventana normal del navegador, conducida con ratón y teclado
+de verdad, donde `navigator.webdriver` es falso y la página no distingue a BAXY de una
+persona.
+
+Eso mueve el bloque de vídeo entero del contrato al bucle, y con él la parte del diseño
+que decía que el árbol de accesibilidad bastaba: para una página web conducida a mano hará
+falta leerla por su propio árbol, no por UIA.
+
 ## 5. Lo que este diseño no resuelve
 
 - **Las sesiones.** Que BAXY sepa pulsar «Reproducir» no le da la cuenta de Netflix. El
