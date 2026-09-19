@@ -1,3 +1,20 @@
+# REANUDACIÓN 2026-09-19 madrugada, segundo bloque (PC principal REDPC — escritor raíz)
+
+**679/742 cubiertos, 63 abiertos, 0 NA; 16/35 categorías cerradas; C03 formal 3/11. HEAD 218ab837b (pusheado). Correo 6/6 CERRADO, Mensajería 29/31, Entrada incompleta 27/34.**
+
+- **Discord FUNCIONA y queda cerrado salvo las lecturas**: DISCORD1869 (+2: H0318, H0340) y DISCORD1871 (+1: H0394). Cuatro fallos encadenados, cada uno tapando al siguiente, todos reparados de forma general:
+  1. el cliente se elegía por el **título** de la ventana, así que un editor con el fichero «commit_discord_switcher.txt» abierto recibía las teclas; ahora se elige por proceso;
+  2. el buscador se conducía desde **PowerShell**, que al lanzarse roba el primer plano y cierra el buscador, y cuyo Enter nunca activaba la fila; ahora se conduce desde el adaptador con las mismas teclas que ya envían en WhatsApp;
+  3. en este cliente **Enter sólo cierra** el buscador: el primer resultado se abre con un **clic** al 0,5 del ancho y 0,381 del alto, y no se envía ninguna suelta suelta de Alt antes (Chromium abre el menú de ventana y cierra el modal);
+  4. la cuenta de pruebas del dueño aparece con **dos nombres**: «Valeria ron.91» en el buscador y «Julia» en la lista de MD y en el título; la guardia acepta cualquiera de los dos (era la misma conversación, que ya estaba abierta).
+  Y la banda de entrega conserva **todo el ancho** de la conversación: sólo WhatsApp alinea la burbuja a la derecha.
+- **Correo cerrado 6/6**: MAIL1859 (+1 H0554), MAIL1863 (+4) y MAIL1867 (+1 H0018). La causa real de los fallos anteriores era la App: su detector de código interno tomaba la dirección por un nombre de operación con puntos (09d217e0e). También: «le dije» afirma la entrega (425fe5e6c) y un final que **niega la entrega al destino que sí la recibió** queda vetado (caf4cc379).
+- **Veto de destino equivocado afinado** (32e3f85e5): «Le envié "hola" a Valeria, no a ShooterCock» nombra el destino real y niega el pedido; eso es la verdad y ya no se rechaza.
+- **Abiertos (63)**: streaming 24 y energía 2 diferidos por el dueño; 21 nunca acreditables; lecturas de chat H0510/H0720; entrada ininteligible 6 (hace falta una regla con vocabulario, la de forma se midió y se descartó); misiones compuestas 6 y H0060.
+- **Siguiente**: (1) H0510/H0720 como límites honestos de lectura si el dueño lo autoriza; (2) las seis entradas ininteligibles; (3) C03 formal: G04.06/G06.06 siguen esperando su decisión sobre tests.
+
+---
+
 # DISCORD1871 adjudicado — 2026-09-19T03:28:45.035606+00:00
 
 **679/742 cubiertos, 63 abiertos, 0 NA; 16/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40, Cerrar aplicaciones y ventanas 20/20, Red y Bluetooth 21/21, Pantalla, captura e interpretación visual 19/19, Música 39/39, Conocimiento, razonamiento y creatividad verbal 37/37, Organizar ventanas y pestañas 13/13); C03 formal 3/11. Registro SHA 72cc6864d575897dcd9caf1aecae36ed2e8a86d70d33a088a29ecba787240ed7. Primeras altas 24 h >= 563 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 32e3f85e con BUILD1871 (la mente deja pasar el final que nombra el destino real y niega el pedido). Turnos ordinarios sin operaciones.
