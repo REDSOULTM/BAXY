@@ -567,13 +567,17 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             await Task.Delay(300, cancellationToken).ConfigureAwait(false);
             SendChord(VirtualKeyControl, VirtualKeyK);
             await Task.Delay(1400, cancellationToken).ConfigureAwait(false);
+            AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), "discord: after ctrl+k");
             SendChord(VirtualKeyControl, VirtualKeyA);
             await Task.Delay(120, cancellationToken).ConfigureAwait(false);
             SendKey(VirtualKeyBack);
             await Task.Delay(120, cancellationToken).ConfigureAwait(false);
             SendText(recipient);
             await Task.Delay(1200, cancellationToken).ConfigureAwait(false);
+            AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), $"discord: after typing «{recipient}»");
             SendKey(VirtualKeyReturn);
+            await Task.Delay(1500, cancellationToken).ConfigureAwait(false);
+            AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), "discord: after enter, title " + WindowTitle(handle));
         }
 
         await Task.Delay(900, cancellationToken).ConfigureAwait(false);
