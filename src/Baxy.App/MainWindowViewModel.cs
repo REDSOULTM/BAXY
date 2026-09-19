@@ -2263,6 +2263,27 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 }
             }
 
+            // cien-41 027 «open that»: la recuperación se quedó sin pregunta
+            // —el presupuesto de 2,5 s no siempre alcanza bajo carga— y el turno
+            // moría, aunque el pedido sí era una acción sin objeto. La App tiene
+            // su propia aclaración de protocolo, que no se presenta como texto
+            // del modelo, y preguntar qué quiere es más veraz que no contestar.
+            if (UserMessagePolicy.ConversationFallbackIntent(route.Text)
+                == "clarification"
+                && turn.EffectOperations.Count == 0
+                && turn.IntentOperations.Count == 0)
+            {
+                _pendingMindClarificationObjective = route.Text.Length > 0
+                    ? route.Text
+                    : null;
+                AddMessage(
+                    "BAXY",
+                    TurnVisibleFacts.Clarification("ambiguous_request"),
+                    isUser: false,
+                    messageEvent: UserMessageEvent.Clarification);
+                return true;
+            }
+
             AddMessage(
                 "BAXY",
                 TurnVisibleFacts.Failure(failureCode, new JsonObject
