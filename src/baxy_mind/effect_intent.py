@@ -3230,6 +3230,25 @@ def known_unsupported_effect_request(
             {"input.visible.click"},
         ),
         (
+            # H0542 «Crea una carpeta en el escritorio, mete un txt dentro,
+            # comprímela y luego abre el zip»: la carpeta y el txt se crean, pero
+            # ninguna operación comprime una carpeta cualquiera ni abre un zip.
+            # Sin declararlo, el verificador veía la primera cláusula servida,
+            # retiraba el límite entero y el turno acababa preguntando si quería
+            # ayuda para organizar archivos, que no es la respuesta a lo que se
+            # pidió. backup.known.create comprime una carpeta conocida como copia
+            # de seguridad: no es comprimir la que acaban de crear ni abrir el zip.
+            _has(
+                folded,
+                r"\b(?:(?:des)?comprim[eaií]\w*|des\w*zip\w*|zipe[ao]\w*|zippe[ao]\w*|compress(?:es|ed|ing)?)\b"
+                r"|\bzip\s+(?:it|them|la|lo|el|the)\b"
+                r"|\b(?:archivo|fichero)\s+zip\b"
+                r"|\b(?:un|el|la|the|a)\s+zip\b"
+                r"|\.zip\b",
+            ),
+            {"archive.create", "archive.extract"},
+        ),
+        (
             # LIMITS1683 H0302 «qué redes wifi hay»: saved profiles and the current
             # state are read; no operation scans the networks around the PC.
             _has(folded, r"\b(?:que|cuales|what|which)\s+redes(?:\s+(?:wifi|wi\s*fi|inalambricas))?\s+(?:hay|disponibles|cerca|detectas|ves|encontras)\b"
