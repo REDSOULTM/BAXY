@@ -62,6 +62,17 @@ def without_observed_names(text: str, situation: object) -> str:
                         host = re.match(r"^(?:https?://)?(?:www\.)?([^/?#]+)", url)
                         if host and 0 < len(host.group(1)) <= 253:
                             names.add(host.group(1))
+        if (node.get("kind") == "operation" and operation in {"message.send.test", "message.draft"}
+                and node.get("verified") is True and node.get("succeeded") is True
+                and node.get("polarity") == "success"):
+            # MAIL1853 «escribile un mail a X» sent to the owner's test mailbox: the
+            # forced destination («autor@example.com»), the requested
+            # recipient (an address, a name, the survey's «[EMAIL_REDACTED]») and the
+            # sent text are observed data, never dotted or snake-cased codes.
+            observed = node.get("observed")
+            if isinstance(observed, dict):
+                names.update(value.strip() for key in ("forcedDestination", "requestedRecipient", "displayName", "text")
+                             if isinstance(value := observed.get(key), str) and 0 < len(value.strip()) <= 4096)
         if (node.get("kind") == "operation" and operation == "notification.list"
                 and node.get("verified") is True and node.get("succeeded") is True
                 and node.get("polarity") == "success"):
