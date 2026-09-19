@@ -7115,6 +7115,21 @@ def compose_visible_defect(
             # («Sólo hago lo de este PC, nada más»). Exigir sólo la negación, y
             # además un verbo de una lista cerrada, agotó cuatro composiciones
             # correctas seguidas en panel-opus-3.
+            # cien-36 023/082 «qué no haces» → «Sólo hago lo que este PC me
+            # ordena»: the machine orders nothing and BAXY obeys no machine;
+            # the person is the one who asks. That sentence reads as obedience
+            # to the PC, which is false, so it is not publishable.
+            if re.search(
+                r"\b(?:este\s+)?(?:pc|computadora|ordenador|equipo|maquina)\b[^.]{0,30}"
+                r"\b(?:me\s+)?(?:ordena|ordene|manda|mande)\b|"
+                r"\b(?:me\s+)?(?:ordena|ordene|manda|mande)\s+(?:este\s+)?"
+                r"(?:pc|computadora|ordenador|equipo|maquina)\b|"
+                r"\b(?:this\s+)?(?:pc|computer|machine)\s+(?:orders|tells|commands)\s+me\b|"
+                r"\b(?:what|lo\s+que)\s+(?:this\s+|este\s+)?(?:pc|computer|machine)\s+"
+                r"(?:orders|tells|commands|ordena|manda)\b",
+                folded_refuse,
+            ) is not None:
+                return "obeys_the_machine"
             restricts = any(marker in folded_refuse for marker in _SCOPE_MARKERS)
             negates = (
                 re.search(
@@ -14478,10 +14493,13 @@ class LlmRuntime:
                 )
             elif _looks_like_refuse_question(user_text):
                 instruct(
-                    "\nSay in first person that you only do the work of "
-                    "this PC and nothing beyond it, in your own words. Never "
-                    "list what you do as things you refuse. One short "
-                    "sentence. Do not greet. Do not introduce yourself."
+                    "\nSay in first person that on this PC you only do what "
+                    "the person asks you for among the things you can do, and "
+                    "nothing beyond that, in your own words. The PC gives you no "
+                    "orders and you obey no machine: never say that this PC tells "
+                    "you or orders you what to do. Never list what you do as "
+                    "things you refuse. One short sentence. Do not greet. Do not "
+                    "introduce yourself."
                 )
             elif _looks_like_negative_constraint(user_text):
                 instruct(
