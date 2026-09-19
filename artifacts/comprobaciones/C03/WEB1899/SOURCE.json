@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1899-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "no source change (measurement of the current behaviour on the HEAD of WEB1899).",
+  "patch": "artifacts/comprobaciones/C03/WEB1899/SOURCE.patch",
+  "commits": [
+    "f815ec5a04399fb74dac730a6dbb2be5f327e8f0"
+  ],
+  "build": "BUILD1899 (C03-repairs1899-build/BUILD_READY.json; sin cambio de codigo)",
+  "cause_measured": "La fila nunca se habia enlazado ni adjudicado; el turno moria por el JSON de los fragmentos leido como hueco de plantilla, y eso quedo resuelto en WEB1887.",
+  "change": "Ninguno en el codigo: se mide el comportamiento vigente.",
+  "measurement": "WEB1899: 4 de 5 casos aprobados; el literal informo fielmente un unico resultado sin relacion que devolvio el buscador, 0 creditos; 0 créditos. el turno ya no muere con el JSON de los fragmentos",
+  "credits": 0
+}

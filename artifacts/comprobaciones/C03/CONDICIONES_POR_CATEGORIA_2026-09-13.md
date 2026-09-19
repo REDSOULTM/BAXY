@@ -1582,3 +1582,7 @@ Navegación y búsqueda web pasa de 44/46 a 44/46 con decir llanamente que no ej
 ## Actualización 2026-09-19 (LIMITS1897)
 
 Navegación y búsqueda web pasa de 44/46 a 46/46 con decir llanamente que no ejecuta comandos, nombrando el que se pidio, sin inventar una salida ni desviar la conversacion al codigo (commit f91b7e27, BUILD1897) (HEAD f91b7e27): 6 de 6 casos aprobados; las dos filas de comando dicen el limite nombrando el comando pedido, cero operaciones, 2 creditos, 2 créditos. el rechazo en ingles ya nombra lo pedido La categoría queda cerrada.
+
+## Actualización 2026-09-19 (WEB1899)
+
+Navegación y búsqueda web pasa de 44/46 a 44/46 con buscar el dato en internet y decir que paginas lo traen, sin decir que uso la API que la persona nombro (commit e9aa3039, BUILD1899) (HEAD e9aa3039): 4 de 5 casos aprobados; el literal informo fielmente un unico resultado sin relacion que devolvio el buscador, 0 creditos, 0 créditos. el turno ya no muere con el JSON de los fragmentos
