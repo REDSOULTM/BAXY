@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1887-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (the sites the search returned reach the composer and the retry hint, quoted JSON is not an unfilled hole, and a report of a verified search names its pages instead of ending with no reply), on top of the WEB1887 build.",
+  "patch": "artifacts/comprobaciones/C03/WEB1887/SOURCE.patch",
+  "commits": [
+    "f815ec5a04399fb74dac730a6dbb2be5f327e8f0"
+  ],
+  "build": "BUILD1887 (C03-repairs1887-build/BUILD_READY.json; mente)",
+  "cause_measured": "La pista de reintento y la rama que contesta daban un ejemplo generico de sitio, asi que el informe hablaba de multiples fuentes sin nombrar ninguna; el JSON citado de un fragmento se leia como hueco por rellenar; y un informe cuyos tres candidatos caian dejaba el turno sin respuesta.",
+  "change": "Los sitios que devolvio la busqueda llegan al redactor y a la pista, un objeto JSON deja de contar como hueco, y tras el tercer veto el turno publica las paginas encontradas si ese texto pasa las mismas reglas.",
+  "measurement": "WEB1887: 3 de 5 casos aprobados (1 variante, 2 limites); el literal nombra sus paginas pero abre con una causa sin fuente y la variante en espanol no nombra ninguna, 0 creditos; 0 créditos. ninguno de los cinco turnos termino sin respuesta",
+  "credits": 0
+}

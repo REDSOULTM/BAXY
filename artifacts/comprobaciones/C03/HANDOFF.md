@@ -1,3 +1,11 @@
+# WEB1887 adjudicado — 2026-09-19T07:36:35.515512+00:00
+
+**683/742 cubiertos, 59 abiertos, 0 NA; 16/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40, Cerrar aplicaciones y ventanas 20/20, Red y Bluetooth 21/21, Pantalla, captura e interpretación visual 19/19, Música 39/39, Conocimiento, razonamiento y creatividad verbal 37/37, Organizar ventanas y pestañas 13/13); C03 formal 3/11. Registro SHA 6f874d8eb037b4ad63ef557c2d6e86a568df68a3c537e7f2f0636eb607c0551e. Primeras altas 24 h >= 567 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 1885e3c3 con BUILD1887 (la mente nombra los sitios que devolvio la busqueda y tiene salida veraz cuando los tres candidatos caen). Turnos ordinarios sin operaciones.
+
+WEB1887 («Navegación y búsqueda web», investigar en internet la pregunta de la persona y decir que paginas la contestan, nombrandolas, sin quedarse sin respuesta): 3 de 5 casos aprobados (1 variante, 2 limites); el literal nombra sus paginas pero abre con una causa sin fuente y la variante en espanol no nombra ninguna, 0 creditos, 0 créditos. Adjudicación 04035e58b38b99ae99804fe75936b3c2ebfa799a514b9980233c42bd8a1b4c40. ninguno de los cinco turnos termino sin respuesta
+
+---
+
 # Handoff C03 — REANUDACIÓN 2026-09-19 (REDPC, Opus 5)
 
 **683/742 cubiertos, 59 abiertos, 0 NA; 16/35 categorías cerradas; C03 formal 3/11.**

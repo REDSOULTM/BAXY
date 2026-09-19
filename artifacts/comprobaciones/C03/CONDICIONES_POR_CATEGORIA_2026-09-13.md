@@ -1558,3 +1558,7 @@ Navegación y búsqueda web pasa de 44/46 a 44/46 con abrir el navegador nombrad
 ## Actualización 2026-09-19 (WEB1885)
 
 Navegación y búsqueda web pasa de 44/46 a 44/46 con abrir el navegador nombrado en el sitio pedido tras un preambulo que cede el control del PC, sin negar la capacidad (commit f815ec5a, BUILD1885) (HEAD f815ec5a): 3 de 5 casos aprobados: las dos variantes abrieron de verdad; el literal preguntó y el límite de capacidad siguió negando, 0 créditos. Las dos variantes proponen exactamente una browser.navigate.named, la raíz la aprueba con el navegador y la URL comprobados, se completa y se verifica con finalUrl https://itch.io/, y el final dice lo que hizo: la negación de capacidad que midió WEB1883 desaparece en los dos idiomas. El literal queda abierto porque su destino llega sin dominio.
+
+## Actualización 2026-09-19 (WEB1887)
+
+Navegación y búsqueda web pasa de 44/46 a 44/46 con investigar en internet la pregunta de la persona y decir que paginas la contestan, nombrandolas, sin quedarse sin respuesta (commit 1885e3c3, BUILD1887) (HEAD 1885e3c3): 3 de 5 casos aprobados (1 variante, 2 limites); el literal nombra sus paginas pero abre con una causa sin fuente y la variante en espanol no nombra ninguna, 0 creditos, 0 créditos. ninguno de los cinco turnos termino sin respuesta
