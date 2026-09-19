@@ -11388,6 +11388,10 @@ def _is_direct_request(text: str) -> bool:
         r"ponme|pone|poneme|pongame|"
         r"activa|activar|desactiva|desactivar|enciende|encender|prende|prender|"
         r"apaga|apagar|arranca|inicia|start|conecta|conectar|conectame|conectate|connect|"
+        # H0401 «reiniciá la PC»: apagar era un acto de habla y reiniciar no, de
+        # modo que el pedido ni llegaba a resolverse y el turno decía «No puedo
+        # reiniciar la PC» sin haberlo intentado. Es la misma orden.
+        r"reinicia|reiniciar|reiniciame|reboot|restart|"
         # LIMITS1677 «Run pytest.», «Execute ls.»: a command run is a request speech act.
         r"run|execute|"
         # LIMITS1683: downloads, arithmetic and scans are request speech acts too.
@@ -18802,7 +18806,14 @@ def resolve_explicit_effects(
         and "system.power" in available
         and _has(
             folded,
-            r"^(?:apaga|apagame|shutdown|shut\s+down)\b",
+            # H0401 «reiniciá la PC»: el apagado estaba y el reinicio no, de modo
+            # que el pedido no resolvía ninguna operación y el turno contestaba
+            # «No puedo reiniciar la PC» sin haberlo intentado siquiera. Es la
+            # misma transición, con otra acción. El nombre del equipo, que se
+            # exige más abajo, es lo que impide que «reiniciá el router» entre
+            # por aquí.
+            r"^(?:apaga|apagame|shutdown|shut\s+down|"
+            r"reinicia|reiniciame|reiniciar|reboot|restart)\b",
         )
         and _has(
             folded,

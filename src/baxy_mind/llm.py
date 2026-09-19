@@ -3468,6 +3468,13 @@ _FAILURE_MARKERS = re.compile(
     r"eso no lo hago|i don't do that|i do not do that|"
     r"no la encontré|no lo encontré|no pude encontr|"
     r"no responde|se agotó|"
+    # H0714/H0401: «Windows no aceptó la solicitud de apagado, por lo que el PC
+    # sigue encendido» es un fallo dicho entero y bien, pero ningún marcador lo
+    # reconocía y el turno moría en missing_failure tras tres borradores. Que
+    # algo no se acepte o se rechace es afirmar que no ocurrió.
+    r"no acept[oó]|no fue aceptad[ao]|no la acept[oó]|no lo acept[oó]|"
+    r"(?:did\s*n[o']t|does\s*n[o']t|was\s+not)\s+accept(?:ed)?|"
+    r"rechaz[oó]|rechazad[ao]|refused|rejected|"
     r"didn't find|did not find|didn't respond|did not respond|"
     r"time ran out|not found|"
     r"irrelevant|irrelevantes?|no useful results|nothing useful|"
@@ -3507,9 +3514,12 @@ _CAUSE_FACT = {
     # vez de hablarle a la persona: «El fallo se debe a que el resultado no fue
     # verificado». El hecho que si se sabe es que el paso se envio y no se pudo
     # confirmar, de modo que no se afirma que haya pasado.
+    # El hecho largo —que enumeraba las cuatro transiciones— se recitaba entero
+    # en un caso y mataba la redacción en dos de cuatro. Dice lo mismo en una
+    # cláusula: Windows no la aceptó y el equipo sigue encendido.
     "power_transition_not_accepted": (
-        "Windows did not accept the power request, so nothing changed: the PC was "
-        "not shut down, restarted, locked or signed out"
+        "Windows did not accept the power request, so nothing changed and the PC "
+        "is still on"
     ),
     "result_unverified": (
         "the step was sent and its result could not be confirmed, so nothing is "

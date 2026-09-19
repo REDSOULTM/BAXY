@@ -1892,7 +1892,19 @@ internal static class UserMessagePolicy
         // must hear as such («the results were irrelevant», «sin resultados»).
         || Regex.IsMatch(normalized,
             @"\b(?:irrelevant|irrelevantes?|no\s+useful\s+results|nothing\s+useful|no\s+results|sin\s+resultados|no\s+(?:hubo|hay)\s+resultados)\b",
-            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking)
+        // H0714 «apagá la computadora», H0401 «reiniciá la PC»: «Windows no
+        // aceptó la solicitud de apagado, por lo que el PC sigue encendido» es
+        // un fallo dicho entero y bien. Como ningún marcador lo reconocía, la
+        // respuesta fiel se leía como si invirtiera el resultado y el turno
+        // moría sin publicar nada. Que algo no se acepte o se rechace es
+        // afirmar que no ocurrió. El gemelo de esta lista vive en
+        // _FAILURE_MARKERS de la mente y cambia con ella.
+        || Regex.IsMatch(
+            normalized,
+            @"\b(?:no\s+(?:la\s+|lo\s+)?acepto|no\s+fue\s+aceptad[ao]|rechazo|rechazad[ao]|refused|rejected)\b"
+            + @"|\b(?:did\s*not|didn[’']?t|does\s*not|doesn[’']?t|was\s+not|wasn[’']?t)\s+accept(?:ed)?\b",
+            RegexOptions.CultureInvariant);
     }
 
     private static bool AttributesBaxyActionToUser(string source, string result)

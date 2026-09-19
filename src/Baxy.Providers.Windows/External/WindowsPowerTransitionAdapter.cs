@@ -107,7 +107,14 @@ internal sealed class WindowsPowerTransitionAdapter : IExternalOperationAdapter
             WindowsPowerTransitionResult transition = _platform.Request(action);
             if (!transition.Accepted)
             {
-                return ValueTask.FromResult(effectBoundary.Failure(
+                // H0714 «apagá la computadora», H0401 «reiniciá la PC»: que la
+                // transición no fuera aceptada no es una duda, es un hecho.
+                // Windows devolvió que no la inicia, de modo que no se apagó ni
+                // se reinició nada. Contarlo como efecto posible —sólo porque la
+                // frontera se cruza antes de preguntar— hacía que el turno
+                // publicara «no pude confirmar si la acción se realizó» en vez
+                // de lo único que sí se sabe.
+                return ValueTask.FromResult(ExternalJson.FailureBeforeEffect(
                     operation, "power_transition_not_accepted"));
             }
 
