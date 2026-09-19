@@ -391,45 +391,73 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         if($null -eq $w){[pscustomobject]@{ok=$false;error='client_window_not_found'}|ConvertTo-Json -Compress;exit 2}
         function Read-Items {param($win) $r=@();foreach($e in $win.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)){if($e.Current.ControlType.ProgrammaticName -eq 'ControlType.ListItem'){$n=$e.Current.Name;if($n){$r+=$n.Substring(0,[Math]::Min(160,$n.Length))}}};,$r}
         $items=@()
-        for($poll=0;$poll -lt 12;$poll++){$items=Read-Items $w;if(($items | Where-Object { $_.ToLowerInvariant().Contains($needle) }).Count -gt 0){break};Start-Sleep -Milliseconds 400}
+        $rounds=if($needle.Length -gt 0){12}else{1}
+        for($poll=0;$poll -lt $rounds;$poll++){$items=Read-Items $w;if($needle.Length -gt 0 -and ($items | Where-Object { $_.ToLowerInvariant().Contains($needle) }).Count -gt 0){break};if($poll -lt $rounds-1){Start-Sleep -Milliseconds 400}}
         [pscustomobject]@{ok=$true;items=@($items)}|ConvertTo-Json -Compress
         """;
 
-    /// <summary>The index of the first quick-switcher row naming the recipient, or -1.</summary>
-    private static async ValueTask<int> QuickSwitcherRowAsync(string recipient, CancellationToken cancellationToken)
+    /// <summary>Every list row of the Discord window, in tree order (an empty needle
+    /// reads once; a needle polls until a row contains it).</summary>
+    private static async ValueTask<List<string>> QuickSwitcherItemsAsync(string needle, CancellationToken cancellationToken)
     {
         ExternalProcessResult process = await SwitcherRunner.RunAsync(
             "powershell.exe",
             ["-NoProfile", "-NonInteractive", "-Command", "& {\n" + QuickSwitcherItemsScript + "\n}",
-                Convert.ToBase64String(Encoding.UTF8.GetBytes(recipient))],
+                Convert.ToBase64String(Encoding.UTF8.GetBytes(needle))],
             TimeSpan.FromSeconds(30),
             cancellationToken).ConfigureAwait(false);
         string[] lines = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
         string line = lines.Length > 0 ? lines[^1] : "{}";
-        AuditReading([], $"quick switcher read (exit {process.ExitCode}): {line}\n{process.Error}");
+        AuditReading([], $"list rows read (needle «{needle}», exit {process.ExitCode}): {line}\n{process.Error}");
+        var rows = new List<string>();
         try
         {
             using JsonDocument document = JsonDocument.Parse(line);
-            if (!document.RootElement.TryGetProperty("items", out JsonElement items) || items.ValueKind != JsonValueKind.Array)
+            if (document.RootElement.TryGetProperty("items", out JsonElement items) && items.ValueKind == JsonValueKind.Array)
             {
-                return -1;
-            }
-
-            string needle = Fold(recipient);
-            int index = 0;
-            foreach (JsonElement item in items.EnumerateArray())
-            {
-                if (item.ValueKind == JsonValueKind.String
-                    && Fold(item.GetString() ?? string.Empty).Contains(needle, StringComparison.Ordinal))
+                foreach (JsonElement item in items.EnumerateArray())
                 {
-                    return index;
+                    if (item.ValueKind == JsonValueKind.String)
+                    {
+                        rows.Add(item.GetString() ?? string.Empty);
+                    }
                 }
-
-                index++;
             }
         }
         catch (JsonException)
         {
+        }
+
+        return rows;
+    }
+
+    /// <summary>The index, among the rows the open switcher added to the window
+    /// (those absent before it opened: the DM list and the messages stay), of the
+    /// first row naming the recipient, or -1.</summary>
+    private static int QuickSwitcherRow(List<string> before, List<string> after, string recipient)
+    {
+        var baseline = new Dictionary<string, int>(StringComparer.Ordinal);
+        foreach (string row in before)
+        {
+            baseline[row] = baseline.TryGetValue(row, out int count) ? count + 1 : 1;
+        }
+
+        string needle = Fold(recipient);
+        int index = 0;
+        foreach (string row in after)
+        {
+            if (baseline.TryGetValue(row, out int count) && count > 0)
+            {
+                baseline[row] = count - 1;
+                continue;
+            }
+
+            if (Fold(row).Contains(needle, StringComparison.Ordinal))
+            {
+                return index;
+            }
+
+            index++;
         }
 
         return -1;
@@ -520,6 +548,10 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             SendKey(VirtualKeyEscape);
             await Task.Delay(250, cancellationToken).ConfigureAwait(false);
             byte[] composerBefore = CaptureRegion(handle, CaptureArea.Composer, channel);
+            // The window's list rows before the switcher opens (DM list, messages):
+            // the switcher's own rows are those added afterwards (run b: the first
+            // «Valeria» row was the 55th list row of the window, not a switcher row).
+            List<string> rowsBefore = await QuickSwitcherItemsAsync(string.Empty, cancellationToken).ConfigureAwait(false);
             SendChord(VirtualKeyControl, VirtualKeyK);
             await Task.Delay(1400, cancellationToken).ConfigureAwait(false);
             SendChord(VirtualKeyControl, VirtualKeyA);
@@ -527,7 +559,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             SendKey(VirtualKeyBack);
             SendText(recipient);
             await Task.Delay(900, cancellationToken).ConfigureAwait(false);
-            int row = await QuickSwitcherRowAsync(recipient, cancellationToken).ConfigureAwait(false);
+            List<string> rowsAfter = await QuickSwitcherItemsAsync(recipient, cancellationToken).ConfigureAwait(false);
+            int row = QuickSwitcherRow(rowsBefore, rowsAfter, recipient);
             AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), $"quick switcher row for «{recipient}»: {row}");
             if (row < 0)
             {
