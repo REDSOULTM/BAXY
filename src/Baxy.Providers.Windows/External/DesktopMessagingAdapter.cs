@@ -585,7 +585,13 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             SendVirtualKey(VirtualKeyShift, keyUp: true);
             SendVirtualKey(VirtualKeyAlt, keyUp: true);
             await Task.Delay(150, cancellationToken).ConfigureAwait(false);
-            SendKey(VirtualKeyReturn);
+            // The first result is opened with the mouse: Enter only dismisses the
+            // switcher on this client (the capture after typing shows the row
+            // highlighted, the one after Enter shows the previous chat with the
+            // composer focused). The switcher is centred in the window and its
+            // first row sits just below the input.
+            ClickAtRelative(handle, 0.5, DiscordSwitcherFirstRowHeightFraction);
+            await Task.Delay(1200, cancellationToken).ConfigureAwait(false);
             await Task.Delay(1500, cancellationToken).ConfigureAwait(false);
             AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), "discord: after enter, title " + WindowTitle(handle));
         }
@@ -1620,6 +1626,44 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private const int SidebarChatsLogicalY = 70;
     private const int ChatSearchLogicalX = 190;
     private const int ChatSearchLogicalY = 124;
+
+    // DISCORD1869: the quick switcher's first result, as a fraction of the
+    // window's height (its modal is centred; the input sits at about 28 % and the
+    // first row about 10 % below it).
+    private const double DiscordSwitcherFirstRowHeightFraction = 0.381;
+
+    private static void ClickAtRelative(nint handle, double widthFraction, double heightFraction)
+    {
+        nint previousDpi = SetThreadDpiAwarenessContext((nint)(-4));
+        try
+        {
+            if (!GetWindowRect(handle, out Rect rectangle))
+            {
+                return;
+            }
+
+            int x = rectangle.Left + (int)((rectangle.Right - rectangle.Left) * widthFraction);
+            int y = rectangle.Top + (int)((rectangle.Bottom - rectangle.Top) * heightFraction);
+            if (!SetCursorPos(x, y))
+            {
+                return;
+            }
+
+            Input[] inputs =
+            [
+                MouseInput(0x0002),
+                MouseInput(0x0004),
+            ];
+            _ = SendInput((uint)inputs.Length, inputs, Marshal.SizeOf<Input>());
+        }
+        finally
+        {
+            if (previousDpi != 0)
+            {
+                _ = SetThreadDpiAwarenessContext(previousDpi);
+            }
+        }
+    }
 
     private static void ClickAt(nint handle, int logicalX, int logicalY)
     {
