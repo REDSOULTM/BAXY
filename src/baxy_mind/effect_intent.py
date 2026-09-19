@@ -323,6 +323,18 @@ def _entity_lookup_query(text: str) -> str | None:
     if match is None:
         return None
     entity = match.group("entity").strip(" \t\r\n.,;:")
+    # cien-39 073 «what is cache memory, one sentence»: the length the person
+    # asks for is not part of the name. It travelled inside the entity, the
+    # public search was made for that whole string, and the page found was a
+    # grammar site about using the phrase in a sentence, cited as the source.
+    entity = re.sub(
+        r"[,;]?\s*(?:in|en)?\s*(?:one|a|1|una?)\s+(?:short\s+)?"
+        r"(?:sentence|line|phrase|frase|linea|oracion)\s*[.!?]*$|"
+        r"[,;]?\s*(?:briefly|brevemente|en\s+corto|nada\s+mas|solo\s+eso)\s*[.!?]*$",
+        "",
+        entity,
+        flags=re.IGNORECASE,
+    ).strip(" \t\r\n.,;:")
     folded_entity = _fold(entity)
     if not folded_entity or not re.search(r"[a-z]", folded_entity):
         return None

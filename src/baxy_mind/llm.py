@@ -7004,6 +7004,16 @@ def compose_visible_defect(
         return "copied_instruction"
     if _TASK_METADISCOURSE.search(stripped) is not None:
         return "copied_instruction"
+    # cien-39 072 «de qué te ocupas en este PC» → «Me ocupó abrir y cerrar
+    # programas…»: tercera persona del pretérito donde va la primera del
+    # presente. Dice que algo le ocupó a BAXY, no de qué se ocupa.
+    if re.search(
+        r"(?<![a-záéíóú])me\s+(?:ocup|encarg|dedic|enfoc)[oó]\s+"
+        r"(?:a\s+)?[a-záéíóú]+(?:ar|er|ir)\b",
+        stripped,
+        re.IGNORECASE,
+    ) is not None:
+        return "broken_person_conjugation"
     # Un hueco por rellenar no es una respuesta: «La hora actual es [hora
     # actual en español].» (conocimiento-3/t3).
     placeholder = re.search(r"\[[^\]]{3,}\]|\{[^}]{3,}\}|<[a-z ]{3,}>", stripped)
@@ -15759,6 +15769,13 @@ class LlmRuntime:
             == _accent_folded_with_punctuation(str(seen_send_for_hint.get("forcedDestination") or ""))
         )
         retry_hint = {
+            "broken_person_conjugation": (
+                "Say it in the first person present: «me ocupo de …», never "
+                "«me ocupó», which says something occupied you."
+                if response_language == "en"
+                else "Dilo en primera persona del presente: «me ocupo de …», nunca "
+                "«me ocupó», que dice que algo te ocupó a vos."
+            ),
             "search_report_without_source": (
                 "Name the pages: give the title and the site of each page whose fact "
                 "you report (for example «according to example.com»); say nothing no "
