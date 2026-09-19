@@ -1,3 +1,11 @@
+# WEB1891 adjudicado — 2026-09-19T08:05:09.128635+00:00
+
+**684/742 cubiertos, 58 abiertos, 0 NA; 16/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40, Cerrar aplicaciones y ventanas 20/20, Red y Bluetooth 21/21, Pantalla, captura e interpretación visual 19/19, Música 39/39, Conocimiento, razonamiento y creatividad verbal 37/37, Organizar ventanas y pestañas 13/13); C03 formal 3/11. Registro SHA 0b021404ca004c0801d035c4f5aeabb3ef284aea71aa9e8807952af8d616c94f. Primeras altas 24 h >= 568 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 1e5e87ff con BUILD1891 (nombrar la pagina deja de eximir a la oracion de decir solo lo que esa pagina trae). Turnos ordinarios sin operaciones.
+
+WEB1891 («Navegación y búsqueda web», investigar en internet la pregunta de la persona y decir que paginas la contestan, sin atribuirles nada que no digan): 5 de 5 casos aprobados; el literal nombra tres de sus paginas con titulo y sitio y no afirma nada mas, 1 credito, 1 créditos. Adjudicación 6d3d4f09f2ccfcc3615ba65afeb3f0e4723de492e24f98a42defe25974a8f405. la fila cierra tras cuatro tandas
+
+---
+
 # WEB1889 adjudicado — 2026-09-19T07:54:47.357880+00:00
 
 **683/742 cubiertos, 59 abiertos, 0 NA; 16/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40, Cerrar aplicaciones y ventanas 20/20, Red y Bluetooth 21/21, Pantalla, captura e interpretación visual 19/19, Música 39/39, Conocimiento, razonamiento y creatividad verbal 37/37, Organizar ventanas y pestañas 13/13); C03 formal 3/11. Registro SHA 5ae2e307949ca8755d6bc22412a1c266af63df7740a4bc3d5c0fd80831b6dc09. Primeras altas 24 h >= 567 (sin cambio).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 57172b84 con BUILD1889 (la pregunta de investigacion se mide como el informe que es). Turnos ordinarios sin operaciones.

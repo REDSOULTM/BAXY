@@ -1566,3 +1566,7 @@ Navegación y búsqueda web pasa de 44/46 a 44/46 con investigar en internet la 
 ## Actualización 2026-09-19 (WEB1889)
 
 Navegación y búsqueda web pasa de 44/46 a 44/46 con investigar en internet la pregunta de la persona y decir que paginas la contestan, sin atribuirles nada que no digan (commit 57172b84, BUILD1889) (HEAD 57172b84): 4 de 5 casos aprobados (2 variantes, 2 limites); el literal nombra sus paginas pero les atribuye una causa que no contienen, 0 creditos, 0 créditos. las dos variantes pasaron de no nombrar ninguna pagina a nombrar tres cada una
+
+## Actualización 2026-09-19 (WEB1891)
+
+Navegación y búsqueda web pasa de 44/46 a 45/46 con investigar en internet la pregunta de la persona y decir que paginas la contestan, sin atribuirles nada que no digan (commit 1e5e87ff, BUILD1891) (HEAD 1e5e87ff): 5 de 5 casos aprobados; el literal nombra tres de sus paginas con titulo y sitio y no afirma nada mas, 1 credito, 1 créditos. la fila cierra tras cuatro tandas

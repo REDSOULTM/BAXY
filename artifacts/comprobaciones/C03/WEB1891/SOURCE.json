@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1891-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (naming the page is not a licence to attribute to it what it does not say), on top of the WEB1891 build.",
+  "patch": "artifacts/comprobaciones/C03/WEB1891/SOURCE.patch",
+  "commits": [
+    "f815ec5a04399fb74dac730a6dbb2be5f327e8f0"
+  ],
+  "build": "BUILD1891 (C03-repairs1891-build/BUILD_READY.json; mente)",
+  "cause_measured": "Una oracion que nombraba alguna pagina quedaba exenta de la comprobacion de vocabulario, de modo que podia atribuirle una causa que ningun resultado contiene.",
+  "change": "Toda oracion del informe se mide igual contra lo observado y el pedido; la salida veraz en ingles suma sus dos palabras propias a la lista de vocabulario de informe.",
+  "measurement": "WEB1891: 5 de 5 casos aprobados; el literal nombra tres de sus paginas con titulo y sitio y no afirma nada mas, 1 credito; 1 créditos. la fila cierra tras cuatro tandas",
+  "credits": 1
+}
