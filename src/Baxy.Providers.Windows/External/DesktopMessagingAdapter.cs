@@ -506,6 +506,13 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // rows are read by UI Automation before Enter; the row that names the
             // recipient is selected with Down, and nothing is opened when no row
             // names it.
+            // Escape first: Ctrl+K toggles an already open switcher closed and the
+            // typed name would land in the open chat's composer (the owner had
+            // the switcher open on «viol» on 2026-09-18). The open chat's composer
+            // band must not change while the name is typed, as in WhatsApp.
+            SendKey(VirtualKeyEscape);
+            await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+            byte[] composerBefore = CaptureRegion(handle, CaptureArea.Composer, channel);
             SendChord(VirtualKeyControl, VirtualKeyK);
             await Task.Delay(1400, cancellationToken).ConfigureAwait(false);
             SendChord(VirtualKeyControl, VirtualKeyA);
@@ -516,8 +523,22 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             int row = await QuickSwitcherRowAsync(recipient, cancellationToken).ConfigureAwait(false);
             if (row < 0)
             {
+                // No row names the recipient: close the switcher; if the name landed
+                // in the open chat's composer instead (the switcher was not open),
+                // remove it there and report the lost search focus.
                 SendKey(VirtualKeyEscape);
-                return new(false, true, handle, processId, "recipient_not_in_quick_switcher");
+                await Task.Delay(300, cancellationToken).ConfigureAwait(false);
+                byte[] composerAfter = CaptureRegion(handle, CaptureArea.Composer, channel);
+                bool composerChanged = !CryptographicOperations.FixedTimeEquals(
+                    SHA256.HashData(composerBefore),
+                    SHA256.HashData(composerAfter));
+                if (composerChanged)
+                {
+                    SendChord(VirtualKeyControl, VirtualKeyA);
+                    SendKey(VirtualKeyBack);
+                }
+
+                return new(false, true, handle, processId, composerChanged ? "search_focus_not_verified" : "recipient_not_in_quick_switcher");
             }
 
             for (int step = 0; step < row; step++)
