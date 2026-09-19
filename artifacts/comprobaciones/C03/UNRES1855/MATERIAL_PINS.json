@@ -1,0 +1,132 @@
+{
+  "schema": "unres1855-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-unres1855-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-unres1855-instrument-v1",
+  "seal_sha256": "af4748a047594a6a55845d1ccc70547df7e7ba9f9d5deb7e082d84b5afa949c8",
+  "runner_sha256": "43a469fb4d48d24bce5e67cac90257c9b7893b3cde80f4c014e7c6754b1f1244",
+  "transport_seal_sha256": "639a4ad03d84e329eb5f2057f0087670f0567edc2884caf4004d01721a806387",
+  "files": {
+    "panel.json": "ffcbff97f3feb2eb5e8b375a56da5207f21481f7ba54af135235467767010e01",
+    "turns.jsonl": "d21aaf656f8efa87aebcfcd47ade87fb7716bb95926cdbed43702abea61e0773",
+    "case-map.json": "b00bee8eb7860111d6c00d855bf2b313bd2dedf52ad149bf04a3381e594a3f3a",
+    "PLAN.md": "a851aa099f40af39ba98f4d9789cad65a1139401c85df82e7e362b8daff29888"
+  },
+  "counts": {
+    "cases": 11,
+    "historical_literals": 7,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 22,
+    "session_controls": 11,
+    "ordinary_turns": 11,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 11,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 7,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0139",
+      "kind": "historical_literal",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "2b867b5fa9f79abe75375577ddbf57c3e6ff9a02721a72d943ab196f51dc3e06",
+      "criterion_sha256": "dbba975083e240fdb4a0f003df89a7ba67e1c63d3bb63867adc419a6018edea5"
+    },
+    {
+      "index": 1,
+      "case_id": "H0160",
+      "kind": "historical_literal",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "32b24f8c36c12506e854d8c951fc1fed2216c50e0020c0c2cdf3e99097f03d69",
+      "criterion_sha256": "dbba975083e240fdb4a0f003df89a7ba67e1c63d3bb63867adc419a6018edea5"
+    },
+    {
+      "index": 2,
+      "case_id": "H0210",
+      "kind": "historical_literal",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "42b00919c7aa6f16767e7a9d624220aecf5ee0a16cc20c9a15fc9a205c532791",
+      "criterion_sha256": "dbba975083e240fdb4a0f003df89a7ba67e1c63d3bb63867adc419a6018edea5"
+    },
+    {
+      "index": 3,
+      "case_id": "H0246",
+      "kind": "historical_literal",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "4f9eb2bfff8e796a26aff22696d362b47becfd5604dc9950169d816f95be0de5",
+      "criterion_sha256": "dbba975083e240fdb4a0f003df89a7ba67e1c63d3bb63867adc419a6018edea5"
+    },
+    {
+      "index": 4,
+      "case_id": "H0404",
+      "kind": "historical_literal",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "8a0aab2e0e21a3caca73d15e85dd59bdb37325ff674f2db3f42824dd86f293c7",
+      "criterion_sha256": "dbba975083e240fdb4a0f003df89a7ba67e1c63d3bb63867adc419a6018edea5"
+    },
+    {
+      "index": 5,
+      "case_id": "H0414",
+      "kind": "historical_literal",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "8c00cdbc80e659a1d6121f1e3f479cc9d309d614cf0b6658a44ec5fceb92199e",
+      "criterion_sha256": "dbba975083e240fdb4a0f003df89a7ba67e1c63d3bb63867adc419a6018edea5"
+    },
+    {
+      "index": 6,
+      "case_id": "H0639",
+      "kind": "historical_literal",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "dbfae466b3cd47d340ed8c6647abc15302fdb56dcc4a227b7ea835b47b17731f",
+      "criterion_sha256": "dbba975083e240fdb4a0f003df89a7ba67e1c63d3bb63867adc419a6018edea5"
+    },
+    {
+      "index": 7,
+      "case_id": "unres1855-dev-01",
+      "kind": "original_development_variant",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "81a4d526740a1555224effef1e9d5ce4b9ea68d2af71caf3cdd47cecf3114901",
+      "criterion_sha256": "dbba975083e240fdb4a0f003df89a7ba67e1c63d3bb63867adc419a6018edea5"
+    },
+    {
+      "index": 8,
+      "case_id": "unres1855-dev-02",
+      "kind": "original_development_variant",
+      "group": "overheard_speech",
+      "credit_behavior": "overheard_speech",
+      "text_sha256": "21211c52642a5a89f425eafb39df5dd30b7d2b4b713135226fb25f55b479b79d",
+      "criterion_sha256": "dbba975083e240fdb4a0f003df89a7ba67e1c63d3bb63867adc419a6018edea5"
+    },
+    {
+      "index": 9,
+      "case_id": "unres1855-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "f07131483e00e0d48093e31cb828d0264d6fe4a402cbca34f201616b41813333",
+      "criterion_sha256": "d9d1d12739ec363a0cf1b0be66091c22bd63548fa4d49999a8c8ed7e43e3fee3"
+    },
+    {
+      "index": 10,
+      "case_id": "unres1855-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "03263165e6302e83fe435c82c428ec8c9adbb8cc9d2cb1efe481d5fd9c6e16ce",
+      "criterion_sha256": "6e780c9b9929b142884c3b350aadeb696043bb6ba215b5df39cb17b9293174f1"
+    }
+  ]
+}

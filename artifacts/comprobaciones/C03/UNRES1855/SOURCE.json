@@ -1,0 +1,13 @@
+{
+  "schema": "c03-unres1855-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "no source change (measurement of the current behaviour on the HEAD after the mail withdrawal).",
+  "patch": "artifacts/comprobaciones/C03/UNRES1855/SOURCE.patch",
+  "commits": [],
+  "build": "BUILD1855 (C03-repairs1855-build/BUILD_READY.json; sin cambio de codigo)",
+  "cause_measured": "Sin medir: las siete entradas confusas nunca se ejecutaron en una tanda.",
+  "change": "Ninguno en el codigo: se mide si el producto responde a una entrada ininteligible con un no entendi honesto y sin operar.",
+  "measurement": "UNRES1855: 11 ejecutados, 6 aprobados (2 literales, 1 variante, 2 límites y un literal que pidió precisar), 5 fallidos; 0 créditos. Medición raíz en el PC principal, sin cambio de código: las siete entradas ininteligibles se ejecutaron como turnos ordinarios con cero operaciones. Seis casos fueron fieles: «That's it. Get this spiderbell.» y la variante inglesa recibieron «I couldn't understand the request properly.», «Vean con teléfono.» recibió una pregunta que pide precisar entre dos lecturas, «Estos mexicanos son duros…» recibió que no está seguro de la frase, y los dos límites explicaron y reconocieron la prohibición. Cinco fingieron entender: «¡Habristín!» recibió un saludo, «Calendar Devil?» una respuesta de identidad, «Hable este.» un «¡Claro! ¿En qué estás pensando?», el marcador sin texto una pregunta abierta en inglés, y la variante castellana «No puedo completar el resultado…», que da por hecha una tarea pendiente inexistente. Cero créditos: una de las dos variantes falló, así que ningún literal tiene par. Causa medida para la reparación: la entrada ininteligible no se clasifica como no resuelta y el compositor la trata como conversación.",
+  "credits": 0
+}
