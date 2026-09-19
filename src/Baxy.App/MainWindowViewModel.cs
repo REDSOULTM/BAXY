@@ -2230,6 +2230,39 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                     turn.MissingFields);
             }
 
+            // Symmetrically, a recovered turn that carries the mind's validated
+            // conversational reply is an answer, not a failure. cien-37 030 «send
+            // flowers to Deimos»: the recovery composed «Sending flowers to Deimos
+            // is outside what I do on this PC» and publishing the failure replaced
+            // it with «I couldn't understand the request…», which is false: it was
+            // understood and simply cannot be done. The reply answers to the same
+            // contract as any other conversational reply, and the recovery carries
+            // no operations, so it grants no execution authority either.
+            if (turn.Kind == "conversation"
+                && turn.Reply is { Length: > 0 }
+                && turn.EffectOperations.Count == 0
+                && turn.IntentOperations.Count == 0)
+            {
+                LastMindReplyRejection =
+                    UserMessagePolicy.ConversationReplyRejectionReason(
+                        route.Text,
+                        turn.Reply,
+                        turn.ResponseLanguage,
+                        string.Join(" ", PreviousUserRequests()),
+                        unsupportedByMind: string.Equals(
+                            turn.ConversationKind, "unsupported", StringComparison.Ordinal));
+                if (LastMindReplyRejection is null)
+                {
+                    AddMessage(
+                        "BAXY",
+                        turn.Reply,
+                        isUser: false,
+                        formulatedByMind: true,
+                        route: PublicResponseRoute.Conversation);
+                    return true;
+                }
+            }
+
             AddMessage(
                 "BAXY",
                 TurnVisibleFacts.Failure(failureCode, new JsonObject

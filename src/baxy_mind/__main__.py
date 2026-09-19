@@ -6866,10 +6866,13 @@ def _prepare_turn_result(
     # planificador, o una pregunta sobre el turno anterior —«Would you like to
     # hear a fun fact about Peru?»— (limites-14/003..006, limites-20/009,
     # panel-opus-13/038, /052).
+    # cien-37 030 «send flowers to Deimos»: a place no operation reaches
+    # has nothing to clarify either; the question asked for the detail of
+    # something that cannot be done at all.
     nothing_to_clarify = bool(
         read_request(objective).intents
         & {INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
-    )
+    ) or effect_intent.out_of_world_request(objective)
     # AUDIO858 H0067 «subí el volumen y decime qué fecha es», H0527 «listá
     # las ventanas y enfocá la mejor»: the read clause runs now and the
     # final ends with the question the other clause needs; the turn is not
@@ -8130,10 +8133,13 @@ def _recover_failed_turn(
     # como pregunta era el último sitio por donde salía —«¿Qué específicamente
     # no puedes hacer en este PC?», «¿Qué acción específica te niega la política
     # de seguridad de BAXY?»— (limites-16/003..006).
+    # cien-37 030 «send flowers to Deimos»: a place no operation reaches
+    # has nothing to clarify either; the question asked for the detail of
+    # something that cannot be done at all.
     nothing_to_clarify = bool(
         read_request(objective).intents
         & {INTENT_CAPABILITY, INTENT_REFUSE, INTENT_CONTINUE_CONSTRAINT}
-    )
+    ) or effect_intent.out_of_world_request(objective)
     if llm is not None:
         try:
             if nothing_to_clarify:
@@ -8239,7 +8245,14 @@ def _recovery_visible_from_compose(llm: Any, objective: str) -> tuple[str, str]:
                     "situation": json.dumps(
                         {
                             "kind": "failure",
-                            "cause": "request_analysis_failed",
+                            # A place no operation reaches is a boundary, not a
+                            # failed reading: «I couldn't understand the request to
+                            # send flowers to Deimos» is false.
+                            "cause": (
+                                "out_of_catalog"
+                                if effect_intent.out_of_world_request(objective)
+                                else "request_analysis_failed"
+                            ),
                             "polarity": "failure",
                         },
                         ensure_ascii=False,
