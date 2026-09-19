@@ -3525,6 +3525,14 @@ _CAUSE_FACT = {
         "that application has no open window right now, so it is not open; "
         "nothing was done to it"
     ),
+    # H0096 «aprieta en Among Us» con Among Us sin instalar: ahora BAXY mira la
+    # pantalla antes de pulsar, de modo que la ausencia es algo medido y no una
+    # suposicion. El hecho es la ausencia, no el fallo. Sin hecho detras, la
+    # causa se proyectaba tal cual —«visible button not found»—, que es jerga y
+    # no una respuesta, el mismo defecto que el dueno rechazo en H0714.
+    "visible_button_not_found": (
+        "nothing on the screen is called that, so nothing was pressed"
+    ),
     # NETWORK1721 «conectate al wifi de casa» with no saved network of that
     # name: the fact is the absence; nothing was done. Not «connected»: the
     # truncated-word lens read the draft's «connect» as a cut of it
@@ -6777,6 +6785,22 @@ _TASK_METADISCOURSE = re.compile(
     re.IGNORECASE,
 )
 
+# H0714 y H0096: una respuesta que empieza explicando «el fallo» habla del
+# desperfecto interno, no con la persona. El dueno lo rechazo escrito asi en
+# espanol —«El fallo se debe a que el resultado no fue verificado»— y el mismo
+# molde salia en ingles —«The failure occurred because no element on the screen
+# matches...»— aun con el hecho correcto detras. Se veta solo la apertura, de
+# modo que contar lo que paso sigue siendo posible en cualquier otro lugar de
+# la frase.
+_FAILURE_AS_TOPIC = re.compile(
+    r"^\s*(?:el|la)\s+(?:fallo|falla|error)\s+"
+    r"(?:se\s+deb[eií]|fue\s+(?:porque|debido)|ocurri[oó]|sucedi[oó]|"
+    r"se\s+produjo|consisti[oó])"
+    r"|^\s*the\s+(?:failure|error)\s+"
+    r"(?:occurred|happened|arose|stems|resulted|is\s+due|was\s+(?:because|due|caused))",
+    re.IGNORECASE,
+)
+
 _SCOPE_MARKERS = (
     "not listed",
     "outside",
@@ -7259,6 +7283,8 @@ def compose_visible_defect(
         return "copied_instruction"
     if _TASK_METADISCOURSE.search(stripped) is not None:
         return "copied_instruction"
+    if _FAILURE_AS_TOPIC.match(stripped) is not None:
+        return "failure_as_topic"
     # cien-39 072 «de qué te ocupas en este PC» → «Me ocupó abrir y cerrar
     # programas…»: tercera persona del pretérito donde va la primera del
     # presente. Dice que algo le ocupó a BAXY, no de qué se ocupa.

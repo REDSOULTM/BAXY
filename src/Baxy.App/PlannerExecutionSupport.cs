@@ -394,6 +394,12 @@ internal static class PlanObservationProjector
                 { "games", "name" },
             ["game.purchase.prepare"] = new(StringComparer.Ordinal)
                 { "expectedPriceCents" },
+            // H0096 «aprieta en Among Us»: el clic mira la pantalla antes de
+            // pulsar, y lo que ve sólo sirve si sale del paso. Sin estos
+            // campos la observación proyectada llegaba vacía: los ojos leían
+            // 47 controles de la ventana y el paso siguiente no veía ninguno.
+            ["input.visible.controls"] = new(StringComparer.Ordinal)
+                { "authority", "controlCount", "controls", "kind", "name", "window" },
             ["peripheral.list"] = new(StringComparer.Ordinal)
                 { "kind", "name" },
             ["reminder.resolve.exact"] = new(StringComparer.Ordinal)

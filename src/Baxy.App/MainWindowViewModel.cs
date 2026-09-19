@@ -702,6 +702,25 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
                 && openedProcessId > 0;
         }
 
+        if (execution.Steps[0].Operation == "input.visible.controls")
+        {
+            // H0096 «aprieta en Among Us»: mirar antes de pulsar. Leer los
+            // controles visibles es de sólo lectura y no cruza frontera de
+            // efecto; el clic que la sigue sigue siendo revisado y el revisor ve
+            // el mismo argumento único de etiqueta que vería sin la lectura.
+            return execution.CurrentStep.Operation == "input.visible.click"
+                && execution.PendingOperation is { } looked
+                && looked.Arguments.ValueKind == JsonValueKind.Object
+                && looked.Arguments.EnumerateObject().Count() == 1
+                && looked.Arguments.TryGetProperty("label", out JsonElement looking)
+                && looking.ValueKind == JsonValueKind.String
+                && !string.IsNullOrWhiteSpace(looking.GetString())
+                && result["controls"] is JsonArray { Count: > 0 } listed
+                && result["controlCount"] is JsonValue listedCountValue
+                && listedCountValue.TryGetValue(out int listedCount)
+                && listedCount >= listed.Count;
+        }
+
         if (execution.Steps[0].Operation is not ("window.resolve" or "window.active")
             || execution.CurrentStep.Operation != "app.close"
             || execution.PendingOperation is not { } prepared

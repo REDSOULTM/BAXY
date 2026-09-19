@@ -25,6 +25,17 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
         "active_window_not_found",
     };
 
+    // H0096 «aprieta en Among Us»: el script sólo emite este código después de
+    // recorrer el árbol y los botones nativos y no encontrar nada con ese
+    // nombre, es decir, antes de tocar nada. Marcarlo como «pudo haber efecto»
+    // sólo porque la frontera se cruza al arrancar convertía una ausencia
+    // medida en una duda, y el turno la contaba como un resultado sin
+    // confirmar en vez de decir que ahí no había nada así.
+    private static readonly HashSet<string> BeforeAnyPress = new(StringComparer.Ordinal)
+    {
+        "visible_button_not_found",
+    };
+
     private readonly IExternalProcessRunner _runner;
     private readonly string _script;
     private readonly IVisibleControlLocator? _ocr;
@@ -334,7 +345,9 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
             string error = root.TryGetProperty("error", out JsonElement errorValue)
                 ? errorValue.GetString() ?? "visible_click_failed"
                 : "visible_click_failed";
-            return effectBoundary.Failure(operation, error, effect);
+            return !effect && BeforeAnyPress.Contains(error)
+                ? ExternalJson.FailureBeforeEffect(operation, error)
+                : effectBoundary.Failure(operation, error, effect);
         }
         if (!effect || !PostreadHolds(root))
             return effectBoundary.Failure(
