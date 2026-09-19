@@ -3502,6 +3502,19 @@ _CAUSE_FACT = {
     "timeout": "wait ran out",
     "provider_down": "no response",
     "out_of_catalog": "outside what I do",
+    # H0714: Windows rechazo la transicion de energia. La App resume eso como
+    # «result_unverified», y sin un hecho detras el modelo hablaba del fallo en
+    # vez de hablarle a la persona: «El fallo se debe a que el resultado no fue
+    # verificado». El hecho que si se sabe es que el paso se envio y no se pudo
+    # confirmar, de modo que no se afirma que haya pasado.
+    "power_transition_not_accepted": (
+        "Windows did not accept the power request, so nothing changed: the PC was "
+        "not shut down, restarted, locked or signed out"
+    ),
+    "result_unverified": (
+        "the step was sent and its result could not be confirmed, so nothing is "
+        "claimed to have happened"
+    ),
     "model_invalid": "unusable answer",
     "app_not_found": "not found",
     # CLOSE1369 «cierra steam» with Steam not running: «No pude cerrar Steam
