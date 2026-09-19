@@ -1602,3 +1602,7 @@ Interacción dentro de aplicaciones pasa de 21/22 a 22/22 con mirar la pantalla 
 ## Actualización 2026-09-19 (LANG1909)
 
 Hora y fecha pasa de 19/23 a 21/23 con pedir que repitan en espanol o ingles el pedido escrito en otro idioma, en vez de contestarlo en el idioma equivocado (commit ecc19b60, BUILD1909) (HEAD ecc19b60): 6 ejecutados, 6 aprobados, 0 fallidos, 2 créditos. Los cuatro pedidos en alemán o italiano terminaron con cero operaciones y un final que pide que se repita en español o en inglés; el español y el inglés siguen dando la hora; cien-59 100/100 con cero agotes.
+
+## Actualización 2026-09-19 (UI1911)
+
+Instalar y desinstalar software pasa de 29/31 a 30/31 con completar el dialogo de descarga que ya esta abierto pulsando el boton que el pedido nombra (commit 2d9cd6b9, BUILD1911) (HEAD 2d9cd6b9): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Los cuatro turnos con clic leyeron las 30 líneas del diálogo que la raíz dejó abierto y pulsaron el botón del pedido; el literal arrancó la instalación de DOOM Eternal en E:; cien-60 100/100 con cero agotes.

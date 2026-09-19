@@ -1,3 +1,25 @@
+## UI1911 — estado vigente 2026-09-19T19:18:34.686046+00:00
+
+Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 705/742 | 37 | 0 | >=589 | 13/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 588 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); UI1911 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: UI1911: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/UI1911/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 129.89 s acumulados; pico GPU 3492.93 MiB; pico RAM 1967.01 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque UI1911 precedente. -->
+
 ## LANG1909 — estado vigente 2026-09-19T18:37:19.056108+00:00
 
 Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.

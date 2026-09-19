@@ -1,0 +1,373 @@
+commit 2d9cd6b932ee73e9f91314307d2d99f75b892362
+
+C03: el botón que nadie veía, y no llamar completado a lo que no cambió nada
+
+H0101, que el dueño pidió expresamente: «Hay un diálogo de descarga de doom
+eternal abierto en steam, completalo haciendo click en instalar». Tres cosas
+lo impedían, y cada una salió de medir la anterior.
+
+La primera, leer el pedido. El verbo principal —«completalo»— no nombra
+ninguna operación y el turno moría como conversación: «¿Quieres que te ayude
+a completar el diálogo?». Pero la frase sí dice qué hacer: la cláusula de
+gerundio nombra el clic y su etiqueta. Cuando está, es ella el acto de habla,
+venga el verbo principal que venga. Vale también para «by clicking install» y
+para «apretando click en Instalar»; «no lo completes haciendo click en
+instalar» sigue sin serlo.
+
+La segunda, la honestidad del postread. El diálogo dice «Instalar» tres
+veces: el título, el rótulo «INSTALAR EN:» y el botón. Se pulsó el rótulo, no
+pasó nada, y como la palabra seguía en pantalla el clic se dio por bueno: el
+turno publicó que el diálogo se había completado mientras seguía abierto y
+sin descargar nada. Que la etiqueta siga ahí no prueba nada; lo único que
+prueba un efecto es que la superficie cambie. Además, una etiqueta de control
+termina donde termina la palabra: la que sigue con más texto pegado a su
+derecha en la misma fila —«INSTALAR EN:»— es un rótulo, y se descarta.
+
+La tercera, los ojos. Medido con el OCR de Windows sobre la captura, el botón
+«Instalar» no aparece: es blanco sobre azul saturado y el motor, afinado para
+tinta oscura sobre fondo claro, sólo encuentra el título (h=17) y el rótulo
+(h=9). Una copia en gris con gamma 2,5 sí lo encuentra: h=11 en x=883 y=746.
+De modo que ahora se mira dos veces, la captura tal cual y esa copia, y se
+juntan las apariciones. Nada sale del equipo: el realce es local y la captura
+se borra igual que antes.
+
+Medido de punta a punta, con la raíz aprobando el clic sólo contra una
+ventana de Steam: la lectura nombra 28 controles del diálogo, el clic cae en
+ocr.906.751 —el botón— y la descarga arranca de verdad en el disco que el
+dueño eligió: E:\SteamLibrary\steamapps\appmanifest_782330.acf, DOOM Eternal,
+85.027.805.248 bytes por descargar.
+
+cien-60: 100/100, cero agotes; frente a cien-59 sólo cambian la hora y dos
+frases distintas e igual de ciertas.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/WindowsVisibleOcrLocator.cs b/src/Baxy.Providers.Windows/External/WindowsVisibleOcrLocator.cs
+index 986ca1bd0..d2fb6ee51 100644
+--- a/src/Baxy.Providers.Windows/External/WindowsVisibleOcrLocator.cs
++++ b/src/Baxy.Providers.Windows/External/WindowsVisibleOcrLocator.cs
+@@ -1,4 +1,5 @@
+ using System.Globalization;
++using System.Runtime.InteropServices.WindowsRuntime;
+ using System.Text;
+ using System.Text.Json;
+ using Windows.Globalization;
+@@ -37,7 +38,15 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
+                 BitmapAlphaMode.Ignore);
+             OcrResult recognized = await engine.RecognizeAsync(bitmap);
+             cancellationToken.ThrowIfCancellationRequested();
+-            WordHit? located = UniqueHit(recognized, label);
++            OcrResult? enhanced = null;
++            using (SoftwareBitmap? darker = Darkened(bitmap))
++            {
++                if (darker is not null)
++                    enhanced = await engine.RecognizeAsync(darker);
++            }
++
++            cancellationToken.ThrowIfCancellationRequested();
++            WordHit? located = UniqueHit(recognized, enhanced, label);
+             if (located is null)
+                 return null;
+             WordHit hit = located.Value;
+@@ -58,7 +67,14 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
+                     cancellationToken).ConfigureAwait(false);
+                 VisibleControlSurface.Delete(after.Value.Path);
+             }
+-            bool ok = surfaceObserved || changed;
++            // H0101: el diálogo de descarga de Steam dice «Instalar» tres veces
++            // —el título, el rótulo «INSTALAR EN:» y el botón—. Al pulsar el
++            // rótulo no pasó nada, pero la palabra seguía en pantalla y eso se
++            // daba por bueno: el turno publicó que el diálogo se había
++            // completado cuando seguía abierto y sin descargar nada. Que la
++            // etiqueta siga ahí no prueba nada; lo único que prueba un efecto
++            // es que la superficie cambie. Se sigue anotando lo observado.
++            bool ok = changed;
+             JsonElement result = ExternalJson.Create(writer =>
+             {
+                 writer.WriteStartObject();
+@@ -66,6 +82,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
+                 writer.WriteBoolean("ok", ok);
+                 writer.WriteBoolean("effectObserved", true);
+                 writer.WriteString("error", ok ? "" : "visible_button_postread_unchanged");
++                writer.WriteBoolean("labelStillOnScreen", surfaceObserved);
+                 writer.WriteString("name", hit.Text);
+                 writer.WriteString("controlIdentity", "ocr." + hit.CenterX + "." + hit.CenterY);
+                 writer.WriteBoolean("absentOrDisabled", false);
+@@ -172,18 +189,36 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
+                 BitmapPixelFormat.Bgra8,
+                 BitmapAlphaMode.Ignore);
+             OcrResult recognized = await engine.RecognizeAsync(bitmap);
++            cancellationToken.ThrowIfCancellationRequested();
++            OcrResult? enhanced = null;
++            using (SoftwareBitmap? darker = Darkened(bitmap))
++            {
++                if (darker is not null)
++                    enhanced = await engine.RecognizeAsync(darker);
++            }
++
+             cancellationToken.ThrowIfCancellationRequested();
+             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+             var lines = new List<string>();
+-            foreach (OcrLine line in recognized.Lines)
++            // La segunda pasada nombra lo que la primera no alcanza a leer, como
++            // el botón «Instalar» de Steam: blanco sobre azul saturado.
++            OcrResult[] readPasses = enhanced is null ? [recognized] : [recognized, enhanced];
++            foreach (OcrResult pass in readPasses)
+             {
+-                string text = line.Text.Trim();
+-                if (text.Length == 0 || text.Length > 80 || !seen.Add(text))
+-                    continue;
+-                lines.Add(text);
++                foreach (OcrLine line in pass.Lines)
++                {
++                    string text = line.Text.Trim();
++                    if (text.Length == 0 || text.Length > 80 || !seen.Add(text))
++                        continue;
++                    lines.Add(text);
++                    if (lines.Count >= limit)
++                        break;
++                }
++
+                 if (lines.Count >= limit)
+                     break;
+             }
++
+             return lines.ToArray();
+         }
+         catch (Exception exception) when (exception is IOException or InvalidOperationException
+@@ -197,27 +232,75 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
+         }
+     }
+ 
+-    private static WordHit? UniqueHit(OcrResult recognized, string label)
++    private static WordHit? UniqueHit(
++        OcrResult recognized,
++        OcrResult? enhanced,
++        string label)
+     {
+         string needle = Fold(label);
+         if (needle.Length == 0)
+             return null;
+         HashSet<string> needles = Needles(needle);
++        OcrResult[] passes = enhanced is null ? [recognized] : [recognized, enhanced];
++        List<global::Windows.Foundation.Rect> words = [];
++        foreach (OcrResult pass in passes)
++        {
++            foreach (OcrLine everyLine in pass.Lines)
++            {
++                foreach (OcrWord everyWord in everyLine.Words)
++                    words.Add(everyWord.BoundingRect);
++            }
++        }
++
+         List<WordHit> hits = [];
+         List<double> heights = [];
+-        foreach (OcrLine line in recognized.Lines)
++        List<bool> continues = [];
++        foreach (OcrResult pass in passes)
+         {
+-            foreach (OcrWord word in line.Words)
++            foreach (OcrLine line in pass.Lines)
++            {
++                foreach (OcrWord word in line.Words)
++                {
++                    if (!needles.Contains(Fold(word.Text)))
++                        continue;
++                    global::Windows.Foundation.Rect box = word.BoundingRect;
++                    var hit = new WordHit(
++                        word.Text,
++                        (int)(box.X + box.Width / 2),
++                        (int)(box.Y + box.Height / 2));
++                    // La misma palabra leída en las dos pasadas es una sola
++                    // aparición, no dos: se cuenta una vez.
++                    if (hits.Any(seen => Math.Abs(seen.CenterX - hit.CenterX) <= 4
++                        && Math.Abs(seen.CenterY - hit.CenterY) <= 4))
++                    {
++                        continue;
++                    }
++
++                    hits.Add(hit);
++                    heights.Add(box.Height);
++                    continues.Add(ContinuesToTheRight(box, words));
++                }
++            }
++        }
++        // H0101: en el diálogo de descarga de Steam la palabra «Instalar» sale
++        // tres veces —el título, el rótulo «INSTALAR EN:» y el botón—, y el
++        // rótulo, escrito en versalitas pequeñas, ganaba la regla del cuerpo
++        // menor. Un rótulo así no es una etiqueta de control: sigue con más
++        // texto pegado a su derecha, en su misma fila. La de un control termina
++        // ahí. Cuando alguna termina, las que siguen se descartan.
++        if (continues.Contains(false) && continues.Contains(true))
++        {
++            List<WordHit> kept = [];
++            List<double> keptHeights = [];
++            for (int index = 0; index < hits.Count; index++)
+             {
+-                if (!needles.Contains(Fold(word.Text)))
++                if (continues[index])
+                     continue;
+-                global::Windows.Foundation.Rect box = word.BoundingRect;
+-                hits.Add(new WordHit(
+-                    word.Text,
+-                    (int)(box.X + box.Width / 2),
+-                    (int)(box.Y + box.Height / 2)));
+-                heights.Add(box.Height);
++                kept.Add(hits[index]);
++                keptHeights.Add(heights[index]);
+             }
++            hits = kept;
++            heights = keptHeights;
+         }
+         if (hits.Count == 1)
+             return hits[0];
+@@ -272,6 +355,75 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
+         return hits.Count == 1 ? hits[0] : null;
+     }
+ 
++    // H0101: el boton «Instalar» del dialogo de Steam es texto blanco sobre azul
++    // saturado. El OCR de Windows, afinado para tinta oscura sobre fondo claro,
++    // no lo lee: en la captura sólo encuentra el título y el rótulo «INSTALAR
++    // EN:». Medido, una copia en gris con gamma 2,5 —que oscurece los medios
++    // tonos y separa la letra del fondo— sí lo encuentra. De modo que se mira
++    // dos veces: la imagen tal cual y esa copia. Nada se envía a ninguna parte.
++    private static readonly byte[] DarkenedRamp = BuildRamp();
++
++    private static byte[] BuildRamp()
++    {
++        var ramp = new byte[256];
++        for (int level = 0; level < 256; level++)
++            ramp[level] = (byte)Math.Round(255 * Math.Pow(level / 255.0, 2.5));
++        return ramp;
++    }
++
++    private static SoftwareBitmap? Darkened(SoftwareBitmap source)
++    {
++        try
++        {
++            int width = source.PixelWidth;
++            int height = source.PixelHeight;
++            var pixels = new byte[4 * width * height];
++            source.CopyToBuffer(pixels.AsBuffer());
++            for (int index = 0; index + 3 < pixels.Length; index += 4)
++            {
++                int luminance = (int)(0.114 * pixels[index]
++                    + 0.587 * pixels[index + 1]
++                    + 0.299 * pixels[index + 2]);
++                byte value = DarkenedRamp[luminance < 0 ? 0 : luminance > 255 ? 255 : luminance];
++                pixels[index] = value;
++                pixels[index + 1] = value;
++                pixels[index + 2] = value;
++            }
++
++            var darker = new SoftwareBitmap(
++                BitmapPixelFormat.Bgra8, width, height, BitmapAlphaMode.Ignore);
++            darker.CopyFromBuffer(pixels.AsBuffer());
++            return darker;
++        }
++        catch (Exception exception) when (exception is ArgumentException
++            or InvalidOperationException or OutOfMemoryException)
++        {
++            return null;
++        }
++    }
++
++    // Otra palabra en la misma fila, pegada a la derecha: menos de un cuerpo y
++    // medio de separación y con los centros verticales a menos de media altura.
++    // Así se distingue «INSTALAR EN:» —que sigue— del botón «Instalar» y del
++    // título, que terminan ahí; «Cancelar», a 215 px, no cuenta como pegada.
++    private static bool ContinuesToTheRight(
++        global::Windows.Foundation.Rect box,
++        IReadOnlyList<global::Windows.Foundation.Rect> words)
++    {
++        double centre = box.Y + box.Height / 2;
++        double right = box.X + box.Width;
++        foreach (global::Windows.Foundation.Rect other in words)
++        {
++            if (other.X <= box.X && other.Y <= box.Y)
++                continue;
++            if (Math.Abs(other.Y + other.Height / 2 - centre) > box.Height / 2)
++                continue;
++            if (other.X >= right && other.X - right <= box.Height * 1.5)
++                return true;
++        }
++        return false;
++    }
++
+     private static string Fold(string value)
+     {
+         string form = value.Normalize(NormalizationForm.FormD).ToLowerInvariant();
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 5472d445a..213658d2d 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -11228,6 +11228,11 @@ def _is_direct_request(text: str) -> bool:
+ 
+     if console_prompt_command(text):
+         return True
++    # H0101: «completalo haciendo click en instalar». La cláusula de gerundio
++    # nombra la operación y su etiqueta, de modo que el pedido es directo
++    # aunque el verbo principal no esté en ninguna lista.
++    if _gerund_click_label(text) is not None:
++        return True
+     topic = _machine_status_topic(text)
+     if topic is not None:
+         text = topic.group("body")
+@@ -16830,6 +16835,46 @@ _VISIBLE_CLICK_WEB_DESTINATION = re.compile(
+     r"wikipedia|https?://|www\.|\.com\b|\.org\b|\.net\b|\.io\b",
+     re.IGNORECASE,
+ )
++# H0101 «Hay un diálogo de descarga de doom eternal abierto en steam, completalo
++# haciendo click en instalar»: el verbo principal —«completalo»— no nombra
++# ninguna operación, y el pedido moría sin leerse. Pero la frase sí dice qué
++# hacer: la cláusula de gerundio nombra el clic y su etiqueta. Cuando está, es
++# ella el acto de habla, venga el verbo principal que venga.
++_GERUND_CLICK = re.compile(
++    r"\b(?:haciendo|dando|pulsando|apretando|presionando)\s+(?:un\s+|el\s+)?"
++    r"(?:clic|click|clics|clicks)\s+(?:en|sobre|a)\s+"
++    r"(?:(?:el|la|los|las)\s+)?"
++    r"(?:(?:boton|button|control|enlace|link|pestana|tab|seccion|section)\s+)?"
++    r"(?:(?:el|la|los|las)\s+)?"
++    r"(?P<label>[^,;.!?]{1,80}?)"
++    r"(?:\s+(?:boton|button|control|enlace|link|pestana|tab|seccion|section))?"
++    r"[\s?!.]*$"
++    r"|\bby\s+clicking\s+(?:on\s+)?"
++    r"(?:the\s+)?(?:(?:button|control|link|tab|section)\s+)?(?:the\s+)?"
++    r"(?P<label_en>[^,;.!?]{1,80}?)"
++    r"(?:\s+(?:button|control|link|tab|section))?"
++    r"[\s?!.]*$",
++)
++
++
++def _gerund_click_label(text: str) -> str | None:
++    """Name the control of a «haciendo click en X» clause, or nothing."""
++
++    folded = _fold(text)
++    if _has(folded, r"\bno\s+(?:lo|la|los|las)?\s*\w*\s*haciendo\s+cl"):
++        return None
++    found = _GERUND_CLICK.search(folded)
++    if found is None:
++        return None
++    label = (found.group("label") or found.group("label_en") or "").strip(" \t\"'`")
++    if (
++        not label
++        or len(label.split()) > 6
++        or _VISIBLE_CLICK_WEB_DESTINATION.search(label) is not None
++        or re.search(r"\b(?:tecla|teclas|key|keys|teclado|keyboard)\b", label) is not None
++    ):
++        return None
++    return label
+ 
+ 
+ def _visible_click_label(
+@@ -16850,6 +16895,9 @@ def _visible_click_label(
+         rf"^([¿?¡!\s]*){_VISIBLE_CLICK_APP_CONTEXT}\s+", r"\1", _fold(text), count=1,
+     )
+     text = re.sub(rf"\s+{_VISIBLE_CLICK_APP_CONTEXT}(?=[\s?!.]*$)", "", text, count=1)
++    gerund = _gerund_click_label(text)
++    if gerund is not None:
++        return gerund
+     request = _match(
+         text,
+         (

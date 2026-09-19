@@ -1,0 +1,15 @@
+{
+  "schema": "c03-ui1911-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (a «haciendo click en X» clause is the speech act, whatever the main verb) and src/Baxy.Providers.Windows/External/WindowsVisibleOcrLocator.cs (only a changed surface proves the click, a label that continues to its right is not a control, and the eyes take a second darkened pass so low-contrast button text is read), on top of the LANG1909 build.",
+  "patch": "artifacts/comprobaciones/C03/UI1911/SOURCE.patch",
+  "commits": [
+    "2d9cd6b932ee73e9f91314307d2d99f75b892362"
+  ],
+  "build": "BUILD1911 (C03-repairs1911-build/BUILD_READY.json; mente y Providers)",
+  "cause_measured": "El verbo principal del pedido no nombraba ninguna operacion y el turno moria como conversacion; el clic caia en el rotulo «INSTALAR EN:» y se daba por bueno porque la palabra seguia en pantalla; y el boton, blanco sobre azul saturado, era invisible para el OCR.",
+  "change": "La clausula de gerundio nombra la operacion y su etiqueta; solo una superficie que cambia prueba el clic y un rotulo que continua a su derecha no es un control; y los ojos miran una segunda vez sobre una copia oscurecida.",
+  "measurement": "UI1911: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. Los cuatro turnos con clic leyeron las 30 líneas del diálogo que la raíz dejó abierto y pulsaron el botón del pedido; el literal arrancó la instalación de DOOM Eternal en E:; cien-60 100/100 con cero agotes.",
+  "credits": 1
+}
