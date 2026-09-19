@@ -577,14 +577,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             SendText(recipient);
             await Task.Delay(1200, cancellationToken).ConfigureAwait(false);
             AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), $"discord: after typing «{recipient}»");
-            // The modifiers are released explicitly before Enter: a chord whose
-            // key-up the client missed leaves Control logically down, and Discord
-            // ignores Ctrl+Enter in the quick switcher (the switcher stayed open
-            // with the right row highlighted and the chat never changed).
-            SendVirtualKey(VirtualKeyControl, keyUp: true);
-            SendVirtualKey(VirtualKeyShift, keyUp: true);
-            SendVirtualKey(VirtualKeyAlt, keyUp: true);
-            await Task.Delay(150, cancellationToken).ConfigureAwait(false);
+            // No stray modifier key-up is sent here: a lone Alt release activates
+            // the window menu in Chromium and closed the switcher, so the click
+            // below landed on the conversation behind it.
             // The first result is opened with the mouse: Enter only dismisses the
             // switcher on this client (the capture after typing shows the row
             // highlighted, the one after Enter shows the previous chat with the
