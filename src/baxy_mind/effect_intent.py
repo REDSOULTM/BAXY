@@ -16969,6 +16969,14 @@ def _visible_click_intent(
         # client's interface (UI1735) and stays a click.
         return None
     evidence = text.strip(" ,;:-")[:240]
+    # H0096: mirar antes de pulsar. La lectura de controles es de solo lectura,
+    # no cruza frontera de efecto y le da al redactor lo que hay delante, que es
+    # lo que hace falta para decir la verdad cuando la etiqueta no aparece en
+    # ninguna parte —Among Us no esta instalado en este PC—.
+    if "input.visible.controls" in available_operations:
+        return EffectIntent(
+            ("input.visible.controls", "input.visible.click"), (evidence, evidence),
+        )
     return EffectIntent(("input.visible.click",), (evidence,))
 
 
