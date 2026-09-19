@@ -1546,3 +1546,7 @@ Información web actual pasa de 16/17 a 16/17 con investigar en internet la preg
 ## Actualización 2026-09-19 (WEB1879)
 
 Información web actual pasa de 16/17 a 16/17 con investigar en internet la pregunta de la persona y decir que paginas la contestan, nombrandolas (commit b5365f70, BUILD1879) (HEAD b5365f70): 4 de 5 casos aprobados (2 variantes, 2 límites); el literal falló por una causa sin fuente en su primera oración, 0 créditos. Con la regla que exige nombrar las páginas, los tres informes atribuyeron lo que copian y las dos variantes quedaron enteras; el literal nombró fallas.mx y ADSLZone pero abrió afirmando en voz propia dos causas que ningún resultado contiene.
+
+## Actualización 2026-09-19 (WEB1881)
+
+Información web actual pasa de 16/17 a 16/17 con investigar en internet la pregunta de la persona y decir que paginas la contestan, sin afirmar nada por su cuenta (commit 3262e2d0, BUILD1881) (HEAD 3262e2d0): 4 de 5 casos aprobados (2 variantes, 2 límites); el literal terminó sin respuesta, 0 créditos. La regla que exige que toda oración sin fuente use sólo palabras de algún resultado dejó al literal sin borrador publicable: con temperatura cero sus tres candidatos son siempre los mismos y cada uno cae en una regla distinta, de modo que el turno terminó sin respuesta; las dos variantes publicaron su informe entero.

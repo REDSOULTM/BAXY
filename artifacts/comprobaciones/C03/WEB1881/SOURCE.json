@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1881-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (a sentence of a search report that names no page may only use words some result or the request brings), on top of the WEB1881 build.",
+  "patch": "artifacts/comprobaciones/C03/WEB1881/SOURCE.patch",
+  "commits": [
+    "3262e2d0d7484d10da3c1fbe32182e0c3e5fa3a1"
+  ],
+  "build": "BUILD1881 (C03-repairs1881-build/BUILD_READY.json; mente)",
+  "cause_measured": "Nada impedia que el informe abriera con una frase propia resumiendo causas que ningun resultado contiene.",
+  "change": "Una oracion del informe que no nombre ninguna pagina solo puede usar palabras de algun resultado o del pedido; entidad y curiosidad quedan fuera.",
+  "measurement": "WEB1881: 4 de 5 casos aprobados (2 variantes, 2 límites); el literal terminó sin respuesta; 0 créditos. La regla que exige que toda oración sin fuente use sólo palabras de algún resultado dejó al literal sin borrador publicable: con temperatura cero sus tres candidatos son siempre los mismos y cada uno cae en una regla distinta, de modo que el turno terminó sin respuesta; las dos variantes publicaron su informe entero.",
+  "credits": 0
+}

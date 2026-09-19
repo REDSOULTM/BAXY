@@ -1,3 +1,25 @@
+## WEB1881 — estado vigente 2026-09-19T04:37:41.906511+00:00
+
+Parcial: 4 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 683/742 | 59 | 0 | >=567 | 13/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 567 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); WEB1881 añade 0. No se cuentan revalidaciones.
+
+Siguiente acción: WEB1881: 5 ejecutados, 4 aprobados, 1 fallidos, 0 créditos (índices []); Información web actual 16/17. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/WEB1881/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 123.51 s acumulados; pico GPU 3492.93 MiB; pico RAM 2473.29 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque WEB1881 precedente. -->
+
 ## WEB1879 — estado vigente 2026-09-19T04:29:02.395358+00:00
 
 Parcial: 4 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.

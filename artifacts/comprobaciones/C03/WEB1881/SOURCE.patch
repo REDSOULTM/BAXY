@@ -1,0 +1,160 @@
+commit 3262e2d0d7484d10da3c1fbe32182e0c3e5fa3a1
+
+C03: un informe de búsqueda no puede afirmar en voz propia lo que ningún resultado dice (WEB1879 H0060: «WhatsApp suele fallar por problemas técnicos generales del servicio… o fallos en la conexión», con «técnicos» y «conexión» ausentes de los cinco resultados)
+
+La regla de WEB1879 obligó a nombrar las páginas y el final las nombró, pero abrió
+con una frase propia que resume causas. Las dos variantes de la misma forma
+atribuyeron cada dato a su página y coinciden con el fragmento, de modo que el
+defecto es exactamente esa frase sin fuente.
+
+`_search_report_unsourced_claim` recorre las oraciones del informe: una oración que
+no nombre ninguna página sólo puede usar palabras que traiga algún resultado o el
+propio pedido, con tolerancia de flexión por las cuatro primeras letras («enviar»
+vale por «envío»), más una lista cerrada de palabras de informe propias («encontré»,
+«páginas», «según», «menciona», «according», «titled»…). Igual que la regla de
+nombrado, juzga sólo la rama de informe: entidad y curiosidad quedan fuera.
+
+Medido sobre los borradores publicados que aún están en disco: 24 finales de
+web.search verificada, dos vetos, los dos literales defectuosos de WEB1877 y
+WEB1879; los cuatro finales de variante que sí pasaron siguen pasando.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 0b816392e..3a038e12a 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -5820,6 +5820,107 @@ def _search_report_sources(payload: dict, user_text: str) -> list[str]:
+     return sources
+ 
+ 
++# The words a report may bring of its own: it says that it searched, what it
++# found and which page says what. Everything else has to come from a result or
++# from the request. WEB1879 H0060: «problemas técnicos generales del servicio»
++# and «fallos en la conexión» were the model's own summary of causes; no title
++# or snippet of the five results carried either.
++_SEARCH_REPORT_OWN_WORDS = frozenset(
++    {
++        "encontre", "encontro", "encontraron", "encontrada", "encontradas",
++        "encontrado", "encontrados", "varios", "varias", "articulo", "articulos",
++        "pagina", "paginas", "resultado", "resultados", "busqueda", "menciona",
++        "mencionan", "mencionado", "indica", "indican", "senala", "senalan",
++        "sitio", "sitios", "fuente", "fuentes", "segun", "describe", "describen",
++        "reporta", "reportan", "reportado", "explica", "explican", "afirma",
++        "afirman", "dicen", "recomienda", "recomiendan", "ademas", "tambien",
++        "otras", "otros", "general", "generales", "primera", "segunda", "tercera",
++        "found", "page", "pages", "result", "results", "search", "mention",
++        "mentions", "state", "states", "report", "reports", "another", "third",
++        "titled", "according", "several", "article", "articles", "site", "sites",
++        "source", "sources", "list", "lists", "note", "notes", "recommend",
++        "recommends", "recommended",
++    }
++)
++
++
++def _search_report_sentence_names_source(sentence: str, sources: list[tuple[str, str]]) -> bool:
++    """The sentence says which page it is reporting."""
++
++    folded = _reading_fold(sentence)
++    compact = re.sub(r"[^a-z0-9]+", "", folded)
++    for kind, value in sources:
++        if kind == "title":
++            if value and (value in compact or (len(value) > 24 and value[:24] in compact)):
++                return True
++        elif value and value in folded:
++            return True
++    return False
++
++
++def _search_report_named_sources(payload: dict, user_text: str) -> list[tuple[str, str]]:
++    """Hosts, host labels and compacted titles a sentence may cite."""
++
++    seen = payload.get("seen")
++    results = seen.get("results") if isinstance(seen, dict) else None
++    folded_user = _reading_fold(user_text)
++    sources: list[tuple[str, str]] = []
++    for item in results if isinstance(results, list) else []:
++        if not isinstance(item, dict):
++            continue
++        url = item.get("url")
++        if isinstance(url, str) and url.strip():
++            host = (urlparse(url.strip()).hostname or "").casefold()
++            host = host[4:] if host.startswith("www.") else host
++            if host:
++                sources.append(("host", host))
++                for label in host.split("."):
++                    if (
++                        len(label) >= 5
++                        and label not in _SEARCH_SOURCE_GENERIC_LABELS
++                        and label not in folded_user
++                    ):
++                        sources.append(("label", label))
++        title = item.get("title")
++        if isinstance(title, str):
++            compacted = re.sub(r"[^a-z0-9]+", "", _reading_fold(title))
++            if len(compacted) >= 12:
++                sources.append(("title", compacted))
++    return sources
++
++
++def _search_report_unsourced_claim(text: str, payload: dict, user_text: str) -> bool:
++    """A sentence of the report states something that is neither in a result nor asked."""
++
++    if _search_results_text(payload) is None:
++        return False
++    if (
++        _entity_lookup_query(user_text or "") is not None
++        or _research_question_subject(user_text or "") is not None
++        or curiosity_request(user_text or "")
++    ):
++        return False
++    observed = set(
++        re.findall(r"[a-z]+", _reading_fold(_search_results_text(payload) or ""))
++    ) | set(re.findall(r"[a-z]+", _reading_fold(user_text)))
++    if not observed:
++        return False
++    sources = _search_report_named_sources(payload, user_text)
++    for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip()):
++        if not _reading_fold(sentence):
++            continue
++        if _search_report_sentence_names_source(sentence, sources):
++            continue
++        for word in re.findall(r"[a-z]+", _reading_fold(sentence)):
++            if len(word) < 5 or word in _SEARCH_REPORT_OWN_WORDS:
++                continue
++            # Inflection is tolerated by the first four letters («enviar» for
++            # «envío»); a word no result shares even that much is the model's.
++            if not any(seen_word.startswith(word[:4]) for seen_word in observed):
++                return True
++    return False
++
++
+ def _search_report_without_source(text: str, payload: dict, user_text: str) -> bool:
+     """A verified search was reported without naming a single page of it."""
+ 
+@@ -5911,6 +6012,10 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
+     if _search_report_without_source(text, payload, user_text):
+         # WEB1877 H0060: the pages were found and reported, but none was named.
+         return "search_report_without_source"
++    if _search_report_unsourced_claim(text, payload, user_text):
++        # WEB1879 H0060: a sentence of the report summarised causes in its own
++        # voice; no result contains them.
++        return "search_report_unsourced_claim"
+     folded = _reading_fold(text)
+     seen = payload.get("seen")
+     # A wifi reading observes the WLAN connection, not internet reachability.
+@@ -15728,6 +15833,13 @@ class LlmRuntime:
+             == _accent_folded_with_punctuation(str(seen_send_for_hint.get("forcedDestination") or ""))
+         )
+         retry_hint = {
++            "search_report_unsourced_claim": (
++                "Say only what a result says, with its words, and name the page that "
++                "says it; do not summarise causes of your own."
++                if response_language == "en"
++                else "Di sólo lo que dice algún resultado, con sus palabras, y nombra la "
++                "página que lo dice; no resumas causas por tu cuenta."
++            ),
+             "search_report_without_source": (
+                 "Name the pages: give the title and the site of each page whose fact "
+                 "you report (for example «according to example.com»); say nothing no "
