@@ -24,6 +24,62 @@
 | cien-34 | **v17 fresca** Granite 4.2-3B **registrado**, sin override | no: 12 agotes espontáneos + publicados infieles; ver abajo |
 | cien-35 | **v18 fresca** Granite 4.2-3B **registrado**, sin override | no: 7 agotes espontáneos + publicados infieles; ver abajo |
 
+## cien-37 (leída, v18, Qwen3-4B registrado, tras ocho reparaciones, 2026-09-19)
+
+Misma población congelada y mismo runtime que cien-36, sobre el candidato Release del
+commit `543ebb62a`, que incorpora las ocho reparaciones que cien-36 hizo posibles.
+Captura `cien-37/events.jsonl` `56fed10c8f8c6e1f07b6fcad8c2f29aa7eb8df96859fe111a4e4048de61fa80e`.
+100 terminales: **98 published_final, 2 composition_failed**. Limpias **91/100**
+(cien-36: 83/100).
+
+### Lo que cien-36 dejó y cien-37 confirma reparado
+
+| # | cien-36 | cien-37 |
+|---|---|---|
+| 017 | agote `model_response_rejected` | «I only do what is asked of me and never go beyond that.» |
+| 023 | «Sólo hago lo que este PC me ordena» | «Solo hago lo que me pides, nada más.» |
+| 027 | agote `unsolicited_catalog` | «What specifically do you want me to open for you?» |
+| 032 | página de EnglishClub sobre la destreza «speaking» | «I'm BAXY, the assistant running on this PC.» |
+| 047 | «let's call it "ChatFlow"» (app inventada) | «I'll keep chatting without opening any apps.» |
+| 067 | «No abriré la app que mencionas» | «Voy a seguir hablando sin abrir ninguna app.» |
+| 082 | «Sólo hago lo que me ordena este PC» | «Sólo hago lo que me pides, nada más.» |
+| 096 | «No pude entender bien lo que me estás pidiendo» | «¿Qué es lo que querés que te abra?» |
+
+También mejoró 018, que antes nombraba Paint sin venir a cuento: «Sigo sin abrir
+programas.»
+
+### Agotes espontáneos (2)
+
+030 «send flowers to Deimos» y 040 «hire a guide on Ceres», los dos
+`out_of_world_question;recovery:out_of_world_question;retry_exhausted`. El diagnóstico
+tiene nombre gracias a la reparación del compositor: antes decía sólo
+`model_response_rejected`.
+
+**Causa medida, y no es el veto.** Reproducido el bloque 3 entero con auditoría de
+composición, el borrador es «Who specifically should receive the flowers?»: la mente
+pregunta por el detalle de algo que no puede hacer, que es justo lo que el veto
+existe para impedir. En sesión limpia los cinco pedidos de este tipo contestan bien
+(«I cannot send flowers to Deimos as requested.»); con la historia del bloque delante
+la clasificación de «fuera de catálogo» se pierde y el turno se vuelve una
+aclaración. La mente no tiene la lista de lugares fuera de este mundo que la App sí
+tiene, así que no puede sostener esa clasificación cuando el contexto la empuja.
+
+### Publicados infieles (7)
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 003 | explícame qué es un SSD | «en lugar de placas de circuito» | hecho falso sobre el disco tradicional |
+| 007 | traduce 'good evening' | «Buenas tardes» | traducción equivocada |
+| 028 | traduce 'see you' | «Te veo» | traducción equivocada |
+| 060 | ship a piano to Charon | «What specific details do you need…?» | pregunta por el detalle de lo que no puede hacer |
+| 072 | de qué te ocupas | «Me ocupó abrir y cerrar programas» | error de conjugación |
+| 073 | what is cache memory | «— From "CACHE MEMORY in a Sentence Examples…"» | cita una página de ejemplos como fuente |
+| 090 | rent a studio on Haumea | «Are you looking for a studio rental in Haumea…?» | pregunta en vez de decir el límite |
+
+060 y 090 son la misma causa que los dos agotes: la clasificación de fuera de mundo
+perdida en contexto. Con el veto leyendo ahora la oración interrogativa, los dos
+quedan vetados y reintentados en vez de publicarse tal cual.
+
 ## cien-36 (leída, v18, Qwen3-4B registrado en REDPC, 2026-09-19)
 
 Misma población congelada `cien-v18.turns.jsonl`
@@ -76,6 +132,7 @@ publicados infieles leídos uno a uno. Limpias 83/100.
 4. **«sigue sin abrir apps» (4 turnos, 2 mal)**: 047 inventa una app, 067 nombra
    una app que nadie mencionó.
 | cien-36 | **v18 fresca** Qwen3-4B-Instruct-2507 Q4_K_M **registrado** en REDPC, sin override | no: 4 agotes espontáneos + 13 publicados infieles; ver abajo |
+| cien-37 | **v18 fresca** Qwen3-4B registrado + ocho reparaciones de cien-36 | no: 2 agotes + 7 publicados infieles; ver abajo |
 
 ## cien-35 (leída, v18, Granite registrado)
 

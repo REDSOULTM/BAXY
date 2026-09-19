@@ -592,8 +592,7 @@ internal static class UserMessagePolicy
                 || said.Contains("unusable answer", StringComparison.Ordinal)),
             ("out_of_world_question",
                 LooksLikeOutOfWorldRequest(user)
-                && (reply.Contains('?', StringComparison.Ordinal)
-                    || reply.Contains('¿', StringComparison.Ordinal))),
+                && AsksAboutTheOutOfWorldRequest(user, reply)),
             ("restates_definition_ask", LooksLikeRestatingDefinitionAsk(said)),
             ("definition_as_action", RestatesDefinitionAsAction(userText, reply)),
             ("broken_modal_gerund", HasBrokenModalGerund(reply)),
@@ -1395,6 +1394,61 @@ internal static class UserMessagePolicy
             + @"[^.!?]{0,40}\b(?:meme|memes|imagen|imagenes|foto|fotos|gif|gifs|sticker|stickers|dibujo|dibujos|"
             + @"picture|pictures|image|images|photo|photos)\b",
             RegexOptions.CultureInvariant);
+
+    // cien-37 030/040 «send flowers to Deimos»: any question at all used to
+    // veto the reply, so a final that stated the limit and then offered help
+    // in general died and the person was left with nothing. What must not
+    // happen is asking ABOUT the thing that cannot be done (cien-36 060 «What
+    // specific details do you need about shipping a piano to Charon?»), so the
+    // interrogative sentence is what gets read. A reply that asks nothing about
+    // the request must still say it cannot do it.
+    private static bool AsksAboutTheOutOfWorldRequest(string user, string reply)
+    {
+        bool asks = false;
+        foreach (string sentence in Regex.Split(reply, @"(?<=[.!?\u00bf])\s+"))
+        {
+            if (!sentence.Contains('?', StringComparison.Ordinal)
+                && !sentence.Contains('\u00bf', StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            asks = true;
+            string said = FoldForPolicy(sentence);
+            foreach (Match word in Regex.Matches(FoldForPolicy(user), @"[a-z]{4,}"))
+            {
+                if (OutOfWorldQuestionStopWords.Contains(word.Value))
+                {
+                    continue;
+                }
+
+                if (said.Contains(word.Value, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return asks && !StatesAnInability(FoldForPolicy(reply));
+    }
+
+    private static readonly HashSet<string> OutOfWorldQuestionStopWords =
+        new(StringComparer.Ordinal)
+        {
+            "please", "could", "would", "there", "that", "this", "with", "para",
+            "porfa", "favor", "quiero", "puedes", "podrias", "quieres",
+        };
+
+    private static bool StatesAnInability(string said) =>
+        said.Contains("cannot", StringComparison.Ordinal)
+        || said.Contains("can t", StringComparison.Ordinal)
+        || said.Contains("can't", StringComparison.Ordinal)
+        || said.Contains("no puedo", StringComparison.Ordinal)
+        || said.Contains("outside what i do", StringComparison.Ordinal)
+        || said.Contains("fuera de lo que", StringComparison.Ordinal)
+        || said.Contains("no hago", StringComparison.Ordinal)
+        || said.Contains("i do not do", StringComparison.Ordinal)
+        || said.Contains("i don t do", StringComparison.Ordinal);
 
     private static bool LooksLikeOutOfWorldRequest(string user) =>
         AsksForAWorldAction(user)
