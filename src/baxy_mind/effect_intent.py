@@ -2797,7 +2797,11 @@ def confident_non_target_language(text: str) -> str | None:
         r"\b(?:apri|scrivi|salvala|finestra|spesa)\b|"
         r"\bblocco\s+note\b|\bfai\s+partire\b|"
         r"\b(?:calcolatrice|schermo|volume\s+piu\s+alto)\b|"
-        r"\bche\s+ore\s+sono\b|\balza\s+il\b",
+        r"\bche\s+ore\s+sono\b|\balza\s+il\b|"
+        # «che ora e» es italiano entero. «che» a secas es rioplatense («che,
+        # abrime el chrome»), de modo que hace falta la forma completa: el
+        # detector sigue absteniéndose ante la palabra suelta.
+        r"\bche\s+ora\s+e\b",
     ):
         return "it"
     # El aleman faltaba entero, y por eso un pedido en aleman llegaba a la ruta
@@ -2809,7 +2813,7 @@ def confident_non_target_language(text: str) -> str | None:
         r"\b(?:offne|oeffne|mach|erstelle|schliesse|zeige|starte)\b|"
         r"\b(?:lautstarke|lauter|leiser|bildschirm|fenster|rechner|"
         r"notiz|uhrzeit)\b|"
-        r"\bwie\s+spat\b|\bden\s+(?:rechner|bildschirm)\b|"
+        r"\bwie\s+spat\b|\bwie\s+viel\s+uhr\b|\bden\s+(?:rechner|bildschirm)\b|"
         r"\b(?:eine|einen|dass|ich)\s+\w",
     ):
         return "de"
