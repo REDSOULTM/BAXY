@@ -1,0 +1,323 @@
+{
+  "schema": "discord1871-root-adjudication-v2",
+  "decided_at_utc": "2026-09-19T03:28:45.035606+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "32e3f85e5b922d6a3214351cd3c6c4f1e62f27e4",
+  "decisions_sha256": "3c59f792a1f0ecad20585fef0500961f0efe6e088c0248834785568fb44fa1b7",
+  "registry_before_sha256": "8dd78e56248fed8d4c2afd013885adc27d318bb06faa725007a3742ee318f56f",
+  "registry_before_counts": {
+    "covered": 678,
+    "open": 64,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "5023e147d9357ae3ae5365278fdd75545f7d56b2890101f8cd35fafe9f2dc1e9",
+  "preparation_sha256": "77e409892e02458994ad24a8433f423f315ba36f7562676d4588b4d33c4b8a6b",
+  "passed": 5,
+  "failed": 0,
+  "unexecuted": 0,
+  "executed": 5,
+  "segments_started": 5,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [
+    "H0394"
+  ],
+  "counters": {
+    "covered": 679,
+    "open": 63,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 562,
+    "categories_total": 35,
+    "categories_closed_after": 13,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 562 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); DISCORD1871 añade 1. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 563
+  },
+  "resources": {
+    "seconds_sum": 101.04700000000594,
+    "gpu_peak_mib": 3492.9296875,
+    "ram_peak_mib": 1855.1640625
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0394",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        1,
+        2
+      ],
+      "reason": "Envió el mensaje de la persona al usuario de pruebas del dueño (Valeria) (destino forzado), con revisión de la raíz, y lo dijo con verdad; crédito con dos variantes aprobadas.",
+      "observation_note": "Turno revisado: message.send.test propuesta con el canal, el destinatario pedido y el texto de la persona, aprobada por la raíz, completada y verificada (destino forzado al usuario de pruebas del dueño (Valeria), texto enviado y entrega leída por OCR, sent true); una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "d4bdbced9a4e60d80369f37ac236a1ef68c72cb438920140ddadface7e9f9786",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-00\\EXIT.json": "bb5020469176316fa105878a6ec6439ac01c65fc25e0f22aa333088273bf2242",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-00\\RESOURCES.json": "28608ae23a1399cfbb56071ff51512396410c5a4bff3ef94d7808c9e7b99653e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\profile-owner-00.json": "715a5e377bc5f191624367003c6826e85d5ead351f0f14d5739d3413de72b3e6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-00\\PREREG.json": "2d13be9d8bb4a8f61a3f909ab2cee3646fb0afc34798d43337a0608fda0238e6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-00\\capture\\events.jsonl": "f7415f17fae01de4437c50258426699fbffbcb3e7038a0b4ebc8277e0052048f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-00\\turns.jsonl": "220bd0da78063b8949121278700a533998a93ec0c94280ca0901e418957ff684",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\fixture-00.json": "40210d0a6e97895cccd64ff73cdf48e04c84a96ab4aca61962cc6c1fca01be18",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\context-00.json": "40670c9f24cc3f99d5ace557a8a3eb1eeec26ed9ac56a66493723bca51ab870c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\context-prelaunch-00.json": "6a1203046a8ad61d2ffce9a7da9c726aee8c384286b03294368c98e5eaa7d9d3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-00\\case-observations.json": "52404dfecef0c56f48edc426221d65839d4f3c0cb227b677e7dd0028669ee6ab",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-00\\journal-before.json": "6fab7aa1fc99b9779eada5e7a4386ea8e2c49501463d9a9e677ed72474273874",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-00\\journal-after.json": "3b443a48bd729f4c008d7c0cd0b0f4bf1a0930e03d3ce6ef1e9175d0a8aadfcc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "969f8fd2ff7c0a48ecd8ca6cfbef4cac12cff83f19c46b93ee2b326b4bf8d99a"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "f0621ce6-e7a4-419d-ad5a-41f34097162b",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "639967f3-e49a-403f-b9d9-62f4b7ea40e1",
+          "operation": "message.send.test",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "discord1871-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Envió el mensaje de la persona al usuario de pruebas del dueño (Valeria) (destino forzado), con revisión de la raíz, y lo dijo con verdad; variante o literal sin dos pares aprobados.",
+      "observation_note": "Turno revisado: message.send.test propuesta con el canal, el destinatario pedido y el texto de la persona, aprobada por la raíz, completada y verificada (destino forzado al usuario de pruebas del dueño (Valeria), texto enviado y entrega leída por OCR, sent true); una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "d4bdbced9a4e60d80369f37ac236a1ef68c72cb438920140ddadface7e9f9786",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-01\\EXIT.json": "0ba5c71d163793c2f55c3708e27bc8278dbf5da96079c6e7a3a2d6a5a4c36033",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-01\\RESOURCES.json": "a3ae6b2af8e4e04a42feaaedc1e81c2768db6ce483e2abc786fbfddeb4af4e6e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\profile-owner-01.json": "514bb3e8f2bf30c15038b0a626143fc821d1bf574982f2a597d8cae3cb412e66",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-01\\PREREG.json": "7511482d543fc40c16e32de30e34d7e9590e1d2658be354714a70ddf65d3569d",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-01\\capture\\events.jsonl": "8bed676cc6217d776f55ea4647eeeec7eb797ef02f5c4b4018360d016e3a80bd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-01\\turns.jsonl": "109a69afb2b1c03c65dc18524bd811e153eadf25e96e00ba07930f01641e6f11",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\fixture-01.json": "f084764c2434178821b014641a63b354cce3df71dae763a09889196b6cfddeb5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\context-01.json": "ec65437f5d2f05599349961d1b1465a9042ccf5877c2ed5c0d94062be4804ab1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\context-prelaunch-01.json": "97a4ac1873e4d2f964ea84f7aedc3f8d21f30b9a09b8be5ee5da78d5eb3dee6a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-01\\case-observations.json": "57e2692e25868435d08ed959031203bdfa363535d7343c10ea5e3008eeb4d85b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-01\\journal-before.json": "ff809849ac6c4f05212222dd49de7b2710096762b60623ca6dcb6bbf53b0c146",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-01\\journal-after.json": "8d10218a4e3824ae22b9444c36e5c28dd25c8daec96716d28f64cad3dc3a300b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "7546f8a990d598038003b3903d7896e76a206be3eb98b18b47b33d2b5b136104"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "e96aad8d-981f-40c8-bf6b-e06b8907c1be",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "237b6cc0-742b-47b9-b8f2-4c65dc973938",
+          "operation": "message.send.test",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "discord1871-dev-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Envió el mensaje de la persona al usuario de pruebas del dueño (Valeria) (destino forzado), con revisión de la raíz, y lo dijo con verdad; variante o literal sin dos pares aprobados.",
+      "observation_note": "Turno revisado: message.send.test propuesta con el canal, el destinatario pedido y el texto de la persona, aprobada por la raíz, completada y verificada (destino forzado al usuario de pruebas del dueño (Valeria), texto enviado y entrega leída por OCR, sent true); una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "3a387538dd07363af6e85d0338e175974128cdb9a8b56738bc9a9dac643c32e8",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-02\\EXIT.json": "7a7a58ddedf9f9513c39c668dd154000d6b783d3226659e6a56325d6487098ed",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-02\\RESOURCES.json": "cb54725340ca0f9aae30bb3bb916f5d089c03befcc601a55628acc7261645800",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\profile-owner-02.json": "1b7530e00074670b1b5bcc9dd67bea486e264820352c8d2e61a624e71c88c7c8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-02\\PREREG.json": "fb33e2d50670b57eac91ac2cb511c1131a79b46d2007305c2f3cc8f222eeabd4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-02\\capture\\events.jsonl": "24891e252bb1f724d30e1c3e9d0034fbf6447684a82d6b13831bf3f125967a47",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-02\\turns.jsonl": "604ceeb9bc59e8d47df07bfb0d7b2ed7ab55fc81937720de06477b060421319a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\fixture-02.json": "4ca12c58b953de67adb5f8e3314df073ebc5f8199b22fb4de4212d6e667b2322",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\context-02.json": "821822f8ca1587f3fbac51a174e7d2e34d8633b55678759a7eb284881e9d3bf3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\context-prelaunch-02.json": "4d3820906505e4305ef851c0d15c18b307101de96a8679cedafbd3bffe8605f4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-02\\case-observations.json": "6ab4b909f58bc117cf317199183c5f8844459813f02150424f8514fefc7d4462",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-02\\journal-before.json": "31e08a43651ed433c51b2286208a3181ba9721e472f9c468963060c0ba0785f9",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-02\\journal-after.json": "72151a49a304fb60176e94ab7f881617c541805b509932f9a8ea3b8cca76a0ea",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "3f964c58a885beb17190888218d02a962eda67f55b3c67b0bde799ac23856440"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "dd87c7fc-67e2-426a-981f-3568d6996f3c",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "c8b0bb74-7a43-40f5-9959-ff7abef27730",
+          "operation": "message.send.test",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "discord1871-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "36c47d27053a25ab13ba87c31329ef89bfcaf3b2cb545a5e7a4ba8f28b22d2cd",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-03\\EXIT.json": "389de3f7b7c7d3212e57f76684dd29c6a4b3c516817284fcd55bfc9b12699987",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-03\\RESOURCES.json": "a3339aba18fb3407aa4bc03d01daa170917ff7fdea03f4884a84ca161f36c8eb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\profile-owner-03.json": "fb32bffb4e3b823fa252525d0dcf3fea95f9dc00fe984edf6d3f19a476573637",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-03\\PREREG.json": "b03f0ab7eb8c9478d5dda93c562595447f5ffb28f7f98741d61f8fe5427de0f3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-03\\capture\\events.jsonl": "58c688254d6194f972e3b6f407b4dec93efcc0bdcb5636d7b6de26a3be7303df",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-03\\turns.jsonl": "80ceb445c33b67c76edc3ae68ca964e1f76121e3e5aed8c3a4530660b623a313",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\fixture-03.json": "1f9222e1d45d376cfbaf2c865931cc6d53b282350e91d601ab7d1c90a1680f35",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\context-03.json": "10b4e8f649e999a4446512ef858df7e606b4b78763966c67924d6408b1778025",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\context-prelaunch-03.json": "a09027cbde3e71ee778b34a2e4865f86c85c1a58d349264bafa74fa81dbfce91",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-03\\case-observations.json": "0f0598f33acc17602b0741419bb2408112498ba37205a0d4a839761d18133708",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-03\\journal-before.json": "7a98a96b7ae978e50d23a21d2bbcc2d05cd109a366491562bbc6b3f8e7d758a4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-03\\journal-after.json": "ad966563826ca4d47a69e1be6d927a880a5f4d8c60bd407c9a39588e0a9de51f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "a31ca725c3d278b245d61b109e65db24fd517fa8d8529c839632f045b289aced"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "36eb6889-bc23-4401-9b99-22bae6d3fe8d",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "discord1871-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "37eac5d97ff9d4f12d67e932299090ef6d19f5a706b1d983bab7ff017f7b08bf",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-04\\EXIT.json": "914917a9d2122d3a8705157de879288c46abcfab8f6280c84447426faa59eed4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-04\\RESOURCES.json": "d1139188be4de8d420ff45cf84d0bf9abbce6b358dc0f5c0ebd96251287c21a2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\profile-owner-04.json": "93140a8855aee1ac4c5af009d1792cb6c0cd95b8d2ee535b82f790124f75ac0a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-04\\PREREG.json": "3ee68be3bf316c612085fa3138e1ab32c5706347c785ddddc1e352bd66f49d3a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-04\\capture\\events.jsonl": "f6172c9a9bd641c9f148b491dced88664298c2f280fc01b68b14264bc85565ad",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-04\\turns.jsonl": "59b5c1aa1bcb0196c17aab3c30ec0791f5e08624ee868698d79a28f896c4d945",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\fixture-04.json": "51cdf03e2cd1f09a398f5b0f3dbba4e373c5b8f9e3f48b0d9b9cf43d218178cf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\context-04.json": "652b26ee08c949b37a2723d935665f084b602dc5ad14a13777d05e56cd28ffa5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\context-prelaunch-04.json": "4ad255d882d291bc98bd0a2fd84d5d9f1cc02f8d8be47fb740c40b6ce3d436ed",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-04\\case-observations.json": "f9ebb57edc2218e17801d9b6e286a96124da20a88329344d00cd12d8c283c272",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-04\\journal-before.json": "950e72b779af87d1c10b6f7e75f1dd947b5c95a6444c2a2a2bfa945388bebc45",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-04\\journal-after.json": "6fd1e02f4fbb83562fd4988c656216fe8f95afd29dce68012b0b8331afd694e7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "2a24e3b40c0ceb1140f041284dfb29700d2591068b4ea1ae4877336460c972bd"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "bebe1591-7e73-4ebf-834c-606e4e0cab2c",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "DISCORD1871: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Mensajería 29/31. Siguiente: panel grande de mensajería (Musica y Valeria) sobre el mismo mecanismo.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}

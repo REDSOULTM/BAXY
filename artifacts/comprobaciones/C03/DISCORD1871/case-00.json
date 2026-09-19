@@ -1,0 +1,24 @@
+{
+  "index": 0,
+  "case_id": "H0394",
+  "terminal_kind": "published_final",
+  "final_sha256": "d4bdbced9a4e60d80369f37ac236a1ef68c72cb438920140ddadface7e9f9786",
+  "clients_absent_before": true,
+  "verdict": "passed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 22.125,
+    "gpu_peak_mib": 3492.9296875,
+    "ram_peak_mib": 1818.9765625,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-00\\EXIT.json": "bb5020469176316fa105878a6ec6439ac01c65fc25e0f22aa333088273bf2242",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\results\\case-00\\RESOURCES.json": "28608ae23a1399cfbb56071ff51512396410c5a4bff3ef94d7808c9e7b99653e",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1871-instrument-v1\\private\\run-00\\case-observations.json": "52404dfecef0c56f48edc426221d65839d4f3c0cb227b677e7dd0028669ee6ab"
+  }
+}
