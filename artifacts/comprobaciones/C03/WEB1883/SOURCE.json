@@ -1,0 +1,13 @@
+{
+  "schema": "c03-web1883-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "no source change (measurement of the current behaviour on the HEAD after the WEB1883 revert).",
+  "patch": "artifacts/comprobaciones/C03/WEB1883/SOURCE.patch",
+  "commits": [],
+  "build": "BUILD1883 (C03-repairs1883-build/BUILD_READY.json; sin cambio de codigo)",
+  "cause_measured": "WEB864 midio una negacion de permisos sin impedimento observado y sin navegacion; desde entonces el navegador nombrado y la apertura por sitio existen.",
+  "change": "Ninguno en el codigo: se mide el comportamiento vigente.",
+  "measurement": "WEB1883: 1 de 5 casos aprobados; las dos variantes y el límite de capacidad negaron una capacidad existente; 0 créditos. El preámbulo que cede el control del PC convierte una orden explícita y soportada en una negación de capacidad: Opera GX está instalada y browser.navigate.named quedó acreditada en WEB1805, y aun así los dos textos de variante dijeron que no podían; el literal no negó nada pero tampoco abrió, y preguntó si hacerlo.",
+  "credits": 0
+}

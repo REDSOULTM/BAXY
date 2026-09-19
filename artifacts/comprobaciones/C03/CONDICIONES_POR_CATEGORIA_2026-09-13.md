@@ -1550,3 +1550,7 @@ Información web actual pasa de 16/17 a 16/17 con investigar en internet la preg
 ## Actualización 2026-09-19 (WEB1881)
 
 Información web actual pasa de 16/17 a 16/17 con investigar en internet la pregunta de la persona y decir que paginas la contestan, sin afirmar nada por su cuenta (commit 3262e2d0, BUILD1881) (HEAD 3262e2d0): 4 de 5 casos aprobados (2 variantes, 2 límites); el literal terminó sin respuesta, 0 créditos. La regla que exige que toda oración sin fuente use sólo palabras de algún resultado dejó al literal sin borrador publicable: con temperatura cero sus tres candidatos son siempre los mismos y cada uno cae en una regla distinta, de modo que el turno terminó sin respuesta; las dos variantes publicaron su informe entero.
+
+## Actualización 2026-09-19 (WEB1883)
+
+Navegación y búsqueda web pasa de 44/46 a 44/46 con abrir el navegador nombrado en el sitio pedido tras un preambulo que cede el control del PC, sin negar la capacidad (commit dc7861a0, BUILD1883) (HEAD dc7861a0): 1 de 5 casos aprobados; las dos variantes y el límite de capacidad negaron una capacidad existente, 0 créditos. El preámbulo que cede el control del PC convierte una orden explícita y soportada en una negación de capacidad: Opera GX está instalada y browser.navigate.named quedó acreditada en WEB1805, y aun así los dos textos de variante dijeron que no podían; el literal no negó nada pero tampoco abrió, y preguntó si hacerlo.
