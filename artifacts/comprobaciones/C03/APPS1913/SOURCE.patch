@@ -1,0 +1,80 @@
+commit 793d06f6ab84dc1fbccc666375a85e7d1f27ac2f
+
+C03: reutilizar un proceso vivo no es haberlo abierto, y «el navegador chrome» es Chrome
+
+Dos defectos que destaparon las variantes de H0461 «che, abrime el chrome».
+
+El primero: con Chrome ya corriendo, BAXY contestó «Abrí Chrome. Ya estaba
+corriendo, así que solo lo abrí de nuevo.» El recibo dice alreadyRunning, es
+decir que no se abrió nada: se reutilizó el proceso vivo. Ya había un guardián
+para eso —de APPS1029 y REPAIR1030—, pero su ancla de cláusula sólo miraba el
+punto, el «pero» y la «y», y «así que solo lo abrí de nuevo» se colaba entera.
+Ahora una consecutiva o una coma encabezan cláusula igual, y un «sólo» o un
+«just» delante no cambian lo que se afirma. Una cláusula que empieza negando
+—«así que no lo abrí de nuevo»— sigue fuera, que es lo que debe decirse.
+
+El segundo: «che, abrime el navegador chrome» no resolvía ninguna operación y
+el turno terminaba preguntando «¿Qué URL deseas abrir en el navegador
+Chrome?». «Navegador» delante de un navegador con nombre es una aposición, no
+un destino. Quitada, el pedido es el que se hizo: abrir la aplicación. «abrí
+el navegador», sin nombre detrás, sigue abriendo un navegador, y «andá a
+youtube en el navegador chrome» sigue siendo una navegación.
+
+Medido, con Chrome corriendo:
+  che, abrime el chrome          → Ya tienes Chrome abierto, estaba corriendo antes.
+  abrime el chrome               → Ya tienes Chrome abierto.
+  abrí el chrome                 → La app ya estaba abierta.
+  che, abrime el navegador chrome→ Ya está abierto el navegador Chrome.
+  No abras el chrome.            → Entendido, no abriré Chrome.
+
+cien-61: 100/100, cero agotes; frente a cien-60 sólo cambian la hora y una
+frase distinta e igual de cierta.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 213658d2d..bf6b7e094 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -17854,6 +17854,17 @@ def resolve_explicit_effects(
+     if explicit_non_action_frame(text):
+         return None
+     folded = _strip_request_envelope(_fold(re.sub(r"[\r\n]+", " . ", text)))
++    # H0461 «che, abrime el navegador chrome»: «navegador» delante de un
++    # navegador con nombre es una aposición, no un destino. Sin quitarla el
++    # pedido no resolvía nada y el turno acababa preguntando qué URL abrir,
++    # cuando lo que se pidió fue abrir la aplicación. «abrí el navegador», sin
++    # nombre detrás, sigue intacto.
++    folded = re.sub(
++        r"\b(?:navegador|browser)\s+"
++        r"(?=(?:chrome|opera(?:\s*gx)?|edge|brave|firefox|safari)\b)",
++        "",
++        folded,
++    )
+     available = frozenset(available_operations)
+     if (
+         "filesystem.known.list" in available
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 9b98b6fb9..ed8f3c745 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -7033,8 +7033,17 @@ def _claims_a_relaunch(folded: str) -> bool:
+     # As with opening claims and failure assertions, keep polarity scoped to
+     # each clause. An affirmative subject/verb head cannot skip over a denial;
+     # a later independent affirmative clause must still be checked.
++    # H0461 «che, abrime el chrome» con Chrome ya corriendo: «Ya estaba
++    # corriendo, así que solo lo abrí de nuevo» decía justo lo que el recibo
++    # niega, y pasaba porque el ancla sólo miraba el punto, el «pero» y la «y».
++    # Una consecutiva —«así que», «entonces»— y una coma encabezan cláusula
++    # igual; «sólo» y «just» delante no cambian lo que se afirma. Una cláusula
++    # que empieza negando sigue fuera.
+     return re.search(
+-        r"(?:^|[.;]\s*|\b(?:pero|but)\s+|\b(?:y|and)\s+(?=(?:yo|i)\b))"
++        r"(?:^|[.;,]\s*|\b(?:pero|but)\s+|\b(?:as[ií]\s+que|entonces|so|then)\s+"
++        r"|\b(?:y|and)\s+(?=(?:yo|i)\b))"
++        r"(?!no\b|not\b|nunca\b|never\b)"
++        r"(?:s[oó]lo\s+|solamente\s+|just\s+|only\s+)*"
+         r"(?:ya\s+|yo\s+|i\s+|i've\s+|i\s+have\s+)*(?:(?:lo|la)\s+)?"
+         r"(?:volv[ií]\s+a\s+(?:abrir|lanzar)|"
+         r"(?:abrí|abri|abro|lancé|lance)\s+(?:de\s+nuevo|otra\s+vez|igual)|"

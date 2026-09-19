@@ -1606,3 +1606,7 @@ Hora y fecha pasa de 19/23 a 21/23 con pedir que repitan en espanol o ingles el 
 ## Actualización 2026-09-19 (UI1911)
 
 Instalar y desinstalar software pasa de 29/31 a 30/31 con completar el dialogo de descarga que ya esta abierto pulsando el boton que el pedido nombra (commit 2d9cd6b9, BUILD1911) (HEAD 2d9cd6b9): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Los cuatro turnos con clic leyeron las 30 líneas del diálogo que la raíz dejó abierto y pulsaron el botón del pedido; el literal arrancó la instalación de DOOM Eternal en E:; cien-60 100/100 con cero agotes.
+
+## Actualización 2026-09-19 (APPS1913)
+
+Abrir aplicaciones pasa de 50/54 a 51/54 con abrir la aplicacion que se nombra y decir lo que el recibo devuelve, sin dar por abierto lo que ya estaba (commit 793d06f6, BUILD1913) (HEAD 793d06f6): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Los cuatro turnos con apertura ejecutaron una sola app.open verificada y el final dijo lo que el recibo devuelve; «abrime el navegador chrome» dejó de pedir una URL; cien-61 100/100 con cero agotes.

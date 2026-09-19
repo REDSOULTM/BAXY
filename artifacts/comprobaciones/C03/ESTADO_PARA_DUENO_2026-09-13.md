@@ -1,3 +1,25 @@
+## APPS1913 — estado vigente 2026-09-19T19:37:40.486231+00:00
+
+Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 706/742 | 36 | 0 | >=590 | 13/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 589 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); APPS1913 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: APPS1913: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/APPS1913/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 136.11 s acumulados; pico GPU 3492.93 MiB; pico RAM 2085.66 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque APPS1913 precedente. -->
+
 ## UI1911 — estado vigente 2026-09-19T19:18:34.686046+00:00
 
 Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

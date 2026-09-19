@@ -1,0 +1,15 @@
+{
+  "schema": "c03-apps1913-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (a clause led by a consecutive or a comma is still a claim of having reopened a live process) and src/baxy_mind/effect_intent.py («navegador» before a named browser is an apposition, not a destination), on top of the UI1911 build.",
+  "patch": "artifacts/comprobaciones/C03/APPS1913/SOURCE.patch",
+  "commits": [
+    "793d06f6ab84dc1fbccc666375a85e7d1f27ac2f"
+  ],
+  "build": "BUILD1913 (C03-repairs1913-build/BUILD_READY.json; mente)",
+  "cause_measured": "El guardian de «ya estaba corriendo» solo miraba el punto, el «pero» y la «y», de modo que «asi que solo lo abri de nuevo» afirmaba lo que el recibo niega; y «navegador» delante del nombre del navegador impedia resolver la apertura, con lo que el turno acababa preguntando por una URL que nadie pidio.",
+  "change": "Una consecutiva o una coma encabezan clausula igual para el guardian, y la aposicion «navegador» se retira delante de un navegador con nombre.",
+  "measurement": "APPS1913: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. Los cuatro turnos con apertura ejecutaron una sola app.open verificada y el final dijo lo que el recibo devuelve; «abrime el navegador chrome» dejó de pedir una URL; cien-61 100/100 con cero agotes.",
+  "credits": 1
+}
