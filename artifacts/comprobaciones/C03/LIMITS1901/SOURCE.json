@@ -1,0 +1,15 @@
+{
+  "schema": "c03-limits1901-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (the abstaining foreign-language detector gains German and the French, Italian and Portuguese forms it was missing), on top of the LIMITS1901 build.",
+  "patch": "artifacts/comprobaciones/C03/LIMITS1901/SOURCE.patch",
+  "commits": [
+    "f815ec5a04399fb74dac730a6dbb2be5f327e8f0"
+  ],
+  "build": "BUILD1901 (C03-repairs1901-build/BUILD_READY.json; mente)",
+  "cause_measured": "El detector de idioma ajeno no conocia el aleman y le faltaban formas de frances, italiano y portugues, de modo que esos pedidos llegaban a la ruta espanola: uno guardaba una nota y otro moria sin respuesta.",
+  "change": "Se anaden pistas de alta precision para los cuatro idiomas, palabras que el espanol y el ingles no comparten; una palabra compartida sigue sin bastar.",
+  "measurement": "LIMITS1901: 13 de 14 casos aprobados; las diez filas en otro idioma piden repetir el pedido en espanol o ingles, cero operaciones, 10 creditos; 10 créditos. primera tanda de catorce casos",
+  "credits": 10
+}

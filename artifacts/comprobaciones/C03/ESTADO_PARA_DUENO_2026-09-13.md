@@ -1,3 +1,25 @@
+## LIMITS1901 — estado vigente 2026-09-19T16:03:43.228295+00:00
+
+Parcial: 13 aprobados, 1 fallidos, 0 sin ejecutar; 10 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 699/742 | 43 | 0 | >=583 | 13/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 573 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); LIMITS1901 añade 10. No se cuentan revalidaciones.
+
+Siguiente acción: LIMITS1901: 14 ejecutados, 13 aprobados, 1 fallidos, 10 créditos (índices [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/LIMITS1901/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 245.22 s acumulados; pico GPU 3492.93 MiB; pico RAM 1695.32 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 14; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque LIMITS1901 precedente. -->
+
 ## WEB1899 — estado vigente 2026-09-19T15:00:24.371895+00:00
 
 Parcial: 4 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.
