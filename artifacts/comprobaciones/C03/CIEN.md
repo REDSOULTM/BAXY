@@ -24,6 +24,42 @@
 | cien-34 | **v17 fresca** Granite 4.2-3B **registrado**, sin override | no: 12 agotes espontáneos + publicados infieles; ver abajo |
 | cien-35 | **v18 fresca** Granite 4.2-3B **registrado**, sin override | no: 7 agotes espontáneos + publicados infieles; ver abajo |
 
+## cien-38 a cien-40 (leídas, v18, Qwen3-4B registrado, 2026-09-19)
+
+Misma población congelada y mismo runtime. Capturas
+`cien-39/events.jsonl` `5dc2b0531d38ebe35dd5d6e8cd35194826ecc483fd343a2b16096ca5892d188d` y
+`cien-40/events.jsonl` `5b347032166aa5bf5877925dd894b56a3963465f73eed8604d011d895f0ebd3b`.
+
+| Corrida | Publicadas | Agotes | Limpias | Qué la separó de la anterior |
+|---|---:|---:|---:|---|
+| cien-38 | 99 | 1 | — | la recuperación veraz de la mente se publica en vez del texto de fallo de la App |
+| cien-39 | **100** | **0** | 94 | el límite viaja marcado con la respuesta recuperada |
+| cien-40 | **100** | **0** | **97** | la instrucción de formato deja de viajar dentro del nombre buscado; «Me ocupó» corregido con reintento |
+
+**cien-39 es la primera corrida sin un solo turno muerto** desde que existe esta
+población. Los cuatro agotes de cien-36 y los dos de cien-37 eran todos la misma
+causa encadenada: un veto correcto sobre un borrador que preguntaba por el detalle de
+algo imposible, sin ninguna salida veraz detrás.
+
+### Los tres que quedan en cien-40
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 003 | explícame qué es un SSD | «en lugar de placas de circuito como en los discos tradicionales» | hecho falso del modelo: el disco tradicional usa platos magnéticos |
+| 007 | traduce 'good evening' | «Buenas tardes» | el inglés saluda a la noche |
+| 028 | traduce 'see you' | «Te veo» | es una despedida, «nos vemos», no que BAXY vea a la persona |
+
+Los tres son del texto del modelo, no del enrutado: ninguna regla determinista los
+alcanza sin tocar la capa correcta. **Intento medido y revertido**: dar la
+equivalencia fija al redactor de traducción rompió la ruta entera —empezó a preguntar
+«¿lo quieres más formal o más casual?» y un turno agotó—, porque la forma de
+presentación de «traduce X» no es `translation` sino `content_draft`. Cerrar esas dos
+exige llevar el pedido a su forma correcta primero.
+
+**Regla aprendida dos veces hoy**: un veto sin camino de corrección detrás es peor que
+el defecto que evita. El de conjugación murió puesto en la App y funcionó puesto en la
+mente, donde hay pista y reintento.
+
 ## cien-37 (leída, v18, Qwen3-4B registrado, tras ocho reparaciones, 2026-09-19)
 
 Misma población congelada y mismo runtime que cien-36, sobre el candidato Release del
@@ -133,6 +169,9 @@ publicados infieles leídos uno a uno. Limpias 83/100.
    una app que nadie mencionó.
 | cien-36 | **v18 fresca** Qwen3-4B-Instruct-2507 Q4_K_M **registrado** en REDPC, sin override | no: 4 agotes espontáneos + 13 publicados infieles; ver abajo |
 | cien-37 | **v18 fresca** Qwen3-4B registrado + ocho reparaciones de cien-36 | no: 2 agotes + 7 publicados infieles; ver abajo |
+| cien-38 | v18 + la recuperación veraz publicada | no: 1 agote + 6 infieles |
+| cien-39 | v18 + el límite que viaja con la recuperación | **no, pero 0 agotes**: 100 publicadas, 6 infieles |
+| cien-40 | v18 + instrucción de formato fuera del nombre y conjugación corregida | **no: 0 agotes, 3 infieles; 97/100 limpias** |
 
 ## cien-35 (leída, v18, Granite registrado)
 
