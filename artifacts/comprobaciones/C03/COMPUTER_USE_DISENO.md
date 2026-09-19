@@ -143,6 +143,49 @@ falta leerla por su propio árbol, no por UIA.
 - **Lo que no está.** Among Us no está instalado: ningún bucle lo va a encontrar. Ahí lo
   correcto es mirarlo y decir que no está, que es lo que el dueño pidió.
 
+## 6. Corrección con la biblioteca: el estorbo del vídeo no es el webdriver, es Widevine
+
+El 19-09, antes de buscar en la biblioteca, esta campaña concluyó que Netflix rechazaba
+la reproducción porque el navegador conducido expone `navigator.webdriver: true`. La
+generación anterior ya había investigado esto entero y dice lo contrario, con fuentes:
+
+> «None of Netflix, Disney+, HBO Max, or Prime Video aggressively fingerprint
+> Playwright/CDP for *playback* purposes (the dominant blocker is Widevine, which is
+> upstream of fingerprinting).» […] «`navigator.webdriver === true` is set when CDP is
+> attached, and some sites read it. **None of the four streaming platforms gate playback
+> on this flag**.»
+> — `biblioteca/gemma4-agent/documentacion/04_computer_use/streaming_playback_field_guide_2026.md`
+
+Lo que sí bloquea, según esa guía:
+
+1. **Widevine.** El navegador tiene que ser un Chrome o Edge **real y firmado**. Un
+   Chromium empaquetado no trae el CDM y Netflix devuelve M7701-1003 / M7121-1331. El
+   adaptador de BAXY ya levanta `msedge.exe` real, de modo que este requisito se cumple.
+2. **La sesión.** El perfil del navegador que BAXY levanta es el directorio de datos del
+   turno: con un perfil nuevo por caso —que es lo que exige la medición— nunca hay
+   sesión iniciada. Es el estorbo estructural, no el DRM.
+3. **`--disable-gpu`.** Se añadió para no pasar del techo de memoria (WEB1261). La guía
+   no lo nombra, pero la ruta de medios protegidos puede depender de la GPU: es lo
+   primero que hay que medir cuando haya una sesión.
+
+Y su veredicto de arquitectura, que es la respuesta a «cómo se hacía esto bien»:
+
+> «**Use Architecture B (attach to a real, signed Google Chrome started with
+> `--remote-debugging-port=9222`) as the primary path.**» — login gratis, Widevine
+> funciona, misma huella que el usuario. El coste: Chrome tiene que arrancar con el
+> puerto, y no puede haber otra instancia usando ese mismo perfil.
+
+Con eso, la ruta del vídeo deja de ser OCR a ciegas: se conduce por DOM, con selectores
+que la guía ya fijó —`[data-uia="search-title-card"]` y `[data-uia="play-button"]` en
+Netflix, `/search?q=` que sí existe allí y no en Disney+—. Para Disney+ la guía advierte
+que no hay URL de búsqueda con parámetro y que hay que escribir en el campo; y avisa de
+lo que aquí se acababa de tropezar: «Avoid OCR — exactly the failure mode the user
+already identified».
+
+La palanca que la guía marca como la de mayor rendimiento es una caché de
+«título → URL»: la primera vez que se reproduce algo se guarda la URL final, y a partir
+de ahí se va directo sin buscar.
+
 ## Fuentes
 
 - [OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments](https://arxiv.org/html/2404.07972v2)
