@@ -3235,6 +3235,14 @@ def _unresolved_input_kind(objective: str) -> str | None:
         and re.search(r"\d\s*[-+*/x×÷=^%]\s*\d", folded) is None
     ):
         return "noise"
+    if re.fullmatch(r"[\[(<][a-z0-9_. -]{1,60}[\])>][\s.!?]*", folded) is not None:
+        # UNRES1855 H0639: the whole message is one bracketed token; whatever it
+        # stands for, nothing in it is a request (a pasted placeholder, the
+        # survey's «[PHONE_REDACTED]»). A shape rule for SHORT text in general
+        # was measured and rejected: with no vocabulary it cannot tell
+        # «¡Habristín!» from «pausá», «silencio» or «repetí», which the readers
+        # do not resolve either and which the model answers correctly today.
+        return "noise"
     if _overheard_speech(folded):
         return "overheard_speech"
     if _echoed_words(folded):
