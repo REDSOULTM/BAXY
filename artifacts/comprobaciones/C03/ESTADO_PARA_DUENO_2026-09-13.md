@@ -1,3 +1,25 @@
+## LIMITS1915 — estado vigente 2026-09-19T20:05:27.635724+00:00
+
+Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 707/742 | 35 | 0 | >=591 | 13/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 590 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); LIMITS1915 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: LIMITS1915: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/LIMITS1915/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 113.58 s acumulados; pico GPU 3492.93 MiB; pico RAM 1775.48 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque LIMITS1915 precedente. -->
+
 ## APPS1913 — estado vigente 2026-09-19T19:37:40.486231+00:00
 
 Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

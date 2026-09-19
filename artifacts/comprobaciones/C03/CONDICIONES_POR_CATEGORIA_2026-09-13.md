@@ -1610,3 +1610,7 @@ Instalar y desinstalar software pasa de 29/31 a 30/31 con completar el dialogo d
 ## Actualización 2026-09-19 (APPS1913)
 
 Abrir aplicaciones pasa de 50/54 a 51/54 con abrir la aplicacion que se nombra y decir lo que el recibo devuelve, sin dar por abierto lo que ya estaba (commit 793d06f6, BUILD1913) (HEAD 793d06f6): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Los cuatro turnos con apertura ejecutaron una sola app.open verificada y el final dijo lo que el recibo devuelve; «abrime el navegador chrome» dejó de pedir una URL; cien-61 100/100 con cero agotes.
+
+## Actualización 2026-09-19 (LIMITS1915)
+
+Archivos y carpetas pasa de 31/32 a 32/32 con decir llanamente que no se puede comprimir ni abrir un zip, nombrando lo que se pidio (commit 84912e9f, BUILD1915) (HEAD 84912e9f): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Los cuatro del grupo terminaron con cero operaciones y un final que dice el límite nombrando lo que se pidió; cien-62 100/100 con cero agotes. La categoría queda cerrada.

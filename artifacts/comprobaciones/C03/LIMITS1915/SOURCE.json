@@ -1,0 +1,15 @@
+{
+  "schema": "c03-limits1915-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (compressing a folder and opening a zip are declared as known missing variants, so the limit is not withdrawn for a clause the catalogue does serve), on top of the APPS1913 build.",
+  "patch": "artifacts/comprobaciones/C03/LIMITS1915/SOURCE.patch",
+  "commits": [
+    "84912e9f4522c21bf740dda4b58c7ddeb4a461f9"
+  ],
+  "build": "BUILD1915 (C03-repairs1915-build/BUILD_READY.json; mente)",
+  "cause_measured": "Comprimir y abrir un zip no estaban declarados como variantes ausentes, de modo que el verificador retiraba el limite en cuanto el catalogo servia una de las clausulas y el turno acababa ofreciendo ayuda generica en vez de decir lo que no se puede hacer.",
+  "change": "Comprimir una carpeta y abrir o descomprimir un zip quedan declarados como variantes que ninguna operacion sirve.",
+  "measurement": "LIMITS1915: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. Los cuatro del grupo terminaron con cero operaciones y un final que dice el límite nombrando lo que se pidió; cien-62 100/100 con cero agotes.",
+  "credits": 1
+}

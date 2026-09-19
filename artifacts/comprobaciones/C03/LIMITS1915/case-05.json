@@ -1,0 +1,24 @@
+{
+  "index": 5,
+  "case_id": "limits1915-boundary-02",
+  "terminal_kind": "published_final",
+  "final_sha256": "1026f757f1610d2f691d8ffb319a6e43c2133298c7bd7dbdfd8903317098a76c",
+  "clients_absent_before": true,
+  "verdict": "passed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 19.0,
+    "gpu_peak_mib": 3492.9296875,
+    "ram_peak_mib": 1775.484375,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1915-instrument-v1\\results\\case-05\\EXIT.json": "75fe0366d41f32637bb52ee22c5a828532c57666c50994113f6e105dba5103d4",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1915-instrument-v1\\results\\case-05\\RESOURCES.json": "61780b94a0da2f1e8475de90e136ca15856a299f6508290b2db916235ced1954",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-limits1915-instrument-v1\\private\\run-05\\case-observations.json": "b909def03cbec7d6495f6ec559dd7e36c261c205081e24ec2d879d0866e9ced8"
+  }
+}

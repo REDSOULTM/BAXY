@@ -1,0 +1,63 @@
+commit 84912e9f4522c21bf740dda4b58c7ddeb4a461f9
+
+C03: comprimir una carpeta y abrir un zip es un límite, y se dice como tal
+
+H0542 «Crea una carpeta en el escritorio, mete un txt dentro, comprímela y
+luego abre el zip». El dueño lo decidió así: límite honesto.
+
+El catálogo crea la carpeta y el txt, pero ninguna operación comprime una
+carpeta cualquiera ni abre un zip. Lo que faltaba era declararlo. Sin esa
+declaración, el verificador que retira un límite cuando el catálogo contesta
+el pedido veía la primera cláusula servida, retiraba el límite entero, y el
+turno acababa preguntando «¿Quieres que te ayude a organizar o crear archivos
+en tu escritorio?», que no es la respuesta a lo que se pidió.
+
+backup.known.create comprime una carpeta conocida como copia de seguridad: no
+es comprimir la que acaban de crear, ni abrir el zip después.
+
+Medido:
+  Crea una carpeta…, comprímela y luego abre el zip
+      → No puedo crear una carpeta, meter un archivo txt dentro, comprimirla
+        y abrir el zip tal como fue pedido.
+  comprimí la carpeta del escritorio   → No puedo comprimir la carpeta…
+  abrí el zip que está en el escritorio→ No puedo abrir el zip…
+  comprimí esa carpeta en un zip       → No puedo comprimir esa carpeta…
+  Crea una carpeta en el escritorio y mete un txt dentro → sin cambio
+  hacé una copia de seguridad del escritorio             → sin cambio
+
+cien-62: 100/100, cero agotes; frente a cien-61 sólo cambian la hora y una
+mayúscula.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index bf6b7e094..261e46830 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -3229,6 +3229,25 @@ def known_unsupported_effect_request(
+             and _has(folded, r"\b(?:gui|interfaz|interface|biblioteca|library|tienda|store|menu|menus)\b"),
+             {"input.visible.click"},
+         ),
++        (
++            # H0542 «Crea una carpeta en el escritorio, mete un txt dentro,
++            # comprímela y luego abre el zip»: la carpeta y el txt se crean, pero
++            # ninguna operación comprime una carpeta cualquiera ni abre un zip.
++            # Sin declararlo, el verificador veía la primera cláusula servida,
++            # retiraba el límite entero y el turno acababa preguntando si quería
++            # ayuda para organizar archivos, que no es la respuesta a lo que se
++            # pidió. backup.known.create comprime una carpeta conocida como copia
++            # de seguridad: no es comprimir la que acaban de crear ni abrir el zip.
++            _has(
++                folded,
++                r"\b(?:(?:des)?comprim[eaií]\w*|des\w*zip\w*|zipe[ao]\w*|zippe[ao]\w*|compress(?:es|ed|ing)?)\b"
++                r"|\bzip\s+(?:it|them|la|lo|el|the)\b"
++                r"|\b(?:archivo|fichero)\s+zip\b"
++                r"|\b(?:un|el|la|the|a)\s+zip\b"
++                r"|\.zip\b",
++            ),
++            {"archive.create", "archive.extract"},
++        ),
+         (
+             # LIMITS1683 H0302 «qué redes wifi hay»: saved profiles and the current
+             # state are read; no operation scans the networks around the PC.
