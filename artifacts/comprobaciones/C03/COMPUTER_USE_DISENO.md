@@ -80,6 +80,27 @@ diseño más que cualquier otra cosa:
   acto, así que un fallo se reproduce y se repara. Toda la campaña depende de eso: la
   lección de hoy, cuatro veces, es que lo que no se reproduce no se arregla.
 
+## 4b. Medido en Steam: el árbol de accesibilidad puede estar vacío
+
+El diálogo de instalación de Steam se abrió y se leyó con la lectura nueva. UIA devuelve
+**un solo nodo, «Chrome Legacy Window», sin un solo hijo**. Se pidió dos veces, por si
+Chromium activaba su árbol bajo demanda tras la primera petición; no lo activa.
+
+La interfaz de Steam —y la de Epic y la de Discord, que son de la misma familia— es
+Chromium incrustado. Para ellas **el canal que los papers miden como el mejor no existe**,
+y manda la cascada de OCR que el clic ya tiene detrás de UIA. Es el caso inverso al de una
+aplicación nativa como la Calculadora, donde UIA lo da todo.
+
+De aquí salen dos consecuencias para el bucle:
+
+- **La lectura de controles tiene que decir cuándo no ve nada.** Un único nodo contenedor
+  no es una pantalla sin controles: es una pantalla que este canal no sabe leer. El bucle
+  debe pasar a OCR en ese caso, no concluir que no hay nada que pulsar.
+- **Un paso puede necesitar más de un clic.** El diálogo de DOOM Eternal viene con la
+  unidad por defecto (C:, 54,62 GB libres) para un juego de 89,52 GB: completarlo de
+  verdad exige elegir antes otra unidad. La fila que dice «completalo haciendo click en
+  instalar» no se cumple con un clic, y el criterio tiene que decirlo.
+
 ## 5. Lo que este diseño no resuelve
 
 - **Las sesiones.** Que BAXY sepa pulsar «Reproducir» no le da la cuenta de Netflix. El
