@@ -8025,7 +8025,15 @@ def compose_visible_defect(
             failure_assertions,
         ):
             return "extra_claim"
-    is_failure = intent == "error" or polarity == "failure"
+    # cien-45/48 turno 027: un pedido ambiguo que el bloque lleva a la ruta de
+    # error se contesta preguntando, y la pregunta caia en la regla que exige
+    # decir el fallo. No hay fallo que decir: la persona pidio abrir algo sin
+    # decir que. La lista de pedidos ambiguos es cerrada y el texto ha de ser
+    # solo pregunta.
+    is_failure = (intent == "error" or polarity == "failure") and not (
+        _looks_like_ambiguous_action(user_text)
+        and visible_reply_is_only_questions(stripped)
+    )
     if is_failure:
         if _SUCCESS_OPENERS.match(stripped) is not None:
             return "reversed_polarity"
@@ -14865,12 +14873,16 @@ class LlmRuntime:
                 instruct("\nAsk one short question that disambiguates. Do not guess.")
         elif intent == "error" or polarity == "failure":
             if cause in {"out_of_catalog", "out-of-catalog"}:
+                # LIMITS1895/003: sin pedir que nombre lo pedido, el ingles se
+                # quedaba en «This is outside what I do on this PC.» mientras el
+                # espanol si decia «Ejecutar npm install esta fuera de lo que
+                # hago en este PC». La misma asimetria de idiomas de siempre.
                 refuse_line = (
                     "This is outside what you do on this PC. Say so in one "
-                    "sentence of your own. "
+                    "sentence of your own, naming what was asked. "
                     if response_language == "en"
                     else "El pedido queda fuera de lo que haces en este PC. "
-                    "Dilo en una frase tuya. "
+                    "Dilo en una frase tuya, nombrando lo que te pidieron. "
                 )
                 instruct("\n" + refuse_line + "Do not say you tried and failed.")
             elif response_language == "en":
