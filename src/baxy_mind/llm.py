@@ -8442,6 +8442,17 @@ def compose_visible_defect(
             and observed_dict.get("playbackStatus") == "playing"
             and isinstance(observed_dict.get("title"), str)
         )
+        if (
+            operation == "streaming.play.named"
+            and isinstance(observed_dict.get("observedProgressSeconds"), (int, float))
+            and re.search(r"\d[\d.,]*\s*(?:segundos?|seconds?|secs?\b)", folded)
+        ):
+            # Los segundos observados son la prueba de que el vídeo avanza, no un
+            # hecho que contarle a la persona: un borrador los leyó como suyos
+            # —«Ya estás viendo Stranger Things en Netflix. Está en reproducción
+            # y has pasado 0.63 segundos»— y le atribuyó un tiempo que pasó el
+            # vídeo, no ella. Pedir una serie no es preguntar por dónde va.
+            return "playback_progress_stated"
         scheduled_due = _verified_notification_due(situation)
         title = observed_dict.get("title")
         if scheduled_due is not None and not re.search(
@@ -16388,6 +16399,11 @@ class LlmRuntime:
                 "seen.installedIn are the Pythons where the package IS installed and seen.notInstalledIn where it is not: state exactly that, without denying an install listed in seen.installedIn or asserting one that is not there."
                 if response_language == "en"
                 else "seen.installedIn son los Python donde el paquete SÍ está instalado y seen.notInstalledIn donde no: di exactamente eso, sin negar una instalación de seen.installedIn ni afirmar una que no esté."
+            ),
+            "playback_progress_stated": (
+                "Say only that it is playing and what is playing; do not state any number of seconds: the observed progress is how you checked, not something the person did."
+                if response_language == "en"
+                else "Di sólo que está reproduciéndose y qué se reproduce; no digas ningún número de segundos: el avance observado es cómo lo comprobaste, no algo que haya hecho la persona."
             ),
             "screen_wrong_count": (
                 "The screen shows seen.lineCount lines: that is the only number you may state; seen.lines are only some of those lines, so do not count them."
