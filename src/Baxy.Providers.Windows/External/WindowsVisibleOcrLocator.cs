@@ -146,6 +146,57 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         return needles;
     }
 
+    // Lo que está escrito en la ventana de delante, línea a línea. Hace falta
+    // porque hay superficies que no exponen árbol de accesibilidad: la interfaz
+    // de Steam devuelve un solo nodo, «Chrome Legacy Window», sin un hijo. Ahí
+    // lo único que se puede leer es lo que se ve.
+    internal static async ValueTask<string[]?> TryReadLinesAsync(
+        int limit,
+        CancellationToken cancellationToken)
+    {
+        VisibleControlSurface.CapturedWindow? captured =
+            await VisibleControlSurface.CaptureForegroundAsync(cancellationToken)
+                .ConfigureAwait(false);
+        if (captured is null)
+            return null;
+        VisibleControlSurface.CapturedWindow window = captured.Value;
+        try
+        {
+            OcrEngine? engine = OcrEngine.TryCreateFromUserProfileLanguages();
+            if (engine is null)
+                return null;
+            StorageFile file = await StorageFile.GetFileFromPathAsync(window.Path);
+            using IRandomAccessStream stream = await file.OpenReadAsync();
+            BitmapDecoder decoder = await BitmapDecoder.CreateAsync(stream);
+            using SoftwareBitmap bitmap = await decoder.GetSoftwareBitmapAsync(
+                BitmapPixelFormat.Bgra8,
+                BitmapAlphaMode.Ignore);
+            OcrResult recognized = await engine.RecognizeAsync(bitmap);
+            cancellationToken.ThrowIfCancellationRequested();
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var lines = new List<string>();
+            foreach (OcrLine line in recognized.Lines)
+            {
+                string text = line.Text.Trim();
+                if (text.Length == 0 || text.Length > 80 || !seen.Add(text))
+                    continue;
+                lines.Add(text);
+                if (lines.Count >= limit)
+                    break;
+            }
+            return lines.ToArray();
+        }
+        catch (Exception exception) when (exception is IOException or InvalidOperationException
+            or UnauthorizedAccessException)
+        {
+            return null;
+        }
+        finally
+        {
+            VisibleControlSurface.Delete(window.Path);
+        }
+    }
+
     private static WordHit? UniqueHit(OcrResult recognized, string label)
     {
         string needle = Fold(label);

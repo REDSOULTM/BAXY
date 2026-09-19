@@ -182,7 +182,48 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
                 return ExternalJson.Failure(operation, code);
             }
 
-            return ExternalJson.Success(operation, root.Clone(), false);
+            // Una ventana que sólo expone su contenedor no es una ventana sin
+            // controles: es una que este canal no sabe leer. Medido en el diálogo
+            // de instalación de Steam, que devuelve «Chrome Legacy Window» y nada
+            // más. Cuando pasa, se lee lo que está escrito.
+            int counted = root.TryGetProperty("controls", out JsonElement listed)
+                && listed.ValueKind == JsonValueKind.Array
+                    ? listed.GetArrayLength()
+                    : 0;
+            if (counted > 1)
+                return ExternalJson.Success(operation, root.Clone(), false);
+
+            string[]? lines = await WindowsVisibleOcrLocator
+                .TryReadLinesAsync(limit, cancellationToken).ConfigureAwait(false);
+            if (lines is null || lines.Length == 0)
+                return ExternalJson.Success(operation, root.Clone(), false);
+
+            string window = root.TryGetProperty("window", out JsonElement named)
+                && named.ValueKind == JsonValueKind.String
+                    ? named.GetString() ?? string.Empty
+                    : string.Empty;
+            JsonElement read = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteBoolean("ok", true);
+                writer.WriteString("error", string.Empty);
+                writer.WriteString("window", window);
+                writer.WriteNumber("controlCount", lines.Length);
+                writer.WriteStartArray("controls");
+                foreach (string line in lines)
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString("name", line);
+                    writer.WriteString("kind", "Text");
+                    writer.WriteEndObject();
+                }
+
+                writer.WriteEndArray();
+                writer.WriteString("authority", "windows_media_ocr_lines");
+                writer.WriteEndObject();
+            });
+            return ExternalJson.Success(operation, read, false);
         }
         catch (Exception exception) when (exception is IOException or JsonException
             or TimeoutException or OperationCanceledException)
