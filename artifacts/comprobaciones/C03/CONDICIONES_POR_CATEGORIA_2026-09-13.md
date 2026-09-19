@@ -1570,3 +1570,7 @@ Navegación y búsqueda web pasa de 44/46 a 44/46 con investigar en internet la 
 ## Actualización 2026-09-19 (WEB1891)
 
 Navegación y búsqueda web pasa de 44/46 a 45/46 con investigar en internet la pregunta de la persona y decir que paginas la contestan, sin atribuirles nada que no digan (commit 1e5e87ff, BUILD1891) (HEAD 1e5e87ff): 5 de 5 casos aprobados; el literal nombra tres de sus paginas con titulo y sitio y no afirma nada mas, 1 credito, 1 créditos. la fila cierra tras cuatro tandas
+
+## Actualización 2026-09-19 (LIMITS1893)
+
+Navegación y búsqueda web pasa de 44/46 a 47/46 con decir llanamente que no guarda contactos, nombrando a la persona del pedido, sin inventar una agenda ni un guardado (commit 6abee5e6, BUILD1893) (HEAD 6abee5e6): 7 de 7 casos aprobados; las tres filas de contacto dicen llanamente que no guardan contactos, cero operaciones, 3 creditos, 3 créditos. primera tanda con tres literales

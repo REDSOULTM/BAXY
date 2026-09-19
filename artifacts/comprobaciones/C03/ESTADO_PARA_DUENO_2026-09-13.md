@@ -1,3 +1,25 @@
+## LIMITS1893 — estado vigente 2026-09-19T08:37:54.332139+00:00
+
+Parcial: 7 aprobados, 0 fallidos, 0 sin ejecutar; 3 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 687/742 | 55 | 0 | >=571 | 13/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 568 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); LIMITS1893 añade 3. No se cuentan revalidaciones.
+
+Siguiente acción: LIMITS1893: 7 ejecutados, 7 aprobados, 0 fallidos, 3 créditos (índices [0, 1, 2]). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/LIMITS1893/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 119.66 s acumulados; pico GPU 3492.93 MiB; pico RAM 1625.62 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 7; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque LIMITS1893 precedente. -->
+
 ## WEB1891 — estado vigente 2026-09-19T08:05:09.128635+00:00
 
 Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

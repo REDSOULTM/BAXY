@@ -1,0 +1,15 @@
+{
+  "schema": "c03-limits1893-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "no source change (measurement of the current behaviour on the HEAD of LIMITS1893); the panel carries the mark each row has instead of requiring positive, because an honest limit is not marked positive.",
+  "patch": "artifacts/comprobaciones/C03/LIMITS1893/SOURCE.patch",
+  "commits": [
+    "f815ec5a04399fb74dac730a6dbb2be5f327e8f0"
+  ],
+  "build": "BUILD1893 (C03-repairs1893-build/BUILD_READY.json; sin cambio de codigo)",
+  "cause_measured": "Las tres filas nunca se habian enlazado ni adjudicado; la conducta vigente es la negativa honesta que el dueno decidio acreditar.",
+  "change": "Ninguno en el codigo: se mide el comportamiento vigente.",
+  "measurement": "LIMITS1893: 7 de 7 casos aprobados; las tres filas de contacto dicen llanamente que no guardan contactos, cero operaciones, 3 creditos; 3 créditos. primera tanda con tres literales",
+  "credits": 3
+}
