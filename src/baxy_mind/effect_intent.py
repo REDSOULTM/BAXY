@@ -313,6 +313,17 @@ def _entity_lookup_query(text: str) -> str | None:
         r"what|who|how|which|where|when|why)\b",
     ):
         return None
+    # cien-36 032 «who is speaking»: a bare present participle after «who is»
+    # is a predicate, not a name. Read as an entity it sent the turn to a
+    # public page about the language skill «speaking», while the Spanish
+    # «quién está hablando» answered with the assistant identity (089).
+    if _has(
+        folded_entity,
+        r"^(?:speaking|talking|writing|typing|answering|replying|responding|"
+        r"listening|calling|asking|reading|hablando|escribiendo|respondiendo|"
+        r"contestando|escuchando|llamando|preguntando|leyendo)$",
+    ):
+        return None
     if _has(
         folded_entity,
         r"\b(?:bax[yi]|olly|alexa|siri|asistente|assistant|palabra|word|significa|"
