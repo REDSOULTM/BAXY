@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1879-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (a report of a verified search that names no page of it is rejected, with one corrected retry), on top of the WEB1879 build.",
+  "patch": "artifacts/comprobaciones/C03/WEB1879/SOURCE.patch",
+  "commits": [
+    "b5365f70a30bf84c664ef676e0302c755717b370"
+  ],
+  "build": "BUILD1879 (C03-repairs1879-build/BUILD_READY.json; mente)",
+  "cause_measured": "Nada exigia que el informe de una busqueda nombrara las paginas de las que sale cada dato, y el final del literal no nombro ninguna.",
+  "change": "Un informe de una web.search verificada tiene que nombrar el sitio o el titulo de alguna pagina del resultado; la rama de entidad y la de curiosidad quedan fuera.",
+  "measurement": "WEB1879: 4 de 5 casos aprobados (2 variantes, 2 límites); el literal falló por una causa sin fuente en su primera oración; 0 créditos. Con la regla que exige nombrar las páginas, los tres informes atribuyeron lo que copian y las dos variantes quedaron enteras; el literal nombró fallas.mx y ADSLZone pero abrió afirmando en voz propia dos causas que ningún resultado contiene.",
+  "credits": 0
+}

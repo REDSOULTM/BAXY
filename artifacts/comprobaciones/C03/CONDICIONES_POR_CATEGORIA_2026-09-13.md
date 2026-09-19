@@ -1542,3 +1542,7 @@ Entrada incompleta, ruido y control de diálogo pasa de 30/34 a 31/34 con respon
 ## Actualización 2026-09-19 (WEB1877)
 
 Información web actual pasa de 16/17 a 16/17 con investigar en internet la pregunta de la persona y decir que paginas la contestan, sin afirmar una causa que ningun resultado sostiene (commit 00678916, BUILD1877) (HEAD 00678916): 4 de 5 casos aprobados (2 variantes, 2 límites); el literal falló por no nombrar las páginas, 0 créditos. Con el segundo motor las tres investigaciones completaron y verificaron exactamente una web.search con las palabras de la persona y obtuvieron páginas pertinentes; las dos variantes nombraron sitios y títulos y el literal no nombró ninguno, de modo que la condición externa queda levantada y lo que falta es la atribución en el informe.
+
+## Actualización 2026-09-19 (WEB1879)
+
+Información web actual pasa de 16/17 a 16/17 con investigar en internet la pregunta de la persona y decir que paginas la contestan, nombrandolas (commit b5365f70, BUILD1879) (HEAD b5365f70): 4 de 5 casos aprobados (2 variantes, 2 límites); el literal falló por una causa sin fuente en su primera oración, 0 créditos. Con la regla que exige nombrar las páginas, los tres informes atribuyeron lo que copian y las dos variantes quedaron enteras; el literal nombró fallas.mx y ADSLZone pero abrió afirmando en voz propia dos causas que ningún resultado contiene.
