@@ -497,7 +497,7 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private const string DiscordOpenDirectMessageScript = """
         $ErrorActionPreference='Stop';$label=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]));$needle=$label.ToLowerInvariant()
         Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes;Add-Type -AssemblyName System.Windows.Forms
-        $sig='using System;using System.Runtime.InteropServices;public static class BaxyDmWin{[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h,int c);}'
+        $sig='using System;using System.Runtime.InteropServices;public static class BaxyDmWin{[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h,int c);[DllImport("user32.dll")] public static extern bool SetCursorPos(int x,int y);[DllImport("user32.dll")] public static extern void mouse_event(uint f,int dx,int dy,uint d,int e);}'
         if(-not ([System.Management.Automation.PSTypeName]'BaxyDmWin').Type){Add-Type -TypeDefinition $sig}
         $root=[System.Windows.Automation.AutomationElement]::RootElement
         $cond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ClassNameProperty,'Chrome_WidgetWin_1')
@@ -505,39 +505,33 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         if($null -eq $w){[pscustomobject]@{ok=$false;error='client_window_not_found'}|ConvertTo-Json -Compress;exit 2}
         $h=[IntPtr]$w.Current.NativeWindowHandle;[void][BaxyDmWin]::ShowWindow($h,9)
         $escaped=[regex]::Replace($label,'([+^%~(){}\[\]])','{$1}')
-        function Read-Items {param($win) $r=@();foreach($e in $win.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)){if($e.Current.ControlType.ProgrammaticName -eq 'ControlType.ListItem'){$n=$e.Current.Name;if($n){$r+=$n.Substring(0,[Math]::Min(160,$n.Length))}}};,$r}
-        $opened=$false;$chosen='';$rounds=0;$baseCount=0;$newRows=@()
+        function Find-Row {param($win,$nd) foreach($e in $win.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)){if($e.Current.ControlType.ProgrammaticName -eq 'ControlType.ListItem'){$n=$e.Current.Name;if($n -and $n.ToLowerInvariant().Contains($nd)){$rect=$e.Current.BoundingRectangle;if($rect.Width -gt 0 -and $rect.Height -gt 0){return [pscustomobject]@{name=$n.Substring(0,[Math]::Min(160,$n.Length));x=[int]($rect.X+$rect.Width/2);y=[int]($rect.Y+$rect.Height/2)}}}}};return $null}
+        $opened=$false;$chosen='';$rounds=0
         for($round=0;$round -lt 4 -and -not $opened;$round++){
           $rounds=$round+1
           [void][BaxyDmWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 500
           if([BaxyDmWin]::GetForegroundWindow() -ne $h){Start-Sleep -Milliseconds 400;continue}
           [System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 300
-          $before=Read-Items $w;$baseCount=$before.Count
+          # No row names the recipient before the switcher opens (the test user has
+          # no entry in the direct-message list); the row that names it after typing
+          # is a switcher result and is clicked by its own rectangle. Counting the
+          # rows the switcher added selected a neighbour instead (run d: «Julia»).
+          if($null -ne (Find-Row $w $needle)){[pscustomobject]@{ok=$false;error='recipient_visible_before_search'}|ConvertTo-Json -Compress;exit 4}
           [System.Windows.Forms.SendKeys]::SendWait('^k');Start-Sleep -Milliseconds 1400
           if([BaxyDmWin]::GetForegroundWindow() -ne $h){[System.Windows.Forms.SendKeys]::SendWait('{ESC}');continue}
           [System.Windows.Forms.SendKeys]::SendWait('^a');Start-Sleep -Milliseconds 120
           [System.Windows.Forms.SendKeys]::SendWait('{BACKSPACE}');Start-Sleep -Milliseconds 120
           [System.Windows.Forms.SendKeys]::SendWait($escaped);Start-Sleep -Milliseconds 900
-          $after=@();$index=-1
-          for($poll=0;$poll -lt 10;$poll++){
-            $after=Read-Items $w
-            $bag=@{};foreach($row in $before){if($bag.ContainsKey($row)){$bag[$row]=$bag[$row]+1}else{$bag[$row]=1}}
-            $index=-1;$position=0
-            foreach($row in $after){
-              if($bag.ContainsKey($row) -and $bag[$row] -gt 0){$bag[$row]=$bag[$row]-1;continue}
-              if($row.ToLowerInvariant().Contains($needle)){$index=$position;$chosen=$row;break}
-              $position=$position+1
-            }
-            if($index -ge 0){break}
-            Start-Sleep -Milliseconds 400
-          }
-          $newRows=@($after.Count)
-          if($index -lt 0){[System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 300;continue}
-          for($step=0;$step -lt $index;$step++){[System.Windows.Forms.SendKeys]::SendWait('{DOWN}');Start-Sleep -Milliseconds 120}
-          [System.Windows.Forms.SendKeys]::SendWait('{ENTER}');Start-Sleep -Milliseconds 1500
+          $row=$null
+          for($poll=0;$poll -lt 10 -and $null -eq $row;$poll++){$row=Find-Row $w $needle;if($null -ne $row){break};Start-Sleep -Milliseconds 400}
+          if($null -eq $row){[System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 300;continue}
+          $chosen=$row.name
+          [void][BaxyDmWin]::SetCursorPos($row.x,$row.y);Start-Sleep -Milliseconds 150
+          [BaxyDmWin]::mouse_event(0x0002,0,0,0,0);[BaxyDmWin]::mouse_event(0x0004,0,0,0,0)
+          Start-Sleep -Milliseconds 1500
           $opened=$true
         }
-        [pscustomobject]@{ok=$opened;title=$w.Current.Name;chosen=$chosen;rounds=$rounds;baseRows=$baseCount;afterRows=@($newRows)[0]}|ConvertTo-Json -Compress
+        [pscustomobject]@{ok=$opened;title=$w.Current.Name;chosen=$chosen;rounds=$rounds}|ConvertTo-Json -Compress
         """;
 
     /// <summary>Open the Discord direct message whose switcher row names the
@@ -653,19 +647,12 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // sent, the title guard refused each time). Nothing is typed into an
             // open chat: the switcher swallows the name, and when no row of its own
             // names the recipient nothing is opened.
-            byte[] composerBefore = CaptureRegion(handle, CaptureArea.Composer, channel);
+            // The composer band is NOT compared here: opening the intended chat
+            // changes it too (its placeholder names the recipient), which refused a
+            // correct open in run d. The guard is the window title, which the caller
+            // reads again right after this block.
             string? openedTitle = await OpenDiscordDirectMessageAsync(recipient, cancellationToken)
                 .ConfigureAwait(false);
-            byte[] composerAfter = CaptureRegion(handle, CaptureArea.Composer, channel);
-            if (!CryptographicOperations.FixedTimeEquals(
-                    SHA256.HashData(composerBefore),
-                    SHA256.HashData(composerAfter)))
-            {
-                SendChord(VirtualKeyControl, VirtualKeyA);
-                SendKey(VirtualKeyBack);
-                return new(false, true, handle, processId, "search_focus_not_verified");
-            }
-
             if (openedTitle is null)
             {
                 return new(false, true, handle, processId, "recipient_not_in_quick_switcher");
