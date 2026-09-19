@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1889-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (a research question is a report like any other, and a sentence that names no page may only use words some result or the request brings), on top of the WEB1889 build.",
+  "patch": "artifacts/comprobaciones/C03/WEB1889/SOURCE.patch",
+  "commits": [
+    "f815ec5a04399fb74dac730a6dbb2be5f327e8f0"
+  ],
+  "build": "BUILD1889 (C03-repairs1889-build/BUILD_READY.json; mente)",
+  "cause_measured": "La pregunta de investigacion estaba exenta de las dos reglas del informe, asi que nada impedia un final sin una sola pagina nombrada ni una causa atribuida a paginas que no la contienen.",
+  "change": "Cae la exencion de la pregunta de investigacion, vuelve la regla de oracion sin fuente con su pista de reintento, y el vocabulario de informe admite las palabras de la salida veraz para que la red de seguridad no se vete a si misma.",
+  "measurement": "WEB1889: 4 de 5 casos aprobados (2 variantes, 2 limites); el literal nombra sus paginas pero les atribuye una causa que no contienen, 0 creditos; 0 créditos. las dos variantes pasaron de no nombrar ninguna pagina a nombrar tres cada una",
+  "credits": 0
+}
