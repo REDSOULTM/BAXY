@@ -1,0 +1,15 @@
+{
+  "schema": "c03-limits1903-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "no source change (measurement of the current behaviour on the HEAD of LIMITS1903).",
+  "patch": "artifacts/comprobaciones/C03/LIMITS1903/SOURCE.patch",
+  "commits": [
+    "f815ec5a04399fb74dac730a6dbb2be5f327e8f0"
+  ],
+  "build": "BUILD1903 (C03-repairs1903-build/BUILD_READY.json; sin cambio de codigo)",
+  "cause_measured": "Las dos filas nunca se habian enlazado ni adjudicado; la conducta vigente es conversacional y estable.",
+  "change": "Ninguno en el codigo: se mide el comportamiento vigente.",
+  "measurement": "LIMITS1903: 6 de 6 casos aprobados; el saludo en varios idiomas y la charla mezclada se contestan como conversacion, cero operaciones, 2 creditos; 2 créditos. el limite confirma que un pedido de verdad en otro idioma sigue pidiendo que lo repitan",
+  "credits": 2
+}

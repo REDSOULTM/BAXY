@@ -1590,3 +1590,7 @@ Navegación y búsqueda web pasa de 44/46 a 44/46 con buscar el dato en internet
 ## Actualización 2026-09-19 (LIMITS1901)
 
 Navegación y búsqueda web pasa de 44/46 a 54/46 con pedir que repitan el pedido en espanol o en ingles, sin ejecutar nada y sin negar una capacidad que si tiene (commit ef5966e9, BUILD1901) (HEAD ef5966e9): 13 de 14 casos aprobados; las diez filas en otro idioma piden repetir el pedido en espanol o ingles, cero operaciones, 10 creditos, 10 créditos. primera tanda de catorce casos
+
+## Actualización 2026-09-19 (LIMITS1903)
+
+Navegación y búsqueda web pasa de 44/46 a 46/46 con contestar como conversacion un saludo en varios idiomas o una charla mezclada, sin pedir que repitan nada y sin inventar un pedido (commit a36b87ad, BUILD1903) (HEAD a36b87ad): 6 de 6 casos aprobados; el saludo en varios idiomas y la charla mezclada se contestan como conversacion, cero operaciones, 2 creditos, 2 créditos. el limite confirma que un pedido de verdad en otro idioma sigue pidiendo que lo repitan La categoría queda cerrada.

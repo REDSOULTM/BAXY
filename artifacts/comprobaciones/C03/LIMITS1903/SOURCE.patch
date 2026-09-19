@@ -1,0 +1,95 @@
+commit f815ec5a04399fb74dac730a6dbb2be5f327e8f0
+
+C03: ceder el control del PC no es el pedido, y «entrar a» es el mismo acto de petición que «andá a» (WEB1883: las dos variantes negaron una capacidad que el producto tiene)
+
+Dos causas medidas sobre el resolutor explícito, con Opera GX instalada y
+browser.navigate.named acreditada en WEB1805:
+
+1. «Tomá el control de mi computadora y abrí itch.io en Opera GX» no resolvía nada,
+   mientras que «abrí itch.io en Opera GX» resolvía la navegación con navegador
+   nombrado. La cláusula inicial entrega la máquina, no pide nada, y dejaba al turno
+   sin efecto explícito: el modelo lo resolvía como conversación y el final decía
+   que no podía hacerlo. `without_control_cession_preamble` quita esa cláusula sólo
+   cuando encabeza el texto y algo la sigue, de modo que «Tomá el control de mi PC.»
+   a secas conserva su propia respuesta.
+
+2. La lista de verbos que cuentan como acto de petición tenía «anda», «andate»,
+   «ve» y «navega», pero no «entra», «entrar» ni «vete», así que «entrá a itch.io»
+   perdía la autoridad de pedido y con ella toda la misión compuesta. Los tres
+   verbos son el mismo acto y quedan juntos.
+
+Medido sobre el resolutor: «Tomá el control de mi computadora y abrí itch.io en Opera
+GX», «Take control of my PC and open itch.io in Opera GX», «abrí opera gx y entrá a
+itch.io» y «entrá a itch.io» resuelven ahora la navegación; «Tomá el control de mi
+PC.», «abrí el control de volumen», «tomá nota de mi cumpleaños», «entrá a la
+configuración» y «vamos a ver» siguen sin resolver nada.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 9b1e2184e..e55dfa957 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -11159,6 +11159,11 @@ def _is_direct_request(text: str) -> bool:
+         r"apuntame|apunta|jot|"
+         r"dale(?=\s+(?:enter|intro|return))|"
+         r"llevame|anda|andar|andate|"
++        # WEB1883 H0081 «abri opera gx y entra a …»: «entrar a» is the same
++        # go-to speech act as «anda a» and «ve a», and it was the only one of
++        # the three missing here, so the whole request lost its authority and
++        # the turn became a conversation that denied the capability.
++        r"entra|entrar|entrale|entrate|vete|vayamos|vamos|"
+         r"devuelvele|devuelve|devuelveme|"
+         r"maximiza|maximizar|maximize|minimiza|minimizar|minimize|"
+         # WINDOWS1695 «Minimisa ópera.»: the s-for-z spelling is the same order.
+@@ -17577,6 +17582,40 @@ def deferred_clarification_split(
+     return None
+ 
+ 
++# WEB1883 H0081 «tomá control de mi pc, quiero que abras opera gx y entres a …»:
++# the opening clause hands the machine over, it does not ask for anything. With
++# it in front, this resolver found no effect and the turn became a conversation
++# whose final denied a capability the product has (Opera GX is installed and
++# browser.navigate.named was credited in WEB1805); without it the very same
++# sentence resolves to the named navigation. Only a LEADING clause is dropped,
++# and only when a request follows it.
++_CONTROL_CESSION_PREAMBLE = re.compile(
++    r"^[\s¡!¿?]*(?:por\s+favor\s*,?\s*|please\s*,?\s*)?"
++    r"(?:tom[aá](?:te)?|agarr[aá]|manej[aá]|controla|control[aá]|"
++    r"take(?:\s+over)?|assume|use)\s*"
++    r"(?:el\s+|the\s+)?(?:control|mando|manejo|comando)?\s*"
++    r"(?:de\s+|of\s+|sobre\s+)?"
++    r"(?:mi|my|la|el|the)\s*"
++    r"(?:pc|computadora|computador|compu|ordenador|m[aá]quina|equipo|"
++    r"computer|machine|laptop|notebook)"
++    r"\s*(?:[,;.]|\s)\s*(?:y|and|luego|then|despu[eé]s|ahora|now)?\s*",
++    re.IGNORECASE,
++)
++
++
++def without_control_cession_preamble(text: str) -> str:
++    """The request that follows a clause handing the machine over, or the text."""
++
++    current = str(text or "")
++    match = _CONTROL_CESSION_PREAMBLE.match(current)
++    if match is None:
++        return current
++    rest = current[match.end():].strip()
++    # «Tomá el control de mi PC.» on its own asks for exactly that and keeps its
++    # own answer; only a request that follows the clause replaces it.
++    return rest if rest else current
++
++
+ def resolve_explicit_effects(
+     text: str,
+     available_operations: Iterable[str],
+@@ -17587,6 +17626,8 @@ def resolve_explicit_effects(
+ ) -> EffectIntent | None:
+     """Resolve a bounded sequence of clause-local, closed-catalog effects."""
+ 
++    text = without_control_cession_preamble(text)
++
+     if explicit_non_action_frame(text):
+         return None
+     folded = _strip_request_envelope(_fold(re.sub(r"[\r\n]+", " . ", text)))
