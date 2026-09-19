@@ -539,7 +539,16 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
           }
           if(-not $selected.ToLowerInvariant().Contains($needle)){[System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 300;$chosen='selected: ' + $selected;continue}
           $chosen=$selected
-          [System.Windows.Forms.SendKeys]::SendWait('{ENTER}');Start-Sleep -Milliseconds 1500
+          # The foreground is re-asserted immediately before Enter and the title is
+          # read afterwards: the product's own window runs the case meanwhile, and a
+          # foreground stolen between typing and Enter left the previous chat open
+          # with the right row selected (runs d-f).
+          [void][BaxyDmWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 200
+          if([BaxyDmWin]::GetForegroundWindow() -ne $h){[System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 300;continue}
+          [System.Windows.Forms.SendKeys]::SendWait('{ENTER}');Start-Sleep -Milliseconds 1800
+          $title=$w.Current.Name
+          if(-not $title.ToLowerInvariant().Contains($needle)){Start-Sleep -Milliseconds 1200;$title=$w.Current.Name}
+          if(-not $title.ToLowerInvariant().Contains($needle)){$chosen='opened: ' + $title;continue}
           $opened=$true
         }
         [pscustomobject]@{ok=$opened;title=$w.Current.Name;chosen=$chosen;rounds=$rounds}|ConvertTo-Json -Compress
