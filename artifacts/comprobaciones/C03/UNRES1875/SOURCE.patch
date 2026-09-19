@@ -1,0 +1,54 @@
+commit c8fe9a2848045bdf0df0b791393dffa6daaec47e
+
+C03: el guardia que exige reconocer el ruido tenía en inglés la mitad del vocabulario que tenía en español (UNRES1873 H0639: la pregunta veraz fue rechazada dos veces y el turno acabó publicando la genérica «What would you like to talk about?»)
+
+La lectura de un marcador sin texto es inglesa, así que el idioma obligatorio de la
+aclaración es el inglés. Medido contra la mente de esta máquina, el modelo contestó
+«I see only signs and redacted text — no clear request there. What would you like me
+to do instead?», que es exactamente lo que el guardia pide: decir qué llegó y que ahí
+no hay un pedido. Pero su mitad inglesa sólo tenía «symbols», «digits», «letters» y
+«you sent/wrote/typed», mientras la española ya aceptaba «signos», «no veo» y «ningún
+pedido». Los dos intentos fueron rechazados, clarify_unresolved_input levantó
+ValueError, el turno murió en turn_preparation y la recuperación semántica publicó su
+pregunta genérica, sin decir que no había llegado nada legible.
+
+Las dos mitades llevan ahora el mismo vocabulario: «signs», «I don't see / can't
+find / cannot read», «no request» y sus variantes, junto a «ningún pedido» del lado
+español. Comprobado sobre la mente real: el marcador pasa al primer intento y las
+entradas de ruido ya acreditadas («????», «(nombre)», «1234567890») siguen dando la
+misma pregunta que antes; las genéricas que el dueño rechazó («What would you like to
+talk about?», «¿En qué puedo ayudarte?») siguen rechazadas.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 5dc3c4295..d20e73433 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -8688,12 +8688,24 @@ def _bare_path_name(text: str) -> str:
+     return re.split(r"[\\/]", str(text).strip().rstrip("\\/"))[-1].strip()
+ 
+ 
++# UNRES1875 H0639 (a bare redaction placeholder): the reading of that text
++# is English, so the mandatory clarification language is English, and the
++# model answered that it saw only signs and redacted text and no clear
++# request there. That is the acknowledgement this guard asks for, but its
++# English half had neither "signs" nor "I don't see a request" while its
++# Spanish half already took the same words; both attempts were rejected, the
++# turn died and the generic recovery question was published instead. The two
++# halves now carry the same vocabulary.
+ _NOISE_ACKNOWLEDGED = re.compile(
+     r"\b(?:signos?|simbolos?|cifras?|digitos?|numeros?|letras?|emojis?|"
+     r"caracter(?:es)?|interrogaci[oó]n|mensaje|escribiste|enviaste|mandaste|"
+     r"llego|recib[ií]|no (?:veo|encuentro|logro|entiendo|reconozco)|"
++    r"(?:no|ning[uú]n)\s+(?:\w+\s+){0,2}pedido|"
+     r"con eso|con esto|de eso|de esto|"
+-    r"symbols?|digits?|numbers?|letters?|characters?|question marks?|"
++    r"symbols?|signs?|digits?|numbers?|letters?|characters?|question marks?|"
++    r"(?:do(?:es)?\s+not|don'?t|doesn'?t|cannot|can'?t)\s+"
++    r"(?:see|find|read|understand|recognis|recogniz)\w*|"
++    r"(?:no|any)\s+(?:\w+\s+){0,2}request|"
+     r"you (?:sent|wrote|typed)|with that|with this)\b",
+     re.IGNORECASE,
+ )

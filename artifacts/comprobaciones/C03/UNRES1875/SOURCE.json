@@ -1,0 +1,15 @@
+{
+  "schema": "c03-unres1875-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (the noise acknowledgement guard carries in English the same words it already had in Spanish), on top of the UNRES1875 HEAD.",
+  "patch": "artifacts/comprobaciones/C03/UNRES1875/SOURCE.patch",
+  "commits": [
+    "c8fe9a2848045bdf0df0b791393dffa6daaec47e"
+  ],
+  "build": "BUILD1875 (C03-repairs1875-build/BUILD_READY.json; mente)",
+  "cause_measured": "El guardia de reconocimiento de ruido solo tenia en ingles la mitad del vocabulario que tenia en espanol, asi que rechazo una pregunta veraz y el turno acabo en la recuperacion generica.",
+  "change": "Las dos mitades del guardia llevan las mismas palabras: signos, no veo, ningun pedido y sus equivalentes ingleses.",
+  "measurement": "UNRES1875: 5 de 5 casos aprobados (1 literal, 2 variantes, 2 límites); 1 créditos. El guardia de ruido, con el mismo vocabulario en los dos idiomas, aceptó al primer intento la pregunta veraz: el marcador sin texto y las dos variantes de la misma forma recibieron una pregunta que dice que ahí no hay un pedido legible y pregunta qué hacer, con cero operaciones y cero violaciones.",
+  "credits": 1
+}
