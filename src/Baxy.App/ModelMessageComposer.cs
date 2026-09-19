@@ -165,11 +165,11 @@ internal static class ModelMessageComposer
                 UsedRecovery: false);
         }
 
-        string originalFailure = UserMessagePolicy.ModelResponseRejectionReason(
+        string originalFailure = RejectionReason(
             composed?.Text,
             draft,
             userText,
-            priorUserText) ?? "model_response_rejected";
+            priorUserText);
         if (!allowRecovery)
         {
             return new ModelMessageCompositionOutcome(
@@ -199,16 +199,37 @@ internal static class ModelMessageComposer
                 UsedRecovery: true);
         }
 
-        string recoveryFailure = UserMessagePolicy.ModelResponseRejectionReason(
+        string recoveryFailure = RejectionReason(
             recovered?.Text,
             draft,
             userText,
-            priorUserText) ?? "model_response_rejected";
+            priorUserText);
         return new ModelMessageCompositionOutcome(
             null,
             $"{originalFailure};recovery:{recoveryFailure}",
             UsedRecovery: true);
     }
+
+    // cien-36 027 «open that»: the clarification was refused by
+    // IsSafeConversationReply, whose reason the composer never asked, so the
+    // turn recorded the bare «model_response_rejected» and no check could be
+    // told from another. Both reason functions are consulted, in the order
+    // they run.
+    private static string RejectionReason(
+        string? modelText,
+        UserMessageDraft draft,
+        string userText,
+        string? priorUserText) =>
+        UserMessagePolicy.ModelResponseRejectionReason(
+            modelText, draft, userText, priorUserText)
+        ?? (modelText is null
+            ? null
+            : UserMessagePolicy.ConversationReplyRejectionReason(
+                userText,
+                modelText,
+                priorUserText: priorUserText,
+                hasRequiredInput: UserMessagePolicy.HasRequiredInput(draft)))
+        ?? "model_response_rejected";
 
     private static string? AcceptPublishedConversation(
         string? modelText,
@@ -228,8 +249,14 @@ internal static class ModelMessageComposer
 
         if ((draft.Intent is "welcome" or "clarification" or "conversation"
                 || UserMessagePolicy.ConversationFallbackIntent(userText) == "out_of_catalog")
+            // cien-36 027 «open that» → «What do you want me to open?»: the
+            // person did ask for an opening, and the question asks which one;
+            // without this flag the check read it as a catalog action nobody
+            // asked for and the turn exhausted, while the Spanish «¿Qué querés
+            // que abra?» passed.
             && !UserMessagePolicy.IsSafeConversationReply(
                 userText, accepted, priorUserText: priorUserText,
+                clarification: draft.Intent == "clarification",
                 hasRequiredInput: UserMessagePolicy.HasRequiredInput(draft)))
         {
             return null;

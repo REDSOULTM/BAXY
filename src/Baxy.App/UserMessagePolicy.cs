@@ -965,7 +965,9 @@ internal static class UserMessagePolicy
             coveredFamilyNamed = true;
         }
 
-        return !coveredFamilyNamed;
+        // No family at all was named: the reply carries only the action the
+        // person themself asked for, which is not a proposal of its own.
+        return !coveredFamilyNamed && !SharesCatalogActionVerb(user, said);
     }
 
     private static bool UserCoversCatalogFamily(string user, string[] family)
@@ -1488,15 +1490,33 @@ internal static class UserMessagePolicy
         return true;
     }
 
+    private static readonly string[] CatalogActionVerbs =
+    [
+        "cierra", "close", "abre", "open", "lanza", "launch", "borra",
+        "delete", "silencia", "mute", "revisa", "muestra", "chequea",
+        "check", "envia", "send", "traduce", "translate", "haz ",
+        "hazlo", "do that", "do it",
+    ];
+
     private static bool ContainsCatalogActionVerb(string user) =>
-        ContainsAny(
-            user,
-            [
-                "cierra", "close", "abre", "open", "lanza", "launch", "borra",
-                "delete", "silencia", "mute", "revisa", "muestra", "chequea",
-                "check", "envia", "send", "traduce", "translate", "haz ",
-                "hazlo", "do that", "do it",
-            ]);
+        ContainsAny(user, CatalogActionVerbs);
+
+    // cien-36 027 «open that» → «What do you want me to open?»: the question
+    // repeats the very verb the person used and names nothing else, so it
+    // proposes no action of its own.
+    private static bool SharesCatalogActionVerb(string user, string said)
+    {
+        foreach (string verb in CatalogActionVerbs)
+        {
+            if (said.Contains(verb, StringComparison.Ordinal)
+                && user.Contains(verb, StringComparison.Ordinal))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private static bool FamilyNamed(string[] family, params string[] names)
     {
