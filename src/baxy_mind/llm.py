@@ -5972,6 +5972,7 @@ _SEARCH_REPORT_OWN_WORDS = frozenset(
         # El informe que el turno arma de los resultados cuando todo candidato
         # cae usa estas tres: sin ellas la red de seguridad se vetaba sola.
         "busque", "estas", "internet",
+        "searched", "these",
         "encontre", "encontro", "encontraron", "encontrada", "encontradas",
         "encontrado", "encontrados", "varios", "varias", "articulo", "articulos",
         "pagina", "paginas", "resultado", "resultados", "busqueda", "menciona",
@@ -5987,51 +5988,6 @@ _SEARCH_REPORT_OWN_WORDS = frozenset(
         "recommends", "recommended",
     }
 )
-
-
-def _search_report_sentence_names_source(sentence: str, sources: list[tuple[str, str]]) -> bool:
-    """The sentence says which page it is reporting."""
-
-    folded = _reading_fold(sentence)
-    compact = re.sub(r"[^a-z0-9]+", "", folded)
-    for kind, value in sources:
-        if kind == "title":
-            if value and (value in compact or (len(value) > 24 and value[:24] in compact)):
-                return True
-        elif value and value in folded:
-            return True
-    return False
-
-
-def _search_report_named_sources(payload: dict, user_text: str) -> list[tuple[str, str]]:
-    """Hosts, host labels and compacted titles a sentence may cite."""
-
-    seen = payload.get("seen")
-    results = seen.get("results") if isinstance(seen, dict) else None
-    folded_user = _reading_fold(user_text)
-    sources: list[tuple[str, str]] = []
-    for item in results if isinstance(results, list) else []:
-        if not isinstance(item, dict):
-            continue
-        url = item.get("url")
-        if isinstance(url, str) and url.strip():
-            host = (urlparse(url.strip()).hostname or "").casefold()
-            host = host[4:] if host.startswith("www.") else host
-            if host:
-                sources.append(("host", host))
-                for label in host.split("."):
-                    if (
-                        len(label) >= 5
-                        and label not in _SEARCH_SOURCE_GENERIC_LABELS
-                        and label not in folded_user
-                    ):
-                        sources.append(("label", label))
-        title = item.get("title")
-        if isinstance(title, str):
-            compacted = re.sub(r"[^a-z0-9]+", "", _reading_fold(title))
-            if len(compacted) >= 12:
-                sources.append(("title", compacted))
-    return sources
 
 
 def _search_report_unsourced_claim(text: str, payload: dict, user_text: str) -> bool:
@@ -6053,11 +6009,12 @@ def _search_report_unsourced_claim(text: str, payload: dict, user_text: str) -> 
     ) | set(re.findall(r"[a-z]+", _reading_fold(user_text)))
     if not observed:
         return False
-    sources = _search_report_named_sources(payload, user_text)
+    # WEB1889: toda oracion se mide igual. Nombrar la pagina la avalaba y por
+    # ahi pasaba «...fallas.mx y downdetector.mx, que mencionan problemas de
+    # conexion», con «conexion» ausente de los cinco resultados. Que el
+    # informe nombre sus paginas lo exige la otra regla.
     for sentence in re.split(r"(?<=[.!?])\s+", str(text).strip()):
         if not _reading_fold(sentence):
-            continue
-        if _search_report_sentence_names_source(sentence, sources):
             continue
         for word in re.findall(r"[a-z]+", _reading_fold(sentence)):
             if len(word) < 5 or word in _SEARCH_REPORT_OWN_WORDS:
