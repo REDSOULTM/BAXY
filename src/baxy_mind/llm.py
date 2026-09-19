@@ -2056,6 +2056,15 @@ def _conversation_presentation_shape(
     """Close a few no-history prose contracts without changing turn authority."""
 
     semantic_text = explicit_non_action_body(text) or text
+    # cien-40 007/028: «traduce 'good evening' al español» recibía la forma de
+    # redacción de contenido, no la de traducción, así que el prompt del
+    # traductor —devolver la traducción y nada más— no llegaba nunca a los
+    # pedidos más corrientes. Un pedido de traducción es una traducción.
+    if re.match(
+        r"^[\s¿?¡!]*(?:traduc(?:e|i|ime|eme|ir|elo|ela|ela)|translate)\b",
+        _policy_guard_text(_strip_request_envelope(semantic_text)),
+    ):
+        return "translation"
     if conversation_only_content_request(semantic_text):
         roleplay = _policy_guard_text(_strip_request_envelope(semantic_text))
         return (
@@ -4972,6 +4981,40 @@ def _looks_like_negative_constraint(user_text: str) -> bool:
 
 def _looks_like_identity_question(user_text: str) -> bool:
     return read_request(user_text).has(INTENT_IDENTITY)
+
+
+# cien-40 007 «traduce 'good evening' al español» → «Buenas tardes»: el inglés
+# saluda a la noche donde el español saluda a la tarde. Son equivalencias fijas
+# de cortesía, no traducciones que dependan del contexto, así que se le dan
+# hechas al traductor. Lo que no esté aquí se traduce como siempre.
+_SET_PHRASE_TRANSLATIONS = {
+    "good morning": "buenos días",
+    "good afternoon": "buenas tardes",
+    "good evening": "buenas noches",
+    "good night": "buenas noches",
+    "see you": "nos vemos",
+    "see you later": "hasta luego",
+    "see you soon": "hasta pronto",
+    "goodbye": "adiós",
+    "thank you": "gracias",
+    "you are welcome": "de nada",
+    "excuse me": "perdón",
+    "i am sorry": "lo siento",
+}
+
+
+def _set_phrase_translation(user_text: str) -> tuple[str, str] | None:
+    """The quoted set phrase of a translation request and its fixed equivalent."""
+
+    current = str(user_text or "")
+    if re.search(r"traduc|translat", current, re.IGNORECASE) is None:
+        return None
+    quoted = re.search(r"['‘“\"«]([^'’”\"»]{2,40})['’”\"»]", current)
+    if quoted is None:
+        return None
+    phrase = " ".join(quoted.group(1).strip(" .!?,;:").casefold().split())
+    equivalent = _SET_PHRASE_TRANSLATIONS.get(phrase)
+    return (quoted.group(1).strip(), equivalent) if equivalent else None
 
 
 def _looks_like_refuse_question(user_text: str) -> bool:
@@ -10475,6 +10518,13 @@ class LlmRuntime:
                     ) + (
                         " " + CONVERSATION_FACT_PROVENANCE_PROMPT
                         if direct_knowledge else ""
+                    ) + (
+                        " El equivalente fijo de «" + _set_phrase[0]
+                        + "» en español es «" + _set_phrase[1]
+                        + "»: devuelve exactamente eso."
+                        if presentation_shape == "translation"
+                        and (_set_phrase := _set_phrase_translation(text))
+                        else ""
                     ),
                 },
                 *(
