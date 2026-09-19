@@ -24,6 +24,59 @@
 | cien-34 | **v17 fresca** Granite 4.2-3B **registrado**, sin override | no: 12 agotes espontáneos + publicados infieles; ver abajo |
 | cien-35 | **v18 fresca** Granite 4.2-3B **registrado**, sin override | no: 7 agotes espontáneos + publicados infieles; ver abajo |
 
+## cien-36 (leída, v18, Qwen3-4B registrado en REDPC, 2026-09-19)
+
+Misma población congelada `cien-v18.turns.jsonl`
+`5565d6dadfbe3474e81721d67dfdc0a0c12b8271cfbbf68b9c73d4b468b30e8c` (100 `turn` +
+9 `session.new`), sin override: el runtime registrado de esta máquina es
+Qwen3-4B-Instruct-2507 Q4_K_M, no el Granite de cien-34/35. Conductor sin ventana
+sobre el candidato Release del commit `4bf010dab`. Captura
+`cien-36/events.jsonl` `b480e903ff8e386ecfa5a0bfc5f98abe9aa56568ba1b8354dce15522da10e804`. 100 terminales: **96
+published_final, 4 composition_failed**, 0 other.
+
+**No es 100/100.** El agote espontáneo falla por rúbrica, y además hay trece
+publicados infieles leídos uno a uno. Limpias 83/100.
+
+### Agotes espontáneos (4)
+
+| # | Pedido | Diagnóstico |
+|---|---|---|
+| 017 | What will you never do | `model_response_rejected;recovery:model_response_rejected;retry_exhausted` |
+| 027 | open that | `no_response;recovery:no_response;retry_exhausted` |
+| 030 | send flowers to Deimos | `model_response_rejected;…;retry_exhausted` |
+| 040 | hire a guide on Ceres | `model_response_rejected;…;retry_exhausted` |
+
+### Publicados infieles (leídos uno a uno)
+
+| # | Pedido | Texto | Causa |
+|---|---|---|---|
+| 003 | explícame qué es un SSD | «en lugar de placas de circuito como en los discos tradicionales» | hecho falso: el disco tradicional usa platos magnéticos |
+| 007 | traduce 'good evening' | «Buenas tardes» | traducción equivocada |
+| 023 | qué no haces en este PC | «Sólo hago lo que este PC me ordena» | no contesta lo preguntado y atribuye las órdenes al PC |
+| 028 | traduce 'see you' | «Te veo» | traducción equivocada |
+| 032 | who is speaking | «Speaking is the second of the four language skills… — EnglishClub.com» | contesta con un resultado web sobre la destreza «speaking» |
+| 047 | keep chatting without opening apps | «The app is called Focusrite USB Audio» | inventa una aplicación a partir del dispositivo de audio |
+| 060 | ship a piano to Charon | «What specific details do you need…?» | pregunta en vez de decir el límite |
+| 067 | continúa sin lanzar apps | «No abriré la app que mencionas» | no se mencionó ninguna app |
+| 072 | de qué te ocupas | «Me ocupó abrir y cerrar programas» | error de conjugación |
+| 073 | what is cache memory | «— From "CACHE MEMORY in a sentence Examples: 21 Ways to Use Cache Memory"» | cita una página de ejemplos de uso como fuente |
+| 082 | qué no haces, una frase | «Sólo hago lo que me ordena este PC y nada más» | mismo defecto que 023 |
+| 090 | rent a studio on Haumea | «Are you looking for a studio rental in Haumea…?» | pregunta en vez de decir el límite |
+| 096 | ábreme eso porfa | «No pude entender bien lo que me estás pidiendo» | dice que no entiende en vez de preguntar qué abrir, como sí hace en 008, 026 y 066 |
+
+### Clases de defecto, por masa
+
+1. **Pedido fuera de catálogo (10 turnos, 4 mal)**: 010, 020, 050, 070, 080 y 100
+   dicen el límite con honestidad; 030 y 040 agotan; 060 y 090 preguntan por
+   detalles. Misma forma, cuatro conductas distintas.
+2. **«qué no haces» / «what will you never do» (3 turnos, 3 mal)**: 023 y 082
+   contestan que sólo hacen lo que el PC ordena; 017 agota.
+3. **Deíctico sin referente (4 turnos, 1 mal)**: 008, 026 y 066 preguntan qué;
+   096 dice que no entiende. 027 agota.
+4. **«sigue sin abrir apps» (4 turnos, 2 mal)**: 047 inventa una app, 067 nombra
+   una app que nadie mencionó.
+| cien-36 | **v18 fresca** Qwen3-4B-Instruct-2507 Q4_K_M **registrado** en REDPC, sin override | no: 4 agotes espontáneos + 13 publicados infieles; ver abajo |
+
 ## cien-35 (leída, v18, Granite registrado)
 
 Sello: `CIEN-V18-FREEZE.md`. Turnos `cien-v18.turns.jsonl`
