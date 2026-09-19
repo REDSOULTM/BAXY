@@ -1,0 +1,15 @@
+{
+  "schema": "c03-web1885-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (a clause handing the machine over is not the request, and entrar a is the same go-to speech act as anda a), on top of the WEB1885 build.",
+  "patch": "artifacts/comprobaciones/C03/WEB1885/SOURCE.patch",
+  "commits": [
+    "f815ec5a04399fb74dac730a6dbb2be5f327e8f0"
+  ],
+  "build": "BUILD1885 (C03-repairs1885-build/BUILD_READY.json; mente)",
+  "cause_measured": "El preambulo que cede el PC dejaba al turno sin efecto explicito y el verbo entrar no contaba como acto de peticion, de modo que la mision compuesta se resolvia como conversacion y el final negaba la capacidad.",
+  "change": "Se quita la clausula inicial que entrega la maquina cuando algo la sigue, y entrar, entrale y vete se suman a los verbos de ir.",
+  "measurement": "WEB1885: 3 de 5 casos aprobados: las dos variantes abrieron de verdad; el literal preguntó y el límite de capacidad siguió negando; 0 créditos. Las dos variantes proponen exactamente una browser.navigate.named, la raíz la aprueba con el navegador y la URL comprobados, se completa y se verifica con finalUrl https://itch.io/, y el final dice lo que hizo: la negación de capacidad que midió WEB1883 desaparece en los dos idiomas. El literal queda abierto porque su destino llega sin dominio.",
+  "credits": 0
+}

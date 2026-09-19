@@ -1554,3 +1554,7 @@ Información web actual pasa de 16/17 a 16/17 con investigar en internet la preg
 ## Actualización 2026-09-19 (WEB1883)
 
 Navegación y búsqueda web pasa de 44/46 a 44/46 con abrir el navegador nombrado en el sitio pedido tras un preambulo que cede el control del PC, sin negar la capacidad (commit dc7861a0, BUILD1883) (HEAD dc7861a0): 1 de 5 casos aprobados; las dos variantes y el límite de capacidad negaron una capacidad existente, 0 créditos. El preámbulo que cede el control del PC convierte una orden explícita y soportada en una negación de capacidad: Opera GX está instalada y browser.navigate.named quedó acreditada en WEB1805, y aun así los dos textos de variante dijeron que no podían; el literal no negó nada pero tampoco abrió, y preguntó si hacerlo.
+
+## Actualización 2026-09-19 (WEB1885)
+
+Navegación y búsqueda web pasa de 44/46 a 44/46 con abrir el navegador nombrado en el sitio pedido tras un preambulo que cede el control del PC, sin negar la capacidad (commit f815ec5a, BUILD1885) (HEAD f815ec5a): 3 de 5 casos aprobados: las dos variantes abrieron de verdad; el literal preguntó y el límite de capacidad siguió negando, 0 créditos. Las dos variantes proponen exactamente una browser.navigate.named, la raíz la aprueba con el navegador y la URL comprobados, se completa y se verifica con finalUrl https://itch.io/, y el final dice lo que hizo: la negación de capacidad que midió WEB1883 desaparece en los dos idiomas. El literal queda abierto porque su destino llega sin dominio.
