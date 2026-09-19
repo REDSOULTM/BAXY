@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Text.Json;
 using Windows.Globalization;
@@ -37,7 +38,15 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                 BitmapAlphaMode.Ignore);
             OcrResult recognized = await engine.RecognizeAsync(bitmap);
             cancellationToken.ThrowIfCancellationRequested();
-            WordHit? located = UniqueHit(recognized, label);
+            OcrResult? enhanced = null;
+            using (SoftwareBitmap? darker = Darkened(bitmap))
+            {
+                if (darker is not null)
+                    enhanced = await engine.RecognizeAsync(darker);
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+            WordHit? located = UniqueHit(recognized, enhanced, label);
             if (located is null)
                 return null;
             WordHit hit = located.Value;
@@ -58,7 +67,14 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                     cancellationToken).ConfigureAwait(false);
                 VisibleControlSurface.Delete(after.Value.Path);
             }
-            bool ok = surfaceObserved || changed;
+            // H0101: el diálogo de descarga de Steam dice «Instalar» tres veces
+            // —el título, el rótulo «INSTALAR EN:» y el botón—. Al pulsar el
+            // rótulo no pasó nada, pero la palabra seguía en pantalla y eso se
+            // daba por bueno: el turno publicó que el diálogo se había
+            // completado cuando seguía abierto y sin descargar nada. Que la
+            // etiqueta siga ahí no prueba nada; lo único que prueba un efecto
+            // es que la superficie cambie. Se sigue anotando lo observado.
+            bool ok = changed;
             JsonElement result = ExternalJson.Create(writer =>
             {
                 writer.WriteStartObject();
@@ -66,6 +82,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                 writer.WriteBoolean("ok", ok);
                 writer.WriteBoolean("effectObserved", true);
                 writer.WriteString("error", ok ? "" : "visible_button_postread_unchanged");
+                writer.WriteBoolean("labelStillOnScreen", surfaceObserved);
                 writer.WriteString("name", hit.Text);
                 writer.WriteString("controlIdentity", "ocr." + hit.CenterX + "." + hit.CenterY);
                 writer.WriteBoolean("absentOrDisabled", false);
@@ -173,17 +190,35 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                 BitmapAlphaMode.Ignore);
             OcrResult recognized = await engine.RecognizeAsync(bitmap);
             cancellationToken.ThrowIfCancellationRequested();
+            OcrResult? enhanced = null;
+            using (SoftwareBitmap? darker = Darkened(bitmap))
+            {
+                if (darker is not null)
+                    enhanced = await engine.RecognizeAsync(darker);
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var lines = new List<string>();
-            foreach (OcrLine line in recognized.Lines)
+            // La segunda pasada nombra lo que la primera no alcanza a leer, como
+            // el botón «Instalar» de Steam: blanco sobre azul saturado.
+            OcrResult[] readPasses = enhanced is null ? [recognized] : [recognized, enhanced];
+            foreach (OcrResult pass in readPasses)
             {
-                string text = line.Text.Trim();
-                if (text.Length == 0 || text.Length > 80 || !seen.Add(text))
-                    continue;
-                lines.Add(text);
+                foreach (OcrLine line in pass.Lines)
+                {
+                    string text = line.Text.Trim();
+                    if (text.Length == 0 || text.Length > 80 || !seen.Add(text))
+                        continue;
+                    lines.Add(text);
+                    if (lines.Count >= limit)
+                        break;
+                }
+
                 if (lines.Count >= limit)
                     break;
             }
+
             return lines.ToArray();
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException
@@ -197,27 +232,75 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         }
     }
 
-    private static WordHit? UniqueHit(OcrResult recognized, string label)
+    private static WordHit? UniqueHit(
+        OcrResult recognized,
+        OcrResult? enhanced,
+        string label)
     {
         string needle = Fold(label);
         if (needle.Length == 0)
             return null;
         HashSet<string> needles = Needles(needle);
+        OcrResult[] passes = enhanced is null ? [recognized] : [recognized, enhanced];
+        List<global::Windows.Foundation.Rect> words = [];
+        foreach (OcrResult pass in passes)
+        {
+            foreach (OcrLine everyLine in pass.Lines)
+            {
+                foreach (OcrWord everyWord in everyLine.Words)
+                    words.Add(everyWord.BoundingRect);
+            }
+        }
+
         List<WordHit> hits = [];
         List<double> heights = [];
-        foreach (OcrLine line in recognized.Lines)
+        List<bool> continues = [];
+        foreach (OcrResult pass in passes)
         {
-            foreach (OcrWord word in line.Words)
+            foreach (OcrLine line in pass.Lines)
             {
-                if (!needles.Contains(Fold(word.Text)))
-                    continue;
-                global::Windows.Foundation.Rect box = word.BoundingRect;
-                hits.Add(new WordHit(
-                    word.Text,
-                    (int)(box.X + box.Width / 2),
-                    (int)(box.Y + box.Height / 2)));
-                heights.Add(box.Height);
+                foreach (OcrWord word in line.Words)
+                {
+                    if (!needles.Contains(Fold(word.Text)))
+                        continue;
+                    global::Windows.Foundation.Rect box = word.BoundingRect;
+                    var hit = new WordHit(
+                        word.Text,
+                        (int)(box.X + box.Width / 2),
+                        (int)(box.Y + box.Height / 2));
+                    // La misma palabra leída en las dos pasadas es una sola
+                    // aparición, no dos: se cuenta una vez.
+                    if (hits.Any(seen => Math.Abs(seen.CenterX - hit.CenterX) <= 4
+                        && Math.Abs(seen.CenterY - hit.CenterY) <= 4))
+                    {
+                        continue;
+                    }
+
+                    hits.Add(hit);
+                    heights.Add(box.Height);
+                    continues.Add(ContinuesToTheRight(box, words));
+                }
             }
+        }
+        // H0101: en el diálogo de descarga de Steam la palabra «Instalar» sale
+        // tres veces —el título, el rótulo «INSTALAR EN:» y el botón—, y el
+        // rótulo, escrito en versalitas pequeñas, ganaba la regla del cuerpo
+        // menor. Un rótulo así no es una etiqueta de control: sigue con más
+        // texto pegado a su derecha, en su misma fila. La de un control termina
+        // ahí. Cuando alguna termina, las que siguen se descartan.
+        if (continues.Contains(false) && continues.Contains(true))
+        {
+            List<WordHit> kept = [];
+            List<double> keptHeights = [];
+            for (int index = 0; index < hits.Count; index++)
+            {
+                if (continues[index])
+                    continue;
+                kept.Add(hits[index]);
+                keptHeights.Add(heights[index]);
+            }
+            hits = kept;
+            heights = keptHeights;
         }
         if (hits.Count == 1)
             return hits[0];
@@ -270,6 +353,75 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                 (int)(box.Y + box.Height / 2)));
         }
         return hits.Count == 1 ? hits[0] : null;
+    }
+
+    // H0101: el boton «Instalar» del dialogo de Steam es texto blanco sobre azul
+    // saturado. El OCR de Windows, afinado para tinta oscura sobre fondo claro,
+    // no lo lee: en la captura sólo encuentra el título y el rótulo «INSTALAR
+    // EN:». Medido, una copia en gris con gamma 2,5 —que oscurece los medios
+    // tonos y separa la letra del fondo— sí lo encuentra. De modo que se mira
+    // dos veces: la imagen tal cual y esa copia. Nada se envía a ninguna parte.
+    private static readonly byte[] DarkenedRamp = BuildRamp();
+
+    private static byte[] BuildRamp()
+    {
+        var ramp = new byte[256];
+        for (int level = 0; level < 256; level++)
+            ramp[level] = (byte)Math.Round(255 * Math.Pow(level / 255.0, 2.5));
+        return ramp;
+    }
+
+    private static SoftwareBitmap? Darkened(SoftwareBitmap source)
+    {
+        try
+        {
+            int width = source.PixelWidth;
+            int height = source.PixelHeight;
+            var pixels = new byte[4 * width * height];
+            source.CopyToBuffer(pixels.AsBuffer());
+            for (int index = 0; index + 3 < pixels.Length; index += 4)
+            {
+                int luminance = (int)(0.114 * pixels[index]
+                    + 0.587 * pixels[index + 1]
+                    + 0.299 * pixels[index + 2]);
+                byte value = DarkenedRamp[luminance < 0 ? 0 : luminance > 255 ? 255 : luminance];
+                pixels[index] = value;
+                pixels[index + 1] = value;
+                pixels[index + 2] = value;
+            }
+
+            var darker = new SoftwareBitmap(
+                BitmapPixelFormat.Bgra8, width, height, BitmapAlphaMode.Ignore);
+            darker.CopyFromBuffer(pixels.AsBuffer());
+            return darker;
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or InvalidOperationException or OutOfMemoryException)
+        {
+            return null;
+        }
+    }
+
+    // Otra palabra en la misma fila, pegada a la derecha: menos de un cuerpo y
+    // medio de separación y con los centros verticales a menos de media altura.
+    // Así se distingue «INSTALAR EN:» —que sigue— del botón «Instalar» y del
+    // título, que terminan ahí; «Cancelar», a 215 px, no cuenta como pegada.
+    private static bool ContinuesToTheRight(
+        global::Windows.Foundation.Rect box,
+        IReadOnlyList<global::Windows.Foundation.Rect> words)
+    {
+        double centre = box.Y + box.Height / 2;
+        double right = box.X + box.Width;
+        foreach (global::Windows.Foundation.Rect other in words)
+        {
+            if (other.X <= box.X && other.Y <= box.Y)
+                continue;
+            if (Math.Abs(other.Y + other.Height / 2 - centre) > box.Height / 2)
+                continue;
+            if (other.X >= right && other.X - right <= box.Height * 1.5)
+                return true;
+        }
+        return false;
     }
 
     private static string Fold(string value)

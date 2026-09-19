@@ -11228,6 +11228,11 @@ def _is_direct_request(text: str) -> bool:
 
     if console_prompt_command(text):
         return True
+    # H0101: «completalo haciendo click en instalar». La cláusula de gerundio
+    # nombra la operación y su etiqueta, de modo que el pedido es directo
+    # aunque el verbo principal no esté en ninguna lista.
+    if _gerund_click_label(text) is not None:
+        return True
     topic = _machine_status_topic(text)
     if topic is not None:
         text = topic.group("body")
@@ -16830,6 +16835,46 @@ _VISIBLE_CLICK_WEB_DESTINATION = re.compile(
     r"wikipedia|https?://|www\.|\.com\b|\.org\b|\.net\b|\.io\b",
     re.IGNORECASE,
 )
+# H0101 «Hay un diálogo de descarga de doom eternal abierto en steam, completalo
+# haciendo click en instalar»: el verbo principal —«completalo»— no nombra
+# ninguna operación, y el pedido moría sin leerse. Pero la frase sí dice qué
+# hacer: la cláusula de gerundio nombra el clic y su etiqueta. Cuando está, es
+# ella el acto de habla, venga el verbo principal que venga.
+_GERUND_CLICK = re.compile(
+    r"\b(?:haciendo|dando|pulsando|apretando|presionando)\s+(?:un\s+|el\s+)?"
+    r"(?:clic|click|clics|clicks)\s+(?:en|sobre|a)\s+"
+    r"(?:(?:el|la|los|las)\s+)?"
+    r"(?:(?:boton|button|control|enlace|link|pestana|tab|seccion|section)\s+)?"
+    r"(?:(?:el|la|los|las)\s+)?"
+    r"(?P<label>[^,;.!?]{1,80}?)"
+    r"(?:\s+(?:boton|button|control|enlace|link|pestana|tab|seccion|section))?"
+    r"[\s?!.]*$"
+    r"|\bby\s+clicking\s+(?:on\s+)?"
+    r"(?:the\s+)?(?:(?:button|control|link|tab|section)\s+)?(?:the\s+)?"
+    r"(?P<label_en>[^,;.!?]{1,80}?)"
+    r"(?:\s+(?:button|control|link|tab|section))?"
+    r"[\s?!.]*$",
+)
+
+
+def _gerund_click_label(text: str) -> str | None:
+    """Name the control of a «haciendo click en X» clause, or nothing."""
+
+    folded = _fold(text)
+    if _has(folded, r"\bno\s+(?:lo|la|los|las)?\s*\w*\s*haciendo\s+cl"):
+        return None
+    found = _GERUND_CLICK.search(folded)
+    if found is None:
+        return None
+    label = (found.group("label") or found.group("label_en") or "").strip(" \t\"'`")
+    if (
+        not label
+        or len(label.split()) > 6
+        or _VISIBLE_CLICK_WEB_DESTINATION.search(label) is not None
+        or re.search(r"\b(?:tecla|teclas|key|keys|teclado|keyboard)\b", label) is not None
+    ):
+        return None
+    return label
 
 
 def _visible_click_label(
@@ -16850,6 +16895,9 @@ def _visible_click_label(
         rf"^([¿?¡!\s]*){_VISIBLE_CLICK_APP_CONTEXT}\s+", r"\1", _fold(text), count=1,
     )
     text = re.sub(rf"\s+{_VISIBLE_CLICK_APP_CONTEXT}(?=[\s?!.]*$)", "", text, count=1)
+    gerund = _gerund_click_label(text)
+    if gerund is not None:
+        return gerund
     request = _match(
         text,
         (
