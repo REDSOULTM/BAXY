@@ -5897,6 +5897,71 @@ def _search_report_sources(payload: dict, user_text: str) -> list[str]:
     return sources
 
 
+def _search_results_of(situation: dict) -> list:
+    """Los resultados de una busqueda, venga la situacion entera o el payload visible."""
+
+    results = _merged_observed(situation).get("results")
+    if not isinstance(results, list):
+        seen = situation.get("seen") if isinstance(situation, dict) else None
+        results = seen.get("results") if isinstance(seen, dict) else None
+    return results if isinstance(results, list) else []
+
+
+def _search_pages_report(situation: dict, language: str, limit: int = 3) -> str:
+    """Las paginas que la busqueda devolvio, nombradas: titulo y sitio."""
+
+    results = _search_results_of(situation)
+    if not results:
+        return ""
+    named: list[str] = []
+    for item in results:
+        if not isinstance(item, dict):
+            continue
+        title = " ".join(str(item.get("title") or "").split())
+        title = title.strip(" " + chr(34) + chr(171) + chr(187) + chr(8220) + chr(8221))[:90]
+        url = str(item.get("url") or "").strip()
+        host = (urlparse(url).hostname or "").casefold() if url else ""
+        host = host[4:] if host.startswith("www.") else host
+        if not title or not host:
+            continue
+        named.append(
+            chr(171) + title + chr(187)
+            + (" on " if language == "en" else " en ")
+            + host
+        )
+        if len(named) >= limit:
+            break
+    if not named:
+        return ""
+    joiner = " and " if language == "en" else " y "
+    listed = (", ".join(named[:-1]) + joiner + named[-1]) if len(named) > 1 else named[0]
+    return (
+        "I searched the web and found these pages: " + listed + "."
+        if language == "en"
+        else "Busqué en internet y encontré estas páginas: " + listed + "."
+    )
+
+
+def _search_result_hosts(situation: dict, limit: int = 3) -> list[str]:
+    """Los sitios distintos que esta búsqueda devolvió, en orden."""
+
+    results = _search_results_of(situation)
+    hosts: list[str] = []
+    for item in results:
+        if not isinstance(item, dict):
+            continue
+        url = item.get("url")
+        if not isinstance(url, str) or not url.strip():
+            continue
+        host = (urlparse(url.strip()).hostname or "").casefold()
+        host = host[4:] if host.startswith("www.") else host
+        if host and host not in hosts:
+            hosts.append(host)
+        if len(hosts) >= limit:
+            break
+    return hosts
+
+
 def _search_report_without_source(text: str, payload: dict, user_text: str) -> bool:
     """A verified search was reported without naming a single page of it."""
 
@@ -7094,6 +7159,15 @@ def compose_visible_defect(
     # Un hueco por rellenar no es una respuesta: «La hora actual es [hora
     # actual en español].» (conocimiento-3/t3).
     placeholder = re.search(r"\[[^\]]{3,}\]|\{[^}]{3,}\}|<[a-z ]{3,}>", stripped)
+    # H0463: un informe de busqueda cita el JSON que trae el fragmento del
+    # resultado ({"620": {"success":true, ...}}). Un hueco de plantilla se
+    # escribe con palabras; un objeto JSON empieza por comilla o trae «":».
+    # Sin esta salvedad los tres candidatos caian en copied_instruction y el
+    # turno terminaba sin respuesta.
+    if placeholder is not None and re.match(
+        r"\{\s*\"|\{[^}]*\"\s*:", placeholder.group(0)
+    ) is not None:
+        placeholder = None
     if placeholder is not None and not _bracket_is_observed(placeholder.group(0), facts):
         # MAIL1853 «escribile un mail a [EMAIL_REDACTED]»: a bracket the person
         # wrote themselves, in this turn or in an earlier request of the same
@@ -15113,6 +15187,21 @@ class LlmRuntime:
                 "ningún dato que ningún fragmento contenga; si ningún fragmento "
                 "dice qué es, nombra las páginas encontradas. Sin pregunta al final."
             )
+            # H0060: sin los sitios delante, el modelo escribe «múltiples fuentes»
+            # y no nombra ninguna, que es justo lo que esta fila pide.
+            _entity_hosts = _search_result_hosts(visible_situation)
+            if _entity_hosts:
+                instruct(
+                    " The sites of those pages are: "
+                    + ", ".join(_entity_hosts)
+                    + ". Write the one you use exactly like that; never say "
+                    "«several sources» without naming one."
+                    if response_language == "en"
+                    else " Los sitios de esas páginas son: "
+                    + ", ".join(_entity_hosts)
+                    + ". Escribe tal cual el que uses; nunca digas "
+                    "«múltiples fuentes» sin nombrar ninguna."
+                )
         elif _search_results_text(visible_situation) is not None:
             # WEB1445: the person asked a live question; the results are pages,
             # not the answer itself. Say what was found, never what it might say.
@@ -15873,14 +15962,33 @@ class LlmRuntime:
                 else "Dilo en primera persona del presente: «me ocupo de …», nunca "
                 "«me ocupó», que dice que algo te ocupó a vos."
             ),
+            # H0463: cuando el sitio se llama casi como lo que la persona pidió
+            # (store.steampowered.com para un pedido que dice «Steam»), el modelo
+            # escribe «según Steam», que no nombra la página, y los tres
+            # candidatos caen en la misma regla. La pista nombra los sitios que
+            # esta búsqueda devolvió, que el turno ya tiene delante.
             "search_report_without_source": (
-                "Name the pages: give the title and the site of each page whose fact "
-                "you report (for example «according to example.com»); say nothing no "
-                "result states."
-                if response_language == "en"
-                else "Nombra las páginas: da el título y el sitio de cada página cuyo dato "
-                "cuentes (por ejemplo «según ejemplo.com»); no digas nada que ningún "
-                "resultado afirme."
+                (
+                    "Name the pages: give the title and the site of each page whose "
+                    "fact you report, writing the site exactly as it reads here: "
+                    + ", ".join(_hosts_for_hint)
+                    + ". Say nothing no result states."
+                    if response_language == "en"
+                    else "Nombra las páginas: da el título y el sitio de cada página "
+                    "cuyo dato cuentes, escribiendo el sitio tal cual se lee aquí: "
+                    + ", ".join(_hosts_for_hint)
+                    + ". No digas nada que ningún resultado afirme."
+                )
+                if (_hosts_for_hint := _search_result_hosts(situation))
+                else (
+                    "Name the pages: give the title and the site of each page whose fact "
+                    "you report (for example «according to example.com»); say nothing no "
+                    "result states."
+                    if response_language == "en"
+                    else "Nombra las páginas: da el título y el sitio de cada página cuyo dato "
+                    "cuentes (por ejemplo «según ejemplo.com»); no digas nada que ningún "
+                    "resultado afirme."
+                )
             ),
             "recalled_as_own": (
                 "The record is about the person: say it in the second person («your name is …», «you like …»)."
@@ -16335,4 +16443,12 @@ class LlmRuntime:
             required_actions=required_actions,
             required_words=required_words,
         )
+        # Los tres candidatos cayeron. Si lo que hubo fue una busqueda
+        # verificada, sus paginas bastan para decir la verdad sin el modelo:
+        # el turno informa lo encontrado en vez de morir. Pasa por las mismas
+        # reglas que cualquier candidato.
+        pages_report = _search_pages_report(visible_situation, response_language)
+        if pages_report and publishable(pages_report):
+            record_stage("pages_fallback", pages_report, pages_report, third, "", True)
+            return pages_report
         return ""
