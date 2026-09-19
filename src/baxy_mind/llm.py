@@ -5775,6 +5775,73 @@ def _search_results_text(payload: dict) -> str | None:
     return "\n".join(parts) if parts else None
 
 
+# WEB1877 H0060: «Se encontraron varios artículos… Una de las páginas indica…
+# Otras fuentes describen…» reported what the pages say and named none of them,
+# so nothing in it can be checked; the two variants of the same shape named
+# «laverdadnoticias.com», «problemashoy.es» and the titles. The instruction
+# already asked for the title and the site of each fact; this is what enforces
+# it. A site label the person used themself («whatsapp» in «me falla mucho
+# whatsapp») is their word, not an attribution, so it does not count.
+_SEARCH_SOURCE_GENERIC_LABELS = frozenset(
+    {"www", "com", "net", "org", "edu", "gov", "web", "site", "blog", "news", "page", "pages"}
+)
+
+
+def _search_report_sources(payload: dict, user_text: str) -> list[str]:
+    """Every way the report may name one of the pages the search returned."""
+
+    seen = payload.get("seen")
+    results = seen.get("results") if isinstance(seen, dict) else None
+    if not isinstance(results, list):
+        return []
+    folded_user = _reading_fold(user_text)
+    sources: list[str] = []
+    for item in results:
+        if not isinstance(item, dict):
+            continue
+        url = item.get("url")
+        if isinstance(url, str) and url.strip():
+            host = (urlparse(url.strip()).hostname or "").casefold()
+            host = host[4:] if host.startswith("www.") else host
+            if host:
+                sources.append(host)
+                for label in host.split("."):
+                    if (
+                        len(label) >= 5
+                        and label not in _SEARCH_SOURCE_GENERIC_LABELS
+                        and label not in folded_user
+                    ):
+                        sources.append(label)
+        title = item.get("title")
+        if isinstance(title, str) and title.strip():
+            words = [word for word in _reading_fold(title).split() if len(word) >= 3]
+            for start in range(max(0, len(words) - 3)):
+                sources.append(" ".join(words[start:start + 4]))
+    return sources
+
+
+def _search_report_without_source(text: str, payload: dict, user_text: str) -> bool:
+    """A verified search was reported without naming a single page of it."""
+
+    if _search_results_text(payload) is None:
+        return False
+    # Only the search REPORT is judged here. A who/what-is question and a
+    # request for a curiosity are composed by their own branches, whose finals
+    # answer with a snippet instead of listing pages (KNOWLEDGE1475, 1509,
+    # 1511, credited that way), and this rule never reaches them.
+    if (
+        _entity_lookup_query(user_text or "") is not None
+        or _research_question_subject(user_text or "") is not None
+        or curiosity_request(user_text or "")
+    ):
+        return False
+    sources = _search_report_sources(payload, user_text)
+    if not sources:
+        return False
+    folded = _reading_fold(text)
+    return not any(source in folded for source in sources)
+
+
 def _verified_search_results(situation: dict) -> bool:
     """A completed, verified web.search whose observation carries results."""
 
@@ -5841,6 +5908,9 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     window_defect = window_fact_defect(text, payload, user_text)
     if window_defect:
         return window_defect
+    if _search_report_without_source(text, payload, user_text):
+        # WEB1877 H0060: the pages were found and reported, but none was named.
+        return "search_report_without_source"
     folded = _reading_fold(text)
     seen = payload.get("seen")
     # A wifi reading observes the WLAN connection, not internet reachability.
@@ -15658,6 +15728,15 @@ class LlmRuntime:
             == _accent_folded_with_punctuation(str(seen_send_for_hint.get("forcedDestination") or ""))
         )
         retry_hint = {
+            "search_report_without_source": (
+                "Name the pages: give the title and the site of each page whose fact "
+                "you report (for example «according to example.com»); say nothing no "
+                "result states."
+                if response_language == "en"
+                else "Nombra las páginas: da el título y el sitio de cada página cuyo dato "
+                "cuentes (por ejemplo «según ejemplo.com»); no digas nada que ningún "
+                "resultado afirme."
+            ),
             "recalled_as_own": (
                 "The record is about the person: say it in the second person («your name is …», «you like …»)."
                 if response_language == "en"
