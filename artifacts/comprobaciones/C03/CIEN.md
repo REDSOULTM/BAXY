@@ -24,6 +24,41 @@
 | cien-34 | **v17 fresca** Granite 4.2-3B **registrado**, sin override | no: 12 agotes espontáneos + publicados infieles; ver abajo |
 | cien-35 | **v18 fresca** Granite 4.2-3B **registrado**, sin override | no: 7 agotes espontáneos + publicados infieles; ver abajo |
 
+## cien-45 y cien-46 (leídas, v18, Qwen3-4B registrado, 2026-09-19)
+
+Misma población congelada y mismo runtime. Capturas
+`cien-45/events.jsonl` `3affe2bf294c4fc817c4c6f46aa2a9023c16f3be9edfa202e4f74cdbe6f7c65f` y
+`cien-46/events.jsonl` `f3949e969a59a8e09119b25312a1eb4936ecb4e60801b4d03f573a338534d4aa`.
+
+| Corrida | Publicadas | Agotes | Limpias | Qué la separó de la anterior |
+|---|---:|---:|---:|---|
+| cien-45 | 99 | 1 | 99 | control tras los arreglos del informe de búsqueda y del lector de idioma |
+| cien-46 | **100** | **0** | **100** | un pedido ambiguo pregunta aunque los tres candidatos caigan |
+
+### El 027 y por qué no se veía solo
+
+`open that` contesta «What do you want me to open?» cinco de cinco veces en sesión
+limpia. Dentro de su bloque —seis turnos antes, el último «ábreme eso»— murió en cien-41
+y volvió a morir en cien-45, y al reproducir el bloque entero murió dos de tres veces. Los
+tres candidatos devolvían «This is outside what I do on this PC», el veto era correcto —un
+pedido ambiguo se contesta preguntando— y detrás no había ninguna salida.
+
+Es la misma forma del defecto que el informe de búsqueda sin respuesta, y se arregla
+igual: la lista de pedidos ambiguos es cerrada y corta, así que la pregunta se arma sin
+pedírsela al modelo. Si los tres candidatos caen, el turno pregunta.
+
+**Medir el bloque, no el turno.** Un turno que pasa aislado y muere en la corrida no es
+azar: es el contexto de su bloque. Reproducir el bloque entero es lo que convirtió esto en
+una causa localizable.
+
+### cien-46 contra cien-44
+
+Las dos son 100/100. Leída cien-44 entera a mano, cien-46 se leyó contra ella: nueve
+líneas distintas, todas reformulaciones. Dos se comprobaron contra sus hechos. «Son las 5
+horas y 17 minutos» es verbosa pero cierta. «This is explained in the GeeksforGeeks
+article on computer science fundamentals» describe la página por su propia url,
+`geeksforgeeks.org/computer-science-fundamentals/`: no inventa el tema, lo lee.
+
 ## cien-41 a cien-44 (leídas, v18, Qwen3-4B registrado, 2026-09-19)
 
 Misma población congelada `cien-v18.turns.jsonl` y mismo runtime. Capturas

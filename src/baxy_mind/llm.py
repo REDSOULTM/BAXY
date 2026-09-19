@@ -4991,6 +4991,34 @@ def _looks_like_ambiguous_action(user_text: str) -> bool:
     return read_request(user_text).has(INTENT_AMBIGUOUS_ACTION)
 
 
+# cien-41 y cien-45, turno 027: dentro de su bloque el modelo contesta el
+# pedido ambiguo negando en vez de preguntar, los tres candidatos caen en el
+# veto correcto y el turno termina sin respuesta. La lista de pedidos
+# ambiguos es cerrada, asi que la pregunta se arma sin el modelo.
+_AMBIGUOUS_ACTION_QUESTIONS = (
+    (("abrir", "abre", "abreme", "open"),
+     "What do you want me to open?", "¿Qué quieres que abra?"),
+    (("cerrar", "cierra", "close"),
+     "What do you want me to close?", "¿Qué quieres que cierre?"),
+)
+
+
+def _ambiguous_action_question(user_text: str, language: str) -> str:
+    """La pregunta que le toca a un pedido sin objeto, sin pasar por el modelo."""
+
+    if not _looks_like_ambiguous_action(user_text):
+        return ""
+    folded = _reading_fold(user_text)
+    for verbs, english, spanish in _AMBIGUOUS_ACTION_QUESTIONS:
+        if any(re.search(r"(?<!\w)" + verb, folded) for verb in verbs):
+            return english if language == "en" else spanish
+    return (
+        "What exactly do you want me to do?"
+        if language == "en"
+        else "¿Qué quieres que haga exactamente?"
+    )
+
+
 def _looks_like_continue_constraint(user_text: str) -> bool:
     return read_request(user_text).has(INTENT_CONTINUE_CONSTRAINT)
 
@@ -16526,6 +16554,13 @@ class LlmRuntime:
         # verificada, sus paginas bastan para decir la verdad sin el modelo:
         # el turno informa lo encontrado en vez de morir. Pasa por las mismas
         # reglas que cualquier candidato.
+        ambiguous_question = _ambiguous_action_question(user_text, response_language)
+        if ambiguous_question and publishable(ambiguous_question):
+            record_stage(
+                "ambiguous_fallback", ambiguous_question, ambiguous_question,
+                third, "", True,
+            )
+            return ambiguous_question
         pages_report = _search_pages_report(visible_situation, response_language)
         if pages_report and publishable(pages_report):
             record_stage("pages_fallback", pages_report, pages_report, third, "", True)

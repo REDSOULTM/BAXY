@@ -50,6 +50,7 @@ _ES_WORDS = frozenset(
     antes aquello aqui asi aunque ayer borra buenas buenos busca cada
     cancelar cerrada cerrado cierra cierre como con confirmar continuar contra crea cual cuales cuando cuanto cuenta
     cuentame de dejar del desde dias dice dices dime donde dos durante el
+    en aprieta apreta apretar apriete pulsa pulsar presiona presionar clic
     ella ellas ellos encontrar encuentra entendi entiendo entonces era explica explicame
     eres esa ese eso escrita escrito esta estan este esto estoy fue gracias guardada guardado hace hacer
     haces hacia han hasta haz hola hora horas hoy igual incluso la las
@@ -351,8 +352,26 @@ def _explicit_language(folded: str) -> str | None:
     return None
 
 
+# H0096 «aprieta en Among Us»: el nombre del juego votaba en ingles y el
+# pedido se contestaba en ingles. Una palabra con mayuscula que no empieza
+# oracion es un nombre propio, y un nombre no dice en que idioma habla la
+# persona.
+
+
+def _proper_name_tokens(text: str) -> set[str]:
+    """Palabras con mayuscula que no abren oracion, plegadas."""
+
+    names: set[str] = set()
+    for sentence in re.split(r"[.!?\u00a1\u00bf]+", str(text or "")):
+        words = re.findall(r"[^\W\d_]+", sentence, re.UNICODE)
+        for word in words[1:]:
+            if word[:1].isupper() and not word.isupper():
+                names.update(re.findall(r"[a-z]+", fold(word)))
+    return names
+
+
 def _language_evidence(text: str, folded: str) -> tuple[int, int]:
-    tokens = set(re.findall(r"[a-z]+", folded))
+    tokens = set(re.findall(r"[a-z]+", folded)) - _proper_name_tokens(text)
     spanish = len(tokens & _ES_WORDS)
     english = len(tokens & _EN_WORDS)
     spanish += 2 * sum(
