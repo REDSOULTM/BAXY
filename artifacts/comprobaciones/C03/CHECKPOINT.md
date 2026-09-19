@@ -1,3 +1,25 @@
+## DISCORD1869 — estado vigente 2026-09-19T03:20:50.563742+00:00
+
+Parcial: 6 aprobados, 1 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 678/742 | 64 | 0 | >=562 | 13/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 560 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); DISCORD1869 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: DISCORD1869: 7 ejecutados, 6 aprobados, 1 fallidos, 2 créditos (índices [0, 1]); Mensajería 28/31. Siguiente: panel grande de mensajería (Musica y Valeria) sobre el mismo mecanismo.
+
+Evidencia: `artifacts/comprobaciones/C03/DISCORD1869/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 156.17 s acumulados; pico GPU 3492.93 MiB; pico RAM 2496.50 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 7; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque DISCORD1869 precedente. -->
+
 ## MAIL1867 — estado vigente 2026-09-19T02:41:37.510864+00:00
 
 Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

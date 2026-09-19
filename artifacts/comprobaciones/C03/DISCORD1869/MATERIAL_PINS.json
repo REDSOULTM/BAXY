@@ -1,0 +1,96 @@
+{
+  "schema": "discord1869-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1869-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-discord1869-instrument-v1",
+  "seal_sha256": "b38be236ebaaa47f19447f5817b77237b88516d7901dce9fa2128722848ebae8",
+  "runner_sha256": "db3a0d20272313a9dd73e4c68e1fbdbca5185ad53943ff10d385f724999aecdf",
+  "transport_seal_sha256": "4c46ea68ec2ce9cbc081e154a7f99e4e67f7d3a5aefebdfb35c295fee2fa17e8",
+  "files": {
+    "panel.json": "55df84b0f00ee2553cffea1a9c17b3eafd7de5b3de82544d2d9e511261073c30",
+    "turns.jsonl": "bdd80b8d2eb4b516c26f9588a77a33639a75814ec30e8185d4f26ad568c35a78",
+    "case-map.json": "9b7cd30419e0361c72b7158e0842579146847166b88f49458560a6341d6706b8",
+    "PLAN.md": "e5d293aef4122d43bd72e1f7e854a5f6dc8d7be627ddfed9b914340b8d39f37c"
+  },
+  "counts": {
+    "cases": 7,
+    "historical_literals": 3,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 14,
+    "session_controls": 7,
+    "ordinary_turns": 2,
+    "reviewed_turns": 5,
+    "maximum_reportable_terminals": 12,
+    "maximum_internal_confirmations": 5
+  },
+  "kind_counts": {
+    "historical_literal": 3,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0318",
+      "kind": "historical_literal",
+      "group": "msg_send",
+      "credit_behavior": "msg_send",
+      "text_sha256": "683efc984a827464e9e737ac2b9c2047b6e017e11a57da2de04574103fd732fc",
+      "criterion_sha256": "fa3269a43471fcd3e469732dac1622f3ead809bcc67a494371d2abfcf9c6031a"
+    },
+    {
+      "index": 1,
+      "case_id": "H0340",
+      "kind": "historical_literal",
+      "group": "msg_send",
+      "credit_behavior": "msg_send",
+      "text_sha256": "6fe77ca01fe6fb3f28f5b7484afd87f3f5d1e489edfc9559bbda0b11b2d559b4",
+      "criterion_sha256": "fa3269a43471fcd3e469732dac1622f3ead809bcc67a494371d2abfcf9c6031a"
+    },
+    {
+      "index": 2,
+      "case_id": "H0394",
+      "kind": "historical_literal",
+      "group": "msg_send",
+      "credit_behavior": "msg_send",
+      "text_sha256": "8727c36a00056e52330fc240d2c0e701af488430ccc552ed8a7bc82f4dec9760",
+      "criterion_sha256": "fa3269a43471fcd3e469732dac1622f3ead809bcc67a494371d2abfcf9c6031a"
+    },
+    {
+      "index": 3,
+      "case_id": "discord1869-dev-01",
+      "kind": "original_development_variant",
+      "group": "msg_send",
+      "credit_behavior": "msg_send",
+      "text_sha256": "41583dc7f528c64326c6b54eb7761d81e84b2743545beca367bd0c9aa3794804",
+      "criterion_sha256": "fa3269a43471fcd3e469732dac1622f3ead809bcc67a494371d2abfcf9c6031a"
+    },
+    {
+      "index": 4,
+      "case_id": "discord1869-dev-02",
+      "kind": "original_development_variant",
+      "group": "msg_send",
+      "credit_behavior": "msg_send",
+      "text_sha256": "706afb4e2781aed0412472d0428722b3b9b7d8ee1f4489272afecf01e77e3d55",
+      "criterion_sha256": "fa3269a43471fcd3e469732dac1622f3ead809bcc67a494371d2abfcf9c6031a"
+    },
+    {
+      "index": 5,
+      "case_id": "discord1869-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "e1d3aa05b16ebc75993ab941feb2dde8c46cb25d75df8d7466ce026ed3d5f784",
+      "criterion_sha256": "86c3c20adbe53615128899e34c79fd3a0880fb6209ce728c58e6f2aca500087b"
+    },
+    {
+      "index": 6,
+      "case_id": "discord1869-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "986d7f7bbfdbab212792b2007a812865abb2061a681aa0fa59a80bd9fecef384",
+      "criterion_sha256": "73161b7f1d3c58dca07a891f1bf75f788f0b3294aaec1bf70f0ae05bb5a13483"
+    }
+  ]
+}
