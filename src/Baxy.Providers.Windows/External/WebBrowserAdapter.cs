@@ -289,8 +289,14 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         CdpStreamingPlaybackResult playback = await _browser.PlayNetflixAsync(
             title, cancellationToken).ConfigureAwait(false);
         if (!playback.Verified)
+        {
+            // Un fallo que no dice donde se quedo obliga a adivinar. Se anota la
+            // ultima pagina observada, que es lo que separa «no eligio perfil» de
+            // «no encontro la tarjeta» y de «no vio avanzar el video».
+            RecordStreamingRejection(title, playback);
             return effectBoundary.Failure(
                 operation, playback.ErrorCode, playback.EffectObserved);
+        }
         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
         {
             writer.WriteStartObject(); writer.WriteNumber("version", 1);
@@ -303,6 +309,36 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteString("authority", "netflix_cdp_video_progress_postread");
             writer.WriteEndObject();
         }), playback.EffectObserved);
+    }
+
+    private void RecordStreamingRejection(string title, CdpStreamingPlaybackResult playback)
+    {
+        if (_searchDiagnosticPath is null)
+            return;
+        try
+        {
+            string path = Path.Combine(
+                Path.GetDirectoryName(_searchDiagnosticPath)!,
+                "streaming-playback-rejections.jsonl");
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+            string line = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteString("schema", "baxy.streaming-playback-rejection.v1");
+                writer.WriteString("utc", DateTimeOffset.UtcNow.ToString("o"));
+                writer.WriteString("title", title);
+                writer.WriteString("error", playback.ErrorCode);
+                writer.WriteString("lastUrl", playback.FinalUrl);
+                writer.WriteString("lastPageTitle", playback.PageTitle);
+                writer.WriteEndObject();
+            }).GetRawText();
+            File.AppendAllText(path, line + Environment.NewLine, Encoding.UTF8);
+        }
+        catch (Exception exception) when (exception is IOException
+            or UnauthorizedAccessException or ArgumentException)
+        {
+            // Un diagnostico que no se puede escribir no cambia el resultado.
+        }
     }
 
     private async ValueTask<ExternalCapabilityReceipt> PlayYouTubeAsync(

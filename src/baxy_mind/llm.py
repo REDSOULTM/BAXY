@@ -8429,6 +8429,18 @@ def compose_visible_defect(
             and situation.get("succeeded") is True
             and observed_dict.get("playbackStatus") == "playing"
             and isinstance(observed_dict.get("title"), str)
+        ) or (
+            # Las filas de vídeo «pon Stranger Things en Netflix»: la
+            # reproducción en la sesión de streaming nombra lo que se ve por su
+            # título observado, igual que Spotify o el reproductor local. Sin
+            # estar aquí, el guardián exigía además la palabra «título» en la
+            # respuesta, y los tres borradores —«Ya está reproduciendo Stranger
+            # Things en Netflix»— morían en missing_name con el vídeo avanzando.
+            operation == "streaming.play.named"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and observed_dict.get("playbackStatus") == "playing"
+            and isinstance(observed_dict.get("title"), str)
         )
         scheduled_due = _verified_notification_due(situation)
         title = observed_dict.get("title")
