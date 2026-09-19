@@ -1,0 +1,15 @@
+{
+  "schema": "c03-limits1895-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (a console prompt line with its command is a command run and a direct request), on top of the LIMITS1895 build.",
+  "patch": "artifacts/comprobaciones/C03/LIMITS1895/SOURCE.patch",
+  "commits": [
+    "f815ec5a04399fb74dac730a6dbb2be5f327e8f0"
+  ],
+  "build": "BUILD1895 (C03-repairs1895-build/BUILD_READY.json; mente)",
+  "cause_measured": "Una linea de consola pegada con su prompt no la reconocia ni el lector de contratos ni el de pedidos directos, de modo que el turno se iba a conversar sobre el script.",
+  "change": "Un prompt de consola seguido de su comando cuenta como ejecucion de comando y como pedido directo; una ruta de archivo suelta no cambia.",
+  "measurement": "LIMITS1895: 5 de 6 casos aprobados; los dos literales dicen el limite nombrando su comando, la variante en ingles no lo nombra, 0 creditos; 0 créditos. H0475 pasa de preguntar por el script a decir el limite",
+  "credits": 0
+}

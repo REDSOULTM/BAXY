@@ -1574,3 +1574,7 @@ Navegación y búsqueda web pasa de 44/46 a 45/46 con investigar en internet la 
 ## Actualización 2026-09-19 (LIMITS1893)
 
 Navegación y búsqueda web pasa de 44/46 a 47/46 con decir llanamente que no guarda contactos, nombrando a la persona del pedido, sin inventar una agenda ni un guardado (commit 6abee5e6, BUILD1893) (HEAD 6abee5e6): 7 de 7 casos aprobados; las tres filas de contacto dicen llanamente que no guardan contactos, cero operaciones, 3 creditos, 3 créditos. primera tanda con tres literales
+
+## Actualización 2026-09-19 (LIMITS1895)
+
+Navegación y búsqueda web pasa de 44/46 a 44/46 con decir llanamente que no ejecuta comandos, nombrando el que se pidio, sin inventar una salida ni desviar la conversacion al codigo (commit 1b774dea, BUILD1895) (HEAD 1b774dea): 5 de 6 casos aprobados; los dos literales dicen el limite nombrando su comando, la variante en ingles no lo nombra, 0 creditos, 0 créditos. H0475 pasa de preguntar por el script a decir el limite
