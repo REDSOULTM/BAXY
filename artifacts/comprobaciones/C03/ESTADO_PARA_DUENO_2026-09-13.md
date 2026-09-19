@@ -1,3 +1,25 @@
+## MAIL1863 — estado vigente 2026-09-19T02:12:55.808362+00:00
+
+Parcial: 10 aprobados, 1 fallidos, 0 sin ejecutar; 4 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 675/742 | 67 | 0 | >=559 | 13/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 555 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MAIL1863 añade 4. No se cuentan revalidaciones.
+
+Siguiente acción: MAIL1863: 11 ejecutados, 10 aprobados, 1 fallidos, 4 créditos (índices [0, 2, 3, 4]); Correo 5/6. Siguiente: panel grande de mensajería (Musica y Valeria) sobre el mismo mecanismo.
+
+Evidencia: `artifacts/comprobaciones/C03/MAIL1863/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 254.95 s acumulados; pico GPU 3492.93 MiB; pico RAM 2407.16 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 11; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque MAIL1863 precedente. -->
+
 ## MAIL1859 — estado vigente 2026-09-19T01:22:38.510677+00:00
 
 Parcial: 6 aprobados, 6 fallidos, 0 sin ejecutar; 1 créditos.

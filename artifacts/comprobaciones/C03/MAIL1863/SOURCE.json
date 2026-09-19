@@ -1,0 +1,15 @@
+{
+  "schema": "c03-mail1863-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py and src/baxy_mind/observed_response_literals.py (the send receipt literals are observed data, a bracket the person wrote is not a template hole, the retry hint quotes both destinations), on top of the mail mechanism restored by the owner decision of 18-09 section 5.",
+  "patch": "artifacts/comprobaciones/C03/MAIL1863/SOURCE.patch",
+  "commits": [
+    "09d217e0e"
+  ],
+  "build": "BUILD1863 (C03-repairs1863-build/BUILD_READY.json; producto)",
+  "cause_measured": "MAIL1861 midio la causa restante: la App rechazaba como codigo interno el final veraz que nombra la direccion de la casilla: los seis envios salieron de verdad, pero tres vetos del compositor tumbaron finales veraces (la direccion del destino leida como codigo interno, el marcador entre corchetes del propio literal leido como hueco de plantilla, y la pista de reintento sin citar el destino).",
+  "change": "Una direccion de correo en la respuesta queda exenta del detector de codigo interno de la App, como ya lo estaban los sitios web publicos.",
+  "measurement": "MAIL1863: 11 ejecutados, 10 aprobados (4 de 5 literales, 4 variantes, 2 límites), 1 fallido; 4 créditos. Medición raíz en el PC principal: los nueve casos de envío salieron de verdad a la casilla de pruebas del dueño (destino forzado por construcción, envío por su Outlook clásico, copia leída en Elementos enviados, recibo sent true); seis de ellos como diálogos que preguntaron el texto o el destinatario que faltaba y completaron el pedido con la respuesta. Con la dirección exenta del detector de código interno de la App, los finales se publicaron y nombraron la casilla real diciendo que no llegó al destinatario pedido. H0018 falló por negar la entrega al propio destino real. Las cuatro variantes pasaron, así que los cuatro literales aprobados acreditan. Correo 5/6; queda H0018.",
+  "credits": 4
+}
