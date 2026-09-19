@@ -8688,12 +8688,24 @@ def _bare_path_name(text: str) -> str:
     return re.split(r"[\\/]", str(text).strip().rstrip("\\/"))[-1].strip()
 
 
+# UNRES1875 H0639 (a bare redaction placeholder): the reading of that text
+# is English, so the mandatory clarification language is English, and the
+# model answered that it saw only signs and redacted text and no clear
+# request there. That is the acknowledgement this guard asks for, but its
+# English half had neither "signs" nor "I don't see a request" while its
+# Spanish half already took the same words; both attempts were rejected, the
+# turn died and the generic recovery question was published instead. The two
+# halves now carry the same vocabulary.
 _NOISE_ACKNOWLEDGED = re.compile(
     r"\b(?:signos?|simbolos?|cifras?|digitos?|numeros?|letras?|emojis?|"
     r"caracter(?:es)?|interrogaci[oó]n|mensaje|escribiste|enviaste|mandaste|"
     r"llego|recib[ií]|no (?:veo|encuentro|logro|entiendo|reconozco)|"
+    r"(?:no|ning[uú]n)\s+(?:\w+\s+){0,2}pedido|"
     r"con eso|con esto|de eso|de esto|"
-    r"symbols?|digits?|numbers?|letters?|characters?|question marks?|"
+    r"symbols?|signs?|digits?|numbers?|letters?|characters?|question marks?|"
+    r"(?:do(?:es)?\s+not|don'?t|doesn'?t|cannot|can'?t)\s+"
+    r"(?:see|find|read|understand|recognis|recogniz)\w*|"
+    r"(?:no|any)\s+(?:\w+\s+){0,2}request|"
     r"you (?:sent|wrote|typed)|with that|with this)\b",
     re.IGNORECASE,
 )
