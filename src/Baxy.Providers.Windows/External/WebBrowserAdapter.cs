@@ -17,6 +17,31 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     private readonly HttpClient _http;
     private readonly string? _searchDiagnosticPath;
 
+    // El perfil del navegador colgaba del directorio del turno, de modo que cada
+    // turno estrenaba uno. Dos cosas no sobreviven a eso, y las dos hacen falta
+    // para el video: la sesion iniciada en el servicio, y el componente Widevine
+    // —Chrome lo instala como componente, y en un perfil recien creado todavia
+    // no esta—. La sesion del navegador es del equipo y de la persona, como su
+    // Steam o su WhatsApp: no es estado del turno. Vive donde vive el resto de
+    // lo suyo, y un turno con perfil nuevo la encuentra igual.
+    internal static string SharedBrowserProfile(string dataRoot, string leaf)
+    {
+        try
+        {
+            string local = Environment.GetFolderPath(
+                Environment.SpecialFolder.LocalApplicationData);
+            if (!string.IsNullOrWhiteSpace(local))
+                return Path.Combine(local, "BAXY", "browser-session-v1", leaf);
+        }
+        catch (Exception exception) when (exception is ArgumentException
+            or PlatformNotSupportedException)
+        {
+            // Sin carpeta de usuario se vuelve al comportamiento anterior.
+        }
+
+        return Path.Combine(dataRoot, leaf + "-browser-profile");
+    }
+
     internal WebBrowserAdapter(string dataRoot)
         : this(dataRoot, sessionContext: null)
     {
@@ -24,7 +49,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
 
     internal WebBrowserAdapter(string dataRoot, CdpBrowserSessionContext? sessionContext)
     {
-        _browser = new CdpBrowserSession(Path.Combine(dataRoot, "browser-profile"));
+        _browser = new CdpBrowserSession(SharedBrowserProfile(dataRoot, "edge"));
         _sessionContext = sessionContext;
         _searchDiagnosticPath = Path.Combine(dataRoot, "captures", "web-search-rejections.jsonl");
         _http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
