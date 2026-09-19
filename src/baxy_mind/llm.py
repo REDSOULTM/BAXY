@@ -7551,6 +7551,12 @@ def compose_visible_defect(
                 + re.escape(_accent_folded_with_punctuation(requested)),
                 folded_reply,
             )
+            # DISCORD1869 H0394: «Le envié "hola" a Valeria, no a ShooterCock» names
+            # the real destination and denies the requested one, which is the truth;
+            # only a reply that does not deny it claims the wrong delivery.
+            and not _denies_the_destination(
+                folded_reply, _accent_folded_with_punctuation(requested),
+            )
         ):
             return "sent_wrong_destination"
     if (
