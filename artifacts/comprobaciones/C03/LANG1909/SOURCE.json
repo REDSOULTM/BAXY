@@ -1,0 +1,15 @@
+{
+  "schema": "c03-lang1909-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.App/NaturalSystemStatusRequestParser.cs (the clock shortcut no longer answers German, Italian or French) and src/baxy_mind/effect_intent.py (two more German and Italian forms are recognised, without claiming the bare Rioplatense «che»), on top of the UI1907 build.",
+  "patch": "artifacts/comprobaciones/C03/LANG1909/SOURCE.patch",
+  "commits": [
+    "ecc19b60ae4e7840814a302a01a197c225ecaf3e"
+  ],
+  "build": "BUILD1909 (C03-repairs1909-build/BUILD_READY.json; App y mente)",
+  "cause_measured": "Un atajo de la App reconocia cuatro formas extranjeras de preguntar la hora y las mandaba directas a system.time, de modo que el turno ni llegaba a la mente, que ya decidia tratarlas como idioma no servido; la respuesta salia en espanol a un pedido que no lo era.",
+  "change": "El atajo del reloj deja de reconocer aleman, italiano y frances, y el detector aprende dos formas mas sin reclamar el «che» rioplatense.",
+  "measurement": "LANG1909: 6 ejecutados, 6 aprobados, 0 fallidos; 2 créditos. Los cuatro pedidos en alemán o italiano terminaron con cero operaciones y un final que pide que se repita en español o en inglés; el español y el inglés siguen dando la hora; cien-59 100/100 con cero agotes.",
+  "credits": 2
+}

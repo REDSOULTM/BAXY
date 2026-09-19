@@ -1598,3 +1598,7 @@ Navegación y búsqueda web pasa de 44/46 a 46/46 con contestar como conversacio
 ## Actualización 2026-09-19 (UI1907)
 
 Interacción dentro de aplicaciones pasa de 21/22 a 22/22 con mirar la pantalla antes de pulsar y decir que no hay nada con ese nombre cuando no lo hay (commit 186bdf91, BUILD1907) (HEAD 186bdf91): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Los cuatro turnos con clic leyeron los controles de la ventana que abrió la raíz antes de pulsar y, al no haber nada con esa etiqueta, lo dijeron sin afirmar que hubieran pulsado; cien-58 100/100 con cero agotes. La categoría queda cerrada.
+
+## Actualización 2026-09-19 (LANG1909)
+
+Hora y fecha pasa de 19/23 a 21/23 con pedir que repitan en espanol o ingles el pedido escrito en otro idioma, en vez de contestarlo en el idioma equivocado (commit ecc19b60, BUILD1909) (HEAD ecc19b60): 6 ejecutados, 6 aprobados, 0 fallidos, 2 créditos. Los cuatro pedidos en alemán o italiano terminaron con cero operaciones y un final que pide que se repita en español o en inglés; el español y el inglés siguen dando la hora; cien-59 100/100 con cero agotes.
