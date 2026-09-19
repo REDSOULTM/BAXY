@@ -1592,6 +1592,13 @@ internal static class UserMessagePolicy
         string withoutWebHosts = Regex.Replace(withoutUserIdentifiers,
             @"\b(?:https?://|www\.)(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,63}\b",
             string.Empty, options | RegexOptions.IgnoreCase);
+        // MAIL1861: an e-mail address is what a mail reply has to name («Se envió
+        // … a autor@example.com»); its domain is not a dotted
+        // operation name. Only the address span is excluded, so codes elsewhere
+        // still cross the checks below.
+        withoutWebHosts = Regex.Replace(withoutWebHosts,
+            @"\b[a-z0-9._%+-]+@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,63}\b",
+            string.Empty, options | RegexOptions.IgnoreCase);
         return EchoesAnInstructionThePersonDidNotWrite(folded, userText)
             || Regex.IsMatch(withoutUserIdentifiers, @"\b[a-z]{2,}(?:_[a-z0-9]+){1,}\b", options)
             || Regex.IsMatch(withoutWebHosts, @"\b[a-z]{2,}(?:\.[a-z][a-z0-9]*){1,}\b", options)
