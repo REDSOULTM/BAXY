@@ -44,3 +44,16 @@ la casilla del §3 por el Outlook clásico del dueño, copia en Elementos enviad
 12 casos en 9b6aec45f (6 aprobados, 6 correos reales de prueba a la casilla del §3) y NO se adjudica.
 Las 6 filas de Correo (H0018, H0279, H0440, H0554, H0609, H0638) quedan abiertas a la espera de la
 clasificación del dueño: «no aplica» (capacidad fuera de alcance) o límite honesto sin crédito.
+
+## 5. Correo: reincorporado (noche, ~21:15)
+
+Texto del dueño: «Espera sabes qué, vuelve a implementar lo del correo, realmente era funcionar,
+solo vuelve a poner lo que sacaste y sigue con Discord».
+
+Efecto: se revierte el retiro del §4 y vuelve el mecanismo tal como estaba (message.send.test con
+canal «email», destino forzado a la casilla del §3 por el Outlook clásico del dueño, copia en
+Elementos enviados; lectores de correo de la mente). MAIL1853, ejecutado en 9b6aec45f, queda
+igualmente sin adjudicar: se vuelve a medir en una tanda nueva sobre el build vigente, después de
+Discord, con los arreglos que sus fallos dejaron medidos (marcador «[EMAIL_REDACTED]» del literal
+tomado por hueco de plantilla, dirección del destino forzado tomada por código interno, y finales
+que no nombraban la dirección real).

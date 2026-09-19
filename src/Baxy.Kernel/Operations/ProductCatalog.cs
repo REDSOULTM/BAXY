@@ -972,7 +972,7 @@ public static class ProductCatalog
             "message.send.test",
             Schema(
                 [
-                    String("channel", values: ["discord", "whatsapp"]),
+                    String("channel", values: ["discord", "email", "whatsapp"]),
                     String("requestedRecipient", maximumUtf8Bytes: 512, nonWhitespace: true),
                     String("text", maximumUtf8Bytes: 16_384, nonWhitespace: true),
                 ],
@@ -980,7 +980,7 @@ public static class ProductCatalog
             OperationRisks.ExternalCommunication,
             "message.send.test.forced.destination.ocr.postread.v1",
             ToolExposure.Public,
-            "Decisión del dueño §6: envío real a sus canales de prueba. El destino se fuerza SIEMPRE al canal seguro del dueño (WhatsApp grupo Música, Discord usuario Valeria), nunca al destinatario nombrado; escribe el texto, pulsa enviar y verifica la entrega por OCR; el recibo guarda el destinatario pedido y el destino real forzado. Decisión del dueño 2026-09-18 (noche): el envío de correo queda fuera de BAXY."),
+            "Decisión del dueño §6 (y §3 del 18-09 para el correo): envío real a sus canales de prueba. El destino se fuerza SIEMPRE al canal seguro del dueño (WhatsApp grupo Música, Discord usuario Valeria, correo a la casilla de pruebas del dueño), nunca al destinatario nombrado; en WhatsApp/Discord escribe el texto, pulsa enviar y verifica la entrega por OCR; en correo envía por el Outlook del dueño y verifica la copia en Elementos enviados; el recibo guarda el destinatario pedido y el destino real forzado."),
         Descriptor(
             "network.dns.status",
             EmptySchema(),
