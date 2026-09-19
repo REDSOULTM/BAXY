@@ -505,7 +505,9 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
         if($null -eq $w){[pscustomobject]@{ok=$false;error='client_window_not_found'}|ConvertTo-Json -Compress;exit 2}
         $h=[IntPtr]$w.Current.NativeWindowHandle;[void][BaxyDmWin]::ShowWindow($h,9)
         $escaped=[regex]::Replace($label,'([+^%~(){}\[\]])','{$1}')
-        function Find-Row {param($win,$nd) foreach($e in $win.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)){if($e.Current.ControlType.ProgrammaticName -eq 'ControlType.ListItem'){$n=$e.Current.Name;if($n -and $n.ToLowerInvariant().Contains($nd)){$rect=$e.Current.BoundingRectangle;if($rect.Width -gt 0 -and $rect.Height -gt 0){return [pscustomobject]@{name=$n.Substring(0,[Math]::Min(160,$n.Length));x=[int]($rect.X+$rect.Width/2);y=[int]($rect.Y+$rect.Height/2)}}}}};return $null}
+        function Get-Rows {param($win) $r=@();foreach($e in $win.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)){if($e.Current.ControlType.ProgrammaticName -eq 'ControlType.ListItem'){$n=$e.Current.Name;if($n){$sel=$false;try{$p=$e.GetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern);if($null -ne $p){$sel=$p.Current.IsSelected}}catch{};$r+=[pscustomobject]@{name=$n.Substring(0,[Math]::Min(160,$n.Length));selected=$sel}}}};,$r}
+        function Find-Row {param($win,$nd) foreach($row in (Get-Rows $win)){if($row.name.ToLowerInvariant().Contains($nd)){return $row}};return $null}
+        function Get-Selected {param($win) foreach($row in (Get-Rows $win)){if($row.selected){return $row.name}};return ''}
         $opened=$false;$chosen='';$rounds=0
         for($round=0;$round -lt 4 -and -not $opened;$round++){
           $rounds=$round+1
@@ -526,9 +528,18 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
           for($poll=0;$poll -lt 10 -and $null -eq $row;$poll++){$row=Find-Row $w $needle;if($null -ne $row){break};Start-Sleep -Milliseconds 400}
           if($null -eq $row){[System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 300;continue}
           $chosen=$row.name
-          [void][BaxyDmWin]::SetCursorPos($row.x,$row.y);Start-Sleep -Milliseconds 150
-          [BaxyDmWin]::mouse_event(0x0002,0,0,0,0);[BaxyDmWin]::mouse_event(0x0004,0,0,0,0)
-          Start-Sleep -Milliseconds 1500
+          # Step down reading which row the switcher has SELECTED after each press;
+          # Enter is pressed only when the selected row names the recipient. Neither
+          # counting the new rows nor clicking the row's rectangle opened it (runs
+          # d and e ended on «Julia» with «Valeria, usuario, ron.91» found).
+          $selected=Get-Selected $w;$steps=0
+          while($steps -lt 14 -and -not $selected.ToLowerInvariant().Contains($needle)){
+            [System.Windows.Forms.SendKeys]::SendWait('{DOWN}');Start-Sleep -Milliseconds 220
+            $selected=Get-Selected $w;$steps=$steps+1
+          }
+          if(-not $selected.ToLowerInvariant().Contains($needle)){[System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 300;$chosen='selected: ' + $selected;continue}
+          $chosen=$selected
+          [System.Windows.Forms.SendKeys]::SendWait('{ENTER}');Start-Sleep -Milliseconds 1500
           $opened=$true
         }
         [pscustomobject]@{ok=$opened;title=$w.Current.Name;chosen=$chosen;rounds=$rounds}|ConvertTo-Json -Compress
