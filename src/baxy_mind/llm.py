@@ -7487,7 +7487,11 @@ def compose_visible_defect(
             return "sent_wrong_destination"
         if (
             re.search(
-                r"\b(?:envie|envio|enviado|enviada|mande|mando|mandado|sent|delivered|entregue|entregado)\b",
+                # MAIL1859: «le dije X a Y», «le escribí», «I told them» state the
+                # delivery of a verified send as plainly as «envié».
+                r"\b(?:envie|envio|enviado|enviada|mande|mando|mandado|sent|delivered|entregue|entregado|"
+                r"dije|dijo|dicho|escribi|escribio|escrito|avise|aviso|avisado|comunique|comunico|"
+                r"told|said|wrote|written|passed\s+along)\b",
                 folded_reply,
             )
             is None
