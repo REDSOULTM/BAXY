@@ -395,7 +395,13 @@ internal static class ProductConductorHost
                 // MSGSEND1845 «manda un mensaje a Musica en whatsapp que diga hola»: the
                 // real send, forced by construction to the owner's test channel, is
                 // confirmed by the root reviewer (owner decision, section 6).
-                or "message.send.test"))
+                or "message.send.test"
+                // Las 24 filas de vídeo «pon Stranger Things en Netflix»: la
+                // reproducción en la sesión de streaming la confirma el revisor
+                // de la raíz, igual que las otras reproducciones externas. Sin
+                // esto el turno revisado se rechazaba con
+                // review_pending_not_supported y la fila no se podía medir.
+                or "streaming.play.named" or "streaming.navigate"))
         {
             return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
         }
