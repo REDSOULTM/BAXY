@@ -1,0 +1,15 @@
+{
+  "schema": "c03-limits1897-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (an out-of-catalog refusal names what was asked, in both languages), on top of the LIMITS1897 build.",
+  "patch": "artifacts/comprobaciones/C03/LIMITS1897/SOURCE.patch",
+  "commits": [
+    "f815ec5a04399fb74dac730a6dbb2be5f327e8f0"
+  ],
+  "build": "BUILD1897 (C03-repairs1897-build/BUILD_READY.json; mente)",
+  "cause_measured": "La instruccion del rechazo fuera de catalogo no pedia nombrar lo pedido, y en ingles el modelo se quedaba en la formula general.",
+  "change": "El rechazo nombra lo pedido en los dos idiomas; y una pregunta a un pedido ambiguo deja de juzgarse como un fallo sin decir el fallo.",
+  "measurement": "LIMITS1897: 6 de 6 casos aprobados; las dos filas de comando dicen el limite nombrando el comando pedido, cero operaciones, 2 creditos; 2 créditos. el rechazo en ingles ya nombra lo pedido",
+  "credits": 2
+}

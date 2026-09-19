@@ -1578,3 +1578,7 @@ Navegación y búsqueda web pasa de 44/46 a 47/46 con decir llanamente que no gu
 ## Actualización 2026-09-19 (LIMITS1895)
 
 Navegación y búsqueda web pasa de 44/46 a 44/46 con decir llanamente que no ejecuta comandos, nombrando el que se pidio, sin inventar una salida ni desviar la conversacion al codigo (commit 1b774dea, BUILD1895) (HEAD 1b774dea): 5 de 6 casos aprobados; los dos literales dicen el limite nombrando su comando, la variante en ingles no lo nombra, 0 creditos, 0 créditos. H0475 pasa de preguntar por el script a decir el limite
+
+## Actualización 2026-09-19 (LIMITS1897)
+
+Navegación y búsqueda web pasa de 44/46 a 46/46 con decir llanamente que no ejecuta comandos, nombrando el que se pidio, sin inventar una salida ni desviar la conversacion al codigo (commit f91b7e27, BUILD1897) (HEAD f91b7e27): 6 de 6 casos aprobados; las dos filas de comando dicen el limite nombrando el comando pedido, cero operaciones, 2 creditos, 2 créditos. el rechazo en ingles ya nombra lo pedido La categoría queda cerrada.

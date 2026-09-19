@@ -1,3 +1,25 @@
+## LIMITS1897 — estado vigente 2026-09-19T09:09:35.862963+00:00
+
+Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 689/742 | 53 | 0 | >=573 | 13/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 571 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); LIMITS1897 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: LIMITS1897: 6 ejecutados, 6 aprobados, 0 fallidos, 2 créditos (índices [0, 1]). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/LIMITS1897/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 104.65 s acumulados; pico GPU 3492.93 MiB; pico RAM 1720.58 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque LIMITS1897 precedente. -->
+
 ## LIMITS1895 — estado vigente 2026-09-19T08:54:54.832452+00:00
 
 Parcial: 5 aprobados, 1 fallidos, 0 sin ejecutar; 0 créditos.
