@@ -334,7 +334,22 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // honest search ended web_search_results_irrelevant. The same engine's HTML page,
     // asked with the product's own User-Agent, lists ten organic results that answer
     // the question, so the provider reads that page; the pertinence gate stays.
+    // WEB1877 (2026-09-19): that HTML page in turn began answering every query from
+    // this machine with sites that share no word with it (measured with the product's
+    // own User-Agent: a museum, a furniture shop and a music service for three
+    // different Spanish questions), so the pertinence gate rejected everything again.
+    // A second engine now follows the first: the engines are asked in order and the
+    // first one whose results pass the gate answers, with the receipt naming the
+    // engine that actually answered. Neither engine is trusted over the other; the
+    // gate is the same for both.
     private const string SearchEndpoint = "https://www.bing.com/search";
+    private const string FallbackSearchEndpoint = "https://lite.duckduckgo.com/lite/";
+    private const string PrimarySearchAuthority = "bing_html_https";
+    private const string FallbackSearchAuthority = "duckduckgo_lite_https";
+
+    private readonly record struct SearchChannelReading(
+        List<SearchCandidate> Candidates,
+        bool IsResultsPage);
 
     private async ValueTask<ExternalCapabilityReceipt> SearchAsync(
         string operation,
@@ -348,75 +363,133 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             throw new InvalidDataException("The search query has no verifiable terms.");
         }
         int limit = Math.Clamp(ExternalJson.OptionalInt(arguments, "limit", 5), 1, 20);
-        Uri endpoint = new(SearchEndpoint + "?q=" + Uri.EscapeDataString(query)
-            + SearchMarket(CultureInfo.CurrentCulture));
-        using HttpResponseMessage response = await _http.GetAsync(
-            endpoint, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+        int structurallyValidItems = 0;
+        bool anyResultsPage = false;
+        var rejectedByLastEngine = new List<(string Title, Uri Url, string Snippet)>();
+        foreach (string authority in new[] { PrimarySearchAuthority, FallbackSearchAuthority })
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            SearchChannelReading reading;
+            try
+            {
+                reading = await ReadSearchChannelAsync(authority, query, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch (HttpRequestException)
+            {
+                // This engine did not answer; the next one still may, and if none
+                // does the reply says the search could not be made.
+                continue;
+            }
+            catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
+            {
+                continue;
+            }
+            anyResultsPage |= reading.IsResultsPage;
+            structurallyValidItems += reading.Candidates.Count;
+            if (reading.Candidates.Count == 0)
+            {
+                continue;
+            }
+            string[] verifiableTerms = VerifiableSearchTerms(queryTokens, reading.Candidates);
+            var results = new List<(string Title, string Url, string Snippet)>();
+            var rejected = new List<(string Title, Uri Url, string Snippet)>();
+            foreach (SearchCandidate candidate in reading.Candidates)
+            {
+                if (results.Count >= limit) break;
+                if (IsSearchResultRelevant(verifiableTerms, candidate.Observed))
+                {
+                    results.Add((candidate.Title, candidate.Url.AbsoluteUri, candidate.Snippet));
+                }
+                else if (_searchDiagnosticPath is not null && rejected.Count < 20)
+                {
+                    rejected.Add((candidate.Title, candidate.Url, candidate.Snippet));
+                }
+            }
+            if (results.Count == 0)
+            {
+                rejectedByLastEngine = rejected;
+                continue;
+            }
+            string answering = authority;
+            JsonElement result = ExternalJson.Create(writer =>
+            {
+                writer.WriteStartObject();
+                writer.WriteNumber("version", 1);
+                writer.WriteString("query", query);
+                writer.WriteNumber("count", results.Count);
+                writer.WriteStartArray("results");
+                foreach ((string title, string url, string snippet) in results)
+                {
+                    writer.WriteStartObject();
+                    writer.WriteString("title", title);
+                    writer.WriteString("url", url);
+                    writer.WriteString("snippet", snippet);
+                    writer.WriteEndObject();
+                }
+                writer.WriteEndArray();
+                writer.WriteString("authority", answering);
+                writer.WriteEndObject();
+            });
+            return ExternalJson.Success(operation, result, effectObserved: false);
+        }
+        if (structurallyValidItems == 0 && !anyResultsPage)
+        {
+            // No engine answered with a results page (a block, a captcha, an error):
+            // nothing was searched, and the reply must not pretend the web had no
+            // answer.
+            return ExternalJson.FailureBeforeEffect(operation, "web_search_engine_unavailable");
+        }
+        RecordSearchRejection(query, queryTokens, structurallyValidItems, rejectedByLastEngine);
+        return ExternalJson.FailureBeforeEffect(operation, "web_search_results_irrelevant");
+    }
+
+    // The primary engine answers a query string; the lite endpoint of the second one
+    // answers only a form post (a GET returns its search form with no results). Each
+    // page is parsed by its own reader and the engine's own links are discarded.
+    private async Task<SearchChannelReading> ReadSearchChannelAsync(
+        string authority,
+        string query,
+        CancellationToken cancellationToken)
+    {
+        bool fallback = authority == FallbackSearchAuthority;
+        using HttpRequestMessage request = fallback
+            ? new HttpRequestMessage(HttpMethod.Post, FallbackSearchEndpoint)
+            {
+                Content = new FormUrlEncodedContent(new[]
+                {
+                    new KeyValuePair<string, string>("q", query),
+                }),
+            }
+            : new HttpRequestMessage(
+                HttpMethod.Get,
+                SearchEndpoint + "?q=" + Uri.EscapeDataString(query)
+                    + SearchMarket(CultureInfo.CurrentCulture));
+        using HttpResponseMessage response = await _http
+            .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
             .ConfigureAwait(false);
         string page = await ReadBoundedTextAsync(response, 4_000_000, cancellationToken)
             .ConfigureAwait(false);
+        string engineHost = fallback ? "duckduckgo.com" : "bing.com";
         var candidates = new List<SearchCandidate>();
-        foreach ((string title, string url, string snippet) in ParseSearchPage(page))
+        foreach ((string title, string url, string snippet) in fallback
+            ? ParseDuckDuckGoLitePage(page)
+            : ParseSearchPage(page))
         {
             cancellationToken.ThrowIfCancellationRequested();
             if (Uri.TryCreate(url, UriKind.Absolute, out Uri? parsed)
                 && parsed.Scheme is "http" or "https"
-                && !parsed.Host.EndsWith("bing.com", StringComparison.OrdinalIgnoreCase)
+                && !parsed.Host.EndsWith(engineHost, StringComparison.OrdinalIgnoreCase)
                 && title.Length is > 0 and <= 4_096
                 && snippet.Length <= 16_384)
             {
                 candidates.Add(new SearchCandidate(title, parsed, snippet, ObservedSearchTokens(title, parsed, snippet)));
             }
         }
-        int structurallyValidItems = candidates.Count;
-        if (structurallyValidItems == 0 && !IsSearchResultsPage(response, page))
-        {
-            // The engine answered with something other than a results page (a block,
-            // a captcha, an error): nothing was searched, and the reply must not
-            // pretend the web had no answer.
-            return ExternalJson.FailureBeforeEffect(operation, "web_search_engine_unavailable");
-        }
-        string[] verifiableTerms = VerifiableSearchTerms(queryTokens, candidates);
-        var results = new List<(string Title, string Url, string Snippet)>();
-        var rejected = new List<(string Title, Uri Url, string Snippet)>();
-        foreach (SearchCandidate candidate in candidates)
-        {
-            if (results.Count >= limit) break;
-            if (IsSearchResultRelevant(verifiableTerms, candidate.Observed))
-            {
-                results.Add((candidate.Title, candidate.Url.AbsoluteUri, candidate.Snippet));
-            }
-            else if (_searchDiagnosticPath is not null && rejected.Count < 20)
-            {
-                rejected.Add((candidate.Title, candidate.Url, candidate.Snippet));
-            }
-        }
-        if (structurallyValidItems > 0 && results.Count == 0)
-        {
-            RecordSearchRejection(query, queryTokens, structurallyValidItems, rejected);
-            return ExternalJson.FailureBeforeEffect(
-                operation, "web_search_results_irrelevant");
-        }
-        JsonElement result = ExternalJson.Create(writer =>
-        {
-            writer.WriteStartObject();
-            writer.WriteNumber("version", 1);
-            writer.WriteString("query", query);
-            writer.WriteNumber("count", results.Count);
-            writer.WriteStartArray("results");
-            foreach ((string title, string url, string snippet) in results)
-            {
-                writer.WriteStartObject();
-                writer.WriteString("title", title);
-                writer.WriteString("url", url);
-                writer.WriteString("snippet", snippet);
-                writer.WriteEndObject();
-            }
-            writer.WriteEndArray();
-            writer.WriteString("authority", "bing_html_https");
-            writer.WriteEndObject();
-        });
-        return ExternalJson.Success(operation, result, effectObserved: false);
+        bool isResultsPage = fallback
+            ? IsDuckDuckGoResultsPage(response, page)
+            : IsSearchResultsPage(response, page);
+        return new SearchChannelReading(candidates, isResultsPage);
     }
 
     private static async Task<string> ReadBoundedTextAsync(
@@ -549,6 +622,41 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         }
         return absolute;
     }
+
+    private static readonly Regex DuckDuckGoResultLink = new(
+        "<a\\b[^>]*href=[\"']([^\"']+)[\"'][^>]*class=[\"']result-link[\"'][^>]*>(.*?)</a>",
+        RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant,
+        TimeSpan.FromSeconds(2));
+
+    private static readonly Regex DuckDuckGoResultSnippet = new(
+        "<td\\b[^>]*class=[\"']result-snippet[\"'][^>]*>(.*?)</td>",
+        RegexOptions.Singleline | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant,
+        TimeSpan.FromSeconds(2));
+
+    // The lite endpoint lists each result as an anchor of class «result-link» whose
+    // href is already the real target, followed by its snippet cell; a result without
+    // a snippet keeps an empty one instead of borrowing the next result's.
+    internal static IEnumerable<(string Title, string Url, string Snippet)> ParseDuckDuckGoLitePage(string page)
+    {
+        MatchCollection links = DuckDuckGoResultLink.Matches(page);
+        for (int index = 0; index < links.Count; index++)
+        {
+            int blockStart = links[index].Index + links[index].Length;
+            int blockEnd = index + 1 < links.Count ? links[index + 1].Index : page.Length;
+            Match snippet = DuckDuckGoResultSnippet.Match(page, blockStart, blockEnd - blockStart);
+            yield return (
+                HtmlText(links[index].Groups[2].Value),
+                System.Net.WebUtility.HtmlDecode(links[index].Groups[1].Value),
+                snippet.Success ? HtmlText(snippet.Groups[1].Value) : string.Empty);
+        }
+    }
+
+    // The lite endpoint marks its results table in the page itself; a block or an
+    // error page carries neither that mark nor a single result link.
+    private static bool IsDuckDuckGoResultsPage(HttpResponseMessage response, string page) =>
+        response.IsSuccessStatusCode
+        && (page.Contains("Web results are present", StringComparison.Ordinal)
+            || DuckDuckGoResultLink.IsMatch(page));
 
     // A genuine answer carries the engine's result list container even when it is
     // empty; a block, a captcha or an error page does not.
