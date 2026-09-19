@@ -1,0 +1,15 @@
+{
+  "schema": "c03-mail1867-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (a reply that denies the delivery to the destination it reached is vetoed), on top of the MAIL1867 build.",
+  "patch": "artifacts/comprobaciones/C03/MAIL1867/SOURCE.patch",
+  "commits": [
+    "09d217e0e"
+  ],
+  "build": "BUILD1867 (C03-repairs1867-build/BUILD_READY.json; mente)",
+  "cause_measured": "El final de H0018 negaba la entrega a la propia casilla a la que llego, y ningun veto lo impedia.",
+  "change": "El veto lee la frase que nombra el destino real: una negacion antes de el es una entrega negada.",
+  "measurement": "MAIL1867: 5 ejecutados, 5 aprobados (1 literal, 2 variantes, 2 límites), 0 fallidos; 1 créditos. Medición raíz en el PC principal: H0018 corrió como diálogo (BAXY preguntó qué decir, la raíz respondió «que llego tarde») y el envío salió de verdad a la casilla de pruebas del dueño por su Outlook, con la copia en Elementos enviados como evidencia. El final nombró la casilla real y dijo que no fue al destinatario pedido, sin negar la entrega a esa casilla, que es lo que el veto nuevo impide. Las dos variantes de diálogo pasaron, así que el literal acredita. Correo queda cerrado 6/6.",
+  "credits": 1
+}

@@ -1,3 +1,11 @@
+# MAIL1867 adjudicado — 2026-09-19T02:41:37.510864+00:00
+
+**676/742 cubiertos, 66 abiertos, 0 NA; 16/35 categorías cerradas (Procesos 9/9, Estado de ventanas 14/14, Identidad y capacidades del asistente 19/19, Portapapeles 3/3, Leer y resumir páginas web 2/2, Memoria personal 10/10, Brillo y pantalla 17/17, Alarmas, recordatorios, tareas y agenda 38/38, Crear documentos y editar imágenes 2/2, Estado de hardware y sistema 40/40, Cerrar aplicaciones y ventanas 20/20, Red y Bluetooth 21/21, Pantalla, captura e interpretación visual 19/19, Música 39/39, Conocimiento, razonamiento y creatividad verbal 37/37, Organizar ventanas y pestañas 13/13); C03 formal 3/11. Registro SHA 9eb15479830fe70f2258401444229f9090520a047f55c4eacab38a822924f06b. Primeras altas 24 h >= 560 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 072757ec con BUILD1867 (la mente rechaza el final que niega la entrega al destino que si la recibio). Turnos ordinarios sin operaciones.
+
+MAIL1867 («Correo», enviar de verdad el correo a la casilla de pruebas y decirlo sin negar la entrega a esa casilla): 5 ejecutados, 5 aprobados (1 literal, 2 variantes, 2 límites), 0 fallidos, 1 créditos. Adjudicación ab43b3730dc9c326c07978e25dd0c409f4b6ae90a73e2bef6af03f3e98d554bd. Medición raíz en el PC principal: H0018 corrió como diálogo (BAXY preguntó qué decir, la raíz respondió «que llego tarde») y el envío salió de verdad a la casilla de pruebas del dueño por su Outlook, con la copia en Elementos enviados como evidencia. El final nombró la casilla real y dijo que no fue al destinatario pedido, sin negar la entrega a esa casilla, que es lo que el veto nuevo impide. Las dos variantes de diálogo pasaron, así que el literal acredita. Correo queda cerrado 6/6.
+
+---
+
 # REANUDACIÓN 2026-09-19 madrugada (PC principal REDPC — escritor raíz)
 
 **675/742 cubiertos, 67 abiertos, 0 NA; 16/35 categorías cerradas; C03 formal 3/11. HEAD caf4cc379 (pusheado). Correo 5/6, Mensajería 26/31, Entrada incompleta 27/34.**

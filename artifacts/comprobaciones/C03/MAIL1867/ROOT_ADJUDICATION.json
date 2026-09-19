@@ -1,0 +1,323 @@
+{
+  "schema": "mail1867-root-adjudication-v2",
+  "decided_at_utc": "2026-09-19T02:41:37.510864+00:00",
+  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
+  "head": "072757eccb56ae1a088b0457ad9af704a989f076",
+  "decisions_sha256": "681e24610d3d0bcbb9ea5e069c2f14bfd85e6b568f78ea44cd26b592ab9fe39a",
+  "registry_before_sha256": "795f5e622540e5c351bb9269a94fe28259d92ca27c8891d02b1999e1fe68d7bf",
+  "registry_before_counts": {
+    "covered": 675,
+    "open": 67,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "candidate_manifest_sha256": "e0700ad8254686196574447f06eb0c5c1edad8849df9e36011b62f383b0711ed",
+  "preparation_sha256": "00e4bbe273effbfacd761e9b319617d506b34ebdb538846dbac895f6e7c6d4b1",
+  "passed": 5,
+  "failed": 0,
+  "unexecuted": 0,
+  "executed": 5,
+  "segments_started": 5,
+  "aborted_before_admission": 0,
+  "aborted_before_admission_indices": [],
+  "credits": [
+    "H0018"
+  ],
+  "counters": {
+    "covered": 676,
+    "open": 66,
+    "not_applicable": 0,
+    "total": 742
+  },
+  "metrics": {
+    "first_covered_last24h_is_lower_bound": true,
+    "first_covered_last24h_before": 559,
+    "categories_total": 35,
+    "categories_closed_after": 13,
+    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 559 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); MAIL1867 añade 1. No se cuentan revalidaciones.",
+    "first_covered_last24h_after": 560
+  },
+  "resources": {
+    "seconds_sum": 116.84399999999732,
+    "gpu_peak_mib": 3492.9296875,
+    "ram_peak_mib": 2598.359375
+  },
+  "cases": [
+    {
+      "index": 0,
+      "case_id": "H0018",
+      "verdict": "passed",
+      "credit": true,
+      "pair_indices": [
+        1,
+        2
+      ],
+      "reason": "Envió el mensaje de la persona al canal de prueba del dueño (destino forzado), con revisión de la raíz, y lo dijo con verdad; crédito con dos variantes aprobadas.",
+      "observation_note": "Turno revisado: message.send.test propuesta con el canal, el destinatario pedido y el texto de la persona, aprobada por la raíz, completada y verificada (destino forzado al canal de prueba del dueño, texto enviado y entrega leída por OCR, sent true); una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "6ee01dca177a6711232402fcde55c21157e89baa2632801c8d395cae6154c0af",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\results\\case-00\\EXIT.json": "4233b314773e3f7310c56d728115b01a77012aff1d04bfc8342c72a732fdf087",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\results\\case-00\\RESOURCES.json": "1371e1a3312a2dac892aa94630722f48e0faf522aa34e8b5dc819d9cc1e86363",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\profile-owner-00.json": "072fca213a1b78f67095674299cbda78afb360fa595e2a4464a06c4915167715",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\results\\case-00\\PREREG.json": "7af6ba1c4597af17dbdd5287c17b6c75a83125ede09bc573fa6ae22219216443",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-00\\capture\\events.jsonl": "116ab9db325e836a4c0385268daadcd7a26a1a138facb1f046c5d076f62fc76b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-00\\turns.jsonl": "65f3ed5475f7f611b1516b39ff93c84ddd34bcae056da2b52d79797c00cd49da",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\fixture-00.json": "6ee4cc0b93e3c43082ea0a6faaef915927dc9ffb43184d372474eecf5d06df66",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\context-00.json": "997293ffbd76d46b8f4d88c020ecf579b7fd3a59b363042a65b1d2b9bbbfce93",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\context-prelaunch-00.json": "eaea411ef6381d6aa2bdcc097ae793a51acaddf56551f702fea43d83d8c31364",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-00\\case-observations.json": "784ac0a5fbf7a985a39a275ce89ce055ebdd92a798907195776caf6107580ed5",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-00\\journal-before.json": "b8ab507489aa18c7726b5189ea22c67d39e8c8d69adc75afc9a5523e4f781a29",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-00\\journal-after.json": "c02a2741b664639fdf40a71ae24a4146c9f557f0de27e351303e91d6e51d23dc",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "bada0411ac3dab9c467ac2b9fd1fc619346df2b190fadeae3e4d400a799efec7"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "58693a3a-080f-4a3b-b839-b420299fa3c6",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "6dcf861f-b403-4d78-a461-4482a2e95332",
+          "operation": "message.send.test",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 1,
+      "case_id": "mail1867-dev-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Envió el mensaje de la persona al canal de prueba del dueño (destino forzado), con revisión de la raíz, y lo dijo con verdad; variante o literal sin dos pares aprobados.",
+      "observation_note": "Turno revisado: message.send.test propuesta con el canal, el destinatario pedido y el texto de la persona, aprobada por la raíz, completada y verificada (destino forzado al canal de prueba del dueño, texto enviado y entrega leída por OCR, sent true); una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "33ccbc4e5db79d89aaf473da0384e3df6e02e824757a13dd12a2a3e50d2cf1fa",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\results\\case-01\\EXIT.json": "2cdc8b1352aa29aca4043e126b5acaf27420cea7e280ea8c683cbe894c8c8146",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\results\\case-01\\RESOURCES.json": "092c3e2caf30845ee25062c6095b89633bd689311670e41fb833ff4254d42d9c",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\profile-owner-01.json": "fe45e51272895ce6ae211cb5549d831ef53d3ab00ff37e3d9468d6644babc4dd",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\results\\case-01\\PREREG.json": "ff5540a7061d3caffbce24b0b7fccdbf42385cb8369dcd4dff815299fd55cdcf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-01\\capture\\events.jsonl": "d0f3388a3835539704be79758ee39db7e1c20aa0fd6275e1f0648dd2795c60bf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-01\\turns.jsonl": "0d0b79eb9d00566d784fc12cfc03d0824380fbf9cfb2f64e297294af777c4843",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\fixture-01.json": "f3919d7d8c0e034c4780874b793a60c21127d83e6f0e90b1a251051cd4cee513",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\context-01.json": "0905dd62c423ea5388f4da4b29d88186190378766f90bc8021685cec3a31178e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\context-prelaunch-01.json": "b620dcdcc252941c8446b56d3a0ca102cebd63cbfc46455162cfded083f3986a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-01\\case-observations.json": "0e9b741814059e1dc98264d48874425e1e0f8005590191a7ba983643b6e27001",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-01\\journal-before.json": "676e75a9b7c0fa78aca31f8a4ecbab8c3deccf6bac248f0c7adef43f36f41c17",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-01\\journal-after.json": "3aad9ad165d65b1cad8d74a9f54e2b33c84d1ac87ad49d274aecfb43d24dbefa",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "191e2966c3a21ffd335fd22449342408c9cd56ac498da82efd8ff46ce0e8eb07"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "49e9388a-8a26-472a-8a91-380be9daa85f",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "bc85d6a2-15da-4851-ba25-9965c01a9837",
+          "operation": "message.send.test",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "case_id": "mail1867-dev-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Envió el mensaje de la persona al canal de prueba del dueño (destino forzado), con revisión de la raíz, y lo dijo con verdad; variante o literal sin dos pares aprobados.",
+      "observation_note": "Turno revisado: message.send.test propuesta con el canal, el destinatario pedido y el texto de la persona, aprobada por la raíz, completada y verificada (destino forzado al canal de prueba del dueño, texto enviado y entrega leída por OCR, sent true); una confirmación; cero violaciones; pins intactos.",
+      "final_sha256": "155b6637f437c1698d7b2a7ed7fb6243a4126e735d983c56dcf67adc85ae0593",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\results\\case-02\\EXIT.json": "d00b9b330f86218fd72c9990891bfd33dae1defcb13f444a17686236131b9409",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\results\\case-02\\RESOURCES.json": "6f174d4d12b7c39b923d18abc7f3538c0f1e98fd60ec92647830e66fcadfe02b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\profile-owner-02.json": "5af43ab2cea87403f72a4e1dc3f12eaa3cf5fee778b41b76776ec08c8d3be67e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\results\\case-02\\PREREG.json": "f444b3b3d3723ac178d512ba7ff8931ee375492d29617fe773e359c18900fc57",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-02\\capture\\events.jsonl": "2d8a883fb61f847dfe4d58ffc5e83f323d5c0e42cae7b794387fcdf80d967ecb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-02\\turns.jsonl": "5ce728ed36a89380b4fc8891c47ac57b3e0854c68faa5b87c4436a709b9aed69",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\fixture-02.json": "a01247ea9ecd771d5f063a5fb83b7cbc1125ff84d58e8314f77155c171e3e96b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\context-02.json": "888e26a3b940d21d54e2f3891591ec7d47f7495d12a668be544eaca14fd2f8ee",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\context-prelaunch-02.json": "7c8ddf9e90d096f6e41c1bf0f9cfada2aefc05202c6663e16c7dc43c83425de7",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-02\\case-observations.json": "84873dc6e62fe27cecefdecde1bbe532a8d3066142d39909ffd85e2a41efd69e",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-02\\journal-before.json": "6968af335c1e3017eed7756902ac7d77030a0b18723085382610d1f2aa0d4381",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-02\\journal-after.json": "085c81e58c68ac1f90f14d74b87d9585caeba65b4dece30c6708e600b7e3e98a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "3c2f57503833625ba6625987bc760fede744f1da3dcede747f68de0c1bfce80e"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "1d467d70-4355-477b-b460-af9731fec0e0",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        },
+        {
+          "invocation_id": "124dbb54-4c97-4419-b714-941579febdc1",
+          "operation": "message.send.test",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "case_id": "mail1867-boundary-01",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "3e98766423ff856adbd595348439bf227b229a3123e8c9470d25607b43490b84",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\results\\case-03\\EXIT.json": "49d54730529f53966ce303f10732ba500fd87abba0049aee1ef8121c5c5302d2",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\results\\case-03\\RESOURCES.json": "e2549a035cdd29b532d67c7ab5f82062f68bd5293e98926f373c6631ee23c3e4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\profile-owner-03.json": "d65ffd56c8e2833f46933df2e9e67293988a5890eda16d8ce67c79401b76c2bf",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\results\\case-03\\PREREG.json": "a1972328897dd9051400f212bd39ceec7973dc1c80ed20f5db748679b67c9f1f",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-03\\capture\\events.jsonl": "01fea19dfeea834a85286afe05670563d3a1197ddb5d5d22fa9ba01c291a7630",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-03\\turns.jsonl": "f3818224c0f68ebeb422d7f55527fd50a2eb156408c9b9c23679dacaeeefcc6b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\fixture-03.json": "b6a0e7cf019ebf3b2ac112c665d1b4ce9241b6b2bb7fe1d9d60ab5177a0c90a3",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\context-03.json": "002033ee239a386b1ef94c73d30332e1d6e2eb6b1c3e7d61bbbcb3583cb1a6a0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\context-prelaunch-03.json": "e10bbee0eb2540f79616974104cf6d7c5cca7074559a01736c334a2d389b87f6",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-03\\case-observations.json": "e6599d6629e01b674b30e46324387063a45f361b28da233baf01e61511994e38",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-03\\journal-before.json": "f3348e6f784263b54a45a0940500b872d5ce5a5ce12d0dcf6d5e6018a5f223d0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-03\\journal-after.json": "62dfcff648dfd103fe3c76b4ee94a38f273a1de540bcf840456bf4420ceb59b8",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "f3cf245a04876841adea94dc6d44a4725783c948dfc9df5d60240f3c3f60dafb"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "379c1948-f430-44e3-85b3-a180fc376ef6",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "case_id": "mail1867-boundary-02",
+      "verdict": "passed",
+      "credit": false,
+      "pair_indices": [],
+      "reason": "Límite aprobado.",
+      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
+      "final_sha256": "b30a3867fb02aa772d6c74240abc0cf0630386e267f5a75a9af19eb556bbad3b",
+      "evidence_pins": {
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\results\\case-04\\EXIT.json": "770d097b413ecd2bd7920b8e927a86874962d816e7fc8a8ac5a0fffb6b5fc2fe",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\results\\case-04\\RESOURCES.json": "49bab283ee64b7cbd05e9a0e57ea8f07927eb7b2c3a948cc96787ef438745836",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\profile-owner-04.json": "6359b6058a3b9e101703982be6a7f383ca492e4310e2a601da49190257a6f135",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\results\\case-04\\PREREG.json": "7ef647cf1cbf385be321010bd102401f92d00c95ca6a4286902ca995050f99fb",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-04\\capture\\events.jsonl": "a32e68806ae60c652644de3ebad0dd1df0506500180982ac4b8b5d6514792e3a",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-04\\turns.jsonl": "2967e961062124cc2be640a5614f67a6100f5e6c20c3fe10157aedecc8bb6fb4",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\fixture-04.json": "2f1c6549add866b7bdfe450965450f9c129f0ce166a880a53ecca0d90b84eb5b",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\context-04.json": "6d85e1dac8393f3b7c2c903069ba1f5db0e1aa2225a0acae0548665a81346278",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\context-prelaunch-04.json": "aae5169ffb92db22b3f9ce4c2de64e1f33d59daf07c4e2f6cd45d48e98531035",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-04\\case-observations.json": "b29de47bb3c083c77c86db5413e8f1d29dbff10dcdc493e1e6c3e766173277b1",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-04\\journal-before.json": "65239273b71f17d1460ad3521815d9cfbbf6284cccf1e50919b4b9605b4255e0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-04\\journal-after.json": "f2f10931df53b04770ab667ff8ed2959132cf51b0012b2184c40c6cec4ee02b0",
+        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-mail1867-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "64d148421b22cf904363b8335a2c57399199694847ab6cecb2e20da3a716002d"
+      },
+      "terminal_kind": "published_final",
+      "clients_absent_before": true,
+      "aborted_before_admission": false,
+      "remaining_execution_uncertain_after_stop": false,
+      "cause_kind": null,
+      "violations": [],
+      "new_invocations": [
+        {
+          "invocation_id": "37355d26-af1b-487b-b662-5b7abd7487ee",
+          "operation": "memory.status",
+          "status": "completed",
+          "verified": true,
+          "error_code": null,
+          "effect_may_have_occurred": null,
+          "phases": [
+            "started",
+            "completed"
+          ],
+          "replayed": false
+        }
+      ]
+    }
+  ],
+  "unexecuted_indices": [],
+  "next_action": "MAIL1867: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Mensajería 10/31. Siguiente: panel grande de mensajería (Musica y Valeria) sobre el mismo mecanismo.",
+  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
+  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
+}
