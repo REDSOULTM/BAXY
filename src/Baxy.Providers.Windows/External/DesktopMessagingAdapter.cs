@@ -485,113 +485,6 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private const uint KeyUp = 0x0002;
     private const uint Unicode = 0x0004;
 
-    // DISCORD1839 (client.channel.locate) inherited: the quick switcher is opened,
-    // typed and READ inside one PowerShell process. A separate process steals the
-    // foreground and Discord closes the switcher on blur, so the rows read from
-    // outside were the DM list and Enter opened whatever it had selected
-    // («Pedro», then «Julia», DISCORD1857 runs a-c). The rows the switcher adds
-    // are the ones absent before it opened; Enter is pressed only after stepping
-    // down to the first of them that names the recipient.
-    private static readonly ExternalProcessRunner SwitcherRunner = new();
-
-    private const string DiscordOpenDirectMessageScript = """
-        $ErrorActionPreference='Stop';$label=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($args[0]));$needle=$label.ToLowerInvariant()
-        Add-Type -AssemblyName UIAutomationClient;Add-Type -AssemblyName UIAutomationTypes;Add-Type -AssemblyName System.Windows.Forms
-        $sig='using System;using System.Runtime.InteropServices;public static class BaxyDmWin{[DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);[DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();[DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h,int c);[DllImport("user32.dll")] public static extern bool SetCursorPos(int x,int y);[DllImport("user32.dll")] public static extern void mouse_event(uint f,int dx,int dy,uint d,int e);}'
-        if(-not ([System.Management.Automation.PSTypeName]'BaxyDmWin').Type){Add-Type -TypeDefinition $sig}
-        # The window is picked by its PROCESS, never by its title: any window whose
-        # title merely contains «discord» (an editor with a file named after it)
-        # matched the old name test and received the keystrokes.
-        $pids=@(Get-Process -Name Discord -ErrorAction SilentlyContinue | ForEach-Object { $_.Id })
-        $root=[System.Windows.Automation.AutomationElement]::RootElement
-        $cond=New-Object System.Windows.Automation.PropertyCondition([System.Windows.Automation.AutomationElement]::ClassNameProperty,'Chrome_WidgetWin_1')
-        $w=$null;foreach($c in $root.FindAll([System.Windows.Automation.TreeScope]::Children,$cond)){if(($pids -contains $c.Current.ProcessId) -and $c.Current.Name){$w=$c;break}}
-        if($null -eq $w){[pscustomobject]@{ok=$false;error='client_window_not_found'}|ConvertTo-Json -Compress;exit 2}
-        $h=[IntPtr]$w.Current.NativeWindowHandle;[void][BaxyDmWin]::ShowWindow($h,9)
-        $escaped=[regex]::Replace($label,'([+^%~(){}\[\]])','{$1}')
-        function Get-Rows {param($win) $r=@();foreach($e in $win.FindAll([System.Windows.Automation.TreeScope]::Descendants,[System.Windows.Automation.Condition]::TrueCondition)){if($e.Current.ControlType.ProgrammaticName -eq 'ControlType.ListItem'){$n=$e.Current.Name;if($n){$sel=$false;try{$p=$e.GetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern);if($null -ne $p){$sel=$p.Current.IsSelected}}catch{};$r+=[pscustomobject]@{name=$n.Substring(0,[Math]::Min(160,$n.Length));selected=$sel}}}};,$r}
-        function Find-Row {param($win,$nd) foreach($row in (Get-Rows $win)){if($row.name.ToLowerInvariant().Contains($nd)){return $row}};return $null}
-        function Get-Selected {param($win) foreach($row in (Get-Rows $win)){if($row.selected){return $row.name}};return ''}
-        $opened=$false;$chosen='';$rounds=0
-        for($round=0;$round -lt 4 -and -not $opened;$round++){
-          $rounds=$round+1
-          [void][BaxyDmWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 500
-          if([BaxyDmWin]::GetForegroundWindow() -ne $h){Start-Sleep -Milliseconds 400;continue}
-          [System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 300
-          # No row names the recipient before the switcher opens (the test user has
-          # no entry in the direct-message list); the row that names it after typing
-          # is a switcher result and is clicked by its own rectangle. Counting the
-          # rows the switcher added selected a neighbour instead (run d: «Julia»).
-          if($null -ne (Find-Row $w $needle)){[pscustomobject]@{ok=$false;error='recipient_visible_before_search'}|ConvertTo-Json -Compress;exit 4}
-          [System.Windows.Forms.SendKeys]::SendWait('^k');Start-Sleep -Milliseconds 1400
-          if([BaxyDmWin]::GetForegroundWindow() -ne $h){[System.Windows.Forms.SendKeys]::SendWait('{ESC}');continue}
-          [System.Windows.Forms.SendKeys]::SendWait('^a');Start-Sleep -Milliseconds 120
-          [System.Windows.Forms.SendKeys]::SendWait('{BACKSPACE}');Start-Sleep -Milliseconds 120
-          [System.Windows.Forms.SendKeys]::SendWait($escaped);Start-Sleep -Milliseconds 900
-          $row=$null
-          for($poll=0;$poll -lt 10 -and $null -eq $row;$poll++){$row=Find-Row $w $needle;if($null -ne $row){break};Start-Sleep -Milliseconds 400}
-          if($null -eq $row){[System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 300;continue}
-          $chosen=$row.name
-          # Step down reading which row the switcher has SELECTED after each press;
-          # Enter is pressed only when the selected row names the recipient. Neither
-          # counting the new rows nor clicking the row's rectangle opened it (runs
-          # d and e ended on «Julia» with «Valeria, usuario, ron.91» found).
-          $selected=Get-Selected $w;$steps=0
-          while($steps -lt 14 -and -not $selected.ToLowerInvariant().Contains($needle)){
-            [System.Windows.Forms.SendKeys]::SendWait('{DOWN}');Start-Sleep -Milliseconds 220
-            $selected=Get-Selected $w;$steps=$steps+1
-          }
-          if(-not $selected.ToLowerInvariant().Contains($needle)){[System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 300;$chosen='selected: ' + $selected;continue}
-          $chosen=$selected
-          # The foreground is re-asserted immediately before Enter and the title is
-          # read afterwards: the product's own window runs the case meanwhile, and a
-          # foreground stolen between typing and Enter left the previous chat open
-          # with the right row selected (runs d-f).
-          [void][BaxyDmWin]::SetForegroundWindow($h);Start-Sleep -Milliseconds 200
-          if([BaxyDmWin]::GetForegroundWindow() -ne $h){[System.Windows.Forms.SendKeys]::SendWait('{ESC}');Start-Sleep -Milliseconds 300;continue}
-          [System.Windows.Forms.SendKeys]::SendWait('{ENTER}');Start-Sleep -Milliseconds 1800
-          $title=$w.Current.Name
-          if(-not $title.ToLowerInvariant().Contains($needle)){Start-Sleep -Milliseconds 1200;$title=$w.Current.Name}
-          if(-not $title.ToLowerInvariant().Contains($needle)){$chosen='opened: ' + $title;continue}
-          $opened=$true
-        }
-        [pscustomobject]@{ok=$opened;title=$w.Current.Name;chosen=$chosen;rounds=$rounds}|ConvertTo-Json -Compress
-        """;
-
-    /// <summary>Open the Discord direct message whose switcher row names the
-    /// recipient, inside one process; returns the window title afterwards, or null
-    /// when no switcher row named it (nothing is opened and nothing is typed into
-    /// an open chat).</summary>
-    private static async ValueTask<string?> OpenDiscordDirectMessageAsync(
-        string recipient,
-        CancellationToken cancellationToken)
-    {
-        ExternalProcessResult process = await SwitcherRunner.RunAsync(
-            "powershell.exe",
-            ["-NoProfile", "-NonInteractive", "-Command", "& {" + "\n" + DiscordOpenDirectMessageScript + "\n" + "}",
-                Convert.ToBase64String(Encoding.UTF8.GetBytes(recipient))],
-            TimeSpan.FromSeconds(60),
-            cancellationToken).ConfigureAwait(false);
-        string[] lines = process.Output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
-        string line = lines.Length > 0 ? lines[^1] : "{}";
-        AuditReading([], $"discord quick switcher (exit {process.ExitCode}): {line}\n{process.Error}");
-        try
-        {
-            using JsonDocument document = JsonDocument.Parse(line);
-            JsonElement root = document.RootElement;
-            if (root.TryGetProperty("ok", out JsonElement ok) && ok.ValueKind == JsonValueKind.True
-                && root.TryGetProperty("title", out JsonElement title) && title.ValueKind == JsonValueKind.String)
-            {
-                return title.GetString();
-            }
-        }
-        catch (JsonException)
-        {
-        }
-
-        return null;
-    }
-
     public async ValueTask<DesktopRecipientObservation> ResolveAsync(
         string channel,
         string recipient,
@@ -664,23 +557,23 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             // rows are read by UI Automation before Enter; the row that names the
             // recipient is selected with Down, and nothing is opened when no row
             // names it.
-            // The switcher is opened, typed and read inside ONE process: a separate
-            // process steals the foreground and Discord closes the switcher on blur,
-            // so rows read from outside were the DM list and Enter opened whatever
-            // was selected («Pedro», then «Julia»: DISCORD1857 runs a-c, nothing
-            // sent, the title guard refused each time). Nothing is typed into an
-            // open chat: the switcher swallows the name, and when no row of its own
-            // names the recipient nothing is opened.
-            // The composer band is NOT compared here: opening the intended chat
-            // changes it too (its placeholder names the recipient), which refused a
-            // correct open in run d. The guard is the window title, which the caller
-            // reads again right after this block.
-            string? openedTitle = await OpenDiscordDirectMessageAsync(recipient, cancellationToken)
-                .ConfigureAwait(false);
-            if (openedTitle is null)
-            {
-                return new(false, true, handle, processId, "recipient_not_in_quick_switcher");
-            }
+            // DISCORD1839 inherited, driven from here: Escape closes anything open
+            // (Ctrl+K toggles an already open switcher shut), Ctrl+K opens the
+            // switcher, the name is typed and Enter confirms the first result. The
+            // keys travel through the same SendInput path that already sends
+            // WhatsApp messages; a PowerShell helper stole the foreground, which
+            // closes the switcher, and its Enter never reached the row.
+            SendKey(VirtualKeyEscape);
+            await Task.Delay(300, cancellationToken).ConfigureAwait(false);
+            SendChord(VirtualKeyControl, VirtualKeyK);
+            await Task.Delay(1400, cancellationToken).ConfigureAwait(false);
+            SendChord(VirtualKeyControl, VirtualKeyA);
+            await Task.Delay(120, cancellationToken).ConfigureAwait(false);
+            SendKey(VirtualKeyBack);
+            await Task.Delay(120, cancellationToken).ConfigureAwait(false);
+            SendText(recipient);
+            await Task.Delay(1200, cancellationToken).ConfigureAwait(false);
+            SendKey(VirtualKeyReturn);
         }
 
         await Task.Delay(900, cancellationToken).ConfigureAwait(false);
