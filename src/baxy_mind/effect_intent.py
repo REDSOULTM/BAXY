@@ -2785,15 +2785,41 @@ def confident_non_target_language(text: str) -> str | None:
     if _has(
         folded,
         r"\b(?:augmente|fenetre|affiche|autres)\b|\bpour\s+cent\b|"
-        r"\bpar\s+dessus\b",
+        r"\bpar\s+dessus\b|"
+        # «monte le volume» moria sin respuesta y «quelle heure est-il» se
+        # contestaba preguntando: ninguna pista cubria esas dos formas.
+        r"\b(?:quelle|ouvre|ferme|baisse|eteins|allume)\b|"
+        r"\bmonte\s+(?:le|la)\b|\bs'il\s+(?:te|vous)\s+plait\b",
     ):
         return "fr"
     if _has(
         folded,
         r"\b(?:apri|scrivi|salvala|finestra|spesa)\b|"
-        r"\bblocco\s+note\b|\bfai\s+partire\b",
+        r"\bblocco\s+note\b|\bfai\s+partire\b|"
+        r"\b(?:calcolatrice|schermo|volume\s+piu\s+alto)\b|"
+        r"\bche\s+ore\s+sono\b|\balza\s+il\b",
     ):
         return "it"
+    # El aleman faltaba entero, y por eso un pedido en aleman llegaba a la ruta
+    # espanola y podia ejecutarse. Se piden palabras funcionales que ni el
+    # espanol ni el ingles tienen: el detector sigue absteniendose ante una
+    # palabra compartida.
+    if _has(
+        folded,
+        r"\b(?:offne|oeffne|mach|erstelle|schliesse|zeige|starte)\b|"
+        r"\b(?:lautstarke|lauter|leiser|bildschirm|fenster|rechner|"
+        r"notiz|uhrzeit)\b|"
+        r"\bwie\s+spat\b|\bden\s+(?:rechner|bildschirm)\b|"
+        r"\b(?:eine|einen|dass|ich)\s+\w",
+    ):
+        return "de"
+    # «que horas sao» y «aumenta o volume»: portugues que las pistas de arriba
+    # no cubrian.
+    if _has(
+        folded,
+        r"\bque\s+horas\b|\baumenta\s+o\b|\bdiminui\s+o\b",
+    ):
+        return "pt"
     return None
 
 
