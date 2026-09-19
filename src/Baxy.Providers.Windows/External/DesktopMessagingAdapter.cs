@@ -481,6 +481,8 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
     private const ushort VirtualKeyA = 0x41;
     private const ushort VirtualKeyBack = 0x08;
     private const ushort VirtualKeyEscape = 0x1B;
+    private const ushort VirtualKeyShift = 0x10;
+    private const ushort VirtualKeyAlt = 0x12;
     private const ushort VirtualKeyDown = 0x28;
     private const uint KeyUp = 0x0002;
     private const uint Unicode = 0x0004;
@@ -575,6 +577,14 @@ internal sealed partial class WindowsDesktopMessagingAutomation : IDesktopMessag
             SendText(recipient);
             await Task.Delay(1200, cancellationToken).ConfigureAwait(false);
             AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), $"discord: after typing «{recipient}»");
+            // The modifiers are released explicitly before Enter: a chord whose
+            // key-up the client missed leaves Control logically down, and Discord
+            // ignores Ctrl+Enter in the quick switcher (the switcher stayed open
+            // with the right row highlighted and the chat never changed).
+            SendVirtualKey(VirtualKeyControl, keyUp: true);
+            SendVirtualKey(VirtualKeyShift, keyUp: true);
+            SendVirtualKey(VirtualKeyAlt, keyUp: true);
+            await Task.Delay(150, cancellationToken).ConfigureAwait(false);
             SendKey(VirtualKeyReturn);
             await Task.Delay(1500, cancellationToken).ConfigureAwait(false);
             AuditReading(CaptureRegion(handle, CaptureArea.Body, channel), "discord: after enter, title " + WindowTitle(handle));
