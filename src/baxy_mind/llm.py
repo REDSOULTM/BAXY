@@ -6855,6 +6855,24 @@ def _bracket_is_observed(bracketed: str, facts: dict) -> bool:
     return False
 
 
+def _denies_the_destination(folded_reply: str, folded_destination: str) -> bool:
+    """True when the sentence that names the real destination negates the delivery
+    to it. A truthful reply names the destination first and only then says it did
+    not reach the person asked for («… a X, no al destinatario pedido»); a denial
+    puts the negation before it («pero no llegó a X»). A dot inside the address
+    («gmail.com») is not a sentence end."""
+
+    if not folded_destination:
+        return False
+    for sentence in re.split(r"[;\n]|\.(?=\s|$)", folded_reply):
+        position = sentence.find(folded_destination)
+        if position < 0:
+            continue
+        if re.search(r"\b(?:no|not|never|nunca|tampoco|didn't|did\s+not)\b", sentence[:position]) is not None:
+            return True
+    return False
+
+
 def compose_visible_defect(
     text: str,
     intent: str,
@@ -7499,6 +7517,14 @@ def compose_visible_defect(
             # A verified send that the reply does not state (MSGSEND1845: «Hola
             # Música.») hides the delivery the person asked for.
             return "send_not_stated"
+        if forced_dest and _denies_the_destination(
+            folded_reply, _accent_folded_with_punctuation(forced_dest),
+        ):
+            # MAIL1863 H0018: the reply denied the delivery to the very
+            # destination it reached («pero no llegó a
+            # autor@example.com»), which is false whoever the
+            # person named.
+            return "denied_test_destination"
         if (
             requested
             and _accent_folded_with_punctuation(requested) == _accent_folded_with_punctuation(forced_dest)
