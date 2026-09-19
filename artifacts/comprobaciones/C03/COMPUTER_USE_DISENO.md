@@ -186,6 +186,47 @@ La palanca que la guía marca como la de mayor rendimiento es una caché de
 «título → URL»: la primera vez que se reproduce algo se guarda la URL final, y a partir
 de ahí se va directo sin buscar.
 
+## 7. Medido el 19-09 con la sesión puesta: Netflix reproduce
+
+El dueño inició sesión en el perfil compartido del navegador de BAXY. Con eso, y con
+`streaming.play.named` añadida a la lista de operaciones que el revisor de la raíz puede
+confirmar, la fila «pon stranger things en netflix» llegó hasta el final:
+
+```
+streaming.play.named     → completada y verificada
+playbackStatus           → playing
+observedProgressSeconds  → 0,70
+finalUrl                 → https://www.netflix.com/watch/80077368
+authority                → netflix_cdp_video_progress_postread
+```
+
+Es decir: **el DRM no era el problema**. Con el perfil persistente, Widevine se instala
+como componente —la carpeta `WidevineCdm` aparece en el perfil— y Edge reproduce. Lo que
+bloqueaba las 24 filas era que el perfil moría con el turno.
+
+### Lo que falta, con su síntoma exacto
+
+1. **El buscador de títulos es intermitente.** De nueve corridas, tres llegaron a
+   reproducir y el resto terminaron en `netflix_title_or_play_control_not_found` tras
+   agotar los 240 intentos (60 s). El patrón sospechado —un Edge vivo sobre el perfil
+   compartido— explicaba parte, pero no todo: hubo fallos con el perfil limpio. Lo que
+   cambia entre una corrida y la siguiente es el estado en que queda Netflix después de
+   reproducir. Hay que mirar la página en el momento del fallo antes de tocar el JS.
+2. **El final no se redacta.** Con la reproducción verificada, la composición agota los
+   tres borradores y el turno termina en `composition_failed`. El primer borrador que
+   registra la auditoría es de la confirmación, no del resultado; falta ver qué payload
+   recibe el redactor tras el éxito.
+3. **Disney+ no está en el catálogo.** `streaming.navigate` acepta netflix, prime_video y
+   youtube; `streaming.play.named`, sólo netflix. Diez de las veinticuatro filas son
+   Disney+, y la guía de la biblioteca advierte que allí no hay URL de búsqueda con
+   parámetro: hay que escribir en el campo.
+
+### Higiene que la tanda tendrá que hacer
+
+Cada caso mide en un perfil nuevo de BAXY, pero el perfil del navegador ahora es
+compartido a propósito. El paso de la raíz tendrá que cerrar los Edge que queden sobre
+ese perfil antes de cada caso, igual que hoy cierra los clientes de mensajería.
+
 ## Fuentes
 
 - [OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments](https://arxiv.org/html/2404.07972v2)
