@@ -11159,6 +11159,11 @@ def _is_direct_request(text: str) -> bool:
         r"apuntame|apunta|jot|"
         r"dale(?=\s+(?:enter|intro|return))|"
         r"llevame|anda|andar|andate|"
+        # WEB1883 H0081 «abri opera gx y entra a …»: «entrar a» is the same
+        # go-to speech act as «anda a» and «ve a», and it was the only one of
+        # the three missing here, so the whole request lost its authority and
+        # the turn became a conversation that denied the capability.
+        r"entra|entrar|entrale|entrate|vete|vayamos|vamos|"
         r"devuelvele|devuelve|devuelveme|"
         r"maximiza|maximizar|maximize|minimiza|minimizar|minimize|"
         # WINDOWS1695 «Minimisa ópera.»: the s-for-z spelling is the same order.
@@ -17577,6 +17582,40 @@ def deferred_clarification_split(
     return None
 
 
+# WEB1883 H0081 «tomá control de mi pc, quiero que abras opera gx y entres a …»:
+# the opening clause hands the machine over, it does not ask for anything. With
+# it in front, this resolver found no effect and the turn became a conversation
+# whose final denied a capability the product has (Opera GX is installed and
+# browser.navigate.named was credited in WEB1805); without it the very same
+# sentence resolves to the named navigation. Only a LEADING clause is dropped,
+# and only when a request follows it.
+_CONTROL_CESSION_PREAMBLE = re.compile(
+    r"^[\s¡!¿?]*(?:por\s+favor\s*,?\s*|please\s*,?\s*)?"
+    r"(?:tom[aá](?:te)?|agarr[aá]|manej[aá]|controla|control[aá]|"
+    r"take(?:\s+over)?|assume|use)\s*"
+    r"(?:el\s+|the\s+)?(?:control|mando|manejo|comando)?\s*"
+    r"(?:de\s+|of\s+|sobre\s+)?"
+    r"(?:mi|my|la|el|the)\s*"
+    r"(?:pc|computadora|computador|compu|ordenador|m[aá]quina|equipo|"
+    r"computer|machine|laptop|notebook)"
+    r"\s*(?:[,;.]|\s)\s*(?:y|and|luego|then|despu[eé]s|ahora|now)?\s*",
+    re.IGNORECASE,
+)
+
+
+def without_control_cession_preamble(text: str) -> str:
+    """The request that follows a clause handing the machine over, or the text."""
+
+    current = str(text or "")
+    match = _CONTROL_CESSION_PREAMBLE.match(current)
+    if match is None:
+        return current
+    rest = current[match.end():].strip()
+    # «Tomá el control de mi PC.» on its own asks for exactly that and keeps its
+    # own answer; only a request that follows the clause replaces it.
+    return rest if rest else current
+
+
 def resolve_explicit_effects(
     text: str,
     available_operations: Iterable[str],
@@ -17586,6 +17625,8 @@ def resolve_explicit_effects(
     previous_user_text: str | None = None,
 ) -> EffectIntent | None:
     """Resolve a bounded sequence of clause-local, closed-catalog effects."""
+
+    text = without_control_cession_preamble(text)
 
     if explicit_non_action_frame(text):
         return None
