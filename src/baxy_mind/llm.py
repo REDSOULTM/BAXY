@@ -2070,6 +2070,16 @@ def _conversation_presentation_shape(
     # redacción de contenido, no la de traducción, así que el prompt del
     # traductor —devolver la traducción y nada más— no llegaba nunca a los
     # pedidos más corrientes. Un pedido de traducción es una traducción.
+    # cien-43 038 «no lances Steam» y luego «if it didn't happen, say so»: la
+    # pregunta por si ocurrio o no llegaba sin forma ninguna y el modelo devolvia
+    # la condicion como tautologia. Es el mismo reconocimiento de la restriccion,
+    # que ya tiene su prompt y su contrato.
+    if has_history and re.search(
+        r"(?:si|if)\s+(?:eso|it|that)?\s*(?:no|didn\s?t|did not|nunca)\s+"
+        r"(?:pas[oó]|ocurri[oó]|sucedi[oó]|happen(?:ed)?|lo\s+hiciste|hiciste)\b",
+        _policy_guard_text(_strip_request_envelope(semantic_text)),
+    ):
+        return "constraint_ack"
     if re.match(
         r"^[\s¿?¡!]*(?:traduc(?:e|i|ime|eme|ir|elo|ela|ela)|translate)\b",
         _policy_guard_text(_strip_request_envelope(semantic_text)),
@@ -5025,6 +5035,20 @@ def _set_phrase_translation(user_text: str) -> tuple[str, str] | None:
     phrase = " ".join(quoted.group(1).strip(" .!?,;:").casefold().split())
     equivalent = _SET_PHRASE_TRANSLATIONS.get(phrase)
     return (quoted.group(1).strip(), equivalent) if equivalent else None
+
+
+_NON_EVENT_CONFIRMATION = re.compile(
+    r"(?:si|if)\s+(?:eso|it|that)?\s*(?:no|didn\s?t|did not|nunca)\s+"
+    r"(?:pas[oó]|ocurri[oó]|sucedi[oó]|happen(?:ed)?|lo\s+hiciste|hiciste)\b",
+)
+
+
+def _asks_non_event_confirmation(user_text: str) -> bool:
+    """The person asks whether what they forbade actually happened."""
+
+    return _NON_EVENT_CONFIRMATION.search(
+        _policy_guard_text(_strip_request_envelope(str(user_text or "")))
+    ) is not None
 
 
 def _looks_like_refuse_question(user_text: str) -> bool:
@@ -10529,6 +10553,18 @@ class LlmRuntime:
                         " " + CONVERSATION_FACT_PROVENANCE_PROMPT
                         + " " + DEFINITION_CONTRAST_PROMPT
                         if direct_knowledge else ""
+                    ) + (
+                        # cien-43 038: la persona pregunta si eso llegó a pasar.
+                        # Sin esto el turno prometía decirlo («If it didn't happen,
+                        # I'll say so») o devolvía la condición como tautología, en vez
+                        # de contestar que no lo hizo.
+                        " La persona pregunta si eso llegó a pasar: dile en primera"
+                        " persona, y en el idioma de este último mensaje, que no lo"
+                        " hiciste, nombrando qué era. No repitas la condición ni"
+                        " prometas decirlo más tarde."
+                        if presentation_shape == "constraint_ack"
+                        and _asks_non_event_confirmation(text)
+                        else ""
                     ) + (
                         " El equivalente fijo de «" + _set_phrase[0]
                         + "» en español es «" + _set_phrase[1]
