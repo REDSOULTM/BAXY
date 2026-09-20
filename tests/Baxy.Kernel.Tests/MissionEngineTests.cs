@@ -275,7 +275,9 @@ public sealed class MissionEngineTests
         });
     }
 
-    [TestCase(OperationRisk.External, "confirmation_required")]
+    // D3 2026-09-20: External asks only for message/email operations; note.create as
+    // Irreversible keeps the confirmation-before-effect check.
+    [TestCase(OperationRisk.Irreversible, "confirmation_required")]
     [TestCase(OperationRisk.Forbidden, "operation_forbidden")]
     public async Task EnforcesRiskBeforeEffect(OperationRisk risk, string expectedError)
     {

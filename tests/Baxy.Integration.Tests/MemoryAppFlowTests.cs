@@ -604,8 +604,11 @@ public sealed class MemoryAppFlowTests
         });
     }
 
+    // D3 (DECISIONES_DUENO_2026-09-20.md): enabling the private memory is not
+    // destructive, so a requested save with the memory disabled enables it and
+    // saves at once; no «memory_disabled» failure and no question in between.
     [Test]
-    public async Task MissingNameFlowPreservesDisabledMemoryAndReportsItsRealCause()
+    public async Task MissingNameFlowEnablesMemoryAndSavesWithoutAsking()
     {
         using TemporaryDirectory temporary = new();
         string? previousDataRoot = Environment.GetEnvironmentVariable("BAXY_DATA_DIR");
@@ -616,12 +619,15 @@ public sealed class MemoryAppFlowTests
             await viewModel.InitializeAsync(CancellationToken.None);
             Assert.That(viewModel.IsReady, Is.True);
             await SubmitAsync(viewModel, "Recuerda mi nombre");
+            Assert.That(LastAssistantMessage(viewModel), Does.Contain("memory_save_needs_content"));
             await SubmitAsync(viewModel, "me llamo Lina");
-            Assert.That(viewModel.Messages, Has.Some.Matches<ConversationMessage>(
+            Assert.That(viewModel.Messages, Has.None.Matches<ConversationMessage>(
                 static message => !message.IsUser && message.Body.Contains("memory_disabled", StringComparison.Ordinal)));
-            Assert.That(LastAssistantMessage(viewModel), Does.Contain("memory_enable"));
-            Assert.That(Parse(LastAssistantMessage(viewModel)).GetProperty("kind").GetString(),
-                Is.EqualTo("confirmation"));
+            Assert.That(viewModel.Messages, Has.None.Matches<ConversationMessage>(
+                static message => !message.IsUser && message.Body.Contains("\"kind\":\"confirmation\"", StringComparison.Ordinal)));
+            JsonElement saved = Parse(LastAssistantMessage(viewModel));
+            Assert.That(saved.GetProperty("operation").GetString(), Is.EqualTo("memory.save"));
+            Assert.That(saved.GetProperty("observed").GetProperty("saved").GetBoolean(), Is.True);
             var store = new LocalMemoryStore(
                 Path.Combine(temporary.Path, "memory-store"),
                 new WindowsProtectedPayload(Path.Combine(
@@ -629,10 +635,9 @@ public sealed class MemoryAppFlowTests
             MemoryStatusResult status = store.Status(new MemoryStatusRequest(null));
             Assert.Multiple(() =>
             {
-                Assert.That(status.Enabled, Is.False);
-                Assert.That(status.TotalRecords, Is.Zero);
+                Assert.That(status.Enabled, Is.True);
+                Assert.That(status.TotalRecords, Is.EqualTo(1));
             });
-            await SubmitAsync(viewModel, "cancelar");
             Assert.That(new DurableRetryStore(Path.Combine(
                 temporary.Path, "shell", "retry-outbox.v1.json")).Load(), Is.Empty);
         }
@@ -692,8 +697,10 @@ public sealed class MemoryAppFlowTests
         }
     }
 
+    // D3 (2026-09-20): the requested save enables the memory itself and resumes at
+    // once — one enable and one save, no challenge, the name never in the outbox.
     [Test]
-    public async Task RequestedSaveOffersEnableAndResumesOnlyAfterExactConfirmation()
+    public async Task RequestedSaveEnablesMemoryAndResumesWithoutAChallenge()
     {
         using TemporaryDirectory temporary = new();
         string? previousDataRoot = Environment.GetEnvironmentVariable("BAXY_DATA_DIR");
@@ -708,32 +715,12 @@ public sealed class MemoryAppFlowTests
                 await first.InitializeAsync(CancellationToken.None);
                 await SubmitAsync(first, "Recuerda mi nombre");
                 await SubmitAsync(first, "me llamo " + name);
-                PreparedOperation enable = new DurableRetryStore(outbox).Load().Single();
-                string initialConfirmation = LastAssistantMessage(first);
-                Assert.Multiple(() =>
-                {
-                    Assert.That(enable.OperationName, Is.EqualTo("memory.enable"));
-                    Assert.That(LastAssistantMessage(first), Does.Contain("memory_enable"));
-                    Assert.That(LastAssistantMessage(first), Does.Not.Contain(name));
-                    Assert.That(File.ReadAllText(outbox, Encoding.UTF8), Does.Not.Contain(name));
-                    Assert.That(ReadMemoryStatus(temporary.Path).Enabled, Is.False);
-                    Assert.That(ReadMemoryStatus(temporary.Path).TotalRecords, Is.Zero);
-                });
-
-                await SubmitAsync(first, "sí y guarda otra cosa");
-                PreparedOperation sameEnable = new DurableRetryStore(outbox).Load().Single();
-                Assert.Multiple(() =>
-                {
-                    Assert.That(sameEnable.MissionId, Is.EqualTo(enable.MissionId));
-                    Assert.That(sameEnable.InvocationId, Is.EqualTo(enable.InvocationId));
-                    Assert.That(LastAssistantMessage(first), Is.EqualTo(initialConfirmation));
-                    Assert.That(ReadMemoryStatus(temporary.Path).Enabled, Is.False);
-                    Assert.That(ReadMemoryStatus(temporary.Path).TotalRecords, Is.Zero);
-                });
-                await SubmitAsync(first, "confirmar");
                 Assert.Multiple(() =>
                 {
                     Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+                    Assert.That(first.Messages, Has.None.Matches<ConversationMessage>(
+                        static message => !message.IsUser
+                            && message.Body.Contains("\"kind\":\"confirmation\"", StringComparison.Ordinal)));
                     Assert.That(Parse(LastAssistantMessage(first)).GetProperty("observed")
                         .GetProperty("saved").GetBoolean(), Is.True);
                     Assert.That(ReadMemoryStatus(temporary.Path).Enabled, Is.True);
@@ -761,8 +748,10 @@ public sealed class MemoryAppFlowTests
         }
     }
 
+    // D3 (2026-09-20): there is no enable offer to cancel; a later «cancelar» has
+    // nothing pending and the record stays.
     [Test]
-    public async Task CancellingOfferedEnableCannotSaveWhenMemoryIsEnabledLater()
+    public async Task CancelAfterADirectEnableAndSaveChangesNothing()
     {
         using TemporaryDirectory temporary = new();
         string? previousDataRoot = Environment.GetEnvironmentVariable("BAXY_DATA_DIR");
@@ -774,24 +763,18 @@ public sealed class MemoryAppFlowTests
             await viewModel.InitializeAsync(CancellationToken.None);
             await SubmitAsync(viewModel, "remember my name");
             await SubmitAsync(viewModel, "my name is Taylor");
-            Assert.That(new DurableRetryStore(outbox).Load().Single().OperationName,
-                Is.EqualTo("memory.enable"));
+            Assert.Multiple(() =>
+            {
+                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+                Assert.That(ReadMemoryStatus(temporary.Path).Enabled, Is.True);
+                Assert.That(ReadMemoryStatus(temporary.Path).TotalRecords, Is.EqualTo(1));
+            });
             await SubmitAsync(viewModel, "cancelar");
             Assert.Multiple(() =>
             {
                 Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
-                Assert.That(ReadMemoryStatus(temporary.Path).Enabled, Is.False);
-                Assert.That(ReadMemoryStatus(temporary.Path).TotalRecords, Is.Zero);
-            });
-            await SubmitAsync(viewModel, "activa la memoria");
-            await SubmitAsync(viewModel, "confirmar");
-            Assert.Multiple(() =>
-            {
                 Assert.That(ReadMemoryStatus(temporary.Path).Enabled, Is.True);
-                Assert.That(ReadMemoryStatus(temporary.Path).TotalRecords, Is.Zero);
-                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
-                Assert.That(Parse(LastAssistantMessage(viewModel)).GetProperty("operation").GetString(),
-                    Is.EqualTo("memory.enable"));
+                Assert.That(ReadMemoryStatus(temporary.Path).TotalRecords, Is.EqualTo(1));
             });
         }
         finally
@@ -824,28 +807,14 @@ public sealed class MemoryAppFlowTests
                 Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
             });
 
+            // D3 (2026-09-20): enabling the memory is not destructive; it runs
+            // without a challenge and the outbox never holds it.
             await SubmitAsync(viewModel, "activa la memoria");
-            PreparedOperation enable = new DurableRetryStore(outbox).Load().Single();
-            string initialConfirmation = LastAssistantMessage(viewModel);
-            Assert.Multiple(() =>
-            {
-                Assert.That(enable.OperationName, Is.EqualTo("memory.enable"));
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("confirmar"));
-            });
-
-            await SubmitAsync(viewModel, "sí y guarda");
-            PreparedOperation stillPending = new DurableRetryStore(outbox).Load().Single();
-            Assert.Multiple(() =>
-            {
-                Assert.That(stillPending.MissionId, Is.EqualTo(enable.MissionId));
-                Assert.That(stillPending.InvocationId, Is.EqualTo(enable.InvocationId));
-                Assert.That(LastAssistantMessage(viewModel), Is.EqualTo(initialConfirmation));
-            });
-
-            await SubmitAsync(viewModel, "confirmar");
             Assert.Multiple(() =>
             {
                 Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
+                Assert.That(Parse(LastAssistantMessage(viewModel)).GetProperty("operation").GetString(),
+                    Is.EqualTo("memory.enable"));
                 Assert.That(Parse(LastAssistantMessage(viewModel)).GetProperty("observed")
                     .GetProperty("enabled").GetBoolean(), Is.True);
             });
@@ -866,12 +835,17 @@ public sealed class MemoryAppFlowTests
                 Assert.That(LastAssistantMessage(viewModel), Does.Contain("memory_records"));
             });
 
+            // D3 (2026-09-20): a sensitive save is not destructive either; it is
+            // stored at once and the secret never reaches a visible message.
             const string sensitiveRequest = "save my api key sk-12345 in your memory";
             await SubmitAsync(viewModel, sensitiveRequest);
             Assert.Multiple(() =>
             {
                 Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("memory_sensitive_save"));
+                Assert.That(Parse(LastAssistantMessage(viewModel)).GetProperty("operation").GetString(),
+                    Is.EqualTo("memory.sensitive.save"));
+                Assert.That(Parse(LastAssistantMessage(viewModel)).GetProperty("observed")
+                    .GetProperty("sensitive").GetBoolean(), Is.True);
                 Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain("sk-12345"));
                 Assert.That(File.ReadAllText(outbox, Encoding.UTF8), Does.Not.Contain("sk-12345"));
                 Assert.That(
@@ -886,16 +860,7 @@ public sealed class MemoryAppFlowTests
                     Is.True);
             });
 
-            await SubmitAsync(viewModel, "cancelar");
-            Assert.Multiple(() =>
-            {
-                Assert.That(new DurableRetryStore(outbox).Load(), Is.Empty);
-                Assert.That(LastAssistantMessage(viewModel), Does.Contain("memory_cancelled"));
-                Assert.That(Parse(LastAssistantMessage(viewModel)).GetProperty("cancelledAction")
-                    .GetProperty("operation").GetString(), Is.EqualTo("memory.sensitive.save"));
-                Assert.That(LastAssistantMessage(viewModel), Does.Not.Contain("sk-12345"));
-            });
-
+            // Forgetting destroys a record: it still asks (work_loss).
             await SubmitAsync(viewModel, "borra mi color favorito");
             Assert.That(new DurableRetryStore(outbox).Load(), Has.Count.EqualTo(1));
             await SubmitAsync(viewModel, "cancelar");
@@ -1125,6 +1090,9 @@ public sealed class MemoryAppFlowTests
         }
     }
 
+    // D3 (2026-09-20): a sensitive save no longer challenges, so its uncertain
+    // start is retried like any reversible operation; the reconciliation
+    // challenge is exercised on memory.forget, which destroys and still asks.
     [Test]
     public async Task ReconciliationChallengeCannotBeCancelledWithAFalseNoEffectClaim()
     {
@@ -1140,7 +1108,13 @@ public sealed class MemoryAppFlowTests
                 Guid.NewGuid().ToString("D"));
             var registry = RetryableOperationRegistry.CreateDefault(previous);
             PreparedOperation uncertain = registry.GetOrAdd(previous.Prepare(
-                SaveRoute(Canary + "-uncertain", "persistent", "secret")));
+                new MemoryRoutedOperation("memory.forget", new JsonObject
+                {
+                    ["version"] = 1,
+                    ["confirmationRequired"] = true,
+                    ["scope"] = "exact",
+                    ["selector"] = Canary + "-uncertain",
+                })));
             OperationRequest startedRequest = uncertain.CreateRequest();
             string fingerprint = RequestFingerprint.Compute(startedRequest);
             await using (FileInvocationJournal journal = await FileInvocationJournal.OpenAsync(

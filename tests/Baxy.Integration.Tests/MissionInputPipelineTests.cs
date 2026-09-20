@@ -43,12 +43,13 @@ public sealed class MissionInputPipelineTests
         "audio.status",
         OperationRisks.ReadOnly,
         PolicyDecision.Allow)]
+    // D3 2026-09-20: privacy_sensitive goes direct; only the destructive asks.
     [TestCase(
-        "es-confirmacion",
+        "es-directo",
         "activa la memoria",
         "memory.enable",
         OperationRisks.PrivacySensitive,
-        PolicyDecision.RequireConfirmation)]
+        PolicyDecision.Allow)]
     [TestCase(
         "en-confirmation",
         "forget my favorite color",

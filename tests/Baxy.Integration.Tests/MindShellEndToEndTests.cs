@@ -694,6 +694,9 @@ public sealed class MindShellEndToEndTests
         });
     }
 
+    // D3 (DECISIONES_DUENO_2026-09-20.md): navigating no longer asks; the Core
+    // confirmation mechanics are exercised on a work_loss operation whose target
+    // process does not exist, so a confirmation would change nothing.
     [Test]
     public async Task SimpleMindActionPreservesCoreConfirmationInsteadOfClaimingSuccess()
     {
@@ -701,7 +704,7 @@ public sealed class MindShellEndToEndTests
         {
             string prompt = await SubmitAsync(
                 viewModel,
-                "Navega Opera a https://example.com/");
+                "Terminá el proceso baxy-proceso-inexistente");
 
             JsonElement[] trace = ReadTrace(tracePath);
             Assert.Multiple(() =>
@@ -709,12 +712,12 @@ public sealed class MindShellEndToEndTests
                 Assert.That(prompt, Does.Contain("confirmation"));
                 Assert.That(prompt, Does.Contain("confirmar"));
                 Assert.That(prompt, Does.Contain("cancelar"));
-                Assert.That(prompt, Does.Not.Contain("Navegué"));
+                Assert.That(prompt, Does.Not.Contain("Terminé"));
                 Assert.That(
                     trace.Count(static entry =>
                         Property(entry, "type") == "arguments"
                         && Property(entry, "operation")
-                            == "browser.navigate.named"),
+                            == "system.process.terminate.named"),
                     Is.EqualTo(1));
                 Assert.That(
                     new DurableRetryStore(
@@ -741,7 +744,7 @@ public sealed class MindShellEndToEndTests
     {
         await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
         {
-            _ = await SubmitAsync(viewModel, "Navega Opera a https://example.com/");
+            _ = await SubmitAsync(viewModel, "Terminá el proceso baxy-proceso-inexistente");
             Assert.That(viewModel.HasPendingPlan, Is.True);
             string answer = await SubmitAsync(viewModel, request);
             Assert.Multiple(() =>
@@ -754,7 +757,7 @@ public sealed class MindShellEndToEndTests
                     "The independent decision must be reused, not sent to the model twice.");
                 Assert.That(ReadTrace(tracePath).Count(entry =>
                     Property(entry, "type") == "arguments"
-                    && Property(entry, "operation") == "browser.navigate.named"), Is.EqualTo(1),
+                    && Property(entry, "operation") == "system.process.terminate.named"), Is.EqualTo(1),
                     "The old action must not be prepared or resumed again.");
             });
             AssertOutboxEmpty(dataRoot);
@@ -769,7 +772,7 @@ public sealed class MindShellEndToEndTests
     {
         await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
         {
-            _ = await SubmitAsync(viewModel, "Navega Opera a https://example.com/");
+            _ = await SubmitAsync(viewModel, "Terminá el proceso baxy-proceso-inexistente");
             string outbox = Path.Combine(dataRoot, "shell", "retry-outbox.v1.json");
             byte[] before = File.ReadAllBytes(outbox);
             string answer = await SubmitAsync(viewModel, fragment);
@@ -792,7 +795,7 @@ public sealed class MindShellEndToEndTests
     {
         await WithContractMindAsync(async (viewModel, dataRoot, tracePath) =>
         {
-            const string request = "Navega Opera a https://example.com/";
+            const string request = "Terminá el proceso baxy-proceso-inexistente";
             _ = await SubmitAsync(viewModel, request);
             string outbox = Path.Combine(dataRoot, "shell", "retry-outbox.v1.json");
             PreparedOperation before = new DurableRetryStore(outbox).Load().Single();

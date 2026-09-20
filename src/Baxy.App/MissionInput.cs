@@ -214,7 +214,7 @@ internal sealed class MissionInputRoute
         return new MissionOperationContract(
             descriptor.Name,
             descriptor.Risk,
-            RiskPolicy.Evaluate(definition.Risk));
+            RiskPolicy.Evaluate(definition.Risk, operation: descriptor.Name));
     }
 }
 

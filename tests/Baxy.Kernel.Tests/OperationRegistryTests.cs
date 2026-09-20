@@ -33,10 +33,13 @@ public sealed class OperationRegistryTests
             Throws.ArgumentException);
     }
 
+    // D3 (DECISIONES_DUENO_2026-09-20.md): only the destructive or irreparable asks
+    // in normal mode; privacy_sensitive/installation and external effects that reach
+    // no other person go direct.
     [TestCase(OperationRisk.ReadOnly, PolicyDecision.Allow)]
     [TestCase(OperationRisk.Reversible, PolicyDecision.Allow)]
-    [TestCase(OperationRisk.Sensitive, PolicyDecision.RequireConfirmation)]
-    [TestCase(OperationRisk.External, PolicyDecision.RequireConfirmation)]
+    [TestCase(OperationRisk.Sensitive, PolicyDecision.Allow)]
+    [TestCase(OperationRisk.External, PolicyDecision.Allow)]
     [TestCase(OperationRisk.Irreversible, PolicyDecision.RequireConfirmation)]
     [TestCase(OperationRisk.Forbidden, PolicyDecision.Deny)]
     public void Policy_is_proportional_and_fail_closed(
@@ -44,6 +47,46 @@ public sealed class OperationRegistryTests
         PolicyDecision expected)
     {
         Assert.That(RiskPolicy.Evaluate(risk), Is.EqualTo(expected));
+    }
+
+    // D3: what reaches another person keeps asking; playing, navigating, clicking,
+    // copying, capturing, typing, radios, settings and installing do not.
+    [TestCase("message.send", PolicyDecision.RequireConfirmation)]
+    [TestCase("message.send.test", PolicyDecision.RequireConfirmation)]
+    [TestCase("email.latest.reply", PolicyDecision.RequireConfirmation)]
+    [TestCase("media.play.query", PolicyDecision.Allow)]
+    [TestCase("streaming.play.named", PolicyDecision.Allow)]
+    [TestCase("browser.navigate.named", PolicyDecision.Allow)]
+    [TestCase("input.visible.click", PolicyDecision.Allow)]
+    [TestCase("calendar.event.create", PolicyDecision.Allow)]
+    [TestCase("capture.screenshot", PolicyDecision.Allow)]
+    [TestCase("clipboard.read.text", PolicyDecision.Allow)]
+    [TestCase("input.text.type", PolicyDecision.Allow)]
+    [TestCase("wifi.radio.set", PolicyDecision.Allow)]
+    [TestCase("bluetooth.device.pair", PolicyDecision.Allow)]
+    [TestCase("system.settings.set", PolicyDecision.Allow)]
+    [TestCase("memory.enable", PolicyDecision.Allow)]
+    [TestCase("game.install.named", PolicyDecision.Allow)]
+    [TestCase("package.install.commit", PolicyDecision.Allow)]
+    [TestCase("game.install.cancel", PolicyDecision.RequireConfirmation)]
+    [TestCase("game.purchase.commit", PolicyDecision.RequireConfirmation)]
+    [TestCase("memory.forget", PolicyDecision.RequireConfirmation)]
+    [TestCase("system.process.terminate.named", PolicyDecision.RequireConfirmation)]
+    [TestCase("system.recyclebin.empty", PolicyDecision.RequireConfirmation)]
+    [TestCase("window.close.all", PolicyDecision.RequireConfirmation)]
+    [TestCase("app.close", PolicyDecision.RequireConfirmation)]
+    [TestCase("system.power", PolicyDecision.Allow)]
+    public void Normal_mode_asks_only_for_the_destructive_or_what_reaches_another_person(
+        string operation,
+        PolicyDecision expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired(operation);
+        Assert.That(
+            RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Normal, operation),
+            Is.EqualTo(expected));
+        Assert.That(
+            RiskPolicy.Evaluate(ProductCatalog.ToPolicyRisk(descriptor.Risk), ConfirmationMode.Bypass, operation),
+            Is.EqualTo(PolicyDecision.Allow));
     }
 
     [TestCase(OperationRisk.Irreversible, ConfirmationMode.Bypass, PolicyDecision.Allow)]

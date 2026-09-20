@@ -557,8 +557,10 @@ public sealed class MemoryOperationProtectionTests
 
     private sealed class ConfirmationOnlyMemoryHandler : IOperationHandler
     {
+        // D3 (2026-09-20): a sensitive save no longer challenges; the App parser
+        // round trip is exercised on a destructive (Irreversible) memory operation.
         public OperationDefinition Definition { get; } =
-            new("memory.save", OperationRisk.Sensitive, "Test memory confirmation.");
+            new("memory.save", OperationRisk.Irreversible, "Test memory confirmation.");
 
         public ValueTask<OperationOutcome> ExecuteAsync(
             OperationInvocation invocation,

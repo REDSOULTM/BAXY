@@ -246,6 +246,19 @@ def _turn(message: dict[str, Any]) -> dict[str, Any]:
             "question": "",
             "reply": "",
         }
+    if text == "Terminá el proceso baxy-proceso-inexistente":
+        # D3 2026-09-20: navigation no longer asks; the confirmation mechanics are
+        # exercised on a work_loss operation that is harmless if ever confirmed
+        # (no such process exists).
+        return {
+            "type": "turn.result",
+            "id": request_id,
+            "kind": "action",
+            "operation": "system.process.terminate.named",
+            "effectOperations": ["system.process.terminate.named"],
+            "question": "",
+            "reply": "",
+        }
     return {
         "type": "turn.result",
         "id": request_id,
@@ -346,6 +359,8 @@ def main() -> int:
                     "url": "https://example.com/",
                 }
                 if operation == "browser.navigate.named"
+                else {"name": "baxy-proceso-inexistente"}
+                if operation == "system.process.terminate.named"
                 else None
             )
             _write(

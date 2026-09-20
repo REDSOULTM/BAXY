@@ -393,7 +393,11 @@ internal sealed class MemoryTurnSession
             return;
         }
 
-        if (!isDurable)
+        // D3 (2026-09-20): a sensitive save is not destructive and completes
+        // without a challenge; the secret still never enters the outbox. Only a
+        // response that neither challenged nor completed leaves it unsaved.
+        if (!isDurable
+            && !string.Equals(response.Status, OperationStatuses.Completed, StringComparison.Ordinal))
         {
             ClearContinuation(prepared);
             _host.Publish(
@@ -445,9 +449,21 @@ internal sealed class MemoryTurnSession
             return;
         }
 
-        _host.Publish(
-            PrivateOperationNarration.CreateMemoryFailureMessage(prepared.OperationName, response),
-            UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+        bool enableFollows = allowEnableOffer
+            && prepared.OperationName == "memory.save"
+            && response.Status == OperationStatuses.Failed
+            && response.ErrorCode == "memory_disabled"
+            && protector.InspectForRecovery(prepared).OriginatesInCurrentSession;
+        if (!enableFollows)
+        {
+            // D3 (2026-09-20): when the person asked to remember something, the
+            // memory is enabled and the save resumes at once (memory.enable no
+            // longer challenges); a «memory_disabled» failure is not published
+            // in between, since the turn does not end there.
+            _host.Publish(
+                PrivateOperationNarration.CreateMemoryFailureMessage(prepared.OperationName, response),
+                UserMessageEvent.Error(UserMessageDiagnosticCodes.ActionNotCompleted));
+        }
         if (MainWindowViewModel.ShouldRetainRetryIdentity(response))
         {
             if (confirmationToken is null || _confirmation is null)
@@ -458,14 +474,10 @@ internal sealed class MemoryTurnSession
             return;
         }
 
-        if (allowEnableOffer
-            && prepared.OperationName == "memory.save"
-            && response.Status == OperationStatuses.Failed
-            && response.ErrorCode == "memory_disabled"
-            && protector.InspectForRecovery(prepared).OriginatesInCurrentSession)
+        if (enableFollows)
         {
-            // The failed save is terminal. Enabling has its own invocation and
-            // challenge; only a verified enable can create a new save attempt.
+            // The failed save is terminal. Enabling has its own invocation;
+            // only a verified enable can create a new save attempt.
             if (!TryRemove(registry, prepared))
             {
                 SetPending(registry, prepared);
