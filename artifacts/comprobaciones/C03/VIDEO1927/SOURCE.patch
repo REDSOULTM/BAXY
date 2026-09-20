@@ -1,0 +1,50 @@
+commit 923efb3ad65235b069e151ee36a772b651da9409
+
+C03: tras el veto de estado, la reproducción de streaming recibe su pista
+
+Con «pon stranger thins en netflix» la reproducción salía —Netflix corrige
+la errata— pero el final no se redactaba: el modelo escribía «Estoy viendo
+Stranger Things», sin estado, y la pista que recibía tras el veto era la de
+ventanas: «abierto/open, no el imperativo». Tres intentos iguales y el turno
+sin final. Medido con la auditoría de composición, no adivinado.
+
+La pista de la reproducción de música ya sabía pedir estado y título; le
+faltaba esta operación. Y para una serie el verbo es reproducirse, no
+sonar, y el sitio es el servicio donde se ve: «Está reproduciéndose en
+Netflix el título «Stranger Things»».
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 567102cc4..e190cf924 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -16526,11 +16526,24 @@ class LlmRuntime:
+                     # MUSIC1561: the drafts wrote the bare title or «Estoy escuchando»;
+                     # the reply must assert the playing state with the title.
+                     else (
+-                        ("Say that it is playing and quote the whole title: «" if response_language == "en"
+-                         else "Di que está sonando o reproduciéndose y cita el título completo: «")
++                        # Una serie no «suena»: para el streaming la pista pide el
++                        # verbo del vídeo y el servicio donde se ve.
++                        ("Say that it is playing on " + str(_merged_observed(situation).get("service", "")).replace("_", " ").title()
++                         + " and quote the whole title: «" if response_language == "en"
++                         else "Di que está reproduciéndose en " + str(_merged_observed(situation).get("service", "")).replace("_", " ").title()
++                         + " y cita el título completo: «")
++                        + str(_merged_observed(situation).get("title")) + "»"
++                        if situation.get("operation") == "streaming.play.named"
++                        else ("Say that it is playing and quote the whole title: «" if response_language == "en"
++                              else "Di que está sonando o reproduciéndose y cita el título completo: «")
+                         + str(_merged_observed(situation).get("title")) + "»"
+                     )
+-                    if situation.get("operation") in {"media.play.youtube", "media.play.query", "media.play.exact"}
++                    # VIDEO1927 H0355 «pon stranger thins en netflix»: con el título
++                    # corregido por Netflix el modelo escribía «Estoy viendo Stranger
++                    # Things», sin estado, y la pista que recibía era la de ventanas
++                    # («abierto/open»); tres intentos iguales y el turno sin final.
++                    if situation.get("operation") in {"media.play.youtube", "media.play.query", "media.play.exact",
++                                                      "streaming.play.named"}
+                     else "abierto/open, no el imperativo."
+                 )
+             ),

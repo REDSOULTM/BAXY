@@ -1634,3 +1634,7 @@ Vídeo y series pasa de 9/26 a 11/26 con poner la serie que se nombra sin pregun
 ## Actualización 2026-09-20 (VIDEO1925)
 
 Vídeo y series pasa de 11/26 a 12/26 con preguntar por el titulo cuando es lo unico que falta, y no ejecutar nada mientras tanto (commit 8a16c93f, BUILD1925) (HEAD 8a16c93f): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Cero operaciones en los cuatro del grupo; cada final es una sola pregunta por el titulo que falta, en el idioma del pedido.
+
+## Actualización 2026-09-20 (VIDEO1927)
+
+Vídeo y series pasa de 12/26 a 14/26 con poner la serie aunque se nombre mal, y decir cual se puso de verdad (commit 923efb3a, BUILD1927) (HEAD 923efb3a): 6 ejecutados, 6 aprobados, 0 fallidos, 2 créditos. La raiz aprueba el titulo tal y como se escribio, Netflix lo corrige, el video avanza y el final nombra el titulo observado; cuatro reproducciones verificadas y dos limites en cero operaciones.

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-video1927-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/llm.py (after a missing-state veto, a streaming playback final is told to say it is playing on the service and to quote the observed title, instead of the window hint), on top of the VIDEO1927 build.",
+  "patch": "artifacts/comprobaciones/C03/VIDEO1927/SOURCE.patch",
+  "commits": [
+    "923efb3ad65235b069e151ee36a772b651da9409"
+  ],
+  "build": "BUILD1927 (C03-repairs1927-build/BUILD_READY.json; mente)",
+  "cause_measured": "Tras el veto missing_state la pista para streaming.play.named era la de ventanas; el modelo repetía «Estoy viendo Stranger Things» tres veces y el turno terminaba sin final.",
+  "change": "La pista pide decir que está reproduciéndose en el servicio y citar el título observado.",
+  "measurement": "VIDEO1927: 6 ejecutados, 6 aprobados, 0 fallidos; 2 créditos. La raiz aprueba el titulo tal y como se escribio, Netflix lo corrige, el video avanza y el final nombra el titulo observado; cuatro reproducciones verificadas y dos limites en cero operaciones.",
+  "credits": 2
+}
