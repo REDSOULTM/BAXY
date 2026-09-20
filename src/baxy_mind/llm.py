@@ -8585,6 +8585,24 @@ def compose_visible_defect(
                         return "wrong_address"
         if (
             operation == "streaming.play.named"
+            and situation.get("verified") is True
+            and situation.get("succeeded") is True
+            and observed_dict.get("playbackStatus") == "playing"
+            and re.search(
+                r"\bno\s+(?:se\s+pued[eo]n?|pude|puedo|podemos|es\s+posible|fue\s+posible)\b"
+                r"|\bno\s+(?:se\s+)?(?:est[aá]|logr[oó]|consigui[oó])\s+reproduci"
+                r"|\b(?:can(?:'|’)?t|cannot|couldn(?:'|’)?t|could\s+not|unable\s+to|wasn(?:'|’)?t\s+able|not\s+possible)\b",
+                folded,
+            )
+        ):
+            # VIDEO1953: con «El diablo viste a la moda 2» avanzando, un borrador
+            # abrió «No, no se puede reproducir "The Devil" en Disney Plus» antes
+            # de nombrar lo que se ve. La búsqueda del servicio corrigió el
+            # título; nada falló. Una reproducción verificada no admite ninguna
+            # negación de capacidad en su final.
+            return "playback_denied"
+        if (
+            operation == "streaming.play.named"
             and isinstance(observed_dict.get("observedProgressSeconds"), (int, float))
             and re.search(
                 r"\d[\d.,]*\s*(?:segundos?|seconds?|secs?\b)"
@@ -16664,6 +16682,11 @@ class LlmRuntime:
                     "Say only that it is playing and what is playing; do not state any number of seconds and do not say where in the video it is: the observed progress is how you checked, not a position and not something the person did."
                     if response_language == "en"
                     else "Di sólo que está reproduciéndose y qué se reproduce; no digas ningún número de segundos ni por dónde va el vídeo: el avance observado es cómo lo comprobaste, no una posición ni algo que haya hecho la persona."
+                ),
+                "playback_denied": (
+                    "Playback is verified: seen.title is playing on the service. Do not say anything cannot or could not be played; if the observed title differs from what was asked, simply name what is playing."
+                    if response_language == "en"
+                    else "La reproducción está verificada: seen.title se está reproduciendo en el servicio. No digas que algo no se puede o no se pudo reproducir; si el título observado no es el que se pidió, nombra sin más lo que se reproduce."
                 ),
                 "screen_wrong_count": (
                     "The screen shows seen.lineCount lines: that is the only number you may state; seen.lines are only some of those lines, so do not count them."
