@@ -6631,6 +6631,17 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     if news_defect:
         return news_defect
     if (
+        payload.get("operation") == "system.power"
+        and isinstance(seen, dict)
+        and isinstance(seen.get("delaySeconds"), int)
+    ):
+        # REOPEN1993 grupo P: the announced delay is the fact; a past-tense
+        # «se apagó»/«se reinició» claims what has not happened yet.
+        if str(seen["delaySeconds"]) not in text:
+            return "missing_state"
+        if re.search(r"\b(?:se\s+(?:apago|reinicio)|ya\s+(?:esta|se)\s+(?:apagad|reiniciad)|was\s+(?:shut\s+down|restarted)|has\s+(?:shut\s+down|restarted))\b", _reading_fold(text)):
+            return "extra_claim"
+    if (
         payload.get("operation") == "storage.removable.list"
         and isinstance(seen, dict)
         and isinstance(seen.get("drives"), list)
@@ -15583,6 +15594,24 @@ class LlmRuntime:
                 "en una oración, la operación y su resultado tal como se muestra (por "
                 "ejemplo que seis por siete da 42 en la Calculadora), usando sólo esos "
                 "números; no se hizo nada más."
+            )
+        if (
+            visible_situation.get("operation") == "system.power"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("delaySeconds"), int)
+        ):
+            # REOPEN1993 grupo P (H0401, H0714): Windows accepted the transition
+            # with a delay it announces; the reply says what will happen and when.
+            delay = visible_situation["seen"]["delaySeconds"]
+            action = str(visible_situation["seen"].get("action") or "")
+            instruct(
+                f"\nWindows accepted the request: the PC will {'restart' if action == 'restart' else 'shut down'} "
+                f"in {delay} seconds (seen.delaySeconds). Say exactly that, in one short sentence, "
+                "with that number; do not say it already restarted or shut down."
+                if response_language == "en"
+                else f"\nWindows aceptó el pedido: el PC se va a {'reiniciar' if action == 'restart' else 'apagar'} "
+                f"en {delay} segundos (seen.delaySeconds). Dilo así, en una oración corta, con ese "
+                "número; no digas que ya se reinició ni que ya se apagó."
             )
         if (
             visible_situation.get("operation") == "web.news.headlines"

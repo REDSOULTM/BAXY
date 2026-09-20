@@ -16,6 +16,16 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
     private const uint ExitWindowsForceIfHung = 0x00000010;
     private const uint ShutdownReasonMajorApplication = 0x00040000;
     private const uint ShutdownReasonPlanned = 0x80000000;
+    // REOPEN1993 H0401/H0714: InitiateSystemShutdownEx needs SeShutdownPrivilege
+    // enabled on this process token; without it Windows answered
+    // ERROR_PRIVILEGE_NOT_HELD and the product told the person that Windows
+    // had not accepted the request. The transition is asked with a short
+    // delay so Windows announces it and `shutdown /a` can still abort it.
+    internal const uint TransitionDelaySeconds = 30;
+    private const string ShutdownPrivilegeName = "SeShutdownPrivilege";
+    private const uint TokenAdjustPrivileges = 0x0020;
+    private const uint TokenQuery = 0x0008;
+    private const uint PrivilegeEnabled = 0x00000002;
 
     public WindowsPowerTransitionResult Request(string action) => action switch
     {
@@ -29,20 +39,20 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
             SetSuspendState(hibernate: false, forceCritical: true, disableWakeEvent: false),
             "win32_setsuspendstate_acceptance"),
         "restart" => new(
-            InitiateSystemShutdownEx(
+            EnableShutdownPrivilege() && InitiateSystemShutdownEx(
                 null,
-                "BAXY confirmó el reinicio solicitado.",
-                timeout: 0,
-                forceAppsClosed: true,
+                "BAXY confirmó el reinicio solicitado; reinicia en 30 segundos.",
+                timeout: TransitionDelaySeconds,
+                forceAppsClosed: false,
                 rebootAfterShutdown: true,
                 ShutdownReasonMajorApplication | ShutdownReasonPlanned),
             "win32_initiatesystemshutdownex_restart_acceptance"),
         "shutdown" => new(
-            InitiateSystemShutdownEx(
+            EnableShutdownPrivilege() && InitiateSystemShutdownEx(
                 null,
-                "BAXY confirmó el apagado solicitado.",
-                timeout: 0,
-                forceAppsClosed: true,
+                "BAXY confirmó el apagado solicitado; apaga en 30 segundos.",
+                timeout: TransitionDelaySeconds,
+                forceAppsClosed: false,
                 rebootAfterShutdown: false,
                 ShutdownReasonMajorApplication | ShutdownReasonPlanned),
             "win32_initiatesystemshutdownex_shutdown_acceptance"),
@@ -63,6 +73,54 @@ internal sealed partial class WindowsPowerTransitionPlatform : IWindowsPowerTran
         [MarshalAs(UnmanagedType.Bool)] bool hibernate,
         [MarshalAs(UnmanagedType.Bool)] bool forceCritical,
         [MarshalAs(UnmanagedType.Bool)] bool disableWakeEvent);
+
+    private static bool EnableShutdownPrivilege()
+    {
+        if (!OpenProcessToken(GetCurrentProcess(), TokenAdjustPrivileges | TokenQuery, out nint token))
+            return false;
+        try
+        {
+            if (!LookupPrivilegeValue(null, ShutdownPrivilegeName, out long luid))
+                return false;
+            var privileges = new TokenPrivileges { PrivilegeCount = 1, Luid = luid, Attributes = PrivilegeEnabled };
+            if (!AdjustTokenPrivileges(token, false, ref privileges, 0, nint.Zero, nint.Zero))
+                return false;
+            // AdjustTokenPrivileges returns true even when the privilege was not
+            // assigned to the token; ERROR_NOT_ALL_ASSIGNED (1300) says so.
+            return Marshal.GetLastPInvokeError() != 1300;
+        }
+        finally
+        {
+            _ = CloseHandle(token);
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct TokenPrivileges
+    {
+        public uint PrivilegeCount;
+        public long Luid;
+        public uint Attributes;
+    }
+
+    [LibraryImport("kernel32.dll")]
+    private static partial nint GetCurrentProcess();
+
+    [LibraryImport("kernel32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool CloseHandle(nint handle);
+
+    [LibraryImport("advapi32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool OpenProcessToken(nint process, uint desiredAccess, out nint token);
+
+    [LibraryImport("advapi32.dll", EntryPoint = "LookupPrivilegeValueW", StringMarshalling = StringMarshalling.Utf16, SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool LookupPrivilegeValue(string? systemName, string name, out long luid);
+
+    [LibraryImport("advapi32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool AdjustTokenPrivileges(nint token, [MarshalAs(UnmanagedType.Bool)] bool disableAll, ref TokenPrivileges newState, uint bufferLength, nint previousState, nint returnLength);
 
     [LibraryImport("advapi32.dll", EntryPoint = "InitiateSystemShutdownExW",
         StringMarshalling = StringMarshalling.Utf16, SetLastError = true)]
@@ -124,6 +182,8 @@ internal sealed class WindowsPowerTransitionAdapter : IExternalOperationAdapter
                 writer.WriteNumber("version", 1);
                 writer.WriteString("action", action);
                 writer.WriteBoolean("accepted", true);
+                if (action is "restart" or "shutdown")
+                    writer.WriteNumber("delaySeconds", WindowsPowerTransitionPlatform.TransitionDelaySeconds);
                 writer.WriteString("requestedUtc", DateTimeOffset.UtcNow);
                 writer.WriteString("authority", transition.Authority);
                 writer.WriteEndObject();
