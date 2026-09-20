@@ -1,0 +1,15 @@
+{
+  "schema": "c03-unres1941-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/corrector.py (the transcription lexicon: Hunspell es_AR + en_US through spylls, a runtime asset), src/baxy_mind/__main__.py (the unknown_word kind for a short message without any known content word), src/baxy_mind/llm.py (the clarification that quotes the word and asks to repeat it), on top of the UNRES1941 build.",
+  "patch": "artifacts/comprobaciones/C03/UNRES1941/SOURCE.patch",
+  "commits": [
+    "ad138f7917ea0b0278744bbe2263f571c3e46312"
+  ],
+  "build": "BUILD1941 (C03-repairs1941-build/BUILD_READY.json; mente)",
+  "cause_measured": "Sin vocabulario no había manera de distinguir una palabra inventada de una orden corta real; el modelo saludaba y fingía entender.",
+  "change": "Un léxico Hunspell libre como recurso del runtime; una palabra que no existe en ningún idioma se cita y se pide repetir.",
+  "measurement": "UNRES1941: 5 ejecutados, 5 aprobados, 0 fallidos; 1 créditos. Los tres casos del grupo cerraron con cero operaciones y una pregunta que cita la palabra desconocida tal cual y pide repetirla; el saludo real «Buenas» se contestó como saludo y la prohibición se reconoció, ambos con cero operaciones. Léxico: Hunspell es_AR + en_US (LibreOffice) vía spylls, instalado en BAXYRuntime/lexicon. Corrida sobre BUILD1941 (HEAD ad138f7).",
+  "credits": 1
+}

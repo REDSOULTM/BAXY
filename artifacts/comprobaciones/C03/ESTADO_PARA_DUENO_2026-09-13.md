@@ -1,3 +1,25 @@
+## UNRES1941 — estado vigente 2026-09-20T12:06:21.998047+00:00
+
+Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 729/742 | 13 | 0 | >=613 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 612 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); UNRES1941 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: UNRES1941: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Entrada incompleta, ruido y control de diálogo 31/34. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/UNRES1941/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 89.06 s acumulados; pico GPU 3490.93 MiB; pico RAM 1745.95 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque UNRES1941 precedente. -->
+
 ## CHATREAD1939 — estado vigente 2026-09-20T07:47:29.238904+00:00
 
 Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 2 créditos.

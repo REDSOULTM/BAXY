@@ -1,0 +1,270 @@
+commit ad138f7917ea0b0278744bbe2263f571c3e46312
+
+C03: una palabra que no existe se pregunta de vuelta, con un léxico de verdad
+
+«¡Habristín!» recibía un saludo que fingía entender. UNRES1855 descartó una
+regla de forma —disparaba en «pausá», «silencio», «repetí»— y pidió una de
+vocabulario; el modelo del producto, medido como juez, dio por inteligibles
+7 de 10 palabras inventadas. El dueño pidió hoy buscar recursos libres ya
+hechos, un autocorrector como el del celular sobre la transcripción, y el
+recurso existe: los diccionarios Hunspell de LibreOffice (es_AR de RLA-ES,
+tri-licencia GPL/LGPL/MPL; en_US de SCOWL) leídos con spylls (MIT, Python
+puro). Viven como recurso del runtime, junto a los modelos
+(BAXYRuntime/lexicon, o BAXY_MIND_LEXICON_DIR), nunca dentro de las fuentes
+selladas; sin ellos la mente no cambia.
+
+Medido: el léxico reconoce el voseo y las formas conjugadas («pausá»,
+«repetí», «decime», «ábreme») y da por desconocidas «Habristín»,
+«Brontifax», «Zumbrelo». La regla es estrecha a propósito: sólo un mensaje
+corto cuyas palabras de contenido son todas desconocidas para los
+diccionarios, el catálogo de aplicaciones y una lista corta de marcas y
+muletillas es una palabra inexistente; un nombre propio dentro de un pedido
+(«pon Merlina en Netflix») nunca lo es. La aclaración cita la palabra tal
+cual y pide repetirla: «No entendí «Habristín»; ¿me lo repetís?».
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 93ba863bd..17ead6f7c 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -36,6 +36,7 @@ os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+ 
+ from . import protocol
+ from . import effect_intent
++from . import corrector
+ from .corrector import catalog_correction_terms
+ from .first_signal import (
+     PATH_MODEL,
+@@ -3218,7 +3219,10 @@ def _echoed_words(folded: str) -> bool:
+     )
+ 
+ 
+-def _unresolved_input_kind(objective: str) -> str | None:
++def _unresolved_input_kind(
++    objective: str,
++    known_names: Iterable[str] = (),
++) -> str | None:
+     """Name an input that carries no readable request at all.
+ 
+     DIALOGUE1277 (H0287 «????», H0570 «1234567890», H0581 «a», H0181 «No.»,
+@@ -3331,6 +3335,13 @@ def _unresolved_input_kind(objective: str) -> str | None:
+         return "noise"
+     if _overheard_speech(folded):
+         return "overheard_speech"
++    if corrector.unintelligible_input(objective, known_names):
++        # UNRES1941 H0210 «¡Habristín!»: every content word of the message is
++        # unknown to the Spanish and English dictionaries, the catalog and the
++        # product's own terms. The honest turn says that word did not come
++        # through and asks to repeat it, never a greeting that fakes
++        # understanding. Absent lexicon → never this kind.
++        return "unknown_word"
+     if _echoed_words(folded):
+         return "echoed_words"
+     if bare_path_file_name(objective) is not None:
+@@ -7014,7 +7025,7 @@ def _prepare_turn_result(
+         or _completes_previous_request(
+             objective, history, authenticated_operations, application_names, game_catalog,
+         )
+-        else _unresolved_input_kind(objective)
++        else _unresolved_input_kind(objective, application_names)
+     )
+     # APPS1495 «abres team», «Abre stea,»: an open order naming a near miss of
+     # one or two catalog applications, with no context, asks which one.
+diff --git a/src/baxy_mind/corrector.py b/src/baxy_mind/corrector.py
+index ff3b97ae7..ac879caa6 100644
+--- a/src/baxy_mind/corrector.py
++++ b/src/baxy_mind/corrector.py
+@@ -156,6 +156,150 @@ def _boundary_punctuation(value: str) -> tuple[str, str]:
+     return value[:start], value[end:]
+ 
+ 
++# ---------------------------------------------------------------------------
++# Léxico de transcripción (UNRES1941, H0210 «¡Habristín!»). El dueño pidió un
++# autocorrector como el del celular sobre la transcripción: la parte segura es
++# saber si una palabra existe. Los diccionarios Hunspell de LibreOffice (es_AR de
++# RLA-ES, en_US de SCOWL) leídos con spylls viven como recurso del runtime
++# (%LOCALAPPDATA%/BAXYRuntime/lexicon, o BAXY_MIND_LEXICON_DIR), nunca dentro de
++# las fuentes selladas; sin ellos el léxico está ausente y nada cambia.
++# ---------------------------------------------------------------------------
++
++import os
++import re
++import threading
++
++_LEXICON_LANGUAGES = ("es_AR", "en_US")
++# Marcas, siglas y muletillas que ningún diccionario general trae y que el
++# producto entiende: no son palabras inventadas.
++_LEXICON_KNOWN_EXTRA = frozenset({
++    "ok", "okey", "okay", "chau", "chao", "porfa", "porfis", "dale", "wsp", "app", "apps",
++    "pc", "gx", "tv", "cpu", "gpu", "ram", "usb", "hdmi", "wifi", "bluetooth", "pdf", "mp3",
++    "mp4", "url", "gif", "jpg", "png", "zip", "bye", "hey", "hi", "hello", "jaja", "jajaja",
++    "jeje", "jajaj", "whatsapp", "discord", "spotify", "netflix", "youtube", "steam", "epic",
++    "opera", "chrome", "edge", "brave", "firefox", "google", "gmail", "outlook", "github",
++    "chatgpt", "windows", "linux", "android", "iphone", "ipad", "mac", "excel", "word",
++    "powerpoint", "notion", "telegram", "teams", "zoom", "skype", "slack", "twitch", "tiktok",
++    "instagram", "facebook", "twitter", "reddit", "wikipedia", "amazon", "prime", "disney",
++    "hbo", "max", "playstation", "xbox", "nintendo", "fortnite", "minecraft", "roblox",
++    "baxy", "emmanuel", "emma", "ema",
++})
++
++
++class _Lexicon:
++    """Diccionarios Hunspell cargados una vez; ausentes si no están instalados."""
++
++    def __init__(self) -> None:
++        self._lock = threading.Lock()
++        self._loaded = False
++        self._dictionaries: list[Any] = []
++
++    def _load(self) -> None:
++        with self._lock:
++            if self._loaded:
++                return
++            self._loaded = True
++            root = os.environ.get("BAXY_MIND_LEXICON_DIR", "").strip() or os.path.join(
++                os.environ.get("LOCALAPPDATA", ""), "BAXYRuntime", "lexicon"
++            )
++            try:
++                from spylls.hunspell import Dictionary  # type: ignore[import-not-found]
++            except Exception:  # noqa: BLE001 - the engine is optional
++                return
++            for language in _LEXICON_LANGUAGES:
++                base = os.path.join(root, language)
++                if not (os.path.isfile(base + ".aff") and os.path.isfile(base + ".dic")):
++                    continue
++                try:
++                    self._dictionaries.append(Dictionary.from_files(base))
++                except Exception:  # noqa: BLE001 - a broken file is an absent file
++                    logger.warning("lexicon %s could not be read", language)
++
++    def available(self) -> bool:
++        self._load()
++        return bool(self._dictionaries)
++
++    def known(self, word: str) -> bool:
++        """True when any dictionary or the product's own list knows the word."""
++
++        self._load()
++        candidate = word.strip()
++        if not candidate:
++            return True
++        if candidate.casefold() in _LEXICON_KNOWN_EXTRA or any(c.isdigit() for c in candidate):
++            return True
++        forms = {candidate, candidate.casefold(), candidate.capitalize()}
++        for dictionary in self._dictionaries:
++            for form in forms:
++                try:
++                    if dictionary.lookup(form):
++                        return True
++                except Exception:  # noqa: BLE001
++                    continue
++        return False
++
++
++_LEXICON = _Lexicon()
++_LEXICON_TOKEN = re.compile(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ'’-]*")
++_LEXICON_FUNCTION_WORDS = frozenset({
++    "a", "al", "ante", "con", "de", "del", "el", "en", "es", "la", "las", "lo", "los", "me",
++    "mi", "mis", "no", "o", "por", "que", "se", "si", "sin", "su", "sus", "te", "tu", "tus",
++    "un", "una", "unos", "unas", "y", "ya", "the", "an", "to", "of", "in", "on", "at", "it",
++    "is", "and", "or", "my", "me", "you", "your", "this", "that", "for", "with", "up",
++})
++
++
++def lexicon_available() -> bool:
++    return _LEXICON.available()
++
++
++def unknown_words(text: str, known_names: Iterable[str] = ()) -> tuple[str, ...]:
++    """Words of the text that no dictionary, catalog name or product term knows.
++
++    Returns () when the lexicon is absent: without a vocabulary nothing is
++    called unknown (UNRES1855 measured and rejected a shape-only rule).
++    """
++
++    if not _LEXICON.available():
++        return ()
++    names = {
++        token.casefold()
++        for name in known_names
++        if isinstance(name, str)
++        for token in _LEXICON_TOKEN.findall(name)
++    }
++    found: list[str] = []
++    for token in _LEXICON_TOKEN.findall(str(text or "")):
++        clean = token.strip("'’-")
++        if len(clean) < 3 or clean.casefold() in _LEXICON_FUNCTION_WORDS or clean.casefold() in names:
++            continue
++        if not _LEXICON.known(clean):
++            found.append(clean)
++    return tuple(found)
++
++
++def unintelligible_input(text: str, known_names: Iterable[str] = ()) -> tuple[str, ...]:
++    """The unknown words of a message that carries no known content word at all.
++
++    «¡Habristín!», «Zumbrelo ya» qualify; «pon Merlina en Netflix» does not (its
++    verb and service are known), so a proper name never turns a request into
++    noise. Bounded to short messages: a long one is talk, not a garbled word.
++    """
++
++    tokens = [
++        token.strip("'’-")
++        for token in _LEXICON_TOKEN.findall(str(text or ""))
++        if len(token.strip("'’-")) >= 3
++    ]
++    content = [token for token in tokens if token.casefold() not in _LEXICON_FUNCTION_WORDS]
++    if not content or len(tokens) > 4:
++        return ()
++    unknown = unknown_words(text, known_names)
++    if len(unknown) != len(content):
++        return ()
++    return unknown
++
++
+ class FuzzyCorrector:
+     """Stateless catalog-entity corrector, reused across ASR turns."""
+ 
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 64327bb82..77895a6e4 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -37,6 +37,7 @@ from pathlib import Path
+ from typing import Any, Callable
+ from urllib.parse import parse_qs, urlparse
+ 
++from . import corrector
+ from . import effect_intent
+ from .effect_intent import (
+     _PERCENTAGE_WORD_VALUES,
+@@ -12795,11 +12796,27 @@ class LlmRuntime:
+         a meaning: the question names what arrived and asks what to do.
+         """
+ 
+-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_text", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window", "echoed_words", "bare_path", "cut_request"}:
++        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_text", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window", "echoed_words", "bare_path", "cut_request", "unknown_word"}:
+             raise ValueError("clase de entrada sin pedido inválida")
+         current = str(text).strip()[:2_048]
++        unknown_words = corrector.unknown_words(current) if kind == "unknown_word" else ()
++        unknown_quoted = ", ".join("«" + word + "»" for word in unknown_words[:3]) or "«…»"
+         situation = (
+             (
++                # UNRES1941 H0210 «¡Habristín!»: the word exists in no language
++                # the assistant knows; asking to repeat it is the honest move.
++                "Eres BAXY. Lo que llegó es una palabra o unas pocas palabras que "
++                "no existen en español ni en inglés: " + unknown_quoted + ". Lo más "
++                "probable es que la transcripción de voz las haya oído mal. Formula "
++                "una sola pregunta breve, en el idioma que parezca del usuario, que "
++                "diga que esa palabra no te llegó bien, citándola tal cual entre "
++                "comillas angulares, y pida que la repita (por ejemplo: «No entendí "
++                + unknown_quoted + "; ¿me lo repetís?»). No adivines qué quiso decir, "
++                "no saludes, no la trates como un nombre ni una orden, no digas que "
++                "algo falló y no ofrezcas ayuda genérica."
++            )
++            if kind == "unknown_word"
++            else (
+                 # WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá
+                 # la mejor»: «la otra» or «la mejor» names no window when
+                 # nothing came before and several windows may be open.

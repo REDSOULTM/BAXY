@@ -1662,3 +1662,7 @@ Instalar y desinstalar software pasa de 30/31 a 31/31 con leer la biblioteca de 
 ## Actualización 2026-09-20 (CHATREAD1939)
 
 Mensajería pasa de 29/31 a 31/31 con decir llanamente que no lee lo que otra persona escribio por chat (commit b4a8ba6e, BUILD1939) (HEAD b4a8ba6e): 6 ejecutados, 6 aprobados, 0 fallidos, 2 créditos. Los cuatro casos del grupo cerraron con cero operaciones y un final que dice llanamente que no puede leer ni contar lo que la persona nombrada escribió (antes: note.read con la pregunta como título, pregunta por el correo, invención en inglés); los límites con cero operaciones. Corrida sobre BUILD1939 (HEAD b4a8ba6). La categoría queda cerrada.
+
+## Actualización 2026-09-20 (UNRES1941)
+
+Entrada incompleta, ruido y control de diálogo pasa de 31/34 a 32/34 con responder a una palabra que no existe en ningun idioma citandola y pidiendo que la repitan (commit ad138f79, BUILD1941) (HEAD ad138f79): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. Los tres casos del grupo cerraron con cero operaciones y una pregunta que cita la palabra desconocida tal cual y pide repetirla; el saludo real «Buenas» se contestó como saludo y la prohibición se reconoció, ambos con cero operaciones. Léxico: Hunspell es_AR + en_US (LibreOffice) vía spylls, instalado en BAXYRuntime/lexicon. Corrida sobre BUILD1941 (HEAD ad138f7).
