@@ -827,6 +827,31 @@ def _verified_dependency_identity_arguments(
                 schema = function.get("parameters") if isinstance(function, dict) else None
                 if isinstance(schema, dict) and validate_json_schema_instance(candidate, schema):
                     return candidate
+    if operation == "window.focus" and effect_intent.other_window_switch_request(objective):
+        # REOPEN1993 H0263 «cambiá a la otra ventana»: the first visible,
+        # non-minimized window that is not in the foreground, in the order
+        # the inventory observed (front to back), is «la otra».
+        for observation in observations:
+            if not (
+                isinstance(observation, dict)
+                and observation.get("operation") == "window.resolve"
+                and observation.get("verified") is True
+                and observation.get("status") == "completed"
+                and isinstance(observation.get("result"), dict)
+            ):
+                continue
+            windows = observation["result"].get("windows")
+            if not isinstance(windows, list):
+                continue
+            for window in windows:
+                if (
+                    isinstance(window, dict)
+                    and window.get("foreground") is not True
+                    and window.get("state") != "minimized"
+                    and isinstance(window.get("windowId"), str)
+                ):
+                    return {"windowId": window["windowId"]}
+        return None
     fields = _DETERMINISTIC_DEPENDENCY_FIELDS.get(operation, ())
     producers = set(required_predecessors(operation)) | set(
         conditional_predecessors(operation, objective)
@@ -2866,6 +2891,25 @@ def _explicit_social_turn_decision(
     }
 
 
+def _with_session_alarm_selector(objective: str, history: object) -> str:
+    """REOPEN1993 H0011: «cancelá la alarma» after this conversation set exactly
+    one alarm reads as the latest-alarm cancellation; otherwise the text stays
+    and the readers ask which alarm."""
+
+    if not isinstance(history, list):
+        return objective
+    previous = history
+    if previous and isinstance(previous[-1], dict) and previous[-1].get("role") == "user" and previous[-1].get("content") == objective:
+        previous = previous[:-1]
+    requests = [
+        str(item.get("content") or "")
+        for item in reversed(previous)
+        if isinstance(item, dict) and item.get("role") == "user"
+    ]
+    rewritten = effect_intent.session_single_alarm_rewrite(objective, requests)
+    return rewritten if rewritten is not None else objective
+
+
 def _previous_user_request(history: list[object], current_request: str) -> str | None:
     """Read the user antecedent, preserving contiguous clock continuations."""
     previous = history
@@ -3389,10 +3433,14 @@ def _unresolved_input_kind(
         return "bare_path"
     if cut_request_tail(objective) is not None:
         return "cut_request"
-    if effect_intent.INDETERMINATE_WINDOW_CLAUSE.fullmatch(folded) is not None:
-        # WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá la
-        # mejor»: a window named only by «la otra», «la mejor», «la
-        # siguiente» with nothing before it; the honest turn asks which.
+    if (
+        effect_intent.INDETERMINATE_WINDOW_CLAUSE.fullmatch(folded) is not None
+        # REOPEN1993 H0263: «la otra/anterior/siguiente» is the window behind
+        # the foreground one and switches; only «la mejor» and the like ask.
+        and not effect_intent.other_window_switch_request(objective)
+    ):
+        # WINDOWS1537 H0392 «enfocá la mejor»: a window named only by «la
+        # mejor» with nothing before it; the honest turn asks which.
         return "indeterminate_window"
     if (
         re.fullmatch(
@@ -5107,6 +5155,10 @@ def _explicit_arguments_from_evidence(
         )
         if application_name is not None:
             return {"applicationName": application_name}
+        if effect_intent.other_window_switch_request(evidence):
+            # REOPEN1993 H0263: every visible window, so the one behind the
+            # foreground can be chosen from the verified reading.
+            return {"process": "*", "byTitle": False, "limit": 50}
         inventory = effect_intent.window_inventory_arguments(evidence)
         if inventory is not None:
             return inventory
@@ -5121,6 +5173,12 @@ def _explicit_arguments_from_evidence(
 
     if operation == "app.open":
         app_id = resolve_application_catalog_app_id(evidence, application_names)
+        if app_id is None:
+            # REOPEN1993 «abre Steel.»: the single installed near name is the
+            # target the reader chose; ground it by its catalog name.
+            near = effect_intent.near_single_open_candidate(evidence, application_names, game_catalog)
+            if near is not None and near[0] == "app.open":
+                app_id = resolve_application_catalog_app_id(near[1], application_names)
         return {"appId": app_id} if app_id is not None else None
 
     if operation == "input.visible.click":
@@ -5178,6 +5236,11 @@ def _explicit_arguments_from_evidence(
 
     if operation == "game.launch":
         app_id = resolve_game_catalog_app_id(evidence, game_catalog)
+        if app_id is None:
+            # REOPEN1993 «Ve a Mad de Rivals.»: the single installed near title.
+            near = effect_intent.near_single_open_candidate(evidence, application_names, game_catalog)
+            if near is not None and near[0] == "game.launch":
+                app_id = resolve_game_catalog_app_id(near[1], game_catalog)
         return {"appId": app_id} if app_id is not None else None
 
     if operation in {
@@ -5524,6 +5587,15 @@ def _explicit_arguments_from_evidence(
         )
         if quoted is not None:
             return {"text": quoted.group("text")}
+        deictic = re.search(
+            # REOPEN1993 H0097 «ponle hola»: the literal after the deictic head.
+            r"(?i)^[\s¡!¿?]*(?:pon[eé]?le|ponele|pon[eé]?melo|put\s+on\s+it|write\s+on\s+it)\s+"
+            r"(?!(?:a|al|por|para|que|en)\b)(?P<text>.+?)"
+            r"(?:\s+(?:ahora|ya|now|please|por\s+favor|porfa))*[\s.!?]*$",
+            evidence.strip(),
+        )
+        if deictic is not None:
+            return {"text": deictic.group("text").strip()}
         typed = re.search(
             (
                 r"\b(?:escribe|escrib[ií]|escribir|teclea|teclear|write|type)\b"
@@ -6996,10 +7068,22 @@ def _prepare_turn_result(
     already_signaled: list[bool] = []
 
     objective = str(message.get("text", ""))
+    history = message.get("history") or []
+    rewritten_objective = _with_session_alarm_selector(objective, history)
+    if (
+        rewritten_objective != objective
+        and isinstance(history, list)
+        and history
+        and isinstance(history[-1], dict)
+        and history[-1].get("role") == "user"
+        and history[-1].get("content") == objective
+    ):
+        # The readers compare the last user turn with the objective by text.
+        history = [*history[:-1], {**history[-1], "content": rewritten_objective}]
+    objective = rewritten_objective
     routing_objective = effect_intent._strip_request_envelope(objective).strip()
     if not routing_objective:
         routing_objective = objective
-    history = message.get("history") or []
     available_operations = tuple(tool.name for tool in planner_catalog.tools)
     authenticated_operations = tuple(tool_by_name)
     non_target_language = confident_non_target_language(objective)
@@ -7075,6 +7159,14 @@ def _prepare_turn_result(
         )
         else _unresolved_input_kind(objective, application_names)
     )
+    if unresolved_input_kind == "deictic_look" and _previous_user_request(history, objective) is None:
+        # REOPEN1993 H0528: with nothing said before, the screen is what to look at.
+        unresolved_input_kind = None
+    if unresolved_input_kind == "deictic_text" and effect_intent.deictic_text_to_type(
+        objective, _previous_user_request(history, objective), application_names,
+    ) is not None:
+        # REOPEN1993 H0097: the application just opened is where the text goes.
+        unresolved_input_kind = None
     # APPS1495 «abres team», «Abre stea,»: an open order naming a near miss of
     # one or two catalog applications, with no context, asks which one.
     near_application_candidates = (
@@ -7089,6 +7181,9 @@ def _prepare_turn_result(
         # LIMITS1677 «ejecuta pytest» → «¿Querés que abra Test Patterns?»: a
         # known unsupported effect names no application to near-match.
         or known_unsupported_effect_request(objective, available_operations)
+        # REOPEN1993: exactly one installed candidate is opened by the effect
+        # readers («abre Steel.» → Steam); only two candidates are asked about.
+        or effect_intent.near_single_open_candidate(objective, application_names, game_catalog) is not None
         else (
             effect_intent.near_catalog_application_candidates(objective, application_names)
             # GAMES1533 «Ve a Mad de Rivals.»: an installed game almost named
@@ -9513,7 +9608,9 @@ def _run_sidecar(
                 tool = tool_by_name.get(operation)
                 if tool is None:
                     raise ValueError(f"tool desconocida: {operation}")
-                objective = str(message.get("text", ""))
+                objective = _with_session_alarm_selector(
+                    str(message.get("text", "")), message.get("history"),
+                )
                 arguments = _ground_explicit_arguments(
                     operation,
                     objective,
