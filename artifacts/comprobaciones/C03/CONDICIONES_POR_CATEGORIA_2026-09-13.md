@@ -1626,3 +1626,7 @@ Vídeo y series pasa de 2/26 a 9/26 con poner la serie que se nombra en el servi
 ## Actualización 2026-09-20 (VIDEO1921)
 
 Vídeo y series pasa de 9/26 a 9/26 con poner la serie que se nombra aunque se nombre mal, y decir cual se puso sin adivinar por donde va (commit c2a1bffb, BUILD1921) (HEAD c2a1bffb): 6 ejecutados, 5 aprobados, 1 fallido, 0 créditos. Las dos filas se reproducen de verdad con finales fieles; una variante no propuso nada porque el extractor literal de argumentos no tenia entrada para la operacion, y sin dos variantes aprobadas ningun literal acredita.
+
+## Actualización 2026-09-20 (VIDEO1923)
+
+Vídeo y series pasa de 9/26 a 11/26 con poner la serie que se nombra sin preguntar por lo que el pedido ya dice (commit dea4e6b2, BUILD1923) (HEAD dea4e6b2): 6 ejecutados, 6 aprobados, 0 fallidos, 2 créditos. Las dos filas y las dos variantes se reproducen de verdad, con la raiz aprobando cada propuesta y el video avanzando; los finales nombran lo que se puso sin afirmar por donde va.

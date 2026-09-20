@@ -1,0 +1,15 @@
+{
+  "schema": "c03-video1923-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (the literal argument extractor now grounds service and title for streaming.play.named from the request itself, whatever verb names it and however the service is spelled), on top of the VIDEO1923 build.",
+  "patch": "artifacts/comprobaciones/C03/VIDEO1923/SOURCE.patch",
+  "commits": [
+    "dea4e6b2e04a076c2465592f3bad80d62e0d5e75"
+  ],
+  "build": "BUILD1923 (C03-repairs1923-build/BUILD_READY.json; mente)",
+  "cause_measured": "El extractor literal de argumentos no tenía entrada para streaming.play.named: el planificador rellenaba service y title a ciegas y, con un verbo menos frecuente, preguntaba por lo que el pedido ya decía.",
+  "change": "El extractor lee el servicio y el título del propio pedido, con cualquier verbo y con el servicio escrito como sea.",
+  "measurement": "VIDEO1923: 6 ejecutados, 6 aprobados, 0 fallidos; 2 créditos. Las dos filas y las dos variantes se reproducen de verdad, con la raiz aprobando cada propuesta y el video avanzando; los finales nombran lo que se puso sin afirmar por donde va.",
+  "credits": 2
+}
