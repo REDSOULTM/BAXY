@@ -24,7 +24,7 @@
 | cien-34 | **v17 fresca** Granite 4.2-3B **registrado**, sin override | no: 12 agotes espontáneos + publicados infieles; ver abajo |
 | cien-35 | **v18 fresca** Granite 4.2-3B **registrado**, sin override | no: 7 agotes espontáneos + publicados infieles; ver abajo |
 
-## cien-76 a cien-86 (leídas, v18, Qwen3-4B registrado, 2026-09-20)
+## cien-76 a cien-87 (leídas, v18, Qwen3-4B registrado, 2026-09-20)
 
 Misma población congelada y mismo runtime; cada corrida sigue a un cambio de fuente de la
 mente o de la App, y la última, **cien-85**, corre sobre el árbol del cierre (HEAD `771f779df`,
@@ -38,6 +38,7 @@ BUILD1955, 742/742). Capturas `cien-84/events.jsonl` `156e5ef86ee45a0f247c4fe40c
 | cien-84 | **100** | **0** | **100** | la lectura exige dos palabras y ninguna del diccionario (5c60bbe66) |
 | cien-85 | **100** | **0** | **100** | control del árbol final: las cuatro capas de Disney+ no tocan ningún turno de la población |
 | cien-86 | **100** | **0** | **100** | el veto `playback_denied` (3a506dec4): una reproducción verificada no admite «no se puede reproducir»; leída contra cien-85 (relojes y reformulaciones con los mismos hechos). Captura `cien-86/events.jsonl` `a1b3565fa37255d7d0e0121e15adef0ab158a0b1132f664377a5fa0e16ad69b2` |
+| cien-87 | **100** | **0** | **100** | post-goal Fase 1 (0fa7d91a0): Full verde; en la mente, «5pm», volumen de app, envoltura social, investigar el propio equipo, compuestos y «sound» reparados. Leída contra cien-86: 19 líneas distintas —12 relojes (11:51 → 16:25), 2 volumen (6 → 50, el dueño lo cambió entre corridas) y 5 reformulaciones con los mismos hechos («un compañero» → «tu compañero», la explicación del sistema operativo, «What specifically do you want me to open for you?», el abridor de charla)—. Captura `cien-87/events.jsonl` `d6ab4884e821d709abf8e1653aa1816c5a4fde28bb14facff49881dc8d23725d` |
 
 ### cien-85 contra cien-84
 

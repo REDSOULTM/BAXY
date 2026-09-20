@@ -1,3 +1,18 @@
+## FULL-VERDE (post-goal Fase 1) — estado vigente 2026-09-20T19:27:59.462384+00:00
+
+La Full vuelve a verde sin relajar nada (D8/D19): 54 rojos .NET y 222 pytest (215 fallos + 7 errores; la pytest no
+se había corrido en C03). Regresiones reales de la mente reparadas en fuente (5pm, volumen de app leído como música,
+envoltura social, investigar el propio equipo, compuestos tragados por tiempo/winget, «sound», «dime la ventana…»,
+«And Spotify?», «Abre Portal desde Steam», spanglish explícito, «ninguna red wifi», resto de inventario en inglés) y
+contratos sellados re-anclados citando su tanda (lista en COMPUTER_USE_DISENO.md §15). Ambiente REDPC: corpus privados,
+Piper 2023.11.14-2, 41 ficheros CRLF devueltos a LF (R278). Full 2026-09-20 (plan post-goal Fase 1): Python 13107 pases/3 skips ambientales/465 subpruebas; .NET Contracts 70, Integration 3449 pases/1 skip ambiental, Kernel 164, Providers 605, Setup 477; Fast exit 0. Publicado en 0fa7d91a0fdedf94486b8a8cbbdf6c2e00d63d2e. cien-87 100/100 (0 agotes; 19 líneas distintas frente a cien-86: relojes, volumen del dueño y reformulaciones con los mismos hechos).
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 742/742 | 0 | 0 | >=626 | 35/35 |
+
+Siguiente acción: Fase 2 del plan (confirmaciones sólo para lo destructivo, D3) → cien-88 → Fase 3 REOPEN1957.
+
 ## VIDEO1955 — estado vigente 2026-09-20T14:33:44.346889+00:00
 
 Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 4 créditos.
