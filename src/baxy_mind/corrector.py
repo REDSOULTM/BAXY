@@ -156,6 +156,150 @@ def _boundary_punctuation(value: str) -> tuple[str, str]:
     return value[:start], value[end:]
 
 
+# ---------------------------------------------------------------------------
+# Léxico de transcripción (UNRES1941, H0210 «¡Habristín!»). El dueño pidió un
+# autocorrector como el del celular sobre la transcripción: la parte segura es
+# saber si una palabra existe. Los diccionarios Hunspell de LibreOffice (es_AR de
+# RLA-ES, en_US de SCOWL) leídos con spylls viven como recurso del runtime
+# (%LOCALAPPDATA%/BAXYRuntime/lexicon, o BAXY_MIND_LEXICON_DIR), nunca dentro de
+# las fuentes selladas; sin ellos el léxico está ausente y nada cambia.
+# ---------------------------------------------------------------------------
+
+import os
+import re
+import threading
+
+_LEXICON_LANGUAGES = ("es_AR", "en_US")
+# Marcas, siglas y muletillas que ningún diccionario general trae y que el
+# producto entiende: no son palabras inventadas.
+_LEXICON_KNOWN_EXTRA = frozenset({
+    "ok", "okey", "okay", "chau", "chao", "porfa", "porfis", "dale", "wsp", "app", "apps",
+    "pc", "gx", "tv", "cpu", "gpu", "ram", "usb", "hdmi", "wifi", "bluetooth", "pdf", "mp3",
+    "mp4", "url", "gif", "jpg", "png", "zip", "bye", "hey", "hi", "hello", "jaja", "jajaja",
+    "jeje", "jajaj", "whatsapp", "discord", "spotify", "netflix", "youtube", "steam", "epic",
+    "opera", "chrome", "edge", "brave", "firefox", "google", "gmail", "outlook", "github",
+    "chatgpt", "windows", "linux", "android", "iphone", "ipad", "mac", "excel", "word",
+    "powerpoint", "notion", "telegram", "teams", "zoom", "skype", "slack", "twitch", "tiktok",
+    "instagram", "facebook", "twitter", "reddit", "wikipedia", "amazon", "prime", "disney",
+    "hbo", "max", "playstation", "xbox", "nintendo", "fortnite", "minecraft", "roblox",
+    "baxy", "emmanuel", "emma", "ema",
+})
+
+
+class _Lexicon:
+    """Diccionarios Hunspell cargados una vez; ausentes si no están instalados."""
+
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self._loaded = False
+        self._dictionaries: list[Any] = []
+
+    def _load(self) -> None:
+        with self._lock:
+            if self._loaded:
+                return
+            self._loaded = True
+            root = os.environ.get("BAXY_MIND_LEXICON_DIR", "").strip() or os.path.join(
+                os.environ.get("LOCALAPPDATA", ""), "BAXYRuntime", "lexicon"
+            )
+            try:
+                from spylls.hunspell import Dictionary  # type: ignore[import-not-found]
+            except Exception:  # noqa: BLE001 - the engine is optional
+                return
+            for language in _LEXICON_LANGUAGES:
+                base = os.path.join(root, language)
+                if not (os.path.isfile(base + ".aff") and os.path.isfile(base + ".dic")):
+                    continue
+                try:
+                    self._dictionaries.append(Dictionary.from_files(base))
+                except Exception:  # noqa: BLE001 - a broken file is an absent file
+                    logger.warning("lexicon %s could not be read", language)
+
+    def available(self) -> bool:
+        self._load()
+        return bool(self._dictionaries)
+
+    def known(self, word: str) -> bool:
+        """True when any dictionary or the product's own list knows the word."""
+
+        self._load()
+        candidate = word.strip()
+        if not candidate:
+            return True
+        if candidate.casefold() in _LEXICON_KNOWN_EXTRA or any(c.isdigit() for c in candidate):
+            return True
+        forms = {candidate, candidate.casefold(), candidate.capitalize()}
+        for dictionary in self._dictionaries:
+            for form in forms:
+                try:
+                    if dictionary.lookup(form):
+                        return True
+                except Exception:  # noqa: BLE001
+                    continue
+        return False
+
+
+_LEXICON = _Lexicon()
+_LEXICON_TOKEN = re.compile(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ'’-]*")
+_LEXICON_FUNCTION_WORDS = frozenset({
+    "a", "al", "ante", "con", "de", "del", "el", "en", "es", "la", "las", "lo", "los", "me",
+    "mi", "mis", "no", "o", "por", "que", "se", "si", "sin", "su", "sus", "te", "tu", "tus",
+    "un", "una", "unos", "unas", "y", "ya", "the", "an", "to", "of", "in", "on", "at", "it",
+    "is", "and", "or", "my", "me", "you", "your", "this", "that", "for", "with", "up",
+})
+
+
+def lexicon_available() -> bool:
+    return _LEXICON.available()
+
+
+def unknown_words(text: str, known_names: Iterable[str] = ()) -> tuple[str, ...]:
+    """Words of the text that no dictionary, catalog name or product term knows.
+
+    Returns () when the lexicon is absent: without a vocabulary nothing is
+    called unknown (UNRES1855 measured and rejected a shape-only rule).
+    """
+
+    if not _LEXICON.available():
+        return ()
+    names = {
+        token.casefold()
+        for name in known_names
+        if isinstance(name, str)
+        for token in _LEXICON_TOKEN.findall(name)
+    }
+    found: list[str] = []
+    for token in _LEXICON_TOKEN.findall(str(text or "")):
+        clean = token.strip("'’-")
+        if len(clean) < 3 or clean.casefold() in _LEXICON_FUNCTION_WORDS or clean.casefold() in names:
+            continue
+        if not _LEXICON.known(clean):
+            found.append(clean)
+    return tuple(found)
+
+
+def unintelligible_input(text: str, known_names: Iterable[str] = ()) -> tuple[str, ...]:
+    """The unknown words of a message that carries no known content word at all.
+
+    «¡Habristín!», «Zumbrelo ya» qualify; «pon Merlina en Netflix» does not (its
+    verb and service are known), so a proper name never turns a request into
+    noise. Bounded to short messages: a long one is talk, not a garbled word.
+    """
+
+    tokens = [
+        token.strip("'’-")
+        for token in _LEXICON_TOKEN.findall(str(text or ""))
+        if len(token.strip("'’-")) >= 3
+    ]
+    content = [token for token in tokens if token.casefold() not in _LEXICON_FUNCTION_WORDS]
+    if not content or len(tokens) > 4:
+        return ()
+    unknown = unknown_words(text, known_names)
+    if len(unknown) != len(content):
+        return ()
+    return unknown
+
+
 class FuzzyCorrector:
     """Stateless catalog-entity corrector, reused across ASR turns."""
 

@@ -37,6 +37,7 @@ from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import parse_qs, urlparse
 
+from . import corrector
 from . import effect_intent
 from .effect_intent import (
     _PERCENTAGE_WORD_VALUES,
@@ -12795,11 +12796,27 @@ class LlmRuntime:
         a meaning: the question names what arrived and asks what to do.
         """
 
-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_text", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window", "echoed_words", "bare_path", "cut_request"}:
+        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_text", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window", "echoed_words", "bare_path", "cut_request", "unknown_word"}:
             raise ValueError("clase de entrada sin pedido inválida")
         current = str(text).strip()[:2_048]
+        unknown_words = corrector.unknown_words(current) if kind == "unknown_word" else ()
+        unknown_quoted = ", ".join("«" + word + "»" for word in unknown_words[:3]) or "«…»"
         situation = (
             (
+                # UNRES1941 H0210 «¡Habristín!»: the word exists in no language
+                # the assistant knows; asking to repeat it is the honest move.
+                "Eres BAXY. Lo que llegó es una palabra o unas pocas palabras que "
+                "no existen en español ni en inglés: " + unknown_quoted + ". Lo más "
+                "probable es que la transcripción de voz las haya oído mal. Formula "
+                "una sola pregunta breve, en el idioma que parezca del usuario, que "
+                "diga que esa palabra no te llegó bien, citándola tal cual entre "
+                "comillas angulares, y pida que la repita (por ejemplo: «No entendí "
+                + unknown_quoted + "; ¿me lo repetís?»). No adivines qué quiso decir, "
+                "no saludes, no la trates como un nombre ni una orden, no digas que "
+                "algo falló y no ofrezcas ayuda genérica."
+            )
+            if kind == "unknown_word"
+            else (
                 # WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá
                 # la mejor»: «la otra» or «la mejor» names no window when
                 # nothing came before and several windows may be open.

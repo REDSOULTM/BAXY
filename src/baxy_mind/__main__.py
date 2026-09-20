@@ -36,6 +36,7 @@ os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
 from . import protocol
 from . import effect_intent
+from . import corrector
 from .corrector import catalog_correction_terms
 from .first_signal import (
     PATH_MODEL,
@@ -3218,7 +3219,10 @@ def _echoed_words(folded: str) -> bool:
     )
 
 
-def _unresolved_input_kind(objective: str) -> str | None:
+def _unresolved_input_kind(
+    objective: str,
+    known_names: Iterable[str] = (),
+) -> str | None:
     """Name an input that carries no readable request at all.
 
     DIALOGUE1277 (H0287 «????», H0570 «1234567890», H0581 «a», H0181 «No.»,
@@ -3331,6 +3335,13 @@ def _unresolved_input_kind(objective: str) -> str | None:
         return "noise"
     if _overheard_speech(folded):
         return "overheard_speech"
+    if corrector.unintelligible_input(objective, known_names):
+        # UNRES1941 H0210 «¡Habristín!»: every content word of the message is
+        # unknown to the Spanish and English dictionaries, the catalog and the
+        # product's own terms. The honest turn says that word did not come
+        # through and asks to repeat it, never a greeting that fakes
+        # understanding. Absent lexicon → never this kind.
+        return "unknown_word"
     if _echoed_words(folded):
         return "echoed_words"
     if bare_path_file_name(objective) is not None:
@@ -7014,7 +7025,7 @@ def _prepare_turn_result(
         or _completes_previous_request(
             objective, history, authenticated_operations, application_names, game_catalog,
         )
-        else _unresolved_input_kind(objective)
+        else _unresolved_input_kind(objective, application_names)
     )
     # APPS1495 «abres team», «Abre stea,»: an open order naming a near miss of
     # one or two catalog applications, with no context, asks which one.
