@@ -16526,11 +16526,24 @@ class LlmRuntime:
                     # MUSIC1561: the drafts wrote the bare title or «Estoy escuchando»;
                     # the reply must assert the playing state with the title.
                     else (
-                        ("Say that it is playing and quote the whole title: «" if response_language == "en"
-                         else "Di que está sonando o reproduciéndose y cita el título completo: «")
+                        # Una serie no «suena»: para el streaming la pista pide el
+                        # verbo del vídeo y el servicio donde se ve.
+                        ("Say that it is playing on " + str(_merged_observed(situation).get("service", "")).replace("_", " ").title()
+                         + " and quote the whole title: «" if response_language == "en"
+                         else "Di que está reproduciéndose en " + str(_merged_observed(situation).get("service", "")).replace("_", " ").title()
+                         + " y cita el título completo: «")
+                        + str(_merged_observed(situation).get("title")) + "»"
+                        if situation.get("operation") == "streaming.play.named"
+                        else ("Say that it is playing and quote the whole title: «" if response_language == "en"
+                              else "Di que está sonando o reproduciéndose y cita el título completo: «")
                         + str(_merged_observed(situation).get("title")) + "»"
                     )
-                    if situation.get("operation") in {"media.play.youtube", "media.play.query", "media.play.exact"}
+                    # VIDEO1927 H0355 «pon stranger thins en netflix»: con el título
+                    # corregido por Netflix el modelo escribía «Estoy viendo Stranger
+                    # Things», sin estado, y la pista que recibía era la de ventanas
+                    # («abierto/open»); tres intentos iguales y el turno sin final.
+                    if situation.get("operation") in {"media.play.youtube", "media.play.query", "media.play.exact",
+                                                      "streaming.play.named"}
                     else "abierto/open, no el imperativo."
                 )
             ),
