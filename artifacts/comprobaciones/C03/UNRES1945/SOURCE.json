@@ -1,0 +1,15 @@
+{
+  "schema": "c03-unres1945-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (the deictic_speak and bare_phrase_question kinds), src/baxy_mind/llm.py (their clarifications), on top of the UNRES1945 build.",
+  "patch": "artifacts/comprobaciones/C03/UNRES1945/SOURCE.patch",
+  "commits": [
+    "24e12e0f57a15f7180495fe53a4c4248e66c07cb"
+  ],
+  "build": "BUILD1945 (C03-repairs1945-build/BUILD_READY.json; mente)",
+  "cause_measured": "Palabras reales sin pedido no tenían lectura: el modelo saludaba, explicaba o contestaba con su identidad.",
+  "change": "Dos lecturas estrechas —hablar de un demostrativo suelto, nombre con signo de pregunta— y sus aclaraciones honestas.",
+  "measurement": "UNRES1945: 6 ejecutados, 6 aprobados, 0 fallidos; 2 créditos. Los cuatro casos del grupo cerraron con cero operaciones y una pregunta que nombra lo que falta («¿De qué querés que hable?», «No sé a qué te referís; ¿me lo repetís con más contexto?»); los límites con cero operaciones. Corrida sobre BUILD1945 (HEAD 24e12e0).",
+  "credits": 2
+}

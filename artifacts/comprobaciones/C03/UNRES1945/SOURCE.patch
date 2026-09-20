@@ -1,0 +1,111 @@
+commit 24e12e0f57a15f7180495fe53a4c4248e66c07cb
+
+C03: palabras reales que no forman ningún pedido se preguntan, no se fingen
+
+«Hable este.» recibía «¡Claro! ¿En qué estás pensando hablar?» y «Calendar
+Devil?» una respuesta de identidad o una explicación inventada: el modelo
+fingía entender. Con el léxico de ayer estas dos no son palabras
+inexistentes —todas existen—, así que llevan dos lecturas propias y
+estrechas: un verbo de hablar con un demostrativo suelto y nada antes
+pregunta de qué quiere que hable; y un nombre de una a tres palabras con
+mayúscula y signo de pregunta, sin verbo, que no sea una aplicación del
+catálogo ni una palabra inexistente, dice que no sabe a qué se refiere y
+pide más contexto, sin repetir sus palabras: citarlas de vuelta era un eco
+y la App lo rechazaba. «Steam?» y «Spotify?» siguen su camino de hoy.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 17ead6f7c..97cabcdde 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -3237,6 +3237,12 @@ def _unresolved_input_kind(
+     folded = effect_intent._fold(objective).strip()
+     if not folded:
+         return None
++    names_folded = {
++        token.casefold()
++        for name in known_names
++        if isinstance(name, str)
++        for token in (name, *re.findall(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ'’-]*", name))
++    }
+     if (
+         re.fullmatch(
+             # DIALOGUE1491 H0393 «Ve a portal una.», H0541 «Ve Portal 2 UN»: a
+@@ -3335,6 +3341,28 @@ def _unresolved_input_kind(
+         return "noise"
+     if _overheard_speech(folded):
+         return "overheard_speech"
++    if re.fullmatch(r"[¿?¡!\s]*(?:hable|habla|hablame|hableme|hablanos|hablenos|hablalo|hablelo|speak|talk|tell)\s+(?:(?:de|sobre|about|of|me)\s+)?(?:de\s+)?(?:est[aeo]s?|es[aeo]s?|aquell[ao]s?|it|this|that|these|those)[.!?\s]*", folded) is not None:
++        # UNRES1945 H0404 «Hable este.»: a speak/talk verb with a bare
++        # demonstrative and nothing before it — nothing names what to talk
++        # about; the honest turn asks that, never a chat opener.
++        return "deictic_speak"
++    _bare = re.fullmatch(r"[¿?¡!\s]*(?P<phrase>[A-ZÁÉÍÓÚÑ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ'’-]+(?:\s+[A-ZÁÉÍÓÚÑ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ'’-]+){0,2})\s*\?[\s.!?]*", str(objective).strip())
++    if (
++        _bare is not None
++        and not corrector.unknown_words(objective, known_names)
++        # «Steam?», «Spotify?» name a catalog application on their own and
++        # keep today's path; «Calendar Devil?» only shares a word with one.
++        and _bare.group("phrase").casefold() not in names_folded
++        and not (
++            len(_bare.group("phrase").split()) == 1
++            and _bare.group("phrase").casefold() in names_folded
++        )
++    ):
++        # UNRES1945 H0160 «Calendar Devil?»: one to three capitalised words
++        # and a question mark, no verb, no catalog name, real words in some
++        # language; the model answered as if it were a question about BAXY.
++        # The honest turn says it does not know what that refers to and asks.
++        return "bare_phrase_question"
+     if corrector.unintelligible_input(objective, known_names):
+         # UNRES1941 H0210 «¡Habristín!»: every content word of the message is
+         # unknown to the Spanish and English dictionaries, the catalog and the
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 77895a6e4..d8f2243f2 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -12796,13 +12796,41 @@ class LlmRuntime:
+         a meaning: the question names what arrived and asks what to do.
+         """
+ 
+-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_text", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window", "echoed_words", "bare_path", "cut_request", "unknown_word"}:
++        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_text", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window", "echoed_words", "bare_path", "cut_request", "unknown_word", "deictic_speak", "bare_phrase_question"}:
+             raise ValueError("clase de entrada sin pedido inválida")
+         current = str(text).strip()[:2_048]
+         unknown_words = corrector.unknown_words(current) if kind == "unknown_word" else ()
+         unknown_quoted = ", ".join("«" + word + "»" for word in unknown_words[:3]) or "«…»"
+         situation = (
+             (
++                # UNRES1945 H0404 «Hable este.»: a speak verb with a bare
++                # demonstrative; what to talk about was never named.
++                "Eres BAXY. El usuario te pidió que hables de «esto», «este» o "
++                "«eso», sin decir de qué, y no hay nada anterior a lo que pueda "
++                "referirse. Formula una sola pregunta breve, en el idioma del "
++                "usuario, que pregunte de qué quiere que hables (por ejemplo: «¿De "
++                "qué querés que hable?»). No adivines un tema, no saludes, no "
++                "digas que no entiendes ni que algo falló y no ofrezcas ayuda "
++                "genérica."
++            )
++            if kind == "deictic_speak"
++            else (
++                # UNRES1945 H0160 «Calendar Devil?»: a bare capitalised phrase
++                # with a question mark; nothing says what it refers to.
++                # Quoting the phrase back echoes the whole request and the App
++                # rejects it (echoes_request); the question names the gap only.
++                "Eres BAXY. Lo que llegó es sólo un nombre o unas pocas palabras "
++                "con signo de pregunta, sin verbo ni pedido. No sabes a qué se "
++                "refiere y no hay nada anterior que lo aclare. Formula una sola "
++                "pregunta breve, en el idioma que parezca del usuario, que diga que "
++                "no sabes a qué se refiere con eso y pida que lo repita con más "
++                "contexto (por ejemplo: «No sé a qué te referís; ¿me lo repetís con "
++                "más contexto?»). No repitas sus palabras, no adivines qué es, no lo "
++                "expliques, no contestes con tu identidad, no saludes y no ofrezcas "
++                "ayuda genérica."
++            )
++            if kind == "bare_phrase_question"
++            else (
+                 # UNRES1941 H0210 «¡Habristín!»: the word exists in no language
+                 # the assistant knows; asking to repeat it is the honest move.
+                 "Eres BAXY. Lo que llegó es una palabra o unas pocas palabras que "

@@ -1670,3 +1670,7 @@ Entrada incompleta, ruido y control de diálogo pasa de 31/34 a 32/34 con respon
 ## Actualización 2026-09-20 (PRIME1943)
 
 Vídeo y series pasa de 15/26 a 16/26 con decir llanamente que no puede poner una serie en Prime Video (commit 98ecc3aa, BUILD1943) (HEAD 98ecc3aa): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. Los tres casos del grupo cerraron con cero operaciones y un final que dice llanamente que no puede poner la serie en Prime Video (el dueño no tiene Prime Video, 2026-09-20); los límites con cero operaciones. Corrida sobre BUILD1943 (HEAD 98ecc3a).
+
+## Actualización 2026-09-20 (UNRES1945)
+
+Entrada incompleta, ruido y control de diálogo pasa de 32/34 a 34/34 con preguntar de que o a que se refiere cuando llegan palabras reales sin ningun pedido (commit 24e12e0f, BUILD1945) (HEAD 24e12e0f): 6 ejecutados, 6 aprobados, 0 fallidos, 2 créditos. Los cuatro casos del grupo cerraron con cero operaciones y una pregunta que nombra lo que falta («¿De qué querés que hable?», «No sé a qué te referís; ¿me lo repetís con más contexto?»); los límites con cero operaciones. Corrida sobre BUILD1945 (HEAD 24e12e0). La categoría queda cerrada.
