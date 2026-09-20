@@ -1,0 +1,463 @@
+commit e5258858fb62a372c25d07be3bea6016f1c226cd
+
+C03: lecturas de REOPEN1993 en la mente: candidato único, alarma de la sesión, la otra ventana, mirar la pantalla, ponle texto (BUILD1995)
+
+Auditoría semántica (D24; regla del dueño: actuar con contexto determinista o
+candidato único, preguntar sólo con ambigüedad real):
+
+- effect_intent.near_single_open_candidate: un nombre de aplicación o de juego
+  mal oído con exactamente un candidato instalado se abre o se lanza («abre
+  Steel.» → Steam, «Ve a Mad de Rivals.» → Marvel Rivals); dos candidatos
+  («abres team») siguen preguntando cuál. __main__ fundamenta appId por el
+  candidato.
+- effect_intent.session_single_alarm_rewrite + __main__._with_session_alarm_selector:
+  «cancelá la alarma» tras exactamente una alarma puesta en esta conversación
+  (y ninguna cancelada después) se lee como la última alarma; sin ese
+  antecedente sigue preguntando cuál (AGENDA1337).
+- effect_intent.other_window_switch_request: «cambiá a la otra ventana» lee el
+  inventario (window.resolve de todas) y enfoca la primera ventana visible no
+  minimizada que no está en primer plano; «la mejor» sigue preguntando.
+- effect_intent.deictic_look_request: «quiero que lo veas y de qué se trata»
+  sin ningún pedido anterior mira la pantalla (captura + OCR); con antecedente
+  sigue preguntando qué mirar.
+- effect_intent.deictic_text_to_type: «ponle hola» justo después de abrir o
+  traer al frente una aplicación escribe el texto ahí (input.text.type); sin
+  ese antecedente sigue preguntando dónde.
+
+tests/test_c03_semantic_audit_1993.py cubre cada lectura y cada límite.
+
+Co-Authored-By: Claude Opus 5 (1M context) <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index c4abc3a30..31f98ed3a 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -827,6 +827,31 @@ def _verified_dependency_identity_arguments(
+                 schema = function.get("parameters") if isinstance(function, dict) else None
+                 if isinstance(schema, dict) and validate_json_schema_instance(candidate, schema):
+                     return candidate
++    if operation == "window.focus" and effect_intent.other_window_switch_request(objective):
++        # REOPEN1993 H0263 «cambiá a la otra ventana»: the first visible,
++        # non-minimized window that is not in the foreground, in the order
++        # the inventory observed (front to back), is «la otra».
++        for observation in observations:
++            if not (
++                isinstance(observation, dict)
++                and observation.get("operation") == "window.resolve"
++                and observation.get("verified") is True
++                and observation.get("status") == "completed"
++                and isinstance(observation.get("result"), dict)
++            ):
++                continue
++            windows = observation["result"].get("windows")
++            if not isinstance(windows, list):
++                continue
++            for window in windows:
++                if (
++                    isinstance(window, dict)
++                    and window.get("foreground") is not True
++                    and window.get("state") != "minimized"
++                    and isinstance(window.get("windowId"), str)
++                ):
++                    return {"windowId": window["windowId"]}
++        return None
+     fields = _DETERMINISTIC_DEPENDENCY_FIELDS.get(operation, ())
+     producers = set(required_predecessors(operation)) | set(
+         conditional_predecessors(operation, objective)
+@@ -2866,6 +2891,25 @@ def _explicit_social_turn_decision(
+     }
+ 
+ 
++def _with_session_alarm_selector(objective: str, history: object) -> str:
++    """REOPEN1993 H0011: «cancelá la alarma» after this conversation set exactly
++    one alarm reads as the latest-alarm cancellation; otherwise the text stays
++    and the readers ask which alarm."""
++
++    if not isinstance(history, list):
++        return objective
++    previous = history
++    if previous and isinstance(previous[-1], dict) and previous[-1].get("role") == "user" and previous[-1].get("content") == objective:
++        previous = previous[:-1]
++    requests = [
++        str(item.get("content") or "")
++        for item in reversed(previous)
++        if isinstance(item, dict) and item.get("role") == "user"
++    ]
++    rewritten = effect_intent.session_single_alarm_rewrite(objective, requests)
++    return rewritten if rewritten is not None else objective
++
++
+ def _previous_user_request(history: list[object], current_request: str) -> str | None:
+     """Read the user antecedent, preserving contiguous clock continuations."""
+     previous = history
+@@ -3389,10 +3433,14 @@ def _unresolved_input_kind(
+         return "bare_path"
+     if cut_request_tail(objective) is not None:
+         return "cut_request"
+-    if effect_intent.INDETERMINATE_WINDOW_CLAUSE.fullmatch(folded) is not None:
+-        # WINDOWS1537 H0263 «cambiá a la otra ventana», H0392 «enfocá la
+-        # mejor»: a window named only by «la otra», «la mejor», «la
+-        # siguiente» with nothing before it; the honest turn asks which.
++    if (
++        effect_intent.INDETERMINATE_WINDOW_CLAUSE.fullmatch(folded) is not None
++        # REOPEN1993 H0263: «la otra/anterior/siguiente» is the window behind
++        # the foreground one and switches; only «la mejor» and the like ask.
++        and not effect_intent.other_window_switch_request(objective)
++    ):
++        # WINDOWS1537 H0392 «enfocá la mejor»: a window named only by «la
++        # mejor» with nothing before it; the honest turn asks which.
+         return "indeterminate_window"
+     if (
+         re.fullmatch(
+@@ -5107,6 +5155,10 @@ def _explicit_arguments_from_evidence(
+         )
+         if application_name is not None:
+             return {"applicationName": application_name}
++        if effect_intent.other_window_switch_request(evidence):
++            # REOPEN1993 H0263: every visible window, so the one behind the
++            # foreground can be chosen from the verified reading.
++            return {"process": "*", "byTitle": False, "limit": 50}
+         inventory = effect_intent.window_inventory_arguments(evidence)
+         if inventory is not None:
+             return inventory
+@@ -5121,6 +5173,12 @@ def _explicit_arguments_from_evidence(
+ 
+     if operation == "app.open":
+         app_id = resolve_application_catalog_app_id(evidence, application_names)
++        if app_id is None:
++            # REOPEN1993 «abre Steel.»: the single installed near name is the
++            # target the reader chose; ground it by its catalog name.
++            near = effect_intent.near_single_open_candidate(evidence, application_names, game_catalog)
++            if near is not None and near[0] == "app.open":
++                app_id = resolve_application_catalog_app_id(near[1], application_names)
+         return {"appId": app_id} if app_id is not None else None
+ 
+     if operation == "input.visible.click":
+@@ -5178,6 +5236,11 @@ def _explicit_arguments_from_evidence(
+ 
+     if operation == "game.launch":
+         app_id = resolve_game_catalog_app_id(evidence, game_catalog)
++        if app_id is None:
++            # REOPEN1993 «Ve a Mad de Rivals.»: the single installed near title.
++            near = effect_intent.near_single_open_candidate(evidence, application_names, game_catalog)
++            if near is not None and near[0] == "game.launch":
++                app_id = resolve_game_catalog_app_id(near[1], game_catalog)
+         return {"appId": app_id} if app_id is not None else None
+ 
+     if operation in {
+@@ -5524,6 +5587,15 @@ def _explicit_arguments_from_evidence(
+         )
+         if quoted is not None:
+             return {"text": quoted.group("text")}
++        deictic = re.search(
++            # REOPEN1993 H0097 «ponle hola»: the literal after the deictic head.
++            r"(?i)^[\s¡!¿?]*(?:pon[eé]?le|ponele|pon[eé]?melo|put\s+on\s+it|write\s+on\s+it)\s+"
++            r"(?!(?:a|al|por|para|que|en)\b)(?P<text>.+?)"
++            r"(?:\s+(?:ahora|ya|now|please|por\s+favor|porfa))*[\s.!?]*$",
++            evidence.strip(),
++        )
++        if deictic is not None:
++            return {"text": deictic.group("text").strip()}
+         typed = re.search(
+             (
+                 r"\b(?:escribe|escrib[ií]|escribir|teclea|teclear|write|type)\b"
+@@ -6996,10 +7068,22 @@ def _prepare_turn_result(
+     already_signaled: list[bool] = []
+ 
+     objective = str(message.get("text", ""))
++    history = message.get("history") or []
++    rewritten_objective = _with_session_alarm_selector(objective, history)
++    if (
++        rewritten_objective != objective
++        and isinstance(history, list)
++        and history
++        and isinstance(history[-1], dict)
++        and history[-1].get("role") == "user"
++        and history[-1].get("content") == objective
++    ):
++        # The readers compare the last user turn with the objective by text.
++        history = [*history[:-1], {**history[-1], "content": rewritten_objective}]
++    objective = rewritten_objective
+     routing_objective = effect_intent._strip_request_envelope(objective).strip()
+     if not routing_objective:
+         routing_objective = objective
+-    history = message.get("history") or []
+     available_operations = tuple(tool.name for tool in planner_catalog.tools)
+     authenticated_operations = tuple(tool_by_name)
+     non_target_language = confident_non_target_language(objective)
+@@ -7075,6 +7159,14 @@ def _prepare_turn_result(
+         )
+         else _unresolved_input_kind(objective, application_names)
+     )
++    if unresolved_input_kind == "deictic_look" and _previous_user_request(history, objective) is None:
++        # REOPEN1993 H0528: with nothing said before, the screen is what to look at.
++        unresolved_input_kind = None
++    if unresolved_input_kind == "deictic_text" and effect_intent.deictic_text_to_type(
++        objective, _previous_user_request(history, objective), application_names,
++    ) is not None:
++        # REOPEN1993 H0097: the application just opened is where the text goes.
++        unresolved_input_kind = None
+     # APPS1495 «abres team», «Abre stea,»: an open order naming a near miss of
+     # one or two catalog applications, with no context, asks which one.
+     near_application_candidates = (
+@@ -7089,6 +7181,9 @@ def _prepare_turn_result(
+         # LIMITS1677 «ejecuta pytest» → «¿Querés que abra Test Patterns?»: a
+         # known unsupported effect names no application to near-match.
+         or known_unsupported_effect_request(objective, available_operations)
++        # REOPEN1993: exactly one installed candidate is opened by the effect
++        # readers («abre Steel.» → Steam); only two candidates are asked about.
++        or effect_intent.near_single_open_candidate(objective, application_names, game_catalog) is not None
+         else (
+             effect_intent.near_catalog_application_candidates(objective, application_names)
+             # GAMES1533 «Ve a Mad de Rivals.»: an installed game almost named
+@@ -9513,7 +9608,9 @@ def _run_sidecar(
+                 tool = tool_by_name.get(operation)
+                 if tool is None:
+                     raise ValueError(f"tool desconocida: {operation}")
+-                objective = str(message.get("text", ""))
++                objective = _with_session_alarm_selector(
++                    str(message.get("text", "")), message.get("history"),
++                )
+                 arguments = _ground_explicit_arguments(
+                     operation,
+                     objective,
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 14d83cccb..a2b0dccc1 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -21,7 +21,7 @@ import re
+ import time
+ import unicodedata
+ from dataclasses import dataclass, field
+-from typing import Iterable, Iterator
++from typing import Iterable, Iterator, Sequence
+ 
+ from .catalog_operation_aliases import exact_catalog_operation_plan
+ 
+@@ -5492,6 +5492,30 @@ def near_catalog_game_candidates(
+     return tuple(names[:2])
+ 
+ 
++def near_single_open_candidate(
++    text: str,
++    application_names: Iterable[str] | ApplicationCatalogIndex,
++    games: Iterable[tuple[str, str, str]] | GameCatalogIndex,
++) -> tuple[str, str] | None:
++    """REOPEN1993 (auditoría semántica; regla del dueño 2026-09-19 «lo mal dicho
++    lo arregla BAXY»): an open, launch or go-to order that almost names exactly
++    ONE installed application («abre Steel.», «Abre stea,», «Sí, abre Ste.») or
++    exactly one installed game («Ve a Mad de Rivals.») names it: the opening
++    happens and the final says which one opened. Two candidates («abres team»
++    → Steam / Microsoft Teams) keep asking which; none keeps the other readers.
++    Returns (operation, display name) or None."""
++
++    applications = near_catalog_application_candidates(text, application_names)
++    if len(applications) == 1:
++        return ("app.open", applications[0])
++    if applications:
++        return None
++    titles = near_catalog_game_candidates(text, games)
++    if len(titles) == 1:
++        return ("game.launch", titles[0])
++    return None
++
++
+ def _application_target_forms(
+     raw_target: str,
+ ) -> tuple[tuple[str, int], ...]:
+@@ -10605,6 +10629,62 @@ def _active_alarm_stop_request(text: str) -> bool:
+     )
+ 
+ 
++def session_single_alarm_rewrite(
++    text: str,
++    previous_user_texts: Sequence[str],
++) -> str | None:
++    """REOPEN1993 H0011 «cancelá la alarma» (owner: ask which alarm «unless BAXY
++    already set one in this session»): when exactly one previous request of
++    this conversation set an alarm and none cancelled one since, «la alarma» is
++    that alarm and the order reads as the latest-alarm cancellation. Returns the
++    text with the selector made explicit, or None when the question stands."""
++
++    folded = _fold(text)
++    if not folded or _has(folded, r"\b(?:alarms|alarmas)\b") or not _has(folded, r"\b(?:alarm|alarma)\b"):
++        return None
++    if _has(folded, _CLOCK_TIME_SELECTOR) or _latest_notification_selector(folded):
++        return None
++    if re.search(r"\d", folded) or _has(
++        folded,
++        r"\b(?:de|a|para|at|for)\s+(?:las?\s+)?(?:una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce)\b",
++    ):
++        # «cancelá la alarma de las 7» names its alarm; nothing to resolve.
++        return None
++    head_cancel = _head_is(
++        _request_head(folded),
++        r"(?:delete|remove|cancel|erase|elimina|eliminar|borra|borrar|quita|quitar|cancela|cancelar|"
++        r"cancelame|cancelamela|cancelala|borrame|borrala|quitame|quitala|eliminame|eliminala)",
++    )
++    if not head_cancel and not _alarm_turn_off_request(folded):
++        return None
++    alarms_set = 0
++    for previous in previous_user_texts[:6]:
++        previous_folded = _fold(previous)
++        if not previous_folded:
++            continue
++        if _has(
++            previous_folded,
++            r"\b(?:cancel|cancela|cancelar|cancelame|borra|quita|elimina|delete|remove|apaga|desactiva)\b",
++        ) and _has(previous_folded, r"\b(?:alarm|alarma|alarms|alarmas)\b"):
++            # The most recent request wins: a cancellation after the setting
++            # leaves nothing that «la alarma» could name.
++            return None
++        if _has(
++            previous_folded,
++            r"\b(?:alarma|alarm|despertame|despiertame|wake\s+me|timer|temporizador|conta|cuenta)\b",
++        ) and _has(
++            previous_folded,
++            r"\b(?:pon|pone|ponme|poneme|programa|crea|set|put|despertame|despiertame|wake|conta|cuenta|start)\b",
++        ):
++            alarms_set += 1
++    if alarms_set != 1:
++        return None
++    rewritten = re.sub(r"\b(la|una|mi|el)\s+(alarma)\b", r"\1 ultima \2", text, count=1, flags=re.IGNORECASE)
++    if rewritten == text:
++        rewritten = re.sub(r"\b(the|my|an?)\s+(alarm)\b", r"\1 last \2", text, count=1, flags=re.IGNORECASE)
++    return rewritten if rewritten != text else None
++
++
+ def _alarm_turn_off_request(text: str) -> bool:
+     """Recognize an alarm cancellation paraphrase even with a modal head."""
+ 
+@@ -18013,6 +18093,102 @@ INDETERMINATE_WINDOW_CLAUSE = re.compile(
+     r")[\s.!?¿¡]*"
+ )
+ 
++# REOPEN1993 H0263 «cambiá a la otra ventana»: «la otra» (or «la anterior»,
++# «la siguiente») with nothing named before it is the window right behind
++# the one in front — deterministic, so the turn switches and says to which.
++# «la mejor», «la más grande» keep asking (WINDOWS1537).
++_OTHER_WINDOW_SWITCH = re.compile(
++    r"[\s¡!¿?]*(?:"
++    r"(?:cambia|cambiame|pasa|pasame|anda|andate|ve|salta|volve|vuelve|switch|go|jump|move|"
++    r"enfoca|enfocame|activa|activame|trae|traeme|pone|poneme|lleva|llevame|focus|bring|put)"
++    r"(?:\s+(?:a|to))?\s+(?:la|the)\s+(?:"
++    r"(?:otra|other|anterior|previous|siguiente|next)(?:\s+(?:ventana|window))?|"
++    r"(?:ventana|window)\s+(?:anterior|previous|siguiente|next))"
++    r"(?:\s+(?:al\s+frente|adelante|to\s+the\s+front|forward))?"
++    r")[\s.!?¿¡]*"
++)
++
++
++# DIALOGUE1487/1489 H0528 «Quiero que lo veas y de que se trata?», «Miralo y
++# decime de qué se trata»: a request to look at «it/this/that» and say what it
++# is, with nothing named. REOPEN1993: with no earlier request in the
++# conversation there is nothing else «lo» can be but the screen in front, so
++# the turn looks at the screen (capture + text read) and says what it is
++# about; with an antecedent the question «qué debo mirar» stands.
++DEICTIC_LOOK_CLAUSE = re.compile(
++    r"[\s¡!¿?]*(?:"
++    r"(?:quiero|necesito|quisiera)\s+que\s+(?:lo|la|los|las)\s+(?:veas|mires|revises|leas|chequees)|"
++    r"(?:mira|miralo|mirala|ve|velo|vela|fijate|revisa|revisalo|revisala|chequea|chequealo|lee|leelo|leela)"
++    r"(?:\s+(?:en\s+)?(?:eso|esto|lo|la|aquello))?|"
++    r"(?:look\s+at|check(?:\s+out)?|see|read)\s+(?:it|this|that)(?:\s+out)?"
++    r")"
++    r"(?:\s*(?:,|y|and)\s*(?:me\s+)?(?:digas|decime|dime|contame|cuentame|tell\s+me)?\s*"
++    r"(?:de\s+)?(?:que|what)\s+(?:se\s+trata|es|dice|it(?:'s|\s+is)(?:\s+about)?|it\s+says))?"
++    r"[\s.!?¿¡]*"
++)
++
++
++def deictic_look_request(text: str) -> bool:
++    """True for «miralo y decime de qué se trata» with nothing named."""
++
++    folded = _strip_request_envelope(_fold(text)).strip()
++    return bool(folded) and DEICTIC_LOOK_CLAUSE.fullmatch(folded) is not None
++
++
++# UI1643 H0097 «ponle hola»: a text to put «to it» with nothing named. REOPEN1993
++# (owner: ask where «unless the previous context makes the destination clear»):
++# right after a request that opened or brought an application to the front,
++# the text goes into that application (the focused control of the window in
++# front); with no such antecedent the question «dónde» stands.
++_DEICTIC_TEXT_ORDER = re.compile(
++    r"[\s¡!¿?]*(?:pon[eé]?le|ponele|pon[eé]?melo|put\s+on\s+it|write\s+on\s+it)\s+"
++    r"(?!(?:a|al|por|para|que|en)\b)(?P<text>[¿?¡!\w][^.!?]{0,60}?)"
++    r"(?:\s+(?:ahora|ya|now|please|por\s+favor|porfa))*[\s.!?]*"
++)
++
++
++def deictic_text_to_type(
++    text: str,
++    previous_user_text: str | None,
++    application_names: Iterable[str] | ApplicationCatalogIndex,
++) -> str | None:
++    """The literal to type for «ponle <texto>» when the previous request opened
++    or focused an application; None otherwise."""
++
++    if not previous_user_text:
++        return None
++    folded = _strip_request_envelope(_fold(text)).strip()
++    order = _DEICTIC_TEXT_ORDER.fullmatch(folded)
++    if order is None or _has(
++        folded,
++        r"\b(?:en|a|al|del|de)\s+(?:el|la|los|las|mi|mis|tu|tus|un|una|the|my|a)?\s*"
++        r"(?:ventana|archivo|nota|chat|grupo|mensaje|correo|mail|documento|campo|titulo|"
++        r"nombre|whatsapp|discord|telegram|window|file|note|chat|message|document|field)\b",
++    ):
++        return None
++    catalog = build_application_catalog_index(application_names)
++    previous_folded = _strip_request_envelope(_fold(previous_user_text))
++    opened = _authenticated_application_request(previous_folded, catalog)
++    focused = resolve_application_focus_name(previous_user_text, catalog)
++    if (opened is None or opened[0] not in {"app.open", "window.focus"}) and focused is None:
++        return None
++    # The person's own spelling: take the literal from the original text.
++    original = re.search(
++        r"(?i)(?:pon[eé]?le|ponele|pon[eé]?melo|put\s+on\s+it|write\s+on\s+it)\s+(?P<text>.+?)"
++        r"(?:\s+(?:ahora|ya|now|please|por\s+favor|porfa))*[\s.!?]*$",
++        text.strip(),
++    )
++    literal = (original.group("text") if original is not None else order.group("text")).strip()
++    return literal or None
++
++
++def other_window_switch_request(text: str) -> bool:
++    """True for a switch to «la otra/anterior/siguiente ventana» with no other clause."""
++
++    folded = _strip_request_envelope(_fold(text)).strip()
++    return bool(folded) and _OTHER_WINDOW_SWITCH.fullmatch(folded) is not None
++
++
+ # Reads a turn may run before asking about the other clause.
+ _DEFERRED_READ_OPERATIONS = frozenset({"system.time", "window.resolve"})
+ 
+@@ -18330,6 +18506,28 @@ def resolve_explicit_effects(
+         # WINDOWS1385: bringing an authenticated application to the front is
+         # window.focus; window.resolve (its prerequisite) binds the window.
+         return EffectIntent(("window.focus",), (folded,))
++    if (
++        {"capture.screenshot", "ocr.read"} <= available
++        and deictic_look_request(text)
++        and previous_user_text is None
++    ):
++        # REOPEN1993 H0528: nothing named earlier, so «lo» is the screen.
++        return EffectIntent(("capture.screenshot", "ocr.read"), (folded, folded))
++    if (
++        "input.text.type" in available
++        and deictic_text_to_type(text, previous_user_text, authenticated_applications) is not None
++    ):
++        # REOPEN1993 H0097: the text goes into the application just opened.
++        return EffectIntent(("input.text.type",), (text,))
++    if {"window.resolve", "window.focus"} <= available and other_window_switch_request(text):
++        # REOPEN1993 H0263: the inventory is read and the window behind the
++        # foreground one is focused (grounded from that reading, never guessed).
++        return EffectIntent(("window.resolve", "window.focus"), (folded, folded))
++    single_near = near_single_open_candidate(text, authenticated_applications, authenticated_games)
++    if single_near is not None and single_near[0] in available:
++        # REOPEN1993 «abre Steel.» → Steam, «Ve a Mad de Rivals.» → Marvel
++        # Rivals: one installed candidate is opened, not asked about.
++        return EffectIntent((single_near[0],), (single_near[1],))
+     destination = _symbolic_web_destination(text)
+     if (
+         destination is not None

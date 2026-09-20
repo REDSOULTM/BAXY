@@ -1,3 +1,25 @@
+## NEAR1995 — estado vigente 2026-09-20T22:10:22.844467+00:00
+
+Parcial: 6 aprobados, 2 fallidos, 0 sin ejecutar; 2 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 653/742 | 89 | 0 | >=628 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 626 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); NEAR1995 añade 2. No se cuentan revalidaciones.
+
+Siguiente acción: NEAR1995: 8 ejecutados, 6 aprobados, 2 fallidos, 2 créditos (índices [2, 3]). Siguiente: las tandas de las demás lecturas de REOPEN1993 (alarma de la sesión, otra ventana, mirar la pantalla, ponle texto) y cien.
+
+Evidencia: `artifacts/comprobaciones/C03/NEAR1995/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 206.17 s acumulados; pico GPU 3492.93 MiB; pico RAM 1873.21 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque NEAR1995 precedente. -->
+
 ## REOPEN1993 — estado vigente 2026-09-20T20:53:40.825299+00:00
 
 Reapertura por la auditoría semántica completa (D24; REOPEN1957/AUDITORIA_SEMANTICA.md): 56 filas positivas acreditadas con una pregunta donde el contexto era determinista (A, B, C, D: 18), un canal preguntado con destino único (E: 6), una búsqueda fallida (F: 2), clima sin clima (W: 12), noticias sin titulares (N: 3), instalar/desinstalar software leído como biblioteca de Steam (G: 7), Steam/Epic sin alcanzar (S: 4), «Windows no aceptó» el apagado/reinicio (P: 2) y wifi «de casa» sin preguntar ni aprender (H: 2) vuelven a abiertas: H0011, H0019, H0024, H0033, H0034, H0045, H0061, H0074, H0089, H0097, H0098, H0128, H0167, H0170, H0198, H0217, H0227, H0231, H0232, H0263, H0299, H0325, H0339, H0344, H0368, H0374, H0376, H0380, H0386, H0398, H0401, H0408, H0415, H0431, H0456, H0457, H0478, H0509, H0522, H0528, H0536, H0571, H0574, H0578, H0583, H0590, H0617, H0620, H0651, H0664, H0682, H0689, H0699, H0701, H0708, H0714. Ningún crédito nuevo; la evidencia previa queda en reopen_history.
