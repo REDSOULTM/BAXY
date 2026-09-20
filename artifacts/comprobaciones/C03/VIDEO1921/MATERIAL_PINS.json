@@ -1,0 +1,87 @@
+{
+  "schema": "video1921-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1921-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1921-instrument-v1",
+  "seal_sha256": "22d865e3ed20218cd025a1fc9305a9ffd2027bd16ed86d746410568a51c43fc6",
+  "runner_sha256": "3ed01492a2e1d1c3e4d6e43540f0bf3fd791ad17d7b12c79113479f00749e461",
+  "transport_seal_sha256": "a7f21624e7635af417eb60a30cdc0bf7ed05138226f64be290dd90cf3283fa05",
+  "files": {
+    "panel.json": "a8c788961dae8d20f79373eef4925ad2e6a679f36c94e1d94983442a5a082e7c",
+    "turns.jsonl": "bb8c09dd4ddbbd0c7af5051bf1679749850224b6b93847559054d291fad8961f",
+    "case-map.json": "d82e553656f82b3bc66aced2fbd8ec9801f1044ad6515216dc1b7eab0d5f97b2",
+    "PLAN.md": "4cfaebad6acdc96949f84aabc03d7c4ebf60c74182fffe6cf7a7af3b52d181d1"
+  },
+  "counts": {
+    "cases": 6,
+    "historical_literals": 2,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 12,
+    "session_controls": 6,
+    "ordinary_turns": 2,
+    "reviewed_turns": 4,
+    "maximum_reportable_terminals": 10,
+    "maximum_internal_confirmations": 4
+  },
+  "kind_counts": {
+    "historical_literal": 2,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0155",
+      "kind": "historical_literal",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "31186f9dc8d269033e1044d7604b8338ba7088c16db39ce733672b9d299bcf0a",
+      "criterion_sha256": "661942dd3d3140e54d2f0e3151a9179ff85218de5ec2953e011c1ec1c736c275"
+    },
+    {
+      "index": 1,
+      "case_id": "H0411",
+      "kind": "historical_literal",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "8ba39b2410895142254cee360e414cccb9ff9ed7a2b013f00386cb96eb6c6467",
+      "criterion_sha256": "661942dd3d3140e54d2f0e3151a9179ff85218de5ec2953e011c1ec1c736c275"
+    },
+    {
+      "index": 2,
+      "case_id": "video1921-dev-01",
+      "kind": "original_development_variant",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "37fb4d065733a04250d57c8f1a3ecb6910a783caea2c556092dc779472856d43",
+      "criterion_sha256": "661942dd3d3140e54d2f0e3151a9179ff85218de5ec2953e011c1ec1c736c275"
+    },
+    {
+      "index": 3,
+      "case_id": "video1921-dev-02",
+      "kind": "original_development_variant",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "bbd73b591eb344de8ade8edbc1e742f8c26553cce4dc2692fe63a70d9fbdcc00",
+      "criterion_sha256": "661942dd3d3140e54d2f0e3151a9179ff85218de5ec2953e011c1ec1c736c275"
+    },
+    {
+      "index": 4,
+      "case_id": "video1921-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "a08744964ba0843fd1bc23d959af801082f2500cf7a864f2cb4668789b2104fc",
+      "criterion_sha256": "031153cb155d4fd6216825f753dc315529c6a33cdc1329a8ed51b2593af70750"
+    },
+    {
+      "index": 5,
+      "case_id": "video1921-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "bc24898c6d653acc0303bda963f8edd69ad552c3e75140829c1ecc5b591f40cc",
+      "criterion_sha256": "50757e30c0886c9c9d6fe25617d31896c91ed2f486ced29f1b243a9954f5945b"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema": "c03-video1921-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs (the service's own fuzzy search is trusted, the playback is proved by the card that was chosen instead of by the page repeating the name, and the receipt reports the observed title), src/baxy_mind/effect_intent.py («ver» heads the request as its own action signature already declared, and a misspelled service name is still that service) and src/baxy_mind/llm.py (a playback final may not state where in the video it is), on top of the VIDEO1921 build.",
+  "patch": "artifacts/comprobaciones/C03/VIDEO1921/SOURCE.patch",
+  "commits": [
+    "c2a1bffb9eebf462007fa1160d54ff3ff6d2414a"
+  ],
+  "build": "BUILD1921 (C03-repairs1921-build/BUILD_READY.json; mente y Providers)",
+  "cause_measured": "El final afirmaba en qué punto del vídeo estaba, y el recibo sólo trae el avance entre dos lecturas; «ver» encabezaba el pedido según la firma de la operación pero no según la cabeza que resuelve; y el adaptador tiraba la corrección que el buscador del servicio acababa de dar al exigir que la tarjeta repitiera lo pedido.",
+  "change": "Decir por dónde va el vídeo queda vetado; «ver» encabeza el pedido en las dos listas; y la reproducción se prueba por la ficha elegida, con el título observado en el recibo.",
+  "measurement": "VIDEO1921: 6 ejecutados, 5 aprobados, 1 fallido; 0 créditos. Las dos filas se reproducen de verdad con finales fieles; una variante no propuso nada porque el extractor literal de argumentos no tenia entrada para la operacion, y sin dos variantes aprobadas ningun literal acredita.",
+  "credits": 0
+}

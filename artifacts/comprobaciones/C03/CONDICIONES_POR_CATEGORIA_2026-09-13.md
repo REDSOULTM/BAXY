@@ -1622,3 +1622,7 @@ Energía del sistema pasa de 1/3 a 3/3 con llamar de verdad a la transicion pedi
 ## Actualización 2026-09-19 (VIDEO1919)
 
 Vídeo y series pasa de 2/26 a 9/26 con poner la serie que se nombra en el servicio que se nombra, y decir que se esta reproduciendo solo cuando se ha visto avanzar (commit 5648ab9d, BUILD1919) (HEAD 5648ab9d): 14 ejecutados, 11 aprobados, 3 fallidos, 7 créditos. Nueve reproducciones aprobadas por la raiz, completadas y verificadas contra el avance observado del video; un final falla por afirmar la posicion del video, que el recibo no da, y dos turnos quedan detenidos sin efecto porque el revisor de la raiz llevaba un unico titulo fijado.
+
+## Actualización 2026-09-20 (VIDEO1921)
+
+Vídeo y series pasa de 9/26 a 9/26 con poner la serie que se nombra aunque se nombre mal, y decir cual se puso sin adivinar por donde va (commit c2a1bffb, BUILD1921) (HEAD c2a1bffb): 6 ejecutados, 5 aprobados, 1 fallido, 0 créditos. Las dos filas se reproducen de verdad con finales fieles; una variante no propuso nada porque el extractor literal de argumentos no tenia entrada para la operacion, y sin dos variantes aprobadas ningun literal acredita.

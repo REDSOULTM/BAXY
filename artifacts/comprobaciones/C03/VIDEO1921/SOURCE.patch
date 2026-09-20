@@ -1,0 +1,314 @@
+commit c2a1bffb9eebf462007fa1160d54ff3ff6d2414a
+
+C03: lo mal dicho lo arregla BAXY, y el final no adivina el minuto
+
+Tres cosas, cada una medida.
+
+La búsqueda de Netflix ya es difusa, y el adaptador tiraba su corrección:
+después de buscar exigía que la tarjeta repitiera literalmente lo pedido.
+Ahora se queda con lo que el servicio devuelve. Pidiendo «stranger thins»
+se reproduce Stranger Things, y el recibo dice el título observado, de modo
+que BAXY lo nombra y la persona ve la corrección en vez de que se le oculte.
+
+La prueba de que se abrió lo pedido pasa a ser la ficha que se eligió, no
+que la página repita el nombre. Medido: la ficha de Stranger Things es la
+80057281 y el reproductor acaba en 80077368, porque la primera es la serie
+y la segunda el episodio al que Netflix redirige; y un título traducido
+—«Wednesday» se llama «Merlina» en este perfil— no se daba nunca por
+reproducido aunque estuviera delante.
+
+«ver» encabeza el pedido. La firma de esta misma operación ya la daba por
+forma legítima y la cabeza que resuelve la rechazaba. «watch» viaja con ella
+por simetría pero hoy no resuelve: en inglés es también el reloj inteligente
+y los lectores de dispositivos la reclaman antes.
+
+Y decir por dónde va el vídeo queda vetado: observedProgressSeconds es el
+avance entre dos lecturas, no la posición.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+index 80022f64e..0943de894 100644
+--- a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+@@ -300,7 +300,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
+         return ExternalJson.Success(operation, ExternalJson.Create(writer =>
+         {
+             writer.WriteStartObject(); writer.WriteNumber("version", 1);
+-            writer.WriteString("service", service); writer.WriteString("title", title);
++            writer.WriteString("service", service);
++            writer.WriteString("title", playback.Title);
+             writer.WriteString("finalUrl", playback.FinalUrl);
+             writer.WriteString("pageTitle", playback.PageTitle);
+             writer.WriteString("targetId", playback.TargetId);
+@@ -330,6 +331,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
+                 writer.WriteString("error", playback.ErrorCode);
+                 writer.WriteString("lastUrl", playback.FinalUrl);
+                 writer.WriteString("lastPageTitle", playback.PageTitle);
++                writer.WriteString("lastObserved", playback.LastObserved);
+                 writer.WriteEndObject();
+             }).GetRawText();
+             File.AppendAllText(path, line + Environment.NewLine, Encoding.UTF8);
+@@ -1011,12 +1013,18 @@ internal sealed record CdpMediaPlaybackResult(
+ internal sealed record CdpStreamingPlaybackResult(
+     bool Verified,
+     bool EffectObserved,
+-    string RequestedTitle,
++    // En una reproducción verificada es el nombre de la ficha que el buscador del
++    // servicio eligió: lo que de verdad se puso, que no tiene por qué escribirse
++    // como se pidió. En los caminos que no llegan a elegir nada es el pedido.
++    string Title,
+     string FinalUrl,
+     string PageTitle,
+     string TargetId,
+     double ObservedProgressSeconds,
+-    string ErrorCode);
++    string ErrorCode,
++    // La última lectura de la sonda, tal cual, para que un rechazo diga en qué
++    // condición se quedó en vez de obligar a una corrida por hipótesis.
++    string LastObserved = "");
+ 
+ internal sealed class CdpBrowserSessionContext
+ {
+@@ -1609,6 +1617,9 @@ internal class CdpBrowserSession : IDisposable
+         double? baseline = null;
+         string lastUrl = navigation.FinalUrl;
+         string lastPageTitle = string.Empty;
++        string chosenId = string.Empty;
++        string lastObserved = string.Empty;
++        string chosenName = string.Empty;
+         string failure = "netflix_title_or_play_control_not_found";
+         // Con la sesión iniciada el camino es más largo de lo que era: elegir perfil,
+         // volver a la búsqueda, abrir el título y esperar al reproductor son tres
+@@ -1624,6 +1635,7 @@ internal class CdpBrowserSession : IDisposable
+             string observed = await EvaluateStringAsync(
+                 socket,
+                 "(()=>{const wanted=" + titleLiteral + ".toLowerCase();"
++                + "let chosenId='',chosenName='';"
+                 + "const body=(document.body?.innerText||'').toLowerCase();"
+                 + "const auth=location.pathname.includes('/login')||body.includes('sign in')||"
+                 + "body.includes('iniciar sesión')||body.includes('inicia sesión');let action='none';"
+@@ -1635,13 +1647,13 @@ internal class CdpBrowserSession : IDisposable
+                 + "const tile=document.querySelector('[data-uia^=\"profile-selector+tile-\"]')"
+                 + "||document.querySelector('[data-uia=\"profile-selector\"] a,[data-uia=\"profile-selector\"] li');"
+                 + "if(tile){tile.click();action='profile_clicked';"
+-                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action].join('\\u001f');}}"
++                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action,chosenId,chosenName].join('\\u001f');}}"
+                 // Elegido el perfil, Netflix lleva a la portada: hay que volver a la
+                 // búsqueda, que es donde estaba el título que se pidió.
+                 + "if(!auth&&!location.pathname.startsWith('/search')&&!location.pathname.includes('/watch/')"
+                 + "&&!document.querySelector('[data-uia=\"profile-gate-screen\"]')){"
+                 + "location.href=" + searchLiteral + ";action='search_again';"
+-                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action].join('\\u001f');}"
++                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action,chosenId,chosenName].join('\\u001f');}"
+                 // La búsqueda de Netflix ya no da enlaces «/title/»: cada resultado es
+                 // un «standard-card», un <a> cuyo href lleva «jbv=<id del vídeo>».
+                 // Medido contra la página real: buscando sólo «/title/» lo único que
+@@ -1649,12 +1661,12 @@ internal class CdpBrowserSession : IDisposable
+                 // se va al reproductor, que es a donde lleva pulsarlo.
+                 + "if(!auth&&location.pathname.startsWith('/search')){"
+                 + "const cards=[...document.querySelectorAll('a[data-uia=\"standard-card\"],a[href*=\"jbv=\"]')];"
+-                + "const named=cards.map(a=>({a,t:((a.innerText||'')+' '+(a.getAttribute('aria-label')||'')).trim().toLowerCase()}));"
+-                + "const hit=named.find(x=>x.t===wanted)||named.find(x=>x.t.startsWith(wanted))||named.find(x=>x.t.includes(wanted));"
+-                + "if(hit){const id=(hit.a.getAttribute('href')||'').match(/jbv=(\\d+)/);"
+-                + "if(id){location.href='https://www.netflix.com/watch/'+id[1];action='watch_nav';}"
++                + "const named=cards.map(a=>({a,t:((a.innerText||'')+' '+(a.getAttribute('aria-label')||'')).trim().toLowerCase(),n:((a.getAttribute('aria-label')||a.innerText||'').trim())}));"
++                + "const hit=named.find(x=>x.t===wanted)||named.find(x=>x.t.startsWith(wanted))||named.find(x=>x.t.includes(wanted))||named[0];"
++                + "if(hit){chosenName=hit.n;const id=(hit.a.getAttribute('href')||'').match(/jbv=(\\d+)/);"
++                + "if(id){chosenId=id[1];location.href='https://www.netflix.com/watch/'+id[1];action='watch_nav';}"
+                 + "else{hit.a.click();action='result_clicked';}"
+-                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action].join('\\u001f');}"
++                + "return [location.href,document.title,'ok','unmatched',-1,'missing',0,action,chosenId,chosenName].join('\\u001f');}"
+                 + "const links=[...document.querySelectorAll('a[href*=\"/title/\"]')];"
+                 + "const link=links.find(a=>((a.closest('[data-uia],.title-card,.slider-item')?.innerText||a.innerText||'').toLowerCase()).includes(wanted));"
+                 + "if(link){link.click();action='result_clicked';}}"
+@@ -1665,31 +1677,52 @@ internal class CdpBrowserSession : IDisposable
+                 + "const v=document.querySelector('video');if(v&&v.paused){v.play().catch(()=>{});}"
+                 + "const matched=(document.title.toLowerCase()+' '+body).includes(wanted);"
+                 + "return [location.href,document.title,auth?'auth':'ok',matched?'matched':'unmatched',"
+-                + "v?v.readyState:-1,v?(v.paused?'paused':'playing'):'missing',v?v.currentTime:0,action].join('\\u001f');})()",
++                + "v?v.readyState:-1,v?(v.paused?'paused':'playing'):'missing',v?v.currentTime:0,action,chosenId,chosenName].join('\\u001f');})()",
+                 cancellationToken,
+                 userGesture: true).ConfigureAwait(false);
++            lastObserved = observed;
+             string[] fields = observed.Split('\u001f');
+-            if (fields.Length != 8) continue;
++            if (fields.Length != 10) continue;
+             lastUrl = fields[0]; lastPageTitle = fields[1];
+             if (fields[2] == "auth")
+                 return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
+                     "netflix_authentication_required");
++            // La ficha elegida en la búsqueda se recuerda entre vueltas: el guion
++            // vuelve a empezar en cada evaluación y para entonces ya está en la
++            // página del reproductor, donde no quedan tarjetas que mirar.
++            if (fields[8].Length > 0) chosenId = fields[8];
++            if (fields[9].Length > 0) chosenName = fields[9];
+             bool watch = lastUrl.Contains("netflix.com/watch/", StringComparison.OrdinalIgnoreCase);
+             bool ready = int.TryParse(fields[4], NumberStyles.Integer,
+                 CultureInfo.InvariantCulture, out int readyState) && readyState >= 2;
+             bool progressing = double.TryParse(fields[6], NumberStyles.Float,
+                 CultureInfo.InvariantCulture, out double currentTime);
+-            if (watch && fields[3] == "matched" && ready
++            // Lo que prueba que se abrió lo pedido es la ficha que se eligió, no que
++            // la página repita el nombre. Exigir lo segundo descartaba un título
++            // traducido —«Wednesday» se llama «Merlina» en este perfil— con el vídeo
++            // delante, y tiraba la corrección que el buscador de Netflix acababa de
++            // dar a un título mal escrito. Sin ficha elegida (navegación directa) se
++            // conserva la comprobación del texto.
++            // Medido: la ficha de «Stranger Things» es la 80057281 y el reproductor
++            // acaba en /watch/80077368, porque la primera es la serie y la segunda el
++            // episodio al que Netflix redirige. Exigir que la URL lleve el id elegido
++            // rechazaba una reproducción correcta. Basta con haber elegido la ficha y
++            // estar en un reproductor: la redirección es suya, no nuestra.
++            bool opened = chosenId.Length > 0 || fields[3] == "matched";
++            if (watch && opened && ready
+                 && fields[5] == "playing" && progressing)
+             {
+                 if (baseline is not null && currentTime >= baseline.Value + 0.5)
+-                    return new(true, true, title, lastUrl, lastPageTitle, targetId,
++                    return new(true, true,
++                        chosenName.Length > 0 ? chosenName : title,
++                        lastUrl, lastPageTitle, targetId,
+                         currentTime - baseline.Value, string.Empty);
+                 baseline ??= currentTime;
+                 failure = "netflix_video_progress_not_observed";
+             }
+         }
+-        return new(false, true, title, lastUrl, lastPageTitle, targetId, 0, failure);
++        return new(false, true, title, lastUrl, lastPageTitle, targetId, 0, failure,
++            lastObserved + "|remembered=" + chosenId + "/" + chosenName);
+     }
+ 
+     public virtual void Dispose()
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index dbfd5c587..d3f03c979 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -2285,11 +2285,17 @@ def _curated_domain_is_grounded(
+         )
+     if operation == "streaming.play.named":
+         return (
+-            _has(folded, r"\bnetflix\b")
++            _has(folded, r"\b" + _NETFLIX_SPELLED + r"\b")
+             and _has(
+                 folded,
++                # VIDEO1921: «ver» encabeza el pedido igual que los demás, y
++                # dejarla sólo en la rama que resuelve la habría partido en dos.
++                # «watch» viaja con ella por simetría, pero hoy no resuelve: en
++                # inglés es también el reloj inteligente y los lectores de
++                # dispositivos la reclaman antes. No acompañar una palabra
++                # ambigua es lo seguro; ninguna fila abierta la necesita.
+                 r"\b(?:reproduce|play|pon|busca|find|encuentra|encuentras|"
+-                r"arranca|arrancala|start)\b",
++                r"arranca|arrancala|start|ver|watch)\b",
+             )
+             and not _has(folded, r"\b(?:como|how|tutorial|ejemplo|example)\b")
+         )
+@@ -5048,6 +5054,13 @@ def _has(text: str, pattern: str) -> bool:
+     return _match(text, pattern) is not None
+ 
+ 
++# VIDEO1921 H0737: el nombre del servicio se escribe mal —o lo escribe mal el
++# oído de BAXY, que es lo más probable— y eso no lo convierte en otro servicio.
++# Alternancia corta y cerrada, no distancia de edición: el catálogo de servicios
++# es cerrado y una tolerancia genérica leería «Netflix» donde se dijo otra cosa.
++_NETFLIX_SPELLED = r"(?:netflix|nerflix|netlix|netfix|netflis|neflix)"
++
++
+ def _entity_key(value: str) -> str:
+     return " ".join(re.findall(r"[a-z0-9]+", _fold(value)))
+ 
+@@ -12175,7 +12188,7 @@ def _strict_catalog_request(
+                 r"\b(?:stage|staged|prepare|prepared|preparado|alista|install|"
+                 r"installation|instalar|instalarse|ready|listo)\b",
+             ),
+-            ("streaming.play.named", r"\bnetflix\b"),
++            ("streaming.play.named", r"\b" + _NETFLIX_SPELLED + r"\b"),
+         )
+         found_domains: list[tuple[int, str]] = []
+         for operation, pattern in domain_patterns:
+@@ -12464,7 +12477,7 @@ def _strict_catalog_request(
+             ),
+             "streaming.play.named": (
+                 r"\b(?:pon|put|play|start|reproduce|ver|watch|find|encuentra|encuentras)\b"
+-                r".{0,120}\bnetflix\b|\bnetflix\b.{0,120}"
++                r".{0,120}\b" + _NETFLIX_SPELLED + r"\b|\b" + _NETFLIX_SPELLED + r"\b.{0,120}"
+                 r"\b(?:pon|put|play|start|reproduce|ver|watch)\b"
+             ),
+         }
+@@ -12570,7 +12583,7 @@ def _strict_catalog_request(
+             or bounded_calendar_read
+             or (
+                 found_operation_set == {"streaming.play.named"}
+-                and _has(text, r"\bnetflix\b")
++                and _has(text, r"\b" + _NETFLIX_SPELLED + r"\b")
+             )
+         )
+         generic_surface_safe = not (
+@@ -13500,17 +13513,26 @@ def _strict_catalog_request(
+         r"localiza|locate)\s+wednesday\s+(?:en|in|on|desde|from|through|"
+         r"usando|using)\s+netflix\b",
+     )
++    # VIDEO1921 H0737 «quiero ver stranger things en nerflix»: el servicio se
++    # escribe mal —o lo escribe mal el oído de BAXY, que es lo más probable— y
++    # eso no lo convierte en otro servicio. Alternancia corta y cerrada, no
++    # distancia de edición: el catálogo de servicios es cerrado y una tolerancia
++    # genérica acabaría leyendo «Netflix» donde la persona dijo otra cosa.
+     if (
+         (not deferred_effect or netflix_weekday_title)
+-        and _has(text, r"\bnetflix\b")
++        and _has(text, r"\b" + _NETFLIX_SPELLED + r"\b")
+         and _has(
+             text,
++            # VIDEO1921 H0411 «ver stranger things en netflix»: la firma de esta
++            # misma operación ya daba «ver» y «watch» por formas legítimas de
++            # pedirla, y esta cabeza las rechazaba. La asimetría entre las dos
++            # listas era el defecto; «quiero ver …» resolvía por otro camino.
+             r"^(?:reproduce|play|pon|pone|put\s+on|busca|find|inicia|start|encuentra|encuentras|"
+-            r"localiza|locate)\b",
++            r"localiza|locate|ver|watch)\b",
+         )
+         and _has(
+             text,
+-            r"\b(?:en|in|on|desde|from|through|usando|using)\s+netflix\b",
++            r"\b(?:en|in|on|desde|from|through|usando|using)\s+" + _NETFLIX_SPELLED + r"\b",
+         )
+     ):
+         resolved = intent("streaming.play.named")
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index c1d0fc89c..567102cc4 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -8445,7 +8445,18 @@ def compose_visible_defect(
+         if (
+             operation == "streaming.play.named"
+             and isinstance(observed_dict.get("observedProgressSeconds"), (int, float))
+-            and re.search(r"\d[\d.,]*\s*(?:segundos?|seconds?|secs?\b)", folded)
++            and re.search(
++                r"\d[\d.,]*\s*(?:segundos?|seconds?|secs?\b)"
++                # VIDEO1919 H0155: el veto de los dígitos dejaba abierta la puerta
++                # de al lado, y por ahí se publicó «se está reproduciendo desde el
++                # momento cero». El recibo trae el avance medido ENTRE DOS
++                # LECTURAS, no la posición en el vídeo: decir por dónde va es
++                # afirmar sin verificar, y aquel acierto fue casualidad.
++                r"|\bdesde\s+(?:el\s+)?(?:momento\s+)?(?:cero|principio|comienzo|inicio)\b"
++                r"|\bfrom\s+the\s+(?:very\s+)?(?:beginning|start)\b"
++                r"|\bdesde\s+el\s+minuto\b",
++                folded,
++            )
+         ):
+             # Los segundos observados son la prueba de que el vídeo avanza, no un
+             # hecho que contarle a la persona: un borrador los leyó como suyos
+@@ -16401,9 +16412,9 @@ class LlmRuntime:
+                 else "seen.installedIn son los Python donde el paquete SÍ está instalado y seen.notInstalledIn donde no: di exactamente eso, sin negar una instalación de seen.installedIn ni afirmar una que no esté."
+             ),
+             "playback_progress_stated": (
+-                "Say only that it is playing and what is playing; do not state any number of seconds: the observed progress is how you checked, not something the person did."
++                "Say only that it is playing and what is playing; do not state any number of seconds and do not say where in the video it is: the observed progress is how you checked, not a position and not something the person did."
+                 if response_language == "en"
+-                else "Di sólo que está reproduciéndose y qué se reproduce; no digas ningún número de segundos: el avance observado es cómo lo comprobaste, no algo que haya hecho la persona."
++                else "Di sólo que está reproduciéndose y qué se reproduce; no digas ningún número de segundos ni por dónde va el vídeo: el avance observado es cómo lo comprobaste, no una posición ni algo que haya hecho la persona."
+             ),
+             "screen_wrong_count": (
+                 "The screen shows seen.lineCount lines: that is the only number you may state; seen.lines are only some of those lines, so do not count them."
