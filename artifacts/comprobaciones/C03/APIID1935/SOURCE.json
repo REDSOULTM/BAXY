@@ -1,0 +1,15 @@
+{
+  "schema": "c03-apiid1935-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (a public API named as the means is a declined means, with or without a comma), src/baxy_mind/__main__.py (the declined means leaves the search query), src/baxy_mind/llm.py (search reports do not rank results; reporting verbs are the report's own words; the report says no API was used, also in the safety-net report; pasted addresses are vetoed), on top of the APIID1935 build.",
+  "patch": "artifacts/comprobaciones/C03/APIID1935/SOURCE.patch",
+  "commits": [
+    "ec826bbe8e3770e3e23ff4ac5efef5ad2754895c"
+  ],
+  "build": "BUILD1935 (C03-repairs1935-build/BUILD_READY.json; mente)",
+  "cause_measured": "La directiva «usando la API pública» iba en la consulta, los borradores juzgaban los resultados y morían sin fuente, y el final no decía que no usó la API.",
+  "change": "La API nombrada es un medio declinado fuera de la consulta; el informe nombra páginas sin juzgarlas, dice que no usó la API y no pega direcciones.",
+  "measurement": "APIID1935: 5 ejecutados, 5 aprobados, 0 fallidos; 1 créditos. Los tres casos del grupo hicieron exactamente una web.search completada y verificada con lo pedido como consulta (sin la directiva de la API) y publicaron un final que dice que no usó la API y nombra las páginas encontradas por título y sitio (SteamDB con el App ID en el título, la tienda de Steam), sin afirmar nada que ninguna traiga; los límites con cero operaciones. Corrida sobre BUILD1935 (HEAD ec826bb).",
+  "credits": 1
+}
