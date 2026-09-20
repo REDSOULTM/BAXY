@@ -4871,6 +4871,35 @@ def resolve_explicit_clarification_intent(
         and not _has(clause, r"\b(?:en|on)\s+(?:netflix|disney|prime|hbo|max|crunchyroll|star|paramount|twitch|hulu|peacock|apple)\b")
         for clause in _request_clauses(music_folded)
     )
+    # VIDEO1925 H0010 «prende algo en netflix»: un pedido de streaming sin
+    # título es tan vacío como una canción sin nombre, y la cláusula de arriba
+    # excluye los servicios a propósito porque «The Office en Prime Video» sí
+    # nombra un título. Aquí sólo entra lo que nombra el servicio y NO nombra
+    # nada que ver: se pregunta por el título, que es el único dato que falta.
+    # «Prende» es «pon» en el habla de la persona.
+    bare_streaming_clause = any(
+        _head_is(
+            _request_head(clause),
+            r"(?:pon|pone|poneme|ponme|prende|prendeme|prendé|reproduce|reproduci|play|put|start|inicia|dale)",
+        )
+        and _has(
+            clause,
+            r"\b(?:algo|something|anything|cualquier\s+cosa|una\s+serie|a\s+(?:series|show)|"
+            r"un\s+video|a\s+video|una\s+peli(?:cula)?|a\s+(?:movie|film)|lo\s+que\s+sea|whatever)\b",
+        )
+        and _has(clause, r"\b(?:en|on)\s+" + _NETFLIX_SPELLED + r"\b")
+        and not _has(
+            clause,
+            r"\b(?:algo|something|una\s+serie|un\s+video|una\s+peli(?:cula)?)\s+"
+            r"(?:de|sobre|llamad[oa]|of|about|called|named)\s+\S",
+        )
+        for clause in _request_clauses(music_folded)
+    )
+    if "streaming.play.named" in available and bare_streaming_clause:
+        # El nombre del hueco es lo que el modelo lee para redactar la pregunta:
+        # con «title» a secas, «put something on Netflix» acabó en «what would
+        # you like me to add to Netflix?», que lee «put on» como añadir.
+        return ClarificationIntent(("streaming.play.named",), ("title_to_watch",))
     browser_music = _named_browser_music_request(text)
     if (
         "media.play.query" in available
