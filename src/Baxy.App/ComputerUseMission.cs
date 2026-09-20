@@ -868,56 +868,56 @@ internal static class ComputerUseSuccessCheck
                 return view["window"] is JsonObject owned
                     && Fold((string?)owned["process"]).Contains(Fold(rest), StringComparison.Ordinal);
             case "control":
-            {
-                string name = rest;
-                string? state = null;
-                int split = rest.LastIndexOf(':');
-                if (split > 0 && rest[(split + 1)..] is "selected" or "on" or "off" or "expanded" or "focused" or "collapsed")
                 {
-                    name = rest[..split];
-                    state = rest[(split + 1)..];
-                }
+                    string name = rest;
+                    string? state = null;
+                    int split = rest.LastIndexOf(':');
+                    if (split > 0 && rest[(split + 1)..] is "selected" or "on" or "off" or "expanded" or "focused" or "collapsed")
+                    {
+                        name = rest[..split];
+                        state = rest[(split + 1)..];
+                    }
 
-                return FindControls(view, name).Any(control => state is null
-                    || Fold((string?)control["state"]).Split(' ').Contains(state));
-            }
+                    return FindControls(view, name).Any(control => state is null
+                        || Fold((string?)control["state"]).Split(' ').Contains(state));
+                }
             case "value":
-            {
-                int equals = rest.IndexOf('=', StringComparison.Ordinal);
-                if (equals <= 0)
                 {
-                    return false;
-                }
+                    int equals = rest.IndexOf('=', StringComparison.Ordinal);
+                    if (equals <= 0)
+                    {
+                        return false;
+                    }
 
-                string needle = Fold(rest[(equals + 1)..]);
-                return FindControls(view, rest[..equals]).Any(control =>
-                    Fold((string?)control["value"]).Contains(needle, StringComparison.Ordinal));
-            }
+                    string needle = Fold(rest[(equals + 1)..]);
+                    return FindControls(view, rest[..equals]).Any(control =>
+                        Fold((string?)control["value"]).Contains(needle, StringComparison.Ordinal));
+                }
             case "count":
                 return CountAtom(rest, view);
             case "stepdone":
-            {
-                string[] parts = rest.Split(':', 2);
-                string operation = parts[0].Trim();
-                string? argument = parts.Length > 1 ? Fold(parts[1]) : null;
-                foreach (JsonNode? node in steps)
                 {
-                    if (node is not JsonObject step || (bool?)step["ok"] != true
-                        || (string?)step["operation"] != operation)
+                    string[] parts = rest.Split(':', 2);
+                    string operation = parts[0].Trim();
+                    string? argument = parts.Length > 1 ? Fold(parts[1]) : null;
+                    foreach (JsonNode? node in steps)
                     {
-                        continue;
+                        if (node is not JsonObject step || (bool?)step["ok"] != true
+                            || (string?)step["operation"] != operation)
+                        {
+                            continue;
+                        }
+
+                        if (argument is null
+                            || Fold((string?)step["key"]) == argument
+                            || Fold((string?)step["label"]).Contains(argument, StringComparison.Ordinal))
+                        {
+                            return true;
+                        }
                     }
 
-                    if (argument is null
-                        || Fold((string?)step["key"]) == argument
-                        || Fold((string?)step["label"]).Contains(argument, StringComparison.Ordinal))
-                    {
-                        return true;
-                    }
+                    return false;
                 }
-
-                return false;
-            }
             case "file":
                 return rest.Length > 0 && Path.IsPathRooted(rest) && File.Exists(rest);
             case "manifest":
