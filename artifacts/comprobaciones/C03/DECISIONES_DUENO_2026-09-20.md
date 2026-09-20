@@ -112,3 +112,11 @@ verificación mejor que la pantalla (ficheros, registro, manifiestos, COM, radio
 de desarrollo.» (Captura del 2026-09-20: mensaje directo «Ron92», usuario `.wolfsoultm.4191`.)
 Lectura: «Ron92» sustituye a «Valeria» en el destino forzado del adaptador, en los revisores y drivers de tanda y en
 la sustitución de terceros (D13). WhatsApp sigue siendo el grupo «Música»; correo, la casilla de pruebas.
+
+## D23 — El motor de computer use lo construye Fable 5.1 high
+«Quiero que Opus se encargue de todo el plan menos el motor general de computer use; que espere a que Fable 5.1 high
+lo complete, porque es el modelo en el que confío para que me haga el mejor motor de computer use para BAXY.»
+Lectura: Fase 4 en una sesión Fable (rama `fable/computer-use-engine`, worktree propio); Opus sigue con el resto y
+fusiona el motor cuando esté entregado. Visión sin LLM en tres escalones y memoria de procedimientos entran como
+entregables del motor. Auditoría semántica: se reabren A, B, C (incluido «botón rojo», por color HSV) y de D sólo
+«cuántos .py hay en el directorio actual» y «contestale que…»; «pon algo en Netflix/Disney+» sigue preguntando.

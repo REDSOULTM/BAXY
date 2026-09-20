@@ -185,6 +185,18 @@ Encuesta 742/0/0.» Commit + push. Aceptación: `source_quality_gate_passed: mod
   sólo eso, una vez.
 
 ### Fase 4 — Motor general de computer use (D10, D21) (3–4 días + cien)
+**Reparto (decisión del dueño 2026-09-20, tarde): esta fase la construye una sesión Fable 5.1 high; Opus 5 NO la
+toca.** Fable trabaja en un worktree propio sobre la rama `fable/computer-use-engine` (creada desde
+`codex/kiro-goal-c03`), sin correr tandas ni cien mientras Opus tenga algo corriendo en el PC; la tanda de aceptación
+CU1959 se corre en una ventana acordada con Opus (mensaje entre sesiones o aviso del dueño). Cuando Fable entregue
+(rama empujada, Fast verde, CU1959 adjudicada), Opus la fusiona en `codex/kiro-goal-c03`, corre una cien y arranca
+la Fase 5. Mientras tanto Opus hace las Fases 1–3, 6–8 y las herramientas tipadas de la Fase 5 que no necesitan el
+motor (`shell.command.run`, `file.compress`/`file.open`, `system.settings.set airplane_mode`, `desktop.wallpaper.set`,
+`document.presentation.create`, `web.download`, `game.uninstall.named`, Steam por `steam://` + manifiesto).
+Entregables adicionales del motor (D23): visión sin LLM en tres escalones (texto → plantilla local con OpenCV y
+color HSV por control → encoder pequeño MobileCLIP2/SigLIP 2 y Florence-2-base sólo si el banco lo exige) y
+**memoria de procedimientos** (misión lograda → secuencia guardada por app+objetivo, reproducida determinista y
+verificada; el modelo interviene sólo cuando la vista se desvía).
 **Principio (identidad, `00_IDENTIDAD.md:118-137`)**: cubrir el PC, no las apps; cero código por aplicación fuera de
 alias; lo que no cabe en una herramienta se encadena; la cascada UIA → OCR → visión es el núcleo. Las filas de la
 encuesta no se resuelven con una operación cada una: se resuelven con **un motor** que ve, decide, actúa y verifica
