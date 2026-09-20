@@ -1,0 +1,15 @@
+{
+  "schema": "c03-video1949-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs (PlayDisneyAsync: default cards remembered, choice only when the set changes, first card after three quiet seconds, «Selecciona esta opción» stripped), on top of the VIDEO1949 build.",
+  "patch": "artifacts/comprobaciones/C03/VIDEO1949/SOURCE.patch",
+  "commits": [
+    "ce712690b7514f0f36c2de8927ad734d1c42368b"
+  ],
+  "build": "BUILD1949 (C03-repairs1949-build/BUILD_READY.json; Providers)",
+  "cause_measured": "La página de búsqueda de Disney+ muestra fichas por defecto y la lectura las tomaba por resultados un instante después de escribir.",
+  "change": "Las fichas de antes de escribir se recuerdan y sólo se elige cuando cambian; la primera se toma tras tres segundos sin cambios.",
+  "measurement": "VIDEO1949: 10 ejecutados, 8 aprobados, 2 fallidos; 0 créditos. La variante en voseo que falló en VIDEO1947 reproduce con la búsqueda esperada; dos turnos con «Daredevil» fallaron porque la ficha de nombre exacto era la de colección (/browse/page-), sin botón de reproducir, con finales honestos: sin dos variantes aprobadas, cero créditos. La reparación se mide en la tanda siguiente.",
+  "credits": 0
+}

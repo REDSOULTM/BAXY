@@ -1678,3 +1678,7 @@ Entrada incompleta, ruido y control de diálogo pasa de 32/34 a 34/34 con pregun
 ## Actualización 2026-09-20 (VIDEO1947)
 
 Vídeo y series pasa de 16/26 a 16/26 con poner una serie nombrandola en Disney+ y decir que se reproduce nombrando el titulo observado (commit fa944b77, BUILD1947) (HEAD fa944b77): 10 ejecutados, 9 aprobados, 1 fallido, 0 créditos. Las seis filas con título y la variante en inglés reproducen en Disney+ con el vídeo que avanza y un final que nombra el título observado; la variante en voseo falló porque la lectura eligió una ficha por defecto de la página de búsqueda antes de que llegaran los resultados, con final honesto: sin dos variantes aprobadas, cero créditos. La reparación se mide en la tanda siguiente.
+
+## Actualización 2026-09-20 (VIDEO1949)
+
+Vídeo y series pasa de 16/26 a 16/26 con poner una serie nombrandola en Disney+ eligiendo la ficha cuando la busqueda responde (commit ce712690, BUILD1949) (HEAD ce712690): 10 ejecutados, 8 aprobados, 2 fallidos, 0 créditos. La variante en voseo que falló en VIDEO1947 reproduce con la búsqueda esperada; dos turnos con «Daredevil» fallaron porque la ficha de nombre exacto era la de colección (/browse/page-), sin botón de reproducir, con finales honestos: sin dos variantes aprobadas, cero créditos. La reparación se mide en la tanda siguiente.
