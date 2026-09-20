@@ -405,10 +405,16 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     // first one whose results pass the gate answers, with the receipt naming the
     // engine that actually answered. Neither engine is trusted over the other; the
     // gate is the same for both.
+    // 2026-09-20 (H0463 «Busca el App ID de Doom Eternal en Steam usando la API
+    // publica»): the first engine answered with ONE result about a music service
+    // that shared the single word «app» with the request, the gate let it through,
+    // and the second engine —which answers that exact query with SteamDB first— was
+    // never asked. Measured with the product's User-Agent, one probe each. The
+    // engine that answers is asked first; the decaying one stays as the fallback.
     private const string SearchEndpoint = "https://www.bing.com/search";
     private const string FallbackSearchEndpoint = "https://lite.duckduckgo.com/lite/";
-    private const string PrimarySearchAuthority = "bing_html_https";
-    private const string FallbackSearchAuthority = "duckduckgo_lite_https";
+    private const string PrimarySearchAuthority = "duckduckgo_lite_https";
+    private const string FallbackSearchAuthority = "bing_html_https";
 
     private readonly record struct SearchChannelReading(
         List<SearchCandidate> Candidates,
@@ -455,6 +461,10 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
                 continue;
             }
             string[] verifiableTerms = VerifiableSearchTerms(queryTokens, reading.Candidates);
+            if (!SearchPageSharesEnough(queryTokens, verifiableTerms))
+            {
+                verifiableTerms = [];
+            }
             var results = new List<(string Title, string Url, string Snippet)>();
             var rejected = new List<(string Title, Uri Url, string Snippet)>();
             foreach (SearchCandidate candidate in reading.Candidates)
@@ -515,7 +525,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         string query,
         CancellationToken cancellationToken)
     {
-        bool fallback = authority == FallbackSearchAuthority;
+        bool fallback = authority == "duckduckgo_lite_https";
         using HttpRequestMessage request = fallback
             ? new HttpRequestMessage(HttpMethod.Post, FallbackSearchEndpoint)
             {
@@ -861,6 +871,15 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         int matched = verifiableTerms.Count(term => MatchesSearchTerm(term, observed));
         return matched >= (verifiableTerms.Length + 1) / 2;
     }
+
+    // The verifiable terms are the request words that SOME candidate repeats, so a
+    // page of junk that shares one generic word («app») with an eight-word request
+    // makes that one word the whole yardstick and every junk item passes it. A
+    // request of three content words or more needs at least two of them found on
+    // the page before its results are judged at all; shorter requests keep the rule
+    // above, since «capital de francia» has only two words to share.
+    private static bool SearchPageSharesEnough(string[] queryTokens, string[] verifiableTerms) =>
+        queryTokens.Length < 3 || verifiableTerms.Length >= 2;
 
     private static bool MatchesSearchTerm(string token, HashSet<string> observed) =>
         observed.Contains(token)
