@@ -336,6 +336,35 @@ corredor y al adjudicador sin tocar el caso ordinario. Al publicar se descubrió
 la tabla pública de categorías había derivado (créditos sumados a la etiqueta equivocada;
 «Navegación y búsqueda web» decía 48/46): se reconstruye desde el registro canónico.
 
+## 11. SITE1933: el sitio nombrado sin dominio, en el navegador nombrado (2026-09-20)
+
+H0081 «Toma control de mi pc, quiero que abras opera gx y entras a pivigames» había quedado
+en WEB1883/1885 con el preámbulo ya resuelto pero sin camino: «pivigames» no es un dominio,
+no había URL que fundamentar y el turno preguntaba «¿Quieres que abra Opera GX y entre en
+pivigames?». Con la cadena de §10 el camino existía: una `web.search` verificada con el
+nombre del sitio y una `browser.navigate.named` al primer resultado, fundamentada sin el
+modelo. Lo que faltaba era la lectura —«abre <navegador> y entra a <sitio>», «quiero que
+abras … y entres a …», «entra a <sitio> en <navegador>», «open … and go to …»— y tres cosas
+que sólo se vieron con el turno delante (commit d78f522, BUILD1933):
+
+- el navegador salía como «opera»: «abras» no estaba entre los verbos que la lectura del
+  navegador nombrado conocía y el modelo rellenaba; ahora sale de la misma lectura;
+- «pivigames.es» era jerga para los dos guardianes (mente y App): la pregunta de
+  confirmación moría tres veces en `internal_code`. El dominio de la navegación propuesta o
+  alcanzada es nombre observado, como el de un resultado de búsqueda (WEB1447);
+- el final inventaba la página: «el sitio está disponible y puedo ver las últimas
+  actualizaciones y categorías… no he podido verificar si es seguro», y en inglés listaba
+  los resultados. Una navegación sin lectura de página no describe contenido, no juzga, no
+  lista resultados y no nombra otro dominio que el alcanzado (`navigation_content_claim`,
+  `wrong_address`); lo navegado a una página de resultados (Bing, YouTube) sigue pudiendo
+  decir «resultados».
+
+**Medición.** Seis de seis: literal y tres variantes con `approved_1_of_1`, navegador
+observado `opera_gx`, dirección final `https://pivigames.es/`; finales «Abrí el navegador
+opera gx y entré en el sitio pivigames.es.», «I opened Opera GX and navigated to
+pivigames.es. The page loaded successfully.». 1 crédito (H0081): Navegación y búsqueda web
+**46/46, cerrada**; 724/742.
+
 ## Fuentes
 
 - [OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments](https://arxiv.org/html/2404.07972v2)
