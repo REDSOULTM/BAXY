@@ -756,7 +756,7 @@ def validate_decision(
         if app_id is None:
             return _none("la aplicación no está en el catálogo", code="application_unknown")
         if history and _steps_ok(history, "app.open", appId=app_id):
-            return _none("esa aplicación ya se abrió en esta misión", code="already_open")
+            return _none("esa aplicación ya está abierta", code="already_open")
         return _guard_repeat({"operation": "app.open", "arguments": {"appId": app_id}, "reason": why}, last_failed)
     return _none(why or "el modelo no ve por dónde seguir")
 
@@ -800,12 +800,12 @@ def describe_step(step: dict, language: str) -> str:
 # «operación» is a forbidden term in finals, so no cause says it).
 _STOP_CAUSES: dict[str, dict[str, str]] = {
     "computer_use_no_step_visible": {"es": "no vi en la pantalla un control con el que seguir", "en": "I did not see on the screen a control to go on with"},
-    "computer_use_evidence_not_visible": {"es": "no encontré en la pantalla la prueba de que se hubiera logrado", "en": "I did not find on the screen the proof that it was done"},
+    "computer_use_evidence_not_visible": {"es": "la pantalla no mostró la prueba de que se hubiera logrado", "en": "I did not find on the screen the proof that it was done"},
     "computer_use_budget_exhausted": {"es": "se agotaron los pasos previstos sin llegar", "en": "the planned steps ran out before getting there"},
     "computer_use_time_exhausted": {"es": "se agotó el tiempo previsto sin llegar", "en": "the planned time ran out before getting there"},
     "computer_use_surface_unchanged": {"es": "la pantalla dejó de cambiar tras lo que hice", "en": "the screen stopped changing after what I did"},
-    "computer_use_view_unavailable": {"es": "no pude leer la ventana", "en": "I could not read the window"},
-    "computer_use_decision_unavailable": {"es": "no pude decidir el siguiente paso", "en": "I could not decide the next step"},
+    "computer_use_view_unavailable": {"es": "la ventana no se dejó leer", "en": "I could not read the window"},
+    "computer_use_decision_unavailable": {"es": "el siguiente paso quedó sin decidir", "en": "I could not decide the next step"},
     "computer_use_repeated_step": {"es": "el único paso que veía ya había fallado", "en": "the only step I could see had already failed"},
     "computer_use_step_failed": {"es": "un paso no se pudo hacer", "en": "a step could not be done"},
     "computer_use_step_arguments_invalid": {"es": "el paso elegido no era válido", "en": "the chosen step was not valid"},
