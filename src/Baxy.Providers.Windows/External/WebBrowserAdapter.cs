@@ -1816,13 +1816,25 @@ internal class CdpBrowserSession : IDisposable
                 // búsqueda de la página.
                 + "if(!auth&&p.includes('/browse/search')){const input=document.querySelector('#searchInput,input[type=\"search\"]');"
                 + "const cards=[...document.querySelectorAll('a[data-testid=\"set-item\"]')];"
-                + "if(cards.length&&(input?.value||'').length){"
+                + "const hrefs=cards.map(a=>a.getAttribute('href')||'').join(',');"
+                // VIDEO1947: la página de búsqueda trae fichas por defecto antes de que se
+                // escriba nada, y con el texto recién escrito siguen ahí un instante. Las
+                // fichas de antes de escribir se recuerdan y sólo se elige cuando cambian;
+                // si ninguna coincide con el pedido, la primera se toma sólo cuando el
+                // conjunto lleva tres segundos sin cambiar, para no confundir las fichas
+                // por defecto con una corrección del buscador («The Devil» → «El diablo
+                // viste a la moda 2»).
+                + "if(!(input?.value||'').length){window.__baxyPreSearch=hrefs;window.__baxyNoHit=0;}"
+                + "const fresh=cards.length&&hrefs!==(window.__baxyPreSearch??'');"
+                + "if(fresh&&(input?.value||'').length){"
                 // El aria-label de la ficha trae el título y detrás la clasificación, el
-                // estreno y el género («Daredevil Clasificación: 18+. Estreno: 2015. …»);
-                // el nombre es lo que hay antes de esos rótulos.
-                + "const clean=s=>(s||'').split(/\\s+(?:Clasificaci[oó]n|Rating|Estreno|Release|G[eé]nero|Genre)\\s*:/)[0].trim();"
+                // estreno y el género («Daredevil Clasificación: 18+. Estreno: 2015. …»)
+                // o la invitación a abrirla; el nombre es lo que hay antes de esos rótulos.
+                + "const clean=s=>(s||'').split(/\\s+(?:(?:Clasificaci[oó]n|Rating|Estreno|Release|G[eé]nero|Genre)\\s*:|Selecciona esta opci[oó]n|Select this option)/)[0].trim();"
                 + "const named=cards.map(a=>({a,t:clean(a.getAttribute('aria-label')||a.innerText).toLowerCase(),n:clean(a.getAttribute('aria-label')||a.innerText)}));"
-                + "const hit=named.find(x=>x.t===wanted)||named.find(x=>x.t.startsWith(wanted))||named.find(x=>x.t.includes(wanted))||named[0];"
+                + "let hit=named.find(x=>x.t===wanted)||named.find(x=>x.t.startsWith(wanted))||named.find(x=>x.t.includes(wanted));"
+                + "if(hrefs!==window.__baxyLastHrefs){window.__baxyLastHrefs=hrefs;window.__baxyNoHit=0;}"
+                + "if(!hit){window.__baxyNoHit=(window.__baxyNoHit||0)+1;if(window.__baxyNoHit>12){hit=named[0];}}"
                 + "if(hit){chosenName=hit.n;chosenHref=hit.a.getAttribute('href')||'';if(chosenHref){location.href=chosenHref;action='entity_nav';}"
                 + "return [location.href,document.title,'ok',-1,'missing',0,action,chosenHref,chosenName,'cards'].join('\\u001f');}}"
                 + "if(input){input.focus();return [location.href,document.title,'ok',-1,'missing',0,'input_focused','','',(input.value||'').length?'typed':'empty'].join('\\u001f');}}"
