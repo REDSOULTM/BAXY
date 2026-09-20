@@ -1811,6 +1811,20 @@ internal class CdpBrowserSession : IDisposable
                 + "const auth=location.pathname.includes('/login')||location.pathname.includes('/begin')||"
                 + "body.includes('inicia sesión')||body.includes('iniciar sesión')||body.includes('log in');"
                 + "const p=location.pathname;"
+                // El aria-label de la ficha trae el título y detrás la clasificación, el
+                // estreno y el género («Daredevil Clasificación: 18+. Estreno: 2015. …»)
+                // o la invitación a abrirla; el nombre es lo que hay antes de esos rótulos.
+                // Una ficha de serie o película lleva a /browse/entity-<id>; una de
+                // colección («Daredevil» como universo), a /browse/page-<id>, que no tiene
+                // botón de reproducir: entre iguales se prefiere la ficha de la obra.
+                + "const clean=s=>(s||'').split(/\\s+(?:(?:Clasificaci[oó]n|Rating|Estreno|Release|G[eé]nero|Genre)\\s*:|Selecciona esta opci[oó]n|Select this option)/)[0].trim();"
+                + "const isEntity=a=>(a.getAttribute('href')||'').includes('/browse/entity-');"
+                + "const pick=list=>list.find(x=>x.t===wanted)||list.find(x=>x.t.startsWith(wanted))||list.find(x=>x.t.includes(wanted));"
+                + "const choose=cards=>{const named=cards.map(a=>({a,t:clean(a.getAttribute('aria-label')||a.innerText).toLowerCase(),n:clean(a.getAttribute('aria-label')||a.innerText)}));"
+                + "const hrefs=cards.map(a=>a.getAttribute('href')||'').join(',');"
+                + "if(hrefs!==window.__baxyLastHrefs){window.__baxyLastHrefs=hrefs;window.__baxyNoHit=0;}"
+                + "let hit=pick(named.filter(x=>isEntity(x.a)))||pick(named);"
+                + "if(!hit){window.__baxyNoHit=(window.__baxyNoHit||0)+1;if(window.__baxyNoHit>12){hit=named.find(x=>isEntity(x.a))||named[0];}}return hit;};"
                 // La búsqueda: el cuadro se enfoca aquí y el texto lo escribe CDP
                 // (Input.insertText), porque el valor puesto por JS no dispara la
                 // búsqueda de la página.
@@ -1827,17 +1841,16 @@ internal class CdpBrowserSession : IDisposable
                 + "if(!(input?.value||'').length){window.__baxyPreSearch=hrefs;window.__baxyNoHit=0;}"
                 + "const fresh=cards.length&&hrefs!==(window.__baxyPreSearch??'');"
                 + "if(fresh&&(input?.value||'').length){"
-                // El aria-label de la ficha trae el título y detrás la clasificación, el
-                // estreno y el género («Daredevil Clasificación: 18+. Estreno: 2015. …»)
-                // o la invitación a abrirla; el nombre es lo que hay antes de esos rótulos.
-                + "const clean=s=>(s||'').split(/\\s+(?:(?:Clasificaci[oó]n|Rating|Estreno|Release|G[eé]nero|Genre)\\s*:|Selecciona esta opci[oó]n|Select this option)/)[0].trim();"
-                + "const named=cards.map(a=>({a,t:clean(a.getAttribute('aria-label')||a.innerText).toLowerCase(),n:clean(a.getAttribute('aria-label')||a.innerText)}));"
-                + "let hit=named.find(x=>x.t===wanted)||named.find(x=>x.t.startsWith(wanted))||named.find(x=>x.t.includes(wanted));"
-                + "if(hrefs!==window.__baxyLastHrefs){window.__baxyLastHrefs=hrefs;window.__baxyNoHit=0;}"
-                + "if(!hit){window.__baxyNoHit=(window.__baxyNoHit||0)+1;if(window.__baxyNoHit>12){hit=named[0];}}"
+                + "const hit=choose(cards);"
                 + "if(hit){chosenName=hit.n;chosenHref=hit.a.getAttribute('href')||'';if(chosenHref){location.href=chosenHref;action='entity_nav';}"
                 + "return [location.href,document.title,'ok',-1,'missing',0,action,chosenHref,chosenName,'cards'].join('\\u001f');}}"
                 + "if(input){input.focus();return [location.href,document.title,'ok',-1,'missing',0,'input_focused','','',(input.value||'').length?'typed':'empty'].join('\\u001f');}}"
+                // La colección: si la búsqueda llevó a una página de universo, la obra
+                // se elige entre sus fichas con la misma lectura.
+                + "if(!auth&&p.includes('/browse/page-')){const cards=[...document.querySelectorAll('a[data-testid=\"set-item\"]')].filter(isEntity);"
+                + "const hit=cards.length?choose(cards):null;"
+                + "if(hit){chosenName=hit.n;chosenHref=hit.a.getAttribute('href')||'';if(chosenHref){location.href=chosenHref;action='entity_nav';}}"
+                + "return [location.href,document.title,'ok',-1,'missing',0,action,chosenHref,chosenName,'page'].join('\\u001f');}"
                 // La ficha: su botón de reproducir lleva al reproductor por la
                 // propia aplicación (SPA), que es la ruta que arranca.
                 + "if(!auth&&p.includes('/browse/entity-')){const play=document.querySelector('a[data-testid=\"playback-action-button\"],button[data-testid=\"playback-action-button\"]');"
