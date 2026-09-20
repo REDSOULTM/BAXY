@@ -366,164 +366,194 @@ internal static class ProductConductorHost
 
         await EmitTurnAsync(initial, capture, cancellationToken, caseId, "request")
             .ConfigureAwait(true);
-        if (observed is null || initial.TimedOut
-            || initial.Terminal != ProductTurnTerminal.PublishedFinal
-            || initial.Diagnostic is not null
-            || observed.Prepared.OperationName is not (
-                "browser.navigate" or "browser.navigate.named" or "app.close" or "input.visible.click"
-                // CLOSEALL1733 «cerrame todo»: the whole-desktop close is confirmed by the root reviewer.
-                or "window.close.all"
-                or "system.settings.set" or "clipboard.write.text" or "clipboard.read.text"
-                // SCREEN1399 «sacá un screenshot»: a privacy-sensitive capture is
-                // confirmed by the root reviewer like the clipboard operations.
-                or "capture.screenshot" or "capture.active.window"
-                // WEB1539 «resumime esta página»: the privacy-sensitive read of the
-                // page open in the browser session is reviewed the same way.
-                or "browser.page.read"
-                // MUSIC1553 «pon un video de lofi en youtube»: the external
-                // playback (yt-dlp + local mpv) is confirmed by the root reviewer.
-                or "media.play.youtube"
-                // MUSIC1747 «pon michael jackson en spotify»: the playback in the
-                // Spotify desktop client is confirmed by the root reviewer.
-                or "media.play.query"
-                // NETWORK1737 «sí, prendelo»: switching the Wi-Fi radio on after the
-                // offer is confirmed by the root reviewer.
-                or "wifi.radio.set"
-                // NETWORK1721 «conectate al wifi de casa»: the sensitive
-                // connection to a saved profile is confirmed by the root reviewer.
-                or "wifi.connect.named"
-                // MSGSEND1845 «manda un mensaje a Musica en whatsapp que diga hola»: the
-                // real send, forced by construction to the owner's test channel, is
-                // confirmed by the root reviewer (owner decision, section 6).
-                or "message.send.test"
-                // Las 24 filas de vídeo «pon Stranger Things en Netflix»: la
-                // reproducción en la sesión de streaming la confirma el revisor
-                // de la raíz, igual que las otras reproducciones externas. Sin
-                // esto el turno revisado se rechazaba con
-                // review_pending_not_supported y la fila no se podía medir.
-                or "streaming.play.named" or "streaming.navigate"))
+        // H0516 «Abre Opera GX, busca una receta de pizza, guarda una captura en el
+        // escritorio y luego cierra Opera»: una misión puede llevar más de un efecto
+        // revisado. Cada uno se propone a la raíz por separado, con su propio nonce,
+        // y se ejecuta sólo con su propia aprobación; nunca se aprueba un sufijo. El
+        // turno termina cuando el plan no deja nada pendiente. Como mucho cuatro
+        // revisiones: más es una misión que no cabe en un turno.
+        ProductTurnResult current = initial;
+        for (int review = 0; review < 4; review++)
         {
-            return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
-        }
-
-        // Prepared owns its arguments; this independent snapshot never exposes
-        // the confirmation token and is never regenerated from reviewer input.
-        PreparedOperation prepared = observed.Prepared;
-        JsonObject arguments = JsonNode.Parse(prepared.Arguments.GetRawText())!.AsObject();
-        string nonce = Guid.NewGuid().ToString("N");
-        string reviewPath = Path.Combine(directory, nonce);
-        string proposalPath = Path.Combine(reviewPath, "proposal.json");
-        string approvalPath = Path.Combine(reviewPath, "approval.json");
-        var proposal = new JsonObject
-        {
-            ["schema"] = "conductor-review-proposal-v1",
-            ["nonce"] = nonce,
-            ["caseId"] = caseId,
-            ["requestText"] = text,
-            ["operation"] = prepared.OperationName,
-            ["arguments"] = arguments.DeepClone(),
-            ["missionId"] = prepared.MissionId,
-            ["invocationId"] = prepared.InvocationId,
-            ["expiresAtUtc"] = observed.ExpiresAtUtc.ToString("O"),
-        };
-        proposal[prepared.OperationName == "app.close" ? "windowObservations" : "webSearchObservations"] =
-            conductor.ViewModel.CaptureConductorReadEvidence();
-        try
-        {
-            ValidateReviewDirectory(directory, profileDirectory);
-            if (Directory.Exists(reviewPath))
+            if (observed is null || current.TimedOut
+                || current.Terminal != ProductTurnTerminal.PublishedFinal
+                || current.Diagnostic is not null
+                || observed.Prepared.OperationName is not (
+                    "browser.navigate" or "browser.navigate.named" or "app.close" or "input.visible.click"
+                    // CLOSEALL1733 «cerrame todo»: the whole-desktop close is confirmed by the root reviewer.
+                    or "window.close.all"
+                    or "system.settings.set" or "clipboard.write.text" or "clipboard.read.text"
+                    // SCREEN1399 «sacá un screenshot»: a privacy-sensitive capture is
+                    // confirmed by the root reviewer like the clipboard operations.
+                    or "capture.screenshot" or "capture.active.window"
+                    // WEB1539 «resumime esta página»: the privacy-sensitive read of the
+                    // page open in the browser session is reviewed the same way.
+                    or "browser.page.read"
+                    // MUSIC1553 «pon un video de lofi en youtube»: the external
+                    // playback (yt-dlp + local mpv) is confirmed by the root reviewer.
+                    or "media.play.youtube"
+                    // MUSIC1747 «pon michael jackson en spotify»: the playback in the
+                    // Spotify desktop client is confirmed by the root reviewer.
+                    or "media.play.query"
+                    // NETWORK1737 «sí, prendelo»: switching the Wi-Fi radio on after the
+                    // offer is confirmed by the root reviewer.
+                    or "wifi.radio.set"
+                    // NETWORK1721 «conectate al wifi de casa»: the sensitive
+                    // connection to a saved profile is confirmed by the root reviewer.
+                    or "wifi.connect.named"
+                    // MSGSEND1845 «manda un mensaje a Musica en whatsapp que diga hola»: the
+                    // real send, forced by construction to the owner's test channel, is
+                    // confirmed by the root reviewer (owner decision, section 6).
+                    or "message.send.test"
+                    // Las 24 filas de vídeo «pon Stranger Things en Netflix»: la
+                    // reproducción en la sesión de streaming la confirma el revisor
+                    // de la raíz, igual que las otras reproducciones externas. Sin
+                    // esto el turno revisado se rechazaba con
+                    // review_pending_not_supported y la fila no se podía medir.
+                    or "streaming.play.named" or "streaming.navigate"))
             {
-                return await RejectAsync("review_directory_already_exists").ConfigureAwait(true);
-            }
-            Directory.CreateDirectory(reviewPath);
-            ValidateReviewDirectory(reviewPath, profileDirectory);
-            using (var stream = new FileStream(proposalPath, FileMode.CreateNew,
-                FileAccess.Write, FileShare.Read))
-            {
-                byte[] bytes = Encoding.UTF8.GetBytes(proposal.ToJsonString(JsonOptions));
-                await stream.WriteAsync(bytes, cancellationToken).ConfigureAwait(true);
+                return await RejectAsync("review_pending_not_supported").ConfigureAwait(true);
             }
 
-            await EmitAsync(new JsonObject
+            // Prepared owns its arguments; this independent snapshot never exposes
+            // the confirmation token and is never regenerated from reviewer input.
+            PreparedOperation prepared = observed.Prepared;
+            JsonObject arguments = JsonNode.Parse(prepared.Arguments.GetRawText())!.AsObject();
+            string nonce = Guid.NewGuid().ToString("N");
+            string reviewPath = Path.Combine(directory, nonce);
+            string proposalPath = Path.Combine(reviewPath, "proposal.json");
+            string approvalPath = Path.Combine(reviewPath, "approval.json");
+            var proposal = new JsonObject
             {
-                ["type"] = "review_required",
-                ["caseId"] = caseId,
+                ["schema"] = "conductor-review-proposal-v1",
                 ["nonce"] = nonce,
-                ["proposalPath"] = proposalPath,
-                ["approvalPath"] = approvalPath,
-                ["maximumConfirmations"] = 1,
-            }, capture, cancellationToken).ConfigureAwait(true);
-
-            while (elapsed.Elapsed < timeout && DateTimeOffset.UtcNow < observed.ExpiresAtUtc)
+                ["caseId"] = caseId,
+                ["requestText"] = text,
+                ["operation"] = prepared.OperationName,
+                ["arguments"] = arguments.DeepClone(),
+                ["missionId"] = prepared.MissionId,
+                ["invocationId"] = prepared.InvocationId,
+                ["expiresAtUtc"] = observed.ExpiresAtUtc.ToString("O"),
+            };
+            proposal[prepared.OperationName == "app.close" ? "windowObservations" : "webSearchObservations"] =
+                conductor.ViewModel.CaptureConductorReadEvidence();
+            ProductTurnResult? final = null;
+            try
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                if (!ReferenceEquals(observed, conductor.ViewModel
-                    .CaptureConductorConfirmation(allowVerifiedReadPrefix: true)))
+                ValidateReviewDirectory(directory, profileDirectory);
+                if (Directory.Exists(reviewPath))
                 {
-                    return await RejectAsync("review_pending_changed").ConfigureAwait(true);
+                    return await RejectAsync("review_directory_already_exists").ConfigureAwait(true);
                 }
+                Directory.CreateDirectory(reviewPath);
                 ValidateReviewDirectory(reviewPath, profileDirectory);
-                if (File.Exists(approvalPath))
+                using (var stream = new FileStream(proposalPath, FileMode.CreateNew,
+                    FileAccess.Write, FileShare.Read))
                 {
-                    if ((File.GetAttributes(approvalPath) & FileAttributes.ReparsePoint) != 0)
+                    byte[] bytes = Encoding.UTF8.GetBytes(proposal.ToJsonString(JsonOptions));
+                    await stream.WriteAsync(bytes, cancellationToken).ConfigureAwait(true);
+                }
+
+                await EmitAsync(new JsonObject
+                {
+                    ["type"] = "review_required",
+                    ["caseId"] = caseId,
+                    ["nonce"] = nonce,
+                    ["proposalPath"] = proposalPath,
+                    ["approvalPath"] = approvalPath,
+                    ["maximumConfirmations"] = 1,
+                    ["review"] = review + 1,
+                }, capture, cancellationToken).ConfigureAwait(true);
+
+                while (elapsed.Elapsed < timeout && DateTimeOffset.UtcNow < observed.ExpiresAtUtc)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    if (!ReferenceEquals(observed, conductor.ViewModel
+                        .CaptureConductorConfirmation(allowVerifiedReadPrefix: true)))
                     {
-                        return await RejectAsync("review_approval_invalid").ConfigureAwait(true);
+                        return await RejectAsync("review_pending_changed").ConfigureAwait(true);
                     }
-                    using var stream = new FileStream(approvalPath, FileMode.Open,
-                        FileAccess.Read, FileShare.Read);
-                    if (stream.Length is <= 0 or > 65_536)
+                    ValidateReviewDirectory(reviewPath, profileDirectory);
+                    if (File.Exists(approvalPath))
                     {
-                        return await RejectAsync("review_approval_invalid").ConfigureAwait(true);
-                    }
-                    byte[] bytes = new byte[(int)stream.Length];
-                    await stream.ReadExactlyAsync(bytes, cancellationToken).ConfigureAwait(true);
-                    JsonObject? approval = JsonNode.Parse(bytes) as JsonObject;
-                    if (approval is null || approval.Count != 8
-                        || ReviewString(approval, "schema") != "conductor-review-approval-v1"
-                        || ReviewString(approval, "nonce") != nonce
-                        || ReviewString(approval, "caseId") != caseId
-                        || ReviewString(approval, "operation") != prepared.OperationName
-                        || ReviewString(approval, "missionId") != prepared.MissionId
-                        || ReviewString(approval, "invocationId") != prepared.InvocationId
-                        || !JsonNode.DeepEquals(approval["arguments"], arguments))
-                    {
-                        return await RejectAsync("review_approval_mismatch").ConfigureAwait(true);
-                    }
-                    if (ReviewString(approval, "decision") != "approve")
-                    {
-                        return await RejectAsync("review_not_approved").ConfigureAwait(true);
-                    }
-                    if (elapsed.Elapsed >= timeout
-                        || DateTimeOffset.UtcNow >= observed.ExpiresAtUtc)
-                    {
+                        if ((File.GetAttributes(approvalPath) & FileAttributes.ReparsePoint) != 0)
+                        {
+                            return await RejectAsync("review_approval_invalid").ConfigureAwait(true);
+                        }
+                        using var stream = new FileStream(approvalPath, FileMode.Open,
+                            FileAccess.Read, FileShare.Read);
+                        if (stream.Length is <= 0 or > 65_536)
+                        {
+                            return await RejectAsync("review_approval_invalid").ConfigureAwait(true);
+                        }
+                        byte[] bytes = new byte[(int)stream.Length];
+                        await stream.ReadExactlyAsync(bytes, cancellationToken).ConfigureAwait(true);
+                        JsonObject? approval = JsonNode.Parse(bytes) as JsonObject;
+                        if (approval is null || approval.Count != 8
+                            || ReviewString(approval, "schema") != "conductor-review-approval-v1"
+                            || ReviewString(approval, "nonce") != nonce
+                            || ReviewString(approval, "caseId") != caseId
+                            || ReviewString(approval, "operation") != prepared.OperationName
+                            || ReviewString(approval, "missionId") != prepared.MissionId
+                            || ReviewString(approval, "invocationId") != prepared.InvocationId
+                            || !JsonNode.DeepEquals(approval["arguments"], arguments))
+                        {
+                            return await RejectAsync("review_approval_mismatch").ConfigureAwait(true);
+                        }
+                        if (ReviewString(approval, "decision") != "approve")
+                        {
+                            return await RejectAsync("review_not_approved").ConfigureAwait(true);
+                        }
+                        if (elapsed.Elapsed >= timeout
+                            || DateTimeOffset.UtcNow >= observed.ExpiresAtUtc)
+                        {
+                            break;
+                        }
+
+                        final = await conductor.ConfirmPendingAsync(
+                            current, observed, prepared.OperationName, arguments,
+                            timeout - elapsed.Elapsed, cancellationToken,
+                            allowVerifiedReadPrefix: true).ConfigureAwait(true);
                         break;
                     }
-
-                    ProductTurnResult final = await conductor.ConfirmPendingAsync(
-                        initial, observed, prepared.OperationName, arguments,
-                        timeout - elapsed.Elapsed, cancellationToken,
-                        allowVerifiedReadPrefix: true).ConfigureAwait(true);
-                    // MUSIC1593: a playback that a follow-up turn continues is
-                    // emitted as an intermediate «request» phase; the case's
-                    // final is the follow-up.
-                    await EmitTurnAsync(final, capture, cancellationToken, caseId, completionPhase)
+                    await Task.Delay(TimeSpan.FromMilliseconds(200), cancellationToken)
                         .ConfigureAwait(true);
-                    // One reviewed effect only. Never auto-approve a suffix.
-                    return !final.TimedOut
-                        && final.Terminal == ProductTurnTerminal.PublishedFinal
-                        && !final.Posterior.HasPendingPlan && !final.Posterior.HasCompositionError;
                 }
-                await Task.Delay(TimeSpan.FromMilliseconds(200), cancellationToken)
-                    .ConfigureAwait(true);
             }
-        }
-        catch (Exception error) when (error is IOException or UnauthorizedAccessException
-            or JsonException or ArgumentException or InvalidOperationException)
-        {
-            return await RejectAsync("review_io_or_data_invalid").ConfigureAwait(true);
+            catch (Exception error) when (error is IOException or UnauthorizedAccessException
+                or JsonException or ArgumentException or InvalidOperationException)
+            {
+                return await RejectAsync("review_io_or_data_invalid").ConfigureAwait(true);
+            }
+
+            if (final is null)
+            {
+                return await RejectAsync("review_timed_out").ConfigureAwait(true);
+            }
+
+            PendingOperationConfirmation? next = conductor.ViewModel
+                .CaptureConductorConfirmation(allowVerifiedReadPrefix: true);
+            if (next is null || !final.Posterior.HasPendingPlan || final.TimedOut
+                || final.Terminal != ProductTurnTerminal.PublishedFinal)
+            {
+                // MUSIC1593: a playback that a follow-up turn continues is
+                // emitted as an intermediate «request» phase; the case's
+                // final is the follow-up.
+                await EmitTurnAsync(final, capture, cancellationToken, caseId, completionPhase)
+                    .ConfigureAwait(true);
+                return !final.TimedOut
+                    && final.Terminal == ProductTurnTerminal.PublishedFinal
+                    && !final.Posterior.HasPendingPlan && !final.Posterior.HasCompositionError;
+            }
+
+            // Another reviewed effect of the same mission waits for its own review.
+            await EmitTurnAsync(final, capture, cancellationToken, caseId, "request")
+                .ConfigureAwait(true);
+            current = final;
+            observed = next;
         }
 
-        return await RejectAsync("review_timed_out").ConfigureAwait(true);
+        return await RejectAsync("review_chain_too_long").ConfigureAwait(true);
     }
 
     /// <summary>

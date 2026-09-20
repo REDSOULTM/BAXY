@@ -789,6 +789,37 @@ def _verified_dependency_identity_arguments(
         report = effect_intent.process_report_file_request(effect_intent._fold(objective))
         if report is not None:
             return _process_report_file_arguments(report, observations, tool)
+    if operation == "browser.navigate.named":
+        # H0516 «Abre Opera GX, busca una receta de pizza, …»: la navegación
+        # que sigue a una búsqueda va al primer resultado verificado, en el
+        # navegador que la persona nombró. El modelo, rellenando a ciegas,
+        # escribió «opera» donde la persona dijo «Opera GX», y en este PC sólo
+        # está Opera GX: el navegador es del pedido y la URL de la búsqueda.
+        browser = effect_intent._named_browser(effect_intent._fold(objective))
+        searches = [
+            observation["result"]
+            for observation in observations
+            if isinstance(observation, dict)
+            and observation.get("operation") == "web.search"
+            and observation.get("verified") is True
+            and observation.get("status") == "completed"
+            and isinstance(observation.get("result"), dict)
+        ]
+        if browser is not None and len(searches) == 1:
+            first = next(
+                (
+                    result.get("url")
+                    for result in (searches[0].get("results") or [])
+                    if isinstance(result, dict) and isinstance(result.get("url"), str)
+                ),
+                None,
+            )
+            if first is not None:
+                candidate = {"browser": browser, "url": first}
+                function = tool.get("function")
+                schema = function.get("parameters") if isinstance(function, dict) else None
+                if isinstance(schema, dict) and validate_json_schema_instance(candidate, schema):
+                    return candidate
     fields = _DETERMINISTIC_DEPENDENCY_FIELDS.get(operation, ())
     producers = set(required_predecessors(operation)) | set(
         conditional_predecessors(operation, objective)

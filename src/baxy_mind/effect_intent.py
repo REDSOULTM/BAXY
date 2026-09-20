@@ -16819,8 +16819,10 @@ def _named_browser_match(text: str) -> re.Match[str] | None:
     return _match(
         text,
         (
-            rf"^[¿?¡!\s]*(?:navega|navegar|navigate|ve|go)\s+"
-            rf"(?P<leading>{browser})\b|"
+            # H0516 «Abre Opera GX, busca una receta …»: abrir un navegador por
+            # su nombre al frente de la misión lo nombra igual que «navega con».
+            rf"^[¿?¡!\s]*(?:navega|navegar|navigate|ve|go|abre|abri|abrime|abrí|open|launch)\s+"
+            rf"(?:el|la|the)?\s*(?P<leading>{browser})\b|"
             rf"\b(?:usando|mediante|via|with|using)\s+"
             rf"(?:el|la|the)?\s*(?P<instrument>{browser})\b|"
             rf"\b(?:en|in)\s+(?:el|la|the)?\s*"

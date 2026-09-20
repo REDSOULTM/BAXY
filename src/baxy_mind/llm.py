@@ -3764,6 +3764,21 @@ def _lift_observed_blob(blob: dict) -> dict:
     return lifted
 
 
+def _situation_steps(situation: dict) -> list[dict]:
+    """Los pasos de una misión, decodificados; vacío si no es una misión."""
+
+    steps = situation.get("steps") if isinstance(situation, dict) else None
+    decoded: list[dict] = []
+    for raw in steps or []:
+        try:
+            step = json.loads(raw) if isinstance(raw, str) else raw
+        except (TypeError, ValueError):
+            continue
+        if isinstance(step, dict):
+            decoded.append(step)
+    return decoded
+
+
 def _merged_observed(situation: dict) -> dict:
     merged: dict = {}
     for blob in _observed_maps_from_situation(situation):
@@ -8442,6 +8457,27 @@ def compose_visible_defect(
             and observed_dict.get("playbackStatus") == "playing"
             and isinstance(observed_dict.get("title"), str)
         )
+        # H0516 «… guarda una captura en el escritorio …»: la captura de pantalla
+        # no lleva ruta —queda en la carpeta privada de BAXY— y dos de los tres
+        # borradores decían «se guardó en el escritorio». Un lugar que el recibo
+        # no da es inventado, en una misión de varios pasos o en una sola.
+        _capture_steps = [
+            step for step in _situation_steps(situation)
+            if step.get("operation") in {"capture.screenshot", "capture.active.window"}
+        ] or ([situation] if operation in {"capture.screenshot", "capture.active.window"} else [])
+        if _capture_steps and not any(
+            isinstance((step.get("observed") or {}).get(key), str)
+            for step in _capture_steps
+            for key in ("path", "savedTo", "filePath", "location")
+        ) and any(
+            # «no quedó en el escritorio» es verdad; sólo la afirmación se veta.
+            re.search(r"\b(?:no|not|nunca|never|tampoco|didn't|wasn't)\b", folded[max(0, claim.start() - 14):claim.start()]) is None
+            for claim in re.finditer(
+                r"\b(?:guard(?:[eé]|ad[ao]|[oó])|se\s+guard[oó]|qued[oó]|saved|stored|kept)\b[^.;]{0,40}?\b(?:escritorio|desktop|documentos|documents|descargas|downloads|im[aá]genes|pictures|carpeta|folder)\b",
+                folded,
+            )
+        ):
+            return "invented_capture_location"
         if (
             operation == "streaming.play.named"
             and isinstance(observed_dict.get("observedProgressSeconds"), (int, float))
@@ -8749,6 +8785,19 @@ def compose_visible_defect(
         if "?" in question_text or "¿" in question_text:
             return "extra_claim"
         closed_request = re.search(r"\bcierr|\bclose\b", (user_text or "").casefold())
+        # H0516 «… y luego cierra Opera»: en una misión de varios pasos el cierre
+        # no trae nombre de aplicación en lo observado, y exigir «ventana» a
+        # «cerré Opera GX» tumbaba un final fiel. Si la persona nombró lo que
+        # había que cerrar y el final repite ese nombre, está nombrado.
+        closed_object = re.search(
+            r"\b(?:cierr[ae]|cerr[aá]|close|quit)\s+(?:el|la|los|las|the|a)?\s*([a-záéíóúñ0-9][\w+.-]*)",
+            _reading_fold(user_text or ""),
+        )
+        closed_named = bool(
+            closed_object
+            and closed_object.group(1) not in {"todo", "everything", "all", "eso", "esto", "that", "it", "lo", "la"}
+            and closed_object.group(1) in folded
+        )
         if (
             closed_request
             and operation != "browser.control"
@@ -8756,9 +8805,11 @@ def compose_visible_defect(
         ):
             # BROWSER1841 «close all tabs»: closing tabs names «pestañas»/«tabs»,
             # not a window; the close_all narration is guarded by its own lens.
-            if "ventana" not in folded and "window" not in folded:
+            if not closed_named and "ventana" not in folded and "window" not in folded:
                 return "missing_name"
-            if not re.search(r"cerrad|closed", folded):
+            # Nombrar lo cerrado exime de «ventana», no de decir que se cerró: un
+            # final que abre Opera GX y calla el cierre no cuenta la misión.
+            if not re.search(r"cerrad|closed|\bcerr[eé]\b|\bcerramos\b", folded):
                 return "missing_state"
     if cause == "mission_completed":
         skip = {
@@ -16158,422 +16209,439 @@ class LlmRuntime:
             _accent_folded_with_punctuation(str(seen_send_for_hint.get("requestedRecipient") or ""))
             == _accent_folded_with_punctuation(str(seen_send_for_hint.get("forcedDestination") or ""))
         )
-        retry_hint = {
-            "broken_person_conjugation": (
-                "Say it in the first person present: «me ocupo de …», never "
-                "«me ocupó», which says something occupied you."
-                if response_language == "en"
-                else "Dilo en primera persona del presente: «me ocupo de …», nunca "
-                "«me ocupó», que dice que algo te ocupó a vos."
-            ),
-            # H0463: cuando el sitio se llama casi como lo que la persona pidió
-            # (store.steampowered.com para un pedido que dice «Steam»), el modelo
-            # escribe «según Steam», que no nombra la página, y los tres
-            # candidatos caen en la misma regla. La pista nombra los sitios que
-            # esta búsqueda devolvió, que el turno ya tiene delante.
-            "search_report_unsourced_claim": (
-                "Say only what a result says, with its words, and name the page that "
-                "says it; do not summarise causes of your own."
-                if response_language == "en"
-                else "Di sólo lo que dice algún resultado, con sus palabras, y nombra la "
-                "página que lo dice; no resumas causas por tu cuenta."
-            ),
-            "search_report_without_source": (
-                (
-                    "Name the pages: give the title and the site of each page whose "
-                    "fact you report, writing the site exactly as it reads here: "
-                    + ", ".join(_hosts_for_hint)
-                    + ". Say nothing no result states."
+        def hint_for(defect: str) -> str:
+            return {
+                "broken_person_conjugation": (
+                    "Say it in the first person present: «me ocupo de …», never "
+                    "«me ocupó», which says something occupied you."
                     if response_language == "en"
-                    else "Nombra las páginas: da el título y el sitio de cada página "
-                    "cuyo dato cuentes, escribiendo el sitio tal cual se lee aquí: "
-                    + ", ".join(_hosts_for_hint)
-                    + ". No digas nada que ningún resultado afirme."
-                )
-                if (_hosts_for_hint := _search_result_hosts(situation))
-                else (
-                    "Name the pages: give the title and the site of each page whose fact "
-                    "you report (for example «according to example.com»); say nothing no "
-                    "result states."
+                    else "Dilo en primera persona del presente: «me ocupo de …», nunca "
+                    "«me ocupó», que dice que algo te ocupó a vos."
+                ),
+                # H0463: cuando el sitio se llama casi como lo que la persona pidió
+                # (store.steampowered.com para un pedido que dice «Steam»), el modelo
+                # escribe «según Steam», que no nombra la página, y los tres
+                # candidatos caen en la misma regla. La pista nombra los sitios que
+                # esta búsqueda devolvió, que el turno ya tiene delante.
+                "search_report_unsourced_claim": (
+                    "Say only what a result says, with its words, and name the page that "
+                    "says it; do not summarise causes of your own."
                     if response_language == "en"
-                    else "Nombra las páginas: da el título y el sitio de cada página cuyo dato "
-                    "cuentes (por ejemplo «según ejemplo.com»); no digas nada que ningún "
-                    "resultado afirme."
-                )
-            ),
-            "recalled_as_own": (
-                "The record is about the person: say it in the second person («your name is …», «you like …»)."
-                if response_language == "en"
-                else "El dato es de la persona: dilo en segunda persona («te llamás …», «te gusta …»), nunca «me llamo» ni «me gusta»."
-            ),
-            "missing_deferred_question": (
-                ("End with one question: how much to change the volume."
-                 if response_language == "en"
-                 else "Terminá con una sola pregunta: cuánto cambiar el volumen.")
-                if deferred_for_hint is not None and deferred_for_hint.kind == "volume_amount"
-                else ("End with one question: which window to focus."
-                      if response_language == "en"
-                      else "Terminá con una sola pregunta: cuál ventana enfocar.")
-            ),
-            "missing_confirmation_choice": (
-                "Pregunta con todas estas opciones literales: "
-                f"{', '.join(required_words) or 'confirmar, cancelar'}."
-            ),
-            "wrong_language": "Same language as the request.",
-            "joined_claimed": (
-                "You did NOT join or open the channel: say you found it and ask whether the person wants you to join; never say you joined or entered."
-                if response_language == "en"
-                else "NO te uniste ni abriste el canal: di que lo encontraste y pregunta si la persona quiere que te unas; nunca digas que te uniste o entraste."
-            ),
-            "draft_claimed_sent": (
-                "The message was only left written in the chat and was NOT sent: say you left it written and did not send it, so the person can send it; never say it was sent or delivered."
-                if response_language == "en"
-                else "El mensaje sólo quedó escrito en el chat y NO se envió: di que lo dejaste escrito y que no lo enviaste, para que la persona lo envíe; nunca digas que se envió o se entregó."
-            ),
-            "sent_wrong_destination": (
-                (
-                    "The message really went to the owner's test channel, exactly where the person asked: say that you sent the text (quote it) to that channel by its name, and mention no other recipient."
-                    if response_language == "en"
-                    else "El mensaje llegó de verdad al canal de pruebas del dueño, justo donde la persona pidió: di que enviaste el texto (cítalo) a ese canal por su nombre, y no menciones a ningún otro destinatario."
-                )
-                if same_target_send
-                else (
-                    # MAIL1853: the test destination can be a long address the model
-                    # paraphrased («el canal de prueba de Emmanuel»); both literals
-                    # are quoted so the reply copies them.
-                    f"The message was really sent, but only to the owner's own test channel «{seen_send_for_hint.get('forcedDestination') or ''}», not to the requested recipient «{seen_send_for_hint.get('requestedRecipient') or ''}»: write that exact destination as it is and make clear it did not go to the requested one."
-                    if response_language == "en"
-                    else f"El mensaje se envió de verdad, pero sólo al canal de pruebas propio del dueño «{seen_send_for_hint.get('forcedDestination') or ''}», no al destinatario pedido «{seen_send_for_hint.get('requestedRecipient') or ''}»: escribe ese destino real tal cual y deja claro que no fue al pedido."
-                )
-            ),
-            "send_not_stated": (
-                "The message was really sent to the owner's test channel: say that you sent it («quote the text») to that channel; a greeting alone hides the delivery."
-                if response_language == "en"
-                else "El mensaje se envió de verdad al canal de pruebas del dueño: di que lo enviaste (cita el texto) a ese canal; un saludo solo oculta el envío."
-            ),
-            "denied_test_destination": (
-                "The recipient the person named IS the owner's test channel and the message really went there: say you sent it to that channel and do not say it was not sent to anyone."
-                if response_language == "en"
-                else "El destinatario que pidió la persona ES el canal de pruebas del dueño y el mensaje llegó ahí de verdad: di que lo enviaste a ese canal y no digas que no fue enviado a nadie."
-            ),
-            "extra_claim": (
-                "Answer what you will not do, in your own words."
-                if _looks_like_refuse_question(user_text)
-                else (
-                    ""
-                    if _looks_like_continue_constraint(user_text)
-                    else (
-                        "State only what the observation supports."
-                        if inventory_answer else "One short sentence of the facts."
+                    else "Di sólo lo que dice algún resultado, con sus palabras, y nombra la "
+                    "página que lo dice; no resumas causas por tu cuenta."
+                ),
+                "search_report_without_source": (
+                    (
+                        "Name the pages: give the title and the site of each page whose "
+                        "fact you report, writing the site exactly as it reads here: "
+                        + ", ".join(_hosts_for_hint)
+                        + ". Say nothing no result states."
+                        if response_language == "en"
+                        else "Nombra las páginas: da el título y el sitio de cada página "
+                        "cuyo dato cuentes, escribiendo el sitio tal cual se lee aquí: "
+                        + ", ".join(_hosts_for_hint)
+                        + ". No digas nada que ningún resultado afirme."
                     )
-                )
-            ),
-            "wrong_actor": (
-                "Say in first person what you can do, not what the person can do."
-                if _looks_like_capability_question(user_text)
-                else _MACHINE_ACTOR_FEEDBACK
-            ),
-            "reversed_mute": "Name audio or speakers and the mute state.",
-            "reversed_polarity": "Failure. Do not say it is open or that you opened it.",
-            "asserted_failure": (
-                "Name several entries of can. One short sentence."
-                if _looks_like_capability_question(user_text)
-                else (
-                    "The search completed with no matching file names. Preserve "
-                    "the query and restrict the finding to the folders searched, "
-                    "without naming an unobserved folder or claiming the file "
-                    "is absent everywhere. Do not describe a failed search."
-                    if _verified_empty_known_file_query(situation) is not None
-                    else "Success. State what was seen."
-                )
-            ),
-            "internal_code": "Sin códigos internos ni jerga de contrato.",
-            "confirmation_asserted": "Pregunta; no afirmes.",
-            "welcome_opener": "Saluda; evita Listo.",
-            "knowledge_greeting": (
-                "Name several entries of can. One short sentence. Do not greet."
-                if _looks_like_capability_question(user_text)
-                else "Answer the question. Do not greet."
-            ),
-            "invented": "No invented or truncated words.",
-            "cut_by_length": (
-                "The reply was cut off before its end. Write a shorter one: at most three sentences, naming at most three items, and finish the last sentence."
-                if response_language == "en"
-                else "La respuesta se cortó antes de terminar. Escribe una más corta: como máximo tres oraciones, nombrando como máximo tres elementos, y termina la última oración."
-            ),
-            "welcome_repeat": "Un solo Hola.",
-            "copied_instruction": "Devuelve el mensaje, no la etiqueta ni la instrucción.",
-            "lowercase": (
-                "Start with a capital letter."
-                if response_language == "en"
-                else "Empieza con mayúscula."
-            ),
-            "clarification_not_a_question": "Una pregunta.",
-            "invented_connectivity": (
-                "Only the wifi connection was read. Say nothing about internet, "
-                "other networks, or being online or offline."
-            ),
-            "too_many_sentences": "Una sola frase.",
-            "wrong_gender": "Masculine abierto/cerrado. Feminine abierta/cerrada.",
-            "missing_name": (
-                # AUDIO1793: the application volume final names the app and the
-                # level the sessions now have.
-                (
-                    ("Say that you turned " + str(_merged_observed(situation).get("app")) + "'s own volume "
-                     + ("up" if _merged_observed(situation).get("direction") == "up" else "down")
-                     + " and that it is now at " + str(_merged_observed(situation).get("level")) + "; nothing about it being closed or silent.")
+                    if (_hosts_for_hint := _search_result_hosts(situation))
+                    else (
+                        "Name the pages: give the title and the site of each page whose fact "
+                        "you report (for example «according to example.com»); say nothing no "
+                        "result states."
+                        if response_language == "en"
+                        else "Nombra las páginas: da el título y el sitio de cada página cuyo dato "
+                        "cuentes (por ejemplo «según ejemplo.com»); no digas nada que ningún "
+                        "resultado afirme."
+                    )
+                ),
+                "recalled_as_own": (
+                    "The record is about the person: say it in the second person («your name is …», «you like …»)."
                     if response_language == "en"
-                    else ("Di que " + ("subiste" if _merged_observed(situation).get("direction") == "up" else "bajaste")
-                          + " el volumen propio de " + str(_merged_observed(situation).get("app"))
-                          + " y que ahora está en " + str(_merged_observed(situation).get("level")) + "; nada sobre que esté cerrado o sin sonido.")
-                )
-                if situation.get("operation") == "audio.app.volume.adjust"
-                and situation.get("verified") is True
-                and isinstance(_merged_observed(situation), dict)
-                else
-                "Name the clock and mute or volume."
-                if _merged_observed(situation)
-                and (
-                    "muted" in _merged_observed(situation)
-                    or "level" in _merged_observed(situation)
-                )
-                # MUSIC1555: the drafts quoted a fragment («Smooth Criminal»)
-                # of the observed title; the whole title, verbatim, is the name.
-                else (
-                    # VIDEO1717: told only to quote the title, the model answered
-                    # with the bare title; the state belongs in the same sentence.
-                    ("Say in one sentence that it is playing and quote the whole title exactly as observed, inside quotation marks: "
+                    else "El dato es de la persona: dilo en segunda persona («te llamás …», «te gusta …»), nunca «me llamo» ni «me gusta»."
+                ),
+                "missing_deferred_question": (
+                    ("End with one question: how much to change the volume."
                      if response_language == "en"
-                     else "Di en una oración que está reproduciéndose y cita el título completo tal cual se observó, entre comillas: ")
-                    + "«" + str(_merged_observed(situation).get("title")) + "»"
-                )
-                if _youtube_playback_in_payload({"operation": situation.get("operation"), "verified": situation.get("verified"), "succeeded": situation.get("succeeded"), "seen": _merged_observed(situation)}) is not None
-                # MUSIC1593 H0543 «qué canción está sonando» on the local player: the
-                # draft quoted «Greatest Hits (2)» and then translated the bracketed
-                # duration; the whole observed title, verbatim, is the name here too.
-                or _local_player_session(situation)
-                # MUSIC1773 H0163: a Spotify query with a long classical title was
-                # paraphrased as the request on every retry; any verified playback
-                # with an observed title gets the title to quote.
-                or _verified_media_playing_title(situation)
-                else "Include names and numbers from seen."
-            ),
-            "promised_effect": (
-                "It already happened: say you opened the site, in the past."
-                if response_language == "en"
-                else "Ya ocurrió: di que abriste el sitio, en pasado."
-            ),
-            "action_attributed_to_user": (
-                "You did it, not the person: say what you did, in the first person."
-                if response_language == "en"
-                else "Lo hiciste tú, no la persona: di lo que hiciste, en primera persona."
-            ),
-            "invented_version": (
-                "Name only the observed Windows edition, major version and build; "
-                "no feature-update name like 22H2."
-                if response_language == "en"
-                else "Di sólo la edición, la versión mayor y la compilación observadas de "
-                "Windows; sin nombres de actualización como 22H2."
-            ),
-            "contradicted_maximum": (
-                "The observed brightness is not the maximum: say the observed value "
-                "and that it is not at the maximum."
-                if response_language == "en"
-                else "El brillo observado no está al máximo: di el valor observado y "
-                "que no está al máximo."
-            ),
-            "contradicted_minimum": (
-                "The observed brightness is not the minimum: say the observed value "
-                "and that it is not at the minimum."
-                if response_language == "en"
-                else "El brillo observado no está al mínimo: di el valor observado y "
-                "que no está al mínimo."
-            ),
-            "missing_written_file": (
-                "You also wrote the file named in the filesystem.write.text step: say that you created it, with its exact name, then what it lists."
-                if response_language == "en"
-                else "También escribiste el archivo nombrado en el paso filesystem.write.text: di que lo creaste, con su nombre exacto, y luego qué lista."
-            ),
-            "missing_prior_open": (
-                "You also opened the application in this turn: say that you opened it, then the rest."
-                if response_language == "en"
-                else "En este turno también abriste la aplicación: di que la abriste y luego lo demás."
-            ),
-            "missing_click_verb": (
-                "You pressed the button: say that you pressed (clicked) it, with the label the person asked for."
-                if response_language == "en"
-                # UI1373 H0555: corrected drafts read «Aprié el botón 5», a
-                # conjugation the model cannot get right; steer to verbs it can.
-                else "Apretaste el botón: dilo con «Hice clic en el …» o «Pulsé el …» y la etiqueta que pidió la persona; no conjugues «apretar»."
-            ),
-            "package_state_reversed": (
-                "seen.installedIn are the Pythons where the package IS installed and seen.notInstalledIn where it is not: state exactly that, without denying an install listed in seen.installedIn or asserting one that is not there."
-                if response_language == "en"
-                else "seen.installedIn son los Python donde el paquete SÍ está instalado y seen.notInstalledIn donde no: di exactamente eso, sin negar una instalación de seen.installedIn ni afirmar una que no esté."
-            ),
-            "playback_progress_stated": (
-                "Say only that it is playing and what is playing; do not state any number of seconds and do not say where in the video it is: the observed progress is how you checked, not a position and not something the person did."
-                if response_language == "en"
-                else "Di sólo que está reproduciéndose y qué se reproduce; no digas ningún número de segundos ni por dónde va el vídeo: el avance observado es cómo lo comprobaste, no una posición ni algo que haya hecho la persona."
-            ),
-            "screen_wrong_count": (
-                "The screen shows seen.lineCount lines: that is the only number you may state; seen.lines are only some of those lines, so do not count them."
-                if response_language == "en"
-                else "La pantalla muestra seen.lineCount líneas: ese es el único número que puedes decir; seen.lines son sólo algunas de esas líneas, no las cuentes."
-            ),
-            "ocr_unsupported_terms": (
-                "Use only words that appear in the recognized text: quote two or three of its lines exactly as they are, say how many lines were recognized, and add no interpretation, purpose or warning."
-                if response_language == "en"
-                else "Usa sólo palabras que estén en el texto reconocido: cita dos o tres de sus líneas tal cual, di cuántas líneas se reconocieron y no añadas interpretación, propósito ni avisos."
-            ),
-            "search_unsupported_claim": (
-                "Do not state a weather condition, temperature or forecast the results do not contain; name the pages found (their titles and sites) instead."
-                if response_language == "en"
-                else "No afirmes un estado del tiempo, temperatura ni pronóstico que los resultados no contengan; nombra en su lugar las páginas encontradas (sus títulos y sitios)."
-            ),
-            "invented_number": (
-                "Use only the observed numbers from seen.monitors (width, height, refreshHz) and seen.monitorCount; no other number."
-                if response_language == "en"
-                else "Usa sólo los números observados de seen.monitors (width, height, refreshHz) y seen.monitorCount; ningún otro número."
-            ),
-            "reversed_state": (
-                "State the observed Bluetooth radio state exactly: seen.radioOn true is on, false is off."
-                if response_language == "en"
-                else "Di el estado observado de la radio Bluetooth tal cual: seen.radioOn true es encendida, false es apagada."
-            ),
-            "wrong_address": (
-                "Cite only the navigated address (seen.finalUrl); do not mention any other address."
-                if response_language == "en"
-                else "Cita sólo la dirección navegada (seen.finalUrl); no menciones ninguna otra dirección."
-            ),
-            "search_result_denied": (
-                "The search did return results: do not say you have no information; name the pages found."
-                if response_language == "en"
-                else "La búsqueda sí devolvió resultados: no digas que no tienes información; nombra las páginas encontradas."
-            ),
-            "listing_unlisted_name": (
-                "Quote only names that appear in seen.names, exactly as written, each in its own quotation marks; do not invent or alter any name."
-                if response_language == "en"
-                else "Cita sólo nombres que estén en seen.names, tal cual están escritos, cada uno entre sus propias comillas; no inventes ni cambies ningún nombre."
-            ),
-            "listing_wrong_count": (
-                "The only numbers you may state are seen.count (total entries), seen.fileCount, seen.folderCount and seen.moreNotShown; do not invent other figures."
-                if response_language == "en"
-                else "Los únicos números que puedes decir son seen.count (entradas en total), seen.fileCount, seen.folderCount y seen.moreNotShown; no inventes otras cifras."
-            ),
-            "capture_not_reported": (
-                "You took the screenshot: say so in the first person past tense, without repeating the request, without identifiers, and without inventing where it was saved."
-                if response_language == "en"
-                else "Sacaste la captura de pantalla: dilo en pasado y en primera persona («Saqué/Tomé una captura de pantalla»), sin repetir la orden, sin identificadores y sin inventar dónde quedó."
-            ),
-            "missing_written_text": (
-                "Quote the exact text from writtenText and say you copied it to the clipboard."
-                if response_language == "en"
-                else "Cita el texto exacto de writtenText y di que lo copiaste al portapapeles."
-            ),
-            "echo_without_report": (
-                "Do not just repeat the text: say that you copied it to the clipboard."
-                if response_language == "en"
-                else "No repitas sólo el texto: di que lo copiaste al portapapeles."
-            ),
-            "mislabelled_installed": (
-                "The figure you called installed is the total; the installed "
-                "capacity is a different observed value. Say total, or use the "
-                "installed_capacity figure for installed."
-                if response_language == "en"
-                else "La cifra que llamaste instalada es el total; la capacidad "
-                "instalada es otro valor observado. Di total, o usa la cifra de "
-                "installed_capacity para instalada."
-            ) + _memory_capacity_note(_merged_observed(situation).get("memory"), response_language),
-            "missing_scan_limit": (
-                "Only the wifi connection state was read; you cannot scan or list "
-                "available networks. Say so plainly."
-                if response_language == "en"
-                else "Sólo se leyó si el wifi está conectado; no puedes escanear ni "
-                "listar las redes disponibles. Dilo claramente."
-            ),
-            "missing_remembered": (
-                ("Keep these words exactly as given, untranslated: "
-                 if response_language == "en"
-                 else "Conserva estas palabras tal cual, sin traducirlas: ")
-                + ", ".join(_missing_remembered_words(
-                    text, str(_merged_observed(situation).get("remembered") or "")))
-            ),
-            "missing_failure": (
-                "Say the request is outside what you do on this PC. "
-                "Never say you tried."
-                if cause in {"out_of_catalog", "out-of-catalog"}
-                else "Name the failure cause in prose."
-            ),
-            "unstated_already_running": (
-                "Name the app. Say it was already open. Never say you opened, launched "
-                "or reopened it."
-                if response_language == "en"
-                else "Nombra la app. Di que ya estaba abierta. Nunca digas que la abriste "
-                     "ni que la volviste a abrir."
-            ),
-            "invented_prior_open_state": (
-                "The app was closed and you opened it now. Do not say it was already open."
-                if response_language == "en"
-                else "La app estaba cerrada y la abriste ahora. No digas que ya estaba abierta."
-            ),
-            "missing_state": (
-                "Give the scheduled time in UTC, not the current time or a restarted countdown."
-                if _verified_notification_due(situation) is not None
-                else (
-                    "State the observed playbackStatus; a loaded title does not imply playback."
+                     else "Terminá con una sola pregunta: cuánto cambiar el volumen.")
+                    if deferred_for_hint is not None and deferred_for_hint.kind == "volume_amount"
+                    else ("End with one question: which window to focus."
+                          if response_language == "en"
+                          else "Terminá con una sola pregunta: cuál ventana enfocar.")
+                ),
+                "missing_confirmation_choice": (
+                    "Pregunta con todas estas opciones literales: "
+                    f"{', '.join(required_words) or 'confirmar, cancelar'}."
+                ),
+                "wrong_language": "Same language as the request.",
+                "joined_claimed": (
+                    "You did NOT join or open the channel: say you found it and ask whether the person wants you to join; never say you joined or entered."
+                    if response_language == "en"
+                    else "NO te uniste ni abriste el canal: di que lo encontraste y pregunta si la persona quiere que te unas; nunca digas que te uniste o entraste."
+                ),
+                "draft_claimed_sent": (
+                    "The message was only left written in the chat and was NOT sent: say you left it written and did not send it, so the person can send it; never say it was sent or delivered."
+                    if response_language == "en"
+                    else "El mensaje sólo quedó escrito en el chat y NO se envió: di que lo dejaste escrito y que no lo enviaste, para que la persona lo envíe; nunca digas que se envió o se entregó."
+                ),
+                "sent_wrong_destination": (
+                    (
+                        "The message really went to the owner's test channel, exactly where the person asked: say that you sent the text (quote it) to that channel by its name, and mention no other recipient."
+                        if response_language == "en"
+                        else "El mensaje llegó de verdad al canal de pruebas del dueño, justo donde la persona pidió: di que enviaste el texto (cítalo) a ese canal por su nombre, y no menciones a ningún otro destinatario."
+                    )
+                    if same_target_send
+                    else (
+                        # MAIL1853: the test destination can be a long address the model
+                        # paraphrased («el canal de prueba de Emmanuel»); both literals
+                        # are quoted so the reply copies them.
+                        f"The message was really sent, but only to the owner's own test channel «{seen_send_for_hint.get('forcedDestination') or ''}», not to the requested recipient «{seen_send_for_hint.get('requestedRecipient') or ''}»: write that exact destination as it is and make clear it did not go to the requested one."
+                        if response_language == "en"
+                        else f"El mensaje se envió de verdad, pero sólo al canal de pruebas propio del dueño «{seen_send_for_hint.get('forcedDestination') or ''}», no al destinatario pedido «{seen_send_for_hint.get('requestedRecipient') or ''}»: escribe ese destino real tal cual y deja claro que no fue al pedido."
+                    )
+                ),
+                "send_not_stated": (
+                    "The message was really sent to the owner's test channel: say that you sent it («quote the text») to that channel; a greeting alone hides the delivery."
+                    if response_language == "en"
+                    else "El mensaje se envió de verdad al canal de pruebas del dueño: di que lo enviaste (cita el texto) a ese canal; un saludo solo oculta el envío."
+                ),
+                "denied_test_destination": (
+                    "The recipient the person named IS the owner's test channel and the message really went there: say you sent it to that channel and do not say it was not sent to anyone."
+                    if response_language == "en"
+                    else "El destinatario que pidió la persona ES el canal de pruebas del dueño y el mensaje llegó ahí de verdad: di que lo enviaste a ese canal y no digas que no fue enviado a nadie."
+                ),
+                "extra_claim": (
+                    "Answer what you will not do, in your own words."
+                    if _looks_like_refuse_question(user_text)
+                    else (
+                        ""
+                        if _looks_like_continue_constraint(user_text)
+                        else (
+                            "State only what the observation supports."
+                            if inventory_answer else "One short sentence of the facts."
+                        )
+                    )
+                ),
+                "wrong_actor": (
+                    "Say in first person what you can do, not what the person can do."
+                    if _looks_like_capability_question(user_text)
+                    else _MACHINE_ACTOR_FEEDBACK
+                ),
+                "reversed_mute": "Name audio or speakers and the mute state.",
+                "reversed_polarity": "Failure. Do not say it is open or that you opened it.",
+                "asserted_failure": (
+                    "Name several entries of can. One short sentence."
+                    if _looks_like_capability_question(user_text)
+                    else (
+                        "The search completed with no matching file names. Preserve "
+                        "the query and restrict the finding to the folders searched, "
+                        "without naming an unobserved folder or claiming the file "
+                        "is absent everywhere. Do not describe a failed search."
+                        if _verified_empty_known_file_query(situation) is not None
+                        else "Success. State what was seen."
+                    )
+                ),
+                "internal_code": "Sin códigos internos ni jerga de contrato.",
+                "confirmation_asserted": "Pregunta; no afirmes.",
+                "welcome_opener": "Saluda; evita Listo.",
+                "knowledge_greeting": (
+                    "Name several entries of can. One short sentence. Do not greet."
+                    if _looks_like_capability_question(user_text)
+                    else "Answer the question. Do not greet."
+                ),
+                "invented": "No invented or truncated words.",
+                "cut_by_length": (
+                    "The reply was cut off before its end. Write a shorter one: at most three sentences, naming at most three items, and finish the last sentence."
+                    if response_language == "en"
+                    else "La respuesta se cortó antes de terminar. Escribe una más corta: como máximo tres oraciones, nombrando como máximo tres elementos, y termina la última oración."
+                ),
+                "welcome_repeat": "Un solo Hola.",
+                "copied_instruction": "Devuelve el mensaje, no la etiqueta ni la instrucción.",
+                "lowercase": (
+                    "Start with a capital letter."
+                    if response_language == "en"
+                    else "Empieza con mayúscula."
+                ),
+                "clarification_not_a_question": "Una pregunta.",
+                "invented_connectivity": (
+                    "Only the wifi connection was read. Say nothing about internet, "
+                    "other networks, or being online or offline."
+                ),
+                "too_many_sentences": "Una sola frase.",
+                "wrong_gender": "Masculine abierto/cerrado. Feminine abierta/cerrada.",
+                "missing_name": (
+                    # AUDIO1793: the application volume final names the app and the
+                    # level the sessions now have.
+                    (
+                        ("Say that you turned " + str(_merged_observed(situation).get("app")) + "'s own volume "
+                         + ("up" if _merged_observed(situation).get("direction") == "up" else "down")
+                         + " and that it is now at " + str(_merged_observed(situation).get("level")) + "; nothing about it being closed or silent.")
+                        if response_language == "en"
+                        else ("Di que " + ("subiste" if _merged_observed(situation).get("direction") == "up" else "bajaste")
+                              + " el volumen propio de " + str(_merged_observed(situation).get("app"))
+                              + " y que ahora está en " + str(_merged_observed(situation).get("level")) + "; nada sobre que esté cerrado o sin sonido.")
+                    )
+                    if situation.get("operation") == "audio.app.volume.adjust"
+                    and situation.get("verified") is True
+                    and isinstance(_merged_observed(situation), dict)
+                    else
+                    "Name the clock and mute or volume."
+                    if _merged_observed(situation)
+                    and (
+                        "muted" in _merged_observed(situation)
+                        or "level" in _merged_observed(situation)
+                    )
+                    # MUSIC1555: the drafts quoted a fragment («Smooth Criminal»)
+                    # of the observed title; the whole title, verbatim, is the name.
+                    else (
+                        # VIDEO1717: told only to quote the title, the model answered
+                        # with the bare title; the state belongs in the same sentence.
+                        ("Say in one sentence that it is playing and quote the whole title exactly as observed, inside quotation marks: "
+                         if response_language == "en"
+                         else "Di en una oración que está reproduciéndose y cita el título completo tal cual se observó, entre comillas: ")
+                        + "«" + str(_merged_observed(situation).get("title")) + "»"
+                    )
+                    if _youtube_playback_in_payload({"operation": situation.get("operation"), "verified": situation.get("verified"), "succeeded": situation.get("succeeded"), "seen": _merged_observed(situation)}) is not None
+                    # MUSIC1593 H0543 «qué canción está sonando» on the local player: the
+                    # draft quoted «Greatest Hits (2)» and then translated the bracketed
+                    # duration; the whole observed title, verbatim, is the name here too.
+                    or _local_player_session(situation)
+                    # MUSIC1773 H0163: a Spotify query with a long classical title was
+                    # paraphrased as the request on every retry; any verified playback
+                    # with an observed title gets the title to quote.
+                    or _verified_media_playing_title(situation)
+                    else "Include names and numbers from seen."
+                ),
+                "promised_effect": (
+                    "It already happened: say you opened the site, in the past."
+                    if response_language == "en"
+                    else "Ya ocurrió: di que abriste el sitio, en pasado."
+                ),
+                "action_attributed_to_user": (
+                    "You did it, not the person: say what you did, in the first person."
+                    if response_language == "en"
+                    else "Lo hiciste tú, no la persona: di lo que hiciste, en primera persona."
+                ),
+                "invented_version": (
+                    "Name only the observed Windows edition, major version and build; "
+                    "no feature-update name like 22H2."
+                    if response_language == "en"
+                    else "Di sólo la edición, la versión mayor y la compilación observadas de "
+                    "Windows; sin nombres de actualización como 22H2."
+                ),
+                "contradicted_maximum": (
+                    "The observed brightness is not the maximum: say the observed value "
+                    "and that it is not at the maximum."
+                    if response_language == "en"
+                    else "El brillo observado no está al máximo: di el valor observado y "
+                    "que no está al máximo."
+                ),
+                "contradicted_minimum": (
+                    "The observed brightness is not the minimum: say the observed value "
+                    "and that it is not at the minimum."
+                    if response_language == "en"
+                    else "El brillo observado no está al mínimo: di el valor observado y "
+                    "que no está al mínimo."
+                ),
+                "missing_written_file": (
+                    "You also wrote the file named in the filesystem.write.text step: say that you created it, with its exact name, then what it lists."
+                    if response_language == "en"
+                    else "También escribiste el archivo nombrado en el paso filesystem.write.text: di que lo creaste, con su nombre exacto, y luego qué lista."
+                ),
+                "missing_prior_open": (
+                    "You also opened the application in this turn: say that you opened it, then the rest."
+                    if response_language == "en"
+                    else "En este turno también abriste la aplicación: di que la abriste y luego lo demás."
+                ),
+                "missing_click_verb": (
+                    "You pressed the button: say that you pressed (clicked) it, with the label the person asked for."
+                    if response_language == "en"
+                    # UI1373 H0555: corrected drafts read «Aprié el botón 5», a
+                    # conjugation the model cannot get right; steer to verbs it can.
+                    else "Apretaste el botón: dilo con «Hice clic en el …» o «Pulsé el …» y la etiqueta que pidió la persona; no conjugues «apretar»."
+                ),
+                "package_state_reversed": (
+                    "seen.installedIn are the Pythons where the package IS installed and seen.notInstalledIn where it is not: state exactly that, without denying an install listed in seen.installedIn or asserting one that is not there."
+                    if response_language == "en"
+                    else "seen.installedIn son los Python donde el paquete SÍ está instalado y seen.notInstalledIn donde no: di exactamente eso, sin negar una instalación de seen.installedIn ni afirmar una que no esté."
+                ),
+                "playback_progress_stated": (
+                    "Say only that it is playing and what is playing; do not state any number of seconds and do not say where in the video it is: the observed progress is how you checked, not a position and not something the person did."
+                    if response_language == "en"
+                    else "Di sólo que está reproduciéndose y qué se reproduce; no digas ningún número de segundos ni por dónde va el vídeo: el avance observado es cómo lo comprobaste, no una posición ni algo que haya hecho la persona."
+                ),
+                "screen_wrong_count": (
+                    "The screen shows seen.lineCount lines: that is the only number you may state; seen.lines are only some of those lines, so do not count them."
+                    if response_language == "en"
+                    else "La pantalla muestra seen.lineCount líneas: ese es el único número que puedes decir; seen.lines son sólo algunas de esas líneas, no las cuentes."
+                ),
+                "ocr_unsupported_terms": (
+                    "Use only words that appear in the recognized text: quote two or three of its lines exactly as they are, say how many lines were recognized, and add no interpretation, purpose or warning."
+                    if response_language == "en"
+                    else "Usa sólo palabras que estén en el texto reconocido: cita dos o tres de sus líneas tal cual, di cuántas líneas se reconocieron y no añadas interpretación, propósito ni avisos."
+                ),
+                "search_unsupported_claim": (
+                    "Do not state a weather condition, temperature or forecast the results do not contain; name the pages found (their titles and sites) instead."
+                    if response_language == "en"
+                    else "No afirmes un estado del tiempo, temperatura ni pronóstico que los resultados no contengan; nombra en su lugar las páginas encontradas (sus títulos y sitios)."
+                ),
+                "invented_number": (
+                    "Use only the observed numbers from seen.monitors (width, height, refreshHz) and seen.monitorCount; no other number."
+                    if response_language == "en"
+                    else "Usa sólo los números observados de seen.monitors (width, height, refreshHz) y seen.monitorCount; ningún otro número."
+                ),
+                "reversed_state": (
+                    "State the observed Bluetooth radio state exactly: seen.radioOn true is on, false is off."
+                    if response_language == "en"
+                    else "Di el estado observado de la radio Bluetooth tal cual: seen.radioOn true es encendida, false es apagada."
+                ),
+                "wrong_address": (
+                    "Cite only the navigated address (seen.finalUrl); do not mention any other address."
+                    if response_language == "en"
+                    else "Cita sólo la dirección navegada (seen.finalUrl); no menciones ninguna otra dirección."
+                ),
+                "search_result_denied": (
+                    "The search did return results: do not say you have no information; name the pages found."
+                    if response_language == "en"
+                    else "La búsqueda sí devolvió resultados: no digas que no tienes información; nombra las páginas encontradas."
+                ),
+                "listing_unlisted_name": (
+                    "Quote only names that appear in seen.names, exactly as written, each in its own quotation marks; do not invent or alter any name."
+                    if response_language == "en"
+                    else "Cita sólo nombres que estén en seen.names, tal cual están escritos, cada uno entre sus propias comillas; no inventes ni cambies ningún nombre."
+                ),
+                "listing_wrong_count": (
+                    "The only numbers you may state are seen.count (total entries), seen.fileCount, seen.folderCount and seen.moreNotShown; do not invent other figures."
+                    if response_language == "en"
+                    else "Los únicos números que puedes decir son seen.count (entradas en total), seen.fileCount, seen.folderCount y seen.moreNotShown; no inventes otras cifras."
+                ),
+                "invented_capture_location": (
+                    "Keep every step you did, in order (what you opened, what you searched, the screenshot, what you closed), and say that the screenshot was not saved to the desktop (the receipt gives no path); do not name any other place."
+                    if response_language == "en"
+                    else "Cuenta todos los pasos que hiciste, en orden (qué abriste, qué buscaste, la captura, qué cerraste), y di que la captura no quedó guardada en el escritorio (el recibo no da ninguna ruta); no nombres ningún otro lugar."
+                ),
+                "capture_not_reported": (
+                    "You took the screenshot: say so in the first person past tense, without repeating the request, without identifiers, and without inventing where it was saved."
+                    if response_language == "en"
+                    else "Sacaste la captura de pantalla: dilo en pasado y en primera persona («Saqué/Tomé una captura de pantalla»), sin repetir la orden, sin identificadores y sin inventar dónde quedó."
+                ),
+                "missing_written_text": (
+                    "Quote the exact text from writtenText and say you copied it to the clipboard."
+                    if response_language == "en"
+                    else "Cita el texto exacto de writtenText y di que lo copiaste al portapapeles."
+                ),
+                "echo_without_report": (
+                    "Do not just repeat the text: say that you copied it to the clipboard."
+                    if response_language == "en"
+                    else "No repitas sólo el texto: di que lo copiaste al portapapeles."
+                ),
+                "mislabelled_installed": (
+                    "The figure you called installed is the total; the installed "
+                    "capacity is a different observed value. Say total, or use the "
+                    "installed_capacity figure for installed."
+                    if response_language == "en"
+                    else "La cifra que llamaste instalada es el total; la capacidad "
+                    "instalada es otro valor observado. Di total, o usa la cifra de "
+                    "installed_capacity para instalada."
+                ) + _memory_capacity_note(_merged_observed(situation).get("memory"), response_language),
+                "missing_scan_limit": (
+                    "Only the wifi connection state was read; you cannot scan or list "
+                    "available networks. Say so plainly."
+                    if response_language == "en"
+                    else "Sólo se leyó si el wifi está conectado; no puedes escanear ni "
+                    "listar las redes disponibles. Dilo claramente."
+                ),
+                "missing_remembered": (
+                    ("Keep these words exactly as given, untranslated: "
+                     if response_language == "en"
+                     else "Conserva estas palabras tal cual, sin traducirlas: ")
+                    + ", ".join(_missing_remembered_words(
+                        text, str(_merged_observed(situation).get("remembered") or "")))
+                ),
+                "missing_failure": (
+                    "Say the request is outside what you do on this PC. "
+                    "Never say you tried."
+                    if cause in {"out_of_catalog", "out-of-catalog"}
+                    else "Name the failure cause in prose."
+                ),
+                "unstated_already_running": (
+                    "Name the app. Say it was already open. Never say you opened, launched "
+                    "or reopened it."
+                    if response_language == "en"
+                    else "Nombra la app. Di que ya estaba abierta. Nunca digas que la abriste "
+                         "ni que la volviste a abrir."
+                ),
+                "invented_prior_open_state": (
+                    "The app was closed and you opened it now. Do not say it was already open."
+                    if response_language == "en"
+                    else "La app estaba cerrada y la abriste ahora. No digas que ya estaba abierta."
+                ),
+                "missing_state": (
+                    "Give the scheduled time in UTC, not the current time or a restarted countdown."
+                    if _verified_notification_due(situation) is not None
+                    else (
+                        "State the observed playbackStatus; a loaded title does not imply playback."
+                        if situation.get("operation") == "media.status"
+                        # MUSIC1561: the drafts wrote the bare title or «Estoy escuchando»;
+                        # the reply must assert the playing state with the title.
+                        else (
+                            # Una serie no «suena»: para el streaming la pista pide el
+                            # verbo del vídeo y el servicio donde se ve.
+                            ("Say that it is playing on " + str(_merged_observed(situation).get("service", "")).replace("_", " ").title()
+                             + " and quote the whole title: «" if response_language == "en"
+                             else "Di que está reproduciéndose en " + str(_merged_observed(situation).get("service", "")).replace("_", " ").title()
+                             + " y cita el título completo: «")
+                            + str(_merged_observed(situation).get("title")) + "»"
+                            if situation.get("operation") == "streaming.play.named"
+                            else ("Say that it is playing and quote the whole title: «" if response_language == "en"
+                                  else "Di que está sonando o reproduciéndose y cita el título completo: «")
+                            + str(_merged_observed(situation).get("title")) + "»"
+                        )
+                        # VIDEO1927 H0355 «pon stranger thins en netflix»: con el título
+                        # corregido por Netflix el modelo escribía «Estoy viendo Stranger
+                        # Things», sin estado, y la pista que recibía era la de ventanas
+                        # («abierto/open»); tres intentos iguales y el turno sin final.
+                        if situation.get("operation") in {"media.play.youtube", "media.play.query", "media.play.exact",
+                                                          "streaming.play.named"}
+                        # H0516: tras corregir el lugar de la captura, el borrador olvidaba
+                        # el cierre y la pista era la de ventanas. Si la persona pidió
+                        # cerrar algo, el estado que falta es ese cierre.
+                        else (
+                            ("Also say, in the past tense, that you closed what the person asked you to close."
+                             if response_language == "en"
+                             else "Di también, en pasado, que cerraste lo que la persona pidió cerrar.")
+                            if re.search(r"\bcierr|\bcerr[aá]\b|\bclose\b", (user_text or "").casefold())
+                            else "abierto/open, no el imperativo."
+                        )
+                    )
+                ),
+                "reversed_result": (
+                    f"The session is {observed_playback}. Correct the contrary playback "
+                    "claim: paused or stopped means the loaded track is not playing. "
+                    "Preserve the supplied title and artist in a natural reply, without "
+                    "implying PC-wide silence."
                     if situation.get("operation") == "media.status"
-                    # MUSIC1561: the drafts wrote the bare title or «Estoy escuchando»;
-                    # the reply must assert the playing state with the title.
+                    and situation.get("verified") is True
+                    and situation.get("succeeded") is True
+                    and observed_playback in {"playing", "paused", "stopped"}
                     else (
-                        # Una serie no «suena»: para el streaming la pista pide el
-                        # verbo del vídeo y el servicio donde se ve.
-                        ("Say that it is playing on " + str(_merged_observed(situation).get("service", "")).replace("_", " ").title()
-                         + " and quote the whole title: «" if response_language == "en"
-                         else "Di que está reproduciéndose en " + str(_merged_observed(situation).get("service", "")).replace("_", " ").title()
-                         + " y cita el título completo: «")
-                        + str(_merged_observed(situation).get("title")) + "»"
-                        if situation.get("operation") == "streaming.play.named"
-                        else ("Say that it is playing and quote the whole title: «" if response_language == "en"
-                              else "Di que está sonando o reproduciéndose y cita el título completo: «")
-                        + str(_merged_observed(situation).get("title")) + "»"
+                        "Name the app. Say you will not open it."
+                        if _looks_like_negative_constraint(user_text)
+                        else (
+                            "Do not invert."
+                            if _looks_like_refuse_question(user_text)
+                            else "State only what seen shows."
+                        )
                     )
-                    # VIDEO1927 H0355 «pon stranger thins en netflix»: con el título
-                    # corregido por Netflix el modelo escribía «Estoy viendo Stranger
-                    # Things», sin estado, y la pista que recibía era la de ventanas
-                    # («abierto/open»); tres intentos iguales y el turno sin final.
-                    if situation.get("operation") in {"media.play.youtube", "media.play.query", "media.play.exact",
-                                                      "streaming.play.named"}
-                    else "abierto/open, no el imperativo."
-                )
-            ),
-            "reversed_result": (
-                f"The session is {observed_playback}. Correct the contrary playback "
-                "claim: paused or stopped means the loaded track is not playing. "
-                "Preserve the supplied title and artist in a natural reply, without "
-                "implying PC-wide silence."
-                if situation.get("operation") == "media.status"
-                and situation.get("verified") is True
-                and situation.get("succeeded") is True
-                and observed_playback in {"playing", "paused", "stopped"}
-                else (
-                    "Name the app. Say you will not open it."
-                    if _looks_like_negative_constraint(user_text)
-                    else (
-                        "Do not invert."
-                        if _looks_like_refuse_question(user_text)
-                        else "State only what seen shows."
-                    )
-                )
-            ),
-            "acting_asserted": _PROGRESS_MESSAGE_INSTRUCTION,
-            "welcome_question": "Greet. No question.",
-            "answered_with_a_question": (
-                "Answer it. Do not ask."
-                if response_language == "en"
-                else "Contéstala. No preguntes."
-            ),
-        }.get(defect, "")
+                ),
+                "acting_asserted": _PROGRESS_MESSAGE_INSTRUCTION,
+                "welcome_question": "Greet. No question.",
+                "answered_with_a_question": (
+                    "Answer it. Do not ask."
+                    if response_language == "en"
+                    else "Contéstala. No preguntes."
+                ),
+            }.get(defect, "")
+
+        retry_hint = hint_for(defect)
         retry_hint = " ".join(
             part for part in (retry_hint, contract_hint(text)) if part
         )
@@ -16632,8 +16700,16 @@ class LlmRuntime:
         )
         third_payload = dict(payload)
         third_payload.update(compose_sampling)
+        # H0516: el tercer intento pedía la pista del PRIMER defecto (el lugar de
+        # la captura) cuando el segundo era otro (faltaba el cierre), y el modelo
+        # repetía. Cada intento recibe la pista de su propio defecto.
+        # Y las pistas se acumulan: con sólo la nueva, el tercer borrador volvía a
+        # inventar el escritorio que el primero ya había corregido.
+        third_defect = rejection_reason(retry_text) or defect
         third_hint = " ".join(
-            part for part in (retry_hint, contract_hint(retry_text)) if part
+            part for part in dict.fromkeys(
+                (hint_for(defect), hint_for(third_defect), contract_hint(retry_text))
+            ) if part
         )
         sent_instructions.append(third_hint)
         third_system = (

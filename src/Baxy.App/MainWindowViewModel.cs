@@ -630,10 +630,71 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
         return execution!.Confirmation;
     }
 
+    // Los efectos que el conductor revisado sabe proponer a la raíz uno por uno. Un
+    // paso restante que no sea de sólo lectura tiene que estar aquí, o la cadena no
+    // se admite: nada se ejecutaría sin su revisión.
+    private static readonly HashSet<string> ChainReviewedEffects = new(StringComparer.Ordinal)
+    {
+        "browser.navigate", "browser.navigate.named", "capture.screenshot",
+        "capture.active.window", "app.close", "input.visible.click", "streaming.play.named",
+    };
+
+    private static bool ReviewedEffectChainShape(PendingMindPlanExecution execution)
+    {
+        int done = execution.NextIndex;
+        if (done < 0 || done >= execution.Steps.Count
+            || execution.PendingOperation is not { } pending
+            || pending.OperationName != execution.CurrentStep.Operation
+            || !ChainReviewedEffects.Contains(pending.OperationName)
+            || execution.CompletedMessages.Count != done
+            || execution.Observations.Count != done)
+        {
+            return false;
+        }
+
+        for (int index = 0; index < done; index++)
+        {
+            if (execution.Observations[index] is not JsonObject observation
+                || (string?)observation["stepId"] != execution.Steps[index].Id
+                || (string?)observation["operation"] != execution.Steps[index].Operation
+                || (string?)observation["status"] != OperationStatuses.Completed
+                || (bool?)observation["verified"] != true)
+            {
+                return false;
+            }
+        }
+
+        for (int index = done + 1; index < execution.Steps.Count; index++)
+        {
+            string operation = execution.Steps[index].Operation;
+            if (!ProductCatalog.TryGet(operation, out ProductOperationDescriptor? descriptor)
+                || (descriptor.Risk != OperationRisks.ReadOnly
+                    && !ChainReviewedEffects.Contains(operation)))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private static bool ConductorConfirmationShape(
         PendingMindPlanExecution execution,
         bool allowVerifiedReadPrefix)
     {
+        if (allowVerifiedReadPrefix && execution.Steps.Count >= 3
+            && ReviewedEffectChainShape(execution))
+        {
+            // H0516 «Abre Opera GX, busca una receta de pizza, guarda una captura
+            // en el escritorio y luego cierra Opera»: una misión de varios pasos
+            // con más de un efecto revisado. Las formas de abajo son de uno o dos
+            // pasos y no cambian; aquí la regla es general: todo lo ya hecho está
+            // completado y verificado, el paso pendiente es el actual, y cada paso
+            // que queda o es de sólo lectura o se revisará a su turno. Nunca se
+            // aprueba un sufijo: el revisor de la raíz ve cada efecto por separado.
+            return true;
+        }
+
         if (execution.Steps.Count == 1 && execution.NextIndex == 0
             && execution.Observations.Count == 0 && execution.CompletedMessages.Count == 0)
         {
@@ -779,21 +840,34 @@ internal sealed class MainWindowViewModel : INotifyPropertyChanged, IAsyncDispos
     internal JsonArray CaptureConductorReadEvidence()
     {
         if (CaptureConductorConfirmation(allowVerifiedReadPrefix: true) is null
-            || _mindPlans.Current is not { NextIndex: 1 } execution
-            || execution.Observations[0] is not JsonObject observation)
+            || _mindPlans.Current is not { NextIndex: >= 1 } execution)
         {
             return [];
         }
 
-        // Existing projection excludes messages, credentials and tokens.
-        return [new JsonObject
+        // H0516: a chain carries every completed step before the reviewed one
+        // (the search, the navigation, the capture, the window read); the
+        // reviewer receives the whole verified prefix and judges the one its
+        // rule needs. Existing projection excludes messages, credentials and tokens.
+        var evidence = new JsonArray();
+        for (int index = 0; index < execution.NextIndex && index < execution.Observations.Count; index++)
         {
-            ["stepId"] = observation["stepId"]?.DeepClone(),
-            ["operation"] = observation["operation"]?.DeepClone(),
-            ["verified"] = observation["verified"]?.DeepClone(),
-            ["status"] = observation["status"]?.DeepClone(),
-            ["result"] = observation["result"]?.DeepClone(),
-        }];
+            if (execution.Observations[index] is not JsonObject observation)
+            {
+                continue;
+            }
+
+            evidence.Add(new JsonObject
+            {
+                ["stepId"] = observation["stepId"]?.DeepClone(),
+                ["operation"] = observation["operation"]?.DeepClone(),
+                ["verified"] = observation["verified"]?.DeepClone(),
+                ["status"] = observation["status"]?.DeepClone(),
+                ["result"] = observation["result"]?.DeepClone(),
+            });
+        }
+
+        return evidence;
     }
 
     internal async Task SubmitAsync(

@@ -90,6 +90,10 @@ _ENUM_EVIDENCE_ALIASES = {
     "stop": ("stop", "deten", "detener", "para"),
     "docx": ("docx", "word", "documento"),
     "xlsx": ("xlsx", "excel", "spreadsheet", "hoja de calculo", "tabla"),
+    # H0516 «Abre Opera GX, …»: el valor del catálogo lleva guion bajo y la persona
+    # escribe «Opera GX»; sin el alias, «opera» —substring de «opera gx»— pasaba por
+    # fundamentado y «opera_gx» no, justo al revés de lo dicho.
+    "opera_gx": ("opera gx", "opera_gx", "operagx"),
     "netflix": ("netflix",),
     "prime_video": ("prime video", "amazon prime", "prime"),
     "youtube": ("youtube",),
