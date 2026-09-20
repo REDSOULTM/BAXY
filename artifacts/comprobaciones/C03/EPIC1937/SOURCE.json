@@ -1,0 +1,15 @@
+{
+  "schema": "c03-epic1937-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (optional store argument), src/Baxy.Providers.Windows/External/SteamLocalAdapter.cs (the Epic Games launcher branch of the library read), src/baxy_mind (the store named after the title, the composer's store-aware instruction, the invented-effect veto), on top of the EPIC1937 build.",
+  "patch": "artifacts/comprobaciones/C03/EPIC1937/SOURCE.patch",
+  "commits": [
+    "896d647ebb60118893065acc1cc102c194c8fb06"
+  ],
+  "build": "BUILD1937 (C03-repairs1937-build/BUILD_READY.json; Kernel, Providers y mente)",
+  "cause_measured": "La lectura de biblioteca sólo conocía Steam; una descarga en Epic Games terminaba en un límite sin leer nada.",
+  "change": "game.entitlement.named lee la biblioteca de Epic Games (manifiestos instalados y caché del catálogo) cuando la persona nombra esa tienda; el final dice el estado leído sin inventar efectos.",
+  "measurement": "EPIC1937: 5 ejecutados, 5 aprobados, 0 fallidos; 1 créditos. Los tres casos del grupo hicieron exactamente una game.entitlement.named con store=epic completada y verificada (biblioteca del lanzador de Epic Games: Fall Guys en la biblioteca y no instalado) y publicaron un final que dice ese estado y que la descarga se inicia desde el lanzador, sin inventar instalaciones ni descargas; los límites con cero operaciones. Corrida sobre BUILD1937 (HEAD 896d647).",
+  "credits": 1
+}

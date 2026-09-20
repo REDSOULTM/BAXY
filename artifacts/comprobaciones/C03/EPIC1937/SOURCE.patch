@@ -1,0 +1,306 @@
+commit 896d647ebb60118893065acc1cc102c194c8fb06
+
+C03: la lectura de biblioteca conoce Epic Games
+
+«Descarga Fall guys en epic games» contestaba «No puedo descargar Fall Guys
+en Epic Games tal como fue pedido»: Steam tenía su lectura de biblioteca y
+Epic no. El lanzador de Epic Games guarda los mismos dos hechos en local
+—un manifiesto JSON por juego instalado y la caché del catálogo de la
+cuenta autenticada—, así que game.entitlement.named gana el argumento
+opcional store (epic|steam): con epic lee esos dos ficheros, nada más. La
+lectura del pedido reconoce la tienda nombrada tras el título y la
+instrucción del compositor nombra la tienda leída; para Epic la descarga se
+inicia desde el lanzador, BAXY no la inicia.
+
+Dos borradores medidos con el turno delante quedan vetados: «Fortnite ya
+está desinstalado… lo eliminé correctamente» y «Ya instalé Fall Guys»; la
+lectura no instala, descarga ni desinstala nada.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Kernel/Operations/ProductCatalog.cs b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+index 72a672a67..788a0d3fe 100644
+--- a/src/Baxy.Kernel/Operations/ProductCatalog.cs
++++ b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+@@ -602,11 +602,20 @@ public static class ProductCatalog
+             "Lista el catálogo local de Steam mediante una sesión resuelta y acotada."),
+         Descriptor(
+             "game.entitlement.named",
+-            Schema([String("title", maximumUtf8Bytes: 256, nonWhitespace: true)], ["title"]),
++            Schema(
++                [
++                    // H0578 «Descarga Fall guys en epic games»: the Epic Games launcher
++                    // keeps the same two facts locally (installed manifests, the
++                    // authenticated catalog cache); the store the person names picks
++                    // the library that is read. Absent, it is Steam as before.
++                    String("store", values: ["epic", "steam"]),
++                    String("title", maximumUtf8Bytes: 256, nonWhitespace: true),
++                ],
++                ["title"]),
+             OperationRisks.ReadOnly,
+             "game.entitlement.named.steam.librarycache.manifest.postread.v1",
+             ToolExposure.Public,
+-            "Comprueba por título si un juego de Steam figura en la biblioteca autenticada local y si está instalado; no descarga, no compra ni abre diálogos."),
++            "Comprueba por título si un juego de Steam o de Epic Games figura en la biblioteca autenticada local y si está instalado; no descarga, no compra ni abre diálogos."),
+         Descriptor(
+             "game.install.cancel",
+             Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
+diff --git a/src/Baxy.Providers.Windows/External/SteamLocalAdapter.cs b/src/Baxy.Providers.Windows/External/SteamLocalAdapter.cs
+index a214d5344..31d45541c 100644
+--- a/src/Baxy.Providers.Windows/External/SteamLocalAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/SteamLocalAdapter.cs
+@@ -179,6 +179,13 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
+         {
+             return ExternalJson.Failure(operation, "steam_title_invalid");
+         }
++        if (arguments.ValueKind == JsonValueKind.Object
++            && arguments.TryGetProperty("store", out JsonElement store)
++            && store.ValueKind == JsonValueKind.String
++            && string.Equals(store.GetString(), "epic", StringComparison.Ordinal))
++        {
++            return EpicEntitlementNamed(operation, title);
++        }
+         string folded = FoldTitle(title);
+         string? appId = KnownTitleAppIds.TryGetValue(folded, out string? known)
+             ? known
+@@ -339,6 +346,117 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
+         return ExternalJson.Failure(operation, "steam_install_transition_not_verified", effectObserved: true);
+     }
+ 
++    // H0578 «Descarga Fall guys en epic games»: the Epic Games launcher keeps its
++    // installed games as one JSON manifest each (%ProgramData%\Epic\EpicGamesLauncher\
++    // Data\Manifests\*.item: DisplayName, AppName, CatalogItemId, InstallLocation) and
++    // the authenticated account's catalog as a base64 JSON list (Data\Catalog\
++    // catcache.bin: id, title, namespace). Both are read, nothing is written; a title
++    // that matches exactly one catalog entry is resolved, anything else is not.
++    private static string EpicLauncherDataRoot => Path.Combine(
++        Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
++        "Epic", "EpicGamesLauncher", "Data");
++
++    private static ExternalCapabilityReceipt EpicEntitlementNamed(string operation, string title)
++    {
++        string folded = FoldTitle(title);
++        string manifests = Path.Combine(EpicLauncherDataRoot, "Manifests");
++        string catalogCache = Path.Combine(EpicLauncherDataRoot, "Catalog", "catcache.bin");
++        if (!Directory.Exists(manifests) && !File.Exists(catalogCache))
++        {
++            return ExternalJson.Failure(operation, "epic_launcher_data_not_found");
++        }
++        string? installedName = null;
++        string? installedCatalogId = null;
++        if (Directory.Exists(manifests))
++        {
++            foreach (string file in Directory.EnumerateFiles(manifests, "*.item"))
++            {
++                try
++                {
++                    using JsonDocument document = JsonDocument.Parse(File.ReadAllText(file, Encoding.UTF8));
++                    JsonElement root = document.RootElement;
++                    if (root.ValueKind != JsonValueKind.Object
++                        || !root.TryGetProperty("DisplayName", out JsonElement displayName)
++                        || displayName.ValueKind != JsonValueKind.String
++                        || FoldTitle(displayName.GetString() ?? string.Empty) != folded
++                        || (root.TryGetProperty("bIsIncompleteInstall", out JsonElement incomplete)
++                            && incomplete.ValueKind == JsonValueKind.True))
++                    {
++                        continue;
++                    }
++                    installedName = displayName.GetString();
++                    installedCatalogId = root.TryGetProperty("CatalogItemId", out JsonElement catalogId)
++                        && catalogId.ValueKind == JsonValueKind.String ? catalogId.GetString() : null;
++                    break;
++                }
++                catch (JsonException)
++                {
++                    // A manifest the launcher is rewriting is not evidence either way.
++                }
++                catch (IOException)
++                {
++                }
++            }
++        }
++        string? ownedName = null;
++        string? ownedCatalogId = null;
++        int ownedMatches = 0;
++        if (File.Exists(catalogCache))
++        {
++            try
++            {
++                byte[] decoded = Convert.FromBase64String(File.ReadAllText(catalogCache, Encoding.ASCII).Trim());
++                using JsonDocument document = JsonDocument.Parse(decoded);
++                if (document.RootElement.ValueKind == JsonValueKind.Array)
++                {
++                    foreach (JsonElement item in document.RootElement.EnumerateArray())
++                    {
++                        if (item.ValueKind != JsonValueKind.Object
++                            || !item.TryGetProperty("title", out JsonElement itemTitle)
++                            || itemTitle.ValueKind != JsonValueKind.String
++                            || FoldTitle(itemTitle.GetString() ?? string.Empty) != folded)
++                        {
++                            continue;
++                        }
++                        ownedMatches++;
++                        ownedName ??= itemTitle.GetString();
++                        ownedCatalogId ??= item.TryGetProperty("id", out JsonElement itemId)
++                            && itemId.ValueKind == JsonValueKind.String ? itemId.GetString() : null;
++                    }
++                }
++            }
++            catch (FormatException)
++            {
++            }
++            catch (JsonException)
++            {
++            }
++            catch (IOException)
++            {
++            }
++        }
++        bool installed = installedName is not null;
++        bool owned = installed || ownedMatches >= 1;
++        string? catalogItemId = installedCatalogId ?? ownedCatalogId;
++        JsonElement result = ExternalJson.Create(writer =>
++        {
++            writer.WriteStartObject(); writer.WriteNumber("version", 1);
++            writer.WriteString("query", title);
++            writer.WriteString("store", "epic");
++            writer.WriteBoolean("resolved", owned);
++            if (catalogItemId is null) writer.WriteNull("appId"); else writer.WriteString("appId", catalogItemId);
++            writer.WriteString("title", installedName ?? ownedName ?? title);
++            writer.WriteBoolean("owned", owned);
++            writer.WriteBoolean("installed", installed);
++            writer.WriteString("state", installed ? "installed"
++                : owned ? "owned_not_installed" : "not_in_library");
++            writer.WriteString("authority", installed
++                ? "epic_launcher_local_manifest" : "epic_launcher_catalog_cache");
++            writer.WriteEndObject();
++        });
++        return ExternalJson.Success(operation, result, effectObserved: false);
++    }
++
+     private string? ResolveSnapshotTitle(string folded)
+     {
+         string[] matches = _snapshot()
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index fc0c7649e..93ba863bd 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -5108,7 +5108,11 @@ def _explicit_arguments_from_evidence(
+     if operation == "game.entitlement.named":
+         # INSTALL1617: the title is the person's literal from the request.
+         title = effect_intent.steam_library_title(evidence)
+-        return {"title": title} if title is not None else None
++        if title is None:
++            return None
++        # H0578: the store named after the title picks the library that is read.
++        store = effect_intent.game_library_store(evidence)
++        return {"title": title, "store": store} if store == "epic" else {"title": title}
+ 
+     if operation == "game.installed.named":
+         # APPS1613 H0275: the title is the clause's own literal; the provider
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 83417025f..7b5a53fb3 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -16721,11 +16721,26 @@ _STEAM_LIBRARY_REQUEST = re.compile(
+     r"(?P<title>[a-z0-9][a-z0-9 .:'&+-]{0,80}?)"
+     # INSTALL1625 H0387/H0721 «… en Teams»: the owner's transcriptions write
+     # Steam as «Teams» (H0386/H0522); a game platform, never the meeting app.
+-    r"\s+(?:en|de|desde|por|from|on|in|via|through)\s+(?:steam|seam|stim|estim|teams|team)"
++    # H0578 «Descarga Fall guys en epic games»: the Epic Games launcher keeps the
++    # same two facts locally; the store named after the title picks the library.
++    r"\s+(?:en|de|desde|por|from|on|in|via|through)\s+"
++    r"(?:(?:el|la|the)\s+)?(?P<store>steam|seam|stim|estim|teams|team|epic(?:\s+games)?(?:\s+(?:store|launcher))?|egs)"
+     r"(?:\s+(?:por\s+favor|please|ahora|now))?[\s.!?]*"
+ )
+ 
+ 
++def game_library_store(text: str) -> str:
++    """The store a library request names after the title: «epic» or «steam»."""
++
++    folded = _strip_request_envelope(_fold(text)).strip()
++    match = _STEAM_LIBRARY_REQUEST.fullmatch(folded.rstrip(".!?").strip())
++    if match is None:
++        head, separator, _rest = folded.partition(". ")
++        match = _STEAM_LIBRARY_REQUEST.fullmatch(head.rstrip(".!?").strip()) if separator else None
++    store = (match.group("store") if match is not None else "") or ""
++    return "epic" if store.startswith(("epic", "egs")) else "steam"
++
++
+ def steam_library_title(text: str) -> str | None:
+     """The game named by a Steam download/install/uninstall request.
+ 
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index 7308f5ecc..64327bb82 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -4688,19 +4688,32 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
+         and situation.get("verified") is True
+         and situation.get("succeeded") is True
+     ):
++        _store_name = (
++            "Epic Games" if _merged_observed(situation).get("store") == "epic" else "Steam"
++        )
+         bits.append(
+-            "This result reads the person's Steam library only: owned says "
++            f"This result reads the person's {_store_name} library only: owned says "
+             "whether the title is in their authenticated library, installed "
+             "whether it is on disk. Nothing was downloaded, installed, "
+             "uninstalled, purchased or opened. If owned is false, say the game "
+-            "is not in their Steam library, so it cannot be downloaded or "
++            f"is not in their {_store_name} library, so it cannot be downloaded or "
+             "installed (for an uninstall request: it is not installed); do not "
+             "offer to buy it, open the store, search or add it. If owned is true "
+             "and installed is false, say it is in the library but not installed "
+-            "and that installing needs their confirmation; do not claim a "
+-            "download started. If installed is true, say it is already "
+-            "installed. Name the game as the person named it, in one or two "
+-            "sentences, in the person's language."
++            + (
++                # H0578: BAXY drives no Epic install; the launcher does that.
++                "and that the download is started from the Epic Games launcher; "
++                "do not claim a download started. "
++                if _store_name == "Epic Games"
++                else "and that installing needs their confirmation; do not claim a "
++                "download started. "
++            )
++            + "If installed is true, say it is installed; for an uninstall request "
++            "say it is installed and that uninstalling is done from the "
++            f"{_store_name} client — never say it was uninstalled, removed or "
++            "deleted, never say something failed or could not be done, and say "
++            "nothing about opening or not opening anything. Name the game as the "
++            "person named it, in one or two sentences, in the person's language."
+         )
+     if (
+         situation.get("operation") == "window.close.all"
+@@ -8021,6 +8034,29 @@ def compose_visible_defect(
+             "",
+             _accent_folded_with_punctuation(failure_assertions),
+         )
++    if (
++        kind == "operation"
++        and situation.get("operation") == "game.entitlement.named"
++        and polarity == "success"
++        and situation.get("verified") is True
++        and situation.get("succeeded") is True
++        and (
++            # H0578 «desinstalá Fortnite de Epic Games» → «Fortnite ya está
++            # desinstalado… lo eliminé correctamente»: the library read never
++            # installs, downloads or removes anything; a draft that says it did
++            # (or that an installed game is gone) invents the effect.
++            re.search(
++                r"\b(?:lo\s+|la\s+|se\s+)?(?:desinstal(?:[eé]|ado|ada|amos|aste)|elimin(?:[eé]|ado|ada|amos|aste)|borr(?:[eé]|ado|ada|amos|aste)|quit(?:[eé]|ado|ada|aste)|"
++                r"uninstalled|removed|deleted)\b|"
++                r"\b(?:lo\s+|la\s+|se\s+)?(?:instal(?:[eé]|amos|aste)|descargu(?:[eé]|amos)|descargaste|baj(?:[eé]|amos|aste))\b|"
++                r"\b(?:i|we)\s+(?:have\s+)?(?:installed|downloaded|uninstalled|removed)\b|"
++                r"\b(?:se\s+(?:instal[oó]|descarg[oó]|desinstal[oó])|(?:has|have)\s+been\s+(?:installed|downloaded|uninstalled))\b",
++                _accent_folded_with_punctuation(stripped),
++            )
++            is not None
++        )
++    ):
++        return "extra_claim"
+     if (
+         kind == "operation"
+         and situation.get("operation") == "game.entitlement.named"

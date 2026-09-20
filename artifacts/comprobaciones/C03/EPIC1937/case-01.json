@@ -1,0 +1,24 @@
+{
+  "index": 1,
+  "case_id": "epic1937-dev-01",
+  "terminal_kind": "published_final",
+  "final_sha256": "6035bb2025c96a9c6ed6f9bd3813a19e5ecde2dd3c059b37cce79195e8c5eb7e",
+  "clients_absent_before": true,
+  "verdict": "passed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 17.5,
+    "gpu_peak_mib": 3490.9296875,
+    "ram_peak_mib": 1623.80078125,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-epic1937-instrument-v1\\results\\case-01\\EXIT.json": "a31f5b14985b0303adeece11794a4c1dd442bc7766c51fabcc1b2d5e3ba3292b",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-epic1937-instrument-v1\\results\\case-01\\RESOURCES.json": "dc0fe41c1aa88b5bbdfdca938fbcfe30ea43cf70938fbabfa523acdb7de98198",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-epic1937-instrument-v1\\private\\run-01\\case-observations.json": "b7021bf123dfcf205d41372d698cfe6e171c48fd4c9aa3e66f6187a74abe9b88"
+  }
+}

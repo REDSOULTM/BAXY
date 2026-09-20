@@ -1,0 +1,78 @@
+{
+  "schema": "epic1937-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-epic1937-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-epic1937-instrument-v1",
+  "seal_sha256": "dc1a37d29c5aabcc8dd48f4b7e8241cdc7f0351881be8f08c555a222bffd98d5",
+  "runner_sha256": "bf6a5309869f0a80fc43f0afe4732189a46d259840d7cafd4213f8defbcb3c59",
+  "transport_seal_sha256": "cfbe4a7f31adedce7e57aa4c457ebb3e0e579390a308bc5528d8e83b4eb26919",
+  "files": {
+    "panel.json": "1382301e88416c864b1151788c701326300b853d4923dc6489f86cfc17c1635d",
+    "turns.jsonl": "04a0ae0a5e457840c2c095ce64e2b67023c5859127ba25f7177d5037365d1efc",
+    "case-map.json": "c4e82c23320cabca9abbcf1bf507b4f54b4eeae153998731186d495660868012",
+    "PLAN.md": "7b8983dae18d28d85e880102e4f4d02652072434f2ee4b691b18f9f90f3691bb"
+  },
+  "counts": {
+    "cases": 5,
+    "historical_literals": 1,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 10,
+    "session_controls": 5,
+    "ordinary_turns": 5,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 5,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0578",
+      "kind": "historical_literal",
+      "group": "epic_entitlement",
+      "credit_behavior": "epic_entitlement",
+      "text_sha256": "c9da05630956b80ca0603311b0b5610f8b82f1df00b1ca2f9ec49991c3cd012c",
+      "criterion_sha256": "2d1e7037adcf02ac9d60f6d7a149000d14f93c570689f6881c9c64c284e3b68c"
+    },
+    {
+      "index": 1,
+      "case_id": "epic1937-dev-01",
+      "kind": "original_development_variant",
+      "group": "epic_entitlement",
+      "credit_behavior": "epic_entitlement",
+      "text_sha256": "a706f8a5f85be926f4444ed9081d6d69a0d69ce6766a4bc955b41aca7359cede",
+      "criterion_sha256": "2d1e7037adcf02ac9d60f6d7a149000d14f93c570689f6881c9c64c284e3b68c"
+    },
+    {
+      "index": 2,
+      "case_id": "epic1937-dev-02",
+      "kind": "original_development_variant",
+      "group": "epic_entitlement",
+      "credit_behavior": "epic_entitlement",
+      "text_sha256": "cba892a0a3df1f3a1eece4238014455b735b5c44d284dad0f63e0241eed94134",
+      "criterion_sha256": "2d1e7037adcf02ac9d60f6d7a149000d14f93c570689f6881c9c64c284e3b68c"
+    },
+    {
+      "index": 3,
+      "case_id": "epic1937-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "089b78aadbb25d94121b11639399753035c6682d68d7fb184fb4f2240df17f09",
+      "criterion_sha256": "e062b77870f83820978fd802ae2490e919d13578196fef9c2216aa10447a3152"
+    },
+    {
+      "index": 4,
+      "case_id": "epic1937-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "f62d18fc4cba41ff26740a66f574ecd721f93af9f5a0464b1961f73f75533eaf",
+      "criterion_sha256": "a454b20b056a1525ef836ce6a69cfef864a30d7612da17248b8a13e0c033e733"
+    }
+  ]
+}

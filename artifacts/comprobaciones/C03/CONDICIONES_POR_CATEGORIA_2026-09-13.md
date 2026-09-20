@@ -1654,3 +1654,7 @@ Navegación y búsqueda web pasa de 45/46 a 46/46 con entrar en un sitio nombrad
 ## Actualización 2026-09-20 (APIID1935)
 
 Bibliotecas y fichas de juegos pasa de 5/6 a 6/6 con buscar el dato en internet diciendo que no uso la API que la persona nombro y nombrando las paginas que lo traen (commit ec826bbe, BUILD1935) (HEAD ec826bbe): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. Los tres casos del grupo hicieron exactamente una web.search completada y verificada con lo pedido como consulta (sin la directiva de la API) y publicaron un final que dice que no usó la API y nombra las páginas encontradas por título y sitio (SteamDB con el App ID en el título, la tienda de Steam), sin afirmar nada que ninguna traiga; los límites con cero operaciones. Corrida sobre BUILD1935 (HEAD ec826bb). La categoría queda cerrada.
+
+## Actualización 2026-09-20 (EPIC1937)
+
+Instalar y desinstalar software pasa de 30/31 a 31/31 con leer la biblioteca de Epic Games ante una descarga y decir el estado del juego (commit 896d647e, BUILD1937) (HEAD 896d647e): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. Los tres casos del grupo hicieron exactamente una game.entitlement.named con store=epic completada y verificada (biblioteca del lanzador de Epic Games: Fall Guys en la biblioteca y no instalado) y publicaron un final que dice ese estado y que la descarga se inicia desde el lanzador, sin inventar instalaciones ni descargas; los límites con cero operaciones. Corrida sobre BUILD1937 (HEAD 896d647). La categoría queda cerrada.
