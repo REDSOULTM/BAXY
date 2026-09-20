@@ -6107,6 +6107,11 @@ def _ground_explicit_arguments(
         "media.control",
         "media.play.query",
         "media.play.youtube",
+        # VIDEO1929 H0737 «quiero ver stranger things en nerflix»: el extractor
+        # conserva el título literal y aporta el único servicio del catálogo;
+        # exigir que «netflix» apareciera escrito tal cual tiraba esa lectura y
+        # el turno preguntaba en qué servicio, con el servicio delante.
+        "streaming.play.named",
         "system.process.list",
         "system.settings.adjust",
         "system.settings.set",
