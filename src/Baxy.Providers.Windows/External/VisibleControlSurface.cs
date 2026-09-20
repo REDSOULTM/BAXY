@@ -25,6 +25,16 @@ internal static partial class VisibleControlSurface
     {
         cancellationToken.ThrowIfCancellationRequested();
         nint hwnd = GetForegroundWindow();
+        // While a window is changing hands (an application was just brought to
+        // the front) the foreground is briefly nobody's: wait a little, then
+        // take the topmost foreign window rather than answering «no window».
+        for (int attempt = 0; hwnd == 0 && attempt < 6; attempt++)
+        {
+            await Task.Delay(200, cancellationToken).ConfigureAwait(false);
+            hwnd = GetForegroundWindow();
+        }
+        if (hwnd == 0)
+            hwnd = TopmostForeignWindow();
         if (hwnd == 0)
             return 0;
         // UI1395: a freshly launched UWP app is fronted by its CoreWindow

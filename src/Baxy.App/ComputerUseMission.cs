@@ -269,13 +269,16 @@ internal static class ComputerUseMission
             state["elapsedMs"] = alreadyElapsed + stopwatch.ElapsedMilliseconds;
             ShellTraceSink.Record(ShellTraceScopes.Turn, traceId, "computer.use.step",
                 $"step.{steps.Count}.{ShellTrace.SanitizeLabel(decision.Operation)}.ok.{(bool?)record["ok"] == true}");
-            // The window redraws after the act, not during it.
-            await Task.Delay(400, cancellationToken).ConfigureAwait(true);
+            // The window redraws after the act, not during it; an application
+            // brought to the front needs a moment more before its window owns
+            // the foreground (measured: GetForegroundWindow returned nothing
+            // right after app.open on the Calculator).
+            await Task.Delay(decision.Operation == "app.open" ? 1200 : 400, cancellationToken).ConfigureAwait(true);
         }
 
         _ = context.MarkResolved(context.Registry, missionPrepared);
         state["elapsedMs"] = alreadyElapsed + stopwatch.ElapsedMilliseconds;
-        JsonObject observed = Observed(state, steps, reached, satisfiedBy, evidence, errorCode);
+        JsonObject observed = Observed(state, steps, reached, satisfiedBy, evidence, errorCode, lastView);
         if (reached && context.Procedures is not null)
         {
             observed["procedure"] = context.Procedures.Learn(state, steps);
@@ -480,7 +483,8 @@ internal static class ComputerUseMission
     };
 
     private static JsonObject Observed(
-        JsonObject state, JsonArray steps, bool reached, string? satisfiedBy, string? evidence, string? errorCode)
+        JsonObject state, JsonArray steps, bool reached, string? satisfiedBy, string? evidence, string? errorCode,
+        JsonObject? lastView)
     {
         var observed = new JsonObject
         {
@@ -501,6 +505,11 @@ internal static class ComputerUseMission
             observed["satisfiedBy"] = satisfiedBy;
         }
 
+        if (lastView is not null)
+        {
+            observed["screen"] = ScreenExcerpt(lastView);
+        }
+
         if (evidence is not null)
         {
             observed["evidence"] = evidence;
@@ -512,6 +521,62 @@ internal static class ComputerUseMission
         }
 
         return observed;
+    }
+
+    // What was on the screen when the mission ended, for the final to quote:
+    // the controls that carry a value (a display, a field) and a few lines.
+    private static JsonObject ScreenExcerpt(JsonObject view)
+    {
+        var values = new JsonArray();
+        if (view["controls"] is JsonArray controls)
+        {
+            foreach (JsonNode? node in controls)
+            {
+                if (node is JsonObject control && (string?)control["value"] is { Length: > 0 } value && values.Count < 5)
+                {
+                    values.Add((JsonNode?)new JsonObject
+                    {
+                        ["name"] = (string?)control["name"],
+                        ["value"] = value.Length > 80 ? value[..80] : value,
+                    });
+                }
+            }
+        }
+
+        var lines = new JsonArray();
+        if (view["text"] is JsonObject text)
+        {
+            foreach (string zone in new[] { "T", "C", "TL", "TR", "L", "R", "B", "BL", "BR" })
+            {
+                if (text[zone] is not JsonArray zoneLines)
+                {
+                    continue;
+                }
+
+                foreach (JsonNode? line in zoneLines)
+                {
+                    if (lines.Count >= 6)
+                    {
+                        break;
+                    }
+
+                    lines.Add((JsonNode?)JsonValue.Create((string?)line ?? string.Empty));
+                }
+            }
+        }
+
+        var excerpt = new JsonObject { ["title"] = (string?)view["window"]?["title"] };
+        if (values.Count > 0)
+        {
+            excerpt["values"] = values;
+        }
+
+        if (lines.Count > 0)
+        {
+            excerpt["lines"] = lines;
+        }
+
+        return excerpt;
     }
 
     private static OperationResponse Synthesize(
@@ -988,7 +1053,7 @@ internal sealed class ComputerUseProcedures
     {
         string folded = ComputerUseSuccessCheck.Fold(goal);
         folded = System.Text.RegularExpressions.Regex.Replace(
-            folded, @"^(?:por favor\s+|please\s+|baxy[,\s]+)+", string.Empty);
+            folded, @"^(?:(?:por favor|please|baxy)[,\s]+)+", string.Empty);
         return folded.Trim(' ', '.', '!', '?');
     }
 

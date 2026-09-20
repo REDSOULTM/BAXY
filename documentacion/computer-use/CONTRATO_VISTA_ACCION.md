@@ -229,7 +229,15 @@ Presupuesto de tiempo fijo: 90 s de misión; cada vista ≤ 30 s, cada primitiva
 2. **Recordar.** Si hay un procedimiento guardado para `(application, goal normalizado)`
    (§5), se ejecuta su siguiente paso sin modelo; si su verificación falla o la vista no
    trae lo que el paso espera, se abandona el procedimiento y se pasa al modelo.
-3. **Decidir.** `computer.use.step` a la mente (§4.4): un paso, JSON estricto, temperatura 0.
+3. **Decidir.** `computer.use.step` a la mente (§4.4). Primero lo que el objetivo dicta sin
+   modelo (`computer_use.deterministic_step`): la aplicación pedida no está delante →
+   `app.open`; «apretar <tecla>» → esa tecla; «calcular <expr>» → escribir la expresión y
+   Enter; «escribir <texto>» → escribirlo; «ir a / hacer clic en <X>» → clic en el control
+   que se llama X si está en la vista; «activar/desactivar <X>» → clic en ese control si su
+   estado no es ya el pedido; «cerrar todas las pestañas» → `ctrl_w` mientras haya más de
+   una `TabItem`. Un paso que acaba de fallar nunca se repite: lo que sigue lo decide el
+   modelo, con JSON estricto y temperatura 0 (medido en la Calculadora: el modelo pulsando
+   dígito a dígito agotó los 90 s; con el paso dictado la misión son dos pasos).
 4. **Actuar.** La primitiva va al Kernel como operación con sus argumentos; el Kernel
    autoriza (§2.1), el provider ejecuta y verifica.
 5. **Registrar.** El paso queda en la misión con `{operation, args, ok, error, changed,
@@ -357,12 +365,16 @@ de plan:
   "window": {"title": "Steam", "process": "steamwebhelper"},
   "joined": false,                 // sólo cuando un paso fue un canal de voz confirmado
   "evidence": "Biblioteca",
+  "screen": {"title": "Steam", "values": [{"name": "Pantalla", "value": "La pantalla muestra 84"}], "lines": ["12 × 7 =", "84"]},
   "elapsedMs": 6100,
   "modelMs": 2400,
   "procedure": "replayed|learned|none",
   "authority": "shell_loop_over_uia_ocr_postread"
 }
 ```
+
+`screen` es lo que la ventana mostraba al terminar (valores de sus campos y unas líneas): el
+final cita un valor o una línea cuando responde al objetivo (la pantalla de la calculadora).
 
 Vetos del compositor (mente): `joined_claimed` invertido (decir «entré al canal» sin
 `seen.joined`, o negarlo con `seen.joined: true`), pasado falso («ayer», «la semana

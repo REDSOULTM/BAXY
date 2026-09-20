@@ -321,7 +321,10 @@ STEP_PROMPT = (
     "ya se ve cumplido devolvé done con la evidencia literal; si el último paso falló, elegí otro "
     "control o otro acto, nunca el mismo; para escribir texto primero hace falta un campo enfocado; "
     "nunca escribas en un campo de contraseña; para enviar un mensaje o entrar a un canal de voz "
-    "usá click en el control que lo nombra. why: una frase corta."
+    "usá click en el control que lo nombra. Para escribir números, una expresión o un texto usá "
+    "type con el texto completo (no clics dígito a dígito) y después key enter si hace falta. "
+    "Si el destino no está en la vista, buscá un campo de búsqueda (click) o abrí el buscador "
+    "con key ctrl_k o ctrl_f, escribí el nombre y elegí el resultado. why: una frase corta."
 )
 
 _STEP_SCHEMA = {
@@ -537,6 +540,88 @@ def application_is_in_front(view: dict, application: str | None) -> bool:
     return any(token in haystack for token in tokens) if tokens else fold(application) in haystack
 
 
+_CALC_TRANSLATE = str.maketrans({"×": "*", "x": "*", "X": "*", "÷": "/", "−": "-", ",": "."})
+
+
+def _expression_for_typing(expression: str) -> str:
+    return "".join(expression.translate(_CALC_TRANSLATE).split())
+
+
+def _steps_ok(history: list[dict], operation: str, **match: str) -> list[dict]:
+    found = []
+    for step in history:
+        if step.get("operation") != operation or step.get("ok") is not True:
+            continue
+        if all(fold(step.get(key)) == fold(value) for key, value in match.items()):
+            found.append(step)
+    return found
+
+
+def deterministic_step(
+    *,
+    goal: str,
+    view: dict,
+    history: list[dict],
+) -> dict[str, object] | None:
+    """The step the goal itself dictates when the view shows it (contract §4.2):
+    a key to press, a text or an expression to type, a named control to click
+    or to switch, a tab to close while more than one is open. No model, no
+    application knowledge; anything else, or a step that just failed, goes to
+    the model."""
+
+    folded_goal = fold(goal)
+    last = history[-1] if history and isinstance(history[-1], dict) else None
+    if last is not None and last.get("ok") is not True:
+        return None
+    reason = "el objetivo lo dice"
+    if folded_goal.startswith("apretar "):
+        key = _key_from_words(folded_goal[len("apretar "):])
+        if key is not None and not _steps_ok(history, "input.key.press", key=key):
+            arguments: dict[str, object] = {"key": key}
+            if key == "enter" and _composer_with_text(view):
+                arguments["target"] = "message_composer"
+            return {"operation": "input.key.press", "arguments": arguments, "reason": reason}
+        return None
+    if folded_goal.startswith("calcular "):
+        expression = _expression_for_typing(goal[len("calcular "):])
+        if not expression:
+            return None
+        if not _steps_ok(history, "input.text.type"):
+            return {"operation": "input.text.type", "arguments": {"text": expression}, "reason": reason}
+        if not _steps_ok(history, "input.key.press", key="enter"):
+            return {"operation": "input.key.press", "arguments": {"key": "enter"}, "reason": reason}
+        return None
+    if folded_goal.startswith("escribir "):
+        text = goal[len("escribir "):].strip()
+        if text and not _steps_ok(history, "input.text.type") and not _focused_is_password(view):
+            return {"operation": "input.text.type", "arguments": {"text": text}, "reason": reason}
+        return None
+    if folded_goal == "cerrar todas las pestanas":
+        tabs = 0
+        for control in view.get("controls") or []:
+            if isinstance(control, dict) and str(control.get("kind")) == "TabItem":
+                tabs += 1 + int(control.get("repeated") or 0)
+        if tabs > 1:
+            return {"operation": "input.key.press", "arguments": {"key": "ctrl_w"}, "reason": f"quedan {tabs} pestañas"}
+        return None
+    for head, wanted in (("ir a ", None), ("hacer clic en ", None), ("activar ", "on"), ("desactivar ", "off")):
+        if not folded_goal.startswith(head):
+            continue
+        target = re.sub(r"^(?:el|la|los|las|the|al|a\s+la|a\s+los|a\s+las)\s+", "", goal[len(head):].strip(), flags=re.IGNORECASE)
+        control = find_control(view, target)
+        if control is None:
+            return None
+        if wanted is not None and wanted in str(control.get("state") or "").split():
+            return None
+        if _steps_ok(history, "input.visible.click", label=str(control.get("name") or "")):
+            return None
+        arguments = {"label": str(control.get("name") or target)}
+        if isinstance(control.get("i"), int):
+            arguments["index"] = control["i"]
+        return {"operation": "input.visible.click", "arguments": arguments, "reason": reason}
+    return None
+
+
 def decide_step(
     llm: Any,
     *,
@@ -559,6 +644,9 @@ def decide_step(
         app_id = effect_intent.resolve_application_catalog_app_id(f"abre {application}", application_names)
         if app_id is not None:
             return {"operation": "app.open", "arguments": {"appId": app_id}, "reason": "la aplicación pedida no está delante"}
+    dictated = deterministic_step(goal=goal, view=view, history=history)
+    if dictated is not None:
+        return dictated
     last_failed = history[-1] if history and isinstance(history[-1], dict) and history[-1].get("ok") is False else None
     user = (
         f"Pedido: {objective}\nObjetivo: {goal}"
@@ -717,6 +805,8 @@ def project_seen(observed: dict, language: str) -> dict[str, object]:
         seen["evidence"] = observed.get("evidence")
     if observed.get("satisfiedBy"):
         seen["satisfiedBy"] = observed.get("satisfiedBy")
+    if isinstance(observed.get("screen"), dict):
+        seen["screen"] = observed.get("screen")
     if observed.get("stoppedBy"):
         seen["stoppedBy"] = observed.get("stoppedBy")
     if observed.get("procedure") in {"replayed", "learned", "relearned"}:
@@ -730,7 +820,8 @@ def compose_instruction(seen: dict, language: str) -> str:
         return (
             "This result is a computer-use mission that REACHED its goal: seen.goal is what was asked, "
             "seen.stepsDone the acts done in order (clicks, keys, typing) on the window seen.windowTitle, "
-            "seen.evidence the text on screen that proves it when present. Say in one or two sentences, in "
+            "seen.evidence the text on screen that proves it when present, seen.screen what the window showed "
+            "at the end (values of its fields and a few lines: quote a value or a line when it answers the goal). Say in one or two sentences, in "
             "the person's language and in the past tense, what you did and what you saw; quote seen.evidence "
             "exactly when it exists. seen.joined says whether a voice channel or call was joined: say you "
             "joined only if it is true. Never add steps, times or results that are not in seen."

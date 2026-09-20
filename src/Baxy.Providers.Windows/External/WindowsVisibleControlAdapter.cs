@@ -295,7 +295,7 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
 
             // One capture serves the colours, the written text and the surface
             // hash; a window without an accessible tree (CEF, SDL, canvas) is
-            // read from what is drawn, the case measured in Steam.
+            // read from what is drawn, the case measured in a game launcher (UI1731).
             VisibleControlSurface.CapturedWindow? captured = null;
             try
             {

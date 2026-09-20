@@ -247,3 +247,32 @@ def test_mission_vetoes() -> None:
     failed = computer_use.project_seen({**OBSERVED, "reached": False, "stoppedBy": "computer_use_no_step_visible"}, "es")
     assert computer_use.mission_defect("listo, ya estas en la biblioteca.", failed) == "reversed_polarity"
     assert computer_use.mission_defect("no pude llegar a la biblioteca: no encontre el control.", failed) is None
+
+
+# ------------------------------------------------------- pasos dictados
+
+
+def test_deterministic_steps_follow_the_goal_family_and_the_view() -> None:
+    calc = computer_use.deterministic_step(goal="calcular 12×7", view=VIEW, history=[])
+    assert calc == {"operation": "input.text.type", "arguments": {"text": "12*7"}, "reason": "el objetivo lo dice"}
+    typed = [{"step": 1, "operation": "input.text.type", "text": "12*7", "ok": True}]
+    assert computer_use.deterministic_step(goal="calcular 12×7", view=VIEW, history=typed)["arguments"] == {"key": "enter"}
+    entered = typed + [{"step": 2, "operation": "input.key.press", "key": "enter", "ok": True}]
+    assert computer_use.deterministic_step(goal="calcular 12×7", view=VIEW, history=entered) is None
+    key = computer_use.deterministic_step(goal="apretar enter", view=VIEW, history=[])
+    assert key == {"operation": "input.key.press", "arguments": {"key": "enter"}, "reason": "el objetivo lo dice"}
+    go = computer_use.deterministic_step(goal="ir a la biblioteca", view=VIEW, history=[])
+    assert go["operation"] == "input.visible.click" and go["arguments"] == {"label": "Biblioteca", "index": 1}
+    assert computer_use.deterministic_step(goal="ir a descargas", view=VIEW, history=[]) is None
+    # A failed last step hands the decision to the model.
+    failed = [{"step": 1, "operation": "input.visible.click", "label": "Biblioteca", "ok": False}]
+    assert computer_use.deterministic_step(goal="ir a la biblioteca", view=VIEW, history=failed) is None
+    toggle_view = {"window": {"title": "Configuración"}, "controls": [{"i": 4, "kind": "Button", "name": "Modo avión", "state": "off"}], "text": {}}
+    on = computer_use.deterministic_step(goal="activar modo avion", view=toggle_view, history=[])
+    assert on["arguments"] == {"label": "Modo avión", "index": 4}
+    already = {"window": {"title": "Configuración"}, "controls": [{"i": 4, "kind": "Button", "name": "Modo avión", "state": "on"}], "text": {}}
+    assert computer_use.deterministic_step(goal="activar modo avion", view=already, history=[]) is None
+    tabs_view = {"window": {"title": "Chrome"}, "controls": [{"i": 0, "kind": "TabItem", "name": "Nueva pestaña", "repeated": 2}], "text": {}}
+    assert computer_use.deterministic_step(goal="cerrar todas las pestañas", view=tabs_view, history=[])["arguments"] == {"key": "ctrl_w"}
+    one_tab = {"window": {"title": "Chrome"}, "controls": [{"i": 0, "kind": "TabItem", "name": "Nueva pestaña"}], "text": {}}
+    assert computer_use.deterministic_step(goal="cerrar todas las pestañas", view=one_tab, history=[]) is None
