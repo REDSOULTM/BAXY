@@ -33,8 +33,8 @@ public sealed class MvpExternalCatalogMatrixTests
         "wifi.scan",
     ];
 
-    // + weather.current y web.news.headlines (auditoría semántica REOPEN1993, grupos W y N).
-    private const int ExpectedExternalHandlers = 85 + 17 + 2;
+    // + weather.current, web.news.headlines y package.uninstall (auditoría semántica REOPEN1993, grupos W, N y G).
+    private const int ExpectedExternalHandlers = 85 + 17 + 3;
     private static readonly JsonSerializerOptions EvidenceJsonOptions = new()
     {
         WriteIndented = true,

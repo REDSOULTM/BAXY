@@ -1229,7 +1229,17 @@ public static class ProductCatalog
             OperationRisks.ReadOnly,
             "package.install.prepare.winget.selection.v1",
             ToolExposure.Public,
-            "Resuelve un paquete winget exacto y prepara una confirmación sin instalar."),
+            "Resuelve un paquete winget exacto, o el único paquete que lleva el nombre pedido, y prepara una confirmación sin instalar."),
+        // Auditoría semántica 2026-09-20 (REOPEN1993, grupo G): «desinstalá Discord»
+        // es una desinstalación real por el gestor de paquetes, verificada por su
+        // ausencia después; pierde lo instalado, así que confirma en modo normal.
+        Descriptor(
+            "package.uninstall",
+            Schema([String("packageId", maximumUtf8Bytes: 256, nonWhitespace: true)], ["packageId"]),
+            OperationRisks.WorkLoss,
+            "package.uninstall.winget.absence.postread.v1",
+            ToolExposure.Public,
+            "Desinstala mediante winget el paquete instalado que se nombra (por su id exacto o su nombre único) y verifica su ausencia en la lista de paquetes instalados."),
         Descriptor(
             "peripheral.list",
             Schema([String("kind", values:

@@ -116,6 +116,9 @@ internal static class Goal05CatalogObservation
                 or "software.python.package.status" or "notification.list" => Unverifiable(
                 descriptor,
                 "Lecturas de dispositivos, unidades, registro PEP 514, pip o Programador de tareas del usuario; verificadas en su tanda por doble lectura, no recorridas aquí para no inventariar la máquina del usuario."),
+            "package.uninstall" => Unverifiable(
+                descriptor,
+                "Desinstalaría por winget un paquete del usuario y verificaría su ausencia (REOPEN1993 grupo G); no restaurable desde esta sesión."),
             "web.news.headlines" => Unverifiable(
                 descriptor,
                 "Lectura de un canal RSS público de noticias (REOPEN1993 grupo N); esta matriz no sale a internet ni toma titulares ajenos como pass simulado."),

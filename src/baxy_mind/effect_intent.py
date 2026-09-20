@@ -2436,7 +2436,13 @@ def _curated_domain_is_grounded(
             )
             and not _has(folded, r"\b(?:como|how|tutorial|ejemplo|example)\b")
         )
+    if operation == "package.uninstall":
+        software = software_package_request(text, application_names)
+        return software is not None and software[0] == "uninstall"
     if operation == "package.install.prepare":
+        software = software_package_request(text, application_names)
+        if software is not None and software[0] == "install":
+            return True
         return (
             _spoken_package_id(folded) is not None
             and _has(
@@ -17162,6 +17168,49 @@ def installed_catalog_application_name(
     return None
 
 
+def software_package_request(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex,
+) -> tuple[str, str, bool] | None:
+    """REOPEN1993 grupo G: an install or uninstall of software by name
+    («instala Spotify», «instalá Photoshop», «desinstalá Discord») →
+    (verb, name as written, whether the Start catalog holds it). Games named
+    with their store and Python packages keep their own readers; a name the
+    catalog does not hold and that is not known software abstains."""
+
+    folded = _strip_request_envelope(_fold(text)).strip().rstrip(".!?").strip()
+    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(folded):
+        return None
+    if _has(folded, r"\b(?:pip|steam|epic|juego|game|python)\b|https?://"):
+        return None
+    match = re.fullmatch(
+        rf"[¿?¡!\s]*(?:(?:necesito|quiero|quisiera|podes|podrias|puedes|can\s+you|could\s+you|please)\s+(?:que\s+)?)?"
+        rf"(?:me\s+)?(?P<verb>{_CATALOG_INSTALL_VERB})\s+(?:(?:el|la|the|a)\s+)?(?:(?:app|aplicacion|programa|application)\s+)?"
+        r"(?P<name>[a-z0-9][a-z0-9 .+'&-]{0,60}?)"
+        r"(?:[\s,]+(?:por\s+favor|please|ahora|now|de\s+nuevo|again))?",
+        folded,
+    )
+    if match is None:
+        return None
+    verb = "uninstall" if match.group("verb").startswith(("desinstal", "uninstall")) else "install"
+    name = match.group("name").strip()
+    if not name or re.fullmatch(r"(?:todo|todos|todas|eso|esto|aquello|algo|nada|lo|la|el|it|this|that|everything|all)", name):
+        return None
+    catalog_name = resolve_application_catalog_app_id("abre " + name, application_names)
+    in_catalog = catalog_name is not None
+    known = re.fullmatch(_KNOWN_SOFTWARE, name) is not None
+    plain = re.fullmatch(r"[a-z0-9][a-z0-9'+-]*(?:\s+[a-z0-9][a-z0-9'+-]*){0,3}", name) is not None and not _has(
+        name, r"\b(?:programas?|aplicaciones?|apps?|juegos?|cosas?|archivos?|programs?|applications?|games?|files?)\b",
+    )
+    if not (in_catalog or known or plain):
+        return None
+    raw = str(text)
+    folded_raw = _fold(raw)
+    position = folded_raw.find(name) if len(folded_raw) == len(raw) else -1
+    written = raw[position:position + len(name)] if position >= 0 else name
+    return (verb, catalog_name if in_catalog else written, in_catalog)
+
+
 def installed_game_title(text: str) -> str | None:
     """Read the game named by an installed question («dime si X ya está instalado»).
 
@@ -18559,6 +18608,18 @@ def resolve_explicit_effects(
         # the install effect itself needs an entitlement and a confirmation,
         # and most such requests name games the library does not hold.
         return EffectIntent(("game.entitlement.named",), (text,))
+    software = software_package_request(text, authenticated_applications)
+    if software is not None:
+        # REOPEN1993 grupo G: software is installed and removed by the Windows
+        # package manager. Installing what the Start catalog already holds is
+        # answered by its presence (INSTALL1625); removing it is a real
+        # uninstall; installing what is absent resolves the package and
+        # installs it, or says winget does not offer it.
+        verb, _name, in_catalog = software
+        if verb == "uninstall" and in_catalog and "package.uninstall" in available:
+            return EffectIntent(("package.uninstall",), (text,))
+        if verb == "install" and not in_catalog and {"package.install.prepare", "package.install.commit"} <= available:
+            return EffectIntent(("package.install.prepare", "package.install.commit"), (text, text))
     if (
         "app.installed" in available
         and installed_catalog_application_name(text, authenticated_applications) is not None

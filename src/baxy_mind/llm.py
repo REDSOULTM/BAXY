@@ -3544,6 +3544,34 @@ _CAUSE_FACT = {
     "visible_button_not_found": (
         "nothing on the screen is called that, so nothing was pressed"
     ),
+    # REOPEN1993 grupo G: the package manager names its own absences.
+    "winget_package_not_resolved": (
+        "the Windows package manager (winget) offers no package by exactly that name, so nothing was installed"
+    ),
+    "winget_package_ambiguous": (
+        "the Windows package manager (winget) offers several packages by that name, so none was chosen and nothing was installed"
+    ),
+    "winget_package_not_installed": (
+        "no installed package has that name, so nothing was removed"
+    ),
+    "winget_install_not_verified": (
+        "the installer finished but the package is not in the installed list, so the installation is not confirmed"
+    ),
+    "winget_uninstall_not_verified": (
+        "the uninstaller finished but the package is still in the installed list, so the removal is not confirmed"
+    ),
+    "winget_install_not_started": (
+        "the installer could not be started, so nothing was installed"
+    ),
+    "winget_uninstall_not_started": (
+        "the uninstaller could not be started, so nothing was removed"
+    ),
+    "winget_confirmation_not_prepared": (
+        "the installation was not prepared, so nothing was installed"
+    ),
+    "winget_adapter_unavailable": (
+        "the Windows package manager (winget) is not available on this PC, so nothing was installed or removed"
+    ),
     # REOPEN1993 grupo N: the headlines feed names its own absences.
     "news_feed_unavailable": (
         "the news feed did not answer, so no headlines were read"
@@ -6304,6 +6332,27 @@ def _news_fact_defect(text: str, payload: dict) -> str:
     return ""
 
 
+def _package_fact_defect(text: str, payload: dict) -> str:
+    """REOPEN1993 grupo G: the reply names the package and does not claim a
+    finished install or removal while the process is still running."""
+
+    operation = payload.get("operation")
+    seen = payload.get("seen")
+    if operation not in {"package.install.commit", "package.uninstall"} or not isinstance(seen, dict):
+        return ""
+    name = seen.get("name")
+    folded_text = _reading_fold(text)
+    if isinstance(name, str) and name.strip() and _reading_fold(name) not in folded_text:
+        return "missing_state"
+    running = seen.get("installing") is True or seen.get("uninstalling") is True
+    if running and re.search(
+        r"\b(?:instal(?:e|ado|ada)|desinstal(?:e|ado|ada)|quit(?:e|ado|ada)|elimin(?:e|ado|ada)|removed|installed|uninstalled)\b",
+        folded_text,
+    ) and not re.search(r"\b(?:sigue|todavia|aun|still|empez|comenz|started|running|corriendo|en curso|en marcha)\b", folded_text):
+        return "extra_claim"
+    return ""
+
+
 def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     """El texto público conserva los hechos que el payload le dio.
 
@@ -6630,6 +6679,9 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     news_defect = _news_fact_defect(text, payload)
     if news_defect:
         return news_defect
+    package_defect = _package_fact_defect(text, payload)
+    if package_defect:
+        return package_defect
     if (
         payload.get("operation") == "system.power"
         and isinstance(seen, dict)
@@ -15594,6 +15646,41 @@ class LlmRuntime:
                 "en una oración, la operación y su resultado tal como se muestra (por "
                 "ejemplo que seis por siete da 42 en la Calculadora), usando sólo esos "
                 "números; no se hizo nada más."
+            )
+        if (
+            visible_situation.get("operation") == "package.uninstall"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("removed"), bool)
+        ):
+            # REOPEN1993 grupo G: a real uninstall through winget; the reply names
+            # the package and says whether it is already gone or still being removed.
+            instruct(
+                "\nseen.name is the package that was uninstalled through the Windows package "
+                "manager; seen.removed true means it is no longer in the installed list, "
+                "seen.uninstalling true means the uninstaller is still running. Say which it "
+                "is, naming the package, in one short sentence; no version numbers unless asked."
+                if response_language == "en"
+                else "\nseen.name es el paquete desinstalado por el gestor de paquetes de Windows; "
+                "seen.removed true significa que ya no está en la lista de instalados, "
+                "seen.uninstalling true que el desinstalador sigue corriendo. Di cuál de las "
+                "dos, nombrando el paquete, en una oración corta; sin versiones salvo que las pidan."
+            )
+        if (
+            visible_situation.get("operation") == "package.install.commit"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("installed"), bool)
+        ):
+            # REOPEN1993 grupo G: a real install through winget.
+            instruct(
+                "\nseen.name is the package installed through the Windows package manager; "
+                "seen.installed true means it is now in the installed list, seen.installing "
+                "true means the installer is still running. Say which it is, naming the "
+                "package, in one short sentence."
+                if response_language == "en"
+                else "\nseen.name es el paquete instalado por el gestor de paquetes de Windows; "
+                "seen.installed true significa que ya está en la lista de instalados, "
+                "seen.installing true que el instalador sigue corriendo. Di cuál de las dos, "
+                "nombrando el paquete, en una oración corta."
             )
         if (
             visible_situation.get("operation") == "system.power"

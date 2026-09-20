@@ -75,6 +75,7 @@ internal static class ExternalCapabilityHandlers
         "ocr.read",
         "package.install.commit",
         "package.install.prepare",
+        "package.uninstall",
         "peripheral.list",
         "peripheral.print",
         "peripheral.scan",

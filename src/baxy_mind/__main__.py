@@ -5970,6 +5970,16 @@ def _explicit_arguments_from_evidence(
         if effect_intent._weather_lookup_query(evidence) is not None:
             return {"location": effect_intent._weather_location(evidence)}
 
+    if operation in {"package.install.prepare", "package.uninstall"}:
+        software = effect_intent.software_package_request(evidence, application_names)
+        if software is not None and (
+            (operation == "package.uninstall") == (software[0] == "uninstall")
+        ):
+            # REOPEN1993 grupo G: the package is the name as the person wrote
+            # it (or the catalog name when the catalog holds it); winget
+            # resolves the exact id.
+            return {"packageId": software[1]} if operation == "package.uninstall" else {"packageId": software[1], "version": None}
+
     if operation == "web.news.headlines":
         if effect_intent._news_headlines_request(evidence):
             return {"topic": effect_intent._news_topic(evidence), "limit": 5}
@@ -6294,6 +6304,12 @@ def _ground_explicit_arguments(
         "message.draft",
         "message.send.test",
         "game.launch",
+        # REOPEN1993 grupo G/N/W: the readers own the package name (catalog
+        # name or the person's), the news topic and the weather place.
+        "package.install.prepare",
+        "package.uninstall",
+        "web.news.headlines",
+        "weather.current",
         "media.control",
         "media.play.query",
         "media.play.youtube",
