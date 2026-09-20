@@ -3387,6 +3387,21 @@ def known_unsupported_effect_request(
             client_navigation_target(folded) is not None,
             {"input.visible.click"},
         ),
+        (
+            # H0510 «qué me escribió mamá», H0720 «leéme el último mensaje de
+            # Pedro» (owner, 2026-09-17 §5: reading private chats stays out;
+            # defer or honest limit): no operation reads what a named person
+            # wrote in a chat. The mail reader reads the latest mail of the
+            # test mailbox regardless of sender, so a request that names mail
+            # keeps that path; a chat client or no channel at all is this limit.
+            (
+                _has(folded, r"\b(?:que|what)\s+me\s+(?:escribi[oó]|escribieron|mand[oó]|mandaron|envi[oó]|enviaron|dijo|dijeron|puso|pusieron)\b"
+                             r"|\bwhat\s+did\s+\w+(?:\s+\w+)?\s+(?:write|send|say|text)\s+(?:to\s+)?me\b"
+                             r"|\b(?:lee|leeme|leer|leelo|leela|leelos|leelas|mostra|mostrame|muestra|muestrame|dime|decime|read|show)\b.{0,40}\b(?:mensajes?|messages?|chats?|dms?|texts?)\b.{0,30}\b(?:de|from|of)\s+\w+")
+                and not _has(folded, r"\b(?:correos?|mails?|e-?mails?|emails?|inbox|bandeja|gmail|outlook)\b")
+            ),
+            {"message.read.named"},
+        ),
     )
     return any(
         matched and not supported & available for matched, supported in contracts
