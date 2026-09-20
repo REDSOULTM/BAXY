@@ -1,0 +1,15 @@
+{
+  "schema": "c03-near1995-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Opus 5)",
+  "owner": "src/baxy_mind/effect_intent.py (near_single_open_candidate: one installed near name opens; two keep asking; session_single_alarm_rewrite, other_window_switch_request, deictic_look_request, deictic_text_to_type for the sibling rows) and src/baxy_mind/__main__.py (grounding of app.open/game.launch through the near name; session alarm selector; window.focus of the window behind the foreground; deictic look/text gates), on top of the NEAR1995 build.",
+  "patch": "artifacts/comprobaciones/C03/NEAR1995/SOURCE.patch",
+  "commits": [
+    "e5258858fb62a372c25d07be3bea6016f1c226cd"
+  ],
+  "build": "BUILD1995 (C03-repairs1995-build/BUILD_READY.json; mente)",
+  "cause_measured": "Un nombre de aplicación mal transcrito con un único candidato instalado terminaba en una pregunta en vez de abrirse.",
+  "change": "El único candidato instalado se abre y el final lo nombra; dos candidatos siguen preguntando cuál.",
+  "measurement": "NEAR1995: 6 aprobados de 8 (H0386 «Abre stea,» y H0522 «Sí, abre Ste.» abren Steam sin preguntar con dos variantes; H0227/H0398 «Steel» fallan por el empate con dos «Shell» del catálogo real); 2 créditos. Medición: cuatro casos con app.open de Steam completada y verificada (reutilizado, alreadyRunning) y finales que nombran Steam; dos literales «Steel» preguntaron por Google Cloud SDK Shell u OpenSSL Shell (defecto de desempate de la lectura, reparación pendiente); dos límites con cero operaciones.",
+  "credits": 2
+}

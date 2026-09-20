@@ -63,8 +63,9 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # not claim new audio acceptance.
 # C03 post-goal 2026-09-20 (Fase 1): pytest verde sin relajar; 5pm/volumen de app/envoltura social/investigar el propio equipo reparados en la mente.
 # C03 post-goal 2026-09-20 (Fase 1): pytest verde sin relajar; 5pm/volumen de app/envoltura social/investigar el propio equipo reparados en la mente.
+# REOPEN1993: lecturas de la mente (candidato único, alarma de la sesión, otra ventana, mirar la pantalla, ponle texto)
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "95b3e3cf3e56ac3bc4f883342cd5b1e2ce9a1cc4d77c6f6e4c7f35bdb226c235"
+    "605143e1456020c84aa644c24e5d1363c6deb178bb56e3233a043e24adcbac3f"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"

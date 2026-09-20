@@ -102,9 +102,10 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # C03 818 pins the process narration and metadata-vocabulary repairs. This is
 # current program identity only; V8 artifacts, arithmetic and verdict stay sealed.
 # C03 post-goal 2026-09-20 (Fase 1): pytest verde sin relajar; 5pm/volumen de app/envoltura social/investigar el propio equipo reparados en la mente.
+# REOPEN1993: lecturas de la mente (candidato único, alarma de la sesión, otra ventana, mirar la pantalla, ponle texto)
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "65ed4fc1adec32d184f4a19cfcf3de535538f17d6e0a5eb54fc2777dd349b8de"
+        "8d849b268b03a2f089b0ec5e57a18f5f4242409d0060b77e1fbd6df0f3e6c83a"
     ),
     "src/baxy_mind/llm.py": (
         "076c7e55cbe5d0a11d1ab05dfe47006ce737acdd4b25159354ffcbb83b03429f"
