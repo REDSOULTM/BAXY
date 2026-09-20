@@ -1,3 +1,15 @@
+## REOPEN1993 — estado vigente 2026-09-20T20:53:40.825299+00:00
+
+Reapertura por la auditoría semántica completa (D24; REOPEN1957/AUDITORIA_SEMANTICA.md): 56 filas positivas acreditadas con una pregunta donde el contexto era determinista (A, B, C, D: 18), un canal preguntado con destino único (E: 6), una búsqueda fallida (F: 2), clima sin clima (W: 12), noticias sin titulares (N: 3), instalar/desinstalar software leído como biblioteca de Steam (G: 7), Steam/Epic sin alcanzar (S: 4), «Windows no aceptó» el apagado/reinicio (P: 2) y wifi «de casa» sin preguntar ni aprender (H: 2) vuelven a abiertas: H0011, H0019, H0024, H0033, H0034, H0045, H0061, H0074, H0089, H0097, H0098, H0128, H0167, H0170, H0198, H0217, H0227, H0231, H0232, H0263, H0299, H0325, H0339, H0344, H0368, H0374, H0376, H0380, H0386, H0398, H0401, H0408, H0415, H0431, H0456, H0457, H0478, H0509, H0522, H0528, H0536, H0571, H0574, H0578, H0583, H0590, H0617, H0620, H0651, H0664, H0682, H0689, H0699, H0701, H0708, H0714. Ningún crédito nuevo; la evidencia previa queda en reopen_history.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 651/742 | 91 | 0 | >=626 | 18/35 |
+
+Procedencia de primeras altas: sin cambio (las altas ya otorgadas no se descuentan); la cobertura baja en 35. Por categoría: Abrir aplicaciones 48/54 (−4); Alarmas, recordatorios, tareas y agenda 37/38 (−1); Archivos y carpetas 29/32 (−2); Bibliotecas y fichas de juegos 5/6 (−1); Energía del sistema 1/3 (−2); Información web actual 3/17 (−14); Instalar y desinstalar software 2/31 (−11); Interacción dentro de aplicaciones 12/22 (−6); Mensajería 21/31 (−8); Navegación y búsqueda web 42/46 (−3); Organizar ventanas y pestañas 11/13 (−1); Pantalla, captura e interpretación visual 18/19 (−1); Red y Bluetooth 18/21 (−2).
+
+Siguiente acción (D24): corregir las lecturas de la mente por tandas selladas (A, B, H0097, H0701, E, F, H) con cien detrás; luego las herramientas tipadas sin motor (clima, noticias, winget, energía, steam://, zip, modo avión, comandos, fondo, PowerPoint, descarga web); las filas «requiere motor» (Discord canal/silenciar, pestañas, pulsar en apps, chats por OCR, botón rojo, misiones GUI) esperan la entrega de fable/computer-use-engine.
+
 ## REOPEN1957 — estado vigente 2026-09-20T20:16:13.282023+00:00
 
 Reapertura por decisión del dueño (artifacts/comprobaciones/C03/DECISIONES_DUENO_2026-09-20.md, D1 «la encuesta es la especificación» y D11): 35 filas positivas acreditadas como lectura de biblioteca (Steam: 20), límite conocido (pulsar en app, zip, modo avión, comandos, fondo, PowerPoint, imágenes: 11), parada honesta (canal de Discord: 2), cierre en el navegador propio (pestañas: 1) o límite honesto (leer chats: 2) vuelven a abiertas: H0039, H0048, H0049, H0069, H0077, H0083, H0107, H0118, H0175, H0188, H0245, H0272, H0290, H0295, H0345, H0382, H0387, H0390, H0396, H0434, H0444, H0459, H0482, H0510, H0542, H0566, H0608, H0612, H0636, H0643, H0659, H0671, H0680, H0720, H0721. Ningún crédito nuevo; la evidencia previa queda en reopen_history.
