@@ -239,7 +239,11 @@ Presupuesto de tiempo fijo: 90 s de misión; cada vista ≤ 30 s, cada primitiva
 ### 4.2 Una vuelta del bucle
 
 1. **Mirar.** `input.visible.controls {includeText: true}` (con `waitForLabel` cuando el
-   paso anterior esperaba una etiqueta). Si `successCheck` ya se cumple → fin.
+   paso anterior esperaba una etiqueta). La ventana es la del proceso que la misión ya
+   conoce (`processId`, tomado del `app.open` que hizo o de la primera vista cuyo título
+   nombró la aplicación) o, hasta entonces, la titulada como `application`; sin aplicación,
+   la del primer plano. Si `successCheck` ya se cumple → fin; si la vista trae
+   `window.coveredBy`, la misión para (`computer_use_window_covered`).
 2. **Recordar.** Si hay un procedimiento guardado para `(application, goal normalizado)`
    (§5), se ejecuta su siguiente paso sin modelo; si su verificación falla o la vista no
    trae lo que el paso espera, se abandona el procedimiento y se pasa al modelo.
