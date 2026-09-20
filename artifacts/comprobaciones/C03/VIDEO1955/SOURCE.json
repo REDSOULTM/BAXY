@@ -1,0 +1,15 @@
+{
+  "schema": "c03-video1955-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "no source change (measurement of the VIDEO1947 reading: streaming service spelled after the title, closed misspellings, fragment clause).",
+  "patch": "artifacts/comprobaciones/C03/VIDEO1955/SOURCE.patch",
+  "commits": [
+    "2a00565525798ef2cfd0e6bc2120a30a3a65bb7a"
+  ],
+  "build": "BUILD1955 (C03-repairs1955-build/BUILD_READY.json; sin cambio de codigo)",
+  "cause_measured": "Las transcripciones cortadas o mal oídas que nombran Disney+ sin título no tenían lectura; el modelo saludaba o inventaba.",
+  "change": "Ninguno en el código: se mide la lectura de VIDEO1947 sobre las cuatro filas.",
+  "measurement": "VIDEO1955: 8 ejecutados, 8 aprobados, 0 fallidos; 4 créditos. Las cuatro transcripciones cortadas o mal oídas que nombran Disney+ sin título preguntan qué ver, en su idioma, con cero operaciones; dos variantes hacen lo mismo y los límites no tocan nada. Cuatro literales acreditan con dos variantes aprobadas: 742/742 y las 35 categorías cerradas.",
+  "credits": 4
+}

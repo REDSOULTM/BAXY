@@ -1,3 +1,25 @@
+## VIDEO1955 — estado vigente 2026-09-20T14:33:44.346889+00:00
+
+Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 4 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 742/742 | 0 | 0 | >=626 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 622 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); VIDEO1955 añade 4. No se cuentan revalidaciones.
+
+Siguiente acción: VIDEO1955: 8 ejecutados, 8 aprobados, 0 fallidos, 4 créditos (índices [0, 1, 2, 3]). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/VIDEO1955/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 140.19 s acumulados; pico GPU 3492.93 MiB; pico RAM 1871.85 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 8; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque VIDEO1955 precedente. -->
+
 ## VIDEO1953 — estado vigente 2026-09-20T14:25:37.633722+00:00
 
 Parcial: 5 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.

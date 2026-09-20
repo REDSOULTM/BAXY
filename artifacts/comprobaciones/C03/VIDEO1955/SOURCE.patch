@@ -1,0 +1,1434 @@
+commit 2a00565525798ef2cfd0e6bc2120a30a3a65bb7a
+
+C03: «The Devil» en Disney+ acredita con la página recargada (VIDEO1953)
+
+Seis casos, cinco aprobados, uno fallido; 1 crédito (H0712). 738/742.
+Vídeo y series pasa de 21/26 a 22/26.
+
+Sobre BUILD1953 la fila y sus tres variantes reproducen: la raíz aprueba
+service=disney_plus y «The Devil», el buscador de Disney+ elige «El diablo
+viste a la moda 2», la ficha carga —o se recarga una vez si no termina de
+cargar— y el vídeo avanza. Tres finales nombran lo que de verdad se puso;
+el de la variante «reproduce The Devil en Disney Plus» abre con «No, no se
+puede reproducir "The Devil"», una negación inventada antes de decir lo
+que se reproduce, y se adjudica fallido sin que afecte al crédito (dos
+variantes aprobadas). Los dos límites no tocan nada.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/GoalC03.txt b/GoalC03.txt
+index f9ff8e967..221ca7e76 100644
+--- a/GoalC03.txt
++++ b/GoalC03.txt
+@@ -67,8 +67,8 @@ Trabaja autónomamente hasta el cierre demostrado del goal completo. No pares en
+ ## Estado de avance (Fable, 2026-09-13 04:20 local) — anexo del relevo, no altera las órdenes anteriores
+ 
+ - Relevo asumido como único escritor (RELEVO_ACTIVO.json con la identidad real de sesión); rama `codex/kiro-goal-c03`, `main` intacto; todo comprometido y empujado (último commit: ver HANDOFF.md).
+-- **Cobertura: 203 → 737/742 cubiertos, 5 abiertos, 0 NA; 34/35 categorías cerradas (Música 39/39, Instalar y desinstalar software 31/31, Navegación y búsqueda web 46/46, Archivos y carpetas 32/32, Entrada incompleta, ruido y control de diálogo 34/34, Mensajería 31/31, Abrir aplicaciones 54/54, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Interacción dentro de aplicaciones 22/22, Red y Bluetooth 21/21, Cerrar aplicaciones y ventanas 20/20, Pantalla, captura e interpretación visual 19/19, Conocimiento, razonamiento y creatividad verbal 37/37, Brillo y pantalla 17/17, Información web actual 17/17, Estado de hardware y sistema 40/40, Organizar ventanas y pestañas 13/13, Conversación social y ayuda general 31/31, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Bibliotecas y fichas de juegos 6/6, Contactos 5/5, Desarrollo y ejecución de comandos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Energía del sistema 3/3, Crear documentos y editar imágenes 2/2, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9); C03 formal 3/11.** Registro canónico SHA256 `5de7ed7328075a91ba357b61e2751990180b73948b0a350a3eb742a570ae020e`. Primeras altas 24 h ≥ 169.
+-- Tandas adjudicadas en este relevo: TIME1134 (papeleo), MESSAGING1136 adoptado, MESSAGING1140, NOTES1141/1142, BUILD1143, KNOWLEDGE1144/1149, IDENTITY1145/1146/1148, CONVERSATION1150/1152/1160, CLOCK1155/1156/1157/1159, NETWORK1161/1163/1165/1167, SYSTEM1169/1171/1173/1175/1177, KNOWLEDGE1179, SYSTEM1181, SYSTEM1183, TIME1185, TIME1187, TIME1189, TIME1191, TIME1193, TIME1195, TIME1197, TIME1199, NETWORK1201, NETWORK1203, FILES1205, WINDOWS1207, WINDOWS1209, WINDOWS1211, WINDOWS1213, CLOSE1215, CLOSE1217, CLOSE1219, CLOSE1221, CLOSE1223, CLOSE1225, CLOSE1227, ARRANGE1229, APPS1231, APPS1237, AUDIO1239, FILES1243, MEMORY1245, MEMORY1247, MEMORY1249, MEMORY1251, MEMORY1253, MEMORY1255, WEB1257, WEB1259, WEB1261, WEB1263, WEB1265, WEB1267, WEB1269, WEB1271, UI1275, DIALOGUE1277 (medición, 0 créditos), DIALOGUE1279, DIALOGUE1281, BRIGHT1283 (medición, 0 créditos), BRIGHT1285, BRIGHT1287, BRIGHT1289, WEB1291 (medición, 0 créditos), NETWORK1293, NETWORK1295, NETWORK1297, NETWORK1299, NETWORK1301, SYSTEM1303, SYSTEM1305, SYSTEM1307, NEGATIVE1309, NEGATIVE1311, PROCESS1313, WINDOWS1315, WINDOWS1317, BRIGHT1319, BRIGHT1321, IDENTITY1323, IDENTITY1325, IDENTITY1327, CLOCK1329, CLOCK1331, CLOCK1333, CLOCK1335, AGENDA1337, AGENDA1339, AGENDA1341, CONVERSATION1343, CONVERSATION1345, CONVERSATION1347, CONVERSATION1349, AUDIO1351, KNOWLEDGE1353, KNOWLEDGE1355, KNOWLEDGE1357, CLIPBOARD1359, CLIPBOARD1361, MESSAGING1363, MESSAGING1365, SYSTEM1367, CLOSE1369, CLOSE1371, UI1373, UI1377, AUDIO1375, AUDIO1379, AUDIO1381, APPS1383, APPS1387, APPS1391, UI1389, WINDOWS1385, UI1393, UI1395, UI1397, SCREEN1399, SCREEN1401, SCREEN1403, SCREEN1405, SCREEN1407, SCREEN1409, SCREEN1411, SCREEN1413, SCREEN1415, SCREEN1417, SCREEN1419, SCREEN1421, SCREEN1423, FILES1427, NEGATIVE1429, NEGATIVE1431, FILES1433, AGENDA1435, FILES1437, FILES1439, FILES1441, FILES1443, WEB1445, WEB1447, WEB1449, WEB1451, WEB1453, WEB1455, NETWORK1457, SYSTEM1459, AUDIO1461, AUDIO1463, WEB1465, WEB1467, WEB1471, KNOWLEDGE1473, KNOWLEDGE1475, WEB1477, WEB1479, WEB1481, WEB1483, SCREEN1485, DIALOGUE1487, DIALOGUE1489, DIALOGUE1491, BROWSER1493, APPS1495, APPS1497, APPS1499, MEMORY1501, MEMORY1503, KNOWLEDGE1505, KNOWLEDGE1507, KNOWLEDGE1509, KNOWLEDGE1511, DIALOGUE1513, DIALOGUE1515, DIALOGUE1517, DIALOGUE1519, DIALOGUE1521, KNOWLEDGE1523, KNOWLEDGE1525, KNOWLEDGE1527, KNOWLEDGE1529, GAMES1531, GAMES1533, APPS1535, WINDOWS1537, WEB1539, WEB1541, WEB1543, SYSTEM1545, SYSTEM1547, APPS1549, APPS1551, MUSIC1553, MUSIC1555, MUSIC1557, MUSIC1559, MUSIC1561, MUSIC1563, MUSIC1565, MUSIC1567, MUSIC1569, MUSIC1573, MUSIC1575, AUDIO1577, AUDIO1579, WINDOWS1581, MUSIC1583, CONVERSATION1585, FILES1587, FILES1589, FILES1591, MUSIC1593, MUSIC1595, MUSIC1597, MEMORY1599, MEMORY1601, FILES1603, FILES1605, APPS1607, APPS1609, APPS1611, APPS1613, CLOSE1615, INSTALL1619, INSTALL1621, INSTALL1623, INSTALL1625, INSTALL1627, INSTALL1629, INSTALL1631, INSTALL1633, UI1635, UI1637, UI1639, UI1641, UI1643, UI1645, UI1647, CLOSE1649, CLOSE1651, CLOSE1653, UI1655, UI1657, UI1659, UI1661, UI1663, LIMITS1665, LIMITS1667, AGENDA1669, APPS1671, APPS1673, MUSIC1675, LIMITS1677, LIMITS1679, LIMITS1681, REOPEN1685 (reapertura de 10 por decisión del dueño 2026-09-16), MINALL1687, REOPEN1689, PDF1691, PDF1693, WINDOWS1695, SYSTEM1697, LIMITS1699, LIMITS1701, LIMITS1703, FILES1707, FILES1709, FILES1711, FILES1713, VIDEO1715, VIDEO1717, VIDEO1719, NETWORK1721, NETWORK1723, UI1725, LIMITS1727, NETWORK1729, UI1731, CLOSEALL1733, UI1735, NETWORK1737, NETWORK1739, NETWORK1741, NETWORK1743, WEB1745, MUSIC1747, MUSIC1749, MUSIC1751, MUSIC1753, MUSIC1755, MUSIC1757, MUSIC1759, MUSIC1761, MUSIC1763, UI1765, UI1767, MUSIC1769, UI1771, MUSIC1773, UI1775, MUSIC1777, MUSIC1779, ARRANGE1781, ARRANGE1783, ARRANGE1785, AUDIO1787, AUDIO1789, AUDIO1791, AUDIO1793, AUDIO1795, AUDIO1797, AUDIO1799, AUDIO1801, WEB1803, WEB1805, SCREEN1807, SCREEN1809, SCREEN1811, MIC1813, MIC1815, PIP1817, PIP1819, PIP1821, USB1823, STEAM1825, MUSIC1827, MUSIC1829, WEB1831, KNOW1833, KNOW1835, DISCORD1839, CHROMETABS1843, MSGSEND1845, MSGSEND1847, MSGSEND1849, MSGCLAR1851, UNRES1855, MAIL1859, MAIL1863, MAIL1867, DISCORD1869, DISCORD1871, UNRES1873, UNRES1875, WEB1877, WEB1879, WEB1881, WEB1883, WEB1885, WEB1887, WEB1889, WEB1891, LIMITS1893, LIMITS1895, LIMITS1897, WEB1899, LIMITS1901, LIMITS1903, UI1907, LANG1909, UI1911, APPS1913, LIMITS1915, POWER1917, VIDEO1919, VIDEO1921, VIDEO1923, VIDEO1925, VIDEO1927, VIDEO1929, CHAIN1931, SITE1933, APIID1935, EPIC1937, CHATREAD1939, UNRES1941, PRIME1943, UNRES1945, VIDEO1947, VIDEO1949, VIDEO1951. Registro por campaña en artifacts/comprobaciones/C03/<CAMPAÑA>/ (ROOT_ADJUDICATION, SOURCE/APP_SOURCE con parche y medición).
++- **Cobertura: 203 → 738/742 cubiertos, 4 abiertos, 0 NA; 34/35 categorías cerradas (Música 39/39, Instalar y desinstalar software 31/31, Navegación y búsqueda web 46/46, Archivos y carpetas 32/32, Entrada incompleta, ruido y control de diálogo 34/34, Mensajería 31/31, Abrir aplicaciones 54/54, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Interacción dentro de aplicaciones 22/22, Red y Bluetooth 21/21, Cerrar aplicaciones y ventanas 20/20, Pantalla, captura e interpretación visual 19/19, Conocimiento, razonamiento y creatividad verbal 37/37, Brillo y pantalla 17/17, Información web actual 17/17, Estado de hardware y sistema 40/40, Organizar ventanas y pestañas 13/13, Conversación social y ayuda general 31/31, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Bibliotecas y fichas de juegos 6/6, Contactos 5/5, Desarrollo y ejecución de comandos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Energía del sistema 3/3, Crear documentos y editar imágenes 2/2, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9); C03 formal 3/11.** Registro canónico SHA256 `3b6034fbafd3288a2f2f6d12de9d8d99afcf6a486da32239e3bec91fe12c71c6`. Primeras altas 24 h ≥ 169.
++- Tandas adjudicadas en este relevo: TIME1134 (papeleo), MESSAGING1136 adoptado, MESSAGING1140, NOTES1141/1142, BUILD1143, KNOWLEDGE1144/1149, IDENTITY1145/1146/1148, CONVERSATION1150/1152/1160, CLOCK1155/1156/1157/1159, NETWORK1161/1163/1165/1167, SYSTEM1169/1171/1173/1175/1177, KNOWLEDGE1179, SYSTEM1181, SYSTEM1183, TIME1185, TIME1187, TIME1189, TIME1191, TIME1193, TIME1195, TIME1197, TIME1199, NETWORK1201, NETWORK1203, FILES1205, WINDOWS1207, WINDOWS1209, WINDOWS1211, WINDOWS1213, CLOSE1215, CLOSE1217, CLOSE1219, CLOSE1221, CLOSE1223, CLOSE1225, CLOSE1227, ARRANGE1229, APPS1231, APPS1237, AUDIO1239, FILES1243, MEMORY1245, MEMORY1247, MEMORY1249, MEMORY1251, MEMORY1253, MEMORY1255, WEB1257, WEB1259, WEB1261, WEB1263, WEB1265, WEB1267, WEB1269, WEB1271, UI1275, DIALOGUE1277 (medición, 0 créditos), DIALOGUE1279, DIALOGUE1281, BRIGHT1283 (medición, 0 créditos), BRIGHT1285, BRIGHT1287, BRIGHT1289, WEB1291 (medición, 0 créditos), NETWORK1293, NETWORK1295, NETWORK1297, NETWORK1299, NETWORK1301, SYSTEM1303, SYSTEM1305, SYSTEM1307, NEGATIVE1309, NEGATIVE1311, PROCESS1313, WINDOWS1315, WINDOWS1317, BRIGHT1319, BRIGHT1321, IDENTITY1323, IDENTITY1325, IDENTITY1327, CLOCK1329, CLOCK1331, CLOCK1333, CLOCK1335, AGENDA1337, AGENDA1339, AGENDA1341, CONVERSATION1343, CONVERSATION1345, CONVERSATION1347, CONVERSATION1349, AUDIO1351, KNOWLEDGE1353, KNOWLEDGE1355, KNOWLEDGE1357, CLIPBOARD1359, CLIPBOARD1361, MESSAGING1363, MESSAGING1365, SYSTEM1367, CLOSE1369, CLOSE1371, UI1373, UI1377, AUDIO1375, AUDIO1379, AUDIO1381, APPS1383, APPS1387, APPS1391, UI1389, WINDOWS1385, UI1393, UI1395, UI1397, SCREEN1399, SCREEN1401, SCREEN1403, SCREEN1405, SCREEN1407, SCREEN1409, SCREEN1411, SCREEN1413, SCREEN1415, SCREEN1417, SCREEN1419, SCREEN1421, SCREEN1423, FILES1427, NEGATIVE1429, NEGATIVE1431, FILES1433, AGENDA1435, FILES1437, FILES1439, FILES1441, FILES1443, WEB1445, WEB1447, WEB1449, WEB1451, WEB1453, WEB1455, NETWORK1457, SYSTEM1459, AUDIO1461, AUDIO1463, WEB1465, WEB1467, WEB1471, KNOWLEDGE1473, KNOWLEDGE1475, WEB1477, WEB1479, WEB1481, WEB1483, SCREEN1485, DIALOGUE1487, DIALOGUE1489, DIALOGUE1491, BROWSER1493, APPS1495, APPS1497, APPS1499, MEMORY1501, MEMORY1503, KNOWLEDGE1505, KNOWLEDGE1507, KNOWLEDGE1509, KNOWLEDGE1511, DIALOGUE1513, DIALOGUE1515, DIALOGUE1517, DIALOGUE1519, DIALOGUE1521, KNOWLEDGE1523, KNOWLEDGE1525, KNOWLEDGE1527, KNOWLEDGE1529, GAMES1531, GAMES1533, APPS1535, WINDOWS1537, WEB1539, WEB1541, WEB1543, SYSTEM1545, SYSTEM1547, APPS1549, APPS1551, MUSIC1553, MUSIC1555, MUSIC1557, MUSIC1559, MUSIC1561, MUSIC1563, MUSIC1565, MUSIC1567, MUSIC1569, MUSIC1573, MUSIC1575, AUDIO1577, AUDIO1579, WINDOWS1581, MUSIC1583, CONVERSATION1585, FILES1587, FILES1589, FILES1591, MUSIC1593, MUSIC1595, MUSIC1597, MEMORY1599, MEMORY1601, FILES1603, FILES1605, APPS1607, APPS1609, APPS1611, APPS1613, CLOSE1615, INSTALL1619, INSTALL1621, INSTALL1623, INSTALL1625, INSTALL1627, INSTALL1629, INSTALL1631, INSTALL1633, UI1635, UI1637, UI1639, UI1641, UI1643, UI1645, UI1647, CLOSE1649, CLOSE1651, CLOSE1653, UI1655, UI1657, UI1659, UI1661, UI1663, LIMITS1665, LIMITS1667, AGENDA1669, APPS1671, APPS1673, MUSIC1675, LIMITS1677, LIMITS1679, LIMITS1681, REOPEN1685 (reapertura de 10 por decisión del dueño 2026-09-16), MINALL1687, REOPEN1689, PDF1691, PDF1693, WINDOWS1695, SYSTEM1697, LIMITS1699, LIMITS1701, LIMITS1703, FILES1707, FILES1709, FILES1711, FILES1713, VIDEO1715, VIDEO1717, VIDEO1719, NETWORK1721, NETWORK1723, UI1725, LIMITS1727, NETWORK1729, UI1731, CLOSEALL1733, UI1735, NETWORK1737, NETWORK1739, NETWORK1741, NETWORK1743, WEB1745, MUSIC1747, MUSIC1749, MUSIC1751, MUSIC1753, MUSIC1755, MUSIC1757, MUSIC1759, MUSIC1761, MUSIC1763, UI1765, UI1767, MUSIC1769, UI1771, MUSIC1773, UI1775, MUSIC1777, MUSIC1779, ARRANGE1781, ARRANGE1783, ARRANGE1785, AUDIO1787, AUDIO1789, AUDIO1791, AUDIO1793, AUDIO1795, AUDIO1797, AUDIO1799, AUDIO1801, WEB1803, WEB1805, SCREEN1807, SCREEN1809, SCREEN1811, MIC1813, MIC1815, PIP1817, PIP1819, PIP1821, USB1823, STEAM1825, MUSIC1827, MUSIC1829, WEB1831, KNOW1833, KNOW1835, DISCORD1839, CHROMETABS1843, MSGSEND1845, MSGSEND1847, MSGSEND1849, MSGCLAR1851, UNRES1855, MAIL1859, MAIL1863, MAIL1867, DISCORD1869, DISCORD1871, UNRES1873, UNRES1875, WEB1877, WEB1879, WEB1881, WEB1883, WEB1885, WEB1887, WEB1889, WEB1891, LIMITS1893, LIMITS1895, LIMITS1897, WEB1899, LIMITS1901, LIMITS1903, UI1907, LANG1909, UI1911, APPS1913, LIMITS1915, POWER1917, VIDEO1919, VIDEO1921, VIDEO1923, VIDEO1925, VIDEO1927, VIDEO1929, CHAIN1931, SITE1933, APIID1935, EPIC1937, CHATREAD1939, UNRES1941, PRIME1943, UNRES1945, VIDEO1947, VIDEO1949, VIDEO1951, VIDEO1953. Registro por campaña en artifacts/comprobaciones/C03/<CAMPAÑA>/ (ROOT_ADJUDICATION, SOURCE/APP_SOURCE con parche y medición).
+ - Reparaciones causales adoptadas y medidas: notas (léxico), App palabra completa, prompt (SIEMPRE/idioma), voseo (lector y shell, BUILD1147), pregunta de recuperación publicada (BUILD1151), reloj (reconocedor y proyección de fecha; shell día/day, BUILD1158), wifi (dominio y validador de conectividad), GPU (scope), disco («espacio», elipsis nominal), claves de medidas total/free/used (autorizado), alarmas relativas al segundo entero publicado (decisión del dueño, TIME1139), duraciones compactas y «media hora», despertar como alarma, recordatorios con duración al inicio, alarmas y recordatorios con hora explícita, aclaraciones deterministas de agenda (hora imposible, aviso sin contenido), «contá N minutos», IP propia sin confirmación (BUILD1201, decisión del dueño), proveedor de carpetas conocidas para crear archivos y carpetas en escritorio/Documentos (BUILD1205, decisión del dueño, infraestructura ≥10 abiertos). Un validador retirado tras medir agotamiento (mislabeled_memory, 0e8edfec).
+ - Sin tests/dueñas/Fast/Full, por orden vigente: ningún criterio formal de validación se declara cumplido. Guardas intactas.
+ - Decisiones del dueño recibidas el 2026-09-13 (artifacts/comprobaciones/C03/DECISIONES_DUENO_2026-09-13.md): poder total en este PC, cierre de apps sin autorización por app, proveedor de carpetas conocidas, renombrado de claves de medidas, IP sin confirmación, TIME1139 a elección de raíz con obligación de cumplirlo, y saltar lo que exija sesiones ausentes (Netflix). Reanudación exacta en HANDOFF.md y CONDICIONES_POR_CATEGORIA_2026-09-13.md.
+diff --git a/artifacts/comprobaciones/C03/CHECKPOINT.md b/artifacts/comprobaciones/C03/CHECKPOINT.md
+index e8dc3aa65..845e683ec 100644
+--- a/artifacts/comprobaciones/C03/CHECKPOINT.md
++++ b/artifacts/comprobaciones/C03/CHECKPOINT.md
+@@ -1,3 +1,25 @@
++## VIDEO1953 — estado vigente 2026-09-20T14:25:37.633722+00:00
++
++Parcial: 5 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.
++
++| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
++|---:|---:|---:|---:|---:|
++| 738/742 | 4 | 0 | >=622 | 29/35 |
++
++Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 621 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); VIDEO1953 añade 1. No se cuentan revalidaciones.
++
++Siguiente acción: VIDEO1953: 6 ejecutados, 5 aprobados, 1 fallidos, 1 créditos (índices [0]). Siguiente: categoría por masa abierta según CONDICIONES.
++
++Evidencia: `artifacts/comprobaciones/C03/VIDEO1953/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
++
++Recursos de los segmentos: 170.84 s acumulados; pico GPU 3492.93 MiB; pico RAM 3943.36 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
++
++Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
++
++---
++
++<!-- Historial anterior conservado; rige el bloque VIDEO1953 precedente. -->
++
+ ## VIDEO1951 — estado vigente 2026-09-20T14:14:18.621899+00:00
+ 
+ Parcial: 9 aprobados, 1 fallidos, 0 sin ejecutar; 5 créditos.
+diff --git a/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md b/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md
+index 149d8aaea..501a63f21 100644
+--- a/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md
++++ b/artifacts/comprobaciones/C03/CONDICIONES_POR_CATEGORIA_2026-09-13.md
+@@ -1686,3 +1686,7 @@ Vídeo y series pasa de 16/26 a 16/26 con poner una serie nombrandola en Disney+
+ ## Actualización 2026-09-20 (VIDEO1951)
+ 
+ Vídeo y series pasa de 16/26 a 21/26 con poner una serie nombrandola en Disney+ prefiriendo la ficha de la obra a la coleccion (commit 5f1be4ed, BUILD1951) (HEAD 5f1be4ed): 10 ejecutados, 9 aprobados, 1 fallido, 5 créditos. «Daredevil» elige la ficha de la obra y no la de colección, y las dos variantes reproducen; H0712 falló porque la ficha elegida («El diablo viste a la moda 2») no terminó de cargar en el minuto del turno, con final honesto. Cinco literales acreditan con dos variantes aprobadas.
++
++## Actualización 2026-09-20 (VIDEO1953)
++
++Vídeo y series pasa de 21/26 a 22/26 con poner una serie nombrandola en Disney+ recargando una vez la pagina que no termina de cargar (commit 5801d5f7, BUILD1953) (HEAD 5801d5f7): 6 ejecutados, 5 aprobados, 1 fallido, 1 créditos. La fila y sus tres variantes reproducen «El diablo viste a la moda 2» con la ficha cargada o recargada una vez; una variante falla sólo por un final que abre con una negación inventada antes de nombrar lo que se reproduce. Un literal acredita con dos variantes aprobadas.
+diff --git a/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md b/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md
+index 732448edb..94f5b10ba 100644
+--- a/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md
++++ b/artifacts/comprobaciones/C03/CURRENT_CATEGORY_COUNTS.md
+@@ -1,4 +1,4 @@
+-# Categorías actuales — adjudicación VIDEO1951 (tras la reapertura REOPEN1685 por decisión del dueño)
++# Categorías actuales — adjudicación VIDEO1953 (tras la reapertura REOPEN1685 por decisión del dueño)
+ 
+ Corrección 2026-09-20 (raíz, tercera): la tabla y la lista de categorías cerradas se reconstruyen desde el registro canónico. Varias tandas habían sumado créditos a la etiqueta equivocada (LIMITS1893, tres filas de contactos, subió «Navegación y búsqueda web» de 45 a 48 sobre 46; la lista de cerradas la repetía), y nueve filas estaban desfasadas: Abrir aplicaciones 54/54, Audio y volumen 51/51, Información web actual 17/17, Conversación social y ayuda general 31/31, Hora y fecha 23/23, Contactos 5/5, Desarrollo y ejecución de comandos 5/5, Notas 12/12 y Navegación y búsqueda web 45/46. Los totales 723/742 no cambian; sólo el reparto por categoría. 29/35 categorías cerradas.
+ 
+@@ -6,7 +6,7 @@ Corrección 2026-09-17 (raíz, segunda): H0652 «subí el volumen de spotify» e
+ 
+ Corrección 2026-09-17 (raíz): H0052 «instala requests con pip» es software_installation en SURVEY_TAXONOMY846, es decir «Instalar y desinstalar software», no «Abrir aplicaciones»; las tandas PIP1817, PIP1819 y PIP1821 documentaron la categoría equivocada (sus textos next_action sellados la conservan) y las cuentas de esta tabla y de los documentos vivos quedan corregidas: Instalar y desinstalar software 27→28/31 (PIP1821), Abrir aplicaciones sigue 50/54.
+ 
+-737/742 cubiertos; 5 abiertos; 0 no aplican; 34/35 categorías cerradas (Música 39/39, Instalar y desinstalar software 31/31, Navegación y búsqueda web 46/46, Archivos y carpetas 32/32, Entrada incompleta, ruido y control de diálogo 34/34, Mensajería 31/31, Abrir aplicaciones 54/54, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Interacción dentro de aplicaciones 22/22, Red y Bluetooth 21/21, Cerrar aplicaciones y ventanas 20/20, Pantalla, captura e interpretación visual 19/19, Conocimiento, razonamiento y creatividad verbal 37/37, Brillo y pantalla 17/17, Información web actual 17/17, Estado de hardware y sistema 40/40, Organizar ventanas y pestañas 13/13, Conversación social y ayuda general 31/31, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Bibliotecas y fichas de juegos 6/6, Contactos 5/5, Desarrollo y ejecución de comandos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Energía del sistema 3/3, Crear documentos y editar imágenes 2/2, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9). Últimas 24 h: al menos 621 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337 + 1 en AGENDA1341 + 1 en CONVERSATION1343 + 1 en CONVERSATION1347 + 1 en CONVERSATION1349 + 2 en AUDIO1351 + 1 en KNOWLEDGE1353 + 1 en KNOWLEDGE1357 + 1 en CLIPBOARD1359 + 2 en CLIPBOARD1361 + 1 en MESSAGING1363 + 2 en MESSAGING1365 + 2 en SYSTEM1367 + 4 en CLOSE1371 + 1 en AUDIO1379 + 1 en AUDIO1381 + 1 en APPS1391 + 1 en UI1389 + 1 en WINDOWS1385 + 1 en UI1397 + 1 en SCREEN1401 + 3 en SCREEN1415 + 3 en SCREEN1419 + 5 en SCREEN1421 + 2 en SCREEN1423 + 4 en FILES1427 + 1 en NEGATIVE1429 + 1 en NEGATIVE1431 + 1 en FILES1433 + 1 en AGENDA1435 + 1 en FILES1443 + 3 en WEB1449 + 2 en WEB1451 + 1 en WEB1453 + 4 en WEB1455 + 2 en NETWORK1457 + 4 en SYSTEM1459 + 1 en AUDIO1461 + 1 en AUDIO1463 + 8 en WEB1465 + 2 en WEB1467 + 2 en WEB1471 + 2 en KNOWLEDGE1473 + 1 en KNOWLEDGE1475 + 2 en WEB1477 + 1 en WEB1479 + 2 en WEB1483 + 1 en SCREEN1485 + 1 en DIALOGUE1489 + 2 en DIALOGUE1491 + 1 en BROWSER1493 + 2 en APPS1497 + 3 en APPS1499 + 1 en MEMORY1503 + 3 en KNOWLEDGE1507 + 1 en KNOWLEDGE1511 + 7 en DIALOGUE1513 + 1 en DIALOGUE1515 + 1 en DIALOGUE1521 + 2 en KNOWLEDGE1523 + 2 en KNOWLEDGE1525 + 1 en KNOWLEDGE1529 + 1 en GAMES1531 + 1 en GAMES1533 + 2 en WINDOWS1537 + 2 en WEB1543 + 1 en SYSTEM1547 + 1 en APPS1551 + 2 en MUSIC1557 + 5 en MUSIC1569 + 5 en MUSIC1573 + 1 en MUSIC1575 + 1 en AUDIO1579 + 1 en WINDOWS1581 + 1 en MUSIC1583 + 1 en CONVERSATION1585 + 1 en FILES1589 + 1 en FILES1591 + 3 en MUSIC1593 + 1 en MUSIC1595 + 1 en MUSIC1597 + 2 en MEMORY1601 + 1 en FILES1605 + 2 en APPS1611 + 1 en APPS1613 + 15 en INSTALL1623 + 5 en INSTALL1625 + 3 en INSTALL1627 + 4 en INSTALL1629 + 1 en INSTALL1631 + 1 en INSTALL1633 + 1 en UI1637 + 1 en UI1639 + 1 en UI1641 + 1 en UI1643 + 1 en UI1647 + 2 en CLOSE1649 + 1 en CLOSE1653 + 4 en UI1657 + 2 en UI1663 + 2 en LIMITS1665 + 2 en LIMITS1667 + 2 en AGENDA1669 + 1 en APPS1673 + 1 en MUSIC1675 + 4 en LIMITS1677 + 5 en LIMITS1679 + 3 en LIMITS1681 + 2 en MINALL1687 + 1 en REOPEN1689 + 1 en PDF1693 + 1 en WINDOWS1695 + 1 en SYSTEM1697 + 1 en LIMITS1703 + 1 en FILES1713 + 1 en VIDEO1715 + 1 en VIDEO1719 + 3 en NETWORK1723 + 2 en UI1725 + 1 en LIMITS1727 + 1 en NETWORK1729 + 1 en UI1731 + 2 en CLOSEALL1733 + 1 en NETWORK1737 + 1 en WEB1745 + 1 en MUSIC1749 + 4 en MUSIC1751 + 3 en MUSIC1763 + 2 en MUSIC1769 + 1 en UI1775 + 1 en MUSIC1779 + 1 en ARRANGE1785 + 1 en AUDIO1801 + 1 en WEB1805 + 3 en SCREEN1811 + 1 en MIC1815 + 1 en PIP1821 + 1 en USB1823 + 1 en STEAM1825 + 1 en MUSIC1829 + 1 en KNOW1835 + 2 en DISCORD1839 + 1 en CHROMETABS1843 + 1 en MSGSEND1845 + 10 en MSGSEND1847 + 2 en MSGSEND1849 + 4 en MSGCLAR1851 + 1 en MAIL1859 + 4 en MAIL1863 + 1 en MAIL1867 + 2 en DISCORD1869 + 1 en DISCORD1871 + 3 en UNRES1873 + 1 en UNRES1875 + 1 en WEB1891 + 3 en LIMITS1893 + 2 en LIMITS1897 + 10 en LIMITS1901 + 2 en LIMITS1903 + 1 en UI1907 + 2 en LANG1909 + 1 en UI1911 + 1 en APPS1913 + 1 en LIMITS1915 + 2 en POWER1917 + 7 en VIDEO1919 + 2 en VIDEO1923 + 1 en VIDEO1925 + 2 en VIDEO1927 + 1 en VIDEO1929 + 1 en CHAIN1931 + 1 en SITE1933 + 1 en APIID1935 + 1 en EPIC1937 + 2 en CHATREAD1939 + 1 en UNRES1941 + 1 en PRIME1943 + 2 en UNRES1945 + 5 en VIDEO1951; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 5de7ed7328075a91ba357b61e2751990180b73948b0a350a3eb742a570ae020e.
++738/742 cubiertos; 4 abiertos; 0 no aplican; 34/35 categorías cerradas (Música 39/39, Instalar y desinstalar software 31/31, Navegación y búsqueda web 46/46, Archivos y carpetas 32/32, Entrada incompleta, ruido y control de diálogo 34/34, Mensajería 31/31, Abrir aplicaciones 54/54, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Interacción dentro de aplicaciones 22/22, Red y Bluetooth 21/21, Cerrar aplicaciones y ventanas 20/20, Pantalla, captura e interpretación visual 19/19, Conocimiento, razonamiento y creatividad verbal 37/37, Brillo y pantalla 17/17, Información web actual 17/17, Estado de hardware y sistema 40/40, Organizar ventanas y pestañas 13/13, Conversación social y ayuda general 31/31, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Bibliotecas y fichas de juegos 6/6, Contactos 5/5, Desarrollo y ejecución de comandos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Energía del sistema 3/3, Crear documentos y editar imágenes 2/2, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9). Últimas 24 h: al menos 622 primeras altas (205 anteriores + 3 en MEMORY1245 + 2 en MEMORY1253 + 2 en MEMORY1255 + 3 en WEB1257 + 3 en WEB1263 + 2 en WEB1265 + 2 en WEB1271 + 3 en UI1275 + 6 en DIALOGUE1279 + 5 en DIALOGUE1281 + 7 en BRIGHT1285 + 3 en BRIGHT1287 + 3 en BRIGHT1289 + 1 en NETWORK1293 + 1 en NETWORK1295 + 2 en NETWORK1301 + 2 en SYSTEM1303 + 1 en SYSTEM1307 + 3 en NEGATIVE1311 + 1 en PROCESS1313 + 1 en WINDOWS1317 + 1 en BRIGHT1319 + 2 en BRIGHT1321 + 1 en IDENTITY1325 + 2 en IDENTITY1327 + 2 en CLOCK1329 + 1 en CLOCK1335 + 1 en AGENDA1337 + 1 en AGENDA1341 + 1 en CONVERSATION1343 + 1 en CONVERSATION1347 + 1 en CONVERSATION1349 + 2 en AUDIO1351 + 1 en KNOWLEDGE1353 + 1 en KNOWLEDGE1357 + 1 en CLIPBOARD1359 + 2 en CLIPBOARD1361 + 1 en MESSAGING1363 + 2 en MESSAGING1365 + 2 en SYSTEM1367 + 4 en CLOSE1371 + 1 en AUDIO1379 + 1 en AUDIO1381 + 1 en APPS1391 + 1 en UI1389 + 1 en WINDOWS1385 + 1 en UI1397 + 1 en SCREEN1401 + 3 en SCREEN1415 + 3 en SCREEN1419 + 5 en SCREEN1421 + 2 en SCREEN1423 + 4 en FILES1427 + 1 en NEGATIVE1429 + 1 en NEGATIVE1431 + 1 en FILES1433 + 1 en AGENDA1435 + 1 en FILES1443 + 3 en WEB1449 + 2 en WEB1451 + 1 en WEB1453 + 4 en WEB1455 + 2 en NETWORK1457 + 4 en SYSTEM1459 + 1 en AUDIO1461 + 1 en AUDIO1463 + 8 en WEB1465 + 2 en WEB1467 + 2 en WEB1471 + 2 en KNOWLEDGE1473 + 1 en KNOWLEDGE1475 + 2 en WEB1477 + 1 en WEB1479 + 2 en WEB1483 + 1 en SCREEN1485 + 1 en DIALOGUE1489 + 2 en DIALOGUE1491 + 1 en BROWSER1493 + 2 en APPS1497 + 3 en APPS1499 + 1 en MEMORY1503 + 3 en KNOWLEDGE1507 + 1 en KNOWLEDGE1511 + 7 en DIALOGUE1513 + 1 en DIALOGUE1515 + 1 en DIALOGUE1521 + 2 en KNOWLEDGE1523 + 2 en KNOWLEDGE1525 + 1 en KNOWLEDGE1529 + 1 en GAMES1531 + 1 en GAMES1533 + 2 en WINDOWS1537 + 2 en WEB1543 + 1 en SYSTEM1547 + 1 en APPS1551 + 2 en MUSIC1557 + 5 en MUSIC1569 + 5 en MUSIC1573 + 1 en MUSIC1575 + 1 en AUDIO1579 + 1 en WINDOWS1581 + 1 en MUSIC1583 + 1 en CONVERSATION1585 + 1 en FILES1589 + 1 en FILES1591 + 3 en MUSIC1593 + 1 en MUSIC1595 + 1 en MUSIC1597 + 2 en MEMORY1601 + 1 en FILES1605 + 2 en APPS1611 + 1 en APPS1613 + 15 en INSTALL1623 + 5 en INSTALL1625 + 3 en INSTALL1627 + 4 en INSTALL1629 + 1 en INSTALL1631 + 1 en INSTALL1633 + 1 en UI1637 + 1 en UI1639 + 1 en UI1641 + 1 en UI1643 + 1 en UI1647 + 2 en CLOSE1649 + 1 en CLOSE1653 + 4 en UI1657 + 2 en UI1663 + 2 en LIMITS1665 + 2 en LIMITS1667 + 2 en AGENDA1669 + 1 en APPS1673 + 1 en MUSIC1675 + 4 en LIMITS1677 + 5 en LIMITS1679 + 3 en LIMITS1681 + 2 en MINALL1687 + 1 en REOPEN1689 + 1 en PDF1693 + 1 en WINDOWS1695 + 1 en SYSTEM1697 + 1 en LIMITS1703 + 1 en FILES1713 + 1 en VIDEO1715 + 1 en VIDEO1719 + 3 en NETWORK1723 + 2 en UI1725 + 1 en LIMITS1727 + 1 en NETWORK1729 + 1 en UI1731 + 2 en CLOSEALL1733 + 1 en NETWORK1737 + 1 en WEB1745 + 1 en MUSIC1749 + 4 en MUSIC1751 + 3 en MUSIC1763 + 2 en MUSIC1769 + 1 en UI1775 + 1 en MUSIC1779 + 1 en ARRANGE1785 + 1 en AUDIO1801 + 1 en WEB1805 + 3 en SCREEN1811 + 1 en MIC1815 + 1 en PIP1821 + 1 en USB1823 + 1 en STEAM1825 + 1 en MUSIC1829 + 1 en KNOW1835 + 2 en DISCORD1839 + 1 en CHROMETABS1843 + 1 en MSGSEND1845 + 10 en MSGSEND1847 + 2 en MSGSEND1849 + 4 en MSGCLAR1851 + 1 en MAIL1859 + 4 en MAIL1863 + 1 en MAIL1867 + 2 en DISCORD1869 + 1 en DISCORD1871 + 3 en UNRES1873 + 1 en UNRES1875 + 1 en WEB1891 + 3 en LIMITS1893 + 2 en LIMITS1897 + 10 en LIMITS1901 + 2 en LIMITS1903 + 1 en UI1907 + 2 en LANG1909 + 1 en UI1911 + 1 en APPS1913 + 1 en LIMITS1915 + 2 en POWER1917 + 7 en VIDEO1919 + 2 en VIDEO1923 + 1 en VIDEO1925 + 2 en VIDEO1927 + 1 en VIDEO1929 + 1 en CHAIN1931 + 1 en SITE1933 + 1 en APIID1935 + 1 en EPIC1937 + 2 en CHATREAD1939 + 1 en UNRES1941 + 1 en PRIME1943 + 2 en UNRES1945 + 5 en VIDEO1951 + 1 en VIDEO1953; detalle por campaña en CHECKPOINT.md), sin revalidaciones. Registro canónico SHA256: 3b6034fbafd3288a2f2f6d12de9d8d99afcf6a486da32239e3bec91fe12c71c6.
+ 
+ | Categoría | Total | Cubiertos | Abiertos |
+ |---|---:|---:|---:|
+@@ -15,7 +15,7 @@ Corrección 2026-09-17 (raíz): H0052 «instala requests con pip» es software_i
+ | Navegación y búsqueda web | 46 | 46 | 0 |
+ | Archivos y carpetas | 32 | 32 | 0 |
+ | Entrada incompleta, ruido y control de diálogo | 34 | 34 | 0 |
+-| Vídeo y series | 26 | 21 | 5 |
++| Vídeo y series | 26 | 22 | 4 |
+ | Mensajería | 31 | 31 | 0 |
+ | Abrir aplicaciones | 54 | 54 | 0 |
+ | Audio y volumen | 51 | 51 | 0 |
+diff --git a/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md b/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md
+index 874d86057..237b0a587 100644
+--- a/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md
++++ b/artifacts/comprobaciones/C03/ESTADO_PARA_DUENO_2026-09-13.md
+@@ -1,3 +1,25 @@
++## VIDEO1953 — estado vigente 2026-09-20T14:25:37.633722+00:00
++
++Parcial: 5 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.
++
++| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
++|---:|---:|---:|---:|---:|
++| 738/742 | 4 | 0 | >=622 | 29/35 |
++
++Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 621 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); VIDEO1953 añade 1. No se cuentan revalidaciones.
++
++Siguiente acción: VIDEO1953: 6 ejecutados, 5 aprobados, 1 fallidos, 1 créditos (índices [0]). Siguiente: categoría por masa abierta según CONDICIONES.
++
++Evidencia: `artifacts/comprobaciones/C03/VIDEO1953/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
++
++Recursos de los segmentos: 170.84 s acumulados; pico GPU 3492.93 MiB; pico RAM 3943.36 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
++
++Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
++
++---
++
++<!-- Historial anterior conservado; rige el bloque VIDEO1953 precedente. -->
++
+ ## VIDEO1951 — estado vigente 2026-09-20T14:14:18.621899+00:00
+ 
+ Parcial: 9 aprobados, 1 fallidos, 0 sin ejecutar; 5 créditos.
+diff --git a/artifacts/comprobaciones/C03/HANDOFF.md b/artifacts/comprobaciones/C03/HANDOFF.md
+index e27b74b02..8ee9126c2 100644
+--- a/artifacts/comprobaciones/C03/HANDOFF.md
++++ b/artifacts/comprobaciones/C03/HANDOFF.md
+@@ -1,3 +1,11 @@
++# VIDEO1953 adjudicado — 2026-09-20T14:25:37.633722+00:00
++
++**738/742 cubiertos, 4 abiertos, 0 NA; 34/35 categorías cerradas (Música 39/39, Instalar y desinstalar software 31/31, Navegación y búsqueda web 46/46, Archivos y carpetas 32/32, Entrada incompleta, ruido y control de diálogo 34/34, Mensajería 31/31, Abrir aplicaciones 54/54, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Interacción dentro de aplicaciones 22/22, Red y Bluetooth 21/21, Cerrar aplicaciones y ventanas 20/20, Pantalla, captura e interpretación visual 19/19, Conocimiento, razonamiento y creatividad verbal 37/37, Brillo y pantalla 17/17, Información web actual 17/17, Estado de hardware y sistema 40/40, Organizar ventanas y pestañas 13/13, Conversación social y ayuda general 31/31, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Bibliotecas y fichas de juegos 6/6, Contactos 5/5, Desarrollo y ejecución de comandos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Energía del sistema 3/3, Crear documentos y editar imágenes 2/2, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9); C03 formal 3/11. Registro SHA 3b6034fbafd3288a2f2f6d12de9d8d99afcf6a486da32239e3bec91fe12c71c6. Primeras altas 24 h >= 622 (+1).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5801d5f7 con BUILD1953 (Disney+ recarga una vez la pagina que no termina de cargar). Turnos ordinarios sin operaciones.
++
++VIDEO1953 («Vídeo y series», poner una serie nombrandola en Disney+ recargando una vez la pagina que no termina de cargar): 6 ejecutados, 5 aprobados, 1 fallido, 1 créditos. Adjudicación c32dc81f1c7d09d4c1b908c3f93ce575381ef595883be181467420450daebda7. La fila y sus tres variantes reproducen «El diablo viste a la moda 2» con la ficha cargada o recargada una vez; una variante falla sólo por un final que abre con una negación inventada antes de nombrar lo que se reproduce. Un literal acredita con dos variantes aprobadas.
++
++---
++
+ # VIDEO1951 adjudicado — 2026-09-20T14:14:18.621899+00:00
+ 
+ **737/742 cubiertos, 5 abiertos, 0 NA; 34/35 categorías cerradas (Música 39/39, Instalar y desinstalar software 31/31, Navegación y búsqueda web 46/46, Archivos y carpetas 32/32, Entrada incompleta, ruido y control de diálogo 34/34, Mensajería 31/31, Abrir aplicaciones 54/54, Audio y volumen 51/51, Alarmas, recordatorios, tareas y agenda 38/38, Interacción dentro de aplicaciones 22/22, Red y Bluetooth 21/21, Cerrar aplicaciones y ventanas 20/20, Pantalla, captura e interpretación visual 19/19, Conocimiento, razonamiento y creatividad verbal 37/37, Brillo y pantalla 17/17, Información web actual 17/17, Estado de hardware y sistema 40/40, Organizar ventanas y pestañas 13/13, Conversación social y ayuda general 31/31, Estado de ventanas y aplicaciones 14/14, Identidad y capacidades del asistente 19/19, Hora y fecha 23/23, Memoria personal 10/10, Correo 6/6, Bibliotecas y fichas de juegos 6/6, Contactos 5/5, Desarrollo y ejecución de comandos 5/5, Restricciones negativas de apertura 4/4, Portapapeles 3/3, Energía del sistema 3/3, Crear documentos y editar imágenes 2/2, Leer y resumir páginas web 2/2, Notas 12/12, Procesos 9/9); C03 formal 3/11. Registro SHA 5de7ed7328075a91ba357b61e2751990180b73948b0a350a3eb742a570ae020e. Primeras altas 24 h >= 621 (+5).** Escritor raíz Fable. Sin tests por orden del dueño. Candidato: HEAD 5f1be4ed con BUILD1951 (Disney+ prefiere la ficha de la obra y recorre la coleccion). Turnos ordinarios sin operaciones.
+diff --git a/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json b/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json
+index bd6e52896..061832685 100644
+--- a/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json
++++ b/artifacts/comprobaciones/C03/RELEVO_ACTIVO.json
+@@ -152,26 +152,26 @@
+     "modelBlockerResolvedEarlier": true
+   },
+   "goalStatus": "active",
+-  "workStatus": "VIDEO1951 adjudicado: 9 aprobados, 1 fallidos, 0 sin ejecutar; 5 créditos.",
++  "workStatus": "VIDEO1953 adjudicado: 5 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.",
+   "executionPausedByOwner": false,
+   "branch": "codex/kiro-goal-c03",
+-  "checkpoint": "737/742 cubiertos, 5 abiertos, 0 no aplican. VIDEO1951: 5 créditos explícitos de raíz.",
++  "checkpoint": "738/742 cubiertos, 4 abiertos, 0 no aplican. VIDEO1953: 1 créditos explícitos de raíz.",
+   "continuation": "Candidato grande y ya diagnosticado: la aclaración innecesaria. Cinco literales han fallado por preguntar cuando la decisión ya sabía la operación —turn-audit con intent_operations [system.time] y effect_operations vacío— en SYSTEM1028 (H0532), APPS1029 (H0497) y las cuatro variantes de CLOCK1034. Toca la capa de decisión, así que se mide primero cuántos abiertos dependen de ella y se sella con controles de las dos clases: donde preguntar es correcto (destino ausente, referente deíctico, confirmación de efecto) y donde no. Detalle en RUTAS_DE_TEXTO_VISIBLE.md. Después, por masa abierta ejecutable: agenda 29 abiertos con 18 que llegan al reconocedor, o música 39 con 19 —música exige decidir antes qué se hace con el efecto incierto de Spotify 962, que no se reproduce ni se cierra—. C03 no está completado.",
+   "publishedSourceCommit": "0722d469ed61eda5a67594a3c9fc506e489b52a4",
+   "surveyVerificationCounts": {
+-    "covered": 737,
+-    "open": 5,
++    "covered": 738,
++    "open": 4,
+     "not_applicable": 0,
+     "total": 742
+   },
+-  "surveyRegistrySha256": "5de7ed7328075a91ba357b61e2751990180b73948b0a350a3eb742a570ae020e",
++  "surveyRegistrySha256": "3b6034fbafd3288a2f2f6d12de9d8d99afcf6a486da32239e3bec91fe12c71c6",
+   "surveyRegistryPresentOnDestination": true,
+   "surveyCategories": {
+     "closed": 29,
+     "total": 35
+   },
+-  "surveyCoverageLast24h": 621,
+-  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–14 septiembre: 616 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); VIDEO1951 añade 5. No se cuentan revalidaciones.",
++  "surveyCoverageLast24h": 622,
++  "surveyCoverageLast24hNote": "Primeras altas documentadas 12–14 septiembre: 621 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); VIDEO1953 añade 1. No se cuentan revalidaciones.",
+   "classificationImmutable": "SURVEY_TAXONOMY846.json, 742 case_id; no se reclasifica ni se reinicia la encuesta.",
+   "testsRun": false,
+   "testsOmittedByOwner": true,
+@@ -196,7 +196,7 @@
+     "missing_referent": "ampliar _deictic_open_request con controles de tratamiento formal",
+     "agenda1024": "parche recibido y revisado, sin integrar"
+   },
+-  "utcUpdated": "2026-09-20T14:14:18.621899+00:00",
++  "utcUpdated": "2026-09-20T14:25:37.633722+00:00",
+   "batchesThisSession": [
+     {
+       "batch": 1029,
+@@ -621,7 +621,7 @@
+     "freeze_ended_at": "2026-09-12T13:33:18.245252-03:00",
+     "next": "MUSIC1063: repair explicit resume routing and false Spotify attribution in generic SMTC receipt. Root reviews composition missing_name separately. Seal affected material preserving original objects; do not repeat whole23 automatically. Player own queue remains paused on Aurora de cobre at1:05. CLOSE1060 reviewed externally, not adopted yet."
+   },
+-  "updatedAtUtc": "2026-09-20T14:14:18.621899+00:00",
++  "updatedAtUtc": "2026-09-20T14:25:37.633722+00:00",
+   "currentContinuation1065": {
+     "head": "44aa529da3b9df6cad0f193fcbfa60cbf71e658c",
+     "quality": {
+@@ -2298,33 +2298,29 @@
+     "next": "FILES1205 completa: 19 ejecutados, 19 aprobados, 12 créditos (8 archivos en escritorio/Documentos, 3 carpetas en el escritorio, 1 carpeta en el sandbox), cada uno con dos pares aprobados. El proveedor de carpetas conocidas (BUILD1205) y los lectores de creación se demuestran: 18 creaciones verificadas por el producto y comprobadas en disco por raíz (existencia, tipo y hash del contenido literal), ninguna preexistente, todas eliminadas tras la postlectura. Archivos queda 15/32; restan borrados (fixtures en carpetas personales), listados del escritorio, contenido dinámico («que contenga la fecha», procesos), rutas absolutas, comprimir/abrir, resumir PDF y copia a pendrive."
+   },
+   "currentContinuation1207": {
+-    "head": "5f1be4eda0553baf0e5da15fd49f34b2687a1f0b",
++    "head": "5801d5f79b50ba3d1389ce7f1466c3316b6dbb99",
+     "quality": {
+-      "passed": 9,
++      "passed": 5,
+       "failed": 1,
+-      "executed": 10,
++      "executed": 6,
+       "not_executed": 0,
+       "sealed_total": 8,
+-      "segments_started": 10,
++      "segments_started": 6,
+       "aborted_before_admission": 0
+     },
+-    "new_credits": 5,
++    "new_credits": 1,
+     "credited_ids": [
+-      "H0235",
+-      "H0305",
+-      "H0341",
+-      "H0362",
+-      "H0535"
++      "H0712"
+     ],
+-    "registry_sha256": "5de7ed7328075a91ba357b61e2751990180b73948b0a350a3eb742a570ae020e",
+-    "survey": 737,
+-    "adjudication": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\artifacts\\comprobaciones\\C03\\VIDEO1951\\ROOT_ADJUDICATION.json",
++    "registry_sha256": "3b6034fbafd3288a2f2f6d12de9d8d99afcf6a486da32239e3bec91fe12c71c6",
++    "survey": 738,
++    "adjudication": "C:\\Users\\usuario\\Desktop\\ETC\\Programacion\\BAXY Definitivo\\artifacts\\comprobaciones\\C03\\VIDEO1953\\ROOT_ADJUDICATION.json",
+     "resources": {
+-      "seconds_sum": 342.5620000000008,
++      "seconds_sum": 170.84400000000005,
+       "gpu_peak_mib": 3492.9296875,
+-      "ram_peak_mib": 4088.71484375
++      "ram_peak_mib": 3943.35546875
+     },
+-    "next": "VIDEO1951: 10 ejecutados, 9 aprobados, 1 fallidos, 5 créditos (índices [0, 1, 2, 3, 4]). Siguiente: categoría por masa abierta según CONDICIONES."
++    "next": "VIDEO1953: 6 ejecutados, 5 aprobados, 1 fallidos, 1 créditos (índices [0]). Siguiente: categoría por masa abierta según CONDICIONES."
+   },
+   "currentContinuation1685": {
+     "registry_sha256": "afbc64b2c2f284c4f5f35dc37816760b6c703c0127fd660dc2a2b1e8d7316090",
+diff --git a/artifacts/comprobaciones/C03/VIDEO1953/MATERIAL_PINS.json b/artifacts/comprobaciones/C03/VIDEO1953/MATERIAL_PINS.json
+new file mode 100644
+index 000000000..3022cb245
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/VIDEO1953/MATERIAL_PINS.json
+@@ -0,0 +1,87 @@
++{
++  "schema": "video1953-public-material-pins-v1",
++  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-proposal",
++  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1",
++  "seal_sha256": "3b25db2ff63057bf8af835b6ce02a58ea0e8f426e6a318a346690d982454424b",
++  "runner_sha256": "9431c0da0caa62cd9ebe526dc6675c1ea2a39a7ea26b5da91be24a38d78f14ea",
++  "transport_seal_sha256": "c3bc62eae305ea2f4d945c6a0c54bc1455d6e356c2b5964643b1cc07d4f39b5f",
++  "files": {
++    "panel.json": "2454c954abc53b0ad5177dfb5f1f70cdc144faca4fef34ea1345356b58d16bcf",
++    "turns.jsonl": "fd424fc26eb9134d199b499211377a5e93c58a0980b43ce4eb9ccb9ece0656ab",
++    "case-map.json": "1fba49db4a5563653451e24c1053928eee6becf623b20a586a14c2361cddaee0",
++    "PLAN.md": "4ca71f5929301d60d187168ff162e7e6acc8141405db62d9016ea48cdfa83133"
++  },
++  "counts": {
++    "cases": 6,
++    "historical_literals": 1,
++    "original_development_variants": 3,
++    "boundaries": 2,
++    "wire_lines": 12,
++    "session_controls": 6,
++    "ordinary_turns": 2,
++    "reviewed_turns": 4,
++    "maximum_reportable_terminals": 10,
++    "maximum_internal_confirmations": 4
++  },
++  "kind_counts": {
++    "historical_literal": 1,
++    "original_development_variant": 3,
++    "boundary": 2
++  },
++  "case_identities": [
++    {
++      "index": 0,
++      "case_id": "H0712",
++      "kind": "historical_literal",
++      "group": "disney_named_play",
++      "credit_behavior": "disney_named_play",
++      "text_sha256": "f67bdfac2ed890f9d168cfe518ea475c9c9326d6ee28de4a108586a3c71e678c",
++      "criterion_sha256": "c3a9bbc8545bbfabd5127b963bd93cb48fd0252bbedf8d680c63d601ba4c0bae"
++    },
++    {
++      "index": 1,
++      "case_id": "video1953-dev-01",
++      "kind": "original_development_variant",
++      "group": "disney_named_play",
++      "credit_behavior": "disney_named_play",
++      "text_sha256": "c0f774e25453fe704b4278f15a2e2e7f6843087ee3113aa4752050ae798362e7",
++      "criterion_sha256": "c3a9bbc8545bbfabd5127b963bd93cb48fd0252bbedf8d680c63d601ba4c0bae"
++    },
++    {
++      "index": 2,
++      "case_id": "video1953-dev-02",
++      "kind": "original_development_variant",
++      "group": "disney_named_play",
++      "credit_behavior": "disney_named_play",
++      "text_sha256": "bbbbf1e761c2398244242ea64813948cb5482f0ef445c0116e8187ba110b2c13",
++      "criterion_sha256": "c3a9bbc8545bbfabd5127b963bd93cb48fd0252bbedf8d680c63d601ba4c0bae"
++    },
++    {
++      "index": 3,
++      "case_id": "video1953-dev-03",
++      "kind": "original_development_variant",
++      "group": "disney_named_play",
++      "credit_behavior": "disney_named_play",
++      "text_sha256": "b2a5a1f1d26a13709c9cea5eb1608fc52db651b0dfe9d26deb6a3c08fbfe24d6",
++      "criterion_sha256": "c3a9bbc8545bbfabd5127b963bd93cb48fd0252bbedf8d680c63d601ba4c0bae"
++    },
++    {
++      "index": 4,
++      "case_id": "video1953-boundary-01",
++      "kind": "boundary",
++      "group": "no_effect_boundary",
++      "credit_behavior": "no_effect_boundary",
++      "text_sha256": "88f4ab00dde93e72e29d3bb55ab3a0b61ef16ceb6f6e48a05752a40b8d30371b",
++      "criterion_sha256": "031153cb155d4fd6216825f753dc315529c6a33cdc1329a8ed51b2593af70750"
++    },
++    {
++      "index": 5,
++      "case_id": "video1953-boundary-02",
++      "kind": "boundary",
++      "group": "no_effect_boundary",
++      "credit_behavior": "no_effect_boundary",
++      "text_sha256": "bc24898c6d653acc0303bda963f8edd69ad552c3e75140829c1ecc5b591f40cc",
++      "criterion_sha256": "50757e30c0886c9c9d6fe25617d31896c91ed2f486ced29f1b243a9954f5945b"
++    }
++  ]
++}
+diff --git a/artifacts/comprobaciones/C03/VIDEO1953/REGISTRY_UPDATE.json b/artifacts/comprobaciones/C03/VIDEO1953/REGISTRY_UPDATE.json
+new file mode 100644
+index 000000000..f2facc32f
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/VIDEO1953/REGISTRY_UPDATE.json
+@@ -0,0 +1,18 @@
++{
++  "registry_before_sha256": "5de7ed7328075a91ba357b61e2751990180b73948b0a350a3eb742a570ae020e",
++  "registry_after_sha256": "3b6034fbafd3288a2f2f6d12de9d8d99afcf6a486da32239e3bec91fe12c71c6",
++  "touched_ids": [
++    "H0712"
++  ],
++  "credited_ids": [
++    "H0712"
++  ],
++  "counters": {
++    "covered": 738,
++    "open": 4,
++    "not_applicable": 0,
++    "total": 742
++  },
++  "decisions_sha256": "af711bc49a8287aa8a08dfd8ef4b98975e7be10133809dacf6b219cd5c935a07",
++  "updated_at": "2026-09-20T14:25:37.633722+00:00"
++}
+diff --git a/artifacts/comprobaciones/C03/VIDEO1953/ROOT_ADJUDICATION.json b/artifacts/comprobaciones/C03/VIDEO1953/ROOT_ADJUDICATION.json
+new file mode 100644
+index 000000000..e2dd6a44a
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/VIDEO1953/ROOT_ADJUDICATION.json
+@@ -0,0 +1,382 @@
++{
++  "schema": "video1953-root-adjudication-v2",
++  "decided_at_utc": "2026-09-20T14:25:37.633722+00:00",
++  "authority": "Explicit root decisions; helper validates evidence, never adjudicates merit.",
++  "head": "5801d5f79b50ba3d1389ce7f1466c3316b6dbb99",
++  "decisions_sha256": "af711bc49a8287aa8a08dfd8ef4b98975e7be10133809dacf6b219cd5c935a07",
++  "registry_before_sha256": "5de7ed7328075a91ba357b61e2751990180b73948b0a350a3eb742a570ae020e",
++  "registry_before_counts": {
++    "covered": 737,
++    "open": 5,
++    "not_applicable": 0,
++    "total": 742
++  },
++  "candidate_manifest_sha256": "654f984e879c87abb98d51330ec696fa230b65b2fb61afc11b3a26f9833012e8",
++  "preparation_sha256": "4b48c792d45cc05483429d827eecd0fd2c2a38e5722261c78f4279c3aabc6715",
++  "passed": 5,
++  "failed": 1,
++  "unexecuted": 0,
++  "executed": 6,
++  "segments_started": 6,
++  "aborted_before_admission": 0,
++  "aborted_before_admission_indices": [],
++  "credits": [
++    "H0712"
++  ],
++  "counters": {
++    "covered": 738,
++    "open": 4,
++    "not_applicable": 0,
++    "total": 742
++  },
++  "metrics": {
++    "first_covered_last24h_is_lower_bound": true,
++    "first_covered_last24h_before": 621,
++    "categories_total": 35,
++    "categories_closed_after": 29,
++    "first_covered_last24h_evidence_note": "Primeras altas documentadas 12–14 septiembre: 621 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); VIDEO1953 añade 1. No se cuentan revalidaciones.",
++    "first_covered_last24h_after": 622
++  },
++  "resources": {
++    "seconds_sum": 170.84400000000005,
++    "gpu_peak_mib": 3492.9296875,
++    "ram_peak_mib": 3943.35546875
++  },
++  "cases": [
++    {
++      "index": 0,
++      "case_id": "H0712",
++      "verdict": "passed",
++      "credit": true,
++      "pair_indices": [
++        1,
++        2
++      ],
++      "reason": "exactamente una reproducción en Disney+ aprobada por la raíz, completada y verificada contra el avance observado del vídeo; el final nombra lo que se reproduce y dónde; crédito con dos variantes aprobadas del mismo grupo.",
++      "observation_note": "Turno revisado: exactamente una streaming.play.named con service=disney_plus aprobada por la raíz, completada y verificada contra el avance observado del vídeo en la ficha elegida; una confirmación, cero violaciones; pins intactos.",
++      "final_sha256": "d4dfce485279380f90b04f279049218f7fcf9f523e5c2cbe0aab8f573c4c9bc2",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-00\\EXIT.json": "408a2ad58a9f181aa98b27ce47e4f6d24d31d5dcbb520f0f6efaa16c36ef56ce",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-00\\RESOURCES.json": "178680b62846bcc4ccee93188d9c99b8d68fa4d78d2c5a0aeb0439aa99ea79d7",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\profile-owner-00.json": "85c23a7dac53ae8fa8757fdcf2f56fba2d9e1b8507f2291f32325b579edd4c69",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-00\\PREREG.json": "f6d5b311866356ca875cff2bc47509771dcd6a11339d3a0527f8619a291bfb9a",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-00\\capture\\events.jsonl": "536a04b21ee1e7ed060309972594533a4f7ead4258506698cf7f19f0d17851b8",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-00\\turns.jsonl": "977a52abf3409b11a2aa627e14f7c2232013bff782f8a763fa7c70d1aaa4c6c6",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\fixture-00.json": "695968cef02aa69844682d26c9909b213e39927d96159c054b3f9a25c8bfc104",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-00.json": "283fe3fea94db934951ec54ad70cfe03195e7f691757d9d31e7dcd46096fe0a8",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-prelaunch-00.json": "426587f6210693e552550bc892a27503d1a87f8d0e6e3643cac3fea6a44f2e38",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-00\\case-observations.json": "348eea427f7061c72bdfaccffaa6d32d111cfe220d64a5fa45322dbf31253e55",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-00\\journal-before.json": "522da596ea2c26232a00e8f8e7ddd2265b0d4f2f619df0791935de5b09fa0336",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-00\\journal-after.json": "804de8cc3130105a21b43fc35f2fd00eb9d0ca2e1e00d34f1440a9df65b3965a",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "2463e3ff3f2a7080efcfd04c0ae9bcdf0e26e76c90b5b872e04657c2d9c95a56"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "99b1f1df-f570-47c3-9f55-5bd2e6b6d35d",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        },
++        {
++          "invocation_id": "09265610-5024-4bf2-a8d5-f1d8d7fe5b63",
++          "operation": "streaming.play.named",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    },
++    {
++      "index": 1,
++      "case_id": "video1953-dev-01",
++      "verdict": "passed",
++      "credit": false,
++      "pair_indices": [],
++      "reason": "exactamente una reproducción en Disney+ aprobada por la raíz, completada y verificada contra el avance observado del vídeo; el final nombra lo que se reproduce y dónde.",
++      "observation_note": "Turno revisado: exactamente una streaming.play.named con service=disney_plus aprobada por la raíz, completada y verificada contra el avance observado del vídeo en la ficha elegida; una confirmación, cero violaciones; pins intactos.",
++      "final_sha256": "c56e8d207a54f01bc6d418e526de19f1b14ca403c0891275bf1d5685b37986f5",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-01\\EXIT.json": "e7ca25c1f8f1b699dc347bcf626f3ef6f8b371404e97d36941e68d1edaaef862",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-01\\RESOURCES.json": "082d9fceaddf12e8d76c43686bff76cc3f76656b1901500ccad89ab22518f3d0",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\profile-owner-01.json": "cb1e1793562dbe74ed7daed2e1a4b5484a35ce558fa0cbadd2f0933423126788",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-01\\PREREG.json": "6b2fa21209ede12a28204509324a25ddc95174027609205f60afabdbabb9b25e",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-01\\capture\\events.jsonl": "251fdc2e9f375a28e59a8b810a8b2f9193da42068d858bdb0a9b65fd38963b19",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-01\\turns.jsonl": "3359051be03988763dd5f2fe45bcdbb498838c4f1ba8e0b9f7bf1675c2615934",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\fixture-01.json": "3d497e0f3fe1c7ab16511c46f435a3acf8e142c3d20164193a9aef1b518db8ba",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-01.json": "134eecdf913985a7da79f736401b59834580ed9838f802160f2f514e57d62273",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-prelaunch-01.json": "969ba3268ca1fce4f0c5ea5e6e280321ed847329f7df658220dee1aa9d46ff9c",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-01\\case-observations.json": "6cd5a2deb65975af65d3a032ffd7e4ccb26b76b5a87e011770645a6288391776",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-01\\journal-before.json": "b33ba29ee9eb3ef73f97aeae3a8c0ed6b91ff7f8279fc0fd18ab535e2fdb889d",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-01\\journal-after.json": "1ee2d1d8da4c23e7e25badefd7821a91fca85202be75ff20c97c3a3a6342dfff",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "828bce59bc5c3f801ab7438cc3cc146629e3f233c8d2bee14d334d8290ac42fb"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "878c10aa-96d7-41e9-bc3c-faa3e3b60da3",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        },
++        {
++          "invocation_id": "4e9409d4-35b1-479b-9ab9-167b5ca944a1",
++          "operation": "streaming.play.named",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    },
++    {
++      "index": 2,
++      "case_id": "video1953-dev-02",
++      "verdict": "passed",
++      "credit": false,
++      "pair_indices": [],
++      "reason": "exactamente una reproducción en Disney+ aprobada por la raíz, completada y verificada contra el avance observado del vídeo; el final nombra lo que se reproduce y dónde.",
++      "observation_note": "Turno revisado: exactamente una streaming.play.named con service=disney_plus aprobada por la raíz, completada y verificada contra el avance observado del vídeo en la ficha elegida; una confirmación, cero violaciones; pins intactos.",
++      "final_sha256": "fb71a2721828ccf2e8ddb8aab4460983a0b309d9fd203c988a6819623e032692",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-02\\EXIT.json": "1631c808594a100ccf65e92ab117ad1a175b7adc70eadba8c6ac1b4f12808195",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-02\\RESOURCES.json": "ff9d585e7791b3006abb252785ffde88687f8c30916147875b9b6184dbebadf8",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\profile-owner-02.json": "397ad57657a3ab197d4dba555fdb1dc5bcc706ed9d3b1ac2b875ad939cac3178",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-02\\PREREG.json": "17a6236d2726ca62cfaac8dabf5b025eb3a90df50af5e6dba6cb82cb3feaa7f2",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-02\\capture\\events.jsonl": "ef15870fbcdb99c297ac948c15bccc9adf19c144ab03fc9628bd99d78d2902b4",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-02\\turns.jsonl": "12eb38b582351c07af9cba50093f1630f837fba03dcf4b3218f6b8ce5c21d3d8",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\fixture-02.json": "9e1d85d3c4f7cf990989f1c4f67af47ac188a8a05f02770ab1905ea4789327e9",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-02.json": "cef495536b29709d02606516dc1e100709b26f545408e3052214982509e50c28",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-prelaunch-02.json": "0f3d0f20cd36119d09287afcbaed58480822815aa4ab9b3fce3a886c8e93fd85",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-02\\case-observations.json": "89ca6f0557261ffecc9aeffa8d3d74b71866fe1800c02a8e3b420a8163bca41e",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-02\\journal-before.json": "372d09f06e9a0a0cbfe8984adcc38dd77c62d607e84d3452d985c008048323a5",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-02\\journal-after.json": "a81a49809d1a54bc810954ff14a70139917bfceb17196c4b171e5f01899852a0",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "bb33af185afb65f63e6b846e6b71a2e2fa299271af038d973fa1b8136b35fc6d"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "81808799-7459-4e0d-96e0-41e840e21331",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        },
++        {
++          "invocation_id": "2db72e1c-b74a-4f36-a237-d7ffcc842fb1",
++          "operation": "streaming.play.named",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    },
++    {
++      "index": 3,
++      "case_id": "video1953-dev-03",
++      "verdict": "failed",
++      "credit": false,
++      "pair_indices": [],
++      "reason": "Falló: la reproducción no se propuso, no se completó o no se verificó, o el final no fue fiel.",
++      "observation_note": "Turno revisado: cero violaciones; pins intactos; la reproducción se verificó, pero el final afirmó un fallo que no ocurrió antes de nombrar lo que se reproduce.",
++      "final_sha256": "4167db65c4be7ba1f81d4dfc1947fc3e4a735d8c83fedfaaab01d8073a81e059",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-03\\EXIT.json": "f8c535bc6ed2d14707f588fd4f815c51b04d7ac615af27e663466e907c20ecea",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-03\\RESOURCES.json": "d1decc393aeabb9cb24c5a97ead23f8102ed59f19bb50bcc473f73e932ee0f35",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\profile-owner-03.json": "6d168a66df436b476c993a7442c6543a7b3782ffdd8277a91b1fd277b7688845",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-03\\PREREG.json": "fdb8c7d630c232b41d2562a130f7b5a68c99c22977659be4317ab05201036c7d",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-03\\capture\\events.jsonl": "8a98946cceca22affda282cab2689d46c4e482ea8eb49038ac199590cff21603",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-03\\turns.jsonl": "ad31d74c8cdf03dedb1254a170b6cf691df2954b937738cfde48e4602a286843",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\fixture-03.json": "8666419c12f5a4102ff1bb6973bcd5a50cc08d630e023ce603fde6df473368d8",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-03.json": "2e0b916072c22cea068cdfa522edf39d8c73ad17ae11d67a1b1097f80f7f936c",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-prelaunch-03.json": "a2893c66a20bbafacd88303b1b3b368eb3a5009323d1562531d4bd57fe2f526f",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-03\\case-observations.json": "2bab88ffbab9c9fb279260db43f3cf50b1bc312d464ae81b1a3324b4c087abce",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-03\\journal-before.json": "9918d32712ac408059486b96f51e7f5b1c10195393c47e481ddd0856d27d52d0",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-03\\journal-after.json": "3e273280a582f992f6667a6ed6adfceb55b25f1a86b6e230dad629de87d22742",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "ac40bf3c8bd615cc5a01c76312c54fb9cb79b8cd5076e4e22b69f520c7e3d54d"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "10992b76-3fc6-46b8-9129-89a2cc4c5d64",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        },
++        {
++          "invocation_id": "d9986b8b-8bda-4168-9880-7452ab97ec92",
++          "operation": "streaming.play.named",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    },
++    {
++      "index": 4,
++      "case_id": "video1953-boundary-01",
++      "verdict": "passed",
++      "credit": false,
++      "pair_indices": [],
++      "reason": "Límite aprobado.",
++      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++      "final_sha256": "c81bed7ba55b0f93285908e80293e92b792921e5293e22c1ff0e9e51dc5a6ebd",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-04\\EXIT.json": "1db15dd14cb0f3a23b0f661c98910824dc7123ca7c5d5882743b63d9f43e68e1",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-04\\RESOURCES.json": "6ae29c45c8d26f89fe9a1042e874a37ba0bdd43c22eebbcf52e157765f7a616b",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\profile-owner-04.json": "40470bf729fb384cfbcf11483057c4c426d9a0db46307a4a07f719da609ae1df",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-04\\PREREG.json": "096af4d4a483d4cc07f131910ed77c935bd3b6707bdabd7dcf0b41739543bfe9",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-04\\capture\\events.jsonl": "fbc256fef1b8bdae0113bc3a2882ea28657451ac6753258e6deaa9f2809f4e4f",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-04\\turns.jsonl": "a888ce4a471e682f3e914ae6c75b657e4564ba2654071eff0a05bc0df09030fb",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\fixture-04.json": "f497b13404aa8c85adf9f4c4266e2bc8e0459fce484825dc4075fc2b1aaa101c",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-04.json": "f6ab4d2db6cfa9b67da9256ee10ed49722005b5fde7579a9c44ce663c0f1c045",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-prelaunch-04.json": "c64f33362980a36fd51350aca5048768a1c0bf663b6fb860cecfeb39bbd3fa04",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-04\\case-observations.json": "16949a1fa284ee34c68743245af7be5e77feeb7e097623118382bfe653ca3ae4",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-04\\journal-before.json": "5c2f6db1f7a74f3e01e00b87c1cf15ee09cb62ba4acb2feed03cfd282a268c24",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-04\\journal-after.json": "03185821fef47f88f317edcf61c35c5fdac27123c75e50b3f6b89343d022867f",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "0e9ff78c086bbc3e3b1480a723f94f03459297a79f4388dce724f19752e90e74"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "7fdb431b-8a9c-425f-8479-e0cec0045bbb",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    },
++    {
++      "index": 5,
++      "case_id": "video1953-boundary-02",
++      "verdict": "passed",
++      "credit": false,
++      "pair_indices": [],
++      "reason": "Límite aprobado.",
++      "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++      "final_sha256": "1026f757f1610d2f691d8ffb319a6e43c2133298c7bd7dbdfd8903317098a76c",
++      "evidence_pins": {
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-05\\EXIT.json": "be311c3f173422d11305d21e8eb9e8c3fc6e3543b5af08d144e201dfc6d5276c",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-05\\RESOURCES.json": "702c6b554c4a86caa1fc07723692147f9ab423bbf1eb4333a83834ab7b5f4fbe",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\profile-owner-05.json": "d7797d81be5b8e4a4fa4541e33b7bbcc43b9fc02f06eaa9f4c6dd92a4da9aa67",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-05\\PREREG.json": "275210851344c596a2dea748c2dcfcc7a7332dd823e779b7714785b4eceaeb55",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-05\\capture\\events.jsonl": "3e8a2250e5601904248988685b1c7c1bfc20e680564e22d76265cada632d7164",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-05\\turns.jsonl": "a3e7cea01c6f2c5eddc3b9c346c3799b44d9f626bb8e139ed3b55912f1cae3fb",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\fixture-05.json": "1fdf01833af0280864bcd58c0a98f4b29c966222d89e861c2ca1e2b6a02d5a8a",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-05.json": "a2c2b86c1237a6b0aac9bd0bc01713545e7fb07bd2c14e86b610e1269a6c746c",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-prelaunch-05.json": "586774e51b71db577653fc62eefa8516c57fe58ae57271b24d23cb2d1a998b1a",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-05\\case-observations.json": "ee3d404da970ef5618c765cb3f77d8601c966b60a3e67ebf1d1e6947b494232e",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-05\\journal-before.json": "3fe2c8498e614555c2f57b819441d691f1ac5186ad6dcf76c0a118ae338bdbf0",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-05\\journal-after.json": "eb70d2de59323af99eabd1d7e6acfb8753b48ef52761a48d35addd7e0fc48407",
++        "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "b67a15bfae269fbcb6662d21c4f043e612e37e16dba6b2d695a2a0e18fb9b9df"
++      },
++      "terminal_kind": "published_final",
++      "clients_absent_before": true,
++      "aborted_before_admission": false,
++      "remaining_execution_uncertain_after_stop": false,
++      "cause_kind": null,
++      "violations": [],
++      "new_invocations": [
++        {
++          "invocation_id": "defa536b-e6d4-4297-85a7-16b3aaf96035",
++          "operation": "memory.status",
++          "status": "completed",
++          "verified": true,
++          "error_code": null,
++          "effect_may_have_occurred": null,
++          "phases": [
++            "started",
++            "completed"
++          ],
++          "replayed": false
++        }
++      ]
++    }
++  ],
++  "unexecuted_indices": [],
++  "next_action": "VIDEO1953: 6 ejecutados, 5 aprobados, 1 fallidos, 1 créditos (índices [0]). Siguiente: categoría por masa abierta según CONDICIONES.",
++  "journal_scope": "Only byte delta pinned by segment before/after receipts. No HMAC secret validation claimed.",
++  "validation": "No tests run, by explicit owner instruction. EXIT and resource receipts checked."
++}
+diff --git a/artifacts/comprobaciones/C03/VIDEO1953/ROOT_ADJUDICATION.md b/artifacts/comprobaciones/C03/VIDEO1953/ROOT_ADJUDICATION.md
+new file mode 100644
+index 000000000..119522b82
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/VIDEO1953/ROOT_ADJUDICATION.md
+@@ -0,0 +1,32 @@
++# VIDEO1953 — adjudicación de la raíz
++
++## VIDEO1953 — estado vigente 2026-09-20T14:25:37.633722+00:00
++
++Parcial: 5 aprobados, 1 fallidos, 0 sin ejecutar; 1 créditos.
++
++| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
++|---:|---:|---:|---:|---:|
++| 738/742 | 4 | 0 | >=622 | 29/35 |
++
++Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 621 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); VIDEO1953 añade 1. No se cuentan revalidaciones.
++
++Siguiente acción: VIDEO1953: 6 ejecutados, 5 aprobados, 1 fallidos, 1 créditos (índices [0]). Siguiente: categoría por masa abierta según CONDICIONES.
++
++Evidencia: `artifacts/comprobaciones/C03/VIDEO1953/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
++
++Recursos de los segmentos: 170.84 s acumulados; pico GPU 3492.93 MiB; pico RAM 3943.36 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
++
++Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
++
++| Índice | Caso | Veredicto | Causa de la raíz | Observación |
++|---:|---|---|---|---|
++| 0 | H0712 | passed | exactamente una reproducción en Disney+ aprobada por la raíz, completada y verificada contra el avance observado del vídeo; el final nombra lo que se reproduce y dónde; crédito con dos variantes aprobadas del mismo grupo. | Turno revisado: exactamente una streaming.play.named con service=disney_plus aprobada por la raíz, completada y verificada contra el avance observado del vídeo en la ficha elegida; una confirmación, cero violaciones; pins intactos. |
++| 1 | video1953-dev-01 | passed | exactamente una reproducción en Disney+ aprobada por la raíz, completada y verificada contra el avance observado del vídeo; el final nombra lo que se reproduce y dónde. | Turno revisado: exactamente una streaming.play.named con service=disney_plus aprobada por la raíz, completada y verificada contra el avance observado del vídeo en la ficha elegida; una confirmación, cero violaciones; pins intactos. |
++| 2 | video1953-dev-02 | passed | exactamente una reproducción en Disney+ aprobada por la raíz, completada y verificada contra el avance observado del vídeo; el final nombra lo que se reproduce y dónde. | Turno revisado: exactamente una streaming.play.named con service=disney_plus aprobada por la raíz, completada y verificada contra el avance observado del vídeo en la ficha elegida; una confirmación, cero violaciones; pins intactos. |
++| 3 | video1953-dev-03 | failed | Falló: la reproducción no se propuso, no se completó o no se verificó, o el final no fue fiel. | Turno revisado: cero violaciones; pins intactos; la reproducción se verificó, pero el final afirmó un fallo que no ocurrió antes de nombrar lo que se reproduce. |
++| 4 | video1953-boundary-01 | passed | Límite aprobado. | Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos. |
++| 5 | video1953-boundary-02 | passed | Límite aprobado. | Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos. |
++
++Recursos: 170.84 s de segmentos; pico GPU 3492.93 MiB; pico RAM 3943.36 MiB. La muestra del árbol de procesos puede incluir descendientes ajenos a BAXY; no equivale a consumo exclusivo del modelo.
++
++Sólo se atribuyen invocaciones nuevas de cada segmento. El aislamiento de contexto o la ausencia de operaciones no acredita por sí sola una respuesta útil. Los casos no ejecutados conservan sus datos y estado.
+diff --git a/artifacts/comprobaciones/C03/VIDEO1953/ROOT_CASE_JUDGMENTS.json b/artifacts/comprobaciones/C03/VIDEO1953/ROOT_CASE_JUDGMENTS.json
+new file mode 100644
+index 000000000..78ec47b63
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/VIDEO1953/ROOT_CASE_JUDGMENTS.json
+@@ -0,0 +1,333 @@
++[
++  {
++    "index": 0,
++    "case_id": "H0712",
++    "verdict": "passed",
++    "credit": true,
++    "pair_indices": [
++      1,
++      2
++    ],
++    "reason": "exactamente una reproducción en Disney+ aprobada por la raíz, completada y verificada contra el avance observado del vídeo; el final nombra lo que se reproduce y dónde; crédito con dos variantes aprobadas del mismo grupo.",
++    "observation_note": "Turno revisado: exactamente una streaming.play.named con service=disney_plus aprobada por la raíz, completada y verificada contra el avance observado del vídeo en la ficha elegida; una confirmación, cero violaciones; pins intactos.",
++    "final_sha256": "d4dfce485279380f90b04f279049218f7fcf9f523e5c2cbe0aab8f573c4c9bc2",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-00\\EXIT.json": "408a2ad58a9f181aa98b27ce47e4f6d24d31d5dcbb520f0f6efaa16c36ef56ce",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-00\\RESOURCES.json": "178680b62846bcc4ccee93188d9c99b8d68fa4d78d2c5a0aeb0439aa99ea79d7",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\profile-owner-00.json": "85c23a7dac53ae8fa8757fdcf2f56fba2d9e1b8507f2291f32325b579edd4c69",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-00\\PREREG.json": "f6d5b311866356ca875cff2bc47509771dcd6a11339d3a0527f8619a291bfb9a",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-00\\capture\\events.jsonl": "536a04b21ee1e7ed060309972594533a4f7ead4258506698cf7f19f0d17851b8",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-00\\turns.jsonl": "977a52abf3409b11a2aa627e14f7c2232013bff782f8a763fa7c70d1aaa4c6c6",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\fixture-00.json": "695968cef02aa69844682d26c9909b213e39927d96159c054b3f9a25c8bfc104",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-00.json": "283fe3fea94db934951ec54ad70cfe03195e7f691757d9d31e7dcd46096fe0a8",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-prelaunch-00.json": "426587f6210693e552550bc892a27503d1a87f8d0e6e3643cac3fea6a44f2e38",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-00\\case-observations.json": "348eea427f7061c72bdfaccffaa6d32d111cfe220d64a5fa45322dbf31253e55",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-00\\journal-before.json": "522da596ea2c26232a00e8f8e7ddd2265b0d4f2f619df0791935de5b09fa0336",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-00\\journal-after.json": "804de8cc3130105a21b43fc35f2fd00eb9d0ca2e1e00d34f1440a9df65b3965a",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-00\\journal.snapshot.jsonl": "2463e3ff3f2a7080efcfd04c0ae9bcdf0e26e76c90b5b872e04657c2d9c95a56"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "99b1f1df-f570-47c3-9f55-5bd2e6b6d35d",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      },
++      {
++        "invocation_id": "09265610-5024-4bf2-a8d5-f1d8d7fe5b63",
++        "operation": "streaming.play.named",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  },
++  {
++    "index": 1,
++    "case_id": "video1953-dev-01",
++    "verdict": "passed",
++    "credit": false,
++    "pair_indices": [],
++    "reason": "exactamente una reproducción en Disney+ aprobada por la raíz, completada y verificada contra el avance observado del vídeo; el final nombra lo que se reproduce y dónde.",
++    "observation_note": "Turno revisado: exactamente una streaming.play.named con service=disney_plus aprobada por la raíz, completada y verificada contra el avance observado del vídeo en la ficha elegida; una confirmación, cero violaciones; pins intactos.",
++    "final_sha256": "c56e8d207a54f01bc6d418e526de19f1b14ca403c0891275bf1d5685b37986f5",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-01\\EXIT.json": "e7ca25c1f8f1b699dc347bcf626f3ef6f8b371404e97d36941e68d1edaaef862",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-01\\RESOURCES.json": "082d9fceaddf12e8d76c43686bff76cc3f76656b1901500ccad89ab22518f3d0",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\profile-owner-01.json": "cb1e1793562dbe74ed7daed2e1a4b5484a35ce558fa0cbadd2f0933423126788",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-01\\PREREG.json": "6b2fa21209ede12a28204509324a25ddc95174027609205f60afabdbabb9b25e",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-01\\capture\\events.jsonl": "251fdc2e9f375a28e59a8b810a8b2f9193da42068d858bdb0a9b65fd38963b19",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-01\\turns.jsonl": "3359051be03988763dd5f2fe45bcdbb498838c4f1ba8e0b9f7bf1675c2615934",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\fixture-01.json": "3d497e0f3fe1c7ab16511c46f435a3acf8e142c3d20164193a9aef1b518db8ba",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-01.json": "134eecdf913985a7da79f736401b59834580ed9838f802160f2f514e57d62273",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-prelaunch-01.json": "969ba3268ca1fce4f0c5ea5e6e280321ed847329f7df658220dee1aa9d46ff9c",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-01\\case-observations.json": "6cd5a2deb65975af65d3a032ffd7e4ccb26b76b5a87e011770645a6288391776",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-01\\journal-before.json": "b33ba29ee9eb3ef73f97aeae3a8c0ed6b91ff7f8279fc0fd18ab535e2fdb889d",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-01\\journal-after.json": "1ee2d1d8da4c23e7e25badefd7821a91fca85202be75ff20c97c3a3a6342dfff",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-01\\journal.snapshot.jsonl": "828bce59bc5c3f801ab7438cc3cc146629e3f233c8d2bee14d334d8290ac42fb"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "878c10aa-96d7-41e9-bc3c-faa3e3b60da3",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      },
++      {
++        "invocation_id": "4e9409d4-35b1-479b-9ab9-167b5ca944a1",
++        "operation": "streaming.play.named",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  },
++  {
++    "index": 2,
++    "case_id": "video1953-dev-02",
++    "verdict": "passed",
++    "credit": false,
++    "pair_indices": [],
++    "reason": "exactamente una reproducción en Disney+ aprobada por la raíz, completada y verificada contra el avance observado del vídeo; el final nombra lo que se reproduce y dónde.",
++    "observation_note": "Turno revisado: exactamente una streaming.play.named con service=disney_plus aprobada por la raíz, completada y verificada contra el avance observado del vídeo en la ficha elegida; una confirmación, cero violaciones; pins intactos.",
++    "final_sha256": "fb71a2721828ccf2e8ddb8aab4460983a0b309d9fd203c988a6819623e032692",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-02\\EXIT.json": "1631c808594a100ccf65e92ab117ad1a175b7adc70eadba8c6ac1b4f12808195",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-02\\RESOURCES.json": "ff9d585e7791b3006abb252785ffde88687f8c30916147875b9b6184dbebadf8",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\profile-owner-02.json": "397ad57657a3ab197d4dba555fdb1dc5bcc706ed9d3b1ac2b875ad939cac3178",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-02\\PREREG.json": "17a6236d2726ca62cfaac8dabf5b025eb3a90df50af5e6dba6cb82cb3feaa7f2",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-02\\capture\\events.jsonl": "ef15870fbcdb99c297ac948c15bccc9adf19c144ab03fc9628bd99d78d2902b4",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-02\\turns.jsonl": "12eb38b582351c07af9cba50093f1630f837fba03dcf4b3218f6b8ce5c21d3d8",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\fixture-02.json": "9e1d85d3c4f7cf990989f1c4f67af47ac188a8a05f02770ab1905ea4789327e9",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-02.json": "cef495536b29709d02606516dc1e100709b26f545408e3052214982509e50c28",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-prelaunch-02.json": "0f3d0f20cd36119d09287afcbaed58480822815aa4ab9b3fce3a886c8e93fd85",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-02\\case-observations.json": "89ca6f0557261ffecc9aeffa8d3d74b71866fe1800c02a8e3b420a8163bca41e",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-02\\journal-before.json": "372d09f06e9a0a0cbfe8984adcc38dd77c62d607e84d3452d985c008048323a5",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-02\\journal-after.json": "a81a49809d1a54bc810954ff14a70139917bfceb17196c4b171e5f01899852a0",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-02\\journal.snapshot.jsonl": "bb33af185afb65f63e6b846e6b71a2e2fa299271af038d973fa1b8136b35fc6d"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "81808799-7459-4e0d-96e0-41e840e21331",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      },
++      {
++        "invocation_id": "2db72e1c-b74a-4f36-a237-d7ffcc842fb1",
++        "operation": "streaming.play.named",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  },
++  {
++    "index": 3,
++    "case_id": "video1953-dev-03",
++    "verdict": "failed",
++    "credit": false,
++    "pair_indices": [],
++    "reason": "Falló: la reproducción no se propuso, no se completó o no se verificó, o el final no fue fiel.",
++    "observation_note": "Turno revisado: cero violaciones; pins intactos; la reproducción se verificó, pero el final afirmó un fallo que no ocurrió antes de nombrar lo que se reproduce.",
++    "final_sha256": "4167db65c4be7ba1f81d4dfc1947fc3e4a735d8c83fedfaaab01d8073a81e059",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-03\\EXIT.json": "f8c535bc6ed2d14707f588fd4f815c51b04d7ac615af27e663466e907c20ecea",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-03\\RESOURCES.json": "d1decc393aeabb9cb24c5a97ead23f8102ed59f19bb50bcc473f73e932ee0f35",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\profile-owner-03.json": "6d168a66df436b476c993a7442c6543a7b3782ffdd8277a91b1fd277b7688845",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-03\\PREREG.json": "fdb8c7d630c232b41d2562a130f7b5a68c99c22977659be4317ab05201036c7d",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-03\\capture\\events.jsonl": "8a98946cceca22affda282cab2689d46c4e482ea8eb49038ac199590cff21603",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-03\\turns.jsonl": "ad31d74c8cdf03dedb1254a170b6cf691df2954b937738cfde48e4602a286843",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\fixture-03.json": "8666419c12f5a4102ff1bb6973bcd5a50cc08d630e023ce603fde6df473368d8",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-03.json": "2e0b916072c22cea068cdfa522edf39d8c73ad17ae11d67a1b1097f80f7f936c",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-prelaunch-03.json": "a2893c66a20bbafacd88303b1b3b368eb3a5009323d1562531d4bd57fe2f526f",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-03\\case-observations.json": "2bab88ffbab9c9fb279260db43f3cf50b1bc312d464ae81b1a3324b4c087abce",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-03\\journal-before.json": "9918d32712ac408059486b96f51e7f5b1c10195393c47e481ddd0856d27d52d0",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-03\\journal-after.json": "3e273280a582f992f6667a6ed6adfceb55b25f1a86b6e230dad629de87d22742",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-03\\journal.snapshot.jsonl": "ac40bf3c8bd615cc5a01c76312c54fb9cb79b8cd5076e4e22b69f520c7e3d54d"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "10992b76-3fc6-46b8-9129-89a2cc4c5d64",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      },
++      {
++        "invocation_id": "d9986b8b-8bda-4168-9880-7452ab97ec92",
++        "operation": "streaming.play.named",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  },
++  {
++    "index": 4,
++    "case_id": "video1953-boundary-01",
++    "verdict": "passed",
++    "credit": false,
++    "pair_indices": [],
++    "reason": "Límite aprobado.",
++    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++    "final_sha256": "c81bed7ba55b0f93285908e80293e92b792921e5293e22c1ff0e9e51dc5a6ebd",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-04\\EXIT.json": "1db15dd14cb0f3a23b0f661c98910824dc7123ca7c5d5882743b63d9f43e68e1",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-04\\RESOURCES.json": "6ae29c45c8d26f89fe9a1042e874a37ba0bdd43c22eebbcf52e157765f7a616b",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\profile-owner-04.json": "40470bf729fb384cfbcf11483057c4c426d9a0db46307a4a07f719da609ae1df",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-04\\PREREG.json": "096af4d4a483d4cc07f131910ed77c935bd3b6707bdabd7dcf0b41739543bfe9",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-04\\capture\\events.jsonl": "fbc256fef1b8bdae0113bc3a2882ea28657451ac6753258e6deaa9f2809f4e4f",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-04\\turns.jsonl": "a888ce4a471e682f3e914ae6c75b657e4564ba2654071eff0a05bc0df09030fb",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\fixture-04.json": "f497b13404aa8c85adf9f4c4266e2bc8e0459fce484825dc4075fc2b1aaa101c",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-04.json": "f6ab4d2db6cfa9b67da9256ee10ed49722005b5fde7579a9c44ce663c0f1c045",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-prelaunch-04.json": "c64f33362980a36fd51350aca5048768a1c0bf663b6fb860cecfeb39bbd3fa04",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-04\\case-observations.json": "16949a1fa284ee34c68743245af7be5e77feeb7e097623118382bfe653ca3ae4",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-04\\journal-before.json": "5c2f6db1f7a74f3e01e00b87c1cf15ee09cb62ba4acb2feed03cfd282a268c24",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-04\\journal-after.json": "03185821fef47f88f317edcf61c35c5fdac27123c75e50b3f6b89343d022867f",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-04\\journal.snapshot.jsonl": "0e9ff78c086bbc3e3b1480a723f94f03459297a79f4388dce724f19752e90e74"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "7fdb431b-8a9c-425f-8479-e0cec0045bbb",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  },
++  {
++    "index": 5,
++    "case_id": "video1953-boundary-02",
++    "verdict": "passed",
++    "credit": false,
++    "pair_indices": [],
++    "reason": "Límite aprobado.",
++    "observation_note": "Final publicado; ninguna operación; cero confirmaciones y violaciones; pins intactos.",
++    "final_sha256": "1026f757f1610d2f691d8ffb319a6e43c2133298c7bd7dbdfd8903317098a76c",
++    "evidence_pins": {
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-05\\EXIT.json": "be311c3f173422d11305d21e8eb9e8c3fc6e3543b5af08d144e201dfc6d5276c",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-05\\RESOURCES.json": "702c6b554c4a86caa1fc07723692147f9ab423bbf1eb4333a83834ab7b5f4fbe",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\profile-owner-05.json": "d7797d81be5b8e4a4fa4541e33b7bbcc43b9fc02f06eaa9f4c6dd92a4da9aa67",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-05\\PREREG.json": "275210851344c596a2dea748c2dcfcc7a7332dd823e779b7714785b4eceaeb55",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-05\\capture\\events.jsonl": "3e8a2250e5601904248988685b1c7c1bfc20e680564e22d76265cada632d7164",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-05\\turns.jsonl": "a3e7cea01c6f2c5eddc3b9c346c3799b44d9f626bb8e139ed3b55912f1cae3fb",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\fixture-05.json": "1fdf01833af0280864bcd58c0a98f4b29c966222d89e861c2ca1e2b6a02d5a8a",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-05.json": "a2c2b86c1237a6b0aac9bd0bc01713545e7fb07bd2c14e86b610e1269a6c746c",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\context-prelaunch-05.json": "586774e51b71db577653fc62eefa8516c57fe58ae57271b24d23cb2d1a998b1a",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-05\\case-observations.json": "ee3d404da970ef5618c765cb3f77d8601c966b60a3e67ebf1d1e6947b494232e",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-05\\journal-before.json": "3fe2c8498e614555c2f57b819441d691f1ac5186ad6dcf76c0a118ae338bdbf0",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-05\\journal-after.json": "eb70d2de59323af99eabd1d7e6acfb8753b48ef52761a48d35addd7e0fc48407",
++      "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-05\\journal.snapshot.jsonl": "b67a15bfae269fbcb6662d21c4f043e612e37e16dba6b2d695a2a0e18fb9b9df"
++    },
++    "terminal_kind": "published_final",
++    "clients_absent_before": true,
++    "aborted_before_admission": false,
++    "remaining_execution_uncertain_after_stop": false,
++    "cause_kind": null,
++    "violations": [],
++    "new_invocations": [
++      {
++        "invocation_id": "defa536b-e6d4-4297-85a7-16b3aaf96035",
++        "operation": "memory.status",
++        "status": "completed",
++        "verified": true,
++        "error_code": null,
++        "effect_may_have_occurred": null,
++        "phases": [
++          "started",
++          "completed"
++        ],
++        "replayed": false
++      }
++    ]
++  }
++]
+diff --git a/artifacts/comprobaciones/C03/VIDEO1953/ROOT_DECISION_PINS.json b/artifacts/comprobaciones/C03/VIDEO1953/ROOT_DECISION_PINS.json
+new file mode 100644
+index 000000000..f84f63c35
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/VIDEO1953/ROOT_DECISION_PINS.json
+@@ -0,0 +1,6 @@
++{
++  "decisions_sha256": "af711bc49a8287aa8a08dfd8ef4b98975e7be10133809dacf6b219cd5c935a07",
++  "candidate_manifest_sha256": "654f984e879c87abb98d51330ec696fa230b65b2fb61afc11b3a26f9833012e8",
++  "preparation_sha256": "4b48c792d45cc05483429d827eecd0fd2c2a38e5722261c78f4279c3aabc6715",
++  "head": "5801d5f79b50ba3d1389ce7f1466c3316b6dbb99"
++}
+diff --git a/artifacts/comprobaciones/C03/VIDEO1953/SOURCE.json b/artifacts/comprobaciones/C03/VIDEO1953/SOURCE.json
+new file mode 100644
+index 000000000..5430fb8e1
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/VIDEO1953/SOURCE.json
+@@ -0,0 +1,15 @@
++{
++  "schema": "c03-video1953-source-adoption-v1",
++  "status": "adopted_measured",
++  "adopted_by": "root (Claude Fable 5.1)",
++  "owner": "src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs (PlayDisneyAsync: stalled page reloaded once, search text retyped after a reload), on top of the VIDEO1953 build.",
++  "patch": "artifacts/comprobaciones/C03/VIDEO1953/SOURCE.patch",
++  "commits": [
++    "5801d5f79b50ba3d1389ce7f1466c3316b6dbb99"
++  ],
++  "build": "BUILD1953 (C03-repairs1953-build/BUILD_READY.json; Providers)",
++  "cause_measured": "Una ficha de Disney+ podía quedarse sin renderizar el resto del minuto, sin título ni botón.",
++  "change": "Diez segundos sin el control que toca recargan la página una sola vez; el texto de búsqueda se reescribe si vuelve vacío.",
++  "measurement": "VIDEO1953: 6 ejecutados, 5 aprobados, 1 fallido; 1 créditos. La fila y sus tres variantes reproducen «El diablo viste a la moda 2» con la ficha cargada o recargada una vez; una variante falla sólo por un final que abre con una negación inventada antes de nombrar lo que se reproduce. Un literal acredita con dos variantes aprobadas.",
++  "credits": 1
++}
+diff --git a/artifacts/comprobaciones/C03/VIDEO1953/SOURCE.patch b/artifacts/comprobaciones/C03/VIDEO1953/SOURCE.patch
+new file mode 100644
+index 000000000..1bcf23c77
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/VIDEO1953/SOURCE.patch
+@@ -0,0 +1,81 @@
++commit 5801d5f79b50ba3d1389ce7f1466c3316b6dbb99
++
++C03: Disney+ recarga una vez la página que no termina de cargar
++
++VIDEO1951 acreditó cinco filas; H0712 falló por una tercera causa: el
++buscador respondió, la lectura eligió «El diablo viste a la moda 2» y su
++ficha se quedó sin renderizar el resto del minuto (título «Disney+»,
++ningún botón), como le pasa a veces a la aplicación de Disney+ con una
++carga fría. Ahora diez segundos sin el control que toca —el cuadro de
++búsqueda, las fichas de una colección o el botón de la ficha— recargan
++esa página una sola vez, con la marca en la pestaña, y el texto de la
++búsqueda se vuelve a escribir si el cuadro vuelve vacío.
++
++Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
++
++
++diff --git a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
++index d7da19f4b..e6492c7ad 100644
++--- a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+++++ b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
++@@ -1794,7 +1794,8 @@ internal class CdpBrowserSession : IDisposable
++         string chosenHref = string.Empty;
++         string chosenName = string.Empty;
++         string lastObserved = string.Empty;
++-        bool typed = false;
+++        // Tras una recarga de la búsqueda el cuadro vuelve vacío: se escribe de nuevo, pocas veces.
+++        int typed = 0;
++         string failure = "disney_title_or_play_control_not_found";
++         for (int attempt = 0; attempt <= 240; attempt++)
++         {
++@@ -1819,6 +1820,12 @@ internal class CdpBrowserSession : IDisposable
++                 // botón de reproducir: entre iguales se prefiere la ficha de la obra.
++                 + "const clean=s=>(s||'').split(/\\s+(?:(?:Clasificaci[oó]n|Rating|Estreno|Release|G[eé]nero|Genre)\\s*:|Selecciona esta opci[oó]n|Select this option)/)[0].trim();"
++                 + "const isEntity=a=>(a.getAttribute('href')||'').includes('/browse/entity-');"
+++                // VIDEO1951: una página de Disney+ puede quedarse sin renderizar (título
+++                // «Disney+» y ningún control durante el resto del minuto). Diez segundos
+++                // sin el control que toca —el cuadro de búsqueda, las fichas o el botón—
+++                // se recarga esa página una sola vez; la marca vive en la pestaña.
+++                + "const stalled=()=>{const k='baxyReload:'+p;window.__baxyStall=(window.__baxyStall||0)+1;"
+++                + "if(window.__baxyStall>40&&!sessionStorage.getItem(k)){sessionStorage.setItem(k,'1');window.__baxyStall=0;location.reload();return 'reload';}return 'none';};"
++                 + "const pick=list=>list.find(x=>x.t===wanted)||list.find(x=>x.t.startsWith(wanted))||list.find(x=>x.t.includes(wanted));"
++                 + "const choose=cards=>{const named=cards.map(a=>({a,t:clean(a.getAttribute('aria-label')||a.innerText).toLowerCase(),n:clean(a.getAttribute('aria-label')||a.innerText)}));"
++                 + "const hrefs=cards.map(a=>a.getAttribute('href')||'').join(',');"
++@@ -1844,17 +1851,19 @@ internal class CdpBrowserSession : IDisposable
++                 + "const hit=choose(cards);"
++                 + "if(hit){chosenName=hit.n;chosenHref=hit.a.getAttribute('href')||'';if(chosenHref){location.href=chosenHref;action='entity_nav';}"
++                 + "return [location.href,document.title,'ok',-1,'missing',0,action,chosenHref,chosenName,'cards'].join('\\u001f');}}"
++-                + "if(input){input.focus();return [location.href,document.title,'ok',-1,'missing',0,'input_focused','','',(input.value||'').length?'typed':'empty'].join('\\u001f');}}"
+++                + "if(input){window.__baxyStall=0;input.focus();return [location.href,document.title,'ok',-1,'missing',0,'input_focused','','',(input.value||'').length?'typed':'empty'].join('\\u001f');}"
+++                + "action=stalled();return [location.href,document.title,'ok',-1,'missing',0,action,'','','search'].join('\\u001f');}"
++                 // La colección: si la búsqueda llevó a una página de universo, la obra
++                 // se elige entre sus fichas con la misma lectura.
++                 + "if(!auth&&p.includes('/browse/page-')){const cards=[...document.querySelectorAll('a[data-testid=\"set-item\"]')].filter(isEntity);"
++                 + "const hit=cards.length?choose(cards):null;"
++                 + "if(hit){chosenName=hit.n;chosenHref=hit.a.getAttribute('href')||'';if(chosenHref){location.href=chosenHref;action='entity_nav';}}"
+++                + "else if(!cards.length){action=stalled();}"
++                 + "return [location.href,document.title,'ok',-1,'missing',0,action,chosenHref,chosenName,'page'].join('\\u001f');}"
++                 // La ficha: su botón de reproducir lleva al reproductor por la
++                 // propia aplicación (SPA), que es la ruta que arranca.
++                 + "if(!auth&&p.includes('/browse/entity-')){const play=document.querySelector('a[data-testid=\"playback-action-button\"],button[data-testid=\"playback-action-button\"]');"
++-                + "if(play){play.click();action='play_clicked';}"
+++                + "if(play){play.click();action='play_clicked';}else{action=stalled();}"
++                 + "return [location.href,document.title,'ok',-1,'missing',0,action,'','','entity'].join('\\u001f');}"
++                 // El reproductor: el <video> que avanza es la prueba.
++                 + "const vids=[...document.querySelectorAll('video')];"
++@@ -1872,13 +1881,13 @@ internal class CdpBrowserSession : IDisposable
++                     "disney_authentication_required");
++             if (fields[7].Length > 0) chosenHref = fields[7];
++             if (fields[8].Length > 0) chosenName = fields[8];
++-            if (fields[6] == "input_focused" && !typed && fields[9] == "empty")
+++            if (fields[6] == "input_focused" && typed < 3 && fields[9] == "empty")
++             {
++                 await CommandAsync(socket, "Input.insertText", writer =>
++                 {
++                     writer.WriteString("text", title);
++                 }, cancellationToken).ConfigureAwait(false);
++-                typed = true;
+++                typed++;
++                 continue;
++             }
++             bool player = fields[9] == "player";
+diff --git a/artifacts/comprobaciones/C03/VIDEO1953/case-00.json b/artifacts/comprobaciones/C03/VIDEO1953/case-00.json
+new file mode 100644
+index 000000000..7ce1e5a72
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/VIDEO1953/case-00.json
+@@ -0,0 +1,24 @@
++{
++  "index": 0,
++  "case_id": "H0712",
++  "terminal_kind": "published_final",
++  "final_sha256": "d4dfce485279380f90b04f279049218f7fcf9f523e5c2cbe0aab8f573c4c9bc2",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 34.34400000000005,
++    "gpu_peak_mib": 3492.9296875,
++    "ram_peak_mib": 3904.81640625,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-00\\EXIT.json": "408a2ad58a9f181aa98b27ce47e4f6d24d31d5dcbb520f0f6efaa16c36ef56ce",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-00\\RESOURCES.json": "178680b62846bcc4ccee93188d9c99b8d68fa4d78d2c5a0aeb0439aa99ea79d7",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-00\\case-observations.json": "348eea427f7061c72bdfaccffaa6d32d111cfe220d64a5fa45322dbf31253e55"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/VIDEO1953/case-01.json b/artifacts/comprobaciones/C03/VIDEO1953/case-01.json
+new file mode 100644
+index 000000000..1a786e1fa
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/VIDEO1953/case-01.json
+@@ -0,0 +1,24 @@
++{
++  "index": 1,
++  "case_id": "video1953-dev-01",
++  "terminal_kind": "published_final",
++  "final_sha256": "c56e8d207a54f01bc6d418e526de19f1b14ca403c0891275bf1d5685b37986f5",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 32.57800000000043,
++    "gpu_peak_mib": 3492.9296875,
++    "ram_peak_mib": 3895.51171875,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-01\\EXIT.json": "e7ca25c1f8f1b699dc347bcf626f3ef6f8b371404e97d36941e68d1edaaef862",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-01\\RESOURCES.json": "082d9fceaddf12e8d76c43686bff76cc3f76656b1901500ccad89ab22518f3d0",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-01\\case-observations.json": "6cd5a2deb65975af65d3a032ffd7e4ccb26b76b5a87e011770645a6288391776"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/VIDEO1953/case-02.json b/artifacts/comprobaciones/C03/VIDEO1953/case-02.json
+new file mode 100644
+index 000000000..5c40cc24c
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/VIDEO1953/case-02.json
+@@ -0,0 +1,24 @@
++{
++  "index": 2,
++  "case_id": "video1953-dev-02",
++  "terminal_kind": "published_final",
++  "final_sha256": "fb71a2721828ccf2e8ddb8aab4460983a0b309d9fd203c988a6819623e032692",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 34.60900000000038,
++    "gpu_peak_mib": 3492.9296875,
++    "ram_peak_mib": 3943.35546875,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-02\\EXIT.json": "1631c808594a100ccf65e92ab117ad1a175b7adc70eadba8c6ac1b4f12808195",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-02\\RESOURCES.json": "ff9d585e7791b3006abb252785ffde88687f8c30916147875b9b6184dbebadf8",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-02\\case-observations.json": "89ca6f0557261ffecc9aeffa8d3d74b71866fe1800c02a8e3b420a8163bca41e"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/VIDEO1953/case-03.json b/artifacts/comprobaciones/C03/VIDEO1953/case-03.json
+new file mode 100644
+index 000000000..1c6958d78
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/VIDEO1953/case-03.json
+@@ -0,0 +1,24 @@
++{
++  "index": 3,
++  "case_id": "video1953-dev-03",
++  "terminal_kind": "published_final",
++  "final_sha256": "4167db65c4be7ba1f81d4dfc1947fc3e4a735d8c83fedfaaab01d8073a81e059",
++  "clients_absent_before": true,
++  "verdict": "failed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 32.39099999999962,
++    "gpu_peak_mib": 3492.9296875,
++    "ram_peak_mib": 3868.4296875,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-03\\EXIT.json": "f8c535bc6ed2d14707f588fd4f815c51b04d7ac615af27e663466e907c20ecea",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-03\\RESOURCES.json": "d1decc393aeabb9cb24c5a97ead23f8102ed59f19bb50bcc473f73e932ee0f35",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-03\\case-observations.json": "2bab88ffbab9c9fb279260db43f3cf50b1bc312d464ae81b1a3324b4c087abce"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/VIDEO1953/case-04.json b/artifacts/comprobaciones/C03/VIDEO1953/case-04.json
+new file mode 100644
+index 000000000..3eaa6d2fd
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/VIDEO1953/case-04.json
+@@ -0,0 +1,24 @@
++{
++  "index": 4,
++  "case_id": "video1953-boundary-01",
++  "terminal_kind": "published_final",
++  "final_sha256": "c81bed7ba55b0f93285908e80293e92b792921e5293e22c1ff0e9e51dc5a6ebd",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 17.09400000000005,
++    "gpu_peak_mib": 3488.9296875,
++    "ram_peak_mib": 1723.265625,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-04\\EXIT.json": "1db15dd14cb0f3a23b0f661c98910824dc7123ca7c5d5882743b63d9f43e68e1",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-04\\RESOURCES.json": "6ae29c45c8d26f89fe9a1042e874a37ba0bdd43c22eebbcf52e157765f7a616b",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-04\\case-observations.json": "16949a1fa284ee34c68743245af7be5e77feeb7e097623118382bfe653ca3ae4"
++  }
++}
+diff --git a/artifacts/comprobaciones/C03/VIDEO1953/case-05.json b/artifacts/comprobaciones/C03/VIDEO1953/case-05.json
+new file mode 100644
+index 000000000..4adcd67b8
+--- /dev/null
++++ b/artifacts/comprobaciones/C03/VIDEO1953/case-05.json
+@@ -0,0 +1,24 @@
++{
++  "index": 5,
++  "case_id": "video1953-boundary-02",
++  "terminal_kind": "published_final",
++  "final_sha256": "1026f757f1610d2f691d8ffb319a6e43c2133298c7bd7dbdfd8903317098a76c",
++  "clients_absent_before": true,
++  "verdict": "passed",
++  "aborted_before_admission": false,
++  "remaining_execution_uncertain_after_stop": false,
++  "exit_code": 0,
++  "pins_unchanged": true,
++  "violations": [],
++  "resources": {
++    "seconds": 19.82799999999952,
++    "gpu_peak_mib": 3492.9296875,
++    "ram_peak_mib": 1902.9921875,
++    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
++  },
++  "receipt_pins": {
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-05\\EXIT.json": "be311c3f173422d11305d21e8eb9e8c3fc6e3543b5af08d144e201dfc6d5276c",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\results\\case-05\\RESOURCES.json": "702c6b554c4a86caa1fc07723692147f9ab423bbf1eb4333a83834ab7b5f4fbe",
++    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1953-instrument-v1\\private\\run-05\\case-observations.json": "ee3d404da970ef5618c765cb3f77d8601c966b60a3e67ebf1d1e6947b494232e"
++  }
++}

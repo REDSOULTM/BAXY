@@ -1,0 +1,105 @@
+{
+  "schema": "video1955-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1955-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1955-instrument-v1",
+  "seal_sha256": "887faf0345f864c3ae38fdd6e06e2bf73962ecbe991722be2b1159e096549c70",
+  "runner_sha256": "923d4caa7665e067c56b2994f93ac68a8f7666d82a5eff6db99a3470349cc351",
+  "transport_seal_sha256": "49425d2ccb1ae1e9d885e85d862237b97a7e5e013b902aa5c782f32e2b15d1d8",
+  "files": {
+    "panel.json": "146624c39784235f29145651cffbc4c591f3831e1f643cad66927b4377e240be",
+    "turns.jsonl": "4248f4c38a314166056a03fa12dcc3d2ea4075ff6175ec68e21b0d6b0c05ba3a",
+    "case-map.json": "d7520dc9519e079fc5900fdea241d32928d898c3c480aec16b8086af1516b400",
+    "PLAN.md": "3cbd9d7c2e86127389863247edd1277a0c21a925d0601a943b1ca14728b870ac"
+  },
+  "counts": {
+    "cases": 8,
+    "historical_literals": 4,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 16,
+    "session_controls": 8,
+    "ordinary_turns": 8,
+    "reviewed_turns": 0,
+    "maximum_reportable_terminals": 8,
+    "maximum_internal_confirmations": 0
+  },
+  "kind_counts": {
+    "historical_literal": 4,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0113",
+      "kind": "historical_literal",
+      "group": "disney_bare_request",
+      "credit_behavior": "disney_bare_request",
+      "text_sha256": "230b3fb9e9af852aaee9b19b223ff65b0d4a027ce8d04c4bb10ae1ee5f757b03",
+      "criterion_sha256": "e68c3f9942895ed42cdf1f24afe59dcaf0f715f6b2e2553712908ae6bab3d8b0"
+    },
+    {
+      "index": 1,
+      "case_id": "H0130",
+      "kind": "historical_literal",
+      "group": "disney_bare_request",
+      "credit_behavior": "disney_bare_request",
+      "text_sha256": "29de3c82bafa82311bb960510a2ffd413fa0eb2127980a8575826507f8ac5f12",
+      "criterion_sha256": "e68c3f9942895ed42cdf1f24afe59dcaf0f715f6b2e2553712908ae6bab3d8b0"
+    },
+    {
+      "index": 2,
+      "case_id": "H0252",
+      "kind": "historical_literal",
+      "group": "disney_bare_request",
+      "credit_behavior": "disney_bare_request",
+      "text_sha256": "5126a160a94b0fdd4b8485860b58359cc3e55fd14b2a40686548fa31187d149d",
+      "criterion_sha256": "e68c3f9942895ed42cdf1f24afe59dcaf0f715f6b2e2553712908ae6bab3d8b0"
+    },
+    {
+      "index": 3,
+      "case_id": "H0270",
+      "kind": "historical_literal",
+      "group": "disney_bare_request",
+      "credit_behavior": "disney_bare_request",
+      "text_sha256": "5787062f417c6f0471cc54b2c41d89bee07ce31f48f0afd309cf47b1f297768a",
+      "criterion_sha256": "e68c3f9942895ed42cdf1f24afe59dcaf0f715f6b2e2553712908ae6bab3d8b0"
+    },
+    {
+      "index": 4,
+      "case_id": "video1955-dev-01",
+      "kind": "original_development_variant",
+      "group": "disney_bare_request",
+      "credit_behavior": "disney_bare_request",
+      "text_sha256": "f17a95fd5a8d972e73265fa8e2f4909085acf7438fc535eae6ca208545a389c5",
+      "criterion_sha256": "e68c3f9942895ed42cdf1f24afe59dcaf0f715f6b2e2553712908ae6bab3d8b0"
+    },
+    {
+      "index": 5,
+      "case_id": "video1955-dev-02",
+      "kind": "original_development_variant",
+      "group": "disney_bare_request",
+      "credit_behavior": "disney_bare_request",
+      "text_sha256": "548fcc17aa625d56da1cc7887c59b768e963ee80722b20bdf7ab80834b69ed70",
+      "criterion_sha256": "e68c3f9942895ed42cdf1f24afe59dcaf0f715f6b2e2553712908ae6bab3d8b0"
+    },
+    {
+      "index": 6,
+      "case_id": "video1955-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "88f4ab00dde93e72e29d3bb55ab3a0b61ef16ceb6f6e48a05752a40b8d30371b",
+      "criterion_sha256": "d1e532eed01f2872ea235d03b4d48a162885605b712fad8cd7ad185e6fcb3964"
+    },
+    {
+      "index": 7,
+      "case_id": "video1955-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "bc24898c6d653acc0303bda963f8edd69ad552c3e75140829c1ecc5b591f40cc",
+      "criterion_sha256": "50757e30c0886c9c9d6fe25617d31896c91ed2f486ced29f1b243a9954f5945b"
+    }
+  ]
+}

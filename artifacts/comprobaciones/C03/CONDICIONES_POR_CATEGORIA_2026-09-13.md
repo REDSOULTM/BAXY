@@ -1690,3 +1690,7 @@ Vídeo y series pasa de 16/26 a 21/26 con poner una serie nombrandola en Disney+
 ## Actualización 2026-09-20 (VIDEO1953)
 
 Vídeo y series pasa de 21/26 a 22/26 con poner una serie nombrandola en Disney+ recargando una vez la pagina que no termina de cargar (commit 5801d5f7, BUILD1953) (HEAD 5801d5f7): 6 ejecutados, 5 aprobados, 1 fallido, 1 créditos. La fila y sus tres variantes reproducen «El diablo viste a la moda 2» con la ficha cargada o recargada una vez; una variante falla sólo por un final que abre con una negación inventada antes de nombrar lo que se reproduce. Un literal acredita con dos variantes aprobadas.
+
+## Actualización 2026-09-20 (VIDEO1955)
+
+Vídeo y series pasa de 22/26 a 26/26 con preguntar que ver cuando se nombra Disney+ sin titulo (commit 2a005655, BUILD1955) (HEAD 2a005655): 8 ejecutados, 8 aprobados, 0 fallidos, 4 créditos. Las cuatro transcripciones cortadas o mal oídas que nombran Disney+ sin título preguntan qué ver, en su idioma, con cero operaciones; dos variantes hacen lo mismo y los límites no tocan nada. Cuatro literales acreditan con dos variantes aprobadas: 742/742 y las 35 categorías cerradas. La categoría queda cerrada.
