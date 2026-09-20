@@ -879,6 +879,9 @@ def _public_live_lookup_request(folded: str) -> bool:
             folded,
             r"\b(?:walmart|amazon|oysho|safeway|target|costco|ikea)\b",
         )
+        # H0646: «quiero ver The Boys en Amazon Prime» names the streaming
+        # service, not the store; the Prime Video limit answers it.
+        and not _has(folded, r"\bamazon\s+prime\b|\bprime\s*video\b")
         and _has(
             folded,
             r"^(?:i\s+need|i\s+want|let(?:'s|\s+us)\s+get|necesito|quiero|"
@@ -3401,6 +3404,15 @@ def known_unsupported_effect_request(
                 and not _has(folded, r"\b(?:correos?|mails?|e-?mails?|emails?|inbox|bandeja|gmail|outlook)\b")
             ),
             {"message.read.named"},
+        ),
+        (
+            # H0646 «pone The Office en Prime Video» (owner, 2026-09-20: no
+            # Prime Video subscription; the row is an honest limit): the
+            # streaming session on this PC has no Prime Video, so no operation
+            # can play there. Netflix keeps its own reviewed playback.
+            _has(folded, r"\b(?:pon|pone|poneme|ponme|poné|reproduce|reproduci|reprodúceme|play|put(?:\s+on)?|start|inicia|dale|ver|mira|mirar|watch|quiero\s+ver|quisiera\s+ver)\b")
+            and _has(folded, r"\b(?:en|on|in)\s+(?:amazon\s+)?(?:prime\s*video|primevideo|prime)\b"),
+            {"streaming.play.prime_video"},
         ),
     )
     return any(
