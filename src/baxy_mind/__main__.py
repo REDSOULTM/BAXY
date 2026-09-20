@@ -24,7 +24,7 @@ from datetime import date, datetime, time as datetime_time, timedelta, timezone
 from enum import Enum
 from functools import partial
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Iterable
 from urllib.parse import urlencode, urlsplit
 
 # PyTorch otherwise sizes its CPU pools for the whole machine. On a 16 GiB
