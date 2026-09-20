@@ -5402,10 +5402,11 @@ def near_catalog_application_candidates(
         return ()
     if key in catalog.keys:
         return ()
-    scored: list[tuple[int, str]] = []
+    scored: list[tuple[int, int, str]] = []
     for name, entry_key in catalog.entries:
         tokens = [entry_key] + entry_key.split()
         best = None
+        prefix = 0
         for token in tokens:
             if len(token) < 3:
                 continue
@@ -5417,10 +5418,14 @@ def near_catalog_application_candidates(
                 if distance > limit:
                     continue
                 score = distance
-            best = score if best is None else min(best, score)
+            if best is None or score < best:
+                best = score
+                prefix = _common_prefix_length(key, token)
+            elif score == best:
+                prefix = max(prefix, _common_prefix_length(key, token))
         if best is not None:
-            scored.append((best, name))
-    scored.sort(key=lambda item: (item[0], item[1]))
+            scored.append((best, -prefix, name))
+    scored.sort()
     if not scored:
         return ()
     # A short garbled target («team», «ste») may stand for two names one edit
@@ -5428,10 +5433,34 @@ def near_catalog_application_candidates(
     best = scored[0][0]
     tolerance = 1 if len(key) <= 4 else 0
     names = []
-    for score, name in scored:
+    prefixes = []
+    scores = []
+    for score, negative_prefix, name in scored:
         if score <= best + tolerance and name not in names:
             names.append(name)
+            prefixes.append(-negative_prefix)
+            scores.append(score)
+    # NEAR1995 «abre Steel.»: with this PC's catalog «steel» is two edits from
+    # «steam» and from two installed «Shell» names alike. What a person hears
+    # is the opening of the word: among names tied at the same distance, the
+    # one that alone shares three or more leading letters with what was said
+    # is the name meant. Names kept only by the short-word tolerance («team»:
+    # Teams at 0, Steam at 1) are not a tie and still ask which (H0521, owner).
+    if len(names) > 1 and len(set(scores)) == 1:
+        longest = max(prefixes)
+        leaders = [name for name, length in zip(names, prefixes) if length == longest]
+        if longest >= 3 and len(leaders) == 1:
+            return (leaders[0],)
     return tuple(names[:2])
+
+
+def _common_prefix_length(left: str, right: str) -> int:
+    count = 0
+    for a, b in zip(left, right):
+        if a != b:
+            break
+        count += 1
+    return count
 
 
 _NEAR_GAME_ORDER = re.compile(

@@ -18,7 +18,9 @@ from baxy_mind.__main__ import (
     _with_session_alarm_selector,
 )
 
-APPLICATIONS = ("Steam", "Microsoft Teams", "Google Chrome", "Discord", "Calculadora", "Bloc de notas")
+# The Start catalog of this PC holds two «Shell» names two edits from «steel» (NEAR1995); Teams is not installed here.
+APPLICATIONS = ("Steam", "Google Cloud SDK Shell", "OpenSSL Shell", "Google Chrome", "Discord", "Calculadora", "Bloc de notas")
+APPLICATIONS_WITH_TEAMS = (*APPLICATIONS, "Microsoft Teams")
 GAMES = effect_intent.build_game_catalog_index(
     [("steam", "2767030", "Marvel Rivals"), ("steam", "108600", "Project Zomboid")]
 )
@@ -46,9 +48,22 @@ def test_single_near_game_launches_without_asking() -> None:
 
 
 def test_two_near_candidates_keep_asking() -> None:
-    # H0521 «abres team»: Steam and Microsoft Teams are both installed; the question stands.
-    assert effect_intent.near_single_open_candidate("abres team", APPLICATIONS, GAMES) is None
-    assert effect_intent.resolve_explicit_effects("abres team", OPERATIONS, APPLICATIONS, GAMES) is None
+    # H0521 «abres team» with Steam and Microsoft Teams both installed: Teams at distance 0 and
+    # Steam at 1 are not a tie (the short-word tolerance keeps both) and the question stands
+    # (owner: never make «team» mean Teams everywhere).
+    assert effect_intent.near_catalog_application_candidates("abres team", APPLICATIONS_WITH_TEAMS) == ("Microsoft Teams", "Steam")
+    assert effect_intent.near_single_open_candidate("abres team", APPLICATIONS_WITH_TEAMS, GAMES) is None
+    assert effect_intent.resolve_explicit_effects("abres team", OPERATIONS, APPLICATIONS_WITH_TEAMS, GAMES) is None
+    # On this PC Teams is not installed: the only candidate is Steam and it opens (NEAR1997).
+    assert effect_intent.near_single_open_candidate("abres team", APPLICATIONS, GAMES) == ("app.open", "Steam")
+
+
+def test_shared_prefix_breaks_a_tie_at_the_same_distance() -> None:
+    # NEAR1995: «steel» is two edits from «steam», «google cloud sdk shell» and «openssl shell»;
+    # only Steam shares the heard «ste», so it is the one name meant.
+    assert effect_intent.near_catalog_application_candidates("abre Steel.", APPLICATIONS) == ("Steam",)
+    assert effect_intent.near_catalog_application_candidates("abrí Steel, porfa", APPLICATIONS) == ("Steam",)
+    assert effect_intent.near_catalog_application_candidates("open stema please", APPLICATIONS) == ("Steam",)
 
 
 def test_exact_names_and_unknown_names_are_untouched() -> None:
