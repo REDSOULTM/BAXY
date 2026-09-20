@@ -1,0 +1,15 @@
+{
+  "schema": "c03-video1929-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/__main__.py (the streaming service grounded by the literal extractor is a catalog value the reader owns, exempt from the literal recheck like the music provider), on top of the VIDEO1929 build.",
+  "patch": "artifacts/comprobaciones/C03/VIDEO1929/SOURCE.patch",
+  "commits": [
+    "c79ee7138a024fc036f5179cd3736bbcdabb5c74"
+  ],
+  "build": "BUILD1929 (C03-repairs1929-build/BUILD_READY.json; mente)",
+  "cause_measured": "La comprobación de literalidad tras el extractor exigía que «netflix» apareciera escrito; con «nerflix» tiraba la lectura y el plan acababa en clarify.",
+  "change": "El servicio de streaming queda exento de la recomprobación literal, como el proveedor de música.",
+  "measurement": "VIDEO1929: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. Cuatro reproducciones con el servicio mal escrito, aprobadas por la raiz y verificadas contra el avance del video; los finales nombran Netflix y el titulo. La primera corrida de los cuatro quedo detenida por un titulo esperado heredado en el revisor; se preservo y se repitio.",
+  "credits": 1
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "video1929-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1929-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1929-instrument-v1",
+  "seal_sha256": "4959c23818a853987485f2423328bb2f6873bb5eb65ba3b8f9e11908061aae36",
+  "runner_sha256": "131968fc970ff583dab19ed8b044bca4b62e8a0bdf7a37268727cd1a299f3ae4",
+  "transport_seal_sha256": "8d6503e12df91fdd37bc461db48406395678a269adb06b5cdc1f4baf8911a9f9",
+  "files": {
+    "panel.json": "e859a63ad9e463e600ae250d15f0719db9382d9a0070dc1550b8be93e752b9fa",
+    "turns.jsonl": "f8042f8091f9f95190bad38c204db15708b9c3c7be67b189d37ed85cc6c5267a",
+    "case-map.json": "657b6d12c164a8603d68bbc0953a1ba0b63f76f6294e98963b932d7eedb54f92",
+    "PLAN.md": "826b87fda0bbc30bc14971cb597bd35cbb7fbc5d8d86c0503a4fa7a2f5665651"
+  },
+  "counts": {
+    "cases": 6,
+    "historical_literals": 1,
+    "original_development_variants": 3,
+    "boundaries": 2,
+    "wire_lines": 12,
+    "session_controls": 6,
+    "ordinary_turns": 2,
+    "reviewed_turns": 4,
+    "maximum_reportable_terminals": 10,
+    "maximum_internal_confirmations": 4
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 3,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0737",
+      "kind": "historical_literal",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "fda4fb5a438188b6cf6630ce3028deda9429f31ede0366ba139a4907562e210a",
+      "criterion_sha256": "2f2eed4bc2e04f732d959bf28fafceafbac7571a06e5f544035e0e0d7660e196"
+    },
+    {
+      "index": 1,
+      "case_id": "video1929-dev-01",
+      "kind": "original_development_variant",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "5ebeaea21152e658f44a0739074ed53861f4955f51e81ae82a5d459287ce56cf",
+      "criterion_sha256": "2f2eed4bc2e04f732d959bf28fafceafbac7571a06e5f544035e0e0d7660e196"
+    },
+    {
+      "index": 2,
+      "case_id": "video1929-dev-02",
+      "kind": "original_development_variant",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "2363fe27e31d010665d3c29f33ac4ca095688f7092e4597cd5187193b0df7eeb",
+      "criterion_sha256": "2f2eed4bc2e04f732d959bf28fafceafbac7571a06e5f544035e0e0d7660e196"
+    },
+    {
+      "index": 3,
+      "case_id": "video1929-dev-03",
+      "kind": "original_development_variant",
+      "group": "streaming_named_play",
+      "credit_behavior": "streaming_named_play",
+      "text_sha256": "d59180b5caacf4ac0e3bb453560082373af0dda8c9fb04ede24e172afe30ca56",
+      "criterion_sha256": "2f2eed4bc2e04f732d959bf28fafceafbac7571a06e5f544035e0e0d7660e196"
+    },
+    {
+      "index": 4,
+      "case_id": "video1929-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "a08744964ba0843fd1bc23d959af801082f2500cf7a864f2cb4668789b2104fc",
+      "criterion_sha256": "031153cb155d4fd6216825f753dc315529c6a33cdc1329a8ed51b2593af70750"
+    },
+    {
+      "index": 5,
+      "case_id": "video1929-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "bc24898c6d653acc0303bda963f8edd69ad552c3e75140829c1ecc5b591f40cc",
+      "criterion_sha256": "50757e30c0886c9c9d6fe25617d31896c91ed2f486ced29f1b243a9954f5945b"
+    }
+  ]
+}

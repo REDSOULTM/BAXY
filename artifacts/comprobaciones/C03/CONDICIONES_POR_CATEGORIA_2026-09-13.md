@@ -1638,3 +1638,7 @@ Vídeo y series pasa de 11/26 a 12/26 con preguntar por el titulo cuando es lo u
 ## Actualización 2026-09-20 (VIDEO1927)
 
 Vídeo y series pasa de 12/26 a 14/26 con poner la serie aunque se nombre mal, y decir cual se puso de verdad (commit 923efb3a, BUILD1927) (HEAD 923efb3a): 6 ejecutados, 6 aprobados, 0 fallidos, 2 créditos. La raiz aprueba el titulo tal y como se escribio, Netflix lo corrige, el video avanza y el final nombra el titulo observado; cuatro reproducciones verificadas y dos limites en cero operaciones.
+
+## Actualización 2026-09-20 (VIDEO1929)
+
+Vídeo y series pasa de 14/26 a 15/26 con poner la serie aunque el servicio se nombre mal, sin preguntar por lo que ya esta escrito (commit c79ee713, BUILD1929) (HEAD c79ee713): 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos. Cuatro reproducciones con el servicio mal escrito, aprobadas por la raiz y verificadas contra el avance del video; los finales nombran Netflix y el titulo. La primera corrida de los cuatro quedo detenida por un titulo esperado heredado en el revisor; se preservo y se repitio.

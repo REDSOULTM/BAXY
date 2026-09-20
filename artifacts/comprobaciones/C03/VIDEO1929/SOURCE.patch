@@ -1,0 +1,36 @@
+commit c79ee7138a024fc036f5179cd3736bbcdabb5c74
+
+C03: el servicio mal escrito sigue siendo el servicio
+
+«Quiero ver stranger things en nerflix» terminaba preguntando qué servicio
+y qué título, con los dos escritos delante. En frío todo lo determinista lo
+aceptaba; una sonda directa al mind —turn.decide y plan sin la App— enseñó
+dónde: la decisión era la acción y el plan devolvía clarify. Tras el
+extractor literal hay una comprobación de que cada valor sea palabra que la
+persona escribió, con exenciones por operación; «netflix» no está en
+«nerflix», la lectura se tiraba y el modelo preguntaba.
+
+La exención que ya tenía la reproducción de música —el analizador conserva
+la consulta literal y aporta el único proveedor del catálogo— es
+exactamente ésta. Medido: nerflix, netlix, Netfix y neflix reproducen y el
+final nombra Netflix.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index 7190bf6d4..66822e0e6 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -6107,6 +6107,11 @@ def _ground_explicit_arguments(
+         "media.control",
+         "media.play.query",
+         "media.play.youtube",
++        # VIDEO1929 H0737 «quiero ver stranger things en nerflix»: el extractor
++        # conserva el título literal y aporta el único servicio del catálogo;
++        # exigir que «netflix» apareciera escrito tal cual tiraba esa lectura y
++        # el turno preguntaba en qué servicio, con el servicio delante.
++        "streaming.play.named",
+         "system.process.list",
+         "system.settings.adjust",
+         "system.settings.set",
