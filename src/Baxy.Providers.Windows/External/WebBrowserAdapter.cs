@@ -282,12 +282,13 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
     {
         string service = ExternalJson.RequiredString(arguments, "service");
         string title = ExternalJson.RequiredString(arguments, "title").Trim();
-        if (service != "netflix" || title.Length == 0)
+        if (service is not ("netflix" or "disney_plus") || title.Length == 0)
             return ExternalJson.Failure(operation, "streaming_named_argument_invalid");
         _sessionContext?.Activate(_browser);
         effectBoundary.Cross(cancellationToken);
-        CdpStreamingPlaybackResult playback = await _browser.PlayNetflixAsync(
-            title, cancellationToken).ConfigureAwait(false);
+        CdpStreamingPlaybackResult playback = service == "disney_plus"
+            ? await _browser.PlayDisneyAsync(title, cancellationToken).ConfigureAwait(false)
+            : await _browser.PlayNetflixAsync(title, cancellationToken).ConfigureAwait(false);
         if (!playback.Verified)
         {
             // Un fallo que no dice donde se quedo obliga a adivinar. Se anota la
@@ -307,7 +308,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
             writer.WriteString("targetId", playback.TargetId);
             writer.WriteString("playbackStatus", "playing");
             writer.WriteNumber("observedProgressSeconds", playback.ObservedProgressSeconds);
-            writer.WriteString("authority", "netflix_cdp_video_progress_postread");
+            writer.WriteString("authority", service == "disney_plus"
+                ? "disney_cdp_video_progress_postread" : "netflix_cdp_video_progress_postread");
             writer.WriteEndObject();
         }), playback.EffectObserved);
     }
@@ -977,6 +979,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
         string[] suffixes = service switch
         {
             "netflix" => ["netflix.com"],
+            "disney_plus" => ["disneyplus.com"],
             "prime_video" => ["primevideo.com", "amazon.com"],
             "youtube" => ["youtube.com", "youtu.be"],
             _ => [],
@@ -1742,6 +1745,140 @@ internal class CdpBrowserSession : IDisposable
         }
         return new(false, true, title, lastUrl, lastPageTitle, targetId, 0, failure,
             lastObserved + "|remembered=" + chosenId + "/" + chosenName);
+    }
+
+    // VIDEO1947 «pon Daredevil en Disney+»: medido en el perfil compartido con la
+    // sesión del dueño. El enlace frío /play/<id> se queda cargando para siempre
+    // (el puente de identidad de login.disney.com falla: «Scope is not present»);
+    // la ruta que reproduce es la de una persona: la búsqueda (/browse/search,
+    // #searchInput), la ficha (a[data-testid="set-item"] → /browse/entity-<id>) y
+    // su botón «Ver ahora» (a[data-testid="playback-action-button"]). Con el
+    // agente de usuario de Edge el reproductor elige PlayReady y el renderizador
+    // de Media Foundation de este PC falla (0x8004CD…); con uno de Chrome elige
+    // Widevine y el vídeo avanza. El primer <video> de la página es un elemento
+    // de fondo que nunca sale de readyState 0: se mira el que avanza.
+    private const string DisneyChromeUserAgent =
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+        + "Chrome/153.0.0.0 Safari/537.36";
+
+    internal virtual async ValueTask<CdpStreamingPlaybackResult> PlayDisneyAsync(
+        string title,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(title) || Encoding.UTF8.GetByteCount(title) > 512)
+            return new(false, false, title, string.Empty, string.Empty, string.Empty, 0,
+                "disney_title_invalid");
+        Uri endpoint = await EnsureEndpointAsync(cancellationToken).ConfigureAwait(false);
+        (string targetId, Uri webSocket) = await ResolveTargetAsync(
+            endpoint, createIfMissing: true, cancellationToken).ConfigureAwait(false);
+        using var socket = new ClientWebSocket();
+        await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
+        // El override vive con esta sesión CDP: dura lo que dura el socket, sólo
+        // para este destino; Netflix y las navegaciones nombradas no lo ven.
+        await CommandAsync(socket, "Emulation.setUserAgentOverride", writer =>
+        {
+            writer.WriteString("userAgent", DisneyChromeUserAgent);
+        }, cancellationToken).ConfigureAwait(false);
+        const string searchUrl = "https://www.disneyplus.com/es-419/browse/search";
+        JsonElement navigate = await CommandAsync(socket, "Page.navigate", writer =>
+        {
+            writer.WriteString("url", searchUrl);
+        }, cancellationToken).ConfigureAwait(false);
+        if (navigate.TryGetProperty("error", out _))
+            return new(false, false, title, searchUrl, string.Empty, targetId, 0,
+                "cdp_navigation_rejected");
+        string titleLiteral = "\"" + JsonEncodedText.Encode(title).ToString() + "\"";
+        double? baseline = null;
+        string lastUrl = searchUrl;
+        string lastPageTitle = string.Empty;
+        string chosenHref = string.Empty;
+        string chosenName = string.Empty;
+        string lastObserved = string.Empty;
+        bool typed = false;
+        string failure = "disney_title_or_play_control_not_found";
+        for (int attempt = 0; attempt <= 240; attempt++)
+        {
+            if (attempt > 0)
+            {
+                await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+            }
+
+            string observed = await EvaluateStringAsync(
+                socket,
+                "(()=>{const wanted=" + titleLiteral + ".toLowerCase();"
+                + "let chosenHref='',chosenName='',action='none';"
+                + "const body=(document.body?.innerText||'').toLowerCase();"
+                + "const auth=location.pathname.includes('/login')||location.pathname.includes('/begin')||"
+                + "body.includes('inicia sesión')||body.includes('iniciar sesión')||body.includes('log in');"
+                + "const p=location.pathname;"
+                // La búsqueda: el cuadro se enfoca aquí y el texto lo escribe CDP
+                // (Input.insertText), porque el valor puesto por JS no dispara la
+                // búsqueda de la página.
+                + "if(!auth&&p.includes('/browse/search')){const input=document.querySelector('#searchInput,input[type=\"search\"]');"
+                + "const cards=[...document.querySelectorAll('a[data-testid=\"set-item\"]')];"
+                + "if(cards.length&&(input?.value||'').length){"
+                // El aria-label de la ficha trae el título y detrás la clasificación, el
+                // estreno y el género («Daredevil Clasificación: 18+. Estreno: 2015. …»);
+                // el nombre es lo que hay antes de esos rótulos.
+                + "const clean=s=>(s||'').split(/\\s+(?:Clasificaci[oó]n|Rating|Estreno|Release|G[eé]nero|Genre)\\s*:/)[0].trim();"
+                + "const named=cards.map(a=>({a,t:clean(a.getAttribute('aria-label')||a.innerText).toLowerCase(),n:clean(a.getAttribute('aria-label')||a.innerText)}));"
+                + "const hit=named.find(x=>x.t===wanted)||named.find(x=>x.t.startsWith(wanted))||named.find(x=>x.t.includes(wanted))||named[0];"
+                + "if(hit){chosenName=hit.n;chosenHref=hit.a.getAttribute('href')||'';if(chosenHref){location.href=chosenHref;action='entity_nav';}"
+                + "return [location.href,document.title,'ok',-1,'missing',0,action,chosenHref,chosenName,'cards'].join('\\u001f');}}"
+                + "if(input){input.focus();return [location.href,document.title,'ok',-1,'missing',0,'input_focused','','',(input.value||'').length?'typed':'empty'].join('\\u001f');}}"
+                // La ficha: su botón de reproducir lleva al reproductor por la
+                // propia aplicación (SPA), que es la ruta que arranca.
+                + "if(!auth&&p.includes('/browse/entity-')){const play=document.querySelector('a[data-testid=\"playback-action-button\"],button[data-testid=\"playback-action-button\"]');"
+                + "if(play){play.click();action='play_clicked';}"
+                + "return [location.href,document.title,'ok',-1,'missing',0,action,'','','entity'].join('\\u001f');}"
+                // El reproductor: el <video> que avanza es la prueba.
+                + "const vids=[...document.querySelectorAll('video')];"
+                + "const v=vids.find(x=>x.readyState>=2&&!x.paused)||vids.find(x=>x.readyState>=2)||vids[vids.length-1];"
+                + "if(v&&v.paused&&v.readyState>=2){v.play().catch(()=>{});}"
+                + "return [location.href,document.title,auth?'auth':'ok',v?v.readyState:-1,v?(v.paused?'paused':'playing'):'missing',v?v.currentTime:0,action,'','',p.includes('/play/')?'player':'other'].join('\\u001f');})()",
+                cancellationToken,
+                userGesture: true).ConfigureAwait(false);
+            lastObserved = observed;
+            string[] fields = observed.Split('\u001f');
+            if (fields.Length != 10) continue;
+            lastUrl = fields[0]; lastPageTitle = fields[1];
+            if (fields[2] == "auth")
+                return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
+                    "disney_authentication_required");
+            if (fields[7].Length > 0) chosenHref = fields[7];
+            if (fields[8].Length > 0) chosenName = fields[8];
+            if (fields[6] == "input_focused" && !typed && fields[9] == "empty")
+            {
+                await CommandAsync(socket, "Input.insertText", writer =>
+                {
+                    writer.WriteString("text", title);
+                }, cancellationToken).ConfigureAwait(false);
+                typed = true;
+                continue;
+            }
+            bool player = fields[9] == "player";
+            bool ready = int.TryParse(fields[3], NumberStyles.Integer,
+                CultureInfo.InvariantCulture, out int readyState) && readyState >= 2;
+            bool progressing = double.TryParse(fields[5], NumberStyles.Float,
+                CultureInfo.InvariantCulture, out double currentTime);
+            if (player && chosenHref.Length > 0 && ready && fields[4] == "playing" && progressing)
+            {
+                // El reproductor titula la pestaña «<título> | Disney+»: es el nombre
+                // observado más limpio que hay; la ficha elegida queda de reserva.
+                string pageName = lastPageTitle.Contains(" | ", StringComparison.Ordinal)
+                    ? lastPageTitle[..lastPageTitle.IndexOf(" | ", StringComparison.Ordinal)].Trim()
+                    : string.Empty;
+                if (baseline is not null && currentTime >= baseline.Value + 0.5)
+                    return new(true, true,
+                        pageName.Length > 0 ? pageName : chosenName.Length > 0 ? chosenName : title,
+                        lastUrl, lastPageTitle, targetId,
+                        currentTime - baseline.Value, string.Empty);
+                baseline ??= currentTime;
+                failure = "disney_video_progress_not_observed";
+            }
+        }
+        return new(false, true, title, lastUrl, lastPageTitle, targetId, 0, failure,
+            lastObserved + "|remembered=" + chosenHref + "/" + chosenName);
     }
 
     public virtual void Dispose()

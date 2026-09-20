@@ -5364,7 +5364,8 @@ def _explicit_arguments_from_evidence(
             r"(?:(?:la|the)\s+(?:serie|series|pel[ií]cula|peli|movie|film)\s+)?"
             r"(?P<title>.+?)\s+"
             r"(?:en|in|on|desde|from|through|usando|using)\s+"
-            r"(?:netflix|nerflix|netlix|netfix|netflis|neflix)\b",
+            r"(?:netflix|nerflix|netlix|netfix|netflis|neflix|"
+            r"disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|dinsey|dizney)\b",
             clause_literal(evidence),
             re.IGNORECASE,
         )
@@ -5373,7 +5374,11 @@ def _explicit_arguments_from_evidence(
         title = named.group("title").strip().strip("\"'«»“”").strip()
         if not title or len(title.encode("utf-8")) > 512:
             return None
-        streaming_arguments: dict[str, object] = {"service": "netflix", "title": title}
+        # VIDEO1947: the service is the one spelled after the title.
+        streaming_arguments: dict[str, object] = {
+            "service": effect_intent.streaming_service_named(evidence),
+            "title": title,
+        }
         return streaming_arguments
 
     if operation == "media.play.query":

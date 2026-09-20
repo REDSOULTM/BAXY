@@ -4574,6 +4574,26 @@ def resolve_explicit_clarification_intent(
         )
         is not None
     )
+    # VIDEO1947 H0130 «Toda la serie en Disney Plus», H0252 «Bueno, una serie
+    # East Plus.», H0113 «on everybody en Disney.»: transcripciones cortadas o
+    # mal oídas que nombran el servicio de streaming y ningún título legible:
+    # sin verbo («toda la serie», «una serie») o con palabras que no forman un
+    # título («on everybody»). El único dato que falta es qué ver: se pregunta.
+    fragment_streaming_clause = any(
+        _has(clause, r"\b" + _NETFLIX_SPELLED + r"\b")
+        and (
+            re.fullmatch(
+                r"[¿?¡!\s]*(?:(?:bueno|dale|che|ya)\s*[,;:]?\s+)?(?:toda|la|una|otra|alguna|the|a|whole|some)\s+(?:la\s+)?"
+                r"(?:serie|series|show|peli(?:cula)?|movie|temporada|season)(?:\s+(?:completa|entera|whole))?"
+                r"\s+(?:(?:en|on|de|of)\s+)?" + _NETFLIX_SPELLED + r"[\s.!?]*",
+                clause,
+            ) is not None
+            or _has(clause, r"^[¿?¡!\s]*(?:on|in|and|the)\s+\w+\s+(?:en|on)\s+" + _NETFLIX_SPELLED + r"\b")
+        )
+        and not _has(clause, r"\b(?:llamad[oa]|called|named|titulad[oa])\b")
+        and len(clause.split()) <= 7
+        for clause in _request_clauses(re.sub(r"^(?:(?:bueno|dale|che|ya)\s*[,;:]?\s+)+", "", folded, count=1))
+    )
     incomplete_schedule = _incomplete_scheduled_request(text, available)
     if incomplete_schedule is not None:
         return incomplete_schedule
@@ -4586,6 +4606,7 @@ def resolve_explicit_clarification_intent(
         # BRIGHT1283: «estoy cansado subí el brillo», «subime el brillo» carry
         # a preamble or a clitic the direct-request heads do not list.
         and not brightness_relative_without_amount(folded)
+        and not fragment_streaming_clause
     ):
         return None
     corrected_generic_game_request = (
@@ -4922,7 +4943,7 @@ def resolve_explicit_clarification_intent(
         )
         for clause in _request_clauses(music_folded)
     )
-    if "streaming.play.named" in available and bare_streaming_clause:
+    if "streaming.play.named" in available and (bare_streaming_clause or fragment_streaming_clause):
         # El nombre del hueco es lo que el modelo lee para redactar la pregunta:
         # con «title» a secas, «put something on Netflix» acabó en «what would
         # you like me to add to Netflix?», que lee «put on» como añadir.
@@ -5114,7 +5135,21 @@ def _has(text: str, pattern: str) -> bool:
 # oído de BAXY, que es lo más probable— y eso no lo convierte en otro servicio.
 # Alternancia corta y cerrada, no distancia de edición: el catálogo de servicios
 # es cerrado y una tolerancia genérica leería «Netflix» donde se dijo otra cosa.
-_NETFLIX_SPELLED = r"(?:netflix|nerflix|netlix|netfix|netflis|neflix)"
+# VIDEO1947: Disney+ joins the closed streaming catalog; the same short, closed
+# alternation of misspellings (the owner's ear, not another service).
+_NETFLIX_SPELLED = (
+    r"(?:netflix|nerflix|netlix|netfix|netflis|neflix|"
+    r"disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|dinsey|dizney|east\s*plus)"
+)
+
+
+def streaming_service_named(text: str) -> str:
+    """The catalog value of the streaming service the text names: disney_plus or netflix."""
+
+    folded = _fold(text)
+    if _has(folded, r"\b(?:disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|dinsey|dizney|east\s*plus)\b"):
+        return "disney_plus"
+    return "netflix"
 
 
 def _entity_key(value: str) -> str:

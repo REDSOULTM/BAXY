@@ -1423,14 +1423,18 @@ public static class ProductCatalog
             "streaming.play.named",
             Schema(
                 [
-                    String("service", values: ["netflix"]),
+                    // VIDEO1947: Disney+ joins Netflix. Its player refuses the
+                    // PlayReady path on this PC (MediaFoundation 0x8004CD…) and
+                    // plays with Widevine when the page sees a Chrome user agent;
+                    // the provider sets that override on the Disney+ target only.
+                    String("service", values: ["disney_plus", "netflix"]),
                     String("title", maximumUtf8Bytes: 512, nonWhitespace: true),
                 ],
                 ["service", "title"]),
             OperationRisks.ExternalCommunication,
             "streaming.play.named.netflix.cdp.video.progress.v1",
             ToolExposure.Public,
-            "Busca y reproduce un título en una sesión Netflix autenticada y verifica que el video avanza."),
+            "Busca y reproduce un título en una sesión autenticada de Netflix o Disney+ y verifica que el video avanza."),
         Descriptor(
             "system.application.crash.diagnose",
             Schema(

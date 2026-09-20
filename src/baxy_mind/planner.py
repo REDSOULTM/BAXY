@@ -95,6 +95,7 @@ _ENUM_EVIDENCE_ALIASES = {
     # fundamentado y «opera_gx» no, justo al revés de lo dicho.
     "opera_gx": ("opera gx", "opera_gx", "operagx"),
     "netflix": ("netflix",),
+    "disney_plus": ("disney plus", "disney+", "disneyplus", "disney"),
     "prime_video": ("prime video", "amazon prime", "prime"),
     "youtube": ("youtube",),
     "all_known": (
