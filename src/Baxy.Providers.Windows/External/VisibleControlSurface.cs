@@ -159,7 +159,7 @@ internal static partial class VisibleControlSurface
     /// <summary>
     /// The root window of another process drawn over the centre of this one,
     /// or 0 when the window is what a person sees there. Measured: a fullscreen
-    /// video player on top of Settings and of Steam; the view read the player
+    /// video player on top of a settings page and of a game launcher; the view read the player
     /// and a click would have landed on it.
     /// </summary>
     internal static nint CoveringWindow(nint hwnd)
