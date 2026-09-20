@@ -6060,6 +6060,18 @@ _SEARCH_REPORT_OWN_WORDS = frozenset(
         "titled", "according", "several", "article", "articles", "site", "sites",
         "source", "sources", "list", "lists", "note", "notes", "recommend",
         "recommends", "recommended",
+        # H0463: «la página … indica que el App ID es 1098290; otra página menciona
+        # el juego pero no especifica el App ID»: verbs that report what a page
+        # does or does not carry, and the word for what Steam lists, are the
+        # report's own voice, not a claim about the world.
+        "especifica", "especifican", "proporciona", "proporcionan", "indico",
+        "muestra", "muestran", "incluye", "incluyen", "contiene", "contienen",
+        "aparece", "aparecen", "corresponde", "corresponden", "pertenece",
+        "perteneciente", "titulada", "titulado", "juego", "juegos", "game", "games",
+        "entrada", "entradas", "entry", "entries", "registro", "record", "listed",
+        "listada", "listado", "shows", "specifies", "provides", "includes", "contains",
+        "appears", "belongs", "corresponds", "titulo", "title", "lleva", "llevan",
+        "carries", "carry", "datos",
     }
 )
 
@@ -6151,7 +6163,7 @@ def _search_unsupported_claim(text: str, results_text: str) -> str | None:
 
 
 _MEANS_WORDS = (
-    r"(?:python|powershell|bash|cmd|scripts?|c[oó]digo|code|terminal|consola|console)"
+    r"(?:python|powershell|bash|cmd|scripts?|c[oó]digo|code|terminal|consola|console|api)"
 )
 # «sin Python», «sin usar un script», «no usé la terminal», «without running code»:
 # a negated mention is the honest disclaimer, not a claim.
@@ -6199,6 +6211,16 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         # voice; no result contains them. Reinstated in WEB1889: the turn no
         # longer dies when every candidate falls, so the rule has a way out.
         return "search_report_unsourced_claim"
+    if (
+        _search_results_text(payload) is not None
+        and _entity_lookup_query(user_text or "") is None
+        and not curiosity_request(user_text or "")
+        and re.search(r"https?://", str(text)) is not None
+    ):
+        # H0463: «DOOM Eternal: idStudio - SteamDB https://steamdb.info/app/…»
+        # is a pasted listing, not a report a companion would say; pages are
+        # named by title and site. The safety-net report has that shape.
+        return "search_report_pasted_urls"
     folded = _reading_fold(text)
     seen = payload.get("seen")
     # A wifi reading observes the WLAN connection, not internet reachability.
@@ -14765,17 +14787,33 @@ class LlmRuntime:
             # product's own observation; the assistant does not program or run
             # scripts as a capability (owner's ruling). Report the readings and
             # never claim the means, a script, or a terminal.
-            scope = (
-                " The request names a means (a language, a script or a terminal)"
-                " that was not used: the values in seen were read directly by the"
-                " assistant. Report them; do not say that you used or ran that"
-                " means, a script or code, and do not ask for a terminal."
-                if response_language == "en"
-                else " El pedido nombra un medio (un lenguaje, un script o una"
-                " terminal) que no se usó: los valores de seen los leyó el asistente"
-                " directamente. Informalos; no digas que usaste ni ejecutaste ese"
-                " medio, un script ni código, y no pidas una terminal."
-            )
+            if "api" in str(declined_means(user_text)):
+                # H0463 «… usando la API publica»: the product has no Steam API
+                # call; the public search ran instead. Say so and name the pages.
+                scope = (
+                    " The request asks to use a public API that the assistant does"
+                    " not call: a public web search ran instead. Say plainly that"
+                    " you did not use the API and searched the web, and name the"
+                    " pages found (their titles and sites); do not claim the API."
+                    if response_language == "en"
+                    else " El pedido pide usar una API pública que el asistente no"
+                    " consulta: en su lugar corrió una búsqueda pública en internet."
+                    " Di llanamente que no usaste la API y que buscaste en internet,"
+                    " y nombra las páginas encontradas (sus títulos y sitios); no"
+                    " digas que usaste la API."
+                )
+            else:
+                scope = (
+                    " The request names a means (a language, a script or a terminal)"
+                    " that was not used: the values in seen were read directly by the"
+                    " assistant. Report them; do not say that you used or ran that"
+                    " means, a script or code, and do not ask for a terminal."
+                    if response_language == "en"
+                    else " El pedido nombra un medio (un lenguaje, un script o una"
+                    " terminal) que no se usó: los valores de seen los leyó el asistente"
+                    " directamente. Informalos; no digas que usaste ni ejecutaste ese"
+                    " medio, un script ni código, y no pidas una terminal."
+                )
             message_prompt += scope
             cpu_prompt += scope
         if (
@@ -15528,6 +15566,33 @@ class LlmRuntime:
                 "dato que ningún resultado contenga, aunque lo sepas; si los resultados "
                 "sólo remiten a páginas de pronóstico, dilo."
             )
+            # H0463 «Busca el App ID de Doom Eternal en Steam usando la API
+            # publica»: the three drafts judged the results («no es el correcto
+            # para la versión de campaña», «se asocia a una versión diferente»)
+            # and died as unsourced claims. A report names pages; it does not
+            # rank them. And the API the person named was not used: say so.
+            instruct(
+                " Do not judge, compare or rank the results (never say which one is "
+                "the right one, a different version or not confirmed): one short "
+                "sentence per page, quoting its title exactly as written and naming "
+                "its site, is enough. Prose only: no line breaks, no list, no URLs."
+                if response_language == "en"
+                else " No juzgues, compares ni ordenes los resultados (nunca digas cuál "
+                "es el correcto, otra versión o no confirmado): basta una oración corta "
+                "por página, citando su título tal cual está escrito y nombrando su "
+                "sitio. Sólo prosa: sin saltos de línea, sin lista, sin URLs."
+            )
+            if "api" in str(declined_means(user_text or "") or ""):
+                instruct(
+                    " The person asked to use a public API; you did not call any API: "
+                    "the public web search ran instead. Say that plainly at the start "
+                    "(«I did not use the API; I searched the web») and then name the pages."
+                    if response_language == "en"
+                    else " La persona pidió usar una API pública; no consultaste ninguna "
+                    "API: en su lugar corrió la búsqueda pública en internet. Dilo "
+                    "llanamente al principio («No usé la API; busqué en internet») y "
+                    "luego nombra las páginas."
+                )
         if _written_file_after_listing(visible_situation) is not None:
             # FILES1707 «crea un archivo de texto con los 5 procesos que más
             # memoria usan»: the listing was read and written to a file; the
@@ -16269,6 +16334,11 @@ class LlmRuntime:
                 # escribe «según Steam», que no nombra la página, y los tres
                 # candidatos caen en la misma regla. La pista nombra los sitios que
                 # esta búsqueda devolvió, que el turno ya tiene delante.
+                "search_report_pasted_urls": (
+                    "Do not paste addresses: name each page by its title in guillemets and its site (for example steamdb.info), in prose."
+                    if response_language == "en"
+                    else "No pegues direcciones: nombra cada página por su título entre comillas angulares y su sitio (por ejemplo steamdb.info), en prosa."
+                ),
                 "search_report_unsourced_claim": (
                     "Say only what a result says, with its words, and name the page that "
                     "says it; do not summarise causes of your own."
@@ -16811,6 +16881,13 @@ class LlmRuntime:
             )
             return ambiguous_question
         pages_report = _search_pages_report(visible_situation, response_language)
+        if pages_report and "api" in str(declined_means(user_text or "") or ""):
+            # H0463 «… usando la API publica»: the safety-net report keeps the
+            # same honesty the drafts were asked for — no API was called.
+            pages_report = (
+                "I did not use the API. " if response_language == "en"
+                else "No usé la API. "
+            ) + pages_report
         if pages_report and publishable(pages_report):
             record_stage("pages_fallback", pages_report, pages_report, third, "", True)
             return pages_report

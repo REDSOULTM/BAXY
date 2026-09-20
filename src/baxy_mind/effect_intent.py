@@ -6967,13 +6967,22 @@ _TRAILING_SOCIAL_CLOSURE = re.compile(
 # to program as a capability; the readable request before it is answered from
 # the product's own readings and the means is declined, never followed.
 _TRAILING_MEANS_DIRECTIVE = re.compile(
-    r"\s*[.,;:]\s*(?:"
+    r"(?:\s*[.,;:]\s*(?:"
     r"(?:us[aá]|usando|utiliz[aá]|utilizando|emple[aá]|empleando|hazlo con|"
     r"hacelo con|con|mediante|a trav[eé]s de|use|using|with|by using|via)"
     r"\s+(?:el\s+|la\s+|un\s+|una\s+|a\s+|the\s+)?"
     r"(?P<means>python|powershell|bash|cmd|"
     r"script(?:\s+(?:de|en|of|in)\s+(?:python|powershell|bash))?|"
     r"c[oó]digo(?:\s+(?:de|en)\s+python)?|code|terminal|consola|console)"
+    r")"
+    # H0463 «Busca el App ID de Doom Eternal en Steam usando la API publica»:
+    # a public API is a means the product does not call (owner: pending
+    # capability); with or without a comma, the directive is declined the
+    # same way as a language and the search runs on the request before it.
+    r"|(?:\s*[.,;:]\s*|\s+)(?:usando|utilizando|mediante|a trav[eé]s de|"
+    r"using|through|via|with|by\s+using)\s+(?:la\s+|el\s+|the\s+|its\s+|su\s+)?"
+    r"(?P<api>(?:steam\s+(?:web\s+)?)?api(?:\s+(?:p[uú]blica|publica|public))?"
+    r"(?:\s+(?:de|of)\s+steam)?|public\s+(?:steam\s+)?(?:web\s+)?api|steam\s+(?:web\s+)?api)"
     r")\s*[.!]*$",
     re.IGNORECASE,
 )
@@ -6989,7 +6998,7 @@ def declined_means(text: str) -> str | None:
     found = _TRAILING_MEANS_DIRECTIVE.search(text)
     if found is None or found.start() == 0:
         return None
-    return found.group("means").casefold()
+    return (found.group("means") or found.group("api")).casefold()
 
 
 def _strip_trailing_means_directive(text: str) -> str:

@@ -5347,6 +5347,11 @@ def _explicit_arguments_from_evidence(
         return _explicit_media_control_arguments(evidence)
 
     if operation == "web.search":
+        # H0463 «… usando la API publica»: the declined means is not part of
+        # the query (the query «el App ID de Doom Eternal en Steam usando la API
+        # publica» still found SteamDB, but the words are the person's directive,
+        # not what they are looking for).
+        evidence = effect_intent._strip_trailing_means_directive(evidence)
         research_question = effect_intent._research_question_query(evidence)
         if research_question is not None:
             # WEB1831: the engine answers the question in the person's words
