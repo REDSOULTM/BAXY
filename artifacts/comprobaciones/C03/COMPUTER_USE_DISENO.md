@@ -365,6 +365,35 @@ opera gx y entré en el sitio pivigames.es.», «I opened Opera GX and navigated
 pivigames.es. The page loaded successfully.». 1 crédito (H0081): Navegación y búsqueda web
 **46/46, cerrada**; 724/742.
 
+## 12. Tres filas más con lecturas honestas: API de Steam, Epic Games, chats (2026-09-20)
+
+- **APIID1935 (H0463 «Busca el App ID de Doom Eternal en Steam usando la API publica»).** La API
+  nombrada es un medio que BAXY no consulta: la directiva «usando la API pública», con o sin
+  coma, se declina como «Usa Python» y sale de la consulta; el informe de búsqueda dice al
+  principio que no usó la API y nombra las páginas (SteamDB lleva el App ID en el título). Los
+  borradores del modelo juzgaban los resultados («no es el correcto para la versión de campaña»)
+  y morían sin fuente; ahora la instrucción prohíbe ordenar o comparar y un final que pega
+  direcciones se veta. «Bibliotecas y fichas de juegos» 6/6.
+- **EPIC1937 (H0578 «Descarga Fall guys en epic games»).** El lanzador de Epic Games guarda en
+  local un manifiesto por juego instalado y la caché del catálogo de la cuenta; la lectura de
+  biblioteca (`game.entitlement.named`) gana `store=epic` y lee esos dos ficheros. El final dice
+  el estado —Fall Guys en la biblioteca, no instalado, la descarga se inicia desde el lanzador— y
+  dos invenciones medidas («ya está desinstalado… lo eliminé», «ya instalé») quedan vetadas.
+  Trampa de Kernel: las propiedades del esquema van ordenadas (`store` antes de `title`) o el
+  catálogo estático no arranca. «Instalar y desinstalar software» 31/31.
+- **CHATREAD1939 (H0510 «qué me escribió mamá», H0720 «leéme el último mensaje de Pedro»).** Por
+  decisión del dueño (2026-09-17 §5) leer chats privados queda fuera: contrato de límite conocido
+  («qué me escribió/mandó/dijo X», «leéme los mensajes de X», «what did X write me»; el correo
+  conserva su lectura) y la respuesta llana de los límites. Antes: una nota titulada con la
+  pregunta, una pregunta por el correo, una invención en inglés. «Mensajería» 31/31.
+
+**Estado: 728/742, 33/35 categorías cerradas; cien-76 a cien-80, 100/100.** Las 14 filas
+abiertas dependen del dueño: Disney+ ×10 (el nivel de Widevine `SW_SECURE_DECODE` falta en todo
+el PC, también en su Edge; PlayReady sí; falta que pruebe Disney+ en su Edge normal), Prime Video
+×1 (sesión con suscripción en el perfil de BAXY), y tres entradas ininteligibles («¡Habristín!»,
+«Hable este.», «Calendar Devil?») que necesitan un léxico: el modelo del producto, medido como
+juez, dio por inteligibles 7 de 10 palabras inventadas.
+
 ## Fuentes
 
 - [OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments](https://arxiv.org/html/2404.07972v2)
