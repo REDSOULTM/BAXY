@@ -110,6 +110,32 @@ internal static class ObservedResponseLiterals
                 }
             }
         }
+        if (IsString(node, "kind", "confirmation")
+            && node.TryGetProperty("pendingAction", out JsonElement pendingAction) && pendingAction.ValueKind == JsonValueKind.Object
+            && pendingAction.TryGetProperty("arguments", out JsonElement pendingArguments) && pendingArguments.ValueKind == JsonValueKind.Object
+            && pendingArguments.TryGetProperty("url", out JsonElement pendingUrl) && pendingUrl.ValueKind == JsonValueKind.String
+            && Uri.TryCreate(pendingUrl.GetString(), UriKind.Absolute, out Uri? pendingUri)
+            && pendingUri.Host is { Length: > 0 } pendingHost)
+        {
+            // H0081 «quiero que abras opera gx y entras a pivigames» → «¿Quieres
+            // confirmar o cancelar que abra Opera GX y entre a pivigames.es?»: the
+            // host of the navigation proposed for confirmation is observed data
+            // (it came from the verified search), not a dotted operation name.
+            names.Add(pendingHost.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ? pendingHost[4..] : pendingHost);
+        }
+        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+            && (IsString(node, "operation", "browser.navigate") || IsString(node, "operation", "browser.navigate.named"))
+            && node.TryGetProperty("verified", out JsonElement navVerified) && navVerified.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("succeeded", out JsonElement navSucceeded) && navSucceeded.ValueKind == JsonValueKind.True
+            && node.TryGetProperty("observed", out JsonElement navObserved) && navObserved.ValueKind == JsonValueKind.Object
+            && navObserved.TryGetProperty("finalUrl", out JsonElement finalUrl) && finalUrl.ValueKind == JsonValueKind.String
+            && Uri.TryCreate(finalUrl.GetString(), UriKind.Absolute, out Uri? finalUri)
+            && finalUri.Host is { Length: > 0 } finalHost)
+        {
+            // The host the browser actually reached («entré a pivigames.es») is
+            // observed data as much as a search result's host.
+            names.Add(finalHost.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ? finalHost[4..] : finalHost);
+        }
         if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
             && IsString(node, "operation", "notification.list")
             && node.TryGetProperty("verified", out JsonElement notifVerified) && notifVerified.ValueKind == JsonValueKind.True

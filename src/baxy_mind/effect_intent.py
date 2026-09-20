@@ -15348,6 +15348,76 @@ def _direct_public_search_query(text: str) -> str | None:
     return query
 
 
+# H0081 «Toma control de mi pc, quiero que abras opera gx y entras a pivigames»
+# (WEB1883/1885 la dejaron abierta: el destino llega sin dominio, no hay URL que
+# fundamentar y el turno preguntaba «¿Quieres que abra Opera GX y entre en
+# pivigames?» en vez de entrar). Un sitio nombrado con una sola palabra sin
+# punto, en un navegador nombrado, se resuelve como el destino simbólico sin
+# navegador: la búsqueda verificada da la URL y la navegación nombrada la abre
+# (CHAIN1931 ya fundamenta browser.navigate.named con el primer resultado
+# verificado). Formas: «abre <navegador> y entra a <sitio>», «quiero que abras
+# <navegador> y entres a <sitio>», «entra a <sitio> en <navegador>», «open
+# <browser> and go to <site>». Un dominio, una URL, un nombre público cerrado
+# (youtube, gmail…) o una aplicación del catálogo no pasan por aquí.
+_NAMED_BROWSER_SITE_BROWSER = (
+    r"(?:el\s+|the\s+)?(?:navegador\s+|browser\s+)?"
+    r"(?P<browser>opera\s*gx|opera|google\s+chrome|chrome|microsoft\s+edge|edge|brave)"
+)
+_NAMED_BROWSER_SITE_ENTRY = (
+    r"(?:entr(?:a|as|e|es|ale|ate|ame)|entrar|ve|anda|andate|andá|navega|navegar|"
+    r"metete|meteme|llevame|go|navigate|take\s+me|head)\s+(?:a|al|to|en|into|over\s+to)\s+"
+    r"(?:la\s+pagina\s+(?:de\s+)?|the\s+(?:site|page)\s+(?:of\s+)?)?"
+    r"(?P<site>[a-z0-9][a-z0-9_-]{2,40})"
+)
+_NAMED_BROWSER_SITE_HEAD = (
+    r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
+    r"(?:(?:quiero|necesito|quisiera|i\s+want|i\s+need|i'd\s+like)\s+"
+    r"(?:que\s+|you\s+to\s+)?)?(?:me\s+)?"
+)
+_NAMED_BROWSER_SITE_REQUEST = re.compile(
+    _NAMED_BROWSER_SITE_HEAD
+    + r"(?:abr(?:e|i|as|is|ime|ir|a|an)|open|launch)\s+" + _NAMED_BROWSER_SITE_BROWSER
+    + r"\s*(?:,|;|\s+y\s+(?:luego\s+|despues\s+)?(?:que\s+)?|\s+and\s+(?:then\s+)?|\s+luego\s+|\s+then\s+)\s*"
+    + _NAMED_BROWSER_SITE_ENTRY + r"[\s.!?]*$"
+    + r"|" + _NAMED_BROWSER_SITE_HEAD + _NAMED_BROWSER_SITE_ENTRY.replace("(?P<site>", "(?P<site2>")
+    + r"\s+(?:en|in|con|with|usando|using)\s+" + _NAMED_BROWSER_SITE_BROWSER.replace("(?P<browser>", "(?P<browser2>")
+    + r"[\s.!?]*$",
+    re.IGNORECASE,
+)
+
+
+def _named_browser_site_request(
+    text: str,
+    application_names: Iterable[str] | ApplicationCatalogIndex = (),
+) -> tuple[str, str] | None:
+    """(browser, bare site name) for «abre <navegador> y entra a <sitio>», else None."""
+
+    folded = _fold(without_control_cession_preamble(text))
+    found = _NAMED_BROWSER_SITE_REQUEST.fullmatch(folded.strip())
+    if found is None:
+        return None
+    site = found.group("site") or found.group("site2") or ""
+    browser_name = found.group("browser") or found.group("browser2") or ""
+    browser = _named_browser("in " + browser_name)
+    if (
+        browser not in NAMED_CDP_BROWSERS
+        or explicit_non_action_frame(text)
+        or _is_negated_match(folded, found)
+        or _is_meta_or_tool_denial(folded)
+        or _is_past_or_hypothetical_state(folded)
+        or _has_contradictory_correction(folded)
+        or not effect_request_is_authoritative(text)
+        or re.fullmatch(_NAMED_PUBLIC_SITE, site) is not None
+        or resolve_application_catalog_app_id(site, application_names) is not None
+        or _has(site, r"^(?:la|el|the|un|una|a|mi|my|este|esta|ese|esa|this|that|eso|it|"
+                r"alli|ahi|there|aqui|here|internet|web|google|bing|configuracion|settings|"
+                r"ajustes|opciones|options|archivo|archivos|file|files|carpeta|folder|"
+                r"escritorio|desktop|descargas|downloads|documentos|documents)$")
+    ):
+        return None
+    return browser, site
+
+
 def _named_browser_search(text: str) -> tuple[str, str] | None:
     """Bind a public query and browser within one complete current request."""
 
@@ -18154,6 +18224,13 @@ def resolve_explicit_effects(
         return EffectIntent(("browser.navigate.named",), (text,))
     if "browser.navigate.named" in available and _named_browser_search(text) is not None:
         return EffectIntent(("browser.navigate.named",), (text,))
+    if (
+        {"web.search", "browser.navigate.named"} <= available
+        and _named_browser_site_request(text, authenticated_applications) is not None
+    ):
+        # H0081: the bare site name is looked up by the verified search and the
+        # named browser opens its first result (the CHAIN1931 dependency).
+        return EffectIntent(("web.search", "browser.navigate.named"), (text, text))
     if (
         "app.installed" in available
         and unresolved_application_open_name(text, authenticated_applications) is not None

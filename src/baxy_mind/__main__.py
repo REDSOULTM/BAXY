@@ -796,6 +796,12 @@ def _verified_dependency_identity_arguments(
         # escribió «opera» donde la persona dijo «Opera GX», y en este PC sólo
         # está Opera GX: el navegador es del pedido y la URL de la búsqueda.
         browser = effect_intent._named_browser(effect_intent._fold(objective))
+        named_site = effect_intent._named_browser_site_request(objective, application_names)
+        if named_site is not None:
+            # H0081 «quiero que abras opera gx y entras a pivigames»: «abras» is
+            # not one of the leading verbs the named-browser reader knows, and
+            # without the browser from the reader the model wrote «opera» again.
+            browser = named_site[0]
         searches = [
             observation["result"]
             for observation in observations
@@ -5349,6 +5355,11 @@ def _explicit_arguments_from_evidence(
         destination = effect_intent._symbolic_web_destination(evidence)
         if destination is not None:
             return {"query": destination}
+        named_site = effect_intent._named_browser_site_request(evidence)
+        if named_site is not None:
+            # H0081 «abre opera gx y entra a pivigames»: the site name alone is
+            # the query; its URL is the first verified result.
+            return {"query": named_site[1]}
         query = ""
         search_evidence = re.split(
             r"\s+(?:(?:y\s+)?(?:despu\S+s|luego)|and\s+then|then|afterwards)"

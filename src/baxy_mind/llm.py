@@ -8478,6 +8478,52 @@ def compose_visible_defect(
             )
         ):
             return "invented_capture_location"
+        # H0081 «quiero que abras opera gx y entras a pivigames»: la navegación
+        # verificada da el navegador y la dirección final, nada más. El borrador
+        # decía «el sitio está disponible y puedo ver las últimas actualizaciones
+        # y categorías de juegos… no he podido verificar si es seguro»: contenido
+        # que nadie leyó (no hubo lectura de página) y juicios que el recibo no
+        # da. Se veta la descripción del contenido, no el nombre del sitio.
+        _navigation_steps = [
+            step for step in _situation_steps(situation)
+            if step.get("operation") in {"browser.navigate", "browser.navigate.named"}
+        ] or ([situation] if operation in {"browser.navigate", "browser.navigate.named"} else [])
+        _page_read = any(
+            step.get("operation") in {"browser.page.read", "ocr.read", "vision.describe"}
+            for step in _situation_steps(situation)
+        ) or operation in {"browser.page.read", "ocr.read", "vision.describe"}
+        if _navigation_steps and not _page_read and re.search(
+            r"\b(?:puedo ver|veo|se ven?|muestra|aparecen?|contenido|disponible|actualizaciones|categor[ií]as|seguro|segura|seguridad|confiable|fiable|verificar|virus|i can see|i see|shows|showed|content|available|safe|safety|reliable|trustworthy|verify|verified)\b",
+            folded,
+        ):
+            return "navigation_content_claim"
+        if _navigation_steps and not _page_read:
+            # La variante inglesa listaba los resultados de la búsqueda («a YouTube
+            # channel, a related site (pivigamers.com), a Reddit discussion…»): la
+            # búsqueda fue el medio para dar con la dirección, no lo pedido. Salvo
+            # que lo navegado sea una página de resultados (WEB1481/1885), ni
+            # «resultados» ni ningún otro dominio que el alcanzado.
+            _reached_hosts = set()
+            for step in _navigation_steps:
+                for key in ("finalUrl", "requestedUrl"):
+                    value = (step.get("observed") or {}).get(key) if step is not situation else observed_dict.get(key)
+                    if isinstance(value, str) and value:
+                        host = (urlparse(value).hostname or "").casefold()
+                        if host:
+                            _reached_hosts.add(host[4:] if host.startswith("www.") else host)
+            _results_page = any(
+                host.endswith(("bing.com", "youtube.com", "duckduckgo.com", "google.com"))
+                for host in _reached_hosts
+            )
+            if _reached_hosts and not _results_page:
+                if re.search(r"\b(?:resultados?|results?)\b", folded):
+                    return "navigation_content_claim"
+                for host in re.findall(
+                    r"(?<![\w@.-])(?:https?://)?(?:www\.)?((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63})(?![\w-])",
+                    folded,
+                ):
+                    if host.casefold() not in _reached_hosts:
+                        return "wrong_address"
         if (
             operation == "streaming.play.named"
             and isinstance(observed_dict.get("observedProgressSeconds"), (int, float))
@@ -16512,6 +16558,11 @@ class LlmRuntime:
                     "The only numbers you may state are seen.count (total entries), seen.fileCount, seen.folderCount and seen.moreNotShown; do not invent other figures."
                     if response_language == "en"
                     else "Los únicos números que puedes decir son seen.count (entradas en total), seen.fileCount, seen.folderCount y seen.moreNotShown; no inventes otras cifras."
+                ),
+                "navigation_content_claim": (
+                    "You only opened the site in the named browser: say, in the past, which browser you opened and which site you reached (seen.finalUrl's host); do not describe what the page shows, whether it is available, safe or reliable, and do not mention the search results."
+                    if response_language == "en"
+                    else "Sólo abriste el sitio en el navegador nombrado: di, en pasado, qué navegador abriste y a qué sitio entraste (el dominio de seen.finalUrl); no describas lo que muestra la página, ni si está disponible, ni si es segura o confiable, y no menciones los resultados de la búsqueda."
                 ),
                 "invented_capture_location": (
                     "Keep every step you did, in order (what you opened, what you searched, the screenshot, what you closed), and say that the screenshot was not saved to the desktop (the receipt gives no path); do not name any other place."

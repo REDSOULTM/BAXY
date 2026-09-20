@@ -62,6 +62,29 @@ def without_observed_names(text: str, situation: object) -> str:
                         host = re.match(r"^(?:https?://)?(?:www\.)?([^/?#]+)", url)
                         if host and 0 < len(host.group(1)) <= 253:
                             names.add(host.group(1))
+        if node.get("kind") == "confirmation":
+            # H0081 «quiero que abras opera gx y entras a pivigames» → «¿Quieres
+            # confirmar o cancelar que abra Opera GX y entre a pivigames.es?»: the
+            # host of the navigation proposed for confirmation is observed data
+            # (it came from the verified search), not a dotted operation name.
+            pending = node.get("pendingAction")
+            arguments = pending.get("arguments") if isinstance(pending, dict) else None
+            url = arguments.get("url") if isinstance(arguments, dict) else None
+            if isinstance(url, str):
+                host = re.match(r"^(?:https?://)?(?:www\.)?([^/?#]+)", url)
+                if host and 0 < len(host.group(1)) <= 253:
+                    names.add(host.group(1))
+        if (node.get("kind") == "operation" and operation in {"browser.navigate", "browser.navigate.named"}
+                and node.get("verified") is True and node.get("succeeded") is True
+                and node.get("polarity") == "success"):
+            # The host the browser actually reached («entré a pivigames.es») is
+            # observed data as much as a search result's host.
+            observed = node.get("observed")
+            url = observed.get("finalUrl") if isinstance(observed, dict) else None
+            if isinstance(url, str):
+                host = re.match(r"^(?:https?://)?(?:www\.)?([^/?#]+)", url)
+                if host and 0 < len(host.group(1)) <= 253:
+                    names.add(host.group(1))
         if (node.get("kind") == "operation" and operation in {"message.send.test", "message.draft"}
                 and node.get("verified") is True and node.get("succeeded") is True
                 and node.get("polarity") == "success"):
