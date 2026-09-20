@@ -121,10 +121,9 @@ fusiona el motor cuando esté entregado. Visión sin LLM en tres escalones y mem
 entregables del motor. Auditoría semántica: se reabren A, B, C (incluido «botón rojo», por color HSV) y de D sólo
 «cuántos .py hay en el directorio actual» y «contestale que…»; «pon algo en Netflix/Disney+» sigue preguntando.
 
-## D24 — Dos sesiones Fable en el motor; Opus en la semántica a full
+## D24 — Una sesión Fable hace el motor entero; Opus, la semántica a full
 «Quiero dos sesiones Fable trabajando el motor de computer use y, mientras, el mismo agente del plan original de Opus
 trabajando en la reapertura de 35 filas y la auditoría semántica del resto, analizando todos los casos y arreglando
 la semántica a full.»
-Lectura: Fable-A (percepción, grounding, acciones) y Fable-B (bucle de misión, memoria de procedimientos, tanda
-CU1959) con un contrato de vista/acción acordado primero; Opus audita las 742 filas contra la encuesta, reabre y
+Lectura (corregida por el dueño: «un mismo agente de Fable debe hacer todo el motor»): una sola sesión Fable construye percepción, grounding, acciones, bucle, memoria de procedimientos y CU1959, empezando por el contrato de vista/acción; Opus audita las 742 filas contra la encuesta, reabre y
 arregla las lecturas de la mente con tandas y cien, y sigue después con herramientas tipadas y Fases 6–8.

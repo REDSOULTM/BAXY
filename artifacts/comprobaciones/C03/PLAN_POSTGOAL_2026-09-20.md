@@ -193,17 +193,14 @@ CU1959 se corre en una ventana acordada con Opus (mensaje entre sesiones o aviso
 la Fase 5. Mientras tanto Opus hace las Fases 1–3, 6–8 y las herramientas tipadas de la Fase 5 que no necesitan el
 motor (`shell.command.run`, `file.compress`/`file.open`, `system.settings.set airplane_mode`, `desktop.wallpaper.set`,
 `document.presentation.create`, `web.download`, `game.uninstall.named`, Steam por `steam://` + manifiesto).
-**Reparto en dos sesiones Fable (D24)**: rama base `fable/computer-use-engine`; **Fable-A «ojos y manos»** en
-`fable/cu-perception` (vista compacta, color HSV, grounding por texto/plantilla/encoder, `input.scroll`, clic por
-índice/rect, `wait_for`, postlecturas) y **Fable-B «cerebro»** en `fable/cu-loop` (contrato de vista/acción,
-`mission.computer_use` en mente + Kernel, memoria de procedimientos, journal CHAIN1931, tanda CU1959). Primer paso
-común: el **contrato JSON de vista y acción** (`documentacion/computer-use/CONTRATO_VISTA_ACCION.md`) lo escribe B
-y lo aprueba A antes de codificar; B trabaja con fixtures de vista hasta que A entregue. Fusiones diarias a
-`fable/computer-use-engine` (merge commit, Fast verde). Opus, mientras, hace la **semántica a full** (Fase 3
-ampliada): auditar las 742 filas contra la encuesta, reabrir lo que corresponda por D-audit, arreglar las lecturas de
-la mente (contexto determinista, nombre aproximado, elegir por la persona sólo donde es determinista) con tandas y
-cien; después las herramientas tipadas y las Fases 6–8. **Un solo proceso del producto en el PC a la vez**: quien
-vaya a correr algo avisa por SendMessage a las otras dos sesiones y espera «ok».
+**Reparto (D24, corregido por el dueño)**: **una sola sesión Fable 5.1 high construye el motor entero** (vista
+compacta, grounding, acciones, bucle de misión, memoria de procedimientos, tanda CU1959) en la rama
+`fable/computer-use-engine` con worktree propio; primer paso, el contrato de vista/acción
+(`documentacion/computer-use/CONTRATO_VISTA_ACCION.md`). Opus, mientras, hace la **semántica a full** (Fase 3
+ampliada): auditar las 742 filas contra la encuesta, reabrir lo que corresponda, arreglar las lecturas de la mente
+(contexto determinista, nombre aproximado, elegir por la persona sólo donde es determinista) con tandas y cien;
+después las herramientas tipadas y las Fases 6–8. **Un solo proceso del producto en el PC a la vez**: quien vaya a
+correr algo avisa por SendMessage a la otra sesión y espera «ok».
 Entregables adicionales del motor (D23): visión sin LLM en tres escalones (texto → plantilla local con OpenCV y
 color HSV por control → encoder pequeño MobileCLIP2/SigLIP 2 y Florence-2-base sólo si el banco lo exige) y
 **memoria de procedimientos** (misión lograda → secuencia guardada por app+objetivo, reproducida determinista y
