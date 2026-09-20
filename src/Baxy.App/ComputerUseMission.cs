@@ -182,14 +182,13 @@ internal static class ComputerUseMission
                 }
 
                 errorCode = "computer_use_evidence_not_visible";
-                evidence = cited;
                 break;
             }
 
             if (decision.Operation == "none" || !Primitives.Contains(decision.Operation))
             {
                 errorCode = "computer_use_no_step_visible";
-                evidence = decision.Reason;
+                state["stopReason"] = decision.Reason;
                 break;
             }
 
@@ -259,6 +258,12 @@ internal static class ComputerUseMission
             RecordResponse(record, response);
             _ = context.MarkResolved(context.Registry, prepared);
             steps.Add(record);
+            if (decision.Operation == "app.open" && (int?)record["processId"] is > 0 and int opened)
+            {
+                // From here on the mission looks at that application's window.
+                state["processId"] = opened;
+            }
+
             if ((bool?)record["ok"] != true && fromProcedure)
             {
                 // The learned sequence deviated: from here on the model decides.
@@ -389,6 +394,11 @@ internal static class ComputerUseMission
         CancellationToken cancellationToken)
     {
         var arguments = new JsonObject { ["includeText"] = true, ["limit"] = 60 };
+        if ((int?)state["processId"] is > 0 and int owner)
+        {
+            arguments["processId"] = owner;
+        }
+
         if ((string?)state["waitForLabel"] is { Length: > 0 } waited)
         {
             arguments["waitForLabel"] = waited;
@@ -565,10 +575,38 @@ internal static class ComputerUseMission
             }
         }
 
+        // What carries a number is usually the answer a person looks for (a
+        // display, a counter, a price): named controls and lines with digits.
+        var numbers = new JsonArray();
+        if (view["controls"] is JsonArray named)
+        {
+            foreach (JsonNode? node in named)
+            {
+                if (node is JsonObject control && (string?)control["name"] is { Length: > 0 } name
+                    && name.Any(char.IsAsciiDigit) && numbers.Count < 6)
+                {
+                    numbers.Add((JsonNode?)JsonValue.Create(name.Length > 80 ? name[..80] : name));
+                }
+            }
+        }
+
+        foreach (JsonNode? line in lines)
+        {
+            if ((string?)line is { Length: > 0 } text && text.Any(char.IsAsciiDigit) && numbers.Count < 6)
+            {
+                numbers.Add((JsonNode?)JsonValue.Create(text));
+            }
+        }
+
         var excerpt = new JsonObject { ["title"] = (string?)view["window"]?["title"] };
         if (values.Count > 0)
         {
             excerpt["values"] = values;
+        }
+
+        if (numbers.Count > 0)
+        {
+            excerpt["numbers"] = numbers;
         }
 
         if (lines.Count > 0)

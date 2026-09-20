@@ -810,6 +810,9 @@ public static class ProductCatalog
                 [
                     Boolean("includeText", types: NullableBoolean),
                     Integer("limit", 1, 60),
+                    // El proceso de la aplicación que la misión acaba de abrir: su
+                    // ventana es la superficie aunque otra tenga el foco.
+                    Integer("processId", 1, int.MaxValue, types: NullableInteger),
                     String("waitForLabel", types: NullableString, maximumUtf8Bytes: 256),
                 ],
                 []),

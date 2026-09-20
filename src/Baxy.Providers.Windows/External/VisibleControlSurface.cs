@@ -63,18 +63,125 @@ internal static partial class VisibleControlSurface
         // has no usable surface, take that window and bring it to the front,
         // because the click lands on whatever is on top.
         _ = GetWindowThreadProcessId(hwnd, out uint foregroundProcess);
-        if (foregroundProcess == unchecked((uint)Environment.ProcessId) || !HasUsableSurface(hwnd))
+        // The desktop itself (Progman / WorkerW, «Program Manager») and the
+        // taskbar are never the surface a person acts on: when nothing owns the
+        // foreground the act lands on the topmost application window.
+        if (foregroundProcess == unchecked((uint)Environment.ProcessId) || !HasUsableSurface(hwnd)
+            || IsShellSurface(hwnd))
         {
             nint candidate = TopmostForeignWindow();
             if (candidate != 0)
             {
-                _ = SetForegroundWindow(candidate);
+                BringToFront(candidate);
                 await Task.Delay(250, cancellationToken).ConfigureAwait(false);
                 hwnd = candidate;
             }
         }
 
         return hwnd;
+    }
+
+    /// <summary>
+    /// The window of one process: its largest visible top-level window, or the
+    /// ApplicationFrameHost frame hosting it (a UWP app such as the Calculator
+    /// has no top-level window of its own). Brought to the front so keys and
+    /// clicks land on it; 0 when the process shows nothing.
+    /// </summary>
+    internal static async ValueTask<nint> ResolveProcessWindowAsync(
+        int processId,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        nint found = 0;
+        for (int attempt = 0; found == 0 && attempt < 8; attempt++)
+        {
+            if (attempt > 0)
+                await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+            found = LargestTopLevelWindow(processId);
+            if (found == 0 || !HasUsableSurface(found))
+                found = FrameHosting(unchecked((uint)processId));
+        }
+
+        if (found == 0)
+            return 0;
+        if (GetForegroundWindow() != found)
+        {
+            BringToFront(found);
+            await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+        }
+
+        return found;
+    }
+
+    private static nint FrameHosting(uint processId)
+    {
+        nint frame = 0;
+        EnumWindowsProc callback = (window, outerParameter) =>
+        {
+            if (!IsWindowVisible(window) || ClassName(window) != "ApplicationFrameWindow")
+                return true;
+            bool hosts = false;
+            EnumWindowsProc children = (child, innerParameter) =>
+            {
+                GetWindowThreadProcessId(child, out uint owner);
+                if (owner == processId)
+                {
+                    hosts = true;
+                    return false;
+                }
+
+                return true;
+            };
+            _ = EnumChildWindows(window, children, nint.Zero);
+            if (!hosts)
+                return true;
+            frame = window;
+            return false;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        return frame;
+    }
+
+    private static bool IsShellSurface(nint window)
+    {
+        string className = ClassName(window);
+        return className is "Progman" or "WorkerW" or "Shell_TrayWnd" or "Shell_SecondaryTrayWnd";
+    }
+
+    internal static string ClassName(nint window)
+    {
+        var buffer = new char[128];
+        int copied = GetClassNameW(window, buffer, buffer.Length);
+        return copied <= 0 ? string.Empty : new string(buffer, 0, copied);
+    }
+
+    /// <summary>
+    /// Brings a window to the front the way the messaging adapter does: attached
+    /// to the input of the thread that owns the foreground, so Windows accepts
+    /// the request from this background process (a plain SetForegroundWindow is
+    /// refused and the typed keys would go elsewhere).
+    /// </summary>
+    internal static bool BringToFront(nint window)
+    {
+        nint foreground = GetForegroundWindow();
+        uint foregroundThread = GetWindowThreadProcessId(foreground, out _);
+        uint currentThread = GetCurrentThreadId();
+        bool attached = foregroundThread != 0
+            && currentThread != foregroundThread
+            && AttachThreadInput(currentThread, foregroundThread, true);
+        try
+        {
+            if (IsIconic(window))
+                _ = ShowWindow(window, 9);
+            _ = BringWindowToTop(window);
+            _ = SetForegroundWindow(window);
+            return GetForegroundWindow() == window;
+        }
+        finally
+        {
+            if (attached)
+                _ = AttachThreadInput(currentThread, foregroundThread, false);
+        }
     }
 
     internal static async ValueTask<CapturedWindow?> CaptureAsync(
@@ -109,6 +216,8 @@ internal static partial class VisibleControlSurface
         catch (IOException) { }
         catch (UnauthorizedAccessException) { }
     }
+
+    internal static bool IsAlive(nint hwnd) => hwnd != 0 && IsWindow(hwnd) && IsWindowVisible(hwnd);
 
     internal static string WindowTitle(nint hwnd)
     {
@@ -233,6 +342,28 @@ internal static partial class VisibleControlSurface
     private static partial int GetWindowTextLengthW(nint hwnd);
 
     [LibraryImport("user32.dll", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial int GetClassNameW(nint hwnd, [Out] char[] text, int count);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool AttachThreadInput(uint idAttach, uint idAttachTo, [MarshalAs(UnmanagedType.Bool)] bool attach);
+
+    [LibraryImport("kernel32.dll")]
+    private static partial uint GetCurrentThreadId();
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool BringWindowToTop(nint hwnd);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool ShowWindow(nint hwnd, int command);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool IsIconic(nint hwnd);
+
+    [LibraryImport("user32.dll", StringMarshalling = StringMarshalling.Utf16)]
     private static partial int GetWindowTextW(nint hwnd, [Out] char[] text, int count);
 
     [LibraryImport("user32.dll")]
@@ -248,7 +379,15 @@ internal static partial class VisibleControlSurface
 
     [LibraryImport("user32.dll")]
     [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool EnumChildWindows(nint parent, EnumWindowsProc callback, nint lParam);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
     private static partial bool IsWindowVisible(nint window);
+
+    [LibraryImport("user32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    private static partial bool IsWindow(nint window);
 
     [LibraryImport("user32.dll")]
     private static partial uint GetWindowThreadProcessId(nint window, out uint processId);

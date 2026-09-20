@@ -562,6 +562,7 @@ def deterministic_step(
     goal: str,
     view: dict,
     history: list[dict],
+    application: str | None = None,
 ) -> dict[str, object] | None:
     """The step the goal itself dictates when the view shows it (contract §4.2):
     a key to press, a text or an expression to type, a named control to click
@@ -572,7 +573,11 @@ def deterministic_step(
     folded_goal = fold(goal)
     last = history[-1] if history and isinstance(history[-1], dict) else None
     if last is not None and last.get("ok") is not True:
-        return None
+        # An opening that could not be verified but left the application in
+        # front (measured: the Calculator's hosted window is invisible to the
+        # opener's inventory) does not stop what the goal dictates.
+        if not (last.get("operation") == "app.open" and application_is_in_front(view, application)):
+            return None
     reason = "el objetivo lo dice"
     if folded_goal.startswith("apretar "):
         key = _key_from_words(folded_goal[len("apretar "):])
@@ -644,7 +649,7 @@ def decide_step(
         app_id = effect_intent.resolve_application_catalog_app_id(f"abre {application}", application_names)
         if app_id is not None:
             return {"operation": "app.open", "arguments": {"appId": app_id}, "reason": "la aplicación pedida no está delante"}
-    dictated = deterministic_step(goal=goal, view=view, history=history)
+    dictated = deterministic_step(goal=goal, view=view, history=history, application=application)
     if dictated is not None:
         return dictated
     last_failed = history[-1] if history and isinstance(history[-1], dict) and history[-1].get("ok") is False else None
@@ -781,6 +786,22 @@ def describe_step(step: dict, language: str) -> str:
     return operation
 
 
+# The typed stop reasons as facts the final can state (the model words them;
+# «operación» is a forbidden term in finals, so no cause says it).
+_STOP_CAUSES: dict[str, dict[str, str]] = {
+    "computer_use_no_step_visible": {"es": "no vi en la pantalla un control con el que seguir", "en": "I did not see on the screen a control to go on with"},
+    "computer_use_evidence_not_visible": {"es": "no encontré en la pantalla la prueba de que se hubiera logrado", "en": "I did not find on the screen the proof that it was done"},
+    "computer_use_budget_exhausted": {"es": "se agotaron los pasos previstos sin llegar", "en": "the planned steps ran out before getting there"},
+    "computer_use_time_exhausted": {"es": "se agotó el tiempo previsto sin llegar", "en": "the planned time ran out before getting there"},
+    "computer_use_surface_unchanged": {"es": "la pantalla dejó de cambiar tras lo que hice", "en": "the screen stopped changing after what I did"},
+    "computer_use_view_unavailable": {"es": "no pude leer la ventana", "en": "I could not read the window"},
+    "computer_use_decision_unavailable": {"es": "no pude decidir el siguiente paso", "en": "I could not decide the next step"},
+    "computer_use_repeated_step": {"es": "el único paso que veía ya había fallado", "en": "the only step I could see had already failed"},
+    "computer_use_step_failed": {"es": "un paso no se pudo hacer", "en": "a step could not be done"},
+    "computer_use_step_arguments_invalid": {"es": "el paso elegido no era válido", "en": "the chosen step was not valid"},
+}
+
+
 def project_seen(observed: dict, language: str) -> dict[str, object]:
     """What the composer may say about a mission: only what the loop observed."""
 
@@ -809,6 +830,9 @@ def project_seen(observed: dict, language: str) -> dict[str, object]:
         seen["screen"] = observed.get("screen")
     if observed.get("stoppedBy"):
         seen["stoppedBy"] = observed.get("stoppedBy")
+        seen["stoppedBecause"] = _STOP_CAUSES.get(str(observed.get("stoppedBy")), {}).get(
+            "en" if language == "en" else "es", str(observed.get("stoppedBy")).replace("_", " ")
+        )
     if observed.get("procedure") in {"replayed", "learned", "relearned"}:
         seen["procedure"] = observed.get("procedure")
     return seen
@@ -821,7 +845,10 @@ def compose_instruction(seen: dict, language: str) -> str:
             "This result is a computer-use mission that REACHED its goal: seen.goal is what was asked, "
             "seen.stepsDone the acts done in order (clicks, keys, typing) on the window seen.windowTitle, "
             "seen.evidence the text on screen that proves it when present, seen.screen what the window showed "
-            "at the end (values of its fields and a few lines: quote a value or a line when it answers the goal). Say in one or two sentences, in "
+            "at the end (seen.screen.numbers: the controls and lines carrying a number, such as a display or a "
+            "counter; seen.screen.values: its fields; seen.screen.lines: a few lines). When the goal asked for a "
+            "calculation, a number or a value, quote the matching entry of seen.screen.numbers exactly; do not "
+            "list the other lines of the window. Say in one or two sentences, in "
             "the person's language and in the past tense, what you did and what you saw; quote seen.evidence "
             "exactly when it exists. seen.joined says whether a voice channel or call was joined: say you "
             "joined only if it is true. Never add steps, times or results that are not in seen."
@@ -829,10 +856,10 @@ def compose_instruction(seen: dict, language: str) -> str:
     return (
         "This result is a computer-use mission that did NOT reach its goal: seen.goal is what was asked, "
         "seen.stepsDone what was done before stopping, seen.stepsFailed what could not be done, "
-        "seen.stoppedBy the typed reason. Say in one or two sentences, in the person's language, what was "
-        "done and that the goal was not reached, naming what stopped it plainly (the control was not "
-        "found, the screen did not change, the budget ran out). Never say it succeeded and never invent "
-        "a cause that is not in seen."
+        "seen.stoppedBecause the cause in the person's words. Say in one or two sentences, in the person's "
+        "language, what was done and that the goal was not reached, giving seen.stoppedBecause as the "
+        "cause (reword it lightly, never say «operación» or «operation»). Never say it succeeded and never "
+        "invent a cause that is not in seen."
     )
 
 

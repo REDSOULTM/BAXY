@@ -6142,6 +6142,12 @@ def _ground_explicit_arguments(
             )
     if explicit is None:
         return None
+    if operation == "mission.computer.use":
+        # Computer use: the application is the catalog's display name, the goal
+        # is normalized («calculá» → «calcular») and the success check is a
+        # grammar of the reader's own; none of them is a literal the person
+        # must have spelled. The reader is deterministic, never the model.
+        return explicit if validate_json_schema_instance(explicit, schema) else None
     if operation == "web.search" and explicit.get("query") == _todays_news_query(evidence):
         # WEB1451 «qué pasó hoy en el mundo»: the news reader supplies the
         # word «noticias»; the scope words are the person's own.

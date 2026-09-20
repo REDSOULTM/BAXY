@@ -37,8 +37,11 @@ Contrato de verificación `input.visible.controls.windows.uia.snapshot.v2`.
 {
   "limit": 60,            // opcional, 1..60; por defecto 60
   "includeText": true,    // opcional; añade el texto OCR por zonas (cuesta ~1 s)
-  "waitForLabel": "Biblioteca"  // opcional; espera acotada (≤ 24 s) hasta que esa etiqueta
+  "waitForLabel": "Biblioteca", // opcional; espera acotada (≤ 24 s) hasta que esa etiqueta
                                 // aparezca en controles o texto antes de devolver la vista
+  "processId": 1234             // opcional; la ventana de ese proceso (o el marco que la aloja,
+                                // UWP) es la superficie aunque otra tenga el foco: es la app
+                                // que la misión acaba de abrir. Se trae al frente.
 }
 ```
 
@@ -372,6 +375,10 @@ de plan:
   "authority": "shell_loop_over_uia_ocr_postread"
 }
 ```
+
+Cuando la misión no llega, `stoppedBy` (código) se proyecta al compositor como `stoppedBecause`,
+una causa en palabras de la persona («no vi en la pantalla un control con el que seguir»),
+porque «operación» es un término vetado en los finales y el modelo lo escribía solo.
 
 `screen` es lo que la ventana mostraba al terminar (valores de sus campos y unas líneas): el
 final cita un valor o una línea cuando responde al objetivo (la pantalla de la calculadora).

@@ -276,3 +276,30 @@ def test_deterministic_steps_follow_the_goal_family_and_the_view() -> None:
     assert computer_use.deterministic_step(goal="cerrar todas las pestañas", view=tabs_view, history=[])["arguments"] == {"key": "ctrl_w"}
     one_tab = {"window": {"title": "Chrome"}, "controls": [{"i": 0, "kind": "TabItem", "name": "Nueva pestaña"}], "text": {}}
     assert computer_use.deterministic_step(goal="cerrar todas las pestañas", view=one_tab, history=[]) is None
+
+
+def test_a_failed_open_with_the_application_in_front_does_not_stop_the_dictated_steps() -> None:
+    failed_open = [{"step": 1, "operation": "app.open", "appId": "Calculadora", "ok": False, "error": "verification_failed"}]
+    calc_view = {"window": {"title": "Calculadora", "process": "CalculatorApp", "focused": None}, "controls": [{"i": 0, "kind": "Button", "name": "Uno"}], "text": {}}
+    typed = computer_use.deterministic_step(goal="calcular 12×7", view=calc_view, history=failed_open, application="Calculadora")
+    assert typed == {"operation": "input.text.type", "arguments": {"text": "12*7"}, "reason": "el objetivo lo dice"}
+    elsewhere = {"window": {"title": "Program Manager", "process": "explorer", "focused": None}, "controls": [], "text": {}}
+    assert computer_use.deterministic_step(goal="calcular 12×7", view=elsewhere, history=failed_open, application="Calculadora") is None
+
+
+def test_mission_arguments_ground_without_a_literal_check() -> None:
+    from baxy_mind.__main__ import _ground_explicit_arguments
+
+    schema = {
+        "type": "object",
+        "properties": {
+            "application": {"type": ["string", "null"]},
+            "budgetSteps": {"type": ["integer", "null"]},
+            "goal": {"type": "string"},
+            "successCheck": {"type": ["string", "null"]},
+        },
+        "required": ["goal"],
+        "additionalProperties": False,
+    }
+    grounded = _ground_explicit_arguments("mission.computer.use", "en la calculadora calculá 12×7", schema, APPS)
+    assert grounded is not None and grounded["application"] == "Calculadora" and grounded["goal"] == "calcular 12×7"

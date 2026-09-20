@@ -197,8 +197,16 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         int limit = 60;
         bool includeText = false;
         string? waitForLabel = null;
+        int processId = 0;
         if (arguments.ValueKind == JsonValueKind.Object)
         {
+            if (arguments.TryGetProperty("processId", out JsonElement owner)
+                && owner.ValueKind == JsonValueKind.Number
+                && owner.TryGetInt32(out int requestedProcess) && requestedProcess > 0)
+            {
+                processId = requestedProcess;
+            }
+
             if (arguments.TryGetProperty("limit", out JsonElement requested)
                 && requested.ValueKind == JsonValueKind.Number
                 && requested.TryGetInt32(out int value))
@@ -219,7 +227,7 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         DateTime deadline = DateTime.UtcNow + LabelWaitBudget;
         while (true)
         {
-            ViewResult view = await BuildViewAsync(limit, includeText, cancellationToken)
+            ViewResult view = await BuildViewAsync(limit, includeText, processId, cancellationToken)
                 .ConfigureAwait(false);
             if (view.Receipt.ErrorCode is not null)
                 return view.Receipt;
@@ -236,6 +244,7 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
     private async ValueTask<ViewResult> BuildViewAsync(
         int limit,
         bool includeText,
+        int processId,
         CancellationToken cancellationToken)
     {
         const string operation = "input.visible.controls";
@@ -243,8 +252,17 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         nint hwnd;
         try
         {
-            hwnd = await VisibleControlSurface.ResolveForegroundAsync(cancellationToken)
-                .ConfigureAwait(false);
+            // The application the mission works on (the one it just opened) is
+            // the surface even when another window holds the foreground.
+            hwnd = processId > 0
+                ? await VisibleControlSurface.ResolveProcessWindowAsync(processId, cancellationToken)
+                    .ConfigureAwait(false)
+                : 0;
+            if (hwnd == 0)
+            {
+                hwnd = await VisibleControlSurface.ResolveForegroundAsync(cancellationToken)
+                    .ConfigureAwait(false);
+            }
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException)
         {
@@ -289,7 +307,7 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
                     : string.Empty;
             if (title.Length == 0)
                 title = VisibleControlSurface.WindowTitle(hwnd);
-            (int processId, string processName) = VisibleControlSurface.WindowProcess(hwnd);
+            (int ownerProcessId, string processName) = VisibleControlSurface.WindowProcess(hwnd);
             VisibleControlSurface.TryBounds(hwnd, out int left, out int top, out int right, out int bottom);
             var windowRect = new Rect(left, top, right - left, bottom - top);
 
@@ -375,7 +393,7 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
                     writer.WriteStartObject("window");
                     writer.WriteString("title", title);
                     writer.WriteString("process", processName);
-                    writer.WriteNumber("processId", processId);
+                    writer.WriteNumber("processId", ownerProcessId);
                     writer.WriteNumber("hwnd", hwnd);
                     WriteRect(writer, "rect", windowRect);
                     if (root.TryGetProperty("focused", out JsonElement focused)
@@ -540,11 +558,28 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         CancellationToken cancellationToken)
     {
         var effectBoundary = new ExternalEffectBoundary();
-        nint hwnd;
+        nint hwnd = 0;
         try
         {
-            hwnd = await VisibleControlSurface.ResolveForegroundAsync(cancellationToken)
-                .ConfigureAwait(false);
+            // A click by the identity of the last view lands on that view's
+            // window while it still exists, whatever holds the foreground now.
+            LastView? recent;
+            lock (_viewLock)
+            {
+                recent = _lastView;
+            }
+
+            if (controlId is not null && recent is not null && VisibleControlSurface.IsAlive(recent.Hwnd))
+            {
+                VisibleControlSurface.BringToFront(recent.Hwnd);
+                hwnd = recent.Hwnd;
+            }
+
+            if (hwnd == 0)
+            {
+                hwnd = await VisibleControlSurface.ResolveForegroundAsync(cancellationToken)
+                    .ConfigureAwait(false);
+            }
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException)
         {
