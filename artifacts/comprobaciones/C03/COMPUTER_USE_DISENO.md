@@ -273,6 +273,31 @@ su final salió inestable; H0737 («nerflix») acaba preguntando pese a que en f
 determinista lo acepta (APLAZADOS); H0010 sin título; diez de Disney+ y una de Prime
 Video, sin servicio en el catálogo; dos ininteligibles.
 
+## 9. VIDEO1925 y el muro de Disney+ (2026-09-20)
+
+**H0010 «prende algo en netflix».** Sin título no hay qué poner; la regla común de la encuesta
+es preguntar únicamente por lo que falta. BAXY contestaba «¿Quieres que reproduzca un video en
+Netflix?», un sí o no que no pedía nada. Ahora pregunta por el título y sólo por él, en el
+idioma del pedido. Seis de seis, 719/742.
+
+**Disney+ (diez filas) tiene el recorrido medido y un muro delante.** Con la sesión del dueño:
+la búsqueda no admite `?q=` (la biblioteca tenía razón), vive en `/browse/search` y se
+escribe en `#searchInput`; las fichas son `a[data-testid="set-item"]` hacia
+`/browse/entity-<id>` con el título en el `aria-label`; la ficha ofrece
+`a[data-testid="playback-action-button"]` hacia `/play/<id>`. Y ahí el `<video>` se queda
+sin fuente, sin error, tráiler incluido, también a mano y sin depuración. La causa la
+sospechó el dueño y la medición la confirmó: en el perfil de BAXY, Widevine sólo concede
+`SW_SECURE_CRYPTO` y rechaza `SW_SECURE_DECODE`; PlayReady 2000/3000 sí. Netflix se
+conforma; Disney+ no. Es el módulo de descifrado del perfil, no BAXY, y la comprobación
+siguiente es del dueño: si Disney+ reproduce en su Edge normal, y si el módulo Widevine
+del perfil de BAXY está actualizado.
+
+**Lección del método, dos veces en un día.** Una variante verificada contra el lector y
+no de extremo a extremo dejó VIDEO1921 sin créditos; desde entonces cada variante se
+prueba de extremo a extremo antes de sellar. Y una habilidad de planificador escrita para
+«start …» no hacía nada —en la ruta del esqueleto cerrado no se lee— mientras una entrada
+en el extractor literal lo arreglaba; se midió con y sin, y la habilidad se retiró.
+
 ## Fuentes
 
 - [OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments](https://arxiv.org/html/2404.07972v2)
