@@ -60,7 +60,39 @@ chats privados (H0510, H0720) y memes/imágenes de la web (H0069, H0077).
 sentido.» → H0306, H0138 y las negativas H0014/H0116/H0124 siguen como límite.
 
 ## D12 — `main`
-Sin decisión. Un PR se abre sólo con su «sí» explícito (plan Fase 12).
+«Una vez que todo esté listo y bien, hacer merge con main como sea recomendado; sinceramente no me interesa cómo.»
+Lectura: al final (plan Fase 12), merge de `origin/main` en la rama, PR por merge commit, `main` local actualizada.
+
+## D13 — Terceros en los literales → canal de prueba
+«Estos que nombran a terceros sólo cambiar por los canales seguros y listo, no hay razón para complicarse: si es
+por Discord "Valeria", si es por WhatsApp "Música"; si el mensaje dice "Dile a mamá por wsp que ya voy", se debe
+cambiar por "Dile a Música que ya voy", así de simple.»
+Lectura: en las tandas el literal se mide con el destinatario sustituido (correo → casilla de pruebas); el panel
+anota la sustitución; los créditos existentes se conservan.
+
+## D14 — Destinos de prueba
+«Sí»: «Música» (WhatsApp), «Valeria» (Discord), `autor@example.com`; sí a medir «al nombrado» con esos nombres.
+
+## D15 — Discord
+«Realmente no me importa cómo se haga; si te unes a cualquier canal no me afecta; que se haga como sea recomendado.»
+Lectura: texto/MD entra directo; voz pregunta antes y se queda conectado con el micrófono como esté.
+
+## D16 — Pestañas
+«Sí, dejar abierto el navegador, a menos que el usuario diga lo contrario.» Varios navegadores sin nombrar → preguntar cuál.
+
+## D17 — VS Code
+«VS Code se debe mantener a toda costa porque estamos en pleno desarrollo.»
+
+## D18 — Spotify
+«Hacer lo recomendado, sólo me interesa que BAXY funcione.» → medir las cuatro formas, construir lo que falle, más D7.
+
+## D19 — Full roja
+«Como sea mejor y recomendado, pero cumplir con goal C03 (tomar en cuenta que sigue en los demás goals).»
+Lectura: re-anclar contratos citando decisiones, escribir las pruebas faltantes, no romper sellos de otros goals.
+
+## D20 — RAM
+«Cambié de PC, este tiene 32 GB de RAM; no cierres nada a menos que sea necesario para el desarrollo y pruebas de
+BAXY; por RAM no falta ahora.»
 
 ## Vigentes y no revocadas
 Modelo Qwen3-4B local; 4 GB de VRAM; guarda de 4000 MiB libres (autorizado cerrar para liberar RAM);

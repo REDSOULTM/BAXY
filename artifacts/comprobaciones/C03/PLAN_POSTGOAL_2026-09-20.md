@@ -25,7 +25,7 @@ seis filas formales selladas). El dueño (Emmanuel) pasó a Fable la planificaci
 | # | Decisión | Consecuencia |
 |---|---|---|
 | D1 | «Todo lo que se detalla en las encuestas son cosas que BAXY debe hacer (cada fila dice si debe o no y cómo)». | El registro es la especificación. Las filas positivas acreditadas como «límite» o con una lectura en vez de la acción se **reabren** (§5). |
-| D2 | Envíos reales de mensajes «a cualquiera, con o sin preguntar dependiendo del modo: normal o bypass». | `message.send` al destinatario nombrado; modo normal → confirma; bypass → envía. |
+| D2 | Envíos reales de mensajes «a cualquiera, con o sin preguntar dependiendo del modo: normal o bypass» (Q1: «a cualquier persona»). | `message.send` al destinatario nombrado; modo normal → confirma; bypass → envía. |
 | D3 | «Hay muchas acciones que piden confirmaciones innecesarias (poner una serie…)». Elige que dejen de pedirla: reproducir/navegar, portapapeles/captura, pulsar/escribir en apps, Wi-Fi/Bluetooth/ajustes. «Lo que debe pedir permiso son sólo cosas destructivas o irreparables». | Nueva tabla de `RiskPolicy` en modo normal (§4 Fase 2). Coincide con `documentacion/00_IDENTIDAD.md` §«Peligro y confirmación — dos modos». |
 | D4 | Correo: «BAXY debe adaptarse a Gmail o Outlook, dependiendo qué use el usuario»; aprueba Outlook clásico de REDPC → casilla de pruebas. | `email.send` con detección de proveedor (§4 Fase 7). |
 | D5 | «Cerrame todo»: todo menos VS Code y las ventanas propias, cierre educado, si pide guardar se detiene y avisa. | Ya es así (`window.close.all`). Nada que construir; sólo verificar en la Full. |
@@ -35,7 +35,15 @@ seis filas formales selladas). El dueño (Emmanuel) pasó a Fable la planificaci
 | D9 | «Quiero que Claude Code tenga permisos totales para mandar mensajes por Discord o WhatsApp; son canales seguros de prueba». | §4 Fase 0 paso 4: reglas de permiso confirmadas por el dueño. |
 | D10 | BAXY «debe estar en el tope del arte del computer use, encadenar tools y hacer misiones compuestas; todo se detalla en AGENTS.md e identidad». | Principio transversal (§3): toda capacidad nueva se construye como misión encadenable; cascada UIA→OCR→visión es el núcleo (`00_IDENTIDAD.md:137`). |
 | D11 | Reabrir también: ejecutar comandos, fondo de pantalla y PowerPoint, leer chats privados y memes/imágenes de la web. **Contactos NO**: «dice explícitamente que BAXY no puede hacerlo porque en PC esto no tiene sentido». | §5. |
-| D12 | Sin decisión sobre `main`. | PR sólo con su «sí» (§4 Fase 11). |
+| D12 | «Una vez que todo esté listo y bien, hacer merge con main como sea recomendado». | PR por merge commit al final (§4 Fase 12), sin volver a preguntar. |
+| D13 | Terceros en los literales: «sólo cambiar por los canales seguros y listo: si es por Discord "Valeria", si es por WhatsApp "Música"; "Dile a mamá por wsp que ya voy" → "Dile a Música que ya voy"». | En las tandas el literal se mide con el destinatario sustituido por el canal de prueba; correo → casilla de pruebas. Los créditos se conservan; el panel anota `literal_measured` con la sustitución (§4 Fases 6–7). |
+| D14 | Destinos de prueba confirmados: «Música» (WhatsApp), «Valeria» (Discord), casilla `autor@example.com`; sí a medir «al nombrado» con esos nombres. | Nada que preguntar en Fases 6–7. |
+| D15 | Discord: «que se haga como sea recomendado»: texto/MD entra directo; voz pregunta antes y se queda conectado con el micrófono como esté (no se silencia salvo pedido). | §4 Fase 4. |
+| D16 | Pestañas: «dejar abierto el navegador, a menos que el usuario diga lo contrario»; varios navegadores y ninguno nombrado → preguntar cuál. | §4 Fase 5. |
+| D17 | «VS Code se debe mantener a toda costa porque estamos en pleno desarrollo». | `window.close.all` conserva Code/terminal/producto; nunca se toca. |
+| D18 | Spotify: «hacer lo recomendado, sólo me interesa que BAXY funcione» → medir las cuatro formas (nivel absoluto, en pausa, control SMTC, nada) y construir sólo lo que falle, más la cadena de D7. | §4 Fase 11. |
+| D19 | Full roja: «como sea mejor y recomendado, pero cumplir con goal C03 (y tener en cuenta que sigue en los demás goals)». | Re-anclar contratos citando decisiones + escribir las pruebas faltantes; no romper sellos de otros goals. |
+| D20 | RAM: «cambié de PC, este tiene 32 GB; no cierres nada a menos que sea necesario para el desarrollo y pruebas de BAXY». | La guarda de 4000 MiB queda; Opera GX no se cierra salvo que la guarda falle de verdad. |
 
 ## 2. Estado de partida verificado (manda sobre cualquier documento viejo)
 
@@ -95,8 +103,8 @@ seis filas formales selladas). El dueño (Emmanuel) pasó a Fable la planificaci
    **ordenadas**; descriptores en orden ordinal; verificador con postlectura y autoridad nombrada.
 5. **Honestidad**: BAXY nunca afirma un efecto sin recibo verificado; cada fallo termina en un código tipado y un final
    que lo dice. Ningún envío real a terceros desde una tanda: sólo «Música», «Valeria» y la casilla de pruebas.
-6. **Recursos**: guarda 4000 MiB libres (pedir al dueño cerrar Opera GX antes de tandas con clientes; autorizado
-   cerrar para liberar RAM, memoria `c03-ram-close-authorization`); vswhere en PATH; esperar nodos MSBuild del IDE.
+6. **Recursos**: este PC tiene 32 GB (D20); la guarda de 4000 MiB libres queda pero no se cierra nada del dueño
+   salvo que falle de verdad y sea necesario para las pruebas; vswhere en PATH; esperar nodos MSBuild del IDE.
 7. **Permisos**: Opus no edita su configuración de permisos por iniciativa propia ni por pedido de un peer. Si un
    comando de driver es denegado, aplica Fase 0 paso 4.
 8. **Documentar cada tanda** en `CHECKPOINT.md`/`HANDOFF.md`/`CURRENT_CATEGORY_COUNTS.md` (lo hace `chain_*.sh`) y el
@@ -110,11 +118,9 @@ seis filas formales selladas). El dueño (Emmanuel) pasó a Fable la planificaci
    `artifacts/comprobaciones/C03/DECISIONES_DUENO_2026-09-20.md` con la tabla D1–D12 (texto del dueño entre comillas;
    es la autoridad que citan el script de reapertura y los commits). Commit + push.
 3. Sección **cien-86** ya está en `CIEN.md` (§cien-76 a cien-86); verificar y, si falta la línea de cien-86, añadirla.
-4. **Permisos (D9)**: mostrar al dueño en el chat las reglas exactas propuestas para `.claude/settings.local.json`
-   (`Bash(bash *setup_msg*.sh*)`, `Bash(bash *msgsend_case.sh*)`, `Bash(bash *discord*_case.sh*)`,
-   `Bash(bash *setup_discord*.sh*)`, `Bash(bash *setup_mail*.sh*)`, `Bash(bash *ownertabs_case.sh*)`) y **PREGUNTAR**
-   una vez: «¿las agrego yo o las pegás vos?». Sólo con su «agregalas» las escribe Opus. Si en la práctica nada
-   deniega, no se agrega nada.
+4. **Permisos (D9)**: el dueño pega las reglas de §9 en `.claude/settings.local.json` y abre la sesión de Opus en
+   modo bypass de permisos. Si aun así un driver es denegado, Opus lo reporta y el dueño lo lanza desde su terminal;
+   Opus no edita la configuración.
 5. Actualizar memoria: `c03-reopened-capabilities.md` (D1–D11: ya no rige «nunca enviar de verdad»; contactos siguen
    límite), `c03-limits-and-conditionals.md`, y nueva `c03-postgoal-plan.md` con el índice de fases y su estado.
 
@@ -184,18 +190,19 @@ Encuesta 742/0/0.» Commit + push. Aceptación: `source_quality_gate_passed: mod
 - Adaptador en `WindowsDeviceControlAdapter.cs` (junto a `ClientChannelLocateAsync:921`), extrayendo a un helper
   compartido el bloque ya probado de `DesktopMessagingAdapter.ResolveAsync` rama Discord (`:555-591`: Escape → Ctrl+K
   1400 ms → texto → **clic relativo 0.5/0.381** sobre la fila → 2700 ms → verificación por título) más el prototipo
-  `discord_probe.ps1 -Join` (scratchpad d--). Voz: silenciar micrófono del sistema antes (`audio.microphone.mute`),
-  unirse, verificar por UIA «Voz conectada»/«Desconectar»; texto: cabecera nombra el canal. Recibo `channelName,
-  channelKind, server, joined:true, microphoneMuted`. Un solo proceso PowerShell (lección `commit_discord_single_process.txt`).
+  `discord_probe.ps1 -Join` (scratchpad d--). Voz: unirse con el micrófono como esté (D15; no se silencia salvo pedido),
+  verificar por UIA «Voz conectada»/«Desconectar»; texto: cabecera nombra el canal. Recibo `channelName,
+  channelKind, server, joined:true`. Un solo proceso PowerShell (lección `commit_discord_single_process.txt`).
   Modo normal: voz pide confirmación (Fase 2), texto entra directo. Se queda dentro (la persona pidió ir).
 - Mente: `effect_intent.py:18183-18186` enruta `client_channel_request` (`:1404`) a `open` si está disponible;
-  `__main__.py:5131` args; `llm.py:4619-4635` guion (decir que entró, canal/servidor, micrófono silenciado si voz);
+  `__main__.py:5131` args; `llm.py:4619-4635` guion (decir que entró, canal/servidor);
   veto `joined_claimed` (`:7899`) sólo cuando `seen.joined` no es true, y nuevo `joined_not_stated` cuando lo es;
   máscara del nombre «Cotele!!!??» (`:8892-8907`) se conserva.
 - Tanda DISCORD1959 (plantilla `discord1839`, 6 casos): literales H0290, H0636; variantes «entrá al canal Cotele en
   Discord», «go to Cotele on Discord»; límites «no entres a ningún canal», «ve a Zzqx en Discord» (no existe → honesto).
-  Driver `discord_join_case.sh`: Discord del dueño abierto (o lanzado por la raíz), micrófono silenciado y restaurado,
-  **la raíz desconecta tras cada caso** (`discord_probe.ps1` tiene la salida), Opera GX cerrada. Crédito +2.
+  Driver `discord_join_case.sh`: Discord del dueño abierto (o lanzado por la raíz), micrófono del sistema silenciado
+  por el driver durante la tanda y restaurado (higiene de la medición, no del producto), **la raíz desconecta tras cada
+  caso** (`discord_probe.ps1` tiene la salida). Crédito +2.
   Fast → cien-89.
 
 ### Fase 5 — Pestañas del Chrome del dueño (H0444) (2–3 h + cien)
@@ -212,7 +219,8 @@ Encuesta 742/0/0.» Commit + push. Aceptación: `source_quality_gate_passed: mod
 - Tanda TABS1961 (plantilla `chrometabs1843`): literal H0444; variantes «close all Chrome tabs», «cerrá las pestañas
   de chrome»; límites «cerrá esta pestaña» (límite llano LIMITS1677), «no cierres nada del navegador». Driver
   `ownertabs_case.sh`: `chrome.exe --new-window about:blank about:blank about:blank` en el perfil del dueño, cuenta
-  `TabItem` antes/después, cierra esa ventana al final. Crédito +1. Fast → cien-90.
+  `TabItem` antes/después, deja el navegador abierto con una pestaña (D16) y cierra esa ventana de utillaje al final.
+  Crédito +1. Fast → cien-90.
 
 ### Fase 6 — Mensajes al destinatario nombrado (D2) (3–4 h + cien; revalidación)
 - Hoy `effect_intent.py:18187-18194` prefiere `message.send.test`. Cambio: preferir `message.recipient.resolve` →
@@ -223,10 +231,12 @@ Encuesta 742/0/0.» Commit + push. Aceptación: `source_quality_gate_passed: mod
   mantiene; destinatario no encontrado → `recipient_identity_not_verified` y final honesto («no encontré a X»).
 - Tanda MSGNAMED1963 (plantilla `msgsend1847`, driver `msgsend_case.sh`, revisor `approve_message_send.py` adaptado a
   `message.send` cuyo `recipientId` resuelva a «Música» o «Valeria»; matar `whatsapp.root.exe` respawn; cerrar cliente
-  después): literales H0005, H0369, H0425 (→ Música, **revalidación sin crédito**: ya cubiertas); H0318/H0394 nombran a
-  ShooterCock → la raíz **no aprueba** un tercero real; se mide la parada honesta («no lo envié») y el diálogo en normal;
-  variantes «mandale hola a Valeria por discord», «send hi to Música on whatsapp»; límites. Evidencia `revalidation`
-  en las filas. Si el driver es denegado: Fase 0 paso 4. Fast → cien-91.
+  después):
+  literales con el destinatario **sustituido por el canal de prueba (D13)**: WhatsApp H0008, H0540, H0489, H0208,
+  H0611, H0225, H0024 («mandale a mamá…» → «mandale a Música…»), Discord H0318, H0340, H0394 (ShooterCock → Valeria),
+  más H0005, H0369, H0425 tal cual; el panel anota `literal_measured` con la sustitución. **Revalidación sin crédito**
+  (ya cubiertas). Variantes «mandale hola a Valeria por discord», «send hi to Música on whatsapp»; límites. Evidencia
+  `revalidation` en las filas. Si el driver es denegado: Fase 0 paso 4. Fast → cien-91.
 
 ### Fase 7 — Correo a dirección libre, Outlook o Gmail (D4) (3–4 h + cien; revalidación)
 - Op nueva `email.send(subject?, text, to)` (`ExternalCommunication`, confirma en normal). Provider en
@@ -239,10 +249,10 @@ Encuesta 742/0/0.» Commit + push. Aceptación: `source_quality_gate_passed: mod
   navegador de BAXY); si no, Gmail queda construido y anotado en APLAZADOS como «sin sesión para medir».
 - Mente: `message_draft_request` (`effect_intent.py:1432-1469`) canal email → `email.send`; sin dirección → pregunta
   la dirección (nunca la inventa); `_latest_email_domain` intacto; `__main__.py:5136-5146` args.
-- Tanda MAIL1965 (plantilla `mail1867`): literal H0638 «enviá un correo» (diálogo) y variantes a la casilla de
-  pruebas (`autor@example.com`; **PREGUNTAR** una vez si sigue siendo la de pruebas); H0554/H0609 nombran
-  `ana@gmail.com`/otra real → la raíz no aprueba, se mide la confirmación honesta. Revalidación sin crédito. Corregir de paso
-  la `verification_reason` de H0018 (copiada de una fila de WhatsApp). Fast → cien-92.
+- Tanda MAIL1965 (plantilla `mail1867`): literales H0554, H0279, H0440, H0609, H0018, H0638 con la dirección
+  **sustituida por la casilla de pruebas** `autor@example.com` (D13, D14) y `literal_measured` anotado;
+  variantes. Revalidación sin crédito. Corregir de paso la `verification_reason` de H0018 (copiada de una fila de
+  WhatsApp). Fast → cien-92.
 
 ### Fase 8 — Pulsar dentro de una app (H0175, H0566) (2 h + cien)
 - Sin op nueva: cadena `window.resolve/window.focus` (app nombrada) → `input.key.press` (`ProductCatalog.cs:700`,
@@ -305,7 +315,10 @@ Encuesta 742/0/0.» Commit + push. Aceptación: `source_quality_gate_passed: mod
   `web.search`) → descarga → abre con el visor (`file.open`), «te muestro este»; fixtures borrados después. Tanda WEB1987. +2.
 - Cien tras cada tanda con cambio de mente/App (cien-94…).
 
-### Fase 11 — Spotify encadenado y nivel absoluto (D7) (3–4 h; revalidación)
+### Fase 11 — Spotify: medir primero, construir lo que falle (D7, D18) (3–4 h; revalidación)
+- Primero una sonda en frío con el Spotify de la Store (driver `spotify_case.sh`/`appvol_case.sh` del scratchpad d--):
+  (a) nivel absoluto «poné spotify al 50»; (b) ajuste con Spotify en pausa (`app_audio_session_not_found`); (c) control
+  «pausá/siguiente en spotify» (`media.control sourceApp` por SMTC); (d) nada. Construir sólo lo que falle.
 - Cuando `audio.app.volume.adjust` devuelve `app_audio_session_not_found` y la app está en el catálogo de inicio, el
   planificador propone la cadena `app.open(spotify)` → `media.play.query` (Spotify; `spotify_case.sh`/`approve_spotify.py`)
   → `audio.app.volume.adjust` (CHAIN1931, grounding dependiente). Añadir `audio.app.volume.set(app, level)` absoluto
@@ -319,10 +332,11 @@ Encuesta 742/0/0.» Commit + push. Aceptación: `source_quality_gate_passed: mod
   `COMPUTER_USE_DISENO.md` §15 (reaperturas, modo de confirmaciones, capacidades nuevas), `APLAZADOS.md` (lo que quede
   sin poder medir: Gmail sin sesión, títulos de Steam no poseídos…), `HANDOFF.md`, memoria (`c03-postgoal-plan.md` con
   estado por fase), barrido de perfiles a `C:\Users\usuario\BAXY-evidencia\<fecha>\`, push. Registro: 742/742 de nuevo.
-- **PR a `main` (D12): PREGUNTAR** una vez al dueño; con «sí»: `git fetch origin && git merge origin/main` en la rama
+- **PR a `main` (D12, decidido: sí, sin volver a preguntar)**: `git fetch origin && git merge origin/main` en la rama
   (2 commits de docs, sin conflictos esperados) → Fast → push → `gh pr create --base main --head codex/kiro-goal-c03`
   con cifras (742/742, 35/35, cien, Full por suite) y la nota de que el diff es evidencia; merge por **merge commit**
-  (nunca squash/rebase: 1 600 commits citados por SHA); después `git branch -f main origin/main` local. Sin «sí»: nada.
+  (nunca squash/rebase: 1 600 commits citados por SHA); el dueño pulsa el merge en GitHub; después
+  `git branch -f main origin/main` local.
 
 ## 5. Filas que se reabren en la Fase 3 (35) y por qué
 
@@ -374,7 +388,9 @@ empujada y documentada: se puede parar entre fases sin perder nada.
 - Dos tandas, o tanda + cien, a la vez; editar `src` con algo corriendo; compilar entre ejecución y adjudicación.
 - Hard-codear Discord/Spotify/Chrome/Steam fuera de alias y enumerados; listas de destinatarios en código.
 - Inventar en los finales («lo envié», «entré», «instalé», «cerré») sin recibo verificado.
-- Volver a preguntar al dueño lo que este plan ya decide.
+- Volver a preguntar al dueño lo que este plan ya decide (quedan sólo: la auditoría semántica tras la Fase 3, los
+  títulos de Steam que posee su cuenta, y si quiere medir Gmail en este PC).
+- Cerrar Opera GX u otra app del dueño «por RAM» sin que la guarda falle (D20).
 
 ## 8. Verificación de punta a punta
 
@@ -386,3 +402,22 @@ empujada y documentada: se puede parar entre fases sin perder nada.
 - Fases 4–11: por tanda, `chain_*.sh` termina en `PUSHED`, `root_publish` explica los contadores por créditos
   explícitos, recibos con autoridad de postlectura, y cien 100/100 detrás de cada cambio de mente/App.
 - Fase 12: registro 742/742 y 35/35; Full verde; cien verde; `git status` limpio; `git rev-list --count origin/codex/kiro-goal-c03..HEAD` = 0.
+
+## 9. Permisos que el dueño pega antes de arrancar (D9)
+
+En `.claude/settings.local.json` del repositorio, dentro de `permissions.allow` (y la sesión de Opus se abre en modo
+bypass de permisos):
+
+```json
+"Bash(bash *setup_*.sh*)",
+"Bash(bash *chain_*.sh*)",
+"Bash(bash *_case.sh*)",
+"Bash(bash *rerun_*.sh*)",
+"Bash(python *approve_*.py*)",
+"Bash(python -X utf8 *approve_*.py*)",
+"Bash(powershell.exe *run_baxy_conductor.ps1*)",
+"Bash(powershell.exe *test_source_quality.ps1*)",
+"Bash(powershell.exe *discord_probe.ps1*)",
+"Bash(git push *)",
+"Bash(gh pr create *)"
+```
