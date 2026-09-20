@@ -1674,3 +1674,7 @@ Vídeo y series pasa de 15/26 a 16/26 con decir llanamente que no puede poner un
 ## Actualización 2026-09-20 (UNRES1945)
 
 Entrada incompleta, ruido y control de diálogo pasa de 32/34 a 34/34 con preguntar de que o a que se refiere cuando llegan palabras reales sin ningun pedido (commit 24e12e0f, BUILD1945) (HEAD 24e12e0f): 6 ejecutados, 6 aprobados, 0 fallidos, 2 créditos. Los cuatro casos del grupo cerraron con cero operaciones y una pregunta que nombra lo que falta («¿De qué querés que hable?», «No sé a qué te referís; ¿me lo repetís con más contexto?»); los límites con cero operaciones. Corrida sobre BUILD1945 (HEAD 24e12e0). La categoría queda cerrada.
+
+## Actualización 2026-09-20 (VIDEO1947)
+
+Vídeo y series pasa de 16/26 a 16/26 con poner una serie nombrandola en Disney+ y decir que se reproduce nombrando el titulo observado (commit fa944b77, BUILD1947) (HEAD fa944b77): 10 ejecutados, 9 aprobados, 1 fallido, 0 créditos. Las seis filas con título y la variante en inglés reproducen en Disney+ con el vídeo que avanza y un final que nombra el título observado; la variante en voseo falló porque la lectura eligió una ficha por defecto de la página de búsqueda antes de que llegaran los resultados, con final honesto: sin dos variantes aprobadas, cero créditos. La reparación se mide en la tanda siguiente.

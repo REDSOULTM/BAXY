@@ -1,0 +1,15 @@
+{
+  "schema": "c03-video1947-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Kernel/Operations/ProductCatalog.cs (service enum), src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs (PlayDisneyAsync), src/baxy_mind (service spelled after the title, planner alias), on top of the VIDEO1947 build.",
+  "patch": "artifacts/comprobaciones/C03/VIDEO1947/SOURCE.patch",
+  "commits": [
+    "fa944b77b0b2cea8c323a7e805dfdbbbb33d6ab7"
+  ],
+  "build": "BUILD1947 (C03-repairs1947-build/BUILD_READY.json; Kernel, Providers y mente)",
+  "cause_measured": "El diagnóstico leía el vídeo de fondo y el enlace frío; el reproductor elegía PlayReady, que falla en este PC.",
+  "change": "Disney+ se reproduce por la ficha y su botón con Widevine (agente de Chrome en esa sesión); la mente lee el servicio tras el título.",
+  "measurement": "VIDEO1947: 10 ejecutados, 9 aprobados, 1 fallido; 0 créditos. Las seis filas con título y la variante en inglés reproducen en Disney+ con el vídeo que avanza y un final que nombra el título observado; la variante en voseo falló porque la lectura eligió una ficha por defecto de la página de búsqueda antes de que llegaran los resultados, con final honesto: sin dos variantes aprobadas, cero créditos. La reparación se mide en la tanda siguiente.",
+  "credits": 0
+}

@@ -1,0 +1,343 @@
+commit fa944b77b0b2cea8c323a7e805dfdbbbb33d6ab7
+
+C03: Disney+ reproduce por la ruta de una persona y con Widevine
+
+Las diez filas de Disney+ estaban aplazadas por un diagnóstico equivocado:
+el primer <video> de la página es un elemento de fondo que nunca sale de
+readyState 0, y el enlace frío /play/<id> sí se queda cargando para
+siempre porque el puente de identidad de login.disney.com falla («Scope is
+not present»). Medido de nuevo, con la sesión del dueño y también en su
+propio Edge: por la ruta de una persona —la búsqueda (#searchInput), la
+ficha (a[data-testid=set-item]) y su botón «Ver ahora»— el reproductor
+arranca. Con el agente de usuario de Edge elige PlayReady y el
+renderizador de Media Foundation de este PC falla (0x8004CD…); con uno de
+Chrome elige Widevine y el vídeo avanza, también sin GPU.
+
+PlayDisneyAsync pone Emulation.setUserAgentOverride sólo en su destino
+CDP, escribe el título con Input.insertText, elige la ficha, pulsa
+reproducir y verifica el <video> que avanza; el título observado es el de
+la pestaña («Daredevil | Disney+»). El servicio de streaming.play.named
+acepta disney_plus. En la mente, el servicio escrito tras el título elige
+disney_plus o netflix con una alternancia cerrada de erratas (disney+,
+disney plus, dysney, east plus); las transcripciones cortadas que nombran
+el servicio sin título («Toda la serie en Disney Plus», «Bueno, una serie
+East Plus.», «on everybody en Disney.») preguntan qué ver.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.Kernel/Operations/ProductCatalog.cs b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+index 788a0d3fe..f4c376993 100644
+--- a/src/Baxy.Kernel/Operations/ProductCatalog.cs
++++ b/src/Baxy.Kernel/Operations/ProductCatalog.cs
+@@ -1423,14 +1423,18 @@ public static class ProductCatalog
+             "streaming.play.named",
+             Schema(
+                 [
+-                    String("service", values: ["netflix"]),
++                    // VIDEO1947: Disney+ joins Netflix. Its player refuses the
++                    // PlayReady path on this PC (MediaFoundation 0x8004CD…) and
++                    // plays with Widevine when the page sees a Chrome user agent;
++                    // the provider sets that override on the Disney+ target only.
++                    String("service", values: ["disney_plus", "netflix"]),
+                     String("title", maximumUtf8Bytes: 512, nonWhitespace: true),
+                 ],
+                 ["service", "title"]),
+             OperationRisks.ExternalCommunication,
+             "streaming.play.named.netflix.cdp.video.progress.v1",
+             ToolExposure.Public,
+-            "Busca y reproduce un título en una sesión Netflix autenticada y verifica que el video avanza."),
++            "Busca y reproduce un título en una sesión autenticada de Netflix o Disney+ y verifica que el video avanza."),
+         Descriptor(
+             "system.application.crash.diagnose",
+             Schema(
+diff --git a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+index 3e7a08bcf..e2f5a20e4 100644
+--- a/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
++++ b/src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs
+@@ -282,12 +282,13 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
+     {
+         string service = ExternalJson.RequiredString(arguments, "service");
+         string title = ExternalJson.RequiredString(arguments, "title").Trim();
+-        if (service != "netflix" || title.Length == 0)
++        if (service is not ("netflix" or "disney_plus") || title.Length == 0)
+             return ExternalJson.Failure(operation, "streaming_named_argument_invalid");
+         _sessionContext?.Activate(_browser);
+         effectBoundary.Cross(cancellationToken);
+-        CdpStreamingPlaybackResult playback = await _browser.PlayNetflixAsync(
+-            title, cancellationToken).ConfigureAwait(false);
++        CdpStreamingPlaybackResult playback = service == "disney_plus"
++            ? await _browser.PlayDisneyAsync(title, cancellationToken).ConfigureAwait(false)
++            : await _browser.PlayNetflixAsync(title, cancellationToken).ConfigureAwait(false);
+         if (!playback.Verified)
+         {
+             // Un fallo que no dice donde se quedo obliga a adivinar. Se anota la
+@@ -307,7 +308,8 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
+             writer.WriteString("targetId", playback.TargetId);
+             writer.WriteString("playbackStatus", "playing");
+             writer.WriteNumber("observedProgressSeconds", playback.ObservedProgressSeconds);
+-            writer.WriteString("authority", "netflix_cdp_video_progress_postread");
++            writer.WriteString("authority", service == "disney_plus"
++                ? "disney_cdp_video_progress_postread" : "netflix_cdp_video_progress_postread");
+             writer.WriteEndObject();
+         }), playback.EffectObserved);
+     }
+@@ -977,6 +979,7 @@ internal sealed class WebBrowserAdapter : IExternalOperationAdapter, IDisposable
+         string[] suffixes = service switch
+         {
+             "netflix" => ["netflix.com"],
++            "disney_plus" => ["disneyplus.com"],
+             "prime_video" => ["primevideo.com", "amazon.com"],
+             "youtube" => ["youtube.com", "youtu.be"],
+             _ => [],
+@@ -1744,6 +1747,140 @@ internal class CdpBrowserSession : IDisposable
+             lastObserved + "|remembered=" + chosenId + "/" + chosenName);
+     }
+ 
++    // VIDEO1947 «pon Daredevil en Disney+»: medido en el perfil compartido con la
++    // sesión del dueño. El enlace frío /play/<id> se queda cargando para siempre
++    // (el puente de identidad de login.disney.com falla: «Scope is not present»);
++    // la ruta que reproduce es la de una persona: la búsqueda (/browse/search,
++    // #searchInput), la ficha (a[data-testid="set-item"] → /browse/entity-<id>) y
++    // su botón «Ver ahora» (a[data-testid="playback-action-button"]). Con el
++    // agente de usuario de Edge el reproductor elige PlayReady y el renderizador
++    // de Media Foundation de este PC falla (0x8004CD…); con uno de Chrome elige
++    // Widevine y el vídeo avanza. El primer <video> de la página es un elemento
++    // de fondo que nunca sale de readyState 0: se mira el que avanza.
++    private const string DisneyChromeUserAgent =
++        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
++        + "Chrome/153.0.0.0 Safari/537.36";
++
++    internal virtual async ValueTask<CdpStreamingPlaybackResult> PlayDisneyAsync(
++        string title,
++        CancellationToken cancellationToken)
++    {
++        if (string.IsNullOrWhiteSpace(title) || Encoding.UTF8.GetByteCount(title) > 512)
++            return new(false, false, title, string.Empty, string.Empty, string.Empty, 0,
++                "disney_title_invalid");
++        Uri endpoint = await EnsureEndpointAsync(cancellationToken).ConfigureAwait(false);
++        (string targetId, Uri webSocket) = await ResolveTargetAsync(
++            endpoint, createIfMissing: true, cancellationToken).ConfigureAwait(false);
++        using var socket = new ClientWebSocket();
++        await socket.ConnectAsync(webSocket, cancellationToken).ConfigureAwait(false);
++        // El override vive con esta sesión CDP: dura lo que dura el socket, sólo
++        // para este destino; Netflix y las navegaciones nombradas no lo ven.
++        await CommandAsync(socket, "Emulation.setUserAgentOverride", writer =>
++        {
++            writer.WriteString("userAgent", DisneyChromeUserAgent);
++        }, cancellationToken).ConfigureAwait(false);
++        const string searchUrl = "https://www.disneyplus.com/es-419/browse/search";
++        JsonElement navigate = await CommandAsync(socket, "Page.navigate", writer =>
++        {
++            writer.WriteString("url", searchUrl);
++        }, cancellationToken).ConfigureAwait(false);
++        if (navigate.TryGetProperty("error", out _))
++            return new(false, false, title, searchUrl, string.Empty, targetId, 0,
++                "cdp_navigation_rejected");
++        string titleLiteral = "\"" + JsonEncodedText.Encode(title).ToString() + "\"";
++        double? baseline = null;
++        string lastUrl = searchUrl;
++        string lastPageTitle = string.Empty;
++        string chosenHref = string.Empty;
++        string chosenName = string.Empty;
++        string lastObserved = string.Empty;
++        bool typed = false;
++        string failure = "disney_title_or_play_control_not_found";
++        for (int attempt = 0; attempt <= 240; attempt++)
++        {
++            if (attempt > 0)
++            {
++                await Task.Delay(250, cancellationToken).ConfigureAwait(false);
++            }
++
++            string observed = await EvaluateStringAsync(
++                socket,
++                "(()=>{const wanted=" + titleLiteral + ".toLowerCase();"
++                + "let chosenHref='',chosenName='',action='none';"
++                + "const body=(document.body?.innerText||'').toLowerCase();"
++                + "const auth=location.pathname.includes('/login')||location.pathname.includes('/begin')||"
++                + "body.includes('inicia sesión')||body.includes('iniciar sesión')||body.includes('log in');"
++                + "const p=location.pathname;"
++                // La búsqueda: el cuadro se enfoca aquí y el texto lo escribe CDP
++                // (Input.insertText), porque el valor puesto por JS no dispara la
++                // búsqueda de la página.
++                + "if(!auth&&p.includes('/browse/search')){const input=document.querySelector('#searchInput,input[type=\"search\"]');"
++                + "const cards=[...document.querySelectorAll('a[data-testid=\"set-item\"]')];"
++                + "if(cards.length&&(input?.value||'').length){"
++                // El aria-label de la ficha trae el título y detrás la clasificación, el
++                // estreno y el género («Daredevil Clasificación: 18+. Estreno: 2015. …»);
++                // el nombre es lo que hay antes de esos rótulos.
++                + "const clean=s=>(s||'').split(/\\s+(?:Clasificaci[oó]n|Rating|Estreno|Release|G[eé]nero|Genre)\\s*:/)[0].trim();"
++                + "const named=cards.map(a=>({a,t:clean(a.getAttribute('aria-label')||a.innerText).toLowerCase(),n:clean(a.getAttribute('aria-label')||a.innerText)}));"
++                + "const hit=named.find(x=>x.t===wanted)||named.find(x=>x.t.startsWith(wanted))||named.find(x=>x.t.includes(wanted))||named[0];"
++                + "if(hit){chosenName=hit.n;chosenHref=hit.a.getAttribute('href')||'';if(chosenHref){location.href=chosenHref;action='entity_nav';}"
++                + "return [location.href,document.title,'ok',-1,'missing',0,action,chosenHref,chosenName,'cards'].join('\\u001f');}}"
++                + "if(input){input.focus();return [location.href,document.title,'ok',-1,'missing',0,'input_focused','','',(input.value||'').length?'typed':'empty'].join('\\u001f');}}"
++                // La ficha: su botón de reproducir lleva al reproductor por la
++                // propia aplicación (SPA), que es la ruta que arranca.
++                + "if(!auth&&p.includes('/browse/entity-')){const play=document.querySelector('a[data-testid=\"playback-action-button\"],button[data-testid=\"playback-action-button\"]');"
++                + "if(play){play.click();action='play_clicked';}"
++                + "return [location.href,document.title,'ok',-1,'missing',0,action,'','','entity'].join('\\u001f');}"
++                // El reproductor: el <video> que avanza es la prueba.
++                + "const vids=[...document.querySelectorAll('video')];"
++                + "const v=vids.find(x=>x.readyState>=2&&!x.paused)||vids.find(x=>x.readyState>=2)||vids[vids.length-1];"
++                + "if(v&&v.paused&&v.readyState>=2){v.play().catch(()=>{});}"
++                + "return [location.href,document.title,auth?'auth':'ok',v?v.readyState:-1,v?(v.paused?'paused':'playing'):'missing',v?v.currentTime:0,action,'','',p.includes('/play/')?'player':'other'].join('\\u001f');})()",
++                cancellationToken,
++                userGesture: true).ConfigureAwait(false);
++            lastObserved = observed;
++            string[] fields = observed.Split('\u001f');
++            if (fields.Length != 10) continue;
++            lastUrl = fields[0]; lastPageTitle = fields[1];
++            if (fields[2] == "auth")
++                return new(false, true, title, lastUrl, lastPageTitle, targetId, 0,
++                    "disney_authentication_required");
++            if (fields[7].Length > 0) chosenHref = fields[7];
++            if (fields[8].Length > 0) chosenName = fields[8];
++            if (fields[6] == "input_focused" && !typed && fields[9] == "empty")
++            {
++                await CommandAsync(socket, "Input.insertText", writer =>
++                {
++                    writer.WriteString("text", title);
++                }, cancellationToken).ConfigureAwait(false);
++                typed = true;
++                continue;
++            }
++            bool player = fields[9] == "player";
++            bool ready = int.TryParse(fields[3], NumberStyles.Integer,
++                CultureInfo.InvariantCulture, out int readyState) && readyState >= 2;
++            bool progressing = double.TryParse(fields[5], NumberStyles.Float,
++                CultureInfo.InvariantCulture, out double currentTime);
++            if (player && chosenHref.Length > 0 && ready && fields[4] == "playing" && progressing)
++            {
++                // El reproductor titula la pestaña «<título> | Disney+»: es el nombre
++                // observado más limpio que hay; la ficha elegida queda de reserva.
++                string pageName = lastPageTitle.Contains(" | ", StringComparison.Ordinal)
++                    ? lastPageTitle[..lastPageTitle.IndexOf(" | ", StringComparison.Ordinal)].Trim()
++                    : string.Empty;
++                if (baseline is not null && currentTime >= baseline.Value + 0.5)
++                    return new(true, true,
++                        pageName.Length > 0 ? pageName : chosenName.Length > 0 ? chosenName : title,
++                        lastUrl, lastPageTitle, targetId,
++                        currentTime - baseline.Value, string.Empty);
++                baseline ??= currentTime;
++                failure = "disney_video_progress_not_observed";
++            }
++        }
++        return new(false, true, title, lastUrl, lastPageTitle, targetId, 0, failure,
++            lastObserved + "|remembered=" + chosenHref + "/" + chosenName);
++    }
++
+     public virtual void Dispose()
+     {
+         _http.Dispose();
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index f71cf7761..38ba2e14e 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -5364,7 +5364,8 @@ def _explicit_arguments_from_evidence(
+             r"(?:(?:la|the)\s+(?:serie|series|pel[ií]cula|peli|movie|film)\s+)?"
+             r"(?P<title>.+?)\s+"
+             r"(?:en|in|on|desde|from|through|usando|using)\s+"
+-            r"(?:netflix|nerflix|netlix|netfix|netflis|neflix)\b",
++            r"(?:netflix|nerflix|netlix|netfix|netflis|neflix|"
++            r"disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|dinsey|dizney)\b",
+             clause_literal(evidence),
+             re.IGNORECASE,
+         )
+@@ -5373,7 +5374,11 @@ def _explicit_arguments_from_evidence(
+         title = named.group("title").strip().strip("\"'«»“”").strip()
+         if not title or len(title.encode("utf-8")) > 512:
+             return None
+-        streaming_arguments: dict[str, object] = {"service": "netflix", "title": title}
++        # VIDEO1947: the service is the one spelled after the title.
++        streaming_arguments: dict[str, object] = {
++            "service": effect_intent.streaming_service_named(evidence),
++            "title": title,
++        }
+         return streaming_arguments
+ 
+     if operation == "media.play.query":
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 42198a4ee..8ef25d104 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -4574,6 +4574,26 @@ def resolve_explicit_clarification_intent(
+         )
+         is not None
+     )
++    # VIDEO1947 H0130 «Toda la serie en Disney Plus», H0252 «Bueno, una serie
++    # East Plus.», H0113 «on everybody en Disney.»: transcripciones cortadas o
++    # mal oídas que nombran el servicio de streaming y ningún título legible:
++    # sin verbo («toda la serie», «una serie») o con palabras que no forman un
++    # título («on everybody»). El único dato que falta es qué ver: se pregunta.
++    fragment_streaming_clause = any(
++        _has(clause, r"\b" + _NETFLIX_SPELLED + r"\b")
++        and (
++            re.fullmatch(
++                r"[¿?¡!\s]*(?:(?:bueno|dale|che|ya)\s*[,;:]?\s+)?(?:toda|la|una|otra|alguna|the|a|whole|some)\s+(?:la\s+)?"
++                r"(?:serie|series|show|peli(?:cula)?|movie|temporada|season)(?:\s+(?:completa|entera|whole))?"
++                r"\s+(?:(?:en|on|de|of)\s+)?" + _NETFLIX_SPELLED + r"[\s.!?]*",
++                clause,
++            ) is not None
++            or _has(clause, r"^[¿?¡!\s]*(?:on|in|and|the)\s+\w+\s+(?:en|on)\s+" + _NETFLIX_SPELLED + r"\b")
++        )
++        and not _has(clause, r"\b(?:llamad[oa]|called|named|titulad[oa])\b")
++        and len(clause.split()) <= 7
++        for clause in _request_clauses(re.sub(r"^(?:(?:bueno|dale|che|ya)\s*[,;:]?\s+)+", "", folded, count=1))
++    )
+     incomplete_schedule = _incomplete_scheduled_request(text, available)
+     if incomplete_schedule is not None:
+         return incomplete_schedule
+@@ -4586,6 +4606,7 @@ def resolve_explicit_clarification_intent(
+         # BRIGHT1283: «estoy cansado subí el brillo», «subime el brillo» carry
+         # a preamble or a clitic the direct-request heads do not list.
+         and not brightness_relative_without_amount(folded)
++        and not fragment_streaming_clause
+     ):
+         return None
+     corrected_generic_game_request = (
+@@ -4922,7 +4943,7 @@ def resolve_explicit_clarification_intent(
+         )
+         for clause in _request_clauses(music_folded)
+     )
+-    if "streaming.play.named" in available and bare_streaming_clause:
++    if "streaming.play.named" in available and (bare_streaming_clause or fragment_streaming_clause):
+         # El nombre del hueco es lo que el modelo lee para redactar la pregunta:
+         # con «title» a secas, «put something on Netflix» acabó en «what would
+         # you like me to add to Netflix?», que lee «put on» como añadir.
+@@ -5114,7 +5135,21 @@ def _has(text: str, pattern: str) -> bool:
+ # oído de BAXY, que es lo más probable— y eso no lo convierte en otro servicio.
+ # Alternancia corta y cerrada, no distancia de edición: el catálogo de servicios
+ # es cerrado y una tolerancia genérica leería «Netflix» donde se dijo otra cosa.
+-_NETFLIX_SPELLED = r"(?:netflix|nerflix|netlix|netfix|netflis|neflix)"
++# VIDEO1947: Disney+ joins the closed streaming catalog; the same short, closed
++# alternation of misspellings (the owner's ear, not another service).
++_NETFLIX_SPELLED = (
++    r"(?:netflix|nerflix|netlix|netfix|netflis|neflix|"
++    r"disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|dinsey|dizney|east\s*plus)"
++)
++
++
++def streaming_service_named(text: str) -> str:
++    """The catalog value of the streaming service the text names: disney_plus or netflix."""
++
++    folded = _fold(text)
++    if _has(folded, r"\b(?:disney\s*\+|disney\s*plus|disneyplus|disney|dysney|disne|dinsey|dizney|east\s*plus)\b"):
++        return "disney_plus"
++    return "netflix"
+ 
+ 
+ def _entity_key(value: str) -> str:
+diff --git a/src/baxy_mind/planner.py b/src/baxy_mind/planner.py
+index 48e8a8665..2ee39208c 100644
+--- a/src/baxy_mind/planner.py
++++ b/src/baxy_mind/planner.py
+@@ -95,6 +95,7 @@ _ENUM_EVIDENCE_ALIASES = {
+     # fundamentado y «opera_gx» no, justo al revés de lo dicho.
+     "opera_gx": ("opera gx", "opera_gx", "operagx"),
+     "netflix": ("netflix",),
++    "disney_plus": ("disney plus", "disney+", "disneyplus", "disney"),
+     "prime_video": ("prime video", "amazon prime", "prime"),
+     "youtube": ("youtube",),
+     "all_known": (

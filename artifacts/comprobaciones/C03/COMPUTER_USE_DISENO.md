@@ -394,6 +394,66 @@ el PC, también en su Edge; PlayReady sí; falta que pruebe Disney+ en su Edge n
 «Hable este.», «Calendar Devil?») que necesitan un léxico: el modelo del producto, medido como
 juez, dio por inteligibles 7 de 10 palabras inventadas.
 
+## 13. Disney+: el diagnóstico equivocado, la ruta de una persona y el agente de Chrome (2026-09-20)
+
+Las diez filas de Disney+ llevaban dos días aplazadas «por el DRM». La medición que las cerró
+tenía dos errores, y los dos se descubrieron cuando el dueño reinició el PC y volvió a medirse
+todo desde cero:
+
+- **La sonda leía el `<video>` equivocado.** La página del reproductor tiene dos: el primero es
+  un elemento de fondo (`btm-media-client-element`) que nunca sale de `readyState 0`; el que
+  reproduce es el segundo (`hive-video`), y estaba avanzando a 1280 px mientras el informe decía
+  «sin fuente ni error». Regla para las sondas que quede escrita: el vídeo que prueba una
+  reproducción es *el que avanza*, no el primero del DOM.
+- **El enlace frío `/play/<id>` sí se cuelga**, pero no por el DRM: el puente de identidad de
+  `login.disney.com` (`bridge/web`) falla con «Scope is not present», el reproductor nunca pide
+  el manifiesto ni llama a EME y la ruedita gira para siempre. La ruta que arranca es la de una
+  persona: la búsqueda (`/browse/search`, escribiendo en `#searchInput` por CDP —el valor puesto
+  por JS no dispara la búsqueda—), la ficha (`a[data-testid="set-item"]` → `/browse/entity-<id>`,
+  con el título en el `aria-label` seguido de clasificación, estreno y género) y su botón «Ver
+  ahora» (`a[data-testid="playback-action-button"]`), que navega dentro de la aplicación.
+
+Con esa ruta apareció el problema real y su solución. Con el agente de usuario de Edge el
+reproductor elige **PlayReady** y el renderizador de Media Foundation de este PC falla
+(`MEDIAELEMENT_ERROR … MediaFoundationRenderer error: kOnPlaybackError (0x8004CD…)`), también en
+el Edge del dueño y también sin GPU; con un agente de **Chrome** elige **Widevine** —el mismo
+nivel `SW_SECURE_CRYPTO` con el que Netflix ya se conformaba— y el vídeo avanza (rs 4, 1280 px
+con GPU, 640 px sin GPU). El override se pone con `Emulation.setUserAgentOverride` sólo en la
+sesión CDP del destino de Disney+: dura lo que dura el socket, y Netflix y las navegaciones
+nombradas no lo ven.
+
+**Producto (commit fa944b7, BUILD1947).** `streaming.play.named` acepta `service=disney_plus`
+(el esquema del Kernel ordena sus propiedades; `store` antes que `title` fue la lección de Epic).
+`WebBrowserAdapter.PlayDisneyAsync` es hermano de `PlayNetflixAsync`: override de agente,
+búsqueda por `Input.insertText`, elección de la ficha (igualdad, prefijo, inclusión, primera),
+botón, y el `<video>` que avanza; el título observado es el de la pestaña («Daredevil |
+Disney+»), con la ficha elegida de reserva. `HostMatchesService` conoce `disneyplus.com`. En la
+mente, el servicio escrito tras el título elige `disney_plus` o `netflix` con la misma
+alternancia cerrada de erratas (disney+, disney plus, dysney, east plus —así oyó «Disney Plus»
+una transcripción—), el planificador conoce el alias, y las transcripciones cortadas que nombran
+el servicio sin título («Toda la serie en Disney Plus», «Bueno, una serie East Plus.», «on
+everybody en Disney.») preguntan qué ver, como «prende algo en netflix» en VIDEO1925.
+
+**Medido antes de las tandas.** «Pon daredevil en disney» → «Ya está reproduciendo *Daredevil*
+en Disney+»; «pon The Mandalorian en Disney Plus» → «Está reproduciéndose en Disney Plus el
+título completo: «The Mandalorian»»; «Quiero ver The Devil en Disney+» → el buscador de Disney+
+eligió «El diablo viste a la moda 2» y el final lo dice tal cual: lo mal oído lo arregla el
+servicio (orden del dueño del 19-09) y BAXY nombra lo que de verdad puso. El nivel de Widevine
+`SW_SECURE_DECODE` sigue sin concederse en todo el PC; no hizo falta.
+
+**Tandas.** VIDEO1947 (seis filas con título, revisadas: H0235, H0305, H0341, H0362, H0535,
+H0712; variantes en inglés y voseo): nueve de diez. La variante en voseo enseñó una carrera de
+la búsqueda: con el texto ya escrito, la página aún mostraba sus fichas por defecto y la lectura
+tomó la primera («¿Volverías con tu ex? 2»), cuyo reproductor no arrancó; el final fue honesto
+(«no se pudo verificar su resultado») y, sin dos variantes aprobadas, la tanda no acredita. La
+reparación —recordar las fichas de antes de escribir y elegir sólo cuando cambien, con una
+espera corta antes de conformarse con la primera— se mide en la tanda siguiente, con VIDEO1949
+(cuatro sin título, ordinarias: H0113, H0130, H0252, H0270) detrás. Los resultados van en
+CHECKPOINT.md y en la tabla de categorías.
+
+**Lección del método.** Dos sesiones raíz sobre el mismo perfil de streaming se pisan el candado
+del navegador y tumban las reproducciones: una sola corre tandas de vídeo a la vez.
+
 ## Fuentes
 
 - [OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments](https://arxiv.org/html/2404.07972v2)
