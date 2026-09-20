@@ -42,9 +42,10 @@ public sealed class ProductCatalogTests
     internal static readonly string[] Reopen1993CatalogAdditions =
     [
         "weather.current",
+        "web.news.headlines",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 1;
+    internal const int ExpectedDescriptors = 170 + 21 + 2;
 
     internal const int ExpectedTools = ExpectedDescriptors - 1;
 

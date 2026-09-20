@@ -222,6 +222,74 @@ def _weather_read_intent(
     return EffectIntent(("weather.current",), (text.strip(),))
 
 
+_NEWS_SCOPE_WORDS = (
+    r"^(?:de\s+|del\s+|sobre\s+|about\s+|on\s+|of\s+)?"
+    r"(?:hoy|today|ahora|now|actuales?|latest|ultimas?|recientes?|recent|"
+    r"el\s+dia|the\s+day|el\s+mundo|the\s+world|internacionales?|international|"
+    r"en\s+el\s+mundo|in\s+the\s+world|del\s+mundo|de\s+hoy|de\s+ahora|"
+    r"breaking|principales|top|nuevas?|new)(?:\s+(?:hoy|today|en\s+el\s+mundo|in\s+the\s+world|de\s+hoy))*$"
+)
+
+
+def _news_headlines_request(text: str) -> bool:
+    """REOPEN1993 (grupo N): a request for today's news or headlines («buscá
+    noticias de hoy», «qué pasó hoy en el mundo», «dame los titulares»)."""
+
+    folded = _strip_request_envelope(_fold(text))
+    if not folded or not _public_live_lookup_request(folded):
+        return False
+    if _has(folded, _WEATHER_WORDS):
+        return False
+    return _has(folded, r"\b(?:news|headlines|noticias|titulares|breaking\s+news)\b") or re.match(
+        r"^[¿?¡!\s]*(?:que|what)\s+"
+        r"(?:paso|pasa|ha\s+pasado|esta\s+pasando|ocurrio|ocurre|sucedio|"
+        r"happened|is\s+happening|has\s+happened)\s+(?:hoy|today)\b",
+        folded,
+    ) is not None
+
+
+def _news_topic(text: str) -> str | None:
+    """The topic the person named for the news («noticias de tecnología»,
+    «news about Chile»), with their own spelling; None for the day's news
+    («noticias de hoy», «qué pasó hoy en el mundo»)."""
+
+    if not _news_headlines_request(text):
+        return None
+    stripped = _strip_request_envelope(text.strip())
+    match = re.search(
+        r"\b(?:noticias?|news|titulares|headlines)\s+(?:de|del|sobre|acerca\s+de|about|on|of)\s+"
+        r"(?P<topic>[^,;:.!?]+?)\s*(?:\b(?:de\s+hoy|hoy|today|ahora|now)\b)?\s*[.!?]*$",
+        stripped,
+        re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    topic = match.group("topic").strip(" \t\r\n.,;:")
+    folded_topic = _fold(topic)
+    if (
+        not folded_topic
+        or re.match(_NEWS_SCOPE_WORDS, folded_topic) is not None
+        or _has(folded_topic, r"\b(?:google|internet|la\s+web|the\s+web|online)\b")
+        or len(topic.encode("utf-8")) > 128
+    ):
+        return None
+    return topic
+
+
+def _news_read_intent(
+    text: str,
+    available_operations: Iterable[str],
+) -> EffectIntent | None:
+    """REOPEN1993 (grupo N): the news are read as headlines, never as a web
+    search that ends listing portal names (H0033, H0374, H0509)."""
+
+    if "web.news.headlines" not in frozenset(available_operations):
+        return None
+    if not _news_headlines_request(text) or len(_request_clauses(_fold(text))) != 1:
+        return None
+    return EffectIntent(("web.news.headlines",), (text.strip(),))
+
+
 _TOPIC_RESEARCH = re.compile(
     r"^[¿?¡!\s]*(?:investiga|investigá|investigar|investigue|investigame|investígame|"
     r"research|look\s+into|look\s+up)\s+"
@@ -1986,6 +2054,8 @@ def _curated_domain_is_grounded(
         return calculator_expression_request(folded) is not None
     if operation == "weather.current":
         return _weather_lookup_query(text) is not None
+    if operation == "web.news.headlines":
+        return _news_headlines_request(text)
     if operation == "display.status":
         return _has(folded, r"\b(?:resolucion|monitor(?:es)?|pantallas?|screens?|displays?|hz|hertz|hercios|frecuencia|refresh)\b")
     if operation == "bluetooth.radio.status":
@@ -18793,6 +18863,9 @@ def resolve_explicit_effects(
     weather_read = _weather_read_intent(text, available)
     if weather_read is not None:
         return weather_read
+    news_read = _news_read_intent(text, available)
+    if news_read is not None:
+        return news_read
     if (
         "web.search" in available
         and _public_live_lookup_request(folded)
@@ -19253,6 +19326,9 @@ def resolve_explicit_effects(
     weather_read = _weather_read_intent(text, available)
     if weather_read is not None:
         return weather_read
+    news_read = _news_read_intent(text, available)
+    if news_read is not None:
+        return news_read
     if (
         len(clauses) == 1
         and "web.search" in available
@@ -19803,7 +19879,7 @@ def unresolved_compound_contract(
     )
     benign_live_lookup = (
         isinstance(resolved_intent, EffectIntent)
-        and resolved_intent.operations in (("web.search",), ("weather.current",))
+        and resolved_intent.operations in (("web.search",), ("weather.current",), ("web.news.headlines",))
         and _public_live_lookup_request(folded)
     )
     benign_game_correction = (

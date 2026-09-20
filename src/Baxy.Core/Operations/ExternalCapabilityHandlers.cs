@@ -100,6 +100,7 @@ internal static class ExternalCapabilityHandlers
         "filesystem.sandbox.diff.named",
         "filesystem.sandbox.move.named",
         "weather.current",
+        "web.news.headlines",
         "wifi.connect",
         "wifi.connect.named",
         "wifi.disconnect",

@@ -116,6 +116,9 @@ internal static class Goal05CatalogObservation
                 or "software.python.package.status" or "notification.list" => Unverifiable(
                 descriptor,
                 "Lecturas de dispositivos, unidades, registro PEP 514, pip o Programador de tareas del usuario; verificadas en su tanda por doble lectura, no recorridas aquí para no inventariar la máquina del usuario."),
+            "web.news.headlines" => Unverifiable(
+                descriptor,
+                "Lectura de un canal RSS público de noticias (REOPEN1993 grupo N); esta matriz no sale a internet ni toma titulares ajenos como pass simulado."),
             "weather.current" => Unverifiable(
                 descriptor,
                 "Lectura de un servicio público de pronóstico (Open-Meteo) y de la ubicación de este PC por su IP (REOPEN1993 grupo W); esta matriz no sale a internet ni toma un pronóstico ajeno como pass simulado."),

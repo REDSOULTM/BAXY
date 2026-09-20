@@ -1674,6 +1674,21 @@ public static class ProductCatalog
             "weather.current.openmeteo.read.v1",
             ToolExposure.Public,
             "Lee el clima actual y el pronóstico de mañana del lugar nombrado, o de la ubicación de este PC si no se nombra ninguno, desde un servicio público sin clave, y devuelve temperatura, sensación térmica, estado del cielo, viento, humedad y probabilidad de lluvia."),
+        // Auditoría semántica 2026-09-20 (REOPEN1993, grupo N): la encuesta pide las
+        // noticias, no nombres de portales. Titulares del día o de un tema nombrado
+        // desde un canal RSS público, cada uno con su medio y su hora.
+        Descriptor(
+            "web.news.headlines",
+            Schema(
+                [
+                    Integer("limit", 1, 10, types: NullableInteger),
+                    String("topic", types: NullableString, maximumUtf8Bytes: 128),
+                ],
+                []),
+            OperationRisks.ReadOnly,
+            "web.news.headlines.googlenews.rss.read.v1",
+            ToolExposure.Public,
+            "Lee los titulares del día, o los de un tema nombrado, desde un canal público de noticias y devuelve cada titular tal cual con su medio, su hora y su enlace."),
         Descriptor(
             "web.search",
             Schema(

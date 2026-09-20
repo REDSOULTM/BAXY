@@ -5970,6 +5970,10 @@ def _explicit_arguments_from_evidence(
         if effect_intent._weather_lookup_query(evidence) is not None:
             return {"location": effect_intent._weather_location(evidence)}
 
+    if operation == "web.news.headlines":
+        if effect_intent._news_headlines_request(evidence):
+            return {"topic": effect_intent._news_topic(evidence), "limit": 5}
+
     if operation == "display.status":
         if effect_intent._display_status_question(evidence):
             return {}
@@ -7331,6 +7335,8 @@ def _prepare_turn_result(
         )
     )
     live_public_intent = effect_intent._weather_read_intent(
+        effect_intent._strip_request_envelope(objective), available_operations
+    ) or effect_intent._news_read_intent(
         effect_intent._strip_request_envelope(objective), available_operations
     ) or (
         EffectIntent(("web.search",), (objective,))

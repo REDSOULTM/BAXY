@@ -3544,6 +3544,19 @@ _CAUSE_FACT = {
     "visible_button_not_found": (
         "nothing on the screen is called that, so nothing was pressed"
     ),
+    # REOPEN1993 grupo N: the headlines feed names its own absences.
+    "news_feed_unavailable": (
+        "the news feed did not answer, so no headlines were read"
+    ),
+    "news_feed_unreadable": (
+        "the news feed answered something that is not a feed, so no headlines were read"
+    ),
+    "news_feed_empty": (
+        "the news feed had no headlines right now, so none was read"
+    ),
+    "news_topic_without_headlines": (
+        "the news feed has no headlines about that topic right now, so none was read"
+    ),
     # REOPEN1993 grupo W: the weather read names its own absences; nothing
     # was searched in a browser and no forecast is invented.
     "weather_place_not_found": (
@@ -6268,6 +6281,29 @@ def _weather_fact_defect(text: str, payload: dict, user_text: str) -> str:
     return ""
 
 
+def _news_fact_defect(text: str, payload: dict) -> str:
+    """REOPEN1993 grupo N: the reply quotes the observed headlines (at least
+    three when the feed gave that many) and names no portal listing instead."""
+
+    if payload.get("operation") != "web.news.headlines":
+        return ""
+    seen = payload.get("seen")
+    if not isinstance(seen, dict) or not isinstance(seen.get("headlines"), list):
+        return ""
+    titles = [
+        str(item.get("title")).strip()
+        for item in seen["headlines"]
+        if isinstance(item, dict) and isinstance(item.get("title"), str) and item.get("title").strip()
+    ]
+    if not titles:
+        return ""
+    folded_text = _reading_fold(text)
+    quoted = sum(1 for title in titles if _reading_fold(title) in folded_text)
+    if quoted < min(3, len(titles)):
+        return "missing_state"
+    return ""
+
+
 def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     """El texto público conserva los hechos que el payload le dio.
 
@@ -6591,6 +6627,9 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     weather_defect = _weather_fact_defect(text, payload, user_text)
     if weather_defect:
         return weather_defect
+    news_defect = _news_fact_defect(text, payload)
+    if news_defect:
+        return news_defect
     if (
         payload.get("operation") == "storage.removable.list"
         and isinstance(seen, dict)
@@ -15544,6 +15583,28 @@ class LlmRuntime:
                 "en una oración, la operación y su resultado tal como se muestra (por "
                 "ejemplo que seis por siete da 42 en la Calculadora), usando sólo esos "
                 "números; no se hizo nada más."
+            )
+        if (
+            visible_situation.get("operation") == "web.news.headlines"
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("headlines"), list)
+        ):
+            # REOPEN1993 grupo N: the read is the headlines themselves; the
+            # reply quotes them as they are, each with its medium.
+            instruct(
+                "\nseen.headlines are today's headlines read from a public news feed "
+                "(title, source, publishedAt) and seen.count their number. Say that these "
+                "are today's headlines and quote three to five of them exactly as written, "
+                "each followed by its source in parentheses, one per line or separated by "
+                "semicolons. Do not summarise, rank or add anything of your own; no numbers "
+                "that are not in a title."
+                if response_language == "en"
+                else "\nseen.headlines son los titulares de hoy leídos de un canal público de "
+                "noticias (title, source, publishedAt) y seen.count su cantidad. Di que son "
+                "los titulares de hoy y cita de tres a cinco tal cual están escritos, cada uno "
+                "seguido de su medio entre paréntesis, uno por línea o separados por punto y "
+                "coma. No resumas, no ordenes ni agregues nada propio; sin números que no "
+                "estén en un titular."
             )
         if (
             visible_situation.get("operation") == "weather.current"

@@ -61,6 +61,7 @@ public sealed class WindowsExternalCapabilityProvider : IExternalCapabilityProvi
             new NamedBrowserAdapter(root, browserSessionContext),
             new WebBrowserAdapter(root, browserSessionContext),
             new OpenMeteoWeatherAdapter(),
+            new GoogleNewsHeadlinesAdapter(),
             new MicrosoftGraphCalendarAdapter(),
             new MicrosoftAccountAdapter(root),
         ];
