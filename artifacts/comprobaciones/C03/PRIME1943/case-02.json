@@ -1,0 +1,24 @@
+{
+  "index": 2,
+  "case_id": "prime1943-dev-02",
+  "terminal_kind": "published_final",
+  "final_sha256": "f745a0ea92235d008703e336357e172ad4aac8f67940a00deb8b31ba7763962f",
+  "clients_absent_before": true,
+  "verdict": "passed",
+  "aborted_before_admission": false,
+  "remaining_execution_uncertain_after_stop": false,
+  "exit_code": 0,
+  "pins_unchanged": true,
+  "violations": [],
+  "resources": {
+    "seconds": 17.125,
+    "gpu_peak_mib": 3492.9296875,
+    "ram_peak_mib": 1578.296875,
+    "scope": "Inherited process-tree samplers can include non-BAXY descendants. Per-process RAM/role samples remain private; these peaks are not model-only usage."
+  },
+  "receipt_pins": {
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-prime1943-instrument-v1\\results\\case-02\\EXIT.json": "c709683ca1a0bdf51fa577f787adc203d0b783f9a663b89d30325b863fc2bbc9",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-prime1943-instrument-v1\\results\\case-02\\RESOURCES.json": "b2e406a77f414c8a956d987446ad39ef0834f88def9ff2b4fadfb9d05ae96d71",
+    "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-prime1943-instrument-v1\\private\\run-02\\case-observations.json": "b91567b104b0f1d1428655af6237d3926f5f494c1b6e9e488c54a9795c233c72"
+  }
+}

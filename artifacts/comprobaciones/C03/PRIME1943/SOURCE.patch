@@ -1,0 +1,45 @@
+commit 98ecc3aa837c1bbf0cfd7eb35c99dd256fa8524c
+
+C03: poner algo en Prime Video es un límite honesto, no hay Prime Video
+
+El dueño no tiene Prime Video (2026-09-20). «pone The Office en Prime
+Video» se cierra con un contrato de límite conocido —operación hipotética
+streaming.play.prime_video, que se levanta sola si algún día existe— y la
+respuesta llana de los límites, en el idioma del pedido. El lector de
+compras («quiero X de Amazon») deja pasar «Amazon Prime»: antes mandaba
+«quiero ver The Boys en Amazon Prime» a una búsqueda web que moría sin
+respuesta. Netflix conserva su reproducción revisada.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index b1d52538d..42198a4ee 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -879,6 +879,9 @@ def _public_live_lookup_request(folded: str) -> bool:
+             folded,
+             r"\b(?:walmart|amazon|oysho|safeway|target|costco|ikea)\b",
+         )
++        # H0646: «quiero ver The Boys en Amazon Prime» names the streaming
++        # service, not the store; the Prime Video limit answers it.
++        and not _has(folded, r"\bamazon\s+prime\b|\bprime\s*video\b")
+         and _has(
+             folded,
+             r"^(?:i\s+need|i\s+want|let(?:'s|\s+us)\s+get|necesito|quiero|"
+@@ -3402,6 +3405,15 @@ def known_unsupported_effect_request(
+             ),
+             {"message.read.named"},
+         ),
++        (
++            # H0646 «pone The Office en Prime Video» (owner, 2026-09-20: no
++            # Prime Video subscription; the row is an honest limit): the
++            # streaming session on this PC has no Prime Video, so no operation
++            # can play there. Netflix keeps its own reviewed playback.
++            _has(folded, r"\b(?:pon|pone|poneme|ponme|poné|reproduce|reproduci|reprodúceme|play|put(?:\s+on)?|start|inicia|dale|ver|mira|mirar|watch|quiero\s+ver|quisiera\s+ver)\b")
++            and _has(folded, r"\b(?:en|on|in)\s+(?:amazon\s+)?(?:prime\s*video|primevideo|prime)\b"),
++            {"streaming.play.prime_video"},
++        ),
+     )
+     return any(
+         matched and not supported & available for matched, supported in contracts

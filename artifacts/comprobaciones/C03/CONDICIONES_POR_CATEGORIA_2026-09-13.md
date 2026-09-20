@@ -1666,3 +1666,7 @@ Mensajería pasa de 29/31 a 31/31 con decir llanamente que no lee lo que otra pe
 ## Actualización 2026-09-20 (UNRES1941)
 
 Entrada incompleta, ruido y control de diálogo pasa de 31/34 a 32/34 con responder a una palabra que no existe en ningun idioma citandola y pidiendo que la repitan (commit ad138f79, BUILD1941) (HEAD ad138f79): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. Los tres casos del grupo cerraron con cero operaciones y una pregunta que cita la palabra desconocida tal cual y pide repetirla; el saludo real «Buenas» se contestó como saludo y la prohibición se reconoció, ambos con cero operaciones. Léxico: Hunspell es_AR + en_US (LibreOffice) vía spylls, instalado en BAXYRuntime/lexicon. Corrida sobre BUILD1941 (HEAD ad138f7).
+
+## Actualización 2026-09-20 (PRIME1943)
+
+Vídeo y series pasa de 15/26 a 16/26 con decir llanamente que no puede poner una serie en Prime Video (commit 98ecc3aa, BUILD1943) (HEAD 98ecc3aa): 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos. Los tres casos del grupo cerraron con cero operaciones y un final que dice llanamente que no puede poner la serie en Prime Video (el dueño no tiene Prime Video, 2026-09-20); los límites con cero operaciones. Corrida sobre BUILD1943 (HEAD 98ecc3a).

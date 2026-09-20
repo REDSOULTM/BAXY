@@ -1,3 +1,25 @@
+## PRIME1943 — estado vigente 2026-09-20T12:29:24.822453+00:00
+
+Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 730/742 | 12 | 0 | >=614 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 613 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); PRIME1943 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: PRIME1943: 5 ejecutados, 5 aprobados, 0 fallidos, 1 créditos (índices [0]); Entrada incompleta, ruido y control de diálogo 31/34. Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/PRIME1943/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 90.45 s acumulados; pico GPU 3492.93 MiB; pico RAM 1750.61 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 5; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque PRIME1943 precedente. -->
+
 ## UNRES1941 — estado vigente 2026-09-20T12:06:21.998047+00:00
 
 Parcial: 5 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

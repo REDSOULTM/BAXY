@@ -1,0 +1,15 @@
+{
+  "schema": "c03-prime1943-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (known-unsupported contract for Prime Video playback; the retailer reader spares «Amazon Prime»), on top of the PRIME1943 build.",
+  "patch": "artifacts/comprobaciones/C03/PRIME1943/SOURCE.patch",
+  "commits": [
+    "98ecc3aa837c1bbf0cfd7eb35c99dd256fa8524c"
+  ],
+  "build": "BUILD1943 (C03-repairs1943-build/BUILD_READY.json; mente)",
+  "cause_measured": "El dueño no tiene Prime Video: ninguna operación reproduce ahí y el turno lo decía por el modelo o lo mandaba a una búsqueda que moría.",
+  "change": "Poner o ver algo en Prime Video es un límite conocido que se dice llanamente.",
+  "measurement": "PRIME1943: 5 ejecutados, 5 aprobados, 0 fallidos; 1 créditos. Los tres casos del grupo cerraron con cero operaciones y un final que dice llanamente que no puede poner la serie en Prime Video (el dueño no tiene Prime Video, 2026-09-20); los límites con cero operaciones. Corrida sobre BUILD1943 (HEAD 98ecc3a).",
+  "credits": 1
+}
