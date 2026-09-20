@@ -19,10 +19,13 @@ public sealed class MemoryAppFlowTests
     private const string Canary = "BAXY-MEMORY-APP-private-Alex";
     private const string Timestamp = "2026-07-15T15:00:00.0000000+00:00";
 
+    // MEMORY1249 (8317b26ff, tras MEMORY1247): las banderas falsas (replayed/corrected/sensitive) no son
+    // hechos y el compositor las verbalizaba («no se realizaron correcciones ni acciones de replay»); la
+    // proyección sólo emite las verdaderas. Sólo se esperan aquí las que son true.
     [TestCase(
         "memory.enable",
         "{\"version\":1,\"enabled\":true,\"replayed\":false}",
-        "{\"enabled\":true,\"replayed\":false}")]
+        "{\"enabled\":true}")]
     [TestCase(
         "memory.disable",
         "{\"version\":1,\"enabled\":false,\"replayed\":true}",
@@ -30,11 +33,11 @@ public sealed class MemoryAppFlowTests
     [TestCase(
         "memory.save",
         "{\"version\":1,\"recordId\":\"52dc83f9-cee9-49e6-bd99-20c9b1c67dda\",\"revision\":1,\"selector\":\"favorite_color\",\"replayed\":false}",
-        "{\"saved\":true,\"corrected\":false,\"sensitive\":false}")]
+        "{\"saved\":true}")]
     [TestCase(
         "memory.correct",
         "{\"version\":1,\"recordId\":\"52dc83f9-cee9-49e6-bd99-20c9b1c67dda\",\"revision\":2,\"selector\":\"favorite_color\",\"replayed\":false}",
-        "{\"saved\":true,\"corrected\":true,\"sensitive\":false}")]
+        "{\"saved\":true,\"corrected\":true}")]
     [TestCase(
         "memory.forget",
         "{\"version\":1,\"deletedCount\":2,\"replayed\":false}",
@@ -74,6 +77,13 @@ public sealed class MemoryAppFlowTests
             {
                 Assert.That(JsonElement.DeepEquals(observed.GetProperty(expected.Name), expected.Value), Is.True,
                     expected.Name);
+            }
+            foreach (string flag in new[] { "replayed", "corrected", "sensitive" })
+            {
+                Assert.That(
+                    observed.TryGetProperty(flag, out JsonElement value) && !value.GetBoolean(),
+                    Is.False,
+                    $"{flag}=false no es un hecho (MEMORY1249)");
             }
             Assert.That(projection.Message, Does.Not.Contain("52dc83f9-cee9-49e6-bd99-20c9b1c67dda"));
             Assert.That(projection.Message, Does.Not.Contain("favorite_color"));
@@ -280,7 +290,8 @@ public sealed class MemoryAppFlowTests
             JsonElement observed = Parse(projection!.Message).GetProperty("observed");
             Assert.That(observed.GetProperty("destination").GetString(), Is.EqualTo("Documents/BAXY"));
             Assert.That(observed.GetProperty("mayRedirectOrSync").GetBoolean(), Is.True);
-            Assert.That(observed.GetProperty("replayed").GetBoolean(), Is.False);
+            // replayed=false no se emite (MEMORY1249).
+            Assert.That(observed.TryGetProperty("replayed", out _), Is.False);
             Assert.That(projection.Message, Does.Not.Contain("local"));
             Assert.That(projection.Message, Does.Not.Contain(path));
             Assert.That(projection.Message, Does.Not.Contain(digest));

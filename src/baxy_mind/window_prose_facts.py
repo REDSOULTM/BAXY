@@ -23,7 +23,10 @@ _NUMBER_WORD = re.compile(rf"\b{_NUMBER}\b")
 _COUNT = re.compile(
     r"\b(?:(?P<bound>at least|at most|more than|less than|fewer than|"
     r"al menos|como maximo|mas de|menos de)\s+)?"
-    rf"(?P<number>{_NUMBER})\s+(?:(?:visible|open|visibles?|abiertas?)\s+)?"
+    # «1 more window not named here»: the English remainder puts «more»/«other»
+    # between the number and the noun, as Spanish puts «más» after it.
+    rf"(?P<number>{_NUMBER})\s+(?:(?:visible|open|visibles?|abiertas?)\s+|"
+    r"(?<!\bno )(?:more|other|further)\s+)?"
     r"(?:windows?|ventanas?)\b"
 )
 _INSTALLATION = re.compile(
@@ -756,8 +759,11 @@ def _inventory_fact_defect(text: str, payload: dict, user_text: str) -> str:
                 # A colon followed by an observed identity introduces the
                 # enumerated page. Explicit total/observation modifiers above
                 # still win; a later list cannot rebind an earlier total.
+                # «Tres ventanas con título: …» (WINDOWS1213: titled windows are
+                # the named page) introduces the page the same way.
                 enumeration = re.match(
-                    r"\s*(?:(?:abiertas?|visibles?|open|visible)\s*)?:\s*[\"'«]?(.+)",
+                    r"\s*(?:(?:abiertas?|visibles?|open|visible|con\s+titulo|titled|with\s+(?:a\s+)?titles?)\s*)?"
+                    r":\s*[\"'«]?(.+)",
                     clause[match.end():],
                 )
                 named_entry = enumeration and re.match(

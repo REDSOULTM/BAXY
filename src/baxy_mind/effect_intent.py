@@ -255,6 +255,18 @@ def _research_question_query(text: str) -> str | None:
         return None
     if _has(folded_question, r"\b(?:archivos?|files?|carpetas?|folders?|documentos?|documents?|notas?|notes?|mi\s+pc|my\s+pc|este\s+equipo)\b"):
         return None
+    # «averigua cómo quedó el audio del equipo», «find out how computer audio is
+    # set»: the state of this machine is read here, not researched online; only
+    # a question that names the internet keeps the public search.
+    if not _has(_fold(raw), r"\b(?:internet|web|google|online)\b") and _has(
+        folded_question,
+        r"\b(?:audio|volumen|volume|sonido|sound|brillo|brightness|wifi|wi-fi|bateria|battery|"
+        r"ventanas?|windows?|pantalla|screen|cpu|ram|memoria|memory|disco|disk|"
+        r"equipo|computer|computadora|computador|ordenador|pc|laptop|notebook|"
+        r"maquina|machine|cacharro|aparato|dispositivo|device|contraption|"
+        r"(?:este|esta|this)\s+(?:trasto|chisme|bicho|thing|box|rig))\b",
+    ):
+        return None
     # The person's own spelling: the question as written in the request.
     start = _fold(raw).find(folded_question)
     question = raw[start:start + len(folded_question)].strip(" .!?,;") if start >= 0 and len(_fold(raw)) == len(raw) else folded_question
@@ -3301,7 +3313,7 @@ def known_unsupported_effect_request(
             {"shell.command.run"},
         ),
         (
-            # H0475 «PS C:\\Users\\usuario\\Desktop...> python carter_core.py»: una linea de
+            # H0475 «PS C:\\...\\Desktop...> python carter_core.py»: una linea de
             # consola pegada con su prompt es un comando, aunque no traiga verbo
             # delante. Sin esto la del prompt de PowerShell acababa preguntando si
             # la persona queria ayuda para entender el script, mientras que la misma
@@ -3853,11 +3865,13 @@ def _incomplete_scheduled_request(
         return None
     if clock is not None:
         literal_clock = clock.group(0)
-        digits = re.search(r"\b(\d{1,2})\b", literal_clock)
+        # «5pm» writes the meridiem against the digits: no word boundary sits
+        # between them, so the hour and its period are read without one.
+        digits = re.search(r"\b(\d{1,2})(?![\d:])", literal_clock)
         hour_value = int(digits.group(1)) if digits else None
         has_period = _has(
             literal_clock,
-            r"\b(?:a\.?\s*m\.?|p\.?\s*m\.?)\b|\b(?:de\s+la|in\s+the)\s+\w+\b",
+            r"(?<![a-z])(?:a\.?\s*m\.?|p\.?\s*m\.?)\b|\b(?:de\s+la|in\s+the)\s+\w+\b",
         )
         if hour_value is not None and (
             hour_value > 23 or (has_period and not 1 <= hour_value <= 12)
@@ -3867,7 +3881,7 @@ def _incomplete_scheduled_request(
             return ClarificationIntent((operation,), ("valid_hour_0_to_23",))
         complete_clock = _has(
             literal_clock,
-            r"\b\d{1,2}:\d{2}\b|\b(?:a\.?\s*m\.?|p\.?\s*m\.?)\b|"
+            r"\b\d{1,2}:\d{2}\b|(?<![a-z])(?:a\.?\s*m\.?|p\.?\s*m\.?)\b|"
             r"\b(?:de\s+la|in\s+the)\s+\w+\b|\b(?:0|1[3-9]|2[0-3])\b",
         )
         complete_clock = complete_clock or any(
@@ -6977,7 +6991,9 @@ _REQUEST_PREFIX = (
     # Un saludo suelto tampoco cambia el acto de habla: sólo desplaza la cabeza
     # del pedido, igual que el vocativo de abajo. Se exige el separador
     # explícito para que «hola mundo» o «escribe hola» sigan intactos.
-    r"(?:buenos dias|buenas tardes|buenas noches|buenas|hola|"
+    # The raw text keeps its accents («Buenos días,»): the greeting is matched
+    # with or without them so every reader sees the same stripped request.
+    r"(?:buenos d[ií]as|buenas tardes|buenas noches|buenas|hola|"
     rf"good morning|good afternoon|good evening|hello|hi|hey)\s*[,;:.!?]{_PREFIX_GAP}|"
     r"(?:(?:che|oye|oiga|hey|ey|ok|okay|hola|hello|hi|escucha|listen|"
     r"a ver)\s+)?"
@@ -8428,8 +8444,13 @@ _SCREEN_INVENTORY = re.compile(
     r"are\s+there|do\s+you\s+see|can\s+i\s+(?:click|press))"
     r"\s+(?:en\s+|on\s+|in\s+)?(?:la\s+|the\s+)?"
     r"(?:pantalla|ventana|screen|window)"
-    r"|^[\s¿?¡!]*(?:mira|mirate|revisa|lee|leeme|dime|decime|look\s+at|read|tell\s+me)"
-    r"\s+(?:(?:lo\s+)?que\s+(?:hay|ves|se\s+ve)\s+en\s+|what\s?s?\s+(?:is\s+)?on\s+)?"
+    r"|^[\s¿?¡!]*(?:mira|mirate|revisa|lee|leeme|look\s+at|read)"
+    r"\s+(?:(?:lo\s+)?que\s+(?:hay|ves|se\s+ve)\s+en\s+|what(?:'s|\s+is)?\s+on\s+)?"
+    r"(?:la\s+|the\s+)?(?:pantalla|ventana|screen|window)"
+    # «dime la ventana que tiene el foco» names a window, not its contents: a
+    # telling verb needs «lo que hay en» / «what's on» before the noun.
+    r"|^[\s¿?¡!]*(?:dime|decime|tell\s+me)"
+    r"\s+(?:(?:lo\s+)?que\s+(?:hay|ves|se\s+ve)\s+en\s+|what(?:'s|\s+is)?\s+on\s+)"
     r"(?:la\s+|the\s+)?(?:pantalla|ventana|screen|window)"
     # «what's on the screen» sin verbo delante es como la persona lo dice de
     # verdad; el plegado conserva el apostrofo, asi que va escrito.
@@ -8849,6 +8870,13 @@ def _explicit_named_music_query(text: str) -> str | None:
         or len(_request_clauses(folded)) != 1
         or _other_device_effect_scope(folded)
         or _fold(query) in {"it", "them", "this", "that", "esto", "eso", "esa", "ese"}
+        # «pon el audio de Spotify al 20 %»: a volume object is a level to set,
+        # never the thing to play; «ponme un recordatorio para las 3» schedules.
+        or _has(
+            _fold(query),
+            r"^(?:(?:el|la|the|un|una|a|an)\s+)?(?:audio|volumen|volume|sonido|sound|"
+            r"recordatorio|reminder|alarma|alarm|temporizador|timer|nota|note|tarea|task|evento|event)\b",
+        )
         or _has(
             _fold(query),
             r"\b(?:archivo|file|carpeta|folder|pagina|page|fondo|wallpaper|"
@@ -10137,7 +10165,8 @@ _SEARCH = r"(?:busc[aá]|buscar|encuentra|search|find|look\s+up)"
 # recognized prefix and silently dropping the rest of the request.
 _COVERAGE_ACTION_HEAD = (
     rf"(?:{_OPEN}|{_LIST}|{_READ}|{_CLOCK_READ_HEAD}|{_CREATE}|{_SEARCH}|{_SET_VOLUME_VERB}|"
-    r"haz|toma|captura|take|capture|dejar|put|ring|sound|"
+    # «sound the alarm» is an order; «volume and sound output» is a noun.
+    r"haz|toma|captura|take|capture|dejar|put|ring|sound(?=\s+(?:the|an?|la|una)\s+alarm)|"
     rf"{_VOLUME_UP_VERB}|{_VOLUME_DOWN_VERB}|bajalo|subelo|"
     r"pone|arranca|cambiar|get rid|"
     rf"reduce|increment|decrease|silencia|silenciame|mute|{_UNMUTE_VERB}|mutea|mutear|"
@@ -11851,6 +11880,9 @@ def _strict_catalog_request(
         package_id is not None
         and not deferred_effect
         and not explicit_catalog_composition
+        # «deja Git.Git ready y check si Audacity está installed»: the package
+        # is one clause of a compound; the clause reader keeps the other one.
+        and len(_request_clauses(text)) == 1
         and _has(
             text,
             r"\b(?:prepara|preparado|prepare|stage|staged|resolve|resuelve|"
@@ -15327,6 +15359,12 @@ def _symbolic_web_destination(text: str) -> str | None:
     """Preserve a public site operand without manufacturing its URL."""
 
     request = _strip_request_envelope(text)
+    # A social envelope («Buenos días, …», «Baxy, haz esto: …») is transparent
+    # for every reader: it is stripped on the folded text when the raw one
+    # keeps it (accents, capitals), and it never counts as a clause of its own.
+    folded_request = _strip_request_envelope(_fold(text))
+    if len(_fold(request)) > len(folded_request):
+        request = folded_request
     desired = _explicit_desire_request(request)
     if desired is not None:
         request = request[desired.start("body"):]
@@ -15342,7 +15380,7 @@ def _symbolic_web_destination(text: str) -> str | None:
     )
     if found is None:
         return None
-    folded = _fold(text)
+    folded = _fold(request)
     if (
         explicit_non_action_frame(text)
         or _is_meta_or_tool_denial(folded)
@@ -15492,7 +15530,10 @@ def _named_browser_site_request(
 def _named_browser_search(text: str) -> tuple[str, str] | None:
     """Bind a public query and browser within one complete current request."""
 
-    folded = _fold(text)
+    # The guards read the request without its social envelope: «Cuando
+    # puedas,» is courtesy, not a deferral, and «Te paso una tarea:» names no
+    # task of the catalogue.
+    folded = _fold(_strip_request_envelope(text))
     if (
         len(text) > 16_384
         or explicit_non_action_frame(text)
@@ -18295,6 +18336,11 @@ def resolve_explicit_effects(
         and {"web.search", "browser.navigate"} <= available
         and _authenticated_application_request(folded, authenticated_applications) is None
         and resolve_application_catalog_app_id(destination, authenticated_applications) is None
+        # «Abre Portal desde Steam»: a game named in a store's library is the
+        # game, not a public site called «portal».
+        and resolve_game_catalog_app_id(text, authenticated_games) is None
+        and not near_catalog_game_candidates(text, authenticated_games)
+        and not _has(folded, r"\b(?:desde|en|from|in|on)\s+(?:steam|epic(?:\s+games)?)\b")
     ):
         # Resolve the destination through the existing verified search dependency.
         return EffectIntent(("web.search", "browser.navigate"), (text, text))
@@ -18494,7 +18540,14 @@ def resolve_explicit_effects(
             # MUSIC1559: no provider named → the local YouTube playback.
             return EffectIntent(("media.play.youtube",), (evidence,))
         return EffectIntent(("media.play.query",), (evidence,))
-    if "web.search" in available and _public_live_lookup_request(folded):
+    if (
+        "web.search" in available
+        and _public_live_lookup_request(folded)
+        # «find itinerary en Downloads y busca weather Curicó online»: the
+        # live lookup is one clause of a compound; the clause reader below keeps
+        # the other one.
+        and len(_request_clauses(folded)) == 1
+    ):
         # WEB1445: the evidence keeps the person's accents («mañana»); the
         # engine answers the literal phrase and not its folded form.
         return EffectIntent(("web.search",), (text.strip(),))

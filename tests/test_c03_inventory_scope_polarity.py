@@ -24,7 +24,9 @@ def observation(count=2, total=7, complete=True, offset=0):
     "This list contains {count} windows; there are more windows.",
     "The list includes {count} windows; this is a partial inventory.",
 ])
-@pytest.mark.parametrize("count,total", [(2, 7), (20, 25), (3, 8)])
+# WINDOWS1209 (53ac92649): the narrator's copy names at most NAMED_WINDOWS_PER_ANSWER
+# windows, so page quantities are measured inside that cap.
+@pytest.mark.parametrize("count,total", [(2, 7), (10, 25), (3, 8)])
 def test_a_list_quantity_is_bound_to_the_page_not_the_selected_total(pattern, count, total):
     payload = _compose_situation_payload(observation(count, total), "en", "List the windows.")
     original = copy.deepcopy(payload)
@@ -133,7 +135,7 @@ def test_a_faithful_answer_reaches_the_user_without_an_unnecessary_retry(model, 
     "Aquí tienes la lista:\n\n- Atlas 0\n\nSe observaron {total} ventanas. Esta página muestra {count} ventanas.",
     "Here is the list:\n\n- Atlas 0\n\nObserved: {total} windows. This page includes {count} of them.",
 ])
-@pytest.mark.parametrize("count,total", [(1, 4), (3, 9), (20, 25)])
+@pytest.mark.parametrize("count,total", [(1, 4), (3, 9), (10, 25)])
 @pytest.mark.parametrize("complete", [True, False])
 def test_two_bound_quantities_disclose_a_subset_without_a_required_phrase(pattern, count, total, complete):
     # This checks quantity interpretation, not whether all identities are listed.
@@ -150,7 +152,7 @@ def test_two_bound_quantities_disclose_a_subset_without_a_required_phrase(patter
     "Esta página muestra {count} de las {total} ventanas observadas.",
     "The list includes {count} of {total} observed windows.",
 ])
-@pytest.mark.parametrize("count,total", [(1, 4), (3, 9), (20, 25)])
+@pytest.mark.parametrize("count,total", [(1, 4), (3, 9), (10, 25)])
 @pytest.mark.parametrize("complete", [True, False])
 def test_a_fraction_can_refer_to_observed_windows_without_asserting_global_total(pattern, count, total, complete):
     payload = _compose_situation_payload(observation(count, total, complete), "en", "List the windows.")

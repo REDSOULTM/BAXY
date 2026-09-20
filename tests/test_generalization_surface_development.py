@@ -81,6 +81,10 @@ def test_opened_r1_failures_are_deterministic_development_regressions(
     accepted = {
         tuple(group) for group in row["compatible_terminal_operation_sets"]
     }
+    if ("vision.describe",) in accepted:
+        # SCREEN1417 (ec963d3ef): describing the screen reads its text by OCR
+        # and says images are out of reach; the corpus predates that reading.
+        accepted.add(("ocr.read",))
 
     assert result is not None
     assert _terminal_operations(result.operations) in accepted

@@ -50,7 +50,10 @@ internal sealed class NamedBrowserAdapter : IExternalOperationAdapter, IDisposab
         // WEB1797 «busca operagx en opera»: the person names the Opera family;
         // when plain Opera is absent and Opera GX is installed, the navigation
         // runs in Opera GX and the receipt names the browser actually used.
-        if (browser == "opera" && ResolveBrowser("opera") is null && ResolveBrowser("opera_gx") is not null)
+        // A session already held for «opera» is Opera: it is never redirected
+        // (an injected session, or one this adapter opened when Opera resolved).
+        if (browser == "opera" && !_browsers.ContainsKey("opera")
+            && ResolveBrowser("opera") is null && ResolveBrowser("opera_gx") is not null)
             browser = "opera_gx";
         if (!_browsers.TryGetValue(browser, out CdpBrowserSession? session))
         {

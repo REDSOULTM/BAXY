@@ -487,6 +487,37 @@ literal, tres variantes, dos límites): el sellado rechaza literales ya cubierto
 **Estado: 742/742, 35/35 categorías cerradas; cien-76 a cien-85, 100/100 (cien-85 sobre el árbol
 del cierre, HEAD 771f779df).** Detalle en CIEN.md.
 
+## 15. Post-goal: la Full verde y lo que la compuerta encontró (2026-09-20, Fase 1 del plan)
+
+El goal se cerró con la orden «sin tests»; el plan post-goal (`PLAN_POSTGOAL_2026-09-20.md`, D8/D19)
+mandó volver la Full a verde sin relajar nada. La .NET traía 54 rojos, todos re-pinados con la
+tanda que cambió el contrato o arreglados en fuente; la pytest, que la raíz no había corrido en
+todo C03, traía 215 fallos y 7 errores. De esos, lo que importa al producto:
+
+- **Regresiones reales de la mente, reparadas** (cada una con su línea en `effect_intent.py`):
+  «5pm» pegado pedía AM/PM; «pon el audio de Spotify al 20 %» y «ponme un recordatorio para las 3»
+  se leían como música (MUSIC1559 heredó un hueco); una envoltura social («Buenos días,», «Baxy,
+  haz esto:») escondía la lectura de sitio nombrado (SITE1933) y la búsqueda en navegador
+  nombrado; el pedido de investigar (WEB1831) se tragaba preguntas sobre el estado del propio
+  equipo («averigua cómo quedó el audio», «qué nombre lleva este cacharro»); el tiempo (WEB1445)
+  y el paquete winget («deja Git.Git ready y …») se comían el otro miembro de un compuesto;
+  «sound» como verbo de alarma rompía «volume and sound output»; «dime la ventana que tiene el
+  foco» se leía como inventario de pantalla; «And Spotify?» como nombre suelto; «Abre Portal
+  desde Steam» como sitio «portal». En la App, `UserMessagePolicy` vuelve a rechazar un «no pude»
+  de la mente en un turno fuera de catálogo (UI1659 sólo exime el límite en presente) y
+  `NamedBrowserAdapter` no redirige a Opera GX una sesión ya abierta como Opera.
+- **Contratos sellados re-anclados en las pruebas**, citando la tanda: NOTE_ROUTING985, MUSIC1559,
+  MUSIC1749, SITE1933, KNOWLEDGE1473, WEB1831, SCREEN1417, AGENDA1337, APPS1231, UI1273, FILES1205,
+  AUDIO1579, LANG1909, MEMORY1249, REPAIR1031, UI1775, MUSIC1755, WINDOWS1209/1211/1213,
+  CLOSE1060 (window.resolve v3), la decisión 13-09 de `network.ip.list`, cien-36/42.
+- **Ambiente de REDPC**: corpus privados copiados del repo anterior (gitignored); runtime Piper
+  2023.11.14-2 instalado (sin él la voz del producto era SAPI); 41 ficheros con CRLF en disco
+  tras la transferencia devueltos a LF (R278).
+- **Sellos de identidad de programa**: el activo de alias v1 vuelve a su identidad R267 y los
+  alias de C03 viven en `catalog_operation_aliases.c03.v1.json` (el cargador los funde); el árbol
+  de programa del wake (STT) y los hashes de V8 se re-pinan con una línea fechada antes de cada
+  Full (`repin_program_identity.py`).
+
 ## Fuentes
 
 - [OSWorld: Benchmarking Multimodal Agents for Open-Ended Tasks in Real Computer Environments](https://arxiv.org/html/2404.07972v2)

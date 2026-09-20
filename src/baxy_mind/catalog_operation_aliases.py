@@ -11,6 +11,11 @@ from typing import Mapping
 
 
 _DATA = Path(__file__).with_name("data") / "catalog_operation_aliases.v1.json"
+# The v1 asset keeps the identity sealed by R267 (bound to the R219 catalogue);
+# the operations added in C03 carry their aliases in a second asset that is
+# loaded with it and bound to the current catalogue by its own test.
+_C03_DATA = Path(__file__).with_name("data") / "catalog_operation_aliases.c03.v1.json"
+_ASSETS = (_DATA, _C03_DATA)
 _OPERATION_NAME = re.compile(r"^[a-z][a-z0-9]*(?:\.[a-z][a-z0-9]*)+$")
 
 
@@ -18,7 +23,14 @@ _OPERATION_NAME = re.compile(r"^[a-z][a-z0-9]*(?:\.[a-z][a-z0-9]*)+$")
 def catalog_operation_aliases() -> Mapping[str, tuple[str, ...]]:
     """Return validated exact aliases; they never add catalogue authority."""
 
-    payload = json.loads(_DATA.read_text(encoding="utf-8"))
+    aliases: dict[str, tuple[str, ...]] = {}
+    for asset in _ASSETS:
+        _load_alias_asset(asset, aliases)
+    return MappingProxyType(aliases)
+
+
+def _load_alias_asset(asset: Path, aliases: dict[str, tuple[str, ...]]) -> None:
+    payload = json.loads(asset.read_text(encoding="utf-8"))
     if (
         not isinstance(payload, dict)
         or payload.get("schema") != "baxy.catalog-operation-aliases.v1"
@@ -29,7 +41,7 @@ def catalog_operation_aliases() -> Mapping[str, tuple[str, ...]]:
     rows = payload.get("aliases")
     if not isinstance(rows, list) or not rows:
         raise RuntimeError("catalog operation alias asset is empty")
-    aliases: dict[str, tuple[str, ...]] = {}
+    loaded = 0
     for row in rows:
         if not isinstance(row, dict) or set(row) != {
             "normalized_text",
@@ -62,10 +74,10 @@ def catalog_operation_aliases() -> Mapping[str, tuple[str, ...]]:
         ):
             raise RuntimeError("catalog operation alias row is invalid or duplicated")
         aliases[normalized] = tuple(operations)
+        loaded += 1
     expected_count = payload.get("alias_count")
-    if expected_count != len(aliases):
+    if expected_count != loaded:
         raise RuntimeError("catalog operation alias count changed")
-    return MappingProxyType(aliases)
 
 
 @lru_cache(maxsize=1)
@@ -78,10 +90,10 @@ def catalog_operation_alias_pairs() -> tuple[tuple[str, str], ...]:
     """
 
     catalog_operation_aliases()  # validate the asset contract first
-    payload = json.loads(_DATA.read_text(encoding="utf-8"))
     return tuple(
         (str(row["target_operation"]), str(row["text"]))
-        for row in payload["aliases"]
+        for asset in _ASSETS
+        for row in json.loads(asset.read_text(encoding="utf-8"))["aliases"]
     )
 
 

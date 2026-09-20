@@ -476,8 +476,10 @@ def test_language_wrapper_keeps_explanation_prompt_and_literal_request(
     client.chat(user_text, conversation_kind="knowledge", response_language="mixed")
     assert len(client.payloads) == 1
     messages = client.payloads[0]["messages"]
+    # cien-42 003: a direct knowledge answer also carries the definition-contrast rule.
     assert messages[0]["content"] == (
         llm.SYSTEM_PROMPT + " " + llm.CONVERSATION_FACT_PROVENANCE_PROMPT
+        + " " + llm.DEFINITION_CONTRAST_PROMPT
     )
     assert messages[-1]["content"] == user_text
 

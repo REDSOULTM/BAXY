@@ -378,7 +378,9 @@ public sealed class WindowsInstalledApplicationOpenProviderTests
             Assert.That(result.ErrorCode, Is.EqualTo(
                 ApplicationOpenErrorCodes.VerificationFailed));
             Assert.That(platform.ActivateCalls, Is.EqualTo(1));
-            Assert.That(platform.DelayCalls, Is.EqualTo(28));
+            // UI1771/UI1775 (26b718dbd): a launch whose window is still to come is waited on
+            // for up to 30 s (300 polls of 100 ms) before it is declared unverified.
+            Assert.That(platform.DelayCalls, Is.EqualTo(300));
         });
     }
 

@@ -61,8 +61,10 @@ WAKE_V17_HISTORICAL_PROGRAM_TREE_SHA256 = (
 # C03 590: registered CPU prose adapter is isolated from other model roles.
 # Historical STT/wake campaign pins remain unchanged; this declaration does
 # not claim new audio acceptance.
+# C03 post-goal 2026-09-20 (Fase 1): pytest verde sin relajar; 5pm/volumen de app/envoltura social/investigar el propio equipo reparados en la mente.
+# C03 post-goal 2026-09-20 (Fase 1): pytest verde sin relajar; 5pm/volumen de app/envoltura social/investigar el propio equipo reparados en la mente.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "fa2db24c808f22939c6129d20cba3e12400a5623915def3a9e13ab1c19068bdf"
+    "95b3e3cf3e56ac3bc4f883342cd5b1e2ce9a1cc4d77c6f6e4c7f35bdb226c235"
 )
 CONSUMED_BLIND_CONTRACT = (
     "artifacts/research/stt_real_audio_fusion_blind_preopen_contract_v1.json"

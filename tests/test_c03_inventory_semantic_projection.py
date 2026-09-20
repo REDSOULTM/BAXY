@@ -79,8 +79,12 @@ def test_large_list_requests_name_a_bounded_titled_first_subset(user_text, count
     assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
     reply = f"{named}\n\nSe observaron {total - n} ventanas no nombradas en esta lista."
     assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
-    assert not compose_visible_defect(reply, "status", user_text, {"situation": original})
-    reply = f"Se observaron {total} ventanas en total ({total - n} no nombradas):\n{named}"
+    # WINDOWS1213 (2c0da2098): a Spanish answer to an English request is wrong_language.
+    if user_text == "Lista las ventanas.":
+        assert not compose_visible_defect(reply, "status", user_text, {"situation": original})
+    # WINDOWS1211 (470341492): the remainder is a window quantity of its own
+    # («3 ventanas no nombradas»), never a bare number.
+    reply = f"Se observaron {total} ventanas en total ({total - n} ventanas no nombradas):\n{named}"
     assert not _payload_fact_defect(reply, {"seen": seen, "operation": "window.resolve"}, user_text)
     assert _payload_fact_defect(f"Se observaron {total - n + 1} ventanas que no están incluidas:\n{named}", {"seen": seen, "operation": "window.resolve"}, user_text) == "reversed_result"
     english = f"The following windows are open:\n{named}\n{total - n} windows were observed but are not named here."

@@ -67,7 +67,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                     cancellationToken).ConfigureAwait(false);
                 VisibleControlSurface.Delete(after.Value.Path);
             }
-            // H0101: el diálogo de descarga de Steam dice «Instalar» tres veces
+            // H0101: el diálogo de descarga del lanzador de juegos dice «Instalar» tres veces
             // —el título, el rótulo «INSTALAR EN:» y el botón—. Al pulsar el
             // rótulo no pasó nada, pero la palabra seguía en pantalla y eso se
             // daba por bueno: el turno publicó que el diálogo se había
@@ -165,7 +165,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
 
     // Lo que está escrito en la ventana de delante, línea a línea. Hace falta
     // porque hay superficies que no exponen árbol de accesibilidad: la interfaz
-    // de Steam devuelve un solo nodo, «Chrome Legacy Window», sin un hijo. Ahí
+    // del lanzador de juegos devuelve un solo nodo (la ventana heredada de CEF), sin un hijo. Ahí
     // lo único que se puede leer es lo que se ve.
     internal static async ValueTask<string[]?> TryReadLinesAsync(
         int limit,
@@ -201,7 +201,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
             var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var lines = new List<string>();
             // La segunda pasada nombra lo que la primera no alcanza a leer, como
-            // el botón «Instalar» de Steam: blanco sobre azul saturado.
+            // el botón «Instalar» del lanzador de juegos: blanco sobre azul saturado.
             OcrResult[] readPasses = enhanced is null ? [recognized] : [recognized, enhanced];
             foreach (OcrResult pass in readPasses)
             {
@@ -282,7 +282,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
                 }
             }
         }
-        // H0101: en el diálogo de descarga de Steam la palabra «Instalar» sale
+        // H0101: en el diálogo de descarga del lanzador de juegos la palabra «Instalar» sale
         // tres veces —el título, el rótulo «INSTALAR EN:» y el botón—, y el
         // rótulo, escrito en versalitas pequeñas, ganaba la regla del cuerpo
         // menor. Un rótulo así no es una etiqueta de control: sigue con más
@@ -355,7 +355,7 @@ internal sealed class WindowsVisibleOcrLocator : IVisibleControlLocator
         return hits.Count == 1 ? hits[0] : null;
     }
 
-    // H0101: el boton «Instalar» del dialogo de Steam es texto blanco sobre azul
+    // H0101: el boton «Instalar» del dialogo del lanzador de juegos es texto blanco sobre azul
     // saturado. El OCR de Windows, afinado para tinta oscura sobre fondo claro,
     // no lo lee: en la captura sólo encuentra el título y el rótulo «INSTALAR
     // EN:». Medido, una copia en gris con gamma 2,5 —que oscurece los medios

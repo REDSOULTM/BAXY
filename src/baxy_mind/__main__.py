@@ -3358,6 +3358,9 @@ def _unresolved_input_kind(
             "are", "is", "do", "does", "did", "can", "could", "will", "would", "should", "what",
             "who", "where", "when", "why", "how", "which", "still", "you", "anything", "ready",
             "hello", "hi", "hey", "thanks", "thank", "good", "ok", "okay", "any", "got", "all",
+            # «And Spotify?»: a conjunction opens a follow-up on the previous
+            # question, which the scoped readers resolve; it is not a bare name.
+            "and", "or", "but",
         }
         and not corrector.unknown_words(objective, known_names)
         # «Steam?», «Spotify?» name a catalog application on their own and
@@ -3519,7 +3522,9 @@ def _general_factoid_prompt(objective: str) -> bool:
                 r"(?:(?:podrias|puedes|can\s+you|could\s+you)\s+)?"
                 r"(?:confirmar|confirm)\s+(?:si|whether)\s+"
                 r"[a-z][a-z .'-]{0,64}\s+(?:esta\s+casad[oa]|is\s+married)|"
-                r"(?:(?:me\s+)?(?:puedes|podrias)\s+dar\s+)?"
+                # «me puedes dar una receta…»: the envelope strip already took
+                # «me puedes», so «dar» may stand alone in front of the recipe.
+                r"(?:(?:me\s+)?(?:puedes|podrias)\s+)?(?:dar\s+)?"
                 r"(?:una\s+)?receta(?:\s+casera)?\s+(?:de|para)\s+\S.+|"
                 r"cual\s+es\s+la\s+receta\s+(?:de|del)\s+\S.+|"
                 r"what\s+(?:all\s+)?(?:goes|ingredients?\s+go)\s+into\s+"

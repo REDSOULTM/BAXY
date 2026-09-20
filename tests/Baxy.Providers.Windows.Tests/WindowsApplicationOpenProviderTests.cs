@@ -781,13 +781,55 @@ public sealed class WindowsApplicationOpenProviderTests
             Assert.That(result.ProcessId, Is.EqualTo(800));
             Assert.That(result.WindowHandle, Is.EqualTo(0x8002));
             Assert.That(process.FocusRequests, Is.EqualTo(1));
-            Assert.That(platform.DelayCalls, Is.EqualTo(1));
+            // REPAIR1031 (c38461b7e): the converged visible window verifies on the
+            // first observation; the foreground is asked for, never awaited.
+            Assert.That(platform.DelayCalls, Is.Zero);
+        });
+    }
+
+    // REPAIR1031 (c38461b7e): «the app is open» is proven by a visible window of the
+    // bound process, not by the foreground, which Windows refuses to hand over while a
+    // system flyout owns it (seventeen turns lost to «Configuración rápida»). A visible
+    // window without the foreground verifies and asks for the foreground once.
+    [Test]
+    public async Task VerifierAcceptsAVisibleWindowWithoutTheForegroundAndAsksForIt()
+    {
+        using TestEnvironment environment = new();
+        FakePlatform platform = environment.CreatePlatform();
+        FakeProcessState process = environment.Win32Process(
+            801,
+            FirstCreationTime,
+            (nint)0x801,
+            foreground: false);
+        process.WindowVisible = true;
+        process.FocusSucceeds = false;
+        platform.Processes.Add(process);
+        ApplicationOpenRequest request = Request();
+        ApplicationLaunchReceipt receipt = ReceiptFor(
+            request,
+            environment.BootstrapPath,
+            801,
+            FirstCreationTime,
+            0x801,
+            launchIssued: true);
+
+        ApplicationVerificationResult result =
+            await new WindowsApplicationOpenVerifier(platform).VerifyAsync(
+                request,
+                receipt,
+                CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(result.Verified, Is.True);
+            Assert.That(result.ErrorCode, Is.Null);
+            Assert.That(process.FocusRequests, Is.EqualTo(1));
+            Assert.That(platform.DelayCalls, Is.Zero);
         });
     }
 
     [TestCase(false, true)]
-    [TestCase(true, false)]
-    public async Task VerifierRequiresBothVisibleWindowAndObservedForeground(
+    public async Task VerifierRequiresAVisibleWindow(
         bool windowVisible,
         bool foreground)
     {

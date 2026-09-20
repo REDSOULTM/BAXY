@@ -204,10 +204,13 @@ public sealed class RequestReadingConformanceTests
     }
 
     /// <summary>
-    /// Un aviso de estado no es una conversación: no lleva el pedido anterior.
+    /// MUSIC1757/MUSIC1759 (f0d453107): el pedido anterior viaja con toda composición,
+    /// también con un aviso de estado, porque decide el idioma de un final cuando la
+    /// respuesta de la persona no tiene idioma propio («Play a song on Spotify.» →
+    /// «Queen»). Es dato de lectura, no hecho publicable: no entra en la situación.
     /// </summary>
     [Test]
-    public void StatusFactsDoNotCarryPreviousRequests()
+    public void StatusFactsCarryPreviousRequestsOnlyAsReadingData()
     {
         UserMessageDraft draft = UserMessagePolicy.Create(
             TurnVisibleFacts.Status("acting"),
@@ -218,7 +221,11 @@ public sealed class RequestReadingConformanceTests
             previousAnswer: null,
             priorRequests: ["explícame qué es la caché, una frase"]);
 
-        Assert.That(facts["priorRequests"], Is.Null);
+        Assert.That(facts["priorRequests"], Is.Not.Null);
+        Assert.That(
+            facts["situation"]!.GetValue<string>(),
+            Does.Not.Contain("explícame qué es la caché"));
+        Assert.That(facts["context"], Is.Null);
     }
 
     /// <summary>

@@ -567,10 +567,14 @@ internal static class UserMessagePolicy
             // UI1659 «Go to the announcements channel in Discord.»: the mind
             // closed the turn as a known unsupported effect and its bounded
             // contract validated «I cannot go to …»; the request-text heuristic
-            // does not see that limit, so the kind is passed explicitly.
+            // does not see that limit, so the kind is passed explicitly. A limit
+            // never attempted anything, so a reply that claims a failed attempt
+            // («No pude abrir la aplicación») is still rejected and the turn
+            // keeps its out_of_catalog boundary (plan post-goal 2026-09-20,
+            // Fase 1 grupo F; mirrors the mind's own extra_claim veto).
             ("looks_like_failure",
                 LooksLikeFailure(reply)
-                && !unsupportedByMind
+                && !(unsupportedByMind && !ClaimsFailedAttempt(reply))
                 && !LooksLikeKnowledgeQuestion(user)
                 && ConversationFallbackIntent(userText) != "out_of_catalog"),
             ("greeting_not_returned",
@@ -1458,7 +1462,9 @@ internal static class UserMessagePolicy
             ["marte", "mars", "jupiter", "saturn", "neptun", "pluton",
                 "europa", "ganymede", "ganimedes", "calisto", "callisto",
                 "triton", "ceres", "phobos", "deimos", "oberon", "rocket",
-                "bitcoin", "titan",
+                // BUILD1143 made these whole words («martes» is not «marte»);
+                // the plural stays out of this world (Fase 1 grupo F).
+                "bitcoin", "bitcoins", "titan",
                 "postcard", "to io", "a io", "to the moon", "a la luna",
                 "fabrica una hora", "invent a clock", "inventa una hora",
                 "fabricate a clock", "fabricate a"]);
@@ -1499,6 +1505,14 @@ internal static class UserMessagePolicy
         Regex.IsMatch(
             folded,
             @"\b(?:hi|hey|hello|hola)[, ]+(?:saturno?|marte|mars|jupiter|neptuno?)\b",
+            RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
+
+    // Past-tense own failure: «no pude», «no logré», «I couldn't», «failed to».
+    // A present limit («no puedo», «I cannot») is not an attempt.
+    private static bool ClaimsFailedAttempt(string reply) =>
+        Regex.IsMatch(
+            FoldForPolicy(reply),
+            @"\b(?:no\s+(?:pude|logr[eé]|consegu[ií]|complet[eé]|realic[eé])|(?:i\s+)?(?:couldn['’]t|could\s+not)|failed\s+to)\b",
             RegexOptions.CultureInvariant | RegexOptions.NonBacktracking);
 
     private static bool ClaimsUnverifiedConnectivity(string folded) =>

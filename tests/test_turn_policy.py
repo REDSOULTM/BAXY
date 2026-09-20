@@ -167,7 +167,9 @@ def test_explicit_or_balanced_mixed_language_is_not_overridden_by_a_second_reade
             "¿Qué quieres cerrar?",
         ),
         (
-            "close that",
+            # «close that» itself now reads as the deictic close (app.close);
+            # a referent with no reading keeps exercising the model decision.
+            "close that thing",
             "What should I close? A window or a program?",
             "What should I close?",
         ),
@@ -180,7 +182,9 @@ def test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     # Exercise a model decision rather than the earlier bare-reference shortcut.
-    monkeypatch.setattr(mind_main, "_standalone_deictic_request", lambda _text: False)
+    monkeypatch.setattr(
+        mind_main, "_standalone_deictic_request", lambda *_args, **_kwargs: False,
+    )
     tool = _goal03c_catalog_tool("app.close")
     calls: list[str] = []
 
@@ -196,7 +200,7 @@ def test_invalid_clarification_prose_is_reworded_without_redeciding_the_intent(
                 "effect_count": "zero",
                 "effect_operations": [],
                 "effect_verification": "not_applicable",
-                "response_language": "en" if text == "close that" else "es",
+                "response_language": "en" if text.startswith("close") else "es",
             }
 
         @staticmethod
@@ -438,8 +442,10 @@ def test_chat_authors_the_name_answer_with_conversation_context(reply: str) -> N
         ],
     }
     assert dialogue[1:] == [{"role": "user", "content": "¿Cómo me llamo?"}]
+    # cien-42 003: a direct knowledge answer also carries the definition-contrast rule.
     assert payloads[0]["messages"][0]["content"] == (
         llm_module.SYSTEM_PROMPT + " " + llm_module.CONVERSATION_FACT_PROVENANCE_PROMPT
+        + " " + llm_module.DEFINITION_CONTRAST_PROMPT
     )
 
 
@@ -3379,12 +3385,13 @@ def test_application_argument_grounding_uses_authenticated_provider_identity() -
         "required": ["appId"],
         "additionalProperties": False,
     }
+    # APPS1231 (258c9aad2): the English alias binds the installed entry itself.
     assert _ground_explicit_arguments(
         "app.open",
         "Open Notepad",
         schema,
         applications,
-    ) == {"appId": "windows.notepad"}
+    ) == {"appId": "Bloc de notas"}
 
 
 @pytest.mark.parametrize(
@@ -7888,6 +7895,12 @@ def test_effect_guard_can_only_change_conversation_presentation_to_unsupported()
         def _verify_semantic_effect_shape(_text: str) -> tuple[str, str]:
             return "not_complete", "one"
 
+        # 5ae42554e / 2782b1a85: an incomplete zero-effect turn first tries a
+        # reworded clarification; an empty one keeps the unsupported boundary.
+        @staticmethod
+        def clarify_after_turn_failure(_objective: str, **_kwargs: object) -> str:
+            return ""
+
     result = apply_conversation_effect_presentation(
         conversation,
         "Pide un servicio externo.",
@@ -11294,11 +11307,6 @@ def test_unavailable_app_and_game_requests_close_before_model_selection(
 @pytest.mark.parametrize(
     ("operation", "text", "expected"),
     [
-        (
-            "browser.navigate",
-            "go to the washington post website",
-            {"url": "https://www.washingtonpost.com/"},
-        ),
         ("audio.mute", "de ahora en adelante mudo", {"state": True}),
         (
             "note.create",
@@ -11313,6 +11321,14 @@ def test_fresh_gate_effect_arguments_are_literal_and_grounded(
     expected: dict[str, object],
 ) -> None:
     assert _explicit_arguments_from_evidence(operation, text) == expected
+
+
+# a2b881c62 / SITE1933: a symbolic site («the washington post website») is not
+# a URL the mind may manufacture; the navigation depends on the verified search.
+def test_symbolic_site_never_becomes_a_manufactured_url() -> None:
+    assert _explicit_arguments_from_evidence(
+        "browser.navigate", "go to the washington post website",
+    ) is None
 
 
 @pytest.mark.parametrize(

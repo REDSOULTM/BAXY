@@ -264,9 +264,11 @@ class PlannerCatalogTests(unittest.TestCase):
                 {"query": "Alan Turing"},
             ),
             (
+                # 1288f8c6c (C03): «la página oficial de» is syntax around the
+                # public name; the verified search receives the name itself.
                 "web.search",
                 "Abre la página oficial de OpenAI.",
-                {"query": "página oficial de OpenAI"},
+                {"query": "OpenAI"},
             ),
             (
                 "web.search",

@@ -4,7 +4,7 @@ import copy
 import pytest
 
 from baxy_mind.llm import LlmRuntime, _compose_situation_payload, _payload_fact_defect
-from baxy_mind.window_prose_facts import window_fact_feedback
+from baxy_mind.window_prose_facts import NAMED_WINDOWS_PER_ANSWER, window_fact_feedback
 
 
 def observation(names, repeat):
@@ -42,7 +42,7 @@ def test_each_observed_entry_or_its_explicit_count_is_required(names, repeat, re
     '{count} ventanas de "{name}"', '{count} windows of "{name}"',
     '{count} "{name}" windows', '{count} × "{name}"',
 ])
-@pytest.mark.parametrize("count", [2, 4, 7])
+@pytest.mark.parametrize("count", [2, 3])
 def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(pattern, count):
     names = ["Atlas", "Atlas 2", "Review.1"]
     payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
@@ -50,6 +50,26 @@ def test_group_counts_belong_to_the_named_identity_not_the_whole_inventory(patte
     bad = good.replace(pattern.format(name=names[-1], count=count), pattern.format(name=names[-1], count=count + 1))
     assert not _payload_fact_defect(good, payload, "List the windows.")
     assert _payload_fact_defect(bad, payload, "List the windows.") == "reversed_result"
+
+
+# WINDOWS1209/1211 (53ac92649, 470341492): a list request names at most
+# NAMED_WINDOWS_PER_ANSWER windows; the answer states the page's counts and how
+# many observed windows it leaves unnamed. Counts beyond the page are false.
+@pytest.mark.parametrize("count", [4, 7])
+def test_group_counts_beyond_the_named_page_are_false(count):
+    names = ["Atlas", "Atlas 2", "Review.1"]
+    payload = _compose_situation_payload(observation(names, count), "en", "List the windows.")
+    page = payload["seen"]["windows"]
+    assert len(page) == NAMED_WINDOWS_PER_ANSWER
+    remaining = payload["seen"]["returnedPageScope"]["windowsObservedButNotNamedHere"]
+    assert remaining == 3 * count - NAMED_WINDOWS_PER_ANSWER
+    on_page = {name: sum(1 for window in page if window["title"] == name) for name in names}
+    good = "; ".join(
+        f'"{name}" ({on_page[name]} windows)' for name in names if on_page[name]
+    ) + f"; {remaining} more windows not named here."
+    assert not _payload_fact_defect(good, payload, "List the windows.")
+    whole = "; ".join(f'"{name}" ({count} windows)' for name in names) + "."
+    assert _payload_fact_defect(whole, payload, "List the windows.") in {"missing_fact", "reversed_result"}
 
 
 @pytest.mark.parametrize("reply", [
@@ -80,12 +100,16 @@ def test_a_count_only_request_does_not_require_all_titles(request_text):
     assert window_fact_feedback('Hay ocho ventanas en total.', payload, request_text) is None
 
 
+# WINDOWS1213 (2c0da2098): untitled windows are counted, never named by their
+# process («Dos ventanas de Explorador sin título» never matched a processName).
 @pytest.mark.parametrize("title", ["", "   "])
-def test_process_identity_is_only_a_fallback_for_an_empty_title(title):
+def test_an_untitled_window_is_counted_not_named_by_its_process(title):
     source = observation(["Atlas", title], 1)
     source['observed']['windows'][1]['processName'] = 'Companion'
     payload = _compose_situation_payload(source, "en", "List the windows.")
-    assert not _payload_fact_defect('"Atlas", "Companion".', payload, "List the windows.")
+    assert payload["seen"]["windows"] == [{"title": "Atlas", "processName": "Viewer0"}]
+    assert not _payload_fact_defect('"Atlas"; 1 more window not named here.', payload, "List the windows.")
+    assert _payload_fact_defect('"Atlas", "Companion".', payload, "List the windows.") == "missing_fact"
     assert _payload_fact_defect('"Viewer0", "Companion".', payload, "List the windows.") == "missing_fact"
 
 
@@ -137,7 +161,8 @@ def test_an_annotated_process_does_not_supply_an_independent_unnamed_window(proc
         window['processName'] = process
     payload = _compose_situation_payload(source, 'en', 'List the windows.')
     incomplete = pattern.format(process=process) + '.'
-    complete = pattern.format(process=process) + ', "' + process + '".'
+    # WINDOWS1213: the untitled window is counted as unnamed, not named by its process.
+    complete = pattern.format(process=process) + '; 1 more window not named here.'
     assert _payload_fact_defect(incomplete, payload, 'List the windows.') == 'missing_fact'
     assert not _payload_fact_defect(complete, payload, 'List the windows.')
 

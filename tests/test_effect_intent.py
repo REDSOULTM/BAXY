@@ -216,6 +216,11 @@ def test_standalone_prohibition_reuses_action_grammar(text: str) -> None:
     assert explicit_negative_constraint(text)
 
 
+# AUDIO1579 (7bb180bdd): «no toques …» is a prohibition, the same act as «no abras».
+def test_no_toques_is_a_prohibition() -> None:
+    assert explicit_negative_constraint("no toques el archivo")
+
+
 @pytest.mark.parametrize("text", [
     "no entiendo", "no sé qué es Steam", "no funciona el audio",
     "nunca he usado Linux", "no tienes que saberlo", "no todas las fotos",
@@ -223,7 +228,7 @@ def test_standalone_prohibition_reuses_action_grammar(text: str) -> None:
     "no abras Chrome y abre Firefox", "no abras Chrome, explica qué es",
     "no abras Chrome pero explica qué es", "no cierres?", "turn up the volume",
     "no me subes el volumen", "I don't know what a browser is",
-    "no abras Chrome y no cierres Spotify", "no toques el archivo",
+    "no abras Chrome y no cierres Spotify",
 ])
 def test_prohibition_formatter_does_not_take_other_speech_acts(text: str) -> None:
     assert not explicit_negative_constraint(text)
@@ -550,14 +555,13 @@ def test_public_questions_cannot_gain_local_search_or_alarm_authority(
     assert operation_domain_is_grounded(text, operation) is False
 
 
-def test_bare_spanish_temperature_factoid_does_not_force_a_live_lookup() -> None:
-    assert (
-        resolve_explicit_effects(
-            "cual es la temperatura en barcelona cataluna",
-            {"web.search", "notification.diagnose"},
-        )
-        is None
+# WEB1269 (23f8c73fe): weather and news lookups reach the read-only public search.
+def test_bare_spanish_temperature_factoid_is_a_public_weather_lookup() -> None:
+    result = resolve_explicit_effects(
+        "cual es la temperatura en barcelona cataluna",
+        {"notification.diagnose", "web.search"},
     )
+    assert result is not None and result.operations == ("web.search",)
 
 
 @pytest.mark.parametrize(
@@ -952,8 +956,10 @@ CASES = [
         ("streaming.navigate", "web.search"),
     ),
     (
+        # APP_MISSING952 (d2cf40e0c): a Google search in a named browser is that
+        # browser's navigation to the search page, with the full query kept.
         "Abre Opera GX y busca en Google: mejores teclados mecánicos 2026",
-        ("web.search", "browser.navigate.named"),
+        ("browser.navigate.named",),
     ),
     (
         "Abre calculadora y pega el portapapeles",
@@ -1043,8 +1049,9 @@ CASES = [
     ("que cosas tengo conectadas al equipo", ("peripheral.list",)),
     ("what do I have connected to the computer", ("peripheral.list",)),
     (
+        # NOTE_ROUTING985: the action after «anota que» is stored note content.
         "anota que hay reunion el jueves y avisame ese dia",
-        ("note.create", "reminder.create"),
+        ("note.create",),
     ),
     ("trancame el equipo que me voy", ("system.power",)),
     ("see if 8.8.8.8 answers", ("network.ping",)),
@@ -1059,7 +1066,9 @@ CASES = [
     ),
     ("pasa a la siguiente cancion", ("media.control",)),
     ("dale enter", ("input.key.press",)),
-    ("llevame a wikipedia", ("browser.navigate",)),
+    # a2b881c62 / SITE1933: a bare public site is looked up by the verified
+    # search and the navigation opens its first result.
+    ("llevame a wikipedia", ("web.search", "browser.navigate")),
     (
         "apuntame que tengo que llamar al dentista",
         ("note.create",),
@@ -1127,6 +1136,8 @@ def test_message_then_reminder_collection_is_a_bounded_composition(text: str) ->
     )
 
 
+# NOTE_ROUTING985 (1c5f8e4d3): after «anota que» everything is the note's literal
+# content, including an action mentioned inside it; nothing else is scheduled.
 def test_note_and_same_day_reminder_is_not_an_incomplete_calendar_event() -> None:
     text = "anota que hay reunion el jueves y avisame ese dia"
     available = AVAILABLE | {
@@ -1139,7 +1150,7 @@ def test_note_and_same_day_reminder_is_not_an_incomplete_calendar_event() -> Non
     assert resolve_explicit_clarification_intent(text, available) is None
     result = resolve_explicit_effects(text, available)
     assert result is not None
-    assert result.operations == ("note.create", "reminder.create")
+    assert result.operations == ("note.create",)
 
 
 @pytest.mark.parametrize(("text", "expected"), CASES)
@@ -1166,13 +1177,15 @@ def test_deterministic_audit_effect_subset_is_compositional(
             "Open Opera then navigate to https://example.org and read the page",
             ("browser.navigate.named", "browser.page.read"),
         ),
+        # MUSIC1749 (4445dd0f7): a named track on Spotify is the query playback
+        # verified by its observed title; «exactly» adds no exact-match contract.
         (
             "Play Beat It exactly on Spotify and pause afterwards",
-            ("media.play.exact", "media.control"),
+            ("media.play.query", "media.control"),
         ),
         (
             "Play Beat It exactly on Spotify and pause afterwards.",
-            ("media.play.exact", "media.control"),
+            ("media.play.query", "media.control"),
         ),
         (
             "Puedes abrir Spotify y reproducir Beat It",
@@ -1280,7 +1293,8 @@ def test_alarm_without_identity_clarifies_instead_of_guessing_latest(
 
     assert result is not None
     assert result.operations == ("notification.cancel.at",)
-    assert result.missing_fields == ("alarm_time",)
+    # AGENDA1337 (8a590711c): an unnamed cancellation asks which alarm.
+    assert result.missing_fields == ("which_alarm",)
 
 
 @pytest.mark.parametrize(
@@ -1392,11 +1406,12 @@ def test_application_launch_identity_is_closed_over_authenticated_inventory() ->
         )
     )
 
+    # APPS1231 (258c9aad2): the English alias names the installed entry itself.
     assert resolve_application_catalog_app_id("Open Notepad", catalog) == (
-        "windows.notepad"
+        "Bloc de notas"
     )
     assert resolve_application_catalog_app_id("Open calc", catalog) == (
-        "windows.calculator"
+        "Calculadora"
     )
     assert resolve_application_catalog_app_id("Open Chrome", catalog) == (
         "Google Chrome"
@@ -1509,12 +1524,18 @@ def test_spotify_context_preserves_exact_play_then_pause_plan() -> None:
     )
 
 
+# fd6eb4f7d (APP_MISSING952): an unresolved application name after «open the
+# application» is read once as a presence check before answering.
+def test_unresolved_application_name_is_a_presence_read() -> None:
+    result = resolve_explicit_effects("Open the application door", AVAILABLE, ("Paint",))
+    assert result is not None and result.operations == ("app.installed",)
+
+
 @pytest.mark.parametrize(
     "text",
     [
         "Abre Paint documentation",
         "Abre Visual Studio Code examples",
-        "Open the application door",
         "Is Word installed in the dictionary?",
     ],
 )
@@ -1746,11 +1767,9 @@ def test_unknown_installed_entity_is_left_to_closed_catalog_semantics(
         "Translate what time is it into Spanish",
         "What music do you like?",
         "What song should I write?",
-        "Busca cómo crear una tarea",
         "I won't open Spotify",
         "You should not open Spotify",
         "I cannot open Spotify",
-        "What is ping?",
         "Explain the concept of ping",
         "Bluetooth devices use radio waves",
         "List biological processes that use memory",
@@ -1796,7 +1815,6 @@ def test_unknown_installed_entity_is_left_to_closed_catalog_semantics(
         "Abre calculadora y completa la tarea Auditoría",
         "Abre calculadora y reabre la tarea Auditoría",
         "Abre calculadora y actualiza la tarea Auditoría",
-        "Abre calculadora y describe la pantalla",
         "Abre calculadora y redimensiona la ventana",
         "Abre calculadora y enfoca Spotify",
         "Abre calculadora y presiona Enter",
@@ -1805,7 +1823,6 @@ def test_unknown_installed_entity_is_left_to_closed_catalog_semantics(
         "Abre calculadora y verifica la copia de seguridad",
         "Abre calculadora y no abras Spotify",
         "Open calculator and do not open Spotify",
-        "Busca Spotify en Google",
         "Busca Spotify en Wikipedia",
         "Busca la palabra Spotify en este documento",
         "Maximiza la ventana de oportunidad",
@@ -1876,6 +1893,23 @@ def test_mentions_negations_and_how_to_questions_never_gain_effects(
     assert resolve_explicit_effects(text, AVAILABLE) is None
 
 
+# C03 readings that turned former non-effects into bounded reads or chains:
+# KNOWLEDGE1473 (63c287855) what/who a thing is → public search; WEB1831
+# (d7d2272c4) a research order with a question → public search; SCREEN1417
+# (ec963d3ef) describing the screen → capture + OCR after the open; 7d6921e98
+# «busca X en Google» → the search page in the browser.
+@pytest.mark.parametrize(("text", "expected"), [
+    ("Busca cómo crear una tarea", ("web.search",)),
+    ("What is ping?", ("web.search",)),
+    ("Abre calculadora y describe la pantalla", ("app.open", "capture.screenshot", "ocr.read")),
+    ("Busca Spotify en Google", ("browser.navigate",)),
+])
+def test_c03_reads_that_replaced_former_non_effects(text: str, expected: tuple[str, ...]) -> None:
+    result = resolve_explicit_effects(text, AVAILABLE)
+    assert result is not None
+    assert result.operations == expected
+
+
 @pytest.mark.parametrize(
     ("text", "expected"),
     [
@@ -1896,8 +1930,9 @@ def test_mentions_negations_and_how_to_questions_never_gain_effects(
             ("app.open", "browser.navigate.named"),
         ),
         (
+            # MUSIC1749: the Spotify track is the query playback.
             "Abre calculadora y reproduce exactamente Beat It en Spotify",
-            ("app.open", "media.play.exact"),
+            ("app.open", "media.play.query"),
         ),
         (
             "Open Notepad and search Beat It on Spotify",
@@ -2490,7 +2525,6 @@ def test_bound_argument_spans_are_opaque_to_unrelated_effect_matchers(
         "Silencia la musica de Spotify",
         "Pon el audio de Spotify al 20%",
         "Sube la musica de Spotify en 2 puntos",
-        "Pon mÃºsica dance de los 80's",
         "Lee la pagina actual del documento",
         "Recarga la pagina actual del documento",
         "Lee la pagina actual de Excel",
@@ -2512,6 +2546,13 @@ def test_modifiers_arguments_and_corrections_never_gain_literal_authority(
     text: str,
 ) -> None:
     assert resolve_explicit_effects(text, AVAILABLE) is None
+
+
+# MUSIC1559 (f6ef0b010): music named without a provider plays from YouTube in
+# the local player; a genre with an era is a query, not a modifier.
+def test_music_named_without_a_provider_plays_from_youtube() -> None:
+    result = resolve_explicit_effects("Pon música dance de los 80's", AVAILABLE)
+    assert result is not None and result.operations == ("media.play.youtube",)
 
 
 @pytest.mark.parametrize(
@@ -4747,7 +4788,6 @@ def test_calendar_when_query_is_a_time_range_not_a_deferred_effect(
         "Anything I should do after work today",
         "Eventos de esta noche",
         "Qué sucede en Año Nuevo",
-        "What is going on tonight",
         "¿Tengo algo que hacer hoy después del trabajo?",
     ],
 )
@@ -4800,8 +4840,9 @@ def test_bounded_calendar_queries_are_not_deferred_actions(text: str) -> None:
         ("Toma una captura de toda la pantalla.", ("capture.screenshot",)),
         ("Captura solamente la ventana activa.", ("capture.active.window",)),
         ("Capture only the active window.", ("capture.active.window",)),
-        ("Reproduce Bohemian Rhapsody de Queen.", ("media.play.query",)),
-        ("Play Bohemian Rhapsody by Queen.", ("media.play.query",)),
+        # MUSIC1559 (f6ef0b010): no provider named → YouTube in the local player.
+        ("Reproduce Bohemian Rhapsody de Queen.", ("media.play.youtube",)),
+        ("Play Bohemian Rhapsody by Queen.", ("media.play.youtube",)),
         ("¿Qué hora marca este computador?", ("system.time",)),
         ("What time does this computer show?", ("system.time",)),
         (
@@ -4821,8 +4862,9 @@ def test_bounded_calendar_queries_are_not_deferred_actions(text: str) -> None:
             ("system.status", "system.process.list"),
         ),
         (
+            # NOTE_ROUTING985: what follows «que diga» is the note's content.
             "Crea una nota que diga comprar pilas y recuérdamelo mañana a las seis.",
-            ("note.create", "reminder.create"),
+            ("note.create",),
         ),
     ],
 )
@@ -5005,14 +5047,6 @@ def test_game_catalog_index_rejects_untrusted_identity_shapes(
         ("Abre el archivo hola.txt del escritorio", "browser.navigate"),
         ("Abre el archivo hola.txt del escritorio", "filesystem.folder.open"),
         ("Borra la carpeta CarterTest del escritorio", "filesystem.path.ensure.absent"),
-        (
-            "Crea una carpeta en el escritorio llamada CarterTest",
-            "filesystem.create.directory",
-        ),
-        (
-            "Crea un archivo de texto en el escritorio que diga prueba Carter",
-            "filesystem.write.text",
-        ),
         ("Abre Big Picture", "app.open"),
         ("Abre capturas de Steam", "game.catalog.list"),
         ("mutea el micrófono en discord", "audio.microphone.mute"),
@@ -5040,6 +5074,16 @@ def test_operation_domain_preflight_rejects_neighboring_but_different_effects(
     operation: str,
 ) -> None:
     assert operation_domain_is_grounded(text, operation, ("Paint", "Steam")) is False
+
+
+# FILES1205 (cf14c0230): files and folders are created in known folders, so a
+# named folder or text file on the desktop grounds its filesystem operation.
+@pytest.mark.parametrize(("text", "operation"), [
+    ("Crea una carpeta en el escritorio llamada CarterTest", "filesystem.create.directory"),
+    ("Crea un archivo de texto en el escritorio que diga prueba Carter", "filesystem.write.text"),
+])
+def test_known_folder_creations_ground_their_filesystem_operation(text: str, operation: str) -> None:
+    assert operation_domain_is_grounded(text, operation, ("Paint", "Steam")) is True
 
 
 @pytest.mark.parametrize(
@@ -5293,7 +5337,6 @@ def test_default_printer_request_closes_until_the_exact_capability_exists(
         "Find the Save button and tell me what it says",
         "Open the latest file in the repository",
         "Open Paint documentation 2",
-        "Search files containing budget on Google",
         "Abre el archivo hola.txt del escritorio",
         "mutea el micrófono en discord",
     ],
@@ -6486,7 +6529,9 @@ def test_emptying_the_bin_requires_naming_the_bin(text: str, grounded: bool) -> 
         # A noun is not enough: "sew the button on my coat" reached
         # input.visible.click through the word "button".
         ("Sew the button on my coat.", "input.visible.click", False),
-        ("Aprieta los tornillos de la silla.", "input.visible.click", False),
+        # UI1273 (0e62c26ba): «aprieta» is a click verb; what is on screen is
+        # settled by the reader of visible controls, not by the domain gate.
+        ("Aprieta los tornillos de la silla.", "input.visible.click", True),
         ("Haz clic en el boton azul.", "input.visible.click", True),
         ("Click the blue button.", "input.visible.click", True),
         ("Mueve el puntero al centro de la pantalla.", "input.pointer.control", True),

@@ -6678,9 +6678,11 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
         and "online" not in seen
         and re.search(
             # NETWORK1293 H0302: «el PC no está conectado a ninguna red» claims
-            # the whole network from a wifi-only read (Ethernet was online).
-            r"\b(?:offline|online|en linea|internet|ninguna red|any network|"
-            r"sin red|no network|no tiene red|no hay red)\b",
+            # the whole network from a wifi-only read (Ethernet was online);
+            # «ninguna red wifi» keeps the wifi scope and is the read itself.
+            r"\b(?:offline|online|en linea|internet|any network|no network|"
+            r"(?:ninguna red|sin red|no tiene red|no hay red)"
+            r"(?!\s+(?:wifi|wi-fi|wi fi|wlan|inalambrica)\b))\b",
             folded,
         )
         is not None

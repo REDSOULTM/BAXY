@@ -9,11 +9,45 @@ namespace Baxy.Kernel.Tests;
 [TestFixture]
 public sealed class ProductCatalogTests
 {
+    // C03 (2026-09-12 … 2026-09-20) creció el catálogo de 170 a 191 descriptores con estas 21
+    // operaciones, cada una sellada por su tanda; la cifra se re-pina aquí junto a la lista nominal
+    // (plan post-goal 2026-09-20, Fase 1 grupo B).
+    internal static readonly string[] C03CatalogAdditions =
+    [
+        "audio.app.volume.adjust",
+        "bluetooth.radio.status",
+        "calculator.expression.evaluate",
+        "client.channel.locate",
+        "display.status",
+        "document.pdf.read",
+        "filesystem.known.list",
+        "game.entitlement.named",
+        "input.visible.controls",
+        "message.draft",
+        "message.send.test",
+        "notification.list",
+        "software.python.package.status",
+        "software.python.status",
+        "storage.removable.list",
+        "wifi.radio.set",
+        "wifi.radio.status",
+        "wifi.scan",
+        "window.close.all",
+        "window.minimize.all",
+        "window.snap",
+    ];
+
+    internal const int ExpectedDescriptors = 170 + 21;
+
+    internal const int ExpectedTools = ExpectedDescriptors - 1;
+
     [TestCase("{\"process\":\"*\"}", true)]
     [TestCase("{\"process\":\"*\",\"limit\":50,\"offset\":50}", true)]
     [TestCase("{\"process\":\"*\",\"byTitle\":true}", true)]
     [TestCase("{\"process\":\"editor.exe\",\"offset\":0}", true)]
-    [TestCase("{}", false)]
+    // CLOSE1060 (b7d005955): the flat v3 schema types both selectors and requires
+    // neither; WindowResolveHandler enforces «exactly one» before any OS read.
+    [TestCase("{}", true)]
     [TestCase("{\"process\":\"\"}", false)]
     [TestCase("{\"process\":\" \"}", false)]
     [TestCase("{\"process\":\"*\",\"offset\":-1}", false)]
@@ -30,8 +64,19 @@ public sealed class ProductCatalogTests
         {
             Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.ReadOnly));
             Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
-            Assert.That(descriptor.VerifierContractId, Is.EqualTo("window.resolve.identity.inventory.v2"));
+            // v2 → v3: CLOSE1060 (b7d005955) añadió el selector applicationName a window.resolve.
+            Assert.That(descriptor.VerifierContractId, Is.EqualTo("window.resolve.identity.inventory.v3"));
         });
+    }
+
+    [TestCase("{\"applicationName\":\"Calculadora\"}", true)]
+    [TestCase("{\"applicationName\":\" \"}", false)]
+    public void WindowInventoryAcceptsTheApplicationNameSelectorOfV3(string json, bool expected)
+    {
+        ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("window.resolve");
+        using JsonDocument arguments = JsonDocument.Parse(json);
+
+        Assert.That(OperationArgumentValidator.IsValid(arguments.RootElement, descriptor.ArgumentsSchema), Is.EqualTo(expected));
     }
 
     [Test]
@@ -41,7 +86,10 @@ public sealed class ProductCatalogTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(descriptors, Has.Length.EqualTo(170));
+            Assert.That(descriptors, Has.Length.EqualTo(ExpectedDescriptors));
+            Assert.That(
+                descriptors.Select(static descriptor => descriptor.Name),
+                Is.SupersetOf(C03CatalogAdditions));
             Assert.That(
                 descriptors.Select(static descriptor => descriptor.Name),
                 Is.EqualTo(descriptors.Select(static descriptor => descriptor.Name)
@@ -64,7 +112,7 @@ public sealed class ProductCatalogTests
                 Is.EqualTo(descriptors
                     .Where(static descriptor => descriptor.Name != "app.status")
                     .Select(static descriptor => descriptor.Name)));
-            Assert.That(ProductCatalog.ToolDescriptors, Has.Count.EqualTo(169));
+            Assert.That(ProductCatalog.ToolDescriptors, Has.Count.EqualTo(ExpectedTools));
             Assert.That(
                 ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name),
                 Does.Not.Contain("app.status"));
@@ -82,7 +130,7 @@ public sealed class ProductCatalogTests
                 new OperationDefinition(descriptor)))
             .ToArray();
 
-        Assert.That(tools, Has.Length.EqualTo(169));
+        Assert.That(tools, Has.Length.EqualTo(ExpectedTools));
         for (int index = 0; index < tools.Length; index++)
         {
             ProductOperationDescriptor product = ProductCatalog.ToolDescriptors[index];
@@ -228,8 +276,10 @@ public sealed class ProductCatalogTests
         });
     }
 
+    // Decisión del dueño 2026-09-13 (DECISIONES_DUENO_2026-09-13.md §6, NETWORK1201, 0fed0df6c): la IP
+    // propia se lee a pedido sin confirmación; el riesgo pasó de privacy_sensitive a read_only.
     [Test]
-    public void NetworkIpListIsPrivacySensitiveClosedAndDoubleReadVerified()
+    public void NetworkIpListIsReadOnlyClosedAndDoubleReadVerified()
     {
         ProductOperationDescriptor descriptor = ProductCatalog.GetRequired("network.ip.list");
         using JsonDocument empty = JsonDocument.Parse("{}");
@@ -237,7 +287,7 @@ public sealed class ProductCatalogTests
 
         Assert.Multiple(() =>
         {
-            Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.PrivacySensitive));
+            Assert.That(descriptor.Risk, Is.EqualTo(OperationRisks.ReadOnly));
             Assert.That(descriptor.VerifierContractId,
                 Is.EqualTo("network.ip.list.windows.unicast.secondread.v1"));
             Assert.That(OperationArgumentValidator.IsValid(
@@ -414,9 +464,9 @@ public sealed class ProductCatalogTests
                 Throws.InvalidOperationException);
             Assert.That(exact.Definitions.All(static definition =>
                 definition.ProductDescriptor is not null), Is.True);
-            Assert.That(exact.Definitions, Has.Count.EqualTo(170));
-            Assert.That(exact.ToolDefinitions, Has.Count.EqualTo(169));
-            Assert.That(exact.ToolDescriptors, Has.Count.EqualTo(169));
+            Assert.That(exact.Definitions, Has.Count.EqualTo(ExpectedDescriptors));
+            Assert.That(exact.ToolDefinitions, Has.Count.EqualTo(ExpectedTools));
+            Assert.That(exact.ToolDescriptors, Has.Count.EqualTo(ExpectedTools));
             Assert.That(
                 exact.ToolDefinitions.Select(static definition => definition.Name),
                 Is.EqualTo(ProductCatalog.ToolDescriptors.Select(static descriptor => descriptor.Name)));

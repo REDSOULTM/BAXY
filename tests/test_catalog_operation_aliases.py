@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from baxy_mind.catalog_operation_aliases import (
     catalog_operation_aliases,
     exact_catalog_operation_plan,
 )
+from baxy_mind.request_reading import read_request
 from baxy_mind.effect_intent import (
     resolve_explicit_clarification_intent,
     resolve_explicit_effects,
@@ -16,7 +18,21 @@ from baxy_mind.effect_intent import (
 
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "src/baxy_mind/data/catalog_operation_aliases.v1.json"
+# C03 (plan post-goal 2026-09-20, Fase 1): the v1 asset keeps its R267 identity;
+# the aliases of the operations added in C03 (AGENDA1435, NETWORK1457, SYSTEM1459)
+# live in a second asset loaded with it and bound to the live catalogue below.
+C03_DATA = ROOT / "src/baxy_mind/data/catalog_operation_aliases.c03.v1.json"
 CURRENT_CATALOGUE = ROOT / "artifacts/development/current_core_catalog_snapshot_r219.json"
+PRODUCT_CATALOGUE = ROOT / "src/Baxy.Kernel/Operations/ProductCatalog.cs"
+
+
+def _c03_rows() -> list[dict]:
+    return json.loads(C03_DATA.read_text(encoding="utf-8"))["aliases"]
+
+
+def _product_operations() -> set[str]:
+    pattern = re.compile(r'Descriptor\(\s*"([a-z0-9_.]+)"')
+    return set(pattern.findall(PRODUCT_CATALOGUE.read_text(encoding="utf-8")))
 
 
 def test_runtime_alias_asset_is_complete_unique_and_proposal_only() -> None:
@@ -34,15 +50,20 @@ def test_runtime_alias_asset_is_complete_unique_and_proposal_only() -> None:
     assert payload["catalog_operations"] == catalogue["catalogue"]["operations"] == 174
     assert payload["catalog_sha256"] == catalogue["catalogue"]["operation_names_sha256"]
     assert payload["alias_count"] == 157
-    assert len(aliases) == 157
+    c03 = json.loads(C03_DATA.read_text(encoding="utf-8"))
+    assert c03["alias_count"] == len(c03["aliases"]) == 3
+    assert len(aliases) == 157 + 3
     assert len(set(aliases)) == len(aliases)
     assert alias_operations <= current_operations
     assert "notification.cancel.at" not in alias_operations
+    c03_operations = {operation for row in c03["aliases"] for operation in row["operations"]}
+    assert c03_operations <= _product_operations()
+    assert c03_operations.isdisjoint(alias_operations)
 
 
 def test_every_exact_alias_resolves_only_through_authenticated_operations() -> None:
     payload = json.loads(DATA.read_text(encoding="utf-8"))
-    for row in payload["aliases"]:
+    for row in payload["aliases"] + _c03_rows():
         expected = tuple(row["operations"])
         observed = resolve_explicit_effects(row["text"], expected)
 
@@ -95,10 +116,12 @@ def test_polite_social_closure_is_transparent_for_every_exact_alias() -> None:
             if line.strip()
         )
     }
-    for row in payload["aliases"]:
-        source = corpus_rows[row["target_operation"]]
+    for row in payload["aliases"] + _c03_rows():
+        source = corpus_rows.get(row["target_operation"])
+        # The C03 aliases have no R2 corpus row; their language is the text's.
+        language = source["language"] if source is not None else read_request(row["text"]).language
         expected = tuple(row["operations"])
-        for tail in tails[source["language"]]:
+        for tail in tails[language]:
             text = row["text"].rstrip(".!?") + tail
             observed = resolve_explicit_effects(text, expected)
             assert observed is not None, row["target_operation"]
@@ -148,10 +171,11 @@ def test_request_completion_closure_is_transparent_for_every_exact_alias() -> No
             if line.strip()
         )
     }
-    for row in payload["aliases"]:
-        source = corpus_rows[row["target_operation"]]
+    for row in payload["aliases"] + _c03_rows():
+        source = corpus_rows.get(row["target_operation"])
+        language = source["language"] if source is not None else read_request(row["text"]).language
         expected = tuple(row["operations"])
-        for tail in tails[source["language"]]:
+        for tail in tails[language]:
             text = row["text"].rstrip(".!?") + tail
             observed = resolve_explicit_effects(text, expected)
             assert observed is not None, f"{row['target_operation']} :: {tail}"

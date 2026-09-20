@@ -348,7 +348,8 @@ public sealed class MemoryHandlersTests
             Assert.That(observed.GetProperty("integrityVerified").GetBoolean(), Is.True);
             Assert.That(observed.GetProperty("integrityAlgorithm").GetString(), Is.EqualTo("SHA-256"));
             Assert.That(observed.GetProperty("mayRedirectOrSync").GetBoolean(), Is.True);
-            Assert.That(observed.GetProperty("replayed").GetBoolean(), Is.False);
+            // replayed=false no se emite (MEMORY1249, 8317b26ff).
+            Assert.That(observed.TryGetProperty("replayed", out _), Is.False);
             Assert.That(projection.Message, Does.Not.Contain(path));
             Assert.That(projection.Message, Does.Not.Contain(firstHash));
             Assert.That(projection.Message, Does.Not.Contain(Canary));

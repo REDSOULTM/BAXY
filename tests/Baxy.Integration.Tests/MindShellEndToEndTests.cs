@@ -190,15 +190,19 @@ public sealed class MindShellEndToEndTests
         });
     }
 
+    // CONVERSATION1150/002, /007 y KNOWLEDGE1149/004: una recuperación que trae la pregunta
+    // validada de la mente es una pregunta, no un fallo; no inventa datos personales, no
+    // ejecuta nada y no deja un plan pendiente.
     [Test]
-    public async Task DecisionRecoveryPreservesFailureInsteadOfInventingPersonalData()
+    public async Task DecisionRecoveryAsksInsteadOfInventingPersonalData()
     {
         await WithContractMindAsync(async (viewModel, _, tracePath) =>
         {
             string result = await SubmitAsync(viewModel, "What is on my to do list?");
-            Assert.That(result, Does.Contain("\"cause\":\"turn_runtime_failure\""));
-            Assert.That(result, Does.Contain("\"operationAttempted\":false"));
+            Assert.That(result, Does.Contain("\"kind\":\"clarification\""));
+            Assert.That(result, Does.Contain("\"cause\":\"ambiguous_request\""));
             Assert.That(result, Does.Not.Contain("\"kind\":\"conversation\""));
+            Assert.That(result, Does.Not.Contain("task"));
             Assert.That(viewModel.HasPendingPlan, Is.False);
             _ = await SubmitAsync(viewModel, "Explícame la fotosíntesis");
             JsonElement next = ReadTrace(tracePath).Last(entry =>

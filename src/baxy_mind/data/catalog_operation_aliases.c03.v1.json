@@ -1,0 +1,45 @@
+{
+  "schema": "baxy.catalog-operation-aliases.v1",
+  "authority": "proposal_only_authenticated_catalog_intersection",
+  "note": "Aliases de operaciones añadidas en C03 (AGENDA1435 notification.list, NETWORK1457 bluetooth.radio.status, SYSTEM1459 display.status). El activo v1 queda sellado en su identidad R267; estas filas se cargan junto a él (catalog_operation_aliases.py) y se atan al catálogo vigente en test_catalog_operation_aliases.py.",
+  "alias_count": 3,
+  "aliases": [
+    {
+      "normalized_text": "decime que resolucion de pantalla tengo.",
+      "operations": [
+        "display.status"
+      ],
+      "target_operation": "display.status",
+      "text": "Decime qué resolución de pantalla tengo."
+    },
+    {
+      "normalized_text": "decime si tengo el bluetooth encendido.",
+      "operations": [
+        "bluetooth.radio.status"
+      ],
+      "target_operation": "bluetooth.radio.status",
+      "text": "Decime si tengo el bluetooth encendido."
+    },
+    {
+      "normalized_text": "lista los timers y alarmas programados.",
+      "operations": [
+        "notification.list"
+      ],
+      "target_operation": "notification.list",
+      "text": "Lista los timers y alarmas programados."
+    }
+  ],
+  "excluded_app_memory_operations": [
+    "memory.correct",
+    "memory.disable",
+    "memory.enable",
+    "memory.export",
+    "memory.forget",
+    "memory.list",
+    "memory.recall",
+    "memory.save",
+    "memory.sensitive.save",
+    "memory.session.clear",
+    "memory.status"
+  ]
+}

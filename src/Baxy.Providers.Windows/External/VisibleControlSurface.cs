@@ -29,7 +29,7 @@ internal static partial class VisibleControlSurface
             if (largest != 0)
                 hwnd = largest;
         }
-        // UI1735: the Epic Games Launcher and Discord replace their start-up
+        // UI1735: two Chromium-based launchers replace their start-up
         // window with their main window a few seconds after app.open verified
         // the focus, and the foreground fell back to this product's own window
         // (or to a window with no surface); the label was then searched on the

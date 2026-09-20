@@ -607,7 +607,8 @@ public sealed class ExternalAdaptersTests
             temporary.Path,
             new(true, true, "https://example.com/", "https://example.com/", "opera-page", ""),
             new(true, "opera-page", "https://example.com/", "Example Domain",
-                "Opera-owned snapshot", false, ""));
+                "Opera-owned snapshot", false, ""),
+            observedExecutablePath: Path.Combine(temporary.Path, "opera.exe"));
         using var named = new NamedBrowserAdapter(temporary.Path, context, opera);
         using var edge = new StubBrowserPageSession(
             temporary.Path,
@@ -2581,10 +2582,15 @@ public sealed class ExternalAdaptersTests
     private sealed class StubBrowserChainSession(
         string profile,
         CdpNavigationResult navigation,
-        CdpPageReadResult page)
+        CdpPageReadResult page,
+        string? observedExecutablePath = null)
         : CdpBrowserSession(profile)
     {
         internal int ReadCalls { get; private set; }
+
+        // APP_MISSING952 (d2cf40e0c): a named navigation verifies the browser's
+        // identity by the observed executable; a stub without one stays unverified.
+        internal override string? ObservedExecutablePath => observedExecutablePath;
 
         internal override ValueTask<CdpNavigationResult> NavigateAsync(
             Uri target,

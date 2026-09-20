@@ -770,7 +770,7 @@ public static class ProductCatalog
             OperationRisks.ReadOnly,
             "input.visible.controls.windows.uia.snapshot.v1",
             ToolExposure.Public,
-            "Nombra los controles visibles y habilitados de la ventana en primer plano, los accionables primero, sin tocar ninguno; lectura para saber qué hay antes de pulsar."),
+            "Nombra los controles visibles y habilitados de la ventana en primer plano, los accionables primero, sin tocar ninguno; lectura previa de lo que hay en pantalla antes de pulsar."),
         Descriptor(
             "media.control",
             Schema(

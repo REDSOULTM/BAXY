@@ -40,5 +40,7 @@ def test_decide_abstains_below_half_and_picks_top_above() -> None:
 def test_candidate_contracts_preserve_catalog_identity() -> None:
     contracts = probe.candidate_contracts()
 
-    assert len(contracts) == 169
+    # 169 -> 190: the 21 public operations sealed in C03 (2026-09-12 … 2026-09-20; plan post-goal
+    # 2026-09-20, Fase 1). The catalogue is still the authenticated one, only larger.
+    assert len(contracts) == 190
     assert "app.open" in contracts

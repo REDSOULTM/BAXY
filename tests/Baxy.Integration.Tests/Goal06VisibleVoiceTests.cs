@@ -282,10 +282,17 @@ public sealed class Goal06VisibleVoiceTests
                 "ábreme eso",
                 "¿Quieres que mides el estado del sistema?"),
             Is.True);
+        // cien-36 027 (7f6157746): una pregunta que repite el verbo del propio pedido y no
+        // nombra otra familia no propone una acción por su cuenta.
         Assert.That(
             UserMessagePolicy.ProposesUnsolicitedCatalogAction(
                 "cierra aquello",
                 "¿Qué quieres que cierra?"),
+            Is.False);
+        Assert.That(
+            UserMessagePolicy.ProposesUnsolicitedCatalogAction(
+                "cierra aquello",
+                "¿Quieres que vacíe la papelera?"),
             Is.True);
         Assert.That(
             UserMessagePolicy.IsSafeConversationReply(
@@ -518,7 +525,9 @@ public sealed class Goal06VisibleVoiceTests
         Assert.That(
             UserMessagePolicy.IsSafeConversationReply(
                 "Explícame qué es un huso horario en una frase.",
-                "Un huso horarioio es la diferencia que divide el mundo."),
+                // WEB1449: a doubled two-letter tail («horarioio») is ordinary
+                // morphology; a stutter is a doubled tail of three letters or more.
+                "Un huso horario es la diferenciacia que divide el mundo."),
             Is.False);
         Assert.That(
             UserMessagePolicy.IsSafeConversationReply(

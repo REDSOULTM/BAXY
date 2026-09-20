@@ -337,6 +337,10 @@ class RequestReading:
 def _explicit_language(folded: str) -> str | None:
     """Traducción y idioma pedido mandan sobre la evidencia del texto."""
 
+    # «Dime la hora, please, en spanglish»: la mezcla pedida por su nombre es
+    # una petición explícita de los dos idiomas, lleve o no un verbo delante.
+    if _contains_any(folded, ("en spanglish", "in spanglish")):
+        return "mixed"
     if _contains_any(folded, _TRANSLATION_TOKENS) or _contains_any(
         folded,
         ("responde en ", "contesta en ", "answer in ", "reply in ",

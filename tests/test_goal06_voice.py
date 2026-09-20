@@ -281,7 +281,10 @@ def test_public_compose_profile_follows_gguf() -> None:
     assert '"opening": "none"' in continue_extra
     assert '"apps": "none"' not in continue_extra
     assert "effect" not in continue_extra
-    assert "will not open" in continue_extra
+    # cien-36 047/067 (7ffb1cb0f): the constraint names no application, so the
+    # instruction says «open nothing» instead of ordering one to be named.
+    assert "open nothing" in continue_extra
+    assert "will not open" not in continue_extra
     assert "English only." not in continue_extra
     assert "Name continue and limit" not in continue_extra
     assert "Keep talking" not in continue_extra
@@ -305,7 +308,10 @@ def test_public_compose_profile_follows_gguf() -> None:
         {"situation": '{"kind":"conversation","polarity":"success"}'},
     )
     limits_extra = captured[0]["messages"][1]["content"]
-    assert "only do the work of this PC" in limits_extra
+    # cien-36 023/082/017 (2402dd591): «qué no haces» said the PC gives orders;
+    # the instruction now says BAXY only does what the person asks for.
+    assert "only do what the person asks you for" in limits_extra
+    assert "obey no machine" in limits_extra
     assert "Never list what you do as things you refuse" in limits_extra
     assert "name three or four entries of can" not in limits_extra
     assert "Reply I don't do that" not in limits_extra
@@ -375,7 +381,7 @@ def test_public_compose_profile_follows_gguf() -> None:
         {"situation": '{"kind":"conversation","polarity":"success"}'},
     )
     refuse_q = captured[0]["messages"][1]["content"]
-    assert "only do the work of this PC" in refuse_q
+    assert "only do what the person asks you for" in refuse_q
     assert "moral category" not in refuse_q
     assert "limit of this PC" not in refuse_q
     assert "Never list what you do as things you refuse" in refuse_q

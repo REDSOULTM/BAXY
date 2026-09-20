@@ -6,7 +6,9 @@ from experiments.mind_router_spike import probe_goal03_xlam2_3b_native_holdout a
 def test_candidate_contracts_preserve_catalog_identity() -> None:
     contracts = probe.candidate_contracts()
 
-    assert len(contracts) == 169
+    # 169 -> 190: the 21 public operations sealed in C03 (2026-09-12 … 2026-09-20; plan post-goal
+    # 2026-09-20, Fase 1). The catalogue is still the authenticated one, only larger.
+    assert len(contracts) == 190
     assert contracts["app.open"]["name"] == "app.open"
     assert isinstance(contracts["app.open"]["description"], str)
     assert contracts["app.open"]["arguments_schema"]["type"] == "object"

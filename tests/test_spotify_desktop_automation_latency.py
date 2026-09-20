@@ -22,9 +22,11 @@ def _between(start: str, end: str) -> str:
 
 
 def test_spotify_polling_is_bounded_by_the_original_terminal_horizons() -> None:
+    # MUSIC1755 (e64890997): the search page gets 12 s (it was 6 s); the other
+    # horizons are the original ones.
     assert "$searchDeadline=(Get-Date).AddMilliseconds(12500)" in SOURCE
     assert "$foregroundDeadline=(Get-Date).AddMilliseconds(250)" in SOURCE
-    assert "$searchPageDeadline=(Get-Date).AddSeconds(6)" in SOURCE
+    assert "$searchPageDeadline=(Get-Date).AddSeconds(12)" in SOURCE
     assert "$detailDeadline=(Get-Date).AddSeconds(12)" in SOURCE
     assert "$deadline=(Get-Date).AddSeconds(15)" in SOURCE
 
@@ -60,7 +62,7 @@ def test_spotify_success_paths_observe_before_their_first_poll() -> None:
     )
 
     search_page = _between(
-        "$searchPageDeadline=(Get-Date).AddSeconds(6)",
+        "$searchPageDeadline=(Get-Date).AddSeconds(12)",
         "if(-not $searchPageReady",
     )
     assert search_page.index(".FindAll(") < search_page.index(
@@ -94,7 +96,7 @@ def test_query_generic_play_cannot_exit_early_without_current_search_value() -> 
     assert "return $value" in value_probe
 
     search_page = _between(
-        "$searchPageDeadline=(Get-Date).AddSeconds(6)",
+        "$searchPageDeadline=(Get-Date).AddSeconds(12)",
         "if(-not $searchPageReady -and $null -ne $searchObservationError)",
     )
     value_read = "$querySearchValue=Read-BaxySpotifySearchValue $search"

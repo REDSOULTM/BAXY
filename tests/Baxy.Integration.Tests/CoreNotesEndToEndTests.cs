@@ -802,7 +802,8 @@ public sealed class CoreNotesEndToEndTests
                 status.Result?.GetProperty("operations").EnumerateArray()
                     .Select(static item => item.GetString()),
                 Is.EqualTo(ProductCatalog.OperationNames));
-            Assert.That(session.Hello.Capabilities, Has.Count.EqualTo(169));
+            // 190 herramientas públicas tras las 21 operaciones de C03 (plan post-goal 2026-09-20, grupo B).
+            Assert.That(session.Hello.Capabilities, Has.Count.EqualTo(190));
             Assert.That(
                 session.Hello.Capabilities.Select(static capability => capability.Name),
                 Does.Not.Contain("app.status"));

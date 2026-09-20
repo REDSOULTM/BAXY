@@ -195,8 +195,8 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter
 
             // Una ventana que sólo expone su contenedor no es una ventana sin
             // controles: es una que este canal no sabe leer. Medido en el diálogo
-            // de instalación de Steam, que devuelve «Chrome Legacy Window» y nada
-            // más. Cuando pasa, se lee lo que está escrito.
+            // de instalación de un lanzador de juegos (CEF), que devuelve la
+            // ventana heredada del motor y nada más. Cuando pasa, se lee lo que está escrito.
             int counted = root.TryGetProperty("controls", out JsonElement listed)
                 && listed.ValueKind == JsonValueKind.Array
                     ? listed.GetArrayLength()

@@ -53,6 +53,27 @@ public sealed class MvpLocalTransientHandlerMatrixTests
         });
     }
 
+    // CLOSE1060 (b7d005955): the flat v3 schema requires neither selector; the
+    // handler rejects none, both, or applicationName with byTitle/offset before any read.
+    [TestCase("{}")]
+    [TestCase("{\"applicationName\":\"Calculadora\",\"process\":\"*\"}")]
+    [TestCase("{\"applicationName\":\"Calculadora\",\"byTitle\":false}")]
+    [TestCase("{\"applicationName\":\"Calculadora\",\"offset\":0}")]
+    public async Task WindowInventoryRequiresExactlyOneSelectorBeforeAnyRead(string json)
+    {
+        var provider = new WindowProvider();
+        using JsonDocument arguments = JsonDocument.Parse(json);
+        OperationOutcome outcome = await new WindowResolveHandler(provider).ExecuteAsync(
+            new OperationInvocation("request", "mission", "invocation", arguments.RootElement), CancellationToken.None);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(outcome.Succeeded, Is.False);
+            Assert.That(outcome.ErrorCode, Is.EqualTo(WindowControlErrorCodes.InvalidSelector));
+            Assert.That(provider.ResolveCalls, Is.Zero);
+        });
+    }
+
     [Test]
     public async Task WindowInventoryDefaultsKeepOneReadAndAnHonestEmptyPage()
     {
