@@ -1,0 +1,87 @@
+{
+  "schema": "site1933-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-site1933-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-site1933-instrument-v1",
+  "seal_sha256": "8fc6789f29472caf435ac78f50121c03999007d040159673c47be50c026558d6",
+  "runner_sha256": "9b593f408a5562ed47dca7400a7ab17f90f1dcb6c464f4895faa46ac6eed0cbb",
+  "transport_seal_sha256": "9b77d2b7576ee5b12dfb791d25856b4d2136bd1f25d77ed5ba0b8a0cf1843e18",
+  "files": {
+    "panel.json": "0e5adb67ce3f3784eb9015abb3a2e39306ceaa6c99a5bb5e8879df9d10b9f22e",
+    "turns.jsonl": "598bfe72572a2ce0d92e4075ab01b2312eaba8560abbbb4ab27c8030e7af0078",
+    "case-map.json": "6bf453b7095f1214f96c58ad040cb9c26c5f6ea1821bde6eed13cecb0643d5f9",
+    "PLAN.md": "371e0c2f4b091fd8f9206566e0d582248b42632369d1c295d18cbbfa4bb1b94b"
+  },
+  "counts": {
+    "cases": 6,
+    "historical_literals": 1,
+    "original_development_variants": 3,
+    "boundaries": 2,
+    "wire_lines": 12,
+    "session_controls": 6,
+    "ordinary_turns": 2,
+    "reviewed_turns": 4,
+    "maximum_reportable_terminals": 10,
+    "maximum_internal_confirmations": 4
+  },
+  "kind_counts": {
+    "historical_literal": 1,
+    "original_development_variant": 3,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0081",
+      "kind": "historical_literal",
+      "group": "opera_site_entry",
+      "credit_behavior": "opera_site_entry",
+      "text_sha256": "17b74da9749d2392647680962b9c9dba81c0e493f14ab58ac89090e8aac8163a",
+      "criterion_sha256": "dea2d3e5be6ee97d431c27509876cdb640524a3c980f4cee4ea552a8dcd998c0"
+    },
+    {
+      "index": 1,
+      "case_id": "site1933-dev-01",
+      "kind": "original_development_variant",
+      "group": "opera_site_entry",
+      "credit_behavior": "opera_site_entry",
+      "text_sha256": "41833e62c764f76aaeeef27351f45d681dbfea455589d79ae908ebb941c62c6b",
+      "criterion_sha256": "dea2d3e5be6ee97d431c27509876cdb640524a3c980f4cee4ea552a8dcd998c0"
+    },
+    {
+      "index": 2,
+      "case_id": "site1933-dev-02",
+      "kind": "original_development_variant",
+      "group": "opera_site_entry",
+      "credit_behavior": "opera_site_entry",
+      "text_sha256": "536fbf9e82d197a8b20207a9bdbcbb18f72b878136ffbb20d80e51ffcc688906",
+      "criterion_sha256": "dea2d3e5be6ee97d431c27509876cdb640524a3c980f4cee4ea552a8dcd998c0"
+    },
+    {
+      "index": 3,
+      "case_id": "site1933-dev-03",
+      "kind": "original_development_variant",
+      "group": "opera_site_entry",
+      "credit_behavior": "opera_site_entry",
+      "text_sha256": "1e6bbeae016e86e0c996a7dfe61e9b985559203b585a9ac80035679a3e47cba3",
+      "criterion_sha256": "dea2d3e5be6ee97d431c27509876cdb640524a3c980f4cee4ea552a8dcd998c0"
+    },
+    {
+      "index": 4,
+      "case_id": "site1933-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "72805042a594f7e3d6ff339355a9f9ac7911f25575e2c3cdfdef2650c379893d",
+      "criterion_sha256": "031153cb155d4fd6216825f753dc315529c6a33cdc1329a8ed51b2593af70750"
+    },
+    {
+      "index": 5,
+      "case_id": "site1933-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "bc24898c6d653acc0303bda963f8edd69ad552c3e75140829c1ecc5b591f40cc",
+      "criterion_sha256": "50757e30c0886c9c9d6fe25617d31896c91ed2f486ced29f1b243a9954f5945b"
+    }
+  ]
+}

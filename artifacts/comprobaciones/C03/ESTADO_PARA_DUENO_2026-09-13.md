@@ -1,3 +1,25 @@
+## SITE1933 — estado vigente 2026-09-20T06:50:49.899208+00:00
+
+Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 724/742 | 18 | 0 | >=608 | 29/35 |
+
+Procedencia de primeras altas: Primeras altas documentadas 12–14 septiembre: 607 antes de esta tanda (ver CURRENT_CATEGORY_COUNTS); SITE1933 añade 1. No se cuentan revalidaciones.
+
+Siguiente acción: SITE1933: 6 ejecutados, 6 aprobados, 0 fallidos, 1 créditos (índices [0]). Siguiente: categoría por masa abierta según CONDICIONES.
+
+Evidencia: `artifacts/comprobaciones/C03/SITE1933/ROOT_ADJUDICATION.json`. Sin pruebas por instrucción expresa del dueño.
+
+Recursos de los segmentos: 169.98 s acumulados; pico GPU 3508.37 MiB; pico RAM 4072.05 MiB. El muestreo del árbol de procesos puede incluir descendientes ajenos a BAXY; no representa consumo exclusivo del modelo.
+
+Segmentos iniciados: 6; abortados antes de admisión: 0. Los abortos anteriores a la admisión no son fallos de producto ni literales ejecutados.
+
+---
+
+<!-- Historial anterior conservado; rige el bloque SITE1933 precedente. -->
+
 ## CHAIN1931 — estado vigente 2026-09-20T06:06:25.613379+00:00
 
 Parcial: 6 aprobados, 0 fallidos, 0 sin ejecutar; 1 créditos.

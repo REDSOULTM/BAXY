@@ -1,0 +1,293 @@
+commit d78f52256061630dfcf674a0b61de76f7c8f89bf
+
+C03: un sitio nombrado sin dominio se busca y se abre en el navegador nombrado
+
+«Toma control de mi pc, quiero que abras opera gx y entras a pivigames»
+quedó abierta en WEB1883/1885: el preámbulo ya no desviaba nada, pero el
+destino llega sin dominio, no había URL que fundamentar y el turno
+preguntaba «¿Quieres que abra Opera GX y entre en pivigames?» en vez de
+entrar. Un sitio de una sola palabra sin punto, con un navegador nombrado,
+se lee ahora como el destino simbólico: una búsqueda verificada con ese
+nombre y una navegación nombrada al primer resultado, la dependencia que la
+cadena de Opera GX ya fundamenta sin el modelo. El navegador sale de la
+misma lectura: «abras» no estaba entre los verbos que la lectura del
+navegador nombrado conocía, y el modelo volvía a escribir «opera».
+
+Dos cosas más, medidas con el turno delante:
+
+- El dominio de la navegación propuesta o alcanzada («pivigames.es») es un
+  nombre observado para los dos guardianes, la mente y la App; sin eso la
+  pregunta de confirmación moría tres veces en internal_code.
+- El final de una navegación sin lectura de página no describe la página
+  («puedo ver las últimas actualizaciones y categorías»), no la juzga segura,
+  no lista los resultados de la búsqueda y no nombra otro dominio que el
+  alcanzado; lo navegado a una página de resultados (Bing, YouTube) sigue
+  pudiendo decir «resultados».
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+
+
+diff --git a/src/Baxy.App/ObservedResponseLiterals.cs b/src/Baxy.App/ObservedResponseLiterals.cs
+index 6da73f468..720644841 100644
+--- a/src/Baxy.App/ObservedResponseLiterals.cs
++++ b/src/Baxy.App/ObservedResponseLiterals.cs
+@@ -110,6 +110,32 @@ internal static class ObservedResponseLiterals
+                 }
+             }
+         }
++        if (IsString(node, "kind", "confirmation")
++            && node.TryGetProperty("pendingAction", out JsonElement pendingAction) && pendingAction.ValueKind == JsonValueKind.Object
++            && pendingAction.TryGetProperty("arguments", out JsonElement pendingArguments) && pendingArguments.ValueKind == JsonValueKind.Object
++            && pendingArguments.TryGetProperty("url", out JsonElement pendingUrl) && pendingUrl.ValueKind == JsonValueKind.String
++            && Uri.TryCreate(pendingUrl.GetString(), UriKind.Absolute, out Uri? pendingUri)
++            && pendingUri.Host is { Length: > 0 } pendingHost)
++        {
++            // H0081 «quiero que abras opera gx y entras a pivigames» → «¿Quieres
++            // confirmar o cancelar que abra Opera GX y entre a pivigames.es?»: the
++            // host of the navigation proposed for confirmation is observed data
++            // (it came from the verified search), not a dotted operation name.
++            names.Add(pendingHost.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ? pendingHost[4..] : pendingHost);
++        }
++        if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
++            && (IsString(node, "operation", "browser.navigate") || IsString(node, "operation", "browser.navigate.named"))
++            && node.TryGetProperty("verified", out JsonElement navVerified) && navVerified.ValueKind == JsonValueKind.True
++            && node.TryGetProperty("succeeded", out JsonElement navSucceeded) && navSucceeded.ValueKind == JsonValueKind.True
++            && node.TryGetProperty("observed", out JsonElement navObserved) && navObserved.ValueKind == JsonValueKind.Object
++            && navObserved.TryGetProperty("finalUrl", out JsonElement finalUrl) && finalUrl.ValueKind == JsonValueKind.String
++            && Uri.TryCreate(finalUrl.GetString(), UriKind.Absolute, out Uri? finalUri)
++            && finalUri.Host is { Length: > 0 } finalHost)
++        {
++            // The host the browser actually reached («entré a pivigames.es») is
++            // observed data as much as a search result's host.
++            names.Add(finalHost.StartsWith("www.", StringComparison.OrdinalIgnoreCase) ? finalHost[4..] : finalHost);
++        }
+         if (IsString(node, "kind", "operation") && IsString(node, "polarity", "success")
+             && IsString(node, "operation", "notification.list")
+             && node.TryGetProperty("verified", out JsonElement notifVerified) && notifVerified.ValueKind == JsonValueKind.True
+diff --git a/src/baxy_mind/__main__.py b/src/baxy_mind/__main__.py
+index f10ebec50..9a66ed27d 100644
+--- a/src/baxy_mind/__main__.py
++++ b/src/baxy_mind/__main__.py
+@@ -796,6 +796,12 @@ def _verified_dependency_identity_arguments(
+         # escribió «opera» donde la persona dijo «Opera GX», y en este PC sólo
+         # está Opera GX: el navegador es del pedido y la URL de la búsqueda.
+         browser = effect_intent._named_browser(effect_intent._fold(objective))
++        named_site = effect_intent._named_browser_site_request(objective, application_names)
++        if named_site is not None:
++            # H0081 «quiero que abras opera gx y entras a pivigames»: «abras» is
++            # not one of the leading verbs the named-browser reader knows, and
++            # without the browser from the reader the model wrote «opera» again.
++            browser = named_site[0]
+         searches = [
+             observation["result"]
+             for observation in observations
+@@ -5349,6 +5355,11 @@ def _explicit_arguments_from_evidence(
+         destination = effect_intent._symbolic_web_destination(evidence)
+         if destination is not None:
+             return {"query": destination}
++        named_site = effect_intent._named_browser_site_request(evidence)
++        if named_site is not None:
++            # H0081 «abre opera gx y entra a pivigames»: the site name alone is
++            # the query; its URL is the first verified result.
++            return {"query": named_site[1]}
+         query = ""
+         search_evidence = re.split(
+             r"\s+(?:(?:y\s+)?(?:despu\S+s|luego)|and\s+then|then|afterwards)"
+diff --git a/src/baxy_mind/effect_intent.py b/src/baxy_mind/effect_intent.py
+index 9001e3377..db0bd0bb3 100644
+--- a/src/baxy_mind/effect_intent.py
++++ b/src/baxy_mind/effect_intent.py
+@@ -15348,6 +15348,76 @@ def _direct_public_search_query(text: str) -> str | None:
+     return query
+ 
+ 
++# H0081 «Toma control de mi pc, quiero que abras opera gx y entras a pivigames»
++# (WEB1883/1885 la dejaron abierta: el destino llega sin dominio, no hay URL que
++# fundamentar y el turno preguntaba «¿Quieres que abra Opera GX y entre en
++# pivigames?» en vez de entrar). Un sitio nombrado con una sola palabra sin
++# punto, en un navegador nombrado, se resuelve como el destino simbólico sin
++# navegador: la búsqueda verificada da la URL y la navegación nombrada la abre
++# (CHAIN1931 ya fundamenta browser.navigate.named con el primer resultado
++# verificado). Formas: «abre <navegador> y entra a <sitio>», «quiero que abras
++# <navegador> y entres a <sitio>», «entra a <sitio> en <navegador>», «open
++# <browser> and go to <site>». Un dominio, una URL, un nombre público cerrado
++# (youtube, gmail…) o una aplicación del catálogo no pasan por aquí.
++_NAMED_BROWSER_SITE_BROWSER = (
++    r"(?:el\s+|the\s+)?(?:navegador\s+|browser\s+)?"
++    r"(?P<browser>opera\s*gx|opera|google\s+chrome|chrome|microsoft\s+edge|edge|brave)"
++)
++_NAMED_BROWSER_SITE_ENTRY = (
++    r"(?:entr(?:a|as|e|es|ale|ate|ame)|entrar|ve|anda|andate|andá|navega|navegar|"
++    r"metete|meteme|llevame|go|navigate|take\s+me|head)\s+(?:a|al|to|en|into|over\s+to)\s+"
++    r"(?:la\s+pagina\s+(?:de\s+)?|the\s+(?:site|page)\s+(?:of\s+)?)?"
++    r"(?P<site>[a-z0-9][a-z0-9_-]{2,40})"
++)
++_NAMED_BROWSER_SITE_HEAD = (
++    r"^[¿?¡!\s]*(?:(?:por\s+favor|please)\s*[,;:]?\s*)?"
++    r"(?:(?:quiero|necesito|quisiera|i\s+want|i\s+need|i'd\s+like)\s+"
++    r"(?:que\s+|you\s+to\s+)?)?(?:me\s+)?"
++)
++_NAMED_BROWSER_SITE_REQUEST = re.compile(
++    _NAMED_BROWSER_SITE_HEAD
++    + r"(?:abr(?:e|i|as|is|ime|ir|a|an)|open|launch)\s+" + _NAMED_BROWSER_SITE_BROWSER
++    + r"\s*(?:,|;|\s+y\s+(?:luego\s+|despues\s+)?(?:que\s+)?|\s+and\s+(?:then\s+)?|\s+luego\s+|\s+then\s+)\s*"
++    + _NAMED_BROWSER_SITE_ENTRY + r"[\s.!?]*$"
++    + r"|" + _NAMED_BROWSER_SITE_HEAD + _NAMED_BROWSER_SITE_ENTRY.replace("(?P<site>", "(?P<site2>")
++    + r"\s+(?:en|in|con|with|usando|using)\s+" + _NAMED_BROWSER_SITE_BROWSER.replace("(?P<browser>", "(?P<browser2>")
++    + r"[\s.!?]*$",
++    re.IGNORECASE,
++)
++
++
++def _named_browser_site_request(
++    text: str,
++    application_names: Iterable[str] | ApplicationCatalogIndex = (),
++) -> tuple[str, str] | None:
++    """(browser, bare site name) for «abre <navegador> y entra a <sitio>», else None."""
++
++    folded = _fold(without_control_cession_preamble(text))
++    found = _NAMED_BROWSER_SITE_REQUEST.fullmatch(folded.strip())
++    if found is None:
++        return None
++    site = found.group("site") or found.group("site2") or ""
++    browser_name = found.group("browser") or found.group("browser2") or ""
++    browser = _named_browser("in " + browser_name)
++    if (
++        browser not in NAMED_CDP_BROWSERS
++        or explicit_non_action_frame(text)
++        or _is_negated_match(folded, found)
++        or _is_meta_or_tool_denial(folded)
++        or _is_past_or_hypothetical_state(folded)
++        or _has_contradictory_correction(folded)
++        or not effect_request_is_authoritative(text)
++        or re.fullmatch(_NAMED_PUBLIC_SITE, site) is not None
++        or resolve_application_catalog_app_id(site, application_names) is not None
++        or _has(site, r"^(?:la|el|the|un|una|a|mi|my|este|esta|ese|esa|this|that|eso|it|"
++                r"alli|ahi|there|aqui|here|internet|web|google|bing|configuracion|settings|"
++                r"ajustes|opciones|options|archivo|archivos|file|files|carpeta|folder|"
++                r"escritorio|desktop|descargas|downloads|documentos|documents)$")
++    ):
++        return None
++    return browser, site
++
++
+ def _named_browser_search(text: str) -> tuple[str, str] | None:
+     """Bind a public query and browser within one complete current request."""
+ 
+@@ -18154,6 +18224,13 @@ def resolve_explicit_effects(
+         return EffectIntent(("browser.navigate.named",), (text,))
+     if "browser.navigate.named" in available and _named_browser_search(text) is not None:
+         return EffectIntent(("browser.navigate.named",), (text,))
++    if (
++        {"web.search", "browser.navigate.named"} <= available
++        and _named_browser_site_request(text, authenticated_applications) is not None
++    ):
++        # H0081: the bare site name is looked up by the verified search and the
++        # named browser opens its first result (the CHAIN1931 dependency).
++        return EffectIntent(("web.search", "browser.navigate.named"), (text, text))
+     if (
+         "app.installed" in available
+         and unresolved_application_open_name(text, authenticated_applications) is not None
+diff --git a/src/baxy_mind/llm.py b/src/baxy_mind/llm.py
+index c892a9ad9..103a40d12 100644
+--- a/src/baxy_mind/llm.py
++++ b/src/baxy_mind/llm.py
+@@ -8478,6 +8478,52 @@ def compose_visible_defect(
+             )
+         ):
+             return "invented_capture_location"
++        # H0081 «quiero que abras opera gx y entras a pivigames»: la navegación
++        # verificada da el navegador y la dirección final, nada más. El borrador
++        # decía «el sitio está disponible y puedo ver las últimas actualizaciones
++        # y categorías de juegos… no he podido verificar si es seguro»: contenido
++        # que nadie leyó (no hubo lectura de página) y juicios que el recibo no
++        # da. Se veta la descripción del contenido, no el nombre del sitio.
++        _navigation_steps = [
++            step for step in _situation_steps(situation)
++            if step.get("operation") in {"browser.navigate", "browser.navigate.named"}
++        ] or ([situation] if operation in {"browser.navigate", "browser.navigate.named"} else [])
++        _page_read = any(
++            step.get("operation") in {"browser.page.read", "ocr.read", "vision.describe"}
++            for step in _situation_steps(situation)
++        ) or operation in {"browser.page.read", "ocr.read", "vision.describe"}
++        if _navigation_steps and not _page_read and re.search(
++            r"\b(?:puedo ver|veo|se ven?|muestra|aparecen?|contenido|disponible|actualizaciones|categor[ií]as|seguro|segura|seguridad|confiable|fiable|verificar|virus|i can see|i see|shows|showed|content|available|safe|safety|reliable|trustworthy|verify|verified)\b",
++            folded,
++        ):
++            return "navigation_content_claim"
++        if _navigation_steps and not _page_read:
++            # La variante inglesa listaba los resultados de la búsqueda («a YouTube
++            # channel, a related site (pivigamers.com), a Reddit discussion…»): la
++            # búsqueda fue el medio para dar con la dirección, no lo pedido. Salvo
++            # que lo navegado sea una página de resultados (WEB1481/1885), ni
++            # «resultados» ni ningún otro dominio que el alcanzado.
++            _reached_hosts = set()
++            for step in _navigation_steps:
++                for key in ("finalUrl", "requestedUrl"):
++                    value = (step.get("observed") or {}).get(key) if step is not situation else observed_dict.get(key)
++                    if isinstance(value, str) and value:
++                        host = (urlparse(value).hostname or "").casefold()
++                        if host:
++                            _reached_hosts.add(host[4:] if host.startswith("www.") else host)
++            _results_page = any(
++                host.endswith(("bing.com", "youtube.com", "duckduckgo.com", "google.com"))
++                for host in _reached_hosts
++            )
++            if _reached_hosts and not _results_page:
++                if re.search(r"\b(?:resultados?|results?)\b", folded):
++                    return "navigation_content_claim"
++                for host in re.findall(
++                    r"(?<![\w@.-])(?:https?://)?(?:www\.)?((?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63})(?![\w-])",
++                    folded,
++                ):
++                    if host.casefold() not in _reached_hosts:
++                        return "wrong_address"
+         if (
+             operation == "streaming.play.named"
+             and isinstance(observed_dict.get("observedProgressSeconds"), (int, float))
+@@ -16513,6 +16559,11 @@ class LlmRuntime:
+                     if response_language == "en"
+                     else "Los únicos números que puedes decir son seen.count (entradas en total), seen.fileCount, seen.folderCount y seen.moreNotShown; no inventes otras cifras."
+                 ),
++                "navigation_content_claim": (
++                    "You only opened the site in the named browser: say, in the past, which browser you opened and which site you reached (seen.finalUrl's host); do not describe what the page shows, whether it is available, safe or reliable, and do not mention the search results."
++                    if response_language == "en"
++                    else "Sólo abriste el sitio en el navegador nombrado: di, en pasado, qué navegador abriste y a qué sitio entraste (el dominio de seen.finalUrl); no describas lo que muestra la página, ni si está disponible, ni si es segura o confiable, y no menciones los resultados de la búsqueda."
++                ),
+                 "invented_capture_location": (
+                     "Keep every step you did, in order (what you opened, what you searched, the screenshot, what you closed), and say that the screenshot was not saved to the desktop (the receipt gives no path); do not name any other place."
+                     if response_language == "en"
+diff --git a/src/baxy_mind/observed_response_literals.py b/src/baxy_mind/observed_response_literals.py
+index 9bb5e700e..451923d6f 100644
+--- a/src/baxy_mind/observed_response_literals.py
++++ b/src/baxy_mind/observed_response_literals.py
+@@ -62,6 +62,29 @@ def without_observed_names(text: str, situation: object) -> str:
+                         host = re.match(r"^(?:https?://)?(?:www\.)?([^/?#]+)", url)
+                         if host and 0 < len(host.group(1)) <= 253:
+                             names.add(host.group(1))
++        if node.get("kind") == "confirmation":
++            # H0081 «quiero que abras opera gx y entras a pivigames» → «¿Quieres
++            # confirmar o cancelar que abra Opera GX y entre a pivigames.es?»: the
++            # host of the navigation proposed for confirmation is observed data
++            # (it came from the verified search), not a dotted operation name.
++            pending = node.get("pendingAction")
++            arguments = pending.get("arguments") if isinstance(pending, dict) else None
++            url = arguments.get("url") if isinstance(arguments, dict) else None
++            if isinstance(url, str):
++                host = re.match(r"^(?:https?://)?(?:www\.)?([^/?#]+)", url)
++                if host and 0 < len(host.group(1)) <= 253:
++                    names.add(host.group(1))
++        if (node.get("kind") == "operation" and operation in {"browser.navigate", "browser.navigate.named"}
++                and node.get("verified") is True and node.get("succeeded") is True
++                and node.get("polarity") == "success"):
++            # The host the browser actually reached («entré a pivigames.es») is
++            # observed data as much as a search result's host.
++            observed = node.get("observed")
++            url = observed.get("finalUrl") if isinstance(observed, dict) else None
++            if isinstance(url, str):
++                host = re.match(r"^(?:https?://)?(?:www\.)?([^/?#]+)", url)
++                if host and 0 < len(host.group(1)) <= 253:
++                    names.add(host.group(1))
+         if (node.get("kind") == "operation" and operation in {"message.send.test", "message.draft"}
+                 and node.get("verified") is True and node.get("succeeded") is True
+                 and node.get("polarity") == "success"):

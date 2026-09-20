@@ -1,0 +1,15 @@
+{
+  "schema": "c03-site1933-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/baxy_mind/effect_intent.py (a bare site name with a named browser resolves to web.search + browser.navigate.named), src/baxy_mind/__main__.py (the site name is the query; the browser comes from the reader), src/baxy_mind/observed_response_literals.py and src/Baxy.App/ObservedResponseLiterals.cs (the host of a proposed or reached navigation is observed data), src/baxy_mind/llm.py (a navigation final without a page read describes no content, names no other host and lists no results), on top of the SITE1933 build.",
+  "patch": "artifacts/comprobaciones/C03/SITE1933/SOURCE.patch",
+  "commits": [
+    "d78f52256061630dfcf674a0b61de76f7c8f89bf"
+  ],
+  "build": "BUILD1933 (C03-repairs1933-build/BUILD_READY.json; mente y App)",
+  "cause_measured": "Un sitio nombrado sin dominio no daba URL que fundamentar; el turno preguntaba si abrir en vez de entrar, y el dominio del resultado era jerga para los guardianes.",
+  "change": "El sitio se busca y se abre en el navegador nombrado con la dependencia verificada; el dominio propuesto o alcanzado es nombre observado; el final no describe la página.",
+  "measurement": "SITE1933: 6 ejecutados, 6 aprobados, 0 fallidos; 1 créditos. Cada caso revisado propuso una navegación nombrada al primer resultado de la búsqueda verificada de «pivigames» y recibió la aprobación de la raíz (approved_1_of_1); Opera GX del dueño cerrada antes de cada caso con su autorización; navegador observado opera_gx y dirección final https://pivigames.es/ en los cuatro; finales en pasado que nombran el navegador y el sitio sin describir la página; límites con cero operaciones. Corrida sobre BUILD1933 (HEAD d78f522).",
+  "credits": 1
+}
