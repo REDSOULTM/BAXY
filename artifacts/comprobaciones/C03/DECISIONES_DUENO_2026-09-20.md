@@ -98,3 +98,11 @@ BAXY; por RAM no falta ahora.»
 Modelo Qwen3-4B local; 4 GB de VRAM; guarda de 4000 MiB libres (autorizado cerrar para liberar RAM);
 método de tandas selladas y adjudicación honesta; cien tras cada cambio de mente/App; escritor único del
 registro; sin respuestas visibles fijas; no publicar textos privados; nunca inventar un efecto.
+
+## D21 — Computer use general, no una operación por fila
+«Las misiones como Discord, pestañas, Steam, comandos… que son computer use, realmente se deben resolver de manera
+general: no al 100 % para eso, sino generalizar para que BAXY pueda hacer casi cualquier cosa en el PC mediante sus
+tools + computer use.»
+Lectura: el plan construye un motor general (ver → decidir → actuar → verificar, en bucle, sobre cualquier ventana)
+y usa las 35 filas reabiertas como banco de aceptación; sólo se añade una herramienta tipada cuando Windows ofrece una
+verificación mejor que la pantalla (ficheros, registro, manifiestos, COM, radios).
