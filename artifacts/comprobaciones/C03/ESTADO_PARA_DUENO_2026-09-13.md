@@ -1,3 +1,15 @@
+## REOPEN1957 — estado vigente 2026-09-20T20:16:13.282023+00:00
+
+Reapertura por decisión del dueño (artifacts/comprobaciones/C03/DECISIONES_DUENO_2026-09-20.md, D1 «la encuesta es la especificación» y D11): 35 filas positivas acreditadas como lectura de biblioteca (Steam: 20), límite conocido (pulsar en app, zip, modo avión, comandos, fondo, PowerPoint, imágenes: 11), parada honesta (canal de Discord: 2), cierre en el navegador propio (pestañas: 1) o límite honesto (leer chats: 2) vuelven a abiertas: H0039, H0048, H0049, H0069, H0077, H0083, H0107, H0118, H0175, H0188, H0245, H0272, H0290, H0295, H0345, H0382, H0387, H0390, H0396, H0434, H0444, H0459, H0482, H0510, H0542, H0566, H0608, H0612, H0636, H0643, H0659, H0671, H0680, H0720, H0721. Ningún crédito nuevo; la evidencia previa queda en reopen_history.
+
+| Cubiertos | Abiertos | No aplican | Primeras altas últimas 24 h | Categorías cerradas |
+|---:|---:|---:|---:|---:|
+| 707/742 | 35 | 0 | >=626 | 23/35 |
+
+Procedencia de primeras altas: sin cambio (las altas ya otorgadas no se descuentan); la cobertura baja en 35. Por categoría: Abrir aplicaciones 52/54 (−2); Archivos y carpetas 31/32 (−1); Brillo y pantalla 16/17 (−1); Conversación social y ayuda general 30/31 (−1); Crear documentos y editar imágenes 1/2 (−1); Desarrollo y ejecución de comandos 3/5 (−2); Instalar y desinstalar software 13/31 (−18); Interacción dentro de aplicaciones 18/22 (−4); Mensajería 29/31 (−2); Navegación y búsqueda web 45/46 (−1); Organizar ventanas y pestañas 12/13 (−1); Red y Bluetooth 20/21 (−1).
+
+Siguiente acción: auditoría semántica (PREGUNTAR al dueño, una vez) → Fase 4 motor general de computer use (D21, tanda CU1959) → Fase 5: las 35 filas como banco de aceptación del motor (DISCORD1961, TABS1963, PRESS1965, STEAM1967/1969/1971/1973, CHAIN1975, NET1977, SHELL1979, DESKTOP1981, CHATREAD1983, WEB1985), una tanda sellada por capacidad; cien tras cada cambio de mente/App.
+
 ## VIDEO1955 — estado vigente 2026-09-20T14:33:44.346889+00:00
 
 Parcial: 8 aprobados, 0 fallidos, 0 sin ejecutar; 4 créditos.
