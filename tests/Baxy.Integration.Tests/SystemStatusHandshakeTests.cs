@@ -51,10 +51,11 @@ public sealed class SystemStatusHandshakeTests
         Assert.Multiple(() =>
         {
             // 170 → 191 descriptores (21 operaciones de C03; plan post-goal 2026-09-20, Fase 1 grupo B)
-            // → 196 (weather.current, web.news.headlines, package.uninstall, shell.command.run y game.uninstall.named; auditoría semántica REOPEN1993).
-            Assert.That(ProductCatalog.Descriptors, Has.Count.EqualTo(196));
-            Assert.That(ProductCatalog.ToolDescriptors, Has.Count.EqualTo(195));
-            Assert.That(complete.Capabilities, Has.Count.EqualTo(195));
+            // → 200 (nueve herramientas tipadas de la auditoría semántica REOPEN1957/1993: clima, noticias,
+            // winget, comandos, Steam desinstalar, zip, abrir archivo, fondo de escritorio, descarga web).
+            Assert.That(ProductCatalog.Descriptors, Has.Count.EqualTo(200));
+            Assert.That(ProductCatalog.ToolDescriptors, Has.Count.EqualTo(199));
+            Assert.That(complete.Capabilities, Has.Count.EqualTo(199));
             Assert.That(
                 complete.Capabilities.Select(static capability => capability.Name),
                 Does.Not.Contain("app.status"));

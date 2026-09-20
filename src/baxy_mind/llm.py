@@ -3544,6 +3544,25 @@ _CAUSE_FACT = {
     "visible_button_not_found": (
         "nothing on the screen is called that, so nothing was pressed"
     ),
+    # REOPEN1957 H0542/H0459/H0077: the file tools name their own absences.
+    "zip_already_exists": ("a zip with that name already exists there, so nothing was compressed"),
+    "zip_create_failed": ("the zip could not be created, so nothing was compressed"),
+    "zip_postread_failed": ("the zip was written but could not be read back, so the compression is not confirmed"),
+    "file_not_found": ("no file or folder with that name is in that folder, so nothing was done"),
+    "file_name_invalid": ("that name is not a plain file name, so nothing was done"),
+    "file_extension_not_openable": ("that kind of file is not opened from here, so it stays closed"),
+    "file_open_dispatch_rejected": ("Windows did not open the file, so nothing appeared"),
+    "file_open_not_verified": ("the file was sent to its application but no window or process appeared, so the opening is not confirmed"),
+    "wallpaper_color_unknown": ("that colour is not one the desktop can be set to from here, so the background was not changed"),
+    "wallpaper_file_not_an_image": ("that file is not an image, so the background was not changed"),
+    "wallpaper_set_failed": ("Windows did not accept the new background, so it was not changed"),
+    "wallpaper_postread_failed": ("after the change the desktop does not show the requested background, so the change is not confirmed"),
+    "download_url_invalid": ("that is not a web address that can be downloaded, so nothing was saved"),
+    "download_source_unavailable": ("the address did not answer, so nothing was saved"),
+    "download_page_without_image": ("that page announces no cover image, so nothing was saved"),
+    "download_too_large": ("that file is larger than the 50 MB this download allows, so nothing was saved"),
+    "download_empty": ("the address returned an empty file, so nothing was saved"),
+    "download_write_failed": ("the file could not be written in that folder, so nothing was saved"),
     # REOPEN1957 H0107: airplane mode over the radios names its own absences.
     "airplane_mode_radio_access_denied": (
         "Windows did not grant access to the radios, so airplane mode was not changed"
@@ -6808,6 +6827,15 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     game_defect = _game_library_fact_defect(text, payload)
     if game_defect:
         return game_defect
+    if payload.get("operation") in {"file.compress", "file.open", "desktop.wallpaper.set", "web.download"} and isinstance(seen, dict):
+        # REOPEN1957 H0542/H0459/H0077: the reply names what the postread saw.
+        named = [str(seen.get(key)) for key in ("zipName", "name", "color") if isinstance(seen.get(key), str) and seen.get(key)]
+        if named and not any(_reading_fold(value) in folded for value in named):
+            return "missing_state"
+        observed_numbers = {str(seen.get(key)) for key in ("entryCount", "bytes") if isinstance(seen.get(key), int)}
+        for number in re.findall(r"(?<![\w.,])\d{2,}(?![\w.,])", text):
+            if number not in observed_numbers:
+                return "invented_number"
     if (
         payload.get("operation") in {"system.settings.set", "system.settings.status"}
         and isinstance(seen, dict)
@@ -15786,6 +15814,23 @@ class LlmRuntime:
                 "en una oración, la operación y su resultado tal como se muestra (por "
                 "ejemplo que seis por siete da 42 en la Calculadora), usando sólo esos "
                 "números; no se hizo nada más."
+            )
+        if visible_situation.get("operation") in {"file.compress", "file.open", "desktop.wallpaper.set", "web.download"} and isinstance(visible_situation.get("seen"), dict):
+            # REOPEN1957 H0542/H0459/H0077: each file tool leaves its own
+            # postread; the reply names the file, folder, colour or address seen.
+            instruct(
+                "\nseen is the postread of a file tool: file.compress gives zipName, entryCount and "
+                "bytes in seen.folder; file.open gives name and the windowTitle or processId that "
+                "appeared; desktop.wallpaper.set gives mode (solid_color with color, or picture with "
+                "name); web.download gives name, bytes, folder and sourceUrl. Say what was done in one "
+                "or two short sentences with those exact names; no sizes unless present; nothing else "
+                "was changed."
+                if response_language == "en"
+                else "\nseen es la postlectura de una herramienta de archivos: file.compress da zipName, "
+                "entryCount y bytes en seen.folder; file.open da name y el windowTitle o processId que "
+                "apareció; desktop.wallpaper.set da mode (solid_color con color, o picture con name); "
+                "web.download da name, bytes, folder y sourceUrl. Di qué se hizo en una o dos oraciones "
+                "cortas con esos nombres exactos; sin tamaños que no estén; no se cambió nada más."
             )
         if (
             visible_situation.get("operation") in {"system.settings.set", "system.settings.status"}

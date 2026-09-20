@@ -332,6 +332,23 @@ public static class ProductCatalog
             "clipboard.write.text.sequence.postread.v1",
             ToolExposure.Public,
             "Reemplaza texto del portapapeles y verifica contenido y secuencia mediante postlectura."),
+        // Auditoría semántica 2026-09-20 (REOPEN1957 H0459 «cambiá el fondo de
+        // pantalla a azul», D11): un color liso o una imagen de una carpeta conocida
+        // como fondo de escritorio, verificado por la postlectura del sistema; el
+        // recibo guarda el fondo anterior para restaurarlo.
+        Descriptor(
+            "desktop.wallpaper.set",
+            Schema(
+                [
+                    String("color", types: NullableString, maximumUtf8Bytes: 32),
+                    String("folder", types: NullableString, values: ["desktop", "documents", "downloads", "pictures"]),
+                    String("name", types: NullableString, maximumUtf8Bytes: 200),
+                ],
+                []),
+            OperationRisks.LowReversible,
+            "desktop.wallpaper.set.spi.registry.postread.v1",
+            ToolExposure.Public,
+            "Cambia el fondo de escritorio a un color liso nombrado o a una imagen de una carpeta conocida y verifica la postlectura del sistema; devuelve el fondo anterior."),
         Descriptor(
             "display.status",
             EmptySchema(),
@@ -366,6 +383,34 @@ public static class ProductCatalog
             "email.latest.reply.outlook.sent.postread.v1",
             ToolExposure.Public,
             "Responde al mensaje mas reciente de Outlook y verifica la copia enviada por contenido y hora."),
+        // Auditoría semántica 2026-09-20 (REOPEN1957 H0542 «… comprímela y luego abre
+        // el zip», D11): comprimir un archivo o carpeta de una carpeta conocida a un
+        // zip al lado, verificado abriendo el zip; y abrir por nombre un archivo seguro
+        // de una carpeta conocida, verificado por la ventana o el proceso que aparece.
+        Descriptor(
+            "file.compress",
+            Schema(
+                [
+                    String("folder", values: ["desktop", "documents", "downloads", "pictures"]),
+                    String("name", maximumUtf8Bytes: 200, nonWhitespace: true),
+                ],
+                ["folder", "name"]),
+            OperationRisks.LowReversible,
+            "file.compress.zip.archive.postread.v1",
+            ToolExposure.Public,
+            "Comprime un archivo o una carpeta de una carpeta conocida en un zip con el mismo nombre al lado y verifica que el zip existe y tiene entradas."),
+        Descriptor(
+            "file.open",
+            Schema(
+                [
+                    String("folder", values: ["desktop", "documents", "downloads", "pictures"]),
+                    String("name", maximumUtf8Bytes: 200, nonWhitespace: true),
+                ],
+                ["folder", "name"]),
+            OperationRisks.LowReversible,
+            "file.open.shell.window.process.postread.v1",
+            ToolExposure.Public,
+            "Abre por nombre un archivo seguro de una carpeta conocida con su aplicación predeterminada y verifica la ventana o el proceso que aparece."),
         Descriptor(
             "filesystem.copy",
             FilesystemTransferSchema(),
@@ -1726,6 +1771,23 @@ public static class ProductCatalog
         // Auditoría semántica 2026-09-20 (REOPEN1993, grupo N): la encuesta pide las
         // noticias, no nombres de portales. Titulares del día o de un tema nombrado
         // desde un canal RSS público, cada uno con su medio y su hora.
+        // Auditoría semántica 2026-09-20 (REOPEN1957 H0077 «descarga la imagen de
+        // portada de wikipedia.org y guardala en el escritorio», H0069; D11): bajar un
+        // archivo o imagen de una dirección a una carpeta conocida, verificado por el
+        // tamaño del archivo escrito; una página entrega la imagen que ella misma anuncia.
+        Descriptor(
+            "web.download",
+            Schema(
+                [
+                    String("folder", types: NullableString, values: ["desktop", "documents", "downloads", "pictures"]),
+                    String("name", types: NullableString, maximumUtf8Bytes: 200),
+                    String("url", maximumUtf8Bytes: 2_048, nonWhitespace: true),
+                ],
+                ["url"]),
+            OperationRisks.PrivacySensitive,
+            "web.download.http.file.size.postread.v1",
+            ToolExposure.Public,
+            "Descarga un archivo o una imagen de una dirección web a una carpeta conocida (Descargas si no se nombra) y verifica el archivo escrito; de una página descarga la imagen de portada que la página anuncia."),
         Descriptor(
             "web.news.headlines",
             Schema(

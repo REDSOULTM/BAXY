@@ -5313,6 +5313,19 @@ def _explicit_arguments_from_evidence(
             if folder_word else "all_known",
         }
 
+    zip_mission_folder = effect_intent.folder_txt_zip_open_mission(evidence)
+    if zip_mission_folder is not None and operation in {"filesystem.create.directory", "filesystem.write.text", "file.compress", "file.open"}:
+        # REOPEN1957 H0542: Windows' own default names for the unnamed folder and file.
+        folder_name = effect_intent._ZIP_MISSION_FOLDER
+        file_name = effect_intent._ZIP_MISSION_FILE
+        if operation == "filesystem.create.directory":
+            return {"folder": zip_mission_folder, "relativePath": folder_name}
+        if operation == "filesystem.write.text":
+            return {"folder": zip_mission_folder, "relativePath": folder_name + "/" + file_name, "text": "", "expectedSha256": None}
+        if operation == "file.compress":
+            return {"folder": zip_mission_folder, "name": folder_name}
+        return {"folder": zip_mission_folder, "name": folder_name + ".zip"}
+
     if operation == "filesystem.create.directory":
         # «crea una carpeta llamada CarterTest en el escritorio»: the name is
         # the person's, the folder is a catalog root (owner decision, point 2).
@@ -5990,6 +6003,26 @@ def _explicit_arguments_from_evidence(
                 if installed is not None:
                     return {"title": installed, "store": "steam"}
 
+    if operation == "file.compress":
+        compress = effect_intent.compress_named_request(evidence)
+        if compress is not None:
+            return {"folder": compress[0], "name": compress[1]}
+
+    if operation == "file.open":
+        opened = effect_intent.open_named_file_request(evidence)
+        if opened is not None:
+            return {"folder": opened[0], "name": opened[1]}
+
+    if operation == "desktop.wallpaper.set":
+        wallpaper = effect_intent.wallpaper_request(evidence)
+        if wallpaper is not None:
+            return dict(wallpaper)
+
+    if operation == "web.download":
+        download = effect_intent.web_download_request(evidence)
+        if download is not None:
+            return dict(download)
+
     if operation == "shell.command.run":
         shell = effect_intent.shell_command_request(evidence)
         if shell is not None:
@@ -6250,6 +6283,13 @@ def _ground_explicit_arguments(
             )
     if explicit is None:
         return None
+    if (
+        operation in {"filesystem.create.directory", "filesystem.write.text", "file.compress", "file.open"}
+        and effect_intent.folder_txt_zip_open_mission(evidence) is not None
+    ):
+        # REOPEN1957 H0542: the unnamed folder and file take Windows' default
+        # names, which the person never spelled.
+        return explicit if validate_json_schema_instance(explicit, schema) else None
     if operation == "web.search" and explicit.get("query") == _todays_news_query(evidence):
         # WEB1451 «qué pasó hoy en el mundo»: the news reader supplies the
         # word «noticias»; the scope words are the person's own.
@@ -6331,11 +6371,15 @@ def _ground_explicit_arguments(
         "game.launch",
         # REOPEN1993 grupo G/N/W: the readers own the package name (catalog
         # name or the person's), the news topic and the weather place.
+        "desktop.wallpaper.set",
+        "file.compress",
+        "file.open",
         "game.install.named",
         "game.uninstall.named",
         "package.install.prepare",
         "package.uninstall",
         "shell.command.run",
+        "web.download",
         "web.news.headlines",
         "weather.current",
         "media.control",

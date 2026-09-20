@@ -116,6 +116,9 @@ internal static class Goal05CatalogObservation
                 or "software.python.package.status" or "notification.list" => Unverifiable(
                 descriptor,
                 "Lecturas de dispositivos, unidades, registro PEP 514, pip o Programador de tareas del usuario; verificadas en su tanda por doble lectura, no recorridas aquí para no inventariar la máquina del usuario."),
+            "file.compress" or "file.open" or "desktop.wallpaper.set" or "web.download" => Unverifiable(
+                descriptor,
+                "Escribiría un zip, abriría un archivo, cambiaría el fondo del escritorio o guardaría una descarga en las carpetas del usuario (REOPEN1957 H0542/H0459/H0077); no restaurable desde esta matriz."),
             "game.uninstall.named" => Unverifiable(
                 descriptor,
                 "Desinstalaría un juego instalado del usuario por la consola de Steam y verificaría la ausencia de su manifiesto (REOPEN1993 grupo S); no restaurable desde esta sesión."),

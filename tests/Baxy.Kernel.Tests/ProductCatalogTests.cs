@@ -41,14 +41,18 @@ public sealed class ProductCatalogTests
     // encuesta pedía y el catálogo no tenía.
     internal static readonly string[] Reopen1993CatalogAdditions =
     [
+        "desktop.wallpaper.set",
+        "file.compress",
+        "file.open",
         "game.uninstall.named",
         "package.uninstall",
         "shell.command.run",
         "weather.current",
+        "web.download",
         "web.news.headlines",
     ];
 
-    internal const int ExpectedDescriptors = 170 + 21 + 5;
+    internal const int ExpectedDescriptors = 170 + 21 + 9;
 
     internal const int ExpectedTools = ExpectedDescriptors - 1;
 

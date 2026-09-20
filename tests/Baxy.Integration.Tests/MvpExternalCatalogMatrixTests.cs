@@ -33,8 +33,8 @@ public sealed class MvpExternalCatalogMatrixTests
         "wifi.scan",
     ];
 
-    // + weather.current, web.news.headlines, package.uninstall, shell.command.run y game.uninstall.named (auditoría semántica REOPEN1993).
-    private const int ExpectedExternalHandlers = 85 + 17 + 5;
+    // + las nueve herramientas tipadas de la auditoría semántica REOPEN1957/1993.
+    private const int ExpectedExternalHandlers = 85 + 17 + 9;
     private static readonly JsonSerializerOptions EvidenceJsonOptions = new()
     {
         WriteIndented = true,

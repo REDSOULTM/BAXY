@@ -2438,6 +2438,14 @@ def _curated_domain_is_grounded(
         )
     if operation == "shell.command.run":
         return shell_command_request(text) is not None
+    if operation == "file.compress":
+        return compress_named_request(text) is not None or folder_txt_zip_open_mission(text) is not None
+    if operation == "file.open":
+        return open_named_file_request(text) is not None or folder_txt_zip_open_mission(text) is not None
+    if operation == "desktop.wallpaper.set":
+        return wallpaper_request(text) is not None
+    if operation == "web.download":
+        return web_download_request(text) is not None
     if operation == "game.install.named":
         return steam_library_verb(text) == "install"
     if operation == "game.uninstall.named":
@@ -3401,7 +3409,8 @@ def known_unsupported_effect_request(
                 r"|\b(?:un|el|la|the|a)\s+zip\b"
                 r"|\.zip\b",
             ),
-            {"archive.create", "archive.extract"},
+            # REOPEN1957 H0542: file.compress and file.open now serve it.
+            {"file.compress", "file.open"},
         ),
         (
             # LIMITS1683 H0302 «qué redes wifi hay»: saved profiles and the current
@@ -17085,6 +17094,137 @@ def airplane_mode_question(text: str) -> bool:
     )
 
 
+_ZIP_MISSION_FOLDER = "Nueva carpeta"
+_ZIP_MISSION_FILE = "Nuevo documento de texto.txt"
+
+
+def folder_txt_zip_open_mission(text: str) -> str | None:
+    """REOPEN1957 H0542 «Crea una carpeta en el escritorio, mete un txt dentro,
+    comprímela y luego abre el zip»: the known folder of a four-step mission
+    (create the folder, put a text file in it, zip it, open the zip). The
+    folder and the file are unnamed, so they take Windows' own default
+    names («Nueva carpeta», «Nuevo documento de texto.txt»)."""
+
+    folded = _strip_request_envelope(_fold(text)).strip()
+    if _is_negative_effect_clause(folded):
+        return None
+    match = re.search(
+        rf"\b(?:crea|crear|creame|create|make|haz|hace)\s+(?:una\s+|a\s+)?(?:carpeta|folder|directorio|directory)"
+        rf"(?:\s+(?:nueva|new))?\s+(?:en|on|in)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS})\b",
+        folded,
+    )
+    if match is None:
+        return None
+    if not _has(folded, r"\b(?:mete|meter|pone|pon|poner|crea|crear|guarda|put|add|create)\b.{0,20}\b(?:txt|archivo\s+de\s+texto|text\s+file|archivo\s+txt)\b"):
+        return None
+    if not _has(folded, r"\b(?:comprim\w+|zip\w*|compress\w*)\b"):
+        return None
+    if not _has(folded, r"\b(?:abre|abri|abrir|abrilo|abrila|open)\b.{0,12}\b(?:zip|comprimid[oa]|archive)\b"):
+        return None
+    return _KNOWN_FOLDER_ENUM.get(match.group("folder"))
+
+
+def compress_named_request(text: str) -> tuple[str, str] | None:
+    """«comprimí la carpeta Fotos del escritorio», «zip the file informe.pdf in
+    documents» → (known folder, name). Unnamed targets abstain."""
+
+    raw = _strip_request_envelope(str(text).strip()).rstrip(".!?")
+    folded = _fold(raw)
+    if _is_negative_effect_clause(folded) or folder_txt_zip_open_mission(text) is not None:
+        return None
+    match = re.match(
+        rf"^[¿?¡!\s]*(?:comprim[eií](?:me|la|lo)?|comprimir|zip(?:ea|pea)?(?:me)?|compress)\s+"
+        rf"(?:(?:la|el|the|a)\s+)?(?:(?:carpeta|folder|directorio|archivo|file|fichero)\s+)?"
+        rf"(?P<name>[^\s/\\:*?\"<>|]+(?:\s+[^\s/\\:*?\"<>|]+){{0,4}}?)\s+"
+        rf"(?:del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}|imagenes|pictures)\b",
+        raw,
+        re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    folder = _KNOWN_FOLDER_ENUM.get(_fold(match.group("folder")), "pictures")
+    name = match.group("name").strip()
+    return (folder, name) if name and not _has(_fold(name), r"^(?:todo|todos|todas|eso|esto|it|this|that|all)$") else None
+
+
+def open_named_file_request(text: str) -> tuple[str, str] | None:
+    """«abre el zip Nueva carpeta.zip del escritorio», «abrí informe.pdf de
+    documentos» → (known folder, file name with extension)."""
+
+    raw = _strip_request_envelope(str(text).strip()).rstrip(".!?")
+    folded = _fold(raw)
+    if _is_negative_effect_clause(folded) or folder_txt_zip_open_mission(text) is not None:
+        return None
+    match = re.match(
+        rf"^[¿?¡!\s]*(?:abr[eií](?:me|lo|la)?|abrir|open)\s+"
+        rf"(?:(?:el|la|the|a)\s+)?(?:(?:archivo|file|fichero|zip|pdf|documento|document|imagen|image|foto|photo)\s+)?"
+        rf"(?P<name>[^\s/\\:*?\"<>|]+(?:\s+[^\s/\\:*?\"<>|]+){{0,4}}?\.[a-z0-9]{{1,5}})\s+"
+        rf"(?:del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}|imagenes|pictures)\b",
+        raw,
+        re.IGNORECASE,
+    )
+    if match is None:
+        return None
+    folder = _KNOWN_FOLDER_ENUM.get(_fold(match.group("folder")), "pictures")
+    return (folder, match.group("name").strip())
+
+
+def wallpaper_request(text: str) -> dict[str, str | None] | None:
+    """REOPEN1957 H0459 «cambiá el fondo de pantalla a azul»: a solid colour
+    or a picture from a known folder as the desktop background."""
+
+    raw = _strip_request_envelope(str(text).strip()).rstrip(".!?")
+    folded = _fold(raw)
+    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(folded):
+        return None
+    if not _has(folded, r"\b(?:fondo\s+de\s+(?:pantalla|escritorio)|fondo|wallpaper|papel\s+tapiz|desktop\s+background|background)\b"):
+        return None
+    if not _has(folded, r"\b(?:cambia|cambiar|cambiame|pon|pone|poneme|poner|establece|coloca|usa|change|set|put|use|make)\b"):
+        return None
+    colour = re.search(
+        r"\b(?:a|al|de\s+color|en|to|color)\s+(?P<color>azul|rojo|verde|negro|blanco|gris|amarillo|naranja|violeta|morado|rosa|celeste|marron|"
+        r"blue|red|green|black|white|gray|grey|yellow|orange|purple|pink|lightblue|brown|#?[0-9a-f]{6})\b",
+        folded,
+    )
+    if colour is not None:
+        return {"color": colour.group("color"), "folder": None, "name": None}
+    picture = re.search(
+        rf"(?P<name>[^\s/\\:*?\"<>|]+\.(?:png|jpg|jpeg|bmp|gif|webp))\s+(?:del|de\s+la|de|from|in|en|on)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}|imagenes|pictures)\b",
+        folded,
+    )
+    if picture is not None:
+        return {"color": None, "folder": _KNOWN_FOLDER_ENUM.get(_fold(picture.group("folder")), "pictures"), "name": picture.group("name")}
+    return None
+
+
+def web_download_request(text: str) -> dict[str, str | None] | None:
+    """REOPEN1957 H0077 «descarga la imagen de portada de wikipedia.org y
+    guardala en el escritorio»: the address (a host counts) and the known
+    folder named as destination (Downloads when none)."""
+
+    raw = _strip_request_envelope(str(text).strip()).rstrip(".!?")
+    folded = _fold(raw)
+    if _is_negative_effect_clause(folded) or _is_meta_or_tool_denial(folded):
+        return None
+    if not _has(folded, r"^[¿?¡!\s]*(?:descarga|descargar|descargame|baja|bajar|bajame|download|guarda|guardar|save)\b"):
+        return None
+    if _has(folded, r"\b(?:steam|epic|juego|game|app|aplicacion|programa|winget)\b"):
+        return None
+    address = re.search(
+        r"(?P<url>https?://[^\s\"'<>]+|(?:[a-z0-9-]+\.)+(?:com|org|net|edu|gov|io|es|cl|ar|mx|info|wiki|dev|app)(?:/[^\s\"'<>]*)?)",
+        raw,
+        re.IGNORECASE,
+    )
+    if address is None:
+        return None
+    destination = re.search(
+        rf"\b(?:en|on|in|a|to)\s+(?:(?:el|la|mi|my|the)\s+)?(?P<folder>{_KNOWN_FOLDER_WORDS}|imagenes|pictures)\b",
+        folded,
+    )
+    folder = _KNOWN_FOLDER_ENUM.get(destination.group("folder"), "pictures") if destination is not None else None
+    return {"url": address.group("url"), "folder": folder, "name": None}
+
+
 def steam_library_verb(text: str) -> str | None:
     """REOPEN1993 grupo S: what a library request asks for — «install»
     (descarga, instala, baja), «uninstall» (desinstala, remove) or «launch»
@@ -18725,6 +18865,19 @@ def resolve_explicit_effects(
         # the install effect itself needs an entitlement and a confirmation,
         # and most such requests name games the library does not hold.
         return EffectIntent(("game.entitlement.named",), (text,))
+    if {"filesystem.create.directory", "filesystem.write.text", "file.compress", "file.open"} <= available and folder_txt_zip_open_mission(text) is not None:
+        # REOPEN1957 H0542: create the folder, put a text file in it, zip it, open the zip.
+        return EffectIntent(("filesystem.create.directory", "filesystem.write.text", "file.compress", "file.open"), (text, text, text, text))
+    if "file.compress" in available and compress_named_request(text) is not None:
+        return EffectIntent(("file.compress",), (text,))
+    if "file.open" in available and open_named_file_request(text) is not None:
+        return EffectIntent(("file.open",), (text,))
+    if "desktop.wallpaper.set" in available and wallpaper_request(text) is not None:
+        # REOPEN1957 H0459: a solid colour or a picture as the desktop background.
+        return EffectIntent(("desktop.wallpaper.set",), (text,))
+    if "web.download" in available and web_download_request(text) is not None:
+        # REOPEN1957 H0077: the file or the page's cover image lands in the folder named.
+        return EffectIntent(("web.download",), (text,))
     if "shell.command.run" in available and shell_command_request(text) is not None:
         # REOPEN1993 (D11): a console command is run for real and its output quoted.
         return EffectIntent(("shell.command.run",), (text,))
