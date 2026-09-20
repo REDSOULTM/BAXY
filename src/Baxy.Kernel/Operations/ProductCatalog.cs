@@ -602,11 +602,20 @@ public static class ProductCatalog
             "Lista el catálogo local de Steam mediante una sesión resuelta y acotada."),
         Descriptor(
             "game.entitlement.named",
-            Schema([String("title", maximumUtf8Bytes: 256, nonWhitespace: true)], ["title"]),
+            Schema(
+                [
+                    // H0578 «Descarga Fall guys en epic games»: the Epic Games launcher
+                    // keeps the same two facts locally (installed manifests, the
+                    // authenticated catalog cache); the store the person names picks
+                    // the library that is read. Absent, it is Steam as before.
+                    String("store", values: ["epic", "steam"]),
+                    String("title", maximumUtf8Bytes: 256, nonWhitespace: true),
+                ],
+                ["title"]),
             OperationRisks.ReadOnly,
             "game.entitlement.named.steam.librarycache.manifest.postread.v1",
             ToolExposure.Public,
-            "Comprueba por título si un juego de Steam figura en la biblioteca autenticada local y si está instalado; no descarga, no compra ni abre diálogos."),
+            "Comprueba por título si un juego de Steam o de Epic Games figura en la biblioteca autenticada local y si está instalado; no descarga, no compra ni abre diálogos."),
         Descriptor(
             "game.install.cancel",
             Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),

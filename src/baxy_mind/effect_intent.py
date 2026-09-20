@@ -16721,9 +16721,24 @@ _STEAM_LIBRARY_REQUEST = re.compile(
     r"(?P<title>[a-z0-9][a-z0-9 .:'&+-]{0,80}?)"
     # INSTALL1625 H0387/H0721 «… en Teams»: the owner's transcriptions write
     # Steam as «Teams» (H0386/H0522); a game platform, never the meeting app.
-    r"\s+(?:en|de|desde|por|from|on|in|via|through)\s+(?:steam|seam|stim|estim|teams|team)"
+    # H0578 «Descarga Fall guys en epic games»: the Epic Games launcher keeps the
+    # same two facts locally; the store named after the title picks the library.
+    r"\s+(?:en|de|desde|por|from|on|in|via|through)\s+"
+    r"(?:(?:el|la|the)\s+)?(?P<store>steam|seam|stim|estim|teams|team|epic(?:\s+games)?(?:\s+(?:store|launcher))?|egs)"
     r"(?:\s+(?:por\s+favor|please|ahora|now))?[\s.!?]*"
 )
+
+
+def game_library_store(text: str) -> str:
+    """The store a library request names after the title: «epic» or «steam»."""
+
+    folded = _strip_request_envelope(_fold(text)).strip()
+    match = _STEAM_LIBRARY_REQUEST.fullmatch(folded.rstrip(".!?").strip())
+    if match is None:
+        head, separator, _rest = folded.partition(". ")
+        match = _STEAM_LIBRARY_REQUEST.fullmatch(head.rstrip(".!?").strip()) if separator else None
+    store = (match.group("store") if match is not None else "") or ""
+    return "epic" if store.startswith(("epic", "egs")) else "steam"
 
 
 def steam_library_title(text: str) -> str | None:

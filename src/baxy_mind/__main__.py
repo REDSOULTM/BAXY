@@ -5108,7 +5108,11 @@ def _explicit_arguments_from_evidence(
     if operation == "game.entitlement.named":
         # INSTALL1617: the title is the person's literal from the request.
         title = effect_intent.steam_library_title(evidence)
-        return {"title": title} if title is not None else None
+        if title is None:
+            return None
+        # H0578: the store named after the title picks the library that is read.
+        store = effect_intent.game_library_store(evidence)
+        return {"title": title, "store": store} if store == "epic" else {"title": title}
 
     if operation == "game.installed.named":
         # APPS1613 H0275: the title is the clause's own literal; the provider

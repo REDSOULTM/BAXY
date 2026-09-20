@@ -4688,19 +4688,32 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
         and situation.get("verified") is True
         and situation.get("succeeded") is True
     ):
+        _store_name = (
+            "Epic Games" if _merged_observed(situation).get("store") == "epic" else "Steam"
+        )
         bits.append(
-            "This result reads the person's Steam library only: owned says "
+            f"This result reads the person's {_store_name} library only: owned says "
             "whether the title is in their authenticated library, installed "
             "whether it is on disk. Nothing was downloaded, installed, "
             "uninstalled, purchased or opened. If owned is false, say the game "
-            "is not in their Steam library, so it cannot be downloaded or "
+            f"is not in their {_store_name} library, so it cannot be downloaded or "
             "installed (for an uninstall request: it is not installed); do not "
             "offer to buy it, open the store, search or add it. If owned is true "
             "and installed is false, say it is in the library but not installed "
-            "and that installing needs their confirmation; do not claim a "
-            "download started. If installed is true, say it is already "
-            "installed. Name the game as the person named it, in one or two "
-            "sentences, in the person's language."
+            + (
+                # H0578: BAXY drives no Epic install; the launcher does that.
+                "and that the download is started from the Epic Games launcher; "
+                "do not claim a download started. "
+                if _store_name == "Epic Games"
+                else "and that installing needs their confirmation; do not claim a "
+                "download started. "
+            )
+            + "If installed is true, say it is installed; for an uninstall request "
+            "say it is installed and that uninstalling is done from the "
+            f"{_store_name} client — never say it was uninstalled, removed or "
+            "deleted, never say something failed or could not be done, and say "
+            "nothing about opening or not opening anything. Name the game as the "
+            "person named it, in one or two sentences, in the person's language."
         )
     if (
         situation.get("operation") == "window.close.all"
@@ -8021,6 +8034,29 @@ def compose_visible_defect(
             "",
             _accent_folded_with_punctuation(failure_assertions),
         )
+    if (
+        kind == "operation"
+        and situation.get("operation") == "game.entitlement.named"
+        and polarity == "success"
+        and situation.get("verified") is True
+        and situation.get("succeeded") is True
+        and (
+            # H0578 «desinstalá Fortnite de Epic Games» → «Fortnite ya está
+            # desinstalado… lo eliminé correctamente»: the library read never
+            # installs, downloads or removes anything; a draft that says it did
+            # (or that an installed game is gone) invents the effect.
+            re.search(
+                r"\b(?:lo\s+|la\s+|se\s+)?(?:desinstal(?:[eé]|ado|ada|amos|aste)|elimin(?:[eé]|ado|ada|amos|aste)|borr(?:[eé]|ado|ada|amos|aste)|quit(?:[eé]|ado|ada|aste)|"
+                r"uninstalled|removed|deleted)\b|"
+                r"\b(?:lo\s+|la\s+|se\s+)?(?:instal(?:[eé]|amos|aste)|descargu(?:[eé]|amos)|descargaste|baj(?:[eé]|amos|aste))\b|"
+                r"\b(?:i|we)\s+(?:have\s+)?(?:installed|downloaded|uninstalled|removed)\b|"
+                r"\b(?:se\s+(?:instal[oó]|descarg[oó]|desinstal[oó])|(?:has|have)\s+been\s+(?:installed|downloaded|uninstalled))\b",
+                _accent_folded_with_punctuation(stripped),
+            )
+            is not None
+        )
+    ):
+        return "extra_claim"
     if (
         kind == "operation"
         and situation.get("operation") == "game.entitlement.named"

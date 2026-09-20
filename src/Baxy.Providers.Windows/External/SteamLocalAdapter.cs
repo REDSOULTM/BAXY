@@ -179,6 +179,13 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         {
             return ExternalJson.Failure(operation, "steam_title_invalid");
         }
+        if (arguments.ValueKind == JsonValueKind.Object
+            && arguments.TryGetProperty("store", out JsonElement store)
+            && store.ValueKind == JsonValueKind.String
+            && string.Equals(store.GetString(), "epic", StringComparison.Ordinal))
+        {
+            return EpicEntitlementNamed(operation, title);
+        }
         string folded = FoldTitle(title);
         string? appId = KnownTitleAppIds.TryGetValue(folded, out string? known)
             ? known
@@ -337,6 +344,117 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
             }
         }
         return ExternalJson.Failure(operation, "steam_install_transition_not_verified", effectObserved: true);
+    }
+
+    // H0578 «Descarga Fall guys en epic games»: the Epic Games launcher keeps its
+    // installed games as one JSON manifest each (%ProgramData%\Epic\EpicGamesLauncher\
+    // Data\Manifests\*.item: DisplayName, AppName, CatalogItemId, InstallLocation) and
+    // the authenticated account's catalog as a base64 JSON list (Data\Catalog\
+    // catcache.bin: id, title, namespace). Both are read, nothing is written; a title
+    // that matches exactly one catalog entry is resolved, anything else is not.
+    private static string EpicLauncherDataRoot => Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+        "Epic", "EpicGamesLauncher", "Data");
+
+    private static ExternalCapabilityReceipt EpicEntitlementNamed(string operation, string title)
+    {
+        string folded = FoldTitle(title);
+        string manifests = Path.Combine(EpicLauncherDataRoot, "Manifests");
+        string catalogCache = Path.Combine(EpicLauncherDataRoot, "Catalog", "catcache.bin");
+        if (!Directory.Exists(manifests) && !File.Exists(catalogCache))
+        {
+            return ExternalJson.Failure(operation, "epic_launcher_data_not_found");
+        }
+        string? installedName = null;
+        string? installedCatalogId = null;
+        if (Directory.Exists(manifests))
+        {
+            foreach (string file in Directory.EnumerateFiles(manifests, "*.item"))
+            {
+                try
+                {
+                    using JsonDocument document = JsonDocument.Parse(File.ReadAllText(file, Encoding.UTF8));
+                    JsonElement root = document.RootElement;
+                    if (root.ValueKind != JsonValueKind.Object
+                        || !root.TryGetProperty("DisplayName", out JsonElement displayName)
+                        || displayName.ValueKind != JsonValueKind.String
+                        || FoldTitle(displayName.GetString() ?? string.Empty) != folded
+                        || (root.TryGetProperty("bIsIncompleteInstall", out JsonElement incomplete)
+                            && incomplete.ValueKind == JsonValueKind.True))
+                    {
+                        continue;
+                    }
+                    installedName = displayName.GetString();
+                    installedCatalogId = root.TryGetProperty("CatalogItemId", out JsonElement catalogId)
+                        && catalogId.ValueKind == JsonValueKind.String ? catalogId.GetString() : null;
+                    break;
+                }
+                catch (JsonException)
+                {
+                    // A manifest the launcher is rewriting is not evidence either way.
+                }
+                catch (IOException)
+                {
+                }
+            }
+        }
+        string? ownedName = null;
+        string? ownedCatalogId = null;
+        int ownedMatches = 0;
+        if (File.Exists(catalogCache))
+        {
+            try
+            {
+                byte[] decoded = Convert.FromBase64String(File.ReadAllText(catalogCache, Encoding.ASCII).Trim());
+                using JsonDocument document = JsonDocument.Parse(decoded);
+                if (document.RootElement.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (JsonElement item in document.RootElement.EnumerateArray())
+                    {
+                        if (item.ValueKind != JsonValueKind.Object
+                            || !item.TryGetProperty("title", out JsonElement itemTitle)
+                            || itemTitle.ValueKind != JsonValueKind.String
+                            || FoldTitle(itemTitle.GetString() ?? string.Empty) != folded)
+                        {
+                            continue;
+                        }
+                        ownedMatches++;
+                        ownedName ??= itemTitle.GetString();
+                        ownedCatalogId ??= item.TryGetProperty("id", out JsonElement itemId)
+                            && itemId.ValueKind == JsonValueKind.String ? itemId.GetString() : null;
+                    }
+                }
+            }
+            catch (FormatException)
+            {
+            }
+            catch (JsonException)
+            {
+            }
+            catch (IOException)
+            {
+            }
+        }
+        bool installed = installedName is not null;
+        bool owned = installed || ownedMatches >= 1;
+        string? catalogItemId = installedCatalogId ?? ownedCatalogId;
+        JsonElement result = ExternalJson.Create(writer =>
+        {
+            writer.WriteStartObject(); writer.WriteNumber("version", 1);
+            writer.WriteString("query", title);
+            writer.WriteString("store", "epic");
+            writer.WriteBoolean("resolved", owned);
+            if (catalogItemId is null) writer.WriteNull("appId"); else writer.WriteString("appId", catalogItemId);
+            writer.WriteString("title", installedName ?? ownedName ?? title);
+            writer.WriteBoolean("owned", owned);
+            writer.WriteBoolean("installed", installed);
+            writer.WriteString("state", installed ? "installed"
+                : owned ? "owned_not_installed" : "not_in_library");
+            writer.WriteString("authority", installed
+                ? "epic_launcher_local_manifest" : "epic_launcher_catalog_cache");
+            writer.WriteEndObject();
+        });
+        return ExternalJson.Success(operation, result, effectObserved: false);
     }
 
     private string? ResolveSnapshotTitle(string folded)
