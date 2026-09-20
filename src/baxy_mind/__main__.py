@@ -3237,6 +3237,12 @@ def _unresolved_input_kind(
     folded = effect_intent._fold(objective).strip()
     if not folded:
         return None
+    names_folded = {
+        token.casefold()
+        for name in known_names
+        if isinstance(name, str)
+        for token in (name, *re.findall(r"[A-Za-zÁÉÍÓÚÜÑáéíóúüñ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ'’-]*", name))
+    }
     if (
         re.fullmatch(
             # DIALOGUE1491 H0393 «Ve a portal una.», H0541 «Ve Portal 2 UN»: a
@@ -3335,6 +3341,28 @@ def _unresolved_input_kind(
         return "noise"
     if _overheard_speech(folded):
         return "overheard_speech"
+    if re.fullmatch(r"[¿?¡!\s]*(?:hable|habla|hablame|hableme|hablanos|hablenos|hablalo|hablelo|speak|talk|tell)\s+(?:(?:de|sobre|about|of|me)\s+)?(?:de\s+)?(?:est[aeo]s?|es[aeo]s?|aquell[ao]s?|it|this|that|these|those)[.!?\s]*", folded) is not None:
+        # UNRES1945 H0404 «Hable este.»: a speak/talk verb with a bare
+        # demonstrative and nothing before it — nothing names what to talk
+        # about; the honest turn asks that, never a chat opener.
+        return "deictic_speak"
+    _bare = re.fullmatch(r"[¿?¡!\s]*(?P<phrase>[A-ZÁÉÍÓÚÑ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ'’-]+(?:\s+[A-ZÁÉÍÓÚÑ][A-Za-zÁÉÍÓÚÜÑáéíóúüñ'’-]+){0,2})\s*\?[\s.!?]*", str(objective).strip())
+    if (
+        _bare is not None
+        and not corrector.unknown_words(objective, known_names)
+        # «Steam?», «Spotify?» name a catalog application on their own and
+        # keep today's path; «Calendar Devil?» only shares a word with one.
+        and _bare.group("phrase").casefold() not in names_folded
+        and not (
+            len(_bare.group("phrase").split()) == 1
+            and _bare.group("phrase").casefold() in names_folded
+        )
+    ):
+        # UNRES1945 H0160 «Calendar Devil?»: one to three capitalised words
+        # and a question mark, no verb, no catalog name, real words in some
+        # language; the model answered as if it were a question about BAXY.
+        # The honest turn says it does not know what that refers to and asks.
+        return "bare_phrase_question"
     if corrector.unintelligible_input(objective, known_names):
         # UNRES1941 H0210 «¡Habristín!»: every content word of the message is
         # unknown to the Spanish and English dictionaries, the catalog and the

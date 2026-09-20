@@ -12796,13 +12796,41 @@ class LlmRuntime:
         a meaning: the question names what arrived and asks what to do.
         """
 
-        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_text", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window", "echoed_words", "bare_path", "cut_request", "unknown_word"}:
+        if kind not in {"noise", "bare_negation", "dangling_comparison", "deictic_level", "deictic_text", "deictic_look", "cut_destination", "overheard_speech", "bare_confirmation", "dangling_alternative", "missing_person_referent", "indeterminate_window", "echoed_words", "bare_path", "cut_request", "unknown_word", "deictic_speak", "bare_phrase_question"}:
             raise ValueError("clase de entrada sin pedido inválida")
         current = str(text).strip()[:2_048]
         unknown_words = corrector.unknown_words(current) if kind == "unknown_word" else ()
         unknown_quoted = ", ".join("«" + word + "»" for word in unknown_words[:3]) or "«…»"
         situation = (
             (
+                # UNRES1945 H0404 «Hable este.»: a speak verb with a bare
+                # demonstrative; what to talk about was never named.
+                "Eres BAXY. El usuario te pidió que hables de «esto», «este» o "
+                "«eso», sin decir de qué, y no hay nada anterior a lo que pueda "
+                "referirse. Formula una sola pregunta breve, en el idioma del "
+                "usuario, que pregunte de qué quiere que hables (por ejemplo: «¿De "
+                "qué querés que hable?»). No adivines un tema, no saludes, no "
+                "digas que no entiendes ni que algo falló y no ofrezcas ayuda "
+                "genérica."
+            )
+            if kind == "deictic_speak"
+            else (
+                # UNRES1945 H0160 «Calendar Devil?»: a bare capitalised phrase
+                # with a question mark; nothing says what it refers to.
+                # Quoting the phrase back echoes the whole request and the App
+                # rejects it (echoes_request); the question names the gap only.
+                "Eres BAXY. Lo que llegó es sólo un nombre o unas pocas palabras "
+                "con signo de pregunta, sin verbo ni pedido. No sabes a qué se "
+                "refiere y no hay nada anterior que lo aclare. Formula una sola "
+                "pregunta breve, en el idioma que parezca del usuario, que diga que "
+                "no sabes a qué se refiere con eso y pida que lo repita con más "
+                "contexto (por ejemplo: «No sé a qué te referís; ¿me lo repetís con "
+                "más contexto?»). No repitas sus palabras, no adivines qué es, no lo "
+                "expliques, no contestes con tu identidad, no saludes y no ofrezcas "
+                "ayuda genérica."
+            )
+            if kind == "bare_phrase_question"
+            else (
                 # UNRES1941 H0210 «¡Habristín!»: the word exists in no language
                 # the assistant knows; asking to repeat it is the honest move.
                 "Eres BAXY. Lo que llegó es una palabra o unas pocas palabras que "
