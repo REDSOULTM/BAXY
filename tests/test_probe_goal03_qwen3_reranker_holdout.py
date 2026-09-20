@@ -42,5 +42,7 @@ def test_candidate_contracts_preserve_catalog_identity() -> None:
 
     # 169 -> 190: the 21 public operations sealed in C03 (2026-09-12 … 2026-09-20; plan post-goal
     # 2026-09-20, Fase 1). The catalogue is still the authenticated one, only larger.
-    assert len(contracts) == 190
+    # 190 -> 192: input.scroll y mission.computer.use, el motor general de computer use
+    # (Fase 4 del plan post-goal 2026-09-20, rama fable/computer-use-engine, tanda CU1959).
+    assert len(contracts) == 192
     assert "app.open" in contracts

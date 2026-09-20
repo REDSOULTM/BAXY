@@ -81,8 +81,9 @@ MINDS_SCHEMA = "baxy.stt-minds14-preregistration.v1"
 # C03 post-goal 2026-09-20 (Fase 1): pytest verde sin relajar; 5pm/volumen de app/envoltura social/investigar el propio equipo reparados en la mente.
 # C03 post-goal 2026-09-20 (Fase 1): pytest verde sin relajar; 5pm/volumen de app/envoltura social/investigar el propio equipo reparados en la mente.
 # REOPEN1993: lecturas de la mente (candidato único, alarma de la sesión, otra ventana, mirar la pantalla, ponle texto)
+# CU1959 (2026-09-20): el motor general de computer use cambia la mente (computer_use.py, effect_intent.py, __main__.py, llm.py); re-pin de identidad de programa.
 EXPECTED_PROGRAM_TREE_SHA256 = (
-    "605143e1456020c84aa644c24e5d1363c6deb178bb56e3233a043e24adcbac3f"
+    "aed343adfcb9928675c1423b710773e889b434e29517ed24d4817e4c0036e659"
 )
 SAMPLE_RATE = 16_000
 SILENCE_SAMPLES = SAMPLE_RATE // 5

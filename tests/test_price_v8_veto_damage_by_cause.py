@@ -103,12 +103,13 @@ V8_DATA_DRIFTED_SINCE_THE_CAMPAIGN = {
 # current program identity only; V8 artifacts, arithmetic and verdict stay sealed.
 # C03 post-goal 2026-09-20 (Fase 1): pytest verde sin relajar; 5pm/volumen de app/envoltura social/investigar el propio equipo reparados en la mente.
 # REOPEN1993: lecturas de la mente (candidato único, alarma de la sesión, otra ventana, mirar la pantalla, ponle texto)
+# CU1959 (2026-09-20): el motor general de computer use cambia la mente (computer_use.py, effect_intent.py, __main__.py, llm.py); re-pin de identidad de programa.
 V8_PROGRAMS_REPLACED_BY_GOAL_03 = {
     "src/baxy_mind/__main__.py": (
-        "8d849b268b03a2f089b0ec5e57a18f5f4242409d0060b77e1fbd6df0f3e6c83a"
+        "42d7939b30a1507cb1f52d636b2616e05f2ce4de35ae65c74dfb888a62f88c83"
     ),
     "src/baxy_mind/llm.py": (
-        "076c7e55cbe5d0a11d1ab05dfe47006ce737acdd4b25159354ffcbb83b03429f"
+        "6dfa090c73824bb2ca20d00ed8e0796e1647fd3dd0d37c08f20b58b1d1b892df"
     ),
 }
 

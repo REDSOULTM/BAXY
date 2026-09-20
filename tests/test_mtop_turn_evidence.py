@@ -333,7 +333,9 @@ def test_map_cannot_expand_baxy_capabilities() -> None:
 
     # 169 -> 190: the 21 public operations sealed in C03 (2026-09-12 … 2026-09-20; plan post-goal
     # 2026-09-20, Fase 1). The catalogue is still the authenticated one, only larger.
-    assert len(public_operations) == 190
+    # 190 -> 192: input.scroll y mission.computer.use, el motor general de computer use
+    # (Fase 4 del plan post-goal 2026-09-20, rama fable/computer-use-engine, tanda CU1959).
+    assert len(public_operations) == 192
     assert mapped_operations <= public_operations
     assert mapping["policy"]["execution_authority"] is False
     assert set(mapping["intents"]).isdisjoint(mapping["ood_intents"])

@@ -432,7 +432,7 @@
       "label": "fixture",
       "holdout": false,
       "evidence": [
-        "src/Baxy.Providers.Windows/External/DesktopClickVisible.ps1",
+        "src/Baxy.Providers.Windows/External/DesktopUiaWorker.ps1",
         "src/Baxy.Providers.Windows/External/WindowsVisibleControlAdapter.cs",
         "src/Baxy.Providers.Windows/External/WindowsVisibleOcrLocator.cs",
         "src/Baxy.Providers.Windows/External/WindowsVisibleVisionLocator.cs",
