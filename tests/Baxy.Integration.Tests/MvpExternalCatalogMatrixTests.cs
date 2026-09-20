@@ -33,7 +33,9 @@ public sealed class MvpExternalCatalogMatrixTests
         "wifi.scan",
     ];
 
-    private const int ExpectedExternalHandlers = 85 + 17;
+    // + 1: input.scroll, la primitiva de desplazamiento del motor de computer use
+    // (CONTRATO_VISTA_ACCION.md §2), verificada por el cambio de superficie.
+    private const int ExpectedExternalHandlers = 85 + 17 + 1;
     private static readonly JsonSerializerOptions EvidenceJsonOptions = new()
     {
         WriteIndented = true,

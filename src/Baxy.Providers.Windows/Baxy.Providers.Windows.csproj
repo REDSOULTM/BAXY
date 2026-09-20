@@ -30,12 +30,9 @@
     <None Include="External\DesktopKeyPress.ps1"
             CopyToOutputDirectory="PreserveNewest"
             TargetPath="DesktopKeyPress.ps1" />
-    <None Include="External\DesktopClickVisible.ps1"
+    <None Include="External\DesktopUiaWorker.ps1"
             CopyToOutputDirectory="PreserveNewest"
-            TargetPath="DesktopClickVisible.ps1" />
-    <None Include="External\DesktopListVisible.ps1"
-            CopyToOutputDirectory="PreserveNewest"
-            TargetPath="DesktopListVisible.ps1" />
+            TargetPath="DesktopUiaWorker.ps1" />
     <None Include="External\WindowsScheduledNotification.ps1"
             CopyToOutputDirectory="PreserveNewest"
             TargetPath="WindowsScheduledNotification.ps1" />

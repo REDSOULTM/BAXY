@@ -113,7 +113,10 @@ public sealed class MissionEngine : IDisposable
                 ? RiskPolicy.Evaluate(
                     handler.Definition.Risk,
                     _confirmationMode(),
-                    handler.Definition.Name)
+                    handler.Definition.Name,
+                    // Computer use (CONTRATO_VISTA_ACCION.md §2.1): the step's
+                    // exact arguments decide whether it reaches a person.
+                    request.Arguments)
                 : null;
             if (policy == PolicyDecision.RequireConfirmation && IsReadOfConsentedCapture(request))
             {

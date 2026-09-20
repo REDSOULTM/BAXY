@@ -36,6 +36,14 @@ internal sealed class PendingMindPlanExecution
 
     internal bool PendingEffectMayHaveOccurred { get; set; }
 
+    /// <summary>
+    /// Live state of the computer-use loop while the current step is a
+    /// <c>mission.computer.use</c>: goal, budget, the steps done and the
+    /// primitive waiting for confirmation. Persisted with the plan so a
+    /// confirmed step resumes the same mission (CONTRATO_VISTA_ACCION.md §4).
+    /// </summary>
+    internal JsonObject? ComputerUse { get; set; }
+
     internal MindPlanStep CurrentStep => Steps[NextIndex];
 
     internal bool CanAbandonConfirmation =>
@@ -178,7 +186,9 @@ internal static class MindPlanBoundary
         var definition = new Baxy.Kernel.Operations.OperationDefinition(descriptor);
         return Baxy.Kernel.Policy.RiskPolicy.Evaluate(
                 definition.Risk,
-                operation: pending.OperationName)
+                Baxy.Kernel.Policy.ConfirmationMode.Normal,
+                pending.OperationName,
+                pending.Arguments)
             == Baxy.Kernel.Policy.PolicyDecision.RequireConfirmation;
     }
 

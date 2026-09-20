@@ -8,10 +8,25 @@ internal static partial class VisibleControlSurface
     internal static async ValueTask<CapturedWindow?> CaptureForegroundAsync(
         CancellationToken cancellationToken)
     {
+        nint hwnd = await ResolveForegroundAsync(cancellationToken).ConfigureAwait(false);
+        return hwnd == 0
+            ? null
+            : await CaptureAsync(hwnd, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// The window a person acts on right now: the root of the foreground
+    /// window, or the topmost foreign window when the foreground is ours or
+    /// has no usable surface. The compact view, the click and the scroll all
+    /// resolve the window here, so they always mean the same one.
+    /// </summary>
+    internal static async ValueTask<nint> ResolveForegroundAsync(
+        CancellationToken cancellationToken)
+    {
         cancellationToken.ThrowIfCancellationRequested();
         nint hwnd = GetForegroundWindow();
         if (hwnd == 0)
-            return null;
+            return 0;
         // UI1395: a freshly launched UWP app is fronted by its CoreWindow
         // (calculatorapp.exe, no top-level window of its own) and, once a
         // control is invoked, by its ApplicationFrameHost frame. The frame is
@@ -48,7 +63,16 @@ internal static partial class VisibleControlSurface
                 hwnd = candidate;
             }
         }
-        if (!TryBounds(hwnd, out int left, out int top, out _, out _))
+
+        return hwnd;
+    }
+
+    internal static async ValueTask<CapturedWindow?> CaptureAsync(
+        nint hwnd,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        if (hwnd == 0 || !TryBounds(hwnd, out int left, out int top, out _, out _))
             return null;
         string directory = Path.Combine(Path.GetTempPath(), "baxy-visible-control");
         var provider = new WindowsScreenshotProvider(directory);
@@ -76,7 +100,33 @@ internal static partial class VisibleControlSurface
         catch (UnauthorizedAccessException) { }
     }
 
-    private static bool TryBounds(nint hwnd, out int left, out int top, out int right, out int bottom)
+    internal static string WindowTitle(nint hwnd)
+    {
+        int length = GetWindowTextLengthW(hwnd);
+        if (length <= 0)
+            return string.Empty;
+        var buffer = new char[Math.Min(length, 512) + 1];
+        int copied = GetWindowTextW(hwnd, buffer, buffer.Length);
+        return copied <= 0 ? string.Empty : new string(buffer, 0, copied);
+    }
+
+    internal static (int ProcessId, string ProcessName) WindowProcess(nint hwnd)
+    {
+        _ = GetWindowThreadProcessId(hwnd, out uint processId);
+        if (processId == 0)
+            return (0, string.Empty);
+        try
+        {
+            using var process = System.Diagnostics.Process.GetProcessById(unchecked((int)processId));
+            return (unchecked((int)processId), process.ProcessName);
+        }
+        catch (Exception exception) when (exception is ArgumentException or InvalidOperationException)
+        {
+            return (unchecked((int)processId), string.Empty);
+        }
+    }
+
+    internal static bool TryBounds(nint hwnd, out int left, out int top, out int right, out int bottom)
     {
         left = top = right = bottom = 0;
         if (DwmGetWindowAttribute(hwnd, 9, out Rect rect, Marshal.SizeOf<Rect>()) != 0
@@ -171,6 +221,9 @@ internal static partial class VisibleControlSurface
 
     [LibraryImport("user32.dll")]
     private static partial int GetWindowTextLengthW(nint hwnd);
+
+    [LibraryImport("user32.dll", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial int GetWindowTextW(nint hwnd, [Out] char[] text, int count);
 
     [LibraryImport("user32.dll")]
     private static partial nint GetWindowLongPtrW(nint hwnd, int index);

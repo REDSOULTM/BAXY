@@ -35,7 +35,7 @@ os.environ.setdefault("MKL_NUM_THREADS", "4")
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
 from . import protocol
-from . import effect_intent
+from . import computer_use, effect_intent
 from . import corrector
 from .corrector import catalog_correction_terms
 from .first_signal import (
@@ -161,6 +161,7 @@ _BLOCKING_REQUEST_TYPES = frozenset(
     {
         "arguments",
         "catalog.configure",
+        "computer.use.step",
         "message.compose",
         "narrate",
         "plan",
@@ -5050,6 +5051,12 @@ def _explicit_arguments_from_evidence(
 
         return value.strip().rstrip(".!?").rstrip()
 
+    if operation == "mission.computer.use":
+        # Computer use: application, goal and the deterministic success check
+        # come from the request itself (CONTRATO_VISTA_ACCION.md §4.1, §6).
+        mission = computer_use.mission_request(evidence, application_names)
+        return mission.arguments() if mission is not None else None
+
     if operation == "browser.control":
         return (effect_intent.browser_back_arguments(evidence)
                 or effect_intent.browser_new_tab_arguments(evidence)
@@ -8962,6 +8969,7 @@ def _run_sidecar(
                     # below the 22 s desktop transport SLA.
                     "turn.decide": TURN_DECIDE_NORMAL_BUDGET_SECONDS,
                     "plan.ground": 28.0,
+                    "computer.use.step": 30.0,
                     "plan": 55.0,
                     "narrate": 18.0,
                     "message.compose": compose_budget,
@@ -9504,6 +9512,42 @@ def _run_sidecar(
                         "id": request_id,
                         "operation": operation,
                         "arguments": arguments,
+                    }
+                )
+            elif kind == "computer.use.step":
+                # Computer use (CONTRATO_VISTA_ACCION.md §4.4): one step over the
+                # compact view, strict JSON at temperature 0, checked against the
+                # view without the model before it reaches the shell.
+                if llm is None:
+                    raise RuntimeError("LLM no disponible")
+                view = message.get("view") if isinstance(message.get("view"), dict) else {}
+                history = [
+                    step for step in (message.get("history") or []) if isinstance(step, dict)
+                ]
+                decision = computer_use.decide_step(
+                    llm,
+                    objective=str(message.get("objective", "")),
+                    goal=str(message.get("goal", "")),
+                    application=(
+                        str(message.get("application"))
+                        if message.get("application") else None
+                    ),
+                    success_check=(
+                        str(message.get("successCheck"))
+                        if message.get("successCheck") else None
+                    ),
+                    view=view,
+                    history=history,
+                    budget_left=int(message.get("budgetLeft") or 0),
+                    application_names=application_catalog,
+                )
+                write_request_message(
+                    {
+                        "type": computer_use.STEP_RESULT,
+                        "id": request_id,
+                        "operation": decision["operation"],
+                        "arguments": decision["arguments"],
+                        "reason": decision.get("reason", ""),
                     }
                 )
             elif kind == "arguments":

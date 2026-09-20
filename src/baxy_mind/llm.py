@@ -4281,6 +4281,12 @@ def _compose_situation_payload(
             if visible_seen.get("surfaceChanged") is True:
                 projected["surfaceChanged"] = True
             visible_seen = projected
+        elif operation == "mission.computer.use":
+            # Computer use (CONTRATO_VISTA_ACCION.md §4.5): the composer sees
+            # what the loop did and saw, never the raw steps or hashes.
+            from . import computer_use as _computer_use
+
+            visible_seen = _computer_use.project_seen(visible_seen, language)
         elif operation == "window.close.all" and isinstance(visible_seen.get("closed"), int):
             # CLOSEALL1733 «cerrame todo»: the counts are the facts; process names
             # («Code», «Notepad») are not words for the person — the kept editor
@@ -4616,6 +4622,12 @@ def _compose_shape_instruction(situation: dict, language: str, user_text: str) -
             "failure to search, missing permission, or an unperformed search. "
             "Explain the finding briefly and naturally in the person's language."
         )
+    if situation.get("operation") == "mission.computer.use" and isinstance(observed, dict):
+        from . import computer_use as _computer_use
+
+        bits.append(_computer_use.compose_instruction(
+            _computer_use.project_seen(observed, language), language,
+        ))
     if (
         situation.get("operation") == "client.channel.locate"
         and situation.get("verified") is True
@@ -7898,6 +7910,17 @@ def compose_visible_defect(
         failure_assertions = re.sub(
             finding_predicate, "", _accent_folded_with_punctuation(stripped),
         )
+    if kind == "operation" and situation.get("operation") == "mission.computer.use":
+        # Computer use (CONTRATO_VISTA_ACCION.md §4.5): a join never observed, a
+        # false past time or a failed mission told as a success are invented.
+        from . import computer_use as _computer_use
+
+        mission_defect = _computer_use.mission_defect(
+            _accent_folded_with_punctuation(stripped),
+            _computer_use.project_seen(_merged_observed(situation), "es"),
+        )
+        if mission_defect is not None:
+            return mission_defect
     if (
         kind == "operation"
         and situation.get("operation") == "client.channel.locate"

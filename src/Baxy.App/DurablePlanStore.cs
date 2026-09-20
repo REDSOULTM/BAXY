@@ -70,6 +70,11 @@ internal sealed class DurablePlanStore
             }
 
             execution.CompletedMessages.AddRange(document.CompletedMessages!);
+            if (document.ComputerUse is { ValueKind: JsonValueKind.Object } mission)
+            {
+                execution.ComputerUse = JsonNode.Parse(mission.GetRawText()) as JsonObject;
+            }
+
             if (document.PendingOperation is not null)
             {
                 DurablePreparedOperation pending = document.PendingOperation;
@@ -108,6 +113,9 @@ internal sealed class DurablePlanStore
             Observations = SerializeNodeToElement(execution.Observations),
             CompletedMessages = execution.CompletedMessages.ToList(),
             PendingEffectMayHaveOccurred = execution.PendingEffectMayHaveOccurred,
+            ComputerUse = execution.ComputerUse is null
+                ? null
+                : SerializeNodeToElement(execution.ComputerUse),
             PendingOperation = execution.PendingOperation is null
                 ? null
                 : new DurablePreparedOperation
@@ -397,6 +405,10 @@ internal sealed class DurablePlanDocument
     public bool PendingEffectMayHaveOccurred { get; init; }
 
     public DurablePreparedOperation? PendingOperation { get; init; }
+
+    // Computer use (CONTRATO_VISTA_ACCION.md §4): the loop's state while the
+    // current step is mission.computer.use; absent for every other plan.
+    public JsonElement? ComputerUse { get; init; }
 }
 
 internal sealed class DurablePlanStep

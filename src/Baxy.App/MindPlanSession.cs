@@ -31,6 +31,7 @@ internal sealed class MindPlanSession
     private readonly Host _host;
     private DurablePlanStore? _store;
     private PendingMindPlanExecution? _pending;
+    private ComputerUseProcedures? _procedures;
 
     internal MindPlanSession(Host host)
     {
@@ -183,6 +184,41 @@ internal sealed class MindPlanSession
             }
 
             MindPlanBoundary.ValidateGroundedArguments(step.Operation, arguments);
+            if (step.Operation == ComputerUseMission.OperationName)
+            {
+                // The general computer-use engine: the shell runs the loop; every
+                // primitive it takes is its own journaled, policed operation.
+                ComputerUseMission.Result loop = await ComputerUseMission.RunAsync(
+                    new ComputerUseMission.Context
+                    {
+                        Core = client,
+                        Mind = mind,
+                        Registry = registry,
+                        MarkResolved = _host.TryMarkResolved,
+                        SetStatus = _host.SetStatus,
+                        Procedures = _procedures ??= ComputerUseProcedures.CreateDefault(),
+                    },
+                    execution,
+                    arguments,
+                    cancellationToken);
+                if (loop.Confirmation is { } primitiveConfirmation)
+                {
+                    execution.PendingOperation = null;
+                    StageConfirmation(execution, primitiveConfirmation);
+                    return;
+                }
+
+                OperationResponse missionResponse = loop.Response!;
+                if (missionResponse.Status == OperationStatuses.Completed && missionResponse.Verified)
+                {
+                    CompleteStep(execution, registry, loop.MissionPrepared, step, missionResponse);
+                    continue;
+                }
+
+                FinishWithFailure(execution, missionResponse.Message);
+                return;
+            }
+
             var routed = new RoutedOperation(step.Operation, arguments);
             PreparedOperation prepared = execution.PendingOperation
                 ?? registry.GetOrAdd(routed);
@@ -352,6 +388,23 @@ internal sealed class MindPlanSession
                         cancellationToken,
                         confirmation.Token);
                     execution.Confirmation = null;
+                    if (execution.ComputerUse is not null
+                        && execution.CurrentStep.Operation == ComputerUseMission.OperationName
+                        && confirmation.Prepared.OperationName != ComputerUseMission.OperationName
+                        && !PendingOperationConfirmation.TryCreate(
+                            response, confirmation.Prepared, TimeProvider.System, out _))
+                    {
+                        // The confirmed primitive belongs to a computer-use mission:
+                        // its result joins the mission's steps and the loop resumes.
+                        ComputerUseMission.RecordConfirmedStep(execution, confirmation.Prepared, response);
+                        _ = _host.TryMarkResolved(registry, confirmation.Prepared);
+                        execution.PendingOperation = null;
+                        execution.PendingEffectMayHaveOccurred = false;
+                        Persist(execution);
+                        await ExecuteAsync(execution, registry, cancellationToken);
+                        return;
+                    }
+
                     if (response.Status == OperationStatuses.Completed && response.Verified)
                     {
                         CompleteStep(

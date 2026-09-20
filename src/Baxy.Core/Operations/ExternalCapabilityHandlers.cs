@@ -51,6 +51,7 @@ internal static class ExternalCapabilityHandlers
         "input.keyboard.open",
         "input.keyboard.status",
         "input.pointer.control",
+        "input.scroll",
         "input.select.all",
         "input.text.type",
         "input.visible.click",

@@ -51,8 +51,10 @@ def test_runtime_alias_asset_is_complete_unique_and_proposal_only() -> None:
     assert payload["catalog_sha256"] == catalogue["catalogue"]["operation_names_sha256"]
     assert payload["alias_count"] == 157
     c03 = json.loads(C03_DATA.read_text(encoding="utf-8"))
-    assert c03["alias_count"] == len(c03["aliases"]) == 3
-    assert len(aliases) == 157 + 3
+    # 3 → 5: mission.computer.use e input.scroll, el motor de computer use
+    # (plan post-goal Fase 4, documentacion/computer-use/CONTRATO_VISTA_ACCION.md).
+    assert c03["alias_count"] == len(c03["aliases"]) == 5
+    assert len(aliases) == 157 + 5
     assert len(set(aliases)) == len(aliases)
     assert alias_operations <= current_operations
     assert "notification.cancel.at" not in alias_operations

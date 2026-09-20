@@ -200,10 +200,10 @@ Orden fijo; el primero que resuelve gana; con dos candidatos se pregunta, nunca 
 
 ---
 
-## 4. La misión (`mission.computer_use`)
+## 4. La misión (`mission.computer.use`)
 
 Operación nueva del catálogo, riesgo `low_reversible`, contrato
-`mission.computer_use.shell.loop.v1`, `requiresObservedEffect: false`. El core no la ejecuta
+`mission.computer.use.shell.loop.v1`, `requiresObservedEffect: false`. El core no la ejecuta
 (`computer_use_requires_shell`): la corre el shell, y cada paso que da es una operación
 journalizada por el Kernel. Así la misión aparece en el plan como un paso más
 (`CHAIN1931`: un efecto por paso, proyección de evidencia del prefijo completado,
@@ -229,7 +229,7 @@ Presupuesto de tiempo fijo: 90 s de misión; cada vista ≤ 30 s, cada primitiva
 2. **Recordar.** Si hay un procedimiento guardado para `(application, goal normalizado)`
    (§5), se ejecuta su siguiente paso sin modelo; si su verificación falla o la vista no
    trae lo que el paso espera, se abandona el procedimiento y se pasa al modelo.
-3. **Decidir.** `computer_use.step` a la mente (§4.4): un paso, JSON estricto, temperatura 0.
+3. **Decidir.** `computer.use.step` a la mente (§4.4): un paso, JSON estricto, temperatura 0.
 4. **Actuar.** La primitiva va al Kernel como operación con sus argumentos; el Kernel
    autoriza (§2.1), el provider ejecuta y verifica.
 5. **Registrar.** El paso queda en la misión con `{operation, args, ok, error, changed,
@@ -281,13 +281,13 @@ Ejemplos de las seis misiones de CU1959:
 `stepDone:<op>[:<arg>]` es un atom más: se cumple cuando un paso verificado con esa
 operación (y ese `key`/`label`) está en la misión.
 
-### 4.4 Protocolo mente ↔ shell: `computer_use.step`
+### 4.4 Protocolo mente ↔ shell: `computer.use.step`
 
 Petición del shell (JSONL, mismo canal que `plan.ground`):
 
 ```json
 {
-  "type": "computer_use.step",
+  "type": "computer.use.step",
   "objective": "abre Steam y ve a la biblioteca",   // lo que dijo la persona
   "goal": "ir a la biblioteca",
   "application": "Steam",
@@ -330,7 +330,7 @@ Comprobaciones deterministas antes de devolver al shell (sin modelo):
 Respuesta:
 
 ```json
-{"type": "computer_use.step.result", "id": "…", "operation": "input.visible.click",
+{"type": "computer.use.step.result", "id": "…", "operation": "input.visible.click",
  "arguments": {"label": "Biblioteca", "index": 12}, "reason": "…"}
 ```
 
@@ -410,7 +410,7 @@ Ruta: `<data root>/computer-use/procedures.v1.json` (el data root privado del sh
 
 ## 6. Lo que este contrato no decide
 
-- La **lectura del pedido** (qué frases van a `mission.computer_use`) es de la mente
+- La **lectura del pedido** (qué frases van a `mission.computer.use`) es de la mente
   (`effect_intent`): «en <app> <hacé X>», «abre <app> y <hacé X>», «cerrá todas las
   pestañas de <navegador>», «<hacé X> en <app>». Una petición con operación tipada que
   Windows verifica mejor que la pantalla (ficheros, radios, manifiestos, COM) sigue yendo a

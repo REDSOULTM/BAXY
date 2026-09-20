@@ -1413,6 +1413,15 @@ _MSG_DRAFT_PATTERNS = tuple(
 )
 
 
+def _computer_use_mission_is_direct(text: str) -> bool:
+    """«en <app> apretá enter», «abre Steam y ve a la biblioteca», «cerrá todas
+    las pestañas de chrome»: an app frame with a doing clause is a request."""
+
+    from . import computer_use as _computer_use
+
+    return _computer_use.mission_clause_is_direct(text)
+
+
 def client_channel_request(text: str) -> tuple[str, str] | None:
     """DISCORD1839 «ve a Cotele en Discord», «Go to Cotele in Discord», «Andá al canal
     Cotele en Discord»: the client and the place named by a go-to order scoped to a
@@ -11430,6 +11439,7 @@ def _is_direct_request(text: str) -> bool:
         or _research_question_query(text) is not None
         or message_draft_request(text) is not None
         or client_channel_request(text) is not None
+        or _computer_use_mission_is_direct(text)
     ):
         return True
     request_head = (
@@ -18221,6 +18231,17 @@ def resolve_explicit_effects(
         # MUSIC1827 «open Edge and play some music»: which music is asked first
         # (clarification), not an open-and-play mission with «some music».
         return None
+    if "mission.computer.use" in available:
+        # Computer use (plan post-goal Fase 4, D21; CONTRATO_VISTA_ACCION.md §6):
+        # doing something inside a named, installed application —going to a
+        # channel or a section, pressing a key, switching a setting, closing the
+        # tabs of a named browser, calculating— is one mission of the general
+        # engine, before any per-app route. client.channel.locate stays as the
+        # reserve read when the mission operation is not served.
+        from . import computer_use as _computer_use
+
+        if _computer_use.mission_request(text, authenticated_applications) is not None:
+            return EffectIntent(("mission.computer.use",), (text,))
     channel_request = client_channel_request(text)
     if "client.channel.locate" in available and channel_request is not None and channel_request[0] == "discord":
         # DISCORD1839: the channel is located and the person asked before any join.

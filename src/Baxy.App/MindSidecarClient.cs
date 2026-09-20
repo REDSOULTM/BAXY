@@ -76,6 +76,17 @@ internal sealed record MindPlanResult(
 
 internal sealed record MindComposedMessage(string Text);
 
+/// <summary>
+/// One step of the computer-use loop chosen by the mind over the compact view
+/// (CONTRATO_VISTA_ACCION.md §4.4). <see cref="Operation"/> is a catalog
+/// primitive, or <c>done</c> when the success is visible (with its evidence),
+/// or <c>none</c> when the mind sees no way forward.
+/// </summary>
+internal sealed record MindComputerUseStep(
+    string Operation,
+    JsonObject Arguments,
+    string Reason);
+
 internal sealed record MindVoiceStatus(
     bool Available,
     bool InputAvailable,
@@ -1076,6 +1087,48 @@ internal sealed class MindSidecarClient : IAsyncDisposable
         }
 
         return reply["arguments"]?.DeepClone() as JsonObject;
+    }
+
+    // Computer use: one decision per look; the model reads at most sixty
+    // controls and the text by zone and answers a single strict JSON step at
+    // temperature 0 (CONTRATO_VISTA_ACCION.md §4.4).
+    internal static readonly TimeSpan ComputerUseStepRequestTimeout = TimeSpan.FromSeconds(30);
+
+    public async Task<MindComputerUseStep?> DecideComputerUseStepAsync(
+        string objective,
+        string goal,
+        string? application,
+        string? successCheck,
+        JsonObject view,
+        JsonArray history,
+        int budgetLeft,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(view);
+        ArgumentNullException.ThrowIfNull(history);
+        JsonObject? reply = await RequestAsync(
+            new JsonObject
+            {
+                ["type"] = "computer.use.step",
+                ["objective"] = objective,
+                ["goal"] = goal,
+                ["application"] = application,
+                ["successCheck"] = successCheck,
+                ["view"] = view.DeepClone(),
+                ["history"] = history.DeepClone(),
+                ["budgetLeft"] = budgetLeft,
+            },
+            ComputerUseStepRequestTimeout,
+            cancellationToken).ConfigureAwait(false);
+        if (reply is null
+            || (string?)reply["type"] != "computer.use.step.result"
+            || (string?)reply["operation"] is not { Length: > 0 } operation)
+        {
+            return null;
+        }
+
+        JsonObject arguments = reply["arguments"]?.DeepClone() as JsonObject ?? new JsonObject();
+        return new MindComputerUseStep(operation, arguments, (string?)reply["reason"] ?? string.Empty);
     }
 
     public async Task<MindComposedMessage?> ComposeUserMessageAsync(
