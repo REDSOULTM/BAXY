@@ -39,11 +39,21 @@ Contrato de verificación `input.visible.controls.windows.uia.snapshot.v2`.
   "includeText": true,    // opcional; añade el texto OCR por zonas (cuesta ~1 s)
   "waitForLabel": "Biblioteca", // opcional; espera acotada (≤ 24 s) hasta que esa etiqueta
                                 // aparezca en controles o texto antes de devolver la vista
-  "processId": 1234             // opcional; la ventana de ese proceso (o el marco que la aloja,
+  "processId": 1234,            // opcional; la ventana de ese proceso (o el marco que la aloja,
                                 // UWP) es la superficie aunque otra tenga el foco: es la app
                                 // que la misión acaba de abrir. Se trae al frente.
+  "application": "Configuración" // opcional; sin processId, la ventana visible cuyo título
+                                // contiene ese nombre (plegado: minúsculas sin tildes) es la
+                                // superficie y se trae al frente. Sin ninguna de las dos, la
+                                // ventana en primer plano.
 }
 ```
+
+Si otro proceso dibuja sobre el centro de la ventana elegida (un reproductor a pantalla
+completa, un panel del sistema), la vista intenta una vez traerla al frente y, si sigue
+tapada, la devuelve igual con `window.coveredBy {title, process}`: lo leído es la ventana
+pedida, pero un clic caería sobre la que la tapa. La misión se detiene con
+`computer_use_window_covered` y lo dice con el título de la ventana que tapa.
 
 ### 1.2 Resultado
 
@@ -58,7 +68,8 @@ Contrato de verificación `input.visible.controls.windows.uia.snapshot.v2`.
     "processId": 1234,
     "hwnd": 460248,
     "rect": {"x": 100, "y": 80, "w": 640, "h": 720},
-    "focused": {"i": 7, "kind": "Edit", "name": "Búsqueda", "value": ""}
+    "focused": {"i": 7, "kind": "Edit", "name": "Búsqueda", "value": ""},
+    "coveredBy": {"title": "Película - PotPlayer", "process": "PotPlayerMini64"}  // solo si otra la tapa
   },
   "controls": [
     {
@@ -249,8 +260,9 @@ Presupuesto de tiempo fijo: 90 s de misión; cada vista ≤ 30 s, cada primitiva
 6. **Parar** cuando: `successCheck` se cumple (o el modelo dice `done` con evidencia
    presente en la vista); `budgetSteps` o 90 s agotados (`computer_use_budget_exhausted`);
    dos vistas seguidas iguales tras actuar (`computer_use_surface_unchanged`); el modelo
-   dice `none` (`computer_use_no_step_visible`); una primitiva pide confirmación (la misión
-   queda pendiente y se reanuda con el «sí»).
+   dice `none` (`computer_use_no_step_visible`); otra ventana tapa la aplicación y no cede
+   (`computer_use_window_covered`); una primitiva pide confirmación (la misión queda
+   pendiente y se reanuda con el «sí»).
 
 **Reintento acotado.** Una primitiva que falla sin efecto (`visible_button_not_found`,
 `scroll_surface_unchanged`) se registra y el modelo vuelve a decidir con ese fallo en el

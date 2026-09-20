@@ -113,6 +113,110 @@ internal static partial class VisibleControlSurface
         return found;
     }
 
+    /// <summary>
+    /// The topmost visible window whose title names the application: the
+    /// mission's target when its process is unknown (app.open did not verify,
+    /// or the application was already there). Brought to the front; 0 when no
+    /// window is titled that way. Title matching is generic: the folded
+    /// application name inside the folded title.
+    /// </summary>
+    internal static async ValueTask<nint> ResolveTitledWindowAsync(
+        string application,
+        CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        string wanted = FoldTitle(application);
+        if (wanted.Length == 0)
+            return 0;
+        nint found = 0;
+        uint self = unchecked((uint)Environment.ProcessId);
+        EnumWindowsProc callback = (window, _) =>
+        {
+            if (!IsWindowVisible(window) || GetAncestor(window, 3) != window)
+                return true;
+            if ((GetWindowLongPtrW(window, -20).ToInt64() & 0x80) != 0)
+                return true;
+            GetWindowThreadProcessId(window, out uint owner);
+            if (owner == 0 || owner == self || !HasUsableSurface(window))
+                return true;
+            if (!FoldTitle(WindowTitle(window)).Contains(wanted, StringComparison.Ordinal))
+                return true;
+            found = window;
+            return false;
+        };
+        _ = EnumWindows(callback, nint.Zero);
+        if (found == 0)
+            return 0;
+        if (GetForegroundWindow() != found)
+        {
+            BringToFront(found);
+            await Task.Delay(250, cancellationToken).ConfigureAwait(false);
+        }
+
+        return found;
+    }
+
+    /// <summary>
+    /// The root window of another process drawn over the centre of this one,
+    /// or 0 when the window is what a person sees there. Measured: a fullscreen
+    /// video player on top of Settings and of Steam; the view read the player
+    /// and a click would have landed on it.
+    /// </summary>
+    internal static nint CoveringWindow(nint hwnd)
+    {
+        if (!TryBounds(hwnd, out int left, out int top, out int right, out int bottom))
+            return 0;
+        var centre = new Point((left + right) / 2, (top + bottom) / 2);
+        nint hit = WindowFromPoint(centre);
+        if (hit == 0)
+            return 0;
+        nint root = GetAncestor(hit, 2);
+        if (root == 0)
+            root = hit;
+        if (root == hwnd)
+            return 0;
+        _ = GetWindowThreadProcessId(root, out uint coverOwner);
+        _ = GetWindowThreadProcessId(hwnd, out uint owner);
+        // A window of the same process (a dialog, a menu, a popup) and this
+        // product's own window are not covers.
+        if (coverOwner == owner || coverOwner == unchecked((uint)Environment.ProcessId))
+            return 0;
+        return root;
+    }
+
+    internal static string FoldTitle(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+        string decomposed = value.Normalize(System.Text.NormalizationForm.FormD);
+        var builder = new System.Text.StringBuilder(decomposed.Length);
+        bool pendingSpace = false;
+        foreach (char character in decomposed)
+        {
+            if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(character)
+                == System.Globalization.UnicodeCategory.NonSpacingMark)
+            {
+                continue;
+            }
+
+            if (char.IsWhiteSpace(character))
+            {
+                pendingSpace = builder.Length > 0;
+                continue;
+            }
+
+            if (pendingSpace)
+            {
+                builder.Append(' ');
+                pendingSpace = false;
+            }
+
+            builder.Append(char.ToLowerInvariant(character));
+        }
+
+        return builder.ToString();
+    }
+
     private static nint FrameHosting(uint processId)
     {
         nint frame = 0;
@@ -394,6 +498,16 @@ internal static partial class VisibleControlSurface
 
     [LibraryImport("user32.dll")]
     private static partial nint GetForegroundWindow();
+
+    [LibraryImport("user32.dll")]
+    private static partial nint WindowFromPoint(Point point);
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct Point(int x, int y)
+    {
+        public int X = x;
+        public int Y = y;
+    }
 
     [LibraryImport("user32.dll")]
     private static partial nint GetAncestor(nint hwnd, uint flags);

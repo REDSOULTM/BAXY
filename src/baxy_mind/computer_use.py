@@ -809,6 +809,7 @@ _STOP_CAUSES: dict[str, dict[str, str]] = {
     "computer_use_repeated_step": {"es": "el único paso que veía ya había fallado", "en": "the only step I could see had already failed"},
     "computer_use_step_failed": {"es": "un paso no se pudo hacer", "en": "a step could not be done"},
     "computer_use_step_arguments_invalid": {"es": "el paso elegido no era válido", "en": "the chosen step was not valid"},
+    "computer_use_window_covered": {"es": "otra ventana tapa la aplicación", "en": "another window covers the application"},
 }
 
 
@@ -838,11 +839,20 @@ def project_seen(observed: dict, language: str) -> dict[str, object]:
         seen["satisfiedBy"] = observed.get("satisfiedBy")
     if isinstance(observed.get("screen"), dict):
         seen["screen"] = observed.get("screen")
+    cover = window.get("coveredBy")
+    if isinstance(cover, dict) and (cover.get("title") or cover.get("process")):
+        seen["coveredBy"] = str(cover.get("title") or cover.get("process"))
     if observed.get("stoppedBy"):
         seen["stoppedBy"] = observed.get("stoppedBy")
         seen["stoppedBecause"] = _STOP_CAUSES.get(str(observed.get("stoppedBy")), {}).get(
             "en" if language == "en" else "es", str(observed.get("stoppedBy")).replace("_", " ")
         )
+        if observed.get("stoppedBy") == "computer_use_window_covered" and seen.get("coveredBy"):
+            seen["stoppedBecause"] = (
+                f"the window «{seen['coveredBy']}» covers the application"
+                if language == "en"
+                else f"la ventana «{seen['coveredBy']}» tapa la aplicación"
+            )
     if observed.get("procedure") in {"replayed", "learned", "relearned"}:
         seen["procedure"] = observed.get("procedure")
     return seen

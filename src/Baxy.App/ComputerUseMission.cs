@@ -122,9 +122,18 @@ internal static class ComputerUseMission
             }
 
             state["window"] = lastView["window"]?.DeepClone();
+            AdoptWindow(state, lastView);
             if (ComputerUseSuccessCheck.Evaluate(successCheck, lastView, steps, out satisfiedBy))
             {
                 reached = true;
+                break;
+            }
+
+            if (lastView["window"]?["coveredBy"] is JsonObject)
+            {
+                // Another process draws over the application and did not yield:
+                // acting there would land on the cover. The mission says so.
+                errorCode = "computer_use_window_covered";
                 break;
             }
 
@@ -388,6 +397,23 @@ internal static class ComputerUseMission
         return new MindComputerUseStep(operation, arguments.DeepClone() as JsonObject ?? new JsonObject(), "procedure");
     }
 
+    /// <summary>
+    /// Once a view shows the window titled like the mission's application, the
+    /// mission keeps looking at that process (a later foreground change does
+    /// not move the surface).
+    /// </summary>
+    private static void AdoptWindow(JsonObject state, JsonObject view)
+    {
+        if ((int?)state["processId"] is > 0 || (string?)state["application"] is not { Length: > 0 } application)
+            return;
+        if (view["window"] is not JsonObject window || (int?)window["processId"] is not (> 0 and int owner))
+            return;
+        string title = ComputerUseSuccessCheck.Fold((string?)window["title"]);
+        string wanted = ComputerUseSuccessCheck.Fold(application);
+        if (wanted.Length > 0 && title.Contains(wanted, StringComparison.Ordinal))
+            state["processId"] = owner;
+    }
+
     private static async Task<JsonObject?> LookAsync(
         Context context,
         JsonObject state,
@@ -397,6 +423,13 @@ internal static class ComputerUseMission
         if ((int?)state["processId"] is > 0 and int owner)
         {
             arguments["processId"] = owner;
+        }
+        else if ((string?)state["application"] is { Length: > 0 } application)
+        {
+            // Until the process is known the window titled like the application
+            // is the surface (measured: app.open failed to verify under a
+            // fullscreen player and the view read the player instead).
+            arguments["application"] = application;
         }
 
         if ((string?)state["waitForLabel"] is { Length: > 0 } waited)

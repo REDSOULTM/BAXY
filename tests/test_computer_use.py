@@ -249,6 +249,22 @@ def test_mission_vetoes() -> None:
     assert computer_use.mission_defect("no pude llegar a la biblioteca: no encontre el control.", failed) is None
 
 
+def test_covered_window_names_the_cover_in_the_cause():
+    covered = computer_use.project_seen(
+        {
+            **OBSERVED,
+            "reached": False,
+            "stoppedBy": "computer_use_window_covered",
+            "window": {"title": "Configuración", "process": "ApplicationFrameHost", "coveredBy": {"title": "Pelicula - PotPlayer", "process": "PotPlayerMini64"}},
+        },
+        "es",
+    )
+    assert covered["coveredBy"] == "Pelicula - PotPlayer"
+    assert covered["stoppedBecause"] == "la ventana «Pelicula - PotPlayer» tapa la aplicación"
+    plain = computer_use.project_seen({**OBSERVED, "reached": False, "stoppedBy": "computer_use_window_covered"}, "en")
+    assert plain["stoppedBecause"] == "another window covers the application"
+
+
 # ------------------------------------------------------- pasos dictados
 
 

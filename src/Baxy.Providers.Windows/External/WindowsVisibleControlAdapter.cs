@@ -198,8 +198,16 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         bool includeText = false;
         string? waitForLabel = null;
         int processId = 0;
+        string? application = null;
         if (arguments.ValueKind == JsonValueKind.Object)
         {
+            if (arguments.TryGetProperty("application", out JsonElement named)
+                && named.ValueKind == JsonValueKind.String
+                && !string.IsNullOrWhiteSpace(named.GetString()))
+            {
+                application = named.GetString()!.Trim();
+            }
+
             if (arguments.TryGetProperty("processId", out JsonElement owner)
                 && owner.ValueKind == JsonValueKind.Number
                 && owner.TryGetInt32(out int requestedProcess) && requestedProcess > 0)
@@ -227,7 +235,7 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         DateTime deadline = DateTime.UtcNow + LabelWaitBudget;
         while (true)
         {
-            ViewResult view = await BuildViewAsync(limit, includeText, processId, cancellationToken)
+            ViewResult view = await BuildViewAsync(limit, includeText, processId, application, cancellationToken)
                 .ConfigureAwait(false);
             if (view.Receipt.ErrorCode is not null)
                 return view.Receipt;
@@ -245,23 +253,46 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
         int limit,
         bool includeText,
         int processId,
+        string? application,
         CancellationToken cancellationToken)
     {
         const string operation = "input.visible.controls";
         var stopwatch = Stopwatch.StartNew();
         nint hwnd;
+        nint cover = 0;
         try
         {
-            // The application the mission works on (the one it just opened) is
-            // the surface even when another window holds the foreground.
+            // The application the mission works on (the one it just opened, or
+            // the one named when its process is unknown) is the surface even
+            // when another window holds the foreground.
             hwnd = processId > 0
                 ? await VisibleControlSurface.ResolveProcessWindowAsync(processId, cancellationToken)
                     .ConfigureAwait(false)
                 : 0;
+            if (hwnd == 0 && application is not null)
+            {
+                hwnd = await VisibleControlSurface.ResolveTitledWindowAsync(application, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+
             if (hwnd == 0)
             {
                 hwnd = await VisibleControlSurface.ResolveForegroundAsync(cancellationToken)
                     .ConfigureAwait(false);
+            }
+
+            // Another process drawn over the window (a fullscreen player, an
+            // overlay): one more attempt to bring the window up, then the view
+            // says who covers it rather than reading the cover as the surface.
+            if (hwnd != 0)
+            {
+                cover = VisibleControlSurface.CoveringWindow(hwnd);
+                if (cover != 0)
+                {
+                    VisibleControlSurface.BringToFront(hwnd);
+                    await Task.Delay(300, cancellationToken).ConfigureAwait(false);
+                    cover = VisibleControlSurface.CoveringWindow(hwnd);
+                }
             }
         }
         catch (Exception exception) when (exception is IOException or InvalidOperationException)
@@ -396,6 +427,14 @@ internal sealed class WindowsVisibleControlAdapter : IExternalOperationAdapter, 
                     writer.WriteNumber("processId", ownerProcessId);
                     writer.WriteNumber("hwnd", hwnd);
                     WriteRect(writer, "rect", windowRect);
+                    if (cover != 0)
+                    {
+                        (_, string coverProcess) = VisibleControlSurface.WindowProcess(cover);
+                        writer.WriteStartObject("coveredBy");
+                        writer.WriteString("title", VisibleControlSurface.WindowTitle(cover));
+                        writer.WriteString("process", coverProcess);
+                        writer.WriteEndObject();
+                    }
                     if (root.TryGetProperty("focused", out JsonElement focused)
                         && focused.ValueKind == JsonValueKind.Object)
                     {
