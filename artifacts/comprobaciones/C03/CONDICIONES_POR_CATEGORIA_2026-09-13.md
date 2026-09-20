@@ -1682,3 +1682,7 @@ Vídeo y series pasa de 16/26 a 16/26 con poner una serie nombrandola en Disney+
 ## Actualización 2026-09-20 (VIDEO1949)
 
 Vídeo y series pasa de 16/26 a 16/26 con poner una serie nombrandola en Disney+ eligiendo la ficha cuando la busqueda responde (commit ce712690, BUILD1949) (HEAD ce712690): 10 ejecutados, 8 aprobados, 2 fallidos, 0 créditos. La variante en voseo que falló en VIDEO1947 reproduce con la búsqueda esperada; dos turnos con «Daredevil» fallaron porque la ficha de nombre exacto era la de colección (/browse/page-), sin botón de reproducir, con finales honestos: sin dos variantes aprobadas, cero créditos. La reparación se mide en la tanda siguiente.
+
+## Actualización 2026-09-20 (VIDEO1951)
+
+Vídeo y series pasa de 16/26 a 21/26 con poner una serie nombrandola en Disney+ prefiriendo la ficha de la obra a la coleccion (commit 5f1be4ed, BUILD1951) (HEAD 5f1be4ed): 10 ejecutados, 9 aprobados, 1 fallido, 5 créditos. «Daredevil» elige la ficha de la obra y no la de colección, y las dos variantes reproducen; H0712 falló porque la ficha elegida («El diablo viste a la moda 2») no terminó de cargar en el minuto del turno, con final honesto. Cinco literales acreditan con dos variantes aprobadas.

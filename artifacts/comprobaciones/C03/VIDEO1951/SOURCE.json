@@ -1,0 +1,15 @@
+{
+  "schema": "c03-video1951-source-adoption-v1",
+  "status": "adopted_measured",
+  "adopted_by": "root (Claude Fable 5.1)",
+  "owner": "src/Baxy.Providers.Windows/External/WebBrowserAdapter.cs (PlayDisneyAsync: entity cards preferred, /browse/page- collections walked to the entity card), on top of the VIDEO1951 build.",
+  "patch": "artifacts/comprobaciones/C03/VIDEO1951/SOURCE.patch",
+  "commits": [
+    "5f1be4eda0553baf0e5da15fd49f34b2687a1f0b"
+  ],
+  "build": "BUILD1951 (C03-repairs1951-build/BUILD_READY.json; Providers)",
+  "cause_measured": "Entre los resultados de Disney+ la ficha con el nombre exacto podía ser la de colección, sin botón de reproducir.",
+  "change": "Se prefiere la ficha de la obra y, en una colección, la obra se elige entre sus fichas.",
+  "measurement": "VIDEO1951: 10 ejecutados, 9 aprobados, 1 fallido; 5 créditos. «Daredevil» elige la ficha de la obra y no la de colección, y las dos variantes reproducen; H0712 falló porque la ficha elegida («El diablo viste a la moda 2») no terminó de cargar en el minuto del turno, con final honesto. Cinco literales acreditan con dos variantes aprobadas.",
+  "credits": 5
+}

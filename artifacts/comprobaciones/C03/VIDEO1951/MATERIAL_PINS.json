@@ -1,0 +1,123 @@
+{
+  "schema": "video1951-public-material-pins-v1",
+  "private_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1951-proposal",
+  "instrument_directory": "C:\\Users\\usuario\\AppData\\Local\\BAXY\\C03-video1951-instrument-v1",
+  "seal_sha256": "b99cc2b58134df990ecc02f6b3a7c98410995b3cebd011333f3a96c9bf8f3154",
+  "runner_sha256": "d98f468e74a73e3f1dc4559d65e155c42d659dfd465d4b80988a0a26050af8e5",
+  "transport_seal_sha256": "b5f8ccb2c4690ae0abeaaae441ef536c6ca484449c631f13db79e984d50d737d",
+  "files": {
+    "panel.json": "2b86098ba6e28684cbd74e694cdd56d7bc0bf3422f6120d1521890d1d3cbc408",
+    "turns.jsonl": "b4d0a0fefbe41b9fe4d6fc33e9afb4a2f89bdce03c95d2d62de0414e3552b609",
+    "case-map.json": "bd743f284c363c3e1ede7ef17d43f372a28dd42fc8fa99c714bf21d4f8b81ed3",
+    "PLAN.md": "e6b4f7215604590394d7314ff79308bc871e68a784ea767b3299b6f27e25f82c"
+  },
+  "counts": {
+    "cases": 10,
+    "historical_literals": 6,
+    "original_development_variants": 2,
+    "boundaries": 2,
+    "wire_lines": 20,
+    "session_controls": 10,
+    "ordinary_turns": 2,
+    "reviewed_turns": 8,
+    "maximum_reportable_terminals": 18,
+    "maximum_internal_confirmations": 8
+  },
+  "kind_counts": {
+    "historical_literal": 6,
+    "original_development_variant": 2,
+    "boundary": 2
+  },
+  "case_identities": [
+    {
+      "index": 0,
+      "case_id": "H0235",
+      "kind": "historical_literal",
+      "group": "disney_named_play",
+      "credit_behavior": "disney_named_play",
+      "text_sha256": "4a5d454bbddc28ac9b23a9917b44c8b4a1380de6b3ce2332a75bbe9112e2e6ab",
+      "criterion_sha256": "36f5a5bfddbbc39e5473035937112369edcc191e263e927615669c6af138e5b1"
+    },
+    {
+      "index": 1,
+      "case_id": "H0305",
+      "kind": "historical_literal",
+      "group": "disney_named_play",
+      "credit_behavior": "disney_named_play",
+      "text_sha256": "64e3769899ecb2083a02d82e9d93b95f6a2e321405f2471d47a9b31cc9cddc9e",
+      "criterion_sha256": "36f5a5bfddbbc39e5473035937112369edcc191e263e927615669c6af138e5b1"
+    },
+    {
+      "index": 2,
+      "case_id": "H0341",
+      "kind": "historical_literal",
+      "group": "disney_named_play",
+      "credit_behavior": "disney_named_play",
+      "text_sha256": "70769b200b0d6b2bc506aa4a23163aee819d1dc3fd3b4aef3c42a63c8629b5c6",
+      "criterion_sha256": "36f5a5bfddbbc39e5473035937112369edcc191e263e927615669c6af138e5b1"
+    },
+    {
+      "index": 3,
+      "case_id": "H0362",
+      "kind": "historical_literal",
+      "group": "disney_named_play",
+      "credit_behavior": "disney_named_play",
+      "text_sha256": "76b5a7123787a49fdf73a7cb4821657bdd7c8de1f14e3de52405414721b670cb",
+      "criterion_sha256": "36f5a5bfddbbc39e5473035937112369edcc191e263e927615669c6af138e5b1"
+    },
+    {
+      "index": 4,
+      "case_id": "H0535",
+      "kind": "historical_literal",
+      "group": "disney_named_play",
+      "credit_behavior": "disney_named_play",
+      "text_sha256": "bd1a0c36443e8c83dc954dd05319f186ea0cd89579d3d746635656287b3191a1",
+      "criterion_sha256": "36f5a5bfddbbc39e5473035937112369edcc191e263e927615669c6af138e5b1"
+    },
+    {
+      "index": 5,
+      "case_id": "H0712",
+      "kind": "historical_literal",
+      "group": "disney_named_play",
+      "credit_behavior": "disney_named_play",
+      "text_sha256": "f67bdfac2ed890f9d168cfe518ea475c9c9326d6ee28de4a108586a3c71e678c",
+      "criterion_sha256": "36f5a5bfddbbc39e5473035937112369edcc191e263e927615669c6af138e5b1"
+    },
+    {
+      "index": 6,
+      "case_id": "video1951-dev-01",
+      "kind": "original_development_variant",
+      "group": "disney_named_play",
+      "credit_behavior": "disney_named_play",
+      "text_sha256": "e8d7b60dc771fd1d4eeed8c89b1ae981c65df39295e23690abf89431c0165df7",
+      "criterion_sha256": "36f5a5bfddbbc39e5473035937112369edcc191e263e927615669c6af138e5b1"
+    },
+    {
+      "index": 7,
+      "case_id": "video1951-dev-02",
+      "kind": "original_development_variant",
+      "group": "disney_named_play",
+      "credit_behavior": "disney_named_play",
+      "text_sha256": "e0e0c6cf249f3f3783c2d8164e691eda0f2b2c2672d6d556ec1bd065521ae089",
+      "criterion_sha256": "36f5a5bfddbbc39e5473035937112369edcc191e263e927615669c6af138e5b1"
+    },
+    {
+      "index": 8,
+      "case_id": "video1951-boundary-01",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "88f4ab00dde93e72e29d3bb55ab3a0b61ef16ceb6f6e48a05752a40b8d30371b",
+      "criterion_sha256": "031153cb155d4fd6216825f753dc315529c6a33cdc1329a8ed51b2593af70750"
+    },
+    {
+      "index": 9,
+      "case_id": "video1951-boundary-02",
+      "kind": "boundary",
+      "group": "no_effect_boundary",
+      "credit_behavior": "no_effect_boundary",
+      "text_sha256": "bc24898c6d653acc0303bda963f8edd69ad552c3e75140829c1ecc5b591f40cc",
+      "criterion_sha256": "50757e30c0886c9c9d6fe25617d31896c91ed2f486ced29f1b243a9954f5945b"
+    }
+  ]
+}
