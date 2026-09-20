@@ -51,10 +51,10 @@ public sealed class SystemStatusHandshakeTests
         Assert.Multiple(() =>
         {
             // 170 → 191 descriptores (21 operaciones de C03; plan post-goal 2026-09-20, Fase 1 grupo B)
-            // → 195 (weather.current, web.news.headlines, package.uninstall y shell.command.run; auditoría semántica REOPEN1993).
-            Assert.That(ProductCatalog.Descriptors, Has.Count.EqualTo(195));
-            Assert.That(ProductCatalog.ToolDescriptors, Has.Count.EqualTo(194));
-            Assert.That(complete.Capabilities, Has.Count.EqualTo(194));
+            // → 196 (weather.current, web.news.headlines, package.uninstall, shell.command.run y game.uninstall.named; auditoría semántica REOPEN1993).
+            Assert.That(ProductCatalog.Descriptors, Has.Count.EqualTo(196));
+            Assert.That(ProductCatalog.ToolDescriptors, Has.Count.EqualTo(195));
+            Assert.That(complete.Capabilities, Has.Count.EqualTo(195));
             Assert.That(
                 complete.Capabilities.Select(static capability => capability.Name),
                 Does.Not.Contain("app.status"));

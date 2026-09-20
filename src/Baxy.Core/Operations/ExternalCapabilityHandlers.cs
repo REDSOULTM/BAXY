@@ -44,6 +44,7 @@ internal static class ExternalCapabilityHandlers
         "game.install.prepare",
         "game.install.status",
         "game.launch",
+        "game.uninstall.named",
         "game.purchase.commit",
         "game.purchase.prepare",
         "input.key.press",

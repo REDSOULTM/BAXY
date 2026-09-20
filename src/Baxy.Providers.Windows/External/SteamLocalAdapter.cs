@@ -106,6 +106,9 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
                 "game.install.named" => await InstallNamedAsync(
                     operation, arguments, effectBoundary, cancellationToken)
                     .ConfigureAwait(false),
+                "game.uninstall.named" => await UninstallNamedAsync(
+                    operation, arguments, effectBoundary, cancellationToken)
+                    .ConfigureAwait(false),
                 "game.install.status" => Status(operation, arguments),
                 "game.install.cancel" => await CancelAsync(
                     operation, arguments, effectBoundary, cancellationToken)
@@ -278,6 +281,15 @@ internal sealed partial class SteamLocalAdapter : IExternalOperationAdapter
         CancellationToken cancellationToken)
     {
         string title = ExternalJson.RequiredString(arguments, "title");
+        // REOPEN1993 grupo S (H0578 «Descarga Fall guys en epic games»): the
+        // store named after the title picks the launcher.
+        if (arguments.TryGetProperty("store", out JsonElement store)
+            && store.ValueKind == JsonValueKind.String && store.GetString() == "epic")
+        {
+            return await EpicInstallNamedAsync(operation, title, effectBoundary, cancellationToken)
+                .ConfigureAwait(false);
+        }
+
         string folded = FoldTitle(title);
         string? appId = KnownTitleAppIds.TryGetValue(folded, out string? known)
             ? known
@@ -868,7 +880,9 @@ internal sealed partial class WindowsSteamClientAutomation : ISteamClientAutomat
     public ValueTask<SteamDispatchResult> DispatchAsync(string uri, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri? parsed) || parsed.Scheme != "steam")
+        // REOPEN1993 grupo S: the Epic launcher takes its own install links.
+        if (!Uri.TryCreate(uri, UriKind.Absolute, out Uri? parsed)
+            || parsed.Scheme is not ("steam" or "com.epicgames.launcher"))
         {
             return ValueTask.FromResult(new SteamDispatchResult(false, false));
         }

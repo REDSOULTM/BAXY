@@ -3544,6 +3544,46 @@ _CAUSE_FACT = {
     "visible_button_not_found": (
         "nothing on the screen is called that, so nothing was pressed"
     ),
+    # REOPEN1993 grupo S: the launchers name their own absences.
+    "steam_title_not_resolved": (
+        "no Steam title by that name is known here, so nothing was downloaded, installed or removed"
+    ),
+    "steam_entitlement_not_verified": (
+        "that game is not in the Steam library of the account on this PC, so it was not installed (it can be bought first)"
+    ),
+    "steam_game_not_installed": (
+        "that game is not installed on this PC, so there was nothing to uninstall"
+    ),
+    "steam_install_dispatch_rejected": (
+        "the Steam client did not accept the install request, so nothing started"
+    ),
+    "steam_uninstall_dispatch_rejected": (
+        "the Steam client did not accept the uninstall request, so nothing was removed"
+    ),
+    "steam_uninstall_not_verified": (
+        "the uninstall was requested but the game still shows as installed, so the removal is not confirmed"
+    ),
+    "steam_install_not_verified": (
+        "the install was requested but the download did not start in time, so nothing is confirmed"
+    ),
+    "epic_entitlement_not_verified": (
+        "that game is not in the Epic Games library of the account on this PC, so it was not installed"
+    ),
+    "epic_launcher_data_not_found": (
+        "the Epic Games launcher data is not on this PC, so nothing was installed"
+    ),
+    "epic_install_link_not_resolved": (
+        "the Epic Games launcher gave no install identity for that game, so nothing started"
+    ),
+    "epic_install_dispatch_rejected": (
+        "the Epic Games launcher did not accept the install request, so nothing started"
+    ),
+    "epic_install_not_verified": (
+        "the install was requested in the Epic Games launcher but the download did not start in time, so nothing is confirmed"
+    ),
+    "epic_uninstall_not_supported": (
+        "games are not uninstalled from the Epic Games launcher from here, so nothing was removed"
+    ),
     # REOPEN1993 comandos: what the console run could not do is named.
     "shell_command_destructive": (
         "that command would delete, kill, format or change the system, so it was not run from here"
@@ -6345,6 +6385,33 @@ def _news_fact_defect(text: str, payload: dict) -> str:
     return ""
 
 
+def _game_library_fact_defect(text: str, payload: dict) -> str:
+    """REOPEN1993 grupo S: the reply names the game and matches the manifest
+    state: a started download is not «installed», an already-installed game
+    was not downloaded, an uninstall says the game is gone."""
+
+    if payload.get("operation") not in {"game.install.named", "game.uninstall.named"}:
+        return ""
+    seen = payload.get("seen")
+    if not isinstance(seen, dict) or not isinstance(seen.get("state"), str):
+        return ""
+    folded_text = _reading_fold(text)
+    name = seen.get("name")
+    if isinstance(name, str) and name.strip() and _reading_fold(name) not in folded_text:
+        return "missing_state"
+    state = seen["state"]
+    if state == "downloading":
+        if re.search(r"\b(?:ya\s+(?:esta|quedo)\s+instalad|instalad[oa]\s+(?:correctamente|con exito)|installed successfully|is now installed)\w*", folded_text):
+            return "extra_claim"
+        if not re.search(r"\b(?:descarg|download|instalando|installing|empez|comenz|started|inici)\w*", folded_text):
+            return "missing_state"
+    if state == "already_installed" and re.search(r"\b(?:descarg(?:ue|ando|a\b)|download(?:ed|ing)|empez|started)\w*", folded_text) and not re.search(r"\bno\b", folded_text):
+        return "extra_claim"
+    if state in {"manifest_removed", "manifest_not_installed"} and not re.search(r"\b(?:desinstal|quit|elimin|borr|uninstall|removed|ya no)\w*", folded_text):
+        return "missing_state"
+    return ""
+
+
 def _shell_fact_defect(text: str, payload: dict) -> str:
     """REOPEN1993 comandos: a quoted output line must be one the command
     printed; a failed command is not reported as a success; a command with
@@ -6725,6 +6792,9 @@ def _payload_fact_defect(text: str, payload: dict, user_text: str = "") -> str:
     shell_defect = _shell_fact_defect(text, payload)
     if shell_defect:
         return shell_defect
+    game_defect = _game_library_fact_defect(text, payload)
+    if game_defect:
+        return game_defect
     if (
         payload.get("operation") == "system.power"
         and isinstance(seen, dict)
@@ -15689,6 +15759,27 @@ class LlmRuntime:
                 "en una oración, la operación y su resultado tal como se muestra (por "
                 "ejemplo que seis por siete da 42 en la Calculadora), usando sólo esos "
                 "números; no se hizo nada más."
+            )
+        if (
+            visible_situation.get("operation") in {"game.install.named", "game.uninstall.named"}
+            and isinstance(visible_situation.get("seen"), dict)
+            and isinstance(visible_situation["seen"].get("state"), str)
+        ):
+            # REOPEN1993 grupo S: the launcher's manifest is the fact; the reply
+            # names the game and its state (downloading, already installed,
+            # removed) and never a progress it did not see.
+            instruct(
+                "\nseen.name is the game and seen.state what its launcher's manifest says: "
+                "'downloading' (the download started), 'already_installed' (it was already "
+                "installed, nothing was downloaded), 'manifest_removed' or "
+                "'manifest_not_installed' (it was uninstalled). Say that in one short sentence "
+                "naming the game; seen.bytesDownloaded/bytesTotal may be quoted only if present."
+                if response_language == "en"
+                else "\nseen.name es el juego y seen.state lo que dice el manifiesto de su lanzador: "
+                "'downloading' (empezó la descarga), 'already_installed' (ya estaba instalado, "
+                "no se descargó nada), 'manifest_removed' o 'manifest_not_installed' (quedó "
+                "desinstalado). Dilo en una oración corta nombrando el juego; "
+                "seen.bytesDownloaded/bytesTotal sólo se citan si están."
             )
         if (
             visible_situation.get("operation") == "shell.command.run"

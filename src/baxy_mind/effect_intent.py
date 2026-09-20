@@ -2438,6 +2438,10 @@ def _curated_domain_is_grounded(
         )
     if operation == "shell.command.run":
         return shell_command_request(text) is not None
+    if operation == "game.install.named":
+        return steam_library_verb(text) == "install"
+    if operation == "game.uninstall.named":
+        return steam_library_verb(text) == "uninstall"
     if operation == "package.uninstall":
         software = software_package_request(text, application_names)
         return software is not None and software[0] == "uninstall"
@@ -17042,6 +17046,36 @@ _STEAM_LIBRARY_REQUEST = re.compile(
 )
 
 
+def _installed_game_named(name: str, game_catalog: GameCatalogIndex) -> str | None:
+    """The display name of the installed game that a bare name matches
+    exactly (folded), or None."""
+
+    wanted = _fold(name).strip()
+    for normalized, _provider, _app_id, display in game_catalog.entries:
+        if normalized == wanted or _fold(display).strip() == wanted:
+            return display
+    return None
+
+
+def steam_library_verb(text: str) -> str | None:
+    """REOPEN1993 grupo S: what a library request asks for — «install»
+    (descarga, instala, baja), «uninstall» (desinstala, remove) or «launch»
+    (lanza, abre, juega); None when the text is not a library request."""
+
+    if steam_library_title(text) is None:
+        return None
+    folded = _strip_request_envelope(_fold(text)).strip()
+    head = re.search(rf"\b{_STEAM_LIBRARY_VERB}\b", folded)
+    if head is None:
+        return None
+    verb = head.group(0)
+    if verb.startswith(("desinstal", "uninstall", "remove")):
+        return "uninstall"
+    if verb.startswith(("descarg", "baja", "instal", "install", "download")):
+        return "install"
+    return "launch"
+
+
 def game_library_store(text: str) -> str:
     """The store a library request names after the title: «epic» or «steam»."""
 
@@ -18648,6 +18682,16 @@ def resolve_explicit_effects(
         and not near_catalog_application_candidates(text, authenticated_applications)
         and resolve_application_catalog_app_id(text, authenticated_applications) is None
     ):
+        # REOPEN1993 grupo S (D1/D11: the survey is the specification): a
+        # download or install is the real install (the adapter says «not in
+        # the library» or «already installed» when that is the case), an
+        # uninstall is the real uninstall; launching what is not installed
+        # keeps the library read (INSTALL1633).
+        library_verb = steam_library_verb(text)
+        if library_verb == "install" and "game.install.named" in available:
+            return EffectIntent(("game.install.named",), (text,))
+        if library_verb == "uninstall" and "game.uninstall.named" in available:
+            return EffectIntent(("game.uninstall.named",), (text,))
         # INSTALL1617: a Steam download, install or uninstall of a named game
         # first reads whether the title is in the person's library and on disk;
         # the install effect itself needs an entitlement and a confirmation,
@@ -18666,6 +18710,15 @@ def resolve_explicit_effects(
         verb, _name, in_catalog = software
         if verb == "uninstall" and in_catalog and "package.uninstall" in available:
             return EffectIntent(("package.uninstall",), (text,))
+        if (
+            verb == "uninstall"
+            and not in_catalog
+            and "game.uninstall.named" in available
+            and _installed_game_named(_name, authenticated_games) is not None
+        ):
+            # REOPEN1993 grupo S (H0620 «Desinstala Worms Rumble»): a bare name
+            # that is an installed game is uninstalled from its launcher.
+            return EffectIntent(("game.uninstall.named",), (text,))
         if verb == "install" and not in_catalog and {"package.install.prepare", "package.install.commit"} <= available:
             return EffectIntent(("package.install.prepare", "package.install.commit"), (text, text))
     if (

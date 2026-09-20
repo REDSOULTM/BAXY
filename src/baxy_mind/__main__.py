@@ -5970,6 +5970,20 @@ def _explicit_arguments_from_evidence(
         if effect_intent._weather_lookup_query(evidence) is not None:
             return {"location": effect_intent._weather_location(evidence)}
 
+    if operation in {"game.install.named", "game.uninstall.named"}:
+        library_title = effect_intent.steam_library_title(evidence)
+        library_verb = effect_intent.steam_library_verb(evidence)
+        if library_title is not None and library_verb == ("uninstall" if operation == "game.uninstall.named" else "install"):
+            # REOPEN1993 grupo S: the title as the person named it (the adapter
+            # resolves it) and the store named after it.
+            return {"title": library_title, "store": effect_intent.game_library_store(evidence)}
+        if operation == "game.uninstall.named":
+            software = effect_intent.software_package_request(evidence, application_names)
+            if software is not None and software[0] == "uninstall" and not software[2]:
+                installed = effect_intent._installed_game_named(software[1], game_catalog)
+                if installed is not None:
+                    return {"title": installed, "store": "steam"}
+
     if operation == "shell.command.run":
         shell = effect_intent.shell_command_request(evidence)
         if shell is not None:
@@ -6311,6 +6325,8 @@ def _ground_explicit_arguments(
         "game.launch",
         # REOPEN1993 grupo G/N/W: the readers own the package name (catalog
         # name or the person's), the news topic and the weather place.
+        "game.install.named",
+        "game.uninstall.named",
         "package.install.prepare",
         "package.uninstall",
         "shell.command.run",

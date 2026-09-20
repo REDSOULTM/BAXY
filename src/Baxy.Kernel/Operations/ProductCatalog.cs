@@ -639,11 +639,17 @@ public static class ProductCatalog
             "Confirma una instalación preparada en una sesión Steam autenticada y verifica su job."),
         Descriptor(
             "game.install.named",
-            Schema([String("title", maximumUtf8Bytes: 256, nonWhitespace: true)], ["title"]),
+            // REOPEN1993 grupo S: la tienda nombrada tras el título (Steam o Epic).
+            Schema(
+                [
+                    String("store", types: NullableString, values: ["epic", "steam"]),
+                    String("title", maximumUtf8Bytes: 256, nonWhitespace: true),
+                ],
+                ["title"]),
             OperationRisks.Installation,
             "game.install.named.steam.manifest.postread.v1",
             ToolExposure.Public,
-            "Resuelve un título cerrado de Steam a su AppID, exige entitlement autenticado, inicia la instalación confirmada y verifica la transición del manifest."),
+            "Resuelve un título cerrado de Steam (o de Epic Games) a su identidad, exige entitlement autenticado, inicia la instalación y verifica la transición del manifiesto local."),
         Descriptor(
             "game.install.prepare",
             Schema([String("appId", maximumLength: 16, nonWhitespace: true)], ["appId"]),
@@ -696,6 +702,21 @@ public static class ProductCatalog
             "game.purchase.prepare.steam.selection.v1",
             ToolExposure.Public,
             "Prepara una selección monetaria exacta y devuelve precio y autoridad revisables."),
+        // Auditoría semántica 2026-09-20 (REOPEN1993, grupo S): «Desinstala Worms
+        // Rumble en Steam» es una desinstalación real por la consola de Steam,
+        // verificada por el manifiesto local; pierde lo instalado, así que confirma.
+        Descriptor(
+            "game.uninstall.named",
+            Schema(
+                [
+                    String("store", types: NullableString, values: ["epic", "steam"]),
+                    String("title", maximumUtf8Bytes: 256, nonWhitespace: true),
+                ],
+                ["title"]),
+            OperationRisks.WorkLoss,
+            "game.uninstall.named.steam.manifest.absence.postread.v1",
+            ToolExposure.Public,
+            "Resuelve un título instalado de Steam a su AppID, lo desinstala por la consola del cliente y verifica que el manifiesto local ya no lo declare instalado."),
         Descriptor(
             "input.key.press",
             Schema([String("key", values:

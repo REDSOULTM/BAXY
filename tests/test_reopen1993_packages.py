@@ -12,7 +12,7 @@ from baxy_mind import effect_intent, llm
 
 AVAILABLE = frozenset({
     "package.install.prepare", "package.install.commit", "package.uninstall", "app.installed",
-    "game.entitlement.named", "app.open", "web.search", "game.install.named",
+    "game.entitlement.named", "app.open", "web.search",
     "software.python.package.status",
 })
 APPS = ("Spotify", "Discord", "Steam", "Google Chrome")
@@ -43,6 +43,7 @@ def test_software_requests_go_to_the_package_manager(text: str, operations: tupl
     ("text", "operations"),
     [
         ("instala requests con pip", ("software.python.package.status",)),
+        # REOPEN1993 grupo S: with the install effect available, a Steam download is the real install.
         ("Descarga Worms Rumble en Steam", ("game.entitlement.named",)),
     ],
 )
